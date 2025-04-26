@@ -1,37 +1,57 @@
 import { useState, useEffect } from 'react';
 import './PhotoGrid.css';
+import { API_URL } from '../config';
 
 interface PhotoGridProps {
   album: string;
 }
 
-interface Photo {
-  id: string;
-  src: string;
-  thumbnail: string;
-}
-
 function PhotoGrid({ album }: PhotoGridProps) {
-  const [photos, setPhotos] = useState<Photo[]>([]);
-  const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
+  const [photos, setPhotos] = useState<Array<{id: string, src: string}>>([]);
+  const [selectedPhoto, setSelectedPhoto] = useState<{id: string, src: string} | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [touchEnd, setTouchEnd] = useState<number | null>(null);
+
+  const minSwipeDistance = 50;
+
+  const onTouchStart = (e: React.TouchEvent) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const onTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd || !selectedPhoto) return;
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+
+    if (isLeftSwipe) {
+      const currentIndex = photos.findIndex(p => p.id === selectedPhoto.id);
+      const nextIndex = (currentIndex + 1) % photos.length;
+      setSelectedPhoto(photos[nextIndex]);
+    } else if (isRightSwipe) {
+      const currentIndex = photos.findIndex(p => p.id === selectedPhoto.id);
+      const prevIndex = (currentIndex - 1 + photos.length) % photos.length;
+      setSelectedPhoto(photos[prevIndex]);
+    }
+  };
 
   useEffect(() => {
     const fetchPhotos = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`http://localhost:3001/api/albums/${album}/photos`);
+        const response = await fetch(`${API_URL}/api/albums/${album}/photos`);
         if (!response.ok) {
           throw new Error('Failed to fetch photos');
         }
         const data = await response.json();
-        const photosWithFullPaths = data.map((photo: Photo) => ({
-          ...photo,
-          src: `http://localhost:3001${photo.src}`,
-          thumbnail: `http://localhost:3001${photo.thumbnail}`
-        }));
-        setPhotos(photosWithFullPaths);
+        setPhotos(data);
         setError(null);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'An error occurred');
@@ -43,45 +63,6 @@ function PhotoGrid({ album }: PhotoGridProps) {
 
     fetchPhotos();
   }, [album]);
-
-  const handlePhotoClick = (photo: Photo) => {
-    setSelectedPhoto(photo);
-  };
-
-  const handleCloseModal = () => {
-    setSelectedPhoto(null);
-  };
-
-  const handleDownload = async (photo: Photo) => {
-    try {
-      const response = await fetch(photo.src);
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = photo.id;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
-    } catch (err) {
-      console.error('Error downloading photo:', err);
-    }
-  };
-
-  const handleNext = () => {
-    if (!selectedPhoto) return;
-    const currentIndex = photos.findIndex(p => p.id === selectedPhoto.id);
-    const nextIndex = (currentIndex + 1) % photos.length;
-    setSelectedPhoto(photos[nextIndex]);
-  };
-
-  const handlePrevious = () => {
-    if (!selectedPhoto) return;
-    const currentIndex = photos.findIndex(p => p.id === selectedPhoto.id);
-    const prevIndex = (currentIndex - 1 + photos.length) % photos.length;
-    setSelectedPhoto(photos[prevIndex]);
-  };
 
   if (loading) {
     return <div className="loading">Loading photos...</div>;
@@ -97,24 +78,71 @@ function PhotoGrid({ album }: PhotoGridProps) {
         <div 
           key={photo.id} 
           className="photo-item"
-          onClick={() => handlePhotoClick(photo)}
+          onClick={() => setSelectedPhoto(photo)}
         >
-          <img src={photo.thumbnail} alt={`Photo ${photo.id}`} />
+          <img 
+            src={`${API_URL}${photo.src}`}
+            alt={photo.id}
+            loading="lazy"
+          />
         </div>
       ))}
-
+      
       {selectedPhoto && (
-        <div className="modal">
-          <div className="modal-content">
+        <div 
+          className="modal" 
+          onClick={() => setSelectedPhoto(null)}
+          onTouchStart={onTouchStart}
+          onTouchMove={onTouchMove}
+          onTouchEnd={onTouchEnd}
+        >
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
             <div className="modal-controls">
-              <button onClick={handleCloseModal}>×</button>
-              <button onClick={() => handleDownload(selectedPhoto)}>↓</button>
+              <button onClick={() => {
+                const link = document.createElement('a');
+                link.href = `${API_URL}${selectedPhoto.src}`;
+                link.download = selectedPhoto.id;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+              }}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                  <polyline points="7 10 12 15 17 10" />
+                  <line x1="12" y1="15" x2="12" y2="3" />
+                </svg>
+              </button>
+              <button onClick={() => setSelectedPhoto(null)}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
             </div>
             <div className="modal-navigation">
-              <button onClick={handlePrevious}>←</button>
-              <button onClick={handleNext}>→</button>
+              <button onClick={() => {
+                const currentIndex = photos.findIndex(p => p.id === selectedPhoto.id);
+                const prevIndex = (currentIndex - 1 + photos.length) % photos.length;
+                setSelectedPhoto(photos[prevIndex]);
+              }}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M15 18l-6-6 6-6" />
+                </svg>
+              </button>
+              <button onClick={() => {
+                const currentIndex = photos.findIndex(p => p.id === selectedPhoto.id);
+                const nextIndex = (currentIndex + 1) % photos.length;
+                setSelectedPhoto(photos[nextIndex]);
+              }}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M9 18l6-6-6-6" />
+                </svg>
+              </button>
             </div>
-            <img src={selectedPhoto.src} alt={`Photo ${selectedPhoto.id}`} />
+            <img 
+              src={`${API_URL}${selectedPhoto.src}`}
+              alt={selectedPhoto.id}
+            />
           </div>
         </div>
       )}

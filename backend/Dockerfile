@@ -1,4 +1,9 @@
-FROM node:18-alpine
+FROM node:20-slim
+
+# Install ImageMagick and other dependencies
+RUN apt-get update && apt-get install -y \
+    imagemagick \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 

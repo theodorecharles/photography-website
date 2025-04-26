@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import './App.css'
 import PhotoGrid from './components/PhotoGrid';
+import { API_URL } from './config';
 
 function App() {
   const [albums, setAlbums] = useState<string[]>([]);
@@ -13,7 +14,7 @@ function App() {
     const fetchAlbums = async () => {
       try {
         setLoading(true);
-        const response = await fetch('http://localhost:3001/api/albums');
+        const response = await fetch(`${API_URL}/api/albums`);
         if (!response.ok) {
           throw new Error('Failed to fetch albums');
         }
@@ -49,7 +50,7 @@ function App() {
       <header className="header">
         <div className="header-left">
           <img 
-            src="http://localhost:3001/photos/derpatar.png" 
+            src={`${API_URL}/photos/derpatar.png`}
             alt="Ted Charles" 
             className="avatar"
           />

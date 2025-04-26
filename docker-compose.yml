@@ -5,17 +5,19 @@ services:
     build: ./frontend
     ports:
       - "80:80"
+    environment:
+      - NODE_ENV=production
     depends_on:
       - backend
-    environment:
-      - VITE_API_URL=http://localhost:8080
 
   backend:
     build: ./backend
     ports:
-      - "8080:8080"
+      - "3001:3001"
     volumes:
       - ./photos:/photos
+      - ./thumbnails:/thumbnails
+      - ./optimized:/optimized
     environment:
-      - PORT=8080
+      - PORT=3001
       - PHOTOS_DIR=/photos 
