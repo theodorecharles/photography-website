@@ -3,38 +3,69 @@ import './App.css'
 import PhotoGrid from './components/PhotoGrid';
 import { API_URL } from './config';
 
+interface ExternalLink {
+  title: string;
+  url: string;
+}
+
 function App() {
   const [albums, setAlbums] = useState<string[]>([]);
+  const [externalLinks, setExternalLinks] = useState<ExternalLink[]>([]);
   const [currentAlbum, setCurrentAlbum] = useState<string>('homepage');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   useEffect(() => {
-    const fetchAlbums = async () => {
+    const fetchData = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`${API_URL}/api/albums`);
-        if (!response.ok) {
+        const [albumsResponse, externalLinksResponse] = await Promise.all([
+          fetch(`${API_URL}/api/albums`),
+          fetch(`${API_URL}/api/external-pages`)
+        ]);
+
+        if (!albumsResponse.ok) {
           throw new Error('Failed to fetch albums');
         }
-        const data = await response.json();
-        setAlbums(data.filter((album: string) => album !== 'homepage'));
+        if (!externalLinksResponse.ok) {
+          throw new Error('Failed to fetch external links');
+        }
+
+        const albumsData = await albumsResponse.json();
+        const externalLinksData = await externalLinksResponse.json();
+
+        setAlbums(albumsData.filter((album: string) => album !== 'homepage'));
+        setExternalLinks(externalLinksData.externalLinks);
         setError(null);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'An error occurred');
         setAlbums([]);
+        setExternalLinks([]);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchAlbums();
+    fetchData();
+
+    const handleResize = () => {
+      if (window.innerWidth >= 768) {
+        setIsMenuOpen(false);
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   const handleAlbumClick = (album: string) => {
     setCurrentAlbum(album);
     setIsMenuOpen(false);
+  };
+
+  const handleExternalLinkClick = (url: string) => {
+    window.open(url, '_blank', 'noopener,noreferrer');
   };
 
   if (loading) {
@@ -66,10 +97,20 @@ function App() {
             {albums.map((album) => (
               <li key={album}>
                 <button 
-                  className={currentAlbum === album ? 'active' : ''}
+                  className={`nav-link ${currentAlbum === album ? 'active' : ''}`}
                   onClick={() => handleAlbumClick(album)}
                 >
                   {album.charAt(0).toUpperCase() + album.slice(1)}
+                </button>
+              </li>
+            ))}
+            {externalLinks.map((link) => (
+              <li key={link.title}>
+                <button 
+                  className="nav-link"
+                  onClick={() => handleExternalLinkClick(link.url)}
+                >
+                  {link.title}
                 </button>
               </li>
             ))}
@@ -89,10 +130,19 @@ function App() {
           {albums.map((album) => (
             <button
               key={album}
-              className={currentAlbum === album ? 'active' : ''}
+              className={`nav-link ${currentAlbum === album ? 'active' : ''}`}
               onClick={() => handleAlbumClick(album)}
             >
               {album.charAt(0).toUpperCase() + album.slice(1)}
+            </button>
+          ))}
+          {externalLinks.map((link) => (
+            <button
+              key={link.title}
+              className="nav-link"
+              onClick={() => handleExternalLinkClick(link.url)}
+            >
+              {link.title}
             </button>
           ))}
         </div>

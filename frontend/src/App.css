@@ -94,13 +94,44 @@ body {
   border-radius: 0;
 }
 
-.album-nav button:hover {
+.nav-link {
+  color: #333;
+  text-decoration: none;
+  font-size: 1rem;
+  padding: 0.5rem 1rem;
+  transition: all 0.3s ease;
+  min-width: 100px;
+  text-align: center;
+  display: inline-block;
+  border-bottom: 1px solid transparent;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.nav-link:hover {
   border-bottom: 1px solid #333;
 }
 
-.album-nav button.active {
+.nav-link.active {
   border-bottom: 1px solid #DDDDDD;
   font-weight: 600;
+}
+
+.external-link {
+  color: #333;
+  text-decoration: none;
+  font-size: 1rem;
+  padding: 0.5rem 1rem;
+  transition: all 0.3s ease;
+  min-width: 100px;
+  text-align: center;
+  display: inline-block;
+  border-bottom: 1px solid transparent;
+}
+
+.external-link:hover {
+  border-bottom: 1px solid #333;
 }
 
 .hamburger-menu {
@@ -186,12 +217,14 @@ body {
     display: block;
   }
   
-  .hamburger-menu {
-    display: none;
+  .hamburger-menu,
+  .hamburger-menu.active {
+    display: none !important;
   }
   
-  .mobile-menu {
-    display: none;
+  .mobile-menu,
+  .mobile-menu.active {
+    display: none !important;
   }
 }
 
@@ -202,5 +235,13 @@ body {
   
   .hamburger-menu {
     display: block;
+  }
+  
+  .mobile-menu {
+    display: none;
+  }
+  
+  .mobile-menu.active {
+    display: flex;
   }
 }
