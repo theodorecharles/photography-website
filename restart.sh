@@ -11,6 +11,15 @@ handle_error() {
     exit 1
 }
 
+# Check if photos directory exists
+if [ ! -d "photos" ]; then
+    handle_error "Photos directory does not exist"
+fi
+
+# List contents of photos directory for debugging
+log "Contents of photos directory:"
+ls -la photos
+
 # Create optimized image directories if they don't exist
 log "Creating optimized image directories..."
 mkdir -p optimized/{thumbnail,modal,download} || handle_error "Failed to create optimized directories"
@@ -22,6 +31,10 @@ optimize_images() {
     local success=true
     local total_images=0
     local processed_images=0
+    
+    # Debug: List all image files found
+    log "Searching for images in $src_dir..."
+    find "$src_dir" -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" \) -exec echo "Found: {}" \;
     
     # Count total images first
     total_images=$(find "$src_dir" -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" \) | wc -l)
