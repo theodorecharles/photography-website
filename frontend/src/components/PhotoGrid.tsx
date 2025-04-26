@@ -20,7 +20,7 @@ function PhotoGrid({ album }: PhotoGridProps) {
   const [error, setError] = useState<string | null>(null);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
-  const [modalImageLoading, setModalImageLoading] = useState(false);
+  const [modalImageLoaded, setModalImageLoaded] = useState(false);
 
   const minSwipeDistance = 50;
 
@@ -86,7 +86,10 @@ function PhotoGrid({ album }: PhotoGridProps) {
         <div 
           key={photo.id} 
           className="photo-item"
-          onClick={() => setSelectedPhoto(photo)}
+          onClick={() => {
+            setModalImageLoaded(false);
+            setSelectedPhoto(photo);
+          }}
         >
           <img 
             src={`${API_URL}${photo.thumbnail}`}
@@ -126,6 +129,7 @@ function PhotoGrid({ album }: PhotoGridProps) {
               <button onClick={() => {
                 const currentIndex = photos.findIndex(p => p.id === selectedPhoto.id);
                 const prevIndex = (currentIndex - 1 + photos.length) % photos.length;
+                setModalImageLoaded(false);
                 setSelectedPhoto(photos[prevIndex]);
               }}>
                 <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -135,6 +139,7 @@ function PhotoGrid({ album }: PhotoGridProps) {
               <button onClick={() => {
                 const currentIndex = photos.findIndex(p => p.id === selectedPhoto.id);
                 const nextIndex = (currentIndex + 1) % photos.length;
+                setModalImageLoaded(false);
                 setSelectedPhoto(photos[nextIndex]);
               }}>
                 <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -146,14 +151,13 @@ function PhotoGrid({ album }: PhotoGridProps) {
               src={`${API_URL}${selectedPhoto.thumbnail}`}
               alt={selectedPhoto.id}
               className="modal-placeholder"
-              style={{ display: modalImageLoading ? 'block' : 'none' }}
+              style={{ display: modalImageLoaded ? 'none' : 'block' }}
             />
             <img 
               src={`${API_URL}${selectedPhoto.src}`}
               alt={selectedPhoto.id}
-              onLoadStart={() => setModalImageLoading(true)}
-              onLoad={() => setModalImageLoading(false)}
-              style={{ display: modalImageLoading ? 'none' : 'block' }}
+              onLoad={() => setModalImageLoaded(true)}
+              style={{ display: modalImageLoaded ? 'block' : 'none' }}
             />
           </div>
         </div>
