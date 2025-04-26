@@ -5,6 +5,7 @@
   padding: 1rem;
   width: 100%;
   max-width: 100%;
+  margin-top: 1rem;
 }
 
 .photo-item {
@@ -227,5 +228,17 @@
 @media (min-width: 1200px) {
   .photo-grid {
     grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Mobile-specific adjustments */
+@media (max-width: 599px) {
+  .photo-grid {
+    padding: 0.5rem;
+    gap: 0.5rem;
+  }
+  
+  .main-content {
+    padding-bottom: 2rem;
   }
 } 
