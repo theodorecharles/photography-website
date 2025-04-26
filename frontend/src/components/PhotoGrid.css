@@ -1,8 +1,10 @@
 .photo-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(1, 1fr);
   gap: 1rem;
   padding: 1rem;
+  width: 100%;
+  max-width: 100%;
 }
 
 .photo-item {
@@ -202,4 +204,25 @@
 .modal-navigation button:focus {
   outline: 2px solid rgba(255, 255, 255, 0.5);
   outline-offset: 2px;
+}
+
+/* 2 columns for tablets */
+@media (min-width: 600px) {
+  .photo-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* 3 columns for small desktops */
+@media (min-width: 900px) {
+  .photo-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* 4 columns for large desktops */
+@media (min-width: 1200px) {
+  .photo-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
 } 
