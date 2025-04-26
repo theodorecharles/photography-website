@@ -51,6 +51,18 @@ const getPhotosInAlbum = (album: string) => {
   }
 };
 
+// Helper function to get external pages
+const getExternalPages = () => {
+  try {
+    const configPath = path.join(__dirname, '../../config/external-pages.json');
+    const data = fs.readFileSync(configPath, 'utf8');
+    return JSON.parse(data);
+  } catch (error) {
+    console.error('Error reading external pages config:', error);
+    return { externalLinks: [] };
+  }
+};
+
 // Get all albums
 app.get('/api/albums', (req, res) => {
   const albums = getAlbums();
@@ -65,6 +77,13 @@ app.get('/api/albums/:album/photos', (req, res) => {
   const photos = getPhotosInAlbum(album);
   console.log('Sending photos response:', photos);
   res.json(photos);
+});
+
+// Get external pages
+app.get('/api/external-pages', (req, res) => {
+  const externalPages = getExternalPages();
+  console.log('Sending external pages response:', externalPages);
+  res.json(externalPages);
 });
 
 // Health check endpoint
