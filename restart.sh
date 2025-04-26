@@ -17,7 +17,7 @@ mkdir -p optimized/{thumbnail,modal,download} || handle_error "Failed to create 
 
 # Function to optimize images
 optimize_images() {
-    local src_dir="photos"
+    local src_dir="../photos"
     local optimized_dir="optimized"
     local success=true
     local total_images=0
@@ -25,7 +25,7 @@ optimize_images() {
     
     # Count total images first
     total_images=$(find "$src_dir" -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" \) | wc -l)
-    log "Found $total_images images to process"
+    log "Found $total_images images to process in $src_dir"
     
     # Process each image in the photos directory
     find "$src_dir" -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" \) | while read -r image; do
