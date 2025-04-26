@@ -59,6 +59,11 @@
   margin: 0 auto;
 }
 
+.modal-placeholder {
+  filter: blur(5px);
+  transform: scale(1.1);
+}
+
 .modal-controls {
   position: absolute;
   top: 0;
