@@ -6,9 +6,16 @@ interface PhotoGridProps {
   album: string;
 }
 
+interface Photo {
+  id: string;
+  src: string;
+  thumbnail: string;
+  download: string;
+}
+
 function PhotoGrid({ album }: PhotoGridProps) {
-  const [photos, setPhotos] = useState<Array<{id: string, src: string}>>([]);
-  const [selectedPhoto, setSelectedPhoto] = useState<{id: string, src: string} | null>(null);
+  const [photos, setPhotos] = useState<Photo[]>([]);
+  const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [touchStart, setTouchStart] = useState<number | null>(null);
@@ -81,7 +88,7 @@ function PhotoGrid({ album }: PhotoGridProps) {
           onClick={() => setSelectedPhoto(photo)}
         >
           <img 
-            src={`${API_URL}${photo.src}`}
+            src={`${API_URL}${photo.thumbnail}`}
             alt={photo.id}
             loading="lazy"
           />
@@ -99,12 +106,12 @@ function PhotoGrid({ album }: PhotoGridProps) {
           <div className="modal-content" onClick={e => e.stopPropagation()}>
             <div className="modal-controls">
               <button onClick={() => {
-                window.open(`${API_URL}${selectedPhoto.src}`, '_blank');
+                window.open(`${API_URL}${selectedPhoto.download}`, '_blank');
               }}>
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-                  <polyline points="15 3 21 3 21 9" />
-                  <line x1="10" y1="14" x2="21" y2="3" />
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                  <polyline points="7 10 12 15 17 10" />
+                  <line x1="12" y1="15" x2="12" y2="3" />
                 </svg>
               </button>
               <button onClick={() => setSelectedPhoto(null)}>
