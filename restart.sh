@@ -11,16 +11,16 @@ handle_error() {
     exit 1
 }
 
-# Run image optimization
-log "Starting image optimization..."
-if ! ./optimize_images.sh; then
-    handle_error "Image optimization failed"
-fi
-
 # Pull latest changes
 log "Pulling latest changes from GitHub..."
 if ! git pull origin master; then
     handle_error "Failed to pull from GitHub"
+fi
+
+# Run image optimization
+log "Starting image optimization..."
+if ! ./optimize_images.sh; then
+    handle_error "Image optimization failed"
 fi
 
 # Backend deployment
