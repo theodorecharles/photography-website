@@ -154,4 +154,3 @@ if ! pm2 restart frontend; then
 fi
 
 log "Deployment completed successfully!"
-pm2 list 
