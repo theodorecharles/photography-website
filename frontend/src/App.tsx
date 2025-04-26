@@ -107,7 +107,7 @@ function App() {
             {externalLinks.map((link) => (
               <li key={link.title}>
                 <button 
-                  className="nav-link"
+                  className="nav-link external"
                   onClick={() => handleExternalLinkClick(link.url)}
                 >
                   {link.title}
@@ -139,7 +139,7 @@ function App() {
           {externalLinks.map((link) => (
             <button
               key={link.title}
-              className="nav-link"
+              className="nav-link external"
               onClick={() => handleExternalLinkClick(link.url)}
             >
               {link.title}

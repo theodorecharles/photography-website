@@ -99,17 +99,12 @@ function PhotoGrid({ album }: PhotoGridProps) {
           <div className="modal-content" onClick={e => e.stopPropagation()}>
             <div className="modal-controls">
               <button onClick={() => {
-                const link = document.createElement('a');
-                link.href = `${API_URL}${selectedPhoto.src}`;
-                link.download = selectedPhoto.id;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
+                window.open(`${API_URL}${selectedPhoto.src}`, '_blank');
               }}>
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                  <polyline points="7 10 12 15 17 10" />
-                  <line x1="12" y1="15" x2="12" y2="3" />
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                  <polyline points="15 3 21 3 21 9" />
+                  <line x1="10" y1="14" x2="21" y2="3" />
                 </svg>
               </button>
               <button onClick={() => setSelectedPhoto(null)}>
@@ -125,8 +120,8 @@ function PhotoGrid({ album }: PhotoGridProps) {
                 const prevIndex = (currentIndex - 1 + photos.length) % photos.length;
                 setSelectedPhoto(photos[prevIndex]);
               }}>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M15 18l-6-6 6-6" />
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M18 6L6 12L18 18" />
                 </svg>
               </button>
               <button onClick={() => {
@@ -134,8 +129,8 @@ function PhotoGrid({ album }: PhotoGridProps) {
                 const nextIndex = (currentIndex + 1) % photos.length;
                 setSelectedPhoto(photos[nextIndex]);
               }}>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M9 18l6-6-6-6" />
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M6 6L18 12L6 18" />
                 </svg>
               </button>
             </div>
