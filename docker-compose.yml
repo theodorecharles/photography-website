@@ -4,7 +4,7 @@ services:
   frontend:
     build: ./frontend
     ports:
-      - "80:80"
+      - "8650:80"
     environment:
       - NODE_ENV=production
     depends_on:
@@ -13,7 +13,7 @@ services:
   backend:
     build: ./backend
     ports:
-      - "3001:3001"
+      - "8561:3001"
     volumes:
       - ./photos:/photos
       - ./thumbnails:/thumbnails
