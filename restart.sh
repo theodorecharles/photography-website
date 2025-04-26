@@ -13,17 +13,28 @@ handle_error() {
 
 # Create optimized image directories if they don't exist
 log "Creating optimized image directories..."
-mkdir -p photos/optimized/{thumbnail,modal,download}
+mkdir -p optimized/{thumbnail,modal,download} || handle_error "Failed to create optimized directories"
 
 # Function to optimize images
 optimize_images() {
     local src_dir="photos"
-    local optimized_dir="photos/optimized"
+    local optimized_dir="optimized"
+    local success=true
+    local total_images=0
+    local processed_images=0
+    
+    # Count total images first
+    total_images=$(find "$src_dir" -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" \) | wc -l)
+    log "Found $total_images images to process"
     
     # Process each image in the photos directory
     find "$src_dir" -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" \) | while read -r image; do
+        processed_images=$((processed_images + 1))
+        log "Processing image $processed_images/$total_images: $image"
+        
         # Skip if the file is in the optimized directory
         if [[ "$image" == "$optimized_dir"* ]]; then
+            log "Skipping $image (already in optimized directory)"
             continue
         fi
         
@@ -37,27 +48,54 @@ optimize_images() {
         
         # Create thumbnail if it doesn't exist
         if [ ! -f "$thumb_path" ]; then
-            convert "$image" -resize "512x512>" "$thumb_path"
-            log "Created thumbnail for $filename"
+            log "Creating thumbnail for $filename"
+            if ! convert "$image" -resize "512x512>" "$thumb_path"; then
+                log "ERROR: Failed to create thumbnail for $filename"
+                success=false
+                continue
+            fi
+            log "Successfully created thumbnail for $filename"
+        else
+            log "Thumbnail already exists for $filename"
         fi
         
         # Create modal image if it doesn't exist
         if [ ! -f "$modal_path" ]; then
-            convert "$image" -resize "2048x2048>" "$modal_path"
-            log "Created modal image for $filename"
+            log "Creating modal image for $filename"
+            if ! convert "$image" -resize "2048x2048>" "$modal_path"; then
+                log "ERROR: Failed to create modal image for $filename"
+                success=false
+                continue
+            fi
+            log "Successfully created modal image for $filename"
+        else
+            log "Modal image already exists for $filename"
         fi
         
         # Create download image if it doesn't exist
         if [ ! -f "$download_path" ]; then
-            cp "$image" "$download_path"
-            log "Created download version for $filename"
+            log "Creating download version for $filename"
+            if ! cp "$image" "$download_path"; then
+                log "ERROR: Failed to create download version for $filename"
+                success=false
+                continue
+            fi
+            log "Successfully created download version for $filename"
+        else
+            log "Download version already exists for $filename"
         fi
     done
+    
+    # Check if any errors occurred during optimization
+    if [ "$success" = false ]; then
+        handle_error "Image optimization failed"
+    fi
 }
 
 # Run the optimization function
 log "Starting image optimization..."
 optimize_images
+log "Image optimization completed successfully"
 
 # Pull latest changes
 log "Pulling latest changes from GitHub..."
