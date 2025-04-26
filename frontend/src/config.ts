@@ -5,7 +5,7 @@ const devConfig = {
 
 // Production config
 const prodConfig = {
-  apiUrl: 'https://api.tedroddy.net'
+  apiUrl: 'https://api.tedcharles.net'
 };
 
 // Use production config if mode is production
