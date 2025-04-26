@@ -17,7 +17,7 @@ mkdir -p optimized/{thumbnail,modal,download} || handle_error "Failed to create 
 
 # Function to optimize images
 optimize_images() {
-    local src_dir="../photos"
+    local src_dir="photos"
     local optimized_dir="optimized"
     local success=true
     local total_images=0
@@ -38,51 +38,58 @@ optimize_images() {
             continue
         fi
         
-        # Get the filename without the path
+        # Get the relative path from photos directory
+        local relative_path=${image#$src_dir/}
+        local album_path=$(dirname "$relative_path")
         local filename=$(basename "$image")
         
+        # Create album directories in optimized folders if they don't exist
+        mkdir -p "$optimized_dir/thumbnail/$album_path"
+        mkdir -p "$optimized_dir/modal/$album_path"
+        mkdir -p "$optimized_dir/download/$album_path"
+        
         # Define output paths
-        local thumb_path="$optimized_dir/thumbnail/$filename"
-        local modal_path="$optimized_dir/modal/$filename"
-        local download_path="$optimized_dir/download/$filename"
+        local thumb_path="$optimized_dir/thumbnail/$album_path/$filename"
+        local modal_path="$optimized_dir/modal/$album_path/$filename"
+        local download_path="$optimized_dir/download/$album_path/$filename"
         
         # Create thumbnail if it doesn't exist
         if [ ! -f "$thumb_path" ]; then
-            log "Creating thumbnail for $filename"
+            log "Creating thumbnail for $relative_path"
             if ! convert "$image" -resize "512x512>" "$thumb_path"; then
-                log "ERROR: Failed to create thumbnail for $filename"
+                log "ERROR: Failed to create thumbnail for $relative_path"
                 success=false
                 continue
             fi
-            log "Successfully created thumbnail for $filename"
+            log "Successfully created thumbnail for $relative_path"
         else
-            log "Thumbnail already exists for $filename"
+            log "Thumbnail already exists for $relative_path"
         fi
         
         # Create modal image if it doesn't exist
         if [ ! -f "$modal_path" ]; then
-            log "Creating modal image for $filename"
+            log "Creating modal image for $relative_path"
             if ! convert "$image" -resize "2048x2048>" "$modal_path"; then
-                log "ERROR: Failed to create modal image for $filename"
+                log "ERROR: Failed to create modal image for $relative_path"
                 success=false
                 continue
             fi
-            log "Successfully created modal image for $filename"
+            log "Successfully created modal image for $relative_path"
         else
-            log "Modal image already exists for $filename"
+            log "Modal image already exists for $relative_path"
         fi
         
         # Create download image if it doesn't exist
         if [ ! -f "$download_path" ]; then
-            log "Creating download version for $filename"
+            log "Creating download version for $relative_path"
             if ! cp "$image" "$download_path"; then
-                log "ERROR: Failed to create download version for $filename"
+                log "ERROR: Failed to create download version for $relative_path"
                 success=false
                 continue
             fi
-            log "Successfully created download version for $filename"
+            log "Successfully created download version for $relative_path"
         else
-            log "Download version already exists for $filename"
+            log "Download version already exists for $relative_path"
         fi
     done
     
