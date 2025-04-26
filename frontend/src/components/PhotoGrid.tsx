@@ -142,11 +142,12 @@ function PhotoGrid({ album }: PhotoGridProps) {
                 </svg>
               </button>
             </div>
-            {modalImageLoading ? (
-              <div className="modal-loading">
-                <div className="spinner"></div>
-              </div>
-            ) : null}
+            <img 
+              src={`${API_URL}${selectedPhoto.thumbnail}`}
+              alt={selectedPhoto.id}
+              className="modal-placeholder"
+              style={{ display: modalImageLoading ? 'block' : 'none' }}
+            />
             <img 
               src={`${API_URL}${selectedPhoto.src}`}
               alt={selectedPhoto.id}
