@@ -5,8 +5,8 @@ const devConfig = {
 
 // Production config
 const prodConfig = {
-  apiUrl: 'http://localhost:8561'
+  apiUrl: 'https://api.tedroddy.net'
 };
 
-// Export the appropriate config based on environment
-export const API_URL = process.env.NODE_ENV === 'production' ? prodConfig.apiUrl : devConfig.apiUrl; 
+// Use production config if mode is production
+export const API_URL = import.meta.env.MODE === 'production' ? prodConfig.apiUrl : devConfig.apiUrl; 
