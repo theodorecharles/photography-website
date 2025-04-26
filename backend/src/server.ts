@@ -48,22 +48,12 @@ const getPhotosInAlbum = (album: string) => {
     const files = fs.readdirSync(albumPath)
       .filter(file => /\.(jpg|jpeg|png|gif)$/i.test(file));
 
-    // Special handling for homepage album
-    if (album === 'homepage') {
-      return files.map(file => ({
-        id: file,
-        src: `/optimized/modal/${album}/${file}`,
-        thumbnail: `/optimized/thumbnail/${album}/${file}`,
-        download: `/optimized/download/${album}/${file}`
-      }));
-    }
-
-    // For other albums, use original photos
+    // Use optimized images for all albums
     return files.map(file => ({
       id: file,
-      src: `/photos/${album}/${file}`,
-      thumbnail: `/photos/${album}/${file}`,
-      download: `/photos/${album}/${file}`
+      src: `/optimized/modal/${album}/${file}`,
+      thumbnail: `/optimized/thumbnail/${album}/${file}`,
+      download: `/optimized/download/${album}/${file}`
     }));
   } catch (error) {
     console.error(`Error reading album ${album}:`, error);
