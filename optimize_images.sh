@@ -27,7 +27,7 @@ mkdir -p optimized/{thumbnail,modal,download} || handle_error "Failed to create 
 # Function to process a directory
 process_directory() {
     local dir="$1"
-    local success=true
+    local success=0  # 0 means success, 1 means failure
     
     # Process all files in the current directory
     for file in "$dir"/*; do
@@ -35,6 +35,9 @@ process_directory() {
         if [ -d "$file" ]; then
             # Recursively process subdirectories
             process_directory "$file"
+            if [ $? -ne 0 ]; then
+                success=1
+            fi
             continue
         fi
         
@@ -63,7 +66,7 @@ process_directory() {
             log "Creating thumbnail for $relative_path"
             if ! convert "$file" -resize "512x512>" "$thumb_path"; then
                 log "ERROR: Failed to create thumbnail for $relative_path"
-                success=false
+                success=1
                 continue
             fi
             log "Successfully created thumbnail for $relative_path"
@@ -76,7 +79,7 @@ process_directory() {
             log "Creating modal image for $relative_path"
             if ! convert "$file" -resize "2048x2048>" "$modal_path"; then
                 log "ERROR: Failed to create modal image for $relative_path"
-                success=false
+                success=1
                 continue
             fi
             log "Successfully created modal image for $relative_path"
@@ -89,7 +92,7 @@ process_directory() {
             log "Creating download version for $relative_path"
             if ! cp "$file" "$download_path"; then
                 log "ERROR: Failed to create download version for $relative_path"
-                success=false
+                success=1
                 continue
             fi
             log "Successfully created download version for $relative_path"
