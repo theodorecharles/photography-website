@@ -55,6 +55,8 @@
 .modal-content img {
   max-width: 100%;
   max-height: 80vh;
+  width: auto;
+  height: auto;
   object-fit: contain;
   margin: 0 auto;
 }
@@ -62,6 +64,12 @@
 .modal-placeholder {
   filter: blur(5px);
   transform: scale(1.1);
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
 }
 
 .modal-controls {
