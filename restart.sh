@@ -153,11 +153,5 @@ if ! pm2 restart frontend; then
     fi
 fi
 
-# Kill any existing processes
-pkill -f "node server.js"
-
-# Start the server
-node server.js
-
 log "Deployment completed successfully!"
 pm2 list 
