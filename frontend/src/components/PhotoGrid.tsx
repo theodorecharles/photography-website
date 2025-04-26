@@ -20,6 +20,7 @@ function PhotoGrid({ album }: PhotoGridProps) {
   const [error, setError] = useState<string | null>(null);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
+  const [modalImageLoading, setModalImageLoading] = useState(false);
 
   const minSwipeDistance = 50;
 
@@ -141,9 +142,17 @@ function PhotoGrid({ album }: PhotoGridProps) {
                 </svg>
               </button>
             </div>
+            {modalImageLoading ? (
+              <div className="modal-loading">
+                <div className="spinner"></div>
+              </div>
+            ) : null}
             <img 
               src={`${API_URL}${selectedPhoto.src}`}
               alt={selectedPhoto.id}
+              onLoadStart={() => setModalImageLoading(true)}
+              onLoad={() => setModalImageLoading(false)}
+              style={{ display: modalImageLoading ? 'none' : 'block' }}
             />
           </div>
         </div>
