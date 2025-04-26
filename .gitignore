@@ -1,6 +1,7 @@
 # Dependencies
 node_modules/
 photos/
+optimized/
 /.pnp
 .pnp.js
 
