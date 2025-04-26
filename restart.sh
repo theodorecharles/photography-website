@@ -25,9 +25,9 @@ if ! npm run build; then
 fi
 
 log "Restarting backend with PM2..."
-if ! pm2 restart photo-website-backend; then
+if ! pm2 restart backend; then
     log "Backend not running, starting it..."
-    if ! pm2 start npm --name "photo-website-backend" -- start; then
+    if ! pm2 start npm --name "backend" -- start; then
         handle_error "Failed to start backend"
     fi
 fi
@@ -40,9 +40,9 @@ if ! npm run build; then
 fi
 
 log "Restarting frontend with PM2..."
-if ! pm2 restart photo-website-frontend; then
+if ! pm2 restart frontend; then
     log "Frontend not running, starting it..."
-    if ! pm2 start npm --name "photo-website-frontend" -- start; then
+    if ! pm2 start npm --name "frontend" -- start; then
         handle_error "Failed to start frontend"
     fi
 fi
