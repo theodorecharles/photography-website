@@ -4,7 +4,6 @@ import { API_URL } from '../config';
 
 interface PhotoGridProps {
   album: string;
-  onPhotoSelect: (photo: Photo) => void;
 }
 
 interface Photo {
@@ -16,7 +15,7 @@ interface Photo {
   album: string;
 }
 
-const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onPhotoSelect }) => {
+const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
   const [loading, setLoading] = useState(true);
