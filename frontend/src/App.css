@@ -114,6 +114,7 @@ body {
 
 .album-nav {
   display: none;
+  margin-right: 0.5rem;
 }
 
 .album-nav.active {
