@@ -18,6 +18,14 @@
   border:1px solid rgba(255, 255, 255, 0.1)
 }
 
+.photo-item.albums-list {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.2);
+  cursor: default;
+}
+
 .photo-item:hover {
   border-color: rgba(255, 255, 255, 0.3)
 }
@@ -260,4 +268,41 @@
 .mobile-menu button:focus {
   outline: 2px solid rgba(255, 255, 255, 0.5);
   outline-offset: 2px;
+}
+
+.albums-list-content {
+  padding: 1rem;
+  text-align: center;
+  width: 100%;
+}
+
+.albums-list-content h3 {
+  color: white;
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+}
+
+.albums-buttons {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+  align-items: center;
+  padding: 0 0.5rem;
+}
+
+.album-button {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  width: 100%;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.album-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
 } 
