@@ -1,3 +1,9 @@
+/**
+ * PhotoGrid component for displaying a grid of photos.
+ * This component handles fetching and displaying photos from the backend,
+ * and provides functionality for viewing photos in a modal.
+ */
+
 import { useState, useEffect } from 'react';
 import './PhotoGrid.css';
 import { API_URL } from '../config';
