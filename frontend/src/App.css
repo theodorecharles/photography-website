@@ -114,7 +114,7 @@ body {
   background: rgba(0, 0, 0, 0.6);
   border: 2px solid rgba(255, 255, 255, 0.3);
   color: rgba(255, 255, 255, 0.8);
-  padding: 0.75rem 1.25rem;
+  padding: 0.5rem 0.75rem;
   border-radius: 50px;
   cursor: pointer;
   display: flex;
@@ -123,10 +123,10 @@ body {
   transition: all 0.05s ease;
   outline: none;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  font-size: 1rem;
+  font-size: 16px;
   position: relative;
-  min-width: 44px;
-  min-height: 44px;
+  min-width: 36px;
+  min-height: 36px;
 }
 
 .nav-link:hover {
