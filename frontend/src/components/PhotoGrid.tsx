@@ -4,6 +4,7 @@ import { API_URL } from '../config';
 
 interface PhotoGridProps {
   album: string;
+  onPhotoSelect: (photo: Photo) => void;
 }
 
 interface Photo {
@@ -11,9 +12,10 @@ interface Photo {
   src: string;
   thumbnail: string;
   download: string;
+  title: string;
 }
 
-function PhotoGrid({ album }: PhotoGridProps) {
+const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onPhotoSelect }) => {
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
   const [loading, setLoading] = useState(true);
@@ -72,6 +74,10 @@ function PhotoGrid({ album }: PhotoGridProps) {
     fetchPhotos();
   }, [album]);
 
+  const handleImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    e.currentTarget.classList.add('loaded');
+  };
+
   if (loading) {
     return <div className="loading">Loading photos...</div>;
   }
@@ -93,8 +99,9 @@ function PhotoGrid({ album }: PhotoGridProps) {
         >
           <img 
             src={`${API_URL}${photo.thumbnail}`}
-            alt={photo.id}
+            alt={photo.title}
             loading="lazy"
+            onLoad={handleImageLoad}
           />
         </div>
       ))}
@@ -149,13 +156,13 @@ function PhotoGrid({ album }: PhotoGridProps) {
             </div>
             <img 
               src={`${API_URL}${selectedPhoto.thumbnail}`}
-              alt={selectedPhoto.id}
+              alt={selectedPhoto.title}
               className="modal-placeholder"
               style={{ display: modalImageLoaded ? 'none' : 'block' }}
             />
             <img 
               src={`${API_URL}${selectedPhoto.src}`}
-              alt={selectedPhoto.id}
+              alt={selectedPhoto.title}
               onLoad={() => setModalImageLoaded(true)}
               style={{ display: modalImageLoaded ? 'block' : 'none' }}
             />
@@ -164,6 +171,6 @@ function PhotoGrid({ album }: PhotoGridProps) {
       )}
     </div>
   );
-}
+};
 
 export default PhotoGrid; 
