@@ -15,7 +15,11 @@
   aspect-ratio: 4/3;
   width: 100%;
   height: 100%;
-  background-color: #f0f0f0;
+  border:1px solid rgba(255, 255, 255, 0.1)
+}
+
+.photo-item:hover {
+  border-color: rgba(255, 255, 255, 0.3)
 }
 
 .photo-item img {
@@ -42,7 +46,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.9);
+  background-color: rgba(0, 0, 0, 0.8);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   display: flex;

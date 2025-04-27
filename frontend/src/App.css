@@ -32,11 +32,11 @@ body {
 }
 
 .header {
-  background-color: rgba(255, 255, 255, 0.9);
+  background-color: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   color: #333;
-  padding: 0 1rem;
+  padding: 0 0rem;
   height: 54px;
   display: flex;
   justify-content: space-between;
@@ -47,7 +47,7 @@ body {
   right: 0;
   z-index: 1000;
   border-bottom: 1px solid #FFFFFF;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .header-left {
@@ -58,6 +58,14 @@ body {
   padding: 0.5rem;
   border-radius: 4px;
   transition: all 0.1s ease;
+  text-decoration: none;
+}
+
+.header-left a {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  text-decoration: none;
 }
 
 .header-left:hover {
@@ -87,6 +95,7 @@ body {
   position: relative;
   color: #333;
   text-shadow: 0 0 2px rgba(255, 255, 255, 0.8);
+  white-space: nowrap;
 }
 
 .header-left:hover .header-title {
@@ -130,6 +139,9 @@ body {
   min-width: 100px;
   text-align: center;
   border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .album-nav button.active {
@@ -142,83 +154,61 @@ body {
 }
 
 .nav-link {
-  background: rgba(0, 0, 0, 0.6);
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  color: rgba(255, 255, 255, 0.8);
-  padding: 0.5rem 0.75rem;
-  border-radius: 50px;
+  background: white;
+  border: 1px solid rgba(51, 51, 51, 0.3);
+  color: #000;
+  padding: 0.25rem 0.75rem;
+  border-radius: 2px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.05s ease;
   outline: none;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   font-size: 16px;
   position: relative;
-  min-width: 36px;
-  min-height: 36px;
+  text-decoration: none;
+  min-width: 80px;
 }
 
 .nav-link:hover {
-  background: rgba(0, 0, 0, 0.8);
-  border-color: rgba(255, 255, 255, 0.5);
+  background: #000;
   color: white;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
 }
 
 .nav-link:active {
-  background: rgba(0, 0, 0, 0.9);
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  background: #000;
+  color: white;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .nav-link:focus {
-  outline: 1px solid rgba(255, 255, 255, 0.5);
+  outline: 1px solid rgba(0, 0, 0, 0.5);
   outline-offset: 2px;
 }
 
 .nav-link.active {
-  background: rgba(255, 255, 255, 0.2);
-  border-color: rgba(255, 255, 255, 0.5);
+  background: #333;
+  color: white;
+  border: 1px solid white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .nav-link.external {
-  padding-right: 2.5rem;
+  background: white;
+  border: 1px solid rgba(51, 51, 51, 0.3);
+  color: #000;
+  padding: 0.25rem 0.75rem;
+  border-radius: 2px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
-.nav-link.external::after {
-  content: '';
-  position: absolute;
-  right: 0.75rem;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 12px;
-  height: 12px;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Cpath d='M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6'/%3E%3Cpolyline points='15 3 21 3 21 9'/%3E%3Cline x1='10' y1='14' x2='21' y2='3'/%3E%3C/svg%3E");
-  background-size: contain;
-  background-repeat: no-repeat;
-  opacity: 0.7;
-  transition: opacity 0.2s ease;
-}
-
-.nav-link.external:hover::after {
-  opacity: 1;
-}
-
-.external-link {
-  color: #333;
-  text-decoration: none;
-  font-size: 1rem;
-  padding: 0.5rem 1rem;
-  transition: all 0.1s ease;
-  min-width: 100px;
-  text-align: center;
-  display: inline-block;
-  border-bottom: 1px solid transparent;
-}
-
-.external-link:hover {
-  border-bottom: 1px solid #333;
+.nav-link.external:hover {
+  background: #000;
+  color: white;
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
 }
 
 .hamburger-menu {
@@ -248,76 +238,36 @@ body {
 }
 
 .mobile-menu {
+  display: none;
+  border: 1px solid #FFF;
+  border-top: none;
+  flex-direction: column;
   position: fixed;
   top: 54px;
   right: 0;
-  background-color: rgba(235, 235, 235, 1);
-  border-left: 1px solid white;
+  width: 30%;
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   padding: 1rem;
-  display: none;
-  flex-direction: column;
-  gap: 0.5rem;
-  min-width: 200px;
-  border-radius: 0 0 0 4px;
-  border-top: 1px solid #DDD;
-  margin-right: 0;
-  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
-  transform: translateY(-100%);
-  transition: transform 0.2s ease-out;
-}
-
-.mobile-menu::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: inherit;
-  z-index: -1;
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.5);
+  z-index: 100;
 }
 
 .mobile-menu.active {
   display: flex;
-  transform: translateY(0);
 }
 
-.mobile-menu button {
-  background: white;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  color: #000;
-  padding: 0.5rem 0.75rem;
-  border-radius: 2px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.05s ease;
-  outline: none;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-  font-size: 16px;
-  position: relative;
-  min-width: 36px;
-  min-height: 36px;
-  text-align: left;
+.mobile-menu .nav-link {
   width: 100%;
+  text-align: left;
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.5rem;
+  border-radius: 4px;
 }
 
-.mobile-menu button:hover {
-  background: #000;
-  color: white;
-  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
-}
-
-.mobile-menu button:focus {
-  outline: 2px solid rgba(255, 255, 255, 0.5);
-  outline-offset: 2px;
-}
-
-.mobile-menu button.active {
-  background: #f0f0f0;
-  border-color: rgba(0, 0, 0, 0.1);
-  color: #000;
+.mobile-menu .nav-link:last-child {
+  margin-bottom: 0;
 }
 
 .main-content {
@@ -325,7 +275,7 @@ body {
   padding: 0;
   padding-top: 0;
   min-height: calc(100vh - 54px);
-  background-color: #f5f5f5;
+  background-color: #333;
   position: relative;
   width: 100%;
   overflow-x: hidden;
@@ -375,6 +325,12 @@ body {
 
   .photo-item {
     padding: 0;
+  }
+
+  .mobile-menu {
+    
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
   }
 }
 
