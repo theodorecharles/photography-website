@@ -73,12 +73,19 @@ const PhotoModal: React.FC<PhotoModalProps> = ({ photo, onClose, onNext, onPrev 
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
-      <div className="relative w-full h-full flex items-center justify-center">
+    <div 
+      className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 w-screen h-screen"
+      style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}
+    >
+      <div 
+        className="relative w-full h-full flex items-center justify-center"
+        style={{ width: '100%', height: '100%' }}
+      >
         {/* Close button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-white hover:text-gray-300"
+          className="absolute top-4 right-4 text-white hover:text-gray-300 z-10"
+          style={{ zIndex: 10 }}
         >
           <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -88,7 +95,8 @@ const PhotoModal: React.FC<PhotoModalProps> = ({ photo, onClose, onNext, onPrev 
         {/* Navigation buttons */}
         <button
           onClick={onPrev}
-          className="absolute left-4 text-white hover:text-gray-300"
+          className="absolute left-4 text-white hover:text-gray-300 z-10"
+          style={{ zIndex: 10 }}
         >
           <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -97,7 +105,8 @@ const PhotoModal: React.FC<PhotoModalProps> = ({ photo, onClose, onNext, onPrev 
 
         <button
           onClick={onNext}
-          className="absolute right-4 text-white hover:text-gray-300"
+          className="absolute right-4 text-white hover:text-gray-300 z-10"
+          style={{ zIndex: 10 }}
         >
           <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -106,10 +115,11 @@ const PhotoModal: React.FC<PhotoModalProps> = ({ photo, onClose, onNext, onPrev 
 
         {/* Image container */}
         <div
-          className="relative max-w-full max-h-full"
+          className="relative w-full h-full flex items-center justify-center"
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
+          style={{ width: '100%', height: '100%' }}
         >
           {isLoading && (
             <div className="absolute inset-0 flex items-center justify-center">
@@ -117,13 +127,16 @@ const PhotoModal: React.FC<PhotoModalProps> = ({ photo, onClose, onNext, onPrev 
             </div>
           )}
           <img
-            src={photo.url}
+            src={photo.fullUrl}
             alt={photo.title}
-            className={`max-w-full max-h-screen object-contain transition-opacity duration-300 ${
+            className={`max-w-full max-h-full object-contain transition-opacity duration-300 ${
               isLoading ? 'opacity-0' : 'opacity-100'
             }`}
             onLoad={() => setIsLoading(false)}
             style={{
+              maxWidth: '100%',
+              maxHeight: '100%',
+              objectFit: 'contain',
               transform: `scale(${zoomLevel}) translate(${position.x}px, ${position.y}px)`,
               cursor: isZoomed ? 'move' : 'default'
             }}
