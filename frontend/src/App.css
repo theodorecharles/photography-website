@@ -254,6 +254,7 @@ body {
   background-color: rgba(255, 255, 255, 0.5);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
+  -moz-backdrop-filter: blur(8px);
   border-left: 1px solid white;
   padding: 1rem;
   display: none;
@@ -262,6 +263,8 @@ body {
   min-width: 200px;
   border-radius: 0 0 0 4px;
   margin-right: 1rem;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
 }
 
 .mobile-menu.active {
