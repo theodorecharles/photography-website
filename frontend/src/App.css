@@ -260,9 +260,9 @@ body {
 }
 
 .main-content {
-  margin-top: 64px;
+  margin-top: 54px;
   padding: 0;
-  min-height: calc(100vh - 64px);
+  min-height: calc(100vh - 54px);
   background-color: #f5f5f5;
   position: relative;
   width: 100%;
