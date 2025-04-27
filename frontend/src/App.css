@@ -356,3 +356,188 @@ body {
     display: flex;
   }
 }
+
+/* Footer styles */
+.footer {
+  background-color: #333;
+  padding: 2rem 0;
+  margin-top: 2rem;
+  border-top: 1px solid #444;
+}
+
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+  text-align: center;
+  color: #fff;
+}
+
+.footer-content p {
+  margin-bottom: 1rem;
+}
+
+.footer-links {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+}
+
+.footer-link {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 500;
+  border-bottom: 1px solid #fff;
+}
+
+.footer-link:hover {
+  opacity: 0.8;
+}
+
+/* License page styles */
+.license-page {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+  color: #fff;
+}
+
+.license-page h1 {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #fff;
+}
+
+.license-content {
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.license-content h2 {
+  color: #fff;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+}
+
+.license-content ul {
+  margin-bottom: 1.5rem;
+  padding-left: 1.5rem;
+}
+
+.license-content li {
+  margin-bottom: 0.5rem;
+  line-height: 1.6;
+}
+
+.license-content p {
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+.license-content a {
+  color: #fff;
+  text-decoration: none;
+  border-bottom: 1px solid #fff;
+}
+
+.license-content a:hover {
+  opacity: 0.8;
+}
+
+/* Contact page styles */
+.contact-page {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+  color: #fff;
+}
+
+.contact-page h1 {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #fff;
+}
+
+.contact-content {
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group label {
+  font-weight: 500;
+}
+
+.form-group input,
+.form-group textarea {
+  padding: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font-size: 1rem;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+.submit-button {
+  padding: 0.75rem 1.5rem;
+  background-color: #fff;
+  color: #333;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.submit-button:hover {
+  opacity: 0.9;
+}
+
+.submit-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.success-message {
+  text-align: center;
+}
+
+.success-message h2 {
+  margin-bottom: 1rem;
+  color: #fff;
+}
+
+.error-message {
+  color: #ff6b6b;
+  padding: 0.75rem;
+  background-color: rgba(255, 107, 107, 0.1);
+  border-radius: 4px;
+  text-align: center;
+}
