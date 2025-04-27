@@ -22,14 +22,14 @@ function PhotoGrid({ album }: PhotoGridProps) {
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
   const [modalImageLoaded, setModalImageLoaded] = useState(false);
   const [swipeOffset, setSwipeOffset] = useState(0);
-  const [isSwiping, setIsSwiping] = useState(false);
+  // const [isSwiping, setIsSwiping] = useState(false);
 
   const minSwipeDistance = 50;
 
   const onTouchStart = (e: React.TouchEvent) => {
     setTouchEnd(null);
     setTouchStart(e.targetTouches[0].clientX);
-    setIsSwiping(true);
+    // setIsSwiping(true);
   };
 
   const onTouchMove = (e: React.TouchEvent) => {
@@ -56,7 +56,7 @@ function PhotoGrid({ album }: PhotoGridProps) {
     }
     
     setSwipeOffset(0);
-    setIsSwiping(false);
+    // setIsSwiping(false);
   };
 
   const handleKeyDown = (e: KeyboardEvent) => {
