@@ -1,33 +1,45 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const express_1 = __importDefault(require("express"));
-const cors_1 = __importDefault(require("cors"));
-const dotenv_1 = __importDefault(require("dotenv"));
-const fs_1 = __importDefault(require("fs"));
-const path_1 = __importDefault(require("path"));
+import express from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import nodemailer from 'nodemailer';
 // Load environment variables
-dotenv_1.default.config();
-const app = (0, express_1.default)();
+dotenv.config();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const app = express();
 const port = process.env.PORT || 3001;
-const photosDir = process.env.PHOTOS_DIR || path_1.default.join(__dirname, '../../photos');
+const photosDir = process.env.PHOTOS_DIR || path.join(__dirname, '../../photos');
+const optimizedDir = process.env.OPTIMIZED_DIR || path.join(__dirname, '../../optimized');
 // Log the photos directory path and check if it exists
 console.log('Photos directory path:', photosDir);
-console.log('Directory exists:', fs_1.default.existsSync(photosDir));
-if (fs_1.default.existsSync(photosDir)) {
-    console.log('Directory contents:', fs_1.default.readdirSync(photosDir));
+console.log('Optimized directory path:', optimizedDir);
+console.log('Directory exists:', fs.existsSync(photosDir));
+if (fs.existsSync(photosDir)) {
+    console.log('Directory contents:', fs.readdirSync(photosDir));
 }
 // Middleware
-app.use((0, cors_1.default)());
-app.use(express_1.default.json());
-app.use('/photos', express_1.default.static(photosDir));
+app.use(cors());
+app.use(express.json());
+app.use('/photos', express.static(photosDir));
+app.use('/optimized', express.static(optimizedDir));
+// Create email transporter
+const transporter = nodemailer.createTransport({
+    host: process.env.SMTP_HOST || 'smtp.gmail.com',
+    port: parseInt(process.env.SMTP_PORT || '587'),
+    secure: process.env.SMTP_SECURE === 'true',
+    auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS
+    }
+});
 // Helper function to get all albums
 const getAlbums = () => {
     try {
-        return fs_1.default.readdirSync(photosDir)
-            .filter(file => fs_1.default.statSync(path_1.default.join(photosDir, file)).isDirectory());
+        return fs.readdirSync(photosDir)
+            .filter(file => fs.statSync(path.join(photosDir, file)).isDirectory());
     }
     catch (error) {
         console.error('Error reading photos directory:', error);
@@ -37,17 +49,62 @@ const getAlbums = () => {
 // Helper function to get photos in an album
 const getPhotosInAlbum = (album) => {
     try {
-        const albumPath = path_1.default.join(photosDir, album);
-        return fs_1.default.readdirSync(albumPath)
-            .filter(file => /\.(jpg|jpeg|png|gif)$/i.test(file))
-            .map(file => ({
+        const albumPath = path.join(photosDir, album);
+        const files = fs.readdirSync(albumPath)
+            .filter(file => /\.(jpg|jpeg|png|gif)$/i.test(file));
+        // Use optimized images for all albums
+        return files.map(file => ({
             id: file,
-            src: `/photos/${album}/${file}`,
-            thumbnail: `/photos/${album}/${file}`
+            src: `/optimized/modal/${album}/${file}`,
+            thumbnail: `/optimized/thumbnail/${album}/${file}`,
+            download: `/optimized/download/${album}/${file}`
         }));
     }
     catch (error) {
         console.error(`Error reading album ${album}:`, error);
+        return [];
+    }
+};
+// Helper function to get external pages
+const getExternalPages = () => {
+    try {
+        const configPath = path.join(__dirname, '../../config/external-pages.json');
+        const data = fs.readFileSync(configPath, 'utf8');
+        return JSON.parse(data);
+    }
+    catch (error) {
+        console.error('Error reading external pages config:', error);
+        return { externalLinks: [] };
+    }
+};
+// Helper function to get random photos from all albums
+const getRandomPhotos = (count) => {
+    try {
+        const allAlbums = getAlbums().filter(album => album !== 'homepage');
+        const selectedPhotos = [];
+        // Get 2 random photos from each album
+        allAlbums.forEach(album => {
+            const albumPath = path.join(photosDir, album);
+            const files = fs.readdirSync(albumPath)
+                .filter(file => /\.(jpg|jpeg|png|gif)$/i.test(file));
+            // Shuffle the files array and take up to 2 photos
+            const shuffledFiles = files.sort(() => 0.5 - Math.random());
+            const selectedFiles = shuffledFiles.slice(0, count);
+            selectedFiles.forEach(file => {
+                selectedPhotos.push({
+                    id: file,
+                    src: `/optimized/modal/${album}/${file}`,
+                    thumbnail: `/optimized/thumbnail/${album}/${file}`,
+                    download: `/optimized/download/${album}/${file}`,
+                    album: album
+                });
+            });
+        });
+        // Sort all photos alphabetically by filename
+        return selectedPhotos.sort((a, b) => a.id.localeCompare(b.id));
+    }
+    catch (error) {
+        console.error('Error getting random photos:', error);
         return [];
     }
 };
@@ -63,6 +120,18 @@ app.get('/api/albums/:album/photos', (req, res) => {
     console.log('Requested album:', album);
     const photos = getPhotosInAlbum(album);
     console.log('Sending photos response:', photos);
+    res.json(photos);
+});
+// Get external pages
+app.get('/api/external-pages', (req, res) => {
+    const externalPages = getExternalPages();
+    console.log('Sending external pages response:', externalPages);
+    res.json(externalPages);
+});
+// Get random photos from all albums
+app.get('/api/random-photos', (req, res) => {
+    const count = parseInt(req.query.count) || 2; // Default to 2 photos
+    const photos = getRandomPhotos(count);
     res.json(photos);
 });
 // Health check endpoint
