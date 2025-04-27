@@ -5,6 +5,7 @@
   padding: 1rem;
   width: 100%;
   max-width: 100%;
+  background-color: transparent;
 }
 
 .photo-item {
@@ -14,18 +15,25 @@
   aspect-ratio: 4/3;
   width: 100%;
   height: 100%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: all 0.1s ease;
 }
 
 .photo-item img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.1s ease;
   display: block;
+  transition: transform 0.1s ease;
+}
+
+.photo-item:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.5);
 }
 
 .photo-item:hover img {
-  transform: scale(1.05);
+  transform: scale(1.01);
 }
 
 .modal {
@@ -41,6 +49,23 @@
   z-index: 1000;
 }
 
+.modal-images {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.2s ease-out;
+  will-change: transform;
+}
+
+.modal-images img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
 .modal-content {
   position: relative;
   max-width: 90%;
@@ -49,6 +74,7 @@
   flex-direction: column;
   align-items: center;
   padding: 1rem;
+  overflow: hidden;
 }
 
 .modal-content img {

@@ -79,16 +79,16 @@ function App() {
   return (
     <div className="app">
       <header className="header">
-        <div className="header-left">
+        <div 
+          className="header-left"
+          onClick={() => handleAlbumClick('homepage')}
+        >
           <img 
             src={`${API_URL}/photos/derpatar.png`}
             alt="Ted Charles" 
             className="avatar"
           />
-          <h1 
-            className="header-title"
-            onClick={() => handleAlbumClick('homepage')}
-          >
+          <h1 className="header-title">
             Ted Charles
           </h1>
         </div>
