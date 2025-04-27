@@ -147,10 +147,6 @@ function App() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const handleExternalLinkClick = (url: string) => {
-    window.open(url, '_blank', 'noopener,noreferrer');
-  };
-
   if (loading) {
     return <div className="loading">Loading albums...</div>;
   }
