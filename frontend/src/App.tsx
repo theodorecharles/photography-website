@@ -2,6 +2,9 @@ import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation, useParams } from 'react-router-dom';
 import './App.css'
 import PhotoGrid from './components/PhotoGrid';
+import Footer from './components/Footer';
+import License from './components/License';
+import Contact from './components/Contact';
 import { API_URL } from './config';
 
 interface ExternalLink {
@@ -183,8 +186,11 @@ function App() {
         <Routes>
           <Route path="/" element={<PhotoGrid album="homepage" />} />
           <Route path="/album/:album" element={<AlbumRoute />} />
+          <Route path="/license" element={<License />} />
+          <Route path="/contact" element={<Contact />} />
         </Routes>
       </main>
+      <Footer />
     </div>
   );
 }
