@@ -245,13 +245,17 @@ body {
   position: fixed;
   top: 54px;
   right: 0;
-  width: 30%;
+  width: 50%;
   background: rgba(255, 255, 255, 0.5);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   padding: 1rem;
   box-shadow: 0 4px 4px rgba(0, 0, 0, 0.5);
-  z-index: 100;
+  z-index: 999;
+}
+
+.external-icon {
+  margin-left: 0.25rem
 }
 
 .mobile-menu.active {

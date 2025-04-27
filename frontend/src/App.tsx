@@ -65,34 +65,6 @@ function Navigation({ albums, externalLinks, isMenuOpen, setIsMenuOpen }: {
           <span></span>
         </div>
       </div>
-      <div className={`mobile-menu ${isMenuOpen ? 'active' : ''}`}>
-        {albums.map((album) => (
-          <Link
-            key={album}
-            to={`/album/${album}`}
-            className={`nav-link ${location.pathname === `/album/${album}` ? 'active' : ''}`}
-            onClick={() => setIsMenuOpen(false)}
-          >
-            {album.charAt(0).toUpperCase() + album.slice(1)}
-          </Link>
-        ))}
-        {externalLinks.map((link) => (
-          <a
-            key={link.title}
-            href={link.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="nav-link external"
-          >
-            {link.title}
-            <svg className="external-icon" viewBox="0 0 24 24" width="16" height="16">
-              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M15 3h6v6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M10 14L21 3" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </a>
-        ))}
-      </div>
     </>
   );
 }
@@ -177,6 +149,35 @@ function App() {
           setIsMenuOpen={setIsMenuOpen} 
         />
       </header>
+
+      <div className={`mobile-menu ${isMenuOpen ? 'active' : ''}`}>
+        {albums.map((album) => (
+          <Link
+            key={album}
+            to={`/album/${album}`}
+            className={`nav-link ${location.pathname === `/album/${album}` ? 'active' : ''}`}
+            onClick={() => setIsMenuOpen(false)}
+          >
+            {album.charAt(0).toUpperCase() + album.slice(1)}
+          </Link>
+        ))}
+        {externalLinks.map((link) => (
+          <a
+            key={link.title}
+            href={link.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="nav-link external"
+          >
+            {link.title}
+            <svg className="external-icon" viewBox="0 0 24 24" width="16" height="16">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M15 3h6v6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M10 14L21 3" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </a>
+        ))}
+      </div>
 
       <main className="main-content">
         <Routes>
