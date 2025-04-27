@@ -5,7 +5,7 @@
   padding: 1rem;
   width: 100%;
   max-width: 100%;
-  background-color: transparent;
+  margin-top: 1rem;
 }
 
 .photo-item {
@@ -15,25 +15,18 @@
   aspect-ratio: 4/3;
   width: 100%;
   height: 100%;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  transition: all 0.1s ease;
 }
 
 .photo-item img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  display: block;
   transition: transform 0.1s ease;
-}
-
-.photo-item:hover {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.5);
+  display: block;
 }
 
 .photo-item:hover img {
-  transform: scale(1.01);
+  transform: scale(1.05);
 }
 
 .modal {
@@ -49,23 +42,6 @@
   z-index: 1000;
 }
 
-.modal-images {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  transition: transform 0.2s ease-out;
-  will-change: transform;
-}
-
-.modal-images img {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-
 .modal-content {
   position: relative;
   max-width: 90%;
@@ -74,14 +50,11 @@
   flex-direction: column;
   align-items: center;
   padding: 1rem;
-  overflow: hidden;
 }
 
 .modal-content img {
   max-width: 100%;
   max-height: 80vh;
-  width: auto;
-  height: auto;
   object-fit: contain;
   margin: 0 auto;
 }
@@ -89,12 +62,6 @@
 .modal-placeholder {
   filter: blur(5px);
   transform: scale(1.1);
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  margin: auto;
 }
 
 .modal-controls {
@@ -296,21 +263,11 @@
 /* Mobile-specific adjustments */
 @media (max-width: 599px) {
   .photo-grid {
-    padding: 1rem;
+    padding: 0.5rem;
     gap: 0.5rem;
   }
   
   .main-content {
     padding-bottom: 2rem;
-  }
-
-  .modal-content {
-    max-width: 100%;
-    padding: 0;
-  }
-
-  .modal-content img {
-    max-width: 100%;
-    max-height: 100vh;
   }
 } 

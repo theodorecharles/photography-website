@@ -90,12 +90,14 @@ const PhotoGrid: React.FC = () => {
       </div>
 
       {selectedPhoto && (
-        <PhotoModal
-          photo={selectedPhoto}
-          onClose={() => setSelectedPhoto(null)}
-          onNext={handleNext}
-          onPrev={handlePrev}
-        />
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', zIndex: 50 }}>
+          <PhotoModal
+            photo={selectedPhoto}
+            onClose={() => setSelectedPhoto(null)}
+            onNext={handleNext}
+            onPrev={handlePrev}
+          />
+        </div>
       )}
     </div>
   );

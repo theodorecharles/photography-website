@@ -21,22 +21,16 @@ function PhotoGrid({ album }: PhotoGridProps) {
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
   const [modalImageLoaded, setModalImageLoaded] = useState(false);
-  const [swipeOffset, setSwipeOffset] = useState(0);
-  // const [isSwiping, setIsSwiping] = useState(false);
 
   const minSwipeDistance = 50;
 
   const onTouchStart = (e: React.TouchEvent) => {
     setTouchEnd(null);
     setTouchStart(e.targetTouches[0].clientX);
-    // setIsSwiping(true);
   };
 
   const onTouchMove = (e: React.TouchEvent) => {
-    if (!touchStart) return;
     setTouchEnd(e.targetTouches[0].clientX);
-    const offset = e.targetTouches[0].clientX - touchStart;
-    setSwipeOffset(offset);
   };
 
   const onTouchEnd = () => {
@@ -53,27 +47,6 @@ function PhotoGrid({ album }: PhotoGridProps) {
       const currentIndex = photos.findIndex(p => p.id === selectedPhoto.id);
       const prevIndex = (currentIndex - 1 + photos.length) % photos.length;
       setSelectedPhoto(photos[prevIndex]);
-    }
-    
-    setSwipeOffset(0);
-    // setIsSwiping(false);
-  };
-
-  const handleKeyDown = (e: KeyboardEvent) => {
-    if (!selectedPhoto) return;
-    
-    if (e.key === 'ArrowLeft') {
-      const currentIndex = photos.findIndex(p => p.id === selectedPhoto.id);
-      const prevIndex = (currentIndex - 1 + photos.length) % photos.length;
-      setModalImageLoaded(false);
-      setSelectedPhoto(photos[prevIndex]);
-    } else if (e.key === 'ArrowRight') {
-      const currentIndex = photos.findIndex(p => p.id === selectedPhoto.id);
-      const nextIndex = (currentIndex + 1) % photos.length;
-      setModalImageLoaded(false);
-      setSelectedPhoto(photos[nextIndex]);
-    } else if (e.key === 'Escape') {
-      setSelectedPhoto(null);
     }
   };
 
@@ -98,32 +71,6 @@ function PhotoGrid({ album }: PhotoGridProps) {
 
     fetchPhotos();
   }, [album]);
-
-  useEffect(() => {
-    if (selectedPhoto) {
-      window.addEventListener('keydown', handleKeyDown);
-    }
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [selectedPhoto, photos]);
-
-  useEffect(() => {
-    if (selectedPhoto) {
-      document.body.style.overflow = 'hidden';
-      document.body.style.position = 'fixed';
-      document.body.style.width = '100%';
-    } else {
-      document.body.style.overflow = '';
-      document.body.style.position = '';
-      document.body.style.width = '';
-    }
-    return () => {
-      document.body.style.overflow = '';
-      document.body.style.position = '';
-      document.body.style.width = '';
-    };
-  }, [selectedPhoto]);
 
   if (loading) {
     return <div className="loading">Loading photos...</div>;
@@ -200,20 +147,18 @@ function PhotoGrid({ album }: PhotoGridProps) {
                 </svg>
               </button>
             </div>
-            <div className="modal-images" style={{ transform: `translateX(${swipeOffset}px)` }}>
-              <img 
-                src={`${API_URL}${selectedPhoto.thumbnail}`}
-                alt={selectedPhoto.id}
-                className="modal-placeholder"
-                style={{ display: modalImageLoaded ? 'none' : 'block' }}
-              />
-              <img 
-                src={`${API_URL}${selectedPhoto.src}`}
-                alt={selectedPhoto.id}
-                onLoad={() => setModalImageLoaded(true)}
-                style={{ display: modalImageLoaded ? 'block' : 'none' }}
-              />
-            </div>
+            <img 
+              src={`${API_URL}${selectedPhoto.thumbnail}`}
+              alt={selectedPhoto.id}
+              className="modal-placeholder"
+              style={{ display: modalImageLoaded ? 'none' : 'block' }}
+            />
+            <img 
+              src={`${API_URL}${selectedPhoto.src}`}
+              alt={selectedPhoto.id}
+              onLoad={() => setModalImageLoaded(true)}
+              style={{ display: modalImageLoaded ? 'block' : 'none' }}
+            />
           </div>
         </div>
       )}
