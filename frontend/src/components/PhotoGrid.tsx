@@ -13,6 +13,7 @@ interface Photo {
   thumbnail: string;
   download: string;
   title: string;
+  album: string;
 }
 
 const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onPhotoSelect }) => {
@@ -20,43 +21,18 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onPhotoSelect }) => {
   const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [touchStart, setTouchStart] = useState<number | null>(null);
-  const [touchEnd, setTouchEnd] = useState<number | null>(null);
   const [modalImageLoaded, setModalImageLoaded] = useState(false);
-
-  const minSwipeDistance = 50;
-
-  const onTouchStart = (e: React.TouchEvent) => {
-    setTouchEnd(null);
-    setTouchStart(e.targetTouches[0].clientX);
-  };
-
-  const onTouchMove = (e: React.TouchEvent) => {
-    setTouchEnd(e.targetTouches[0].clientX);
-  };
-
-  const onTouchEnd = () => {
-    if (!touchStart || !touchEnd || !selectedPhoto) return;
-    const distance = touchStart - touchEnd;
-    const isLeftSwipe = distance > minSwipeDistance;
-    const isRightSwipe = distance < -minSwipeDistance;
-
-    if (isLeftSwipe) {
-      const currentIndex = photos.findIndex(p => p.id === selectedPhoto.id);
-      const nextIndex = (currentIndex + 1) % photos.length;
-      setSelectedPhoto(photos[nextIndex]);
-    } else if (isRightSwipe) {
-      const currentIndex = photos.findIndex(p => p.id === selectedPhoto.id);
-      const prevIndex = (currentIndex - 1 + photos.length) % photos.length;
-      setSelectedPhoto(photos[prevIndex]);
-    }
-  };
 
   useEffect(() => {
     const fetchPhotos = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`${API_URL}/api/albums/${album}/photos`);
+        let response;
+        if (album === 'homepage') {
+          response = await fetch(`${API_URL}/api/random-photos?count=2`);
+        } else {
+          response = await fetch(`${API_URL}/api/albums/${album}/photos`);
+        }
         if (!response.ok) {
           throw new Error('Failed to fetch photos');
         }
@@ -73,6 +49,30 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onPhotoSelect }) => {
 
     fetchPhotos();
   }, [album]);
+
+  // Handle keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!selectedPhoto) return;
+
+      if (e.key === 'Escape') {
+        setSelectedPhoto(null);
+      } else if (e.key === 'ArrowLeft') {
+        const currentIndex = photos.findIndex(p => p.id === selectedPhoto.id);
+        const prevIndex = (currentIndex - 1 + photos.length) % photos.length;
+        setModalImageLoaded(false);
+        setSelectedPhoto(photos[prevIndex]);
+      } else if (e.key === 'ArrowRight') {
+        const currentIndex = photos.findIndex(p => p.id === selectedPhoto.id);
+        const nextIndex = (currentIndex + 1) % photos.length;
+        setModalImageLoaded(false);
+        setSelectedPhoto(photos[nextIndex]);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedPhoto, photos]);
 
   const handleImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
     e.currentTarget.classList.add('loaded');
@@ -110,9 +110,6 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onPhotoSelect }) => {
         <div 
           className="modal" 
           onClick={() => setSelectedPhoto(null)}
-          onTouchStart={onTouchStart}
-          onTouchMove={onTouchMove}
-          onTouchEnd={onTouchEnd}
         >
           <div className="modal-content" onClick={e => e.stopPropagation()}>
             <div className="modal-controls">

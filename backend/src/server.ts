@@ -73,6 +73,41 @@ const getExternalPages = () => {
   }
 };
 
+// Helper function to get random photos from all albums
+const getRandomPhotos = (count: number) => {
+  try {
+    const allAlbums = getAlbums().filter(album => album !== 'homepage');
+    const selectedPhotos: { id: string; src: string; thumbnail: string; download: string; album: string }[] = [];
+
+    // Get 2 random photos from each album
+    allAlbums.forEach(album => {
+      const albumPath = path.join(photosDir, album);
+      const files = fs.readdirSync(albumPath)
+        .filter(file => /\.(jpg|jpeg|png|gif)$/i.test(file));
+
+      // Shuffle the files array and take up to 2 photos
+      const shuffledFiles = files.sort(() => 0.5 - Math.random());
+      const selectedFiles = shuffledFiles.slice(0, count);
+
+      selectedFiles.forEach(file => {
+        selectedPhotos.push({
+          id: file,
+          src: `/optimized/modal/${album}/${file}`,
+          thumbnail: `/optimized/thumbnail/${album}/${file}`,
+          download: `/optimized/download/${album}/${file}`,
+          album: album
+        });
+      });
+    });
+
+    // Sort all photos alphabetically by filename
+    return selectedPhotos.sort((a, b) => a.id.localeCompare(b.id));
+  } catch (error) {
+    console.error('Error getting random photos:', error);
+    return [];
+  }
+};
+
 // Get all albums
 app.get('/api/albums', (req, res) => {
   const albums = getAlbums();
@@ -94,6 +129,13 @@ app.get('/api/external-pages', (req, res) => {
   const externalPages = getExternalPages();
   console.log('Sending external pages response:', externalPages);
   res.json(externalPages);
+});
+
+// Get random photos from all albums
+app.get('/api/random-photos', (req, res) => {
+  const count = parseInt(req.query.count as string) || 2; // Default to 2 photos
+  const photos = getRandomPhotos(count);
+  res.json(photos);
 });
 
 // Health check endpoint
