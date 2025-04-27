@@ -1,11 +1,16 @@
 #!/bin/bash
 
+# Image Optimization Script
+# This script processes all images in the photos directory, creating optimized versions
+# for different use cases (thumbnails, modal view, and downloads).
+# It maintains the original directory structure and handles errors gracefully.
+
 # Function to log messages with timestamps
 log() {
     echo "$(date '+%Y-%m-%d %H:%M:%S') - $1"
 }
 
-# Function to handle errors
+# Function to handle errors and exit the script
 handle_error() {
     log "ERROR: $1"
     exit 1
@@ -24,7 +29,7 @@ ls -la photos
 log "Creating optimized image directories..."
 mkdir -p optimized/{thumbnail,modal,download} || handle_error "Failed to create optimized directories"
 
-# Function to process a directory
+# Function to process a directory and its subdirectories
 process_directory() {
     local dir="$1"
     local success=0  # 0 means success, 1 means failure
@@ -56,12 +61,12 @@ process_directory() {
         mkdir -p "optimized/modal/$album_path"
         mkdir -p "optimized/download/$album_path"
         
-        # Define output paths
+        # Define output paths for different image versions
         local thumb_path="optimized/thumbnail/$album_path/$filename"
         local modal_path="optimized/modal/$album_path/$filename"
         local download_path="optimized/download/$album_path/$filename"
         
-        # Create thumbnail if it doesn't exist
+        # Create thumbnail version (512px max dimension)
         if [ ! -f "$thumb_path" ]; then
             log "Creating thumbnail for $relative_path"
             if ! convert "$file" -resize "512x512>" "$thumb_path"; then
@@ -74,7 +79,7 @@ process_directory() {
             log "Thumbnail already exists for $relative_path"
         fi
         
-        # Create modal image if it doesn't exist
+        # Create modal version (2048px max dimension)
         if [ ! -f "$modal_path" ]; then
             log "Creating modal image for $relative_path"
             if ! convert "$file" -resize "2048x2048>" "$modal_path"; then
@@ -87,7 +92,7 @@ process_directory() {
             log "Modal image already exists for $relative_path"
         fi
         
-        # Create download image if it doesn't exist
+        # Create download version (original quality)
         if [ ! -f "$download_path" ]; then
             log "Creating download version for $relative_path"
             if ! cp "$file" "$download_path"; then
