@@ -1,35 +1,40 @@
 #!/bin/bash
 
+# Restart Script
+# This script handles the deployment and restart process for the photography website.
+# It pulls the latest changes, optimizes images, and restarts both frontend and backend services.
+
 # Function to log messages with timestamps
 log() {
     echo "$(date '+%Y-%m-%d %H:%M:%S') - $1"
 }
 
-# Function to handle errors
+# Function to handle errors and exit the script
 handle_error() {
     log "ERROR: $1"
     exit 1
 }
 
-# Pull latest changes
+# Pull latest changes from the repository
 log "Pulling latest changes from GitHub..."
 if ! git pull origin master; then
     handle_error "Failed to pull from GitHub"
 fi
 
-# Run image optimization
+# Run image optimization script
 log "Starting image optimization..."
 if ! ./optimize_images.sh; then
     handle_error "Image optimization failed"
 fi
 
-# Backend deployment
+# Backend deployment process
 log "Building backend..."
 cd backend || handle_error "Failed to cd into backend directory"
 if ! npm run build; then
     handle_error "Backend build failed"
 fi
 
+# Restart backend service using PM2
 log "Restarting backend with PM2..."
 if ! pm2 restart backend; then
     log "Backend not running, starting it..."
@@ -38,13 +43,14 @@ if ! pm2 restart backend; then
     fi
 fi
 
-# Frontend deployment
+# Frontend deployment process
 log "Building frontend..."
 cd ../frontend || handle_error "Failed to cd into frontend directory"
 if ! npm run build; then
     handle_error "Frontend build failed"
 fi
 
+# Restart frontend service using PM2
 log "Restarting frontend with PM2..."
 if ! pm2 restart frontend; then
     log "Frontend not running, starting it..."
@@ -53,5 +59,6 @@ if ! pm2 restart frontend; then
     fi
 fi
 
+# Display PM2 process list
 log "Deployment completed successfully!"
 pm2 list
