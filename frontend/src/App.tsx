@@ -1,9 +1,15 @@
+/**
+ * Main application component for the photography website.
+ * This component handles the routing and layout of the entire application.
+ */
+
 import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation, useParams } from 'react-router-dom';
 import './App.css'
 import PhotoGrid from './components/PhotoGrid';
 import Footer from './components/Footer';
 import License from './components/License';
+import ScrollToTop from './components/ScrollToTop';
 import { API_URL } from './config';
 
 interface ExternalLink {
@@ -77,6 +83,7 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const location = useLocation();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -196,6 +203,7 @@ function App() {
 function AppWrapper() {
   return (
     <Router>
+      <ScrollToTop />
       <App />
     </Router>
   );
