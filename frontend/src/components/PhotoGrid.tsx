@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import './PhotoGrid.css';
 import { API_URL } from '../config';
+import { Link } from 'react-router-dom';
 
 interface PhotoGridProps {
   album: string;
@@ -21,22 +22,47 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [modalImageLoaded, setModalImageLoaded] = useState(false);
+  const [albums, setAlbums] = useState<string[]>([]);
 
   useEffect(() => {
     const fetchPhotos = async () => {
       try {
         setLoading(true);
-        let response;
+        
+        // Always fetch albums list first
+        const albumsResponse = await fetch(`${API_URL}/api/albums`);
+        if (!albumsResponse.ok) {
+          throw new Error('Failed to fetch albums');
+        }
+        const albumsData = await albumsResponse.json();
+        setAlbums(albumsData);
+        
         if (album === 'homepage') {
-          response = await fetch(`${API_URL}/api/random-photos?count=2`);
+          // Fetch all photos from each album for homepage
+          const allPhotosPromises = albumsData.map(async (albumName: string) => {
+            const albumResponse = await fetch(`${API_URL}/api/albums/${albumName}/photos`);
+            if (!albumResponse.ok) {
+              throw new Error(`Failed to fetch photos from album ${albumName}`);
+            }
+            return albumResponse.json();
+          });
+          
+          const allPhotosArrays = await Promise.all(allPhotosPromises);
+          const allPhotos = allPhotosArrays.flat();
+          
+          // Randomly select 9 photos
+          const shuffled = [...allPhotos].sort(() => 0.5 - Math.random());
+          setPhotos(shuffled.slice(0, 9));
         } else {
-          response = await fetch(`${API_URL}/api/albums/${album}/photos`);
+          // For specific album pages, fetch photos normally
+          const response = await fetch(`${API_URL}/api/albums/${album}/photos`);
+          if (!response.ok) {
+            throw new Error('Failed to fetch photos');
+          }
+          const data = await response.json();
+          setPhotos(data);
         }
-        if (!response.ok) {
-          throw new Error('Failed to fetch photos');
-        }
-        const data = await response.json();
-        setPhotos(data);
+        
         setError(null);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'An error occurred');
@@ -104,6 +130,25 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
           />
         </div>
       ))}
+      
+      <div className="photo-item albums-list">
+        <div className="albums-list-content">
+          <h3>{album === 'homepage' ? 'Select an album' : 'Select another album'}</h3>
+          <div className="albums-buttons">
+            {albums
+              .filter(albumName => albumName !== 'homepage' && (album === 'homepage' || albumName !== album))
+              .map((albumName) => (
+                <Link
+                  key={albumName}
+                  to={`/album/${albumName}`}
+                  className="album-button"
+                >
+                  {albumName.charAt(0).toUpperCase() + albumName.slice(1)}
+                </Link>
+              ))}
+          </div>
+        </div>
+      </div>
       
       {selectedPhoto && (
         <div 
