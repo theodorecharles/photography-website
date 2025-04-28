@@ -65,8 +65,9 @@
 
 .modal-content {
   position: relative;
-  max-width: 90%;
-  max-height: 90%;
+  width: 100%;
+  max-width: 90vw;
+  max-height: 90vh;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -74,15 +75,19 @@
 }
 
 .modal-content img {
-  max-width: 100%;
+  width: 100%;
+  height: auto;
   max-height: 80vh;
   object-fit: contain;
   margin: 0 auto;
 }
 
 .modal-placeholder {
-  filter: blur(5px);
   transform: none;
+  width: 100%;
+  height: auto;
+  max-height: 80vh;
+  object-fit: contain;
 }
 
 .modal-controls {
