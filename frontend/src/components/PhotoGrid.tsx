@@ -30,6 +30,18 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
   const [modalImageLoaded, setModalImageLoaded] = useState(false);
   const [albums, setAlbums] = useState<string[]>([]);
 
+  // Handle body scrolling when modal opens/closes
+  useEffect(() => {
+    if (selectedPhoto) {
+      document.body.classList.add('modal-open');
+    } else {
+      document.body.classList.remove('modal-open');
+    }
+    return () => {
+      document.body.classList.remove('modal-open');
+    };
+  }, [selectedPhoto]);
+
   useEffect(() => {
     const fetchPhotos = async () => {
       try {
