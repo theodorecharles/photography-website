@@ -1,5 +1,16 @@
 #!/bin/bash
 
+# Configuration variables
+# Compression levels (0-100, where 100 is highest quality)
+THUMBNAIL_QUALITY=40
+MODAL_QUALITY=60
+DOWNLOAD_QUALITY=100
+
+# Resolution settings (max dimensions)
+THUMBNAIL_MAX_DIM=512
+MODAL_MAX_DIM=1024
+DOWNLOAD_MAX_DIM=3840
+
 # Image Optimization Script
 # This script processes all images in the photos directory, creating optimized versions
 # for different use cases (thumbnails, modal view, and downloads).
@@ -66,10 +77,10 @@ process_directory() {
         local modal_path="optimized/modal/$album_path/$filename"
         local download_path="optimized/download/$album_path/$filename"
         
-        # Create thumbnail version (512px max dimension)
+        # Create thumbnail version
         if [ ! -f "$thumb_path" ]; then
             log "Creating thumbnail for $relative_path"
-            if ! convert "$file" -resize "512x512>" "$thumb_path"; then
+            if ! convert "$file" -resize "${THUMBNAIL_MAX_DIM}x${THUMBNAIL_MAX_DIM}>" -quality $THUMBNAIL_QUALITY "$thumb_path"; then
                 log "ERROR: Failed to create thumbnail for $relative_path"
                 success=1
                 continue
@@ -79,10 +90,10 @@ process_directory() {
             log "Thumbnail already exists for $relative_path"
         fi
         
-        # Create modal version (2048px max dimension)
+        # Create modal version
         if [ ! -f "$modal_path" ]; then
             log "Creating modal image for $relative_path"
-            if ! convert "$file" -resize "2048x2048>" "$modal_path"; then
+            if ! convert "$file" -resize "${MODAL_MAX_DIM}x${MODAL_MAX_DIM}>" -quality $MODAL_QUALITY "$modal_path"; then
                 log "ERROR: Failed to create modal image for $relative_path"
                 success=1
                 continue
@@ -92,10 +103,10 @@ process_directory() {
             log "Modal image already exists for $relative_path"
         fi
         
-        # Create download version (original quality)
+        # Create download version
         if [ ! -f "$download_path" ]; then
             log "Creating download version for $relative_path"
-            if ! cp "$file" "$download_path"; then
+            if ! convert "$file" -resize "${DOWNLOAD_MAX_DIM}x${DOWNLOAD_MAX_DIM}>" -quality $DOWNLOAD_QUALITY "$download_path"; then
                 log "ERROR: Failed to create download version for $relative_path"
                 success=1
                 continue
