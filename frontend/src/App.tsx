@@ -4,7 +4,7 @@
  */
 
 import { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, useLocation, useParams } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, useParams } from 'react-router-dom';
 import './App.css'
 import PhotoGrid from './components/PhotoGrid';
 import Footer from './components/Footer';
@@ -28,7 +28,6 @@ function Navigation({ albums, externalLinks, isMenuOpen, setIsMenuOpen }: {
   isMenuOpen: boolean, 
   setIsMenuOpen: (value: boolean) => void 
 }) {
-  const location = useLocation();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isExternalOpen, setIsExternalOpen] = useState(false);
 
@@ -74,7 +73,7 @@ function Navigation({ albums, externalLinks, isMenuOpen, setIsMenuOpen }: {
               <Link 
                 key={album}
                 to={`/album/${album}`}
-                className={`nav-link ${location.pathname === `/album/${album}` ? 'active' : ''}`}
+                className="nav-link"
                 onClick={() => setIsDropdownOpen(false)}
               >
                 {album.charAt(0).toUpperCase() + album.slice(1)}
@@ -142,7 +141,7 @@ function Navigation({ albums, externalLinks, isMenuOpen, setIsMenuOpen }: {
               <Link 
                 key={album}
                 to={`/album/${album}`}
-                className={`nav-link ${location.pathname === `/album/${album}` ? 'active' : ''}`}
+                className="nav-link"
                 onClick={() => setIsMenuOpen(false)}
               >
                 {album.charAt(0).toUpperCase() + album.slice(1)}
@@ -181,7 +180,7 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const location = useLocation();
+  // const location = useLocation();
 
   // Handle clicks outside the mobile menu
   useEffect(() => {
