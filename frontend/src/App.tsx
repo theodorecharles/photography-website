@@ -29,28 +29,87 @@ function Navigation({ albums, externalLinks, isMenuOpen, setIsMenuOpen }: {
   setIsMenuOpen: (value: boolean) => void 
 }) {
   const location = useLocation();
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isExternalOpen, setIsExternalOpen] = useState(false);
+
+  const handleAlbumsHover = () => {
+    setIsExternalOpen(false);
+    setIsDropdownOpen(true);
+  };
+
+  const handleLinksHover = () => {
+    setIsDropdownOpen(false);
+    setIsExternalOpen(true);
+  };
+
+  const handleDropdownLeave = () => {
+    setIsDropdownOpen(false);
+    setIsExternalOpen(false);
+  };
 
   return (
     <>
-      <nav className="album-nav">
-        <ul>
-          {albums.map((album) => (
-            <li key={album}>
+      <nav className="album-nav" style={{position: "absolute", right: "0", marginRight: "1rem"}}>
+        <div 
+          className="dropdown-container"
+          onMouseEnter={handleAlbumsHover}
+          onMouseLeave={handleDropdownLeave}
+        >
+          <button 
+            className="nav-link"
+            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+          >
+            Albums
+            <svg 
+              className={`dropdown-arrow ${isDropdownOpen ? 'open' : ''}`} 
+              viewBox="0 0 24 24" 
+              width="16" 
+              height="16"
+            >
+              <path d="M6 9L12 15L18 9" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </button>
+          <div className={`dropdown-menu ${isDropdownOpen ? 'open' : ''}`}>
+            {albums.map((album) => (
               <Link 
+                key={album}
                 to={`/album/${album}`}
                 className={`nav-link ${location.pathname === `/album/${album}` ? 'active' : ''}`}
+                onClick={() => setIsDropdownOpen(false)}
               >
                 {album.charAt(0).toUpperCase() + album.slice(1)}
               </Link>
-            </li>
-          ))}
-          {externalLinks.map((link) => (
-            <li key={link.title}>
-              <a 
+            ))}
+          </div>
+        </div>
+        <div 
+          className="dropdown-container"
+          onMouseEnter={handleLinksHover}
+          onMouseLeave={handleDropdownLeave}
+        >
+          <button 
+            className="nav-link"
+            onClick={() => setIsExternalOpen(!isExternalOpen)}
+          >
+            Links
+            <svg 
+              className={`dropdown-arrow ${isExternalOpen ? 'open' : ''}`} 
+              viewBox="0 0 24 24" 
+              width="16" 
+              height="16"
+            >
+              <path d="M6 9L12 15L18 9" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </button>
+          <div className={`dropdown-menu ${isExternalOpen ? 'open' : ''}`}>
+            {externalLinks.map((link) => (
+              <a
+                key={link.title}
                 href={link.url}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="nav-link external"
+                onClick={() => setIsExternalOpen(false)}
               >
                 {link.title}
                 <svg className="external-icon" viewBox="0 0 24 24" width="16" height="16">
@@ -59,18 +118,57 @@ function Navigation({ albums, externalLinks, isMenuOpen, setIsMenuOpen }: {
                   <path d="M10 14L21 3" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
               </a>
-            </li>
-          ))}
-        </ul>
+            ))}
+          </div>
+        </div>
       </nav>
       <div 
-        className={`hamburger-menu ${isMenuOpen ? 'active' : ''}`}
+        className="hamburger-menu"
         onClick={() => setIsMenuOpen(!isMenuOpen)}
       >
         <div className="hamburger-icon">
           <span></span>
           <span></span>
           <span></span>
+        </div>
+      </div>
+      <div 
+        className={`dropdown-container mobile-dropdown ${isMenuOpen ? 'active' : ''}`}
+      >
+        <div className={`dropdown-menu ${isMenuOpen ? 'open' : ''}`}>
+          <div className="mobile-section">
+            {/* <h3>Albums</h3> */}
+            {albums.map((album) => (
+              <Link 
+                key={album}
+                to={`/album/${album}`}
+                className={`nav-link ${location.pathname === `/album/${album}` ? 'active' : ''}`}
+                onClick={() => setIsMenuOpen(false)}
+              >
+                {album.charAt(0).toUpperCase() + album.slice(1)}
+              </Link>
+            ))}
+          </div>
+          <div className="mobile-section">
+            {/* <h3>Links</h3> */}
+            {externalLinks.map((link) => (
+              <a
+                key={link.title}
+                href={link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="nav-link external"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                {link.title}
+                <svg className="external-icon" viewBox="0 0 24 24" width="16" height="16">
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M15 3h6v6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M10 14L21 3" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </a>
+            ))}
+          </div>
         </div>
       </div>
     </>
@@ -192,35 +290,6 @@ function App() {
           setIsMenuOpen={setIsMenuOpen} 
         />
       </header>
-
-      <div className={`mobile-menu ${isMenuOpen ? 'active' : ''}`}>
-        {albums.map((album) => (
-          <Link
-            key={album}
-            to={`/album/${album}`}
-            className={`nav-link ${location.pathname === `/album/${album}` ? 'active' : ''}`}
-            onClick={() => setIsMenuOpen(false)}
-          >
-            {album.charAt(0).toUpperCase() + album.slice(1)}
-          </Link>
-        ))}
-        {externalLinks.map((link) => (
-          <a
-            key={link.title}
-            href={link.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="nav-link external"
-          >
-            {link.title}
-            <svg className="external-icon" viewBox="0 0 24 24" width="16" height="16">
-              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M15 3h6v6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M10 14L21 3" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </a>
-        ))}
-      </div>
 
       <main className="main-content">
         <Routes>
