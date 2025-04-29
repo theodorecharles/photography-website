@@ -4,7 +4,7 @@
  * and provides functionality for viewing photos in a modal.
  */
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import './PhotoGrid.css';
 import { API_URL } from '../config';
 import { Link } from 'react-router-dom';
@@ -29,7 +29,6 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
   const [error, setError] = useState<string | null>(null);
   const [modalImageLoaded, setModalImageLoaded] = useState(false);
   const [albums, setAlbums] = useState<string[]>([]);
-  const scrollPosition = useRef(0);
 
   const handlePhotoClick = (photo: Photo) => {
     setSelectedPhoto(photo);
