@@ -15,7 +15,7 @@ body {
   font-family: 'Arial', sans-serif;
   line-height: 1.6;
   color: var(--text-color);
-  background-color: #333;
+  background-color: #1e1e1e;
   width: 100%;
 }
 
@@ -366,7 +366,7 @@ body {
 
 /* Footer styles */
 .footer {
-  background-color: #333;
+  background-color: #252525;
   padding: 2rem 0;
   margin-top: 2rem;
   border-top: 1px solid #444;
