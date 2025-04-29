@@ -4,7 +4,7 @@
  * and provides functionality for viewing photos in a modal.
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import './PhotoGrid.css';
 import { API_URL } from '../config';
 import { Link } from 'react-router-dom';
@@ -29,16 +29,25 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
   const [error, setError] = useState<string | null>(null);
   const [modalImageLoaded, setModalImageLoaded] = useState(false);
   const [albums, setAlbums] = useState<string[]>([]);
+  const scrollPosition = useRef(0);
+
+  const handlePhotoClick = (photo: Photo) => {
+    setSelectedPhoto(photo);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedPhoto(null);
+  };
 
   // Handle body scrolling when modal opens/closes
   useEffect(() => {
     if (selectedPhoto) {
-      document.body.classList.add('modal-open');
+      document.body.style.overflow = 'hidden';
     } else {
-      document.body.classList.remove('modal-open');
+      document.body.style.overflow = '';
     }
     return () => {
-      document.body.classList.remove('modal-open');
+      document.body.style.overflow = '';
     };
   }, [selectedPhoto]);
 
@@ -136,8 +145,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
           key={photo.id} 
           className="photo-item"
           onClick={() => {
-            setModalImageLoaded(false);
-            setSelectedPhoto(photo);
+            handlePhotoClick(photo);
           }}
         >
           <img 
@@ -171,7 +179,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
       {selectedPhoto && (
         <div 
           className="modal" 
-          onClick={() => setSelectedPhoto(null)}
+          onClick={handleCloseModal}
         >
           <div className="modal-content" onClick={e => e.stopPropagation()}>
             <div className="modal-controls">
@@ -184,7 +192,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
                   <line x1="12" y1="15" x2="12" y2="3" />
                 </svg>
               </button>
-              <button onClick={() => setSelectedPhoto(null)}>
+              <button onClick={handleCloseModal}>
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <line x1="18" y1="6" x2="6" y2="18" />
                   <line x1="6" y1="6" x2="18" y2="18" />
