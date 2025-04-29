@@ -160,7 +160,7 @@ body {
 }
 
 .nav-link {
-  background: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 0, 0, 0.7);
   border: 1px solid rgba(51, 51, 51, 0.2);
   color: #000;
   padding: 0.25rem 0.75rem;
@@ -322,6 +322,12 @@ body {
   }
 }
 
+@media (max-width: 365px) {
+  .header-title {
+    display: none;
+  }
+}
+
 /* Footer styles */
 .footer {
   background-color: #252525;
@@ -416,6 +422,65 @@ body {
   display: inline-block;
   background-color: rgba(255, 255, 255, 0.6);
   margin-left: 1rem;
+}
+
+@media (max-width: 400px) {
+  .dropdown-arrow {
+    display: none;
+  }
+  
+  .dropdown-container {
+    margin-left: 0;
+    width: 80px;
+    margin-right: 8px;
+  }
+
+  .nav-link,
+  .nav-link:hover,
+  .nav-link:active,
+  .nav-link.active {
+    width: 80px;
+    height: 35px;
+    text-align: center;
+    margin: 0 4px;
+    padding: 0.25rem 0.5rem;
+    min-width: 80px;
+    max-width: 80px;
+  }
+
+  .dropdown-button,
+  .dropdown-button:hover,
+  .dropdown-button:active {
+    width: 80px;
+    margin: 0 4px;
+    padding: 0.25rem 0.5rem;
+    justify-content: center;
+    min-width: 80px;
+    max-width: 80px;
+  }
+
+  .album-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 4px;
+  }
+
+  .album-nav button,
+  .album-nav button:hover,
+  .album-nav button:active,
+  .album-nav button.active {
+    width: 80px;
+    margin: 0;
+    padding: 0.25rem 0.5rem;
+    text-align: center;
+    min-width: 80px;
+    max-width: 80px;
+  }
+
+  .header-content {
+    padding: 0 8px;
+  }
 }
 
 .dropdown-button {
