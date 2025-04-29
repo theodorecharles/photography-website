@@ -66,8 +66,9 @@
 /* Prevent body scrolling when modal is open */
 body.modal-open {
   overflow: hidden;
-  position: fixed;
+  height: 100%;
   width: 100%;
+  position: relative;
 }
 
 .modal-content {

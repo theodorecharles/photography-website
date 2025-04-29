@@ -10,7 +10,7 @@ function License() {
   return (
     <div className="license-page">
       <div className="license-content">
-        <h1>Creative Commons Attribution 4.0 International License</h1>
+        <h2>Creative Commons Attribution 4.0 International License</h2>
         <p>
           This work is licensed under the Creative Commons Attribution 4.0 International License.
           To view a copy of this license, visit <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">https://creativecommons.org/licenses/by/4.0/</a>.
