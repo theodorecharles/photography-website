@@ -1,10 +1,16 @@
 { 
     "externalLinks":[
         {
-            "title":"Quake",
+            "title":"Quake JS",
             "url":"http://quake.tedroddy.net"
         },{
-            "title":"Game",
+            "title":"Checked Out!",
+            "url":"http://x.com/checkedoutgame"
+        },{
+            "title":"Youtube",
+            "url":"http://x.com/checkedoutgame"
+        },{
+            "title":"Gallery App",
             "url":"http://x.com/checkedoutgame"
         }
     ]
