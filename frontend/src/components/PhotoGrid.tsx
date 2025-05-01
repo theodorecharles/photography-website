@@ -20,6 +20,11 @@ interface Photo {
   download: string;
   title: string;
   album: string;
+  metadata?: {
+    created: string;
+    modified: string;
+    size: number;
+  };
 }
 
 const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
@@ -86,7 +91,12 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
             throw new Error('Failed to fetch photos');
           }
           const data = await response.json();
-          setPhotos(data);
+          // Sort photos by creation date, newest first
+          const sortedPhotos = data.sort((a: Photo, b: Photo) => {
+            if (!a.metadata || !b.metadata) return 0;
+            return new Date(b.metadata.created).getTime() - new Date(a.metadata.created).getTime();
+          });
+          setPhotos(sortedPhotos);
         }
         
         setError(null);

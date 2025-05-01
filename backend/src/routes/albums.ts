@@ -38,12 +38,22 @@ const getPhotosInAlbum = (photosDir: string, album: string) => {
       .filter(file => /\.(jpg|jpeg|png|gif)$/i.test(file));
 
     // Use optimized images for all albums
-    return files.map(file => ({
-      id: file,
-      src: `/optimized/modal/${album}/${file}`,
-      thumbnail: `/optimized/thumbnail/${album}/${file}`,
-      download: `/optimized/download/${album}/${file}`
-    }));
+    return files.map(file => {
+      const filePath = path.join(albumPath, file);
+      const stats = fs.statSync(filePath);
+      
+      return {
+        id: file,
+        src: `/optimized/modal/${album}/${file}`,
+        thumbnail: `/optimized/thumbnail/${album}/${file}`,
+        download: `/optimized/download/${album}/${file}`,
+        metadata: {
+          created: stats.birthtime,
+          modified: stats.mtime,
+          size: stats.size
+        }
+      };
+    });
   } catch (error) {
     console.error(`Error reading album ${album}:`, error);
     return [];
