@@ -129,7 +129,7 @@ body {
 
 .album-title {
   font-size: 18px;
-  font-weight: 500;
+  font-weight: 600;
   margin: 0;
   color: #1e1e1e;
   text-shadow: 0 0 2px rgba(255, 255, 255, 0.8);
@@ -263,7 +263,7 @@ body {
 }
 
 .main-content {
-  margin-top: 54px;
+  margin-top: 0;
   padding: 1rem;
   min-height: calc(100vh - 54px);
   background-color: #1e1e1e;
@@ -276,7 +276,7 @@ body {
   display: none;
   color: white;
   text-align: center;
-  margin-bottom: 0;
+  margin-bottom: 1rem;
   font-size: 18px;
   font-weight: 500;
 }
