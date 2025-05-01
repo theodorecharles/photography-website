@@ -299,15 +299,6 @@ body {
 }
 
 @media (min-width: 768px) {
-  /* .album-nav {
-    display: block;
-  } */
-  
-  .hamburger-menu,
-  .hamburger-menu.active {
-    display: none !important;
-  }
-  
   .mobile-dropdown {
     display: none;
   }
@@ -350,7 +341,7 @@ body {
   }
 }
 
-@media (max-width: 536px) {
+@media (max-width: 599px) {
   .album-title {
     display: none;
   }
