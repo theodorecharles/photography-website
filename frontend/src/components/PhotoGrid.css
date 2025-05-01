@@ -2,7 +2,7 @@
   display: grid;
   grid-template-columns: repeat(1, 1fr);
   gap: 1rem;
-  padding: 1rem;
+  padding: 0;
   width: 100%;
   max-width: 100%;
   margin-top: 1rem;
@@ -235,8 +235,8 @@ body.modal-open {
 /* Mobile-specific adjustments */
 @media (max-width: 599px) {
   .photo-grid {
-    padding: 1rem;
-    margin-top: 0rem;
+    padding: 0;
+    margin-top: 1rem;
     gap: 1rem;
   }
   
