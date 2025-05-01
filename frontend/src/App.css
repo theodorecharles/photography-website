@@ -33,8 +33,6 @@ body {
 
 .header {
   background-color: rgb(231, 231, 231);
-  /* backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px); */
   color: #1e1e1e;
   padding: 0 1rem;
   height: 54px;
@@ -53,11 +51,6 @@ body {
   display: flex;
   align-items: center;
   gap: 1rem;
-  cursor: pointer;
-  padding: 0.5rem;
-  border-radius: 4px;
-  transition: all 0.1s ease;
-  text-decoration: none;
 }
 
 .header-left a {
@@ -109,17 +102,39 @@ body {
   width: 100%;
   height: 1px;
   background-color: #666;
-}x
+}
 
 .album-nav {
   display: flex;
   align-items: center;
   gap: 1rem;
-  position: fixed;
-  right: 1rem;
-  top: 0.8rem;
-  z-index: 1001;
-  margin-top: 0;
+  position: absolute;
+  right: 0;
+  margin-right: 1rem;
+}
+
+.nav-left, .nav-right {
+  display: flex;
+  align-items: center;
+}
+
+.nav-center {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  width: 100%;
+  pointer-events: none;
+}
+
+.album-title {
+  font-size: 18px;
+  font-weight: 500;
+  margin: 0;
+  color: #1e1e1e;
+  text-shadow: 0 0 2px rgba(255, 255, 255, 0.8);
+  white-space: nowrap;
+  display: inline-block;
 }
 
 .album-nav.active {
@@ -249,13 +264,21 @@ body {
 
 .main-content {
   margin-top: 54px;
-  padding: 0;
-  padding-top: 0;
+  padding: 1rem;
   min-height: calc(100vh - 54px);
   background-color: #1e1e1e;
   position: relative;
   width: 100%;
   overflow-x: hidden;
+}
+
+.main-content-title {
+  display: none;
+  color: white;
+  text-align: center;
+  margin-bottom: 0;
+  font-size: 18px;
+  font-weight: 500;
 }
 
 .loading, .error {
@@ -270,7 +293,6 @@ body {
   transition: all 0.1s ease;
   background-color: #1a1a1a;
 }
-
 
 .photo-item:hover {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -325,6 +347,16 @@ body {
 @media (max-width: 335px) {
   .header-title {
     display: none;
+  }
+}
+
+@media (max-width: 536px) {
+  .album-title {
+    display: none;
+  }
+  
+  .main-content-title {
+    display: block;
   }
 }
 

@@ -4,7 +4,7 @@
  */
 
 import { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, useParams } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, useParams, useLocation } from 'react-router-dom';
 import './App.css'
 import PhotoGrid from './components/PhotoGrid';
 import Footer from './components/Footer';
@@ -22,11 +22,12 @@ function AlbumRoute() {
   return <PhotoGrid album={album || ''} />;
 }
 
-function Navigation({ albums, externalLinks, isMenuOpen, setIsMenuOpen }: { 
+function Navigation({ albums, externalLinks, isMenuOpen, setIsMenuOpen, currentAlbum }: { 
   albums: string[], 
   externalLinks: ExternalLink[], 
   isMenuOpen: boolean, 
-  setIsMenuOpen: (value: boolean) => void 
+  setIsMenuOpen: (value: boolean) => void,
+  currentAlbum?: string
 }) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isExternalOpen, setIsExternalOpen] = useState(false);
@@ -48,89 +49,83 @@ function Navigation({ albums, externalLinks, isMenuOpen, setIsMenuOpen }: {
 
   return (
     <>
-      <nav className="album-nav" style={{position: "absolute", right: "0", marginRight: "1rem"}}>
-        <div 
-          className="dropdown-container"
-          onMouseEnter={handleAlbumsHover}
-          onMouseLeave={handleDropdownLeave}
-        >
-          <button 
-            className="nav-link"
-            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+      {currentAlbum && (
+          <div className="nav-center">
+            <h1 className="album-title">{currentAlbum.charAt(0).toUpperCase() + currentAlbum.slice(1)}</h1>
+          </div>
+        )}
+        <nav className="album-nav">
+        <div className="nav-left">
+          <div 
+            className="dropdown-container"
+            onMouseEnter={handleAlbumsHover}
+            onMouseLeave={handleDropdownLeave}
           >
-            Albums
-            <svg 
-              className={`dropdown-arrow ${isDropdownOpen ? 'open' : ''}`} 
-              viewBox="0 0 24 24" 
-              width="16" 
-              height="16"
+            <button 
+              className="nav-link"
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
             >
-              <path d="M6 9L12 15L18 9" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </button>
-          <div className={`dropdown-menu ${isDropdownOpen ? 'open' : ''}`}>
-            {albums.map((album) => (
-              <Link 
-                key={album}
-                to={`/album/${album}`}
-                className="nav-link"
-                onClick={() => setIsDropdownOpen(false)}
+              Albums
+              <svg 
+                className={`dropdown-arrow ${isDropdownOpen ? 'open' : ''}`} 
+                viewBox="0 0 24 24" 
+                width="16" 
+                height="16"
               >
-                {album.charAt(0).toUpperCase() + album.slice(1)}
-              </Link>
-            ))}
+                <path d="M6 9L12 15L18 9" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </button>
+            <div className={`dropdown-menu ${isDropdownOpen ? 'open' : ''}`}>
+              {albums.map((album) => (
+                <Link 
+                  key={album}
+                  to={`/album/${album}`}
+                  className="nav-link"
+                  onClick={() => setIsDropdownOpen(false)}
+                >
+                  {album.charAt(0).toUpperCase() + album.slice(1)}
+                </Link>
+              ))}
+            </div>
           </div>
         </div>
-        <div 
-          className="dropdown-container"
-          onMouseEnter={handleLinksHover}
-          onMouseLeave={handleDropdownLeave}
-        >
-          <button 
-            className="nav-link"
-            onClick={() => setIsExternalOpen(!isExternalOpen)}
+        
+        <div className="nav-right">
+          <div 
+            className="dropdown-container"
+            onMouseEnter={handleLinksHover}
+            onMouseLeave={handleDropdownLeave}
           >
-            Links
-            <svg 
-              className={`dropdown-arrow ${isExternalOpen ? 'open' : ''}`} 
-              viewBox="0 0 24 24" 
-              width="16" 
-              height="16"
+            <button 
+              className="nav-link"
+              onClick={() => setIsExternalOpen(!isExternalOpen)}
             >
-              <path d="M6 9L12 15L18 9" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </button>
-          <div className={`dropdown-menu ${isExternalOpen ? 'open' : ''}`}>
-            {externalLinks.map((link) => (
-              <a
-                key={link.title}
-                href={link.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="nav-link external"
-                onClick={() => setIsExternalOpen(false)}
+              Links
+              <svg 
+                className={`dropdown-arrow ${isExternalOpen ? 'open' : ''}`} 
+                viewBox="0 0 24 24" 
+                width="16" 
+                height="16"
               >
-                {link.title}
-                <svg className="external-icon" viewBox="0 0 24 24" width="16" height="16">
-                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M15 3h6v6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M10 14L21 3" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </a>
-            ))}
+                <path d="M6 9L12 15L18 9" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </button>
+            <div className={`dropdown-menu ${isExternalOpen ? 'open' : ''}`}>
+              {externalLinks.map((link) => (
+                <a 
+                  key={link.url}
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="nav-link"
+                >
+                  {link.title}
+                </a>
+              ))}
+            </div>
           </div>
         </div>
       </nav>
-      <div 
-        className="hamburger-menu"
-        onClick={() => setIsMenuOpen(!isMenuOpen)}
-      >
-        <div className="hamburger-icon">
-          <span></span>
-          <span></span>
-          <span></span>
-        </div>
-      </div>
       <div 
         className={`dropdown-container mobile-dropdown ${isMenuOpen ? 'active' : ''}`}
       >
@@ -180,7 +175,19 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  // const location = useLocation();
+  const [currentAlbum, setCurrentAlbum] = useState<string | undefined>(undefined);
+  const location = useLocation();
+
+  useEffect(() => {
+    // Update current album based on route
+    const path = location.pathname;
+    if (path.startsWith('/album/')) {
+      const albumName = path.split('/album/')[1];
+      setCurrentAlbum(albumName);
+    } else {
+      setCurrentAlbum(undefined);
+    }
+  }, [location]);
 
   // Handle clicks outside the mobile menu
   useEffect(() => {
@@ -286,11 +293,13 @@ function App() {
           albums={albums} 
           externalLinks={externalLinks} 
           isMenuOpen={isMenuOpen} 
-          setIsMenuOpen={setIsMenuOpen} 
+          setIsMenuOpen={setIsMenuOpen}
+          currentAlbum={currentAlbum}
         />
       </header>
 
       <main className="main-content">
+        {currentAlbum && <h1 className="main-content-title">{currentAlbum.charAt(0).toUpperCase() + currentAlbum.slice(1)}</h1>}
         <Routes>
           <Route path="/" element={<PhotoGrid album="homepage" />} />
           <Route path="/album/:album" element={<AlbumRoute />} />
