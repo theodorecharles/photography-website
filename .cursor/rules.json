@@ -1,0 +1,69 @@
+{
+  "rules": [
+    {
+      "name": "Navigation Component",
+      "description": "Handles the main navigation menu including dropdowns and mobile menu",
+      "files": ["frontend/src/App.tsx"],
+      "patterns": [
+        {
+          "name": "Dropdown Behavior",
+          "description": "Dropdowns should only open on hover if another dropdown is already open",
+          "code": "handleAlbumsHover|handleLinksHover"
+        },
+        {
+          "name": "Scroll Behavior",
+          "description": "Dropdowns should close when the page is scrolled",
+          "code": "useEffect.*handleScroll"
+        }
+      ]
+    },
+    {
+      "name": "Photo Grid Component",
+      "description": "Displays photos in a grid layout with modal view",
+      "files": ["frontend/src/components/PhotoGrid.tsx"],
+      "patterns": [
+        {
+          "name": "Modal View",
+          "description": "Clicking a photo opens it in a modal view with navigation",
+          "code": "handlePhotoClick|handleCloseModal"
+        }
+      ]
+    },
+    {
+      "name": "API Integration",
+      "description": "Handles data fetching from the backend API",
+      "files": ["frontend/src/App.tsx"],
+      "patterns": [
+        {
+          "name": "Data Fetching",
+          "description": "Fetches albums and external links data on component mount",
+          "code": "fetchData|fetch.*API_URL"
+        }
+      ]
+    },
+    {
+      "name": "Mobile Responsiveness",
+      "description": "Handles responsive behavior for mobile devices",
+      "files": ["frontend/src/App.tsx", "frontend/src/App.css"],
+      "patterns": [
+        {
+          "name": "Mobile Menu",
+          "description": "Mobile menu should close on scroll and resize",
+          "code": "isMenuOpen|setIsMenuOpen"
+        }
+      ]
+    }
+  ],
+  "filePatterns": {
+    "frontend/src/App.tsx": {
+      "description": "Main application component with routing and layout",
+      "components": ["App", "Navigation", "AlbumRoute"],
+      "dependencies": ["react-router-dom", "PhotoGrid", "Footer", "License"]
+    },
+    "frontend/src/components/PhotoGrid.tsx": {
+      "description": "Component for displaying photos in a grid with modal view",
+      "components": ["PhotoGrid"],
+      "dependencies": ["react", "API_URL"]
+    }
+  }
+} 

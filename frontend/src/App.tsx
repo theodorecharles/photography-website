@@ -12,16 +12,30 @@ import License from './components/License';
 import ScrollToTop from './components/ScrollToTop';
 import { API_URL } from './config';
 
+// ExternalLink interface defines the structure for external navigation links
 interface ExternalLink {
   title: string;
   url: string;
 }
 
+// AlbumRoute component handles the routing for individual album pages
 function AlbumRoute() {
   const { album } = useParams();
   return <PhotoGrid album={album || ''} />;
 }
 
+/**
+ * Navigation component handles the main navigation menu including:
+ * - Albums dropdown
+ * - External links dropdown
+ * - Mobile menu
+ * 
+ * @param albums - List of available photo albums
+ * @param externalLinks - List of external navigation links
+ * @param isMenuOpen - State of the mobile menu
+ * @param setIsMenuOpen - Function to toggle mobile menu state
+ * @param currentAlbum - Currently selected album
+ */
 function Navigation({ albums, externalLinks, isMenuOpen, setIsMenuOpen, currentAlbum }: { 
   albums: string[], 
   externalLinks: ExternalLink[], 
@@ -29,10 +43,11 @@ function Navigation({ albums, externalLinks, isMenuOpen, setIsMenuOpen, currentA
   setIsMenuOpen: (value: boolean) => void,
   currentAlbum?: string
 }) {
+  // State for managing dropdown visibility
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isExternalOpen, setIsExternalOpen] = useState(false);
 
-  // Close dropdowns on scroll
+  // Close dropdowns when page is scrolled
   useEffect(() => {
     const handleScroll = () => {
       setIsDropdownOpen(false);
@@ -45,6 +60,7 @@ function Navigation({ albums, externalLinks, isMenuOpen, setIsMenuOpen, currentA
     };
   }, []);
 
+  // Handle hover events for Albums dropdown
   const handleAlbumsHover = () => {
     if (isExternalOpen) {
       setIsExternalOpen(false);
@@ -52,6 +68,7 @@ function Navigation({ albums, externalLinks, isMenuOpen, setIsMenuOpen, currentA
     }
   };
 
+  // Handle hover events for Links dropdown
   const handleLinksHover = () => {
     if (isDropdownOpen) {
       setIsDropdownOpen(false);
@@ -59,6 +76,7 @@ function Navigation({ albums, externalLinks, isMenuOpen, setIsMenuOpen, currentA
     }
   };
 
+  // Handle mouse leave events for both dropdowns
   const handleDropdownLeave = () => {
     // Don't close if either dropdown is open
     if (!isDropdownOpen && !isExternalOpen) {
@@ -66,11 +84,13 @@ function Navigation({ albums, externalLinks, isMenuOpen, setIsMenuOpen, currentA
     }
   };
 
+  // Handle click events for Albums dropdown
   const handleAlbumsClick = () => {
     setIsExternalOpen(false);
     setIsDropdownOpen(!isDropdownOpen);
   };
 
+  // Handle click events for Links dropdown
   const handleLinksClick = () => {
     setIsDropdownOpen(false);
     setIsExternalOpen(!isExternalOpen);
@@ -78,12 +98,14 @@ function Navigation({ albums, externalLinks, isMenuOpen, setIsMenuOpen, currentA
 
   return (
     <>
+      {/* Album title display in the center of the navigation */}
       {currentAlbum && (
           <div className="nav-center">
             <h1 className="album-title">{currentAlbum.charAt(0).toUpperCase() + currentAlbum.slice(1)}</h1>
           </div>
         )}
         <nav className="album-nav">
+        {/* Left side navigation - Albums dropdown */}
         <div className="nav-left">
           <div 
             className="dropdown-container"
@@ -119,6 +141,7 @@ function Navigation({ albums, externalLinks, isMenuOpen, setIsMenuOpen, currentA
           </div>
         </div>
         
+        {/* Right side navigation - External links dropdown */}
         <div className="nav-right">
           <div 
             className="dropdown-container"
@@ -155,6 +178,7 @@ function Navigation({ albums, externalLinks, isMenuOpen, setIsMenuOpen, currentA
           </div>
         </div>
       </nav>
+      {/* Mobile menu dropdown */}
       <div 
         className={`dropdown-container mobile-dropdown ${isMenuOpen ? 'active' : ''}`}
       >
@@ -196,7 +220,15 @@ function Navigation({ albums, externalLinks, isMenuOpen, setIsMenuOpen, currentA
   );
 }
 
+/**
+ * Main App component that:
+ * - Manages application state
+ * - Handles data fetching
+ * - Sets up routing
+ * - Renders the main layout
+ */
 function App() {
+  // Application state
   const [albums, setAlbums] = useState<string[]>([]);
   const [externalLinks, setExternalLinks] = useState<ExternalLink[]>([]);
   const [loading, setLoading] = useState(true);
@@ -205,8 +237,8 @@ function App() {
   const [currentAlbum, setCurrentAlbum] = useState<string | undefined>(undefined);
   const location = useLocation();
 
+  // Update current album based on route changes
   useEffect(() => {
-    // Update current album based on route
     const path = location.pathname;
     if (path.startsWith('/album/')) {
       const albumName = path.split('/album/')[1];
@@ -250,6 +282,7 @@ function App() {
     };
   }, [isMenuOpen]);
 
+  // Fetch albums and external links data
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -283,6 +316,7 @@ function App() {
 
     fetchData();
 
+    // Handle window resize for mobile menu
     const handleResize = () => {
       if (window.innerWidth >= 768) {
         setIsMenuOpen(false);
@@ -293,6 +327,7 @@ function App() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  // Loading and error states
   if (loading) {
     return <div className="loading">Loading albums...</div>;
   }
@@ -301,6 +336,7 @@ function App() {
     return <div className="error">Error: {error}</div>;
   }
 
+  // Main application layout
   return (
     <div className="app">
       <header className="header">
@@ -333,11 +369,17 @@ function App() {
           <Route path="/license" element={<License />} />
         </Routes>
       </main>
-      <Footer />
+      <Footer albums={albums} currentAlbum={location.pathname === '/' ? 'homepage' : location.pathname.split('/')[2]} />
     </div>
   );
 }
 
+/**
+ * AppWrapper component that:
+ * - Sets up the router
+ * - Includes ScrollToTop component
+ * - Renders the main App component
+ */
 function AppWrapper() {
   return (
     <Router>

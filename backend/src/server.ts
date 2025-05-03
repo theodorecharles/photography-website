@@ -43,7 +43,14 @@ if (fs.existsSync(photosDir)) {
 app.use(cors()); // Enable CORS for all routes
 app.use(express.json()); // Parse JSON request bodies
 app.use('/photos', express.static(photosDir)); // Serve original photos
-app.use('/optimized', express.static(optimizedDir)); // Serve optimized photos
+app.use('/optimized', express.static(optimizedDir, {
+  maxAge: '1y',
+  etag: true,
+  lastModified: true,
+  setHeaders: (res, path) => {
+    res.setHeader('Cache-Control', 'public, max-age=31536000'); // 1 year
+  }
+})); // Serve optimized photos
 
 // Store directory paths in app for use in routes
 app.set('photosDir', photosDir);
