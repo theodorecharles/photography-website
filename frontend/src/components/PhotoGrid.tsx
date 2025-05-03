@@ -7,7 +7,6 @@
 import { useState, useEffect } from 'react';
 import './PhotoGrid.css';
 import { API_URL } from '../config';
-import { Link } from 'react-router-dom';
 
 interface PhotoGridProps {
   album: string;
@@ -33,7 +32,6 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [modalImageLoaded, setModalImageLoaded] = useState(false);
-  const [albums, setAlbums] = useState<string[]>([]);
   const [imageDimensions, setImageDimensions] = useState<Record<string, { width: number; height: number }>>({});
 
   const handlePhotoClick = (photo: Photo) => {
@@ -67,7 +65,6 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
           throw new Error('Failed to fetch albums');
         }
         const albumsData = await albumsResponse.json();
-        setAlbums(albumsData);
         
         if (album === 'homepage') {
           // Fetch all photos from each album for homepage
@@ -181,13 +178,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
       if (!dimensions) return 1; // Default to 1 if dimensions not loaded yet
       return dimensions.height / dimensions.width;
     });
-
-    // Calculate total height of all photos
-    const totalHeight = photoHeights.reduce((sum, height) => sum + height, 0);
     
-    // Target height for each column
-    const targetHeight = totalHeight / numColumns;
-
     // Initialize column heights
     const columnHeights = Array(numColumns).fill(0);
 
