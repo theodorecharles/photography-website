@@ -34,6 +34,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
   const [error, setError] = useState<string | null>(null);
   const [modalImageLoaded, setModalImageLoaded] = useState(false);
   const [albums, setAlbums] = useState<string[]>([]);
+  const [imageDimensions, setImageDimensions] = useState<Record<string, { width: number; height: number }>>({});
 
   const handlePhotoClick = (photo: Photo) => {
     setSelectedPhoto(photo);
@@ -135,8 +136,80 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [selectedPhoto, photos]);
 
-  const handleImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
-    e.currentTarget.classList.add('loaded');
+  const handleImageLoad = (e: React.SyntheticEvent<HTMLImageElement>, photoId: string) => {
+    const img = e.currentTarget;
+    img.classList.add('loaded');
+    setImageDimensions(prev => ({
+      ...prev,
+      [photoId]: {
+        width: img.naturalWidth,
+        height: img.naturalHeight
+      }
+    }));
+  };
+
+  // Function to get number of columns based on window width
+  const getNumColumns = () => {
+    if (window.innerWidth >= 1600) return 5;
+    if (window.innerWidth >= 1200) return 4;
+    if (window.innerWidth >= 900) return 3;
+    if (window.innerWidth >= 600) return 2;
+    return 1;
+  };
+
+  // State for number of columns
+  const [numColumns, setNumColumns] = useState(getNumColumns());
+
+  // Handle window resize
+  useEffect(() => {
+    const handleResize = () => {
+      setNumColumns(getNumColumns());
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Function to distribute photos into columns
+  const distributePhotos = (photos: Photo[], numColumns: number) => {
+    // Initialize columns with empty arrays
+    const columns: Photo[][] = Array.from({ length: numColumns }, () => []);
+    
+    // Calculate total height for each photo based on its aspect ratio
+    const photoHeights = photos.map(photo => {
+      const dimensions = imageDimensions[photo.id];
+      if (!dimensions) return 1; // Default to 1 if dimensions not loaded yet
+      return dimensions.height / dimensions.width;
+    });
+
+    // Calculate total height of all photos
+    const totalHeight = photoHeights.reduce((sum, height) => sum + height, 0);
+    
+    // Target height for each column
+    const targetHeight = totalHeight / numColumns;
+
+    // Initialize column heights
+    const columnHeights = Array(numColumns).fill(0);
+
+    // Distribute photos to columns
+    photos.forEach((photo, index) => {
+      // Find the column with the smallest current height
+      let shortestColumnIndex = 0;
+      let shortestHeight = columnHeights[0];
+      
+      for (let i = 1; i < numColumns; i++) {
+        if (columnHeights[i] < shortestHeight) {
+          shortestHeight = columnHeights[i];
+          shortestColumnIndex = i;
+        }
+      }
+
+      // Add photo to the shortest column
+      columns[shortestColumnIndex].push(photo);
+      columnHeights[shortestColumnIndex] += photoHeights[index];
+    });
+
+    return columns;
   };
 
   if (loading) {
@@ -149,41 +222,31 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
 
   return (
     <div className="photo-grid">
-      {photos.map((photo) => (
-        <div 
-          key={photo.id} 
-          className="photo-item"
-          onClick={() => {
-            handlePhotoClick(photo);
-          }}
-        >
-          <img 
-            src={`${API_URL}${photo.thumbnail}`}
-            alt={photo.title}
-            loading="lazy"
-            onLoad={handleImageLoad}
-          />
+      {distributePhotos(photos, numColumns).map((column, columnIndex) => (
+        <div key={columnIndex} className="photo-column">
+          {column.map((photo) => (
+            <div 
+              key={photo.id} 
+              className="photo-item"
+              style={{
+                aspectRatio: imageDimensions[photo.id] 
+                  ? `${imageDimensions[photo.id].width} / ${imageDimensions[photo.id].height}`
+                  : '1 / 1'
+              }}
+              onClick={() => {
+                handlePhotoClick(photo);
+              }}
+            >
+              <img 
+                src={`${API_URL}${photo.thumbnail}`}
+                alt={photo.title}
+                loading="lazy"
+                onLoad={(e) => handleImageLoad(e, photo.id)}
+              />
+            </div>
+          ))}
         </div>
       ))}
-      
-      <div className="photo-item albums-list">
-        <div className="albums-list-content">
-          <h3>{album === 'homepage' ? 'Select an album' : 'Select another album'}</h3>
-          <div className="albums-buttons">
-            {albums
-              .filter(albumName => albumName !== 'homepage' && (album === 'homepage' || albumName !== album))
-              .map((albumName) => (
-                <Link
-                  key={albumName}
-                  to={`/album/${albumName}`}
-                  className="album-button"
-                >
-                  {albumName.charAt(0).toUpperCase() + albumName.slice(1)}
-                </Link>
-              ))}
-          </div>
-        </div>
-      </div>
       
       {selectedPhoto && (
         <div 
