@@ -9,4 +9,5 @@ const prodConfig = {
 };
 
 // Use production config if mode is production
-export const API_URL = import.meta.env.MODE === 'production' ? prodConfig.apiUrl : devConfig.apiUrl; 
+export const API_URL = import.meta.env.MODE === 'production' ? prodConfig.apiUrl : devConfig.apiUrl;
+export const cacheBustValue = 0; 

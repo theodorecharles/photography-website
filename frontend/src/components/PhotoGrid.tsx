@@ -7,7 +7,7 @@
 import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import './PhotoGrid.css';
-import { API_URL } from '../config';
+import { API_URL, cacheBustValue } from '../config';
 
 interface PhotoGridProps {
   album: string;
@@ -38,7 +38,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
 
   // Get query parameters from current URL
   const queryParams = new URLSearchParams(location.search);
-  const queryString = queryParams.toString() ? `?${queryParams.toString()}` : '';
+  const queryString = queryParams.toString() ? `?${queryParams.toString()}&i=${cacheBustValue}` : `?i=${cacheBustValue}`;
 
   const handlePhotoClick = (photo: Photo) => {
     setSelectedPhoto(photo);
