@@ -107,7 +107,7 @@ body {
 .album-nav {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0rem;
   position: absolute;
   right: 0;
   margin-right: 1rem;

@@ -32,19 +32,48 @@ function Navigation({ albums, externalLinks, isMenuOpen, setIsMenuOpen, currentA
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isExternalOpen, setIsExternalOpen] = useState(false);
 
+  // Close dropdowns on scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsDropdownOpen(false);
+      setIsExternalOpen(false);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
   const handleAlbumsHover = () => {
-    setIsExternalOpen(false);
-    setIsDropdownOpen(true);
+    if (isExternalOpen) {
+      setIsExternalOpen(false);
+      setIsDropdownOpen(true);
+    }
   };
 
   const handleLinksHover = () => {
-    setIsDropdownOpen(false);
-    setIsExternalOpen(true);
+    if (isDropdownOpen) {
+      setIsDropdownOpen(false);
+      setIsExternalOpen(true);
+    }
   };
 
   const handleDropdownLeave = () => {
-    setIsDropdownOpen(false);
+    // Don't close if either dropdown is open
+    if (!isDropdownOpen && !isExternalOpen) {
+      return;
+    }
+  };
+
+  const handleAlbumsClick = () => {
     setIsExternalOpen(false);
+    setIsDropdownOpen(!isDropdownOpen);
+  };
+
+  const handleLinksClick = () => {
+    setIsDropdownOpen(false);
+    setIsExternalOpen(!isExternalOpen);
   };
 
   return (
@@ -63,7 +92,7 @@ function Navigation({ albums, externalLinks, isMenuOpen, setIsMenuOpen, currentA
           >
             <button 
               className="nav-link"
-              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              onClick={handleAlbumsClick}
             >
               Albums
               <svg 
@@ -98,7 +127,7 @@ function Navigation({ albums, externalLinks, isMenuOpen, setIsMenuOpen, currentA
           >
             <button 
               className="nav-link"
-              onClick={() => setIsExternalOpen(!isExternalOpen)}
+              onClick={handleLinksClick}
             >
               Links
               <svg 
@@ -131,7 +160,6 @@ function Navigation({ albums, externalLinks, isMenuOpen, setIsMenuOpen, currentA
       >
         <div className={`dropdown-menu ${isMenuOpen ? 'open' : ''}`}>
           <div className="mobile-section">
-            {/* <h3>Albums</h3> */}
             {albums.map((album) => (
               <Link 
                 key={album}
@@ -144,7 +172,6 @@ function Navigation({ albums, externalLinks, isMenuOpen, setIsMenuOpen, currentA
             ))}
           </div>
           <div className="mobile-section">
-            {/* <h3>Links</h3> */}
             {externalLinks.map((link) => (
               <a
                 key={link.title}
