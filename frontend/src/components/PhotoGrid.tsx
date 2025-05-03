@@ -5,6 +5,7 @@
  */
 
 import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import './PhotoGrid.css';
 import { API_URL } from '../config';
 
@@ -27,12 +28,17 @@ interface Photo {
 }
 
 const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
+  const location = useLocation();
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [modalImageLoaded, setModalImageLoaded] = useState(false);
   const [imageDimensions, setImageDimensions] = useState<Record<string, { width: number; height: number }>>({});
+
+  // Get query parameters from current URL
+  const queryParams = new URLSearchParams(location.search);
+  const queryString = queryParams.toString() ? `?${queryParams.toString()}` : '';
 
   const handlePhotoClick = (photo: Photo) => {
     setSelectedPhoto(photo);
@@ -60,7 +66,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
         setLoading(true);
         
         // Always fetch albums list first
-        const albumsResponse = await fetch(`${API_URL}/api/albums`);
+        const albumsResponse = await fetch(`${API_URL}/api/albums${queryString}`);
         if (!albumsResponse.ok) {
           throw new Error('Failed to fetch albums');
         }
@@ -69,7 +75,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
         if (album === 'homepage') {
           // Fetch all photos from each album for homepage
           const allPhotosPromises = albumsData.map(async (albumName: string) => {
-            const albumResponse = await fetch(`${API_URL}/api/albums/${albumName}/photos`);
+            const albumResponse = await fetch(`${API_URL}/api/albums/${albumName}/photos${queryString}`);
             if (!albumResponse.ok) {
               throw new Error(`Failed to fetch photos from album ${albumName}`);
             }
@@ -84,7 +90,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
           setPhotos(shuffled.slice(0, 9));
         } else {
           // For specific album pages, fetch photos normally
-          const response = await fetch(`${API_URL}/api/albums/${album}/photos`);
+          const response = await fetch(`${API_URL}/api/albums/${album}/photos${queryString}`);
           if (!response.ok) {
             throw new Error('Failed to fetch photos');
           }
@@ -107,7 +113,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
     };
 
     fetchPhotos();
-  }, [album]);
+  }, [album, queryString]);
 
   // Handle keyboard navigation
   useEffect(() => {
@@ -229,7 +235,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
               }}
             >
               <img 
-                src={`${API_URL}${photo.thumbnail}`}
+                src={`${API_URL}${photo.thumbnail}${queryString}`}
                 alt={photo.title}
                 loading="lazy"
                 onLoad={(e) => handleImageLoad(e, photo.id)}
@@ -247,7 +253,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
           <div className="modal-content" onClick={e => e.stopPropagation()}>
             <div className="modal-controls">
               <button onClick={() => {
-                window.open(`${API_URL}${selectedPhoto.download}`, '_blank');
+                window.open(`${API_URL}${selectedPhoto.download}${queryString}`, '_blank');
               }}>
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
@@ -285,13 +291,13 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
               </button>
             </div>
             <img 
-              src={`${API_URL}${selectedPhoto.thumbnail}`}
+              src={`${API_URL}${selectedPhoto.thumbnail}${queryString}`}
               alt={selectedPhoto.title}
               className="modal-placeholder"
               style={{ display: modalImageLoaded ? 'none' : 'block' }}
             />
             <img 
-              src={`${API_URL}${selectedPhoto.src}`}
+              src={`${API_URL}${selectedPhoto.src}${queryString}`}
               alt={selectedPhoto.title}
               onLoad={() => setModalImageLoaded(true)}
               style={{ display: modalImageLoaded ? 'block' : 'none' }}
