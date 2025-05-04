@@ -2,14 +2,14 @@
 
 # Configuration variables
 # Compression levels (0-100, where 100 is highest quality)
-THUMBNAIL_QUALITY=40
+THUMBNAIL_QUALITY=60
 MODAL_QUALITY=60
 DOWNLOAD_QUALITY=100
 
 # Resolution settings (max dimensions)
-THUMBNAIL_MAX_DIM=512
-MODAL_MAX_DIM=1024
-DOWNLOAD_MAX_DIM=3840
+THUMBNAIL_MAX_DIM=1024
+MODAL_MAX_DIM=2048
+DOWNLOAD_MAX_DIM=4096
 
 # Image Optimization Script
 # This script processes all images in the photos directory, creating optimized versions
