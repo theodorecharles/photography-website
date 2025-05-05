@@ -265,7 +265,6 @@ body {
 .main-content {
   margin-top: 0;
   padding: 1rem;
-  min-height: calc(100vh - 54px);
   background-color: #1e1e1e;
   position: relative;
   width: 100%;
