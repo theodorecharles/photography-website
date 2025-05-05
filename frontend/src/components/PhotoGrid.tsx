@@ -201,6 +201,21 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
         }
       }
 
+      // If this is the last photo and all columns have the same number of photos,
+      // put it in the first column
+      if (index === photos.length - 1) {
+        const photosPerColumn = Math.floor(photos.length / numColumns);
+        const hasExtraPhoto = photos.length % numColumns === 1;
+        
+        if (hasExtraPhoto) {
+          // Check if all columns have the same number of photos
+          const allColumnsEqual = columns.every(col => col.length === photosPerColumn);
+          if (allColumnsEqual) {
+            shortestColumnIndex = 0;
+          }
+        }
+      }
+
       // Add photo to the shortest column
       columns[shortestColumnIndex].push(photo);
       columnHeights[shortestColumnIndex] += photoHeights[index];
