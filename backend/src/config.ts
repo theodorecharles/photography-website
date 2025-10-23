@@ -31,9 +31,18 @@ interface ConfigFile {
     siteName: string;
     avatarPath: string;
   };
+  analytics?: {
+    openobserve?: {
+      enabled: boolean;
+      endpoint: string;
+      username?: string;
+      password?: string;
+    };
+  };
 }
 
-let config: Config;
+let config: Config & { analytics?: ConfigFile['analytics'] };
+let fullConfigData: ConfigFile;
 
 try {
   // Try to load config.json, fall back to config.example.json
@@ -41,10 +50,13 @@ try {
   const examplePath = path.join(__dirname, '../../config/config.example.json');
   
   const configFile = fs.existsSync(configPath) ? configPath : examplePath;
-  const configData: ConfigFile = JSON.parse(fs.readFileSync(configFile, 'utf8'));
+  fullConfigData = JSON.parse(fs.readFileSync(configFile, 'utf8'));
   
   const env = process.env.NODE_ENV || 'development';
-  config = configData[env as 'development' | 'production'];
+  config = {
+    ...fullConfigData[env as 'development' | 'production'],
+    analytics: fullConfigData.analytics
+  };
   
   console.log(`Loaded ${env} configuration from ${configFile}`);
 } catch (error) {

@@ -41,7 +41,9 @@
     "scriptPath": "",
     "openobserve": {
       "enabled": true,
-      "endpoint": "https://log.tedcharles.net/api/default/website/_json"
+      "endpoint": "https://log.tedcharles.net/api/default/website/_json",
+      "username": "me@tedcharles.net",
+      "password": "C765KTDEdK3l0Diw"
     }
   },
   "externalLinks": [

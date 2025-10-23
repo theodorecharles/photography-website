@@ -34,10 +34,7 @@ app.use((req, res, next) => {
   const apiDomain = config.frontend.apiUrl;
   const apiDomainHttps = apiDomain.replace("http://", "https://");
   
-  // Get analytics endpoints if configured
-  const analyticsEndpoint = configFile.analytics?.openobserve?.endpoint || '';
-  const analyticsHost = analyticsEndpoint ? new URL(analyticsEndpoint).origin : '';
-  
+  // Get external analytics script host if configured
   const analyticsScriptPath = configFile.analytics?.scriptPath || '';
   const analyticsScriptHost = analyticsScriptPath && analyticsScriptPath.startsWith('http') 
     ? new URL(analyticsScriptPath).origin 
@@ -50,7 +47,7 @@ app.use((req, res, next) => {
     "style-src 'self' 'unsafe-inline'; " +
     "worker-src 'self'; " + // Allow web workers from same origin
     `img-src 'self' ${apiDomainHttps} ${apiDomain} data:; ` +
-    `connect-src 'self' ${apiDomainHttps} ${apiDomain}${analyticsHost ? ' ' + analyticsHost : ''}; ` +
+    `connect-src 'self' ${apiDomainHttps} ${apiDomain}; ` + // No need to allow OpenObserve - backend handles it
     "font-src 'self'; " +
     "object-src 'none'; " +
     "base-uri 'self'; " +
