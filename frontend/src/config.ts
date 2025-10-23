@@ -1,13 +1,11 @@
-// Development config
-const devConfig = {
-  apiUrl: 'http://localhost:3001'
-};
+// Configuration is managed in config/config.json
+// Update config.json to change API URLs for different environments
+// This file provides defaults if config.json is not found
 
-// Production config
-const prodConfig = {
-  apiUrl: 'https://api.tedcharles.net'
-};
+import configFile from '../../config/config.json';
 
-// Use production config if mode is production
-export const API_URL = import.meta.env.MODE === 'production' ? prodConfig.apiUrl : devConfig.apiUrl;
+const env = import.meta.env.MODE === 'production' ? 'production' : 'development';
+const config = configFile[env];
+
+export const API_URL = config.frontend.apiUrl;
 export const cacheBustValue = 0; 

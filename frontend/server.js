@@ -1,12 +1,19 @@
 import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
+import fs from "fs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Load configuration
+const configPath = path.join(__dirname, "../config/config.json");
+const configFile = JSON.parse(fs.readFileSync(configPath, "utf8"));
+const env = process.env.NODE_ENV || "development";
+const config = configFile[env];
+
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || config.frontend.port;
 
 // Security headers middleware
 app.use((req, res, next) => {
@@ -23,25 +30,55 @@ app.use((req, res, next) => {
     "Permissions-Policy",
     "geolocation=(), microphone=(), camera=()"
   );
+  // Content Security Policy
+  const apiDomain = config.frontend.apiUrl;
+  const apiDomainHttps = apiDomain.replace("http://", "https://");
+  
+  res.setHeader(
+    "Content-Security-Policy",
+    "default-src 'self'; " +
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval'; " + // React needs unsafe-inline/eval
+    "style-src 'self' 'unsafe-inline'; " +
+    `img-src 'self' ${apiDomainHttps} ${apiDomain} data:; ` +
+    `connect-src 'self' ${apiDomainHttps} ${apiDomain}; ` +
+    "font-src 'self'; " +
+    "object-src 'none'; " +
+    "base-uri 'self'; " +
+    "form-action 'self'; " +
+    "frame-ancestors 'none';"
+  );
   next();
 });
 
+// Allowed hosts for security (prevent open redirect attacks)
+const allowedHosts = config.security.allowedHosts;
+
 // HTTPS redirect middleware (only in production)
 app.use((req, res, next) => {
+  const host = req.get("host");
+
+  // Validate host to prevent open redirect attacks
+  if (!allowedHosts.includes(host)) {
+    return res.status(400).send("Invalid host header");
+  }
+
   if (
     process.env.NODE_ENV === "production" &&
     req.headers["x-forwarded-proto"] !== "https"
   ) {
-    return res.redirect(301, `https://${req.get("host")}${req.originalUrl}`);
+    return res.redirect(301, `https://${host}${req.originalUrl}`);
   }
   next();
 });
 
-// Domain redirect middleware
+// Domain redirect middleware (optional, for redirecting old domains)
 app.use((req, res, next) => {
   const host = req.get("host");
-  if (host === "tedroddy.net" || host === "www.tedroddy.net") {
-    return res.redirect(301, `https://tedcharles.net${req.originalUrl}`);
+  const redirectFrom = config.security.redirectFrom || [];
+  const redirectTo = config.security.redirectTo;
+
+  if (redirectFrom.length > 0 && redirectFrom.includes(host) && redirectTo) {
+    return res.redirect(301, `https://${redirectTo}${req.originalUrl}`);
   }
   next();
 });
