@@ -1,12 +1,10 @@
 /**
- * Analytics tracking utility for sending events to OpenObserve.
- * This module provides functions to track various user interactions and page views.
+ * Analytics tracking utility for sending events to the backend API.
+ * The backend then forwards events to OpenObserve with authentication.
+ * This keeps credentials secure and never exposes them in the frontend.
  */
 
-interface AnalyticsConfig {
-  endpoint: string;
-  enabled: boolean;
-}
+import { API_URL } from '../config';
 
 interface AnalyticsEvent {
   event_type: string;
@@ -22,13 +20,13 @@ interface AnalyticsEvent {
   [key: string]: string | number | boolean;
 }
 
-let analyticsConfig: AnalyticsConfig | null = null;
+let analyticsEnabled = false;
 
 /**
- * Initialize analytics with configuration
+ * Initialize analytics
  */
-export function initAnalytics(config: AnalyticsConfig) {
-  analyticsConfig = config;
+export function initAnalytics(enabled: boolean) {
+  analyticsEnabled = enabled;
 }
 
 /**
@@ -49,10 +47,10 @@ function getBaseEventData(): Partial<AnalyticsEvent> {
 }
 
 /**
- * Send an event to OpenObserve
+ * Send an event to the backend API which forwards to OpenObserve
  */
 async function sendEvent(eventData: Partial<AnalyticsEvent>) {
-  if (!analyticsConfig || !analyticsConfig.enabled) {
+  if (!analyticsEnabled) {
     return;
   }
 
@@ -62,7 +60,7 @@ async function sendEvent(eventData: Partial<AnalyticsEvent>) {
   } as AnalyticsEvent;
 
   try {
-    await fetch(analyticsConfig.endpoint, {
+    await fetch(`${API_URL}/api/analytics/track`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

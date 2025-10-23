@@ -26,6 +26,7 @@ import {
 import albumsRouter from "./routes/albums.ts";
 import externalPagesRouter from "./routes/external-pages.ts";
 import healthRouter from "./routes/health.ts";
+import analyticsRouter from "./routes/analytics.ts";
 
 // Get the current directory path for ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -113,6 +114,7 @@ app.set("optimizedDir", optimizedDir);
 app.use(albumsRouter);
 app.use(externalPagesRouter);
 app.use(healthRouter);
+app.use('/api/analytics', analyticsRouter);
 
 // Start the server
 app.listen(PORT, () => {
