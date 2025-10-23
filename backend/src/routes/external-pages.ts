@@ -1,7 +1,7 @@
 /**
  * Route handler for external pages configuration.
  * This file provides endpoints for retrieving external page links
- * and their configurations from a JSON file.
+ * from the main configuration file.
  */
 
 import { Router } from 'express';
@@ -16,16 +16,17 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 /**
- * Helper function to read and parse the external pages configuration file.
+ * Helper function to read and parse the external links from config.
  * @returns Object containing external links configuration
  */
 const getExternalPages = () => {
   try {
-    const configPath = path.join(__dirname, '../../../config/external-pages.json');
+    const configPath = path.join(__dirname, '../../../config/config.json');
     const data = fs.readFileSync(configPath, 'utf8');
-    return JSON.parse(data);
+    const config = JSON.parse(data);
+    return { externalLinks: config.externalLinks || [] };
   } catch (error) {
-    console.error('Error reading external pages config:', error);
+    console.error('Error reading external links from config:', error);
     return { externalLinks: [] };
   }
 };
@@ -33,7 +34,6 @@ const getExternalPages = () => {
 // Get external pages configuration
 router.get('/api/external-pages', (req, res) => {
   const externalPages = getExternalPages();
-  console.log('Sending external pages response:', externalPages);
   res.json(externalPages);
 });
 

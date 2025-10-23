@@ -1,0 +1,58 @@
+{
+  "development": {
+    "frontend": {
+      "port": 3000,
+      "apiUrl": "http://localhost:3001"
+    },
+    "backend": {
+      "port": 3001,
+      "photosDir": "photos",
+      "allowedOrigins": ["http://localhost:5173", "http://localhost:3000"]
+    },
+    "security": {
+      "allowedHosts": ["localhost:3000", "localhost:5173"],
+      "rateLimitWindowMs": 1000,
+      "rateLimitMaxRequests": 50
+    }
+  },
+  "production": {
+    "frontend": {
+      "port": 3000,
+      "apiUrl": "https://api.yourdomain.com"
+    },
+    "backend": {
+      "port": 3001,
+      "photosDir": "photos",
+      "allowedOrigins": ["https://yourdomain.com", "https://www.yourdomain.com"]
+    },
+    "security": {
+      "allowedHosts": ["yourdomain.com", "www.yourdomain.com"],
+      "rateLimitWindowMs": 1000,
+      "rateLimitMaxRequests": 50,
+      "redirectFrom": ["olddomain.com", "www.olddomain.com"],
+      "redirectTo": "yourdomain.com"
+    }
+  },
+  "branding": {
+    "siteName": "Your Name",
+    "avatarPath": "/photos/avatar.png"
+  },
+  "externalLinks": [
+    {
+      "title": "My Blog",
+      "url": "https://blog.example.com"
+    },
+    {
+      "title": "Primes Benchmark",
+      "url": "/primes/"
+    },
+    {
+      "title": "YouTube",
+      "url": "https://youtube.com/@yourname"
+    },
+    {
+      "title": "GitHub",
+      "url": "https://github.com/yourusername/photography-website"
+    }
+  ]
+}
