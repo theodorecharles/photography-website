@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CPU Prime Benchmark</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 800px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .input-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #495057;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        button {
+            padding: 12px 30px;
+            font-size: 1.1em;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .start-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .start-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .start-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .stop-btn {
+            background: #dc3545;
+            color: white;
+            display: none;
+        }
+
+        .stop-btn:hover {
+            background: #c82333;
+        }
+
+        .gauge-container {
+            display: flex;
+            justify-content: center;
+            margin: 30px 0;
+        }
+
+        .stats {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .stat-row:last-child {
+            border-bottom: none;
+        }
+
+        .stat-label {
+            font-weight: 600;
+            color: #6c757d;
+        }
+
+        .stat-value {
+            color: #212529;
+            font-weight: 700;
+            font-size: 1.1em;
+        }
+
+        .status {
+            text-align: center;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+            font-weight: 600;
+            display: none;
+        }
+
+        .status.running {
+            background: #d1ecf1;
+            color: #0c5460;
+            display: block;
+        }
+
+        .status.complete {
+            background: #d4edda;
+            color: #155724;
+            display: block;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            .controls {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>⚡ CPU Prime Benchmark</h1>
+
+        <div class="controls">
+            <div class="input-group">
+                <label for="primeCount">Number of Primes to Calculate:</label>
+                <input type="number" id="primeCount" value="100000" min="1000" max="10000000000" step="1000">
+            </div>
+            <button class="start-btn" id="startBtn" onclick="startBenchmark()">Start Benchmark</button>
+            <button class="stop-btn" id="stopBtn" onclick="stopBenchmark()">Stop</button>
+        </div>
+
+        <div class="status" id="status"></div>
+
+        <div class="gauge-container">
+            <canvas id="gauge" width="500" height="280"></canvas>
+        </div>
+
+        <div class="stats">
+            <div class="stat-row">
+                <span class="stat-label">Tests Completed:</span>
+                <span class="stat-value" id="testCount">0</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">Current Test Duration:</span>
+                <span class="stat-value" id="currentDuration">-</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">Average Duration:</span>
+                <span class="stat-value" id="avgDuration">-</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">Best Time:</span>
+                <span class="stat-value" id="bestTime">-</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">Worst Time:</span>
+                <span class="stat-value" id="worstTime">-</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let workers = [];
+        let running = false;
+        let testResults = [];
+        let lastAverageChangeTime = 0;
+        let previousAverage = 0;
+        let coreCount = 8;
+        let gaugeMin = 0;
+        let gaugeMax = 500;
+        let lastTestPrimes = [];
+
+        // Worker code as a blob
+        const workerCode = `
+            self.onmessage = function(e) {
+                const { start, end } = e.data;
+                const primes = [];
+                
+                for (let num = start; num <= end; num++) {
+                    if (isPrime(num)) {
+                        primes.push(num);
+                    }
+                }
+                
+                self.postMessage({ primes });
+            };
+            
+            function isPrime(n) {
+                if (n <= 1) return false;
+                if (n <= 3) return true;
+                if (n % 2 === 0 || n % 3 === 0) return false;
+                
+                for (let i = 5; i * i <= n; i += 6) {
+                    if (n % i === 0 || n % (i + 2) === 0) return false;
+                }
+                return true;
+            }
+        `;
+
+        const workerBlob = new Blob([workerCode], { type: 'application/javascript' });
+        const workerUrl = URL.createObjectURL(workerBlob);
+
+        function drawGauge(value) {
+            const canvas = document.getElementById('gauge');
+            const ctx = canvas.getContext('2d');
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height - 70;
+            const radius = 150;
+
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw gauge arc
+            const startAngle = 0; // Right side (0 degrees)
+            const endAngle = Math.PI; // Left side (180 degrees)
+
+            // Background arc
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius, startAngle, endAngle, true);
+            ctx.lineWidth = 20;
+            ctx.strokeStyle = '#e9ecef';
+            ctx.stroke();
+
+            // Color gradient for active arc
+            const gradient = ctx.createLinearGradient(centerX - radius, centerY, centerX + radius, centerY);
+            gradient.addColorStop(0, '#28a745');
+            gradient.addColorStop(0.5, '#ffc107');
+            gradient.addColorStop(1, '#dc3545');
+
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius, startAngle, endAngle, true);
+            ctx.lineWidth = 20;
+            ctx.strokeStyle = gradient;
+            ctx.stroke();
+
+            // Calculate needle angle (0ms = 0° (right), gaugeMax ms = 180° (left))
+            // Needle moves clockwise from right (0ms/fast) to left (slow)
+            const clampedValue = Math.min(Math.max(value, gaugeMin), gaugeMax);
+            const normalizedValue = (clampedValue - gaugeMin) / (gaugeMax - gaugeMin);
+            const needleAngle = -normalizedValue * Math.PI;
+
+            // Draw needle
+            const needleLength = radius - 10;
+            const needleX = centerX + needleLength * Math.cos(needleAngle);
+            const needleY = centerY + needleLength * Math.sin(needleAngle);
+
+            ctx.beginPath();
+            ctx.moveTo(centerX, centerY);
+            ctx.lineTo(needleX, needleY);
+            ctx.lineWidth = 4;
+            ctx.strokeStyle = '#495057';
+            ctx.lineCap = 'round';
+            ctx.stroke();
+
+            // Draw center circle
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 12, 0, 2 * Math.PI);
+            ctx.fillStyle = '#495057';
+            ctx.fill();
+
+            // Draw labels
+            ctx.fillStyle = '#495057';
+            ctx.font = 'bold 16px Arial';
+            ctx.textAlign = 'center';
+            
+            // Right label (0ms)
+            ctx.fillText(`${gaugeMin}ms`, centerX + radius + 30, centerY + 5);
+            
+            // Left label (max ms)
+            ctx.fillText(`${gaugeMax}ms`, centerX - radius - 30, centerY + 5);
+
+            // Center value
+            ctx.font = 'bold 28px Arial';
+            ctx.fillStyle = '#667eea';
+            ctx.fillText(`${Math.round(value)}ms`, centerX, centerY + 50);
+        }
+
+        function updateGaugeRange(average) {
+            if (average < gaugeMax) {
+                // Adjust gauge min dynamically
+                gaugeMax = Math.ceil(average / 100) * 100 + 100;
+                if (gaugeMax < 100) gaugeMax = 100;
+            }
+        }
+
+        async function startBenchmark() {
+            const primeCount = parseInt(document.getElementById('primeCount').value);
+            
+            running = true;
+            testResults = [];
+            lastAverageChangeTime = Date.now();
+            previousAverage = 0;
+            gaugeMin = 0;
+            gaugeMax = 500;
+
+            document.getElementById('startBtn').disabled = true;
+            document.getElementById('stopBtn').style.display = 'inline-block';
+            document.getElementById('status').textContent = 'Benchmark running...';
+            document.getElementById('status').className = 'status running';
+
+            drawGauge(0);
+
+            while (running) {
+                await runSingleTest(primeCount);
+                
+                // Check if average has stabilized
+                const avg = testResults.reduce((a, b) => a + b, 0) / testResults.length;
+                const avgDiff = Math.abs(avg - previousAverage);
+                
+                if (testResults.length > 1 && avgDiff < 1) { // Less than 1ms change
+                    if (Date.now() - lastAverageChangeTime > 5000) {
+                        stopBenchmark();
+                        break;
+                    }
+                } else {
+                    lastAverageChangeTime = Date.now();
+                    previousAverage = avg;
+                }
+            }
+        }
+
+        async function runSingleTest(primeCount) {
+            // Estimate upper bound for the Nth prime using approximation
+            // For N > 5: N * (ln(N) + ln(ln(N)))
+            let upperBound;
+            if (primeCount < 6) {
+                upperBound = 15;
+            } else {
+                const logN = Math.log(primeCount);
+                const logLogN = Math.log(logN);
+                upperBound = Math.ceil(primeCount * (logN + logLogN) * 1.3); // 1.3 factor for safety
+            }
+
+            const startTime = performance.now();
+            const promises = [];
+            workers = [];
+
+            // Divide the search range among workers
+            const rangePerWorker = Math.ceil(upperBound / coreCount);
+
+            for (let i = 0; i < coreCount; i++) {
+                const worker = new Worker(workerUrl);
+                workers.push(worker);
+
+                const promise = new Promise((resolve) => {
+                    worker.onmessage = (e) => {
+                        resolve(e.data.primes);
+                    };
+                });
+
+                const start = i === 0 ? 2 : i * rangePerWorker + 1;
+                const end = Math.min((i + 1) * rangePerWorker, upperBound);
+
+                worker.postMessage({ start, end });
+                promises.push(promise);
+            }
+
+            const allPrimesArrays = await Promise.all(promises);
+            
+            // Combine all primes and take the first N
+            const allPrimes = allPrimesArrays.flat().sort((a, b) => a - b).slice(0, primeCount);
+            
+            const endTime = performance.now();
+            const duration = endTime - startTime;
+
+            // Clean up workers
+            workers.forEach(w => w.terminate());
+            workers = [];
+
+            // Store primes from this test
+            lastTestPrimes = allPrimes;
+
+            // Record results
+            testResults.push(duration);
+            updateStats(duration);
+
+            return duration;
+        }
+
+        function updateStats(duration) {
+            const testCount = testResults.length;
+            const avg = testResults.reduce((a, b) => a + b, 0) / testCount;
+            const best = Math.min(...testResults);
+            const worst = Math.max(...testResults);
+
+            document.getElementById('testCount').textContent = testCount;
+            document.getElementById('currentDuration').textContent = `${Math.round(duration)}ms`;
+            document.getElementById('avgDuration').textContent = `${Math.round(avg)}ms`;
+            document.getElementById('bestTime').textContent = `${Math.round(best)}ms`;
+            document.getElementById('worstTime').textContent = `${Math.round(worst)}ms`;
+
+            updateGaugeRange(avg);
+            drawGauge(avg);
+        }
+
+        function stopBenchmark() {
+            running = false;
+            
+            // Terminate any running workers
+            workers.forEach(w => w.terminate());
+            workers = [];
+
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('stopBtn').style.display = 'none';
+            
+            if (testResults.length > 0) {
+                document.getElementById('status').textContent = `Benchmark Complete! Ran ${testResults.length} tests.`;
+                document.getElementById('status').className = 'status complete';
+                
+                // Log count of primes found in last test
+                console.log(`Last test found ${lastTestPrimes.length} primes`);
+            } else {
+                document.getElementById('status').style.display = 'none';
+            }
+        }
+
+        // Initial gauge draw
+        drawGauge(0);
+    </script>
+</body>
+</html>
+
+
