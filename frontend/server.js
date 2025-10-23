@@ -34,14 +34,23 @@ app.use((req, res, next) => {
   const apiDomain = config.frontend.apiUrl;
   const apiDomainHttps = apiDomain.replace("http://", "https://");
   
+  // Get analytics endpoints if configured
+  const analyticsEndpoint = configFile.analytics?.openobserve?.endpoint || '';
+  const analyticsHost = analyticsEndpoint ? new URL(analyticsEndpoint).origin : '';
+  
+  const analyticsScriptPath = configFile.analytics?.scriptPath || '';
+  const analyticsScriptHost = analyticsScriptPath && analyticsScriptPath.startsWith('http') 
+    ? new URL(analyticsScriptPath).origin 
+    : '';
+  
   res.setHeader(
     "Content-Security-Policy",
     "default-src 'self'; " +
-    "script-src 'self' 'unsafe-inline' 'unsafe-eval'; " + // React needs unsafe-inline/eval
+    `script-src 'self' 'unsafe-inline' 'unsafe-eval'${analyticsScriptHost ? ' ' + analyticsScriptHost : ''}; ` + // React needs unsafe-inline/eval
     "style-src 'self' 'unsafe-inline'; " +
     "worker-src 'self'; " + // Allow web workers from same origin
     `img-src 'self' ${apiDomainHttps} ${apiDomain} data:; ` +
-    `connect-src 'self' ${apiDomainHttps} ${apiDomain}; ` +
+    `connect-src 'self' ${apiDomainHttps} ${apiDomain}${analyticsHost ? ' ' + analyticsHost : ''}; ` +
     "font-src 'self'; " +
     "object-src 'none'; " +
     "base-uri 'self'; " +
