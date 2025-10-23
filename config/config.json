@@ -1,0 +1,58 @@
+{
+  "development": {
+    "frontend": {
+      "port": 3000,
+      "apiUrl": "http://localhost:3001"
+    },
+    "backend": {
+      "port": 3001,
+      "photosDir": "photos",
+      "allowedOrigins": ["http://localhost:5173", "http://localhost:3000"]
+    },
+    "security": {
+      "allowedHosts": ["localhost:3000", "localhost:5173"],
+      "rateLimitWindowMs": 1000,
+      "rateLimitMaxRequests": 50
+    }
+  },
+  "production": {
+    "frontend": {
+      "port": 3000,
+      "apiUrl": "https://api.tedcharles.net"
+    },
+    "backend": {
+      "port": 3001,
+      "photosDir": "photos",
+      "allowedOrigins": ["https://tedcharles.net", "https://www.tedcharles.net"]
+    },
+    "security": {
+      "allowedHosts": ["tedcharles.net", "www.tedcharles.net"],
+      "rateLimitWindowMs": 1000,
+      "rateLimitMaxRequests": 50,
+      "redirectFrom": ["tedroddy.net", "www.tedroddy.net"],
+      "redirectTo": "tedcharles.net"
+    }
+  },
+  "branding": {
+    "siteName": "Ted Charles",
+    "avatarPath": "/photos/derpatar.png"
+  },
+  "externalLinks": [
+    {
+      "title": "PC Games",
+      "url": "https://games.tedcharles.net"
+    },
+    {
+      "title": "Primes",
+      "url": "/primes/"
+    },
+    {
+      "title": "Youtube",
+      "url": "https://www.youtube.com/@ted_charles"
+    },
+    {
+      "title": "This Webapp",
+      "url": "https://github.com/theodoreroddy/photography-website"
+    }
+  ]
+}

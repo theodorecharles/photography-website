@@ -1,4 +1,6 @@
 #!/bin/bash
+set -euo pipefail  # Exit on error, undefined variables, and pipe failures
+IFS=$'\n\t'        # Set Internal Field Separator for safer word splitting
 
 # Configuration variables
 # Compression levels (0-100, where 100 is highest quality)
