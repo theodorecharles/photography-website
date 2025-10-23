@@ -43,7 +43,9 @@
     "openobserve": {
       "enabled": false,
       "endpoint": "https://log.yourdomain.com/api/default/website/_json",
-      "_comment": "OpenObserve endpoint for custom event tracking. Set enabled to true to activate."
+      "username": "your-username",
+      "password": "your-password",
+      "_comment": "OpenObserve endpoint and credentials for custom event tracking. The backend proxies requests to keep credentials secure. Set enabled to true to activate."
     }
   },
   "externalLinks": [

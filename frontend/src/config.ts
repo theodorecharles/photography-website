@@ -9,8 +9,5 @@ const config = configFile[env];
 
 export const API_URL = config.frontend.apiUrl;
 export const ANALYTICS_SCRIPT_PATH = configFile.analytics?.scriptPath || '';
-export const OPENOBSERVE_CONFIG = {
-  enabled: configFile.analytics?.openobserve?.enabled || false,
-  endpoint: configFile.analytics?.openobserve?.endpoint || '',
-};
+export const ANALYTICS_ENABLED = configFile.analytics?.openobserve?.enabled || false;
 export const cacheBustValue = 0; 
