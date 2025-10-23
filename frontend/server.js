@@ -39,6 +39,7 @@ app.use((req, res, next) => {
     "default-src 'self'; " +
     "script-src 'self' 'unsafe-inline' 'unsafe-eval'; " + // React needs unsafe-inline/eval
     "style-src 'self' 'unsafe-inline'; " +
+    "worker-src 'self'; " + // Allow web workers from same origin
     `img-src 'self' ${apiDomainHttps} ${apiDomain} data:; ` +
     `connect-src 'self' ${apiDomainHttps} ${apiDomain}; ` +
     "font-src 'self'; " +
