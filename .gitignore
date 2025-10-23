@@ -21,6 +21,9 @@ optimized/
 .env.test.local
 .env.production.local
 
+# Config (track config.example.json and default config.json, but allow local overrides)
+config/config.local.json
+
 # Logs
 npm-debug.log*
 yarn-debug.log*

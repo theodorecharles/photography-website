@@ -1,4 +1,6 @@
 #!/bin/bash
+set -euo pipefail  # Exit on error, undefined variables, and pipe failures
+IFS=$'\n\t'        # Set Internal Field Separator for safer word splitting
 
 # Restart Script
 # This script handles the deployment and restart process for the photography website.
@@ -17,8 +19,9 @@ handle_error() {
 
 # Pull latest changes from the repository
 log "Pulling latest changes from GitHub..."
-if ! git pull origin master; then
-    handle_error "Failed to pull from GitHub"
+# Use --ff-only to prevent accidental merges
+if ! git pull --ff-only origin master; then
+    handle_error "Failed to pull from GitHub (cannot fast-forward)"
 fi
 
 # Run image optimization script
