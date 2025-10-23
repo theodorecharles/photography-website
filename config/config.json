@@ -38,7 +38,11 @@
     "avatarPath": "/photos/derpatar.png"
   },
   "analytics": {
-    "scriptPath": ""
+    "scriptPath": "",
+    "openobserve": {
+      "enabled": true,
+      "endpoint": "https://log.tedcharles.net/api/default/website/_json"
+    }
   },
   "externalLinks": [
     {

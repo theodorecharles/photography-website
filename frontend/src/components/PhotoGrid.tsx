@@ -4,10 +4,11 @@
  * and provides functionality for viewing photos in a modal.
  */
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import "./PhotoGrid.css";
 import { API_URL, cacheBustValue } from "../config";
+import { trackPhotoClick, trackPhotoNavigation, trackPhotoDownload, trackModalClose, trackError } from "../utils/analytics";
 
 interface PhotoGridProps {
   album: string;
@@ -37,6 +38,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
   const [imageDimensions, setImageDimensions] = useState<
     Record<string, { width: number; height: number }>
   >({});
+  const modalOpenTimeRef = useRef<number | null>(null);
 
   // Get query parameters from current URL
   const queryParams = new URLSearchParams(location.search);
@@ -46,10 +48,17 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
 
   const handlePhotoClick = (photo: Photo) => {
     setSelectedPhoto(photo);
+    modalOpenTimeRef.current = Date.now();
+    trackPhotoClick(photo.id, photo.album, photo.title);
   };
 
   const handleCloseModal = () => {
+    if (selectedPhoto && modalOpenTimeRef.current) {
+      const viewDuration = Date.now() - modalOpenTimeRef.current;
+      trackModalClose(selectedPhoto.id, selectedPhoto.album, viewDuration);
+    }
     setSelectedPhoto(null);
+    modalOpenTimeRef.current = null;
   };
 
   // Handle body scrolling when modal opens/closes
@@ -122,8 +131,10 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
 
         setError(null);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "An error occurred");
+        const errorMessage = err instanceof Error ? err.message : "An error occurred";
+        setError(errorMessage);
         setPhotos([]);
+        trackError(errorMessage, `photo_fetch_${album}`);
       } finally {
         setLoading(false);
       }
@@ -138,17 +149,21 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
       if (!selectedPhoto) return;
 
       if (e.key === "Escape") {
-        setSelectedPhoto(null);
+        handleCloseModal();
       } else if (e.key === "ArrowLeft") {
         const currentIndex = photos.findIndex((p) => p.id === selectedPhoto.id);
         const prevIndex = (currentIndex - 1 + photos.length) % photos.length;
+        const prevPhoto = photos[prevIndex];
         setModalImageLoaded(false);
-        setSelectedPhoto(photos[prevIndex]);
+        setSelectedPhoto(prevPhoto);
+        trackPhotoNavigation('previous', prevPhoto.id, prevPhoto.album);
       } else if (e.key === "ArrowRight") {
         const currentIndex = photos.findIndex((p) => p.id === selectedPhoto.id);
         const nextIndex = (currentIndex + 1) % photos.length;
+        const nextPhoto = photos[nextIndex];
         setModalImageLoaded(false);
-        setSelectedPhoto(photos[nextIndex]);
+        setSelectedPhoto(nextPhoto);
+        trackPhotoNavigation('next', nextPhoto.id, nextPhoto.album);
       }
     };
 
@@ -294,6 +309,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
                     `${API_URL}${selectedPhoto.download}${queryString}`,
                     "_blank"
                   );
+                  trackPhotoDownload(selectedPhoto.id, selectedPhoto.album, selectedPhoto.title);
                 }}
               >
                 <svg
@@ -331,8 +347,10 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
                   );
                   const prevIndex =
                     (currentIndex - 1 + photos.length) % photos.length;
+                  const prevPhoto = photos[prevIndex];
                   setModalImageLoaded(false);
-                  setSelectedPhoto(photos[prevIndex]);
+                  setSelectedPhoto(prevPhoto);
+                  trackPhotoNavigation('previous', prevPhoto.id, prevPhoto.album);
                 }}
               >
                 <svg
@@ -352,8 +370,10 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
                     (p) => p.id === selectedPhoto.id
                   );
                   const nextIndex = (currentIndex + 1) % photos.length;
+                  const nextPhoto = photos[nextIndex];
                   setModalImageLoaded(false);
-                  setSelectedPhoto(photos[nextIndex]);
+                  setSelectedPhoto(nextPhoto);
+                  trackPhotoNavigation('next', nextPhoto.id, nextPhoto.album);
                 }}
               >
                 <svg
