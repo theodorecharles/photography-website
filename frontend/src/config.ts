@@ -8,4 +8,5 @@ const env = import.meta.env.MODE === 'production' ? 'production' : 'development'
 const config = configFile[env];
 
 export const API_URL = config.frontend.apiUrl;
+export const ANALYTICS_SCRIPT_PATH = configFile.analytics?.scriptPath || '';
 export const cacheBustValue = 0; 
