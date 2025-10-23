@@ -37,15 +37,6 @@ if ! npm run build; then
     handle_error "Backend build failed"
 fi
 
-# Restart backend service using PM2
-log "Restarting backend with PM2..."
-if ! pm2 restart backend; then
-    log "Backend not running, starting it..."
-    if ! pm2 start npm --name "backend" -- start; then
-        handle_error "Failed to start backend"
-    fi
-fi
-
 # Frontend deployment process
 log "Building frontend..."
 cd ../frontend || handle_error "Failed to cd into frontend directory"
@@ -53,12 +44,15 @@ if ! npm run build; then
     handle_error "Frontend build failed"
 fi
 
-# Restart frontend service using PM2
-log "Restarting frontend with PM2..."
-if ! pm2 restart frontend; then
-    log "Frontend not running, starting it..."
-    if ! pm2 start npm --name "frontend" -- start; then
-        handle_error "Failed to start frontend"
+# Return to project root
+cd ..
+
+# Restart both services using PM2 ecosystem file
+log "Restarting services with PM2 using ecosystem config..."
+if ! pm2 restart ecosystem.config.js --update-env; then
+    log "Services not running, starting them with ecosystem config..."
+    if ! pm2 start ecosystem.config.js; then
+        handle_error "Failed to start services"
     fi
 fi
 
