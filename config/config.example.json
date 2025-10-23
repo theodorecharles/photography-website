@@ -39,7 +39,12 @@
   },
   "analytics": {
     "scriptPath": "",
-    "_comment": "scriptPath should be a URL to an external analytics script (e.g., Google Analytics, Plausible, etc.)"
+    "_comment_script": "scriptPath should be a URL to an external analytics script (e.g., Google Analytics, Plausible, etc.)",
+    "openobserve": {
+      "enabled": false,
+      "endpoint": "https://log.yourdomain.com/api/default/website/_json",
+      "_comment": "OpenObserve endpoint for custom event tracking. Set enabled to true to activate."
+    }
   },
   "externalLinks": [
     {

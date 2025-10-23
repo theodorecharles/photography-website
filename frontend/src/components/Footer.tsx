@@ -4,6 +4,7 @@
  */
 
 import { Link } from 'react-router-dom';
+import { trackAlbumNavigation } from '../utils/analytics';
 
 interface FooterProps {
   albums: string[];
@@ -24,6 +25,7 @@ function Footer({ albums, currentAlbum }: FooterProps) {
                   key={albumName}
                   to={`/album/${albumName}`}
                   className="album-button"
+                  onClick={() => trackAlbumNavigation(albumName, 'footer')}
                 >
                   {albumName.charAt(0).toUpperCase() + albumName.slice(1)}
                 </Link>
