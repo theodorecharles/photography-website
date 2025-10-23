@@ -18,6 +18,7 @@ import Footer from "./components/Footer";
 import License from "./components/License";
 import ScrollToTop from "./components/ScrollToTop";
 import { API_URL } from "./config";
+import { trackPageView, trackAlbumNavigation, trackExternalLinkClick, trackError } from "./utils/analytics";
 
 // ExternalLink interface defines the structure for external navigation links
 interface ExternalLink {
@@ -160,7 +161,10 @@ function Navigation({
                   key={album}
                   to={`/album/${album}`}
                   className="nav-link"
-                  onClick={() => setIsDropdownOpen(false)}
+                  onClick={() => {
+                    setIsDropdownOpen(false);
+                    trackAlbumNavigation(album, 'header');
+                  }}
                 >
                   {album.charAt(0).toUpperCase() + album.slice(1)}
                 </Link>
@@ -202,6 +206,7 @@ function Navigation({
                   target="_blank"
                   rel="noopener noreferrer"
                   className="nav-link"
+                  onClick={() => trackExternalLinkClick(link.title, link.url, 'header')}
                 >
                   {link.title}
                 </a>
@@ -223,7 +228,10 @@ function Navigation({
                 key={album}
                 to={`/album/${album}`}
                 className="nav-link"
-                onClick={() => setIsMenuOpen(false)}
+                onClick={() => {
+                  setIsMenuOpen(false);
+                  trackAlbumNavigation(album, 'mobile_menu');
+                }}
               >
                 {album.charAt(0).toUpperCase() + album.slice(1)}
               </Link>
@@ -237,7 +245,10 @@ function Navigation({
                 target="_blank"
                 rel="noopener noreferrer"
                 className="nav-link external"
-                onClick={() => setIsMenuOpen(false)}
+                onClick={() => {
+                  setIsMenuOpen(false);
+                  trackExternalLinkClick(link.title, link.url, 'mobile_menu');
+                }}
               >
                 {link.title}
                 <svg
@@ -299,14 +310,22 @@ function App() {
   );
   const location = useLocation();
 
-  // Update current album based on route changes
+  // Update current album based on route changes and track page views
   useEffect(() => {
     const path = location.pathname;
     if (path.startsWith("/album/")) {
       const albumName = path.split("/album/")[1];
       setCurrentAlbum(albumName);
+      trackPageView(path, `${albumName.charAt(0).toUpperCase() + albumName.slice(1)} - Album`);
+    } else if (path === "/") {
+      setCurrentAlbum(undefined);
+      trackPageView(path, "Homepage");
+    } else if (path === "/license") {
+      setCurrentAlbum(undefined);
+      trackPageView(path, "License");
     } else {
       setCurrentAlbum(undefined);
+      trackPageView(path);
     }
   }, [location]);
 
@@ -370,9 +389,11 @@ function App() {
         setExternalLinks(externalLinksData.externalLinks);
         setError(null);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "An error occurred");
+        const errorMessage = err instanceof Error ? err.message : "An error occurred";
+        setError(errorMessage);
         setAlbums([]);
         setExternalLinks([]);
+        trackError(errorMessage, 'app_initialization');
       } finally {
         setLoading(false);
       }
