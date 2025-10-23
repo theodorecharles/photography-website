@@ -37,6 +37,9 @@
     "siteName": "Ted Charles",
     "avatarPath": "/photos/derpatar.png"
   },
+  "analytics": {
+    "scriptPath": ""
+  },
   "externalLinks": [
     {
       "title": "PC Games",
