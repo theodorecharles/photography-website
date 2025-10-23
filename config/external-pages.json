@@ -1,16 +1,13 @@
 { 
     "externalLinks":[
         {
-            "title":"Quake JS",
-            "url":"http://quake.tedroddy.net"
-        },{
-            "title":"Checked Out!",
-            "url":"http://x.com/checkedoutgame"
+            "title":"PC Games",
+            "url":"https://games.tedcharles.net"
         },{
             "title":"Youtube",
             "url":"https://www.youtube.com/@ted_charles"
         },{
-            "title":"Gallery App",
+            "title":"This Webapp",
             "url":"https://github.com/theodoreroddy/photography-website"
         }
     ]
