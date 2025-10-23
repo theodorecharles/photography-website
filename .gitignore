@@ -21,7 +21,8 @@ optimized/
 .env.test.local
 .env.production.local
 
-# Config (track config.example.json and default config.json, but allow local overrides)
+# Config (track only config.example.json, users should copy and customize)
+config/config.json
 config/config.local.json
 
 # Logs
