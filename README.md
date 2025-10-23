@@ -300,22 +300,30 @@ export NODE_ENV=production
 
 ### Using PM2 (Recommended)
 
+The project includes a `ecosystem.config.js` file that properly configures both services with production environment variables.
+
 ```bash
-# Install PM2
+# Install PM2 globally
 npm install -g pm2
 
-# Start backend
-cd backend
-pm2 start npm --name "photography-backend" -- start
+# Start both services using the ecosystem file
+pm2 start ecosystem.config.js
 
-# Start frontend
-cd ../frontend
-pm2 start npm --name "photography-frontend" -- start
-
-# Save PM2 configuration
+# Save PM2 configuration for auto-restart on reboot
 pm2 save
 pm2 startup
+
+# View running services
+pm2 list
+
+# View logs
+pm2 logs
+
+# Restart services
+pm2 restart ecosystem.config.js --update-env
 ```
+
+**Important:** The ecosystem file sets `NODE_ENV=production` automatically. Edit `ecosystem.config.js` to change paths or ports if needed.
 
 ### Using the Restart Script
 
