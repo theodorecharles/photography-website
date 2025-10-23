@@ -37,6 +37,10 @@
     "siteName": "Your Name",
     "avatarPath": "/photos/avatar.png"
   },
+  "analytics": {
+    "scriptPath": "",
+    "_comment": "scriptPath should be a URL to an external analytics script (e.g., Google Analytics, Plausible, etc.)"
+  },
   "externalLinks": [
     {
       "title": "My Blog",
