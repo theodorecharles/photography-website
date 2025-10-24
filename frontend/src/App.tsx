@@ -114,7 +114,7 @@ function Navigation({
   };
 
   // Handle mouse leave events for both dropdowns
-  const handleDropdownLeave = (e: React.MouseEvent) => {
+  const handleDropdownLeave = () => {
     // Use a small delay to allow mouse to move into the dropdown menu
     setTimeout(() => {
       // Check if mouse is still not over any dropdown-related elements

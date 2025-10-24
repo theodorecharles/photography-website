@@ -6,22 +6,16 @@
 
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { trackAlbumNavigation, trackExternalLinkClick } from '../utils/analytics';
 import { API_URL } from '../config';
 import './Footer.css';
 
-interface ExternalLink {
-  title: string;
-  url: string;
-}
-
 interface FooterProps {
-  albums: string[];
-  externalLinks: ExternalLink[];
+  albums?: string[];
+  externalLinks?: { title: string; url: string }[];
   currentAlbum?: string;
 }
 
-function Footer({ albums, externalLinks, currentAlbum }: FooterProps) {
+function Footer({ albums: _albums = [], externalLinks: _externalLinks = [], currentAlbum: _currentAlbum }: FooterProps) {
   const [currentYear, setCurrentYear] = useState<number>(new Date().getFullYear());
 
   useEffect(() => {
