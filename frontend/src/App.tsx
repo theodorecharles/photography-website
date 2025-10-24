@@ -19,7 +19,7 @@ import License from "./components/License";
 import ScrollToTop from "./components/ScrollToTop";
 import { SEO } from "./components/SEO";
 import { StructuredData } from "./components/StructuredData";
-import { API_URL } from "./config";
+import { API_URL, SITE_URL } from "./config";
 import { trackPageView, trackAlbumNavigation, trackExternalLinkClick, trackError } from "./utils/analytics";
 
 // ExternalLink interface defines the structure for external navigation links
@@ -38,8 +38,8 @@ function AlbumRoute() {
       <SEO 
         title={`${albumTitle} - Ted Charles Photography`}
         description={`View ${albumTitle} photos from Ted Charles' photography portfolio. Professional ${album} photography.`}
-        url={`https://tedcharles.net/album/${album}`}
-        image={`https://tedcharles.net/photos/derpatar.png`}
+        url={`${SITE_URL}/album/${album}`}
+        image={`${SITE_URL}/photos/derpatar.png`}
       />
       <PhotoGrid album={album || ""} />
     </>
@@ -498,7 +498,7 @@ function App() {
               <SEO 
                 title="License - Ted Charles Photography"
                 description="License information for Ted Charles' photography. All photos are licensed under Creative Commons Attribution 4.0 International License."
-                url="https://tedcharles.net/license"
+                url={`${SITE_URL}/license`}
               />
               <License />
             </>

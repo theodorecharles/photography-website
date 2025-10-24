@@ -1,4 +1,8 @@
 {
+  "type": "module",
+  "scripts": {
+    "build": "node build.js"
+  },
   "devDependencies": {
     "@types/node": "^22.15.2"
   }

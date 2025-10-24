@@ -1,14 +1,17 @@
-// Configuration is managed in config/config.json
-// Update config.json to change API URLs for different environments
-// This file provides defaults if config.json is not found
+/**
+ * Frontend config - ALL values are injected from config.json via build process
+ * NO hardcoded values - everything comes from config/config.json
+ */
 
-import configFile from '../../config/config.json';
+// These MUST be set by the build process from config.json
+// If they're undefined, the build is misconfigured
+export const API_URL = import.meta.env.VITE_API_URL;
+export const SITE_URL = import.meta.env.VITE_SITE_URL;
+export const SITE_NAME = import.meta.env.VITE_SITE_NAME;
+export const ANALYTICS_ENABLED = import.meta.env.VITE_ANALYTICS_ENABLED === 'true';
+export const cacheBustValue = 0;
 
-const env = import.meta.env.MODE === 'production' ? 'production' : 'development';
-const config = configFile[env];
-
-export const API_URL = config.frontend.apiUrl;
-export const ANALYTICS_SCRIPT_PATH = configFile.analytics?.scriptPath || '';
-export const ANALYTICS_ENABLED = configFile.analytics?.openobserve?.enabled || false;
-export const ANALYTICS_HMAC_SECRET = configFile.analytics?.hmacSecret || '';
-export const cacheBustValue = 0; 
+// Validate that required config is present
+if (!API_URL || !SITE_URL || !SITE_NAME) {
+  throw new Error('Missing required configuration. Run: npm run build');
+} 

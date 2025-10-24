@@ -22,7 +22,12 @@ function getAlbums(photosDir: string): string[] {
 router.get('/sitemap.xml', (req, res) => {
   const photosDir = req.app.get('photosDir');
   const albums = getAlbums(photosDir);
-  const baseUrl = 'https://tedcharles.net';
+  
+  // Get base URL from environment (set by build.js from config.json)
+  if (!process.env.SITE_URL) {
+    throw new Error('SITE_URL environment variable not set. This should be set from config.json');
+  }
+  const baseUrl = process.env.SITE_URL;
   const today = new Date().toISOString().split('T')[0];
   
   let xml = `<?xml version="1.0" encoding="UTF-8"?>

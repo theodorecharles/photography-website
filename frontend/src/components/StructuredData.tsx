@@ -4,6 +4,7 @@
  */
 
 import { useEffect } from 'react';
+import { SITE_URL } from '../config';
 
 export function StructuredData() {
   useEffect(() => {
@@ -11,12 +12,12 @@ export function StructuredData() {
       "@context": "https://schema.org",
       "@type": "Person",
       "name": "Ted Charles",
-      "url": "https://tedcharles.net",
-      "image": "https://tedcharles.net/photos/derpatar.png",
+      "url": SITE_URL,
+      "image": `${SITE_URL}/photos/derpatar.png`,
       "jobTitle": "Photographer",
       "sameAs": [
         "https://www.youtube.com/@ted_charles",
-        "https://github.com/theodoreroddy/photography-website"
+        "https://github.com/theodoreroddy/"
       ],
       "knowsAbout": ["Photography", "Web Development", "Digital Art"],
       "hasOccupation": {

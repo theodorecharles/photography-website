@@ -4,6 +4,7 @@
  */
 
 import { useEffect } from 'react';
+import { SITE_URL } from '../config';
 
 interface SEOProps {
   title?: string;
@@ -16,8 +17,8 @@ interface SEOProps {
 export function SEO({ 
   title = "Ted Charles - Photography Portfolio",
   description = "Professional photography portfolio by Ted Charles. View stunning landscape, portrait, and creative photography collections.",
-  image = "https://tedcharles.net/photos/derpatar.png",
-  url = "https://tedcharles.net",
+  image = `${SITE_URL}/photos/derpatar.png`,
+  url = SITE_URL,
   type = "website"
 }: SEOProps) {
   useEffect(() => {
