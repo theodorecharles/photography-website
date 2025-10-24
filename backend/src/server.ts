@@ -94,7 +94,16 @@ app.use("/api/", limiter);
 
 // Parse JSON request bodies with size limit
 app.use(express.json({ limit: "1mb" }));
-app.use("/photos", express.static(photosDir)); // Serve original photos
+
+// Serve original photos with CORS headers
+app.use("/photos", express.static(photosDir, {
+  setHeaders: (res, path) => {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
+  }
+}));
+
+// Serve optimized photos with CORS headers
 app.use(
   "/optimized",
   express.static(optimizedDir, {
@@ -103,9 +112,11 @@ app.use(
     lastModified: true,
     setHeaders: (res, path) => {
       res.setHeader("Cache-Control", "public, max-age=31536000"); // 1 year
+      res.setHeader("Access-Control-Allow-Origin", "*");
+      res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
     },
   })
-); // Serve optimized photos
+);
 
 // Store directory paths in app for use in routes
 app.set("photosDir", photosDir);
