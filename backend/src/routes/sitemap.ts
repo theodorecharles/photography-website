@@ -41,9 +41,18 @@ router.get('/sitemap.xml', (req, res) => {
   </url>`;
 
   albums.forEach(album => {
+    // URL encode the album name and escape XML special characters
+    const encodedAlbum = encodeURIComponent(album);
+    const escapedAlbum = album
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&apos;');
+    
     xml += `
   <url>
-    <loc>${baseUrl}/album/${album}</loc>
+    <loc>${baseUrl}/album/${encodedAlbum}</loc>
     <lastmod>${today}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>

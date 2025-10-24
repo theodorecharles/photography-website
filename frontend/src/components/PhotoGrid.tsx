@@ -4,7 +4,7 @@
  * and provides functionality for viewing photos in a modal.
  */
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useLocation } from "react-router-dom";
 import "./PhotoGrid.css";
 import { API_URL, cacheBustValue } from "../config";
@@ -52,14 +52,14 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
     trackPhotoClick(photo.id, photo.album, photo.title);
   };
 
-  const handleCloseModal = () => {
+  const handleCloseModal = useCallback(() => {
     if (selectedPhoto && modalOpenTimeRef.current) {
       const viewDuration = Date.now() - modalOpenTimeRef.current;
       trackModalClose(selectedPhoto.id, selectedPhoto.album, viewDuration);
     }
     setSelectedPhoto(null);
     modalOpenTimeRef.current = null;
-  };
+  }, [selectedPhoto]);
 
   // Handle body scrolling when modal opens/closes
   useEffect(() => {
@@ -73,42 +73,29 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
     };
   }, [selectedPhoto]);
 
+  // Close modal and reset state when album changes
+  useEffect(() => {
+    setSelectedPhoto(null);
+    setModalImageLoaded(false);
+    modalOpenTimeRef.current = null;
+  }, [album]);
+
   useEffect(() => {
     const fetchPhotos = async () => {
       try {
         setLoading(true);
 
-        // Always fetch albums list first
-        const albumsResponse = await fetch(
-          `${API_URL}/api/albums${queryString}`
-        );
-        if (!albumsResponse.ok) {
-          throw new Error("Failed to fetch albums");
-        }
-        const albumsData = await albumsResponse.json();
-
         if (album === "homepage") {
-          // Fetch all photos from each album for homepage
-          const allPhotosPromises = albumsData.map(
-            async (albumName: string) => {
-              const albumResponse = await fetch(
-                `${API_URL}/api/albums/${albumName}/photos${queryString}`
-              );
-              if (!albumResponse.ok) {
-                throw new Error(
-                  `Failed to fetch photos from album ${albumName}`
-                );
-              }
-              return albumResponse.json();
-            }
+          // Use the random photos endpoint for homepage to show all photos
+          // Not passing count parameter to get all photos from all albums
+          const response = await fetch(
+            `${API_URL}/api/random-photos${queryString}`
           );
-
-          const allPhotosArrays = await Promise.all(allPhotosPromises);
-          const allPhotos = allPhotosArrays.flat();
-
-          // Randomly select 20 photos
-          const shuffled = [...allPhotos].sort(() => 0.5 - Math.random());
-          setPhotos(shuffled.slice(0, 20));
+          if (!response.ok) {
+            throw new Error("Failed to fetch random photos");
+          }
+          const randomPhotos = await response.json();
+          setPhotos(randomPhotos);
         } else {
           // For specific album pages, fetch photos normally
           const response = await fetch(
@@ -156,6 +143,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
         const prevPhoto = photos[prevIndex];
         setModalImageLoaded(false);
         setSelectedPhoto(prevPhoto);
+        modalOpenTimeRef.current = Date.now(); // Reset timer for new photo
         trackPhotoNavigation('previous', prevPhoto.id, prevPhoto.album);
       } else if (e.key === "ArrowRight") {
         const currentIndex = photos.findIndex((p) => p.id === selectedPhoto.id);
@@ -163,13 +151,14 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
         const nextPhoto = photos[nextIndex];
         setModalImageLoaded(false);
         setSelectedPhoto(nextPhoto);
+        modalOpenTimeRef.current = Date.now(); // Reset timer for new photo
         trackPhotoNavigation('next', nextPhoto.id, nextPhoto.album);
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [selectedPhoto, photos]);
+  }, [selectedPhoto, photos, handleCloseModal]);
 
   const handleImageLoad = (
     e: React.SyntheticEvent<HTMLImageElement>,
@@ -351,6 +340,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
                   const prevPhoto = photos[prevIndex];
                   setModalImageLoaded(false);
                   setSelectedPhoto(prevPhoto);
+                  modalOpenTimeRef.current = Date.now(); // Reset timer for new photo
                   trackPhotoNavigation('previous', prevPhoto.id, prevPhoto.album);
                 }}
               >
@@ -374,6 +364,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
                   const nextPhoto = photos[nextIndex];
                   setModalImageLoaded(false);
                   setSelectedPhoto(nextPhoto);
+                  modalOpenTimeRef.current = Date.now(); // Reset timer for new photo
                   trackPhotoNavigation('next', nextPhoto.id, nextPhoto.album);
                 }}
               >
@@ -401,6 +392,12 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
               alt={`${selectedPhoto.album} photography by Ted Charles - ${selectedPhoto.title}`}
               title={selectedPhoto.title}
               onLoad={() => setModalImageLoaded(true)}
+              onError={() => {
+                console.error('Failed to load modal image:', selectedPhoto.src);
+                trackError(`Failed to load image: ${selectedPhoto.id}`, 'modal_image_load');
+                // Show placeholder if full image fails to load
+                setModalImageLoaded(true);
+              }}
               style={{ display: modalImageLoaded ? "block" : "none" }}
             />
           </div>

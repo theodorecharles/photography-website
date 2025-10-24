@@ -25,21 +25,24 @@ export function StructuredData() {
       }
     };
 
-    const script = document.createElement('script');
-    script.type = 'application/ld+json';
-    script.text = JSON.stringify(schema);
-    script.id = 'structured-data-person';
-    
     // Remove old script if exists
     const oldScript = document.getElementById('structured-data-person');
     if (oldScript) {
       oldScript.remove();
     }
     
+    const script = document.createElement('script');
+    script.type = 'application/ld+json';
+    script.text = JSON.stringify(schema);
+    script.id = 'structured-data-person';
+    
     document.head.appendChild(script);
     
     return () => {
-      script.remove();
+      const scriptToRemove = document.getElementById('structured-data-person');
+      if (scriptToRemove) {
+        scriptToRemove.remove();
+      }
     };
   }, []);
   

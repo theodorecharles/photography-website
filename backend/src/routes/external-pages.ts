@@ -21,8 +21,12 @@ const __dirname = path.dirname(__filename);
  */
 const getExternalPages = () => {
   try {
+    // Try to load config.json, fall back to config.example.json
     const configPath = path.join(__dirname, '../../../config/config.json');
-    const data = fs.readFileSync(configPath, 'utf8');
+    const examplePath = path.join(__dirname, '../../../config/config.example.json');
+    
+    const configFile = fs.existsSync(configPath) ? configPath : examplePath;
+    const data = fs.readFileSync(configFile, 'utf8');
     const config = JSON.parse(data);
     return { externalLinks: config.externalLinks || [] };
   } catch (error) {

@@ -32,81 +32,84 @@ function verifyHmac(payload: string, signature: string, secret: string): boolean
 }
 
 // POST endpoint to receive analytics events from frontend
-router.post('/track', (req, res) => {
-  // Use async IIFE to handle async operations
-  (async () => {
-    try {
-      // Get analytics configuration
-      const analyticsConfig = config.analytics?.openobserve;
-      const hmacSecret = config.analytics?.hmacSecret;
+router.post('/track', async (req, res): Promise<void> => {
+  try {
+    // Get analytics configuration
+    const analyticsConfig = config.analytics?.openobserve;
+    const hmacSecret = config.analytics?.hmacSecret;
+    
+    if (!analyticsConfig || !analyticsConfig.enabled) {
+      // Analytics disabled, return success without doing anything
+      res.status(200).json({ success: true, message: 'Analytics disabled' });
+      return;
+    }
+
+    const { endpoint, username, password } = analyticsConfig;
+
+    if (!endpoint || !username || !password) {
+      console.error('Analytics configuration incomplete');
+      res.status(200).json({ success: true, message: 'Analytics not configured' });
+      return;
+    }
+
+    // Verify HMAC signature if secret is configured
+    if (hmacSecret) {
+      const signature = req.headers['x-analytics-signature'];
       
-      if (!analyticsConfig || !analyticsConfig.enabled) {
-        // Analytics disabled, return success without doing anything
-        return res.status(200).json({ success: true, message: 'Analytics disabled' });
+      if (!signature || typeof signature !== 'string') {
+        console.warn('Analytics request missing signature');
+        res.status(401).json({ error: 'Missing signature' });
+        return;
       }
 
-      const { endpoint, username, password } = analyticsConfig;
-
-      if (!endpoint || !username || !password) {
-        console.error('Analytics configuration incomplete');
-        return res.status(200).json({ success: true, message: 'Analytics not configured' });
-      }
-
-      // Verify HMAC signature if secret is configured
-      if (hmacSecret) {
-        const signature = req.headers['x-analytics-signature'];
-        
-        if (!signature || typeof signature !== 'string') {
-          console.warn('Analytics request missing signature');
-          return res.status(401).json({ error: 'Missing signature' });
-        }
-
-        const payload = JSON.stringify(req.body);
-        
-        if (!verifyHmac(payload, signature, hmacSecret)) {
-          console.warn('Analytics request failed signature verification');
-          return res.status(401).json({ error: 'Invalid signature' });
-        }
-      }
-
-      // Extract client IP address
-      // Check X-Forwarded-For header first (for proxies/load balancers)
-      // Then fall back to X-Real-IP, and finally to socket remote address
-      const forwardedFor = req.headers['x-forwarded-for'];
-      const realIp = req.headers['x-real-ip'];
-      let clientIp = req.socket.remoteAddress || 'unknown';
+      const payload = JSON.stringify(req.body);
       
-      if (typeof forwardedFor === 'string') {
-        // X-Forwarded-For can contain multiple IPs, take the first one (original client)
-        clientIp = forwardedFor.split(',')[0].trim();
-      } else if (typeof realIp === 'string') {
-        clientIp = realIp;
+      if (!verifyHmac(payload, signature, hmacSecret)) {
+        console.warn('Analytics request failed signature verification');
+        res.status(401).json({ error: 'Invalid signature' });
+        return;
       }
+    }
 
-      // Add IP address to each event in the array
-      const events = Array.isArray(req.body) ? req.body : [req.body];
-      const eventsWithIp = events.map((event: any) => ({
-        ...event,
-        client_ip: clientIp,
-      }));
+    // Extract client IP address
+    // Check X-Forwarded-For header first (for proxies/load balancers)
+    // Then fall back to X-Real-IP, and finally to socket remote address
+    const forwardedFor = req.headers['x-forwarded-for'];
+    const realIp = req.headers['x-real-ip'];
+    let clientIp = req.socket.remoteAddress || 'unknown';
+    
+    if (typeof forwardedFor === 'string') {
+      // X-Forwarded-For can contain multiple IPs, take the first one (original client)
+      clientIp = forwardedFor.split(',')[0].trim();
+    } else if (typeof realIp === 'string') {
+      clientIp = realIp;
+    }
 
-      // Forward the event(s) to OpenObserve with authentication
-      const credentials = Buffer.from(`${username}:${password}`).toString('base64');
-      
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Basic ${credentials}`,
-        },
-        body: JSON.stringify(eventsWithIp),
-      });
+    // Add IP address to each event in the array
+    const events = Array.isArray(req.body) ? req.body : [req.body];
+    const eventsWithIp = events.map((event: any) => ({
+      ...event,
+      client_ip: clientIp,
+    }));
+
+    // Forward the event(s) to OpenObserve with authentication
+    const credentials = Buffer.from(`${username}:${password}`).toString('base64');
+    
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Basic ${credentials}`,
+      },
+      body: JSON.stringify(eventsWithIp),
+    });
 
       if (!response.ok) {
         const errorText = await response.text();
         console.error('OpenObserve error:', response.status, errorText);
         // Return success anyway to not break frontend
-        return res.status(200).json({ success: true, message: 'Event logged with errors' });
+        res.status(200).json({ success: true, message: 'Event logged with errors' });
+        return;
       }
 
       res.status(200).json({ success: true });
@@ -115,8 +118,7 @@ router.post('/track', (req, res) => {
       // Return success anyway to not break frontend
       res.status(200).json({ success: true, message: 'Event processing failed' });
     }
-  })();
-});
+  });
 
 export default router;
 

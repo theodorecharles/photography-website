@@ -28,6 +28,7 @@ import externalPagesRouter from "./routes/external-pages.ts";
 import healthRouter from "./routes/health.ts";
 import analyticsRouter from "./routes/analytics.ts";
 import sitemapRouter from "./routes/sitemap.ts";
+import yearRouter from "./routes/year.ts";
 
 // Get the current directory path for ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -71,7 +72,9 @@ app.use(
       ) {
         callback(null, true);
       } else {
-        callback(new Error("Not allowed by CORS"));
+        // Reject origin by passing false (not an Error)
+        console.warn(`CORS blocked origin: ${origin}`);
+        callback(null, false);
       }
     },
     credentials: true,
@@ -128,6 +131,7 @@ app.use(externalPagesRouter);
 app.use(healthRouter);
 app.use('/api/analytics', analyticsRouter);
 app.use(sitemapRouter);
+app.use(yearRouter);
 
 // 404 handler - must come after all routes
 app.use((req, res) => {
@@ -149,9 +153,21 @@ app.use((err: any, req: any, res: any, next: any) => {
 });
 
 // Start the server
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
   if (process.env.NODE_ENV === "development") {
     console.log(`Photos directory: ${photosDir}`);
   }
+});
+
+// Handle server errors
+server.on('error', (error: NodeJS.ErrnoException) => {
+  if (error.code === 'EADDRINUSE') {
+    console.error(`Port ${PORT} is already in use. Please free the port or use a different one.`);
+  } else if (error.code === 'EACCES') {
+    console.error(`Permission denied to bind to port ${PORT}. Try using a port above 1024.`);
+  } else {
+    console.error('Server error:', error);
+  }
+  process.exit(1);
 });

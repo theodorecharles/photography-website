@@ -1,4 +1,14 @@
 {
+  "development": {
+    "serverManagement": {
+      "development": "DO NOT use PM2 for development. Run backend and frontend separately: 'cd backend && npm run dev' and 'cd frontend && npm run dev'",
+      "production": "PM2 is used for production only. Use './restart.sh' or 'pm2 start ecosystem.config.js'"
+    },
+    "buildProcess": {
+      "backend": "Backend changes require 'npm run build' to compile TypeScript before deployment",
+      "frontend": "Frontend uses Vite for fast HMR in development"
+    }
+  },
   "rules": [
     {
       "name": "Navigation Component",

@@ -18,4 +18,9 @@ export default defineConfig({
       },
     },
   ],
+  server: {
+    host: '127.0.0.1', // Use IPv4 localhost to avoid IPv6 permission issues
+    port: 5173,
+    strictPort: false, // Allow fallback to another port if 5173 is in use
+  },
 });

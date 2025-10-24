@@ -114,11 +114,24 @@ function Navigation({
   };
 
   // Handle mouse leave events for both dropdowns
-  const handleDropdownLeave = () => {
-    // Don't close if either dropdown is open
-    if (!isDropdownOpen && !isExternalOpen) {
-      return;
-    }
+  const handleDropdownLeave = (e: React.MouseEvent) => {
+    // Use a small delay to allow mouse to move into the dropdown menu
+    setTimeout(() => {
+      // Check if mouse is still not over any dropdown-related elements
+      const dropdowns = document.querySelectorAll('.dropdown-container');
+      let mouseOverDropdown = false;
+      
+      dropdowns.forEach((dropdown) => {
+        if (dropdown.matches(':hover')) {
+          mouseOverDropdown = true;
+        }
+      });
+      
+      if (!mouseOverDropdown) {
+        setIsDropdownOpen(false);
+        setIsExternalOpen(false);
+      }
+    }, 100);
   };
 
   // Handle click events for Albums dropdown
@@ -136,7 +149,7 @@ function Navigation({
   return (
     <>
       {/* Album title display in the center of the navigation */}
-      {currentAlbum && (
+      {currentAlbum && currentAlbum.length > 0 && (
         <div className="nav-center">
           <h1 className="album-title">
             {currentAlbum.charAt(0).toUpperCase() + currentAlbum.slice(1)}
@@ -328,9 +341,16 @@ function App() {
   useEffect(() => {
     const path = location.pathname;
     if (path.startsWith("/album/")) {
-      const albumName = path.split("/album/")[1];
-      setCurrentAlbum(albumName);
-      trackPageView(path, `${albumName.charAt(0).toUpperCase() + albumName.slice(1)} - Album`);
+      // Extract album name, handling trailing slashes and removing any extra path segments
+      const albumName = path.split("/album/")[1].split("/")[0].split("?")[0].trim();
+      // Only set if album name is not empty
+      if (albumName) {
+        setCurrentAlbum(albumName);
+        trackPageView(path, `${albumName.charAt(0).toUpperCase() + albumName.slice(1)} - Album`);
+      } else {
+        setCurrentAlbum(undefined);
+        trackPageView(path);
+      }
     } else if (path === "/") {
       setCurrentAlbum(undefined);
       trackPageView(path, "Homepage");
@@ -459,7 +479,7 @@ function App() {
       </header>
 
       <main className="main-content">
-        {currentAlbum && (
+        {currentAlbum && currentAlbum.length > 0 && (
           <h1 className="main-content-title">
             {currentAlbum.charAt(0).toUpperCase() + currentAlbum.slice(1)}
           </h1>
@@ -489,10 +509,13 @@ function App() {
       </main>
       <Footer
         albums={albums}
+        externalLinks={externalLinks}
         currentAlbum={
           location.pathname === "/"
             ? "homepage"
-            : location.pathname.split("/")[2]
+            : location.pathname.startsWith("/album/")
+            ? location.pathname.split("/album/")[1].split("/")[0].split("?")[0].trim() || undefined
+            : undefined
         }
       />
     </div>
