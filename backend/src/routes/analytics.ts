@@ -2,12 +2,34 @@
  * Analytics route handler
  * Proxies analytics events to OpenObserve with authentication
  * This keeps credentials secure on the backend
+ * 
+ * Verifies HMAC signatures to prevent tampering
  */
 
 import { Router } from 'express';
+import crypto from 'crypto';
 import config from '../config.ts';
 
 const router = Router();
+
+/**
+ * Verify HMAC signature
+ */
+function verifyHmac(payload: string, signature: string, secret: string): boolean {
+  const hmac = crypto.createHmac('sha256', secret);
+  hmac.update(payload);
+  const expectedSignature = hmac.digest('hex');
+  
+  // Use timingSafeEqual to prevent timing attacks
+  try {
+    return crypto.timingSafeEqual(
+      Buffer.from(signature, 'hex'),
+      Buffer.from(expectedSignature, 'hex')
+    );
+  } catch {
+    return false;
+  }
+}
 
 // POST endpoint to receive analytics events from frontend
 router.post('/track', (req, res) => {
@@ -16,6 +38,7 @@ router.post('/track', (req, res) => {
     try {
       // Get analytics configuration
       const analyticsConfig = config.analytics?.openobserve;
+      const hmacSecret = config.analytics?.hmacSecret;
       
       if (!analyticsConfig || !analyticsConfig.enabled) {
         // Analytics disabled, return success without doing anything
@@ -27,6 +50,23 @@ router.post('/track', (req, res) => {
       if (!endpoint || !username || !password) {
         console.error('Analytics configuration incomplete');
         return res.status(200).json({ success: true, message: 'Analytics not configured' });
+      }
+
+      // Verify HMAC signature if secret is configured
+      if (hmacSecret) {
+        const signature = req.headers['x-analytics-signature'];
+        
+        if (!signature || typeof signature !== 'string') {
+          console.warn('Analytics request missing signature');
+          return res.status(401).json({ error: 'Missing signature' });
+        }
+
+        const payload = JSON.stringify(req.body);
+        
+        if (!verifyHmac(payload, signature, hmacSecret)) {
+          console.warn('Analytics request failed signature verification');
+          return res.status(401).json({ error: 'Invalid signature' });
+        }
       }
 
       // Extract client IP address

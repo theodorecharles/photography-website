@@ -38,6 +38,7 @@ interface ConfigFile {
       username?: string;
       password?: string;
     };
+    hmacSecret?: string;
   };
 }
 

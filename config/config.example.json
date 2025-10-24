@@ -46,7 +46,9 @@
       "username": "your-username",
       "password": "your-password",
       "_comment": "OpenObserve endpoint and credentials for custom event tracking. The backend proxies requests to keep credentials secure. Set enabled to true to activate."
-    }
+    },
+    "hmacSecret": "generate-a-random-secret-here-use-openssl-rand-hex-32",
+    "_comment_hmac": "HMAC secret for signing analytics events. Generate with: openssl rand -hex 32. This prevents tampering with events."
   },
   "externalLinks": [
     {

@@ -43,7 +43,7 @@ app.use((req, res, next) => {
   res.setHeader(
     "Content-Security-Policy",
     "default-src 'self'; " +
-    `script-src 'self' 'unsafe-inline' 'unsafe-eval'${analyticsScriptHost ? ' ' + analyticsScriptHost : ''}; ` + // React needs unsafe-inline/eval
+    `script-src 'self' 'unsafe-inline'${analyticsScriptHost ? ' ' + analyticsScriptHost : ''}; ` + // unsafe-inline needed for React inline scripts
     "style-src 'self' 'unsafe-inline'; " +
     "worker-src 'self'; " + // Allow web workers from same origin
     `img-src 'self' ${apiDomainHttps} ${apiDomain} data:; ` +

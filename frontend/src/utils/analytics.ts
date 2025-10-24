@@ -2,9 +2,11 @@
  * Analytics tracking utility for sending events to the backend API.
  * The backend then forwards events to OpenObserve with authentication.
  * This keeps credentials secure and never exposes them in the frontend.
+ * 
+ * Events are signed with HMAC-SHA256 to prevent tampering.
  */
 
-import { API_URL } from '../config';
+import { API_URL, ANALYTICS_HMAC_SECRET } from '../config';
 
 interface AnalyticsEvent {
   event_type: string;
@@ -30,6 +32,32 @@ export function initAnalytics(enabled: boolean) {
 }
 
 /**
+ * Generate HMAC-SHA256 signature for a message
+ */
+async function generateHmac(message: string, secret: string): Promise<string> {
+  const encoder = new TextEncoder();
+  const keyData = encoder.encode(secret);
+  const messageData = encoder.encode(message);
+  
+  // Import the secret as a cryptographic key
+  const cryptoKey = await crypto.subtle.importKey(
+    'raw',
+    keyData,
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign']
+  );
+  
+  // Sign the message
+  const signature = await crypto.subtle.sign('HMAC', cryptoKey, messageData);
+  
+  // Convert to hex string
+  return Array.from(new Uint8Array(signature))
+    .map(b => b.toString(16).padStart(2, '0'))
+    .join('');
+}
+
+/**
  * Get base event data that's common to all events
  */
 function getBaseEventData(): Partial<AnalyticsEvent> {
@@ -48,9 +76,10 @@ function getBaseEventData(): Partial<AnalyticsEvent> {
 
 /**
  * Send an event to the backend API which forwards to OpenObserve
+ * Events are signed with HMAC to prevent tampering
  */
 async function sendEvent(eventData: Partial<AnalyticsEvent>) {
-  if (!analyticsEnabled) {
+  if (!analyticsEnabled || !ANALYTICS_HMAC_SECRET) {
     return;
   }
 
@@ -60,12 +89,18 @@ async function sendEvent(eventData: Partial<AnalyticsEvent>) {
   } as AnalyticsEvent;
 
   try {
+    const payload = JSON.stringify([event]);
+    
+    // Generate HMAC signature
+    const signature = await generateHmac(payload, ANALYTICS_HMAC_SECRET);
+    
     await fetch(`${API_URL}/api/analytics/track`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'X-Analytics-Signature': signature,
       },
-      body: JSON.stringify([event]), // OpenObserve expects an array of events
+      body: payload,
     });
   } catch (error) {
     // Silently fail - don't break the app if analytics fails
