@@ -49,9 +49,9 @@ cd ..
 
 # Restart both services using PM2 ecosystem file
 log "Restarting services with PM2 using ecosystem config..."
-if ! pm2 restart ecosystem.config.js --update-env; then
+if ! pm2 restart ecosystem.config.cjs --update-env; then
     log "Services not running, starting them with ecosystem config..."
-    if ! pm2 start ecosystem.config.js; then
+    if ! pm2 start ecosystem.config.cjs; then
         handle_error "Failed to start services"
     fi
 fi

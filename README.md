@@ -300,14 +300,14 @@ export NODE_ENV=production
 
 ### Using PM2 (Recommended)
 
-The project includes a `ecosystem.config.js` file that properly configures both services with production environment variables.
+The project includes a `ecosystem.config.cjs` file that properly configures both services with production environment variables.
 
 ```bash
 # Install PM2 globally
 npm install -g pm2
 
 # Start both services using the ecosystem file
-pm2 start ecosystem.config.js
+pm2 start ecosystem.config.cjs
 
 # Save PM2 configuration for auto-restart on reboot
 pm2 save
@@ -320,10 +320,10 @@ pm2 list
 pm2 logs
 
 # Restart services
-pm2 restart ecosystem.config.js --update-env
+pm2 restart ecosystem.config.cjs --update-env
 ```
 
-**Important:** The ecosystem file sets `NODE_ENV=production` automatically. Edit `ecosystem.config.js` to change paths or ports if needed.
+**Important:** The ecosystem file sets `NODE_ENV=production` automatically. Edit `ecosystem.config.cjs` to change paths or ports if needed.
 
 ### Using the Restart Script
 
