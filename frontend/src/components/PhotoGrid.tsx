@@ -290,7 +290,8 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
             >
               <img
                 src={`${API_URL}${photo.thumbnail}${queryString}`}
-                alt={photo.title}
+                alt={`${photo.album} photography by Ted Charles - ${photo.title}`}
+                title={photo.title}
                 loading="lazy"
                 onLoad={(e) => handleImageLoad(e, photo.id)}
               />
@@ -390,13 +391,15 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
             </div>
             <img
               src={`${API_URL}${selectedPhoto.thumbnail}${queryString}`}
-              alt={selectedPhoto.title}
+              alt={`${selectedPhoto.album} photography by Ted Charles - ${selectedPhoto.title}`}
+              title={selectedPhoto.title}
               className="modal-placeholder"
               style={{ display: modalImageLoaded ? "none" : "block" }}
             />
             <img
               src={`${API_URL}${selectedPhoto.src}${queryString}`}
-              alt={selectedPhoto.title}
+              alt={`${selectedPhoto.album} photography by Ted Charles - ${selectedPhoto.title}`}
+              title={selectedPhoto.title}
               onLoad={() => setModalImageLoaded(true)}
               style={{ display: modalImageLoaded ? "block" : "none" }}
             />

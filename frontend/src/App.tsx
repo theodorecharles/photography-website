@@ -17,6 +17,8 @@ import PhotoGrid from "./components/PhotoGrid";
 import Footer from "./components/Footer";
 import License from "./components/License";
 import ScrollToTop from "./components/ScrollToTop";
+import { SEO } from "./components/SEO";
+import { StructuredData } from "./components/StructuredData";
 import { API_URL } from "./config";
 import { trackPageView, trackAlbumNavigation, trackExternalLinkClick, trackError } from "./utils/analytics";
 
@@ -29,7 +31,19 @@ interface ExternalLink {
 // AlbumRoute component handles the routing for individual album pages
 function AlbumRoute() {
   const { album } = useParams();
-  return <PhotoGrid album={album || ""} />;
+  const albumTitle = album ? album.charAt(0).toUpperCase() + album.slice(1) : "";
+  
+  return (
+    <>
+      <SEO 
+        title={`${albumTitle} - Ted Charles Photography`}
+        description={`View ${albumTitle} photos from Ted Charles' photography portfolio. Professional ${album} photography.`}
+        url={`https://tedcharles.net/album/${album}`}
+        image={`https://tedcharles.net/photos/derpatar.png`}
+      />
+      <PhotoGrid album={album || ""} />
+    </>
+  );
 }
 
 // PrimesRedirect component forces a full page load to the primes static page
@@ -450,10 +464,25 @@ function App() {
             {currentAlbum.charAt(0).toUpperCase() + currentAlbum.slice(1)}
           </h1>
         )}
+        <StructuredData />
         <Routes>
-          <Route path="/" element={<PhotoGrid album="homepage" />} />
+          <Route path="/" element={
+            <>
+              <SEO />
+              <PhotoGrid album="homepage" />
+            </>
+          } />
           <Route path="/album/:album" element={<AlbumRoute />} />
-          <Route path="/license" element={<License />} />
+          <Route path="/license" element={
+            <>
+              <SEO 
+                title="License - Ted Charles Photography"
+                description="License information for Ted Charles' photography. All photos are licensed under Creative Commons Attribution 4.0 International License."
+                url="https://tedcharles.net/license"
+              />
+              <License />
+            </>
+          } />
           <Route path="/primes" element={<PrimesRedirect />} />
           <Route path="/primes/*" element={<PrimesRedirect />} />
         </Routes>

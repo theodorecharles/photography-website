@@ -27,6 +27,7 @@ import albumsRouter from "./routes/albums.ts";
 import externalPagesRouter from "./routes/external-pages.ts";
 import healthRouter from "./routes/health.ts";
 import analyticsRouter from "./routes/analytics.ts";
+import sitemapRouter from "./routes/sitemap.ts";
 
 // Get the current directory path for ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -115,6 +116,26 @@ app.use(albumsRouter);
 app.use(externalPagesRouter);
 app.use(healthRouter);
 app.use('/api/analytics', analyticsRouter);
+app.use(sitemapRouter);
+
+// 404 handler - must come after all routes
+app.use((req, res) => {
+  res.status(404).json({ error: 'Not found' });
+});
+
+// Global error handler - must be last
+app.use((err: any, req: any, res: any, next: any) => {
+  console.error('Server error:', err);
+  
+  // Don't leak error details in production
+  const message = process.env.NODE_ENV === 'production' 
+    ? 'Internal server error' 
+    : err.message || 'Internal server error';
+  
+  res.status(err.status || 500).json({ 
+    error: message 
+  });
+});
 
 // Start the server
 app.listen(PORT, () => {
