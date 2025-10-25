@@ -126,7 +126,7 @@ export function validateFileUpload(file: Express.Multer.File): { valid: boolean;
  */
 export function csrfProtection(req: any, res: any, next: any) {
   console.log('╔════════════════════════════════════════════════╗');
-  console.log('║         CSRF PROTECTION MIDDLEWARE             ║');
+  console.log('║    🛡️  CSRF PROTECTION V2 - UPDATED 🛡️        ║');
   console.log('╠════════════════════════════════════════════════╣');
   console.log('  URL:', req.url);
   console.log('  Method:', req.method);
