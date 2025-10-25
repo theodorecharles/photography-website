@@ -199,26 +199,12 @@ router.post('/upload-avatar', isAuthenticated, upload.single('avatar'), async (r
     // Also copy to frontend public as favicon.png
     fs.writeFileSync(faviconPngPath, fileData);
     
-    // Generate favicon.ico from the avatar using ImageMagick
+    // Generate favicon.ico from the avatar using ImageMagick convert command
     try {
-      // Try magick command first (ImageMagick 7+), fallback to convert (ImageMagick 6)
-      let convertCmd = 'magick';
-      try {
-        await execAsync('which magick');
-      } catch {
-        // magick not found, try convert
-        await execAsync('which convert');
-        convertCmd = 'convert';
-      }
-      
-      await execAsync(`${convertCmd} "${faviconPngPath}" -resize 32x32 "${faviconIcoPath}"`);
-      console.log('[Avatar Upload] Generated favicon.ico from avatar using', convertCmd);
+      await execAsync(`convert "${faviconPngPath}" -resize 32x32 "${faviconIcoPath}"`);
+      console.log('[Avatar Upload] Generated favicon.ico from avatar using convert');
     } catch (err: any) {
-      if (err.code === 127 || err.stderr?.includes('not found')) {
-        console.warn('[Avatar Upload] ImageMagick not installed, skipping favicon.ico generation');
-      } else {
-        console.error('[Avatar Upload] Failed to generate favicon.ico:', err.message);
-      }
+      console.error('[Avatar Upload] Failed to generate favicon.ico:', err);
       // Continue anyway - favicon.png will still work
     }
     
