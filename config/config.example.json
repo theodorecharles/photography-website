@@ -15,7 +15,8 @@
     "security": {
       "allowedHosts": ["localhost:3000", "localhost:5173"],
       "rateLimitWindowMs": 1000,
-      "rateLimitMaxRequests": 50
+      "rateLimitMaxRequests": 10,
+      "_comment_rateLimit": "Rate limiting: 10 requests per second per IP. Increase if needed for legitimate traffic."
     },
     "auth": {
       "google": {
@@ -49,17 +50,17 @@
       "stream": "website",
       "username": "your-username",
       "password": "your-password",
-      "serviceToken": "your-service-token-here",
+      "serviceToken": "",
       "_comment_endpoint": "OpenObserve base API URL (should end with /api/)",
       "_comment_organization": "Your OpenObserve organization ID",
       "_comment_stream": "The stream name to log events to",
+      "_comment_username": "In production, set ANALYTICS_USERNAME environment variable instead",
       "_comment_password": "In production, set ANALYTICS_PASSWORD environment variable instead",
-      "_comment_serviceToken": "Optional: Service token for OpenObserve API authentication (used for metrics queries). If not provided, username/password will be used.",
+      "_comment_serviceToken": "Optional: Service token for OpenObserve API authentication. In production, set ANALYTICS_SERVICE_TOKEN environment variable instead.",
       "_comment": "OpenObserve endpoint and credentials for custom event tracking. The backend proxies requests to keep credentials secure. Set enabled to true to activate."
     },
-    "hmacSecret": "generate-a-random-secret-here-use-openssl-rand-hex-32",
-    "_comment_hmacSecret": "In production, set ANALYTICS_HMAC_SECRET environment variable instead",
-    "_comment_hmac": "HMAC secret for signing analytics events. Generate with: openssl rand -hex 32. This prevents tampering with events."
+    "hmacSecret": "",
+    "_comment_hmacSecret": "DEPRECATED: Client-side HMAC is insecure. This field is no longer used. Use backend origin validation instead."
   },
   "externalLinks": [
     {

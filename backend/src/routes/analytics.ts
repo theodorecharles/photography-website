@@ -3,11 +3,10 @@
  * Proxies analytics events to OpenObserve with authentication
  * This keeps credentials secure on the backend
  * 
- * Verifies HMAC signatures to prevent tampering
+ * Validates origin to prevent unauthorized tracking
  */
 
 import { Router } from 'express';
-import crypto from 'crypto';
 import config from '../config.ts';
 
 const router = Router();
@@ -17,31 +16,11 @@ router.options('/track', (req, res) => {
   res.status(200).end();
 });
 
-/**
- * Verify HMAC signature
- */
-function verifyHmac(payload: string, signature: string, secret: string): boolean {
-  const hmac = crypto.createHmac('sha256', secret);
-  hmac.update(payload);
-  const expectedSignature = hmac.digest('hex');
-  
-  // Use timingSafeEqual to prevent timing attacks
-  try {
-    return crypto.timingSafeEqual(
-      Buffer.from(signature, 'hex'),
-      Buffer.from(expectedSignature, 'hex')
-    );
-  } catch {
-    return false;
-  }
-}
-
 // POST endpoint to receive analytics events from frontend
 router.post('/track', async (req, res): Promise<void> => {
   try {
     // Get analytics configuration
     const analyticsConfig = config.analytics?.openobserve;
-    const hmacSecret = config.analytics?.hmacSecret;
     
     if (!analyticsConfig || !analyticsConfig.enabled) {
       // Analytics disabled, return success without doing anything
@@ -60,21 +39,15 @@ router.post('/track', async (req, res): Promise<void> => {
     // Construct the full URL: {endpoint}{organization}/{stream}/_json
     const analyticsUrl = `${endpoint}${organization}/${stream}/_json`;
 
-    // Verify HMAC signature if secret is configured
-    if (hmacSecret) {
-      const signature = req.headers['x-analytics-signature'];
-      
-      if (!signature || typeof signature !== 'string') {
-        res.status(400).json({ error: 'Missing HMAC signature' });
-        return;
-      }
-
-      const payload = JSON.stringify(req.body);
-      const isValid = verifyHmac(payload, signature, hmacSecret);
-
-      if (!isValid) {
-        console.warn('Invalid HMAC signature for analytics event');
-        res.status(403).json({ error: 'Invalid signature' });
+    // Validate origin - only allow requests from allowed origins
+    const origin = req.get('Origin') || req.get('Referer');
+    const allowedOrigins = config.backend.allowedOrigins;
+    
+    if (origin) {
+      const isAllowedOrigin = allowedOrigins.some((allowed: string) => origin.startsWith(allowed));
+      if (!isAllowedOrigin) {
+        console.warn('Analytics request from unauthorized origin:', origin);
+        res.status(403).json({ error: 'Unauthorized origin' });
         return;
       }
     }
@@ -114,17 +87,18 @@ router.post('/track', async (req, res): Promise<void> => {
 
       if (!response.ok) {
         const errorText = await response.text();
+        // Log detailed error on server, but don't send to client
         console.error('OpenObserve error:', response.status, errorText);
-        // Return success anyway to not break frontend
-        res.status(200).json({ success: true, message: 'Event logged with errors' });
+        // Return success anyway to not break frontend or leak infrastructure details
+        res.status(200).json({ success: true });
         return;
       }
 
       res.status(200).json({ success: true });
     } catch (error) {
       console.error('Analytics proxy error:', error);
-      // Return success anyway to not break frontend
-      res.status(200).json({ success: true, message: 'Event processing failed' });
+      // Return success anyway to not break frontend or leak error details
+      res.status(200).json({ success: true });
     }
   });
 
