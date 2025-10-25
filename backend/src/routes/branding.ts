@@ -7,6 +7,8 @@ import { Router, Request, Response } from 'express';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import multer from 'multer';
+import os from 'os';
 import { isAuthenticated } from './auth.js';
 import { csrfProtection } from '../security.js';
 
@@ -14,6 +16,28 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const router = Router();
+
+// Configure multer for avatar upload
+const upload = multer({
+  storage: multer.diskStorage({
+    destination: (req, file, cb) => {
+      cb(null, os.tmpdir());
+    },
+    filename: (req, file, cb) => {
+      cb(null, `avatar-${Date.now()}${path.extname(file.originalname)}`);
+    }
+  }),
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB
+  },
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype.match(/^image\/(jpeg|jpg|png|gif)$/)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only image files are allowed'));
+    }
+  }
+});
 
 // Apply CSRF protection to all routes in this router
 router.use(csrfProtection);
@@ -124,15 +148,55 @@ router.put('/', isAuthenticated, (req: Request, res: Response) => {
   }
 });
 
-// Upload logo/avatar
-router.post('/upload-logo', isAuthenticated, (req: Request, res: Response) => {
-  // This would handle file upload - for now, just return success
-  // In a real implementation, you'd use multer or similar
-  res.json({ 
-    success: true, 
-    message: 'Logo upload endpoint - implement with multer',
-    path: '/photos/logo.png'
-  });
+// Upload avatar
+router.post('/upload-avatar', isAuthenticated, upload.single('avatar'), async (req: Request, res: Response): Promise<void> => {
+  try {
+    const file = req.file;
+    if (!file) {
+      res.status(400).json({ error: 'No file uploaded' });
+      return;
+    }
+
+    // Determine paths
+    const projectRoot = path.resolve(__dirname, '../../..');
+    const photosDir = path.join(projectRoot, 'photos');
+    const frontendPublicDir = path.join(projectRoot, 'frontend', 'public');
+    
+    // Use .png extension for consistency
+    const avatarFilename = 'avatar.png';
+    const avatarPath = path.join(photosDir, avatarFilename);
+    const faviconPath = path.join(frontendPublicDir, 'favicon.png');
+    
+    // Read the uploaded file
+    const fileData = fs.readFileSync(file.path);
+    
+    // Write to photos directory
+    fs.writeFileSync(avatarPath, fileData);
+    
+    // Also copy to frontend public as favicon
+    fs.writeFileSync(faviconPath, fileData);
+    
+    // Clean up temp file
+    fs.unlinkSync(file.path);
+    
+    // Update config
+    const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+    if (!config.branding) {
+      config.branding = {};
+    }
+    config.branding.avatarPath = `/photos/${avatarFilename}`;
+    config.branding.faviconPath = '/favicon.png';
+    fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
+    
+    res.json({ 
+      success: true,
+      avatarPath: `/photos/${avatarFilename}`,
+      faviconPath: '/favicon.png'
+    });
+  } catch (error) {
+    console.error('Error uploading avatar:', error);
+    res.status(500).json({ error: 'Failed to upload avatar' });
+  }
 });
 
 export default router;

@@ -810,6 +810,25 @@
   min-height: 80px;
 }
 
+.avatar-upload-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.current-avatar-preview {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.upload-avatar-btn {
+  cursor: pointer;
+}
+
 .color-input-group {
   display: flex;
   gap: 0.75rem;

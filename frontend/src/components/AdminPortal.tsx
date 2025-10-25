@@ -430,6 +430,41 @@ export default function AdminPortal() {
     }
   };
 
+  const handleAvatarUpload = async (file: File) => {
+    setSavingBranding(true);
+    setMessage(null);
+    
+    try {
+      const formData = new FormData();
+      formData.append('avatar', file);
+
+      const res = await fetch(`${API_URL}/api/branding/upload-avatar`, {
+        method: 'POST',
+        credentials: 'include',
+        body: formData,
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setBranding(prev => ({
+          ...prev,
+          avatarPath: data.avatarPath
+        }));
+        setMessage({ type: 'success', text: 'Avatar uploaded successfully!' });
+        // Notify main app to refresh
+        window.dispatchEvent(new Event('branding-updated'));
+      } else {
+        const data = await res.json();
+        setMessage({ type: 'error', text: data.error || 'Failed to upload avatar' });
+      }
+    } catch (err) {
+      setMessage({ type: 'error', text: 'Error uploading avatar' });
+      console.error('Failed to upload avatar:', err);
+    } finally {
+      setSavingBranding(false);
+    }
+  };
+
   const handleBrandingChange = (field: keyof BrandingConfig, value: string) => {
     setBranding(prev => ({
       ...prev,
@@ -555,6 +590,34 @@ export default function AdminPortal() {
           
           <div className="branding-grid">
             <div className="branding-group">
+              <label className="branding-label">Avatar/Logo</label>
+              <div className="avatar-upload-container">
+                {branding.avatarPath && (
+                  <img 
+                    src={`${API_URL}${branding.avatarPath}`} 
+                    alt="Current avatar"
+                    className="current-avatar-preview"
+                  />
+                )}
+                <label className="btn-secondary upload-avatar-btn">
+                  {savingBranding ? 'Uploading...' : 'Upload New Avatar'}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        handleAvatarUpload(file);
+                      }
+                    }}
+                    style={{ display: 'none' }}
+                    disabled={savingBranding}
+                  />
+                </label>
+              </div>
+            </div>
+
+            <div className="branding-group">
               <label className="branding-label">Site Name</label>
               <input
                 type="text"
@@ -562,17 +625,6 @@ export default function AdminPortal() {
                 onChange={(e) => handleBrandingChange('siteName', e.target.value)}
                 className="branding-input"
                 placeholder="Your site name"
-              />
-            </div>
-
-            <div className="branding-group">
-              <label className="branding-label">Avatar/Logo Path</label>
-              <input
-                type="text"
-                value={branding.avatarPath}
-                onChange={(e) => handleBrandingChange('avatarPath', e.target.value)}
-                className="branding-input"
-                placeholder="/photos/avatar.png"
               />
             </div>
 
