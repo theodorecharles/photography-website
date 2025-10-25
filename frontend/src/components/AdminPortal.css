@@ -1,20 +1,14 @@
 .admin-portal {
   min-height: 100vh;
-  padding: 2rem;
-  background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 50%, #0f0f0f 100%);
+  padding: 1rem;
+  background: #0f0f0f;
   position: relative;
 }
 
-.admin-portal::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
-              radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.1) 0%, transparent 50%);
-  pointer-events: none;
+@media (min-width: 768px) {
+  .admin-portal {
+    padding: 2rem;
+  }
 }
 
 .admin-container {
@@ -22,12 +16,19 @@
   margin: 0 auto;
   background: rgba(26, 26, 26, 0.95);
   backdrop-filter: blur(10px);
-  border-radius: 16px;
+  border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 2.5rem;
+  padding: 1.5rem;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
   position: relative;
   z-index: 1;
+}
+
+@media (min-width: 768px) {
+  .admin-container {
+    border-radius: 16px;
+    padding: 2.5rem;
+  }
 }
 
 .admin-header {
@@ -539,18 +540,24 @@
 }
 
 @media (max-width: 768px) {
-  .admin-portal {
-    padding: 1rem;
-  }
-
-  .admin-container {
-    padding: 1.5rem;
-  }
-
   .admin-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .admin-container h1 {
+    font-size: 1.8rem;
+  }
+
+  .admin-section {
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+  }
+
+  .admin-section h2 {
+    font-size: 1.4rem;
   }
 
   .link-fields {
@@ -578,6 +585,16 @@
   .color-picker {
     width: 100%;
     height: 40px;
+  }
+
+  .link-item {
+    padding: 1rem;
+  }
+
+  .branding-input,
+  .branding-textarea,
+  .link-input {
+    font-size: 16px; /* Prevents zoom on iOS */
   }
 }
 
