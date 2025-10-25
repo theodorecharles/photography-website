@@ -48,6 +48,10 @@ const __dirname = path.dirname(__filename);
  * Authentication middleware
  */
 const requireAuth = (req: Request, res: Response, next: Function) => {
+  console.log('[requireAuth] Session:', req.session?.id);
+  console.log('[requireAuth] User:', req.user);
+  console.log('[requireAuth] isAuthenticated:', req.isAuthenticated?.());
+  
   if (req.isAuthenticated && req.isAuthenticated()) {
     return next();
   }
