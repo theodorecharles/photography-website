@@ -15,7 +15,14 @@ export async function fetchWithRateLimitCheck(
     credentials: 'include', // Always include credentials for session cookies
   };
   
+  console.log('[fetchWrapper] Requesting:', input);
+  console.log('[fetchWrapper] credentials:', mergedInit.credentials);
+  console.log('[fetchWrapper] Document cookies:', document.cookie);
+  
   const response = await fetch(input, mergedInit);
+  
+  console.log('[fetchWrapper] Response status:', response.status);
+  console.log('[fetchWrapper] Response Set-Cookie:', response.headers.get('set-cookie'));
   
   // Check for rate limiting
   if (response.status === 429) {
