@@ -337,15 +337,18 @@ body {
 
 .footer-wrapper {
   opacity: 0;
+  visibility: hidden;
   transform: translateY(20px);
-  transition: opacity 0.4s ease, transform 0.4s ease;
+  transition: opacity 0.4s ease, transform 0.4s ease, visibility 0s linear 0.4s;
   pointer-events: none;
 }
 
 .footer-wrapper.visible {
   opacity: 1;
+  visibility: visible;
   transform: translateY(0);
   pointer-events: auto;
+  transition: opacity 0.4s ease, transform 0.4s ease, visibility 0s linear 0s;
 }
 
 .photo-item {
