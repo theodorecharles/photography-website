@@ -965,7 +965,7 @@
   .admin-header {
     flex-direction: column;
     gap: 1rem;
-    align-items: stretch;
+    align-items: flex-start;
   }
 
   .admin-header .btn-home {
