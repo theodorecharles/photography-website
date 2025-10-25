@@ -33,6 +33,11 @@ process.env.VITE_API_URL = frontendConfig.apiUrl;
 process.env.VITE_SITE_URL = siteUrl;
 process.env.VITE_SITE_NAME = config.branding.siteName;
 process.env.VITE_ANALYTICS_ENABLED = String(config.analytics?.openobserve?.enabled || false);
+
+// Additional values for HTML meta tags
+process.env.VITE_SITE_URL_FULL = siteUrl;
+process.env.VITE_API_URL_FULL = frontendConfig.apiUrl;
+process.env.VITE_AVATAR_PATH = config.branding.avatarPath;
 process.env.SITE_URL = siteUrl; // For backend sitemap generation
 
 console.log('Environment variables set from config.json:');
@@ -64,6 +69,24 @@ try {
 } catch (error) {
   console.error('✗ Frontend build failed');
   process.exit(1);
+}
+
+// Replace placeholders in the built HTML file
+console.log('\\nReplacing placeholders in HTML...');
+const htmlPath = path.join(__dirname, 'frontend', 'dist', 'index.html');
+if (fs.existsSync(htmlPath)) {
+  let htmlContent = fs.readFileSync(htmlPath, 'utf8');
+  
+  // Replace placeholders with actual values
+  htmlContent = htmlContent.replace(/%VITE_SITE_URL_FULL%/g, siteUrl);
+  htmlContent = htmlContent.replace(/%VITE_API_URL_FULL%/g, frontendConfig.apiUrl);
+  htmlContent = htmlContent.replace(/%VITE_SITE_NAME%/g, config.branding.siteName);
+  htmlContent = htmlContent.replace(/%VITE_AVATAR_PATH%/g, config.branding.avatarPath);
+  
+  fs.writeFileSync(htmlPath, htmlContent);
+  console.log('✓ HTML placeholders replaced');
+} else {
+  console.warn('⚠ HTML file not found, skipping placeholder replacement');
 }
 
 // Build backend (just compile TypeScript)

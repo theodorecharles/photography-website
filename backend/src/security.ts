@@ -6,6 +6,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import config from './config.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -20,24 +21,32 @@ export function loadSecureConfig() {
   const env = process.env.NODE_ENV || 'development';
   const envConfig = config[env];
   
+  // Merge root-level config (analytics, branding, etc.) with environment config
+  const fullConfig = {
+    ...envConfig,
+    analytics: config.analytics,
+    branding: config.branding,
+    externalLinks: config.externalLinks
+  };
+  
   // Override sensitive data with environment variables if available
   if (process.env.GOOGLE_CLIENT_SECRET) {
-    envConfig.auth.google.clientSecret = process.env.GOOGLE_CLIENT_SECRET;
+    fullConfig.auth.google.clientSecret = process.env.GOOGLE_CLIENT_SECRET;
   }
   
   if (process.env.SESSION_SECRET) {
-    envConfig.auth.sessionSecret = process.env.SESSION_SECRET;
+    fullConfig.auth.sessionSecret = process.env.SESSION_SECRET;
   }
   
   if (process.env.ANALYTICS_PASSWORD) {
-    envConfig.analytics.openobserve.password = process.env.ANALYTICS_PASSWORD;
+    fullConfig.analytics.openobserve.password = process.env.ANALYTICS_PASSWORD;
   }
   
   if (process.env.ANALYTICS_HMAC_SECRET) {
-    envConfig.analytics.hmacSecret = process.env.ANALYTICS_HMAC_SECRET;
+    fullConfig.analytics.hmacSecret = process.env.ANALYTICS_HMAC_SECRET;
   }
   
-  return envConfig;
+  return fullConfig;
 }
 
 /**
@@ -128,12 +137,10 @@ export function csrfProtection(req: any, res: any, next: any) {
   
   // Additional check: ensure the request comes from the same origin
   const origin = req.get('Origin') || req.get('Referer');
-  const allowedOrigins = process.env.NODE_ENV === 'production' 
-    ? ['https://tedcharles.net', 'https://www.tedcharles.net']
-    : ['http://localhost:5173', 'http://localhost:3000'];
+  const allowedOrigins = config.backend.allowedOrigins;
   
   if (origin) {
-    const isAllowedOrigin = allowedOrigins.some(allowed => origin.startsWith(allowed));
+    const isAllowedOrigin = allowedOrigins.some((allowed: string) => origin.startsWith(allowed));
     if (!isAllowedOrigin) {
       return res.status(403).json({ error: 'Request origin not allowed' });
     }

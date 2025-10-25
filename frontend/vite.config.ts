@@ -37,10 +37,14 @@ export default defineConfig({
     'import.meta.env.VITE_SITE_URL': JSON.stringify(siteUrl),
     'import.meta.env.VITE_SITE_NAME': JSON.stringify(config.branding.siteName),
     'import.meta.env.VITE_ANALYTICS_ENABLED': JSON.stringify(String(config.analytics?.openobserve?.enabled || false)),
+    // Additional values for HTML meta tags
+    'import.meta.env.VITE_SITE_URL_FULL': JSON.stringify(siteUrl),
+    'import.meta.env.VITE_API_URL_FULL': JSON.stringify(envConfig.frontend.apiUrl),
+    'import.meta.env.VITE_AVATAR_PATH': JSON.stringify(config.branding.avatarPath),
   },
   server: {
     host: '127.0.0.1', // Use IPv4 localhost to avoid IPv6 permission issues
-    port: 5173,
+    port: envConfig.frontend.devPort || 5173,
     strictPort: false, // Allow fallback to another port if 5173 is in use
   },
 });
