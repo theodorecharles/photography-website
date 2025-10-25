@@ -38,6 +38,10 @@ function verifyHmac(payload: string, signature: string, secret: string): boolean
 
 // POST endpoint to receive analytics events from frontend
 router.post('/track', async (req, res): Promise<void> => {
+  console.log('[Analytics] Track request received');
+  console.log('[Analytics] Headers:', req.headers);
+  console.log('[Analytics] Body length:', JSON.stringify(req.body).length);
+  
   try {
     // Get analytics configuration
     const analyticsConfig = config.analytics?.openobserve;
