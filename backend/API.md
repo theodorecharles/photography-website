@@ -7,7 +7,7 @@ Complete API documentation for the Ted Charles Photography website backend.
 This backend provides a RESTful API for:
 - **Public access**: Viewing albums, photos, and site configuration
 - **Authenticated access**: Managing albums, photos, branding, and external links
-- **Analytics**: Tracking user interactions with HMAC-signed events
+- **Analytics**: Tracking user interactions
 - **OAuth**: Google OAuth 2.0 authentication for admin users
 
 ## Quick Start
@@ -62,20 +62,6 @@ Session cookies are:
 
 ### CSRF Protection
 All state-changing operations (POST, PUT, DELETE) are protected by CSRF tokens. The token is validated using the `csurf` middleware.
-
-### HMAC Signature Validation
-Analytics events must be signed with HMAC-SHA256:
-
-```javascript
-const crypto = require('crypto');
-const payload = JSON.stringify(events);
-const hmac = crypto.createHmac('sha256', secret);
-hmac.update(payload);
-const signature = hmac.digest('hex');
-
-// Send in header
-headers['X-Analytics-Signature'] = signature;
-```
 
 ### Path Traversal Protection
 All file operations sanitize inputs to prevent directory traversal attacks:
@@ -157,10 +143,9 @@ Content-Type: application/json
 ### Analytics
 
 ```bash
-# Track event (requires HMAC signature)
+# Track event
 POST /api/analytics/track
 Content-Type: application/json
-X-Analytics-Signature: <hmac-sha256-signature>
 [
   {
     "event_type": "pageview",
@@ -222,7 +207,7 @@ Analytics supports these event types:
 | 302  | Redirect (OAuth flow) |
 | 400  | Bad request (validation error) |
 | 401  | Not authenticated |
-| 403  | Forbidden (invalid CSRF or HMAC) |
+| 403  | Forbidden (invalid CSRF) |
 | 404  | Resource not found |
 | 500  | Server error |
 
@@ -265,8 +250,7 @@ The API reads configuration from `/config/config.json`:
       "endpoint": "https://...",
       "username": "...",
       "password": "..."
-    },
-    "hmacSecret": "..."
+    }
   },
   "auth": {
     "google": {
