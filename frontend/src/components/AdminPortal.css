@@ -152,6 +152,7 @@
 .btn-primary,
 .btn-secondary,
 .btn-logout,
+.btn-login,
 .btn-home {
   padding: 0.75rem 1.5rem;
   border-radius: 4px;
@@ -161,7 +162,9 @@
   transition: all 0.2s;
   border: none;
   font-family: inherit;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .btn-primary {
@@ -196,6 +199,16 @@
 
 .btn-logout:hover {
   background-color: #c82333;
+}
+
+.btn-login {
+  background-color: #4285F4;
+  color: white;
+  font-weight: 500;
+}
+
+.btn-login:hover {
+  background-color: #357ae8;
 }
 
 .btn-home {
