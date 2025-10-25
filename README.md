@@ -622,11 +622,11 @@ Contributions welcome! Please:
 
 ## Security
 
-Found a security issue? Please review `SECURITY.md` and report responsibly to me@tedcharles.net
+Found a security issue? File an issue or report to me@tedcharles.net
 
 ## Credits
 
-Built with ❤️ by [Ted Charles](https://tedcharles.net)
+Built by [Ted Charles](https://tedcharles.net)
 
 Using React, TypeScript, Express, and modern web technologies.
 
