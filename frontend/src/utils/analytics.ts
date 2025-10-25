@@ -160,11 +160,12 @@ export function trackPhotoDownload(photoId: string, album: string, photoTitle: s
 /**
  * Track modal close
  */
-export function trackModalClose(photoId: string, album: string, viewDuration?: number) {
+export function trackModalClose(photoId: string, album: string, photoTitle: string, viewDuration?: number) {
   sendEvent({
     event_type: 'modal_close',
     photo_id: photoId,
     album: album,
+    photo_title: photoTitle,
     view_duration_ms: viewDuration,
   });
 }

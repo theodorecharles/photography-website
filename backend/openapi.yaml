@@ -841,7 +841,7 @@ components:
         - photo_click: photo_id, album, photo_title
         - photo_navigation: direction, photo_id, album, photo_title, view_duration_ms (time spent on previous photo)
         - photo_download: photo_id, album, photo_title
-        - modal_close: photo_id, album, view_duration_ms (total time modal was open)
+        - modal_close: photo_id, album, photo_title, view_duration_ms (total time modal was open)
         - album_navigation: album, navigation_source (header/footer/mobile_menu)
         - external_link_click: link_title, link_url, navigation_source (header/mobile_menu)
         - admin_auth: action (login/logout), user_email

@@ -55,7 +55,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
   const handleCloseModal = useCallback(() => {
     if (selectedPhoto && modalOpenTimeRef.current) {
       const viewDuration = Date.now() - modalOpenTimeRef.current;
-      trackModalClose(selectedPhoto.id, selectedPhoto.album, viewDuration);
+      trackModalClose(selectedPhoto.id, selectedPhoto.album, selectedPhoto.title, viewDuration);
     }
     setSelectedPhoto(null);
     modalOpenTimeRef.current = null;
