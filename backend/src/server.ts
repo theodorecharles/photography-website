@@ -161,6 +161,31 @@ if (!sessionSecret) {
   process.exit(1);
 }
 
+// Determine cookie domain based on environment
+// For localhost, set domain to 'localhost' to share across different ports
+// For production, extract the base domain to share across subdomains
+let cookieDomain: string | undefined = undefined;
+try {
+  const backendUrl = new URL(config.frontend.apiUrl);
+  const hostname = backendUrl.hostname;
+  
+  if (hostname === 'localhost' || hostname === '127.0.0.1') {
+    // For local development, set domain to 'localhost' to work across ports
+    cookieDomain = 'localhost';
+  } else {
+    // For production, extract base domain (e.g., 'tedcharles.net' from 'api.tedcharles.net')
+    // Set to '.domain.com' to share across subdomains
+    const parts = hostname.split('.');
+    if (parts.length >= 2) {
+      // Get last two parts (domain.tld)
+      cookieDomain = '.' + parts.slice(-2).join('.');
+    }
+  }
+  console.log(`Cookie domain set to: ${cookieDomain}`);
+} catch (err) {
+  console.warn('Could not parse backend URL for cookie domain, using undefined');
+}
+
 app.use(
   session({
     secret: sessionSecret,
@@ -171,10 +196,7 @@ app.use(
       httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
       sameSite: 'lax', // 'lax' works for OAuth redirects and same-site requests
-      // Don't set domain - this restricts cookie to exact subdomain only (more secure)
-      // If you need to share cookies across api.domain.com and www.domain.com,
-      // set domain to '.domain.com' but be aware of the security implications
-      domain: undefined,
+      domain: cookieDomain,
     },
   })
 );
