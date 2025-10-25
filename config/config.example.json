@@ -16,16 +16,13 @@
       "allowedHosts": ["localhost:3000", "localhost:5173"],
       "rateLimitWindowMs": 1000,
       "rateLimitMaxRequests": 30,
-      "_comment_rateLimit": "Rate limiting: 30 requests per second per IP. Adjust based on your needs (higher for image-heavy pages, lower for API-only)."
     },
     "auth": {
       "google": {
         "clientId": "your-google-client-id",
         "clientSecret": "your-google-client-secret",
-        "_comment_clientSecret": "In production, set GOOGLE_CLIENT_SECRET environment variable instead"
       },
       "sessionSecret": "your-session-secret-here",
-      "_comment_sessionSecret": "In production, set SESSION_SECRET environment variable instead. Generate with: openssl rand -hex 32",
       "authorizedEmails": [
         "your-email@example.com"
       ]
@@ -42,25 +39,14 @@
   },
   "analytics": {
     "scriptPath": "",
-    "_comment_script": "scriptPath should be a URL to an external analytics script (e.g., Google Analytics, Plausible, etc.)",
     "openobserve": {
       "enabled": false,
       "endpoint": "https://log.yourdomain.com/api/",
       "organization": "your-organization-id",
       "stream": "website",
       "username": "your-username",
-      "password": "your-password",
-      "serviceToken": "",
-      "_comment_endpoint": "OpenObserve base API URL (should end with /api/)",
-      "_comment_organization": "Your OpenObserve organization ID",
-      "_comment_stream": "The stream name to log events to",
-      "_comment_username": "In production, set ANALYTICS_USERNAME environment variable instead",
-      "_comment_password": "In production, set ANALYTICS_PASSWORD environment variable instead",
-      "_comment_serviceToken": "Optional: Service token for OpenObserve API authentication. In production, set ANALYTICS_SERVICE_TOKEN environment variable instead.",
-      "_comment": "OpenObserve endpoint and credentials for custom event tracking. The backend proxies requests to keep credentials secure. Set enabled to true to activate."
+      "password": "your-password"
     },
-    "hmacSecret": "",
-    "_comment_hmacSecret": "DEPRECATED: Client-side HMAC is insecure. This field is no longer used. Use backend origin validation instead."
   },
   "externalLinks": [
     {
@@ -77,7 +63,7 @@
     },
     {
       "title": "GitHub",
-      "url": "https://github.com/yourusername/photography-website"
+      "url": "https://github.com/yourusername/"
     },
     {
       "title": "Login",
