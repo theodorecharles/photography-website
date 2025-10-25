@@ -24,11 +24,31 @@ interface ExternalLink {
   url: string;
 }
 
+interface BrandingConfig {
+  siteName: string;
+  avatarPath: string;
+  primaryColor: string;
+  secondaryColor: string;
+  metaDescription: string;
+  metaKeywords: string;
+  faviconPath: string;
+}
+
 export default function AdminPortal() {
   const [authStatus, setAuthStatus] = useState<AuthStatus | null>(null);
   const [loading, setLoading] = useState(true);
   const [externalLinks, setExternalLinks] = useState<ExternalLink[]>([]);
+  const [branding, setBranding] = useState<BrandingConfig>({
+    siteName: '',
+    avatarPath: '',
+    primaryColor: '#4ade80',
+    secondaryColor: '#22c55e',
+    metaDescription: '',
+    metaKeywords: '',
+    faviconPath: ''
+  });
   const [saving, setSaving] = useState(false);
+  const [savingBranding, setSavingBranding] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   useEffect(() => {
@@ -53,8 +73,9 @@ export default function AdminPortal() {
         console.log('[AdminPortal] Auth status data:', data);
         setAuthStatus(data);
         if (data.authenticated) {
-          console.log('[AdminPortal] User is authenticated, loading external links');
+          console.log('[AdminPortal] User is authenticated, loading data');
           loadExternalLinks();
+          loadBranding();
         } else {
           console.log('[AdminPortal] User is NOT authenticated');
         }
@@ -75,6 +96,18 @@ export default function AdminPortal() {
       setExternalLinks(data.links || []);
     } catch (err) {
       console.error('Failed to load external links:', err);
+    }
+  };
+
+  const loadBranding = async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/branding`, {
+        credentials: 'include',
+      });
+      const data = await res.json();
+      setBranding(data);
+    } catch (err) {
+      console.error('Failed to load branding config:', err);
     }
   };
 
@@ -119,6 +152,40 @@ export default function AdminPortal() {
     setExternalLinks(newLinks);
   };
 
+  const handleSaveBranding = async () => {
+    setSavingBranding(true);
+    setMessage(null);
+    
+    try {
+      const res = await fetch(`${API_URL}/api/branding`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(branding),
+      });
+
+      if (res.ok) {
+        setMessage({ type: 'success', text: 'Branding settings saved successfully!' });
+      } else {
+        setMessage({ type: 'error', text: 'Failed to save branding settings' });
+      }
+    } catch (err) {
+      setMessage({ type: 'error', text: 'Error saving branding settings' });
+      console.error('Failed to save branding settings:', err);
+    } finally {
+      setSavingBranding(false);
+    }
+  };
+
+  const handleBrandingChange = (field: keyof BrandingConfig, value: string) => {
+    setBranding(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
   const handleLogout = async () => {
     try {
       await fetch(`${API_URL}/api/auth/logout`, {
@@ -135,7 +202,10 @@ export default function AdminPortal() {
     return (
       <div className="admin-portal">
         <div className="admin-container">
-          <p>Loading...</p>
+          <div className="loading-container">
+            <div className="loading-spinner"></div>
+            <p>Loading admin portal...</p>
+          </div>
         </div>
       </div>
     );
@@ -178,7 +248,10 @@ export default function AdminPortal() {
             )}
             <div>
               <h1>Admin Portal</h1>
-              <p className="admin-user-email">{authStatus.user?.email}</p>
+              <div className="admin-status">
+                <span className="status-indicator online"></span>
+                <p className="admin-user-email">{authStatus.user?.email}</p>
+              </div>
             </div>
           </div>
           <button onClick={handleLogout} className="btn-logout">
@@ -193,7 +266,143 @@ export default function AdminPortal() {
         )}
 
         <section className="admin-section">
-          <h2>External Links</h2>
+          <h2>🎨 Branding & Appearance</h2>
+          <p className="section-description">Customize your site's appearance, colors, and branding</p>
+          
+          <div className="branding-grid">
+            <div className="branding-group">
+              <label className="branding-label">Site Name</label>
+              <input
+                type="text"
+                value={branding.siteName}
+                onChange={(e) => handleBrandingChange('siteName', e.target.value)}
+                className="branding-input"
+                placeholder="Your site name"
+              />
+            </div>
+
+            <div className="branding-group">
+              <label className="branding-label">Avatar/Logo Path</label>
+              <input
+                type="text"
+                value={branding.avatarPath}
+                onChange={(e) => handleBrandingChange('avatarPath', e.target.value)}
+                className="branding-input"
+                placeholder="/photos/avatar.png"
+              />
+            </div>
+
+            <div className="branding-group">
+              <label className="branding-label">Primary Color</label>
+              <div className="color-input-group">
+                <input
+                  type="color"
+                  value={branding.primaryColor}
+                  onChange={(e) => handleBrandingChange('primaryColor', e.target.value)}
+                  className="color-picker"
+                />
+                <input
+                  type="text"
+                  value={branding.primaryColor}
+                  onChange={(e) => handleBrandingChange('primaryColor', e.target.value)}
+                  className="branding-input color-text"
+                  placeholder="#4ade80"
+                />
+              </div>
+            </div>
+
+            <div className="branding-group">
+              <label className="branding-label">Secondary Color</label>
+              <div className="color-input-group">
+                <input
+                  type="color"
+                  value={branding.secondaryColor}
+                  onChange={(e) => handleBrandingChange('secondaryColor', e.target.value)}
+                  className="color-picker"
+                />
+                <input
+                  type="text"
+                  value={branding.secondaryColor}
+                  onChange={(e) => handleBrandingChange('secondaryColor', e.target.value)}
+                  className="branding-input color-text"
+                  placeholder="#22c55e"
+                />
+              </div>
+            </div>
+
+            <div className="branding-group full-width">
+              <label className="branding-label">Meta Description</label>
+              <textarea
+                value={branding.metaDescription}
+                onChange={(e) => handleBrandingChange('metaDescription', e.target.value)}
+                className="branding-textarea"
+                placeholder="Brief description of your site for search engines"
+                rows={3}
+              />
+            </div>
+
+            <div className="branding-group full-width">
+              <label className="branding-label">Meta Keywords</label>
+              <input
+                type="text"
+                value={branding.metaKeywords}
+                onChange={(e) => handleBrandingChange('metaKeywords', e.target.value)}
+                className="branding-input"
+                placeholder="photography, portfolio, your name (comma separated)"
+              />
+            </div>
+
+            <div className="branding-group">
+              <label className="branding-label">Favicon Path</label>
+              <input
+                type="text"
+                value={branding.faviconPath}
+                onChange={(e) => handleBrandingChange('faviconPath', e.target.value)}
+                className="branding-input"
+                placeholder="/favicon.ico"
+              />
+            </div>
+          </div>
+
+          <div className="branding-preview">
+            <h3>Preview</h3>
+            <div className="preview-card" style={{
+              '--primary-color': branding.primaryColor,
+              '--secondary-color': branding.secondaryColor
+            } as React.CSSProperties}>
+              <div className="preview-header">
+                <div className="preview-avatar">
+                  {branding.avatarPath ? (
+                    <img src={branding.avatarPath} alt="Avatar" />
+                  ) : (
+                    <div className="preview-avatar-placeholder">👤</div>
+                  )}
+                </div>
+                <div className="preview-info">
+                  <h4>{branding.siteName || 'Your Site Name'}</h4>
+                  <p>{branding.metaDescription || 'Your site description'}</p>
+                </div>
+              </div>
+              <div className="preview-colors">
+                <div className="preview-color" style={{ backgroundColor: branding.primaryColor }}></div>
+                <div className="preview-color" style={{ backgroundColor: branding.secondaryColor }}></div>
+              </div>
+            </div>
+          </div>
+
+          <div className="section-actions">
+            <button 
+              onClick={handleSaveBranding} 
+              className="btn-primary"
+              disabled={savingBranding}
+            >
+              {savingBranding ? 'Saving...' : 'Save Branding Settings'}
+            </button>
+          </div>
+        </section>
+
+        <section className="admin-section">
+          <h2>🔗 External Links</h2>
           <p className="section-description">Manage links shown in the navigation menu</p>
           
           <div className="links-list">
@@ -244,6 +453,9 @@ export default function AdminPortal() {
         </section>
 
         <div className="admin-footer">
+          <div className="footer-info">
+            <p>Admin Portal v1.0 • Last updated: {new Date().toLocaleDateString()}</p>
+          </div>
           <a href="/" className="btn-home">← Back to Site</a>
         </div>
       </div>

@@ -33,6 +33,7 @@ import sitemapRouter from "./routes/sitemap.ts";
 import yearRouter from "./routes/year.ts";
 import authRouter from "./routes/auth.ts";
 import externalLinksRouter from "./routes/external-links.ts";
+import brandingRouter from "./routes/branding.ts";
 
 // Get the current directory path for ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -157,6 +158,7 @@ app.set("optimizedDir", optimizedDir);
 // Register route handlers
 app.use('/api/auth', authRouter);
 app.use('/api/external-links', externalLinksRouter);
+app.use('/api/branding', brandingRouter);
 app.use(albumsRouter);
 app.use(externalPagesRouter);
 app.use(healthRouter);
