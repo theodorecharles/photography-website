@@ -185,10 +185,16 @@ router.post('/upload-avatar', isAuthenticated, upload.single('avatar'), async (r
     
     // Generate favicon.ico from the avatar using ImageMagick
     try {
+      // Check if magick command exists first
+      await execAsync('which magick');
       await execAsync(`magick "${faviconPngPath}" -resize 32x32 "${faviconIcoPath}"`);
-      console.log('Generated favicon.ico from avatar');
-    } catch (err) {
-      console.error('Failed to generate favicon.ico:', err);
+      console.log('[Avatar Upload] Generated favicon.ico from avatar');
+    } catch (err: any) {
+      if (err.code === 127 || err.stderr?.includes('not found')) {
+        console.warn('[Avatar Upload] ImageMagick not installed, skipping favicon.ico generation');
+      } else {
+        console.error('[Avatar Upload] Failed to generate favicon.ico:', err.message);
+      }
       // Continue anyway - favicon.png will still work
     }
     
@@ -198,6 +204,7 @@ router.post('/upload-avatar', isAuthenticated, upload.single('avatar'), async (r
     // Update config
     console.log('[Avatar Upload] Reading config from:', configPath);
     const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+    console.log('[Avatar Upload] Current avatarPath in config:', config.branding?.avatarPath);
     if (!config.branding) {
       config.branding = {};
     }
@@ -205,7 +212,17 @@ router.post('/upload-avatar', isAuthenticated, upload.single('avatar'), async (r
     config.branding.faviconPath = '/favicon.ico';
     console.log('[Avatar Upload] Writing new avatarPath to config:', config.branding.avatarPath);
     fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
-    console.log('[Avatar Upload] Config file updated successfully');
+    console.log('[Avatar Upload] Config file write completed');
+    
+    // Verify the write by reading back
+    const verifyConfig = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+    console.log('[Avatar Upload] Verification read - avatarPath now:', verifyConfig.branding?.avatarPath);
+    
+    if (verifyConfig.branding?.avatarPath !== `/photos/${avatarFilename}`) {
+      console.error('[Avatar Upload] ERROR: Verification failed! Expected:', `/photos/${avatarFilename}`, 'Got:', verifyConfig.branding?.avatarPath);
+    } else {
+      console.log('[Avatar Upload] Verification successful - config was updated correctly');
+    }
     
     res.json({ 
       success: true,
