@@ -15,7 +15,6 @@ info:
     
     ## Security
     - CSRF protection on all mutating endpoints (POST/PUT/DELETE)
-    - HMAC signature validation on analytics events
     - Path traversal protection on all file operations
     - Rate limiting on all endpoints
     
@@ -46,7 +45,7 @@ tags:
   - name: External Links
     description: Navigation menu external link management
   - name: Analytics
-    description: Analytics event tracking with HMAC validation
+    description: Analytics event tracking
   - name: Health
     description: Service health checks
   - name: Utilities
@@ -432,7 +431,7 @@ paths:
     get:
       tags: [Branding]
       summary: Get branding configuration
-      description: Returns site branding settings including colors, site name, meta tags, and HMAC secret for analytics
+      description: Returns site branding settings including colors, site name, and meta tags
       responses:
         '200':
           description: Branding configuration
@@ -606,17 +605,9 @@ paths:
       tags: [Analytics]
       summary: Track analytics event
       description: |
-        Records an analytics event. Events must be signed with HMAC-SHA256 using the configured secret.
-        The signature is calculated over the JSON request body and sent in the X-Analytics-Signature header.
+        Records an analytics event.
         
         Events are proxied to OpenObserve with authentication, keeping credentials secure on the backend.
-      parameters:
-        - name: X-Analytics-Signature
-          in: header
-          required: true
-          schema:
-            type: string
-          description: HMAC-SHA256 signature of the request body (hex encoded)
       requestBody:
         required: true
         content:
@@ -638,9 +629,7 @@ paths:
                   message:
                     type: string
         '400':
-          description: Missing HMAC signature
-        '403':
-          description: Invalid HMAC signature
+          description: Invalid request body
 
 components:
   securitySchemes:
@@ -739,9 +728,6 @@ components:
         faviconPath:
           type: string
           example: /favicon.ico
-        analyticsHmacSecret:
-          type: string
-          description: HMAC secret for signing analytics events (only returned in GET requests)
 
     BrandingUpdate:
       type: object
