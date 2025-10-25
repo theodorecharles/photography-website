@@ -72,7 +72,7 @@ const getPhotosInAlbum = (photosDir: string, album: string) => {
         .replace(/[-_]/g, ' '); // Replace hyphens and underscores with spaces
 
       return {
-        id: file,
+        id: `${album}/${file}`, // Make ID unique and consistent with getAllPhotos
         title: title,
         album: album,
         src: `/optimized/modal/${album}/${file}`,
@@ -138,7 +138,7 @@ const getAllPhotos = (photosDir: string) => {
           .replace(/[-_]/g, ' '); // Replace hyphens and underscores with spaces
 
         allPhotos.push({
-          id: file,
+          id: `${album}/${file}`, // Make ID unique across albums
           title: title,
           album: album,
           src: `/optimized/modal/${album}/${file}`,
