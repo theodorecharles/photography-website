@@ -114,6 +114,28 @@ app.use("/api/", limiter);
 // Parse JSON request bodies with size limit
 app.use(express.json({ limit: "1mb" }));
 
+// DEBUG: Log all incoming requests
+app.use((req, res, next) => {
+  console.log('================ INCOMING REQUEST ================');
+  console.log('Method:', req.method);
+  console.log('URL:', req.url);
+  console.log('Path:', req.path);
+  console.log('Headers:', JSON.stringify(req.headers, null, 2));
+  console.log('==================================================');
+  
+  // Intercept response to log what's being sent
+  const originalJson = res.json.bind(res);
+  res.json = function(body: any) {
+    console.log('================ RESPONSE BEING SENT ================');
+    console.log('Status:', res.statusCode);
+    console.log('Body:', JSON.stringify(body, null, 2));
+    console.log('====================================================');
+    return originalJson(body);
+  };
+  
+  next();
+});
+
 // Configure session middleware for authentication
 const sessionSecret = config.auth?.sessionSecret || 'fallback-secret-change-this';
 app.use(
