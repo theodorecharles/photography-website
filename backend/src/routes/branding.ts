@@ -190,6 +190,10 @@ router.post('/upload-avatar', isAuthenticated, upload.single('avatar'), async (r
     const faviconPngPath = path.join(frontendPublicDir, 'favicon.png');
     const faviconIcoPath = path.join(frontendPublicDir, 'favicon.ico');
     
+    // Also define dist path for immediate serving
+    const frontendDistDir = path.join(projectRoot, 'frontend', 'dist');
+    const faviconIcoPathDist = path.join(frontendDistDir, 'favicon.ico');
+    
     // Read the uploaded file
     const fileData = fs.readFileSync(file.path);
     
@@ -203,6 +207,14 @@ router.post('/upload-avatar', isAuthenticated, upload.single('avatar'), async (r
     try {
       await execAsync(`convert "${faviconPngPath}" -resize 32x32 "${faviconIcoPath}"`);
       console.log('[Avatar Upload] Generated favicon.ico from avatar using convert');
+      
+      // Also copy to dist directory so it's immediately served by nginx
+      if (fs.existsSync(frontendDistDir)) {
+        fs.copyFileSync(faviconIcoPath, faviconIcoPathDist);
+        console.log('[Avatar Upload] Copied favicon.ico to dist directory for immediate serving');
+      } else {
+        console.warn('[Avatar Upload] Frontend dist directory not found, skipping dist copy');
+      }
     } catch (err: any) {
       console.error('[Avatar Upload] Failed to generate favicon.ico:', err);
       // Continue anyway - favicon.png will still work
