@@ -639,7 +639,7 @@ export default function AdminPortal() {
 
         {activeTab === 'branding' && (
         <section className="admin-section">
-          <h2>🎨 Branding & Appearance</h2>
+          <h2>🎨 Branding</h2>
           <p className="section-description">Customize your site's appearance, colors, and branding</p>
           
           <div className="branding-grid">
