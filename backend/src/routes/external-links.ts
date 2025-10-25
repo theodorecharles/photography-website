@@ -36,11 +36,40 @@ router.put('/', isAuthenticated, (req: Request, res: Response): void => {
       return;
     }
 
+    // Limit number of links
+    if (links.length > 50) {
+      res.status(400).json({ error: 'Too many links (maximum 50)' });
+      return;
+    }
+
     // Validate each link
     for (const link of links) {
+      // Check required fields
       if (!link.title || !link.url) {
         res.status(400).json({ error: 'Each link must have a title and url' });
         return;
+      }
+
+      // Validate title
+      if (typeof link.title !== 'string' || link.title.length > 100 || link.title.length < 1) {
+        res.status(400).json({ error: 'Invalid title (must be 1-100 characters)' });
+        return;
+      }
+
+      // Validate URL format and protocol
+      try {
+        const urlObj = new URL(link.url);
+        // Only allow HTTP(S) and relative URLs (starting with /)
+        if (!['http:', 'https:'].includes(urlObj.protocol) && !link.url.startsWith('/')) {
+          res.status(400).json({ error: 'Only HTTP(S) URLs or relative paths allowed' });
+          return;
+        }
+      } catch {
+        // If URL() fails, check if it's a valid relative path
+        if (!link.url.startsWith('/')) {
+          res.status(400).json({ error: 'Invalid URL format' });
+          return;
+        }
       }
     }
 
