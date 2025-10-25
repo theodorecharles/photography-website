@@ -41,6 +41,10 @@ const __dirname = path.dirname(__filename);
 // Initialize Express application
 const app = express();
 
+// Trust proxy - required for production behind nginx/reverse proxy
+// This allows express to read X-Forwarded-* headers correctly
+app.set('trust proxy', 1);
+
 // Resolve photo directory paths relative to project root
 // PHOTOS_DIR should be relative to where you run the backend (typically backend/ directory)
 const photosDir = path.resolve(__dirname, '../../', PHOTOS_DIR);
