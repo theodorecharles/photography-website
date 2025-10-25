@@ -1,0 +1,68 @@
+.auth-error-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background-color: #000;
+}
+
+.auth-error-container {
+  max-width: 500px;
+  width: 100%;
+  text-align: center;
+  padding: 3rem;
+  background-color: #1a1a1a;
+  border-radius: 8px;
+  border: 1px solid #333;
+}
+
+.error-icon {
+  margin: 0 auto 2rem;
+  width: 64px;
+  height: 64px;
+  color: #dc3545;
+}
+
+.auth-error-container h1 {
+  margin-bottom: 1rem;
+  color: #fff;
+  font-size: 2rem;
+}
+
+.error-message {
+  font-size: 1.1rem;
+  color: #fff;
+  margin-bottom: 1rem;
+  line-height: 1.6;
+}
+
+.error-details {
+  color: #888;
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+.error-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.btn-home {
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  text-decoration: none;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  background-color: #3b3b3b;
+  color: white;
+  display: inline-block;
+}
+
+.btn-home:hover {
+  background-color: #4b4b4b;
+}
+

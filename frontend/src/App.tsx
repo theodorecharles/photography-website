@@ -17,6 +17,7 @@ import PhotoGrid from "./components/PhotoGrid";
 import Footer from "./components/Footer";
 import License from "./components/License";
 import Authenticated from "./components/Authenticated";
+import AuthError from "./components/AuthError";
 import ScrollToTop from "./components/ScrollToTop";
 import { SEO } from "./components/SEO";
 import { StructuredData } from "./components/StructuredData";
@@ -512,6 +513,16 @@ function App() {
                 url={`${SITE_URL}/authenticated`}
               />
               <Authenticated />
+            </>
+          } />
+          <Route path="/auth/error" element={
+            <>
+              <SEO 
+                title="Authentication Error - Ted Charles Photography"
+                description="Login error"
+                url={`${SITE_URL}/auth/error`}
+              />
+              <AuthError />
             </>
           } />
           <Route path="/primes" element={<PrimesRedirect />} />

@@ -22,25 +22,28 @@ interface AuthenticatedUser {
 const googleConfig = config.auth?.google;
 const authorizedEmails = config.auth?.authorizedEmails || [];
 
+// Derive callback URL from API URL in config
+const callbackURL = `${config.frontend?.apiUrl}/api/auth/google/callback`;
+
 if (googleConfig?.clientId && googleConfig?.clientSecret) {
   passport.use(
     new GoogleStrategy(
       {
         clientID: googleConfig.clientId,
         clientSecret: googleConfig.clientSecret,
-        callbackURL: googleConfig.callbackURL,
+        callbackURL: callbackURL,
       },
       (accessToken, refreshToken, profile, done) => {
         // Extract user information
         const email = profile.emails?.[0]?.value;
         
         if (!email) {
-          return done(new Error('No email found in Google profile'));
+          return done(new Error('no_email'));
         }
 
         // Check if user is authorized
         if (!authorizedEmails.includes(email)) {
-          return done(new Error('Email not authorized'));
+          return done(new Error('unauthorized'));
         }
 
         // Create user object
@@ -86,18 +89,33 @@ router.get(
 // Route: Google OAuth callback
 router.get(
   '/google/callback',
-  passport.authenticate('google', {
-    failureRedirect: '/?auth=failed',
-  }),
-  (req: Request, res: Response) => {
-    // Successful authentication
-    // Redirect to frontend auth success page
-    // Derive site URL from API URL (remove api. subdomain or change port for localhost)
-    const apiUrl = config.frontend?.apiUrl || '';
-    const frontendUrl = process.env.NODE_ENV === 'production'
-      ? apiUrl.replace('api.', '')
-      : apiUrl.replace(':3001', ':5173');
-    res.redirect(`${frontendUrl}/authenticated`);
+  (req: Request, res: Response, next: NextFunction) => {
+    passport.authenticate('google', (err: any, user: any) => {
+      // Derive frontend URL from config
+      const apiUrl = config.frontend?.apiUrl || '';
+      const frontendUrl = process.env.NODE_ENV === 'production'
+        ? apiUrl.replace('api.', '')
+        : apiUrl.replace(':3001', ':5173');
+
+      // Handle authentication errors
+      if (err) {
+        const reason = err.message || 'failed';
+        return res.redirect(`${frontendUrl}/auth/error?reason=${reason}`);
+      }
+
+      if (!user) {
+        return res.redirect(`${frontendUrl}/auth/error?reason=failed`);
+      }
+
+      // Log the user in
+      req.logIn(user, (err) => {
+        if (err) {
+          return res.redirect(`${frontendUrl}/auth/error?reason=failed`);
+        }
+        // Successful authentication
+        return res.redirect(`${frontendUrl}/authenticated`);
+      });
+    })(req, res, next);
   }
 );
 
