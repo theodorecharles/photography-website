@@ -60,7 +60,6 @@ interface BrandingConfig {
   metaDescription: string;
   metaKeywords: string;
   faviconPath: string;
-  analyticsHmacSecret?: string;
 }
 
 // Get current branding configuration
@@ -92,7 +91,6 @@ router.get('/', (req: Request, res: Response) => {
       metaDescription: branding.metaDescription || 'Photography portfolio by Ted Charles',
       metaKeywords: branding.metaKeywords || 'photography, portfolio, ted charles',
       faviconPath: branding.faviconPath || '/favicon.ico',
-      analyticsHmacSecret: config.analytics?.hmacSecret
     };
     
     console.log('[Get Branding] PID:', process.pid, '- After defaults, returning avatarPath:', brandingConfig.avatarPath);
