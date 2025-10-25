@@ -139,8 +139,8 @@ app.use(
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
       sameSite: 'lax', // 'lax' works for OAuth redirects and same-site requests
       domain: config.frontend.apiUrl.startsWith('https://') 
-        ? '.' + new URL(config.frontend.apiUrl).hostname.replace(/^(api\.|api-)/, '')
-        : undefined, // Share cookie across subdomains in production
+        ? '.' + new URL(config.frontend.apiUrl).hostname.split('.').slice(-2).join('.')
+        : undefined, // Share cookie across subdomains (e.g., .tedcharles.net)
     },
   })
 );
