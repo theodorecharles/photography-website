@@ -887,7 +887,11 @@ export default function AdminPortal() {
                         <div className="photo-overlay">
                           <span className="photo-title">{photo.title}</span>
                           <button
-                            onClick={() => handleDeletePhoto(photo.album, photo.id)}
+                            onClick={() => {
+                              // Extract filename from photo.id (format: "album/filename.jpg")
+                              const filename = photo.id.split('/').pop() || photo.id;
+                              handleDeletePhoto(photo.album, filename);
+                            }}
                             className="btn-delete-photo"
                             title="Delete photo"
                             disabled={isOptimizing}
