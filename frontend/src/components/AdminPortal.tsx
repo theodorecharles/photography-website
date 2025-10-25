@@ -73,6 +73,17 @@ export default function AdminPortal() {
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [optimizingPhotos, setOptimizingPhotos] = useState<Set<string>>(new Set());
 
+  // Auto-dismiss messages after 5 seconds
+  useEffect(() => {
+    if (message) {
+      const timer = setTimeout(() => {
+        setMessage(null);
+      }, 5000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [message]);
+
   useEffect(() => {
     // Check authentication status
     console.log('[AdminPortal] Checking auth status...');
