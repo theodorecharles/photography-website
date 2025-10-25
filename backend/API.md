@@ -31,7 +31,7 @@ npx @redocly/cli preview-docs openapi.yaml
 
 ### Base URLs
 
-- **Production**: `https://api.tedcharles.net`
+- **Production**: `https://api.johndoe.net`
 - **Development**: `http://localhost:3001`
 
 ## Authentication
@@ -165,7 +165,7 @@ X-Analytics-Signature: <hmac-sha256-signature>
   {
     "event_type": "pageview",
     "timestamp": "2024-01-01T12:00:00Z",
-    "page_url": "https://tedcharles.net/album/nature",
+    "page_url": "https://johndoe.net/album/nature",
     "page_path": "/album/nature",
     "referrer": "direct",
     "user_agent": "Mozilla/5.0...",
@@ -255,7 +255,7 @@ The API reads configuration from `/config/config.json`:
     }
   },
   "branding": {
-    "siteName": "Ted Charles",
+    "siteName": "John Doe",
     "primaryColor": "#4ade80",
     ...
   },
@@ -273,7 +273,7 @@ The API reads configuration from `/config/config.json`:
       "clientId": "...",
       "clientSecret": "..."
     },
-    "authorizedEmails": ["me@tedcharles.net"]
+    "authorizedEmails": ["johndoe@gmail.com"]
   }
 }
 ```
