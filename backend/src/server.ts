@@ -189,10 +189,14 @@ try {
 }
 
 // Use the isProduction variable already defined above (line 56)
+// For localhost, disable SameSite to allow cross-port cookies
+// For production, use 'lax' for OAuth compatibility
+const sameSiteValue = isProduction ? 'lax' : false;
+
 console.log('Session cookie config:', {
   secure: isProduction,
   httpOnly: true,
-  sameSite: 'lax',
+  sameSite: sameSiteValue,
   domain: cookieDomain,
 });
 
@@ -205,7 +209,9 @@ app.use(
       secure: isProduction, // HTTPS only in production
       httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
-      sameSite: 'lax', // 'lax' works for OAuth and should work on localhost
+      // Disable SameSite for localhost (different ports = cross-site)
+      // Use 'lax' for production (OAuth compatible)
+      sameSite: sameSiteValue as any,
       domain: cookieDomain,
     },
   })
