@@ -31,15 +31,25 @@ if ! ./optimize_images.sh; then
 fi
 
 # Backend deployment process
-log "Building backend..."
+log "Installing backend dependencies..."
 cd backend || handle_error "Failed to cd into backend directory"
+if ! npm install; then
+    handle_error "Backend npm install failed"
+fi
+
+log "Building backend..."
 if ! npm run build; then
     handle_error "Backend build failed"
 fi
 
 # Frontend deployment process
-log "Building frontend..."
+log "Installing frontend dependencies..."
 cd ../frontend || handle_error "Failed to cd into frontend directory"
+if ! npm install; then
+    handle_error "Frontend npm install failed"
+fi
+
+log "Building frontend..."
 if ! npm run build; then
     handle_error "Frontend build failed"
 fi
