@@ -94,6 +94,8 @@ export default function AdminPortal() {
   const [savingBranding, setSavingBranding] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [optimizingPhotos, setOptimizingPhotos] = useState<Set<string>>(new Set());
+  const [pendingAvatarFile, setPendingAvatarFile] = useState<File | null>(null);
+  const [avatarPreviewUrl, setAvatarPreviewUrl] = useState<string | null>(null);
 
   // Redirect /admin to /admin/albums
   useEffect(() => {
@@ -164,6 +166,15 @@ export default function AdminPortal() {
       trackAdminTabChange(activeTab);
     }
   }, [activeTab, authStatus]);
+
+  // Cleanup avatar preview URL on unmount
+  useEffect(() => {
+    return () => {
+      if (avatarPreviewUrl) {
+        URL.revokeObjectURL(avatarPreviewUrl);
+      }
+    };
+  }, [avatarPreviewUrl]);
 
   const loadExternalLinks = async () => {
     try {
@@ -469,6 +480,37 @@ export default function AdminPortal() {
     setMessage(null);
     
     try {
+      // First upload avatar if there's a pending file
+      if (pendingAvatarFile) {
+        const formData = new FormData();
+        formData.append('avatar', pendingAvatarFile);
+
+        const avatarRes = await fetch(`${API_URL}/api/branding/upload-avatar`, {
+          method: 'POST',
+          credentials: 'include',
+          body: formData,
+        });
+
+        if (avatarRes.ok) {
+          const data = await avatarRes.json();
+          setBranding(prev => ({
+            ...prev,
+            avatarPath: data.avatarPath
+          }));
+          // Track avatar upload
+          trackAvatarUpload();
+          // Clear pending avatar
+          setPendingAvatarFile(null);
+          if (avatarPreviewUrl) {
+            URL.revokeObjectURL(avatarPreviewUrl);
+            setAvatarPreviewUrl(null);
+          }
+        } else {
+          throw new Error('Failed to upload avatar');
+        }
+      }
+
+      // Then save branding settings
       const res = await fetch(`${API_URL}/api/branding`, {
         method: 'PUT',
         headers: {
@@ -496,41 +538,16 @@ export default function AdminPortal() {
     }
   };
 
-  const handleAvatarUpload = async (file: File) => {
-    setSavingBranding(true);
-    setMessage(null);
-    
-    try {
-      const formData = new FormData();
-      formData.append('avatar', file);
-
-      const res = await fetch(`${API_URL}/api/branding/upload-avatar`, {
-        method: 'POST',
-        credentials: 'include',
-        body: formData,
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        setBranding(prev => ({
-          ...prev,
-          avatarPath: data.avatarPath
-        }));
-        setMessage({ type: 'success', text: 'Avatar uploaded successfully!' });
-        // Track avatar upload
-        trackAvatarUpload();
-        // Notify main app to refresh
-        window.dispatchEvent(new Event('branding-updated'));
-      } else {
-        const data = await res.json();
-        setMessage({ type: 'error', text: data.error || 'Failed to upload avatar' });
-      }
-    } catch (err) {
-      setMessage({ type: 'error', text: 'Error uploading avatar' });
-      console.error('Failed to upload avatar:', err);
-    } finally {
-      setSavingBranding(false);
+  const handleAvatarFileSelect = (file: File) => {
+    // Clean up previous preview URL if it exists
+    if (avatarPreviewUrl) {
+      URL.revokeObjectURL(avatarPreviewUrl);
     }
+    
+    // Create preview URL for the new file
+    const previewUrl = URL.createObjectURL(file);
+    setAvatarPreviewUrl(previewUrl);
+    setPendingAvatarFile(file);
   };
 
   const handleBrandingChange = (field: keyof BrandingConfig, value: string) => {
@@ -662,22 +679,22 @@ export default function AdminPortal() {
             <div className="branding-group">
               <label className="branding-label">Avatar/Logo</label>
               <div className="avatar-upload-container">
-                {branding.avatarPath && (
+                {(avatarPreviewUrl || branding.avatarPath) && (
                   <img 
-                    src={`${API_URL}${branding.avatarPath}`} 
+                    src={avatarPreviewUrl || `${API_URL}${branding.avatarPath}`} 
                     alt="Current avatar"
                     className="current-avatar-preview"
                   />
                 )}
                 <label className="btn-secondary upload-avatar-btn">
-                  {savingBranding ? 'Uploading...' : 'Upload New Avatar'}
+                  {pendingAvatarFile ? 'Change Avatar' : 'Select Avatar'}
                   <input
                     type="file"
                     accept="image/*"
                     onChange={(e) => {
                       const file = e.target.files?.[0];
                       if (file) {
-                        handleAvatarUpload(file);
+                        handleAvatarFileSelect(file);
                       }
                     }}
                     style={{ display: 'none' }}
@@ -728,7 +745,7 @@ export default function AdminPortal() {
               className="btn-primary"
               disabled={savingBranding}
             >
-              {savingBranding ? 'Saving...' : 'Save Branding Settings'}
+              {savingBranding ? 'Saving...' : 'Save'}
             </button>
           </div>
         </section>
