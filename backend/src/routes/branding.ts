@@ -9,6 +9,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { exec } from 'child_process';
 import { promisify } from 'util';
+import crypto from 'crypto';
 import multer from 'multer';
 import os from 'os';
 import { isAuthenticated } from './auth.js';
@@ -70,6 +71,9 @@ router.get('/', (req: Request, res: Response) => {
     console.log('[Get Branding] PID:', process.pid, '- Config file last modified:', stats.mtime.toISOString());
     
     const configContent = fs.readFileSync(configPath, 'utf8');
+    const contentHash = crypto.createHash('md5').update(configContent).digest('hex').substring(0, 8);
+    console.log('[Get Branding] PID:', process.pid, '- File content hash:', contentHash);
+    
     const config = JSON.parse(configContent);
     const branding = config.branding || {};
     
@@ -233,7 +237,11 @@ router.post('/upload-avatar', isAuthenticated, upload.single('avatar'), async (r
     console.log('[Avatar Upload] Config file write completed');
     
     // Verify the write by reading back
-    const verifyConfig = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+    const verifyContent = fs.readFileSync(configPath, 'utf8');
+    const verifyHash = crypto.createHash('md5').update(verifyContent).digest('hex').substring(0, 8);
+    console.log('[Avatar Upload] Verification file content hash:', verifyHash);
+    
+    const verifyConfig = JSON.parse(verifyContent);
     console.log('[Avatar Upload] Verification read - avatarPath now:', verifyConfig.branding?.avatarPath);
     
     if (verifyConfig.branding?.avatarPath !== `/photos/${avatarFilename}`) {
