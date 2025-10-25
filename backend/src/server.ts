@@ -113,7 +113,8 @@ app.use(
       secure: process.env.NODE_ENV === 'production', // HTTPS only in production
       httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
-      sameSite: process.env.NODE_ENV === 'production' ? 'lax' : 'lax',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // 'none' required for cross-site cookies
+      domain: process.env.NODE_ENV === 'production' ? '.tedcharles.net' : undefined, // Share cookie across subdomains
     },
   })
 );
