@@ -3,16 +3,32 @@ import react from "@vitejs/plugin-react";
 import fs from 'fs';
 import path from 'path';
 
-// Load config.json to inject values for development mode
+// Load config.json - the single source of truth
 const configPath = path.resolve(__dirname, '../config/config.json');
 const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-const env = process.env.NODE_ENV || 'development';
-const envConfig = config[env];
+const envConfig = config.environment;
 
 // Derive site URL from API URL
-const siteUrl = env === 'production' 
-  ? envConfig.frontend.apiUrl.replace('api.', '') 
-  : envConfig.frontend.apiUrl.replace(':3001', ':3000');
+// If apiUrl starts with https://, replace api. with www.
+// Otherwise (http://localhost), replace :3001 with :3000
+const siteUrl = envConfig.frontend.apiUrl.startsWith('https://') 
+  ? envConfig.frontend.apiUrl.replace('api.', 'www.').replace('api-', 'www-')
+  : envConfig.frontend.apiUrl.replace(/:\d+$/, ':' + envConfig.frontend.port);
+
+// Determine if we should listen on all interfaces (for remote dev)
+// Listen on 0.0.0.0 if the apiUrl is not localhost
+const isRemoteDev = !envConfig.frontend.apiUrl.includes('localhost');
+
+// Extract HMR host from site URL if remote dev
+const hmrHost = isRemoteDev 
+  ? new URL(siteUrl).hostname 
+  : 'localhost';
+
+console.log('Vite config loaded:');
+console.log('  API URL:', envConfig.frontend.apiUrl);
+console.log('  Site URL:', siteUrl);
+console.log('  Listen host:', isRemoteDev ? '0.0.0.0' : '127.0.0.1');
+console.log('  HMR host:', hmrHost);
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -43,8 +59,11 @@ export default defineConfig({
     'import.meta.env.VITE_AVATAR_PATH': JSON.stringify(config.branding.avatarPath),
   },
   server: {
-    host: '127.0.0.1', // Use IPv4 localhost to avoid IPv6 permission issues
-    port: envConfig.frontend.devPort || 5173,
-    strictPort: false, // Allow fallback to another port if 5173 is in use
+    host: isRemoteDev ? '0.0.0.0' : '127.0.0.1',
+    port: envConfig.frontend.port,
+    strictPort: false,
+    hmr: {
+      host: hmrHost,
+    },
   },
 });

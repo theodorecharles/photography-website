@@ -123,13 +123,14 @@ router.get(
     passport.authenticate('google', (err: any, user: any) => {
       // Derive frontend URL from config
       const apiUrl = config.frontend?.apiUrl || '';
-      const frontendUrl = process.env.NODE_ENV === 'production'
-        ? apiUrl.replace('api.', '')
+      const isProduction = apiUrl.startsWith('https://');
+      const frontendUrl = isProduction
+        ? apiUrl.replace(/^https:\/\/(api\.|api-)/, 'https://www.')
         : apiUrl.replace(':3001', ':5173');
 
       // Handle authentication errors
       if (err) {
-        if (process.env.NODE_ENV !== 'production') {
+        if (!isProduction) {
           console.log('[OAuth] Authentication error:', err.message);
         }
         const reason = err.message || 'failed';
@@ -143,7 +144,7 @@ router.get(
       }
 
       if (!user) {
-        if (process.env.NODE_ENV !== 'production') {
+        if (!isProduction) {
           console.log('[OAuth] No user returned');
         }
         // Track authentication failure
@@ -157,7 +158,7 @@ router.get(
       // Log the user in
       req.logIn(user, (err) => {
         if (err) {
-          if (process.env.NODE_ENV !== 'production') {
+          if (!isProduction) {
             console.log('[OAuth] Login error:', err);
           }
           // Track authentication failure
@@ -172,7 +173,7 @@ router.get(
         // Explicitly save the session before redirecting
         req.session.save(async (err) => {
           if (err) {
-            if (process.env.NODE_ENV !== 'production') {
+            if (!isProduction) {
               console.log('[OAuth] Session save error:', err);
             }
             // Track authentication failure

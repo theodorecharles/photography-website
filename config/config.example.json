@@ -1,8 +1,7 @@
 {
-  "development": {
+  "environment": {
     "frontend": {
       "port": 3000,
-      "devPort": 5173,
       "apiUrl": "http://localhost:3001"
     },
     "backend": {
@@ -14,42 +13,28 @@
       "allowedHosts": ["localhost:3000", "localhost:5173"],
       "rateLimitWindowMs": 1000,
       "rateLimitMaxRequests": 50
+    },
+    "auth": {
+      "google": {
+        "clientId": "your-google-client-id",
+        "clientSecret": "your-google-client-secret",
+        "_comment_clientSecret": "In production, set GOOGLE_CLIENT_SECRET environment variable instead"
+      },
+      "sessionSecret": "your-session-secret-here",
+      "_comment_sessionSecret": "In production, set SESSION_SECRET environment variable instead. Generate with: openssl rand -hex 32",
+      "authorizedEmails": [
+        "your-email@example.com"
+      ]
     }
-  },
-  "production": {
-    "frontend": {
-      "port": 3000,
-      "devPort": 5173,
-      "apiUrl": "https://api.yourdomain.com"
-    },
-    "backend": {
-      "port": 3001,
-      "photosDir": "photos",
-      "allowedOrigins": ["https://yourdomain.com", "https://www.yourdomain.com"]
-    },
-    "security": {
-      "allowedHosts": ["yourdomain.com", "www.yourdomain.com"],
-      "rateLimitWindowMs": 1000,
-      "rateLimitMaxRequests": 50,
-      "redirectFrom": ["olddomain.com", "www.olddomain.com"],
-      "redirectTo": "yourdomain.com"
-    }
-  },
-  "auth": {
-    "google": {
-      "clientId": "your-google-client-id",
-      "clientSecret": "your-google-client-secret",
-      "_comment_clientSecret": "In production, set GOOGLE_CLIENT_SECRET environment variable instead"
-    },
-    "sessionSecret": "your-session-secret-here",
-    "_comment_sessionSecret": "In production, set SESSION_SECRET environment variable instead. Generate with: openssl rand -hex 32",
-    "authorizedEmails": [
-      "your-email@example.com"
-    ]
   },
   "branding": {
     "siteName": "Your Name",
-    "avatarPath": "/photos/avatar.png"
+    "avatarPath": "/photos/avatar.png",
+    "primaryColor": "#4ade80",
+    "secondaryColor": "#22c55e",
+    "metaDescription": "Photography portfolio by Your Name",
+    "metaKeywords": "photography, portfolio, your name",
+    "faviconPath": "/favicon.ico"
   },
   "analytics": {
     "scriptPath": "",
@@ -82,9 +67,19 @@
     {
       "title": "GitHub",
       "url": "https://github.com/yourusername/photography-website"
+    },
+    {
+      "title": "Login",
+      "url": "/admin"
     }
   ],
   "contact": {
     "securityEmail": "your-email@example.com"
+  },
+  "_comments": {
+    "environment_config": "This config.json should be customized for each deployment environment. Update the environment.frontend.apiUrl and environment.backend.allowedOrigins for your specific setup.",
+    "local_dev": "For local dev: apiUrl = 'http://localhost:3001'",
+    "remote_dev_vm": "For remote dev VM: apiUrl = 'http://api-dev.yourdomain.com:3001'", 
+    "production": "For production: apiUrl = 'https://api.yourdomain.com'"
   }
 }

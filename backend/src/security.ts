@@ -16,17 +16,16 @@ const __dirname = path.dirname(__filename);
  */
 export function loadSecureConfig() {
   const configPath = path.join(__dirname, '../../config/config.json');
-  const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+  const rawConfig = JSON.parse(fs.readFileSync(configPath, 'utf8'));
   
-  const env = process.env.NODE_ENV || 'development';
-  const envConfig = config[env];
+  const envConfig = rawConfig.environment;
   
   // Merge root-level config (analytics, branding, etc.) with environment config
   const fullConfig = {
     ...envConfig,
-    analytics: config.analytics,
-    branding: config.branding,
-    externalLinks: config.externalLinks
+    analytics: rawConfig.analytics,
+    branding: rawConfig.branding,
+    externalLinks: rawConfig.externalLinks
   };
   
   // Override sensitive data with environment variables if available
@@ -53,15 +52,16 @@ export function loadSecureConfig() {
  * Validate that required security configuration is present in production
  */
 export function validateProductionSecurity() {
-  if (process.env.NODE_ENV === 'production') {
+  const secureConfig = loadSecureConfig();
+  const isProduction = secureConfig.frontend?.apiUrl?.startsWith('https://');
+  
+  if (isProduction) {
     // Load the config to check if required values are present
-    const config = loadSecureConfig();
-    
     const requiredChecks = [
-      { name: 'GOOGLE_CLIENT_SECRET', value: config.auth?.google?.clientSecret },
-      { name: 'SESSION_SECRET', value: config.auth?.sessionSecret },
-      { name: 'ANALYTICS_PASSWORD', value: config.analytics?.openobserve?.password },
-      { name: 'ANALYTICS_HMAC_SECRET', value: config.analytics?.hmacSecret }
+      { name: 'GOOGLE_CLIENT_SECRET', value: secureConfig.auth?.google?.clientSecret },
+      { name: 'SESSION_SECRET', value: secureConfig.auth?.sessionSecret },
+      { name: 'ANALYTICS_PASSWORD', value: secureConfig.analytics?.openobserve?.password },
+      { name: 'ANALYTICS_HMAC_SECRET', value: secureConfig.analytics?.hmacSecret }
     ];
     
     const missing = requiredChecks.filter(check => !check.value);

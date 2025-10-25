@@ -14,10 +14,9 @@ const __dirname = path.dirname(__filename);
 const configPath = path.join(__dirname, '../../config/config.json');
 const fullConfig = JSON.parse(fs.readFileSync(configPath, 'utf8'));
 
-const env = process.env.NODE_ENV || 'development';
-const config = fullConfig[env];
+const config = fullConfig.environment;
 
-console.log(`Loaded ${env} configuration from config.json`);
+console.log(`Loaded configuration from config.json`);
 
 // Export values from config.json (environment variables can override)
 export const PORT = process.env.PORT ? parseInt(process.env.PORT) : config.backend.port;
@@ -34,6 +33,7 @@ export default {
   ...config,
   analytics: fullConfig.analytics,
   branding: fullConfig.branding,
-  externalLinks: fullConfig.externalLinks
+  externalLinks: fullConfig.externalLinks,
+  frontend: config.frontend
 };
 

@@ -53,8 +53,23 @@ app.set('trust proxy', 1);
 
 // Resolve photo directory paths relative to project root
 // PHOTOS_DIR should be relative to where you run the backend (typically backend/ directory)
-const photosDir = path.resolve(__dirname, '../../', PHOTOS_DIR);
-const optimizedDir = path.resolve(__dirname, '../../', OPTIMIZED_DIR);
+let photosDir = path.resolve(__dirname, '../../', PHOTOS_DIR);
+let optimizedDir = path.resolve(__dirname, '../../', OPTIMIZED_DIR);
+
+// Resolve symlinks to get the real path (important for macOS TCC permissions)
+try {
+  photosDir = fs.realpathSync(photosDir);
+  console.log('Photos directory (real path):', photosDir);
+} catch (err) {
+  console.warn('Warning: Could not resolve photos directory:', photosDir);
+}
+
+try {
+  optimizedDir = fs.realpathSync(optimizedDir);
+  console.log('Optimized directory (real path):', optimizedDir);
+} catch (err) {
+  console.warn('Warning: Could not resolve optimized directory:', optimizedDir);
+}
 
 // Verify directory paths exist
 if (!fs.existsSync(photosDir)) {
@@ -80,10 +95,7 @@ app.use(
       // Allow requests with no origin (mobile apps, curl, etc.)
       if (!origin) return callback(null, true);
 
-      if (
-        ALLOWED_ORIGINS.indexOf(origin) !== -1 ||
-        process.env.NODE_ENV === "development"
-      ) {
+      if (ALLOWED_ORIGINS.indexOf(origin) !== -1) {
         callback(null, true);
       } else {
         // Reject origin by passing false (not an Error)
@@ -122,13 +134,13 @@ app.use(
     resave: false,
     saveUninitialized: false,
     cookie: {
-      secure: process.env.NODE_ENV === 'production', // HTTPS only in production
+      secure: config.frontend.apiUrl.startsWith('https://'), // HTTPS only in production
       httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
       sameSite: 'lax', // 'lax' works for OAuth redirects and same-site requests
-      domain: process.env.NODE_ENV === 'production' 
-        ? '.' + new URL(config.frontend.apiUrl).hostname.replace('api.', '')
-        : undefined, // Share cookie across subdomains
+      domain: config.frontend.apiUrl.startsWith('https://') 
+        ? '.' + new URL(config.frontend.apiUrl).hostname.replace(/^(api\.|api-)/, '')
+        : undefined, // Share cookie across subdomains in production
     },
   })
 );
@@ -186,8 +198,9 @@ app.use((req, res) => {
 app.use((err: any, req: any, res: any, next: any) => {
   console.error('Server error:', err);
   
-  // Don't leak error details in production
-  const message = process.env.NODE_ENV === 'production' 
+  // Don't leak error details in production (HTTPS = production)
+  const isProduction = config.frontend.apiUrl.startsWith('https://');
+  const message = isProduction 
     ? 'Internal server error' 
     : err.message || 'Internal server error';
   
@@ -199,9 +212,8 @@ app.use((err: any, req: any, res: any, next: any) => {
 // Start the server
 const server = app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
-  if (process.env.NODE_ENV === "development") {
-    console.log(`Photos directory: ${photosDir}`);
-  }
+  console.log(`API URL: ${config.frontend.apiUrl}`);
+  console.log(`Photos directory: ${photosDir}`);
 });
 
 // Handle server errors
