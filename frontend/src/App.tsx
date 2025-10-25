@@ -402,40 +402,48 @@ function App() {
   }, [isMenuOpen]);
 
   // Fetch albums and external links data
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const [albumsResponse, externalLinksResponse] = await Promise.all([
-          fetch(`${API_URL}/api/albums`),
-          fetch(`${API_URL}/api/external-pages`),
-        ]);
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      const [albumsResponse, externalLinksResponse] = await Promise.all([
+        fetch(`${API_URL}/api/albums`),
+        fetch(`${API_URL}/api/external-pages`),
+      ]);
 
-        if (!albumsResponse.ok) {
-          throw new Error("Failed to fetch albums");
-        }
-        if (!externalLinksResponse.ok) {
-          throw new Error("Failed to fetch external links");
-        }
-
-        const albumsData = await albumsResponse.json();
-        const externalLinksData = await externalLinksResponse.json();
-
-        setAlbums(albumsData.filter((album: string) => album !== "homepage"));
-        setExternalLinks(externalLinksData.externalLinks);
-        setError(null);
-      } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : "An error occurred";
-        setError(errorMessage);
-        setAlbums([]);
-        setExternalLinks([]);
-        trackError(errorMessage, 'app_initialization');
-      } finally {
-        setLoading(false);
+      if (!albumsResponse.ok) {
+        throw new Error("Failed to fetch albums");
       }
+      if (!externalLinksResponse.ok) {
+        throw new Error("Failed to fetch external links");
+      }
+
+      const albumsData = await albumsResponse.json();
+      const externalLinksData = await externalLinksResponse.json();
+
+      setAlbums(albumsData.filter((album: string) => album !== "homepage"));
+      setExternalLinks(externalLinksData.externalLinks);
+      setError(null);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "An error occurred";
+      setError(errorMessage);
+      setAlbums([]);
+      setExternalLinks([]);
+      trackError(errorMessage, 'app_initialization');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+
+    // Listen for admin changes to refresh navigation
+    const handleNavigationUpdate = () => {
+      fetchData();
     };
 
-    fetchData();
+    window.addEventListener('albums-updated', handleNavigationUpdate);
+    window.addEventListener('external-links-updated', handleNavigationUpdate);
 
     // Handle window resize for mobile menu
     const handleResize = () => {
@@ -445,7 +453,12 @@ function App() {
     };
 
     window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      window.removeEventListener('albums-updated', handleNavigationUpdate);
+      window.removeEventListener('external-links-updated', handleNavigationUpdate);
+    };
   }, []);
 
   // Loading and error states

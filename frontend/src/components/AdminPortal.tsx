@@ -205,6 +205,8 @@ export default function AdminPortal() {
         setMessage({ type: 'success', text: 'Album created successfully!' });
         setNewAlbumName('');
         loadAlbums();
+        // Notify main app to refresh navigation
+        window.dispatchEvent(new Event('albums-updated'));
       } else {
         const data = await res.json();
         setMessage({ type: 'error', text: data.error || 'Failed to create album' });
@@ -233,6 +235,8 @@ export default function AdminPortal() {
           setAlbumPhotos([]);
         }
         loadAlbums();
+        // Notify main app to refresh navigation
+        window.dispatchEvent(new Event('albums-updated'));
       } else {
         const data = await res.json();
         setMessage({ type: 'error', text: data.error || 'Failed to delete album' });
@@ -370,6 +374,8 @@ export default function AdminPortal() {
 
       if (res.ok) {
         setMessage({ type: 'success', text: 'External links saved successfully!' });
+        // Notify main app to refresh navigation
+        window.dispatchEvent(new Event('external-links-updated'));
       } else {
         setMessage({ type: 'error', text: 'Failed to save external links' });
       }
