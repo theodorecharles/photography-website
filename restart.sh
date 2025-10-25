@@ -19,8 +19,11 @@ handle_error() {
 
 # Pull latest changes from the repository
 log "Pulling latest changes from GitHub..."
+# Get current branch name
+CURRENT_BRANCH=$(git branch --show-current)
+log "Current branch: $CURRENT_BRANCH"
 # Use --ff-only to prevent accidental merges
-if ! git pull --ff-only origin master; then
+if ! git pull --ff-only origin "$CURRENT_BRANCH"; then
     handle_error "Failed to pull from GitHub (cannot fast-forward)"
 fi
 
