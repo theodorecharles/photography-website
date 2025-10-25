@@ -72,6 +72,8 @@ function Footer({ albums: _albums = [], externalLinks: _externalLinks = [], curr
           <span>&copy; {currentYear} Ted Charles.</span>
           <div className="footer-links">
             <Link to="/license" className="footer-link">View License</Link>
+            <span className="footer-separator">•</span>
+            <a href={`${API_URL}/api/auth/google`} className="footer-link">Login</a>
           </div>
         </div>
       </div>

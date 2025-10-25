@@ -1,0 +1,82 @@
+.authenticated-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background-color: #000;
+}
+
+.auth-container {
+  max-width: 500px;
+  width: 100%;
+  text-align: center;
+  padding: 3rem;
+  background-color: #1a1a1a;
+  border-radius: 8px;
+  border: 1px solid #333;
+}
+
+.auth-container h1 {
+  margin-bottom: 2rem;
+  color: #fff;
+  font-size: 2rem;
+}
+
+.user-avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  margin: 0 auto 1rem;
+  border: 2px solid #444;
+}
+
+.user-name {
+  font-size: 1.5rem;
+  color: #fff;
+  margin: 1rem 0 0.5rem;
+}
+
+.user-email {
+  color: #888;
+  margin-bottom: 2rem;
+}
+
+.auth-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.btn-logout,
+.btn-home {
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  text-decoration: none;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+  font-family: inherit;
+}
+
+.btn-logout {
+  background-color: #dc3545;
+  color: white;
+}
+
+.btn-logout:hover {
+  background-color: #c82333;
+}
+
+.btn-home {
+  background-color: #3b3b3b;
+  color: white;
+  display: inline-block;
+}
+
+.btn-home:hover {
+  background-color: #4b4b4b;
+}
+

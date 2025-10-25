@@ -16,6 +16,7 @@ import "./App.css";
 import PhotoGrid from "./components/PhotoGrid";
 import Footer from "./components/Footer";
 import License from "./components/License";
+import Authenticated from "./components/Authenticated";
 import ScrollToTop from "./components/ScrollToTop";
 import { SEO } from "./components/SEO";
 import { StructuredData } from "./components/StructuredData";
@@ -501,6 +502,16 @@ function App() {
                 url={`${SITE_URL}/license`}
               />
               <License />
+            </>
+          } />
+          <Route path="/authenticated" element={
+            <>
+              <SEO 
+                title="Authenticated - Ted Charles Photography"
+                description="You are now logged in."
+                url={`${SITE_URL}/authenticated`}
+              />
+              <Authenticated />
             </>
           } />
           <Route path="/primes" element={<PrimesRedirect />} />

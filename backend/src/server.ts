@@ -8,12 +8,14 @@ import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
+import session from "express-session";
+import passport from "passport";
 import path from "path";
 import { fileURLToPath } from "url";
 import fs from "fs";
 
 // Import configuration
-import {
+import config, {
   PORT,
   PHOTOS_DIR,
   OPTIMIZED_DIR,
@@ -29,6 +31,7 @@ import healthRouter from "./routes/health.ts";
 import analyticsRouter from "./routes/analytics.ts";
 import sitemapRouter from "./routes/sitemap.ts";
 import yearRouter from "./routes/year.ts";
+import authRouter from "./routes/auth.ts";
 
 // Get the current directory path for ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -98,6 +101,26 @@ app.use("/api/", limiter);
 // Parse JSON request bodies with size limit
 app.use(express.json({ limit: "1mb" }));
 
+// Configure session middleware for authentication
+const sessionSecret = config.auth?.sessionSecret || 'fallback-secret-change-this';
+app.use(
+  session({
+    secret: sessionSecret,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: process.env.NODE_ENV === 'production', // HTTPS only in production
+      httpOnly: true,
+      maxAge: 24 * 60 * 60 * 1000, // 24 hours
+      sameSite: process.env.NODE_ENV === 'production' ? 'lax' : 'lax',
+    },
+  })
+);
+
+// Initialize Passport and session support
+app.use(passport.initialize());
+app.use(passport.session());
+
 // Serve original photos with CORS headers
 app.use("/photos", express.static(photosDir, {
   setHeaders: (res, path) => {
@@ -126,6 +149,7 @@ app.set("photosDir", photosDir);
 app.set("optimizedDir", optimizedDir);
 
 // Register route handlers
+app.use('/api/auth', authRouter);
 app.use(albumsRouter);
 app.use(externalPagesRouter);
 app.use(healthRouter);
