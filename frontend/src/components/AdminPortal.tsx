@@ -525,6 +525,8 @@ export default function AdminPortal() {
         // Track branding update - track all branding fields that could have changed
         const updatedFields = Object.keys(branding).filter(key => branding[key as keyof BrandingConfig]);
         trackBrandingUpdate(updatedFields);
+        // Reload branding to get fresh avatar path with updated timestamp
+        await loadBranding();
         // Notify main app to refresh site name
         window.dispatchEvent(new Event('branding-updated'));
       } else {
@@ -681,9 +683,10 @@ export default function AdminPortal() {
               <div className="avatar-upload-container">
                 {(avatarPreviewUrl || branding.avatarPath) && (
                   <img 
-                    src={avatarPreviewUrl || `${API_URL}${branding.avatarPath}`} 
+                    src={avatarPreviewUrl || `${API_URL}${branding.avatarPath}?v=${Date.now()}`} 
                     alt="Current avatar"
                     className="current-avatar-preview"
+                    key={avatarPreviewUrl || branding.avatarPath}
                   />
                 )}
                 <label className="btn-secondary upload-avatar-btn">
