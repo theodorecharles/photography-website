@@ -474,6 +474,7 @@ export default function AdminPortal() {
     try {
       // First upload avatar if there's a pending file
       if (pendingAvatarFile) {
+        console.log('Uploading avatar file:', pendingAvatarFile.name, pendingAvatarFile.size, 'bytes');
         const formData = new FormData();
         formData.append('avatar', pendingAvatarFile);
 
@@ -485,6 +486,7 @@ export default function AdminPortal() {
 
         if (avatarRes.ok) {
           const data = await avatarRes.json();
+          console.log('Avatar uploaded successfully:', data);
           setBranding(prev => ({
             ...prev,
             avatarPath: data.avatarPath
@@ -493,12 +495,11 @@ export default function AdminPortal() {
           trackAvatarUpload();
           // Clear pending avatar
           setPendingAvatarFile(null);
-          if (avatarPreviewUrl) {
-            URL.revokeObjectURL(avatarPreviewUrl);
-            setAvatarPreviewUrl(null);
-          }
+          setAvatarPreviewUrl(null);
         } else {
-          throw new Error('Failed to upload avatar');
+          const errorData = await avatarRes.json().catch(() => ({ error: 'Unknown error' }));
+          console.error('Avatar upload failed:', avatarRes.status, errorData);
+          throw new Error(errorData.error || 'Failed to upload avatar');
         }
       }
 
@@ -522,10 +523,13 @@ export default function AdminPortal() {
         // Notify main app to refresh site name
         window.dispatchEvent(new Event('branding-updated'));
       } else {
-        setMessage({ type: 'error', text: 'Failed to save branding settings' });
+        const errorData = await res.json().catch(() => ({ error: 'Unknown error' }));
+        console.error('Branding save failed:', res.status, errorData);
+        setMessage({ type: 'error', text: errorData.error || 'Failed to save branding settings' });
       }
     } catch (err) {
-      setMessage({ type: 'error', text: 'Error saving branding settings' });
+      const errorMessage = err instanceof Error ? err.message : 'Error saving branding settings';
+      setMessage({ type: 'error', text: errorMessage });
       console.error('Failed to save branding settings:', err);
     } finally {
       setSavingBranding(false);
