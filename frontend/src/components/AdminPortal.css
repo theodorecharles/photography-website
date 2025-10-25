@@ -963,20 +963,20 @@
 
 @media (max-width: 768px) {
   .admin-header {
-    flex-direction: column;
+    flex-direction: row;
     gap: 1rem;
-    align-items: flex-start;
+    align-items: center;
   }
 
   .admin-header .btn-home {
-    order: -1;
+    flex-shrink: 0;
   }
 
   .admin-header .admin-tabs {
     position: static;
     transform: none;
     overflow-x: auto;
-    align-self: flex-start;
+    margin-left: auto;
   }
 
   .admin-tabs {
