@@ -18,11 +18,13 @@ import Footer from "./components/Footer";
 import License from "./components/License";
 import AdminPortal from "./components/AdminPortal";
 import AuthError from "./components/AuthError";
+import NotFound from "./components/NotFound";
 import ScrollToTop from "./components/ScrollToTop";
 import { SEO } from "./components/SEO";
 import { StructuredData } from "./components/StructuredData";
 import { API_URL, SITE_URL } from "./config";
 import { trackPageView, trackAlbumNavigation, trackExternalLinkClick, trackError, trackDropdownOpen, trackDropdownClose } from "./utils/analytics";
+import { fetchWithRateLimitCheck } from "./utils/fetchWrapper";
 
 // ExternalLink interface defines the structure for external navigation links
 interface ExternalLink {
@@ -362,7 +364,44 @@ function App() {
   const [currentAlbum, setCurrentAlbum] = useState<string | undefined>(
     undefined
   );
+  const [showFooter, setShowFooter] = useState(false);
   const location = useLocation();
+
+  // Global rate limit handler - any component can trigger this
+  useEffect(() => {
+    (window as any).handleRateLimit = () => {
+      setError("RATE_LIMIT");
+      setLoading(false);
+    };
+
+    return () => {
+      delete (window as any).handleRateLimit;
+    };
+  }, []);
+
+  // Show footer when user scrolls down
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY;
+      const windowHeight = window.innerHeight;
+      const documentHeight = document.documentElement.scrollHeight;
+      
+      // Show footer if scrolled down at least 200px or near bottom of page
+      if (scrollPosition > 200 || scrollPosition + windowHeight > documentHeight - 100) {
+        setShowFooter(true);
+      } else {
+        setShowFooter(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    // Check initial scroll position
+    handleScroll();
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
 
   // Update current album based on route changes and track page views
   useEffect(() => {
@@ -431,9 +470,9 @@ function App() {
     try {
       setLoading(true);
       const [albumsResponse, externalLinksResponse, brandingResponse] = await Promise.all([
-        fetch(`${API_URL}/api/albums`),
-        fetch(`${API_URL}/api/external-pages`),
-        fetch(`${API_URL}/api/branding`),
+        fetchWithRateLimitCheck(`${API_URL}/api/albums`),
+        fetchWithRateLimitCheck(`${API_URL}/api/external-pages`),
+        fetchWithRateLimitCheck(`${API_URL}/api/branding`),
       ]);
 
       if (!albumsResponse.ok) {
@@ -458,6 +497,12 @@ function App() {
       setError(null);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "An error occurred";
+      
+      // Don't set error state if it's a rate limit (already handled globally)
+      if (errorMessage === 'Rate limited') {
+        return;
+      }
+      
       setError(errorMessage);
       setAlbums([]);
       setExternalLinks([]);
@@ -504,6 +549,19 @@ function App() {
   }
 
   if (error) {
+    if (error === "RATE_LIMIT") {
+      return (
+        <div className="error rate-limit-error">
+          <div className="rate-limit-icon">🤠</div>
+          <h2>Whoa there, partner!</h2>
+          <p>Slow down there, feller. You're clicking faster than a tumbleweed in a tornado!</p>
+          <p>Give it a moment and try again.</p>
+          <button onClick={() => window.location.reload()} className="retry-button">
+            Try Again
+          </button>
+        </div>
+      );
+    }
     return <div className="error">Error: {error}</div>;
   }
 
@@ -572,19 +630,31 @@ function App() {
           } />
           <Route path="/primes" element={<PrimesRedirect />} />
           <Route path="/primes/*" element={<PrimesRedirect />} />
+          <Route path="*" element={
+            <>
+              <SEO 
+                title="404 - Page Not Found - Ted Charles Photography"
+                description="The page you're looking for doesn't exist."
+                url={`${SITE_URL}${location.pathname}`}
+              />
+              <NotFound />
+            </>
+          } />
         </Routes>
       </main>
-      <Footer
-        albums={albums}
-        externalLinks={externalLinks}
-        currentAlbum={
-          location.pathname === "/"
-            ? "homepage"
-            : location.pathname.startsWith("/album/")
-            ? location.pathname.split("/album/")[1].split("/")[0].split("?")[0].trim() || undefined
-            : undefined
-        }
-      />
+      <div className={`footer-wrapper ${showFooter ? 'visible' : ''}`}>
+        <Footer
+          albums={albums}
+          externalLinks={externalLinks}
+          currentAlbum={
+            location.pathname === "/"
+              ? "homepage"
+              : location.pathname.startsWith("/album/")
+              ? location.pathname.split("/album/")[1].split("/")[0].split("?")[0].trim() || undefined
+              : undefined
+          }
+        />
+      </div>
     </div>
   );
 }

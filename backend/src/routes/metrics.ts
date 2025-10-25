@@ -12,97 +12,16 @@ const router = Router();
 
 /**
  * POST /api/metrics/query
- * Execute a SQL query against OpenObserve
+ * Execute a predefined SQL query against OpenObserve
  * Requires authentication
+ * 
+ * DEPRECATED: This endpoint is disabled for security reasons.
+ * Use GET /api/metrics/stats instead which provides pre-defined queries.
  */
 router.post('/query', isAuthenticated, async (req: Request, res: Response): Promise<void> => {
-  try {
-    const analyticsConfig = config.analytics?.openobserve;
-    
-    if (!analyticsConfig || !analyticsConfig.enabled) {
-      res.status(503).json({ error: 'Analytics not configured' });
-      return;
-    }
-
-    const { endpoint, organization, stream, username, password, serviceToken } = analyticsConfig;
-
-    if (!endpoint || !organization || !stream) {
-      console.error('Analytics endpoint configuration incomplete');
-      res.status(503).json({ error: 'Analytics not properly configured' });
-      return;
-    }
-
-    // Check if we have either service token or username/password
-    if (!serviceToken && (!username || !password)) {
-      console.error('Analytics authentication not configured (need either serviceToken or username/password)');
-      res.status(503).json({ error: 'Analytics authentication not configured' });
-      return;
-    }
-
-    // Extract the SQL query from request body
-    const { sql, startTime, endTime } = req.body;
-
-    if (!sql) {
-      res.status(400).json({ error: 'SQL query is required' });
-      return;
-    }
-
-    // Build the query endpoint: {endpoint}{organization}/_search
-    const queryEndpoint = `${endpoint}${organization}/_search`;
-
-    // Build the query payload
-    const queryPayload = {
-      query: {
-        sql: sql,
-        start_time: startTime || Date.now() - 30 * 24 * 60 * 60 * 1000, // Default: 30 days ago
-        end_time: endTime || Date.now(),
-        from: 0,
-        size: 10000, // Max results
-        sql_mode: "full"
-      },
-      aggs: {
-        histogram: "1 hour"
-      }
-    };
-
-    // Make the query request to OpenObserve
-    // Use service token if available, otherwise use basic auth
-    const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
-    };
-
-    if (serviceToken) {
-      headers['Authorization'] = `Bearer ${serviceToken}`;
-    } else {
-      const credentials = Buffer.from(`${username}:${password}`).toString('base64');
-      headers['Authorization'] = `Basic ${credentials}`;
-    }
-    
-    const response = await fetch(queryEndpoint, {
-      method: 'POST',
-      headers,
-      body: JSON.stringify(queryPayload),
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('OpenObserve query error:', response.status, errorText);
-      res.status(response.status).json({ 
-        error: 'Query failed', 
-        details: errorText 
-      });
-      return;
-    }
-
-    const data = await response.json();
-    res.status(200).json(data);
-  } catch (error) {
-    console.error('Metrics query error:', error);
-    res.status(500).json({ 
-      error: 'Internal server error',
-      message: error instanceof Error ? error.message : 'Unknown error'
-    });
-  }
+  res.status(403).json({ 
+    error: 'This endpoint is deprecated for security reasons. Use GET /api/metrics/stats instead.' 
+  });
 });
 
 /**
@@ -134,9 +53,9 @@ router.get('/stats', isAuthenticated, async (req: Request, res: Response): Promi
 
     // Get time range from query params (default to last 30 days)
     const days = parseInt(req.query.days as string) || 30;
-    // Use a very wide range to catch all events (supports both past and future timestamps)
-    const endTime = 1800000000000000; // Far future (year 2027 in microseconds)
-    const startTime = 1700000000000000; // Recent past (year 2023 in microseconds)
+    // Calculate time range based on the days parameter (OpenObserve uses microseconds)
+    const endTime = Date.now() * 1000; // Convert to microseconds
+    const startTime = endTime - (days * 24 * 60 * 60 * 1000 * 1000); // Convert days to microseconds
 
     // Build the query endpoint: {endpoint}{organization}/_search
     const queryEndpoint = `${endpoint}${organization}/_search`;
@@ -173,7 +92,10 @@ router.get('/stats', isAuthenticated, async (req: Request, res: Response): Promi
       });
 
       if (!response.ok) {
-        throw new Error(`Query failed: ${response.statusText}`);
+        const errorText = await response.text();
+        // Don't include detailed error messages that might leak infrastructure details
+        console.error('OpenObserve query error:', response.status, errorText);
+        throw new Error(`Query failed with status ${response.status}`);
       }
 
       return await response.json();
@@ -231,9 +153,9 @@ router.get('/stats', isAuthenticated, async (req: Request, res: Response): Promi
     res.status(200).json(stats);
   } catch (error) {
     console.error('Metrics stats error:', error);
+    // Don't leak error details to client - they could expose infrastructure info
     res.status(500).json({ 
-      error: 'Internal server error',
-      message: error instanceof Error ? error.message : 'Unknown error'
+      error: 'Failed to retrieve metrics. Please try again later.'
     });
   }
 });

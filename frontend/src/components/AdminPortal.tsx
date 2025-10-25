@@ -129,6 +129,10 @@ export default function AdminPortal() {
     })
       .then((res) => {
         console.log('[AdminPortal] Auth status response:', res.status, res.statusText);
+        if (res.status === 429 && (window as any).handleRateLimit) {
+          (window as any).handleRateLimit();
+          throw new Error('Rate limited');
+        }
         console.log('[AdminPortal] Response headers:', {
           'set-cookie': res.headers.get('set-cookie'),
           'access-control-allow-credentials': res.headers.get('access-control-allow-credentials'),

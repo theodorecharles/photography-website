@@ -52,6 +52,23 @@ const app = express();
 // This allows express to read X-Forwarded-* headers correctly
 app.set('trust proxy', 1);
 
+// HTTPS redirect middleware (production only)
+const isProduction = config.frontend.apiUrl.startsWith('https://');
+if (isProduction) {
+  app.use((req, res, next) => {
+    // Check if request is already HTTPS
+    const isSecure = req.secure || req.headers['x-forwarded-proto'] === 'https';
+    
+    if (!isSecure) {
+      // Redirect to HTTPS
+      const httpsUrl = `https://${req.headers.host}${req.url}`;
+      return res.redirect(301, httpsUrl);
+    }
+    
+    next();
+  });
+}
+
 // Resolve photo directory paths relative to project root
 // PHOTOS_DIR should be relative to where you run the backend (typically backend/ directory)
 let photosDir = path.resolve(__dirname, '../../', PHOTOS_DIR);
@@ -86,6 +103,14 @@ app.use(
   helmet({
     crossOriginResourcePolicy: { policy: "cross-origin" }, // Allow images to be loaded from different origins
     contentSecurityPolicy: false, // Disable CSP as we're serving images
+    frameguard: { action: 'deny' }, // X-Frame-Options: DENY (prevent clickjacking)
+    noSniff: true, // X-Content-Type-Options: nosniff (prevent MIME type sniffing)
+    referrerPolicy: { policy: 'strict-origin-when-cross-origin' }, // Referrer-Policy
+    hsts: {
+      maxAge: 31536000, // 1 year
+      includeSubDomains: true,
+      preload: true
+    }
   })
 );
 
@@ -128,7 +153,14 @@ app.use("/api/", limiter);
 app.use(express.json({ limit: "1mb" }));
 
 // Configure session middleware for authentication
-const sessionSecret = config.auth?.sessionSecret || 'fallback-secret-change-this';
+const sessionSecret = config.auth?.sessionSecret;
+if (!sessionSecret) {
+  console.error('❌ CRITICAL ERROR: SESSION_SECRET is not configured!');
+  console.error('Please set auth.sessionSecret in config.json or SESSION_SECRET environment variable.');
+  console.error('Generate a secure secret with: openssl rand -hex 32');
+  process.exit(1);
+}
+
 app.use(
   session({
     secret: sessionSecret,
@@ -139,9 +171,10 @@ app.use(
       httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
       sameSite: 'lax', // 'lax' works for OAuth redirects and same-site requests
-      domain: config.frontend.apiUrl.startsWith('https://') 
-        ? '.' + new URL(config.frontend.apiUrl).hostname.split('.').slice(-2).join('.')
-        : undefined, // Share cookie across subdomains (e.g., .tedcharles.net)
+      // Don't set domain - this restricts cookie to exact subdomain only (more secure)
+      // If you need to share cookies across api.domain.com and www.domain.com,
+      // set domain to '.domain.com' but be aware of the security implications
+      domain: undefined,
     },
   })
 );
