@@ -130,7 +130,7 @@ app.use(
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
       sameSite: 'lax', // 'lax' works for OAuth redirects and same-site requests
       domain: process.env.NODE_ENV === 'production' 
-        ? new URL(config.frontend.apiUrl).hostname.replace('api.', '') 
+        ? '.' + new URL(config.frontend.apiUrl).hostname.replace('api.', '')
         : undefined, // Share cookie across subdomains
     },
   })
