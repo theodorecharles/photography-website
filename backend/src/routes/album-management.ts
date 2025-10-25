@@ -1,0 +1,327 @@
+/**
+ * Album Management Routes
+ * Authenticated routes for creating, deleting albums and managing photos
+ */
+
+import { Router, Request, Response } from "express";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+import { exec } from "child_process";
+import { promisify } from "util";
+import multer from "multer";
+import os from "os";
+
+const router = Router();
+const execAsync = promisify(exec);
+
+// Configure multer for file uploads
+const upload = multer({
+  storage: multer.diskStorage({
+    destination: (req, file, cb) => {
+      // Use temp directory for initial upload
+      cb(null, os.tmpdir());
+    },
+    filename: (req, file, cb) => {
+      // Keep original filename
+      cb(null, file.originalname);
+    }
+  }),
+  limits: {
+    fileSize: 50 * 1024 * 1024, // 50MB per file
+  },
+  fileFilter: (req, file, cb) => {
+    // Only allow image files
+    if (file.mimetype.match(/^image\/(jpeg|jpg|png|gif)$/)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only image files are allowed'));
+    }
+  }
+});
+
+// Get the current directory path for ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+/**
+ * Authentication middleware
+ */
+const requireAuth = (req: Request, res: Response, next: Function) => {
+  if (req.isAuthenticated && req.isAuthenticated()) {
+    return next();
+  }
+  res.status(401).json({ error: 'Unauthorized' });
+};
+
+/**
+ * Sanitize album/photo name
+ */
+const sanitizeName = (name: string): string | null => {
+  if (!name || name.includes("..") || name.includes("/") || name.includes("\\")) {
+    return null;
+  }
+  if (!/^[a-zA-Z0-9_-]+$/.test(name)) {
+    return null;
+  }
+  return name;
+};
+
+/**
+ * Sanitize photo filename (allows dots for extensions)
+ */
+const sanitizePhotoName = (name: string): string | null => {
+  if (!name || name.includes("..") || name.includes("/") || name.includes("\\")) {
+    return null;
+  }
+  if (!/^[a-zA-Z0-9_\-. ]+\.(jpg|jpeg|png|gif)$/i.test(name)) {
+    return null;
+  }
+  return name;
+};
+
+/**
+ * Create a new album
+ */
+router.post("/api/albums", requireAuth, async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { name } = req.body;
+    
+    if (!name) {
+      res.status(400).json({ error: 'Album name is required' });
+      return;
+    }
+
+    const sanitizedName = sanitizeName(name);
+    if (!sanitizedName) {
+      res.status(400).json({ error: 'Invalid album name. Use only letters, numbers, hyphens, and underscores.' });
+      return;
+    }
+
+    const photosDir = req.app.get("photosDir");
+    const albumPath = path.join(photosDir, sanitizedName);
+
+    if (fs.existsSync(albumPath)) {
+      res.status(400).json({ error: 'Album already exists' });
+      return;
+    }
+
+    // Create album directory
+    fs.mkdirSync(albumPath, { recursive: true });
+
+    res.json({ success: true, album: sanitizedName });
+  } catch (error) {
+    console.error('Error creating album:', error);
+    res.status(500).json({ error: 'Failed to create album' });
+  }
+});
+
+/**
+ * Delete an album and all its photos
+ */
+router.delete("/api/albums/:album", requireAuth, async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { album } = req.params;
+    
+    const sanitizedAlbum = sanitizeName(album);
+    if (!sanitizedAlbum) {
+      res.status(400).json({ error: 'Invalid album name' });
+      return;
+    }
+
+    const photosDir = req.app.get("photosDir");
+    const optimizedDir = req.app.get("optimizedDir");
+    
+    const albumPath = path.join(photosDir, sanitizedAlbum);
+    
+    if (!fs.existsSync(albumPath)) {
+      res.status(404).json({ error: 'Album not found' });
+      return;
+    }
+
+    // Delete from photos directory
+    fs.rmSync(albumPath, { recursive: true, force: true });
+
+    // Delete from optimized directory
+    ['thumbnail', 'modal', 'download'].forEach(dir => {
+      const optimizedPath = path.join(optimizedDir, dir, sanitizedAlbum);
+      if (fs.existsSync(optimizedPath)) {
+        fs.rmSync(optimizedPath, { recursive: true, force: true });
+      }
+    });
+
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Error deleting album:', error);
+    res.status(500).json({ error: 'Failed to delete album' });
+  }
+});
+
+/**
+ * Delete a photo from an album
+ */
+router.delete("/api/albums/:album/photos/:photo", requireAuth, async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { album, photo } = req.params;
+    
+    const sanitizedAlbum = sanitizeName(album);
+    const sanitizedPhoto = sanitizePhotoName(photo);
+    
+    if (!sanitizedAlbum || !sanitizedPhoto) {
+      res.status(400).json({ error: 'Invalid album or photo name' });
+      return;
+    }
+
+    const photosDir = req.app.get("photosDir");
+    const optimizedDir = req.app.get("optimizedDir");
+    
+    const photoPath = path.join(photosDir, sanitizedAlbum, sanitizedPhoto);
+    
+    if (!fs.existsSync(photoPath)) {
+      res.status(404).json({ error: 'Photo not found' });
+      return;
+    }
+
+    // Delete from photos directory
+    fs.unlinkSync(photoPath);
+
+    // Delete from optimized directories
+    ['thumbnail', 'modal', 'download'].forEach(dir => {
+      const optimizedPath = path.join(optimizedDir, dir, sanitizedAlbum, sanitizedPhoto);
+      if (fs.existsSync(optimizedPath)) {
+        fs.unlinkSync(optimizedPath);
+      }
+    });
+
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Error deleting photo:', error);
+    res.status(500).json({ error: 'Failed to delete photo' });
+  }
+});
+
+/**
+ * Upload photos to an album
+ */
+router.post("/api/albums/:album/upload", requireAuth, upload.array('photos', 20), async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { album } = req.params;
+    
+    const sanitizedAlbum = sanitizeName(album);
+    if (!sanitizedAlbum) {
+      res.status(400).json({ error: 'Invalid album name' });
+      return;
+    }
+
+    const files = req.files as Express.Multer.File[];
+    if (!files || files.length === 0) {
+      res.status(400).json({ error: 'No files uploaded' });
+      return;
+    }
+
+    const photosDir = req.app.get("photosDir");
+    const albumPath = path.join(photosDir, sanitizedAlbum);
+    
+    if (!fs.existsSync(albumPath)) {
+      res.status(404).json({ error: 'Album not found' });
+      return;
+    }
+
+    const uploadedFiles: string[] = [];
+    
+    // Move files from temp to album directory
+    for (const file of files) {
+      const destPath = path.join(albumPath, file.originalname);
+      try {
+        // Use read + write to handle symlinks and cross-filesystem moves
+        const data = fs.readFileSync(file.path);
+        fs.writeFileSync(destPath, data);
+        fs.unlinkSync(file.path);
+        uploadedFiles.push(file.originalname);
+      } catch (err) {
+        console.error(`Failed to move file ${file.originalname}:`, err);
+        // Clean up temp file if copy failed
+        try {
+          fs.unlinkSync(file.path);
+        } catch (cleanupErr) {
+          // Ignore cleanup errors
+        }
+        throw err;
+      }
+    }
+
+    // Trigger optimization in background
+    const projectRoot = path.resolve(__dirname, '../../../');
+    const scriptPath = path.join(projectRoot, 'optimize_images.sh');
+
+    if (fs.existsSync(scriptPath)) {
+      // Run script from project root directory
+      exec(`cd "${projectRoot}" && bash "${scriptPath}"`, (error, stdout, stderr) => {
+        if (error) {
+          console.error('Optimization error:', error);
+          if (stderr) console.error('stderr:', stderr);
+        } else {
+          console.log('Optimization complete');
+          if (stdout) console.log('stdout:', stdout);
+        }
+      });
+    }
+
+    res.json({ 
+      success: true, 
+      files: uploadedFiles,
+      message: 'Photos uploaded successfully. Optimization started in background.' 
+    });
+  } catch (error) {
+    console.error('Error uploading photos:', error);
+    res.status(500).json({ error: 'Failed to upload photos' });
+  }
+});
+
+/**
+ * Trigger optimization for an album
+ */
+router.post("/api/albums/:album/optimize", requireAuth, async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { album } = req.params;
+    
+    const sanitizedAlbum = sanitizeName(album);
+    if (!sanitizedAlbum) {
+      res.status(400).json({ error: 'Invalid album name' });
+      return;
+    }
+
+    // Get project root (two levels up from backend/src)
+    const projectRoot = path.resolve(__dirname, '../../../');
+    const scriptPath = path.join(projectRoot, 'optimize_images.sh');
+
+    if (!fs.existsSync(scriptPath)) {
+      res.status(500).json({ error: 'Optimization script not found' });
+      return;
+    }
+
+    // Run optimization script in the background
+    // Don't wait for it to complete
+    const photosDir = req.app.get("photosDir");
+    const albumPath = path.join(photosDir, sanitizedAlbum);
+    
+    exec(`bash "${scriptPath}" "${albumPath}"`, (error, stdout, stderr) => {
+      if (error) {
+        console.error('Optimization error:', error);
+      } else {
+        console.log('Optimization complete for album:', sanitizedAlbum);
+      }
+    });
+
+    res.json({ 
+      success: true, 
+      message: 'Optimization started in background' 
+    });
+  } catch (error) {
+    console.error('Error triggering optimization:', error);
+    res.status(500).json({ error: 'Failed to trigger optimization' });
+  }
+});
+
+export default router;
+

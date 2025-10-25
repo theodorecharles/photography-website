@@ -26,6 +26,7 @@ import config, {
 
 // Import route handlers
 import albumsRouter from "./routes/albums.ts";
+import albumManagementRouter from "./routes/album-management.ts";
 import externalPagesRouter from "./routes/external-pages.ts";
 import healthRouter from "./routes/health.ts";
 import analyticsRouter from "./routes/analytics.ts";
@@ -87,6 +88,8 @@ app.use(
       }
     },
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
   })
 );
 
@@ -160,6 +163,7 @@ app.use('/api/auth', authRouter);
 app.use('/api/external-links', externalLinksRouter);
 app.use('/api/branding', brandingRouter);
 app.use(albumsRouter);
+app.use(albumManagementRouter);
 app.use(externalPagesRouter);
 app.use(healthRouter);
 app.use('/api/analytics', analyticsRouter);

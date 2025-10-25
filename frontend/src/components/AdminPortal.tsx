@@ -34,9 +34,26 @@ interface BrandingConfig {
   faviconPath: string;
 }
 
+interface Album {
+  name: string;
+  photoCount?: number;
+}
+
+interface Photo {
+  id: string;
+  title: string;
+  album: string;
+  src: string;
+  thumbnail: string;
+  download: string;
+}
+
+type Tab = 'branding' | 'navigation' | 'albums';
+
 export default function AdminPortal() {
   const [authStatus, setAuthStatus] = useState<AuthStatus | null>(null);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<Tab>('albums');
   const [externalLinks, setExternalLinks] = useState<ExternalLink[]>([]);
   const [branding, setBranding] = useState<BrandingConfig>({
     siteName: '',
@@ -47,9 +64,14 @@ export default function AdminPortal() {
     metaKeywords: '',
     faviconPath: ''
   });
+  const [albums, setAlbums] = useState<Album[]>([]);
+  const [selectedAlbum, setSelectedAlbum] = useState<string | null>(null);
+  const [albumPhotos, setAlbumPhotos] = useState<Photo[]>([]);
+  const [newAlbumName, setNewAlbumName] = useState('');
   const [saving, setSaving] = useState(false);
   const [savingBranding, setSavingBranding] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [optimizingPhotos, setOptimizingPhotos] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     // Check authentication status
@@ -76,6 +98,7 @@ export default function AdminPortal() {
           console.log('[AdminPortal] User is authenticated, loading data');
           loadExternalLinks();
           loadBranding();
+          loadAlbums();
         } else {
           console.log('[AdminPortal] User is NOT authenticated');
         }
@@ -86,6 +109,12 @@ export default function AdminPortal() {
         setLoading(false);
       });
   }, []);
+
+  useEffect(() => {
+    if (selectedAlbum) {
+      loadAlbumPhotos(selectedAlbum);
+    }
+  }, [selectedAlbum]);
 
   const loadExternalLinks = async () => {
     try {
@@ -105,9 +134,212 @@ export default function AdminPortal() {
         credentials: 'include',
       });
       const data = await res.json();
-      setBranding(data);
+      // Ensure all values are strings (not undefined)
+      setBranding({
+        siteName: data.siteName || '',
+        avatarPath: data.avatarPath || '',
+        primaryColor: data.primaryColor || '#4ade80',
+        secondaryColor: data.secondaryColor || '#22c55e',
+        metaDescription: data.metaDescription || '',
+        metaKeywords: data.metaKeywords || '',
+        faviconPath: data.faviconPath || ''
+      });
     } catch (err) {
       console.error('Failed to load branding config:', err);
+    }
+  };
+
+  const loadAlbums = async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/albums`, {
+        credentials: 'include',
+      });
+      const albumNames = await res.json();
+      const albumsList: Album[] = albumNames.map((name: string) => ({ name }));
+      setAlbums(albumsList);
+    } catch (err) {
+      console.error('Failed to load albums:', err);
+    }
+  };
+
+  const loadAlbumPhotos = async (album: string) => {
+    try {
+      const res = await fetch(`${API_URL}/api/albums/${album}/photos`, {
+        credentials: 'include',
+      });
+      const photos = await res.json();
+      setAlbumPhotos(photos);
+    } catch (err) {
+      console.error('Failed to load album photos:', err);
+    }
+  };
+
+  const handleCreateAlbum = async () => {
+    if (!newAlbumName.trim()) {
+      setMessage({ type: 'error', text: 'Album name is required' });
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API_URL}/api/albums`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({ name: newAlbumName.trim() }),
+      });
+
+      if (res.ok) {
+        setMessage({ type: 'success', text: 'Album created successfully!' });
+        setNewAlbumName('');
+        loadAlbums();
+      } else {
+        const data = await res.json();
+        setMessage({ type: 'error', text: data.error || 'Failed to create album' });
+      }
+    } catch (err) {
+      setMessage({ type: 'error', text: 'Error creating album' });
+      console.error('Failed to create album:', err);
+    }
+  };
+
+  const handleDeleteAlbum = async (album: string) => {
+    if (!confirm(`Are you sure you want to delete the album "${album}" and all its photos?`)) {
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API_URL}/api/albums/${album}`, {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+
+      if (res.ok) {
+        setMessage({ type: 'success', text: 'Album deleted successfully!' });
+        if (selectedAlbum === album) {
+          setSelectedAlbum(null);
+          setAlbumPhotos([]);
+        }
+        loadAlbums();
+      } else {
+        const data = await res.json();
+        setMessage({ type: 'error', text: data.error || 'Failed to delete album' });
+      }
+    } catch (err) {
+      setMessage({ type: 'error', text: 'Error deleting album' });
+      console.error('Failed to delete album:', err);
+    }
+  };
+
+  const pollForThumbnail = async (photoId: string, thumbnailUrl: string, maxAttempts = 30) => {
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
+      try {
+        const response = await fetch(thumbnailUrl, { method: 'HEAD' });
+        if (response.ok) {
+          // Thumbnail is ready
+          setOptimizingPhotos(prev => {
+            const newSet = new Set(prev);
+            newSet.delete(photoId);
+            return newSet;
+          });
+          return true;
+        }
+      } catch (err) {
+        // Continue polling
+      }
+      // Wait 1 second before next attempt
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+    // Timeout - remove from optimizing set anyway
+    setOptimizingPhotos(prev => {
+      const newSet = new Set(prev);
+      newSet.delete(photoId);
+      return newSet;
+    });
+    return false;
+  };
+
+  const handleUploadPhotos = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (!selectedAlbum) {
+      setMessage({ type: 'error', text: 'Please select an album first' });
+      return;
+    }
+
+    const files = event.target.files;
+    if (!files || files.length === 0) {
+      return;
+    }
+
+    const formData = new FormData();
+    for (let i = 0; i < files.length; i++) {
+      formData.append('photos', files[i]);
+    }
+
+    setSaving(true);
+    setMessage(null);
+
+    try {
+      const res = await fetch(`${API_URL}/api/albums/${selectedAlbum}/upload`, {
+        method: 'POST',
+        credentials: 'include',
+        body: formData,
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setMessage({ type: 'success', text: 'Photos uploaded! Optimizing...' });
+        
+        // Reload photos to get the new photo IDs
+        const updatedPhotos = await loadAlbumPhotos(selectedAlbum);
+        
+        // Mark new photos as optimizing and start polling
+        if (data.files && Array.isArray(data.files)) {
+          const newPhotoIds = data.files.map((f: any) => f.filename || f);
+          setOptimizingPhotos(prev => new Set([...prev, ...newPhotoIds]));
+          
+          // Start polling for each uploaded photo
+          for (const filename of newPhotoIds) {
+            const thumbnailUrl = `${API_URL}/optimized/thumbnail/${selectedAlbum}/${filename}`;
+            pollForThumbnail(filename, thumbnailUrl);
+          }
+        }
+        
+        // Reset file input
+        event.target.value = '';
+      } else {
+        const data = await res.json();
+        setMessage({ type: 'error', text: data.error || 'Failed to upload photos' });
+      }
+    } catch (err) {
+      setMessage({ type: 'error', text: 'Error uploading photos' });
+      console.error('Failed to upload photos:', err);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDeletePhoto = async (album: string, photoId: string) => {
+    if (!confirm(`Are you sure you want to delete this photo?`)) {
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API_URL}/api/albums/${album}/photos/${photoId}`, {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+
+      if (res.ok) {
+        setMessage({ type: 'success', text: 'Photo deleted successfully!' });
+        loadAlbumPhotos(album);
+      } else {
+        const data = await res.json();
+        setMessage({ type: 'error', text: data.error || 'Failed to delete photo' });
+      }
+    } catch (err) {
+      setMessage({ type: 'error', text: 'Error deleting photo' });
+      console.error('Failed to delete photo:', err);
     }
   };
 
@@ -204,7 +436,7 @@ export default function AdminPortal() {
         <div className="admin-container">
           <div className="loading-container">
             <div className="loading-spinner"></div>
-            <p>Loading admin portal...</p>
+            <p>Loading site settings...</p>
           </div>
         </div>
       </div>
@@ -215,8 +447,8 @@ export default function AdminPortal() {
     return (
       <div className="admin-portal">
         <div className="admin-container">
-          <h1>Admin Portal</h1>
-          <p>You must be logged in to access the admin portal.</p>
+          <h1>Site Settings</h1>
+          <p>You must be logged in to access site settings.</p>
           <div className="auth-actions">
             <a href={`${API_URL}/api/auth/google`} className="btn-login">
               <svg width="18" height="18" viewBox="0 0 18 18" style={{ marginRight: '8px' }}>
@@ -238,25 +470,27 @@ export default function AdminPortal() {
     <div className="admin-portal">
       <div className="admin-container">
         <div className="admin-header">
-          <div className="admin-user-info">
-            {authStatus.user?.picture && (
-              <img 
-                src={authStatus.user.picture} 
-                alt={authStatus.user.name}
-                className="admin-avatar"
-              />
-            )}
-            <div>
-              <h1>Admin Portal</h1>
-              <div className="admin-status">
-                <span className="status-indicator online"></span>
-                <p className="admin-user-email">{authStatus.user?.email}</p>
-              </div>
-            </div>
+          <a href="/" className="btn-home">← Back to Site</a>
+          <div className="admin-tabs">
+            <button
+              className={`tab-button ${activeTab === 'branding' ? 'active' : ''}`}
+              onClick={() => setActiveTab('branding')}
+            >
+              🎨 Branding
+            </button>
+            <button
+              className={`tab-button ${activeTab === 'navigation' ? 'active' : ''}`}
+              onClick={() => setActiveTab('navigation')}
+            >
+              🔗 Navigation
+            </button>
+            <button
+              className={`tab-button ${activeTab === 'albums' ? 'active' : ''}`}
+              onClick={() => setActiveTab('albums')}
+            >
+              📸 Albums
+            </button>
           </div>
-          <button onClick={handleLogout} className="btn-logout">
-            Logout
-          </button>
         </div>
 
         {message && (
@@ -265,6 +499,7 @@ export default function AdminPortal() {
           </div>
         )}
 
+        {activeTab === 'branding' && (
         <section className="admin-section">
           <h2>🎨 Branding & Appearance</h2>
           <p className="section-description">Customize your site's appearance, colors, and branding</p>
@@ -290,44 +525,6 @@ export default function AdminPortal() {
                 className="branding-input"
                 placeholder="/photos/avatar.png"
               />
-            </div>
-
-            <div className="branding-group">
-              <label className="branding-label">Primary Color</label>
-              <div className="color-input-group">
-                <input
-                  type="color"
-                  value={branding.primaryColor}
-                  onChange={(e) => handleBrandingChange('primaryColor', e.target.value)}
-                  className="color-picker"
-                />
-                <input
-                  type="text"
-                  value={branding.primaryColor}
-                  onChange={(e) => handleBrandingChange('primaryColor', e.target.value)}
-                  className="branding-input color-text"
-                  placeholder="#4ade80"
-                />
-              </div>
-            </div>
-
-            <div className="branding-group">
-              <label className="branding-label">Secondary Color</label>
-              <div className="color-input-group">
-                <input
-                  type="color"
-                  value={branding.secondaryColor}
-                  onChange={(e) => handleBrandingChange('secondaryColor', e.target.value)}
-                  className="color-picker"
-                />
-                <input
-                  type="text"
-                  value={branding.secondaryColor}
-                  onChange={(e) => handleBrandingChange('secondaryColor', e.target.value)}
-                  className="branding-input color-text"
-                  placeholder="#22c55e"
-                />
-              </div>
             </div>
 
             <div className="branding-group full-width">
@@ -364,32 +561,6 @@ export default function AdminPortal() {
             </div>
           </div>
 
-          <div className="branding-preview">
-            <h3>Preview</h3>
-            <div className="preview-card" style={{
-              '--primary-color': branding.primaryColor,
-              '--secondary-color': branding.secondaryColor
-            } as React.CSSProperties}>
-              <div className="preview-header">
-                <div className="preview-avatar">
-                  {branding.avatarPath ? (
-                    <img src={branding.avatarPath} alt="Avatar" />
-                  ) : (
-                    <div className="preview-avatar-placeholder">👤</div>
-                  )}
-                </div>
-                <div className="preview-info">
-                  <h4>{branding.siteName || 'Your Site Name'}</h4>
-                  <p>{branding.metaDescription || 'Your site description'}</p>
-                </div>
-              </div>
-              <div className="preview-colors">
-                <div className="preview-color" style={{ backgroundColor: branding.primaryColor }}></div>
-                <div className="preview-color" style={{ backgroundColor: branding.secondaryColor }}></div>
-              </div>
-            </div>
-          </div>
-
           <div className="section-actions">
             <button 
               onClick={handleSaveBranding} 
@@ -400,7 +571,9 @@ export default function AdminPortal() {
             </button>
           </div>
         </section>
+        )}
 
+        {activeTab === 'navigation' && (
         <section className="admin-section">
           <h2>🔗 External Links</h2>
           <p className="section-description">Manage links shown in the navigation menu</p>
@@ -451,12 +624,144 @@ export default function AdminPortal() {
             </button>
           </div>
         </section>
+        )}
+
+        {activeTab === 'albums' && (
+        <section className="admin-section">
+          <h2>📸 Albums & Photos</h2>
+          <p className="section-description">Manage your photo albums and upload new images</p>
+          
+          <div className="albums-management">
+            <div className="create-album">
+              <h3>Create New Album</h3>
+              <div className="album-input-group">
+                <input
+                  type="text"
+                  value={newAlbumName}
+                  onChange={(e) => setNewAlbumName(e.target.value)}
+                  placeholder="Album name (e.g., nature, portraits)"
+                  className="branding-input"
+                  onKeyDown={(e) => e.key === 'Enter' && handleCreateAlbum()}
+                />
+                <button 
+                  onClick={handleCreateAlbum}
+                  className="btn-primary"
+                >
+                  Create Album
+                </button>
+              </div>
+            </div>
+
+            <div className="albums-list">
+              <h3>Your Albums ({albums.length})</h3>
+              {albums.length === 0 ? (
+                <p style={{ color: '#888', marginTop: '1rem' }}>
+                  No albums yet. Create one to get started!
+                </p>
+              ) : (
+                <div className="album-grid">
+                  {albums.map((album) => (
+                    <div 
+                      key={album.name} 
+                      className={`album-card ${selectedAlbum === album.name ? 'selected' : ''}`}
+                      onClick={() => setSelectedAlbum(album.name)}
+                    >
+                      <div className="album-card-header">
+                        <h4>{album.name}</h4>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteAlbum(album.name);
+                          }}
+                          className="btn-delete-small"
+                          title="Delete album"
+                        >
+                          ×
+                        </button>
+                      </div>
+                      {selectedAlbum === album.name && (
+                        <div className="album-badge">Selected</div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {selectedAlbum && (
+              <div className="album-photos">
+                <div className="photos-header">
+                  <h3>Photos in "{selectedAlbum}"</h3>
+                  <div className="upload-controls">
+                    <label className="btn-primary upload-btn">
+                      {saving ? 'Uploading...' : '+ Upload Photos'}
+                      <input
+                        type="file"
+                        multiple
+                        accept="image/*"
+                        onChange={handleUploadPhotos}
+                        disabled={saving}
+                        style={{ display: 'none' }}
+                      />
+                    </label>
+                  </div>
+                </div>
+
+                {albumPhotos.length === 0 ? (
+                  <p style={{ color: '#888', marginTop: '1rem' }}>
+                    No photos in this album yet. Upload some to get started!
+                  </p>
+                ) : (
+                  <div className="photos-grid">
+                    {albumPhotos.map((photo) => {
+                      const imageUrl = `${API_URL}${photo.thumbnail}`;
+                      const isOptimizing = optimizingPhotos.has(photo.id);
+                      return (
+                      <div key={photo.id} className="photo-item">
+                        {isOptimizing ? (
+                          <div className="photo-optimizing">
+                            <div className="spinner"></div>
+                            <span>Optimizing...</span>
+                          </div>
+                        ) : (
+                          <img 
+                            src={imageUrl}
+                            alt={photo.title}
+                            className="photo-thumbnail"
+                          />
+                        )}
+                        <div className="photo-overlay">
+                          <span className="photo-title">{photo.title}</span>
+                          <button
+                            onClick={() => handleDeletePhoto(photo.album, photo.id)}
+                            className="btn-delete-photo"
+                            title="Delete photo"
+                            disabled={isOptimizing}
+                          >
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <polyline points="3 6 5 6 21 6" />
+                              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+                    );
+                    })}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </section>
+        )}
 
         <div className="admin-footer">
           <div className="footer-info">
             <p>Admin Portal v1.0 • Last updated: {new Date().toLocaleDateString()}</p>
           </div>
-          <a href="/" className="btn-home">← Back to Site</a>
+          <button onClick={handleLogout} className="btn-logout">
+            Logout
+          </button>
         </div>
       </div>
     </div>

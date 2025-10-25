@@ -13,8 +13,8 @@ const __dirname = path.dirname(__filename);
 
 const router = Router();
 
-// Path to config file
-const configPath = path.join(__dirname, '../../config/config.json');
+// Path to config file - go up from backend/src/routes to project root, then into config
+const configPath = path.resolve(__dirname, '../../../config/config.json');
 
 interface BrandingConfig {
   siteName: string;
