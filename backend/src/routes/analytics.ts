@@ -12,8 +12,21 @@ import config from '../config.ts';
 
 const router = Router();
 
+// Add debug middleware to trace all requests to this router
+router.use((req, res, next) => {
+  console.log('========================================');
+  console.log('[Analytics Router] Request received');
+  console.log('[Analytics Router] Method:', req.method);
+  console.log('[Analytics Router] Path:', req.path);
+  console.log('[Analytics Router] Full URL:', req.originalUrl);
+  console.log('[Analytics Router] Headers:', JSON.stringify(req.headers, null, 2));
+  console.log('========================================');
+  next();
+});
+
 // Handle OPTIONS preflight for CORS
 router.options('/track', (req, res) => {
+  console.log('[Analytics] OPTIONS request handled');
   res.status(200).end();
 });
 
