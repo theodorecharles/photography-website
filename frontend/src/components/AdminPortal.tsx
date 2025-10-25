@@ -7,6 +7,15 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { API_URL } from '../config';
 import './AdminPortal.css';
+import {
+  trackAdminAuth,
+  trackAdminTabChange,
+  trackAlbumManagement,
+  trackPhotoManagement,
+  trackExternalLinksUpdate,
+  trackBrandingUpdate,
+  trackAvatarUpload,
+} from '../utils/analytics';
 
 interface User {
   id: string;
@@ -124,6 +133,8 @@ export default function AdminPortal() {
         setAuthStatus(data);
         if (data.authenticated) {
           console.log('[AdminPortal] User is authenticated, loading data');
+          // Track admin portal access
+          trackAdminAuth('login', data.user?.email);
           loadExternalLinks();
           loadBranding();
           loadAlbums();
@@ -143,6 +154,13 @@ export default function AdminPortal() {
       loadAlbumPhotos(selectedAlbum);
     }
   }, [selectedAlbum]);
+
+  // Track tab changes
+  useEffect(() => {
+    if (authStatus?.authenticated) {
+      trackAdminTabChange(activeTab);
+    }
+  }, [activeTab, authStatus]);
 
   const loadExternalLinks = async () => {
     try {
@@ -220,6 +238,8 @@ export default function AdminPortal() {
 
       if (res.ok) {
         setMessage({ type: 'success', text: 'Album created successfully!' });
+        // Track album creation
+        trackAlbumManagement('create', newAlbumName.trim());
         setNewAlbumName('');
         loadAlbums();
         // Notify main app to refresh navigation
@@ -247,6 +267,8 @@ export default function AdminPortal() {
 
       if (res.ok) {
         setMessage({ type: 'success', text: 'Album deleted successfully!' });
+        // Track album deletion
+        trackAlbumManagement('delete', album);
         if (selectedAlbum === album) {
           setSelectedAlbum(null);
           setAlbumPhotos([]);
@@ -322,6 +344,10 @@ export default function AdminPortal() {
         const data = await res.json();
         setMessage({ type: 'success', text: 'Photos uploaded! Optimizing...' });
         
+        // Track photo upload
+        const uploadCount = data.files ? data.files.length : files.length;
+        trackPhotoManagement('upload', selectedAlbum, uploadCount);
+        
         // Reload photos to get the new photo IDs
         await loadAlbumPhotos(selectedAlbum);
         
@@ -364,6 +390,8 @@ export default function AdminPortal() {
 
       if (res.ok) {
         setMessage({ type: 'success', text: 'Photo deleted successfully!' });
+        // Track photo deletion
+        trackPhotoManagement('delete', album, undefined, photoId);
         loadAlbumPhotos(album);
       } else {
         const data = await res.json();
@@ -391,6 +419,8 @@ export default function AdminPortal() {
 
       if (res.ok) {
         setMessage({ type: 'success', text: 'External links saved successfully!' });
+        // Track external links update
+        trackExternalLinksUpdate(externalLinks.length);
         // Notify main app to refresh navigation
         window.dispatchEvent(new Event('external-links-updated'));
       } else {
@@ -434,6 +464,9 @@ export default function AdminPortal() {
 
       if (res.ok) {
         setMessage({ type: 'success', text: 'Branding settings saved successfully!' });
+        // Track branding update - track all branding fields that could have changed
+        const updatedFields = Object.keys(branding).filter(key => branding[key as keyof BrandingConfig]);
+        trackBrandingUpdate(updatedFields);
         // Notify main app to refresh site name
         window.dispatchEvent(new Event('branding-updated'));
       } else {
@@ -468,6 +501,8 @@ export default function AdminPortal() {
           avatarPath: data.avatarPath
         }));
         setMessage({ type: 'success', text: 'Avatar uploaded successfully!' });
+        // Track avatar upload
+        trackAvatarUpload();
         // Notify main app to refresh
         window.dispatchEvent(new Event('branding-updated'));
       } else {
@@ -491,6 +526,8 @@ export default function AdminPortal() {
 
   const handleLogout = async () => {
     try {
+      // Track logout before actually logging out
+      trackAdminAuth('logout', authStatus?.user?.email);
       await fetch(`${API_URL}/api/auth/logout`, {
         method: 'POST',
         credentials: 'include',

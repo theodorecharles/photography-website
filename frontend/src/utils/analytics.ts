@@ -212,3 +212,78 @@ export function trackSearch(query: string, resultCount: number) {
   });
 }
 
+/**
+ * Track admin authentication
+ */
+export function trackAdminAuth(action: 'login' | 'logout', userEmail?: string) {
+  sendEvent({
+    event_type: 'admin_auth',
+    action: action,
+    user_email: userEmail || 'unknown',
+  });
+}
+
+/**
+ * Track admin tab navigation
+ */
+export function trackAdminTabChange(tabName: string) {
+  sendEvent({
+    event_type: 'admin_tab_change',
+    tab_name: tabName,
+  });
+}
+
+/**
+ * Track album management actions
+ */
+export function trackAlbumManagement(action: 'create' | 'delete', albumName: string) {
+  sendEvent({
+    event_type: 'admin_album_management',
+    action: action,
+    album_name: albumName,
+  });
+}
+
+/**
+ * Track photo management actions
+ */
+export function trackPhotoManagement(action: 'upload' | 'delete', albumName: string, photoCount?: number, photoId?: string) {
+  sendEvent({
+    event_type: 'admin_photo_management',
+    action: action,
+    album_name: albumName,
+    photo_count: photoCount,
+    photo_id: photoId,
+  });
+}
+
+/**
+ * Track external links management
+ */
+export function trackExternalLinksUpdate(linkCount: number) {
+  sendEvent({
+    event_type: 'admin_external_links_update',
+    link_count: linkCount,
+  });
+}
+
+/**
+ * Track branding settings updates
+ */
+export function trackBrandingUpdate(fields: string[]) {
+  sendEvent({
+    event_type: 'admin_branding_update',
+    updated_fields: fields.join(','),
+    field_count: fields.length,
+  });
+}
+
+/**
+ * Track avatar uploads
+ */
+export function trackAvatarUpload() {
+  sendEvent({
+    event_type: 'admin_avatar_upload',
+  });
+}
+
