@@ -210,8 +210,13 @@ app.use((err: any, req: any, res: any, next: any) => {
 });
 
 // Start the server
-const server = app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+// For localhost, bind to 127.0.0.1 to avoid macOS permission issues
+// For remote dev/production, bind to 0.0.0.0 to accept external connections
+const isLocalhost = config.frontend.apiUrl.includes('localhost');
+const bindHost = isLocalhost ? '127.0.0.1' : '0.0.0.0';
+
+const server = app.listen(PORT, bindHost, () => {
+  console.log(`Server is running on ${bindHost}:${PORT}`);
   console.log(`API URL: ${config.frontend.apiUrl}`);
   console.log(`Photos directory: ${photosDir}`);
 });
