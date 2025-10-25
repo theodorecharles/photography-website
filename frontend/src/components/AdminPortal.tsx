@@ -614,19 +614,19 @@ export default function AdminPortal() {
               className={`tab-button ${activeTab === 'albums' ? 'active' : ''}`}
               onClick={() => navigate('/admin/albums')}
             >
-              <span className="tab-emoji">📸 </span>Albums
+              Albums
             </button>
             <button
               className={`tab-button ${activeTab === 'links' ? 'active' : ''}`}
               onClick={() => navigate('/admin/links')}
             >
-              <span className="tab-emoji">🔗 </span>Links
+              Links
             </button>
             <button
               className={`tab-button ${activeTab === 'branding' ? 'active' : ''}`}
               onClick={() => navigate('/admin/branding')}
             >
-              <span className="tab-emoji">🎨 </span>Branding
+              Branding
             </button>
           </div>
         </div>

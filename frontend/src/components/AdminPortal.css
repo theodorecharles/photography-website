@@ -1127,10 +1127,3 @@
   }
 }
 
-/* Hide emojis on narrow screens */
-@media (max-width: 400px) {
-  .tab-emoji {
-    display: none;
-  }
-}
-
