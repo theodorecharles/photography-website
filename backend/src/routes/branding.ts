@@ -7,10 +7,14 @@ import { Router, Request, Response } from 'express';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { exec } from 'child_process';
+import { promisify } from 'util';
 import multer from 'multer';
 import os from 'os';
 import { isAuthenticated } from './auth.js';
 import { csrfProtection } from '../security.js';
+
+const execAsync = promisify(exec);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -165,7 +169,8 @@ router.post('/upload-avatar', isAuthenticated, upload.single('avatar'), async (r
     // Use .png extension for consistency
     const avatarFilename = 'avatar.png';
     const avatarPath = path.join(photosDir, avatarFilename);
-    const faviconPath = path.join(frontendPublicDir, 'favicon.png');
+    const faviconPngPath = path.join(frontendPublicDir, 'favicon.png');
+    const faviconIcoPath = path.join(frontendPublicDir, 'favicon.ico');
     
     // Read the uploaded file
     const fileData = fs.readFileSync(file.path);
@@ -173,8 +178,17 @@ router.post('/upload-avatar', isAuthenticated, upload.single('avatar'), async (r
     // Write to photos directory
     fs.writeFileSync(avatarPath, fileData);
     
-    // Also copy to frontend public as favicon
-    fs.writeFileSync(faviconPath, fileData);
+    // Also copy to frontend public as favicon.png
+    fs.writeFileSync(faviconPngPath, fileData);
+    
+    // Generate favicon.ico from the avatar using ImageMagick
+    try {
+      await execAsync(`magick "${faviconPngPath}" -resize 32x32 "${faviconIcoPath}"`);
+      console.log('Generated favicon.ico from avatar');
+    } catch (err) {
+      console.error('Failed to generate favicon.ico:', err);
+      // Continue anyway - favicon.png will still work
+    }
     
     // Clean up temp file
     fs.unlinkSync(file.path);
@@ -185,13 +199,13 @@ router.post('/upload-avatar', isAuthenticated, upload.single('avatar'), async (r
       config.branding = {};
     }
     config.branding.avatarPath = `/photos/${avatarFilename}`;
-    config.branding.faviconPath = '/favicon.png';
+    config.branding.faviconPath = '/favicon.ico';
     fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
     
     res.json({ 
       success: true,
       avatarPath: `/photos/${avatarFilename}`,
-      faviconPath: '/favicon.png'
+      faviconPath: '/favicon.ico'
     });
   } catch (error) {
     console.error('Error uploading avatar:', error);
