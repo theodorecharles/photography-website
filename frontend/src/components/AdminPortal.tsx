@@ -291,7 +291,7 @@ export default function AdminPortal() {
         setMessage({ type: 'success', text: 'Photos uploaded! Optimizing...' });
         
         // Reload photos to get the new photo IDs
-        const updatedPhotos = await loadAlbumPhotos(selectedAlbum);
+        await loadAlbumPhotos(selectedAlbum);
         
         // Mark new photos as optimizing and start polling
         if (data.files && Array.isArray(data.files)) {
