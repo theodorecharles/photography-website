@@ -331,6 +331,7 @@ function App() {
   // Application state
   const [albums, setAlbums] = useState<string[]>([]);
   const [externalLinks, setExternalLinks] = useState<ExternalLink[]>([]);
+  const [siteName, setSiteName] = useState('Ted Charles');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -401,13 +402,14 @@ function App() {
     };
   }, [isMenuOpen]);
 
-  // Fetch albums and external links data
+  // Fetch albums, external links, and branding data
   const fetchData = async () => {
     try {
       setLoading(true);
-      const [albumsResponse, externalLinksResponse] = await Promise.all([
+      const [albumsResponse, externalLinksResponse, brandingResponse] = await Promise.all([
         fetch(`${API_URL}/api/albums`),
         fetch(`${API_URL}/api/external-pages`),
+        fetch(`${API_URL}/api/branding`),
       ]);
 
       if (!albumsResponse.ok) {
@@ -416,18 +418,24 @@ function App() {
       if (!externalLinksResponse.ok) {
         throw new Error("Failed to fetch external links");
       }
+      if (!brandingResponse.ok) {
+        throw new Error("Failed to fetch branding");
+      }
 
       const albumsData = await albumsResponse.json();
       const externalLinksData = await externalLinksResponse.json();
+      const brandingData = await brandingResponse.json();
 
       setAlbums(albumsData.filter((album: string) => album !== "homepage"));
       setExternalLinks(externalLinksData.externalLinks);
+      setSiteName(brandingData.siteName || 'Ted Charles');
       setError(null);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "An error occurred";
       setError(errorMessage);
       setAlbums([]);
       setExternalLinks([]);
+      setSiteName('Ted Charles');
       trackError(errorMessage, 'app_initialization');
     } finally {
       setLoading(false);
@@ -444,6 +452,7 @@ function App() {
 
     window.addEventListener('albums-updated', handleNavigationUpdate);
     window.addEventListener('external-links-updated', handleNavigationUpdate);
+    window.addEventListener('branding-updated', handleNavigationUpdate);
 
     // Handle window resize for mobile menu
     const handleResize = () => {
@@ -458,6 +467,7 @@ function App() {
       window.removeEventListener("resize", handleResize);
       window.removeEventListener('albums-updated', handleNavigationUpdate);
       window.removeEventListener('external-links-updated', handleNavigationUpdate);
+      window.removeEventListener('branding-updated', handleNavigationUpdate);
     };
   }, []);
 
@@ -478,10 +488,10 @@ function App() {
           <Link to="/">
             <img
               src={`${API_URL}/photos/derpatar.png`}
-              alt="Ted Charles"
+              alt={siteName}
               className="avatar"
             />
-            <h1 className="header-title">Ted Charles</h1>
+            <h1 className="header-title">{siteName}</h1>
           </Link>
         </div>
         <Navigation

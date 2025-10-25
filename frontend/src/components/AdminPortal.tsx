@@ -417,6 +417,8 @@ export default function AdminPortal() {
 
       if (res.ok) {
         setMessage({ type: 'success', text: 'Branding settings saved successfully!' });
+        // Notify main app to refresh site name
+        window.dispatchEvent(new Event('branding-updated'));
       } else {
         setMessage({ type: 'error', text: 'Failed to save branding settings' });
       }
