@@ -125,7 +125,7 @@ router.get(
       const apiUrl = config.frontend?.apiUrl || '';
       const isProduction = apiUrl.startsWith('https://');
       const frontendUrl = isProduction
-        ? apiUrl.replace(/^https:\/\/(api\.|api-)/, 'https://www.')
+        ? apiUrl.replace(/^https:\/\/api([-\.])/, 'https://www$1')
         : apiUrl.replace(':3001', ':5173');
 
       // Handle authentication errors
