@@ -49,6 +49,8 @@ router.use(csrfProtection);
 
 // Path to config file - go up from backend/src/routes to project root, then into config
 const configPath = path.resolve(__dirname, '../../../config/config.json');
+console.log('[Branding Routes] Config path resolved to:', configPath);
+console.log('[Branding Routes] __dirname is:', __dirname);
 
 interface BrandingConfig {
   siteName: string;
