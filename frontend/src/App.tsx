@@ -22,7 +22,7 @@ import ScrollToTop from "./components/ScrollToTop";
 import { SEO } from "./components/SEO";
 import { StructuredData } from "./components/StructuredData";
 import { API_URL, SITE_URL } from "./config";
-import { trackPageView, trackAlbumNavigation, trackExternalLinkClick, trackError } from "./utils/analytics";
+import { trackPageView, trackAlbumNavigation, trackExternalLinkClick, trackError, trackDropdownOpen, trackDropdownClose } from "./utils/analytics";
 
 // ExternalLink interface defines the structure for external navigation links
 interface ExternalLink {
@@ -89,6 +89,12 @@ function Navigation({
   // Close dropdowns when page is scrolled
   useEffect(() => {
     const handleScroll = () => {
+      if (isDropdownOpen) {
+        trackDropdownClose('albums', 'scroll');
+      }
+      if (isExternalOpen) {
+        trackDropdownClose('links', 'scroll');
+      }
       setIsDropdownOpen(false);
       setIsExternalOpen(false);
     };
@@ -97,7 +103,7 @@ function Navigation({
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
-  }, []);
+  }, [isDropdownOpen, isExternalOpen]);
 
   // Handle hover events for Albums dropdown
   const handleAlbumsHover = () => {
@@ -139,13 +145,25 @@ function Navigation({
   // Handle click events for Albums dropdown
   const handleAlbumsClick = () => {
     setIsExternalOpen(false);
-    setIsDropdownOpen(!isDropdownOpen);
+    const willOpen = !isDropdownOpen;
+    setIsDropdownOpen(willOpen);
+    if (willOpen) {
+      trackDropdownOpen('albums');
+    } else {
+      trackDropdownClose('albums', 'click');
+    }
   };
 
   // Handle click events for Links dropdown
   const handleLinksClick = () => {
     setIsDropdownOpen(false);
-    setIsExternalOpen(!isExternalOpen);
+    const willOpen = !isExternalOpen;
+    setIsExternalOpen(willOpen);
+    if (willOpen) {
+      trackDropdownOpen('links');
+    } else {
+      trackDropdownClose('links', 'click');
+    }
   };
 
   return (
@@ -191,6 +209,7 @@ function Navigation({
                   to={`/album/${album}`}
                   className="nav-link"
                   onClick={() => {
+                    trackDropdownClose('albums', 'navigation');
                     setIsDropdownOpen(false);
                     trackAlbumNavigation(album, 'header');
                   }}
@@ -235,7 +254,10 @@ function Navigation({
                   target="_blank"
                   rel="noopener noreferrer"
                   className="nav-link"
-                  onClick={() => trackExternalLinkClick(link.title, link.url, 'header')}
+                  onClick={() => {
+                    trackDropdownClose('links', 'navigation');
+                    trackExternalLinkClick(link.title, link.url, 'header');
+                  }}
                 >
                   {link.title}
                 </a>

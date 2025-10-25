@@ -10,6 +10,36 @@ import config from '../config.js';
 
 const router = Router();
 
+/**
+ * Helper function to send analytics event
+ */
+async function sendAnalyticsEvent(eventData: any) {
+  try {
+    const analyticsConfig = config.analytics?.openobserve;
+    if (!analyticsConfig?.enabled) return;
+
+    const { endpoint, username, password } = analyticsConfig;
+    if (!endpoint || !username || !password) return;
+
+    const credentials = Buffer.from(`${username}:${password}`).toString('base64');
+    
+    await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Basic ${credentials}`,
+      },
+      body: JSON.stringify([{
+        ...eventData,
+        timestamp: new Date().toISOString(),
+      }]),
+    });
+  } catch (error) {
+    // Silently fail - don't break auth flow
+    console.debug('Analytics tracking failed:', error);
+  }
+}
+
 // Type definitions for authenticated user
 interface AuthenticatedUser {
   id: string;
@@ -103,6 +133,13 @@ router.get(
           console.log('[OAuth] Authentication error:', err.message);
         }
         const reason = err.message || 'failed';
+        // Track authentication failure
+        sendAnalyticsEvent({
+          event_type: 'auth_result',
+          success: false,
+          failure_reason: reason === 'no_email' ? 'no_email' : reason === 'unauthorized' ? 'unauthorized_email' : 'oauth_error',
+          error_message: err.message || 'unknown',
+        });
         return res.redirect(`${frontendUrl}/auth/error?reason=${reason}`);
       }
 
@@ -110,6 +147,12 @@ router.get(
         if (process.env.NODE_ENV !== 'production') {
           console.log('[OAuth] No user returned');
         }
+        // Track authentication failure
+        sendAnalyticsEvent({
+          event_type: 'auth_result',
+          success: false,
+          failure_reason: 'no_user',
+        });
         return res.redirect(`${frontendUrl}/auth/error?reason=failed`);
       }
 
@@ -119,17 +162,39 @@ router.get(
           if (process.env.NODE_ENV !== 'production') {
             console.log('[OAuth] Login error:', err);
           }
+          // Track authentication failure
+          sendAnalyticsEvent({
+            event_type: 'auth_result',
+            success: false,
+            failure_reason: 'login_error',
+            user_email: user.email || 'unknown',
+          });
           return res.redirect(`${frontendUrl}/auth/error?reason=failed`);
         }
         
         // Explicitly save the session before redirecting
-        req.session.save((err) => {
+        req.session.save(async (err) => {
           if (err) {
             if (process.env.NODE_ENV !== 'production') {
               console.log('[OAuth] Session save error:', err);
             }
+            // Track authentication failure
+            await sendAnalyticsEvent({
+              event_type: 'auth_result',
+              success: false,
+              failure_reason: 'session_save_error',
+              user_email: user.email || 'unknown',
+            });
             return res.redirect(`${frontendUrl}/auth/error?reason=failed`);
           }
+          
+          // Track successful authentication
+          await sendAnalyticsEvent({
+            event_type: 'auth_result',
+            success: true,
+            user_email: user.email || 'unknown',
+            user_name: user.name || 'unknown',
+          });
           
           // Successful authentication - redirect to admin portal
           return res.redirect(`${frontendUrl}/admin`);

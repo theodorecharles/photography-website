@@ -803,6 +803,8 @@ components:
             - modal_close
             - album_navigation
             - external_link_click
+            - dropdown_interaction
+            - auth_result
             - admin_auth
             - admin_tab_change
             - admin_album_management
@@ -844,6 +846,8 @@ components:
         - modal_close: photo_id, album, photo_title, view_duration_ms (total time modal was open)
         - album_navigation: album, navigation_source (header/footer/mobile_menu)
         - external_link_click: link_title, link_url, navigation_source (header/mobile_menu)
+        - dropdown_interaction: action (open/close), dropdown_type (albums/links/mobile_menu), close_reason (click/scroll/navigation/outside_click)
+        - auth_result: success (true/false), user_email, user_name (on success), failure_reason (on failure), error_message (on failure)
         - admin_auth: action (login/logout), user_email
         - admin_tab_change: tab_name
         - admin_album_management: action (create/delete), album_name

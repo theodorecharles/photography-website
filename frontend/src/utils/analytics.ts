@@ -194,6 +194,29 @@ export function trackExternalLinkClick(linkTitle: string, linkUrl: string, sourc
 }
 
 /**
+ * Track dropdown interactions
+ */
+export function trackDropdownOpen(dropdownType: 'albums' | 'links' | 'mobile_menu') {
+  sendEvent({
+    event_type: 'dropdown_interaction',
+    action: 'open',
+    dropdown_type: dropdownType,
+  });
+}
+
+/**
+ * Track dropdown close
+ */
+export function trackDropdownClose(dropdownType: 'albums' | 'links' | 'mobile_menu', reason: 'click' | 'scroll' | 'navigation' | 'outside_click') {
+  sendEvent({
+    event_type: 'dropdown_interaction',
+    action: 'close',
+    dropdown_type: dropdownType,
+    close_reason: reason,
+  });
+}
+
+/**
  * Track error events
  */
 export function trackError(errorMessage: string, errorContext?: string) {
