@@ -167,14 +167,6 @@ export default function AdminPortal() {
     }
   }, [activeTab, authStatus]);
 
-  // Cleanup avatar preview URL on unmount
-  useEffect(() => {
-    return () => {
-      if (avatarPreviewUrl) {
-        URL.revokeObjectURL(avatarPreviewUrl);
-      }
-    };
-  }, [avatarPreviewUrl]);
 
   const loadExternalLinks = async () => {
     try {
@@ -541,14 +533,12 @@ export default function AdminPortal() {
   };
 
   const handleAvatarFileSelect = (file: File) => {
-    // Clean up previous preview URL if it exists
-    if (avatarPreviewUrl) {
-      URL.revokeObjectURL(avatarPreviewUrl);
-    }
-    
-    // Create preview URL for the new file
-    const previewUrl = URL.createObjectURL(file);
-    setAvatarPreviewUrl(previewUrl);
+    // Use FileReader to create data URL for better cross-origin compatibility
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setAvatarPreviewUrl(reader.result as string);
+    };
+    reader.readAsDataURL(file);
     setPendingAvatarFile(file);
   };
 
