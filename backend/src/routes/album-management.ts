@@ -91,7 +91,7 @@ const sanitizePhotoName = (name: string): string | null => {
 /**
  * Create a new album
  */
-router.post("/api/albums", requireAuth, async (req: Request, res: Response): Promise<void> => {
+router.post("/", requireAuth, async (req: Request, res: Response): Promise<void> => {
   try {
     const { name } = req.body;
     
@@ -127,7 +127,7 @@ router.post("/api/albums", requireAuth, async (req: Request, res: Response): Pro
 /**
  * Delete an album and all its photos
  */
-router.delete("/api/albums/:album", requireAuth, async (req: Request, res: Response): Promise<void> => {
+router.delete("/:album", requireAuth, async (req: Request, res: Response): Promise<void> => {
   try {
     const { album } = req.params;
     
@@ -168,7 +168,7 @@ router.delete("/api/albums/:album", requireAuth, async (req: Request, res: Respo
 /**
  * Delete a photo from an album
  */
-router.delete("/api/albums/:album/photos/:photo", requireAuth, async (req: Request, res: Response): Promise<void> => {
+router.delete("/:album/photos/:photo", requireAuth, async (req: Request, res: Response): Promise<void> => {
   try {
     const { album, photo } = req.params;
     
@@ -211,7 +211,7 @@ router.delete("/api/albums/:album/photos/:photo", requireAuth, async (req: Reque
 /**
  * Upload photos to an album
  */
-router.post("/api/albums/:album/upload", requireAuth, upload.array('photos', 20), async (req: Request, res: Response): Promise<void> => {
+router.post("/:album/upload", requireAuth, upload.array('photos', 20), async (req: Request, res: Response): Promise<void> => {
   try {
     const { album } = req.params;
     
@@ -289,7 +289,7 @@ router.post("/api/albums/:album/upload", requireAuth, upload.array('photos', 20)
 /**
  * Trigger optimization for an album
  */
-router.post("/api/albums/:album/optimize", requireAuth, async (req: Request, res: Response): Promise<void> => {
+router.post("/:album/optimize", requireAuth, async (req: Request, res: Response): Promise<void> => {
   try {
     const { album } = req.params;
     

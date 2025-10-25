@@ -192,7 +192,7 @@ app.use('/api/auth', authRouter);
 app.use('/api/external-links', externalLinksRouter);
 app.use('/api/branding', brandingRouter);
 app.use(albumsRouter);
-app.use(albumManagementRouter);
+app.use('/api/albums', albumManagementRouter);
 app.use(externalPagesRouter);
 app.use(healthRouter);
 app.use('/api/analytics', analyticsRouter);
