@@ -19,8 +19,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const configPath = path.join(__dirname, '../../../config/config.json');
 
-// GET external links
-router.get('/', isAuthenticated, (req: Request, res: Response) => {
+// GET external links - public endpoint for navigation menu
+router.get('/', (req: Request, res: Response) => {
   try {
     const configData = JSON.parse(fs.readFileSync(configPath, 'utf8'));
     res.json({ links: configData.externalLinks || [] });
