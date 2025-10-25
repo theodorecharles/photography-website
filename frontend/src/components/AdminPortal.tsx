@@ -472,6 +472,9 @@ export default function AdminPortal() {
     setMessage(null);
     
     try {
+      // Keep track of the updated branding data to send
+      let updatedBranding = { ...branding };
+      
       // First upload avatar if there's a pending file
       if (pendingAvatarFile) {
         console.log('Uploading avatar file:', pendingAvatarFile.name, pendingAvatarFile.size, 'bytes');
@@ -487,6 +490,8 @@ export default function AdminPortal() {
         if (avatarRes.ok) {
           const data = await avatarRes.json();
           console.log('Avatar uploaded successfully:', data);
+          // Update both state and our local copy
+          updatedBranding.avatarPath = data.avatarPath;
           setBranding(prev => ({
             ...prev,
             avatarPath: data.avatarPath
@@ -503,14 +508,14 @@ export default function AdminPortal() {
         }
       }
 
-      // Then save branding settings
+      // Then save branding settings with the updated avatarPath
       const res = await fetch(`${API_URL}/api/branding`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
         credentials: 'include',
-        body: JSON.stringify(branding),
+        body: JSON.stringify(updatedBranding),
       });
 
       if (res.ok) {
