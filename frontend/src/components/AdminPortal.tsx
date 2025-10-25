@@ -509,7 +509,9 @@ export default function AdminPortal() {
     <div className="admin-portal">
       <div className="admin-container">
         <div className="admin-header">
-          <a href="/" className="btn-home">← Back to Site</a>
+          <button onClick={handleLogout} className="btn-logout">
+            Logout
+          </button>
           <div className="admin-tabs">
             <button
               className={`tab-button ${activeTab === 'albums' ? 'active' : ''}`}
@@ -793,12 +795,6 @@ export default function AdminPortal() {
           </div>
         </section>
         )}
-
-        <div className="admin-footer">
-          <button onClick={handleLogout} className="btn-logout">
-            Logout
-          </button>
-        </div>
       </div>
     </div>
   );
