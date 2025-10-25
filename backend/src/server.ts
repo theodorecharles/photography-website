@@ -162,7 +162,7 @@ if (!sessionSecret) {
 }
 
 // Determine cookie domain based on environment
-// For localhost, set domain to 'localhost' to share across different ports
+// For localhost, DON'T set domain (undefined) - browsers handle localhost specially
 // For production, extract the base domain to share across subdomains
 let cookieDomain: string | undefined = undefined;
 try {
@@ -170,8 +170,10 @@ try {
   const hostname = backendUrl.hostname;
   
   if (hostname === 'localhost' || hostname === '127.0.0.1') {
-    // For local development, set domain to 'localhost' to work across ports
-    cookieDomain = 'localhost';
+    // For local development, leave domain undefined
+    // Setting explicit 'localhost' can cause issues with cookies across ports
+    cookieDomain = undefined;
+    console.log('Cookie domain: undefined (localhost development)');
   } else {
     // For production, extract base domain (e.g., 'tedcharles.net' from 'api.tedcharles.net')
     // Set to '.domain.com' to share across subdomains
@@ -179,12 +181,24 @@ try {
     if (parts.length >= 2) {
       // Get last two parts (domain.tld)
       cookieDomain = '.' + parts.slice(-2).join('.');
+      console.log(`Cookie domain set to: ${cookieDomain}`);
     }
   }
-  console.log(`Cookie domain set to: ${cookieDomain}`);
 } catch (err) {
   console.warn('Could not parse backend URL for cookie domain, using undefined');
 }
+
+// Use the isProduction variable already defined above (line 56)
+// For localhost, disable SameSite to allow cross-port cookies
+// For production, use 'lax' for OAuth compatibility
+const sameSiteValue = isProduction ? 'lax' : false;
+
+console.log('Session cookie config:', {
+  secure: isProduction,
+  httpOnly: true,
+  sameSite: sameSiteValue,
+  domain: cookieDomain,
+});
 
 app.use(
   session({
@@ -192,10 +206,12 @@ app.use(
     resave: false,
     saveUninitialized: false,
     cookie: {
-      secure: config.frontend.apiUrl.startsWith('https://'), // HTTPS only in production
+      secure: isProduction, // HTTPS only in production
       httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
-      sameSite: 'lax', // 'lax' works for OAuth redirects and same-site requests
+      // Disable SameSite for localhost (different ports = cross-site)
+      // Use 'lax' for production (OAuth compatible)
+      sameSite: sameSiteValue as any,
       domain: cookieDomain,
     },
   })
@@ -204,6 +220,17 @@ app.use(
 // Initialize Passport and session support
 app.use(passport.initialize());
 app.use(passport.session());
+
+// Debug middleware - log requests to metrics endpoints
+if (!isProduction) {
+  app.use('/api/metrics', (req, res, next) => {
+    console.log(`[Metrics Request] ${req.method} ${req.path}`);
+    console.log('  Cookies:', req.headers.cookie || 'NONE');
+    console.log('  Session ID:', req.sessionID);
+    console.log('  Authenticated:', req.isAuthenticated());
+    next();
+  });
+}
 
 // Serve original photos with CORS headers
 app.use("/photos", express.static(photosDir, {

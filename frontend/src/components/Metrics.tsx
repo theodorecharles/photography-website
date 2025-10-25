@@ -14,6 +14,7 @@ import {
   ResponsiveContainer
 } from 'recharts';
 import { API_URL } from '../config';
+import { fetchWithRateLimitCheck } from '../utils/fetchWrapper';
 import './Metrics.css';
 
 interface Stats {
@@ -54,9 +55,7 @@ export default function Metrics() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`${API_URL}/api/metrics/stats?days=${timeRange}`, {
-        credentials: 'include',
-      });
+      const res = await fetchWithRateLimitCheck(`${API_URL}/api/metrics/stats?days=${timeRange}`);
 
       if (!res.ok) {
         throw new Error('Failed to load metrics');
@@ -75,36 +74,7 @@ export default function Metrics() {
   const loadVisitorsOverTime = async () => {
     setLoadingTimeSeries(true);
     try {
-      // Use very wide range to catch all events (timestamps may be in future due to clock issues)
-      const endTime = 1800000000000000; // Far future
-      const startTime = 1700000000000000; // Recent past
-
-      // Get the stream name from stats (if available), otherwise use default
-      const streamName = stats?.stream || 'website';
-
-      // Query for unique visitors per day
-      const sql = `
-        SELECT 
-          CAST(to_timestamp_micros(_timestamp) AS DATE) as date,
-          COUNT(DISTINCT client_ip) as count
-        FROM "${streamName}"
-        WHERE to_timestamp_micros(_timestamp) >= CURRENT_TIMESTAMP - INTERVAL '${timeRange}' DAY
-        GROUP BY CAST(to_timestamp_micros(_timestamp) AS DATE)
-        ORDER BY date ASC
-      `;
-
-      const res = await fetch(`${API_URL}/api/metrics/query`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-          sql,
-          startTime,
-          endTime,
-        }),
-      });
+      const res = await fetchWithRateLimitCheck(`${API_URL}/api/metrics/visitors-over-time?days=${timeRange}`);
 
       if (!res.ok) {
         throw new Error('Failed to load time series data');
