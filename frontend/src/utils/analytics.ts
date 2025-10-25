@@ -134,12 +134,13 @@ export function trackPhotoClick(photoId: string, album: string, photoTitle: stri
 /**
  * Track photo navigation in modal
  */
-export function trackPhotoNavigation(direction: 'next' | 'previous', photoId: string, album: string) {
+export function trackPhotoNavigation(direction: 'next' | 'previous', photoId: string, album: string, viewDuration?: number) {
   sendEvent({
     event_type: 'photo_navigation',
     direction: direction,
     photo_id: photoId,
     album: album,
+    view_duration_ms: viewDuration,
   });
 }
 

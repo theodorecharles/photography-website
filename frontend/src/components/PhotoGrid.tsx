@@ -141,18 +141,22 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
         const currentIndex = photos.findIndex((p) => p.id === selectedPhoto.id);
         const prevIndex = (currentIndex - 1 + photos.length) % photos.length;
         const prevPhoto = photos[prevIndex];
+        // Calculate view duration of current photo before navigating
+        const viewDuration = modalOpenTimeRef.current ? Date.now() - modalOpenTimeRef.current : undefined;
         setModalImageLoaded(false);
         setSelectedPhoto(prevPhoto);
         modalOpenTimeRef.current = Date.now(); // Reset timer for new photo
-        trackPhotoNavigation('previous', prevPhoto.id, prevPhoto.album);
+        trackPhotoNavigation('previous', prevPhoto.id, prevPhoto.album, viewDuration);
       } else if (e.key === "ArrowRight") {
         const currentIndex = photos.findIndex((p) => p.id === selectedPhoto.id);
         const nextIndex = (currentIndex + 1) % photos.length;
         const nextPhoto = photos[nextIndex];
+        // Calculate view duration of current photo before navigating
+        const viewDuration = modalOpenTimeRef.current ? Date.now() - modalOpenTimeRef.current : undefined;
         setModalImageLoaded(false);
         setSelectedPhoto(nextPhoto);
         modalOpenTimeRef.current = Date.now(); // Reset timer for new photo
-        trackPhotoNavigation('next', nextPhoto.id, nextPhoto.album);
+        trackPhotoNavigation('next', nextPhoto.id, nextPhoto.album, viewDuration);
       }
     };
 
