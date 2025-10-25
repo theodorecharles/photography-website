@@ -41,23 +41,26 @@ export function loadSecureConfig() {
 }
 
 /**
- * Validate that required environment variables are set in production
+ * Validate that required security configuration is present in production
  */
 export function validateProductionSecurity() {
   if (process.env.NODE_ENV === 'production') {
-    const requiredEnvVars = [
-      'GOOGLE_CLIENT_SECRET',
-      'SESSION_SECRET',
-      'ANALYTICS_PASSWORD',
-      'ANALYTICS_HMAC_SECRET'
+    // Load the config to check if required values are present
+    const config = loadSecureConfig();
+    
+    const requiredChecks = [
+      { name: 'GOOGLE_CLIENT_SECRET', value: config.auth?.google?.clientSecret },
+      { name: 'SESSION_SECRET', value: config.auth?.sessionSecret },
+      { name: 'ANALYTICS_PASSWORD', value: config.analytics?.openobserve?.password },
+      { name: 'ANALYTICS_HMAC_SECRET', value: config.analytics?.hmacSecret }
     ];
     
-    const missing = requiredEnvVars.filter(envVar => !process.env[envVar]);
+    const missing = requiredChecks.filter(check => !check.value);
     
     if (missing.length > 0) {
-      console.error('❌ SECURITY ERROR: Missing required environment variables in production:');
-      missing.forEach(envVar => console.error(`  - ${envVar}`));
-      console.error('\nPlease set these environment variables to secure your application.');
+      console.error('❌ SECURITY ERROR: Missing required security configuration in production:');
+      missing.forEach(check => console.error(`  - ${check.name}`));
+      console.error('\nPlease ensure these values are properly configured in config.json.');
       process.exit(1);
     }
   }
