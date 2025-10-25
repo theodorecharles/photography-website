@@ -12,6 +12,11 @@ import config from '../config.ts';
 
 const router = Router();
 
+// Handle OPTIONS preflight for CORS
+router.options('/track', (req, res) => {
+  res.status(200).end();
+});
+
 /**
  * Verify HMAC signature
  */
