@@ -45,7 +45,7 @@
       "organization": "your-organization-id",
       "stream": "website",
       "username": "your-username",
-      "password": "your-password",
+      "password": "your-password"
     }
   },
   "externalLinks": [
@@ -63,7 +63,7 @@
     },
     {
       "title": "GitHub",
-      "url": "https://github.com/yourusername/photography-website"
+      "url": "https://github.com/yourusername/"
     },
     {
       "title": "Login",
