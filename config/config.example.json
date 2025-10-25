@@ -15,8 +15,8 @@
     "security": {
       "allowedHosts": ["localhost:3000", "localhost:5173"],
       "rateLimitWindowMs": 1000,
-      "rateLimitMaxRequests": 10,
-      "_comment_rateLimit": "Rate limiting: 10 requests per second per IP. Increase if needed for legitimate traffic."
+      "rateLimitMaxRequests": 30,
+      "_comment_rateLimit": "Rate limiting: 30 requests per second per IP. Adjust based on your needs (higher for image-heavy pages, lower for API-only)."
     },
     "auth": {
       "google": {
