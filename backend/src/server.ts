@@ -188,16 +188,24 @@ try {
   console.warn('Could not parse backend URL for cookie domain, using undefined');
 }
 
+// Use the isProduction variable already defined above (line 56)
+console.log('Session cookie config:', {
+  secure: isProduction,
+  httpOnly: true,
+  sameSite: 'lax',
+  domain: cookieDomain,
+});
+
 app.use(
   session({
     secret: sessionSecret,
     resave: false,
     saveUninitialized: false,
     cookie: {
-      secure: config.frontend.apiUrl.startsWith('https://'), // HTTPS only in production
+      secure: isProduction, // HTTPS only in production
       httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
-      sameSite: 'lax', // 'lax' works for OAuth redirects and same-site requests
+      sameSite: 'lax', // 'lax' works for OAuth and should work on localhost
       domain: cookieDomain,
     },
   })
@@ -206,6 +214,17 @@ app.use(
 // Initialize Passport and session support
 app.use(passport.initialize());
 app.use(passport.session());
+
+// Debug middleware - log requests to metrics endpoints
+if (!isProduction) {
+  app.use('/api/metrics', (req, res, next) => {
+    console.log(`[Metrics Request] ${req.method} ${req.path}`);
+    console.log('  Cookies:', req.headers.cookie || 'NONE');
+    console.log('  Session ID:', req.sessionID);
+    console.log('  Authenticated:', req.isAuthenticated());
+    next();
+  });
+}
 
 // Serve original photos with CORS headers
 app.use("/photos", express.static(photosDir, {
