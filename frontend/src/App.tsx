@@ -364,6 +364,7 @@ function App() {
   const [currentAlbum, setCurrentAlbum] = useState<string | undefined>(
     undefined
   );
+  const [showFooter, setShowFooter] = useState(false);
   const location = useLocation();
 
   // Global rate limit handler - any component can trigger this
@@ -375,6 +376,30 @@ function App() {
 
     return () => {
       delete (window as any).handleRateLimit;
+    };
+  }, []);
+
+  // Show footer when user scrolls down
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY;
+      const windowHeight = window.innerHeight;
+      const documentHeight = document.documentElement.scrollHeight;
+      
+      // Show footer if scrolled down at least 200px or near bottom of page
+      if (scrollPosition > 200 || scrollPosition + windowHeight > documentHeight - 100) {
+        setShowFooter(true);
+      } else {
+        setShowFooter(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    // Check initial scroll position
+    handleScroll();
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
     };
   }, []);
 
@@ -617,17 +642,19 @@ function App() {
           } />
         </Routes>
       </main>
-      <Footer
-        albums={albums}
-        externalLinks={externalLinks}
-        currentAlbum={
-          location.pathname === "/"
-            ? "homepage"
-            : location.pathname.startsWith("/album/")
-            ? location.pathname.split("/album/")[1].split("/")[0].split("?")[0].trim() || undefined
-            : undefined
-        }
-      />
+      <div className={`footer-wrapper ${showFooter ? 'visible' : ''}`}>
+        <Footer
+          albums={albums}
+          externalLinks={externalLinks}
+          currentAlbum={
+            location.pathname === "/"
+              ? "homepage"
+              : location.pathname.startsWith("/album/")
+              ? location.pathname.split("/album/")[1].split("/")[0].split("?")[0].trim() || undefined
+              : undefined
+          }
+        />
+      </div>
     </div>
   );
 }
