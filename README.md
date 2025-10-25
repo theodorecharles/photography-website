@@ -1,16 +1,41 @@
 # Photography Website
 
-A modern, secure, and performant photography portfolio website built with React, TypeScript, Express, and Node.js. Features optimized image delivery, album management, and a responsive design.
+A modern, secure, and fully-featured photography portfolio website built with React, TypeScript, Express, and Node.js. Features optimized image delivery, comprehensive admin panel, analytics tracking, and responsive design.
 
 ## Features
 
+### Core Features
 - 📸 **Album-based Photo Organization** - Organize photos in folders that automatically become albums
 - 🚀 **Optimized Image Delivery** - Automatic image optimization with multiple sizes (thumbnail, modal, download)
-- 🔒 **Security Hardened** - Rate limiting, CORS protection, input validation, CSP headers, and more
 - 📱 **Responsive Design** - Works beautifully on desktop, tablet, and mobile devices
 - ⚡ **Fast Performance** - Lazy loading, caching, and optimized builds
-- 🎨 **Customizable** - Easy configuration for your own domain and branding
-- 🔗 **External Links** - Configurable external links menu
+
+### Admin Panel
+- 🔐 **Google OAuth Authentication** - Secure admin login with authorized email whitelist
+- 🎨 **Branding Management** - Customize site name, colors, meta tags, and avatar via UI
+- 📝 **Album Management** - Create/delete albums directly from the admin panel
+- 🖼️ **Photo Upload** - Upload and manage photos with automatic optimization
+- 🔗 **Links Management** - Configure external navigation links via admin interface
+- 📊 **Visual Admin Dashboard** - Intuitive interface for all site management
+
+### Analytics & Tracking
+- 📈 **OpenObserve Integration** - Track user interactions and page views
+- 🔒 **HMAC-Signed Events** - Secure analytics with tamper-proof event signatures
+- 📊 **Comprehensive Event Tracking** - Page views, photo interactions, admin actions
+- 🎯 **Privacy-Focused** - Server-side analytics with no client-side tracking scripts
+
+### Security
+- 🔒 **Security Hardened** - Rate limiting, CORS protection, input validation, CSP headers
+- 🛡️ **CSRF Protection** - Token-based CSRF protection on all mutating operations
+- 🔐 **Path Traversal Protection** - Sanitized inputs on all file operations
+- 🚨 **Host Validation** - Prevents open redirect attacks
+- ✅ **HMAC Validation** - Analytics events verified with cryptographic signatures
+
+### Developer Experience
+- 📚 **Complete API Documentation** - OpenAPI 3.0 specification with Swagger support
+- 🔄 **Automated Deployment** - PM2 ecosystem and restart scripts
+- 🛠️ **Type Safety** - Full TypeScript implementation
+- 📖 **Comprehensive Docs** - API guides, security policies, and examples
 
 ## Project Structure
 
@@ -19,19 +44,37 @@ photography-website/
 ├── backend/                 # Express API server
 │   ├── src/
 │   │   ├── server.ts       # Main server file
+│   │   ├── security.ts     # Security middleware (CSRF, rate limiting)
 │   │   └── routes/         # API route handlers
+│   │       ├── albums.ts           # Public album/photo endpoints
+│   │       ├── album-management.ts # Admin album operations
+│   │       ├── auth.ts             # Google OAuth authentication
+│   │       ├── branding.ts         # Branding configuration
+│   │       ├── external-links.ts   # External links management
+│   │       ├── analytics.ts        # Analytics event tracking
+│   │       ├── health.ts           # Health check
+│   │       ├── sitemap.ts          # Dynamic sitemap generation
+│   │       └── year.ts             # Current year endpoint
 │   ├── dist/               # Compiled JavaScript (generated)
+│   ├── openapi.yaml        # OpenAPI 3.0 API specification
+│   ├── API.md              # API documentation and guide
 │   └── package.json
 ├── frontend/               # React frontend
 │   ├── src/
 │   │   ├── App.tsx         # Main React component
 │   │   ├── components/     # React components
+│   │   │   ├── AdminPortal.tsx  # Admin dashboard
+│   │   │   ├── PhotoGrid.tsx    # Photo gallery
+│   │   │   ├── Footer.tsx       # Site footer
+│   │   │   └── SEO.tsx          # SEO meta tags
+│   │   ├── utils/
+│   │   │   └── analytics.ts     # Analytics tracking utilities
 │   │   └── config.ts       # Frontend configuration
 │   ├── public/             # Static assets
 │   ├── dist/               # Production build (generated)
 │   ├── server.js           # Production server
 │   └── package.json
-├── photos/                 # Your original photos (create this folder)
+├── photos/                 # Your original photos
 │   ├── album1/
 │   ├── album2/
 │   └── homepage/          # Photos for homepage
@@ -43,7 +86,8 @@ photography-website/
 │   ├── config.json        # Main configuration (all settings)
 │   └── config.example.json # Configuration template
 ├── optimize_images.sh     # Image optimization script
-└── restart.sh            # Deployment restart script
+├── restart.sh            # Deployment restart script
+└── SECURITY.md           # Security policies and guidelines
 ```
 
 ## Quick Start
@@ -53,13 +97,14 @@ photography-website/
 - **Node.js** 18+ and npm
 - **ImageMagick** (for image optimization): `brew install imagemagick` (macOS) or `apt-get install imagemagick` (Linux)
 - **Git** (for cloning)
+- **Google OAuth Credentials** (for admin authentication - optional for public viewing)
 
 ### Installation
 
 1. **Clone the repository**
 
    ```bash
-   git clone https://github.com/yourusername/photography-website.git
+   git clone https://github.com/theodoreroddy/photography-website.git
    cd photography-website
    ```
 
@@ -74,43 +119,49 @@ photography-website/
 
 3. **Configure your settings**
 
-   The project uses a single configuration file: `config/config.json`
-
-   This file is already set up with default development settings. To customize:
-
-   ```bash
-   # The config.json file contains both development and production settings
-   # Edit config/config.json to update your domains, ports, and directories
-   ```
-
-   For local development, the defaults should work as-is. For production, update the `production` section in `config/config.json`:
+   Edit `config/config.json` to customize your site. Key sections to update:
 
    ```json
    {
-     "production": {
-       "frontend": {
-         "apiUrl": "https://api.yourdomain.com"
+     "branding": {
+       "siteName": "Your Name",
+       "primaryColor": "#4ade80",
+       "metaDescription": "Your photography portfolio"
+     },
+     "auth": {
+       "google": {
+         "clientId": "your-google-client-id",
+         "clientSecret": "your-google-client-secret"
        },
-       "backend": {
-         "allowedOrigins": ["https://yourdomain.com"]
+       "sessionSecret": "generate-a-random-secret-key",
+       "authorizedEmails": ["your-email@example.com"]
+     },
+     "analytics": {
+       "openobserve": {
+         "enabled": true,
+         "endpoint": "your-openobserve-endpoint",
+         "username": "your-username",
+         "password": "your-password"
        },
-       "security": {
-         "allowedHosts": ["yourdomain.com"]
-       }
+       "hmacSecret": "generate-a-random-hmac-secret"
      }
    }
    ```
+
+   **For local development**, the default settings work without authentication. For production with admin features, you'll need:
+   - Google OAuth credentials from [Google Cloud Console](https://console.cloud.google.com)
+   - OpenObserve account (optional, for analytics)
 
 4. **Set up your photos**
 
    ```bash
    mkdir photos
    mkdir photos/homepage
-   mkdir photos/album1
-   mkdir photos/album2
+   mkdir photos/nature
+   mkdir photos/portfolio
    ```
 
-   Copy your photos into these folders. Each folder becomes an album! The folder name is the album name.
+   Copy your photos into these folders. Each folder becomes an album!
 
 5. **Optimize your images**
 
@@ -119,28 +170,9 @@ photography-website/
    ./optimize_images.sh
    ```
 
-   This creates optimized versions (thumbnails, modal views, and downloads) of all your photos.
+   This creates three optimized versions of each photo (thumbnail, modal, download).
 
-6. **Configure external links** (optional)
-
-   Edit the `externalLinks` section in `config/config.json`:
-
-   ```json
-   {
-     "externalLinks": [
-       {
-         "title": "My Blog",
-         "url": "https://blog.example.com"
-       },
-       {
-         "title": "YouTube",
-         "url": "https://youtube.com/@yourname"
-       }
-     ]
-   }
-   ```
-
-7. **Start development servers**
+6. **Start development servers**
 
    In separate terminal windows:
 
@@ -154,53 +186,176 @@ photography-website/
    npm run dev
    ```
 
-8. **Open your browser**
+7. **Open your browser**
 
    Visit http://localhost:5173
 
+## Admin Panel
+
+### Accessing the Admin Panel
+
+1. Navigate to `/admin` on your site
+2. Click "Sign in with Google"
+3. Authenticate with an authorized email (configured in `config.json`)
+
+### Admin Features
+
+The admin panel provides a complete interface for managing your site:
+
+#### **Albums Tab**
+- Create new albums
+- Delete albums (removes all photos)
+- Upload photos (up to 20 files, 50MB each)
+- Delete individual photos
+- Real-time optimization status
+
+#### **Links Tab**
+- Add/edit/remove external navigation links
+- Support for external URLs or relative paths
+- Drag-and-drop ordering (via JSON editor)
+
+#### **Branding Tab**
+- Upload avatar/logo (automatically becomes favicon)
+- Edit site name
+- Configure SEO meta description and keywords
+- Real-time preview of changes
+
+All changes are saved to `config/config.json` and apply immediately.
+
+## Analytics
+
+### Event Tracking
+
+The site automatically tracks:
+
+**Public Events:**
+- Page views
+- Photo clicks and navigation
+- Photo downloads
+- Album navigation
+- External link clicks
+
+**Admin Events:**
+- Login/logout
+- Tab navigation
+- Album create/delete
+- Photo upload/delete
+- Settings updates
+
+### OpenObserve Integration
+
+Analytics events are sent to OpenObserve with HMAC signatures for security:
+
+1. Events generated in frontend (`utils/analytics.ts`)
+2. Signed with HMAC-SHA256
+3. Proxied through backend (`/api/analytics/track`)
+4. Forwarded to OpenObserve with authentication
+
+This keeps credentials secure and prevents event tampering.
+
+### Configuration
+
+```json
+{
+  "analytics": {
+    "openobserve": {
+      "enabled": true,
+      "endpoint": "https://your-o2-instance.com/api/org/stream/_json",
+      "username": "your-email@example.com",
+      "password": "your-api-token"
+    },
+    "hmacSecret": "your-256-bit-hex-secret"
+  }
+}
+```
+
+Generate secrets:
+```bash
+# Session secret (64 hex chars)
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+
+# HMAC secret (64 hex chars)
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+```
+
+## API Documentation
+
+### Complete API Reference
+
+See `backend/API.md` for detailed documentation including:
+- Authentication flows
+- All endpoint specifications
+- Request/response examples
+- Security details
+- Error codes
+
+### OpenAPI Specification
+
+View the interactive API documentation:
+
+```bash
+# Using Swagger UI
+docker run -p 8080:8080 -e SWAGGER_JSON=/openapi.yaml \
+  -v $(pwd)/backend:/app swaggerapi/swagger-ui
+
+# Using Redoc
+npx @redocly/cli preview-docs backend/openapi.yaml
+```
+
+Or paste `backend/openapi.yaml` into [Swagger Editor](https://editor.swagger.io/)
+
+### Quick API Examples
+
+```bash
+# List albums
+curl https://api.yourdomain.com/api/albums
+
+# Get photos in album
+curl https://api.yourdomain.com/api/albums/nature/photos
+
+# Get branding config
+curl https://api.yourdomain.com/api/branding
+
+# Health check
+curl https://api.yourdomain.com/api/health
+```
+
 ## Photo Management
 
-### Adding Photos
+### Adding Photos via Admin Panel
 
-1. Create a folder in the `photos/` directory for each album
-2. Add your photos (`.jpg`, `.jpeg`, `.png`, `.gif`) to these folders
-3. Run the optimization script: `./optimize_images.sh`
-4. Refresh your website - the new album appears automatically!
+1. Log in to `/admin`
+2. Select or create an album
+3. Click "Upload Photos"
+4. Select up to 20 images (50MB each)
+5. Photos are automatically optimized in the background
 
-### Album Organization
+### Adding Photos via File System
 
-- **Folder name = Album name**: A folder named `vacation` becomes an album called "Vacation"
-- **Homepage album**: Put photos in `photos/homepage/` to show on the homepage
-- **Album names**: Use lowercase with hyphens or underscores (e.g., `my-trip`, `family_photos`)
-- **File formats**: Supported formats are JPG, JPEG, PNG, and GIF
+1. Create a folder in `photos/` directory
+2. Add photos (`.jpg`, `.jpeg`, `.png`, `.gif`)
+3. Run `./optimize_images.sh`
+4. Refresh website - album appears automatically
 
 ### Image Optimization
 
-The `optimize_images.sh` script creates three versions of each photo:
+Three versions are generated:
+- **Thumbnail** (400x400px, 60% quality) - Grid display
+- **Modal** (1920px max, 60% quality) - Lightbox view
+- **Download** (4096px max, 100% quality) - Full resolution
 
-- **Thumbnail** (1024px max, 60% quality) - For grid display
-- **Modal** (2048px max, 60% quality) - For lightbox/modal view
-- **Download** (4096px max, 100% quality) - For full-resolution downloads
-
-You can adjust these settings in `optimize_images.sh`:
-
+Configure in `optimize_images.sh`:
 ```bash
 THUMBNAIL_QUALITY=60
 MODAL_QUALITY=60
 DOWNLOAD_QUALITY=100
-
-THUMBNAIL_MAX_DIM=1024
-MODAL_MAX_DIM=2048
-DOWNLOAD_MAX_DIM=4096
 ```
 
 ## Configuration
 
-All configuration is managed in a single file: **`config/config.json`**
+### Main Configuration File
 
-### Main Configuration (`config/config.json`)
-
-This file contains settings for both development and production environments:
+All settings in `config/config.json`:
 
 ```json
 {
@@ -221,113 +376,96 @@ This file contains settings for both development and production environments:
     }
   },
   "production": {
-    // ... same structure, but with your production domains
-  }
+    "frontend": {
+      "apiUrl": "https://api.yourdomain.com"
+    },
+    "backend": {
+      "allowedOrigins": [
+        "https://yourdomain.com",
+        "https://www.yourdomain.com"
+      ]
+    },
+    "security": {
+      "allowedHosts": ["yourdomain.com", "www.yourdomain.com"],
+      "redirectFrom": ["olddomain.com"],
+      "redirectTo": "yourdomain.com"
+    }
+  },
+  "branding": {
+    "siteName": "Your Name",
+    "avatarPath": "/photos/avatar.png",
+    "primaryColor": "#4ade80",
+    "secondaryColor": "#22c55e",
+    "metaDescription": "Photography portfolio",
+    "metaKeywords": "photography, portfolio"
+  },
+  "auth": {
+    "google": {
+      "clientId": "your-client-id",
+      "clientSecret": "your-client-secret"
+    },
+    "sessionSecret": "your-session-secret",
+    "authorizedEmails": ["admin@example.com"]
+  },
+  "analytics": {
+    "openobserve": {
+      "enabled": true,
+      "endpoint": "https://...",
+      "username": "...",
+      "password": "..."
+    },
+    "hmacSecret": "your-hmac-secret"
+  },
+  "externalLinks": [
+    {"title": "Youtube", "url": "https://youtube.com/@yourname"},
+    {"title": "Github", "url": "https://github.com/yourusername"}
+  ]
 }
 ```
 
-**What each setting does:**
+### Google OAuth Setup
 
-- `frontend.port` - Port for the frontend server (production)
-- `frontend.apiUrl` - Backend API URL
-- `backend.port` - Port for the backend server
-- `backend.photosDir` - Path to your photos directory (use `photos` - relative to project root)
-- `backend.allowedOrigins` - CORS allowed origins (your frontend domains)
-- `security.allowedHosts` - Valid hostnames (prevents redirect attacks)
-- `security.rateLimitWindowMs` - Rate limit time window in milliseconds
-- `security.rateLimitMaxRequests` - Max requests per window per IP
-- `security.redirectFrom` - (Optional) Old domains to redirect from
-- `security.redirectTo` - (Optional) New domain to redirect to
-- `externalLinks` - Array of external links shown in the navigation menu
-  - Each link has a `title` and `url`
-  - Internal links (like `/primes/`) work too
-
-**Note:** The `optimized` directory is always `optimized/` at the project root (generated by `optimize_images.sh`).
-
-### Branding
-
-- **Site title**: Edit `frontend/src/App.tsx` - look for "Ted Charles"
-- **Avatar**: Replace `photos/derpatar.png` with your own avatar image
-- **Favicon**: Replace `frontend/public/vite.svg`
-- **Colors**: Edit `frontend/src/App.css` and `frontend/src/index.css`
+1. Go to [Google Cloud Console](https://console.cloud.google.com)
+2. Create a new project
+3. Enable Google+ API
+4. Create OAuth 2.0 credentials
+5. Add authorized redirect URIs:
+   - Development: `http://localhost:3001/api/auth/google/callback`
+   - Production: `https://api.yourdomain.com/api/auth/google/callback`
+6. Copy Client ID and Client Secret to `config.json`
 
 ## Production Deployment
 
 ### Build for Production
 
 ```bash
-# Build backend
-cd backend
-npm run build
-
-# Build frontend
-cd ../frontend
-npm run build
-```
-
-### Configure for Production
-
-Edit `config/config.json` and update the `production` section with your domain and paths:
-
-```json
-{
-  "production": {
-    "frontend": {
-      "port": 3000,
-      "apiUrl": "https://api.yourdomain.com"
-    },
-    "backend": {
-      "port": 3001,
-      "photosDir": "./photos",
-      "allowedOrigins": ["https://yourdomain.com", "https://www.yourdomain.com"]
-    },
-    "security": {
-      "allowedHosts": ["yourdomain.com", "www.yourdomain.com"],
-      "rateLimitWindowMs": 1000,
-      "rateLimitMaxRequests": 50,
-      "redirectFrom": ["olddomain.com"],
-      "redirectTo": "yourdomain.com"
-    }
-  }
-}
-```
-
-Set the NODE_ENV environment variable:
-
-```bash
-export NODE_ENV=production
+# Build both frontend and backend
+cd backend && npm run build
+cd ../frontend && npm run build
 ```
 
 ### Using PM2 (Recommended)
-
-The project includes a `ecosystem.config.cjs` file that properly configures both services with production environment variables.
 
 ```bash
 # Install PM2 globally
 npm install -g pm2
 
-# Start both services using the ecosystem file
+# Start both services
 pm2 start ecosystem.config.cjs
 
-# Save PM2 configuration for auto-restart on reboot
+# Save configuration for auto-restart
 pm2 save
 pm2 startup
 
-# View running services
-pm2 list
-
-# View logs
-pm2 logs
-
-# Restart services
-pm2 restart ecosystem.config.cjs --update-env
+# Management commands
+pm2 list          # View running services
+pm2 logs          # View logs
+pm2 restart all   # Restart all services
 ```
 
-**Important:** The ecosystem file sets `NODE_ENV=production` automatically. Edit `ecosystem.config.cjs` to change paths or ports if needed.
+The `ecosystem.config.cjs` file automatically sets `NODE_ENV=production`.
 
 ### Using the Restart Script
-
-The included `restart.sh` script automates deployment:
 
 ```bash
 chmod +x restart.sh
@@ -335,92 +473,162 @@ chmod +x restart.sh
 ```
 
 This script:
-
 1. Pulls latest changes from Git
 2. Optimizes all images
 3. Builds backend and frontend
-4. Restarts both services with PM2
+4. Restarts services with PM2
+
+### Environment Setup
+
+```bash
+export NODE_ENV=production
+```
+
+Edit `config/config.json` production section for your domain.
 
 ## Security Features
 
-This project includes comprehensive security measures:
+### Implemented Protections
 
 - ✅ **Rate Limiting** - 50 requests/second per IP (configurable)
-- ✅ **CORS Protection** - Whitelist-based origin validation
+- ✅ **CORS Protection** - Whitelist-based origin validation  
+- ✅ **CSRF Protection** - Token-based protection on all mutations
 - ✅ **Input Validation** - Path traversal protection, sanitized inputs
-- ✅ **Security Headers** - CSP, X-Frame-Options, XSS protection, etc.
+- ✅ **Security Headers** - CSP, X-Frame-Options, HSTS, XSS protection
 - ✅ **HTTPS Enforcement** - Automatic redirect in production
 - ✅ **Host Validation** - Prevents open redirect attacks
 - ✅ **Request Size Limits** - Prevents memory exhaustion
-- ✅ **No Authentication Required** - Public portfolio site (as intended)
+- ✅ **HMAC Signatures** - Cryptographically signed analytics events
+- ✅ **OAuth Authentication** - Secure Google OAuth with email whitelist
+- ✅ **Session Security** - HTTP-only, secure cookies with secrets
+
+### Security Best Practices
+
+- Keep `config.json` secrets private (not in Git)
+- Use strong random secrets (32+ bytes)
+- Restrict authorized emails to trusted users
+- Enable HTTPS in production
+- Keep dependencies updated
+- Review `SECURITY.md` for detailed policies
 
 ## Development
 
 ### Project Stack
 
-- **Frontend**: React 19, TypeScript, React Router, Material-UI
-- **Backend**: Node.js, Express 5, TypeScript
-- **Build Tools**: Vite, TypeScript Compiler
-- **Image Processing**: ImageMagick (via shell script)
+**Frontend:**
+- React 19 + TypeScript
+- React Router 7
+- Vite (build tool)
+- Custom CSS
+
+**Backend:**
+- Node.js 18+
+- Express 5 + TypeScript
+- Passport.js (OAuth)
+- Multer (file uploads)
+- csurf (CSRF protection)
+
+**Image Processing:**
+- ImageMagick (shell script)
 
 ### Available Scripts
 
 **Backend:**
-
-- `npm run dev` - Start development server with hot reload
+- `npm run dev` - Development server with hot reload
 - `npm run build` - Build for production
 - `npm start` - Run production build
 
 **Frontend:**
-
-- `npm run dev` - Start Vite dev server
+- `npm run dev` - Vite dev server (port 5173)
 - `npm run build` - Build for production
 - `npm run preview` - Preview production build
-- `npm start` - Run production server (server.js)
+- `npm start` - Run production server
+
+### Development Workflow
+
+1. Make changes to source files
+2. Hot reload automatically updates
+3. Test changes locally
+4. Commit to Git
+5. Run `./restart.sh` on production server
 
 ### Adding New Features
 
-1. **New API Endpoints**: Add routes in `backend/src/routes/`
-2. **New React Components**: Add components in `frontend/src/components/`
-3. **New Pages**: Add routes in `frontend/src/App.tsx`
+**New API Endpoint:**
+1. Create route file in `backend/src/routes/`
+2. Add authentication middleware if needed
+3. Register route in `backend/src/server.ts`
+4. Update `backend/openapi.yaml`
+
+**New Frontend Component:**
+1. Create component in `frontend/src/components/`
+2. Add route in `frontend/src/App.tsx` if needed
+3. Import and use in parent components
+
+**New Analytics Event:**
+1. Add tracking function in `frontend/src/utils/analytics.ts`
+2. Call function where event occurs
+3. Document event type in `backend/openapi.yaml`
 
 ## Troubleshooting
 
 ### Images not showing
-
-- Check that `optimize_images.sh` ran successfully
-- Verify `photos/` and `optimized/` directories exist
-- Check browser console for CORS errors
-- Ensure backend ALLOWED_ORIGINS includes your frontend URL
+- Run `./optimize_images.sh`
+- Check `optimized/` directory exists
+- Verify backend is serving files correctly
+- Check browser console for errors
 
 ### CORS errors
+- Update `allowedOrigins` in `config.json`
+- Restart backend server
+- Clear browser cache
 
-- Update `backend/.env` ALLOWED_ORIGINS to include your frontend domain
-- Restart the backend server after changing .env
+### Authentication not working
+- Verify Google OAuth credentials
+- Check authorized redirect URIs
+- Confirm email is in `authorizedEmails` list
+- Check browser cookies are enabled
+
+### Analytics not tracking
+- Verify `hmacSecret` is configured
+- Check OpenObserve credentials
+- View backend logs for errors
+- Test with: `curl -X POST http://localhost:3001/api/analytics/track`
 
 ### Rate limiting (429 errors)
-
-- Check rate limit configuration in `backend/src/server.ts`
-- Rate limit is 50 requests/second by default
-- Only applies to `/api/*` endpoints
+- Increase `rateLimitMaxRequests` in config
+- Check if legitimate traffic or attack
+- Review rate limit logs
 
 ### Build errors
-
-- Delete `node_modules` and `package-lock.json` in both frontend and backend
-- Run `npm install` again
+- Delete `node_modules` and reinstall
 - Ensure Node.js version is 18+
+- Check TypeScript compiler errors
+- Clear `dist/` directories
 
 ## License
 
-See the LICENSE section on the website footer (configurable in `frontend/src/components/License.tsx`).
+Creative Commons Attribution 4.0 International (CC BY 4.0)
+
+See the `/license` page on the website or `frontend/src/components/License.tsx` for details.
 
 ## Contributing
 
-Feel free to submit issues and pull requests!
+Contributions welcome! Please:
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Submit a pull request
+
+## Security
+
+Found a security issue? Please review `SECURITY.md` and report responsibly to me@tedcharles.net
 
 ## Credits
 
-Built with ❤️ using React, TypeScript, Express, and modern web technologies.
+Built with ❤️ by [Ted Charles](https://tedcharles.net)
+
+Using React, TypeScript, Express, and modern web technologies.
 
 ---
 
@@ -430,36 +638,63 @@ Built with ❤️ using React, TypeScript, Express, and modern web technologies.
 
 ```bash
 # Development
-cd backend && npm run dev        # Start backend
-cd frontend && npm run dev       # Start frontend
-./optimize_images.sh             # Optimize images
+cd backend && npm run dev              # Start backend
+cd frontend && npm run dev             # Start frontend
+./optimize_images.sh                   # Optimize images
 
 # Production
-./restart.sh                     # Deploy everything
-pm2 list                         # Check running services
-pm2 logs                         # View logs
+./restart.sh                           # Deploy everything
+pm2 list                               # Check services
+pm2 logs                               # View logs
+pm2 restart all                        # Restart services
 
-# Image Management
-mkdir photos/new-album           # Create new album
-cp *.jpg photos/new-album/       # Add photos
-./optimize_images.sh             # Optimize new photos
+# Photo Management
+mkdir photos/new-album                 # Create album
+cp *.jpg photos/new-album/             # Add photos
+./optimize_images.sh                   # Optimize
+
+# Admin
+open http://localhost:5173/admin       # Local admin
+open https://yourdomain.com/admin      # Production admin
 ```
 
 ### Important Files
 
-- `config/config.json` - **Main configuration file** (all settings, domains, external links, etc.)
-- `config/config.example.json` - Configuration template for new users
-- `photos/` - Your original photos (organized in album folders)
-- `optimized/` - Generated optimized images (auto-created by script)
-- `optimize_images.sh` - Image optimization script
-- `restart.sh` - Deployment script
+| File | Purpose |
+|------|---------|
+| `config/config.json` | **Main configuration** - all settings |
+| `backend/openapi.yaml` | Complete API specification |
+| `backend/API.md` | API documentation guide |
+| `SECURITY.md` | Security policies |
+| `optimize_images.sh` | Image optimization script |
+| `restart.sh` | Deployment automation |
+| `ecosystem.config.cjs` | PM2 configuration |
 
 ### Ports
 
-- Frontend Dev: 5173 (Vite)
-- Frontend Prod: 3000 (configurable)
-- Backend: 3001 (configurable)
+| Service | Development | Production |
+|---------|-------------|------------|
+| Frontend (Vite) | 5173 | - |
+| Frontend (Prod) | - | 3000 |
+| Backend | 3001 | 3001 |
+
+### Directory Structure
+
+| Directory | Purpose | Tracked in Git |
+|-----------|---------|----------------|
+| `photos/` | Original photos | ❌ No |
+| `optimized/` | Generated images | ❌ No |
+| `backend/dist/` | Compiled JS | ❌ No |
+| `frontend/dist/` | Production build | ❌ No |
+| `config/config.json` | Configuration | ⚠️ Exclude secrets |
 
 ---
 
-For more information or support, please open an issue on GitHub.
+## Links
+
+- **Live Demo**: [tedcharles.net](https://tedcharles.net)
+- **Repository**: [github.com/theodoreroddy/photography-website](https://github.com/theodoreroddy/photography-website)
+- **Issues**: [Submit an issue](https://github.com/theodoreroddy/photography-website/issues)
+- **API Docs**: See `backend/API.md` or `backend/openapi.yaml`
+
+For questions or support, please open an issue on GitHub or email me@tedcharles.net
