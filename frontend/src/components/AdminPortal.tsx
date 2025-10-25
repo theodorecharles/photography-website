@@ -8,10 +8,13 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { API_URL } from '../config';
 import './AdminPortal.css';
 import {
-  trackAdminAuth,
+  trackLoginSucceeded,
+  trackLogout,
   trackAdminTabChange,
-  trackAlbumManagement,
-  trackPhotoManagement,
+  trackAlbumCreated,
+  trackAlbumDeleted,
+  trackPhotoUploaded,
+  trackPhotoDeleted,
   trackExternalLinksUpdate,
   trackBrandingUpdate,
   trackAvatarUpload,
@@ -134,7 +137,7 @@ export default function AdminPortal() {
         if (data.authenticated) {
           console.log('[AdminPortal] User is authenticated, loading data');
           // Track admin portal access
-          trackAdminAuth('login', data.user?.email);
+          trackLoginSucceeded(data.user?.email, data.user?.name);
           loadExternalLinks();
           loadBranding();
           loadAlbums();
@@ -239,7 +242,7 @@ export default function AdminPortal() {
       if (res.ok) {
         setMessage({ type: 'success', text: 'Album created successfully!' });
         // Track album creation
-        trackAlbumManagement('create', newAlbumName.trim());
+        trackAlbumCreated(newAlbumName.trim());
         setNewAlbumName('');
         loadAlbums();
         // Notify main app to refresh navigation
@@ -268,7 +271,7 @@ export default function AdminPortal() {
       if (res.ok) {
         setMessage({ type: 'success', text: 'Album deleted successfully!' });
         // Track album deletion
-        trackAlbumManagement('delete', album);
+        trackAlbumDeleted(album);
         if (selectedAlbum === album) {
           setSelectedAlbum(null);
           setAlbumPhotos([]);
@@ -345,8 +348,13 @@ export default function AdminPortal() {
         setMessage({ type: 'success', text: 'Photos uploaded! Optimizing...' });
         
         // Track photo upload
-        const uploadCount = data.files ? data.files.length : files.length;
-        trackPhotoManagement('upload', selectedAlbum, uploadCount);
+        const uploadedFiles = data.files || [];
+        const photoTitles = uploadedFiles.map((f: any) => {
+          const filename = f.filename || f;
+          // Generate title from filename by removing extension and replacing separators
+          return filename.replace(/\.[^/.]+$/, '').replace(/[-_]/g, ' ');
+        });
+        trackPhotoUploaded(selectedAlbum, uploadedFiles.length, photoTitles);
         
         // Reload photos to get the new photo IDs
         await loadAlbumPhotos(selectedAlbum);
@@ -391,7 +399,8 @@ export default function AdminPortal() {
       if (res.ok) {
         setMessage({ type: 'success', text: 'Photo deleted successfully!' });
         // Track photo deletion
-        trackPhotoManagement('delete', album, undefined, photoId);
+        const photoTitle = photoId.replace(/\.[^/.]+$/, '').replace(/[-_]/g, ' ');
+        trackPhotoDeleted(album, photoId, photoTitle);
         loadAlbumPhotos(album);
       } else {
         const data = await res.json();
@@ -527,7 +536,7 @@ export default function AdminPortal() {
   const handleLogout = async () => {
     try {
       // Track logout before actually logging out
-      trackAdminAuth('logout', authStatus?.user?.email);
+      trackLogout(authStatus?.user?.email);
       await fetch(`${API_URL}/api/auth/logout`, {
         method: 'POST',
         credentials: 'include',

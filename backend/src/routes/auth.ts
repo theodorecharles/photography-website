@@ -135,8 +135,7 @@ router.get(
         const reason = err.message || 'failed';
         // Track authentication failure
         sendAnalyticsEvent({
-          event_type: 'auth_result',
-          success: false,
+          event_type: 'login_failed',
           failure_reason: reason === 'no_email' ? 'no_email' : reason === 'unauthorized' ? 'unauthorized_email' : 'oauth_error',
           error_message: err.message || 'unknown',
         });
@@ -149,8 +148,7 @@ router.get(
         }
         // Track authentication failure
         sendAnalyticsEvent({
-          event_type: 'auth_result',
-          success: false,
+          event_type: 'login_failed',
           failure_reason: 'no_user',
         });
         return res.redirect(`${frontendUrl}/auth/error?reason=failed`);
@@ -164,8 +162,7 @@ router.get(
           }
           // Track authentication failure
           sendAnalyticsEvent({
-            event_type: 'auth_result',
-            success: false,
+            event_type: 'login_failed',
             failure_reason: 'login_error',
             user_email: user.email || 'unknown',
           });
@@ -180,8 +177,7 @@ router.get(
             }
             // Track authentication failure
             await sendAnalyticsEvent({
-              event_type: 'auth_result',
-              success: false,
+              event_type: 'login_failed',
               failure_reason: 'session_save_error',
               user_email: user.email || 'unknown',
             });
@@ -190,8 +186,7 @@ router.get(
           
           // Track successful authentication
           await sendAnalyticsEvent({
-            event_type: 'auth_result',
-            success: true,
+            event_type: 'login_succeeded',
             user_email: user.email || 'unknown',
             user_name: user.name || 'unknown',
           });

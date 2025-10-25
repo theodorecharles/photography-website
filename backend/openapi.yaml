@@ -804,11 +804,14 @@ components:
             - album_navigation
             - external_link_click
             - dropdown_interaction
-            - auth_result
-            - admin_auth
+            - login_succeeded
+            - login_failed
+            - logout
             - admin_tab_change
-            - admin_album_management
-            - admin_photo_management
+            - album_created
+            - album_deleted
+            - photo_uploaded
+            - photo_deleted
             - admin_external_links_update
             - admin_branding_update
             - admin_avatar_upload
@@ -847,11 +850,14 @@ components:
         - album_navigation: album, navigation_source (header/footer/mobile_menu)
         - external_link_click: link_title, link_url, navigation_source (header/mobile_menu)
         - dropdown_interaction: action (open/close), dropdown_type (albums/links/mobile_menu), close_reason (click/scroll/navigation/outside_click)
-        - auth_result: success (true/false), user_email, user_name (on success), failure_reason (on failure), error_message (on failure)
-        - admin_auth: action (login/logout), user_email
+        - login_succeeded: user_email, user_name
+        - login_failed: failure_reason (no_email/unauthorized_email/oauth_error/no_user/login_error/session_save_error), error_message, user_email
+        - logout: user_email
         - admin_tab_change: tab_name
-        - admin_album_management: action (create/delete), album_name
-        - admin_photo_management: action (upload/delete), album_name, photo_count, photo_id
+        - album_created: album
+        - album_deleted: album
+        - photo_uploaded: album, photo_count, photo_titles
+        - photo_deleted: album, photo_id, photo_title
         - admin_external_links_update: link_count
         - admin_branding_update: updated_fields, field_count
         - error: error_message, error_context

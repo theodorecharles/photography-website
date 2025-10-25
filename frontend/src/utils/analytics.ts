@@ -239,12 +239,22 @@ export function trackSearch(query: string, resultCount: number) {
 }
 
 /**
- * Track admin authentication
+ * Track successful admin login/portal access
  */
-export function trackAdminAuth(action: 'login' | 'logout', userEmail?: string) {
+export function trackLoginSucceeded(userEmail?: string, userName?: string) {
   sendEvent({
-    event_type: 'admin_auth',
-    action: action,
+    event_type: 'login_succeeded',
+    user_email: userEmail || 'unknown',
+    user_name: userName,
+  });
+}
+
+/**
+ * Track logout
+ */
+export function trackLogout(userEmail?: string) {
+  sendEvent({
+    event_type: 'logout',
     user_email: userEmail || 'unknown',
   });
 }
@@ -260,26 +270,46 @@ export function trackAdminTabChange(tabName: string) {
 }
 
 /**
- * Track album management actions
+ * Track album creation
  */
-export function trackAlbumManagement(action: 'create' | 'delete', albumName: string) {
+export function trackAlbumCreated(album: string) {
   sendEvent({
-    event_type: 'admin_album_management',
-    action: action,
-    album_name: albumName,
+    event_type: 'album_created',
+    album: album,
   });
 }
 
 /**
- * Track photo management actions
+ * Track album deletion
  */
-export function trackPhotoManagement(action: 'upload' | 'delete', albumName: string, photoCount?: number, photoId?: string) {
+export function trackAlbumDeleted(album: string) {
   sendEvent({
-    event_type: 'admin_photo_management',
-    action: action,
-    album_name: albumName,
+    event_type: 'album_deleted',
+    album: album,
+  });
+}
+
+/**
+ * Track photo upload
+ */
+export function trackPhotoUploaded(album: string, photoCount: number, photoTitles: string[]) {
+  sendEvent({
+    event_type: 'photo_uploaded',
+    album: album,
     photo_count: photoCount,
+    photo_titles: photoTitles.join(', '),
+  });
+}
+
+/**
+ * Track photo deletion
+ */
+export function trackPhotoDeleted(album: string, photoId: string, photoTitle: string) {
+  sendEvent({
+    event_type: 'photo_deleted',
+    album: album,
     photo_id: photoId,
+    photo_title: photoTitle,
   });
 }
 
