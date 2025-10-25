@@ -365,13 +365,16 @@ export default function AdminPortal() {
         
         // Mark new photos as optimizing and start polling
         if (data.files && Array.isArray(data.files)) {
-          const newPhotoIds = data.files.map((f: any) => f.filename || f);
+          const filenames = data.files.map((f: any) => f.filename || f);
+          // Use album/filename format to match photo.id from API
+          const newPhotoIds = filenames.map((f: string) => `${selectedAlbum}/${f}`);
           setOptimizingPhotos(prev => new Set([...prev, ...newPhotoIds]));
           
           // Start polling for each uploaded photo
-          for (const filename of newPhotoIds) {
+          for (const filename of filenames) {
+            const photoId = `${selectedAlbum}/${filename}`;
             const thumbnailUrl = `${API_URL}/optimized/thumbnail/${selectedAlbum}/${filename}`;
-            pollForThumbnail(filename, thumbnailUrl, selectedAlbum);
+            pollForThumbnail(photoId, thumbnailUrl, selectedAlbum);
           }
         }
         
