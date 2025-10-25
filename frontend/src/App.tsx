@@ -354,6 +354,8 @@ function App() {
   const [albums, setAlbums] = useState<string[]>([]);
   const [externalLinks, setExternalLinks] = useState<ExternalLink[]>([]);
   const [siteName, setSiteName] = useState('Ted Charles');
+  const [avatarPath, setAvatarPath] = useState('/photos/derpatar.png');
+  const [avatarCacheBust, setAvatarCacheBust] = useState(Date.now());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -451,6 +453,8 @@ function App() {
       setAlbums(albumsData.filter((album: string) => album !== "homepage"));
       setExternalLinks(externalLinksData.externalLinks);
       setSiteName(brandingData.siteName || 'Ted Charles');
+      setAvatarPath(brandingData.avatarPath || '/photos/derpatar.png');
+      setAvatarCacheBust(Date.now()); // Update cache bust when branding refreshes
       setError(null);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "An error occurred";
@@ -458,6 +462,7 @@ function App() {
       setAlbums([]);
       setExternalLinks([]);
       setSiteName('Ted Charles');
+      setAvatarPath('/photos/derpatar.png');
       trackError(errorMessage, 'app_initialization');
     } finally {
       setLoading(false);
@@ -509,7 +514,7 @@ function App() {
         <div className="header-left">
           <Link to="/">
             <img
-              src={`${API_URL}/photos/derpatar.png`}
+              src={`${API_URL}${avatarPath}?v=${avatarCacheBust}`}
               alt={siteName}
               className="avatar"
             />
