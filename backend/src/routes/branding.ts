@@ -233,8 +233,13 @@ router.post('/upload-avatar', isAuthenticated, upload.single('avatar'), async (r
     config.branding.avatarPath = `/photos/${avatarFilename}`;
     config.branding.faviconPath = '/favicon.ico';
     console.log('[Avatar Upload] Writing new avatarPath to config:', config.branding.avatarPath);
-    fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
-    console.log('[Avatar Upload] Config file write completed');
+    
+    // Write synchronously and force flush to disk
+    const fd = fs.openSync(configPath, 'w');
+    fs.writeSync(fd, JSON.stringify(config, null, 2));
+    fs.fsyncSync(fd);  // Force flush to disk
+    fs.closeSync(fd);
+    console.log('[Avatar Upload] Config file write completed and flushed to disk');
     
     // Verify the write by reading back
     const verifyContent = fs.readFileSync(configPath, 'utf8');
