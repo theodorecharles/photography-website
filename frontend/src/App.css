@@ -285,6 +285,56 @@ body {
   font-size: 1.2rem;
 }
 
+.rate-limit-error {
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  gap: 1rem;
+}
+
+.rate-limit-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.rate-limit-error h2 {
+  color: #ffffff;
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.rate-limit-error p {
+  color: #ffffff;
+  font-size: 1.2rem;
+  margin: 0.5rem 0;
+}
+
+.retry-button {
+  margin-top: 1.5rem;
+  padding: 0.75rem 2rem;
+  font-size: 1.1rem;
+  background-color: #4ade80;
+  color: #1e1e1e;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 600;
+}
+
+.retry-button:hover {
+  background-color: #22c55e;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(74, 222, 128, 0.4);
+}
+
+.retry-button:active {
+  transform: translateY(0);
+}
+
 .photo-item {
   margin-top: 0;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);

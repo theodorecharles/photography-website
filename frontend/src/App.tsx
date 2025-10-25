@@ -436,6 +436,11 @@ function App() {
         fetch(`${API_URL}/api/branding`),
       ]);
 
+      // Check for rate limiting
+      if (albumsResponse.status === 429 || externalLinksResponse.status === 429 || brandingResponse.status === 429) {
+        throw new Error("RATE_LIMIT");
+      }
+
       if (!albumsResponse.ok) {
         throw new Error("Failed to fetch albums");
       }
@@ -457,13 +462,25 @@ function App() {
       setAvatarCacheBust(Date.now()); // Update cache bust when branding refreshes
       setError(null);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "An error occurred";
+      let errorMessage = "An error occurred";
+      
+      if (err instanceof Error) {
+        if (err.message === "RATE_LIMIT") {
+          errorMessage = "RATE_LIMIT";
+        } else {
+          errorMessage = err.message;
+        }
+      }
+      
       setError(errorMessage);
       setAlbums([]);
       setExternalLinks([]);
       setSiteName('Ted Charles');
       setAvatarPath('/photos/derpatar.png');
-      trackError(errorMessage, 'app_initialization');
+      
+      if (errorMessage !== "RATE_LIMIT") {
+        trackError(errorMessage, 'app_initialization');
+      }
     } finally {
       setLoading(false);
     }
@@ -504,6 +521,19 @@ function App() {
   }
 
   if (error) {
+    if (error === "RATE_LIMIT") {
+      return (
+        <div className="error rate-limit-error">
+          <div className="rate-limit-icon">🤠</div>
+          <h2>Whoa there, partner!</h2>
+          <p>Slow down there, feller. You're clicking faster than a tumbleweed in a tornado!</p>
+          <p>Give it a moment and try again.</p>
+          <button onClick={() => window.location.reload()} className="retry-button">
+            Try Again
+          </button>
+        </div>
+      );
+    }
     return <div className="error">Error: {error}</div>;
   }
 
