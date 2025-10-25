@@ -125,13 +125,23 @@ export function validateFileUpload(file: Express.Multer.File): { valid: boolean;
  * For state-changing operations, require a valid session
  */
 export function csrfProtection(req: any, res: any, next: any) {
+  console.log('╔════════════════════════════════════════════════╗');
+  console.log('║         CSRF PROTECTION MIDDLEWARE             ║');
+  console.log('╠════════════════════════════════════════════════╣');
+  console.log('  URL:', req.url);
+  console.log('  Method:', req.method);
+  console.log('  Path:', req.path);
+  console.log('╚════════════════════════════════════════════════╝');
+  
   // Skip CSRF for GET, HEAD, OPTIONS requests
   if (['GET', 'HEAD', 'OPTIONS'].includes(req.method)) {
+    console.log('[CSRF] Skipping - GET/HEAD/OPTIONS request');
     return next();
   }
   
   // For POST/PUT/DELETE, require authentication
   if (!req.isAuthenticated || !req.isAuthenticated()) {
+    console.log('[CSRF] BLOCKED - Not authenticated');
     return res.status(401).json({ error: 'Authentication required for this operation' });
   }
   
@@ -142,9 +152,11 @@ export function csrfProtection(req: any, res: any, next: any) {
   if (origin) {
     const isAllowedOrigin = allowedOrigins.some((allowed: string) => origin.startsWith(allowed));
     if (!isAllowedOrigin) {
+      console.log('[CSRF] BLOCKED - Origin not allowed');
       return res.status(403).json({ error: 'Request origin not allowed' });
     }
   }
   
+  console.log('[CSRF] PASSED - Request authenticated and authorized');
   next();
 }
