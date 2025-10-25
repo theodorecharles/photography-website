@@ -528,16 +528,10 @@ function App() {
               <License />
             </>
           } />
-          <Route path="/admin" element={
-            <>
-              <SEO 
-                title="Admin Portal - Ted Charles Photography"
-                description="Admin portal"
-                url={`${SITE_URL}/admin`}
-              />
-              <AdminPortal />
-            </>
-          } />
+          <Route path="/admin" element={<AdminPortal />} />
+          <Route path="/admin/albums" element={<AdminPortal />} />
+          <Route path="/admin/navigation" element={<AdminPortal />} />
+          <Route path="/admin/branding" element={<AdminPortal />} />
           <Route path="/auth/error" element={
             <>
               <SEO 

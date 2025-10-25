@@ -4,6 +4,7 @@
  */
 
 import { useEffect, useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { API_URL } from '../config';
 import './AdminPortal.css';
 
@@ -51,9 +52,18 @@ interface Photo {
 type Tab = 'branding' | 'navigation' | 'albums';
 
 export default function AdminPortal() {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [authStatus, setAuthStatus] = useState<AuthStatus | null>(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<Tab>('albums');
+  
+  // Determine active tab from URL
+  const getActiveTab = (): Tab => {
+    if (location.pathname.includes('/navigation')) return 'navigation';
+    if (location.pathname.includes('/branding')) return 'branding';
+    return 'albums';
+  };
+  const activeTab = getActiveTab();
   const [externalLinks, setExternalLinks] = useState<ExternalLink[]>([]);
   const [branding, setBranding] = useState<BrandingConfig>({
     siteName: '',
@@ -72,6 +82,13 @@ export default function AdminPortal() {
   const [savingBranding, setSavingBranding] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [optimizingPhotos, setOptimizingPhotos] = useState<Set<string>>(new Set());
+
+  // Redirect /admin to /admin/albums
+  useEffect(() => {
+    if (location.pathname === '/admin') {
+      navigate('/admin/albums', { replace: true });
+    }
+  }, [location.pathname, navigate]);
 
   // Auto-dismiss messages after 5 seconds
   useEffect(() => {
@@ -558,19 +575,19 @@ export default function AdminPortal() {
           <div className="admin-tabs">
             <button
               className={`tab-button ${activeTab === 'albums' ? 'active' : ''}`}
-              onClick={() => setActiveTab('albums')}
+              onClick={() => navigate('/admin/albums')}
             >
               📸 Albums
             </button>
             <button
               className={`tab-button ${activeTab === 'navigation' ? 'active' : ''}`}
-              onClick={() => setActiveTab('navigation')}
+              onClick={() => navigate('/admin/navigation')}
             >
               🔗 Navigation
             </button>
             <button
               className={`tab-button ${activeTab === 'branding' ? 'active' : ''}`}
-              onClick={() => setActiveTab('branding')}
+              onClick={() => navigate('/admin/branding')}
             >
               🎨 Branding
             </button>
