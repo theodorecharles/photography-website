@@ -18,11 +18,13 @@ import Footer from "./components/Footer";
 import License from "./components/License";
 import AdminPortal from "./components/AdminPortal";
 import AuthError from "./components/AuthError";
+import NotFound from "./components/NotFound";
 import ScrollToTop from "./components/ScrollToTop";
 import { SEO } from "./components/SEO";
 import { StructuredData } from "./components/StructuredData";
 import { API_URL, SITE_URL } from "./config";
 import { trackPageView, trackAlbumNavigation, trackExternalLinkClick, trackError, trackDropdownOpen, trackDropdownClose } from "./utils/analytics";
+import { fetchWithRateLimitCheck } from "./utils/fetchWrapper";
 
 // ExternalLink interface defines the structure for external navigation links
 interface ExternalLink {
@@ -364,6 +366,18 @@ function App() {
   );
   const location = useLocation();
 
+  // Global rate limit handler - any component can trigger this
+  useEffect(() => {
+    (window as any).handleRateLimit = () => {
+      setError("RATE_LIMIT");
+      setLoading(false);
+    };
+
+    return () => {
+      delete (window as any).handleRateLimit;
+    };
+  }, []);
+
   // Update current album based on route changes and track page views
   useEffect(() => {
     const path = location.pathname;
@@ -431,15 +445,10 @@ function App() {
     try {
       setLoading(true);
       const [albumsResponse, externalLinksResponse, brandingResponse] = await Promise.all([
-        fetch(`${API_URL}/api/albums`),
-        fetch(`${API_URL}/api/external-pages`),
-        fetch(`${API_URL}/api/branding`),
+        fetchWithRateLimitCheck(`${API_URL}/api/albums`),
+        fetchWithRateLimitCheck(`${API_URL}/api/external-pages`),
+        fetchWithRateLimitCheck(`${API_URL}/api/branding`),
       ]);
-
-      // Check for rate limiting
-      if (albumsResponse.status === 429 || externalLinksResponse.status === 429 || brandingResponse.status === 429) {
-        throw new Error("RATE_LIMIT");
-      }
 
       if (!albumsResponse.ok) {
         throw new Error("Failed to fetch albums");
@@ -462,14 +471,11 @@ function App() {
       setAvatarCacheBust(Date.now()); // Update cache bust when branding refreshes
       setError(null);
     } catch (err) {
-      let errorMessage = "An error occurred";
+      const errorMessage = err instanceof Error ? err.message : "An error occurred";
       
-      if (err instanceof Error) {
-        if (err.message === "RATE_LIMIT") {
-          errorMessage = "RATE_LIMIT";
-        } else {
-          errorMessage = err.message;
-        }
+      // Don't set error state if it's a rate limit (already handled globally)
+      if (errorMessage === 'Rate limited') {
+        return;
       }
       
       setError(errorMessage);
@@ -477,10 +483,7 @@ function App() {
       setExternalLinks([]);
       setSiteName('Ted Charles');
       setAvatarPath('/photos/derpatar.png');
-      
-      if (errorMessage !== "RATE_LIMIT") {
-        trackError(errorMessage, 'app_initialization');
-      }
+      trackError(errorMessage, 'app_initialization');
     } finally {
       setLoading(false);
     }
@@ -602,6 +605,16 @@ function App() {
           } />
           <Route path="/primes" element={<PrimesRedirect />} />
           <Route path="/primes/*" element={<PrimesRedirect />} />
+          <Route path="*" element={
+            <>
+              <SEO 
+                title="404 - Page Not Found - Ted Charles Photography"
+                description="The page you're looking for doesn't exist."
+                url={`${SITE_URL}${location.pathname}`}
+              />
+              <NotFound />
+            </>
+          } />
         </Routes>
       </main>
       <Footer
