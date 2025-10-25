@@ -114,9 +114,6 @@ app.use("/api/", limiter);
 // Parse JSON request bodies with size limit
 app.use(express.json({ limit: "1mb" }));
 
-// CSRF protection for state-changing operations
-app.use('/api/', csrfProtection);
-
 // Configure session middleware for authentication
 const sessionSecret = config.auth?.sessionSecret || 'fallback-secret-change-this';
 app.use(
@@ -169,10 +166,10 @@ app.set("optimizedDir", optimizedDir);
 
 // Register route handlers
 app.use('/api/auth', authRouter);
-app.use('/api/external-links', externalLinksRouter);
-app.use('/api/branding', brandingRouter);
+app.use('/api/external-links', csrfProtection, externalLinksRouter);
+app.use('/api/branding', csrfProtection, brandingRouter);
 app.use(albumsRouter);
-app.use(albumManagementRouter);
+app.use(csrfProtection, albumManagementRouter);
 app.use(externalPagesRouter);
 app.use(healthRouter);
 app.use('/api/analytics', analyticsRouter);
