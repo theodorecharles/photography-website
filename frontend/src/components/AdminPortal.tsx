@@ -5,7 +5,7 @@
 
 import { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { API_URL } from '../config';
+import { API_URL, cacheBustValue } from '../config';
 import './AdminPortal.css';
 import {
   trackLoginSucceeded,
@@ -872,7 +872,7 @@ export default function AdminPortal() {
                 ) : (
                   <div className="photos-grid">
                     {albumPhotos.map((photo) => {
-                      const imageUrl = `${API_URL}${photo.thumbnail}`;
+                      const imageUrl = `${API_URL}${photo.thumbnail}?i=${cacheBustValue}`;
                       const isOptimizing = optimizingPhotos.has(photo.id);
                       return (
                       <div key={photo.id} className="admin-photo-item">
