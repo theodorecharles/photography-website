@@ -23,12 +23,35 @@ interface AnalyticsEvent {
 }
 
 let analyticsEnabled = false;
+let hmacSecret: string | null = null;
 
 /**
  * Initialize analytics
  */
-export function initAnalytics(enabled: boolean) {
+export function initAnalytics(enabled: boolean, secret?: string) {
   analyticsEnabled = enabled;
+  hmacSecret = secret || null;
+}
+
+/**
+ * Generate HMAC-SHA256 signature for payload
+ */
+async function generateHmac(payload: string, secret: string): Promise<string> {
+  const encoder = new TextEncoder();
+  const keyData = encoder.encode(secret);
+  const data = encoder.encode(payload);
+  
+  const key = await crypto.subtle.importKey(
+    'raw',
+    keyData,
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign']
+  );
+  
+  const signature = await crypto.subtle.sign('HMAC', key, data);
+  const hashArray = Array.from(new Uint8Array(signature));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
 /**
@@ -50,7 +73,7 @@ function getBaseEventData(): Partial<AnalyticsEvent> {
 
 /**
  * Send an event to the backend API which forwards to OpenObserve
- * Note: Client-side analytics can always be spoofed - this is normal for web analytics
+ * Events are signed with HMAC to prevent tampering
  */
 async function sendEvent(eventData: Partial<AnalyticsEvent>) {
   if (!analyticsEnabled) {
@@ -64,12 +87,19 @@ async function sendEvent(eventData: Partial<AnalyticsEvent>) {
 
   try {
     const payload = JSON.stringify([event]);
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+    };
+    
+    // Add HMAC signature if secret is available
+    if (hmacSecret) {
+      const signature = await generateHmac(payload, hmacSecret);
+      headers['X-Analytics-Signature'] = signature;
+    }
     
     await fetch(`${API_URL}/api/analytics/track`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers,
       body: payload,
     });
   } catch (error) {

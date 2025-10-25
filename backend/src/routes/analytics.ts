@@ -52,9 +52,24 @@ router.post('/track', async (req, res): Promise<void> => {
       return;
     }
 
-    // Note: HMAC verification removed because client-side secrets provide no real security
-    // Analytics data can always be spoofed from the client side
-    // We rely on rate limiting instead to prevent abuse
+    // Verify HMAC signature if secret is configured
+    if (hmacSecret) {
+      const signature = req.headers['x-analytics-signature'];
+      
+      if (!signature || typeof signature !== 'string') {
+        res.status(400).json({ error: 'Missing HMAC signature' });
+        return;
+      }
+
+      const payload = JSON.stringify(req.body);
+      const isValid = verifyHmac(payload, signature, hmacSecret);
+
+      if (!isValid) {
+        console.warn('Invalid HMAC signature for analytics event');
+        res.status(403).json({ error: 'Invalid signature' });
+        return;
+      }
+    }
 
     // Extract client IP address
     // Check X-Forwarded-For header first (for proxies/load balancers)

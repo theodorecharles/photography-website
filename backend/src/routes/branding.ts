@@ -25,6 +25,7 @@ interface BrandingConfig {
   metaDescription: string;
   metaKeywords: string;
   faviconPath: string;
+  analyticsHmacSecret?: string;
 }
 
 // Get current branding configuration
@@ -41,7 +42,8 @@ router.get('/', (req: Request, res: Response) => {
       secondaryColor: branding.secondaryColor || '#22c55e',
       metaDescription: branding.metaDescription || 'Photography portfolio by Ted Charles',
       metaKeywords: branding.metaKeywords || 'photography, portfolio, ted charles',
-      faviconPath: branding.faviconPath || '/favicon.ico'
+      faviconPath: branding.faviconPath || '/favicon.ico',
+      analyticsHmacSecret: config.analytics?.hmacSecret
     };
     
     res.json(brandingConfig);
