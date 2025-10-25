@@ -650,16 +650,6 @@ export default function AdminPortal() {
               />
             </div>
 
-            <div className="branding-group">
-              <label className="branding-label">Favicon Path</label>
-              <input
-                type="text"
-                value={branding.faviconPath}
-                onChange={(e) => handleBrandingChange('faviconPath', e.target.value)}
-                className="branding-input"
-                placeholder="/favicon.ico"
-              />
-            </div>
           </div>
 
           <div className="section-actions">
