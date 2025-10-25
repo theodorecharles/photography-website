@@ -72,14 +72,5 @@
       "title": "Login",
       "url": "/admin"
     }
-  ],
-  "contact": {
-    "securityEmail": "your-email@example.com"
-  },
-  "_comments": {
-    "environment_config": "This config.json should be customized for each deployment environment. Update the environment.frontend.apiUrl and environment.backend.allowedOrigins for your specific setup.",
-    "local_dev": "For local dev: apiUrl = 'http://localhost:3001'",
-    "remote_dev_vm": "For remote dev VM: apiUrl = 'http://api-dev.yourdomain.com:3001'", 
-    "production": "For production: apiUrl = 'https://api.yourdomain.com'"
-  }
+  ]
 }
