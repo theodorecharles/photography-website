@@ -240,7 +240,7 @@
   gap: 1rem;
 }
 
-.photo-item {
+.admin-photo-item {
   position: relative;
   width: 100%;
   padding-bottom: 100%; /* Creates square aspect ratio */
@@ -251,15 +251,15 @@
   transition: transform 0.2s ease;
 }
 
-.photo-item:hover {
+.admin-photo-item:hover {
   transform: scale(1.02);
 }
 
-.photo-item:hover .photo-overlay {
+.admin-photo-item:hover .photo-overlay {
   opacity: 1;
 }
 
-.photo-thumbnail {
+.admin-photo-thumbnail {
   position: absolute;
   top: 0;
   left: 0;
@@ -270,7 +270,7 @@
   opacity: 1 !important;
 }
 
-.photo-item img {
+.admin-photo-item img {
   opacity: 1 !important;
   object-fit: cover;
 }

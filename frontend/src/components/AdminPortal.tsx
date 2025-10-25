@@ -756,7 +756,7 @@ export default function AdminPortal() {
                       const imageUrl = `${API_URL}${photo.thumbnail}`;
                       const isOptimizing = optimizingPhotos.has(photo.id);
                       return (
-                      <div key={photo.id} className="photo-item">
+                      <div key={photo.id} className="admin-photo-item">
                         {isOptimizing ? (
                           <div className="photo-optimizing">
                             <div className="spinner"></div>
@@ -766,7 +766,7 @@ export default function AdminPortal() {
                           <img 
                             src={imageUrl}
                             alt={photo.title}
-                            className="photo-thumbnail"
+                            className="admin-photo-thumbnail"
                           />
                         )}
                         <div className="photo-overlay">
