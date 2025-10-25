@@ -16,7 +16,7 @@ import "./App.css";
 import PhotoGrid from "./components/PhotoGrid";
 import Footer from "./components/Footer";
 import License from "./components/License";
-import Authenticated from "./components/Authenticated";
+import AdminPortal from "./components/AdminPortal";
 import AuthError from "./components/AuthError";
 import ScrollToTop from "./components/ScrollToTop";
 import { SEO } from "./components/SEO";
@@ -505,14 +505,14 @@ function App() {
               <License />
             </>
           } />
-          <Route path="/authenticated" element={
+          <Route path="/admin" element={
             <>
               <SEO 
-                title="Authenticated - Ted Charles Photography"
-                description="You are now logged in."
-                url={`${SITE_URL}/authenticated`}
+                title="Admin Portal - Ted Charles Photography"
+                description="Admin portal"
+                url={`${SITE_URL}/admin`}
               />
-              <Authenticated />
+              <AdminPortal />
             </>
           } />
           <Route path="/auth/error" element={

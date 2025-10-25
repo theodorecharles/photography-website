@@ -112,8 +112,8 @@ router.get(
         if (err) {
           return res.redirect(`${frontendUrl}/auth/error?reason=failed`);
         }
-        // Successful authentication
-        return res.redirect(`${frontendUrl}/authenticated`);
+        // Successful authentication - redirect to admin portal
+        return res.redirect(`${frontendUrl}/admin`);
       });
     })(req, res, next);
   }
