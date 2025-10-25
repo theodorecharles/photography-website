@@ -512,10 +512,10 @@ export default function AdminPortal() {
           <a href="/" className="btn-home">← Back to Site</a>
           <div className="admin-tabs">
             <button
-              className={`tab-button ${activeTab === 'branding' ? 'active' : ''}`}
-              onClick={() => setActiveTab('branding')}
+              className={`tab-button ${activeTab === 'albums' ? 'active' : ''}`}
+              onClick={() => setActiveTab('albums')}
             >
-              🎨 Branding
+              📸 Albums
             </button>
             <button
               className={`tab-button ${activeTab === 'navigation' ? 'active' : ''}`}
@@ -524,10 +524,10 @@ export default function AdminPortal() {
               🔗 Navigation
             </button>
             <button
-              className={`tab-button ${activeTab === 'albums' ? 'active' : ''}`}
-              onClick={() => setActiveTab('albums')}
+              className={`tab-button ${activeTab === 'branding' ? 'active' : ''}`}
+              onClick={() => setActiveTab('branding')}
             >
-              📸 Albums
+              🎨 Branding
             </button>
           </div>
         </div>
@@ -795,9 +795,6 @@ export default function AdminPortal() {
         )}
 
         <div className="admin-footer">
-          <div className="footer-info">
-            <p>Admin Portal v1.0 • Last updated: {new Date().toLocaleDateString()}</p>
-          </div>
           <button onClick={handleLogout} className="btn-logout">
             Logout
           </button>
