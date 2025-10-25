@@ -58,7 +58,7 @@ interface Photo {
   download: string;
 }
 
-type Tab = 'branding' | 'navigation' | 'albums';
+type Tab = 'branding' | 'links' | 'albums';
 
 export default function AdminPortal() {
   const navigate = useNavigate();
@@ -68,7 +68,7 @@ export default function AdminPortal() {
   
   // Determine active tab from URL
   const getActiveTab = (): Tab => {
-    if (location.pathname.includes('/navigation')) return 'navigation';
+    if (location.pathname.includes('/links')) return 'links';
     if (location.pathname.includes('/branding')) return 'branding';
     return 'albums';
   };
@@ -614,19 +614,19 @@ export default function AdminPortal() {
               className={`tab-button ${activeTab === 'albums' ? 'active' : ''}`}
               onClick={() => navigate('/admin/albums')}
             >
-              📸 Albums
+              <span className="tab-emoji">📸 </span>Albums
             </button>
             <button
-              className={`tab-button ${activeTab === 'navigation' ? 'active' : ''}`}
-              onClick={() => navigate('/admin/navigation')}
+              className={`tab-button ${activeTab === 'links' ? 'active' : ''}`}
+              onClick={() => navigate('/admin/links')}
             >
-              🔗 Navigation
+              <span className="tab-emoji">🔗 </span>Links
             </button>
             <button
               className={`tab-button ${activeTab === 'branding' ? 'active' : ''}`}
               onClick={() => navigate('/admin/branding')}
             >
-              🎨 Branding
+              <span className="tab-emoji">🎨 </span>Branding
             </button>
           </div>
         </div>
@@ -718,7 +718,7 @@ export default function AdminPortal() {
         </section>
         )}
 
-        {activeTab === 'navigation' && (
+        {activeTab === 'links' && (
         <section className="admin-section">
           <h2>🔗 External Links</h2>
           <p className="section-description">Manage links shown in the navigation menu</p>

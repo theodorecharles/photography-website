@@ -530,7 +530,7 @@ function App() {
           } />
           <Route path="/admin" element={<AdminPortal />} />
           <Route path="/admin/albums" element={<AdminPortal />} />
-          <Route path="/admin/navigation" element={<AdminPortal />} />
+          <Route path="/admin/links" element={<AdminPortal />} />
           <Route path="/admin/branding" element={<AdminPortal />} />
           <Route path="/auth/error" element={
             <>

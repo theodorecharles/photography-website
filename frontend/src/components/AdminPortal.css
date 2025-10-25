@@ -85,6 +85,10 @@
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .tab-button:hover {
@@ -1002,6 +1006,7 @@
 
   .admin-tabs {
     gap: 0.25rem;
+    height: 100%;
   }
 
   .tab-button {
@@ -1119,6 +1124,13 @@
 @keyframes spin {
   to {
     transform: rotate(360deg);
+  }
+}
+
+/* Hide emojis on narrow screens */
+@media (max-width: 400px) {
+  .tab-emoji {
+    display: none;
   }
 }
 
