@@ -63,6 +63,7 @@ interface BrandingConfig {
 // Get current branding configuration
 router.get('/', (req: Request, res: Response) => {
   try {
+    console.log('[Get Branding] Reading config from:', configPath);
     const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
     const branding = config.branding || {};
     
@@ -78,6 +79,7 @@ router.get('/', (req: Request, res: Response) => {
       analyticsHmacSecret: config.analytics?.hmacSecret
     };
     
+    console.log('[Get Branding] Returning avatarPath:', brandingConfig.avatarPath);
     res.json(brandingConfig);
   } catch (error) {
     console.error('Error reading branding config:', error);
@@ -194,13 +196,16 @@ router.post('/upload-avatar', isAuthenticated, upload.single('avatar'), async (r
     fs.unlinkSync(file.path);
     
     // Update config
+    console.log('[Avatar Upload] Reading config from:', configPath);
     const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
     if (!config.branding) {
       config.branding = {};
     }
     config.branding.avatarPath = `/photos/${avatarFilename}`;
     config.branding.faviconPath = '/favicon.ico';
+    console.log('[Avatar Upload] Writing new avatarPath to config:', config.branding.avatarPath);
     fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
+    console.log('[Avatar Upload] Config file updated successfully');
     
     res.json({ 
       success: true,
