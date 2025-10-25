@@ -128,11 +128,22 @@ router.get(
         
         console.log('[OAuth Callback] Login successful!');
         console.log('[OAuth Callback] Session ID:', req.sessionID);
-        console.log('[OAuth Callback] Session:', req.session);
-        console.log('[OAuth Callback] Redirecting to admin portal...');
+        console.log('[OAuth Callback] Session before save:', req.session);
+        console.log('[OAuth Callback] User in session:', req.user);
         
-        // Successful authentication - redirect to admin portal
-        return res.redirect(`${frontendUrl}/admin`);
+        // Explicitly save the session before redirecting
+        req.session.save((err) => {
+          if (err) {
+            console.log('[OAuth Callback] Session save error:', err);
+            return res.redirect(`${frontendUrl}/auth/error?reason=failed`);
+          }
+          
+          console.log('[OAuth Callback] Session saved successfully');
+          console.log('[OAuth Callback] Redirecting to admin portal...');
+          
+          // Successful authentication - redirect to admin portal
+          return res.redirect(`${frontendUrl}/admin`);
+        });
       });
     })(req, res, next);
   }
