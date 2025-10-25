@@ -23,6 +23,7 @@ import config, {
   RATE_LIMIT_WINDOW_MS,
   RATE_LIMIT_MAX_REQUESTS,
 } from "./config.ts";
+import { validateProductionSecurity, csrfProtection } from "./security.ts";
 
 // Import route handlers
 import albumsRouter from "./routes/albums.ts";
@@ -39,6 +40,9 @@ import brandingRouter from "./routes/branding.ts";
 // Get the current directory path for ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+// Validate production security before starting
+validateProductionSecurity();
 
 // Initialize Express application
 const app = express();
@@ -109,6 +113,9 @@ app.use("/api/", limiter);
 
 // Parse JSON request bodies with size limit
 app.use(express.json({ limit: "1mb" }));
+
+// CSRF protection for state-changing operations
+app.use('/api/', csrfProtection);
 
 // Configure session middleware for authentication
 const sessionSecret = config.auth?.sessionSecret || 'fallback-secret-change-this';

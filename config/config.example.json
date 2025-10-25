@@ -33,6 +33,18 @@
       "redirectTo": "yourdomain.com"
     }
   },
+  "auth": {
+    "google": {
+      "clientId": "your-google-client-id",
+      "clientSecret": "your-google-client-secret",
+      "_comment_clientSecret": "In production, set GOOGLE_CLIENT_SECRET environment variable instead"
+    },
+    "sessionSecret": "your-session-secret-here",
+    "_comment_sessionSecret": "In production, set SESSION_SECRET environment variable instead. Generate with: openssl rand -hex 32",
+    "authorizedEmails": [
+      "your-email@example.com"
+    ]
+  },
   "branding": {
     "siteName": "Your Name",
     "avatarPath": "/photos/avatar.png"
@@ -45,9 +57,11 @@
       "endpoint": "https://log.yourdomain.com/api/default/website/_json",
       "username": "your-username",
       "password": "your-password",
+      "_comment_password": "In production, set ANALYTICS_PASSWORD environment variable instead",
       "_comment": "OpenObserve endpoint and credentials for custom event tracking. The backend proxies requests to keep credentials secure. Set enabled to true to activate."
     },
     "hmacSecret": "generate-a-random-secret-here-use-openssl-rand-hex-32",
+    "_comment_hmacSecret": "In production, set ANALYTICS_HMAC_SECRET environment variable instead",
     "_comment_hmac": "HMAC secret for signing analytics events. Generate with: openssl rand -hex 32. This prevents tampering with events."
   },
   "externalLinks": [

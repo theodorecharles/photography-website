@@ -7,6 +7,7 @@ import { Router, Request, Response } from 'express';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { isAuthenticated } from './auth.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -51,9 +52,46 @@ router.get('/', (req: Request, res: Response) => {
 });
 
 // Update branding configuration
-router.put('/', (req: Request, res: Response) => {
+router.put('/', isAuthenticated, (req: Request, res: Response) => {
   try {
     const updates: Partial<BrandingConfig> = req.body;
+    
+    // Validate input
+    if (!updates || typeof updates !== 'object') {
+      res.status(400).json({ error: 'Invalid request body' });
+      return;
+    }
+    
+    // Validate each field if provided
+    const validFields = ['siteName', 'avatarPath', 'primaryColor', 'secondaryColor', 'metaDescription', 'metaKeywords', 'faviconPath'];
+    for (const [key, value] of Object.entries(updates)) {
+      if (!validFields.includes(key)) {
+        res.status(400).json({ error: `Invalid field: ${key}` });
+        return;
+      }
+      
+      if (typeof value !== 'string') {
+        res.status(400).json({ error: `Field ${key} must be a string` });
+        return;
+      }
+      
+      // Length limits
+      if (value.length > 500) {
+        res.status(400).json({ error: `Field ${key} is too long (max 500 characters)` });
+        return;
+      }
+    }
+    
+    // Validate color format if provided
+    if (updates.primaryColor && !/^#[0-9A-Fa-f]{6}$/.test(updates.primaryColor)) {
+      res.status(400).json({ error: 'Primary color must be a valid hex color (e.g., #FF0000)' });
+      return;
+    }
+    
+    if (updates.secondaryColor && !/^#[0-9A-Fa-f]{6}$/.test(updates.secondaryColor)) {
+      res.status(400).json({ error: 'Secondary color must be a valid hex color (e.g., #FF0000)' });
+      return;
+    }
     
     // Read current config
     const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
@@ -81,7 +119,7 @@ router.put('/', (req: Request, res: Response) => {
 });
 
 // Upload logo/avatar
-router.post('/upload-logo', (req: Request, res: Response) => {
+router.post('/upload-logo', isAuthenticated, (req: Request, res: Response) => {
   // This would handle file upload - for now, just return success
   // In a real implementation, you'd use multer or similar
   res.json({ 
