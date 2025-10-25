@@ -73,6 +73,10 @@ router.get('/', (req: Request, res: Response) => {
     const config = JSON.parse(configContent);
     const branding = config.branding || {};
     
+    // Debug: log raw branding object
+    console.log('[Get Branding] PID:', process.pid, '- Raw branding.avatarPath from file:', branding.avatarPath);
+    console.log('[Get Branding] PID:', process.pid, '- Raw config.branding keys:', Object.keys(branding));
+    
     // Set defaults if not present
     const brandingConfig: BrandingConfig = {
       siteName: branding.siteName || 'Ted Charles',
@@ -85,7 +89,7 @@ router.get('/', (req: Request, res: Response) => {
       analyticsHmacSecret: config.analytics?.hmacSecret
     };
     
-    console.log('[Get Branding] PID:', process.pid, '- Returning avatarPath:', brandingConfig.avatarPath);
+    console.log('[Get Branding] PID:', process.pid, '- After defaults, returning avatarPath:', brandingConfig.avatarPath);
     res.json(brandingConfig);
   } catch (error) {
     console.error('Error reading branding config:', error);
