@@ -976,6 +976,7 @@
     position: static;
     transform: none;
     overflow-x: auto;
+    align-self: flex-start;
   }
 
   .admin-tabs {
