@@ -7,14 +7,14 @@ import { Router, Request, Response } from "express";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import { exec } from "child_process";
+import { execFile } from "child_process";
 import { promisify } from "util";
 import multer from "multer";
 import os from "os";
 import { csrfProtection } from "../security.js";
 
 const router = Router();
-const execAsync = promisify(exec);
+const execFileAsync = promisify(execFile);
 
 // Apply CSRF protection to all routes in this router
 router.use(csrfProtection);
@@ -33,6 +33,9 @@ const upload = multer({
   }),
   limits: {
     fileSize: 50 * 1024 * 1024, // 50MB per file
+    files: 20, // Maximum 20 files per request
+    fieldSize: 10 * 1024, // 10KB for field values (form data)
+    fields: 10 // Maximum 10 non-file fields
   },
   fileFilter: (req, file, cb) => {
     // Only allow image files
@@ -259,8 +262,8 @@ router.post("/:album/upload", requireAuth, upload.array('photos', 20), async (re
     const scriptPath = path.join(projectRoot, 'optimize_images.sh');
 
     if (fs.existsSync(scriptPath)) {
-      // Run script from project root directory
-      exec(`cd "${projectRoot}" && bash "${scriptPath}"`, (error, stdout, stderr) => {
+      // Run script from project root directory using execFile to prevent command injection
+      execFile('bash', [scriptPath], { cwd: projectRoot }, (error, stdout, stderr) => {
         if (error) {
           console.error('Optimization error:', error);
           if (stderr) console.error('stderr:', stderr);
@@ -304,12 +307,12 @@ router.post("/:album/optimize", requireAuth, async (req: Request, res: Response)
       return;
     }
 
-    // Run optimization script in the background
+    // Run optimization script in the background using execFile to prevent command injection
     // Don't wait for it to complete
     const photosDir = req.app.get("photosDir");
     const albumPath = path.join(photosDir, sanitizedAlbum);
     
-    exec(`bash "${scriptPath}" "${albumPath}"`, (error, stdout, stderr) => {
+    execFile('bash', [scriptPath, albumPath], (error, stdout, stderr) => {
       if (error) {
         console.error('Optimization error:', error);
       } else {

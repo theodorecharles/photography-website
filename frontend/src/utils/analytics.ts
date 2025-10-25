@@ -3,7 +3,7 @@
  * The backend then forwards events to OpenObserve with authentication.
  * This keeps credentials secure and never exposes them in the frontend.
  * 
- * Events are signed with HMAC-SHA256 to prevent tampering.
+ * Events are validated by origin on the backend to prevent unauthorized tracking.
  */
 
 import { API_URL } from '../config';
@@ -23,35 +23,12 @@ interface AnalyticsEvent {
 }
 
 let analyticsEnabled = false;
-let hmacSecret: string | null = null;
 
 /**
  * Initialize analytics
  */
-export function initAnalytics(enabled: boolean, secret?: string) {
+export function initAnalytics(enabled: boolean) {
   analyticsEnabled = enabled;
-  hmacSecret = secret || null;
-}
-
-/**
- * Generate HMAC-SHA256 signature for payload
- */
-async function generateHmac(payload: string, secret: string): Promise<string> {
-  const encoder = new TextEncoder();
-  const keyData = encoder.encode(secret);
-  const data = encoder.encode(payload);
-  
-  const key = await crypto.subtle.importKey(
-    'raw',
-    keyData,
-    { name: 'HMAC', hash: 'SHA-256' },
-    false,
-    ['sign']
-  );
-  
-  const signature = await crypto.subtle.sign('HMAC', key, data);
-  const hashArray = Array.from(new Uint8Array(signature));
-  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
 /**
@@ -73,7 +50,7 @@ function getBaseEventData(): Partial<AnalyticsEvent> {
 
 /**
  * Send an event to the backend API which forwards to OpenObserve
- * Events are signed with HMAC to prevent tampering
+ * The backend validates the request origin to prevent unauthorized tracking
  */
 async function sendEvent(eventData: Partial<AnalyticsEvent>) {
   if (!analyticsEnabled) {
@@ -91,16 +68,11 @@ async function sendEvent(eventData: Partial<AnalyticsEvent>) {
       'Content-Type': 'application/json',
     };
     
-    // Add HMAC signature if secret is available
-    if (hmacSecret) {
-      const signature = await generateHmac(payload, hmacSecret);
-      headers['X-Analytics-Signature'] = signature;
-    }
-    
     await fetch(`${API_URL}/api/analytics/track`, {
       method: 'POST',
       headers,
       body: payload,
+      credentials: 'include', // Include cookies for session-based validation
     });
   } catch (error) {
     // Silently fail - don't break the app if analytics fails

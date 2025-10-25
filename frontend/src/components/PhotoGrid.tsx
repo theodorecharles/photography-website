@@ -9,6 +9,7 @@ import { useLocation } from "react-router-dom";
 import "./PhotoGrid.css";
 import { API_URL, cacheBustValue } from "../config";
 import { trackPhotoClick, trackPhotoNavigation, trackPhotoDownload, trackModalClose, trackError } from "../utils/analytics";
+import { fetchWithRateLimitCheck } from "../utils/fetchWrapper";
 
 interface PhotoGridProps {
   album: string;
@@ -88,7 +89,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
         if (album === "homepage") {
           // Use the random photos endpoint for homepage to show all photos
           // Not passing count parameter to get all photos from all albums
-          const response = await fetch(
+          const response = await fetchWithRateLimitCheck(
             `${API_URL}/api/random-photos${queryString}`
           );
           if (!response.ok) {
@@ -98,7 +99,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
           setPhotos(randomPhotos);
         } else {
           // For specific album pages, fetch photos normally
-          const response = await fetch(
+          const response = await fetchWithRateLimitCheck(
             `${API_URL}/api/albums/${album}/photos${queryString}`
           );
           if (!response.ok) {
@@ -119,6 +120,10 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
         setError(null);
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : "An error occurred";
+        // Don't log rate limit errors (already handled globally)
+        if (errorMessage === 'Rate limited') {
+          return;
+        }
         setError(errorMessage);
         setPhotos([]);
         trackError(errorMessage, `photo_fetch_${album}`);

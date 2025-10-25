@@ -23,6 +23,12 @@ function Footer({ albums: _albums = [], externalLinks: _externalLinks = [], curr
     const fetchCurrentYear = async () => {
       try {
         const response = await fetch(`${API_URL}/api/current-year`);
+        if (response.status === 429) {
+          if ((window as any).handleRateLimit) {
+            (window as any).handleRateLimit();
+          }
+          return;
+        }
         if (response.ok) {
           const data = await response.json();
           setCurrentYear(data.year);

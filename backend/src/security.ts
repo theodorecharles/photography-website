@@ -37,12 +37,16 @@ export function loadSecureConfig() {
     fullConfig.auth.sessionSecret = process.env.SESSION_SECRET;
   }
   
+  if (process.env.ANALYTICS_USERNAME) {
+    fullConfig.analytics.openobserve.username = process.env.ANALYTICS_USERNAME;
+  }
+  
   if (process.env.ANALYTICS_PASSWORD) {
     fullConfig.analytics.openobserve.password = process.env.ANALYTICS_PASSWORD;
   }
   
-  if (process.env.ANALYTICS_HMAC_SECRET) {
-    fullConfig.analytics.hmacSecret = process.env.ANALYTICS_HMAC_SECRET;
+  if (process.env.ANALYTICS_SERVICE_TOKEN) {
+    fullConfig.analytics.openobserve.serviceToken = process.env.ANALYTICS_SERVICE_TOKEN;
   }
   
   return fullConfig;
@@ -60,8 +64,8 @@ export function validateProductionSecurity() {
     const requiredChecks = [
       { name: 'GOOGLE_CLIENT_SECRET', value: secureConfig.auth?.google?.clientSecret },
       { name: 'SESSION_SECRET', value: secureConfig.auth?.sessionSecret },
-      { name: 'ANALYTICS_PASSWORD', value: secureConfig.analytics?.openobserve?.password },
-      { name: 'ANALYTICS_HMAC_SECRET', value: secureConfig.analytics?.hmacSecret }
+      { name: 'ANALYTICS_USERNAME', value: secureConfig.analytics?.openobserve?.username },
+      { name: 'ANALYTICS_PASSWORD', value: secureConfig.analytics?.openobserve?.password }
     ];
     
     const missing = requiredChecks.filter(check => !check.value);
