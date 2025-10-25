@@ -63,8 +63,14 @@ interface BrandingConfig {
 // Get current branding configuration
 router.get('/', (req: Request, res: Response) => {
   try {
-    console.log('[Get Branding] Reading config from:', configPath);
-    const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+    console.log('[Get Branding] PID:', process.pid, '- Reading config from:', configPath);
+    
+    // Read file with no encoding first to check it exists and get stats
+    const stats = fs.statSync(configPath);
+    console.log('[Get Branding] PID:', process.pid, '- Config file last modified:', stats.mtime.toISOString());
+    
+    const configContent = fs.readFileSync(configPath, 'utf8');
+    const config = JSON.parse(configContent);
     const branding = config.branding || {};
     
     // Set defaults if not present
@@ -79,7 +85,7 @@ router.get('/', (req: Request, res: Response) => {
       analyticsHmacSecret: config.analytics?.hmacSecret
     };
     
-    console.log('[Get Branding] Returning avatarPath:', brandingConfig.avatarPath);
+    console.log('[Get Branding] PID:', process.pid, '- Returning avatarPath:', brandingConfig.avatarPath);
     res.json(brandingConfig);
   } catch (error) {
     console.error('Error reading branding config:', error);
