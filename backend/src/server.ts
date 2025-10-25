@@ -162,7 +162,7 @@ if (!sessionSecret) {
 }
 
 // Determine cookie domain based on environment
-// For localhost, set domain to 'localhost' to share across different ports
+// For localhost, DON'T set domain (undefined) - browsers handle localhost specially
 // For production, extract the base domain to share across subdomains
 let cookieDomain: string | undefined = undefined;
 try {
@@ -170,8 +170,10 @@ try {
   const hostname = backendUrl.hostname;
   
   if (hostname === 'localhost' || hostname === '127.0.0.1') {
-    // For local development, set domain to 'localhost' to work across ports
-    cookieDomain = 'localhost';
+    // For local development, leave domain undefined
+    // Setting explicit 'localhost' can cause issues with cookies across ports
+    cookieDomain = undefined;
+    console.log('Cookie domain: undefined (localhost development)');
   } else {
     // For production, extract base domain (e.g., 'tedcharles.net' from 'api.tedcharles.net')
     // Set to '.domain.com' to share across subdomains
@@ -179,9 +181,9 @@ try {
     if (parts.length >= 2) {
       // Get last two parts (domain.tld)
       cookieDomain = '.' + parts.slice(-2).join('.');
+      console.log(`Cookie domain set to: ${cookieDomain}`);
     }
   }
-  console.log(`Cookie domain set to: ${cookieDomain}`);
 } catch (err) {
   console.warn('Could not parse backend URL for cookie domain, using undefined');
 }
