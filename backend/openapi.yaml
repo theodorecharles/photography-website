@@ -29,7 +29,7 @@ info:
     url: https://creativecommons.org/licenses/by/4.0/
 
 servers:
-  - url: https://api.tedcharles.net
+  - url: https://api.johndoe.net
     description: Production server
   - url: http://localhost:3001
     description: Local development server
@@ -106,7 +106,7 @@ paths:
                 <?xml version="1.0" encoding="UTF-8"?>
                 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
                   <url>
-                    <loc>https://tedcharles.net/</loc>
+                    <loc>https://johndoe.net/</loc>
                     <lastmod>2024-01-01</lastmod>
                     <changefreq>weekly</changefreq>
                     <priority>1.0</priority>
@@ -704,7 +704,7 @@ components:
         email:
           type: string
           format: email
-          example: me@tedcharles.net
+          example: johndoe@gmail.com
         name:
           type: string
           example: Ted Charles
