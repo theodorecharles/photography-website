@@ -1,8 +1,10 @@
+const path = require('path');
+
 module.exports = {
   apps: [
     {
       name: "backend",
-      cwd: "/Users/ted/Development/website/photography-website/backend",
+      cwd: path.join(__dirname, 'backend'),
       script: "npm",
       args: "start",
       env: {
@@ -10,13 +12,14 @@ module.exports = {
         PORT: 3001,
       },
       instances: 1,
+      exec_mode: "fork",
       autorestart: true,
       watch: false,
       max_memory_restart: "1G",
     },
     {
       name: "frontend",
-      cwd: "/Users/ted/Development/website/photography-website/frontend",
+      cwd: path.join(__dirname, 'frontend'),
       script: "npm",
       args: "start",
       env: {
@@ -24,6 +27,7 @@ module.exports = {
         PORT: 3000,
       },
       instances: 1,
+      exec_mode: "fork",
       autorestart: true,
       watch: false,
       max_memory_restart: "1G",
