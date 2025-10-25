@@ -25,6 +25,99 @@ router.post('/query', isAuthenticated, async (req: Request, res: Response): Prom
 });
 
 /**
+ * GET /api/metrics/visitors-over-time
+ * Get unique visitors per day for the time series chart
+ * Requires authentication
+ */
+router.get('/visitors-over-time', isAuthenticated, async (req: Request, res: Response): Promise<void> => {
+  try {
+    const analyticsConfig = config.analytics?.openobserve;
+    
+    if (!analyticsConfig || !analyticsConfig.enabled) {
+      res.status(503).json({ error: 'Analytics not configured' });
+      return;
+    }
+
+    const { endpoint, organization, stream, username, password, serviceToken } = analyticsConfig;
+
+    if (!endpoint || !organization || !stream) {
+      res.status(503).json({ error: 'Analytics endpoint configuration incomplete' });
+      return;
+    }
+
+    // Check if we have either service token or username/password
+    if (!serviceToken && (!username || !password)) {
+      res.status(503).json({ error: 'Analytics authentication not configured' });
+      return;
+    }
+
+    // Get time range from query params (default to last 30 days)
+    const days = parseInt(req.query.days as string) || 30;
+    // Calculate time range (OpenObserve uses microseconds)
+    const endTime = Date.now() * 1000;
+    const startTime = endTime - (days * 24 * 60 * 60 * 1000 * 1000);
+
+    // Build the query endpoint
+    const queryEndpoint = `${endpoint}${organization}/_search`;
+    
+    // Prepare authorization header
+    const authHeaders: Record<string, string> = {
+      'Content-Type': 'application/json',
+    };
+
+    if (serviceToken) {
+      authHeaders['Authorization'] = `Bearer ${serviceToken}`;
+    } else {
+      const credentials = Buffer.from(`${username}:${password}`).toString('base64');
+      authHeaders['Authorization'] = `Basic ${credentials}`;
+    }
+
+    // Query for unique visitors per day
+    const sql = `
+      SELECT 
+        CAST(to_timestamp_micros(_timestamp) AS DATE) as date,
+        COUNT(DISTINCT client_ip) as count
+      FROM "${stream}"
+      WHERE _timestamp >= ${startTime} AND _timestamp <= ${endTime}
+      GROUP BY CAST(to_timestamp_micros(_timestamp) AS DATE)
+      ORDER BY date ASC
+    `;
+
+    const queryPayload = {
+      query: {
+        sql,
+        start_time: startTime,
+        end_time: endTime,
+        from: 0,
+        size: 10000,
+        sql_mode: "full"
+      }
+    };
+
+    const response = await fetch(queryEndpoint, {
+      method: 'POST',
+      headers: authHeaders,
+      body: JSON.stringify(queryPayload),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('OpenObserve query error:', response.status, errorText);
+      res.status(500).json({ error: 'Failed to retrieve time series data' });
+      return;
+    }
+
+    const data = await response.json();
+    res.status(200).json({ hits: data.hits || [] });
+  } catch (error) {
+    console.error('Visitors over time error:', error);
+    res.status(500).json({ 
+      error: 'Failed to retrieve time series data. Please try again later.'
+    });
+  }
+});
+
+/**
  * GET /api/metrics/stats
  * Get pre-computed statistics for the dashboard
  * Requires authentication
