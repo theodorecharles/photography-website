@@ -9,8 +9,7 @@ const __dirname = path.dirname(__filename);
 // Load configuration
 const configPath = path.join(__dirname, "../config/config.json");
 const configFile = JSON.parse(fs.readFileSync(configPath, "utf8"));
-const env = process.env.NODE_ENV || "development";
-const config = configFile[env];
+const config = configFile.environment;
 
 const app = express();
 const port = process.env.PORT || config.frontend.port;
@@ -69,10 +68,9 @@ app.use((req, res, next) => {
     return res.status(400).send("Invalid host header");
   }
 
-  if (
-    process.env.NODE_ENV === "production" &&
-    req.headers["x-forwarded-proto"] !== "https"
-  ) {
+  // Redirect to HTTPS if apiUrl uses https (production/remote dev)
+  const isProduction = config.frontend.apiUrl.startsWith("https://");
+  if (isProduction && req.headers["x-forwarded-proto"] !== "https") {
     return res.redirect(301, `https://${host}${req.originalUrl}`);
   }
   next();
@@ -108,6 +106,11 @@ app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "dist", "index.html"));
 });
 
-app.listen(port, () => {
-  console.log(`Frontend server running on port ${port}`);
+// Listen on 0.0.0.0 for remote dev/production, 127.0.0.1 for localhost
+const isLocalhost = config.frontend.apiUrl.includes('localhost');
+const bindHost = isLocalhost ? '127.0.0.1' : '0.0.0.0';
+
+app.listen(port, bindHost, () => {
+  console.log(`Frontend server running on ${bindHost}:${port}`);
+  console.log(`API URL: ${config.frontend.apiUrl}`);
 });
