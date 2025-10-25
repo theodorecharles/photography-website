@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { API_URL, cacheBustValue } from '../config';
 import './AdminPortal.css';
+import Metrics from './Metrics';
 import {
   trackLoginSucceeded,
   trackLogout,
@@ -61,7 +62,7 @@ interface Photo {
   download: string;
 }
 
-type Tab = 'branding' | 'links' | 'albums';
+type Tab = 'branding' | 'links' | 'albums' | 'metrics';
 
 export default function AdminPortal() {
   const navigate = useNavigate();
@@ -73,6 +74,7 @@ export default function AdminPortal() {
   const getActiveTab = (): Tab => {
     if (location.pathname.includes('/links')) return 'links';
     if (location.pathname.includes('/branding')) return 'branding';
+    if (location.pathname.includes('/metrics')) return 'metrics';
     return 'albums';
   };
   const activeTab = getActiveTab();
@@ -662,6 +664,12 @@ export default function AdminPortal() {
             >
               Branding
             </button>
+            <button
+              className={`tab-button ${activeTab === 'metrics' ? 'active' : ''}`}
+              onClick={() => navigate('/admin/metrics')}
+            >
+              Metrics
+            </button>
           </div>
         </div>
 
@@ -669,6 +677,10 @@ export default function AdminPortal() {
           <div className={`message message-${message.type}`}>
             {message.text}
           </div>
+        )}
+
+        {activeTab === 'metrics' && (
+          <Metrics />
         )}
 
         {activeTab === 'branding' && (

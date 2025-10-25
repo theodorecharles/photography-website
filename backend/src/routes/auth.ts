@@ -18,12 +18,14 @@ async function sendAnalyticsEvent(eventData: any) {
     const analyticsConfig = config.analytics?.openobserve;
     if (!analyticsConfig?.enabled) return;
 
-    const { endpoint, username, password } = analyticsConfig;
-    if (!endpoint || !username || !password) return;
+    const { endpoint, organization, stream, username, password } = analyticsConfig;
+    if (!endpoint || !organization || !stream || !username || !password) return;
 
+    // Construct the full URL: {endpoint}{organization}/{stream}/_json
+    const analyticsUrl = `${endpoint}${organization}/${stream}/_json`;
     const credentials = Buffer.from(`${username}:${password}`).toString('base64');
     
-    await fetch(endpoint, {
+    await fetch(analyticsUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -123,10 +125,11 @@ router.get(
     passport.authenticate('google', (err: any, user: any) => {
       // Derive frontend URL from config
       const apiUrl = config.frontend?.apiUrl || '';
+      const frontendPort = config.frontend?.port || 3000;
       const isProduction = apiUrl.startsWith('https://');
       const frontendUrl = isProduction
         ? apiUrl.replace(/^https:\/\/api([-\.])/, 'https://www$1')
-        : apiUrl.replace(':3001', ':5173');
+        : apiUrl.replace(':3001', `:${frontendPort}`);
 
       // Handle authentication errors
       if (err) {

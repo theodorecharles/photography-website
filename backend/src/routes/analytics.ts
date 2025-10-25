@@ -49,13 +49,16 @@ router.post('/track', async (req, res): Promise<void> => {
       return;
     }
 
-    const { endpoint, username, password } = analyticsConfig;
+    const { endpoint, organization, stream, username, password } = analyticsConfig;
 
-    if (!endpoint || !username || !password) {
+    if (!endpoint || !organization || !stream || !username || !password) {
       console.error('Analytics configuration incomplete');
       res.status(200).json({ success: true, message: 'Analytics not configured' });
       return;
     }
+
+    // Construct the full URL: {endpoint}{organization}/{stream}/_json
+    const analyticsUrl = `${endpoint}${organization}/${stream}/_json`;
 
     // Verify HMAC signature if secret is configured
     if (hmacSecret) {
@@ -100,7 +103,7 @@ router.post('/track', async (req, res): Promise<void> => {
     // Forward the event(s) to OpenObserve with authentication
     const credentials = Buffer.from(`${username}:${password}`).toString('base64');
     
-    const response = await fetch(endpoint, {
+    const response = await fetch(analyticsUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
