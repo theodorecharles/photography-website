@@ -11,9 +11,13 @@ import { exec } from "child_process";
 import { promisify } from "util";
 import multer from "multer";
 import os from "os";
+import { csrfProtection } from "../security.js";
 
 const router = Router();
 const execAsync = promisify(exec);
+
+// Apply CSRF protection to all routes in this router
+router.use(csrfProtection);
 
 // Configure multer for file uploads
 const upload = multer({

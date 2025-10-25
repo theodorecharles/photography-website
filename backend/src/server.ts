@@ -23,7 +23,7 @@ import config, {
   RATE_LIMIT_WINDOW_MS,
   RATE_LIMIT_MAX_REQUESTS,
 } from "./config.ts";
-import { validateProductionSecurity, csrfProtection } from "./security.ts";
+import { validateProductionSecurity } from "./security.ts";
 
 // Import route handlers
 import albumsRouter from "./routes/albums.ts";
@@ -187,11 +187,12 @@ app.set("photosDir", photosDir);
 app.set("optimizedDir", optimizedDir);
 
 // Register route handlers
+// Note: CSRF protection is applied inside individual routers that need it
 app.use('/api/auth', authRouter);
-app.use('/api/external-links', csrfProtection, externalLinksRouter);
-app.use('/api/branding', csrfProtection, brandingRouter);
+app.use('/api/external-links', externalLinksRouter);
+app.use('/api/branding', brandingRouter);
 app.use(albumsRouter);
-app.use(csrfProtection, albumManagementRouter);
+app.use(albumManagementRouter);
 app.use(externalPagesRouter);
 app.use(healthRouter);
 app.use('/api/analytics', analyticsRouter);

@@ -8,11 +8,15 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { isAuthenticated } from './auth.js';
+import { csrfProtection } from '../security.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const router = Router();
+
+// Apply CSRF protection to all routes in this router
+router.use(csrfProtection);
 
 // Path to config file - go up from backend/src/routes to project root, then into config
 const configPath = path.resolve(__dirname, '../../../config/config.json');
