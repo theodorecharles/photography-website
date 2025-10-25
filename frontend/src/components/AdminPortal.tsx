@@ -289,10 +289,12 @@ export default function AdminPortal() {
     }
   };
 
-  const pollForThumbnail = async (photoId: string, thumbnailUrl: string, maxAttempts = 30) => {
+  const pollForThumbnail = async (photoId: string, thumbnailUrl: string, album: string, maxAttempts = 30) => {
     for (let attempt = 0; attempt < maxAttempts; attempt++) {
       try {
-        const response = await fetch(thumbnailUrl, { method: 'HEAD' });
+        // Add cache bust parameter to prevent cached 404 responses
+        const cacheBustUrl = `${thumbnailUrl}?t=${Date.now()}`;
+        const response = await fetch(cacheBustUrl, { method: 'HEAD' });
         if (response.ok) {
           // Thumbnail is ready
           setOptimizingPhotos(prev => {
@@ -300,6 +302,8 @@ export default function AdminPortal() {
             newSet.delete(photoId);
             return newSet;
           });
+          // Reload album photos to get fresh URLs and ensure cache is bypassed
+          await loadAlbumPhotos(album);
           return true;
         }
       } catch (err) {
@@ -367,7 +371,7 @@ export default function AdminPortal() {
           // Start polling for each uploaded photo
           for (const filename of newPhotoIds) {
             const thumbnailUrl = `${API_URL}/optimized/thumbnail/${selectedAlbum}/${filename}`;
-            pollForThumbnail(filename, thumbnailUrl);
+            pollForThumbnail(filename, thumbnailUrl, selectedAlbum);
           }
         }
         
