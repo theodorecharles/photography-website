@@ -839,7 +839,7 @@ components:
       description: |
         Additional properties depend on event_type:
         - photo_click: photo_id, album, photo_title
-        - photo_navigation: direction, photo_id, album, view_duration_ms (time spent on previous photo)
+        - photo_navigation: direction, photo_id, album, photo_title, view_duration_ms (time spent on previous photo)
         - photo_download: photo_id, album, photo_title
         - modal_close: photo_id, album, view_duration_ms (total time modal was open)
         - album_navigation: album, navigation_source (header/footer/mobile_menu)
