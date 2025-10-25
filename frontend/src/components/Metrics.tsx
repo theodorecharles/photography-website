@@ -28,6 +28,8 @@ interface Stats {
     end: number;
     days: number;
   };
+  totalViewDuration?: number;
+  topPicturesByDuration?: Array<{ photo_id: string; total_duration: number; avg_duration: number; views: number }>;
 }
 
 interface TimeSeriesData {
@@ -142,6 +144,20 @@ export default function Metrics() {
     return num.toLocaleString();
   };
 
+  const formatDuration = (ms: number) => {
+    const totalSeconds = Math.floor(ms / 1000);
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+    
+    // Pad with zeros for consistent formatting
+    const hh = hours.toString().padStart(2, '0');
+    const mm = minutes.toString().padStart(2, '0');
+    const ss = seconds.toString().padStart(2, '0');
+    
+    return `${hh}:${mm}:${ss}`;
+  };
+
   const formatDate = (timestamp: number) => {
     return new Date(timestamp).toLocaleDateString();
   };
@@ -215,22 +231,10 @@ export default function Metrics() {
             </div>
 
             <div className="metric-card">
-              <div className="metric-icon">📈</div>
+              <div className="metric-icon">⏱️</div>
               <div className="metric-content">
-                <div className="metric-value">
-                  {stats.uniqueVisitors > 0 
-                    ? (stats.pageViews / stats.uniqueVisitors).toFixed(2)
-                    : '0'}
-                </div>
-                <div className="metric-label">Pages per Visitor</div>
-              </div>
-            </div>
-
-            <div className="metric-card">
-              <div className="metric-icon">🎯</div>
-              <div className="metric-content">
-                <div className="metric-value">{formatNumber(stats.eventTypes.length)}</div>
-                <div className="metric-label">Event Types</div>
+                <div className="metric-value">{formatDuration(stats.totalViewDuration || 0)}</div>
+                <div className="metric-label">Total Time Viewing</div>
               </div>
             </div>
           </div>
@@ -299,6 +303,59 @@ export default function Metrics() {
               </div>
             ) : (
               <div className="no-data">No visitor data available for this time range</div>
+            )}
+          </div>
+
+          {/* Top Pictures by View Duration */}
+          <div className="metrics-section">
+            <h3>Most Engaging Pictures</h3>
+            <p style={{ color: '#9ca3af', fontSize: '0.9rem', marginBottom: '1rem' }}>
+              Pictures ranked by total time spent viewing
+            </p>
+            {stats.topPicturesByDuration && stats.topPicturesByDuration.length > 0 ? (
+              <div className="metrics-table">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Photo ID</th>
+                      <th className="text-right">Total Time</th>
+                      <th className="text-right">Avg Time</th>
+                      <th className="text-right">Views</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {stats.topPicturesByDuration.map((picture, index) => {
+                      // Extract album and photo name from photo_id (e.g., "people/08053-00001.jpg")
+                      const [albumName, photoName] = picture.photo_id.split('/');
+                      const photoUrl = `/album/${albumName}?photo=${encodeURIComponent(photoName)}`;
+                      const thumbnailUrl = `${API_URL}/photos/${albumName}/${photoName}`;
+                      
+                      return (
+                        <tr 
+                          key={index} 
+                          className="clickable-row"
+                          onClick={() => window.location.href = photoUrl}
+                          style={{ cursor: 'pointer' }}
+                        >
+                          <td className="page-path photo-id-cell">
+                            <div className="photo-id-wrapper">
+                              <span>{picture.photo_id}</span>
+                              <div className="photo-thumbnail-preview">
+                                <img src={thumbnailUrl} alt={photoName} />
+                              </div>
+                            </div>
+                          </td>
+                          <td className="text-right">{formatDuration(picture.total_duration)}</td>
+                          <td className="text-right">{formatDuration(picture.avg_duration)}</td>
+                          <td className="text-right">{formatNumber(picture.views)}</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div className="no-data">No picture view duration data available</div>
             )}
           </div>
 

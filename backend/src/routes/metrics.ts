@@ -185,7 +185,9 @@ router.get('/stats', isAuthenticated, async (req: Request, res: Response): Promi
       pageViewsResult,
       topPagesResult,
       topReferrersResult,
-      eventTypesResult
+      eventTypesResult,
+      totalViewDurationResult,
+      topPicturesByDurationResult
     ] = await Promise.all([
       // Unique visitors (by IP)
       executeQuery(`SELECT COUNT(DISTINCT client_ip) as unique_visitors FROM "${stream}" WHERE _timestamp >= ${startTime} AND _timestamp <= ${endTime}`),
@@ -200,7 +202,13 @@ router.get('/stats', isAuthenticated, async (req: Request, res: Response): Promi
       executeQuery(`SELECT referrer, COUNT(*) as count FROM "${stream}" WHERE event_type = 'pageview' AND _timestamp >= ${startTime} AND _timestamp <= ${endTime} GROUP BY referrer ORDER BY count DESC LIMIT 10`),
       
       // Event types distribution
-      executeQuery(`SELECT event_type, COUNT(*) as count FROM "${stream}" WHERE _timestamp >= ${startTime} AND _timestamp <= ${endTime} GROUP BY event_type ORDER BY count DESC`)
+      executeQuery(`SELECT event_type, COUNT(*) as count FROM "${stream}" WHERE _timestamp >= ${startTime} AND _timestamp <= ${endTime} GROUP BY event_type ORDER BY count DESC`),
+      
+      // Total view duration (in milliseconds) - sum all events with view_duration_ms
+      executeQuery(`SELECT SUM(view_duration_ms) as total_duration FROM "${stream}" WHERE view_duration_ms IS NOT NULL AND _timestamp >= ${startTime} AND _timestamp <= ${endTime}`),
+      
+      // Top pictures by total view duration - aggregate by photo_id
+      executeQuery(`SELECT photo_id, SUM(view_duration_ms) as total_duration, AVG(view_duration_ms) as avg_duration, COUNT(*) as views FROM "${stream}" WHERE view_duration_ms IS NOT NULL AND photo_id IS NOT NULL AND _timestamp >= ${startTime} AND _timestamp <= ${endTime} GROUP BY photo_id ORDER BY total_duration DESC LIMIT 10`)
     ]);
 
     // Extract results
@@ -210,6 +218,8 @@ router.get('/stats', isAuthenticated, async (req: Request, res: Response): Promi
       topPages: topPagesResult.hits || [],
       topReferrers: topReferrersResult.hits || [],
       eventTypes: eventTypesResult.hits || [],
+      totalViewDuration: totalViewDurationResult.hits?.[0]?.total_duration || 0,
+      topPicturesByDuration: topPicturesByDurationResult.hits || [],
       stream: stream, // Include stream name for frontend queries
       timeRange: {
         start: startTime,
