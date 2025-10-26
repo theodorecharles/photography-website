@@ -99,22 +99,22 @@ release_thread_id() {
 process_single_image() {
     local file="$1"
     local thread_id=$(get_thread_id)
-    local relative_path=${file#photos/}
-    local album_path=$(dirname "$relative_path")
-    local filename=$(basename "$file")
-    
-    # Create album directories in optimized folders if they don't exist
+        local relative_path=${file#photos/}
+        local album_path=$(dirname "$relative_path")
+        local filename=$(basename "$file")
+        
+        # Create album directories in optimized folders if they don't exist
     mkdir -p "optimized/thumbnail/$album_path" 2>/dev/null
     mkdir -p "optimized/modal/$album_path" 2>/dev/null
     mkdir -p "optimized/download/$album_path" 2>/dev/null
-    
-    # Define output paths for different image versions
-    local thumb_path="optimized/thumbnail/$album_path/$filename"
-    local modal_path="optimized/modal/$album_path/$filename"
-    local download_path="optimized/download/$album_path/$filename"
-    
-    # Create thumbnail version
-    if [ ! -f "$thumb_path" ]; then
+        
+        # Define output paths for different image versions
+        local thumb_path="optimized/thumbnail/$album_path/$filename"
+        local modal_path="optimized/modal/$album_path/$filename"
+        local download_path="optimized/download/$album_path/$filename"
+        
+        # Create thumbnail version
+        if [ ! -f "$thumb_path" ]; then
         echo "[T$thread_id] thumbnail: $filename" > "$STATE_DIR/thread_$thread_id"
         if convert "$file" -resize "${THUMBNAIL_MAX_DIM}x${THUMBNAIL_MAX_DIM}>" -quality $THUMBNAIL_QUALITY "$thumb_path" 2>/dev/null; then
             increment_progress
@@ -143,23 +143,20 @@ process_single_image() {
 # Function to collect albums and their images
 collect_albums() {
     local base_dir="$1"
-    declare -A albums
     
-    # Find all directories under photos
-    while IFS= read -r dir; do
-        local album_name=$(basename "$dir")
-        # Find images in this album
-        while IFS= read -r file; do
-            if [ -n "$file" ]; then
-                albums["$album_name"]+="$file"$'\n'
+    # Find all album directories (subdirectories of photos)
+    for album_dir in "$base_dir"/*/; do
+        if [ -d "$album_dir" ]; then
+            local album_name=$(basename "$album_dir")
+            
+            # Check if this album has any images
+            local album_images=$(find "$album_dir" -maxdepth 1 -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" \))
+            
+            if [ -n "$album_images" ]; then
+                echo "ALBUM:$album_name"
+                echo "$album_images"
             fi
-        done < <(find "$dir" -maxdepth 1 -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" \) 2>/dev/null)
-    done < <(find "$base_dir" -type d)
-    
-    # Output albums and their images
-    for album in "${!albums[@]}"; do
-        echo "ALBUM:$album"
-        echo -n "${albums[$album]}"
+        fi
     done
 }
 
@@ -188,7 +185,7 @@ process_album() {
     local album_end=$(date +%s)
     local album_time=$((album_end - album_start))
     
-    # Print album completion message
+    # Print album completion message to file for animation to display
     echo "$album_name optimized in $album_time seconds ✓" >> "$ALBUM_TIMES_FILE"
     
     return 0
@@ -224,15 +221,31 @@ process_directory() {
 
 # Function to get CPU usage percentage
 get_cpu_usage() {
-    # Use vmstat to get CPU usage (more reliable than top)
-    local cpu_percent=$(vmstat 1 2 | tail -1 | awk '{print 100 - $15}')
+    local cpu_percent=0
     
-    # Fallback to /proc/loadavg if vmstat doesn't work
-    if [ -z "$cpu_percent" ] || [ "$cpu_percent" = "" ] || [ "$cpu_percent" = "us.0" ]; then
-        # Get load average and convert to approximate CPU usage
-        local load_avg=$(cat /proc/loadavg | awk '{print $1}')
-        local cpu_count=$(nproc)
-        cpu_percent=$(awk "BEGIN {printf \"%.0f\", ($load_avg / $cpu_count) * 100}")
+    # Detect OS and use appropriate command
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        # macOS - use top command
+        cpu_percent=$(top -l 1 -n 0 | grep "CPU usage" | awk '{print $3}' | sed 's/%//' 2>/dev/null)
+        # If that doesn't work, use sysctl to get load average
+        if [ -z "$cpu_percent" ] || ! [[ "$cpu_percent" =~ ^[0-9.]+$ ]]; then
+            local load_avg=$(sysctl -n vm.loadavg | awk '{print $2}')
+            local cpu_count=$(sysctl -n hw.ncpu)
+            cpu_percent=$(awk "BEGIN {printf \"%.0f\", ($load_avg / $cpu_count) * 100}")
+        else
+            # Convert to integer
+            cpu_percent=$(awk "BEGIN {printf \"%.0f\", $cpu_percent}")
+        fi
+    else
+        # Linux - use vmstat or /proc/loadavg
+        cpu_percent=$(vmstat 1 2 2>/dev/null | tail -1 | awk '{print 100 - $15}')
+        
+        # Fallback to /proc/loadavg if vmstat doesn't work
+        if [ -z "$cpu_percent" ] || [ "$cpu_percent" = "" ]; then
+            local load_avg=$(cat /proc/loadavg 2>/dev/null | awk '{print $1}')
+            local cpu_count=$(nproc 2>/dev/null || grep -c ^processor /proc/cpuinfo)
+            cpu_percent=$(awk "BEGIN {printf \"%.0f\", ($load_avg / $cpu_count) * 100}")
+        fi
     fi
     
     # Ensure we have a valid number
@@ -247,8 +260,11 @@ get_cpu_usage() {
 animate_display() {
     local hex_toggle=0
     
-    # Print initial blank lines for header + progress + threads + extra
-    local total_lines=$((CONCURRENCY + 3))
+    # Animation base lines: header + progress + threads
+    local base_lines=$((CONCURRENCY + 2))
+    
+    # Print initial blank lines
+    local total_lines=$base_lines
     for ((i=0; i<total_lines; i++)); do
         printf "\n"
     done
@@ -262,11 +278,8 @@ animate_display() {
         local progress=$(cat "$PROGRESS_FILE" 2>/dev/null || echo "0")
         local total=$(cat "$TOTAL_FILE" 2>/dev/null || echo "0")
         
-        # Calculate total lines needed (header + progress + threads + blank)
-        local total_lines=$((CONCURRENCY + 3))
-        
         # Move cursor up to redraw all lines
-        printf "\033[${total_lines}A"
+        printf "\033[${base_lines}A"
         
         # Alternate hexagon symbol
         local hex_symbol
@@ -336,9 +349,6 @@ animate_display() {
             fi
         done
         
-        # Print blank line
-        printf "\033[K\n"
-        
         sleep 0.25
     done
 }
@@ -359,12 +369,19 @@ mkdir -p optimized/{thumbnail,modal,download} 2>/dev/null || {
 total_count=$(count_images "photos")
 echo "$total_count" > "$TOTAL_FILE"
 
-# Count total original images for final summary
-total_original=$(find photos -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" \) | wc -l | tr -d ' ')
+# Count total original images for final summary (count from each album directory)
+total_original=0
+for album_dir in photos/*/; do
+    if [ -d "$album_dir" ]; then
+        count=$(find "$album_dir" -maxdepth 1 -type f \( -name "*.jpg" -o -name "*.JPG" -o -name "*.jpeg" -o -name "*.JPEG" -o -name "*.png" -o -name "*.PNG" \) 2>/dev/null | wc -l | tr -d ' ')
+        total_original=$((total_original + count))
+    fi
+done
+echo "$total_original" > "$STATE_DIR/total_original"
 
 # Start image processing in background
 (
-    process_directory "photos"
+process_directory "photos"
     exit_code=$?
     echo "done" > "$STATUS_FILE"
     exit $exit_code
@@ -382,32 +399,39 @@ exit_code=$?
 END_TIME=$(date +%s)
 ELAPSED=$((END_TIME - START_TIME))
 
-# Get final progress count
+# Get final progress count and total original images
 final_progress=$(cat "$PROGRESS_FILE")
+total_original=$(cat "$STATE_DIR/total_original" 2>/dev/null || echo "0")
 
-# Move cursor up to overwrite the last animated display
-total_lines=$((CONCURRENCY + 3))
-printf "\033[${total_lines}A"
+# Calculate animation lines (same as in animate_display)
+animation_lines=$((CONCURRENCY + 2))
+
+# Move cursor up to start of animation
+printf "\033[${animation_lines}A"
 
 # Clear the animation lines
-for ((i=0; i<total_lines; i++)); do
+for ((i=0; i<animation_lines; i++)); do
     printf "\033[K\n"
 done
 
-# Move back up
-printf "\033[${total_lines}A"
+# Move back to top
+printf "\033[${animation_lines}A"
 
-# Print album completion messages
+# Print ALL album completions from file (catches any that finished after animation stopped)
+album_count=0
 if [ -f "$ALBUM_TIMES_FILE" ] && [ -s "$ALBUM_TIMES_FILE" ]; then
     while IFS= read -r album_msg; do
-        printf "%s\n" "$album_msg"
+        printf "\033[36m%s\033[0m\n" "$album_msg"
+        album_count=$((album_count + 1))
     done < "$ALBUM_TIMES_FILE"
-    printf "\n"
 fi
 
+# Print blank line between albums and Done message
+printf "\n"
+
 # Print final success message
-printf " \033[32m✓\033[0m Done!\033[K\n"
-printf "Generated %d optimized versions of %d images in %d seconds.\033[K\n" "$final_progress" "$total_original" "$ELAPSED"
+printf " \033[32m✓\033[0m Done!\n"
+printf "Generated %d optimized versions of %d images in %d seconds.\n" "$final_progress" "$total_original" "$ELAPSED"
 
 if [ $exit_code -ne 0 ]; then
     exit 1
