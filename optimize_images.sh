@@ -203,9 +203,15 @@ animate_display() {
             printf "Scanning images...\033[K\n"
         fi
         
-        # Print current file
+        # Print current file (truncate to fit terminal width)
         if [ -n "$current" ]; then
-            printf "%s\033[K\n" "$current"
+            # Truncate the filename if it's longer than terminal width
+            if [ ${#current} -gt $term_width ]; then
+                local truncated="${current:0:$((term_width - 3))}..."
+                printf "%s\033[K\n" "$truncated"
+            else
+                printf "%s\033[K\n" "$current"
+            fi
         else
             printf "\033[K\n"
         fi
@@ -234,7 +240,12 @@ echo "$total_count" > "$TOTAL_FILE"
 total_original=$(find photos -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" \) | wc -l | tr -d ' ')
 
 # Start image processing in background
-process_directory "photos" &
+(
+    process_directory "photos"
+    exit_code=$?
+    echo "done" > "$STATUS_FILE"
+    exit $exit_code
+) &
 PROCESSOR_PID=$!
 
 # Run animation in foreground (has terminal access)
