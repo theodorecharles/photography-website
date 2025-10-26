@@ -272,7 +272,7 @@ export default function Metrics() {
                       formatter={(value: number) => [value, 'Visitors']}
                     />
                     <Area 
-                      type="monotone" 
+                      type="linear" 
                       dataKey="count" 
                       stroke="#22c55e" 
                       strokeWidth={3}
