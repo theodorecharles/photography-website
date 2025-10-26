@@ -408,7 +408,13 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
         <div className="modal" onClick={handleCloseModal}>
           <div 
             className="modal-content" 
-            onClick={(e) => e.stopPropagation()}
+            onClick={(e) => {
+              e.stopPropagation();
+              // Close info panel when clicking outside of it
+              if (showInfo && !(e.target as HTMLElement).closest('.modal-info-panel') && !(e.target as HTMLElement).closest('.modal-controls-left button')) {
+                setShowInfo(false);
+              }
+            }}
             onTouchStart={handleTouchStart}
             onTouchEnd={handleTouchEnd}
           >
@@ -425,7 +431,20 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
                   className={showInfo ? 'active' : ''}
                   title="Photo information"
                 >
-                  ℹ
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="12" y1="16" x2="12" y2="12" />
+                    <line x1="12" y1="8" x2="12.01" y2="8" />
+                  </svg>
                 </button>
                 {showInfo && (
                   <div className="modal-info-panel">
