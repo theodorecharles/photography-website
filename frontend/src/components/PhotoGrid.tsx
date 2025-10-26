@@ -47,6 +47,8 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
     Record<string, { width: number; height: number }>
   >({});
   const modalOpenTimeRef = useRef<number | null>(null);
+  const touchStartX = useRef<number | null>(null);
+  const touchStartY = useRef<number | null>(null);
 
   // Get query parameters from current URL
   const queryParams = new URLSearchParams(location.search);
@@ -102,6 +104,50 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
     else return (bytes / 1048576).toFixed(2) + ' MB';
   };
 
+  // Handle touch swipe for mobile navigation
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (!touchStartX.current || !touchStartY.current || !selectedPhoto) return;
+
+    const touchEndX = e.changedTouches[0].clientX;
+    const touchEndY = e.changedTouches[0].clientY;
+    const deltaX = touchEndX - touchStartX.current;
+    const deltaY = touchEndY - touchStartY.current;
+
+    // Ensure horizontal swipe is more dominant than vertical
+    if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
+      if (deltaX > 0) {
+        // Swipe right - go to previous photo
+        const currentIndex = photos.findIndex((p) => p.id === selectedPhoto.id);
+        const prevIndex = (currentIndex - 1 + photos.length) % photos.length;
+        const prevPhoto = photos[prevIndex];
+        const viewDuration = modalOpenTimeRef.current ? Date.now() - modalOpenTimeRef.current : undefined;
+        setModalImageLoaded(false);
+        setSelectedPhoto(prevPhoto);
+        setExifData(null);
+        modalOpenTimeRef.current = Date.now();
+        trackPhotoNavigation('previous', prevPhoto.id, prevPhoto.album, prevPhoto.title, viewDuration);
+      } else {
+        // Swipe left - go to next photo
+        const currentIndex = photos.findIndex((p) => p.id === selectedPhoto.id);
+        const nextIndex = (currentIndex + 1) % photos.length;
+        const nextPhoto = photos[nextIndex];
+        const viewDuration = modalOpenTimeRef.current ? Date.now() - modalOpenTimeRef.current : undefined;
+        setModalImageLoaded(false);
+        setSelectedPhoto(nextPhoto);
+        setExifData(null);
+        modalOpenTimeRef.current = Date.now();
+        trackPhotoNavigation('next', nextPhoto.id, nextPhoto.album, nextPhoto.title, viewDuration);
+      }
+    }
+
+    touchStartX.current = null;
+    touchStartY.current = null;
+  };
 
   // Auto-fetch EXIF data when navigating between photos if info panel is open
   useEffect(() => {
@@ -369,6 +415,8 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
                 setShowInfo(false);
               }
             }}
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
           >
             <div className="modal-image-wrapper">
               <div className="modal-controls-left">
