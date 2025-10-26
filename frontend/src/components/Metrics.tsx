@@ -15,6 +15,7 @@ import {
 } from 'recharts';
 import { API_URL } from '../config';
 import { fetchWithRateLimitCheck } from '../utils/fetchWrapper';
+import VisitorMap from './VisitorMap';
 import './Metrics.css';
 
 interface Stats {
@@ -38,6 +39,16 @@ interface TimeSeriesData {
   count: number;
 }
 
+interface VisitorLocation {
+  latitude: number;
+  longitude: number;
+  city: string | null;
+  region: string | null;
+  country: string | null;
+  visit_count: number;
+  unique_visitors: number;
+}
+
 export default function Metrics() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
@@ -45,10 +56,14 @@ export default function Metrics() {
   const [timeRange, setTimeRange] = useState(30); // days
   const [visitorsOverTime, setVisitorsOverTime] = useState<TimeSeriesData[]>([]);
   const [loadingTimeSeries, setLoadingTimeSeries] = useState(false);
+  const [visitorLocations, setVisitorLocations] = useState<VisitorLocation[]>([]);
+  const [loadingLocations, setLoadingLocations] = useState(false);
+  const [expandedRows, setExpandedRows] = useState<Record<string, Set<number>>>({});
 
   useEffect(() => {
     loadStats();
     loadVisitorsOverTime();
+    loadVisitorLocations();
   }, [timeRange]);
 
   const loadStats = async () => {
@@ -117,6 +132,24 @@ export default function Metrics() {
     }
   };
 
+  const loadVisitorLocations = async () => {
+    setLoadingLocations(true);
+    try {
+      const res = await fetchWithRateLimitCheck(`${API_URL}/api/metrics/visitor-locations?days=${timeRange}`);
+
+      if (!res.ok) {
+        throw new Error('Failed to load location data');
+      }
+
+      const data = await res.json();
+      setVisitorLocations(data.locations || []);
+    } catch (err) {
+      console.error('Failed to load visitor locations:', err);
+    } finally {
+      setLoadingLocations(false);
+    }
+  };
+
   const formatNumber = (num: number) => {
     return num.toLocaleString();
   };
@@ -136,12 +169,34 @@ export default function Metrics() {
   };
 
   const formatDate = (timestamp: number) => {
-    return new Date(timestamp).toLocaleDateString();
+    // Convert microseconds to milliseconds for proper date formatting
+    return new Date(timestamp / 1000).toLocaleDateString();
   };
 
-  const truncateUrl = (url: string, maxLength: number = 50) => {
+  const truncateUrl = (url: string, maxLength: number = 40) => {
     if (url.length <= maxLength) return url;
     return url.substring(0, maxLength) + '...';
+  };
+
+  const toggleRowExpansion = (tableName: string, rowIndex: number) => {
+    setExpandedRows(prev => {
+      const newExpanded = { ...prev };
+      if (!newExpanded[tableName]) {
+        newExpanded[tableName] = new Set();
+      }
+      const tableExpanded = new Set(newExpanded[tableName]);
+      if (tableExpanded.has(rowIndex)) {
+        tableExpanded.delete(rowIndex);
+      } else {
+        tableExpanded.add(rowIndex);
+      }
+      newExpanded[tableName] = tableExpanded;
+      return newExpanded;
+    });
+  };
+
+  const isRowExpanded = (tableName: string, rowIndex: number): boolean => {
+    return expandedRows[tableName]?.has(rowIndex) || false;
   };
 
   if (loading && !stats) {
@@ -216,6 +271,15 @@ export default function Metrics() {
             </div>
           </div>
 
+          {/* Visitor Locations Map */}
+          <div className="metrics-section">
+            <h3>Visitor Locations</h3>
+            <p style={{ color: '#9ca3af', fontSize: '0.85rem', marginBottom: '0.75rem' }}>
+              Geographic distribution of visitors based on their IP addresses
+            </p>
+            <VisitorMap locations={visitorLocations} loading={loadingLocations} />
+          </div>
+
           {/* Visitors Over Time Chart */}
           <div className="metrics-section">
             <h3>Unique Visitors Over Time</h3>
@@ -223,7 +287,7 @@ export default function Metrics() {
               <div className="chart-loading">Loading chart data...</div>
             ) : visitorsOverTime.length > 0 ? (
               <div className="chart-container">
-                <ResponsiveContainer width="100%" height={380}>
+                <ResponsiveContainer width="100%" height={300}>
                   <AreaChart 
                     data={visitorsOverTime.map(point => {
                       // Parse date string as local time to avoid timezone shifting
@@ -291,7 +355,7 @@ export default function Metrics() {
           {/* Top Pictures by View Duration */}
           <div className="metrics-section">
             <h3>Most Engaging Pictures</h3>
-            <p style={{ color: '#9ca3af', fontSize: '0.9rem', marginBottom: '1rem' }}>
+            <p style={{ color: '#9ca3af', fontSize: '0.85rem', marginBottom: '0.75rem' }}>
               Pictures ranked by total time spent viewing
             </p>
             {stats.topPicturesByDuration && stats.topPicturesByDuration.length > 0 ? (
@@ -299,7 +363,7 @@ export default function Metrics() {
                 <table>
                   <thead>
                     <tr>
-                      <th>Photo ID</th>
+                      <th>Thumbnail</th>
                       <th className="text-right">Total Time</th>
                       <th className="text-right">Avg Time</th>
                       <th className="text-right">Views</th>
@@ -311,26 +375,55 @@ export default function Metrics() {
                       const [albumName, photoName] = picture.photo_id.split('/');
                       const photoUrl = `/album/${albumName}?photo=${encodeURIComponent(photoName)}`;
                       const thumbnailUrl = `${API_URL}/photos/${albumName}/${photoName}`;
+                      const expanded = isRowExpanded('pictures', index);
                       
                       return (
-                        <tr 
-                          key={index} 
-                          className="clickable-row"
-                          onClick={() => window.location.href = photoUrl}
-                          style={{ cursor: 'pointer' }}
-                        >
-                          <td className="page-path photo-id-cell">
-                            <div className="photo-id-wrapper">
-                              <span>{picture.photo_id}</span>
-                              <div className="photo-thumbnail-preview">
-                                <img src={thumbnailUrl} alt={photoName} />
+                        <>
+                          <tr 
+                            key={index} 
+                            className={`clickable-row ${expanded ? 'expanded-row' : ''}`}
+                            onClick={() => toggleRowExpansion('pictures', index)}
+                            style={{ cursor: 'pointer' }}
+                          >
+                            <td className="photo-thumbnail-cell">
+                              <div className="photo-thumbnail-wrapper">
+                                <img src={thumbnailUrl} alt={photoName} className="photo-thumbnail-small" />
+                                <div className="photo-thumbnail-preview">
+                                  <img src={thumbnailUrl} alt={photoName} />
+                                </div>
                               </div>
-                            </div>
-                          </td>
-                          <td className="text-right">{formatDuration(picture.total_duration)}</td>
-                          <td className="text-right">{formatDuration(picture.avg_duration)}</td>
-                          <td className="text-right">{formatNumber(picture.views)}</td>
-                        </tr>
+                            </td>
+                            <td className="text-right">{formatDuration(picture.total_duration)}</td>
+                            <td className="text-right">{formatDuration(picture.avg_duration)}</td>
+                            <td className="text-right">{formatNumber(picture.views)}</td>
+                          </tr>
+                          {expanded && (
+                            <tr key={`${index}-expanded`} className="expanded-content-row">
+                              <td colSpan={4}>
+                                <div className="expanded-content">
+                                  <div className="expanded-detail">
+                                    <strong>Photo ID:</strong> {picture.photo_id}
+                                  </div>
+                                  <div className="expanded-detail">
+                                    <strong>Album:</strong> {albumName}
+                                  </div>
+                                  <div className="expanded-detail">
+                                    <strong>File Name:</strong> {photoName}
+                                  </div>
+                                  <div className="expanded-actions">
+                                    <a 
+                                      href={photoUrl} 
+                                      className="view-photo-btn"
+                                      onClick={(e) => e.stopPropagation()}
+                                    >
+                                      View Photo →
+                                    </a>
+                                  </div>
+                                </div>
+                              </td>
+                            </tr>
+                          )}
+                        </>
                       );
                     })}
                   </tbody>
@@ -359,12 +452,37 @@ export default function Metrics() {
                       const percentage = stats.pageViews > 0 
                         ? ((page.views / stats.pageViews) * 100).toFixed(1)
                         : '0';
+                      const expanded = isRowExpanded('pages', index);
                       return (
-                        <tr key={index}>
-                          <td className="page-path">{page.page_path}</td>
-                          <td className="text-right">{formatNumber(page.views)}</td>
-                          <td className="text-right">{percentage}%</td>
-                        </tr>
+                        <>
+                          <tr 
+                            key={index} 
+                            className={`clickable-row ${expanded ? 'expanded-row' : ''}`}
+                            onClick={() => toggleRowExpansion('pages', index)}
+                            style={{ cursor: 'pointer' }}
+                          >
+                            <td className="page-path">{page.page_path}</td>
+                            <td className="text-right">{formatNumber(page.views)}</td>
+                            <td className="text-right">{percentage}%</td>
+                          </tr>
+                          {expanded && (
+                            <tr key={`${index}-expanded`} className="expanded-content-row">
+                              <td colSpan={3}>
+                                <div className="expanded-content">
+                                  <div className="expanded-detail">
+                                    <strong>Full Path:</strong> {page.page_path}
+                                  </div>
+                                  <div className="expanded-detail">
+                                    <strong>Total Views:</strong> {formatNumber(page.views)}
+                                  </div>
+                                  <div className="expanded-detail">
+                                    <strong>Percentage of Total:</strong> {percentage}% of all page views
+                                  </div>
+                                </div>
+                              </td>
+                            </tr>
+                          )}
+                        </>
                       );
                     })}
                   </tbody>
@@ -394,14 +512,42 @@ export default function Metrics() {
                       const percentage = totalReferrers > 0 
                         ? ((referrer.count / totalReferrers) * 100).toFixed(1)
                         : '0';
+                      const expanded = isRowExpanded('referrers', index);
                       return (
-                        <tr key={index}>
-                          <td className="referrer" title={referrer.referrer}>
-                            {truncateUrl(referrer.referrer)}
-                          </td>
-                          <td className="text-right">{formatNumber(referrer.count)}</td>
-                          <td className="text-right">{percentage}%</td>
-                        </tr>
+                        <>
+                          <tr 
+                            key={index}
+                            className={`clickable-row ${expanded ? 'expanded-row' : ''}`}
+                            onClick={() => toggleRowExpansion('referrers', index)}
+                            style={{ cursor: 'pointer' }}
+                          >
+                            <td className="referrer" title={referrer.referrer}>
+                              {truncateUrl(referrer.referrer)}
+                            </td>
+                            <td className="text-right">{formatNumber(referrer.count)}</td>
+                            <td className="text-right">{percentage}%</td>
+                          </tr>
+                          {expanded && (
+                            <tr key={`${index}-expanded`} className="expanded-content-row">
+                              <td colSpan={3}>
+                                <div className="expanded-content">
+                                  <div className="expanded-detail">
+                                    <strong>Full Referrer URL:</strong>
+                                    <div style={{ wordBreak: 'break-all', marginTop: '0.5rem' }}>
+                                      {referrer.referrer}
+                                    </div>
+                                  </div>
+                                  <div className="expanded-detail">
+                                    <strong>Total Visits:</strong> {formatNumber(referrer.count)}
+                                  </div>
+                                  <div className="expanded-detail">
+                                    <strong>Percentage:</strong> {percentage}% of all referrers
+                                  </div>
+                                </div>
+                              </td>
+                            </tr>
+                          )}
+                        </>
                       );
                     })}
                   </tbody>
@@ -431,12 +577,37 @@ export default function Metrics() {
                       const percentage = totalEvents > 0 
                         ? ((event.count / totalEvents) * 100).toFixed(1)
                         : '0';
+                      const expanded = isRowExpanded('events', index);
                       return (
-                        <tr key={index}>
-                          <td className="event-type">{event.event_type}</td>
-                          <td className="text-right">{formatNumber(event.count)}</td>
-                          <td className="text-right">{percentage}%</td>
-                        </tr>
+                        <>
+                          <tr 
+                            key={index}
+                            className={`clickable-row ${expanded ? 'expanded-row' : ''}`}
+                            onClick={() => toggleRowExpansion('events', index)}
+                            style={{ cursor: 'pointer' }}
+                          >
+                            <td className="event-type">{event.event_type}</td>
+                            <td className="text-right">{formatNumber(event.count)}</td>
+                            <td className="text-right">{percentage}%</td>
+                          </tr>
+                          {expanded && (
+                            <tr key={`${index}-expanded`} className="expanded-content-row">
+                              <td colSpan={3}>
+                                <div className="expanded-content">
+                                  <div className="expanded-detail">
+                                    <strong>Event Type:</strong> {event.event_type}
+                                  </div>
+                                  <div className="expanded-detail">
+                                    <strong>Total Count:</strong> {formatNumber(event.count)}
+                                  </div>
+                                  <div className="expanded-detail">
+                                    <strong>Percentage:</strong> {percentage}% of all events
+                                  </div>
+                                </div>
+                              </td>
+                            </tr>
+                          )}
+                        </>
                       );
                     })}
                   </tbody>
