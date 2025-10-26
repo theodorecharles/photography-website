@@ -13,19 +13,27 @@ THUMBNAIL_MAX_DIM=1024
 MODAL_MAX_DIM=2048
 DOWNLOAD_MAX_DIM=4096
 
+# Read concurrency from config.json, default to 4 if not found
+CONCURRENCY=$(grep -A 2 '"optimization"' config/config.json 2>/dev/null | grep '"concurrency"' | grep -o '[0-9]*' || echo "4")
+
 # Animation state files
 STATE_DIR=$(mktemp -d)
 PROGRESS_FILE="$STATE_DIR/progress"
-CURRENT_FILE="$STATE_DIR/current"
 STATUS_FILE="$STATE_DIR/status"
 TOTAL_FILE="$STATE_DIR/total"
+ALBUM_TIMES_FILE="$STATE_DIR/album_times"
 START_TIME=$(date +%s)
 
 # Initialize state files
 echo "0" > "$PROGRESS_FILE"
-echo "" > "$CURRENT_FILE"
 echo "running" > "$STATUS_FILE"
 echo "0" > "$TOTAL_FILE"
+touch "$ALBUM_TIMES_FILE"
+
+# Create thread status files (one for each concurrent worker)
+for ((i=1; i<=CONCURRENCY; i++)); do
+    echo "" > "$STATE_DIR/thread_$i"
+done
 
 # Cleanup function
 cleanup() {
@@ -68,9 +76,29 @@ increment_progress() {
     ) 200>"$PROGRESS_FILE.lock"
 }
 
+# Get next available thread ID
+get_thread_id() {
+    for ((i=1; i<=CONCURRENCY; i++)); do
+        if [ ! -f "$STATE_DIR/thread_${i}_busy" ]; then
+            touch "$STATE_DIR/thread_${i}_busy"
+            echo "$i"
+            return
+        fi
+    done
+    echo "1"  # Fallback
+}
+
+# Release thread ID
+release_thread_id() {
+    local thread_id=$1
+    rm -f "$STATE_DIR/thread_${thread_id}_busy"
+    echo "" > "$STATE_DIR/thread_$thread_id"
+}
+
 # Function to process a single image file (all three versions)
 process_single_image() {
     local file="$1"
+    local thread_id=$(get_thread_id)
     local relative_path=${file#photos/}
     local album_path=$(dirname "$relative_path")
     local filename=$(basename "$file")
@@ -87,7 +115,7 @@ process_single_image() {
     
     # Create thumbnail version
     if [ ! -f "$thumb_path" ]; then
-        echo "Generating thumbnail for $filename" > "$CURRENT_FILE"
+        echo "[T$thread_id] thumbnail: $filename" > "$STATE_DIR/thread_$thread_id"
         if convert "$file" -resize "${THUMBNAIL_MAX_DIM}x${THUMBNAIL_MAX_DIM}>" -quality $THUMBNAIL_QUALITY "$thumb_path" 2>/dev/null; then
             increment_progress
         fi
@@ -95,7 +123,7 @@ process_single_image() {
     
     # Create modal version
     if [ ! -f "$modal_path" ]; then
-        echo "Generating modal for $filename" > "$CURRENT_FILE"
+        echo "[T$thread_id] modal: $filename" > "$STATE_DIR/thread_$thread_id"
         if convert "$file" -resize "${MODAL_MAX_DIM}x${MODAL_MAX_DIM}>" -quality $MODAL_QUALITY "$modal_path" 2>/dev/null; then
             increment_progress
         fi
@@ -103,41 +131,49 @@ process_single_image() {
     
     # Create download version
     if [ ! -f "$download_path" ]; then
-        echo "Generating download for $filename" > "$CURRENT_FILE"
+        echo "[T$thread_id] download: $filename" > "$STATE_DIR/thread_$thread_id"
         if convert "$file" -resize "${DOWNLOAD_MAX_DIM}x${DOWNLOAD_MAX_DIM}>" -quality $DOWNLOAD_QUALITY "$download_path" 2>/dev/null; then
             increment_progress
         fi
     fi
+    
+    release_thread_id "$thread_id"
 }
 
-# Function to collect all image files recursively
-collect_images() {
-    local dir="$1"
+# Function to collect albums and their images
+collect_albums() {
+    local base_dir="$1"
+    declare -A albums
     
-    for file in "$dir"/*; do
-        if [ -d "$file" ]; then
-            collect_images "$file"
-        elif [[ "$file" =~ \.(jpg|jpeg|png)$ ]]; then
-            echo "$file"
-        fi
+    # Find all directories under photos
+    while IFS= read -r dir; do
+        local album_name=$(basename "$dir")
+        # Find images in this album
+        while IFS= read -r file; do
+            if [ -n "$file" ]; then
+                albums["$album_name"]+="$file"$'\n'
+            fi
+        done < <(find "$dir" -maxdepth 1 -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" \) 2>/dev/null)
+    done < <(find "$base_dir" -type d)
+    
+    # Output albums and their images
+    for album in "${!albums[@]}"; do
+        echo "ALBUM:$album"
+        echo -n "${albums[$album]}"
     done
 }
 
-# Function to process images in parallel
-process_directory() {
-    local max_jobs=8
-    local job_count=0
+# Function to process a single album
+process_album() {
+    local album_name="$1"
+    shift
+    local images=("$@")
+    local album_start=$(date +%s)
     
-    # Collect all image files
-    local images=()
-    while IFS= read -r file; do
-        images+=("$file")
-    done < <(collect_images "photos")
-    
-    # Process images in parallel with max_jobs limit
+    # Process images in parallel with concurrency limit
     for file in "${images[@]}"; do
-        # Wait if we have max_jobs running
-        while [ $(jobs -r | wc -l) -ge $max_jobs ]; do
+        # Wait if we have CONCURRENCY jobs running
+        while [ $(jobs -r | wc -l) -ge $CONCURRENCY ]; do
             sleep 0.1
         done
         
@@ -145,8 +181,43 @@ process_directory() {
         process_single_image "$file" &
     done
     
-    # Wait for all remaining jobs to complete
+    # Wait for all images in this album to complete
     wait
+    
+    # Calculate album processing time
+    local album_end=$(date +%s)
+    local album_time=$((album_end - album_start))
+    
+    # Print album completion message
+    echo "$album_name optimized in $album_time seconds ✓" >> "$ALBUM_TIMES_FILE"
+    
+    return 0
+}
+
+# Function to process all albums
+process_directory() {
+    local current_album=""
+    local album_images=()
+    
+    # Collect and process albums
+    while IFS= read -r line; do
+        if [[ "$line" =~ ^ALBUM: ]]; then
+            # Process previous album if exists
+            if [ -n "$current_album" ] && [ ${#album_images[@]} -gt 0 ]; then
+                process_album "$current_album" "${album_images[@]}"
+                album_images=()
+            fi
+            # Start new album
+            current_album="${line#ALBUM:}"
+        elif [ -n "$line" ]; then
+            album_images+=("$line")
+        fi
+    done < <(collect_albums "photos")
+    
+    # Process last album
+    if [ -n "$current_album" ] && [ ${#album_images[@]} -gt 0 ]; then
+        process_album "$current_album" "${album_images[@]}"
+    fi
     
     return 0
 }
@@ -176,8 +247,11 @@ get_cpu_usage() {
 animate_display() {
     local hex_toggle=0
     
-    # Print initial 3 blank lines
-    printf "\n\n\n"
+    # Print initial blank lines for header + progress + threads + extra
+    local total_lines=$((CONCURRENCY + 3))
+    for ((i=0; i<total_lines; i++)); do
+        printf "\n"
+    done
     
     while true; do
         local status=$(cat "$STATUS_FILE" 2>/dev/null || echo "done")
@@ -187,10 +261,12 @@ animate_display() {
         
         local progress=$(cat "$PROGRESS_FILE" 2>/dev/null || echo "0")
         local total=$(cat "$TOTAL_FILE" 2>/dev/null || echo "0")
-        local current=$(cat "$CURRENT_FILE" 2>/dev/null || echo "")
         
-        # Always move cursor up 3 lines to redraw
-        printf "\033[3A"
+        # Calculate total lines needed (header + progress + threads + blank)
+        local total_lines=$((CONCURRENCY + 3))
+        
+        # Move cursor up to redraw all lines
+        printf "\033[${total_lines}A"
         
         # Alternate hexagon symbol
         local hex_symbol
@@ -234,7 +310,7 @@ animate_display() {
         
         # Print status line with progress count and CPU usage
         if [ "$total" -gt 0 ]; then
-            printf " ${hex_color}${hex_symbol}\033[0m Optimizing: %d/%d%*s\033[K\n" "$progress" "$total" $((term_width - 20 - ${#progress} - ${#total})) "CPU: ${cpu_usage}%"
+            printf " ${hex_color}${hex_symbol}\033[0m Optimizing: %d/%d (%d threads)%*s\033[K\n" "$progress" "$total" "$CONCURRENCY" $((term_width - 30 - ${#progress} - ${#total})) "CPU: ${cpu_usage}%"
         else
             printf " ${hex_color}${hex_symbol}\033[0m Optimizing:%*s\033[K\n" $((term_width - 15)) "CPU: ${cpu_usage}%"
         fi
@@ -246,18 +322,22 @@ animate_display() {
             printf "Scanning images...\033[K\n"
         fi
         
-        # Print current file (truncate to fit terminal width)
-        if [ -n "$current" ]; then
-            # Truncate the filename if it's longer than terminal width
-            if [ ${#current} -gt $term_width ]; then
-                local truncated="${current:0:$((term_width - 3))}..."
-                printf "%s\033[K\n" "$truncated"
+        # Print each thread's status
+        for ((i=1; i<=CONCURRENCY; i++)); do
+            local thread_status=$(cat "$STATE_DIR/thread_$i" 2>/dev/null || echo "")
+            if [ -n "$thread_status" ]; then
+                # Truncate if too long
+                if [ ${#thread_status} -gt $((term_width - 1)) ]; then
+                    thread_status="${thread_status:0:$((term_width - 4))}..."
+                fi
+                printf "%s\033[K\n" "$thread_status"
             else
-                printf "%s\033[K\n" "$current"
+                printf "\033[K\n"
             fi
-        else
-            printf "\033[K\n"
-        fi
+        done
+        
+        # Print blank line
+        printf "\033[K\n"
         
         sleep 0.25
     done
@@ -306,12 +386,28 @@ ELAPSED=$((END_TIME - START_TIME))
 final_progress=$(cat "$PROGRESS_FILE")
 
 # Move cursor up to overwrite the last animated display
-printf "\033[3A"
+total_lines=$((CONCURRENCY + 3))
+printf "\033[${total_lines}A"
+
+# Clear the animation lines
+for ((i=0; i<total_lines; i++)); do
+    printf "\033[K\n"
+done
+
+# Move back up
+printf "\033[${total_lines}A"
+
+# Print album completion messages
+if [ -f "$ALBUM_TIMES_FILE" ] && [ -s "$ALBUM_TIMES_FILE" ]; then
+    while IFS= read -r album_msg; do
+        printf "%s\n" "$album_msg"
+    done < "$ALBUM_TIMES_FILE"
+    printf "\n"
+fi
 
 # Print final success message
 printf " \033[32m✓\033[0m Done!\033[K\n"
 printf "Generated %d optimized versions of %d images in %d seconds.\033[K\n" "$final_progress" "$total_original" "$ELAPSED"
-printf "\033[K\n"
 
 if [ $exit_code -ne 0 ]; then
     exit 1
