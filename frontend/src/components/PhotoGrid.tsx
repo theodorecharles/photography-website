@@ -175,6 +175,22 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
     modalOpenTimeRef.current = null;
   }, [album]);
 
+  // Auto-open photo from URL query parameter
+  useEffect(() => {
+    if (photos.length > 0 && !selectedPhoto) {
+      const photoParam = queryParams.get('photo');
+      if (photoParam) {
+        // Find photo by filename
+        const photo = photos.find(p => p.id.endsWith(photoParam));
+        if (photo) {
+          setSelectedPhoto(photo);
+          modalOpenTimeRef.current = Date.now();
+          trackPhotoClick(photo.id, photo.album, photo.title);
+        }
+      }
+    }
+  }, [photos]);
+
   useEffect(() => {
     const fetchPhotos = async () => {
       try {
