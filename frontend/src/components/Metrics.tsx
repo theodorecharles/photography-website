@@ -97,8 +97,11 @@ export default function Metrics() {
         date.setDate(date.getDate() - i);
         const dateStr = date.toISOString().split('T')[0];
         
-        // Find if we have data for this date
-        const existing = actualData.find((d: any) => d.date === dateStr);
+        // Find if we have data for this date (normalize API date to YYYY-MM-DD format)
+        const existing = actualData.find((d: any) => {
+          const apiDateStr = d.date?.toString().split('T')[0];
+          return apiDateStr === dateStr;
+        });
         
         filledData.push({
           date: dateStr,
