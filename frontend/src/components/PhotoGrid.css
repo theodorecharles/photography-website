@@ -93,11 +93,18 @@ body.modal-open {
   padding: 1rem;
 }
 
-.modal-content img {
+.modal-image-wrapper {
+  position: relative;
+  display: inline-block;
+  max-width: 100%;
+  max-height: 80vh;
+}
+
+.modal-image-wrapper img {
   max-width: 100%;
   max-height: 80vh;
   object-fit: contain;
-  margin: 0 auto;
+  display: block;
 }
 
 .modal-placeholder {
@@ -108,6 +115,17 @@ body.modal-open {
   object-fit: contain;
 }
 
+.modal-controls-left {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  gap: 0.5rem;
+  z-index: 1001;
+  transform: translate(0, -100%);
+  padding: 0.25rem;
+}
+
 .modal-controls {
   position: absolute;
   top: 0;
@@ -115,8 +133,28 @@ body.modal-open {
   display: flex;
   gap: 0.5rem;
   z-index: 1001;
-  transform: translate(-0.25rem, -100%);
+  transform: translate(0, -100%);
   padding: 0.25rem;
+}
+
+.modal-navigation-hint {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.875rem;
+  padding: 0.5rem;
+  transform: translate(0, 100%);
+  z-index: 1001;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* Hide navigation hint on mobile/touch devices */
+@media (max-width: 768px), (hover: none) {
+  .modal-navigation-hint {
+    display: none;
+  }
 }
 
 .modal-navigation {
@@ -125,7 +163,7 @@ body.modal-open {
   right: 0;
   display: flex;
   gap: 0.5rem;
-  transform: translate(-0.25rem, 100%);
+  transform: translate(0, 100%);
   z-index: 1001;
   padding: 0.25rem;
 }
@@ -149,6 +187,7 @@ body.modal-open {
   pointer-events: auto;
 }
 
+.modal-controls-left button,
 .modal-controls button,
 .modal-navigation button {
   background: rgba(0, 0, 0, 0.5);
@@ -169,12 +208,25 @@ body.modal-open {
   min-height: 38px;
 }
 
+.modal-controls-left button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-controls-left button.active {
+  background: rgba(0, 0, 0, 0.8);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.modal-controls-left button svg,
 .modal-controls button svg,
 .modal-navigation button svg {
   width: 20px;
   height: 20px;
 }
 
+.modal-controls-left button:hover,
 .modal-controls button:hover {
   background: rgba(0, 0, 0, 0.8);
   border-color: rgba(51, 51, 51, 0.8);
@@ -219,6 +271,78 @@ body.modal-open {
   to {
     transform: rotate(360deg);
   }
+}
+
+.modal-info-panel {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  padding: 1.25rem;
+  width: 320px;
+  height: 320px;
+  overflow-y: auto;
+  z-index: 1003;
+  margin-top: 0.5rem;
+  margin-left: 0.5rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+  color: white;
+  animation: fadeIn 0.2s ease-out;
+}
+
+/* Adjust info panel size on mobile */
+@media (max-width: 768px) {
+  .modal-info-panel {
+    width: 280px;
+    height: 280px;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal-info-panel h3 {
+  margin: 0 0 1rem 0;
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #fff;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  padding-bottom: 0.75rem;
+  letter-spacing: 0.025em;
+}
+
+.info-item {
+  display: flex;
+  margin-bottom: 0.75rem;
+  gap: 0.75rem;
+}
+
+.info-item:last-child {
+  margin-bottom: 0;
+}
+
+.info-label {
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.7);
+  min-width: 85px;
+  flex-shrink: 0;
+  font-size: 0.9rem;
+}
+
+.info-value {
+  color: #fff;
+  word-break: break-word;
+  font-size: 0.9rem;
 }
 
 /* 2 columns for tablets */

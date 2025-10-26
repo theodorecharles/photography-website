@@ -7,6 +7,7 @@
 import { Router } from "express";
 import fs from "fs";
 import path from "path";
+import exifr from "exifr";
 
 const router = Router();
 
@@ -190,6 +191,50 @@ router.get("/api/random-photos", (req, res) => {
   
   console.log(`API /api/random-photos: Returning ${photos.length} photos`);
   res.json(photos);
+});
+
+// Get EXIF data for a specific photo
+router.get("/api/photos/:album/:filename/exif", async (req, res): Promise<void> => {
+  const { album, filename } = req.params;
+
+  // Sanitize inputs to prevent path traversal
+  const sanitizedAlbum = sanitizePath(album);
+  const sanitizedFilename = filename.replace(/[^a-zA-Z0-9_. -]/g, '');
+  
+  if (!sanitizedAlbum || !sanitizedFilename) {
+    res.status(400).json({ error: "Invalid album or filename" });
+    return;
+  }
+
+  // Ensure the filename has an image extension
+  if (!/\.(jpg|jpeg|png|gif)$/i.test(sanitizedFilename)) {
+    res.status(400).json({ error: "Invalid image file" });
+    return;
+  }
+
+  try {
+    const photosDir = req.app.get("photosDir");
+    const filePath = path.join(photosDir, sanitizedAlbum, sanitizedFilename);
+
+    // Check if file exists
+    if (!fs.existsSync(filePath)) {
+      res.status(404).json({ error: "Image not found" });
+      return;
+    }
+
+    // Extract EXIF data
+    const exif = await exifr.parse(filePath);
+    
+    if (!exif) {
+      res.json({ message: "No EXIF data found" });
+      return;
+    }
+
+    res.json(exif);
+  } catch (error) {
+    console.error(`Error reading EXIF for ${album}/${filename}:`, error);
+    res.status(500).json({ error: "Failed to read EXIF data" });
+  }
 });
 
 export default router;
