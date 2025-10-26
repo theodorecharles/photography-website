@@ -27,6 +27,7 @@ interface Photo {
     modified: string;
     size: number;
   };
+  exif?: any; // EXIF data from exifr library
 }
 
 const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
@@ -36,10 +37,18 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [modalImageLoaded, setModalImageLoaded] = useState(false);
+  const [showInfo, setShowInfo] = useState(false);
+  const [exifData, setExifData] = useState<any>(null);
+  const [loadingExif, setLoadingExif] = useState(false);
+  const [showNavigationHint, setShowNavigationHint] = useState(
+    () => !localStorage.getItem('hideNavigationHint')
+  );
   const [imageDimensions, setImageDimensions] = useState<
     Record<string, { width: number; height: number }>
   >({});
   const modalOpenTimeRef = useRef<number | null>(null);
+  const touchStartX = useRef<number | null>(null);
+  const touchStartY = useRef<number | null>(null);
 
   // Get query parameters from current URL
   const queryParams = new URLSearchParams(location.search);
@@ -59,8 +68,93 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
       trackModalClose(selectedPhoto.id, selectedPhoto.album, selectedPhoto.title, viewDuration);
     }
     setSelectedPhoto(null);
+    setShowInfo(false);
+    setExifData(null);
     modalOpenTimeRef.current = null;
   }, [selectedPhoto]);
+
+  const fetchExifData = async (photo: Photo) => {
+    if (exifData) return; // Already loaded
+    
+    setLoadingExif(true);
+    try {
+      const filename = photo.id.split('/').pop();
+      const res = await fetchWithRateLimitCheck(
+        `${API_URL}/api/photos/${photo.album}/${filename}/exif${queryString ? '?' + queryString : ''}`
+      );
+      
+      if (res.ok) {
+        const data = await res.json();
+        setExifData(data);
+      } else {
+        console.error('Failed to load EXIF data');
+        setExifData({ error: 'Failed to load' });
+      }
+    } catch (error) {
+      console.error('Error fetching EXIF:', error);
+      setExifData({ error: 'Failed to load' });
+    } finally {
+      setLoadingExif(false);
+    }
+  };
+
+  const formatFileSize = (bytes: number): string => {
+    if (bytes < 1024) return bytes + ' B';
+    else if (bytes < 1048576) return (bytes / 1024).toFixed(2) + ' KB';
+    else return (bytes / 1048576).toFixed(2) + ' MB';
+  };
+
+  // Handle touch swipe for mobile navigation
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (!touchStartX.current || !touchStartY.current || !selectedPhoto) return;
+
+    const touchEndX = e.changedTouches[0].clientX;
+    const touchEndY = e.changedTouches[0].clientY;
+    const deltaX = touchEndX - touchStartX.current;
+    const deltaY = touchEndY - touchStartY.current;
+
+    // Ensure horizontal swipe is more dominant than vertical
+    if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
+      if (deltaX > 0) {
+        // Swipe right - go to previous photo
+        const currentIndex = photos.findIndex((p) => p.id === selectedPhoto.id);
+        const prevIndex = (currentIndex - 1 + photos.length) % photos.length;
+        const prevPhoto = photos[prevIndex];
+        const viewDuration = modalOpenTimeRef.current ? Date.now() - modalOpenTimeRef.current : undefined;
+        setModalImageLoaded(false);
+        setSelectedPhoto(prevPhoto);
+        setExifData(null);
+        modalOpenTimeRef.current = Date.now();
+        trackPhotoNavigation('previous', prevPhoto.id, prevPhoto.album, prevPhoto.title, viewDuration);
+      } else {
+        // Swipe left - go to next photo
+        const currentIndex = photos.findIndex((p) => p.id === selectedPhoto.id);
+        const nextIndex = (currentIndex + 1) % photos.length;
+        const nextPhoto = photos[nextIndex];
+        const viewDuration = modalOpenTimeRef.current ? Date.now() - modalOpenTimeRef.current : undefined;
+        setModalImageLoaded(false);
+        setSelectedPhoto(nextPhoto);
+        setExifData(null);
+        modalOpenTimeRef.current = Date.now();
+        trackPhotoNavigation('next', nextPhoto.id, nextPhoto.album, nextPhoto.title, viewDuration);
+      }
+    }
+
+    touchStartX.current = null;
+    touchStartY.current = null;
+  };
+
+  // Auto-fetch EXIF data when navigating between photos if info panel is open
+  useEffect(() => {
+    if (showInfo && selectedPhoto && !exifData && !loadingExif) {
+      fetchExifData(selectedPhoto);
+    }
+  }, [selectedPhoto, showInfo]);
 
   // Handle body scrolling when modal opens/closes
   useEffect(() => {
@@ -143,6 +237,11 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
       if (e.key === "Escape") {
         handleCloseModal();
       } else if (e.key === "ArrowLeft") {
+        // Hide navigation hint on first arrow key press
+        if (showNavigationHint) {
+          setShowNavigationHint(false);
+          localStorage.setItem('hideNavigationHint', 'true');
+        }
         const currentIndex = photos.findIndex((p) => p.id === selectedPhoto.id);
         const prevIndex = (currentIndex - 1 + photos.length) % photos.length;
         const prevPhoto = photos[prevIndex];
@@ -150,9 +249,15 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
         const viewDuration = modalOpenTimeRef.current ? Date.now() - modalOpenTimeRef.current : undefined;
         setModalImageLoaded(false);
         setSelectedPhoto(prevPhoto);
+        setExifData(null); // Reset EXIF data for new photo
         modalOpenTimeRef.current = Date.now(); // Reset timer for new photo
         trackPhotoNavigation('previous', prevPhoto.id, prevPhoto.album, prevPhoto.title, viewDuration);
       } else if (e.key === "ArrowRight") {
+        // Hide navigation hint on first arrow key press
+        if (showNavigationHint) {
+          setShowNavigationHint(false);
+          localStorage.setItem('hideNavigationHint', 'true');
+        }
         const currentIndex = photos.findIndex((p) => p.id === selectedPhoto.id);
         const nextIndex = (currentIndex + 1) % photos.length;
         const nextPhoto = photos[nextIndex];
@@ -160,6 +265,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
         const viewDuration = modalOpenTimeRef.current ? Date.now() - modalOpenTimeRef.current : undefined;
         setModalImageLoaded(false);
         setSelectedPhoto(nextPhoto);
+        setExifData(null); // Reset EXIF data for new photo
         modalOpenTimeRef.current = Date.now(); // Reset timer for new photo
         trackPhotoNavigation('next', nextPhoto.id, nextPhoto.album, nextPhoto.title, viewDuration);
       }
@@ -167,7 +273,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [selectedPhoto, photos, handleCloseModal]);
+  }, [selectedPhoto, photos, handleCloseModal, showNavigationHint]);
 
   const handleImageLoad = (
     e: React.SyntheticEvent<HTMLImageElement>,
@@ -300,119 +406,228 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
 
       {selectedPhoto && (
         <div className="modal" onClick={handleCloseModal}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-controls">
-              <button
-                onClick={() => {
-                  window.open(
-                    `${API_URL}${selectedPhoto.download}${queryString}`,
-                    "_blank"
-                  );
-                  trackPhotoDownload(selectedPhoto.id, selectedPhoto.album, selectedPhoto.title);
+          <div 
+            className="modal-content" 
+            onClick={(e) => e.stopPropagation()}
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
+          >
+            <div className="modal-image-wrapper">
+              <div className="modal-controls-left">
+                <button
+                  onClick={() => {
+                    const newShowInfo = !showInfo;
+                    setShowInfo(newShowInfo);
+                    if (newShowInfo && selectedPhoto && !exifData && !loadingExif) {
+                      fetchExifData(selectedPhoto);
+                    }
+                  }}
+                  className={showInfo ? 'active' : ''}
+                  title="Photo information"
+                >
+                  ℹ
+                </button>
+                {showInfo && (
+                  <div className="modal-info-panel">
+                    <h3>Photo Information</h3>
+                    <div className="info-item">
+                      <span className="info-label">File:</span>
+                      <span className="info-value">{selectedPhoto.id.split('/').pop()}</span>
+                    </div>
+                    <div className="info-item">
+                      <span className="info-label">Title:</span>
+                      <span className="info-value">{selectedPhoto.title}</span>
+                    </div>
+                    <div className="info-item">
+                      <span className="info-label">Album:</span>
+                      <span className="info-value">{selectedPhoto.album}</span>
+                    </div>
+                    {selectedPhoto.metadata && (
+                      <div className="info-item">
+                        <span className="info-label">Size:</span>
+                        <span className="info-value">{formatFileSize(selectedPhoto.metadata.size)}</span>
+                      </div>
+                    )}
+                    {loadingExif && (
+                      <div className="info-item">
+                        <span className="info-value">Loading EXIF data...</span>
+                      </div>
+                    )}
+                    {exifData && !exifData.error && (
+                      <>
+                        {exifData.Make && (
+                          <div className="info-item">
+                            <span className="info-label">Camera:</span>
+                            <span className="info-value">{exifData.Make} {exifData.Model}</span>
+                          </div>
+                        )}
+                        {exifData.LensModel && (
+                          <div className="info-item">
+                            <span className="info-label">Lens:</span>
+                            <span className="info-value">{exifData.LensModel}</span>
+                          </div>
+                        )}
+                        {exifData.FocalLength && (
+                          <div className="info-item">
+                            <span className="info-label">Focal Length:</span>
+                            <span className="info-value">{exifData.FocalLength}mm</span>
+                          </div>
+                        )}
+                        {exifData.FNumber && (
+                          <div className="info-item">
+                            <span className="info-label">Aperture:</span>
+                            <span className="info-value">f/{exifData.FNumber}</span>
+                          </div>
+                        )}
+                        {exifData.ExposureTime && (
+                          <div className="info-item">
+                            <span className="info-label">Shutter:</span>
+                            <span className="info-value">{exifData.ExposureTime < 1 ? `1/${Math.round(1/exifData.ExposureTime)}` : exifData.ExposureTime}s</span>
+                          </div>
+                        )}
+                        {exifData.ISO && (
+                          <div className="info-item">
+                            <span className="info-label">ISO:</span>
+                            <span className="info-value">{exifData.ISO}</span>
+                          </div>
+                        )}
+                        {exifData.DateTimeOriginal && (
+                          <div className="info-item">
+                            <span className="info-label">Date Taken:</span>
+                            <span className="info-value">
+                              {new Date(exifData.DateTimeOriginal).toLocaleDateString('en-US', {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric'
+                              })}
+                            </span>
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </div>
+                )}
+              </div>
+              <div className="modal-controls">
+                <button
+                  onClick={() => {
+                    window.open(
+                      `${API_URL}${selectedPhoto.download}${queryString}`,
+                      "_blank"
+                    );
+                    trackPhotoDownload(selectedPhoto.id, selectedPhoto.album, selectedPhoto.title);
+                  }}
+                >
+                  <svg
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                    <polyline points="7 10 12 15 17 10" />
+                    <line x1="12" y1="15" x2="12" y2="3" />
+                  </svg>
+                </button>
+                <button onClick={handleCloseModal}>
+                  <svg
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                  </svg>
+                </button>
+              </div>
+              {showNavigationHint && (
+                <div className="modal-navigation-hint">
+                  ← press arrow keys to navigate →
+                </div>
+              )}
+              <div className="modal-navigation">
+                <button
+                  onClick={() => {
+                    const currentIndex = photos.findIndex(
+                      (p) => p.id === selectedPhoto.id
+                    );
+                    const prevIndex =
+                      (currentIndex - 1 + photos.length) % photos.length;
+                    const prevPhoto = photos[prevIndex];
+                    // Calculate view duration of current photo before navigating
+                    const viewDuration = modalOpenTimeRef.current ? Date.now() - modalOpenTimeRef.current : undefined;
+                    setModalImageLoaded(false);
+                    setSelectedPhoto(prevPhoto);
+                    setExifData(null); // Reset EXIF data for new photo
+                    modalOpenTimeRef.current = Date.now(); // Reset timer for new photo
+                    trackPhotoNavigation('previous', prevPhoto.id, prevPhoto.album, prevPhoto.title, viewDuration);
+                  }}
+                >
+                  <svg
+                    width="32"
+                    height="32"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path d="M18 6L6 12L18 18" />
+                  </svg>
+                </button>
+                <button
+                  onClick={() => {
+                    const currentIndex = photos.findIndex(
+                      (p) => p.id === selectedPhoto.id
+                    );
+                    const nextIndex = (currentIndex + 1) % photos.length;
+                    const nextPhoto = photos[nextIndex];
+                    // Calculate view duration of current photo before navigating
+                    const viewDuration = modalOpenTimeRef.current ? Date.now() - modalOpenTimeRef.current : undefined;
+                    setModalImageLoaded(false);
+                    setSelectedPhoto(nextPhoto);
+                    setExifData(null); // Reset EXIF data for new photo
+                    modalOpenTimeRef.current = Date.now(); // Reset timer for new photo
+                    trackPhotoNavigation('next', nextPhoto.id, nextPhoto.album, nextPhoto.title, viewDuration);
+                  }}
+                >
+                  <svg
+                    width="32"
+                    height="32"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path d="M6 6L18 12L6 18" />
+                  </svg>
+                </button>
+              </div>
+              <img
+                src={`${API_URL}${selectedPhoto.thumbnail}${queryString}`}
+                alt={`${selectedPhoto.album} photography by Ted Charles - ${selectedPhoto.title}`}
+                title={selectedPhoto.title}
+                className="modal-placeholder"
+                style={{ display: modalImageLoaded ? "none" : "block" }}
+              />
+              <img
+                src={`${API_URL}${selectedPhoto.src}${queryString}`}
+                alt={`${selectedPhoto.album} photography by Ted Charles - ${selectedPhoto.title}`}
+                title={selectedPhoto.title}
+                onLoad={() => setModalImageLoaded(true)}
+                onError={() => {
+                  console.error('Failed to load modal image:', selectedPhoto.src);
+                  trackError(`Failed to load image: ${selectedPhoto.id}`, 'modal_image_load');
+                  // Show placeholder if full image fails to load
+                  setModalImageLoaded(true);
                 }}
-              >
-                <svg
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                  <polyline points="7 10 12 15 17 10" />
-                  <line x1="12" y1="15" x2="12" y2="3" />
-                </svg>
-              </button>
-              <button onClick={handleCloseModal}>
-                <svg
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <line x1="18" y1="6" x2="6" y2="18" />
-                  <line x1="6" y1="6" x2="18" y2="18" />
-                </svg>
-              </button>
+                style={{ display: modalImageLoaded ? "block" : "none" }}
+              />
             </div>
-            <div className="modal-navigation">
-              <button
-                onClick={() => {
-                  const currentIndex = photos.findIndex(
-                    (p) => p.id === selectedPhoto.id
-                  );
-                  const prevIndex =
-                    (currentIndex - 1 + photos.length) % photos.length;
-                  const prevPhoto = photos[prevIndex];
-                  // Calculate view duration of current photo before navigating
-                  const viewDuration = modalOpenTimeRef.current ? Date.now() - modalOpenTimeRef.current : undefined;
-                  setModalImageLoaded(false);
-                  setSelectedPhoto(prevPhoto);
-                  modalOpenTimeRef.current = Date.now(); // Reset timer for new photo
-                  trackPhotoNavigation('previous', prevPhoto.id, prevPhoto.album, prevPhoto.title, viewDuration);
-                }}
-              >
-                <svg
-                  width="32"
-                  height="32"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <path d="M18 6L6 12L18 18" />
-                </svg>
-              </button>
-              <button
-                onClick={() => {
-                  const currentIndex = photos.findIndex(
-                    (p) => p.id === selectedPhoto.id
-                  );
-                  const nextIndex = (currentIndex + 1) % photos.length;
-                  const nextPhoto = photos[nextIndex];
-                  // Calculate view duration of current photo before navigating
-                  const viewDuration = modalOpenTimeRef.current ? Date.now() - modalOpenTimeRef.current : undefined;
-                  setModalImageLoaded(false);
-                  setSelectedPhoto(nextPhoto);
-                  modalOpenTimeRef.current = Date.now(); // Reset timer for new photo
-                  trackPhotoNavigation('next', nextPhoto.id, nextPhoto.album, nextPhoto.title, viewDuration);
-                }}
-              >
-                <svg
-                  width="32"
-                  height="32"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <path d="M6 6L18 12L6 18" />
-                </svg>
-              </button>
-            </div>
-            <img
-              src={`${API_URL}${selectedPhoto.thumbnail}${queryString}`}
-              alt={`${selectedPhoto.album} photography by Ted Charles - ${selectedPhoto.title}`}
-              title={selectedPhoto.title}
-              className="modal-placeholder"
-              style={{ display: modalImageLoaded ? "none" : "block" }}
-            />
-            <img
-              src={`${API_URL}${selectedPhoto.src}${queryString}`}
-              alt={`${selectedPhoto.album} photography by Ted Charles - ${selectedPhoto.title}`}
-              title={selectedPhoto.title}
-              onLoad={() => setModalImageLoaded(true)}
-              onError={() => {
-                console.error('Failed to load modal image:', selectedPhoto.src);
-                trackError(`Failed to load image: ${selectedPhoto.id}`, 'modal_image_load');
-                // Show placeholder if full image fails to load
-                setModalImageLoaded(true);
-              }}
-              style={{ display: modalImageLoaded ? "block" : "none" }}
-            />
           </div>
         </div>
       )}
