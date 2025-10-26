@@ -58,6 +58,20 @@ export default defineConfig({
     'import.meta.env.VITE_API_URL_FULL': JSON.stringify(envConfig.frontend.apiUrl),
     'import.meta.env.VITE_AVATAR_PATH': JSON.stringify(config.branding.avatarPath),
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // Split React and React-DOM into their own chunk
+          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+          // Split recharts (large charting library) into its own chunk
+          'recharts-vendor': ['recharts'],
+        },
+      },
+    },
+    // Increase chunk size warning limit slightly since we're optimizing
+    chunkSizeWarningLimit: 600,
+  },
   server: {
     host: isRemoteDev ? '0.0.0.0' : '127.0.0.1',
     port: envConfig.frontend.port,
