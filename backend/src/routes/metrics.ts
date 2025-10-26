@@ -142,6 +142,114 @@ router.get('/visitors-over-time', isAuthenticated, async (req: Request, res: Res
 });
 
 /**
+ * GET /api/metrics/visitor-locations
+ * Get visitor locations based on geolocation data
+ * Requires authentication
+ */
+router.get('/visitor-locations', isAuthenticated, async (req: Request, res: Response): Promise<void> => {
+  try {
+    const analyticsConfig = config.analytics?.openobserve;
+    
+    if (!analyticsConfig || !analyticsConfig.enabled) {
+      res.status(503).json({ error: 'Analytics not configured' });
+      return;
+    }
+
+    const { endpoint, organization, stream, username, password, serviceToken } = analyticsConfig;
+
+    if (!endpoint || !organization || !stream) {
+      res.status(503).json({ error: 'Analytics endpoint configuration incomplete' });
+      return;
+    }
+
+    // Check if we have either service token or username/password
+    if (!serviceToken && (!username || !password)) {
+      res.status(503).json({ error: 'Analytics authentication not configured' });
+      return;
+    }
+
+    // Get time range from query params (default to last 30 days)
+    const days = parseInt(req.query.days as string) || 30;
+    
+    // Calculate time range (OpenObserve uses microseconds)
+    const endTime = Date.now() * 1000;
+    const startTime = endTime - (days * 24 * 60 * 60 * 1000 * 1000);
+
+    // Build the query endpoint
+    const queryEndpoint = `${endpoint}${organization}/_search`;
+    
+    // Prepare authorization header
+    const authHeaders: Record<string, string> = {
+      'Content-Type': 'application/json',
+    };
+
+    if (serviceToken) {
+      authHeaders['Authorization'] = `Bearer ${serviceToken}`;
+    } else {
+      const credentials = Buffer.from(`${username}:${password}`).toString('base64');
+      authHeaders['Authorization'] = `Basic ${credentials}`;
+    }
+
+    // Query for visitor locations
+    // Group by coordinates only and take the first non-null city name for each location
+    const sql = `
+      SELECT 
+        geo_latitude as latitude,
+        geo_longitude as longitude,
+        MAX(geo_city) as city,
+        MAX(geo_region) as region,
+        MAX(geo_country_name) as country,
+        COUNT(*) as visit_count,
+        COUNT(DISTINCT client_ip) as unique_visitors
+      FROM "${stream}"
+      WHERE geo_latitude IS NOT NULL 
+        AND geo_longitude IS NOT NULL
+        AND geo_city IS NOT NULL
+        AND geo_city != ''
+        AND _timestamp >= ${startTime} 
+        AND _timestamp <= ${endTime}
+      GROUP BY geo_latitude, geo_longitude
+      ORDER BY visit_count DESC
+      LIMIT 1000
+    `;
+
+    const queryPayload = {
+      query: {
+        sql,
+        start_time: startTime,
+        end_time: endTime,
+        from: 0,
+        size: 10000,
+        sql_mode: "full"
+      }
+    };
+
+    const response = await fetch(queryEndpoint, {
+      method: 'POST',
+      headers: authHeaders,
+      body: JSON.stringify(queryPayload),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('OpenObserve query error:', response.status, errorText);
+      console.error('Query that failed:', sql);
+      res.status(500).json({ error: 'Failed to retrieve location data' });
+      return;
+    }
+
+    const data = await response.json();
+    console.log('Visitor locations query returned:', data.hits?.length || 0, 'locations');
+    res.status(200).json({ locations: data.hits || [] });
+  } catch (error) {
+    console.error('Visitor locations error:', error);
+    res.status(500).json({ 
+      error: 'Failed to retrieve location data. Please try again later.'
+    });
+  }
+});
+
+/**
  * GET /api/metrics/stats
  * Get pre-computed statistics for the dashboard
  * Requires authentication

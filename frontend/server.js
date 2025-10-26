@@ -45,7 +45,7 @@ app.use((req, res, next) => {
     `script-src 'self' 'unsafe-inline'${analyticsScriptHost ? ' ' + analyticsScriptHost : ''}; ` + // unsafe-inline needed for React inline scripts
     "style-src 'self' 'unsafe-inline'; " +
     "worker-src 'self'; " + // Allow web workers from same origin
-    `img-src 'self' ${apiDomainHttps} ${apiDomain} data:; ` +
+    `img-src 'self' ${apiDomainHttps} ${apiDomain} data: https://*.basemaps.cartocdn.com; ` + // Allow CartoDB map tiles
     `connect-src 'self' ${apiDomainHttps} ${apiDomain}; ` + // No need to allow OpenObserve - backend handles it
     "font-src 'self'; " +
     "object-src 'none'; " +
