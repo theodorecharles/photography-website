@@ -12,15 +12,18 @@
         "http://localhost:3000"
       ]
     },
+    "optimization": {
+      "concurrency": 4
+    },
     "security": {
       "allowedHosts": ["localhost:3000", "localhost:5173"],
       "rateLimitWindowMs": 1000,
-      "rateLimitMaxRequests": 30,
+      "rateLimitMaxRequests": 30
     },
     "auth": {
       "google": {
         "clientId": "your-google-client-id",
-        "clientSecret": "your-google-client-secret",
+        "clientSecret": "your-google-client-secret"
       },
       "sessionSecret": "your-session-secret-here",
       "authorizedEmails": [
