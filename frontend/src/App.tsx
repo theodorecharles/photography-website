@@ -3,7 +3,7 @@
  * This component handles the routing and layout of the entire application.
  */
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -15,16 +15,18 @@ import {
 import "./App.css";
 import PhotoGrid from "./components/PhotoGrid";
 import Footer from "./components/Footer";
-import License from "./components/License";
-import AdminPortal from "./components/AdminPortal";
-import AuthError from "./components/AuthError";
-import NotFound from "./components/NotFound";
 import ScrollToTop from "./components/ScrollToTop";
 import { SEO } from "./components/SEO";
 import { StructuredData } from "./components/StructuredData";
 import { API_URL, SITE_URL } from "./config";
 import { trackPageView, trackAlbumNavigation, trackExternalLinkClick, trackError, trackDropdownOpen, trackDropdownClose } from "./utils/analytics";
 import { fetchWithRateLimitCheck } from "./utils/fetchWrapper";
+
+// Lazy load components that aren't needed on initial page load
+const License = lazy(() => import("./components/License"));
+const AdminPortal = lazy(() => import("./components/AdminPortal"));
+const AuthError = lazy(() => import("./components/AuthError"));
+const NotFound = lazy(() => import("./components/NotFound"));
 
 // ExternalLink interface defines the structure for external navigation links
 interface ExternalLink {
@@ -595,52 +597,54 @@ function App() {
           </h1>
         )}
         <StructuredData />
-        <Routes>
-          <Route path="/" element={
-            <>
-              <SEO />
-              <PhotoGrid album="homepage" />
-            </>
-          } />
-          <Route path="/album/:album" element={<AlbumRoute />} />
-          <Route path="/license" element={
-            <>
-              <SEO 
-                title="License - Ted Charles Photography"
-                description="License information for Ted Charles' photography. All photos are licensed under Creative Commons Attribution 4.0 International License."
-                url={`${SITE_URL}/license`}
-              />
-              <License />
-            </>
-          } />
-          <Route path="/admin" element={<AdminPortal />} />
-          <Route path="/admin/albums" element={<AdminPortal />} />
-          <Route path="/admin/links" element={<AdminPortal />} />
-          <Route path="/admin/branding" element={<AdminPortal />} />
-          <Route path="/admin/metrics" element={<AdminPortal />} />
-          <Route path="/auth/error" element={
-            <>
-              <SEO 
-                title="Authentication Error - Ted Charles Photography"
-                description="Login error"
-                url={`${SITE_URL}/auth/error`}
-              />
-              <AuthError />
-            </>
-          } />
-          <Route path="/primes" element={<PrimesRedirect />} />
-          <Route path="/primes/*" element={<PrimesRedirect />} />
-          <Route path="*" element={
-            <>
-              <SEO 
-                title="404 - Page Not Found - Ted Charles Photography"
-                description="The page you're looking for doesn't exist."
-                url={`${SITE_URL}${location.pathname}`}
-              />
-              <NotFound />
-            </>
-          } />
-        </Routes>
+        <Suspense fallback={<div className="loading">Loading...</div>}>
+          <Routes>
+            <Route path="/" element={
+              <>
+                <SEO />
+                <PhotoGrid album="homepage" />
+              </>
+            } />
+            <Route path="/album/:album" element={<AlbumRoute />} />
+            <Route path="/license" element={
+              <>
+                <SEO 
+                  title="License - Ted Charles Photography"
+                  description="License information for Ted Charles' photography. All photos are licensed under Creative Commons Attribution 4.0 International License."
+                  url={`${SITE_URL}/license`}
+                />
+                <License />
+              </>
+            } />
+            <Route path="/admin" element={<AdminPortal />} />
+            <Route path="/admin/albums" element={<AdminPortal />} />
+            <Route path="/admin/links" element={<AdminPortal />} />
+            <Route path="/admin/branding" element={<AdminPortal />} />
+            <Route path="/admin/metrics" element={<AdminPortal />} />
+            <Route path="/auth/error" element={
+              <>
+                <SEO 
+                  title="Authentication Error - Ted Charles Photography"
+                  description="Login error"
+                  url={`${SITE_URL}/auth/error`}
+                />
+                <AuthError />
+              </>
+            } />
+            <Route path="/primes" element={<PrimesRedirect />} />
+            <Route path="/primes/*" element={<PrimesRedirect />} />
+            <Route path="*" element={
+              <>
+                <SEO 
+                  title="404 - Page Not Found - Ted Charles Photography"
+                  description="The page you're looking for doesn't exist."
+                  url={`${SITE_URL}${location.pathname}`}
+                />
+                <NotFound />
+              </>
+            } />
+          </Routes>
+        </Suspense>
       </main>
       <div className={`footer-wrapper ${showFooter ? 'visible' : ''}`}>
         <Footer
