@@ -71,4 +71,3 @@ fi
 
 # Display PM2 process list
 log "Deployment completed successfully!"
-pm2 list
