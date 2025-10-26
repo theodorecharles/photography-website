@@ -31,6 +31,7 @@ echo "0" > "$TOTAL_FILE"
 cleanup() {
     echo "done" > "$STATUS_FILE"
     wait  # Wait for background processes
+    rm -f "$PROGRESS_FILE.lock" 2>/dev/null
     rm -rf "$STATE_DIR"
 }
 trap cleanup EXIT INT TERM
@@ -58,78 +59,96 @@ count_images() {
     echo "$count"
 }
 
-# Function to process a directory and its subdirectories (runs in background)
-process_directory() {
-    local dir="$1"
-    local success=0  # 0 means success, 1 means failure
+# Function to atomically increment progress counter
+increment_progress() {
+    (
+        flock -x 200
+        local progress=$(cat "$PROGRESS_FILE")
+        echo $((progress + 1)) > "$PROGRESS_FILE"
+    ) 200>"$PROGRESS_FILE.lock"
+}
+
+# Function to process a single image file (all three versions)
+process_single_image() {
+    local file="$1"
+    local relative_path=${file#photos/}
+    local album_path=$(dirname "$relative_path")
+    local filename=$(basename "$file")
     
-    # Process all files in the current directory
+    # Create album directories in optimized folders if they don't exist
+    mkdir -p "optimized/thumbnail/$album_path" 2>/dev/null
+    mkdir -p "optimized/modal/$album_path" 2>/dev/null
+    mkdir -p "optimized/download/$album_path" 2>/dev/null
+    
+    # Define output paths for different image versions
+    local thumb_path="optimized/thumbnail/$album_path/$filename"
+    local modal_path="optimized/modal/$album_path/$filename"
+    local download_path="optimized/download/$album_path/$filename"
+    
+    # Create thumbnail version
+    if [ ! -f "$thumb_path" ]; then
+        echo "Generating thumbnail for $filename" > "$CURRENT_FILE"
+        if convert "$file" -resize "${THUMBNAIL_MAX_DIM}x${THUMBNAIL_MAX_DIM}>" -quality $THUMBNAIL_QUALITY "$thumb_path" 2>/dev/null; then
+            increment_progress
+        fi
+    fi
+    
+    # Create modal version
+    if [ ! -f "$modal_path" ]; then
+        echo "Generating modal for $filename" > "$CURRENT_FILE"
+        if convert "$file" -resize "${MODAL_MAX_DIM}x${MODAL_MAX_DIM}>" -quality $MODAL_QUALITY "$modal_path" 2>/dev/null; then
+            increment_progress
+        fi
+    fi
+    
+    # Create download version
+    if [ ! -f "$download_path" ]; then
+        echo "Generating download for $filename" > "$CURRENT_FILE"
+        if convert "$file" -resize "${DOWNLOAD_MAX_DIM}x${DOWNLOAD_MAX_DIM}>" -quality $DOWNLOAD_QUALITY "$download_path" 2>/dev/null; then
+            increment_progress
+        fi
+    fi
+}
+
+# Function to collect all image files recursively
+collect_images() {
+    local dir="$1"
+    
     for file in "$dir"/*; do
-        # Skip if it's a directory
         if [ -d "$file" ]; then
-            # Recursively process subdirectories
-            process_directory "$file"
-            if [ $? -ne 0 ]; then
-                success=1
-            fi
-            continue
-        fi
-        
-        # Skip if it's not an image file
-        if [[ ! "$file" =~ \.(jpg|jpeg|png)$ ]]; then
-            continue
-        fi
-        
-        # Get the relative path from photos directory
-        local relative_path=${file#photos/}
-        local album_path=$(dirname "$relative_path")
-        local filename=$(basename "$file")
-        
-        # Create album directories in optimized folders if they don't exist
-        mkdir -p "optimized/thumbnail/$album_path"
-        mkdir -p "optimized/modal/$album_path"
-        mkdir -p "optimized/download/$album_path"
-        
-        # Define output paths for different image versions
-        local thumb_path="optimized/thumbnail/$album_path/$filename"
-        local modal_path="optimized/modal/$album_path/$filename"
-        local download_path="optimized/download/$album_path/$filename"
-        
-        # Create thumbnail version
-        if [ ! -f "$thumb_path" ]; then
-            echo "Generating thumbnail for $filename" > "$CURRENT_FILE"
-            if ! convert "$file" -resize "${THUMBNAIL_MAX_DIM}x${THUMBNAIL_MAX_DIM}>" -quality $THUMBNAIL_QUALITY "$thumb_path" 2>/dev/null; then
-                success=1
-                continue
-            fi
-            local progress=$(cat "$PROGRESS_FILE")
-            echo $((progress + 1)) > "$PROGRESS_FILE"
-        fi
-        
-        # Create modal version
-        if [ ! -f "$modal_path" ]; then
-            echo "Generating modal for $filename" > "$CURRENT_FILE"
-            if ! convert "$file" -resize "${MODAL_MAX_DIM}x${MODAL_MAX_DIM}>" -quality $MODAL_QUALITY "$modal_path" 2>/dev/null; then
-                success=1
-                continue
-            fi
-            local progress=$(cat "$PROGRESS_FILE")
-            echo $((progress + 1)) > "$PROGRESS_FILE"
-        fi
-        
-        # Create download version
-        if [ ! -f "$download_path" ]; then
-            echo "Generating download for $filename" > "$CURRENT_FILE"
-            if ! convert "$file" -resize "${DOWNLOAD_MAX_DIM}x${DOWNLOAD_MAX_DIM}>" -quality $DOWNLOAD_QUALITY "$download_path" 2>/dev/null; then
-                success=1
-                continue
-            fi
-            local progress=$(cat "$PROGRESS_FILE")
-            echo $((progress + 1)) > "$PROGRESS_FILE"
+            collect_images "$file"
+        elif [[ "$file" =~ \.(jpg|jpeg|png)$ ]]; then
+            echo "$file"
         fi
     done
+}
+
+# Function to process images in parallel
+process_directory() {
+    local max_jobs=8
+    local job_count=0
     
-    return $success
+    # Collect all image files
+    local images=()
+    while IFS= read -r file; do
+        images+=("$file")
+    done < <(collect_images "photos")
+    
+    # Process images in parallel with max_jobs limit
+    for file in "${images[@]}"; do
+        # Wait if we have max_jobs running
+        while [ $(jobs -r | wc -l) -ge $max_jobs ]; do
+            sleep 0.1
+        done
+        
+        # Start processing this image in background
+        process_single_image "$file" &
+    done
+    
+    # Wait for all remaining jobs to complete
+    wait
+    
+    return 0
 }
 
 # Animation display function (runs in foreground)
