@@ -151,6 +151,27 @@ process_directory() {
     return 0
 }
 
+# Function to get CPU usage percentage
+get_cpu_usage() {
+    # Use vmstat to get CPU usage (more reliable than top)
+    local cpu_percent=$(vmstat 1 2 | tail -1 | awk '{print 100 - $15}')
+    
+    # Fallback to /proc/loadavg if vmstat doesn't work
+    if [ -z "$cpu_percent" ] || [ "$cpu_percent" = "" ] || [ "$cpu_percent" = "us.0" ]; then
+        # Get load average and convert to approximate CPU usage
+        local load_avg=$(cat /proc/loadavg | awk '{print $1}')
+        local cpu_count=$(nproc)
+        cpu_percent=$(awk "BEGIN {printf \"%.0f\", ($load_avg / $cpu_count) * 100}")
+    fi
+    
+    # Ensure we have a valid number
+    if ! [[ "$cpu_percent" =~ ^[0-9]+$ ]]; then
+        cpu_percent=0
+    fi
+    
+    echo "${cpu_percent:-0}"
+}
+
 # Animation display function (runs in foreground)
 animate_display() {
     local hex_toggle=0
@@ -208,11 +229,14 @@ animate_display() {
         for ((i=0; i<filled; i++)); do bar="${bar}█"; done
         for ((i=0; i<empty; i++)); do bar="${bar}░"; done
         
-        # Print status line with progress count
+        # Get CPU usage
+        local cpu_usage=$(get_cpu_usage)
+        
+        # Print status line with progress count and CPU usage
         if [ "$total" -gt 0 ]; then
-            printf " ${hex_color}${hex_symbol}\033[0m Optimizing: %d/%d\033[K\n" "$progress" "$total"
+            printf " ${hex_color}${hex_symbol}\033[0m Optimizing: %d/%d%*s\033[K\n" "$progress" "$total" $((term_width - 20 - ${#progress} - ${#total})) "CPU: ${cpu_usage}%"
         else
-            printf " ${hex_color}${hex_symbol}\033[0m Optimizing:\033[K\n"
+            printf " ${hex_color}${hex_symbol}\033[0m Optimizing:%*s\033[K\n" $((term_width - 15)) "CPU: ${cpu_usage}%"
         fi
         
         # Print progress bar
