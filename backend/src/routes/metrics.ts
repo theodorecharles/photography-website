@@ -53,6 +53,9 @@ router.get('/visitors-over-time', isAuthenticated, async (req: Request, res: Res
 
     // Get time range from query params (default to last 30 days)
     const days = parseInt(req.query.days as string) || 30;
+    // Get timezone offset from query params (default to 0 for UTC)
+    const timezoneOffset = parseFloat(req.query.timezoneOffset as string) || 0;
+    
     // Calculate time range (OpenObserve uses microseconds)
     const endTime = Date.now() * 1000;
     const startTime = endTime - (days * 24 * 60 * 60 * 1000 * 1000);
@@ -72,15 +75,34 @@ router.get('/visitors-over-time', isAuthenticated, async (req: Request, res: Res
       authHeaders['Authorization'] = `Basic ${credentials}`;
     }
 
-    // Query for unique visitors per day
+    // Determine the interval string for timezone adjustment
+    // Positive offset means ahead of UTC (e.g., +5 for Eastern in winter)
+    // Negative offset means behind UTC (e.g., -8 for Pacific)
+    const absOffset = Math.abs(timezoneOffset);
+    const intervalStr = timezoneOffset >= 0 
+      ? `+ INTERVAL '${absOffset}' HOUR`
+      : `- INTERVAL '${absOffset}' HOUR`;
+
+    // Query for unique visitors per day with timezone adjustment
+    // Based on user's working query with dynamic timezone offset
     const sql = `
-      SELECT 
-        CAST(to_timestamp_micros(_timestamp) AS DATE) as date,
-        COUNT(DISTINCT client_ip) as count
-      FROM "${stream}"
-      WHERE _timestamp >= ${startTime} AND _timestamp <= ${endTime}
-      GROUP BY CAST(to_timestamp_micros(_timestamp) AS DATE)
-      ORDER BY date ASC
+      WITH normalized AS (
+        SELECT
+          date_trunc('day', to_timestamp_micros(_timestamp) ${intervalStr}) AS day_local,
+          replace(trim(split_part(client_ip, ',', 1)), '::ffff:', '') AS ip
+        FROM "${stream}"
+        WHERE client_ip IS NOT NULL
+          AND client_ip <> ''
+          AND client_ip <> '-'
+          AND _timestamp >= ${startTime} 
+          AND _timestamp <= ${endTime}
+      )
+      SELECT
+        day_local AS date,
+        COUNT(DISTINCT ip) AS count
+      FROM normalized
+      GROUP BY day_local
+      ORDER BY day_local ASC
     `;
 
     const queryPayload = {
@@ -103,11 +125,13 @@ router.get('/visitors-over-time', isAuthenticated, async (req: Request, res: Res
     if (!response.ok) {
       const errorText = await response.text();
       console.error('OpenObserve query error:', response.status, errorText);
+      console.error('Query that failed:', sql);
       res.status(500).json({ error: 'Failed to retrieve time series data' });
       return;
     }
 
     const data = await response.json();
+    console.log('Visitors over time query returned:', data.hits?.length || 0, 'results');
     res.status(200).json({ hits: data.hits || [] });
   } catch (error) {
     console.error('Visitors over time error:', error);

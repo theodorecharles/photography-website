@@ -74,7 +74,11 @@ export default function Metrics() {
   const loadVisitorsOverTime = async () => {
     setLoadingTimeSeries(true);
     try {
-      const res = await fetchWithRateLimitCheck(`${API_URL}/api/metrics/visitors-over-time?days=${timeRange}`);
+      // Get browser timezone offset in hours (negative of getTimezoneOffset() / 60)
+      const offsetMinutes = new Date().getTimezoneOffset();
+      const offsetHours = -offsetMinutes / 60; // Negative because getTimezoneOffset returns opposite sign
+      
+      const res = await fetchWithRateLimitCheck(`${API_URL}/api/metrics/visitors-over-time?days=${timeRange}&timezoneOffset=${offsetHours}`);
 
       if (!res.ok) {
         throw new Error('Failed to load time series data');
@@ -93,8 +97,11 @@ export default function Metrics() {
         date.setDate(date.getDate() - i);
         const dateStr = date.toISOString().split('T')[0];
         
-        // Find if we have data for this date
-        const existing = actualData.find((d: any) => d.date === dateStr);
+        // Find if we have data for this date (normalize API date to YYYY-MM-DD format)
+        const existing = actualData.find((d: any) => {
+          const apiDateStr = d.date?.toString().split('T')[0];
+          return apiDateStr === dateStr;
+        });
         
         filledData.push({
           date: dateStr,
@@ -218,13 +225,18 @@ export default function Metrics() {
               <div className="chart-container">
                 <ResponsiveContainer width="100%" height={380}>
                   <AreaChart 
-                    data={visitorsOverTime.map(point => ({
-                      ...point,
-                      formattedDate: new Date(point.date).toLocaleDateString('en-US', { 
-                        month: 'short', 
-                        day: 'numeric' 
-                      })
-                    }))}
+                    data={visitorsOverTime.map(point => {
+                      // Parse date string as local time to avoid timezone shifting
+                      const [year, month, day] = point.date.toString().split(/[-T]/);
+                      const localDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+                      return {
+                        ...point,
+                        formattedDate: localDate.toLocaleDateString('en-US', { 
+                          month: 'short', 
+                          day: 'numeric' 
+                        })
+                      };
+                    })}
                     margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
                   >
                     <defs>
@@ -260,7 +272,7 @@ export default function Metrics() {
                       formatter={(value: number) => [value, 'Visitors']}
                     />
                     <Area 
-                      type="monotone" 
+                      type="linear" 
                       dataKey="count" 
                       stroke="#22c55e" 
                       strokeWidth={3}
