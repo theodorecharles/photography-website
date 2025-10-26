@@ -13,36 +13,52 @@ THUMBNAIL_MAX_DIM=1024
 MODAL_MAX_DIM=2048
 DOWNLOAD_MAX_DIM=4096
 
-# Image Optimization Script
-# This script processes all images in the photos directory, creating optimized versions
-# for different use cases (thumbnails, modal view, and downloads).
-# It maintains the original directory structure and handles errors gracefully.
+# Animation state files
+STATE_DIR=$(mktemp -d)
+PROGRESS_FILE="$STATE_DIR/progress"
+CURRENT_FILE="$STATE_DIR/current"
+STATUS_FILE="$STATE_DIR/status"
+TOTAL_FILE="$STATE_DIR/total"
+START_TIME=$(date +%s)
 
-# Function to log messages with timestamps
-log() {
-    echo "$(date '+%Y-%m-%d %H:%M:%S') - $1"
+# Initialize state files
+echo "0" > "$PROGRESS_FILE"
+echo "" > "$CURRENT_FILE"
+echo "running" > "$STATUS_FILE"
+echo "0" > "$TOTAL_FILE"
+
+# Cleanup function
+cleanup() {
+    echo "done" > "$STATUS_FILE"
+    wait  # Wait for background processes
+    rm -rf "$STATE_DIR"
+}
+trap cleanup EXIT INT TERM
+
+# Function to count total images that need processing
+count_images() {
+    local dir="$1"
+    local count=0
+    
+    for file in "$dir"/*; do
+        if [ -d "$file" ]; then
+            count=$((count + $(count_images "$file")))
+        elif [[ "$file" =~ \.(jpg|jpeg|png)$ ]]; then
+            # Count how many versions need to be created (max 3 per file)
+            local relative_path=${file#photos/}
+            local album_path=$(dirname "$relative_path")
+            local filename=$(basename "$file")
+            
+            [ ! -f "optimized/thumbnail/$album_path/$filename" ] && count=$((count + 1))
+            [ ! -f "optimized/modal/$album_path/$filename" ] && count=$((count + 1))
+            [ ! -f "optimized/download/$album_path/$filename" ] && count=$((count + 1))
+        fi
+    done
+    
+    echo "$count"
 }
 
-# Function to handle errors and exit the script
-handle_error() {
-    log "ERROR: $1"
-    exit 1
-}
-
-# Check if photos directory exists
-if [ ! -d "photos" ]; then
-    handle_error "Photos directory does not exist"
-fi
-
-# List contents of photos directory for debugging
-log "Contents of photos directory:"
-ls -la photos
-
-# Create optimized image directories if they don't exist
-log "Creating optimized image directories..."
-mkdir -p optimized/{thumbnail,modal,download} || handle_error "Failed to create optimized directories"
-
-# Function to process a directory and its subdirectories
+# Function to process a directory and its subdirectories (runs in background)
 process_directory() {
     local dir="$1"
     local success=0  # 0 means success, 1 means failure
@@ -81,51 +97,168 @@ process_directory() {
         
         # Create thumbnail version
         if [ ! -f "$thumb_path" ]; then
-            log "Creating thumbnail for $relative_path"
-            if ! convert "$file" -resize "${THUMBNAIL_MAX_DIM}x${THUMBNAIL_MAX_DIM}>" -quality $THUMBNAIL_QUALITY "$thumb_path"; then
-                log "ERROR: Failed to create thumbnail for $relative_path"
+            echo "Generating thumbnail for $filename" > "$CURRENT_FILE"
+            if ! convert "$file" -resize "${THUMBNAIL_MAX_DIM}x${THUMBNAIL_MAX_DIM}>" -quality $THUMBNAIL_QUALITY "$thumb_path" 2>/dev/null; then
                 success=1
                 continue
             fi
-            log "Successfully created thumbnail for $relative_path"
-        else
-            log "Thumbnail already exists for $relative_path"
+            local progress=$(cat "$PROGRESS_FILE")
+            echo $((progress + 1)) > "$PROGRESS_FILE"
         fi
         
         # Create modal version
         if [ ! -f "$modal_path" ]; then
-            log "Creating modal image for $relative_path"
-            if ! convert "$file" -resize "${MODAL_MAX_DIM}x${MODAL_MAX_DIM}>" -quality $MODAL_QUALITY "$modal_path"; then
-                log "ERROR: Failed to create modal image for $relative_path"
+            echo "Generating modal for $filename" > "$CURRENT_FILE"
+            if ! convert "$file" -resize "${MODAL_MAX_DIM}x${MODAL_MAX_DIM}>" -quality $MODAL_QUALITY "$modal_path" 2>/dev/null; then
                 success=1
                 continue
             fi
-            log "Successfully created modal image for $relative_path"
-        else
-            log "Modal image already exists for $relative_path"
+            local progress=$(cat "$PROGRESS_FILE")
+            echo $((progress + 1)) > "$PROGRESS_FILE"
         fi
         
         # Create download version
         if [ ! -f "$download_path" ]; then
-            log "Creating download version for $relative_path"
-            if ! convert "$file" -resize "${DOWNLOAD_MAX_DIM}x${DOWNLOAD_MAX_DIM}>" -quality $DOWNLOAD_QUALITY "$download_path"; then
-                log "ERROR: Failed to create download version for $relative_path"
+            echo "Generating download for $filename" > "$CURRENT_FILE"
+            if ! convert "$file" -resize "${DOWNLOAD_MAX_DIM}x${DOWNLOAD_MAX_DIM}>" -quality $DOWNLOAD_QUALITY "$download_path" 2>/dev/null; then
                 success=1
                 continue
             fi
-            log "Successfully created download version for $relative_path"
-        else
-            log "Download version already exists for $relative_path"
+            local progress=$(cat "$PROGRESS_FILE")
+            echo $((progress + 1)) > "$PROGRESS_FILE"
         fi
     done
     
     return $success
 }
 
-# Run the optimization function
-log "Starting image optimization..."
-process_directory "photos"
-if [ $? -ne 0 ]; then
-    handle_error "Image optimization failed"
+# Animation display function (runs in foreground)
+animate_display() {
+    local hex_toggle=0
+    
+    # Print initial 3 blank lines
+    printf "\n\n\n"
+    
+    while true; do
+        local status=$(cat "$STATUS_FILE" 2>/dev/null || echo "done")
+        if [ "$status" = "done" ]; then
+            break
+        fi
+        
+        local progress=$(cat "$PROGRESS_FILE" 2>/dev/null || echo "0")
+        local total=$(cat "$TOTAL_FILE" 2>/dev/null || echo "0")
+        local current=$(cat "$CURRENT_FILE" 2>/dev/null || echo "")
+        
+        # Always move cursor up 3 lines to redraw
+        printf "\033[3A"
+        
+        # Alternate hexagon symbol
+        local hex_symbol
+        local hex_color
+        if [ $hex_toggle -eq 0 ]; then
+            hex_symbol="⬢"
+            hex_color="\033[32m"  # Green
+        else
+            hex_symbol="⬡"
+            hex_color="\033[32m"  # Green
+        fi
+        hex_toggle=$((1 - hex_toggle))
+        
+        # Calculate percentage
+        local percentage=0
+        if [ "$total" -gt 0 ]; then
+            percentage=$(awk "BEGIN {printf \"%.2f\", ($progress / $total) * 100}")
+        fi
+        
+        # Get terminal width directly from terminal device
+        local term_width=$(stty size 2>/dev/null </dev/tty | cut -d' ' -f2)
+        if [ -z "$term_width" ] || [ "$term_width" -eq 0 ]; then
+            term_width=$(tput cols 2>/dev/null || echo 80)
+        fi
+        # Account for percentage display: " 100%" = 5 characters total (to be safe)
+        local bar_width=$((term_width - 5))
+        # Ensure minimum bar width
+        if [ $bar_width -lt 20 ]; then
+            bar_width=20
+        fi
+        
+        # Create progress bar with better characters
+        local filled=$(awk "BEGIN {printf \"%.0f\", ($percentage / 100) * $bar_width}")
+        local empty=$((bar_width - filled))
+        local bar=""
+        for ((i=0; i<filled; i++)); do bar="${bar}█"; done
+        for ((i=0; i<empty; i++)); do bar="${bar}░"; done
+        
+        # Print status line with progress count
+        if [ "$total" -gt 0 ]; then
+            printf " ${hex_color}${hex_symbol}\033[0m Optimizing: %d/%d\033[K\n" "$progress" "$total"
+        else
+            printf " ${hex_color}${hex_symbol}\033[0m Optimizing:\033[K\n"
+        fi
+        
+        # Print progress bar
+        if [ "$total" -gt 0 ]; then
+            printf "%s %2.0f%%\033[K\n" "$bar" "$percentage"
+        else
+            printf "Scanning images...\033[K\n"
+        fi
+        
+        # Print current file
+        if [ -n "$current" ]; then
+            printf "%s\033[K\n" "$current"
+        else
+            printf "\033[K\n"
+        fi
+        
+        sleep 0.25
+    done
+}
+
+# Check if photos directory exists
+if [ ! -d "photos" ]; then
+    echo "ERROR: Photos directory does not exist"
+    exit 1
 fi
-log "Image optimization completed successfully" 
+
+# Create optimized image directories if they don't exist
+mkdir -p optimized/{thumbnail,modal,download} 2>/dev/null || {
+    echo "ERROR: Failed to create optimized directories"
+    exit 1
+}
+
+# Count total images to process
+total_count=$(count_images "photos")
+echo "$total_count" > "$TOTAL_FILE"
+
+# Count total original images for final summary
+total_original=$(find photos -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" \) | wc -l | tr -d ' ')
+
+# Start image processing in background
+process_directory "photos" &
+PROCESSOR_PID=$!
+
+# Run animation in foreground (has terminal access)
+animate_display
+
+# Wait for processing to complete
+wait $PROCESSOR_PID
+exit_code=$?
+
+# Calculate elapsed time
+END_TIME=$(date +%s)
+ELAPSED=$((END_TIME - START_TIME))
+
+# Get final progress count
+final_progress=$(cat "$PROGRESS_FILE")
+
+# Move cursor up to overwrite the last animated display
+printf "\033[3A"
+
+# Print final success message
+printf " \033[32m✓\033[0m Done!\033[K\n"
+printf "Generated %d optimized versions of %d images in %d seconds.\033[K\n" "$final_progress" "$total_original" "$ELAPSED"
+printf "\033[K\n"
+
+if [ $exit_code -ne 0 ]; then
+    exit 1
+fi
