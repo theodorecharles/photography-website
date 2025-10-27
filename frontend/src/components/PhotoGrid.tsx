@@ -206,6 +206,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
     setSelectedPhoto(null);
     setModalImageLoaded(false);
     modalOpenTimeRef.current = null;
+    setColumnTransforms([]);
   }, [album]);
 
   // Auto-open photo from URL query parameter
@@ -352,6 +353,10 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
 
   // State for number of columns
   const [numColumns, setNumColumns] = useState(getNumColumns());
+  
+  // Refs for column elements and their transforms
+  const columnRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const [columnTransforms, setColumnTransforms] = useState<number[]>([]);
 
   // Handle window resize
   useEffect(() => {
@@ -416,6 +421,67 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
     return columns;
   };
 
+  // Effect to handle scroll-based column alignment
+  useEffect(() => {
+    // Get distributed columns to check photo counts
+    const distributedCols = distributePhotos(photos, numColumns);
+    
+    // Only apply the effect if:
+    // 1. More than one column
+    // 2. At least one column has 5 or more photos
+    const hasMultipleColumns = numColumns > 1;
+    const hasSubstantialColumn = distributedCols.some(col => col.length >= 5);
+    
+    if (!hasMultipleColumns || !hasSubstantialColumn) {
+      setColumnTransforms([]);
+      return;
+    }
+
+    const handleScroll = () => {
+      if (photos.length === 0 || !columnRefs.current.length) return;
+
+      // Check if all images have loaded
+      const allImagesLoaded = photos.every(photo => imageDimensions[photo.id]);
+      if (!allImagesLoaded) return;
+
+      const columnHeights = columnRefs.current.map((col) => col?.offsetHeight || 0);
+      const maxHeight = Math.max(...columnHeights);
+      
+      if (maxHeight === 0) return;
+
+      // Get the scroll position
+      const scrollY = window.scrollY;
+      const windowHeight = window.innerHeight;
+      const documentHeight = document.documentElement.scrollHeight;
+      
+      // Calculate how far down the page we've scrolled (0 to 1)
+      const scrollProgress = Math.min(1, scrollY / (documentHeight - windowHeight));
+
+      // Calculate transforms for each column
+      const transforms = columnHeights.map((height, index) => {
+        // Don't shift columns with 4 or fewer photos
+        if (distributedCols[index] && distributedCols[index].length <= 4) {
+          return 0;
+        }
+        
+        // Tallest column doesn't move
+        if (height === maxHeight) return 0;
+        
+        const heightDiff = maxHeight - height;
+        // Apply transform based on scroll progress
+        return heightDiff * scrollProgress;
+      });
+
+      setColumnTransforms(transforms);
+    };
+
+    // Initial calculation
+    handleScroll();
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [photos, numColumns, imageDimensions]);
+
   if (loading) {
     return <div className="loading">Loading photos...</div>;
   }
@@ -427,7 +493,17 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
   return (
     <div className="photo-grid">
       {distributePhotos(photos, numColumns).map((column, columnIndex) => (
-        <div key={columnIndex} className="photo-column">
+        <div 
+          key={columnIndex} 
+          className="photo-column"
+          ref={(el) => { columnRefs.current[columnIndex] = el; }}
+          style={{
+            transform: columnTransforms[columnIndex] 
+              ? `translateY(${columnTransforms[columnIndex]}px)` 
+              : 'none',
+            transition: 'transform 0.1s ease-out'
+          }}
+        >
           {column.map((photo) => (
             <div
               key={photo.id}
