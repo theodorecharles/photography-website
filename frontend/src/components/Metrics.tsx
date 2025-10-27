@@ -3,7 +3,7 @@
  * Displays analytics data and visualizations from OpenObserve
  */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import {
   AreaChart,
   Area,
@@ -67,14 +67,7 @@ export default function Metrics() {
   const [loadingLocations, setLoadingLocations] = useState(false);
   const [expandedRows, setExpandedRows] = useState<Record<string, Set<number>>>({});
 
-  useEffect(() => {
-    loadStats();
-    loadVisitorsOverTime();
-    loadPageviewsByHour();
-    loadVisitorLocations();
-  }, [timeRange]);
-
-  const loadStats = async () => {
+  const loadStats = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -92,9 +85,9 @@ export default function Metrics() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [timeRange]);
 
-  const loadVisitorsOverTime = async () => {
+  const loadVisitorsOverTime = useCallback(async () => {
     setLoadingTimeSeries(true);
     try {
       // Get browser timezone offset in hours (negative of getTimezoneOffset() / 60)
@@ -138,9 +131,9 @@ export default function Metrics() {
     } finally {
       setLoadingTimeSeries(false);
     }
-  };
+  }, [timeRange]);
 
-  const loadPageviewsByHour = async () => {
+  const loadPageviewsByHour = useCallback(async () => {
     setLoadingPageviewsByHour(true);
     try {
       // Get browser timezone offset
@@ -173,9 +166,9 @@ export default function Metrics() {
     } finally {
       setLoadingPageviewsByHour(false);
     }
-  };
+  }, [timeRange]);
 
-  const loadVisitorLocations = async () => {
+  const loadVisitorLocations = useCallback(async () => {
     setLoadingLocations(true);
     try {
       const res = await fetchWithRateLimitCheck(`${API_URL}/api/metrics/visitor-locations?days=${timeRange}`);
@@ -191,7 +184,14 @@ export default function Metrics() {
     } finally {
       setLoadingLocations(false);
     }
-  };
+  }, [timeRange]);
+
+  useEffect(() => {
+    loadStats();
+    loadVisitorsOverTime();
+    loadPageviewsByHour();
+    loadVisitorLocations();
+  }, [loadStats, loadVisitorsOverTime, loadPageviewsByHour, loadVisitorLocations]);
 
   const formatNumber = (num: number) => {
     return num.toLocaleString();
