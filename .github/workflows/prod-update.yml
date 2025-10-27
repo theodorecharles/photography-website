@@ -1,0 +1,16 @@
+name: Update Prod VM
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  deploy:
+    name: Run update.sh on prod VM
+    runs-on: [self-hosted, prod]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Make script executable and run
+        run: |
+          cd /home/ted/
+          ./update.sh
