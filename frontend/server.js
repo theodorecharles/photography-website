@@ -135,11 +135,13 @@ app.get("*", (req, res) => {
       // Derive site URL from API URL:
       // Production: https://api.tedcharles.net -> https://www.tedcharles.net
       // Development: http://localhost:3001 -> http://localhost:3000
+      // Dev server: https://api-dev.tedcharles.net -> https://www-dev.tedcharles.net
       let siteUrl;
       if (apiUrl.includes('localhost')) {
         siteUrl = apiUrl.replace(':3001', ':3000');
       } else {
-        siteUrl = apiUrl.replace('api.', 'www.');
+        // Handle both api. and api-dev. patterns
+        siteUrl = apiUrl.replace(/api(-dev)?\./, 'www$1.');
       }
       
       // Ensure thumbnail URL uses HTTPS for production (Telegram requirement)
