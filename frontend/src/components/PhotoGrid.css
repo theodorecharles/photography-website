@@ -96,23 +96,30 @@ body.modal-open {
 .modal-image-wrapper {
   position: relative;
   display: inline-block;
-  max-width: 100%;
+  max-width: 90vw;
   max-height: 80vh;
 }
 
 .modal-image-wrapper img {
-  max-width: 100%;
+  max-width: 90vw;
   max-height: 80vh;
   object-fit: contain;
   display: block;
+  width: auto;
+  height: auto;
 }
 
 .modal-placeholder {
-  transform: none;
-  width: 100%;
-  height: auto;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  max-width: 90vw;
   max-height: 80vh;
   object-fit: contain;
+  width: auto;
+  height: auto;
+  pointer-events: none;
 }
 
 .modal-controls-left {
