@@ -1,0 +1,16 @@
+name: Update Devel VM
+
+on:
+  push:
+    branches: [devel]
+
+jobs:
+  deploy:
+    name: Run update.sh on devel VM
+    runs-on: [self-hosted, dev]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Make script executable and run
+        run: |
+          cd /home/ted/
+          ./update.sh
