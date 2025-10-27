@@ -5,9 +5,9 @@
  */
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import "./PhotoGrid.css";
-import { API_URL, cacheBustValue } from "../config";
+import { API_URL, SITE_URL, cacheBustValue } from "../config";
 import { trackPhotoClick, trackPhotoNavigation, trackPhotoDownload, trackModalClose, trackError } from "../utils/analytics";
 import { fetchWithRateLimitCheck } from "../utils/fetchWrapper";
 
@@ -32,6 +32,7 @@ interface Photo {
 
 const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
   const [loading, setLoading] = useState(true);
@@ -46,6 +47,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
   const [imageDimensions, setImageDimensions] = useState<
     Record<string, { width: number; height: number }>
   >({});
+  const [copiedLink, setCopiedLink] = useState(false);
   const modalOpenTimeRef = useRef<number | null>(null);
   const touchStartX = useRef<number | null>(null);
   const touchStartY = useRef<number | null>(null);
@@ -56,8 +58,34 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
     ? `?${queryParams.toString()}&i=${cacheBustValue}`
     : `?i=${cacheBustValue}`;
 
+  // Function to update URL with photo parameter
+  const updateURLWithPhoto = useCallback((photo: Photo) => {
+    const filename = photo.id.split('/').pop();
+    const newUrl = `/album/${photo.album}?photo=${encodeURIComponent(filename || '')}`;
+    navigate(newUrl, { replace: true });
+  }, [navigate]);
+
+  // Function to get permalink for current photo
+  const getPhotoPermalink = useCallback((photo: Photo) => {
+    const filename = photo.id.split('/').pop();
+    return `${SITE_URL}/album/${photo.album}?photo=${encodeURIComponent(filename || '')}`;
+  }, []);
+
+  // Function to copy permalink to clipboard
+  const handleCopyLink = useCallback(async (photo: Photo) => {
+    const permalink = getPhotoPermalink(photo);
+    try {
+      await navigator.clipboard.writeText(permalink);
+      setCopiedLink(true);
+      setTimeout(() => setCopiedLink(false), 2000); // Reset after 2 seconds
+    } catch (err) {
+      console.error('Failed to copy link:', err);
+    }
+  }, [getPhotoPermalink]);
+
   const handlePhotoClick = (photo: Photo) => {
     setSelectedPhoto(photo);
+    updateURLWithPhoto(photo);
     modalOpenTimeRef.current = Date.now();
     trackPhotoClick(photo.id, photo.album, photo.title);
   };
@@ -71,7 +99,10 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
     setShowInfo(false);
     setExifData(null);
     modalOpenTimeRef.current = null;
-  }, [selectedPhoto]);
+    setCopiedLink(false);
+    // Clear the photo parameter from URL
+    navigate(`/album/${album}`, { replace: true });
+  }, [selectedPhoto, album, navigate]);
 
   const fetchExifData = async (photo: Photo) => {
     if (exifData) return; // Already loaded
@@ -128,6 +159,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
         const viewDuration = modalOpenTimeRef.current ? Date.now() - modalOpenTimeRef.current : undefined;
         setModalImageLoaded(false);
         setSelectedPhoto(prevPhoto);
+        updateURLWithPhoto(prevPhoto);
         setExifData(null);
         modalOpenTimeRef.current = Date.now();
         trackPhotoNavigation('previous', prevPhoto.id, prevPhoto.album, prevPhoto.title, viewDuration);
@@ -139,6 +171,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
         const viewDuration = modalOpenTimeRef.current ? Date.now() - modalOpenTimeRef.current : undefined;
         setModalImageLoaded(false);
         setSelectedPhoto(nextPhoto);
+        updateURLWithPhoto(nextPhoto);
         setExifData(null);
         modalOpenTimeRef.current = Date.now();
         trackPhotoNavigation('next', nextPhoto.id, nextPhoto.album, nextPhoto.title, viewDuration);
@@ -265,6 +298,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
         const viewDuration = modalOpenTimeRef.current ? Date.now() - modalOpenTimeRef.current : undefined;
         setModalImageLoaded(false);
         setSelectedPhoto(prevPhoto);
+        updateURLWithPhoto(prevPhoto);
         setExifData(null); // Reset EXIF data for new photo
         modalOpenTimeRef.current = Date.now(); // Reset timer for new photo
         trackPhotoNavigation('previous', prevPhoto.id, prevPhoto.album, prevPhoto.title, viewDuration);
@@ -281,6 +315,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
         const viewDuration = modalOpenTimeRef.current ? Date.now() - modalOpenTimeRef.current : undefined;
         setModalImageLoaded(false);
         setSelectedPhoto(nextPhoto);
+        updateURLWithPhoto(nextPhoto);
         setExifData(null); // Reset EXIF data for new photo
         modalOpenTimeRef.current = Date.now(); // Reset timer for new photo
         trackPhotoNavigation('next', nextPhoto.id, nextPhoto.album, nextPhoto.title, viewDuration);
@@ -289,7 +324,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [selectedPhoto, photos, handleCloseModal, showNavigationHint]);
+  }, [selectedPhoto, photos, handleCloseModal, showNavigationHint, updateURLWithPhoto]);
 
   const handleImageLoad = (
     e: React.SyntheticEvent<HTMLImageElement>,
@@ -545,6 +580,36 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
               </div>
               <div className="modal-controls">
                 <button
+                  onClick={() => handleCopyLink(selectedPhoto)}
+                  title={copiedLink ? "Copied!" : "Copy link"}
+                  className={copiedLink ? "copied" : ""}
+                >
+                  {copiedLink ? (
+                    <svg
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                  ) : (
+                    <svg
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
+                      <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                      <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+                    </svg>
+                  )}
+                </button>
+                <button
                   onClick={() => {
                     window.open(
                       `${API_URL}${selectedPhoto.download}${queryString}`,
@@ -552,6 +617,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
                     );
                     trackPhotoDownload(selectedPhoto.id, selectedPhoto.album, selectedPhoto.title);
                   }}
+                  title="Download photo"
                 >
                   <svg
                     width="24"
@@ -566,7 +632,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
                     <line x1="12" y1="15" x2="12" y2="3" />
                   </svg>
                 </button>
-                <button onClick={handleCloseModal}>
+                <button onClick={handleCloseModal} title="Close">
                   <svg
                     width="24"
                     height="24"
@@ -598,6 +664,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
                     const viewDuration = modalOpenTimeRef.current ? Date.now() - modalOpenTimeRef.current : undefined;
                     setModalImageLoaded(false);
                     setSelectedPhoto(prevPhoto);
+                    updateURLWithPhoto(prevPhoto);
                     setExifData(null); // Reset EXIF data for new photo
                     modalOpenTimeRef.current = Date.now(); // Reset timer for new photo
                     trackPhotoNavigation('previous', prevPhoto.id, prevPhoto.album, prevPhoto.title, viewDuration);
@@ -625,6 +692,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
                     const viewDuration = modalOpenTimeRef.current ? Date.now() - modalOpenTimeRef.current : undefined;
                     setModalImageLoaded(false);
                     setSelectedPhoto(nextPhoto);
+                    updateURLWithPhoto(nextPhoto);
                     setExifData(null); // Reset EXIF data for new photo
                     modalOpenTimeRef.current = Date.now(); // Reset timer for new photo
                     trackPhotoNavigation('next', nextPhoto.id, nextPhoto.album, nextPhoto.title, viewDuration);
