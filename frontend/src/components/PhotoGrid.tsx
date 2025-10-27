@@ -610,15 +610,30 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
                   )}
                 </button>
                 <button
-                  onClick={() => {
+                  onClick={async () => {
                     const filename = selectedPhoto.id.split('/').pop() || 'photo.jpg';
-                    const link = document.createElement('a');
-                    link.href = `${API_URL}${selectedPhoto.download}${queryString}`;
-                    link.download = filename;
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                    trackPhotoDownload(selectedPhoto.id, selectedPhoto.album, selectedPhoto.title);
+                    try {
+                      // Fetch the image as a blob to enable cross-origin download
+                      const response = await fetch(`${API_URL}${selectedPhoto.download}${queryString}`);
+                      const blob = await response.blob();
+                      const blobUrl = URL.createObjectURL(blob);
+                      
+                      const link = document.createElement('a');
+                      link.href = blobUrl;
+                      link.download = filename;
+                      document.body.appendChild(link);
+                      link.click();
+                      document.body.removeChild(link);
+                      
+                      // Clean up the blob URL
+                      URL.revokeObjectURL(blobUrl);
+                      
+                      trackPhotoDownload(selectedPhoto.id, selectedPhoto.album, selectedPhoto.title);
+                    } catch (error) {
+                      console.error('Download failed:', error);
+                      // Fallback to opening in new tab if download fails
+                      window.open(`${API_URL}${selectedPhoto.download}${queryString}`, '_blank');
+                    }
                   }}
                   title="Download photo"
                 >
