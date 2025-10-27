@@ -1,6 +1,3 @@
-mkdir -p .github/workflows
-
-cat > .github/workflows/devel-update.yml <<'YAML'
 name: Update Devel VM
 
 on:
@@ -17,8 +14,3 @@ jobs:
         run: |
           chmod +x ./update.sh
           ./update.sh
-YAML
-
-git add .github/workflows/devel-update.yml
-git commit -m "CI: run update.sh on devel via self-hosted runner"
-git push origin devel
