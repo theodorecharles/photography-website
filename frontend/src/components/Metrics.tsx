@@ -161,8 +161,6 @@ export default function Metrics() {
       // Generate all hours in the time range
       const currentHour = new Date(startTime);
       while (currentHour <= now) {
-        const hourStr = currentHour.toISOString();
-        
         // Find if we have data for this hour
         const existing = hits.find((d: any) => {
           if (!d.hour_local) return false;
