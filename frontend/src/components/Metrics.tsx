@@ -149,18 +149,42 @@ export default function Metrics() {
       const data = await res.json();
       const hits = data.hits || [];
       
-      // Format the data for the chart
-      const formattedData = hits.map((item: any) => ({
-        hour: new Date(item.hour_local).toLocaleString('en-US', {
-          month: 'short',
-          day: 'numeric',
-          hour: 'numeric',
-          hour12: true
-        }),
-        pageviews: item.pageviews || 0
-      }));
+      // Fill in missing hours with 0 pageviews
+      const now = new Date();
+      const filledData: HourlyPageviewData[] = [];
       
-      setPageviewsByHour(formattedData);
+      // Calculate the start time (timeRange days ago)
+      const startTime = new Date(now);
+      startTime.setDate(startTime.getDate() - timeRange);
+      startTime.setMinutes(0, 0, 0); // Round to the hour
+      
+      // Generate all hours in the time range
+      const currentHour = new Date(startTime);
+      while (currentHour <= now) {
+        const hourStr = currentHour.toISOString();
+        
+        // Find if we have data for this hour
+        const existing = hits.find((d: any) => {
+          if (!d.hour_local) return false;
+          const apiHour = new Date(d.hour_local);
+          return apiHour.getTime() === currentHour.getTime();
+        });
+        
+        filledData.push({
+          hour: currentHour.toLocaleString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            hour: 'numeric',
+            hour12: true
+          }),
+          pageviews: existing ? existing.pageviews : 0
+        });
+        
+        // Move to next hour
+        currentHour.setHours(currentHour.getHours() + 1);
+      }
+      
+      setPageviewsByHour(filledData);
     } catch (err) {
       console.error('Failed to load hourly pageviews:', err);
     } finally {
@@ -412,8 +436,8 @@ export default function Metrics() {
                   >
                     <defs>
                       <linearGradient id="colorPageviews" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.6}/>
-                        <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.05}/>
+                        <stop offset="5%" stopColor="#22c55e" stopOpacity={0.6}/>
+                        <stop offset="95%" stopColor="#22c55e" stopOpacity={0.05}/>
                       </linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" stroke="#535353" opacity={0.5} />
@@ -425,7 +449,7 @@ export default function Metrics() {
                       textAnchor="end"
                       height={80}
                       tick={{ fill: '#9ca3af' }}
-                      interval="preserveStartEnd"
+                      interval={Math.max(Math.floor(pageviewsByHour.length / 20), 0)}
                     />
                     <YAxis 
                       stroke="#9ca3af"
@@ -442,13 +466,13 @@ export default function Metrics() {
                         color: '#e5e7eb'
                       }}
                       labelStyle={{ color: '#f9fafb', fontWeight: 600 }}
-                      itemStyle={{ color: '#3b82f6' }}
+                      itemStyle={{ color: '#22c55e' }}
                       formatter={(value: number) => [value, 'Pageviews']}
                     />
                     <Area 
-                      type="monotone" 
+                      type="linear" 
                       dataKey="pageviews" 
-                      stroke="#3b82f6" 
+                      stroke="#22c55e" 
                       strokeWidth={3}
                       fillOpacity={1}
                       fill="url(#colorPageviews)"
