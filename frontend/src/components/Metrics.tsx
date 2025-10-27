@@ -3,7 +3,7 @@
  * Displays analytics data and visualizations from OpenObserve
  */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import {
   AreaChart,
   Area,
@@ -39,6 +39,11 @@ interface TimeSeriesData {
   count: number;
 }
 
+interface HourlyPageviewData {
+  hour: string;
+  pageviews: number;
+}
+
 interface VisitorLocation {
   latitude: number;
   longitude: number;
@@ -56,17 +61,13 @@ export default function Metrics() {
   const [timeRange, setTimeRange] = useState(30); // days
   const [visitorsOverTime, setVisitorsOverTime] = useState<TimeSeriesData[]>([]);
   const [loadingTimeSeries, setLoadingTimeSeries] = useState(false);
+  const [pageviewsByHour, setPageviewsByHour] = useState<HourlyPageviewData[]>([]);
+  const [loadingPageviewsByHour, setLoadingPageviewsByHour] = useState(false);
   const [visitorLocations, setVisitorLocations] = useState<VisitorLocation[]>([]);
   const [loadingLocations, setLoadingLocations] = useState(false);
   const [expandedRows, setExpandedRows] = useState<Record<string, Set<number>>>({});
 
-  useEffect(() => {
-    loadStats();
-    loadVisitorsOverTime();
-    loadVisitorLocations();
-  }, [timeRange]);
-
-  const loadStats = async () => {
+  const loadStats = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -84,9 +85,9 @@ export default function Metrics() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [timeRange]);
 
-  const loadVisitorsOverTime = async () => {
+  const loadVisitorsOverTime = useCallback(async () => {
     setLoadingTimeSeries(true);
     try {
       // Get browser timezone offset in hours (negative of getTimezoneOffset() / 60)
@@ -130,9 +131,66 @@ export default function Metrics() {
     } finally {
       setLoadingTimeSeries(false);
     }
-  };
+  }, [timeRange]);
 
-  const loadVisitorLocations = async () => {
+  const loadPageviewsByHour = useCallback(async () => {
+    setLoadingPageviewsByHour(true);
+    try {
+      // Get browser timezone offset
+      const offsetMinutes = new Date().getTimezoneOffset();
+      const offsetHours = -offsetMinutes / 60;
+      
+      const res = await fetchWithRateLimitCheck(`${API_URL}/api/metrics/pageviews-by-hour?days=${timeRange}&timezoneOffset=${offsetHours}`);
+
+      if (!res.ok) {
+        throw new Error('Failed to load hourly pageviews');
+      }
+
+      const data = await res.json();
+      const hits = data.hits || [];
+      
+      // Fill in missing hours with 0 pageviews
+      const now = new Date();
+      const filledData: HourlyPageviewData[] = [];
+      
+      // Calculate the start time (timeRange days ago)
+      const startTime = new Date(now);
+      startTime.setDate(startTime.getDate() - timeRange);
+      startTime.setMinutes(0, 0, 0); // Round to the hour
+      
+      // Generate all hours in the time range
+      const currentHour = new Date(startTime);
+      while (currentHour <= now) {
+        // Find if we have data for this hour
+        const existing = hits.find((d: any) => {
+          if (!d.hour_local) return false;
+          const apiHour = new Date(d.hour_local);
+          return apiHour.getTime() === currentHour.getTime();
+        });
+        
+        filledData.push({
+          hour: currentHour.toLocaleString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            hour: 'numeric',
+            hour12: true
+          }),
+          pageviews: existing ? existing.pageviews : 0
+        });
+        
+        // Move to next hour
+        currentHour.setHours(currentHour.getHours() + 1);
+      }
+      
+      setPageviewsByHour(filledData);
+    } catch (err) {
+      console.error('Failed to load hourly pageviews:', err);
+    } finally {
+      setLoadingPageviewsByHour(false);
+    }
+  }, [timeRange]);
+
+  const loadVisitorLocations = useCallback(async () => {
     setLoadingLocations(true);
     try {
       const res = await fetchWithRateLimitCheck(`${API_URL}/api/metrics/visitor-locations?days=${timeRange}`);
@@ -148,7 +206,14 @@ export default function Metrics() {
     } finally {
       setLoadingLocations(false);
     }
-  };
+  }, [timeRange]);
+
+  useEffect(() => {
+    loadStats();
+    loadVisitorsOverTime();
+    loadPageviewsByHour();
+    loadVisitorLocations();
+  }, [loadStats, loadVisitorsOverTime, loadPageviewsByHour, loadVisitorLocations]);
 
   const formatNumber = (num: number) => {
     return num.toLocaleString();
@@ -349,6 +414,73 @@ export default function Metrics() {
               </div>
             ) : (
               <div className="no-data">No visitor data available for this time range</div>
+            )}
+          </div>
+
+          {/* Pageviews by Hour Chart */}
+          <div className="metrics-section">
+            <h3>Pageviews per Hour</h3>
+            <p style={{ color: '#9ca3af', fontSize: '0.85rem', marginBottom: '0.75rem' }}>
+              Hourly breakdown of page views showing traffic patterns throughout the day
+            </p>
+            {loadingPageviewsByHour ? (
+              <div className="chart-loading">Loading chart data...</div>
+            ) : pageviewsByHour.length > 0 ? (
+              <div className="chart-container">
+                <ResponsiveContainer width="100%" height={300}>
+                  <AreaChart 
+                    data={pageviewsByHour}
+                    margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+                  >
+                    <defs>
+                      <linearGradient id="colorPageviews" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#22c55e" stopOpacity={0.6}/>
+                        <stop offset="95%" stopColor="#22c55e" stopOpacity={0.05}/>
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#535353" opacity={0.5} />
+                    <XAxis 
+                      dataKey="hour" 
+                      stroke="#9ca3af"
+                      style={{ fontSize: '0.75rem', fill: '#9ca3af' }}
+                      angle={-45}
+                      textAnchor="end"
+                      height={80}
+                      tick={{ fill: '#9ca3af' }}
+                      interval={Math.max(Math.floor(pageviewsByHour.length / 20), 0)}
+                    />
+                    <YAxis 
+                      stroke="#9ca3af"
+                      style={{ fontSize: '0.875rem', fill: '#9ca3af' }}
+                      allowDecimals={false}
+                      tick={{ fill: '#9ca3af' }}
+                    />
+                    <Tooltip 
+                      contentStyle={{ 
+                        backgroundColor: 'rgba(45, 45, 45, 0.98)',
+                        border: '1px solid #535353',
+                        borderRadius: '8px',
+                        boxShadow: '0 8px 24px rgba(0, 0, 0, 0.4)',
+                        color: '#e5e7eb'
+                      }}
+                      labelStyle={{ color: '#f9fafb', fontWeight: 600 }}
+                      itemStyle={{ color: '#22c55e' }}
+                      formatter={(value: number) => [value, 'Pageviews']}
+                    />
+                    <Area 
+                      type="linear" 
+                      dataKey="pageviews" 
+                      stroke="#22c55e" 
+                      strokeWidth={3}
+                      fillOpacity={1}
+                      fill="url(#colorPageviews)"
+                      animationDuration={1000}
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+            ) : (
+              <div className="no-data">No hourly pageview data available for this time range</div>
             )}
           </div>
 
