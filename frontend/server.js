@@ -141,7 +141,11 @@ app.get("*", (req, res) => {
       } else {
         siteUrl = apiUrl.replace('api.', 'www.');
       }
-      const thumbnailUrl = `${apiUrl}/optimized/thumbnail/${albumName}/${photoFilename}`;
+      
+      // Ensure thumbnail URL uses HTTPS for production (Telegram requirement)
+      // Use full URL with protocol for social media crawlers
+      let thumbnailUrl = `${apiUrl}/optimized/thumbnail/${albumName}/${photoFilename}`;
+      
       const pageUrl = `${siteUrl}/album/${albumName}?photo=${encodeURIComponent(photoFilename)}`;
       const albumTitleCase = albumName.charAt(0).toUpperCase() + albumName.slice(1);
       
@@ -151,6 +155,7 @@ app.get("*", (req, res) => {
       console.log(`  Photo: ${photoFilename}`);
       console.log(`  Title: ${photoTitle}`);
       console.log(`  OG Image: ${thumbnailUrl}`);
+      console.log(`  OG Image (secure): ${thumbnailUrl.replace('http://', 'https://')}`);
       console.log(`  Page URL: ${pageUrl}`);
       
       // Read the index.html file
@@ -205,7 +210,7 @@ app.get("*", (req, res) => {
           // Update og:image to the photo thumbnail
           .replace(
             /<meta property="og:image" content=".*?" \/>/,
-            `<meta property="og:image" content="${thumbnailUrl}" />`
+            `<meta property="og:image" content="${thumbnailUrl}" />\n    <meta property="og:image:secure_url" content="${thumbnailUrl.replace('http://', 'https://')}" />\n    <meta property="og:image:alt" content="${safePhotoTitle} - Photography by Ted Charles" />\n    <meta property="og:image:type" content="image/jpeg" />`
           )
           // Update twitter:url
           .replace(
