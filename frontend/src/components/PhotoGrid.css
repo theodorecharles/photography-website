@@ -74,6 +74,12 @@
   z-index: 1000;
 }
 
+.modal.fullscreen {
+  background-color: #000;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
 /* Prevent body scrolling when modal is open */
 body.modal-open {
   overflow: hidden;
