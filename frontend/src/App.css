@@ -336,21 +336,16 @@ body {
 }
 
 .footer-wrapper {
-  display: none;
   opacity: 0;
   visibility: hidden;
   transform: translateY(20px);
-  pointer-events: none;
+  transition: opacity 0.6s ease, transform 0.6s ease, visibility 0.6s;
 }
 
 .footer-wrapper.visible {
-  display: block;
   opacity: 1;
   visibility: visible;
   transform: translateY(0);
-  pointer-events: auto;
-  transition: opacity 0.4s ease, transform 0.4s ease;
-  animation: fadeInUp 0.4s ease;
 }
 
 @keyframes fadeInUp {
@@ -432,7 +427,6 @@ body {
 .footer {
   background-color: #252525;
   padding: 2rem 0;
-  margin-top: 2rem;
   border-top: 1px solid #444;
 }
 

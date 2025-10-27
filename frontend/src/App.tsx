@@ -381,29 +381,15 @@ function App() {
     };
   }, []);
 
-  // Show footer when user scrolls down
+  // Show footer after initial content loads
   useEffect(() => {
-    const handleScroll = () => {
-      const scrollPosition = window.scrollY;
-      const windowHeight = window.innerHeight;
-      const documentHeight = document.documentElement.scrollHeight;
-      
-      // Show footer if scrolled down at least 200px or near bottom of page
-      if (scrollPosition > 200 || scrollPosition + windowHeight > documentHeight - 100) {
-        setShowFooter(true);
-      } else {
-        setShowFooter(false);
-      }
-    };
+    // Wait a bit for images to start loading
+    const timer = setTimeout(() => {
+      setShowFooter(true);
+    }, 1000);
 
-    window.addEventListener('scroll', handleScroll);
-    // Check initial scroll position
-    handleScroll();
-
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, []);
+    return () => clearTimeout(timer);
+  }, [location.pathname]);
 
   // Update current album based on route changes and track page views
   useEffect(() => {
