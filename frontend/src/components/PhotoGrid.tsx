@@ -5,7 +5,7 @@
  */
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import "./PhotoGrid.css";
 import { API_URL, SITE_URL, cacheBustValue } from "../config";
 import { trackPhotoClick, trackPhotoNavigation, trackPhotoDownload, trackModalClose, trackError } from "../utils/analytics";
@@ -32,7 +32,6 @@ interface Photo {
 
 const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
   const location = useLocation();
-  const navigate = useNavigate();
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
   const [loading, setLoading] = useState(true);
@@ -58,12 +57,13 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
     ? `?${queryParams.toString()}&i=${cacheBustValue}`
     : `?i=${cacheBustValue}`;
 
-  // Function to update URL with photo parameter
+  // Function to update URL with photo parameter without page reload
   const updateURLWithPhoto = useCallback((photo: Photo) => {
     const filename = photo.id.split('/').pop();
     const newUrl = `/album/${photo.album}?photo=${encodeURIComponent(filename || '')}`;
-    navigate(newUrl, { replace: true });
-  }, [navigate]);
+    // Use history.replaceState instead of navigate to avoid page reload/flickering
+    window.history.replaceState(null, '', newUrl);
+  }, []);
 
   // Function to get permalink for current photo
   const getPhotoPermalink = useCallback((photo: Photo) => {
@@ -100,9 +100,9 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
     setExifData(null);
     modalOpenTimeRef.current = null;
     setCopiedLink(false);
-    // Clear the photo parameter from URL
-    navigate(`/album/${album}`, { replace: true });
-  }, [selectedPhoto, album, navigate]);
+    // Clear the photo parameter from URL without page reload
+    window.history.replaceState(null, '', `/album/${album}`);
+  }, [selectedPhoto, album]);
 
   const fetchExifData = async (photo: Photo) => {
     if (exifData) return; // Already loaded
