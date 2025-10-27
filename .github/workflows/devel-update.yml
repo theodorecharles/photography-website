@@ -1,0 +1,24 @@
+mkdir -p .github/workflows
+
+cat > .github/workflows/devel-update.yml <<'YAML'
+name: Update Devel VM
+
+on:
+  push:
+    branches: [devel]
+
+jobs:
+  deploy:
+    name: Run update.sh on devel VM
+    runs-on: [self-hosted, dev]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Make script executable and run
+        run: |
+          chmod +x ./update.sh
+          ./update.sh
+YAML
+
+git add .github/workflows/devel-update.yml
+git commit -m "CI: run update.sh on devel via self-hosted runner"
+git push origin devel
