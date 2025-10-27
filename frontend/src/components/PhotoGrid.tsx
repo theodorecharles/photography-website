@@ -47,6 +47,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
     Record<string, { width: number; height: number }>
   >({});
   const [copiedLink, setCopiedLink] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const modalOpenTimeRef = useRef<number | null>(null);
   const touchStartX = useRef<number | null>(null);
   const touchStartY = useRef<number | null>(null);
@@ -90,19 +91,48 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
     trackPhotoClick(photo.id, photo.album, photo.title);
   };
 
-  const handleCloseModal = useCallback(() => {
+  const handleCloseModal = useCallback(async () => {
     if (selectedPhoto && modalOpenTimeRef.current) {
       const viewDuration = Date.now() - modalOpenTimeRef.current;
       trackModalClose(selectedPhoto.id, selectedPhoto.album, selectedPhoto.title, viewDuration);
     }
+    // Exit fullscreen if active
+    if (document.fullscreenElement) {
+      try {
+        await document.exitFullscreen();
+      } catch (err) {
+        console.error('Error exiting fullscreen:', err);
+      }
+    }
     setSelectedPhoto(null);
     setShowInfo(false);
     setExifData(null);
+    setIsFullscreen(false);
     modalOpenTimeRef.current = null;
     setCopiedLink(false);
     // Clear the photo parameter from URL without page reload
     window.history.replaceState(null, '', `/album/${album}`);
   }, [selectedPhoto, album]);
+
+  const toggleFullscreen = useCallback(async () => {
+    if (!document.fullscreenElement) {
+      // Enter fullscreen
+      try {
+        await document.documentElement.requestFullscreen();
+        setIsFullscreen(true);
+      } catch (err) {
+        console.error('Error attempting to enable fullscreen:', err);
+      }
+    } else {
+      // Exit fullscreen
+      try {
+        await document.exitFullscreen();
+        setIsFullscreen(false);
+      } catch (err) {
+        console.error('Error attempting to exit fullscreen:', err);
+      }
+    }
+  }, []);
 
   const fetchExifData = async (photo: Photo) => {
     if (exifData) return; // Already loaded
@@ -200,6 +230,18 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
       document.body.style.overflow = "";
     };
   }, [selectedPhoto]);
+
+  // Handle fullscreen changes (like when user presses Esc)
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
+    };
+  }, []);
 
   // Close modal and reset state when album changes
   useEffect(() => {
@@ -532,7 +574,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
       ))}
 
       {selectedPhoto && (
-        <div className="modal" onClick={handleCloseModal}>
+        <div className={`modal ${isFullscreen ? 'fullscreen' : ''}`} onClick={handleCloseModal}>
           <div 
             className="modal-content" 
             onClick={(e) => {
@@ -571,6 +613,78 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
                     <circle cx="12" cy="12" r="10" />
                     <line x1="12" y1="16" x2="12" y2="12" />
                     <line x1="12" y1="8" x2="12.01" y2="8" />
+                  </svg>
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleCopyLink(selectedPhoto);
+                  }}
+                  title={copiedLink ? "Copied!" : "Copy link"}
+                  className={copiedLink ? "copied" : ""}
+                >
+                  {copiedLink ? (
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                  ) : (
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
+                      <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                      <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+                    </svg>
+                  )}
+                </button>
+                <button
+                  onClick={async (e) => {
+                    e.stopPropagation();
+                    const filename = selectedPhoto.id.split('/').pop() || 'photo.jpg';
+                    try {
+                      const response = await fetch(`${API_URL}${selectedPhoto.download}${queryString}`);
+                      const blob = await response.blob();
+                      const blobUrl = URL.createObjectURL(blob);
+                      
+                      const link = document.createElement('a');
+                      link.href = blobUrl;
+                      link.download = filename;
+                      document.body.appendChild(link);
+                      link.click();
+                      document.body.removeChild(link);
+                      
+                      URL.revokeObjectURL(blobUrl);
+                      
+                      trackPhotoDownload(selectedPhoto.id, selectedPhoto.album, selectedPhoto.title);
+                    } catch (error) {
+                      console.error('Download failed:', error);
+                      window.open(`${API_URL}${selectedPhoto.download}${queryString}`, '_blank');
+                    }
+                  }}
+                  title="Download photo"
+                >
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                    <polyline points="7 10 12 15 17 10" />
+                    <line x1="12" y1="15" x2="12" y2="3" />
                   </svg>
                 </button>
                 {showInfo && (
@@ -656,11 +770,13 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
               </div>
               <div className="modal-controls">
                 <button
-                  onClick={() => handleCopyLink(selectedPhoto)}
-                  title={copiedLink ? "Copied!" : "Copy link"}
-                  className={copiedLink ? "copied" : ""}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleFullscreen();
+                  }}
+                  title={isFullscreen ? "Exit fullscreen" : "Fullscreen"}
                 >
-                  {copiedLink ? (
+                  {isFullscreen ? (
                     <svg
                       width="24"
                       height="24"
@@ -669,7 +785,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
                       stroke="currentColor"
                       strokeWidth="2"
                     >
-                      <polyline points="20 6 9 17 4 12" />
+                      <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3" />
                     </svg>
                   ) : (
                     <svg
@@ -680,53 +796,17 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
                       stroke="currentColor"
                       strokeWidth="2"
                     >
-                      <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
-                      <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+                      <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3" />
                     </svg>
                   )}
                 </button>
                 <button
-                  onClick={async () => {
-                    const filename = selectedPhoto.id.split('/').pop() || 'photo.jpg';
-                    try {
-                      // Fetch the image as a blob to enable cross-origin download
-                      const response = await fetch(`${API_URL}${selectedPhoto.download}${queryString}`);
-                      const blob = await response.blob();
-                      const blobUrl = URL.createObjectURL(blob);
-                      
-                      const link = document.createElement('a');
-                      link.href = blobUrl;
-                      link.download = filename;
-                      document.body.appendChild(link);
-                      link.click();
-                      document.body.removeChild(link);
-                      
-                      // Clean up the blob URL
-                      URL.revokeObjectURL(blobUrl);
-                      
-                      trackPhotoDownload(selectedPhoto.id, selectedPhoto.album, selectedPhoto.title);
-                    } catch (error) {
-                      console.error('Download failed:', error);
-                      // Fallback to opening in new tab if download fails
-                      window.open(`${API_URL}${selectedPhoto.download}${queryString}`, '_blank');
-                    }
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleCloseModal();
                   }}
-                  title="Download photo"
+                  title="Close"
                 >
-                  <svg
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                  >
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                    <polyline points="7 10 12 15 17 10" />
-                    <line x1="12" y1="15" x2="12" y2="3" />
-                  </svg>
-                </button>
-                <button onClick={handleCloseModal} title="Close">
                   <svg
                     width="24"
                     height="24"
