@@ -611,10 +611,13 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
                 </button>
                 <button
                   onClick={() => {
-                    window.open(
-                      `${API_URL}${selectedPhoto.download}${queryString}`,
-                      "_blank"
-                    );
+                    const filename = selectedPhoto.id.split('/').pop() || 'photo.jpg';
+                    const link = document.createElement('a');
+                    link.href = `${API_URL}${selectedPhoto.download}${queryString}`;
+                    link.download = filename;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
                     trackPhotoDownload(selectedPhoto.id, selectedPhoto.album, selectedPhoto.title);
                   }}
                   title="Download photo"
