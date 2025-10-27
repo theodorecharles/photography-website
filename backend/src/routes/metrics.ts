@@ -250,6 +250,114 @@ router.get('/visitor-locations', isAuthenticated, async (req: Request, res: Resp
 });
 
 /**
+ * GET /api/metrics/pageviews-by-hour
+ * Get pageviews aggregated by hour for the last N days
+ * Requires authentication
+ */
+router.get('/pageviews-by-hour', isAuthenticated, async (req: Request, res: Response): Promise<void> => {
+  try {
+    const analyticsConfig = config.analytics?.openobserve;
+    
+    if (!analyticsConfig || !analyticsConfig.enabled) {
+      res.status(503).json({ error: 'Analytics not configured' });
+      return;
+    }
+
+    const { endpoint, organization, stream, username, password, serviceToken } = analyticsConfig;
+
+    if (!endpoint || !organization || !stream) {
+      res.status(503).json({ error: 'Analytics endpoint configuration incomplete' });
+      return;
+    }
+
+    // Check if we have either service token or username/password
+    if (!serviceToken && (!username || !password)) {
+      res.status(503).json({ error: 'Analytics authentication not configured' });
+      return;
+    }
+
+    // Get time range from query params (default to last 30 days, same as other metrics)
+    const days = parseInt(req.query.days as string) || 30;
+    // Get timezone offset from query params (default to 0 for UTC)
+    const timezoneOffset = parseFloat(req.query.timezoneOffset as string) || 0;
+    
+    // Calculate time range (OpenObserve uses microseconds)
+    const endTime = Date.now() * 1000;
+    const startTime = endTime - (days * 24 * 60 * 60 * 1000 * 1000);
+
+    // Build the query endpoint
+    const queryEndpoint = `${endpoint}${organization}/_search`;
+    
+    // Prepare authorization header
+    const authHeaders: Record<string, string> = {
+      'Content-Type': 'application/json',
+    };
+
+    if (serviceToken) {
+      authHeaders['Authorization'] = `Bearer ${serviceToken}`;
+    } else {
+      const credentials = Buffer.from(`${username}:${password}`).toString('base64');
+      authHeaders['Authorization'] = `Basic ${credentials}`;
+    }
+
+    // Determine the interval string for timezone adjustment
+    const absOffset = Math.abs(timezoneOffset);
+    const intervalStr = timezoneOffset >= 0 
+      ? `+ INTERVAL '${absOffset}' HOUR`
+      : `- INTERVAL '${absOffset}' HOUR`;
+
+    // Query for pageviews per hour with timezone adjustment
+    const sql = `
+      SELECT
+        date_trunc('hour', to_timestamp_micros(_timestamp) ${intervalStr}) AS hour_local,
+        COUNT(*) AS pageviews
+      FROM "${stream}"
+      WHERE event_type = 'pageview'
+        AND _timestamp >= ${startTime}
+        AND _timestamp <= ${endTime}
+      GROUP BY hour_local
+      ORDER BY hour_local ASC
+    `;
+
+    const requestBody = {
+      query: {
+        sql,
+        start_time: startTime,
+        end_time: endTime,
+        from: 0,
+        size: 10000  // Large enough to capture all hours (max ~416 days)
+      }
+    };
+
+    const response = await fetch(queryEndpoint, {
+      method: 'POST',
+      headers: authHeaders,
+      body: JSON.stringify(requestBody)
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('OpenObserve query failed:', response.status, errorText);
+      throw new Error(`OpenObserve query failed: ${response.status}`);
+    }
+
+    const result = await response.json();
+    
+    console.log(`[Pageviews by hour] Returning ${result.hits?.length || 0} hours of data for ${days} day(s) time range`);
+    
+    res.status(200).json({
+      hits: result.hits || [],
+      took: result.took
+    });
+  } catch (error) {
+    console.error('Pageviews by hour error:', error);
+    res.status(500).json({ 
+      error: 'Failed to retrieve hourly pageviews. Please try again later.'
+    });
+  }
+});
+
+/**
  * GET /api/metrics/stats
  * Get pre-computed statistics for the dashboard
  * Requires authentication
