@@ -103,7 +103,147 @@ app.use(express.static(path.join(__dirname, "dist")));
 // Handle client-side routing (catch-all for React routes)
 // This must come AFTER all other routes
 app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "dist", "index.html"));
+  const indexPath = path.join(__dirname, "dist", "index.html");
+  
+  // Check if this is a photo permalink (album route with photo parameter)
+  const urlPath = req.path;
+  const photoParam = req.query.photo;
+  
+  if (urlPath.startsWith('/album/') && photoParam) {
+    // Extract album name from path (e.g., /album/nature -> nature)
+    const albumMatch = urlPath.match(/^\/album\/([^\/]+)/);
+    if (albumMatch) {
+      const albumName = albumMatch[1];
+      const photoFilename = photoParam;
+      
+      // Generate photo title from filename (remove extension, replace separators with spaces)
+      const photoTitle = photoFilename
+        .replace(/\.[^/.]+$/, '') // Remove extension
+        .replace(/[-_]/g, ' '); // Replace hyphens and underscores with spaces
+      
+      // Escape HTML special characters in photo title for safe insertion
+      const escapeHtml = (str) => str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+      const safePhotoTitle = escapeHtml(photoTitle);
+      
+      // Build URLs for the photo
+      const apiUrl = config.frontend.apiUrl;
+      // Derive site URL from API URL:
+      // Production: https://api.tedcharles.net -> https://www.tedcharles.net
+      // Development: http://localhost:3001 -> http://localhost:3000
+      // Dev server: https://api-dev.tedcharles.net -> https://www-dev.tedcharles.net
+      let siteUrl;
+      if (apiUrl.includes('localhost')) {
+        siteUrl = apiUrl.replace(':3001', ':3000');
+      } else {
+        // Handle both api. and api-dev. patterns
+        siteUrl = apiUrl.replace(/api(-dev)?\./, 'www$1.');
+      }
+      
+      // Ensure thumbnail URL uses HTTPS for production (Telegram requirement)
+      // Use full URL with protocol for social media crawlers
+      let thumbnailUrl = `${apiUrl}/optimized/thumbnail/${albumName}/${photoFilename}`;
+      
+      const pageUrl = `${siteUrl}/album/${albumName}?photo=${encodeURIComponent(photoFilename)}`;
+      const albumTitleCase = albumName.charAt(0).toUpperCase() + albumName.slice(1);
+      
+      // Log meta tag injection for debugging
+      console.log(`[Meta Injection] Photo permalink detected:`);
+      console.log(`  Album: ${albumName}`);
+      console.log(`  Photo: ${photoFilename}`);
+      console.log(`  Title: ${photoTitle}`);
+      console.log(`  OG Image: ${thumbnailUrl}`);
+      console.log(`  OG Image (secure): ${thumbnailUrl.replace('http://', 'https://')}`);
+      console.log(`  Page URL: ${pageUrl}`);
+      
+      // Read the index.html file
+      fs.readFile(indexPath, 'utf8', (err, html) => {
+        if (err) {
+          console.error('Error reading index.html:', err);
+          return res.sendFile(indexPath);
+        }
+        
+        // Replace meta tags with photo-specific content
+        let modifiedHtml = html
+          // Update page title
+          .replace(
+            /<title>.*?<\/title>/,
+            `<title>${safePhotoTitle} - ${albumTitleCase} - Ted Charles Photography</title>`
+          )
+          // Update meta title
+          .replace(
+            /<meta name="title" content=".*?" \/>/,
+            `<meta name="title" content="${safePhotoTitle} - ${albumTitleCase} - Ted Charles Photography" />`
+          )
+          // Update meta description
+          .replace(
+            /<meta name="description" content=".*?" \/>/,
+            `<meta name="description" content="View '${safePhotoTitle}' from the ${albumTitleCase} collection by Ted Charles. Professional photography portfolio." />`
+          )
+          // Update canonical URL
+          .replace(
+            /<link rel="canonical" href=".*?" \/>/,
+            `<link rel="canonical" href="${pageUrl}" />`
+          )
+          // Update og:type to article for individual photos
+          .replace(
+            /<meta property="og:type" content=".*?" \/>/,
+            `<meta property="og:type" content="article" />`
+          )
+          // Update og:url
+          .replace(
+            /<meta property="og:url" content=".*?" \/>/,
+            `<meta property="og:url" content="${pageUrl}" />`
+          )
+          // Update og:title
+          .replace(
+            /<meta property="og:title" content=".*?" \/>/,
+            `<meta property="og:title" content="${safePhotoTitle} - ${albumTitleCase}" />`
+          )
+          // Update og:description
+          .replace(
+            /<meta property="og:description" content=".*?" \/>/,
+            `<meta property="og:description" content="View '${safePhotoTitle}' from the ${albumTitleCase} collection by Ted Charles." />`
+          )
+          // Update og:image to the photo thumbnail
+          .replace(
+            /<meta property="og:image" content=".*?" \/>/,
+            `<meta property="og:image" content="${thumbnailUrl}" />\n    <meta property="og:image:secure_url" content="${thumbnailUrl.replace('http://', 'https://')}" />\n    <meta property="og:image:alt" content="${safePhotoTitle} - Photography by Ted Charles" />\n    <meta property="og:image:type" content="image/jpeg" />`
+          )
+          // Update twitter:url
+          .replace(
+            /<meta property="twitter:url" content=".*?" \/>/,
+            `<meta property="twitter:url" content="${pageUrl}" />`
+          )
+          // Update twitter:title
+          .replace(
+            /<meta property="twitter:title" content=".*?" \/>/,
+            `<meta property="twitter:title" content="${safePhotoTitle} - ${albumTitleCase}" />`
+          )
+          // Update twitter:description
+          .replace(
+            /<meta property="twitter:description" content=".*?" \/>/,
+            `<meta property="twitter:description" content="View '${safePhotoTitle}' from the ${albumTitleCase} collection by Ted Charles." />`
+          )
+          // Update twitter:image to the photo thumbnail
+          .replace(
+            /<meta property="twitter:image" content=".*?" \/>/,
+            `<meta property="twitter:image" content="${thumbnailUrl}" />`
+          );
+        
+        res.send(modifiedHtml);
+      });
+      
+      return;
+    }
+  }
+  
+  // Default: serve the standard index.html
+  res.sendFile(indexPath);
 });
 
 // Listen on 0.0.0.0 for remote dev/production, 127.0.0.1 for localhost
