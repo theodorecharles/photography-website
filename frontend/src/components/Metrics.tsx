@@ -39,6 +39,11 @@ interface TimeSeriesData {
   count: number;
 }
 
+interface HourlyPageviewData {
+  hour: string;
+  pageviews: number;
+}
+
 interface VisitorLocation {
   latitude: number;
   longitude: number;
@@ -56,6 +61,8 @@ export default function Metrics() {
   const [timeRange, setTimeRange] = useState(30); // days
   const [visitorsOverTime, setVisitorsOverTime] = useState<TimeSeriesData[]>([]);
   const [loadingTimeSeries, setLoadingTimeSeries] = useState(false);
+  const [pageviewsByHour, setPageviewsByHour] = useState<HourlyPageviewData[]>([]);
+  const [loadingPageviewsByHour, setLoadingPageviewsByHour] = useState(false);
   const [visitorLocations, setVisitorLocations] = useState<VisitorLocation[]>([]);
   const [loadingLocations, setLoadingLocations] = useState(false);
   const [expandedRows, setExpandedRows] = useState<Record<string, Set<number>>>({});
@@ -63,6 +70,7 @@ export default function Metrics() {
   useEffect(() => {
     loadStats();
     loadVisitorsOverTime();
+    loadPageviewsByHour();
     loadVisitorLocations();
   }, [timeRange]);
 
@@ -129,6 +137,41 @@ export default function Metrics() {
       console.error('Failed to load time series:', err);
     } finally {
       setLoadingTimeSeries(false);
+    }
+  };
+
+  const loadPageviewsByHour = async () => {
+    setLoadingPageviewsByHour(true);
+    try {
+      // Get browser timezone offset
+      const offsetMinutes = new Date().getTimezoneOffset();
+      const offsetHours = -offsetMinutes / 60;
+      
+      const res = await fetchWithRateLimitCheck(`${API_URL}/api/metrics/pageviews-by-hour?days=${timeRange}&timezoneOffset=${offsetHours}`);
+
+      if (!res.ok) {
+        throw new Error('Failed to load hourly pageviews');
+      }
+
+      const data = await res.json();
+      const hits = data.hits || [];
+      
+      // Format the data for the chart
+      const formattedData = hits.map((item: any) => ({
+        hour: new Date(item.hour_local).toLocaleString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          hour: 'numeric',
+          hour12: true
+        }),
+        pageviews: item.pageviews || 0
+      }));
+      
+      setPageviewsByHour(formattedData);
+    } catch (err) {
+      console.error('Failed to load hourly pageviews:', err);
+    } finally {
+      setLoadingPageviewsByHour(false);
     }
   };
 
@@ -349,6 +392,73 @@ export default function Metrics() {
               </div>
             ) : (
               <div className="no-data">No visitor data available for this time range</div>
+            )}
+          </div>
+
+          {/* Pageviews by Hour Chart */}
+          <div className="metrics-section">
+            <h3>Pageviews per Hour</h3>
+            <p style={{ color: '#9ca3af', fontSize: '0.85rem', marginBottom: '0.75rem' }}>
+              Hourly breakdown of page views showing traffic patterns throughout the day
+            </p>
+            {loadingPageviewsByHour ? (
+              <div className="chart-loading">Loading chart data...</div>
+            ) : pageviewsByHour.length > 0 ? (
+              <div className="chart-container">
+                <ResponsiveContainer width="100%" height={300}>
+                  <AreaChart 
+                    data={pageviewsByHour}
+                    margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+                  >
+                    <defs>
+                      <linearGradient id="colorPageviews" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.6}/>
+                        <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.05}/>
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#535353" opacity={0.5} />
+                    <XAxis 
+                      dataKey="hour" 
+                      stroke="#9ca3af"
+                      style={{ fontSize: '0.75rem', fill: '#9ca3af' }}
+                      angle={-45}
+                      textAnchor="end"
+                      height={80}
+                      tick={{ fill: '#9ca3af' }}
+                      interval="preserveStartEnd"
+                    />
+                    <YAxis 
+                      stroke="#9ca3af"
+                      style={{ fontSize: '0.875rem', fill: '#9ca3af' }}
+                      allowDecimals={false}
+                      tick={{ fill: '#9ca3af' }}
+                    />
+                    <Tooltip 
+                      contentStyle={{ 
+                        backgroundColor: 'rgba(45, 45, 45, 0.98)',
+                        border: '1px solid #535353',
+                        borderRadius: '8px',
+                        boxShadow: '0 8px 24px rgba(0, 0, 0, 0.4)',
+                        color: '#e5e7eb'
+                      }}
+                      labelStyle={{ color: '#f9fafb', fontWeight: 600 }}
+                      itemStyle={{ color: '#3b82f6' }}
+                      formatter={(value: number) => [value, 'Pageviews']}
+                    />
+                    <Area 
+                      type="monotone" 
+                      dataKey="pageviews" 
+                      stroke="#3b82f6" 
+                      strokeWidth={3}
+                      fillOpacity={1}
+                      fill="url(#colorPageviews)"
+                      animationDuration={1000}
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+            ) : (
+              <div className="no-data">No hourly pageview data available for this time range</div>
             )}
           </div>
 
