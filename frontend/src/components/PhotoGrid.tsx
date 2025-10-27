@@ -715,7 +715,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
                 alt={`${selectedPhoto.album} photography by Ted Charles - ${selectedPhoto.title}`}
                 title={selectedPhoto.title}
                 className="modal-placeholder"
-                style={{ display: modalImageLoaded ? "none" : "block" }}
+                style={{ opacity: modalImageLoaded ? 0 : 1, transition: 'opacity 0.2s ease' }}
               />
               <img
                 src={`${API_URL}${selectedPhoto.src}${queryString}`}
@@ -728,7 +728,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
                   // Show placeholder if full image fails to load
                   setModalImageLoaded(true);
                 }}
-                style={{ display: modalImageLoaded ? "block" : "none" }}
+                style={{ opacity: modalImageLoaded ? 1 : 0, transition: 'opacity 0.2s ease' }}
               />
             </div>
           </div>
