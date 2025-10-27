@@ -276,8 +276,8 @@ router.get('/pageviews-by-hour', isAuthenticated, async (req: Request, res: Resp
       return;
     }
 
-    // Get time range from query params (default to last 7 days for hourly data)
-    const days = parseInt(req.query.days as string) || 7;
+    // Get time range from query params (default to last 30 days, same as other metrics)
+    const days = parseInt(req.query.days as string) || 30;
     // Get timezone offset from query params (default to 0 for UTC)
     const timezoneOffset = parseFloat(req.query.timezoneOffset as string) || 0;
     
@@ -325,7 +325,7 @@ router.get('/pageviews-by-hour', isAuthenticated, async (req: Request, res: Resp
         start_time: startTime,
         end_time: endTime,
         from: 0,
-        size: days * 24  // Maximum expected hours
+        size: 10000  // Large enough to capture all hours (max ~416 days)
       }
     };
 
@@ -342,6 +342,8 @@ router.get('/pageviews-by-hour', isAuthenticated, async (req: Request, res: Resp
     }
 
     const result = await response.json();
+    
+    console.log(`[Pageviews by hour] Returning ${result.hits?.length || 0} hours of data for ${days} day(s) time range`);
     
     res.status(200).json({
       hits: result.hits || [],
