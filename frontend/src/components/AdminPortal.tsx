@@ -3,7 +3,7 @@
  * Allows authenticated users to manage site settings
  */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { API_URL, cacheBustValue } from '../config';
 import './AdminPortal.css';
@@ -46,6 +46,24 @@ interface BrandingConfig {
   metaDescription: string;
   metaKeywords: string;
   faviconPath: string;
+}
+
+interface ImageOptimizationSettings {
+  concurrency: number;
+  images: {
+    thumbnail: {
+      quality: number;
+      maxDimension: number;
+    };
+    modal: {
+      quality: number;
+      maxDimension: number;
+    };
+    download: {
+      quality: number;
+      maxDimension: number;
+    };
+  };
 }
 
 interface Album {
@@ -98,6 +116,19 @@ export default function AdminPortal() {
   const [optimizingPhotos, setOptimizingPhotos] = useState<Set<string>>(new Set());
   const [pendingAvatarFile, setPendingAvatarFile] = useState<File | null>(null);
   const [avatarPreviewUrl, setAvatarPreviewUrl] = useState<string | null>(null);
+  const [optimizationSettings, setOptimizationSettings] = useState<ImageOptimizationSettings>({
+    concurrency: 4,
+    images: {
+      thumbnail: { quality: 60, maxDimension: 512 },
+      modal: { quality: 90, maxDimension: 2048 },
+      download: { quality: 100, maxDimension: 4096 }
+    }
+  });
+  const [optimizationOutput, setOptimizationOutput] = useState<string[]>([]);
+  const [isOptimizing, setIsOptimizing] = useState(false);
+  const [optimizationComplete, setOptimizationComplete] = useState(false);
+  const [savingOptimization, setSavingOptimization] = useState(false);
+  const outputConsoleRef = useRef<HTMLDivElement>(null);
 
   // Redirect /admin to /admin/albums
   useEffect(() => {
@@ -116,6 +147,13 @@ export default function AdminPortal() {
       return () => clearTimeout(timer);
     }
   }, [message]);
+
+  // Auto-scroll output console to bottom when new content is added
+  useEffect(() => {
+    if (outputConsoleRef.current) {
+      outputConsoleRef.current.scrollTop = outputConsoleRef.current.scrollHeight;
+    }
+  }, [optimizationOutput]);
 
   useEffect(() => {
     // Check authentication status
@@ -149,6 +187,7 @@ export default function AdminPortal() {
           loadExternalLinks();
           loadBranding();
           loadAlbums();
+          loadOptimizationSettings();
         } else {
           console.log('[AdminPortal] User is NOT authenticated');
         }
@@ -229,6 +268,105 @@ export default function AdminPortal() {
       setAlbumPhotos(photos);
     } catch (err) {
       console.error('Failed to load album photos:', err);
+    }
+  };
+
+  const loadOptimizationSettings = async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/image-optimization/settings`, {
+        credentials: 'include',
+      });
+      const data = await res.json();
+      setOptimizationSettings(data);
+    } catch (err) {
+      console.error('Failed to load optimization settings:', err);
+    }
+  };
+
+  const handleSaveOptimizationSettings = async () => {
+    setSavingOptimization(true);
+    try {
+      const res = await fetch(`${API_URL}/api/image-optimization/settings`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(optimizationSettings),
+      });
+      
+      if (res.ok) {
+        setMessage({ type: 'success', text: 'Optimization settings saved successfully' });
+      } else {
+        setMessage({ type: 'error', text: 'Failed to save optimization settings' });
+      }
+    } catch (err) {
+      console.error('Failed to save optimization settings:', err);
+      setMessage({ type: 'error', text: 'Failed to save optimization settings' });
+    } finally {
+      setSavingOptimization(false);
+    }
+  };
+
+  const handleRunOptimization = async (force: boolean = false) => {
+    setIsOptimizing(true);
+    setOptimizationComplete(false);
+    setOptimizationOutput([]);
+    
+    try {
+      const res = await fetch(`${API_URL}/api/image-optimization/optimize`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({ force }),
+      });
+      
+      if (!res.ok) {
+        throw new Error('Failed to start optimization');
+      }
+      
+      // Set up SSE to receive output
+      const reader = res.body?.getReader();
+      const decoder = new TextDecoder();
+      
+      if (!reader) {
+        throw new Error('No reader available');
+      }
+      
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        
+        const chunk = decoder.decode(value);
+        const lines = chunk.split('\n');
+        
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            try {
+              const data = JSON.parse(line.substring(6));
+              if (data.type === 'stdout' || data.type === 'stderr') {
+                setOptimizationOutput(prev => [...prev, data.message]);
+              } else if (data.type === 'complete') {
+                setOptimizationOutput(prev => [...prev, '', data.message]);
+                setOptimizationComplete(true);
+              } else if (data.type === 'error') {
+                setOptimizationOutput(prev => [...prev, `ERROR: ${data.message}`]);
+                setMessage({ type: 'error', text: 'Optimization failed' });
+              }
+            } catch (e) {
+              // Ignore parse errors for incomplete JSON
+            }
+          }
+        }
+      }
+    } catch (err) {
+      console.error('Failed to run optimization:', err);
+      setOptimizationOutput(prev => [...prev, `ERROR: ${err instanceof Error ? err.message : 'Unknown error'}`]);
+      setMessage({ type: 'error', text: 'Failed to run optimization' });
+    } finally {
+      setIsOptimizing(false);
     }
   };
 
@@ -952,8 +1090,168 @@ export default function AdminPortal() {
               </div>
             )}
           </div>
-        </section>
+          </section>
         )}
+        {/* Image Optimization Section */}
+        <section className="admin-section">
+          <h2>⚙️ Image Optimization</h2>
+          <p className="section-description">Configure image quality and run optimization</p>
+          
+          <div className="form-group" style={{ maxWidth: '300px', marginBottom: '2rem' }}>
+              <label className="branding-label">Concurrency (1-16)</label>
+              <input
+                type="number"
+                min="1"
+                max="16"
+                value={optimizationSettings.concurrency}
+                onChange={(e) => setOptimizationSettings({
+                  ...optimizationSettings,
+                  concurrency: parseInt(e.target.value) || 4
+                })}
+                className="branding-input"
+              />
+              <p className="section-description" style={{ marginTop: '0.5rem', fontSize: '0.9rem' }}>
+                Number of images to process in parallel. Higher values are faster but use more CPU.
+              </p>
+            </div>
+            
+            <div className="optimization-grid">
+              <div className="optimization-group">
+                <h4>Thumbnail</h4>
+                <div className="form-group">
+                  <label>Quality (0-100)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    max="100"
+                    value={optimizationSettings.images.thumbnail.quality}
+                    onChange={(e) => setOptimizationSettings({
+                      ...optimizationSettings,
+                      images: { ...optimizationSettings.images, thumbnail: { ...optimizationSettings.images.thumbnail, quality: parseInt(e.target.value) || 0 } }
+                    })}
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Max Dimension (px)</label>
+                  <input
+                    type="number"
+                    min="128"
+                    max="4096"
+                    value={optimizationSettings.images.thumbnail.maxDimension}
+                    onChange={(e) => setOptimizationSettings({
+                      ...optimizationSettings,
+                      images: { ...optimizationSettings.images, thumbnail: { ...optimizationSettings.images.thumbnail, maxDimension: parseInt(e.target.value) || 512 } }
+                    })}
+                  />
+                </div>
+              </div>
+
+              <div className="optimization-group">
+                <h4>Modal</h4>
+                <div className="form-group">
+                  <label>Quality (0-100)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    max="100"
+                    value={optimizationSettings.images.modal.quality}
+                    onChange={(e) => setOptimizationSettings({
+                      ...optimizationSettings,
+                      images: { ...optimizationSettings.images, modal: { ...optimizationSettings.images.modal, quality: parseInt(e.target.value) || 0 } }
+                    })}
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Max Dimension (px)</label>
+                  <input
+                    type="number"
+                    min="512"
+                    max="8192"
+                    value={optimizationSettings.images.modal.maxDimension}
+                    onChange={(e) => setOptimizationSettings({
+                      ...optimizationSettings,
+                      images: { ...optimizationSettings.images, modal: { ...optimizationSettings.images.modal, maxDimension: parseInt(e.target.value) || 2048 } }
+                    })}
+                  />
+                </div>
+              </div>
+
+              <div className="optimization-group">
+                <h4>Download</h4>
+                <div className="form-group">
+                  <label>Quality (0-100)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    max="100"
+                    value={optimizationSettings.images.download.quality}
+                    onChange={(e) => setOptimizationSettings({
+                      ...optimizationSettings,
+                      images: { ...optimizationSettings.images, download: { ...optimizationSettings.images.download, quality: parseInt(e.target.value) || 0 } }
+                    })}
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Max Dimension (px)</label>
+                  <input
+                    type="number"
+                    min="1024"
+                    max="16384"
+                    value={optimizationSettings.images.download.maxDimension}
+                    onChange={(e) => setOptimizationSettings({
+                      ...optimizationSettings,
+                      images: { ...optimizationSettings.images, download: { ...optimizationSettings.images.download, maxDimension: parseInt(e.target.value) || 4096 } }
+                    })}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {optimizationOutput.length > 0 && !optimizationComplete && (
+              <div style={{ marginTop: '2rem', marginBottom: '2rem' }}>
+                <h4 style={{ color: '#f9fafb', marginBottom: '1rem' }}>Output</h4>
+                <div className="output-console" ref={outputConsoleRef}>
+                  {optimizationOutput.map((line, index) => (
+                    <div key={index} className="output-line">{line}</div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem' }}>
+              <button
+                className="btn-primary"
+                onClick={handleSaveOptimizationSettings}
+                disabled={savingOptimization}
+              >
+                {savingOptimization ? 'Saving...' : 'Save Settings'}
+              </button>
+              
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                <button
+                  className="button"
+                  style={{ 
+                    backgroundColor: '#dc3545', 
+                    color: 'white',
+                    border: 'none',
+                    padding: '0.75rem 1.5rem',
+                    borderRadius: '6px',
+                    fontSize: '1rem',
+                    cursor: isOptimizing ? 'not-allowed' : 'pointer',
+                    fontWeight: 600,
+                    transition: 'all 0.2s ease'
+                  }}
+                  onClick={() => handleRunOptimization(true)}
+                  disabled={isOptimizing}
+                >
+                  {isOptimizing ? 'Running...' : 'Force Regenerate All'}
+                </button>
+                {optimizationComplete && (
+                  <span style={{ color: '#28a745', fontSize: '1.5rem' }}>✓</span>
+                )}
+              </div>
+            </div>
+        </section>
       </div>
     </div>
   );
