@@ -239,6 +239,13 @@ body.modal-open {
   height: 20px;
 }
 
+/* Hide fullscreen button on mobile */
+@media (max-width: 768px) {
+  .modal-controls .fullscreen-toggle {
+    display: none;
+  }
+}
+
 .modal-controls-left button:hover,
 .modal-controls button:hover {
   background: rgba(0, 0, 0, 0.8);
