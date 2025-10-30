@@ -53,9 +53,13 @@ router.get('/settings', requireAuth, (req, res) => {
 // PUT /api/image-optimization/settings - Update optimization settings
 router.put('/settings', requireAuth, (req, res) => {
   try {
-    const { concurrency, thumbnail, modal, download } = req.body;
+    const { concurrency, images } = req.body;
     
-    // Validate input
+    // Validate input - accept either nested (images.thumbnail) or flat (thumbnail) format
+    const thumbnail = images?.thumbnail || req.body.thumbnail;
+    const modal = images?.modal || req.body.modal;
+    const download = images?.download || req.body.download;
+    
     if (!thumbnail || !modal || !download) {
       res.status(400).json({ error: 'Missing required settings' });
       return;
