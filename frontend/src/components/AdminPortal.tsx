@@ -1090,173 +1090,172 @@ export default function AdminPortal() {
               </div>
             )}
           </div>
-
-          {/* Image Optimization Section */}
-          <section className="admin-section">
-            <h2>⚙️ Image Optimization</h2>
-            <p className="section-description">Configure image quality and run optimization</p>
-            
-            <div className="optimization-settings">
-              <h3>Optimization Settings</h3>
-              
-              <div className="form-group" style={{ maxWidth: '300px', marginBottom: '2rem' }}>
-                <label>Concurrency (1-16)</label>
-                <input
-                  type="number"
-                  min="1"
-                  max="16"
-                  value={optimizationSettings.concurrency}
-                  onChange={(e) => setOptimizationSettings({
-                    ...optimizationSettings,
-                    concurrency: parseInt(e.target.value) || 4
-                  })}
-                />
-                <p className="section-description" style={{ marginTop: '0.5rem', fontSize: '0.9rem' }}>
-                  Number of images to process in parallel. Higher values are faster but use more CPU.
-                </p>
-              </div>
-              
-              <div className="optimization-grid">
-                <div className="optimization-group">
-                  <h4>Thumbnail</h4>
-                  <div className="form-group">
-                    <label>Quality (0-100)</label>
-                    <input
-                      type="number"
-                      min="0"
-                      max="100"
-                      value={optimizationSettings.images.thumbnail.quality}
-                      onChange={(e) => setOptimizationSettings({
-                        ...optimizationSettings,
-                        images: { ...optimizationSettings.images, thumbnail: { ...optimizationSettings.images.thumbnail, quality: parseInt(e.target.value) || 0 } }
-                      })}
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label>Max Dimension (px)</label>
-                    <input
-                      type="number"
-                      min="128"
-                      max="4096"
-                      value={optimizationSettings.images.thumbnail.maxDimension}
-                      onChange={(e) => setOptimizationSettings({
-                        ...optimizationSettings,
-                        images: { ...optimizationSettings.images, thumbnail: { ...optimizationSettings.images.thumbnail, maxDimension: parseInt(e.target.value) || 512 } }
-                      })}
-                    />
-                  </div>
-                </div>
-
-                <div className="optimization-group">
-                  <h4>Modal</h4>
-                  <div className="form-group">
-                    <label>Quality (0-100)</label>
-                    <input
-                      type="number"
-                      min="0"
-                      max="100"
-                      value={optimizationSettings.images.modal.quality}
-                      onChange={(e) => setOptimizationSettings({
-                        ...optimizationSettings,
-                        images: { ...optimizationSettings.images, modal: { ...optimizationSettings.images.modal, quality: parseInt(e.target.value) || 0 } }
-                      })}
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label>Max Dimension (px)</label>
-                    <input
-                      type="number"
-                      min="512"
-                      max="8192"
-                      value={optimizationSettings.images.modal.maxDimension}
-                      onChange={(e) => setOptimizationSettings({
-                        ...optimizationSettings,
-                        images: { ...optimizationSettings.images, modal: { ...optimizationSettings.images.modal, maxDimension: parseInt(e.target.value) || 2048 } }
-                      })}
-                    />
-                  </div>
-                </div>
-
-                <div className="optimization-group">
-                  <h4>Download</h4>
-                  <div className="form-group">
-                    <label>Quality (0-100)</label>
-                    <input
-                      type="number"
-                      min="0"
-                      max="100"
-                      value={optimizationSettings.images.download.quality}
-                      onChange={(e) => setOptimizationSettings({
-                        ...optimizationSettings,
-                        images: { ...optimizationSettings.images, download: { ...optimizationSettings.images.download, quality: parseInt(e.target.value) || 0 } }
-                      })}
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label>Max Dimension (px)</label>
-                    <input
-                      type="number"
-                      min="1024"
-                      max="16384"
-                      value={optimizationSettings.images.download.maxDimension}
-                      onChange={(e) => setOptimizationSettings({
-                        ...optimizationSettings,
-                        images: { ...optimizationSettings.images, download: { ...optimizationSettings.images.download, maxDimension: parseInt(e.target.value) || 4096 } }
-                      })}
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="button-group">
-                <button
-                  className="button button-primary"
-                  onClick={handleSaveOptimizationSettings}
-                  disabled={savingOptimization}
-                >
-                  {savingOptimization ? 'Saving...' : 'Save Settings'}
-                </button>
-              </div>
-            </div>
-
-            <div className="optimization-actions">
-              <h3>Run Optimization</h3>
-              <p className="section-description">
-                Regenerate all optimized versions of images, even if they already exist.
-              </p>
-              
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                <button
-                  className="button"
-                  style={{ 
-                    backgroundColor: '#dc3545', 
-                    color: 'white',
-                    border: 'none'
-                  }}
-                  onClick={() => handleRunOptimization(true)}
-                  disabled={isOptimizing}
-                >
-                  {isOptimizing ? 'Running...' : 'Force Regenerate All'}
-                </button>
-                {optimizationComplete && (
-                  <span style={{ color: '#28a745', fontSize: '1.5rem' }}>✓</span>
-                )}
-              </div>
-            </div>
-
-            {optimizationOutput.length > 0 && !optimizationComplete && (
-              <div className="optimization-output">
-                <h3>Output</h3>
-                <div className="output-console" ref={outputConsoleRef}>
-                  {optimizationOutput.map((line, index) => (
-                    <div key={index} className="output-line">{line}</div>
-                  ))}
-                </div>
-              </div>
-            )}
           </section>
-        </section>
         )}
+        {/* Image Optimization Section */}
+        <section className="admin-section">
+          <h2>⚙️ Image Optimization</h2>
+          <p className="section-description">Configure image quality and run optimization</p>
+          
+          <div className="optimization-settings">
+            <h3>Optimization Settings</h3>
+            
+            <div className="form-group" style={{ maxWidth: '300px', marginBottom: '2rem' }}>
+              <label>Concurrency (1-16)</label>
+              <input
+                type="number"
+                min="1"
+                max="16"
+                value={optimizationSettings.concurrency}
+                onChange={(e) => setOptimizationSettings({
+                  ...optimizationSettings,
+                  concurrency: parseInt(e.target.value) || 4
+                })}
+              />
+              <p className="section-description" style={{ marginTop: '0.5rem', fontSize: '0.9rem' }}>
+                Number of images to process in parallel. Higher values are faster but use more CPU.
+              </p>
+            </div>
+            
+            <div className="optimization-grid">
+              <div className="optimization-group">
+                <h4>Thumbnail</h4>
+                <div className="form-group">
+                  <label>Quality (0-100)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    max="100"
+                    value={optimizationSettings.images.thumbnail.quality}
+                    onChange={(e) => setOptimizationSettings({
+                      ...optimizationSettings,
+                      images: { ...optimizationSettings.images, thumbnail: { ...optimizationSettings.images.thumbnail, quality: parseInt(e.target.value) || 0 } }
+                    })}
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Max Dimension (px)</label>
+                  <input
+                    type="number"
+                    min="128"
+                    max="4096"
+                    value={optimizationSettings.images.thumbnail.maxDimension}
+                    onChange={(e) => setOptimizationSettings({
+                      ...optimizationSettings,
+                      images: { ...optimizationSettings.images, thumbnail: { ...optimizationSettings.images.thumbnail, maxDimension: parseInt(e.target.value) || 512 } }
+                    })}
+                  />
+                </div>
+              </div>
+
+              <div className="optimization-group">
+                <h4>Modal</h4>
+                <div className="form-group">
+                  <label>Quality (0-100)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    max="100"
+                    value={optimizationSettings.images.modal.quality}
+                    onChange={(e) => setOptimizationSettings({
+                      ...optimizationSettings,
+                      images: { ...optimizationSettings.images, modal: { ...optimizationSettings.images.modal, quality: parseInt(e.target.value) || 0 } }
+                    })}
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Max Dimension (px)</label>
+                  <input
+                    type="number"
+                    min="512"
+                    max="8192"
+                    value={optimizationSettings.images.modal.maxDimension}
+                    onChange={(e) => setOptimizationSettings({
+                      ...optimizationSettings,
+                      images: { ...optimizationSettings.images, modal: { ...optimizationSettings.images.modal, maxDimension: parseInt(e.target.value) || 2048 } }
+                    })}
+                  />
+                </div>
+              </div>
+
+              <div className="optimization-group">
+                <h4>Download</h4>
+                <div className="form-group">
+                  <label>Quality (0-100)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    max="100"
+                    value={optimizationSettings.images.download.quality}
+                    onChange={(e) => setOptimizationSettings({
+                      ...optimizationSettings,
+                      images: { ...optimizationSettings.images, download: { ...optimizationSettings.images.download, quality: parseInt(e.target.value) || 0 } }
+                    })}
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Max Dimension (px)</label>
+                  <input
+                    type="number"
+                    min="1024"
+                    max="16384"
+                    value={optimizationSettings.images.download.maxDimension}
+                    onChange={(e) => setOptimizationSettings({
+                      ...optimizationSettings,
+                      images: { ...optimizationSettings.images, download: { ...optimizationSettings.images.download, maxDimension: parseInt(e.target.value) || 4096 } }
+                    })}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="button-group">
+              <button
+                className="button button-primary"
+                onClick={handleSaveOptimizationSettings}
+                disabled={savingOptimization}
+              >
+                {savingOptimization ? 'Saving...' : 'Save Settings'}
+              </button>
+            </div>
+          </div>
+
+          <div className="optimization-actions">
+            <h3>Run Optimization</h3>
+            <p className="section-description">
+              Regenerate all optimized versions of images, even if they already exist.
+            </p>
+            
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <button
+                className="button"
+                style={{ 
+                  backgroundColor: '#dc3545', 
+                  color: 'white',
+                  border: 'none'
+                }}
+                onClick={() => handleRunOptimization(true)}
+                disabled={isOptimizing}
+              >
+                {isOptimizing ? 'Running...' : 'Force Regenerate All'}
+              </button>
+              {optimizationComplete && (
+                <span style={{ color: '#28a745', fontSize: '1.5rem' }}>✓</span>
+              )}
+            </div>
+          </div>
+
+          {optimizationOutput.length > 0 && !optimizationComplete && (
+            <div className="optimization-output">
+              <h3>Output</h3>
+              <div className="output-console" ref={outputConsoleRef}>
+                {optimizationOutput.map((line, index) => (
+                  <div key={index} className="output-line">{line}</div>
+                ))}
+              </div>
+            </div>
+          )}
+        </section>
       </div>
     </div>
   );

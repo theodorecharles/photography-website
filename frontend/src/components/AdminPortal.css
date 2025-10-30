@@ -1,3 +1,10 @@
+@font-face {
+  font-family: 'Modern DOS';
+  src: url('/fonts/ModernDOS8x16.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 .admin-portal {
   position: relative;
 }
@@ -1190,15 +1197,15 @@
 }
 
 .output-console {
-  background: #1e1e1e;
-  color: #d4d4d4;
+  background: #000000;
+  color: #00ff00;
   padding: 1rem;
   border-radius: 4px;
-  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
-  font-size: 0.875rem;
+  font-family: 'Modern DOS', 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
+  font-size: 1rem;
   max-height: 500px;
   overflow-y: auto;
-  line-height: 1.5;
+  line-height: 1.4;
 }
 
 .output-line {
