@@ -407,50 +407,105 @@ process_directory "photos"
 ) &
 PROCESSOR_PID=$!
 
-# Run animation in foreground (has terminal access)
-animate_display
-
-# Wait for processing to complete
-wait $PROCESSOR_PID
-exit_code=$?
-
-# Calculate elapsed time
-END_TIME=$(date +%s)
-ELAPSED=$((END_TIME - START_TIME))
-
-# Get final progress count and total original images
-final_progress=$(cat "$PROGRESS_FILE")
-total_original=$(cat "$STATE_DIR/total_original" 2>/dev/null || echo "0")
-
-# Calculate animation lines (same as in animate_display)
-animation_lines=$((CONCURRENCY + 2))
-
-# Move cursor up to start of animation
-printf "\033[${animation_lines}A"
-
-# Clear the animation lines
-for ((i=0; i<animation_lines; i++)); do
-    printf "\033[K\n"
-done
-
-# Move back to top
-printf "\033[${animation_lines}A"
-
-# Print ALL album completions from file (catches any that finished after animation stopped)
-album_count=0
-if [ -f "$ALBUM_TIMES_FILE" ] && [ -s "$ALBUM_TIMES_FILE" ]; then
-    while IFS= read -r album_msg; do
-        printf "\033[36m%s\033[0m\n" "$album_msg"
-        album_count=$((album_count + 1))
-    done < "$ALBUM_TIMES_FILE"
+# Check if stdout is a terminal (interactive mode)
+if [ -t 1 ]; then
+    # Run animation in foreground (has terminal access)
+    animate_display
+    
+    # Wait for processing to complete
+    wait $PROCESSOR_PID
+    exit_code=$?
+    
+    # Calculate elapsed time
+    END_TIME=$(date +%s)
+    ELAPSED=$((END_TIME - START_TIME))
+    
+    # Get final progress count and total original images
+    final_progress=$(cat "$PROGRESS_FILE")
+    total_original=$(cat "$STATE_DIR/total_original" 2>/dev/null || echo "0")
+    
+    # Calculate animation lines (same as in animate_display)
+    animation_lines=$((CONCURRENCY + 2))
+    
+    # Move cursor up to start of animation
+    printf "\033[${animation_lines}A"
+    
+    # Clear the animation lines
+    for ((i=0; i<animation_lines; i++)); do
+        printf "\033[K\n"
+    done
+    
+    # Move back to top
+    printf "\033[${animation_lines}A"
+    
+    # Print ALL album completions from file (catches any that finished after animation stopped)
+    album_count=0
+    if [ -f "$ALBUM_TIMES_FILE" ] && [ -s "$ALBUM_TIMES_FILE" ]; then
+        while IFS= read -r album_msg; do
+            printf "\033[36m%s\033[0m\n" "$album_msg"
+            album_count=$((album_count + 1))
+        done < "$ALBUM_TIMES_FILE"
+    fi
+    
+    # Print blank line between albums and Done message
+    printf "\n"
+    
+    # Print final success message
+    printf " \033[32m✓\033[0m Done!\n"
+    printf "Generated %d optimized versions of %d images in %d seconds.\n" "$final_progress" "$total_original" "$ELAPSED"
+else
+    # Non-interactive mode - simple output without animation
+    # Print progress updates by monitoring the state files
+    printf "Starting image optimization...\n"
+    
+    albums_shown=()
+    
+    while true; do
+        status=$(cat "$STATUS_FILE" 2>/dev/null || echo "running")
+        if [ "$status" = "done" ]; then
+            break
+        fi
+        
+        # Show album completions
+        if [ -f "$ALBUM_TIMES_FILE" ]; then
+            while IFS= read -r album_msg; do
+                album_name=$(echo "$album_msg" | cut -d' ' -f1)
+                # Only show if we haven't shown this album yet
+                if [[ ! " ${albums_shown[@]} " =~ " ${album_name} " ]]; then
+                    printf "%s\n" "$album_msg"
+                    albums_shown+=("$album_name")
+                fi
+            done < "$ALBUM_TIMES_FILE"
+        fi
+        
+        sleep 0.5
+    done
+    
+    # Wait for processing to complete
+    wait $PROCESSOR_PID
+    exit_code=$?
+    
+    # Calculate elapsed time
+    END_TIME=$(date +%s)
+    ELAPSED=$((END_TIME - START_TIME))
+    
+    # Get final progress count and total original images
+    final_progress=$(cat "$PROGRESS_FILE")
+    total_original=$(cat "$STATE_DIR/total_original" 2>/dev/null || echo "0")
+    
+    # Print any remaining album completions
+    if [ -f "$ALBUM_TIMES_FILE" ]; then
+        while IFS= read -r album_msg; do
+            album_name=$(echo "$album_msg" | cut -d' ' -f1)
+            if [[ ! " ${albums_shown[@]} " =~ " ${album_name} " ]]; then
+                printf "%s\n" "$album_msg"
+            fi
+        done < "$ALBUM_TIMES_FILE"
+    fi
+    
+    printf "\nDone!\n"
+    printf "Generated %d optimized versions of %d images in %d seconds.\n" "$final_progress" "$total_original" "$ELAPSED"
 fi
-
-# Print blank line between albums and Done message
-printf "\n"
-
-# Print final success message
-printf " \033[32m✓\033[0m Done!\n"
-printf "Generated %d optimized versions of %d images in %d seconds.\n" "$final_progress" "$total_original" "$ELAPSED"
 
 if [ $exit_code -ne 0 ]; then
     exit 1
