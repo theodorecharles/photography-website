@@ -1209,7 +1209,18 @@ export default function AdminPortal() {
               </div>
             </div>
 
-            <div className="button-group">
+            {optimizationOutput.length > 0 && !optimizationComplete && (
+              <div style={{ marginTop: '2rem', marginBottom: '2rem' }}>
+                <h4 style={{ color: '#f9fafb', marginBottom: '1rem' }}>Output</h4>
+                <div className="output-console" ref={outputConsoleRef}>
+                  {optimizationOutput.map((line, index) => (
+                    <div key={index} className="output-line">{line}</div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem' }}>
               <button
                 className="btn-primary"
                 onClick={handleSaveOptimizationSettings}
@@ -1217,44 +1228,32 @@ export default function AdminPortal() {
               >
                 {savingOptimization ? 'Saving...' : 'Save Settings'}
               </button>
-            </div>
-          </div>
-
-          <div className="optimization-actions">
-            <h3>Run Optimization</h3>
-            <p className="section-description">
-              Regenerate all optimized versions of images, even if they already exist.
-            </p>
-            
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-              <button
-                className="button"
-                style={{ 
-                  backgroundColor: '#dc3545', 
-                  color: 'white',
-                  border: 'none'
-                }}
-                onClick={() => handleRunOptimization(true)}
-                disabled={isOptimizing}
-              >
-                {isOptimizing ? 'Running...' : 'Force Regenerate All'}
-              </button>
-              {optimizationComplete && (
-                <span style={{ color: '#28a745', fontSize: '1.5rem' }}>✓</span>
-              )}
-            </div>
-          </div>
-
-          {optimizationOutput.length > 0 && !optimizationComplete && (
-            <div className="optimization-output">
-              <h3>Output</h3>
-              <div className="output-console" ref={outputConsoleRef}>
-                {optimizationOutput.map((line, index) => (
-                  <div key={index} className="output-line">{line}</div>
-                ))}
+              
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                <button
+                  className="button"
+                  style={{ 
+                    backgroundColor: '#dc3545', 
+                    color: 'white',
+                    border: 'none',
+                    padding: '0.75rem 1.5rem',
+                    borderRadius: '6px',
+                    fontSize: '1rem',
+                    cursor: isOptimizing ? 'not-allowed' : 'pointer',
+                    fontWeight: 600,
+                    transition: 'all 0.2s ease'
+                  }}
+                  onClick={() => handleRunOptimization(true)}
+                  disabled={isOptimizing}
+                >
+                  {isOptimizing ? 'Running...' : 'Force Regenerate All'}
+                </button>
+                {optimizationComplete && (
+                  <span style={{ color: '#28a745', fontSize: '1.5rem' }}>✓</span>
+                )}
               </div>
             </div>
-          )}
+          </div>
         </section>
       </div>
     </div>
