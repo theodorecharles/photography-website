@@ -3,7 +3,7 @@
  * Allows authenticated users to manage site settings
  */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { API_URL, cacheBustValue } from '../config';
 import './AdminPortal.css';
@@ -121,6 +121,7 @@ export default function AdminPortal() {
   const [optimizationOutput, setOptimizationOutput] = useState<string[]>([]);
   const [isOptimizing, setIsOptimizing] = useState(false);
   const [savingOptimization, setSavingOptimization] = useState(false);
+  const outputConsoleRef = useRef<HTMLDivElement>(null);
 
   // Redirect /admin to /admin/albums
   useEffect(() => {
@@ -139,6 +140,13 @@ export default function AdminPortal() {
       return () => clearTimeout(timer);
     }
   }, [message]);
+
+  // Auto-scroll output console to bottom when new content is added
+  useEffect(() => {
+    if (outputConsoleRef.current) {
+      outputConsoleRef.current.scrollTop = outputConsoleRef.current.scrollHeight;
+    }
+  }, [optimizationOutput]);
 
   useEffect(() => {
     // Check authentication status
@@ -1213,7 +1221,7 @@ export default function AdminPortal() {
             {optimizationOutput.length > 0 && (
               <div className="optimization-output">
                 <h3>Output</h3>
-                <div className="output-console">
+                <div className="output-console" ref={outputConsoleRef}>
                   {optimizationOutput.map((line, index) => (
                     <div key={index} className="output-line">{line}</div>
                   ))}
