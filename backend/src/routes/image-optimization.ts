@@ -30,10 +30,13 @@ router.get('/settings', requireAuth, (req, res) => {
     const configData = fs.readFileSync(configPath, 'utf8');
     const config = JSON.parse(configData);
     
-    const settings = config.environment?.optimization?.images || {
-      thumbnail: { quality: 60, maxDimension: 512 },
-      modal: { quality: 90, maxDimension: 2048 },
-      download: { quality: 100, maxDimension: 4096 }
+    const settings = {
+      concurrency: config.environment?.optimization?.concurrency || 4,
+      images: config.environment?.optimization?.images || {
+        thumbnail: { quality: 60, maxDimension: 512 },
+        modal: { quality: 90, maxDimension: 2048 },
+        download: { quality: 100, maxDimension: 4096 }
+      }
     };
     
     res.json(settings);
@@ -46,7 +49,7 @@ router.get('/settings', requireAuth, (req, res) => {
 // PUT /api/image-optimization/settings - Update optimization settings
 router.put('/settings', requireAuth, (req, res) => {
   try {
-    const { thumbnail, modal, download } = req.body;
+    const { concurrency, thumbnail, modal, download } = req.body;
     
     // Validate input
     if (!thumbnail || !modal || !download) {
@@ -58,12 +61,17 @@ router.put('/settings', requireAuth, (req, res) => {
     const configData = fs.readFileSync(configPath, 'utf8');
     const config = JSON.parse(configData);
     
-    // Ensure the optimization.images path exists
+    // Ensure the optimization path exists
     if (!config.environment.optimization) {
-      config.environment.optimization = { concurrency: 4 };
+      config.environment.optimization = {};
     }
     
-    // Update settings
+    // Update concurrency
+    if (concurrency !== undefined) {
+      config.environment.optimization.concurrency = Math.max(1, Math.min(16, parseInt(concurrency) || 4));
+    }
+    
+    // Update image settings
     config.environment.optimization.images = {
       thumbnail: {
         quality: Math.max(0, Math.min(100, parseInt(thumbnail.quality) || 60)),
@@ -82,7 +90,7 @@ router.put('/settings', requireAuth, (req, res) => {
     // Write back to config
     fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
     
-    res.json({ success: true, settings: config.environment.optimization.images });
+    res.json({ success: true, settings: config.environment.optimization });
   } catch (error) {
     console.error('Error updating optimization settings:', error);
     res.status(500).json({ error: 'Failed to update optimization settings' });

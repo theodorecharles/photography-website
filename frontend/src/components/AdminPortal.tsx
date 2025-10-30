@@ -49,17 +49,20 @@ interface BrandingConfig {
 }
 
 interface ImageOptimizationSettings {
-  thumbnail: {
-    quality: number;
-    maxDimension: number;
-  };
-  modal: {
-    quality: number;
-    maxDimension: number;
-  };
-  download: {
-    quality: number;
-    maxDimension: number;
+  concurrency: number;
+  images: {
+    thumbnail: {
+      quality: number;
+      maxDimension: number;
+    };
+    modal: {
+      quality: number;
+      maxDimension: number;
+    };
+    download: {
+      quality: number;
+      maxDimension: number;
+    };
   };
 }
 
@@ -114,12 +117,16 @@ export default function AdminPortal() {
   const [pendingAvatarFile, setPendingAvatarFile] = useState<File | null>(null);
   const [avatarPreviewUrl, setAvatarPreviewUrl] = useState<string | null>(null);
   const [optimizationSettings, setOptimizationSettings] = useState<ImageOptimizationSettings>({
-    thumbnail: { quality: 60, maxDimension: 512 },
-    modal: { quality: 90, maxDimension: 2048 },
-    download: { quality: 100, maxDimension: 4096 }
+    concurrency: 4,
+    images: {
+      thumbnail: { quality: 60, maxDimension: 512 },
+      modal: { quality: 90, maxDimension: 2048 },
+      download: { quality: 100, maxDimension: 4096 }
+    }
   });
   const [optimizationOutput, setOptimizationOutput] = useState<string[]>([]);
   const [isOptimizing, setIsOptimizing] = useState(false);
+  const [optimizationComplete, setOptimizationComplete] = useState(false);
   const [savingOptimization, setSavingOptimization] = useState(false);
   const outputConsoleRef = useRef<HTMLDivElement>(null);
 
@@ -303,6 +310,7 @@ export default function AdminPortal() {
 
   const handleRunOptimization = async (force: boolean = false) => {
     setIsOptimizing(true);
+    setOptimizationComplete(false);
     setOptimizationOutput([]);
     
     try {
@@ -342,7 +350,7 @@ export default function AdminPortal() {
                 setOptimizationOutput(prev => [...prev, data.message]);
               } else if (data.type === 'complete') {
                 setOptimizationOutput(prev => [...prev, '', data.message]);
-                setMessage({ type: 'success', text: 'Optimization completed!' });
+                setOptimizationComplete(true);
               } else if (data.type === 'error') {
                 setOptimizationOutput(prev => [...prev, `ERROR: ${data.message}`]);
                 setMessage({ type: 'error', text: 'Optimization failed' });
@@ -1091,6 +1099,23 @@ export default function AdminPortal() {
             <div className="optimization-settings">
               <h3>Optimization Settings</h3>
               
+              <div className="form-group" style={{ maxWidth: '300px', marginBottom: '2rem' }}>
+                <label>Concurrency (1-16)</label>
+                <input
+                  type="number"
+                  min="1"
+                  max="16"
+                  value={optimizationSettings.concurrency}
+                  onChange={(e) => setOptimizationSettings({
+                    ...optimizationSettings,
+                    concurrency: parseInt(e.target.value) || 4
+                  })}
+                />
+                <p className="section-description" style={{ marginTop: '0.5rem', fontSize: '0.9rem' }}>
+                  Number of images to process in parallel. Higher values are faster but use more CPU.
+                </p>
+              </div>
+              
               <div className="optimization-grid">
                 <div className="optimization-group">
                   <h4>Thumbnail</h4>
@@ -1100,10 +1125,10 @@ export default function AdminPortal() {
                       type="number"
                       min="0"
                       max="100"
-                      value={optimizationSettings.thumbnail.quality}
+                      value={optimizationSettings.images.thumbnail.quality}
                       onChange={(e) => setOptimizationSettings({
                         ...optimizationSettings,
-                        thumbnail: { ...optimizationSettings.thumbnail, quality: parseInt(e.target.value) || 0 }
+                        images: { ...optimizationSettings.images, thumbnail: { ...optimizationSettings.images.thumbnail, quality: parseInt(e.target.value) || 0 } }
                       })}
                     />
                   </div>
@@ -1113,10 +1138,10 @@ export default function AdminPortal() {
                       type="number"
                       min="128"
                       max="4096"
-                      value={optimizationSettings.thumbnail.maxDimension}
+                      value={optimizationSettings.images.thumbnail.maxDimension}
                       onChange={(e) => setOptimizationSettings({
                         ...optimizationSettings,
-                        thumbnail: { ...optimizationSettings.thumbnail, maxDimension: parseInt(e.target.value) || 512 }
+                        images: { ...optimizationSettings.images, thumbnail: { ...optimizationSettings.images.thumbnail, maxDimension: parseInt(e.target.value) || 512 } }
                       })}
                     />
                   </div>
@@ -1130,10 +1155,10 @@ export default function AdminPortal() {
                       type="number"
                       min="0"
                       max="100"
-                      value={optimizationSettings.modal.quality}
+                      value={optimizationSettings.images.modal.quality}
                       onChange={(e) => setOptimizationSettings({
                         ...optimizationSettings,
-                        modal: { ...optimizationSettings.modal, quality: parseInt(e.target.value) || 0 }
+                        images: { ...optimizationSettings.images, modal: { ...optimizationSettings.images.modal, quality: parseInt(e.target.value) || 0 } }
                       })}
                     />
                   </div>
@@ -1143,10 +1168,10 @@ export default function AdminPortal() {
                       type="number"
                       min="512"
                       max="8192"
-                      value={optimizationSettings.modal.maxDimension}
+                      value={optimizationSettings.images.modal.maxDimension}
                       onChange={(e) => setOptimizationSettings({
                         ...optimizationSettings,
-                        modal: { ...optimizationSettings.modal, maxDimension: parseInt(e.target.value) || 2048 }
+                        images: { ...optimizationSettings.images, modal: { ...optimizationSettings.images.modal, maxDimension: parseInt(e.target.value) || 2048 } }
                       })}
                     />
                   </div>
@@ -1160,10 +1185,10 @@ export default function AdminPortal() {
                       type="number"
                       min="0"
                       max="100"
-                      value={optimizationSettings.download.quality}
+                      value={optimizationSettings.images.download.quality}
                       onChange={(e) => setOptimizationSettings({
                         ...optimizationSettings,
-                        download: { ...optimizationSettings.download, quality: parseInt(e.target.value) || 0 }
+                        images: { ...optimizationSettings.images, download: { ...optimizationSettings.images.download, quality: parseInt(e.target.value) || 0 } }
                       })}
                     />
                   </div>
@@ -1173,10 +1198,10 @@ export default function AdminPortal() {
                       type="number"
                       min="1024"
                       max="16384"
-                      value={optimizationSettings.download.maxDimension}
+                      value={optimizationSettings.images.download.maxDimension}
                       onChange={(e) => setOptimizationSettings({
                         ...optimizationSettings,
-                        download: { ...optimizationSettings.download, maxDimension: parseInt(e.target.value) || 4096 }
+                        images: { ...optimizationSettings.images, download: { ...optimizationSettings.images.download, maxDimension: parseInt(e.target.value) || 4096 } }
                       })}
                     />
                   </div>
@@ -1197,28 +1222,29 @@ export default function AdminPortal() {
             <div className="optimization-actions">
               <h3>Run Optimization</h3>
               <p className="section-description">
-                Generate optimized versions of images. Use "Force Regenerate" to regenerate all images even if they already exist.
+                Regenerate all optimized versions of images, even if they already exist.
               </p>
               
-              <div className="button-group">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                 <button
-                  className="button button-secondary"
-                  onClick={() => handleRunOptimization(false)}
-                  disabled={isOptimizing}
-                >
-                  {isOptimizing ? 'Running...' : 'Optimize New Images'}
-                </button>
-                <button
-                  className="button button-warning"
+                  className="button"
+                  style={{ 
+                    backgroundColor: '#dc3545', 
+                    color: 'white',
+                    border: 'none'
+                  }}
                   onClick={() => handleRunOptimization(true)}
                   disabled={isOptimizing}
                 >
                   {isOptimizing ? 'Running...' : 'Force Regenerate All'}
                 </button>
+                {optimizationComplete && (
+                  <span style={{ color: '#28a745', fontSize: '1.5rem' }}>✓</span>
+                )}
               </div>
             </div>
 
-            {optimizationOutput.length > 0 && (
+            {optimizationOutput.length > 0 && !optimizationComplete && (
               <div className="optimization-output">
                 <h3>Output</h3>
                 <div className="output-console" ref={outputConsoleRef}>
