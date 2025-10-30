@@ -139,11 +139,11 @@ function Navigation({
       
       if (!clickedInside) {
         if (isDropdownOpen) {
-          trackDropdownClose('albums', 'click_outside');
+          trackDropdownClose('albums', 'outside_click');
           setIsDropdownOpen(false);
         }
         if (isExternalOpen) {
-          trackDropdownClose('links', 'click_outside');
+          trackDropdownClose('links', 'outside_click');
           setIsExternalOpen(false);
         }
       }
