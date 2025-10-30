@@ -1,3 +1,10 @@
+@font-face {
+  font-family: 'Modern DOS';
+  src: url('/fonts/ModernDOS8x16.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 .admin-portal {
   position: relative;
 }
@@ -1124,6 +1131,157 @@
 @keyframes spin {
   to {
     transform: rotate(360deg);
+  }
+}
+
+/* Optimization section */
+.optimization-settings {
+  background: linear-gradient(135deg, #2d2d2d 0%, #262626 100%);
+  border: 1px solid #535353;
+  border-radius: 12px;
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  transition: all 0.2s ease;
+  overflow: visible;
+}
+
+.optimization-settings:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  border-color: #4b5563;
+}
+
+.optimization-settings h3 {
+  margin: 0 0 1rem 0;
+  font-size: 1.15rem;
+  color: #f9fafb;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+.optimization-settings input[type="number"],
+.optimization-settings label {
+  color: #d1d5db;
+}
+
+.optimization-settings input[type="number"] {
+  padding: 0.75rem 1rem;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  color: #fff;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.optimization-settings input[type="number"]:focus {
+  outline: none;
+  border-color: #4ade80;
+  box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.1);
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.optimization-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+  margin-bottom: 1.5rem;
+}
+
+.optimization-group {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 1.5rem;
+  border-radius: 8px;
+}
+
+.optimization-group h4 {
+  color: #f9fafb;
+  margin: 0 0 1rem 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.optimization-group .form-group {
+  margin-bottom: 1rem;
+}
+
+.optimization-group .form-group:last-child {
+  margin-bottom: 0;
+}
+
+.optimization-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #e5e7eb;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.optimization-group input[type="number"] {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  color: #fff;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.optimization-group input[type="number"]:focus {
+  outline: none;
+  border-color: #4ade80;
+  box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.1);
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.optimization-group input[type="number"]::placeholder {
+  color: #6b7280;
+}
+
+.output-console {
+  background: #000000;
+  color: #d1d5db;
+  padding: 1rem;
+  border-radius: 4px;
+  font-family: 'Modern DOS', 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
+  font-size: 1rem;
+  max-height: 500px;
+  overflow-y: auto;
+  line-height: 1.4;
+}
+
+.output-line {
+  margin-bottom: 0.25rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.output-line:empty {
+  height: 0.25rem;
+}
+
+.button-warning {
+  background-color: #f59e0b;
+  color: white;
+}
+
+.button-warning:hover:not(:disabled) {
+  background-color: #d97706;
+}
+
+.button-warning:disabled {
+  background-color: #fbbf24;
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .optimization-grid {
+    grid-template-columns: 1fr;
   }
 }
 
