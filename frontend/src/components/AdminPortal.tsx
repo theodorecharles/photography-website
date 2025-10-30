@@ -124,6 +124,15 @@ export default function AdminPortal() {
       download: { quality: 100, maxDimension: 4096 }
     }
   });
+  const [optimizationErrors, setOptimizationErrors] = useState<{
+    concurrency?: string;
+    thumbnailQuality?: string;
+    thumbnailMaxDimension?: string;
+    modalQuality?: string;
+    modalMaxDimension?: string;
+    downloadQuality?: string;
+    downloadMaxDimension?: string;
+  }>({});
   const [optimizationOutput, setOptimizationOutput] = useState<string[]>([]);
   const [isOptimizing, setIsOptimizing] = useState(false);
   const [optimizationComplete, setOptimizationComplete] = useState(false);
@@ -283,7 +292,69 @@ export default function AdminPortal() {
     }
   };
 
+  const validateOptimizationSettings = () => {
+    const errors: typeof optimizationErrors = {};
+    
+    // Validate concurrency
+    if (optimizationSettings.concurrency === null || optimizationSettings.concurrency === undefined || optimizationSettings.concurrency === '' as any) {
+      errors.concurrency = 'Value required';
+    } else if (optimizationSettings.concurrency < 1 || optimizationSettings.concurrency > 16) {
+      errors.concurrency = 'Must be between 1 and 16';
+    }
+    
+    // Validate thumbnail quality
+    if (optimizationSettings.images.thumbnail.quality === null || optimizationSettings.images.thumbnail.quality === undefined || optimizationSettings.images.thumbnail.quality === '' as any) {
+      errors.thumbnailQuality = 'Value required';
+    } else if (optimizationSettings.images.thumbnail.quality < 0 || optimizationSettings.images.thumbnail.quality > 100) {
+      errors.thumbnailQuality = 'Must be between 0 and 100';
+    }
+    
+    // Validate thumbnail maxDimension
+    if (optimizationSettings.images.thumbnail.maxDimension === null || optimizationSettings.images.thumbnail.maxDimension === undefined || optimizationSettings.images.thumbnail.maxDimension === '' as any) {
+      errors.thumbnailMaxDimension = 'Value required';
+    } else if (optimizationSettings.images.thumbnail.maxDimension < 128 || optimizationSettings.images.thumbnail.maxDimension > 4096) {
+      errors.thumbnailMaxDimension = 'Must be between 128 and 4096';
+    }
+    
+    // Validate modal quality
+    if (optimizationSettings.images.modal.quality === null || optimizationSettings.images.modal.quality === undefined || optimizationSettings.images.modal.quality === '' as any) {
+      errors.modalQuality = 'Value required';
+    } else if (optimizationSettings.images.modal.quality < 0 || optimizationSettings.images.modal.quality > 100) {
+      errors.modalQuality = 'Must be between 0 and 100';
+    }
+    
+    // Validate modal maxDimension
+    if (optimizationSettings.images.modal.maxDimension === null || optimizationSettings.images.modal.maxDimension === undefined || optimizationSettings.images.modal.maxDimension === '' as any) {
+      errors.modalMaxDimension = 'Value required';
+    } else if (optimizationSettings.images.modal.maxDimension < 512 || optimizationSettings.images.modal.maxDimension > 8192) {
+      errors.modalMaxDimension = 'Must be between 512 and 8192';
+    }
+    
+    // Validate download quality
+    if (optimizationSettings.images.download.quality === null || optimizationSettings.images.download.quality === undefined || optimizationSettings.images.download.quality === '' as any) {
+      errors.downloadQuality = 'Value required';
+    } else if (optimizationSettings.images.download.quality < 0 || optimizationSettings.images.download.quality > 100) {
+      errors.downloadQuality = 'Must be between 0 and 100';
+    }
+    
+    // Validate download maxDimension
+    if (optimizationSettings.images.download.maxDimension === null || optimizationSettings.images.download.maxDimension === undefined || optimizationSettings.images.download.maxDimension === '' as any) {
+      errors.downloadMaxDimension = 'Value required';
+    } else if (optimizationSettings.images.download.maxDimension < 1024 || optimizationSettings.images.download.maxDimension > 16384) {
+      errors.downloadMaxDimension = 'Must be between 1024 and 16384';
+    }
+    
+    setOptimizationErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
   const handleSaveOptimizationSettings = async () => {
+    // Validate before saving
+    if (!validateOptimizationSettings()) {
+      setMessage({ type: 'error', text: 'Please fix validation errors before saving' });
+      return;
+    }
+    
     setSavingOptimization(true);
     try {
       const res = await fetch(`${API_URL}/api/image-optimization/settings`, {
@@ -297,6 +368,7 @@ export default function AdminPortal() {
       
       if (res.ok) {
         setMessage({ type: 'success', text: 'Optimization settings saved successfully' });
+        setOptimizationErrors({});
       } else {
         setMessage({ type: 'error', text: 'Failed to save optimization settings' });
       }
@@ -1103,12 +1175,28 @@ export default function AdminPortal() {
                 min="1"
                 max="16"
                 value={optimizationSettings.concurrency}
-                onChange={(e) => setOptimizationSettings({
-                  ...optimizationSettings,
-                  concurrency: parseInt(e.target.value) || 4
-                })}
+                onChange={(e) => {
+                  const value = e.target.value === '' ? '' : parseInt(e.target.value);
+                  setOptimizationSettings({
+                    ...optimizationSettings,
+                    concurrency: value as any
+                  });
+                  // Clear error when user types
+                  if (optimizationErrors.concurrency) {
+                    setOptimizationErrors({ ...optimizationErrors, concurrency: undefined });
+                  }
+                }}
+                onFocus={(e) => e.target.select()}
                 className="branding-input"
+                style={{
+                  borderColor: optimizationErrors.concurrency ? '#dc3545' : undefined
+                }}
               />
+              {optimizationErrors.concurrency && (
+                <p style={{ color: '#dc3545', fontSize: '0.85rem', marginTop: '0.25rem' }}>
+                  {optimizationErrors.concurrency}
+                </p>
+              )}
               <p className="section-description" style={{ marginTop: '0.5rem', fontSize: '0.9rem' }}>
                 Number of images to process in parallel. Higher values are faster but use more CPU.
               </p>
@@ -1124,11 +1212,26 @@ export default function AdminPortal() {
                     min="0"
                     max="100"
                     value={optimizationSettings.images.thumbnail.quality}
-                    onChange={(e) => setOptimizationSettings({
-                      ...optimizationSettings,
-                      images: { ...optimizationSettings.images, thumbnail: { ...optimizationSettings.images.thumbnail, quality: parseInt(e.target.value) || 0 } }
-                    })}
+                    onChange={(e) => {
+                      const value = e.target.value === '' ? '' : parseInt(e.target.value);
+                      setOptimizationSettings({
+                        ...optimizationSettings,
+                        images: { ...optimizationSettings.images, thumbnail: { ...optimizationSettings.images.thumbnail, quality: value as any } }
+                      });
+                      if (optimizationErrors.thumbnailQuality) {
+                        setOptimizationErrors({ ...optimizationErrors, thumbnailQuality: undefined });
+                      }
+                    }}
+                    onFocus={(e) => e.target.select()}
+                    style={{
+                      borderColor: optimizationErrors.thumbnailQuality ? '#dc3545' : undefined
+                    }}
                   />
+                  {optimizationErrors.thumbnailQuality && (
+                    <p style={{ color: '#dc3545', fontSize: '0.85rem', marginTop: '0.25rem' }}>
+                      {optimizationErrors.thumbnailQuality}
+                    </p>
+                  )}
                 </div>
                 <div className="form-group">
                   <label>Max Dimension (px)</label>
@@ -1137,11 +1240,26 @@ export default function AdminPortal() {
                     min="128"
                     max="4096"
                     value={optimizationSettings.images.thumbnail.maxDimension}
-                    onChange={(e) => setOptimizationSettings({
-                      ...optimizationSettings,
-                      images: { ...optimizationSettings.images, thumbnail: { ...optimizationSettings.images.thumbnail, maxDimension: parseInt(e.target.value) || 512 } }
-                    })}
+                    onChange={(e) => {
+                      const value = e.target.value === '' ? '' : parseInt(e.target.value);
+                      setOptimizationSettings({
+                        ...optimizationSettings,
+                        images: { ...optimizationSettings.images, thumbnail: { ...optimizationSettings.images.thumbnail, maxDimension: value as any } }
+                      });
+                      if (optimizationErrors.thumbnailMaxDimension) {
+                        setOptimizationErrors({ ...optimizationErrors, thumbnailMaxDimension: undefined });
+                      }
+                    }}
+                    onFocus={(e) => e.target.select()}
+                    style={{
+                      borderColor: optimizationErrors.thumbnailMaxDimension ? '#dc3545' : undefined
+                    }}
                   />
+                  {optimizationErrors.thumbnailMaxDimension && (
+                    <p style={{ color: '#dc3545', fontSize: '0.85rem', marginTop: '0.25rem' }}>
+                      {optimizationErrors.thumbnailMaxDimension}
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -1154,11 +1272,26 @@ export default function AdminPortal() {
                     min="0"
                     max="100"
                     value={optimizationSettings.images.modal.quality}
-                    onChange={(e) => setOptimizationSettings({
-                      ...optimizationSettings,
-                      images: { ...optimizationSettings.images, modal: { ...optimizationSettings.images.modal, quality: parseInt(e.target.value) || 0 } }
-                    })}
+                    onChange={(e) => {
+                      const value = e.target.value === '' ? '' : parseInt(e.target.value);
+                      setOptimizationSettings({
+                        ...optimizationSettings,
+                        images: { ...optimizationSettings.images, modal: { ...optimizationSettings.images.modal, quality: value as any } }
+                      });
+                      if (optimizationErrors.modalQuality) {
+                        setOptimizationErrors({ ...optimizationErrors, modalQuality: undefined });
+                      }
+                    }}
+                    onFocus={(e) => e.target.select()}
+                    style={{
+                      borderColor: optimizationErrors.modalQuality ? '#dc3545' : undefined
+                    }}
                   />
+                  {optimizationErrors.modalQuality && (
+                    <p style={{ color: '#dc3545', fontSize: '0.85rem', marginTop: '0.25rem' }}>
+                      {optimizationErrors.modalQuality}
+                    </p>
+                  )}
                 </div>
                 <div className="form-group">
                   <label>Max Dimension (px)</label>
@@ -1167,11 +1300,26 @@ export default function AdminPortal() {
                     min="512"
                     max="8192"
                     value={optimizationSettings.images.modal.maxDimension}
-                    onChange={(e) => setOptimizationSettings({
-                      ...optimizationSettings,
-                      images: { ...optimizationSettings.images, modal: { ...optimizationSettings.images.modal, maxDimension: parseInt(e.target.value) || 2048 } }
-                    })}
+                    onChange={(e) => {
+                      const value = e.target.value === '' ? '' : parseInt(e.target.value);
+                      setOptimizationSettings({
+                        ...optimizationSettings,
+                        images: { ...optimizationSettings.images, modal: { ...optimizationSettings.images.modal, maxDimension: value as any } }
+                      });
+                      if (optimizationErrors.modalMaxDimension) {
+                        setOptimizationErrors({ ...optimizationErrors, modalMaxDimension: undefined });
+                      }
+                    }}
+                    onFocus={(e) => e.target.select()}
+                    style={{
+                      borderColor: optimizationErrors.modalMaxDimension ? '#dc3545' : undefined
+                    }}
                   />
+                  {optimizationErrors.modalMaxDimension && (
+                    <p style={{ color: '#dc3545', fontSize: '0.85rem', marginTop: '0.25rem' }}>
+                      {optimizationErrors.modalMaxDimension}
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -1184,11 +1332,26 @@ export default function AdminPortal() {
                     min="0"
                     max="100"
                     value={optimizationSettings.images.download.quality}
-                    onChange={(e) => setOptimizationSettings({
-                      ...optimizationSettings,
-                      images: { ...optimizationSettings.images, download: { ...optimizationSettings.images.download, quality: parseInt(e.target.value) || 0 } }
-                    })}
+                    onChange={(e) => {
+                      const value = e.target.value === '' ? '' : parseInt(e.target.value);
+                      setOptimizationSettings({
+                        ...optimizationSettings,
+                        images: { ...optimizationSettings.images, download: { ...optimizationSettings.images.download, quality: value as any } }
+                      });
+                      if (optimizationErrors.downloadQuality) {
+                        setOptimizationErrors({ ...optimizationErrors, downloadQuality: undefined });
+                      }
+                    }}
+                    onFocus={(e) => e.target.select()}
+                    style={{
+                      borderColor: optimizationErrors.downloadQuality ? '#dc3545' : undefined
+                    }}
                   />
+                  {optimizationErrors.downloadQuality && (
+                    <p style={{ color: '#dc3545', fontSize: '0.85rem', marginTop: '0.25rem' }}>
+                      {optimizationErrors.downloadQuality}
+                    </p>
+                  )}
                 </div>
                 <div className="form-group">
                   <label>Max Dimension (px)</label>
@@ -1197,11 +1360,26 @@ export default function AdminPortal() {
                     min="1024"
                     max="16384"
                     value={optimizationSettings.images.download.maxDimension}
-                    onChange={(e) => setOptimizationSettings({
-                      ...optimizationSettings,
-                      images: { ...optimizationSettings.images, download: { ...optimizationSettings.images.download, maxDimension: parseInt(e.target.value) || 4096 } }
-                    })}
+                    onChange={(e) => {
+                      const value = e.target.value === '' ? '' : parseInt(e.target.value);
+                      setOptimizationSettings({
+                        ...optimizationSettings,
+                        images: { ...optimizationSettings.images, download: { ...optimizationSettings.images.download, maxDimension: value as any } }
+                      });
+                      if (optimizationErrors.downloadMaxDimension) {
+                        setOptimizationErrors({ ...optimizationErrors, downloadMaxDimension: undefined });
+                      }
+                    }}
+                    onFocus={(e) => e.target.select()}
+                    style={{
+                      borderColor: optimizationErrors.downloadMaxDimension ? '#dc3545' : undefined
+                    }}
                   />
+                  {optimizationErrors.downloadMaxDimension && (
+                    <p style={{ color: '#dc3545', fontSize: '0.85rem', marginTop: '0.25rem' }}>
+                      {optimizationErrors.downloadMaxDimension}
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
