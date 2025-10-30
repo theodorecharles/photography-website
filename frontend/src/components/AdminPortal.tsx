@@ -295,7 +295,7 @@ export default function AdminPortal() {
 
   const handleRunOptimization = async (force: boolean = false) => {
     setIsOptimizing(true);
-    setOptimizationOutput(['Starting optimization...']);
+    setOptimizationOutput([]);
     
     try {
       const res = await fetch(`${API_URL}/api/image-optimization/optimize`, {
