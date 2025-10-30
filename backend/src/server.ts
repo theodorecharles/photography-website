@@ -37,6 +37,7 @@ import yearRouter from "./routes/year.ts";
 import authRouter from "./routes/auth.ts";
 import externalLinksRouter from "./routes/external-links.ts";
 import brandingRouter from "./routes/branding.ts";
+import imageOptimizationRouter from "./routes/image-optimization.ts";
 
 // Get the current directory path for ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -265,6 +266,7 @@ app.use('/api/auth', authRouter);
 app.use('/api/external-links', externalLinksRouter);
 app.use('/api/branding', brandingRouter);
 app.use('/api/metrics', metricsRouter);
+app.use('/api/image-optimization', imageOptimizationRouter);
 app.use(albumsRouter);
 app.use('/api/albums', albumManagementRouter);
 app.use(externalPagesRouter);

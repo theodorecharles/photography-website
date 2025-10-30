@@ -603,6 +603,7 @@ function App() {
             <Route path="/admin/links" element={<AdminPortal />} />
             <Route path="/admin/branding" element={<AdminPortal />} />
             <Route path="/admin/metrics" element={<AdminPortal />} />
+            <Route path="/admin/optimization" element={<AdminPortal />} />
             <Route path="/auth/error" element={
               <>
                 <SEO 
