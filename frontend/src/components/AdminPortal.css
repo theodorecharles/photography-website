@@ -1135,9 +1135,7 @@
 }
 
 /* Optimization section */
-.optimization-settings,
-.optimization-actions,
-.optimization-output {
+.optimization-settings {
   background: linear-gradient(135deg, #2d2d2d 0%, #262626 100%);
   border: 1px solid #535353;
   border-radius: 12px;
@@ -1148,16 +1146,12 @@
   overflow: visible;
 }
 
-.optimization-settings:hover,
-.optimization-actions:hover,
-.optimization-output:hover {
+.optimization-settings:hover {
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
   border-color: #4b5563;
 }
 
-.optimization-settings h3,
-.optimization-actions h3,
-.optimization-output h3 {
+.optimization-settings h3 {
   margin: 0 0 1rem 0;
   font-size: 1.15rem;
   color: #f9fafb;
