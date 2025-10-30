@@ -7,8 +7,12 @@ import { spawn } from "child_process";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import { csrfProtection } from "../security.js";
 
 const router = express.Router();
+
+// Apply CSRF protection to all routes in this router
+router.use(csrfProtection);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
