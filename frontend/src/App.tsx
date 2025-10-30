@@ -255,8 +255,6 @@ function Navigation({
                 <a
                   key={link.url}
                   href={link.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
                   className="nav-link"
                   onClick={() => {
                     trackDropdownClose('links', 'navigation');
@@ -297,8 +295,6 @@ function Navigation({
               <a
                 key={link.title}
                 href={link.url}
-                target="_blank"
-                rel="noopener noreferrer"
                 className="nav-link external"
                 onClick={() => {
                   setIsMenuOpen(false);
