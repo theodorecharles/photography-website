@@ -111,8 +111,6 @@ body.modal-open {
   max-height: 80vh;
   object-fit: contain;
   display: block;
-  width: auto;
-  height: auto;
 }
 
 .modal-placeholder {
@@ -123,8 +121,8 @@ body.modal-open {
   max-width: 90vw;
   max-height: 80vh;
   object-fit: contain;
-  width: auto;
-  height: auto;
+  width: 100%;
+  height: 100%;
   pointer-events: none;
 }
 
