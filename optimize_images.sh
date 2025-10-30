@@ -454,12 +454,40 @@ if [ -t 1 ]; then
     printf " \033[32m✓\033[0m Done!\n"
     printf "Generated %d optimized versions of %d images in %d seconds.\n" "$final_progress" "$total_original" "$ELAPSED"
 else
-    # Non-interactive mode - simple output without animation
-    # Wait for processing to complete
+    # Non-interactive mode - print updates as they happen
     printf "Starting image optimization...\n"
     
+    albums_shown=()
+    
+    # Monitor for album completions while process is running
+    while kill -0 $PROCESSOR_PID 2>/dev/null; do
+        # Check for new album completions
+        if [ -f "$ALBUM_TIMES_FILE" ]; then
+            while IFS= read -r album_msg; do
+                album_name=$(echo "$album_msg" | cut -d' ' -f1)
+                # Only show if we haven't shown this album yet
+                if [[ ! " ${albums_shown[*]+"${albums_shown[*]}"} " =~ " ${album_name} " ]]; then
+                    printf "%s\n" "$album_msg"
+                    albums_shown+=("$album_name")
+                fi
+            done < "$ALBUM_TIMES_FILE"
+        fi
+        sleep 0.1
+    done
+    
+    # Wait for process to complete and get exit code
     wait $PROCESSOR_PID
     exit_code=$?
+    
+    # Print any final album completions
+    if [ -f "$ALBUM_TIMES_FILE" ]; then
+        while IFS= read -r album_msg; do
+            album_name=$(echo "$album_msg" | cut -d' ' -f1)
+            if [[ ! " ${albums_shown[*]+"${albums_shown[*]}"} " =~ " ${album_name} " ]]; then
+                printf "%s\n" "$album_msg"
+            fi
+        done < "$ALBUM_TIMES_FILE"
+    fi
     
     # Calculate elapsed time
     END_TIME=$(date +%s)
@@ -468,13 +496,6 @@ else
     # Get final progress count and total original images
     final_progress=$(cat "$PROGRESS_FILE")
     total_original=$(cat "$STATE_DIR/total_original" 2>/dev/null || echo "0")
-    
-    # Print all album completions
-    if [ -f "$ALBUM_TIMES_FILE" ]; then
-        while IFS= read -r album_msg; do
-            printf "%s\n" "$album_msg"
-        done < "$ALBUM_TIMES_FILE"
-    fi
     
     printf "\nDone!\n"
     printf "Generated %d optimized versions of %d images in %d seconds.\n" "$final_progress" "$total_original" "$ELAPSED"
