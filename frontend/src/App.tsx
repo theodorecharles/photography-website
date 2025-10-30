@@ -125,26 +125,38 @@ function Navigation({
     }
   };
 
-  // Handle mouse leave events for both dropdowns
-  const handleDropdownLeave = () => {
-    // Use a small delay to allow mouse to move into the dropdown menu
-    setTimeout(() => {
-      // Check if mouse is still not over any dropdown-related elements
-      const dropdowns = document.querySelectorAll('.dropdown-container');
-      let mouseOverDropdown = false;
+  // Handle clicks outside the dropdowns to close them
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const dropdownContainers = document.querySelectorAll('.dropdown-container');
+      let clickedInside = false;
       
-      dropdowns.forEach((dropdown) => {
-        if (dropdown.matches(':hover')) {
-          mouseOverDropdown = true;
+      dropdownContainers.forEach((container) => {
+        if (container.contains(event.target as Node)) {
+          clickedInside = true;
         }
       });
       
-      if (!mouseOverDropdown) {
-        setIsDropdownOpen(false);
-        setIsExternalOpen(false);
+      if (!clickedInside) {
+        if (isDropdownOpen) {
+          trackDropdownClose('albums', 'click_outside');
+          setIsDropdownOpen(false);
+        }
+        if (isExternalOpen) {
+          trackDropdownClose('links', 'click_outside');
+          setIsExternalOpen(false);
+        }
       }
-    }, 100);
-  };
+    };
+
+    if (isDropdownOpen || isExternalOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isDropdownOpen, isExternalOpen]);
 
   // Handle click events for Albums dropdown
   const handleAlbumsClick = () => {
@@ -186,7 +198,6 @@ function Navigation({
           <div
             className="dropdown-container"
             onMouseEnter={handleAlbumsHover}
-            onMouseLeave={handleDropdownLeave}
           >
             <button className="nav-link" onClick={handleAlbumsClick}>
               Albums
@@ -230,7 +241,6 @@ function Navigation({
           <div
             className="dropdown-container"
             onMouseEnter={handleLinksHover}
-            onMouseLeave={handleDropdownLeave}
           >
             <button className="nav-link" onClick={handleLinksClick}>
               Links
