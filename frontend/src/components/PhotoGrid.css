@@ -189,7 +189,6 @@ body.modal-open {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
   outline: none;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   min-width: 40px;
@@ -210,7 +209,6 @@ body.modal-open {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
   outline: none;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   width: 38px;
