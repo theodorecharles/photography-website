@@ -1211,7 +1211,7 @@ export default function AdminPortal() {
 
             <div className="button-group">
               <button
-                className="button button-primary"
+                className="btn-primary"
                 onClick={handleSaveOptimizationSettings}
                 disabled={savingOptimization}
               >
