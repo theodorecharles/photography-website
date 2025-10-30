@@ -471,7 +471,7 @@ else
             while IFS= read -r album_msg; do
                 album_name=$(echo "$album_msg" | cut -d' ' -f1)
                 # Only show if we haven't shown this album yet
-                if [[ ! " ${albums_shown[@]} " =~ " ${album_name} " ]]; then
+                if [[ ! " ${albums_shown[*]+"${albums_shown[*]}"} " =~ " ${album_name} " ]]; then
                     printf "%s\n" "$album_msg"
                     albums_shown+=("$album_name")
                 fi
@@ -497,7 +497,7 @@ else
     if [ -f "$ALBUM_TIMES_FILE" ]; then
         while IFS= read -r album_msg; do
             album_name=$(echo "$album_msg" | cut -d' ' -f1)
-            if [[ ! " ${albums_shown[@]} " =~ " ${album_name} " ]]; then
+            if [[ ! " ${albums_shown[*]+"${albums_shown[*]}"} " =~ " ${album_name} " ]]; then
                 printf "%s\n" "$album_msg"
             fi
         done < "$ALBUM_TIMES_FILE"
