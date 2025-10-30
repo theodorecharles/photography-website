@@ -13,7 +13,21 @@
       ]
     },
     "optimization": {
-      "concurrency": 4
+      "concurrency": 4,
+      "images": {
+        "thumbnail": {
+          "quality": 60,
+          "maxDimension": 512
+        },
+        "modal": {
+          "quality": 90,
+          "maxDimension": 2048
+        },
+        "download": {
+          "quality": 100,
+          "maxDimension": 4096
+        }
+      }
     },
     "security": {
       "allowedHosts": ["localhost:3000", "localhost:5173"],
