@@ -1138,7 +1138,54 @@
 .optimization-settings,
 .optimization-actions,
 .optimization-output {
-  margin-bottom: 2rem;
+  background: linear-gradient(135deg, #2d2d2d 0%, #262626 100%);
+  border: 1px solid #535353;
+  border-radius: 12px;
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  transition: all 0.2s ease;
+  overflow: visible;
+}
+
+.optimization-settings:hover,
+.optimization-actions:hover,
+.optimization-output:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  border-color: #4b5563;
+}
+
+.optimization-settings h3,
+.optimization-actions h3,
+.optimization-output h3 {
+  margin: 0 0 1rem 0;
+  font-size: 1.15rem;
+  color: #f9fafb;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+.optimization-settings input[type="number"],
+.optimization-settings label {
+  color: #d1d5db;
+}
+
+.optimization-settings input[type="number"] {
+  padding: 0.75rem 1rem;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  color: #fff;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.optimization-settings input[type="number"]:focus {
+  outline: none;
+  border-color: #4ade80;
+  box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.1);
+  background: rgba(0, 0, 0, 0.5);
 }
 
 .optimization-grid {
@@ -1149,15 +1196,17 @@
 }
 
 .optimization-group {
-  background: #f8f9fa;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   padding: 1.5rem;
   border-radius: 8px;
 }
 
 .optimization-group h4 {
+  color: #f9fafb;
   margin: 0 0 1rem 0;
-  color: #2d3748;
-  font-size: 1.1rem;
+  font-size: 1rem;
+  font-weight: 600;
 }
 
 .optimization-group .form-group {
@@ -1171,29 +1220,32 @@
 .optimization-group label {
   display: block;
   margin-bottom: 0.5rem;
-  color: #4a5568;
+  color: #d1d5db;
   font-size: 0.9rem;
   font-weight: 500;
 }
 
 .optimization-group input[type="number"] {
   width: 100%;
-  padding: 0.75rem;
-  border: 1px solid #cbd5e0;
-  border-radius: 4px;
+  padding: 0.75rem 1rem;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  color: #fff;
   font-size: 1rem;
+  transition: all 0.2s ease;
+  font-family: inherit;
 }
 
 .optimization-group input[type="number"]:focus {
   outline: none;
-  border-color: var(--primary-color, #4ade80);
+  border-color: #4ade80;
   box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.1);
+  background: rgba(0, 0, 0, 0.5);
 }
 
-.optimization-actions {
-  padding: 1.5rem;
-  background: #f8f9fa;
-  border-radius: 8px;
+.optimization-group input[type="number"]::placeholder {
+  color: #6b7280;
 }
 
 .output-console {
