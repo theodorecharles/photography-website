@@ -542,8 +542,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
           style={{
             transform: columnTransforms[columnIndex] 
               ? `translateY(${columnTransforms[columnIndex]}px)` 
-              : 'none',
-            transition: 'transform 0.1s ease-out'
+              : 'none'
           }}
         >
           {column.map((photo) => (
