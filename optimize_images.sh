@@ -455,33 +455,9 @@ if [ -t 1 ]; then
     printf "Generated %d optimized versions of %d images in %d seconds.\n" "$final_progress" "$total_original" "$ELAPSED"
 else
     # Non-interactive mode - simple output without animation
-    # Print progress updates by monitoring the state files
+    # Wait for processing to complete
     printf "Starting image optimization...\n"
     
-    albums_shown=()
-    
-    while true; do
-        status=$(cat "$STATUS_FILE" 2>/dev/null || echo "running")
-        if [ "$status" = "done" ]; then
-            break
-        fi
-        
-        # Show album completions
-        if [ -f "$ALBUM_TIMES_FILE" ]; then
-            while IFS= read -r album_msg; do
-                album_name=$(echo "$album_msg" | cut -d' ' -f1)
-                # Only show if we haven't shown this album yet
-                if [[ ! " ${albums_shown[*]+"${albums_shown[*]}"} " =~ " ${album_name} " ]]; then
-                    printf "%s\n" "$album_msg"
-                    albums_shown+=("$album_name")
-                fi
-            done < "$ALBUM_TIMES_FILE"
-        fi
-        
-        sleep 0.5
-    done
-    
-    # Wait for processing to complete
     wait $PROCESSOR_PID
     exit_code=$?
     
@@ -493,13 +469,10 @@ else
     final_progress=$(cat "$PROGRESS_FILE")
     total_original=$(cat "$STATE_DIR/total_original" 2>/dev/null || echo "0")
     
-    # Print any remaining album completions
+    # Print all album completions
     if [ -f "$ALBUM_TIMES_FILE" ]; then
         while IFS= read -r album_msg; do
-            album_name=$(echo "$album_msg" | cut -d' ' -f1)
-            if [[ ! " ${albums_shown[*]+"${albums_shown[*]}"} " =~ " ${album_name} " ]]; then
-                printf "%s\n" "$album_msg"
-            fi
+            printf "%s\n" "$album_msg"
         done < "$ALBUM_TIMES_FILE"
     fi
     
