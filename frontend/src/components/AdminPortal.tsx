@@ -1098,7 +1098,7 @@ export default function AdminPortal() {
           <p className="section-description">Configure image quality and run optimization</p>
           
           <div className="form-group" style={{ maxWidth: '300px', marginBottom: '2rem' }}>
-              <label>Concurrency (1-16)</label>
+              <label className="branding-label">Concurrency (1-16)</label>
               <input
                 type="number"
                 min="1"
@@ -1108,6 +1108,7 @@ export default function AdminPortal() {
                   ...optimizationSettings,
                   concurrency: parseInt(e.target.value) || 4
                 })}
+                className="branding-input"
               />
               <p className="section-description" style={{ marginTop: '0.5rem', fontSize: '0.9rem' }}>
                 Number of images to process in parallel. Higher values are faster but use more CPU.
