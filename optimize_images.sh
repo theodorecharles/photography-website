@@ -2,19 +2,32 @@
 set -euo pipefail  # Exit on error, undefined variables, and pipe failures
 IFS=$'\n\t'        # Set Internal Field Separator for safer word splitting
 
-# Configuration variables
-# Compression levels (0-100, where 100 is highest quality)
-THUMBNAIL_QUALITY=60
-MODAL_QUALITY=90
-DOWNLOAD_QUALITY=100
+# Parse command line arguments
+FORCE_MODE=false
+for arg in "$@"; do
+    case $arg in
+        --force)
+            FORCE_MODE=true
+            shift
+            ;;
+    esac
+done
 
-# Resolution settings (max dimensions)
-THUMBNAIL_MAX_DIM=1024
-MODAL_MAX_DIM=2048
-DOWNLOAD_MAX_DIM=4096
+# Read configuration from config.json
+CONFIG_FILE="config/config.json"
+
+# Read image optimization settings from config.json (nested under optimization.images)
+THUMBNAIL_QUALITY=$(grep -A 20 '"optimization"' "$CONFIG_FILE" 2>/dev/null | grep -A 15 '"images"' | grep -A 2 '"thumbnail"' | grep '"quality"' | grep -o '[0-9]*' | head -1 || echo "60")
+THUMBNAIL_MAX_DIM=$(grep -A 20 '"optimization"' "$CONFIG_FILE" 2>/dev/null | grep -A 15 '"images"' | grep -A 2 '"thumbnail"' | grep '"maxDimension"' | grep -o '[0-9]*' | head -1 || echo "512")
+
+MODAL_QUALITY=$(grep -A 20 '"optimization"' "$CONFIG_FILE" 2>/dev/null | grep -A 15 '"images"' | grep -A 2 '"modal"' | grep '"quality"' | grep -o '[0-9]*' | head -1 || echo "90")
+MODAL_MAX_DIM=$(grep -A 20 '"optimization"' "$CONFIG_FILE" 2>/dev/null | grep -A 15 '"images"' | grep -A 2 '"modal"' | grep '"maxDimension"' | grep -o '[0-9]*' | head -1 || echo "2048")
+
+DOWNLOAD_QUALITY=$(grep -A 20 '"optimization"' "$CONFIG_FILE" 2>/dev/null | grep -A 15 '"images"' | grep -A 2 '"download"' | grep '"quality"' | grep -o '[0-9]*' | head -1 || echo "100")
+DOWNLOAD_MAX_DIM=$(grep -A 20 '"optimization"' "$CONFIG_FILE" 2>/dev/null | grep -A 15 '"images"' | grep -A 2 '"download"' | grep '"maxDimension"' | grep -o '[0-9]*' | head -1 || echo "4096")
 
 # Read concurrency from config.json, default to 4 if not found
-CONCURRENCY=$(grep -A 2 '"optimization"' config/config.json 2>/dev/null | grep '"concurrency"' | grep -o '[0-9]*' || echo "4")
+CONCURRENCY=$(grep -A 2 '"optimization"' "$CONFIG_FILE" 2>/dev/null | grep '"concurrency"' | grep -o '[0-9]*' | head -1 || echo "4")
 
 # Animation state files
 STATE_DIR=$(mktemp -d)
@@ -58,9 +71,15 @@ count_images() {
             local album_path=$(dirname "$relative_path")
             local filename=$(basename "$file")
             
-            [ ! -f "optimized/thumbnail/$album_path/$filename" ] && count=$((count + 1))
-            [ ! -f "optimized/modal/$album_path/$filename" ] && count=$((count + 1))
-            [ ! -f "optimized/download/$album_path/$filename" ] && count=$((count + 1))
+            if [ "$FORCE_MODE" = true ]; then
+                # In force mode, always count all 3 versions
+                count=$((count + 3))
+            else
+                # Only count versions that don't exist
+                [ ! -f "optimized/thumbnail/$album_path/$filename" ] && count=$((count + 1))
+                [ ! -f "optimized/modal/$album_path/$filename" ] && count=$((count + 1))
+                [ ! -f "optimized/download/$album_path/$filename" ] && count=$((count + 1))
+            fi
         fi
     done
     
@@ -114,7 +133,7 @@ process_single_image() {
         local download_path="optimized/download/$album_path/$filename"
         
         # Create thumbnail version
-        if [ ! -f "$thumb_path" ]; then
+        if [ "$FORCE_MODE" = true ] || [ ! -f "$thumb_path" ]; then
         echo "[T$thread_id] thumbnail: $filename" > "$STATE_DIR/thread_$thread_id"
         if convert "$file" -resize "${THUMBNAIL_MAX_DIM}x${THUMBNAIL_MAX_DIM}>" -quality $THUMBNAIL_QUALITY "$thumb_path" 2>/dev/null; then
             increment_progress
@@ -122,7 +141,7 @@ process_single_image() {
     fi
     
     # Create modal version
-    if [ ! -f "$modal_path" ]; then
+    if [ "$FORCE_MODE" = true ] || [ ! -f "$modal_path" ]; then
         echo "[T$thread_id] modal: $filename" > "$STATE_DIR/thread_$thread_id"
         if convert "$file" -resize "${MODAL_MAX_DIM}x${MODAL_MAX_DIM}>" -quality $MODAL_QUALITY "$modal_path" 2>/dev/null; then
             increment_progress
@@ -130,7 +149,7 @@ process_single_image() {
     fi
     
     # Create download version
-    if [ ! -f "$download_path" ]; then
+    if [ "$FORCE_MODE" = true ] || [ ! -f "$download_path" ]; then
         echo "[T$thread_id] download: $filename" > "$STATE_DIR/thread_$thread_id"
         if convert "$file" -resize "${DOWNLOAD_MAX_DIM}x${DOWNLOAD_MAX_DIM}>" -quality $DOWNLOAD_QUALITY "$download_path" 2>/dev/null; then
             increment_progress
