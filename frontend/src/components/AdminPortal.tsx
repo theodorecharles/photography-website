@@ -77,7 +77,7 @@ interface Photo {
   download: string;
 }
 
-type Tab = 'branding' | 'links' | 'albums' | 'metrics' | 'optimization';
+type Tab = 'branding' | 'links' | 'albums' | 'metrics';
 
 export default function AdminPortal() {
   const navigate = useNavigate();
@@ -90,7 +90,6 @@ export default function AdminPortal() {
     if (location.pathname.includes('/links')) return 'links';
     if (location.pathname.includes('/branding')) return 'branding';
     if (location.pathname.includes('/metrics')) return 'metrics';
-    if (location.pathname.includes('/optimization')) return 'optimization';
     return 'albums';
   };
   const activeTab = getActiveTab();
@@ -797,12 +796,6 @@ export default function AdminPortal() {
             >
               Metrics
             </button>
-            <button
-              className={`tab-button ${activeTab === 'optimization' ? 'active' : ''}`}
-              onClick={() => navigate('/admin/optimization')}
-            >
-              Optimization
-            </button>
           </div>
         </div>
 
@@ -1081,10 +1074,8 @@ export default function AdminPortal() {
               </div>
             )}
           </div>
-        </section>
-        )}
 
-        {activeTab === 'optimization' && (
+          {/* Image Optimization Section */}
           <section className="admin-section">
             <h2>⚙️ Image Optimization</h2>
             <p className="section-description">Configure image quality and run optimization</p>
@@ -1230,6 +1221,7 @@ export default function AdminPortal() {
               </div>
             )}
           </section>
+        </section>
         )}
       </div>
     </div>
