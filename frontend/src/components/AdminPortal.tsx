@@ -1097,10 +1097,7 @@ export default function AdminPortal() {
           <h2>⚙️ Image Optimization</h2>
           <p className="section-description">Configure image quality and run optimization</p>
           
-          <div className="optimization-settings">
-            <h3>Optimization Settings</h3>
-            
-            <div className="form-group" style={{ maxWidth: '300px', marginBottom: '2rem' }}>
+          <div className="form-group" style={{ maxWidth: '300px', marginBottom: '2rem' }}>
               <label>Concurrency (1-16)</label>
               <input
                 type="number"
@@ -1253,7 +1250,6 @@ export default function AdminPortal() {
                 )}
               </div>
             </div>
-          </div>
         </section>
       </div>
     </div>
