@@ -5,7 +5,7 @@ IFS=$'\n\t'        # Set Internal Field Separator for safer word splitting
 # Configuration variables
 # Compression levels (0-100, where 100 is highest quality)
 THUMBNAIL_QUALITY=60
-MODAL_QUALITY=60
+MODAL_QUALITY=90
 DOWNLOAD_QUALITY=100
 
 # Resolution settings (max dimensions)

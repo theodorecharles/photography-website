@@ -770,6 +770,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
               </div>
               <div className="modal-controls">
                 <button
+                  className="fullscreen-toggle"
                   onClick={(e) => {
                     e.stopPropagation();
                     toggleFullscreen();
