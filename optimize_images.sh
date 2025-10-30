@@ -122,6 +122,11 @@ process_single_image() {
         local album_path=$(dirname "$relative_path")
         local filename=$(basename "$file")
         
+        # Print progress to stdout for SSE streaming (non-interactive mode)
+        if [ ! -t 1 ]; then
+            printf "Processing: %s/%s\n" "$album_path" "$filename"
+        fi
+        
         # Create album directories in optimized folders if they don't exist
     mkdir -p "optimized/thumbnail/$album_path" 2>/dev/null
     mkdir -p "optimized/modal/$album_path" 2>/dev/null
