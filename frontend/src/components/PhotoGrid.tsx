@@ -85,6 +85,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
   }, [getPhotoPermalink]);
 
   const handlePhotoClick = (photo: Photo) => {
+    setModalImageLoaded(false);
     setSelectedPhoto(photo);
     updateURLWithPhoto(photo);
     modalOpenTimeRef.current = Date.now();
@@ -251,6 +252,11 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
     setColumnTransforms([]);
   }, [album]);
 
+  // Reset modal image loaded state when photo changes
+  useEffect(() => {
+    setModalImageLoaded(false);
+  }, [selectedPhoto?.id]);
+
   // Auto-open photo from URL query parameter
   useEffect(() => {
     if (photos.length > 0 && !selectedPhoto) {
@@ -259,6 +265,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
         // Find photo by filename
         const photo = photos.find(p => p.id.endsWith(photoParam));
         if (photo) {
+          setModalImageLoaded(false);
           setSelectedPhoto(photo);
           modalOpenTimeRef.current = Date.now();
           trackPhotoClick(photo.id, photo.album, photo.title);
@@ -399,11 +406,18 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
   // Refs for column elements and their transforms
   const columnRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [columnTransforms, setColumnTransforms] = useState<number[]>([]);
+  const shiftPointRef = useRef<number | null>(null);
+  const hasReachedBottomRef = useRef(false);
 
   // Handle window resize
   useEffect(() => {
     const handleResize = () => {
       setNumColumns(getNumColumns());
+      // On resize, switch to full-page calculation if we have a shift point
+      if (shiftPointRef.current !== null) {
+        hasReachedBottomRef.current = true;
+        shiftPointRef.current = 0;
+      }
     };
 
     window.addEventListener("resize", handleResize);
@@ -476,6 +490,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
     
     if (!hasMultipleColumns || !hasSubstantialColumn) {
       setColumnTransforms([]);
+      shiftPointRef.current = null;
       return;
     }
 
@@ -484,20 +499,58 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
 
       // Check if all images have loaded
       const allImagesLoaded = photos.every(photo => imageDimensions[photo.id]);
-      if (!allImagesLoaded) return;
+      
+      // If all images just loaded and we haven't set the shift point yet, capture it
+      if (allImagesLoaded && shiftPointRef.current === null && !hasReachedBottomRef.current) {
+        shiftPointRef.current = window.scrollY;
+      }
+      
+      // Don't apply transforms until we have a shift point
+      if (!allImagesLoaded || shiftPointRef.current === null) {
+        return;
+      }
 
       const columnHeights = columnRefs.current.map((col) => col?.offsetHeight || 0);
       const maxHeight = Math.max(...columnHeights);
       
       if (maxHeight === 0) return;
 
-      // Get the scroll position
+      // Get scroll metrics
       const scrollY = window.scrollY;
       const windowHeight = window.innerHeight;
       const documentHeight = document.documentElement.scrollHeight;
+      const maxScroll = documentHeight - windowHeight;
       
-      // Calculate how far down the page we've scrolled (0 to 1)
-      const scrollProgress = Math.min(1, scrollY / (documentHeight - windowHeight));
+      // Check if user has reached the bottom (with small threshold for rounding)
+      if (scrollY >= maxScroll - 5 && !hasReachedBottomRef.current) {
+        hasReachedBottomRef.current = true;
+        shiftPointRef.current = 0;
+      }
+      
+      // Calculate scroll progress
+      let scrollProgress = 0;
+      
+      if (hasReachedBottomRef.current) {
+        // Full-page calculation: Progress = 0 at top, Progress = 1 at bottom
+        scrollProgress = maxScroll > 0 ? scrollY / maxScroll : 0;
+      } else {
+        // Shift-point-based calculation
+        const shiftPoint = shiftPointRef.current;
+        
+        if (scrollY <= shiftPoint) {
+          // Above shift point - no transforms
+          scrollProgress = 0;
+        } else if (scrollY >= maxScroll) {
+          // At bottom - full transforms
+          scrollProgress = 1;
+        } else {
+          // Between shift point and bottom - calculate progress
+          const scrollRange = maxScroll - shiftPoint;
+          if (scrollRange > 0) {
+            scrollProgress = (scrollY - shiftPoint) / scrollRange;
+          }
+        }
+      }
 
       // Calculate transforms for each column
       const transforms = columnHeights.map((height, index) => {
@@ -523,6 +576,12 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, [photos, numColumns, imageDimensions]);
+  
+  // Reset shift point when photos change
+  useEffect(() => {
+    shiftPointRef.current = null;
+    hasReachedBottomRef.current = false;
+  }, [photos]);
 
   if (loading) {
     return <div className="loading">Loading photos...</div>;
@@ -575,6 +634,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
       {selectedPhoto && (
         <div className={`modal ${isFullscreen ? 'fullscreen' : ''}`} onClick={handleCloseModal}>
           <div 
+            key={selectedPhoto.id}
             className="modal-content" 
             onClick={(e) => {
               e.stopPropagation();
@@ -587,7 +647,10 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
             onTouchEnd={handleTouchEnd}
           >
             <div className="modal-image-wrapper">
-              <div className="modal-controls-left">
+              <div 
+                className="modal-controls-left"
+                style={{ opacity: modalImageLoaded ? 1 : 0 }}
+              >
                 <button
                   onClick={() => {
                     const newShowInfo = !showInfo;
@@ -767,7 +830,10 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
                   </div>
                 )}
               </div>
-              <div className="modal-controls">
+              <div 
+                className="modal-controls"
+                style={{ opacity: modalImageLoaded ? 1 : 0 }}
+              >
                 <button
                   className="fullscreen-toggle"
                   onClick={(e) => {
@@ -821,11 +887,17 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
                 </button>
               </div>
               {showNavigationHint && (
-                <div className="modal-navigation-hint">
+                <div 
+                  className="modal-navigation-hint"
+                  style={{ opacity: modalImageLoaded ? 1 : 0 }}
+                >
                   ← press arrow keys to navigate →
                 </div>
               )}
-              <div className="modal-navigation">
+              <div 
+                className="modal-navigation"
+                style={{ opacity: modalImageLoaded ? 1 : 0 }}
+              >
                 <button
                   onClick={() => {
                     const currentIndex = photos.findIndex(
@@ -836,7 +908,6 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
                     const prevPhoto = photos[prevIndex];
                     // Calculate view duration of current photo before navigating
                     const viewDuration = modalOpenTimeRef.current ? Date.now() - modalOpenTimeRef.current : undefined;
-                    setModalImageLoaded(false);
                     setSelectedPhoto(prevPhoto);
                     updateURLWithPhoto(prevPhoto);
                     setExifData(null); // Reset EXIF data for new photo
@@ -864,7 +935,6 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
                     const nextPhoto = photos[nextIndex];
                     // Calculate view duration of current photo before navigating
                     const viewDuration = modalOpenTimeRef.current ? Date.now() - modalOpenTimeRef.current : undefined;
-                    setModalImageLoaded(false);
                     setSelectedPhoto(nextPhoto);
                     updateURLWithPhoto(nextPhoto);
                     setExifData(null); // Reset EXIF data for new photo
@@ -885,13 +955,14 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
                 </button>
               </div>
               <img
-                src={`${API_URL}${selectedPhoto.thumbnail}${queryString}`}
-                alt={`${selectedPhoto.album} photography by Ted Charles - ${selectedPhoto.title}`}
-                title={selectedPhoto.title}
-                className="modal-placeholder"
-                style={{ opacity: modalImageLoaded ? 0 : 1, transition: 'opacity 0.2s ease' }}
-              />
-              <img
+                ref={(img) => {
+                  if (img) {
+                    // When mounted, check if image is already cached/loaded
+                    if (img.complete && img.naturalHeight !== 0) {
+                      setModalImageLoaded(true);
+                    }
+                  }
+                }}
                 src={`${API_URL}${selectedPhoto.src}${queryString}`}
                 alt={`${selectedPhoto.album} photography by Ted Charles - ${selectedPhoto.title}`}
                 title={selectedPhoto.title}
@@ -903,6 +974,26 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
                   setModalImageLoaded(true);
                 }}
                 style={{ opacity: modalImageLoaded ? 1 : 0, transition: 'opacity 0.2s ease' }}
+              />
+              <img
+                ref={(img) => {
+                  // Force immediate display if already cached
+                  if (img && img.complete) {
+                    img.style.opacity = modalImageLoaded ? '0' : '1';
+                  }
+                }}
+                onLoad={(e) => {
+                  // Ensure cached images display immediately
+                  const img = e.currentTarget;
+                  if (!modalImageLoaded) {
+                    img.style.opacity = '1';
+                  }
+                }}
+                src={`${API_URL}${selectedPhoto.thumbnail}${queryString}`}
+                alt={`${selectedPhoto.album} photography by Ted Charles - ${selectedPhoto.title}`}
+                title={selectedPhoto.title}
+                className="modal-placeholder"
+                style={{ opacity: modalImageLoaded ? 0 : 1, transition: 'opacity 0.2s ease' }}
               />
             </div>
           </div>
