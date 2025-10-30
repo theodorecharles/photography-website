@@ -961,7 +961,8 @@ export default function AdminPortal() {
         )}
 
         {activeTab === 'albums' && (
-        <section className="admin-section">
+        <>
+          <section className="admin-section">
           <h2>📸 Albums & Photos</h2>
           <p className="section-description">Manage your photo albums and upload new images</p>
           
@@ -1090,9 +1091,7 @@ export default function AdminPortal() {
               </div>
             )}
           </div>
-          </section>
-        )}
-        {/* Image Optimization Section */}
+        </section>
         <section className="admin-section">
           <h2>⚙️ Image Optimization</h2>
           <p className="section-description">Configure image quality and run optimization</p>
@@ -1252,6 +1251,8 @@ export default function AdminPortal() {
               </div>
             </div>
         </section>
+        </>
+        )}
       </div>
     </div>
   );
