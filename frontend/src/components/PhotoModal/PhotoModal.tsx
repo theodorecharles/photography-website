@@ -389,7 +389,7 @@ const PhotoModal: React.FC<PhotoModalProps> = ({
         };
 
         img.src = modalUrl;
-      }, 500);
+      }, 10);
 
       return () => clearTimeout(timer);
     }
