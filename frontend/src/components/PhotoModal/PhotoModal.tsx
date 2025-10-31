@@ -59,6 +59,14 @@ const PhotoModal: React.FC<PhotoModalProps> = ({
     ? `?${queryParams.toString()}&i=${cacheBustValue}`
     : `?i=${cacheBustValue}`;
 
+  // Update URL with photo parameter
+  const updateURLWithPhoto = useCallback((photo: Photo) => {
+    const filename = photo.id.split('/').pop();
+    const baseUrl = photo.album === 'homepage' ? '/' : `/album/${photo.album}`;
+    const newUrl = `${baseUrl}?photo=${encodeURIComponent(filename || '')}`;
+    window.history.replaceState(null, '', newUrl);
+  }, []);
+
   // Update selectedPhoto when prop changes
   useEffect(() => {
     setSelectedPhoto(initialPhoto);
@@ -67,15 +75,10 @@ const PhotoModal: React.FC<PhotoModalProps> = ({
     setThumbnailLoaded(false);
     setExifData(null);
     modalOpenTimeRef.current = Date.now();
-  }, [initialPhoto.id]);
-
-  // Update URL with photo parameter
-  const updateURLWithPhoto = useCallback((photo: Photo) => {
-    const filename = photo.id.split('/').pop();
-    const baseUrl = photo.album === 'homepage' ? '/' : `/album/${photo.album}`;
-    const newUrl = `${baseUrl}?photo=${encodeURIComponent(filename || '')}`;
-    window.history.replaceState(null, '', newUrl);
-  }, []);
+    
+    // Update URL with photo parameter
+    updateURLWithPhoto(initialPhoto);
+  }, [initialPhoto.id, updateURLWithPhoto]);
 
   // Get permalink for photo
   const getPhotoPermalink = useCallback((photo: Photo) => {
