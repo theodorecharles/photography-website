@@ -137,20 +137,21 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
         const photoTitles = Array.from(files).map(f => f.name);
         trackPhotoUploaded(selectedAlbum, files.length, photoTitles);
         
-        // Track optimizing photos - ensure format matches photo.id (album/filename)
-        if (result.photoIds) {
-          console.log('Backend returned photoIds:', result.photoIds);
-          result.photoIds.forEach((id: string) => {
-            // If id is just filename, prepend album name to match photo.id format
-            const fullId = id.includes('/') ? id : `${selectedAlbum}/${id}`;
+        // Backend returns 'files' array, not 'photoIds'
+        const uploadedFiles = result.files || result.photoIds || [];
+        if (uploadedFiles.length > 0) {
+          console.log('Backend returned files:', uploadedFiles);
+          uploadedFiles.forEach((filename: string) => {
+            // Prepend album name to match photo.id format (album/filename)
+            const fullId = filename.includes('/') ? filename : `${selectedAlbum}/${filename}`;
             console.log('Adding to optimizingPhotos:', fullId);
             setOptimizingPhotos(prev => new Set([...prev, fullId]));
           });
           
           // Poll for completion
-          pollOptimization(result.photoIds);
+          pollOptimization(uploadedFiles);
         } else {
-          console.warn('No photoIds in upload result');
+          console.warn('No files in upload result');
         }
 
         await loadPhotos(selectedAlbum);
@@ -166,32 +167,40 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     }
   };
 
-  const pollOptimization = async (photoIds: string[]) => {
+  const pollOptimization = async (filenames: string[]) => {
     const checkStatus = async () => {
       try {
         const res = await fetch(`${API_URL}/api/photos/optimization-status`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
-          body: JSON.stringify({ photoIds }),
+          body: JSON.stringify({ photoIds: filenames }), // Backend expects 'photoIds' field
         });
 
         if (res.ok) {
-          const { completed } = await res.json();
+          const data = await res.json();
+          console.log('Optimization status response:', data);
+          const completed = data.completed || [];
+          
           setOptimizingPhotos(prev => {
             const updated = new Set(prev);
-            completed.forEach((id: string) => {
+            completed.forEach((filename: string) => {
               // Match the format used when adding (album/filename)
-              const fullId = id.includes('/') ? id : `${selectedAlbum}/${id}`;
+              const fullId = filename.includes('/') ? filename : `${selectedAlbum}/${filename}`;
+              console.log('Removing from optimizingPhotos:', fullId);
               updated.delete(fullId);
             });
             return updated;
           });
 
-          if (completed.length < photoIds.length) {
+          if (completed.length < filenames.length) {
+            console.log(`Still optimizing: ${completed.length}/${filenames.length} complete`);
             setTimeout(checkStatus, 2000);
-          } else if (selectedAlbum) {
-            await loadPhotos(selectedAlbum);
+          } else {
+            console.log('All photos optimized, reloading...');
+            if (selectedAlbum) {
+              await loadPhotos(selectedAlbum);
+            }
           }
         }
       } catch (err) {
@@ -199,6 +208,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
       }
     };
 
+    console.log('Starting optimization polling for:', filenames);
     setTimeout(checkStatus, 2000);
   };
 
