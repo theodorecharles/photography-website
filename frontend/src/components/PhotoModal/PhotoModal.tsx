@@ -374,8 +374,14 @@ const PhotoModal: React.FC<PhotoModalProps> = ({
         const modalUrl = `${API_URL}${selectedPhoto.src}${imageQueryString}`;
 
         img.onload = () => {
-          setModalImageLoaded(true);
+          // Add image to DOM first with opacity: 0
           setShowModalImage(true);
+          // Then after a brief delay, fade it in
+          requestAnimationFrame(() => {
+            setTimeout(() => {
+              setModalImageLoaded(true);
+            }, 10);
+          });
         };
 
         img.onerror = () => {
