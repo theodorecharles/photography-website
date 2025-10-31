@@ -165,45 +165,30 @@ export default function AdminPortal() {
   }, [optimizationOutput]);
 
   useEffect(() => {
-    // Check authentication status
-    console.log('[AdminPortal] Checking auth status...');
-    console.log('[AdminPortal] API_URL:', API_URL);
-    console.log('[AdminPortal] Current location:', window.location.href);
-    console.log('[AdminPortal] Cookies:', document.cookie);
-    
     fetch(`${API_URL}/api/auth/status`, {
       credentials: 'include',
     })
       .then((res) => {
-        console.log('[AdminPortal] Auth status response:', res.status, res.statusText);
         if (res.status === 429 && (window as any).handleRateLimit) {
           (window as any).handleRateLimit();
           throw new Error('Rate limited');
         }
-        console.log('[AdminPortal] Response headers:', {
-          'set-cookie': res.headers.get('set-cookie'),
-          'access-control-allow-credentials': res.headers.get('access-control-allow-credentials'),
-        });
         return res.json();
       })
       .then((data) => {
-        console.log('[AdminPortal] Auth status data:', data);
         setAuthStatus(data);
         if (data.authenticated) {
-          console.log('[AdminPortal] User is authenticated, loading data');
           // Track admin portal access
           trackLoginSucceeded(data.user?.email, data.user?.name);
           loadExternalLinks();
           loadBranding();
           loadAlbums();
           loadOptimizationSettings();
-        } else {
-          console.log('[AdminPortal] User is NOT authenticated');
         }
         setLoading(false);
       })
       .catch((err) => {
-        console.error('[AdminPortal] Failed to check auth status:', err);
+        console.error('Failed to check auth status:', err);
         setLoading(false);
       });
   }, []);
