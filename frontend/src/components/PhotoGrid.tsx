@@ -4,11 +4,11 @@
  * and provides functionality for viewing photos in a modal.
  */
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import "./PhotoGrid.css";
-import { API_URL, SITE_URL, cacheBustValue } from "../config";
-import { trackPhotoClick, trackPhotoNavigation, trackPhotoDownload, trackModalClose, trackError } from "../utils/analytics";
+import { API_URL, cacheBustValue } from "../config";
+import { trackPhotoClick, trackError } from "../utils/analytics";
 import { fetchWithRateLimitCheck } from "../utils/fetchWrapper";
 import PhotoModal from "./PhotoModal";
 
@@ -37,27 +37,9 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
   const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
-  const [modalImageLoaded, setModalImageLoadedRaw] = useState(false);
-  const setModalImageLoaded = (value: boolean) => {
-    console.log('[PERF] setModalImageLoaded called with:', value, 'at', performance.now());
-    setModalImageLoadedRaw(value);
-  };
-  
-  const [showInfo, setShowInfo] = useState(false);
-  const [exifData, setExifData] = useState<any>(null);
-  const [loadingExif, setLoadingExif] = useState(false);
-  const [showNavigationHint, setShowNavigationHint] = useState(
-    () => !localStorage.getItem('hideNavigationHint')
-  );
   const [imageDimensions, setImageDimensions] = useState<
     Record<string, { width: number; height: number }>
   >({});
-  const [copiedLink, setCopiedLink] = useState(false);
-  const [isFullscreen, setIsFullscreen] = useState(false);
-  const [showModalImage, setShowModalImage] = useState(false);
-  const [thumbnailLoaded, setThumbnailLoaded] = useState(false);
-  const modalOpenTimeRef = useRef<number | null>(null);
 
   // Get query parameters from current URL for API calls (not for images)
   const queryParams = new URLSearchParams(location.search);
@@ -71,320 +53,31 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
   // ETags and Last-Modified headers handle cache validation
   const imageQueryString = ``;
 
-  // Function to update URL with photo parameter without page reload
-  const updateURLWithPhoto = useCallback((photo: Photo) => {
-    const filename = photo.id.split('/').pop();
-    // Homepage uses special "homepage" album internally, but URL should be "/"
-    const baseUrl = photo.album === 'homepage' ? '/' : `/album/${photo.album}`;
-    const newUrl = `${baseUrl}?photo=${encodeURIComponent(filename || '')}`;
-    // Use history.replaceState instead of navigate to avoid page reload/flickering
-    window.history.replaceState(null, '', newUrl);
-  }, []);
-
-  // Function to get permalink for current photo
-  const getPhotoPermalink = useCallback((photo: Photo) => {
-    const filename = photo.id.split('/').pop();
-    // Homepage uses special "homepage" album internally, but URL should be "/"
-    const baseUrl = photo.album === 'homepage' ? '/' : `/album/${photo.album}`;
-    return `${SITE_URL}${baseUrl}?photo=${encodeURIComponent(filename || '')}`;
-  }, []);
-
-  // Function to copy permalink to clipboard
-  const handleCopyLink = useCallback(async (photo: Photo) => {
-    const permalink = getPhotoPermalink(photo);
-    try {
-      await navigator.clipboard.writeText(permalink);
-      setCopiedLink(true);
-      setTimeout(() => setCopiedLink(false), 2000); // Reset after 2 seconds
-    } catch (err) {
-      console.error('Failed to copy link:', err);
-    }
-  }, [getPhotoPermalink]);
-
   const handlePhotoClick = (photo: Photo) => {
-    const t0 = performance.now();
-    console.log('[PERF] Click handler started', t0);
-    
-    setModalImageLoaded(false);
-    setShowModalImage(false); // Don't show modal image initially
-    setThumbnailLoaded(false); // Reset thumbnail loaded state
-    const t1 = performance.now();
-    console.log('[PERF] setModalImageLoaded called', t1 - t0);
-    
     setSelectedPhoto(photo);
-    const t2 = performance.now();
-    console.log('[PERF] setSelectedPhoto called', t2 - t1);
-    
-    updateURLWithPhoto(photo);
-    const t3 = performance.now();
-    console.log('[PERF] updateURLWithPhoto called', t3 - t2);
-    
-    modalOpenTimeRef.current = Date.now();
-    
-    // Defer analytics to after render to avoid blocking on cellular
-    setTimeout(() => {
-      trackPhotoClick(photo.id, photo.album, photo.title);
-    }, 0);
-    
-    const t4 = performance.now();
-    console.log('[PERF] Click handler finished', t4 - t0);
+    trackPhotoClick(photo.id, photo.album, photo.title);
   };
 
-  const handleCloseModal = useCallback(async () => {
-    if (selectedPhoto && modalOpenTimeRef.current) {
-      const viewDuration = Date.now() - modalOpenTimeRef.current;
-      trackModalClose(selectedPhoto.id, selectedPhoto.album, selectedPhoto.title, viewDuration);
-    }
-    // Exit fullscreen if active
-    if (document.fullscreenElement) {
-      try {
-        await document.exitFullscreen();
-      } catch (err) {
-        console.error('Error exiting fullscreen:', err);
-      }
-    }
+  const handleCloseModal = () => {
     setSelectedPhoto(null);
-    setShowInfo(false);
-    setExifData(null);
-    setIsFullscreen(false);
-    modalOpenTimeRef.current = null;
-    setCopiedLink(false);
-    // Clear the photo parameter from URL without page reload
-    // Homepage uses special "homepage" album internally, but URL should be "/"
-    const baseUrl = album === 'homepage' ? '/' : `/album/${album}`;
-    window.history.replaceState(null, '', baseUrl);
-  }, [selectedPhoto, album]);
-
-  const toggleFullscreen = useCallback(async () => {
-    if (!document.fullscreenElement) {
-      // Enter fullscreen
-      try {
-        await document.documentElement.requestFullscreen();
-        setIsFullscreen(true);
-      } catch (err) {
-        console.error('Error attempting to enable fullscreen:', err);
-      }
-    } else {
-      // Exit fullscreen
-      try {
-        await document.exitFullscreen();
-        setIsFullscreen(false);
-      } catch (err) {
-        console.error('Error attempting to exit fullscreen:', err);
-      }
-    }
-  }, []);
-
-  const handleToggleInfo = useCallback(() => {
-    const newShowInfo = !showInfo;
-    setShowInfo(newShowInfo);
-    if (newShowInfo && selectedPhoto && !exifData && !loadingExif) {
-      fetchExifData(selectedPhoto);
-    }
-  }, [showInfo, selectedPhoto, exifData, loadingExif]);
-
-  const handleDownload = useCallback(async (photo: Photo) => {
-    const filename = photo.id.split('/').pop() || 'photo.jpg';
-    try {
-      const response = await fetch(`${API_URL}${photo.download}${imageQueryString}`);
-      const blob = await response.blob();
-      const blobUrl = URL.createObjectURL(blob);
-      
-      const link = document.createElement('a');
-      link.href = blobUrl;
-      link.download = filename;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      
-      URL.revokeObjectURL(blobUrl);
-      
-      trackPhotoDownload(photo.id, photo.album, photo.title);
-    } catch (error) {
-      console.error('Download failed:', error);
-      window.open(`${API_URL}${photo.download}${imageQueryString}`, '_blank');
-    }
-  }, [imageQueryString]);
-
-  const handleNavigatePrev = useCallback(() => {
-    if (!selectedPhoto) return;
-    const currentIndex = photos.findIndex((p) => p.id === selectedPhoto.id);
-    const prevIndex = (currentIndex - 1 + photos.length) % photos.length;
-    const prevPhoto = photos[prevIndex];
-    const viewDuration = modalOpenTimeRef.current ? Date.now() - modalOpenTimeRef.current : undefined;
-    setSelectedPhoto(prevPhoto);
-    updateURLWithPhoto(prevPhoto);
-    setExifData(null);
-    modalOpenTimeRef.current = Date.now();
-    setModalImageLoaded(false);
-    setShowModalImage(false);
-    setThumbnailLoaded(false);
-    setTimeout(() => {
-      trackPhotoNavigation('previous', prevPhoto.id, prevPhoto.album, prevPhoto.title, viewDuration);
-    }, 0);
-  }, [selectedPhoto, photos, updateURLWithPhoto]);
-
-  const handleNavigateNext = useCallback(() => {
-    if (!selectedPhoto) return;
-    const currentIndex = photos.findIndex((p) => p.id === selectedPhoto.id);
-    const nextIndex = (currentIndex + 1) % photos.length;
-    const nextPhoto = photos[nextIndex];
-    const viewDuration = modalOpenTimeRef.current ? Date.now() - modalOpenTimeRef.current : undefined;
-    setSelectedPhoto(nextPhoto);
-    updateURLWithPhoto(nextPhoto);
-    setExifData(null);
-    modalOpenTimeRef.current = Date.now();
-    setModalImageLoaded(false);
-    setShowModalImage(false);
-    setThumbnailLoaded(false);
-    setTimeout(() => {
-      trackPhotoNavigation('next', nextPhoto.id, nextPhoto.album, nextPhoto.title, viewDuration);
-    }, 0);
-  }, [selectedPhoto, photos, updateURLWithPhoto]);
-
-  const handleModalContentClick = useCallback((e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (showInfo && !(e.target as HTMLElement).closest('.modal-info-panel') && !(e.target as HTMLElement).closest('.modal-controls-top button')) {
-      setShowInfo(false);
-    }
-  }, [showInfo]);
-
-  const handleThumbnailLoad = useCallback(() => {
-    setThumbnailLoaded(true);
-  }, []);
-
-  const fetchExifData = async (photo: Photo) => {
-    if (exifData) return; // Already loaded
-    
-    setLoadingExif(true);
-    try {
-      const filename = photo.id.split('/').pop();
-      const res = await fetchWithRateLimitCheck(
-        `${API_URL}/api/photos/${photo.album}/${filename}/exif${queryString ? '?' + queryString : ''}`
-      );
-      
-      if (res.ok) {
-        const data = await res.json();
-        setExifData(data);
-      } else {
-        console.error('Failed to load EXIF data');
-        setExifData({ error: 'Failed to load' });
-      }
-    } catch (error) {
-      console.error('Error fetching EXIF:', error);
-      setExifData({ error: 'Failed to load' });
-    } finally {
-      setLoadingExif(false);
-    }
   };
 
-  // Auto-fetch EXIF data when navigating between photos if info panel is open
-  useEffect(() => {
-    if (showInfo && selectedPhoto && !exifData && !loadingExif) {
-      fetchExifData(selectedPhoto);
-    }
-  }, [selectedPhoto, showInfo]);
-
-  // Handle body scrolling when modal opens/closes
-  useEffect(() => {
-    if (selectedPhoto) {
-      // Save current scroll position
-      const scrollY = window.scrollY;
-      
-      // Prevent scrolling on iOS and other platforms
-      document.body.style.overflow = "hidden";
-      document.body.style.position = "fixed";
-      document.body.style.top = `-${scrollY}px`;
-      document.body.style.width = "100%";
-      
-      return () => {
-        // Restore scrolling
-        document.body.style.overflow = "";
-        document.body.style.position = "";
-        document.body.style.top = "";
-        document.body.style.width = "";
-        
-        // Restore scroll position
-        window.scrollTo(0, scrollY);
-      };
-    }
-  }, [selectedPhoto]);
-
-  // Handle fullscreen changes (like when user presses Esc)
-  useEffect(() => {
-    const handleFullscreenChange = () => {
-      setIsFullscreen(!!document.fullscreenElement);
-    };
-
-    document.addEventListener('fullscreenchange', handleFullscreenChange);
-    return () => {
-      document.removeEventListener('fullscreenchange', handleFullscreenChange);
-    };
-  }, []);
-
-  // Close modal and reset state when album changes
+  // Close modal when album changes
   useEffect(() => {
     setSelectedPhoto(null);
-    setModalImageLoaded(false);
-    modalOpenTimeRef.current = null;
     setColumnTransforms([]);
   }, [album]);
 
-  // Reset modal image loaded state when photo changes
-  useEffect(() => {
-    setModalImageLoaded(false);
-    setShowModalImage(false);
-  }, [selectedPhoto?.id]);
-  
-  // Preload modal image AFTER thumbnail is painted, but keep it out of DOM until loaded
-  useEffect(() => {
-    if (selectedPhoto && !showModalImage) {
-      console.log('[PERF] Waiting 200 seconds before preloading modal image', performance.now());
-      
-      // Wait 200 seconds for debugging
-      const timer = setTimeout(() => {
-        console.log('[PERF] Starting to preload modal image', performance.now());
-        
-        // Preload the image using Image() object (not in DOM)
-        const img = new Image();
-        const modalUrl = `${API_URL}${selectedPhoto.src}${imageQueryString}`;
-        
-        img.onload = () => {
-          console.log('[PERF] Modal image preloaded successfully', performance.now());
-          setModalImageLoaded(true);
-          // Now add to DOM since it's loaded
-          setShowModalImage(true);
-        };
-        
-        img.onerror = () => {
-          console.error('[PERF] Modal image preload failed', performance.now());
-          // Show thumbnail only
-        };
-        
-        console.log('[PERF] Starting image preload', performance.now());
-        img.src = modalUrl;
-      }, 500);
-      
-      return () => clearTimeout(timer);
-    }
-  }, [selectedPhoto, showModalImage, imageQueryString]);
-
   // Auto-open photo from URL query parameter
   useEffect(() => {
-    console.log('[PERF] Auto-open effect running', performance.now(), 'photos.length:', photos.length, 'selectedPhoto:', !!selectedPhoto);
     if (photos.length > 0 && !selectedPhoto) {
       const urlParams = new URLSearchParams(location.search);
       const photoParam = urlParams.get('photo');
-      console.log('[PERF] Photo param from URL:', photoParam);
       if (photoParam) {
         // Find photo by filename
         const photo = photos.find(p => p.id.endsWith(photoParam));
         if (photo) {
-          console.log('[PERF] Auto-opening photo from URL', performance.now());
-          setModalImageLoaded(false);
-          setSelectedPhoto(photo);
-          modalOpenTimeRef.current = Date.now();
-          trackPhotoClick(photo.id, photo.album, photo.title);
+          handlePhotoClick(photo);
         }
       }
     }
@@ -443,58 +136,6 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
 
     fetchPhotos();
   }, [album, queryString]);
-
-  // Handle keyboard navigation
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (!selectedPhoto) return;
-
-      if (e.key === "Escape") {
-        handleCloseModal();
-      } else if (e.key === "ArrowLeft") {
-        // Hide navigation hint on first arrow key press
-        if (showNavigationHint) {
-          setShowNavigationHint(false);
-          localStorage.setItem('hideNavigationHint', 'true');
-        }
-        const currentIndex = photos.findIndex((p) => p.id === selectedPhoto.id);
-        const prevIndex = (currentIndex - 1 + photos.length) % photos.length;
-        const prevPhoto = photos[prevIndex];
-        // Calculate view duration of current photo before navigating
-        const viewDuration = modalOpenTimeRef.current ? Date.now() - modalOpenTimeRef.current : undefined;
-        setModalImageLoaded(false);
-        setSelectedPhoto(prevPhoto);
-        updateURLWithPhoto(prevPhoto);
-        setExifData(null); // Reset EXIF data for new photo
-        modalOpenTimeRef.current = Date.now(); // Reset timer for new photo
-        setTimeout(() => {
-          trackPhotoNavigation('previous', prevPhoto.id, prevPhoto.album, prevPhoto.title, viewDuration);
-        }, 0);
-      } else if (e.key === "ArrowRight") {
-        // Hide navigation hint on first arrow key press
-        if (showNavigationHint) {
-          setShowNavigationHint(false);
-          localStorage.setItem('hideNavigationHint', 'true');
-        }
-        const currentIndex = photos.findIndex((p) => p.id === selectedPhoto.id);
-        const nextIndex = (currentIndex + 1) % photos.length;
-        const nextPhoto = photos[nextIndex];
-        // Calculate view duration of current photo before navigating
-        const viewDuration = modalOpenTimeRef.current ? Date.now() - modalOpenTimeRef.current : undefined;
-        setModalImageLoaded(false);
-        setSelectedPhoto(nextPhoto);
-        updateURLWithPhoto(nextPhoto);
-        setExifData(null); // Reset EXIF data for new photo
-        modalOpenTimeRef.current = Date.now(); // Reset timer for new photo
-        setTimeout(() => {
-          trackPhotoNavigation('next', nextPhoto.id, nextPhoto.album, nextPhoto.title, viewDuration);
-        }, 0);
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [selectedPhoto, photos, handleCloseModal, showNavigationHint, updateURLWithPhoto]);
 
   const handleImageLoad = (
     e: React.SyntheticEvent<HTMLImageElement>,
@@ -755,25 +396,8 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
         <PhotoModal
           selectedPhoto={selectedPhoto}
           photos={photos}
-          isFullscreen={isFullscreen}
-          showInfo={showInfo}
-          exifData={exifData}
-          loadingExif={loadingExif}
-          copiedLink={copiedLink}
-          showNavigationHint={showNavigationHint}
-          thumbnailLoaded={thumbnailLoaded}
-          modalImageLoaded={modalImageLoaded}
-          showModalImage={showModalImage}
-          imageQueryString={imageQueryString}
+          album={album}
           onClose={handleCloseModal}
-          onToggleFullscreen={toggleFullscreen}
-          onToggleInfo={handleToggleInfo}
-          onCopyLink={handleCopyLink}
-          onDownload={handleDownload}
-          onNavigatePrev={handleNavigatePrev}
-          onNavigateNext={handleNavigateNext}
-          onThumbnailLoad={handleThumbnailLoad}
-          onModalClick={handleModalContentClick}
         />
       )}
     </div>
