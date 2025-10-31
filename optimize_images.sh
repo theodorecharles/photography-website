@@ -122,11 +122,6 @@ process_single_image() {
         local album_path=$(dirname "$relative_path")
         local filename=$(basename "$file")
         
-        # Print progress to stdout for SSE streaming (non-interactive mode)
-        if [ ! -t 1 ]; then
-            printf "Processing: %s/%s\n" "$album_path" "$filename"
-        fi
-        
         # Create album directories in optimized folders if they don't exist
     mkdir -p "optimized/thumbnail/$album_path" 2>/dev/null
     mkdir -p "optimized/modal/$album_path" 2>/dev/null
@@ -140,6 +135,10 @@ process_single_image() {
         # Create thumbnail version
         if [ "$FORCE_MODE" = true ] || [ ! -f "$thumb_path" ]; then
         echo "[T$thread_id] thumbnail: $filename" > "$STATE_DIR/thread_$thread_id"
+        # Print to stdout for SSE streaming (non-interactive mode)
+        if [ ! -t 1 ]; then
+            printf "Generating thumbnail for: %s/%s\n" "$album_path" "$filename"
+        fi
         if convert "$file" -resize "${THUMBNAIL_MAX_DIM}x${THUMBNAIL_MAX_DIM}>" -quality $THUMBNAIL_QUALITY "$thumb_path" 2>/dev/null; then
             increment_progress
         fi
@@ -148,6 +147,10 @@ process_single_image() {
     # Create modal version
     if [ "$FORCE_MODE" = true ] || [ ! -f "$modal_path" ]; then
         echo "[T$thread_id] modal: $filename" > "$STATE_DIR/thread_$thread_id"
+        # Print to stdout for SSE streaming (non-interactive mode)
+        if [ ! -t 1 ]; then
+            printf "Generating modal for: %s/%s\n" "$album_path" "$filename"
+        fi
         if convert "$file" -resize "${MODAL_MAX_DIM}x${MODAL_MAX_DIM}>" -quality $MODAL_QUALITY "$modal_path" 2>/dev/null; then
             increment_progress
         fi
@@ -156,6 +159,10 @@ process_single_image() {
     # Create download version
     if [ "$FORCE_MODE" = true ] || [ ! -f "$download_path" ]; then
         echo "[T$thread_id] download: $filename" > "$STATE_DIR/thread_$thread_id"
+        # Print to stdout for SSE streaming (non-interactive mode)
+        if [ ! -t 1 ]; then
+            printf "Generating download for: %s/%s\n" "$album_path" "$filename"
+        fi
         if convert "$file" -resize "${DOWNLOAD_MAX_DIM}x${DOWNLOAD_MAX_DIM}>" -quality $DOWNLOAD_QUALITY "$download_path" 2>/dev/null; then
             increment_progress
         fi

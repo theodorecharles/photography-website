@@ -3,7 +3,7 @@
  * Manages photo albums, photo uploads, and image optimization settings
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Album, Photo, ImageOptimizationSettings } from './types';
 import { 
   trackAlbumCreated,
@@ -42,6 +42,28 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   });
   const [optimizationErrors, setOptimizationErrors] = useState<Record<string, string>>({});
   const [optimizationComplete, setOptimizationComplete] = useState(false);
+  const [optimizationLogs, setOptimizationLogs] = useState<string[]>([]);
+  const [isOptimizationRunning, setIsOptimizationRunning] = useState(false);
+  
+  // Refs for auto-scrolling
+  const logContainerRef = useRef<HTMLDivElement>(null);
+  const optimizationSectionRef = useRef<HTMLDivElement>(null);
+
+  // Auto-scroll logs to bottom when they update
+  useEffect(() => {
+    if (logContainerRef.current && isOptimizationRunning) {
+      logContainerRef.current.scrollTop = logContainerRef.current.scrollHeight;
+    }
+  }, [optimizationLogs, isOptimizationRunning]);
+
+  // Scroll page down when logs first appear
+  useEffect(() => {
+    if (optimizationLogs.length === 1 && isOptimizationRunning) {
+      setTimeout(() => {
+        optimizationSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+      }, 100);
+    }
+  }, [optimizationLogs.length, isOptimizationRunning]);
 
   // Load optimization settings from API on mount
   useEffect(() => {
@@ -254,8 +276,8 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     // Validate concurrency
     if (optimizationSettings.concurrency === null || optimizationSettings.concurrency === undefined || optimizationSettings.concurrency === '' as any) {
       errors.concurrency = 'Value required';
-    } else if (optimizationSettings.concurrency < 1 || optimizationSettings.concurrency > 16) {
-      errors.concurrency = 'Must be between 1 and 16';
+    } else if (optimizationSettings.concurrency < 1 || optimizationSettings.concurrency > 32) {
+      errors.concurrency = 'Must be between 1 and 32';
     }
     
     // Validate thumbnail quality
@@ -341,9 +363,15 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   const handleRunOptimization = async (force: boolean = false) => {
     if (!confirm(force ? 'Force regenerate ALL images? This will take a while.' : 'Run image optimization on all photos?')) return;
 
-    setSaving(true);
+    setIsOptimizationRunning(true);
     setOptimizationComplete(false);
+    setOptimizationLogs([]);
     setMessage(null);
+    
+    // Scroll to optimization section
+    setTimeout(() => {
+      optimizationSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    }, 100);
 
     try {
       const res = await fetch(`${API_URL}/api/image-optimization/optimize`, {
@@ -353,17 +381,62 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
         body: JSON.stringify({ force }),
       });
 
-      if (res.ok) {
-        setMessage({ type: 'success', text: 'Optimization started!' });
-        setOptimizationComplete(true);
-      } else {
-        const error = await res.json();
-        setMessage({ type: 'error', text: error.error || 'Failed to start optimization' });
+      if (!res.ok) {
+        setMessage({ type: 'error', text: 'Failed to start optimization' });
+        setIsOptimizationRunning(false);
+        return;
+      }
+
+      // Parse SSE stream
+      const reader = res.body?.getReader();
+      const decoder = new TextDecoder();
+      
+      if (!reader) {
+        setMessage({ type: 'error', text: 'Failed to read response stream' });
+        setIsOptimizationRunning(false);
+        return;
+      }
+
+      let buffer = '';
+      
+      while (true) {
+        const { done, value } = await reader.read();
+        
+        if (done) break;
+        
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop() || ''; // Keep incomplete line in buffer
+        
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            try {
+              const data = JSON.parse(line.slice(6));
+              
+              if (data.type === 'stdout' || data.type === 'stderr') {
+                setOptimizationLogs(prev => [...prev, data.message]);
+              } else if (data.type === 'complete') {
+                setOptimizationComplete(true);
+                // Filter out "Generating" entries when complete
+                setOptimizationLogs(prev => prev.filter(log => !log.startsWith('Generating')));
+                setMessage({ 
+                  type: data.exitCode === 0 ? 'success' : 'error', 
+                  text: data.exitCode === 0 ? 'Optimization completed successfully!' : 'Optimization failed' 
+                });
+              } else if (data.type === 'error') {
+                setMessage({ type: 'error', text: data.message });
+              }
+            } catch (e) {
+              console.error('Failed to parse SSE data:', e);
+            }
+          }
+        }
       }
     } catch (err) {
+      console.error('Optimization error:', err);
       setMessage({ type: 'error', text: 'Network error occurred' });
     } finally {
-      setSaving(false);
+      setIsOptimizationRunning(false);
     }
   };
 
@@ -499,7 +572,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
         </div>
       </section>
       
-      <section className="admin-section">
+      <section className="admin-section" ref={optimizationSectionRef}>
         <h2>⚙️ Image Optimization</h2>
         <p className="section-description">Configure image quality and run optimization</p>
         
@@ -587,11 +660,37 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
           ))}
         </div>
 
+        {optimizationLogs.length > 0 && (
+          <div style={{ marginTop: '2rem' }}>
+            <div 
+              ref={logContainerRef}
+              style={{
+                backgroundColor: '#000',
+                color: '#d4d4d4',
+                padding: '1rem',
+                borderRadius: '4px',
+                border: '1px solid #333',
+                fontFamily: "'Modern DOS', monospace",
+                fontSize: '0.85rem',
+                ...(isOptimizationRunning ? { height: '400px', overflowY: 'auto' } : {}),
+                whiteSpace: 'pre-wrap',
+                wordBreak: 'break-all'
+              }}>
+              {optimizationLogs.map((log, index) => (
+                <div key={index}>{log}</div>
+              ))}
+              {isOptimizationRunning && (
+                <div style={{ marginTop: '0.5rem', color: '#4ade80' }}>⏳ Running...</div>
+              )}
+            </div>
+          </div>
+        )}
+
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem', marginTop: '2rem' }}>
           <button
             className="btn-primary"
             onClick={handleSaveOptimizationSettings}
-            disabled={saving}
+            disabled={saving || isOptimizationRunning}
           >
             {saving ? 'Saving...' : 'Save Settings'}
           </button>
@@ -599,13 +698,13 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
             <button
               onClick={() => handleRunOptimization(true)}
-              disabled={saving}
+              disabled={saving || isOptimizationRunning}
               className="btn-force-regenerate"
             >
-              {saving ? 'Running...' : 'Force Regenerate All'}
+              {isOptimizationRunning ? 'Running...' : 'Force Regenerate All'}
             </button>
-            {optimizationComplete && (
-              <span style={{ color: '#28a745', fontSize: '1.5rem' }}>✓</span>
+            {optimizationComplete && !isOptimizationRunning && (
+              <span style={{ color: 'var(--primary-color)', fontSize: '1.5rem' }}>✓</span>
             )}
           </div>
         </div>

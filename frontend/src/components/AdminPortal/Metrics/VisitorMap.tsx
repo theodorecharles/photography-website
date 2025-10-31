@@ -101,7 +101,7 @@ export default function VisitorMap({ locations, loading }: VisitorMapProps) {
             key={index}
             center={[location.latitude, location.longitude]}
             radius={getMarkerRadius(location.visit_count)}
-            fillColor="#22c55e"
+            fillColor={getComputedStyle(document.documentElement).getPropertyValue('--secondary-color').trim() || '#3b82f6'}
             color="#ffffff"
             weight={2}
             opacity={getMarkerOpacity(location.visit_count)}

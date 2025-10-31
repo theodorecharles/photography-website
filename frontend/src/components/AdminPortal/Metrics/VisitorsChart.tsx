@@ -21,6 +21,10 @@ interface VisitorsChartProps {
 }
 
 const VisitorsChart: React.FC<VisitorsChartProps> = ({ data, loading }) => {
+  // Get the secondary color from CSS custom property
+  const secondaryColor = getComputedStyle(document.documentElement)
+    .getPropertyValue('--secondary-color')
+    .trim() || '#3b82f6';
   if (loading) {
     return (
       <div className="metrics-section">
@@ -63,8 +67,8 @@ const VisitorsChart: React.FC<VisitorsChartProps> = ({ data, loading }) => {
           >
             <defs>
               <linearGradient id="colorVisitors" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#22c55e" stopOpacity={0.6}/>
-                <stop offset="95%" stopColor="#22c55e" stopOpacity={0.05}/>
+                <stop offset="5%" stopColor={secondaryColor} stopOpacity={0.6}/>
+                <stop offset="95%" stopColor={secondaryColor} stopOpacity={0.05}/>
               </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="3 3" stroke="#535353" opacity={0.5} />
@@ -90,13 +94,13 @@ const VisitorsChart: React.FC<VisitorsChartProps> = ({ data, loading }) => {
                 color: '#e5e7eb'
               }}
               labelStyle={{ color: '#f9fafb', fontWeight: 600 }}
-              itemStyle={{ color: '#22c55e' }}
+              itemStyle={{ color: secondaryColor }}
               formatter={(value: number) => [value, 'Visitors']}
             />
             <Area 
               type="linear" 
               dataKey="count" 
-              stroke="#22c55e" 
+              stroke={secondaryColor} 
               strokeWidth={3}
               fillOpacity={1}
               fill="url(#colorVisitors)"

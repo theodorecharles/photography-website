@@ -103,6 +103,24 @@ const LinksManager: React.FC<LinksManagerProps> = ({
     setDragOverIndex(null);
   };
 
+  const handleMoveUp = (index: number) => {
+    if (index === 0) return;
+    const newLinks = [...externalLinks];
+    const temp = newLinks[index];
+    newLinks[index] = newLinks[index - 1];
+    newLinks[index - 1] = temp;
+    setExternalLinks(newLinks);
+  };
+
+  const handleMoveDown = (index: number) => {
+    if (index === externalLinks.length - 1) return;
+    const newLinks = [...externalLinks];
+    const temp = newLinks[index];
+    newLinks[index] = newLinks[index + 1];
+    newLinks[index + 1] = temp;
+    setExternalLinks(newLinks);
+  };
+
   const handleSaveLinks = async () => {
     setSaving(true);
     setMessage(null);
@@ -222,9 +240,40 @@ const LinksManager: React.FC<LinksManagerProps> = ({
                   className="link-input"
                 />
               </div>
+              <div className="mobile-controls">
+                <div className="mobile-reorder-buttons">
+                  <button
+                    onClick={() => handleMoveUp(index)}
+                    className="btn-reorder"
+                    title="Move up"
+                    disabled={index === 0}
+                  >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <polyline points="18 15 12 9 6 15" />
+                    </svg>
+                  </button>
+                  <button
+                    onClick={() => handleMoveDown(index)}
+                    className="btn-reorder"
+                    title="Move down"
+                    disabled={index === externalLinks.length - 1}
+                  >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <polyline points="6 9 12 15 18 9" />
+                    </svg>
+                  </button>
+                </div>
+                <button
+                  onClick={() => handleDeleteLink(index)}
+                  className="btn-delete-mobile"
+                  title="Delete link"
+                >
+                  Delete
+                </button>
+              </div>
               <button
                 onClick={() => handleDeleteLink(index)}
-                className="btn-delete"
+                className="btn-delete btn-delete-desktop"
                 title="Delete link"
               >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

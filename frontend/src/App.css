@@ -1,6 +1,6 @@
 :root {
-  --primary-color: #ffffff;
-  --secondary-color: #f5f5f5;
+  --primary-color: #4ade80;
+  --secondary-color: #3b82f6;
   --text-color: #333;
   --light-text: #333;
   
@@ -95,7 +95,7 @@ body {
   margin-top: 1.5rem;
   padding: 0.75rem 2rem;
   font-size: 1.1rem;
-  background-color: #4ade80;
+  background-color: var(--primary-color);
   color: #1e1e1e;
   border: none;
   border-radius: 8px;
@@ -105,9 +105,10 @@ body {
 }
 
 .retry-button:hover {
-  background-color: #22c55e;
+  background-color: var(--primary-color);
+  filter: brightness(0.9);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(74, 222, 128, 0.4);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--primary-color) 40%, transparent);
 }
 
 .retry-button:active {

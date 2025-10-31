@@ -55,6 +55,11 @@ interface VisitorLocation {
 }
 
 export default function Metrics() {
+  // Get the secondary color from CSS custom property
+  const secondaryColor = getComputedStyle(document.documentElement)
+    .getPropertyValue('--secondary-color')
+    .trim() || '#3b82f6';
+
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -169,12 +174,7 @@ export default function Metrics() {
         });
         
         filledData.push({
-          hour: currentHour.toLocaleString('en-US', {
-            month: 'short',
-            day: 'numeric',
-            hour: 'numeric',
-            hour12: true
-          }),
+          hour: currentHour.toISOString(),
           pageviews: existing ? existing.pageviews : 0
         });
         
@@ -289,10 +289,13 @@ export default function Metrics() {
   }
 
   return (
-    <div className="metrics-container">
-      <div className="metrics-header">
-        <h2>Metrics</h2>
-        <div className="time-range-selector">
+    <section className="admin-section">
+      <div className="metrics-header-wrapper">
+        <div className="metrics-header-content">
+          <h2>📊 Metrics</h2>
+          <p className="section-description">View analytics and visitor data for your photography website</p>
+        </div>
+        <div className="metrics-time-range">
           <label>Time Range:</label>
           <select 
             value={timeRange} 
@@ -370,8 +373,8 @@ export default function Metrics() {
                   >
                     <defs>
                       <linearGradient id="colorVisitors" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#22c55e" stopOpacity={0.6}/>
-                        <stop offset="95%" stopColor="#22c55e" stopOpacity={0.05}/>
+                        <stop offset="5%" stopColor={secondaryColor} stopOpacity={0.6}/>
+                        <stop offset="95%" stopColor={secondaryColor} stopOpacity={0.05}/>
                       </linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" stroke="#535353" opacity={0.5} />
@@ -397,13 +400,13 @@ export default function Metrics() {
                         color: '#e5e7eb'
                       }}
                       labelStyle={{ color: '#f9fafb', fontWeight: 600 }}
-                      itemStyle={{ color: '#22c55e' }}
+                      itemStyle={{ color: secondaryColor }}
                       formatter={(value: number) => [value, 'Visitors']}
                     />
                     <Area 
                       type="linear" 
                       dataKey="count" 
-                      stroke="#22c55e" 
+                      stroke={secondaryColor} 
                       strokeWidth={3}
                       fillOpacity={1}
                       fill="url(#colorVisitors)"
@@ -434,20 +437,30 @@ export default function Metrics() {
                   >
                     <defs>
                       <linearGradient id="colorPageviews" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#22c55e" stopOpacity={0.6}/>
-                        <stop offset="95%" stopColor="#22c55e" stopOpacity={0.05}/>
+                        <stop offset="5%" stopColor={secondaryColor} stopOpacity={0.6}/>
+                        <stop offset="95%" stopColor={secondaryColor} stopOpacity={0.05}/>
                       </linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" stroke="#535353" opacity={0.5} />
                     <XAxis 
                       dataKey="hour" 
                       stroke="#9ca3af"
-                      style={{ fontSize: '0.75rem', fill: '#9ca3af' }}
-                      angle={-45}
-                      textAnchor="end"
-                      height={80}
+                      style={{ fontSize: '0.875rem', fill: '#9ca3af' }}
                       tick={{ fill: '#9ca3af' }}
-                      interval={Math.max(Math.floor(pageviewsByHour.length / 20), 0)}
+                      ticks={pageviewsByHour
+                        .filter((d) => {
+                          const date = new Date(d.hour);
+                          const localHour = date.getHours();
+                          return localHour === 0; // Show only midnight hours
+                        })
+                        .map((d) => d.hour)}
+                      tickFormatter={(value: string) => {
+                        const date = new Date(value);
+                        return date.toLocaleDateString('en-US', {
+                          month: 'short',
+                          day: 'numeric'
+                        });
+                      }}
                     />
                     <YAxis 
                       stroke="#9ca3af"
@@ -464,13 +477,13 @@ export default function Metrics() {
                         color: '#e5e7eb'
                       }}
                       labelStyle={{ color: '#f9fafb', fontWeight: 600 }}
-                      itemStyle={{ color: '#22c55e' }}
+                      itemStyle={{ color: secondaryColor }}
                       formatter={(value: number) => [value, 'Pageviews']}
                     />
                     <Area 
                       type="linear" 
                       dataKey="pageviews" 
-                      stroke="#22c55e" 
+                      stroke={secondaryColor} 
                       strokeWidth={3}
                       fillOpacity={1}
                       fill="url(#colorPageviews)"
@@ -758,7 +771,7 @@ export default function Metrics() {
           </div>
         </>
       )}
-    </div>
+    </section>
   );
 }
 
