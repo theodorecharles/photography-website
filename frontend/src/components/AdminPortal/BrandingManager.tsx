@@ -123,7 +123,6 @@ const BrandingManager: React.FC<BrandingManagerProps> = ({
       
       <div className="branding-grid">
         <div className="branding-group">
-          <label className="branding-label">Avatar/Logo</label>
           <div className="avatar-upload-container">
             {(avatarPreviewUrl || branding.avatarPath) && (
               <img 
@@ -134,7 +133,7 @@ const BrandingManager: React.FC<BrandingManagerProps> = ({
               />
             )}
             <label className="btn-secondary upload-avatar-btn">
-              {pendingAvatarFile ? 'Change Avatar' : 'Select Avatar'}
+              {pendingAvatarFile ? 'Upload Logo' : 'Edit Logo'}
               <input
                 type="file"
                 accept="image/*"
@@ -160,6 +159,44 @@ const BrandingManager: React.FC<BrandingManagerProps> = ({
             className="branding-input"
             placeholder="Your site name"
           />
+        </div>
+
+        <div className="branding-group">
+          <label className="branding-label">Primary Color</label>
+          <div className="color-input-group">
+            <input
+              type="color"
+              value={branding.primaryColor}
+              onChange={(e) => handleBrandingChange('primaryColor', e.target.value)}
+              className="color-picker"
+            />
+            <input
+              type="text"
+              value={branding.primaryColor}
+              onChange={(e) => handleBrandingChange('primaryColor', e.target.value)}
+              className="branding-input color-text"
+              placeholder="#4ade80"
+            />
+          </div>
+        </div>
+
+        <div className="branding-group">
+          <label className="branding-label">Secondary Color</label>
+          <div className="color-input-group">
+            <input
+              type="color"
+              value={branding.secondaryColor}
+              onChange={(e) => handleBrandingChange('secondaryColor', e.target.value)}
+              className="color-picker"
+            />
+            <input
+              type="text"
+              value={branding.secondaryColor}
+              onChange={(e) => handleBrandingChange('secondaryColor', e.target.value)}
+              className="branding-input color-text"
+              placeholder="#3b82f6"
+            />
+          </div>
         </div>
 
         <div className="branding-group full-width">
