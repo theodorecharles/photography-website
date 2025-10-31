@@ -454,7 +454,7 @@ const PhotoModal: React.FC<PhotoModalProps> = ({
             showHint={showNavigationHint}
             onPrevious={handleNavigatePrev}
             onNext={handleNavigateNext}
-            style={imageBounds ? { width: `${imageBounds.width}px`, left: `${imageBounds.left}px` } : {}}
+            style={imageBounds ? { right: `${imageBounds.left}px` } : {}}
           />
         </div>
       </div>
