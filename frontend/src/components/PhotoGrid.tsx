@@ -980,19 +980,6 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
                 style={{ opacity: modalImageLoaded ? 1 : 0 }}
               />
               <img
-                ref={(img) => {
-                  // Force immediate display if already cached
-                  if (img && img.complete) {
-                    img.style.opacity = modalImageLoaded ? '0' : '1';
-                  }
-                }}
-                onLoad={(e) => {
-                  // Ensure cached images display immediately
-                  const img = e.currentTarget;
-                  if (!modalImageLoaded) {
-                    img.style.opacity = '1';
-                  }
-                }}
                 src={`${API_URL}${selectedPhoto.thumbnail}${imageQueryString}`}
                 alt={`${selectedPhoto.album} photography by Ted Charles - ${selectedPhoto.title}`}
                 title={selectedPhoto.title}
