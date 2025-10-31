@@ -11,6 +11,7 @@ interface InfoPanelProps {
   photo: Photo;
   exifData: ExifData | null;
   loadingExif: boolean;
+  style?: React.CSSProperties;
 }
 
 const formatFileSize = (bytes: number): string => {
@@ -24,11 +25,12 @@ const InfoPanel: React.FC<InfoPanelProps> = ({
   photo,
   exifData,
   loadingExif,
+  style,
 }) => {
   if (!show) return null;
 
   return (
-    <div className="modal-info-panel">
+    <div className="modal-info-panel" style={style}>
       <div className="info-item">
         <span className="info-label">File:</span>
         <span className="info-value">{photo.id.split('/').pop()}</span>
