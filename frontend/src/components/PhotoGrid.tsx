@@ -68,6 +68,11 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
     setColumnTransforms([]);
   }, [album]);
 
+  // Update column count when photos change
+  useEffect(() => {
+    setNumColumns(getNumColumns(photos.length));
+  }, [photos.length]);
+
   // Auto-open photo from URL query parameter
   useEffect(() => {
     if (photos.length > 0 && !selectedPhoto) {
@@ -152,8 +157,18 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
     }));
   };
 
-  // Function to get number of columns based on window width
-  const getNumColumns = () => {
+  // Function to get number of columns based on window width and photo count
+  const getNumColumns = (photoCount: number) => {
+    // Always use 1 column on mobile (< 512px)
+    if (window.innerWidth < 512) return 1;
+    
+    // For albums with fewer than 12 images, use 2 columns
+    if (photoCount < 12) return 2;
+    
+    // For albums with 12-23 images, use 3 columns
+    if (photoCount >= 12 && photoCount <= 23) return 3;
+    
+    // For albums with > 24 images, use responsive columns based on width
     if (window.innerWidth >= 1600) return 5;
     if (window.innerWidth >= 1200) return 4;
     if (window.innerWidth >= 900) return 3;
@@ -162,7 +177,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
   };
 
   // State for number of columns
-  const [numColumns, setNumColumns] = useState(getNumColumns());
+  const [numColumns, setNumColumns] = useState(getNumColumns(photos.length));
   
   // Refs for column elements and their transforms
   const columnRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -173,7 +188,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
   // Handle window resize
   useEffect(() => {
     const handleResize = () => {
-      setNumColumns(getNumColumns());
+      setNumColumns(getNumColumns(photos.length));
       // On resize, switch to full-page calculation if we have a shift point
       if (shiftPointRef.current !== null) {
         hasReachedBottomRef.current = true;
@@ -183,7 +198,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
 
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
-  }, []);
+  }, [photos.length]);
 
   // Function to distribute photos into columns
   const distributePhotos = (photos: Photo[], numColumns: number) => {
@@ -240,16 +255,8 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
 
   // Effect to handle scroll-based column alignment
   useEffect(() => {
-    // Get distributed columns to check photo counts
-    const distributedCols = distributePhotos(photos, numColumns);
-    
-    // Only apply the effect if:
-    // 1. More than one column
-    // 2. At least one column has 5 or more photos
-    const hasMultipleColumns = numColumns > 1;
-    const hasSubstantialColumn = distributedCols.some(col => col.length >= 5);
-    
-    if (!hasMultipleColumns || !hasSubstantialColumn) {
+    // Only apply the effect if there is more than one column
+    if (numColumns <= 1) {
       setColumnTransforms([]);
       shiftPointRef.current = null;
       return;
@@ -314,12 +321,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
       }
 
       // Calculate transforms for each column
-      const transforms = columnHeights.map((height, index) => {
-        // Don't shift columns with 4 or fewer photos
-        if (distributedCols[index] && distributedCols[index].length <= 4) {
-          return 0;
-        }
-        
+      const transforms = columnHeights.map((height) => {
         // Tallest column doesn't move
         if (height === maxHeight) return 0;
         
@@ -353,7 +355,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
   }
 
   return (
-    <div className="photo-grid">
+    <div className="photo-grid" style={{ gridTemplateColumns: `repeat(${numColumns}, 1fr)` }}>
       {distributePhotos(photos, numColumns).map((column, columnIndex) => (
         <div 
           key={columnIndex} 
