@@ -35,7 +35,7 @@ const ImageCanvas: React.FC<ImageCanvasProps> = ({
           width: '100%',
           height: '100%',
           maxWidth: 'calc(100vw - 30px)',
-          maxHeight: 'calc(100vh - 160px)',
+          maxHeight: 'calc(100vh - 100px)',
           objectFit: 'contain',
           display: 'block',
           opacity: modalImageLoaded ? 0 : 1,
@@ -56,7 +56,7 @@ const ImageCanvas: React.FC<ImageCanvasProps> = ({
             width: '100%',
             height: '100%',
             maxWidth: 'calc(100vw - 30px)',
-            maxHeight: 'calc(100vh - 160px)',
+            maxHeight: 'calc(100vh - 100px)',
             objectFit: 'contain',
             opacity: modalImageLoaded ? 1 : 0,
             pointerEvents: modalImageLoaded ? 'auto' : 'none'
