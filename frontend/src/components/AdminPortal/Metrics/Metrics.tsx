@@ -450,8 +450,8 @@ export default function Metrics() {
                     <XAxis 
                       dataKey="hour" 
                       stroke="#9ca3af"
-                      style={{ fontSize: '0.75rem', fill: '#9ca3af' }}
-                      height={40}
+                      style={{ fontSize: '0.875rem', fill: '#9ca3af' }}
+                      interval="preserveStartEnd"
                       tick={{ fill: '#9ca3af' }}
                       ticks={pageviewsByHour
                         .filter((d) => {
