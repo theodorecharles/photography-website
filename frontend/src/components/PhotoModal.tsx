@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
-import { trackPhotoClick, trackPhotoNavigation, trackPhotoDownload, trackModalClose } from '../utils/analytics';
+import { trackPhotoNavigation, trackPhotoDownload, trackModalClose } from '../utils/analytics';
 import { fetchWithRateLimitCheck } from '../utils/fetchWrapper';
 import { SITE_URL, cacheBustValue } from '../config';
 import './PhotoModal.css';

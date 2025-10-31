@@ -5,6 +5,7 @@
  */
 
 import { Link } from 'react-router-dom';
+import './License.css';
 
 function License() {
   return (
