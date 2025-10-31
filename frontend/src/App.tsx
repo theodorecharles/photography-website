@@ -65,25 +65,18 @@ function PrimesRedirect() {
  * Navigation component handles the main navigation menu including:
  * - Albums dropdown
  * - External links dropdown
- * - Mobile menu
  *
  * @param albums - List of available photo albums
  * @param externalLinks - List of external navigation links
- * @param isMenuOpen - State of the mobile menu
- * @param setIsMenuOpen - Function to toggle mobile menu state
  * @param currentAlbum - Currently selected album
  */
 function Navigation({
   albums,
   externalLinks,
-  isMenuOpen,
-  setIsMenuOpen,
   currentAlbum,
 }: {
   albums: string[];
   externalLinks: ExternalLink[];
-  isMenuOpen: boolean;
-  setIsMenuOpen: (value: boolean) => void;
   currentAlbum?: string;
 }) {
   // State for managing dropdown visibility
@@ -278,76 +271,6 @@ function Navigation({
           </div>
         </div>
       </nav>
-      {/* Mobile menu dropdown */}
-      <div
-        className={`dropdown-container mobile-dropdown ${
-          isMenuOpen ? "active" : ""
-        }`}
-      >
-        <div className={`dropdown-menu ${isMenuOpen ? "open" : ""}`}>
-          <div className="mobile-section">
-            {albums.map((album) => (
-              <Link
-                key={album}
-                to={`/album/${album}`}
-                className="nav-link"
-                onClick={() => {
-                  setIsMenuOpen(false);
-                  trackAlbumNavigation(album, 'mobile_menu');
-                }}
-              >
-                {album.charAt(0).toUpperCase() + album.slice(1)}
-              </Link>
-            ))}
-          </div>
-          <div className="mobile-section">
-            {externalLinks.map((link) => (
-              <a
-                key={link.title}
-                href={link.url}
-                className="nav-link external"
-                onClick={() => {
-                  setIsMenuOpen(false);
-                  trackExternalLinkClick(link.title, link.url, 'mobile_menu');
-                }}
-              >
-                {link.title}
-                <svg
-                  className="external-icon"
-                  viewBox="0 0 24 24"
-                  width="16"
-                  height="16"
-                >
-                  <path
-                    d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  <path
-                    d="M15 3h6v6"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  <path
-                    d="M10 14L21 3"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </a>
-            ))}
-          </div>
-        </div>
-      </div>
     </>
   );
 }
@@ -368,7 +291,6 @@ function App() {
   const [avatarCacheBust, setAvatarCacheBust] = useState(Date.now());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [currentAlbum, setCurrentAlbum] = useState<string | undefined>(
     undefined
   );
@@ -422,42 +344,6 @@ function App() {
       trackPageView(path);
     }
   }, [location]);
-
-  // Handle clicks outside the mobile menu
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      const mobileMenu = document.querySelector(".mobile-menu");
-      const hamburgerMenu = document.querySelector(".hamburger-menu");
-
-      if (
-        isMenuOpen &&
-        mobileMenu &&
-        !mobileMenu.contains(event.target as Node) &&
-        !hamburgerMenu?.contains(event.target as Node)
-      ) {
-        setIsMenuOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [isMenuOpen]);
-
-  // Handle scroll to close mobile menu
-  useEffect(() => {
-    const handleScroll = () => {
-      if (isMenuOpen) {
-        setIsMenuOpen(false);
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, [isMenuOpen]);
 
   // Fetch albums, external links, and branding data
   const fetchData = async () => {
@@ -519,18 +405,8 @@ function App() {
     window.addEventListener('albums-updated', handleNavigationUpdate);
     window.addEventListener('external-links-updated', handleNavigationUpdate);
     window.addEventListener('branding-updated', handleNavigationUpdate);
-
-    // Handle window resize for mobile menu
-    const handleResize = () => {
-      if (window.innerWidth >= 768) {
-        setIsMenuOpen(false);
-      }
-    };
-
-    window.addEventListener("resize", handleResize);
     
     return () => {
-      window.removeEventListener("resize", handleResize);
       window.removeEventListener('albums-updated', handleNavigationUpdate);
       window.removeEventListener('external-links-updated', handleNavigationUpdate);
       window.removeEventListener('branding-updated', handleNavigationUpdate);
@@ -576,8 +452,6 @@ function App() {
         <Navigation
           albums={albums}
           externalLinks={externalLinks}
-          isMenuOpen={isMenuOpen}
-          setIsMenuOpen={setIsMenuOpen}
           currentAlbum={currentAlbum}
         />
       </header>
