@@ -341,7 +341,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
         
         console.log('[PERF] Starting image preload', performance.now());
         img.src = modalUrl;
-      }, 200000);
+      }, 20);
       
       return () => clearTimeout(timer);
     }
@@ -1079,15 +1079,11 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
                   alt={`${selectedPhoto.album} photography by Ted Charles - ${selectedPhoto.title}`}
                   title={selectedPhoto.title}
                   style={{ 
-                    display: 'block', 
-                    opacity: 1,
-                    width: 'auto',
-                    height: 'auto',
                     maxWidth: '90vw',
                     maxHeight: '80vh',
-                    minWidth: '300px',
-                    minHeight: '300px',
-                    objectFit: 'contain'
+                    objectFit: 'contain',
+                    width: 'auto',
+                    height: 'auto'
                   }}
                 />
               )}
@@ -1097,15 +1093,11 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
                   alt={`${selectedPhoto.album} photography by Ted Charles - ${selectedPhoto.title}`}
                   title={selectedPhoto.title}
                   style={{ 
-                    display: 'block', 
-                    opacity: 1,
-                    width: 'auto',
-                    height: 'auto',
                     maxWidth: '90vw',
                     maxHeight: '80vh',
-                    minWidth: '300px',
-                    minHeight: '300px',
-                    objectFit: 'contain'
+                    objectFit: 'contain',
+                    width: 'auto',
+                    height: 'auto'
                   }}
                 />
               )}
