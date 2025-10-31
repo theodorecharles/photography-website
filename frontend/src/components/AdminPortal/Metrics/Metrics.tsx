@@ -289,22 +289,22 @@ export default function Metrics() {
   }
 
   return (
-    <div className="metrics-container">
-      <div className="metrics-header">
-        <h2>Metrics</h2>
-        <div className="time-range-selector">
-          <label>Time Range:</label>
-          <select 
-            value={timeRange} 
-            onChange={(e) => setTimeRange(Number(e.target.value))}
-            className="time-range-select"
-          >
-            <option value={7}>Last 7 days</option>
-            <option value={30}>Last 30 days</option>
-            <option value={90}>Last 90 days</option>
-            <option value={365}>Last year</option>
-          </select>
-        </div>
+    <section className="admin-section">
+      <h2>📊 Metrics</h2>
+      <p className="section-description">View analytics and visitor data for your photography website</p>
+      
+      <div className="metrics-time-range">
+        <label>Time Range:</label>
+        <select 
+          value={timeRange} 
+          onChange={(e) => setTimeRange(Number(e.target.value))}
+          className="time-range-select"
+        >
+          <option value={7}>Last 7 days</option>
+          <option value={30}>Last 30 days</option>
+          <option value={90}>Last 90 days</option>
+          <option value={365}>Last year</option>
+        </select>
       </div>
 
       {stats && (
@@ -758,7 +758,7 @@ export default function Metrics() {
           </div>
         </>
       )}
-    </div>
+    </section>
   );
 }
 

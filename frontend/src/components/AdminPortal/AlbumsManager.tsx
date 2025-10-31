@@ -704,7 +704,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
               {isOptimizationRunning ? 'Running...' : 'Force Regenerate All'}
             </button>
             {optimizationComplete && !isOptimizationRunning && (
-              <span style={{ color: '#28a745', fontSize: '1.5rem' }}>✓</span>
+              <span style={{ color: 'var(--primary-color)', fontSize: '1.5rem' }}>✓</span>
             )}
           </div>
         </div>
