@@ -1,10 +1,24 @@
 /* Metrics Component Styles */
 
+.metrics-header-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 2rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.metrics-header-content {
+  flex: 1;
+  min-width: 300px;
+}
+
 .metrics-time-range {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  margin-bottom: 2rem;
+  flex-shrink: 0;
 }
 
 .metrics-time-range label {
@@ -66,10 +80,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--primary-color);
-  color: #000;
+  background: #161616;
+  color: #a8a8a8;
+  border: 1px solid var(--primary-color);
   border-radius: 8px;
-  box-shadow: 0 4px 12px color-mix(in srgb, var(--primary-color) 30%, transparent);
 }
 
 .metric-content {
@@ -405,8 +419,17 @@
 
 /* Responsive Design */
 @media (max-width: 768px) {
+  .metrics-header-wrapper {
+    gap: 1rem;
+  }
+
+  .metrics-header-content {
+    min-width: 100%;
+  }
+
   .metrics-time-range {
-    flex-shrink: 0;
+    width: 100%;
+    justify-content: flex-start;
   }
 
   .metrics-time-range label {

@@ -55,6 +55,11 @@ interface VisitorLocation {
 }
 
 export default function Metrics() {
+  // Get the secondary color from CSS custom property
+  const secondaryColor = getComputedStyle(document.documentElement)
+    .getPropertyValue('--secondary-color')
+    .trim() || '#3b82f6';
+
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -290,21 +295,24 @@ export default function Metrics() {
 
   return (
     <section className="admin-section">
-      <h2>📊 Metrics</h2>
-      <p className="section-description">View analytics and visitor data for your photography website</p>
-      
-      <div className="metrics-time-range">
-        <label>Time Range:</label>
-        <select 
-          value={timeRange} 
-          onChange={(e) => setTimeRange(Number(e.target.value))}
-          className="time-range-select"
-        >
-          <option value={7}>Last 7 days</option>
-          <option value={30}>Last 30 days</option>
-          <option value={90}>Last 90 days</option>
-          <option value={365}>Last year</option>
-        </select>
+      <div className="metrics-header-wrapper">
+        <div className="metrics-header-content">
+          <h2>📊 Metrics</h2>
+          <p className="section-description">View analytics and visitor data for your photography website</p>
+        </div>
+        <div className="metrics-time-range">
+          <label>Time Range:</label>
+          <select 
+            value={timeRange} 
+            onChange={(e) => setTimeRange(Number(e.target.value))}
+            className="time-range-select"
+          >
+            <option value={7}>Last 7 days</option>
+            <option value={30}>Last 30 days</option>
+            <option value={90}>Last 90 days</option>
+            <option value={365}>Last year</option>
+          </select>
+        </div>
       </div>
 
       {stats && (
@@ -370,8 +378,8 @@ export default function Metrics() {
                   >
                     <defs>
                       <linearGradient id="colorVisitors" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#22c55e" stopOpacity={0.6}/>
-                        <stop offset="95%" stopColor="#22c55e" stopOpacity={0.05}/>
+                        <stop offset="5%" stopColor={secondaryColor} stopOpacity={0.6}/>
+                        <stop offset="95%" stopColor={secondaryColor} stopOpacity={0.05}/>
                       </linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" stroke="#535353" opacity={0.5} />
@@ -397,13 +405,13 @@ export default function Metrics() {
                         color: '#e5e7eb'
                       }}
                       labelStyle={{ color: '#f9fafb', fontWeight: 600 }}
-                      itemStyle={{ color: '#22c55e' }}
+                      itemStyle={{ color: secondaryColor }}
                       formatter={(value: number) => [value, 'Visitors']}
                     />
                     <Area 
                       type="linear" 
                       dataKey="count" 
-                      stroke="#22c55e" 
+                      stroke={secondaryColor} 
                       strokeWidth={3}
                       fillOpacity={1}
                       fill="url(#colorVisitors)"
@@ -434,8 +442,8 @@ export default function Metrics() {
                   >
                     <defs>
                       <linearGradient id="colorPageviews" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#22c55e" stopOpacity={0.6}/>
-                        <stop offset="95%" stopColor="#22c55e" stopOpacity={0.05}/>
+                        <stop offset="5%" stopColor={secondaryColor} stopOpacity={0.6}/>
+                        <stop offset="95%" stopColor={secondaryColor} stopOpacity={0.05}/>
                       </linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" stroke="#535353" opacity={0.5} />
@@ -464,13 +472,13 @@ export default function Metrics() {
                         color: '#e5e7eb'
                       }}
                       labelStyle={{ color: '#f9fafb', fontWeight: 600 }}
-                      itemStyle={{ color: '#22c55e' }}
+                      itemStyle={{ color: secondaryColor }}
                       formatter={(value: number) => [value, 'Pageviews']}
                     />
                     <Area 
                       type="linear" 
                       dataKey="pageviews" 
-                      stroke="#22c55e" 
+                      stroke={secondaryColor} 
                       strokeWidth={3}
                       fillOpacity={1}
                       fill="url(#colorPageviews)"
