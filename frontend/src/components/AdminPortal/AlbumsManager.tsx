@@ -56,6 +56,15 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     }
   }, [optimizationLogs, isOptimizationRunning]);
 
+  // Scroll page down when logs first appear
+  useEffect(() => {
+    if (optimizationLogs.length === 1 && isOptimizationRunning) {
+      setTimeout(() => {
+        optimizationSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+      }, 100);
+    }
+  }, [optimizationLogs.length, isOptimizationRunning]);
+
   // Load optimization settings from API on mount
   useEffect(() => {
     loadOptimizationSettings();
