@@ -42,6 +42,8 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   });
   const [optimizationErrors, setOptimizationErrors] = useState<Record<string, string>>({});
   const [optimizationComplete, setOptimizationComplete] = useState(false);
+  const [optimizationLogs, setOptimizationLogs] = useState<string[]>([]);
+  const [isOptimizationRunning, setIsOptimizationRunning] = useState(false);
 
   // Load optimization settings from API on mount
   useEffect(() => {
@@ -341,8 +343,9 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   const handleRunOptimization = async (force: boolean = false) => {
     if (!confirm(force ? 'Force regenerate ALL images? This will take a while.' : 'Run image optimization on all photos?')) return;
 
-    setSaving(true);
+    setIsOptimizationRunning(true);
     setOptimizationComplete(false);
+    setOptimizationLogs([]);
     setMessage(null);
 
     try {
@@ -353,17 +356,60 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
         body: JSON.stringify({ force }),
       });
 
-      if (res.ok) {
-        setMessage({ type: 'success', text: 'Optimization started!' });
-        setOptimizationComplete(true);
-      } else {
-        const error = await res.json();
-        setMessage({ type: 'error', text: error.error || 'Failed to start optimization' });
+      if (!res.ok) {
+        setMessage({ type: 'error', text: 'Failed to start optimization' });
+        setIsOptimizationRunning(false);
+        return;
+      }
+
+      // Parse SSE stream
+      const reader = res.body?.getReader();
+      const decoder = new TextDecoder();
+      
+      if (!reader) {
+        setMessage({ type: 'error', text: 'Failed to read response stream' });
+        setIsOptimizationRunning(false);
+        return;
+      }
+
+      let buffer = '';
+      
+      while (true) {
+        const { done, value } = await reader.read();
+        
+        if (done) break;
+        
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop() || ''; // Keep incomplete line in buffer
+        
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            try {
+              const data = JSON.parse(line.slice(6));
+              
+              if (data.type === 'stdout' || data.type === 'stderr') {
+                setOptimizationLogs(prev => [...prev, data.message]);
+              } else if (data.type === 'complete') {
+                setOptimizationComplete(true);
+                setMessage({ 
+                  type: data.exitCode === 0 ? 'success' : 'error', 
+                  text: data.exitCode === 0 ? 'Optimization completed successfully!' : 'Optimization failed' 
+                });
+              } else if (data.type === 'error') {
+                setMessage({ type: 'error', text: data.message });
+              }
+            } catch (e) {
+              console.error('Failed to parse SSE data:', e);
+            }
+          }
+        }
       }
     } catch (err) {
+      console.error('Optimization error:', err);
       setMessage({ type: 'error', text: 'Network error occurred' });
     } finally {
-      setSaving(false);
+      setIsOptimizationRunning(false);
     }
   };
 
@@ -591,7 +637,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
           <button
             className="btn-primary"
             onClick={handleSaveOptimizationSettings}
-            disabled={saving}
+            disabled={saving || isOptimizationRunning}
           >
             {saving ? 'Saving...' : 'Save Settings'}
           </button>
@@ -599,16 +645,41 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
             <button
               onClick={() => handleRunOptimization(true)}
-              disabled={saving}
+              disabled={saving || isOptimizationRunning}
               className="btn-force-regenerate"
             >
-              {saving ? 'Running...' : 'Force Regenerate All'}
+              {isOptimizationRunning ? 'Running...' : 'Force Regenerate All'}
             </button>
-            {optimizationComplete && (
+            {optimizationComplete && !isOptimizationRunning && (
               <span style={{ color: '#28a745', fontSize: '1.5rem' }}>✓</span>
             )}
           </div>
         </div>
+
+        {optimizationLogs.length > 0 && (
+          <div style={{ marginTop: '2rem' }}>
+            <h3>Optimization Progress</h3>
+            <div style={{
+              backgroundColor: '#1e1e1e',
+              color: '#d4d4d4',
+              padding: '1rem',
+              borderRadius: '4px',
+              fontFamily: 'monospace',
+              fontSize: '0.85rem',
+              maxHeight: '400px',
+              overflowY: 'auto',
+              whiteSpace: 'pre-wrap',
+              wordBreak: 'break-all'
+            }}>
+              {optimizationLogs.map((log, index) => (
+                <div key={index}>{log}</div>
+              ))}
+              {isOptimizationRunning && (
+                <div style={{ marginTop: '0.5rem', color: '#4ade80' }}>⏳ Running...</div>
+              )}
+            </div>
+          </div>
+        )}
       </section>
     </>
   );
