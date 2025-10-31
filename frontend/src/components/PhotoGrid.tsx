@@ -54,6 +54,8 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
 
   // Get query parameters from current URL for API calls (not for images)
   const queryParams = new URLSearchParams(location.search);
+  // Remove 'photo' param from API queryString to prevent refetching when opening modals
+  queryParams.delete('photo');
   const queryString = queryParams.toString()
     ? `?${queryParams.toString()}&i=${cacheBustValue}`
     : `?i=${cacheBustValue}`;
@@ -286,12 +288,16 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
 
   // Auto-open photo from URL query parameter
   useEffect(() => {
+    console.log('[PERF] Auto-open effect running', performance.now(), 'photos.length:', photos.length, 'selectedPhoto:', !!selectedPhoto);
     if (photos.length > 0 && !selectedPhoto) {
-      const photoParam = queryParams.get('photo');
+      const urlParams = new URLSearchParams(location.search);
+      const photoParam = urlParams.get('photo');
+      console.log('[PERF] Photo param from URL:', photoParam);
       if (photoParam) {
         // Find photo by filename
         const photo = photos.find(p => p.id.endsWith(photoParam));
         if (photo) {
+          console.log('[PERF] Auto-opening photo from URL', performance.now());
           setModalImageLoaded(false);
           setSelectedPhoto(photo);
           modalOpenTimeRef.current = Date.now();
@@ -664,6 +670,10 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
 
       {selectedPhoto && (
         <div className={`modal ${isFullscreen ? 'fullscreen' : ''}`} onClick={handleCloseModal}>
+          {(() => {
+            console.log('[PERF] Modal rendering, selectedPhoto.id:', selectedPhoto.id, performance.now());
+            return null;
+          })()}
           <div 
             key={selectedPhoto.id}
             className="modal-content" 
