@@ -36,7 +36,7 @@
   position: relative;
   width: 100%;
   height: 100%;
-  max-width: calc(-80px + 100vw);
+  max-width: calc(-30px + 100vw);
   max-height: calc(-160px + 100vh);
 }
 
@@ -45,7 +45,7 @@
   position: relative;
   width: 100%;
   height: 100%;
-  max-width: calc(-80px + 100vw); /* 40px gap on each side */
+  max-width: calc(-30px + 100vw); /* 40px gap on each side */
   max-height: calc(-160px + 100vh); /* 80px gap on top and bottom for controls */
   display: flex;
   flex-direction: column;
@@ -247,7 +247,7 @@
 /* Mobile-specific adjustments */
 @media (max-width: 599px) {
   .modal-image-container {
-    max-width: calc(100vw - 40px); /* 20px gap on each side on mobile */
+    max-width: calc(100vw - 20px); /* 20px gap on each side on mobile */
     max-height: calc(100vh - 120px); /* 60px gap top/bottom on mobile */
   }
 }
