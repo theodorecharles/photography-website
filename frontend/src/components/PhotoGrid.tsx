@@ -36,7 +36,13 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
   const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [modalImageLoaded, setModalImageLoaded] = useState(false);
+  
+  const [modalImageLoaded, setModalImageLoadedRaw] = useState(false);
+  const setModalImageLoaded = (value: boolean) => {
+    console.log('[PERF] setModalImageLoaded called with:', value, 'at', performance.now());
+    setModalImageLoadedRaw(value);
+  };
+  
   const [showInfo, setShowInfo] = useState(false);
   const [exifData, setExifData] = useState<any>(null);
   const [loadingExif, setLoadingExif] = useState(false);
