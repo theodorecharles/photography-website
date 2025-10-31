@@ -1,0 +1,74 @@
+/**
+ * License page styles
+ */
+
+.license-page {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+  color: #fff;
+}
+
+.license-page h1 {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #fff;
+}
+
+.license-content {
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.license-content h2 {
+  color: #fff;
+  margin-top: 0rem;
+  margin-bottom: 1rem;
+}
+
+.license-content ul {
+  margin-bottom: 1.5rem;
+  padding-left: 1.5rem;
+}
+
+.license-content li {
+  margin-bottom: 0.5rem;
+  line-height: 1.6;
+}
+
+.license-content p {
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+.license-content a {
+  color: #fff;
+  text-decoration: none;
+  border-bottom: 1px solid #fff;
+}
+
+.license-content a:hover {
+  opacity: 0.8;
+}
+
+.license-links {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+.license-link {
+  color: #fff;
+  text-decoration: none;
+  padding: 0.75rem 1.5rem;
+  background-color: #3b3b3b;
+  border-radius: 4px;
+  display: inline-block;
+  transition: background-color 0.2s;
+}
+
+.license-link:hover {
+  background-color: #4b4b4b;
+}
+

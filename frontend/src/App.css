@@ -118,157 +118,15 @@ body {
   transform: translateY(0);
 }
 
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.photo-item {
-  margin-top: 0;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: all 0.1s ease;
-  background-color: #1a1a1a;
-}
-
-.photo-item:hover {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
 @media (max-width: 599px) {
-  .header {
-    padding: 0 0.5rem;
-  }
-  
   .main-content {
     margin-top: 54px;
     padding-bottom: 2rem;
-  }
-
-  .photo-item {
-    padding: 0;
-  }
-}
-
-@media (max-width: 767px) {
-  .album-nav {
-    display: flex;
-  }
-}
-
-@media (max-width: 768px) {
-  .album-nav {
-    display: flex;
-  }
-}
-
-@media (max-width: 335px) {
-  .header-title {
-    display: none;
-  }
-}
-
-@media (max-width: 599px) {
-  .album-title {
-    display: none;
   }
   
   .main-content-title {
     display: block;
   }
-}
-
-/* Footer styles */
-.footer {
-  background-color: #252525;
-  padding: 2rem 0;
-  border-top: 1px solid #444;
-}
-
-.footer-content {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 1rem;
-  text-align: center;
-  color: #fff;
-}
-
-.footer-content p {
-  margin-bottom: 1rem;
-}
-
-.footer-links {
-  display: flex;
-  justify-content: center;
-  gap: 2rem;
-}
-
-.footer-link {
-  color: #fff;
-  text-decoration: none;
-  font-weight: 500;
-  border-bottom: 1px solid #fff;
-}
-
-.footer-link:hover {
-  opacity: 0.8;
-}
-
-/* License page styles */
-.license-page {
-  max-width: 800px;
-  margin: 2rem auto;
-  padding: 0 1rem;
-  color: #fff;
-}
-
-.license-page h1 {
-  text-align: center;
-  margin-bottom: 2rem;
-  color: #fff;
-}
-
-.license-content {
-  background-color: rgba(255, 255, 255, 0.1);
-  padding: 2rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-.license-content h2 {
-  color: #fff;
-  margin-top: 0rem;
-  margin-bottom: 1rem;
-}
-
-.license-content ul {
-  margin-bottom: 1.5rem;
-  padding-left: 1.5rem;
-}
-
-.license-content li {
-  margin-bottom: 0.5rem;
-  line-height: 1.6;
-}
-
-.license-content p {
-  line-height: 1.6;
-  margin-bottom: 1rem;
-}
-
-.license-content a {
-  color: #fff;
-  text-decoration: none;
-  border-bottom: 1px solid #fff;
-}
-
-.license-content a:hover {
-  opacity: 0.8;
 }
 
 /* Albums list styles */

@@ -45,35 +45,6 @@ function Footer({ albums: _albums = [], externalLinks: _externalLinks = [], curr
   return (
     <footer className="footer">
       <div className="footer-content">
-        {/* <h3>{currentAlbum === 'homepage' ? 'Select an album' : 'Select another album'}</h3>
-        <div className="albums-buttons">
-          {albums
-            .filter(albumName => albumName !== 'homepage' && (currentAlbum === 'homepage' || albumName !== currentAlbum))
-            .map((albumName) => (
-              <Link
-                key={albumName}
-                to={`/album/${albumName}`}
-                className="album-button"
-                onClick={() => trackAlbumNavigation(albumName, 'footer')}
-              >
-                {albumName.charAt(0).toUpperCase() + albumName.slice(1)}
-              </Link>
-            ))}
-          
-          {externalLinks && externalLinks.length > 0 && externalLinks.map((link) => (
-            <a
-              key={link.url}
-              href={link.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="album-button"
-              onClick={() => trackExternalLinkClick(link.title, link.url, 'footer')}
-            >
-              {link.title}
-            </a>
-          ))}
-        </div> */}
-        
         <div className="footer-bottom">
           <span>&copy; {currentYear} Ted Charles.</span>
           <div className="footer-links">
