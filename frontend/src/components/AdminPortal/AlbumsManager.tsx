@@ -18,14 +18,12 @@ const API_URL = import.meta.env.VITE_API_URL || '';
 
 interface AlbumsManagerProps {
   albums: Album[];
-  setAlbums: (albums: Album[]) => void;
   loadAlbums: () => Promise<void>;
   setMessage: (message: { type: 'success' | 'error'; text: string } | null) => void;
 }
 
 const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   albums,
-  setAlbums,
   loadAlbums,
   setMessage,
 }) => {
