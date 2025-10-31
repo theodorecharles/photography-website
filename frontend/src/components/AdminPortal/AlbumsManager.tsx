@@ -3,7 +3,7 @@
  * Manages photo albums, photo uploads, and image optimization settings
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Album, Photo, ImageOptimizationSettings } from './types';
 import { 
   trackAlbumCreated,
@@ -44,6 +44,17 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   const [optimizationComplete, setOptimizationComplete] = useState(false);
   const [optimizationLogs, setOptimizationLogs] = useState<string[]>([]);
   const [isOptimizationRunning, setIsOptimizationRunning] = useState(false);
+  
+  // Refs for auto-scrolling
+  const logContainerRef = useRef<HTMLDivElement>(null);
+  const optimizationSectionRef = useRef<HTMLDivElement>(null);
+
+  // Auto-scroll logs to bottom when they update
+  useEffect(() => {
+    if (logContainerRef.current && isOptimizationRunning) {
+      logContainerRef.current.scrollTop = logContainerRef.current.scrollHeight;
+    }
+  }, [optimizationLogs, isOptimizationRunning]);
 
   // Load optimization settings from API on mount
   useEffect(() => {
@@ -256,8 +267,8 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     // Validate concurrency
     if (optimizationSettings.concurrency === null || optimizationSettings.concurrency === undefined || optimizationSettings.concurrency === '' as any) {
       errors.concurrency = 'Value required';
-    } else if (optimizationSettings.concurrency < 1 || optimizationSettings.concurrency > 16) {
-      errors.concurrency = 'Must be between 1 and 16';
+    } else if (optimizationSettings.concurrency < 1 || optimizationSettings.concurrency > 32) {
+      errors.concurrency = 'Must be between 1 and 32';
     }
     
     // Validate thumbnail quality
@@ -347,6 +358,11 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     setOptimizationComplete(false);
     setOptimizationLogs([]);
     setMessage(null);
+    
+    // Scroll to optimization section
+    setTimeout(() => {
+      optimizationSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    }, 100);
 
     try {
       const res = await fetch(`${API_URL}/api/image-optimization/optimize`, {
@@ -392,6 +408,8 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                 setOptimizationLogs(prev => [...prev, data.message]);
               } else if (data.type === 'complete') {
                 setOptimizationComplete(true);
+                // Filter out "Processing:" entries when complete
+                setOptimizationLogs(prev => prev.filter(log => !log.startsWith('Processing:')));
                 setMessage({ 
                   type: data.exitCode === 0 ? 'success' : 'error', 
                   text: data.exitCode === 0 ? 'Optimization completed successfully!' : 'Optimization failed' 
@@ -545,7 +563,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
         </div>
       </section>
       
-      <section className="admin-section">
+      <section className="admin-section" ref={optimizationSectionRef}>
         <h2>⚙️ Image Optimization</h2>
         <p className="section-description">Configure image quality and run optimization</p>
         
@@ -633,6 +651,32 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
           ))}
         </div>
 
+        {optimizationLogs.length > 0 && (
+          <div style={{ marginTop: '2rem' }}>
+            <div 
+              ref={logContainerRef}
+              style={{
+                backgroundColor: '#1e1e1e',
+                color: '#d4d4d4',
+                padding: '1rem',
+                borderRadius: '4px',
+                fontFamily: "'Modern DOS', monospace",
+                fontSize: '0.85rem',
+                maxHeight: '400px',
+                overflowY: 'auto',
+                whiteSpace: 'pre-wrap',
+                wordBreak: 'break-all'
+              }}>
+              {optimizationLogs.map((log, index) => (
+                <div key={index}>{log}</div>
+              ))}
+              {isOptimizationRunning && (
+                <div style={{ marginTop: '0.5rem', color: '#4ade80' }}>⏳ Running...</div>
+              )}
+            </div>
+          </div>
+        )}
+
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem', marginTop: '2rem' }}>
           <button
             className="btn-primary"
@@ -655,31 +699,6 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
             )}
           </div>
         </div>
-
-        {optimizationLogs.length > 0 && (
-          <div style={{ marginTop: '2rem' }}>
-            <h3>Optimization Progress</h3>
-            <div style={{
-              backgroundColor: '#1e1e1e',
-              color: '#d4d4d4',
-              padding: '1rem',
-              borderRadius: '4px',
-              fontFamily: 'monospace',
-              fontSize: '0.85rem',
-              maxHeight: '400px',
-              overflowY: 'auto',
-              whiteSpace: 'pre-wrap',
-              wordBreak: 'break-all'
-            }}>
-              {optimizationLogs.map((log, index) => (
-                <div key={index}>{log}</div>
-              ))}
-              {isOptimizationRunning && (
-                <div style={{ marginTop: '0.5rem', color: '#4ade80' }}>⏳ Running...</div>
-              )}
-            </div>
-          </div>
-        )}
       </section>
     </>
   );
