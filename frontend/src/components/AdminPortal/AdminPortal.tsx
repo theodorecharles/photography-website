@@ -11,7 +11,7 @@ import { AuthStatus, ExternalLink, BrandingConfig, Album, Tab } from './types';
 import LinksManager from './LinksManager';
 import BrandingManager from './BrandingManager';
 import AlbumsManager from './AlbumsManager';
-import Metrics from './Metrics';
+import Metrics from './Metrics/Metrics';
 import {
   trackLoginSucceeded,
   trackLogout,
@@ -283,7 +283,6 @@ export default function AdminPortal() {
         {activeTab === 'albums' && (
           <AlbumsManager
             albums={albums}
-            setAlbums={setAlbums}
             loadAlbums={loadAlbums}
             setMessage={setMessage}
           />
