@@ -120,48 +120,85 @@ const LinksManager: React.FC<LinksManagerProps> = ({
       
       <div className="links-list">
         {externalLinks.map((link, index) => (
-          <div
-            key={index}
-            className={`link-item ${draggedIndex === index ? 'dragging' : ''} ${dragOverIndex === index ? 'drag-over' : ''}`}
-            draggable
-            onDragStart={() => handleDragStart(index)}
-            onDragOver={(e) => handleDragOver(e, index)}
-            onDragLeave={handleDragLeave}
-            onDrop={(e) => handleDrop(e, index)}
-            onDragEnd={handleDragEnd}
-          >
-            <div className="drag-handle" title="Drag to reorder">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <line x1="3" y1="9" x2="21" y2="9" />
-                <line x1="3" y1="15" x2="21" y2="15" />
-              </svg>
-            </div>
-            <div className="link-fields">
-              <input
-                type="text"
-                placeholder="Title"
-                value={link.title}
-                onChange={(e) => handleLinkChange(index, 'title', e.target.value)}
-                className="link-input"
-              />
-              <input
-                type="text"
-                placeholder="URL"
-                value={link.url}
-                onChange={(e) => handleLinkChange(index, 'url', e.target.value)}
-                className="link-input"
-              />
-            </div>
-            <button
-              onClick={() => handleDeleteLink(index)}
-              className="btn-delete"
-              title="Delete link"
+          <div key={index}>
+            {/* Show drop preview before this item if it's the drag target */}
+            {dragOverIndex === index && draggedIndex !== null && (
+              <div className="drop-preview">
+                <div className="drag-handle">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <line x1="3" y1="9" x2="21" y2="9" />
+                    <line x1="3" y1="15" x2="21" y2="15" />
+                  </svg>
+                </div>
+                <div className="link-fields">
+                  <input
+                    type="text"
+                    placeholder="Title"
+                    value={externalLinks[draggedIndex].title}
+                    className="link-input"
+                    readOnly
+                    disabled
+                  />
+                  <input
+                    type="text"
+                    placeholder="URL"
+                    value={externalLinks[draggedIndex].url}
+                    className="link-input"
+                    readOnly
+                    disabled
+                  />
+                </div>
+                <button className="btn-delete" disabled>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <polyline points="3 6 5 6 21 6" />
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                  </svg>
+                </button>
+              </div>
+            )}
+            
+            <div
+              className={`link-item ${draggedIndex === index ? 'dragging' : ''}`}
+              draggable
+              onDragStart={() => handleDragStart(index)}
+              onDragOver={(e) => handleDragOver(e, index)}
+              onDragLeave={handleDragLeave}
+              onDrop={(e) => handleDrop(e, index)}
+              onDragEnd={handleDragEnd}
             >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <polyline points="3 6 5 6 21 6" />
-                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-              </svg>
-            </button>
+              <div className="drag-handle" title="Drag to reorder">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <line x1="3" y1="9" x2="21" y2="9" />
+                  <line x1="3" y1="15" x2="21" y2="15" />
+                </svg>
+              </div>
+              <div className="link-fields">
+                <input
+                  type="text"
+                  placeholder="Title"
+                  value={link.title}
+                  onChange={(e) => handleLinkChange(index, 'title', e.target.value)}
+                  className="link-input"
+                />
+                <input
+                  type="text"
+                  placeholder="URL"
+                  value={link.url}
+                  onChange={(e) => handleLinkChange(index, 'url', e.target.value)}
+                  className="link-input"
+                />
+              </div>
+              <button
+                onClick={() => handleDeleteLink(index)}
+                className="btn-delete"
+                title="Delete link"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <polyline points="3 6 5 6 21 6" />
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                </svg>
+              </button>
+            </div>
           </div>
         ))}
       </div>
