@@ -32,8 +32,11 @@ const ImageCanvas: React.FC<ImageCanvasProps> = ({
         alt={`${photo.album} photography by Ted Charles - ${photo.title}`}
         title={photo.title}
         style={{
+          width: '100%',
+          height: '100%',
           maxWidth: 'calc(100vw - 80px)',
           maxHeight: 'calc(100vh - 160px)',
+          objectFit: 'contain',
           display: 'block',
           opacity: modalImageLoaded ? 0 : 1,
           transition: 'opacity 0.3s ease',
@@ -50,8 +53,11 @@ const ImageCanvas: React.FC<ImageCanvasProps> = ({
             position: 'absolute',
             top: 0,
             left: 0,
+            width: '100%',
+            height: '100%',
             maxWidth: 'calc(100vw - 80px)',
             maxHeight: 'calc(100vh - 160px)',
+            objectFit: 'contain',
             opacity: modalImageLoaded ? 1 : 0,
             pointerEvents: modalImageLoaded ? 'auto' : 'none'
           }}

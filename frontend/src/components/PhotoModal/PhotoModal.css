@@ -43,9 +43,12 @@
 /* Image container - nearly full screen with gaps for controls */
 .modal-image-container {
   position: relative;
-  display: inline-block;
+  width: 100%;
+  height: 100%;
   max-width: calc(-80px + 100vw); /* 40px gap on each side */
   max-height: calc(-160px + 100vh); /* 80px gap on top and bottom for controls */
+  display: flex;
+  flex-direction: column;
 }
 
 /* Top controls (info, copy, download, fullscreen, close) */
