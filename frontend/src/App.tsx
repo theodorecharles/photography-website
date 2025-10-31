@@ -15,18 +15,18 @@ import "./App.css";
 import PhotoGrid from "./components/PhotoGrid";
 import Header, { ExternalLink } from "./components/Header";
 import Footer from "./components/Footer";
-import ScrollToTop from "./components/ScrollToTop";
-import { SEO } from "./components/SEO";
-import { StructuredData } from "./components/StructuredData";
+import ScrollToTop from "./components/Misc/ScrollToTop";
+import { SEO } from "./components/Misc/SEO";
+import { StructuredData } from "./components/Misc/StructuredData";
 import { API_URL, SITE_URL } from "./config";
 import { trackPageView, trackError } from "./utils/analytics";
 import { fetchWithRateLimitCheck } from "./utils/fetchWrapper";
 
 // Lazy load components that aren't needed on initial page load
-const License = lazy(() => import("./components/License"));
+const License = lazy(() => import("./components/Misc/License"));
 const AdminPortal = lazy(() => import("./components/AdminPortal"));
-const AuthError = lazy(() => import("./components/AuthError"));
-const NotFound = lazy(() => import("./components/NotFound"));
+const AuthError = lazy(() => import("./components/Misc/AuthError"));
+const NotFound = lazy(() => import("./components/Misc/NotFound"));
 
 // AlbumRoute component handles the routing for individual album pages
 function AlbumRoute() {
