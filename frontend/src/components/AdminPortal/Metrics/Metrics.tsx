@@ -451,11 +451,21 @@ export default function Metrics() {
                       dataKey="hour" 
                       stroke="#9ca3af"
                       style={{ fontSize: '0.75rem', fill: '#9ca3af' }}
-                      angle={-45}
-                      textAnchor="end"
-                      height={80}
+                      height={40}
                       tick={{ fill: '#9ca3af' }}
-                      interval={Math.max(Math.floor(pageviewsByHour.length / 20), 0)}
+                      ticks={pageviewsByHour
+                        .filter((d) => {
+                          const date = new Date(d.hour);
+                          return date.getHours() === 0; // Show only midnight hours
+                        })
+                        .map((d) => d.hour)}
+                      tickFormatter={(value: string) => {
+                        const date = new Date(value);
+                        return date.toLocaleDateString('en-US', {
+                          month: 'short',
+                          day: 'numeric'
+                        });
+                      }}
                     />
                     <YAxis 
                       stroke="#9ca3af"
