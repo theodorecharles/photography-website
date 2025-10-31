@@ -298,9 +298,9 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
   // Preload modal image AFTER thumbnail is painted, but keep it out of DOM until loaded
   useEffect(() => {
     if (selectedPhoto && !showModalImage) {
-      console.log('[PERF] Waiting 100ms before preloading modal image', performance.now());
+      console.log('[PERF] Waiting 1 second before preloading modal image', performance.now());
       
-      // Wait 100ms to ensure thumbnail is painted
+      // Wait 1 full second to ensure thumbnail is painted and visible
       const timer = setTimeout(() => {
         console.log('[PERF] Starting to preload modal image', performance.now());
         
@@ -322,7 +322,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
         
         console.log('[PERF] Starting image preload', performance.now());
         img.src = modalUrl;
-      }, 100);
+      }, 1000);
       
       return () => clearTimeout(timer);
     }
