@@ -1063,10 +1063,12 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
                 </button>
               </div>
               <div style={{ 
-                position: 'relative', 
+                position: 'relative',
+                width: '90vw',
+                height: '80vh',
                 display: 'inline-block'
               }}>
-                {/* Thumbnail - shows first and defines size */}
+                {/* Thumbnail - shows first */}
                 <img
                   ref={(img) => {
                     if (img) {
@@ -1086,8 +1088,8 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
                   alt={`${selectedPhoto.album} photography by Ted Charles - ${selectedPhoto.title}`}
                   title={selectedPhoto.title}
                   style={{ 
-                    maxWidth: '90vw',
-                    maxHeight: '80vh',
+                    width: '100%',
+                    height: '100%',
                     objectFit: 'contain',
                     display: 'block',
                     opacity: modalImageLoaded ? 0 : 1,
