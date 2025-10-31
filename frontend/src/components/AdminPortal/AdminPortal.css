@@ -22,11 +22,6 @@
   z-index: 1;
 }
 
-@media (min-width: 768px) {
-  .admin-container {
-  }
-}
-
 .admin-header {
   display: flex;
   justify-content: space-between;
