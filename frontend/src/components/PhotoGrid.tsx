@@ -1041,32 +1041,33 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
                   </svg>
                 </button>
               </div>
-              <img
-                ref={(img) => {
-                  if (img) {
-                    console.log('[PERF] Thumbnail img ref mounted', performance.now());
-                    console.log('[PERF] Thumbnail img.complete:', img.complete);
-                    console.log('[PERF] Thumbnail img.naturalHeight:', img.naturalHeight);
-                  }
-                }}
-                onLoadStart={() => {
-                  console.log('[PERF] Thumbnail loadstart event', performance.now());
-                }}
-                onLoad={() => {
-                  console.log('[PERF] Thumbnail load event', performance.now());
-                }}
-                src={`${API_URL}${selectedPhoto.thumbnail}${imageQueryString}`}
-                alt={`${selectedPhoto.album} photography by Ted Charles - ${selectedPhoto.title}`}
-                title={selectedPhoto.title}
-                className="modal-placeholder"
-                style={{ opacity: modalImageLoaded ? 0 : 1 }}
-              />
+              {!modalImageLoaded && (
+                <img
+                  ref={(img) => {
+                    if (img) {
+                      console.log('[PERF] Thumbnail img ref mounted', performance.now());
+                      console.log('[PERF] Thumbnail img.complete:', img.complete);
+                      console.log('[PERF] Thumbnail img.naturalHeight:', img.naturalHeight);
+                    }
+                  }}
+                  onLoadStart={() => {
+                    console.log('[PERF] Thumbnail loadstart event', performance.now());
+                  }}
+                  onLoad={() => {
+                    console.log('[PERF] Thumbnail load event', performance.now());
+                  }}
+                  src={`${API_URL}${selectedPhoto.thumbnail}${imageQueryString}`}
+                  alt={`${selectedPhoto.album} photography by Ted Charles - ${selectedPhoto.title}`}
+                  title={selectedPhoto.title}
+                  style={{ display: 'block', opacity: 1 }}
+                />
+              )}
               {showModalImage && modalImageLoaded && (
                 <img
                   src={`${API_URL}${selectedPhoto.src}${imageQueryString}`}
                   alt={`${selectedPhoto.album} photography by Ted Charles - ${selectedPhoto.title}`}
                   title={selectedPhoto.title}
-                  style={{ opacity: 1 }}
+                  style={{ display: 'block', opacity: 1 }}
                 />
               )}
             </div>
