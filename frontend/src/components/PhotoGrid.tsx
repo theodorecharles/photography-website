@@ -1062,20 +1062,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
                   </svg>
                 </button>
               </div>
-              {/* Modal optimized image - always rendered to define wrapper size */}
-              <img
-                src={`${API_URL}${selectedPhoto.src}${imageQueryString}`}
-                alt={`${selectedPhoto.album} photography by Ted Charles - ${selectedPhoto.title}`}
-                title={selectedPhoto.title}
-                style={{ 
-                  maxWidth: '90vw',
-                  maxHeight: '80vh',
-                  objectFit: 'contain',
-                  visibility: showModalImage ? 'visible' : 'hidden',
-                  opacity: modalImageLoaded ? 1 : 0,
-                }}
-              />
-              {/* Thumbnail overlays on top until modal loads */}
+              {/* Thumbnail - rendered first in normal flow */}
               <img
                 ref={(img) => {
                   if (img) {
@@ -1095,18 +1082,31 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
                 alt={`${selectedPhoto.album} photography by Ted Charles - ${selectedPhoto.title}`}
                 title={selectedPhoto.title}
                 style={{ 
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
                   maxWidth: '90vw',
                   maxHeight: '80vh',
                   objectFit: 'contain',
-                  width: "100%",
                   opacity: modalImageLoaded ? 0 : 1,
                   transition: 'opacity 0.3s ease',
-                  pointerEvents: 'none'
                 }}
               />
+              {/* Modal optimized image - overlays on top when loaded */}
+              {showModalImage && (
+                <img
+                  src={`${API_URL}${selectedPhoto.src}${imageQueryString}`}
+                  alt={`${selectedPhoto.album} photography by Ted Charles - ${selectedPhoto.title}`}
+                  title={selectedPhoto.title}
+                  style={{ 
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    maxWidth: '90vw',
+                    maxHeight: '80vh',
+                    objectFit: 'contain',
+                    opacity: modalImageLoaded ? 1 : 0,
+                    pointerEvents: modalImageLoaded ? 'auto' : 'none'
+                  }}
+                />
+              )}
             </div>
           </div>
         </div>
