@@ -28,16 +28,37 @@
 }
 
 .link-item.dragging {
-  opacity: 0.5;
+  opacity: 0;
   cursor: grabbing;
-  transform: scale(0.98);
+  pointer-events: none;
 }
 
 .link-item.drag-over {
-  border-color: #4ade80;
-  background: rgba(74, 222, 128, 0.1);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(74, 222, 128, 0.2);
+  position: relative;
+}
+
+.link-item.drag-over::before {
+  content: '';
+  position: absolute;
+  top: -4px;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #4ade80, #22c55e);
+  border-radius: 2px;
+  box-shadow: 0 0 8px rgba(74, 222, 128, 0.6);
+  animation: pulse-line 1s ease-in-out infinite;
+}
+
+@keyframes pulse-line {
+  0%, 100% {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scaleY(1.2);
+  }
 }
 
 .drag-handle {
