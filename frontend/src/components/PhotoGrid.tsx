@@ -1060,47 +1060,50 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
                   </svg>
                 </button>
               </div>
-              {!modalImageLoaded && (
-                <img
-                  ref={(img) => {
-                    if (img) {
-                      console.log('[PERF] Thumbnail img ref mounted', performance.now());
-                      console.log('[PERF] Thumbnail img.complete:', img.complete);
-                      console.log('[PERF] Thumbnail img.naturalHeight:', img.naturalHeight);
-                    }
-                  }}
-                  onLoadStart={() => {
-                    console.log('[PERF] Thumbnail loadstart event', performance.now());
-                  }}
-                  onLoad={() => {
-                    console.log('[PERF] Thumbnail load event', performance.now());
-                  }}
-                  src={`${API_URL}${selectedPhoto.thumbnail}${imageQueryString}`}
-                  alt={`${selectedPhoto.album} photography by Ted Charles - ${selectedPhoto.title}`}
-                  title={selectedPhoto.title}
-                  style={{ 
-                    maxWidth: '90vw',
-                    maxHeight: '80vh',
-                    objectFit: 'contain',
-                    width: 'auto',
-                    height: 'auto'
-                  }}
-                />
-              )}
-              {showModalImage && modalImageLoaded && (
-                <img
-                  src={`${API_URL}${selectedPhoto.src}${imageQueryString}`}
-                  alt={`${selectedPhoto.album} photography by Ted Charles - ${selectedPhoto.title}`}
-                  title={selectedPhoto.title}
-                  style={{ 
-                    maxWidth: '90vw',
-                    maxHeight: '80vh',
-                    objectFit: 'contain',
-                    width: 'auto',
-                    height: 'auto'
-                  }}
-                />
-              )}
+              {/* Modal optimized image - always rendered to define wrapper size */}
+              <img
+                src={`${API_URL}${selectedPhoto.src}${imageQueryString}`}
+                alt={`${selectedPhoto.album} photography by Ted Charles - ${selectedPhoto.title}`}
+                title={selectedPhoto.title}
+                style={{ 
+                  maxWidth: '90vw',
+                  maxHeight: '80vh',
+                  objectFit: 'contain',
+                  visibility: showModalImage ? 'visible' : 'hidden',
+                  opacity: modalImageLoaded ? 1 : 0,
+                  transition: 'opacity 0.3s ease'
+                }}
+              />
+              {/* Thumbnail overlays on top until modal loads */}
+              <img
+                ref={(img) => {
+                  if (img) {
+                    console.log('[PERF] Thumbnail img ref mounted', performance.now());
+                    console.log('[PERF] Thumbnail img.complete:', img.complete);
+                    console.log('[PERF] Thumbnail img.naturalHeight:', img.naturalHeight);
+                  }
+                }}
+                onLoadStart={() => {
+                  console.log('[PERF] Thumbnail loadstart event', performance.now());
+                }}
+                onLoad={() => {
+                  console.log('[PERF] Thumbnail load event', performance.now());
+                }}
+                src={`${API_URL}${selectedPhoto.thumbnail}${imageQueryString}`}
+                alt={`${selectedPhoto.album} photography by Ted Charles - ${selectedPhoto.title}`}
+                title={selectedPhoto.title}
+                style={{ 
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  maxWidth: '90vw',
+                  maxHeight: '80vh',
+                  objectFit: 'contain',
+                  opacity: modalImageLoaded ? 0 : 1,
+                  transition: 'opacity 0.3s ease',
+                  pointerEvents: 'none'
+                }}
+              />
             </div>
           </div>
         </div>
