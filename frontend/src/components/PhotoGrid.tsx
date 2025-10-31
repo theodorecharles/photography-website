@@ -975,6 +975,13 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
                 </button>
               </div>
               <img
+                src={`${API_URL}${selectedPhoto.thumbnail}${imageQueryString}`}
+                alt={`${selectedPhoto.album} photography by Ted Charles - ${selectedPhoto.title}`}
+                title={selectedPhoto.title}
+                className="modal-placeholder"
+                style={{ opacity: modalImageLoaded ? 1 : 1 }}
+              />
+              <img
                 ref={(img) => {
                   if (img) {
                     // When mounted, check if image is already cached/loaded
@@ -986,6 +993,8 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
                 src={`${API_URL}${selectedPhoto.src}${imageQueryString}`}
                 alt={`${selectedPhoto.album} photography by Ted Charles - ${selectedPhoto.title}`}
                 title={selectedPhoto.title}
+                loading="lazy"
+                decoding="async"
                 onLoad={() => setModalImageLoaded(true)}
                 onError={() => {
                   console.error('Failed to load modal image:', selectedPhoto.src);
@@ -994,13 +1003,6 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
                   setModalImageLoaded(true);
                 }}
                 style={{ opacity: modalImageLoaded ? 0 : 0 }}
-              />
-              <img
-                src={`${API_URL}${selectedPhoto.thumbnail}${imageQueryString}`}
-                alt={`${selectedPhoto.album} photography by Ted Charles - ${selectedPhoto.title}`}
-                title={selectedPhoto.title}
-                className="modal-placeholder"
-                style={{ opacity: modalImageLoaded ? 1 : 1 }}
               />
             </div>
           </div>
