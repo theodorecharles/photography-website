@@ -266,13 +266,26 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
   // Handle body scrolling when modal opens/closes
   useEffect(() => {
     if (selectedPhoto) {
+      // Save current scroll position
+      const scrollY = window.scrollY;
+      
+      // Prevent scrolling on iOS and other platforms
       document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
+      document.body.style.position = "fixed";
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.width = "100%";
+      
+      return () => {
+        // Restore scrolling
+        document.body.style.overflow = "";
+        document.body.style.position = "";
+        document.body.style.top = "";
+        document.body.style.width = "";
+        
+        // Restore scroll position
+        window.scrollTo(0, scrollY);
+      };
     }
-    return () => {
-      document.body.style.overflow = "";
-    };
   }, [selectedPhoto]);
 
   // Handle fullscreen changes (like when user presses Esc)
@@ -304,9 +317,9 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
   // Preload modal image AFTER thumbnail is painted, but keep it out of DOM until loaded
   useEffect(() => {
     if (selectedPhoto && !showModalImage) {
-      console.log('[PERF] Waiting 50ms before preloading modal image', performance.now());
+      console.log('[PERF] Waiting 200 seconds before preloading modal image', performance.now());
       
-      // Wait 50ms to ensure thumbnail is painted and visible
+      // Wait 200 seconds for debugging
       const timer = setTimeout(() => {
         console.log('[PERF] Starting to preload modal image', performance.now());
         
@@ -328,7 +341,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
         
         console.log('[PERF] Starting image preload', performance.now());
         img.src = modalUrl;
-      }, 50);
+      }, 200000);
       
       return () => clearTimeout(timer);
     }
