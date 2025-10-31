@@ -74,7 +74,9 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
   // Function to update URL with photo parameter without page reload
   const updateURLWithPhoto = useCallback((photo: Photo) => {
     const filename = photo.id.split('/').pop();
-    const newUrl = `/album/${photo.album}?photo=${encodeURIComponent(filename || '')}`;
+    // Homepage uses special "homepage" album internally, but URL should be "/"
+    const baseUrl = photo.album === 'homepage' ? '/' : `/album/${photo.album}`;
+    const newUrl = `${baseUrl}?photo=${encodeURIComponent(filename || '')}`;
     // Use history.replaceState instead of navigate to avoid page reload/flickering
     window.history.replaceState(null, '', newUrl);
   }, []);
@@ -82,7 +84,9 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
   // Function to get permalink for current photo
   const getPhotoPermalink = useCallback((photo: Photo) => {
     const filename = photo.id.split('/').pop();
-    return `${SITE_URL}/album/${photo.album}?photo=${encodeURIComponent(filename || '')}`;
+    // Homepage uses special "homepage" album internally, but URL should be "/"
+    const baseUrl = photo.album === 'homepage' ? '/' : `/album/${photo.album}`;
+    return `${SITE_URL}${baseUrl}?photo=${encodeURIComponent(filename || '')}`;
   }, []);
 
   // Function to copy permalink to clipboard
@@ -145,7 +149,9 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
     modalOpenTimeRef.current = null;
     setCopiedLink(false);
     // Clear the photo parameter from URL without page reload
-    window.history.replaceState(null, '', `/album/${album}`);
+    // Homepage uses special "homepage" album internally, but URL should be "/"
+    const baseUrl = album === 'homepage' ? '/' : `/album/${album}`;
+    window.history.replaceState(null, '', baseUrl);
   }, [selectedPhoto, album]);
 
   const toggleFullscreen = useCallback(async () => {
