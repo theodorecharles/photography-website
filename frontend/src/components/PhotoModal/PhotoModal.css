@@ -47,6 +47,8 @@
   height: 100%;
   max-width: calc(-80px + 100vw); /* 40px gap on each side */
   max-height: calc(-160px + 100vh); /* 80px gap on top and bottom for controls */
+  display: flex;
+  flex-direction: column;
 }
 
 /* Top controls (info, copy, download, fullscreen, close) */
@@ -54,11 +56,13 @@
   position: absolute;
   top: 0;
   left: 0;
+  right: 0;
   display: flex;
   gap: 0.5rem;
   z-index: 1001;
   transform: translate(0, -100%);
   padding: 0.25rem;
+  justify-content: flex-start;
 }
 
 .modal-controls-top button {
@@ -176,6 +180,7 @@
   position: absolute;
   bottom: 0;
   left: 0;
+  right: 0;
   color: rgba(255, 255, 255, 0.7);
   font-size: 0.875rem;
   padding: 0.5rem;
@@ -183,6 +188,8 @@
   z-index: 1001;
   user-select: none;
   pointer-events: none;
+  display: flex;
+  justify-content: flex-start;
 }
 
 @media (max-width: 768px), (hover: none) {
@@ -191,23 +198,18 @@
   }
 }
 
-.modal-navigation-container {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  z-index: 1001;
-}
-
 /* Navigation buttons */
 .modal-navigation {
   position: absolute;
   bottom: 0;
+  left: 0;
   right: 0;
   display: flex;
   gap: 0.5rem;
   transform: translate(0, 100%);
   z-index: 1001;
   padding: 0.25rem;
+  justify-content: flex-end;
 }
 
 .modal-navigation button {
