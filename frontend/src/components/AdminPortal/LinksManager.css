@@ -224,12 +224,15 @@
     position: absolute;
     top: 0;
     right: 1rem;
-    gap: 0.5rem;
     align-items: flex-end;
   }
 
   .mobile-controls .mobile-reorder-buttons {
-    margin-bottom: 0.75rem;
+    margin-top: 0;
+  }
+
+  .mobile-controls .btn-delete-mobile {
+    margin-top: 3.25rem;
   }
 
   /* Show mobile delete button */
