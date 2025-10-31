@@ -6,6 +6,7 @@
 import { useState } from 'react';
 import { BrandingConfig } from './types';
 import { trackBrandingUpdate, trackAvatarUpload } from '../../utils/analytics';
+import './BrandingManager.css';
 
 const API_URL = import.meta.env.VITE_API_URL || '';
 

@@ -6,6 +6,7 @@
 import { useState } from 'react';
 import { ExternalLink } from './types';
 import { trackExternalLinksUpdate } from '../../utils/analytics';
+import './LinksManager.css';
 
 const API_URL = import.meta.env.VITE_API_URL || '';
 
