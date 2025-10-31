@@ -249,9 +249,13 @@ app.use(
     etag: true,
     lastModified: true,
     setHeaders: (res, path) => {
-      res.setHeader("Cache-Control", "public, max-age=31536000"); // 1 year
+      // Add 'immutable' for better iOS Safari caching
+      // This tells the browser the content will never change at this URL
+      res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
       res.setHeader("Access-Control-Allow-Origin", "*");
       res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
+      // Add Vary header to help with cache key generation
+      res.setHeader("Vary", "Accept-Encoding");
     },
   })
 );
