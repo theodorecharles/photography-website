@@ -653,7 +653,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
             <div className="modal-image-wrapper">
               <div 
                 className="modal-controls-left"
-                style={{ opacity: modalImageLoaded ? 1 : 0 }}
+                style={{ opacity: modalImageLoaded ? 1 : 1 }}
               >
                 <button
                   onClick={() => {
@@ -836,7 +836,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
               </div>
               <div 
                 className="modal-controls"
-                style={{ opacity: modalImageLoaded ? 1 : 0 }}
+                style={{ opacity: modalImageLoaded ? 1 : 1 }}
               >
                 <button
                   className="fullscreen-toggle"
@@ -893,14 +893,14 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
               {showNavigationHint && (
                 <div 
                   className="modal-navigation-hint"
-                  style={{ opacity: modalImageLoaded ? 1 : 0 }}
+                  style={{ opacity: modalImageLoaded ? 1 : 1 }}
                 >
                   ← press arrow keys to navigate →
                 </div>
               )}
               <div 
                 className="modal-navigation"
-                style={{ opacity: modalImageLoaded ? 1 : 0 }}
+                style={{ opacity: modalImageLoaded ? 1 : 1 }}
               >
                 <button
                   onClick={() => {
