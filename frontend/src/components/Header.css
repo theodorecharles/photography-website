@@ -131,6 +131,7 @@
   text-decoration: none;
   min-width: 80px;
   height: 35px;
+  border-radius: 8px;
 }
 
 .nav-link:hover {
@@ -156,6 +157,7 @@
   display: inline-block;
   background-color: rgba(255, 255, 255, 0.6);
   margin-left: 1rem;
+  border-radius: 8px;
 }
 
 .dropdown-arrow {
