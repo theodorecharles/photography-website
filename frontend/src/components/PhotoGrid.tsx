@@ -1081,8 +1081,12 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
                   style={{ 
                     display: 'block', 
                     opacity: 1,
+                    width: 'auto',
+                    height: 'auto',
                     maxWidth: '90vw',
                     maxHeight: '80vh',
+                    minWidth: '300px',
+                    minHeight: '300px',
                     objectFit: 'contain'
                   }}
                 />
@@ -1095,8 +1099,12 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
                   style={{ 
                     display: 'block', 
                     opacity: 1,
+                    width: 'auto',
+                    height: 'auto',
                     maxWidth: '90vw',
                     maxHeight: '80vh',
+                    minWidth: '300px',
+                    minHeight: '300px',
                     objectFit: 'contain'
                   }}
                 />
