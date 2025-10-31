@@ -130,6 +130,8 @@
 .link-input::placeholder {
   color: #666;
 }
+
+@media (max-width: 768px) {
   .link-fields {
     flex-direction: column;
   }
@@ -142,25 +144,7 @@
     width: 100%;
   }
 
-  .branding-grid {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-  }
-
-  .color-input-group {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .color-picker {
-    width: 100%;
-    height: 40px;
-  }
-
   .link-item {
     padding: 1rem;
   }
-
-  .branding-input,
-  .branding-textarea,
-  .link-input {
+}
