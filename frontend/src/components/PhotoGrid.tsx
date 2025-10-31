@@ -343,7 +343,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
         
         console.log('[PERF] Starting image preload', performance.now());
         img.src = modalUrl;
-      }, 5000);
+      }, 500);
       
       return () => clearTimeout(timer);
     }
@@ -1064,13 +1064,9 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
               </div>
               <div style={{ 
                 position: 'relative', 
-                width: '90vw', 
-                height: '80vh',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
+                display: 'inline-block'
               }}>
-                {/* Thumbnail - shows first */}
+                {/* Thumbnail - shows first and defines size */}
                 <img
                   ref={(img) => {
                     if (img) {
@@ -1090,9 +1086,10 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
                   alt={`${selectedPhoto.album} photography by Ted Charles - ${selectedPhoto.title}`}
                   title={selectedPhoto.title}
                   style={{ 
-                    maxWidth: '100%',
-                    maxHeight: '100%',
+                    maxWidth: '90vw',
+                    maxHeight: '80vh',
                     objectFit: 'contain',
+                    display: 'block',
                     opacity: modalImageLoaded ? 0 : 1,
                     transition: 'opacity 0.3s ease',
                   }}
@@ -1105,11 +1102,10 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
                     title={selectedPhoto.title}
                     style={{ 
                       position: 'absolute',
-                      top: '50%',
-                      left: '50%',
-                      transform: 'translate(-50%, -50%)',
-                      maxWidth: '100%',
-                      maxHeight: '100%',
+                      top: 0,
+                      left: 0,
+                      width: '100%',
+                      height: '100%',
                       objectFit: 'contain',
                       opacity: modalImageLoaded ? 1 : 0,
                       pointerEvents: modalImageLoaded ? 'auto' : 'none'
