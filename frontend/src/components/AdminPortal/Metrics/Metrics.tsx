@@ -13,8 +13,8 @@ import {
   Tooltip,
   ResponsiveContainer
 } from 'recharts';
-import { API_URL } from '../../config';
-import { fetchWithRateLimitCheck } from '../../utils/fetchWrapper';
+import { API_URL } from '../../../config';
+import { fetchWithRateLimitCheck } from '../../../utils/fetchWrapper';
 import VisitorMap from './VisitorMap';
 import './Metrics.css';
 
