@@ -43,28 +43,6 @@ const LinksManager: React.FC<LinksManagerProps> = ({
     setDraggedIndex(index);
   };
 
-  const handleDragEnter = (e: React.DragEvent, index: number) => {
-    e.preventDefault();
-    if (draggedIndex !== index) {
-      setDragOverIndex(index);
-    }
-  };
-
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-  };
-
-  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
-    // Only clear if we're actually leaving the container, not just entering a child
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = e.clientX;
-    const y = e.clientY;
-    
-    if (x < rect.left || x >= rect.right || y < rect.top || y >= rect.bottom) {
-      setDragOverIndex(null);
-    }
-  };
-
   const handleDrop = (e: React.DragEvent, dropIndex: number) => {
     e.preventDefault();
     
@@ -131,9 +109,31 @@ const LinksManager: React.FC<LinksManagerProps> = ({
       <h2>🔗 External Links</h2>
       <p className="section-description">Manage links shown in the navigation menu</p>
       
-      <div className="links-list">
+      <div 
+        className="links-list"
+        onDragLeave={(e) => {
+          // Clear drag over when leaving the list entirely
+          if (e.currentTarget === e.target) {
+            setDragOverIndex(null);
+          }
+        }}
+      >
         {externalLinks.map((link, index) => (
-          <div key={index}>
+          <div 
+            key={index}
+            className="link-wrapper"
+            onDragEnter={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              if (draggedIndex !== null && draggedIndex !== index) {
+                setDragOverIndex(index);
+              }
+            }}
+            onDragOver={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+            }}
+          >
             {/* Show drop preview before this item if it's the drag target */}
             {dragOverIndex === index && draggedIndex !== null && (
               <div className="drop-preview">
@@ -174,9 +174,6 @@ const LinksManager: React.FC<LinksManagerProps> = ({
               className={`link-item ${draggedIndex === index ? 'dragging' : ''}`}
               draggable
               onDragStart={() => handleDragStart(index)}
-              onDragEnter={(e) => handleDragEnter(e, index)}
-              onDragOver={handleDragOver}
-              onDragLeave={handleDragLeave}
               onDrop={(e) => handleDrop(e, index)}
               onDragEnd={handleDragEnd}
             >
