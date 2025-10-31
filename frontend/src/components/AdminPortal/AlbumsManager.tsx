@@ -662,6 +662,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
 
         {optimizationLogs.length > 0 && (
           <div style={{ marginTop: '2rem' }}>
+            <h3>Optimization Progress</h3>
             <div 
               ref={logContainerRef}
               style={{
@@ -671,7 +672,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                 borderRadius: '4px',
                 fontFamily: "'Modern DOS', monospace",
                 fontSize: '0.85rem',
-                maxHeight: '400px',
+                height: '400px',
                 overflowY: 'auto',
                 whiteSpace: 'pre-wrap',
                 wordBreak: 'break-all'
