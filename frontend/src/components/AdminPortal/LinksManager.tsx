@@ -43,6 +43,13 @@ const LinksManager: React.FC<LinksManagerProps> = ({
     setDraggedIndex(index);
   };
 
+  const handleDragEnterItem = (index: number) => {
+    if (draggedIndex === null || draggedIndex === index) {
+      return;
+    }
+    setDragOverIndex(index);
+  };
+
   const handleDrop = (e: React.DragEvent, dropIndex: number) => {
     e.preventDefault();
     
@@ -52,10 +59,11 @@ const LinksManager: React.FC<LinksManagerProps> = ({
       return;
     }
 
+    // Reorder on drop
     const newLinks = [...externalLinks];
     const draggedItem = newLinks[draggedIndex];
     
-    // Remove from old position
+    // Remove from current position
     newLinks.splice(draggedIndex, 1);
     // Insert at new position
     newLinks.splice(dropIndex, 0, draggedItem);
@@ -109,25 +117,15 @@ const LinksManager: React.FC<LinksManagerProps> = ({
       <h2>🔗 External Links</h2>
       <p className="section-description">Manage links shown in the navigation menu</p>
       
-      <div 
-        className="links-list"
-        onDragLeave={(e) => {
-          // Clear drag over when leaving the list entirely
-          if (e.currentTarget === e.target) {
-            setDragOverIndex(null);
-          }
-        }}
-      >
+      <div className="links-list">
         {externalLinks.map((link, index) => (
           <div 
-            key={index}
+            key={`${link.title}-${link.url}-${index}`}
             className="link-wrapper"
             onDragEnter={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              if (draggedIndex !== null && draggedIndex !== index) {
-                setDragOverIndex(index);
-              }
+              handleDragEnterItem(index);
             }}
             onDragOver={(e) => {
               e.preventDefault();
@@ -136,7 +134,7 @@ const LinksManager: React.FC<LinksManagerProps> = ({
             onDrop={(e) => handleDrop(e, index)}
           >
             {/* Show drop preview before this item if it's the drag target */}
-            {dragOverIndex === index && draggedIndex !== null && (
+            {dragOverIndex === index && draggedIndex !== null && draggedIndex !== index && (
               <div className="drop-preview">
                 <div className="drag-handle">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
