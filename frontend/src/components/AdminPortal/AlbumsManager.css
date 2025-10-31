@@ -42,8 +42,8 @@
 }
 
 .album-card.selected {
-  border-color: #4ade80;
-  background: rgba(74, 222, 128, 0.1);
+  border-color: var(--primary-color);
+  background: color-mix(in srgb, var(--primary-color) 10%, transparent);
 }
 
 .album-card-header {
@@ -88,7 +88,7 @@
 .album-badge {
   margin-top: 0.75rem;
   padding: 0.25rem 0.5rem;
-  background: #4ade80;
+  background: var(--primary-color);
   color: #000;
   border-radius: 4px;
   font-size: 0.75rem;
@@ -220,12 +220,12 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background-color: #22c55e;
+  background-color: var(--primary-color);
   animation: pulse 2s infinite;
 }
 
 .status-indicator.online {
-  background-color: #22c55e;
+  background-color: var(--primary-color);
 }
 
 @keyframes pulse {
@@ -248,8 +248,8 @@
 
 .message-success {
   background-color: #1a4d2e;
-  color: #4ade80;
-  border: 1px solid #22c55e;
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
 }
 
 .message-error {
@@ -280,7 +280,7 @@
   content: '';
   width: 4px;
   height: 24px;
-  background: linear-gradient(135deg, #4ade80, #22c55e);
+  background: var(--primary-color);
   border-radius: 2px;
   flex-shrink: 0;
 }
@@ -314,7 +314,7 @@
   width: 40px;
   height: 40px;
   border: 3px solid rgba(255, 255, 255, 0.1);
-  border-top-color: #4ade80;
+  border-top-color: var(--primary-color);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
@@ -368,8 +368,8 @@
 
 .optimization-settings input[type="number"]:focus {
   outline: none;
-  border-color: #4ade80;
-  box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.1);
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-color) 10%, transparent);
   background: rgba(0, 0, 0, 0.5);
 }
 
@@ -424,8 +424,8 @@
 
 .optimization-group input[type="number"]:focus {
   outline: none;
-  border-color: #4ade80;
-  box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.1);
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-color) 10%, transparent);
   background: rgba(0, 0, 0, 0.5);
 }
 

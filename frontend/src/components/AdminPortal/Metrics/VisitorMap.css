@@ -36,7 +36,7 @@
 
 .visitor-map .leaflet-control-zoom a:hover {
   background-color: #3a3a3a;
-  border-color: #22c55e;
+  border-color: var(--secondary-color);
 }
 
 .visitor-map .leaflet-control-attribution {
@@ -46,7 +46,7 @@
 }
 
 .visitor-map .leaflet-control-attribution a {
-  color: #22c55e;
+  color: var(--secondary-color);
 }
 
 /* Popup Styles */
@@ -70,7 +70,7 @@
 }
 
 .visitor-map .leaflet-popup-close-button:hover {
-  color: #22c55e !important;
+  color: var(--secondary-color) !important;
 }
 
 .visitor-popup {
@@ -82,7 +82,7 @@
   font-size: 1.1rem;
   margin-bottom: 0.75rem;
   color: #f9fafb;
-  border-bottom: 2px solid #22c55e;
+  border-bottom: 2px solid var(--secondary-color);
   padding-bottom: 0.5rem;
 }
 
@@ -105,7 +105,7 @@
 }
 
 .stat-value {
-  color: #22c55e;
+  color: var(--secondary-color);
   font-weight: 600;
   font-variant-numeric: tabular-nums;
 }
@@ -155,17 +155,17 @@
 }
 
 .legend-marker-low {
-  background-color: #22c55e;
+  background-color: var(--secondary-color);
   opacity: 0.4;
 }
 
 .legend-marker-medium {
-  background-color: #22c55e;
+  background-color: var(--secondary-color);
   opacity: 0.65;
 }
 
 .legend-marker-high {
-  background-color: #22c55e;
+  background-color: var(--secondary-color);
   opacity: 0.9;
 }
 
@@ -185,7 +185,7 @@
   width: 40px;
   height: 40px;
   border: 3px solid #535353;
-  border-top-color: #22c55e;
+  border-top-color: var(--secondary-color);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
   margin-bottom: 0.75rem;
