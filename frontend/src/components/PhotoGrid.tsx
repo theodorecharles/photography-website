@@ -341,7 +341,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
         
         console.log('[PERF] Starting image preload', performance.now());
         img.src = modalUrl;
-      }, 20);
+      }, 200);
       
       return () => clearTimeout(timer);
     }
@@ -1071,7 +1071,6 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
                   objectFit: 'contain',
                   visibility: showModalImage ? 'visible' : 'hidden',
                   opacity: modalImageLoaded ? 1 : 0,
-                  transition: 'opacity 0.3s ease'
                 }}
               />
               {/* Thumbnail overlays on top until modal loads */}
@@ -1099,6 +1098,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
                   maxWidth: '90vw',
                   maxHeight: '80vh',
                   objectFit: 'contain',
+                  width: "100%",
                   opacity: modalImageLoaded ? 0 : 1,
                   transition: 'opacity 0.3s ease',
                   pointerEvents: 'none'
