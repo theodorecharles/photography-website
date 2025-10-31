@@ -93,7 +93,11 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
     setSelectedPhoto(photo);
     updateURLWithPhoto(photo);
     modalOpenTimeRef.current = Date.now();
-    trackPhotoClick(photo.id, photo.album, photo.title);
+    
+    // Defer analytics to after render to avoid blocking on cellular
+    setTimeout(() => {
+      trackPhotoClick(photo.id, photo.album, photo.title);
+    }, 0);
   };
 
   const handleCloseModal = useCallback(async () => {
@@ -197,7 +201,9 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
         updateURLWithPhoto(prevPhoto);
         setExifData(null);
         modalOpenTimeRef.current = Date.now();
-        trackPhotoNavigation('previous', prevPhoto.id, prevPhoto.album, prevPhoto.title, viewDuration);
+        setTimeout(() => {
+          trackPhotoNavigation('previous', prevPhoto.id, prevPhoto.album, prevPhoto.title, viewDuration);
+        }, 0);
       } else {
         // Swipe left - go to next photo
         const currentIndex = photos.findIndex((p) => p.id === selectedPhoto.id);
@@ -209,7 +215,9 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
         updateURLWithPhoto(nextPhoto);
         setExifData(null);
         modalOpenTimeRef.current = Date.now();
-        trackPhotoNavigation('next', nextPhoto.id, nextPhoto.album, nextPhoto.title, viewDuration);
+        setTimeout(() => {
+          trackPhotoNavigation('next', nextPhoto.id, nextPhoto.album, nextPhoto.title, viewDuration);
+        }, 0);
       }
     }
 
@@ -355,7 +363,9 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
         updateURLWithPhoto(prevPhoto);
         setExifData(null); // Reset EXIF data for new photo
         modalOpenTimeRef.current = Date.now(); // Reset timer for new photo
-        trackPhotoNavigation('previous', prevPhoto.id, prevPhoto.album, prevPhoto.title, viewDuration);
+        setTimeout(() => {
+          trackPhotoNavigation('previous', prevPhoto.id, prevPhoto.album, prevPhoto.title, viewDuration);
+        }, 0);
       } else if (e.key === "ArrowRight") {
         // Hide navigation hint on first arrow key press
         if (showNavigationHint) {
@@ -372,7 +382,9 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
         updateURLWithPhoto(nextPhoto);
         setExifData(null); // Reset EXIF data for new photo
         modalOpenTimeRef.current = Date.now(); // Reset timer for new photo
-        trackPhotoNavigation('next', nextPhoto.id, nextPhoto.album, nextPhoto.title, viewDuration);
+        setTimeout(() => {
+          trackPhotoNavigation('next', nextPhoto.id, nextPhoto.album, nextPhoto.title, viewDuration);
+        }, 0);
       }
     };
 
@@ -916,7 +928,9 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
                     updateURLWithPhoto(prevPhoto);
                     setExifData(null); // Reset EXIF data for new photo
                     modalOpenTimeRef.current = Date.now(); // Reset timer for new photo
-                    trackPhotoNavigation('previous', prevPhoto.id, prevPhoto.album, prevPhoto.title, viewDuration);
+                    setTimeout(() => {
+                      trackPhotoNavigation('previous', prevPhoto.id, prevPhoto.album, prevPhoto.title, viewDuration);
+                    }, 0);
                   }}
                 >
                   <svg
@@ -943,7 +957,9 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
                     updateURLWithPhoto(nextPhoto);
                     setExifData(null); // Reset EXIF data for new photo
                     modalOpenTimeRef.current = Date.now(); // Reset timer for new photo
-                    trackPhotoNavigation('next', nextPhoto.id, nextPhoto.album, nextPhoto.title, viewDuration);
+                    setTimeout(() => {
+                      trackPhotoNavigation('next', nextPhoto.id, nextPhoto.album, nextPhoto.title, viewDuration);
+                    }, 0);
                   }}
                 >
                   <svg
