@@ -1062,51 +1062,61 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
                   </svg>
                 </button>
               </div>
-              {/* Thumbnail - rendered first in normal flow */}
-              <img
-                ref={(img) => {
-                  if (img) {
-                    console.log('[PERF] Thumbnail img ref mounted', performance.now());
-                    console.log('[PERF] Thumbnail img.complete:', img.complete);
-                    console.log('[PERF] Thumbnail img.naturalHeight:', img.naturalHeight);
-                  }
-                }}
-                onLoadStart={() => {
-                  console.log('[PERF] Thumbnail loadstart event', performance.now());
-                }}
-                onLoad={() => {
-                  console.log('[PERF] Thumbnail load event', performance.now());
-                  setThumbnailLoaded(true);
-                }}
-                src={`${API_URL}${selectedPhoto.thumbnail}${imageQueryString}`}
-                alt={`${selectedPhoto.album} photography by Ted Charles - ${selectedPhoto.title}`}
-                title={selectedPhoto.title}
-                style={{ 
-                  maxWidth: '90vw',
-                  maxHeight: '80vh',
-                  objectFit: 'contain',
-                  opacity: modalImageLoaded ? 0 : 1,
-                  transition: 'opacity 0.3s ease',
-                }}
-              />
-              {/* Modal optimized image - overlays on top when loaded */}
-              {showModalImage && (
+              <div style={{ 
+                position: 'relative', 
+                width: '90vw', 
+                height: '80vh',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                {/* Thumbnail - shows first */}
                 <img
-                  src={`${API_URL}${selectedPhoto.src}${imageQueryString}`}
+                  ref={(img) => {
+                    if (img) {
+                      console.log('[PERF] Thumbnail img ref mounted', performance.now());
+                      console.log('[PERF] Thumbnail img.complete:', img.complete);
+                      console.log('[PERF] Thumbnail img.naturalHeight:', img.naturalHeight);
+                    }
+                  }}
+                  onLoadStart={() => {
+                    console.log('[PERF] Thumbnail loadstart event', performance.now());
+                  }}
+                  onLoad={() => {
+                    console.log('[PERF] Thumbnail load event', performance.now());
+                    setThumbnailLoaded(true);
+                  }}
+                  src={`${API_URL}${selectedPhoto.thumbnail}${imageQueryString}`}
                   alt={`${selectedPhoto.album} photography by Ted Charles - ${selectedPhoto.title}`}
                   title={selectedPhoto.title}
                   style={{ 
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    maxWidth: '90vw',
-                    maxHeight: '80vh',
+                    maxWidth: '100%',
+                    maxHeight: '100%',
                     objectFit: 'contain',
-                    opacity: modalImageLoaded ? 1 : 0,
-                    pointerEvents: modalImageLoaded ? 'auto' : 'none'
+                    opacity: modalImageLoaded ? 0 : 1,
+                    transition: 'opacity 0.3s ease',
                   }}
                 />
-              )}
+                {/* Modal optimized image - overlays on top when loaded */}
+                {showModalImage && (
+                  <img
+                    src={`${API_URL}${selectedPhoto.src}${imageQueryString}`}
+                    alt={`${selectedPhoto.album} photography by Ted Charles - ${selectedPhoto.title}`}
+                    title={selectedPhoto.title}
+                    style={{ 
+                      position: 'absolute',
+                      top: '50%',
+                      left: '50%',
+                      transform: 'translate(-50%, -50%)',
+                      maxWidth: '100%',
+                      maxHeight: '100%',
+                      objectFit: 'contain',
+                      opacity: modalImageLoaded ? 1 : 0,
+                      pointerEvents: modalImageLoaded ? 'auto' : 'none'
+                    }}
+                  />
+                )}
+              </div>
             </div>
           </div>
         </div>
