@@ -374,7 +374,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
                   ? `${imageDimensions[photo.id].width} / ${
                       imageDimensions[photo.id].height
                     }`
-                  : "1 / 1",
+                  : "4 / 3",
               }}
               onClick={() => {
                 handlePhotoClick(photo);
