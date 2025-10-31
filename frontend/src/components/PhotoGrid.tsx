@@ -298,29 +298,33 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
   // Preload modal image AFTER thumbnail is painted, but keep it out of DOM until loaded
   useEffect(() => {
     if (selectedPhoto && !showModalImage) {
-      console.log('[PERF] Starting to preload modal image', performance.now());
+      console.log('[PERF] Waiting 100ms before preloading modal image', performance.now());
       
-      // Preload the image using Image() object (not in DOM)
-      const img = new Image();
-      const modalUrl = `${API_URL}${selectedPhoto.src}${imageQueryString}`;
-      
-      img.onload = () => {
-        console.log('[PERF] Modal image preloaded successfully', performance.now());
-        setModalImageLoaded(true);
-        // Now add to DOM since it's loaded
-        setShowModalImage(true);
-      };
-      
-      img.onerror = () => {
-        console.error('[PERF] Modal image preload failed', performance.now());
-        // Show thumbnail only
-      };
-      
-      // Start loading in background
-      requestAnimationFrame(() => {
+      // Wait 100ms to ensure thumbnail is painted
+      const timer = setTimeout(() => {
+        console.log('[PERF] Starting to preload modal image', performance.now());
+        
+        // Preload the image using Image() object (not in DOM)
+        const img = new Image();
+        const modalUrl = `${API_URL}${selectedPhoto.src}${imageQueryString}`;
+        
+        img.onload = () => {
+          console.log('[PERF] Modal image preloaded successfully', performance.now());
+          setModalImageLoaded(true);
+          // Now add to DOM since it's loaded
+          setShowModalImage(true);
+        };
+        
+        img.onerror = () => {
+          console.error('[PERF] Modal image preload failed', performance.now());
+          // Show thumbnail only
+        };
+        
         console.log('[PERF] Starting image preload', performance.now());
         img.src = modalUrl;
-      });
+      }, 100);
+      
+      return () => clearTimeout(timer);
     }
   }, [selectedPhoto, showModalImage, imageQueryString]);
 
