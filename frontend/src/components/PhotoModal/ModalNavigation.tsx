@@ -19,14 +19,14 @@ const ModalNavigation: React.FC<ModalNavigationProps> = ({
   style,
 }) => {
   return (
-    <div className="modal-navigation-container" style={style}>
+    <>
       {showHint && (
         <div className="modal-navigation-hint">
           ← press arrow keys to navigate →
         </div>
       )}
       
-      <div className="modal-navigation">
+      <div className="modal-navigation" style={style}>
         <button onClick={onPrevious}>
           <svg
             width="32"
@@ -53,7 +53,7 @@ const ModalNavigation: React.FC<ModalNavigationProps> = ({
           </svg>
         </button>
       </div>
-    </div>
+    </>
   );
 };
 

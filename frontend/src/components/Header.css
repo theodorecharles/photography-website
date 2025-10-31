@@ -188,6 +188,7 @@
   flex-direction: column;
   visibility: hidden;
   opacity: 0;
+  border-radius: 0px 0px 8px 8px;
   transform: translateY(-10px);
   transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
 }
@@ -203,7 +204,7 @@
   text-align: left;
   padding: 0.75rem 1rem;
   margin-bottom: 0.5rem;
-  border-radius: 0;
+  border-radius: 4px;
   background: white;
   border: 1px solid rgba(51, 51, 51, 0.3);
   color: #000;
