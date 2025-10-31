@@ -24,6 +24,7 @@ const LinksManager: React.FC<LinksManagerProps> = ({
   const [saving, setSaving] = useState(false);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
+  const [dropPosition, setDropPosition] = useState<'before' | 'after'>('before');
 
   const handleAddLink = () => {
     setExternalLinks([...externalLinks, { title: '', url: '' }]);
@@ -43,17 +44,41 @@ const LinksManager: React.FC<LinksManagerProps> = ({
     setDraggedIndex(index);
   };
 
-  const handleDragEnterItem = (index: number) => {
+  const handleDragEnterItem = (e: React.DragEvent, index: number) => {
     if (draggedIndex === null || draggedIndex === index) {
       return;
     }
+    
+    // Determine if we're in the top or bottom half of the item
+    const rect = e.currentTarget.getBoundingClientRect();
+    const midpoint = rect.top + rect.height / 2;
+    const position = e.clientY < midpoint ? 'before' : 'after';
+    
     setDragOverIndex(index);
+    setDropPosition(position);
   };
 
-  const handleDrop = (e: React.DragEvent, dropIndex: number) => {
+  const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     
-    if (draggedIndex === null || draggedIndex === dropIndex) {
+    if (draggedIndex === null || dragOverIndex === null) {
+      setDraggedIndex(null);
+      setDragOverIndex(null);
+      return;
+    }
+
+    // Calculate actual drop position
+    let dropIndex = dragOverIndex;
+    if (dropPosition === 'after') {
+      dropIndex = dragOverIndex + 1;
+    }
+    
+    // Adjust if dragging from before the drop position
+    if (draggedIndex < dropIndex) {
+      dropIndex--;
+    }
+
+    if (draggedIndex === dropIndex) {
       setDraggedIndex(null);
       setDragOverIndex(null);
       return;
@@ -125,16 +150,16 @@ const LinksManager: React.FC<LinksManagerProps> = ({
             onDragEnter={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              handleDragEnterItem(index);
+              handleDragEnterItem(e, index);
             }}
             onDragOver={(e) => {
               e.preventDefault();
               e.stopPropagation();
             }}
-            onDrop={(e) => handleDrop(e, index)}
+            onDrop={handleDrop}
           >
-            {/* Show drop preview before this item if it's the drag target */}
-            {dragOverIndex === index && draggedIndex !== null && draggedIndex !== index && (
+            {/* Show drop preview before this item if hovering top half */}
+            {dragOverIndex === index && draggedIndex !== null && draggedIndex !== index && dropPosition === 'before' && (
               <div className="drop-preview">
                 <div className="drag-handle">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -208,60 +233,44 @@ const LinksManager: React.FC<LinksManagerProps> = ({
                 </svg>
               </button>
             </div>
+            
+            {/* Show drop preview after this item if hovering bottom half */}
+            {dragOverIndex === index && draggedIndex !== null && draggedIndex !== index && dropPosition === 'after' && (
+              <div className="drop-preview">
+                <div className="drag-handle">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <line x1="3" y1="9" x2="21" y2="9" />
+                    <line x1="3" y1="15" x2="21" y2="15" />
+                  </svg>
+                </div>
+                <div className="link-fields">
+                  <input
+                    type="text"
+                    placeholder="Title"
+                    value={externalLinks[draggedIndex].title}
+                    className="link-input"
+                    readOnly
+                    disabled
+                  />
+                  <input
+                    type="text"
+                    placeholder="URL"
+                    value={externalLinks[draggedIndex].url}
+                    className="link-input"
+                    readOnly
+                    disabled
+                  />
+                </div>
+                <button className="btn-delete" disabled>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <polyline points="3 6 5 6 21 6" />
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                  </svg>
+                </button>
+              </div>
+            )}
           </div>
         ))}
-        
-        {/* Drop zone for adding to the end */}
-        <div
-          className="drop-zone-end"
-          onDragEnter={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            if (draggedIndex !== null) {
-              setDragOverIndex(externalLinks.length);
-            }
-          }}
-          onDragOver={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-          }}
-          onDrop={(e) => handleDrop(e, externalLinks.length)}
-        >
-          {dragOverIndex === externalLinks.length && draggedIndex !== null && (
-            <div className="drop-preview">
-              <div className="drag-handle">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <line x1="3" y1="9" x2="21" y2="9" />
-                  <line x1="3" y1="15" x2="21" y2="15" />
-                </svg>
-              </div>
-              <div className="link-fields">
-                <input
-                  type="text"
-                  placeholder="Title"
-                  value={externalLinks[draggedIndex].title}
-                  className="link-input"
-                  readOnly
-                  disabled
-                />
-                <input
-                  type="text"
-                  placeholder="URL"
-                  value={externalLinks[draggedIndex].url}
-                  className="link-input"
-                  readOnly
-                  disabled
-                />
-              </div>
-              <button className="btn-delete" disabled>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <polyline points="3 6 5 6 21 6" />
-                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                </svg>
-              </button>
-            </div>
-          )}
-        </div>
       </div>
 
       <div className="section-actions">
