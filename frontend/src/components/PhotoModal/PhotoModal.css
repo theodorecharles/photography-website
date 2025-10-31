@@ -58,11 +58,16 @@
   left: 0;
   right: 0;
   display: flex;
-  gap: 0.5rem;
+  justify-content: space-between;
   z-index: 1001;
   transform: translate(0, -100%);
   padding: 0.25rem;
-  justify-content: flex-start;
+}
+
+.modal-controls-left,
+.modal-controls-right {
+  display: flex;
+  gap: 0.5rem;
 }
 
 .modal-controls-top button {
