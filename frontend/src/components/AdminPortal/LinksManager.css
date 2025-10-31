@@ -228,11 +228,11 @@
   }
 
   .mobile-controls .mobile-reorder-buttons {
-    margin-top: 0;
+    margin-top: 1.15rem;
   }
 
   .mobile-controls .btn-delete-mobile {
-    margin-top: 3.25rem;
+    margin-top: 1.25rem;
   }
 
   /* Show mobile delete button */
