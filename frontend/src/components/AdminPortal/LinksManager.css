@@ -74,16 +74,6 @@
   color: #4ade80;
 }
 
-.drop-zone-end {
-  min-height: 60px;
-  border-radius: 8px;
-  transition: background 0.2s ease;
-}
-
-.drop-zone-end:hover {
-  background: rgba(255, 255, 255, 0.02);
-}
-
 @keyframes pulse-box {
   0%, 100% {
     opacity: 1;
