@@ -55,6 +55,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
   const [copiedLink, setCopiedLink] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showModalImage, setShowModalImage] = useState(false);
+  const [thumbnailLoaded, setThumbnailLoaded] = useState(false);
   const modalOpenTimeRef = useRef<number | null>(null);
   const touchStartX = useRef<number | null>(null);
   const touchStartY = useRef<number | null>(null);
@@ -107,6 +108,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
     
     setModalImageLoaded(false);
     setShowModalImage(false); // Don't show modal image initially
+    setThumbnailLoaded(false); // Reset thumbnail loaded state
     const t1 = performance.now();
     console.log('[PERF] setModalImageLoaded called', t1 - t0);
     
@@ -341,7 +343,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
         
         console.log('[PERF] Starting image preload', performance.now());
         img.src = modalUrl;
-      }, 100);
+      }, 250);
       
       return () => clearTimeout(timer);
     }
@@ -751,7 +753,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
             <div className="modal-image-wrapper">
               <div 
                 className="modal-controls-left"
-                style={{ opacity: modalImageLoaded ? 1 : 1 }}
+                style={{ opacity: thumbnailLoaded ? 1 : 0 }}
               >
                 <button
                   onClick={() => {
@@ -934,7 +936,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
               </div>
               <div 
                 className="modal-controls"
-                style={{ opacity: modalImageLoaded ? 1 : 1 }}
+                style={{ opacity: thumbnailLoaded ? 1 : 0 }}
               >
                 <button
                   className="fullscreen-toggle"
@@ -1087,6 +1089,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
                 }}
                 onLoad={() => {
                   console.log('[PERF] Thumbnail load event', performance.now());
+                  setThumbnailLoaded(true);
                 }}
                 src={`${API_URL}${selectedPhoto.thumbnail}${imageQueryString}`}
                 alt={`${selectedPhoto.album} photography by Ted Charles - ${selectedPhoto.title}`}
