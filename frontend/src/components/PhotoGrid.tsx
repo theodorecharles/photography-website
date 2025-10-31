@@ -52,11 +52,15 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
   const touchStartX = useRef<number | null>(null);
   const touchStartY = useRef<number | null>(null);
 
-  // Get query parameters from current URL
+  // Get query parameters from current URL for API calls (not for images)
   const queryParams = new URLSearchParams(location.search);
   const queryString = queryParams.toString()
     ? `?${queryParams.toString()}&i=${cacheBustValue}`
     : `?i=${cacheBustValue}`;
+  
+  // For image URLs, don't include query strings to improve caching (especially on iOS)
+  // ETags and Last-Modified headers handle cache validation
+  const imageQueryString = ``;
 
   // Function to update URL with photo parameter without page reload
   const updateURLWithPhoto = useCallback((photo: Photo) => {
@@ -620,7 +624,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
               }}
             >
               <img
-                src={`${API_URL}${photo.thumbnail}${queryString}`}
+                src={`${API_URL}${photo.thumbnail}${imageQueryString}`}
                 alt={`${photo.album} photography by Ted Charles - ${photo.title}`}
                 title={photo.title}
                 loading="lazy"
@@ -715,7 +719,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
                     e.stopPropagation();
                     const filename = selectedPhoto.id.split('/').pop() || 'photo.jpg';
                     try {
-                      const response = await fetch(`${API_URL}${selectedPhoto.download}${queryString}`);
+                      const response = await fetch(`${API_URL}${selectedPhoto.download}${imageQueryString}`);
                       const blob = await response.blob();
                       const blobUrl = URL.createObjectURL(blob);
                       
@@ -731,7 +735,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
                       trackPhotoDownload(selectedPhoto.id, selectedPhoto.album, selectedPhoto.title);
                     } catch (error) {
                       console.error('Download failed:', error);
-                      window.open(`${API_URL}${selectedPhoto.download}${queryString}`, '_blank');
+                      window.open(`${API_URL}${selectedPhoto.download}${imageQueryString}`, '_blank');
                     }
                   }}
                   title="Download photo"
@@ -963,7 +967,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
                     }
                   }
                 }}
-                src={`${API_URL}${selectedPhoto.src}${queryString}`}
+                src={`${API_URL}${selectedPhoto.src}${imageQueryString}`}
                 alt={`${selectedPhoto.album} photography by Ted Charles - ${selectedPhoto.title}`}
                 title={selectedPhoto.title}
                 onLoad={() => setModalImageLoaded(true)}
@@ -989,7 +993,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
                     img.style.opacity = '1';
                   }
                 }}
-                src={`${API_URL}${selectedPhoto.thumbnail}${queryString}`}
+                src={`${API_URL}${selectedPhoto.thumbnail}${imageQueryString}`}
                 alt={`${selectedPhoto.album} photography by Ted Charles - ${selectedPhoto.title}`}
                 title={selectedPhoto.title}
                 className="modal-placeholder"
