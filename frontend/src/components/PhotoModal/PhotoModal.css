@@ -107,7 +107,7 @@
 /* Info panel */
 .modal-info-panel {
   position: absolute;
-  top: 100%;
+  top: 0;
   left: 0;
   background: rgba(0, 0, 0, 0.85);
   backdrop-filter: blur(10px);
@@ -119,8 +119,7 @@
   height: 320px;
   overflow-y: auto;
   z-index: 1003;
-  margin-top: 0.5rem;
-  margin-left: 0.5rem;
+  margin: 0.5rem;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
   color: white;
   animation: fadeIn 0.2s ease-out;
