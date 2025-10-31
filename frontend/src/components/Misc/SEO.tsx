@@ -4,7 +4,7 @@
  */
 
 import { useEffect } from 'react';
-import { SITE_URL } from '../config';
+import { SITE_URL } from '../../config';
 
 interface SEOProps {
   title?: string;
