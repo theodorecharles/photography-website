@@ -29,8 +29,6 @@ const InfoPanel: React.FC<InfoPanelProps> = ({
 
   return (
     <div className="modal-info-panel">
-      <h3>Photo Information</h3>
-      
       <div className="info-item">
         <span className="info-label">File:</span>
         <span className="info-value">{photo.id.split('/').pop()}</span>

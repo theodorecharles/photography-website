@@ -54,7 +54,6 @@ const BrandingManager: React.FC<BrandingManagerProps> = ({
       
       // First upload avatar if there's a pending file
       if (pendingAvatarFile) {
-        console.log('Uploading avatar file:', pendingAvatarFile.name, pendingAvatarFile.size, 'bytes');
         const formData = new FormData();
         formData.append('avatar', pendingAvatarFile);
 
@@ -66,7 +65,6 @@ const BrandingManager: React.FC<BrandingManagerProps> = ({
 
         if (avatarRes.ok) {
           const data = await avatarRes.json();
-          console.log('Avatar uploaded successfully:', data);
           // Update both state and our local copy
           updatedBranding.avatarPath = data.avatarPath;
           setBranding({
