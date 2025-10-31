@@ -417,8 +417,8 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                 setOptimizationLogs(prev => [...prev, data.message]);
               } else if (data.type === 'complete') {
                 setOptimizationComplete(true);
-                // Filter out "Processing:" entries when complete
-                setOptimizationLogs(prev => prev.filter(log => !log.startsWith('Processing:')));
+                // Filter out "Generating" entries when complete
+                setOptimizationLogs(prev => prev.filter(log => !log.startsWith('Generating')));
                 setMessage({ 
                   type: data.exitCode === 0 ? 'success' : 'error', 
                   text: data.exitCode === 0 ? 'Optimization completed successfully!' : 'Optimization failed' 
@@ -672,8 +672,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                 border: '1px solid #333',
                 fontFamily: "'Modern DOS', monospace",
                 fontSize: '0.85rem',
-                height: '400px',
-                overflowY: 'auto',
+                ...(isOptimizationRunning ? { height: '400px', overflowY: 'auto' } : {}),
                 whiteSpace: 'pre-wrap',
                 wordBreak: 'break-all'
               }}>
