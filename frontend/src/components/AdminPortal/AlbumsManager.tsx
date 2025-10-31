@@ -662,14 +662,14 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
 
         {optimizationLogs.length > 0 && (
           <div style={{ marginTop: '2rem' }}>
-            <h3>Optimization Progress</h3>
             <div 
               ref={logContainerRef}
               style={{
-                backgroundColor: '#1e1e1e',
+                backgroundColor: '#000',
                 color: '#d4d4d4',
                 padding: '1rem',
                 borderRadius: '4px',
+                border: '1px solid #333',
                 fontFamily: "'Modern DOS', monospace",
                 fontSize: '0.85rem',
                 height: '400px',
