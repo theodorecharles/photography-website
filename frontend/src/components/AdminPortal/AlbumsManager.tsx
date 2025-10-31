@@ -124,7 +124,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     Array.from(files).forEach(file => formData.append('photos', file));
 
     try {
-      const res = await fetch(`${API_URL}/api/photos/${selectedAlbum}/upload`, {
+      const res = await fetch(`${API_URL}/api/albums/${selectedAlbum}/upload`, {
         method: 'POST',
         credentials: 'include',
         body: formData,
@@ -195,7 +195,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     if (!confirm(`Delete this photo?`)) return;
 
     try {
-      const res = await fetch(`${API_URL}/api/photos/${album}/${filename}`, {
+      const res = await fetch(`${API_URL}/api/albums/${album}/photos/${filename}`, {
         method: 'DELETE',
         credentials: 'include',
       });
