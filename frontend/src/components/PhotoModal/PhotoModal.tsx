@@ -439,6 +439,7 @@ const PhotoModal: React.FC<PhotoModalProps> = ({
             photo={selectedPhoto}
             exifData={exifData}
             loadingExif={loadingExif}
+            style={imageBounds ? { left: `${imageBounds.left}px` } : {}}
           />
 
           <ImageCanvas
