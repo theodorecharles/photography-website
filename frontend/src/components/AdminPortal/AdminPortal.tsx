@@ -5,7 +5,7 @@
 
 import { useEffect, useState, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { API_URL, cacheBustValue } from '../config';
+import { API_URL, cacheBustValue } from '../../config';
 import './AdminPortal.css';
 import Metrics from './Metrics';
 import {
@@ -19,7 +19,7 @@ import {
   trackExternalLinksUpdate,
   trackBrandingUpdate,
   trackAvatarUpload,
-} from '../utils/analytics';
+} from '../../utils/analytics';
 
 interface User {
   id: string;
