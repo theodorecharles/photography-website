@@ -43,6 +43,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     }
   });
   const [optimizationErrors, setOptimizationErrors] = useState<Record<string, string>>({});
+  const [optimizationComplete, setOptimizationComplete] = useState(false);
 
   // Load photos when album is selected
   useEffect(() => {
@@ -131,7 +132,8 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
       if (res.ok) {
         const result = await res.json();
         setMessage({ type: 'success', text: `${files.length} photo(s) uploaded!` });
-        trackPhotoUploaded(selectedAlbum, files.length);
+        const photoTitles = Array.from(files).map(f => f.name);
+        trackPhotoUploaded(selectedAlbum, files.length, photoTitles);
         
         // Track optimizing photos
         result.photoIds?.forEach((id: string) => {
@@ -188,7 +190,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     setTimeout(checkStatus, 2000);
   };
 
-  const handleDeletePhoto = async (album: string, filename: string) => {
+  const handleDeletePhoto = async (album: string, filename: string, photoTitle: string = '') => {
     if (!confirm(`Delete this photo?`)) return;
 
     try {
@@ -199,7 +201,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
 
       if (res.ok) {
         setMessage({ type: 'success', text: 'Photo deleted' });
-        trackPhotoDeleted(album, filename);
+        trackPhotoDeleted(album, filename, photoTitle || filename);
         await loadPhotos(album);
       } else {
         const error = await res.json();
@@ -210,42 +212,112 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     }
   };
 
-  const handleRunOptimization = async () => {
-    // Validate settings
+  const validateOptimizationSettings = () => {
     const errors: Record<string, string> = {};
-    if (optimizationSettings.concurrency < 1 || optimizationSettings.concurrency > 16) {
+    
+    // Validate concurrency
+    if (optimizationSettings.concurrency === null || optimizationSettings.concurrency === undefined || optimizationSettings.concurrency === '' as any) {
+      errors.concurrency = 'Value required';
+    } else if (optimizationSettings.concurrency < 1 || optimizationSettings.concurrency > 16) {
       errors.concurrency = 'Must be between 1 and 16';
     }
-    if (optimizationSettings.images.thumbnail.quality < 0 || optimizationSettings.images.thumbnail.quality > 100) {
+    
+    // Validate thumbnail quality
+    if (optimizationSettings.images.thumbnail.quality === null || optimizationSettings.images.thumbnail.quality === undefined || optimizationSettings.images.thumbnail.quality === '' as any) {
+      errors.thumbnailQuality = 'Value required';
+    } else if (optimizationSettings.images.thumbnail.quality < 0 || optimizationSettings.images.thumbnail.quality > 100) {
       errors.thumbnailQuality = 'Must be between 0 and 100';
     }
-    if (optimizationSettings.images.modal.quality < 0 || optimizationSettings.images.modal.quality > 100) {
+    
+    // Validate thumbnail maxDimension
+    if (optimizationSettings.images.thumbnail.maxDimension === null || optimizationSettings.images.thumbnail.maxDimension === undefined || optimizationSettings.images.thumbnail.maxDimension === '' as any) {
+      errors.thumbnailMaxDimension = 'Value required';
+    } else if (optimizationSettings.images.thumbnail.maxDimension < 128 || optimizationSettings.images.thumbnail.maxDimension > 4096) {
+      errors.thumbnailMaxDimension = 'Must be between 128 and 4096';
+    }
+    
+    // Validate modal quality
+    if (optimizationSettings.images.modal.quality === null || optimizationSettings.images.modal.quality === undefined || optimizationSettings.images.modal.quality === '' as any) {
+      errors.modalQuality = 'Value required';
+    } else if (optimizationSettings.images.modal.quality < 0 || optimizationSettings.images.modal.quality > 100) {
       errors.modalQuality = 'Must be between 0 and 100';
     }
-    if (optimizationSettings.images.download.quality < 0 || optimizationSettings.images.download.quality > 100) {
+    
+    // Validate modal maxDimension
+    if (optimizationSettings.images.modal.maxDimension === null || optimizationSettings.images.modal.maxDimension === undefined || optimizationSettings.images.modal.maxDimension === '' as any) {
+      errors.modalMaxDimension = 'Value required';
+    } else if (optimizationSettings.images.modal.maxDimension < 512 || optimizationSettings.images.modal.maxDimension > 8192) {
+      errors.modalMaxDimension = 'Must be between 512 and 8192';
+    }
+    
+    // Validate download quality
+    if (optimizationSettings.images.download.quality === null || optimizationSettings.images.download.quality === undefined || optimizationSettings.images.download.quality === '' as any) {
+      errors.downloadQuality = 'Value required';
+    } else if (optimizationSettings.images.download.quality < 0 || optimizationSettings.images.download.quality > 100) {
       errors.downloadQuality = 'Must be between 0 and 100';
     }
+    
+    // Validate download maxDimension
+    if (optimizationSettings.images.download.maxDimension === null || optimizationSettings.images.download.maxDimension === undefined || optimizationSettings.images.download.maxDimension === '' as any) {
+      errors.downloadMaxDimension = 'Value required';
+    } else if (optimizationSettings.images.download.maxDimension < 1024 || optimizationSettings.images.download.maxDimension > 16384) {
+      errors.downloadMaxDimension = 'Must be between 1024 and 16384';
+    }
+    
+    setOptimizationErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
 
-    if (Object.keys(errors).length > 0) {
-      setOptimizationErrors(errors);
+  const handleSaveOptimizationSettings = async () => {
+    // Validate before saving
+    if (!validateOptimizationSettings()) {
+      setMessage({ type: 'error', text: 'Please fix validation errors before saving' });
       return;
     }
+    
+    setSaving(true);
+    try {
+      const res = await fetch(`${API_URL}/api/image-optimization/settings`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(optimizationSettings),
+      });
+      
+      if (res.ok) {
+        setMessage({ type: 'success', text: 'Optimization settings saved successfully' });
+        setOptimizationErrors({});
+      } else {
+        setMessage({ type: 'error', text: 'Failed to save optimization settings' });
+      }
+    } catch (err) {
+      console.error('Failed to save optimization settings:', err);
+      setMessage({ type: 'error', text: 'Failed to save optimization settings' });
+    } finally {
+      setSaving(false);
+    }
+  };
 
-    if (!confirm('Run image optimization on all photos?')) return;
+  const handleRunOptimization = async (force: boolean = false) => {
+    if (!confirm(force ? 'Force regenerate ALL images? This will take a while.' : 'Run image optimization on all photos?')) return;
 
     setSaving(true);
+    setOptimizationComplete(false);
     setMessage(null);
 
     try {
-      const res = await fetch(`${API_URL}/api/photos/optimize-all`, {
+      const res = await fetch(`${API_URL}/api/image-optimization/optimize`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify(optimizationSettings),
+        body: JSON.stringify({ force }),
       });
 
       if (res.ok) {
         setMessage({ type: 'success', text: 'Optimization started!' });
+        setOptimizationComplete(true);
       } else {
         const error = await res.json();
         setMessage({ type: 'error', text: error.error || 'Failed to start optimization' });
@@ -367,7 +439,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                         <button
                           onClick={() => {
                             const filename = photo.id.split('/').pop() || photo.id;
-                            handleDeletePhoto(photo.album, filename);
+                            handleDeletePhoto(photo.album, filename, photo.title);
                           }}
                           className="btn-delete-photo"
                           title="Delete photo"
@@ -407,7 +479,8 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                 concurrency: value as any
               });
               if (optimizationErrors.concurrency) {
-                setOptimizationErrors({ ...optimizationErrors, concurrency: undefined });
+                const { concurrency, ...rest } = optimizationErrors;
+                setOptimizationErrors(rest);
               }
             }}
             onFocus={(e) => e.target.select()}
@@ -476,14 +549,27 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
           ))}
         </div>
 
-        <div className="section-actions">
-          <button 
-            onClick={handleRunOptimization}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem', marginTop: '2rem' }}>
+          <button
             className="btn-primary"
+            onClick={handleSaveOptimizationSettings}
             disabled={saving}
           >
-            {saving ? 'Running...' : 'Run Optimization'}
+            {saving ? 'Saving...' : 'Save Settings'}
           </button>
+          
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <button
+              onClick={() => handleRunOptimization(true)}
+              disabled={saving}
+              className="btn-force-regenerate"
+            >
+              {saving ? 'Running...' : 'Force Regenerate All'}
+            </button>
+            {optimizationComplete && (
+              <span style={{ color: '#28a745', fontSize: '1.5rem' }}>✓</span>
+            )}
+          </div>
         </div>
       </section>
     </>
