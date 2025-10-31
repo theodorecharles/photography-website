@@ -136,13 +136,15 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
         const photoTitles = Array.from(files).map(f => f.name);
         trackPhotoUploaded(selectedAlbum, files.length, photoTitles);
         
-        // Track optimizing photos
-        result.photoIds?.forEach((id: string) => {
-          setOptimizingPhotos(prev => new Set([...prev, id]));
-        });
-
-        // Poll for completion
+        // Track optimizing photos - ensure format matches photo.id (album/filename)
         if (result.photoIds) {
+          result.photoIds.forEach((id: string) => {
+            // If id is just filename, prepend album name to match photo.id format
+            const fullId = id.includes('/') ? id : `${selectedAlbum}/${id}`;
+            setOptimizingPhotos(prev => new Set([...prev, fullId]));
+          });
+          
+          // Poll for completion
           pollOptimization(result.photoIds);
         }
 
@@ -173,7 +175,11 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
           const { completed } = await res.json();
           setOptimizingPhotos(prev => {
             const updated = new Set(prev);
-            completed.forEach((id: string) => updated.delete(id));
+            completed.forEach((id: string) => {
+              // Match the format used when adding (album/filename)
+              const fullId = id.includes('/') ? id : `${selectedAlbum}/${id}`;
+              updated.delete(fullId);
+            });
             return updated;
           });
 
