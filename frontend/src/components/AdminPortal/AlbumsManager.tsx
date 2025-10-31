@@ -62,7 +62,6 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
       });
       if (res.ok) {
         const settings = await res.json();
-        console.log('Loaded optimization settings from API:', settings);
         setOptimizationSettings(settings);
       } else {
         console.warn('Failed to load optimization settings, using defaults');
@@ -152,7 +151,6 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
 
       if (res.ok) {
         const result = await res.json();
-        console.log('Upload result:', result);
         setMessage({ type: 'success', text: `${files.length} photo(s) uploaded!` });
         const photoTitles = Array.from(files).map(f => f.name);
         trackPhotoUploaded(selectedAlbum, files.length, photoTitles);
@@ -160,11 +158,9 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
         // Backend returns 'files' array, not 'photoIds'
         const uploadedFiles = result.files || result.photoIds || [];
         if (uploadedFiles.length > 0) {
-          console.log('Backend returned files:', uploadedFiles);
           uploadedFiles.forEach((filename: string) => {
             // Prepend album name to match photo.id format (album/filename)
             const fullId = filename.includes('/') ? filename : `${selectedAlbum}/${filename}`;
-            console.log('Adding to optimizingPhotos:', fullId);
             setOptimizingPhotos(prev => new Set([...prev, fullId]));
           });
           
@@ -204,14 +200,12 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
         const results = await Promise.all(checkPromises);
         const completed = results.filter(r => r.completed).map(r => r.filename);
         
-        console.log(`Optimization check: ${completed.length}/${filenames.length} thumbnails ready`);
         
         // Remove completed photos from optimizing set
         setOptimizingPhotos(prev => {
           const updated = new Set(prev);
           completed.forEach((filename: string) => {
             const fullId = filename.includes('/') ? filename : `${selectedAlbum}/${filename}`;
-            console.log('Thumbnail ready, removing from optimizingPhotos:', fullId);
             updated.delete(fullId);
           });
           return updated;
@@ -220,7 +214,6 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
         if (completed.length < filenames.length) {
           setTimeout(checkStatus, 2000);
         } else {
-          console.log('All thumbnails ready!');
           if (selectedAlbum) {
             await loadPhotos(selectedAlbum);
           }
@@ -230,7 +223,6 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
       }
     };
 
-    console.log('Starting thumbnail polling for:', filenames);
     setTimeout(checkStatus, 2000);
   };
 
@@ -466,7 +458,6 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                   {albumPhotos.map((photo) => {
                     const imageUrl = `${API_URL}${photo.thumbnail}?i=${cacheBustValue}`;
                     const isOptimizing = optimizingPhotos.has(photo.id);
-                    console.log(`Photo ${photo.id} - isOptimizing: ${isOptimizing}, optimizingPhotos:`, Array.from(optimizingPhotos));
                     return (
                     <div key={photo.id} className="admin-photo-item">
                       {isOptimizing ? (
