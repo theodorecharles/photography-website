@@ -133,6 +133,7 @@ const LinksManager: React.FC<LinksManagerProps> = ({
               e.preventDefault();
               e.stopPropagation();
             }}
+            onDrop={(e) => handleDrop(e, index)}
           >
             {/* Show drop preview before this item if it's the drag target */}
             {dragOverIndex === index && draggedIndex !== null && (
@@ -174,7 +175,6 @@ const LinksManager: React.FC<LinksManagerProps> = ({
               className={`link-item ${draggedIndex === index ? 'dragging' : ''}`}
               draggable
               onDragStart={() => handleDragStart(index)}
-              onDrop={(e) => handleDrop(e, index)}
               onDragEnd={handleDragEnd}
             >
               <div className="drag-handle" title="Drag to reorder">
