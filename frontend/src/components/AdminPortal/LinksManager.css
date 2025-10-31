@@ -29,8 +29,14 @@
 
 .link-item.dragging {
   opacity: 0;
+  height: 0;
+  padding: 0;
+  margin: 0;
+  border: none;
+  overflow: hidden;
   cursor: grabbing;
   pointer-events: none;
+  transition: none;
 }
 
 .link-item.drag-over {
