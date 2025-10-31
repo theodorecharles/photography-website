@@ -210,6 +210,58 @@ const LinksManager: React.FC<LinksManagerProps> = ({
             </div>
           </div>
         ))}
+        
+        {/* Drop zone for adding to the end */}
+        <div
+          className="drop-zone-end"
+          onDragEnter={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (draggedIndex !== null) {
+              setDragOverIndex(externalLinks.length);
+            }
+          }}
+          onDragOver={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+          }}
+          onDrop={(e) => handleDrop(e, externalLinks.length)}
+        >
+          {dragOverIndex === externalLinks.length && draggedIndex !== null && (
+            <div className="drop-preview">
+              <div className="drag-handle">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <line x1="3" y1="9" x2="21" y2="9" />
+                  <line x1="3" y1="15" x2="21" y2="15" />
+                </svg>
+              </div>
+              <div className="link-fields">
+                <input
+                  type="text"
+                  placeholder="Title"
+                  value={externalLinks[draggedIndex].title}
+                  className="link-input"
+                  readOnly
+                  disabled
+                />
+                <input
+                  type="text"
+                  placeholder="URL"
+                  value={externalLinks[draggedIndex].url}
+                  className="link-input"
+                  readOnly
+                  disabled
+                />
+              </div>
+              <button className="btn-delete" disabled>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <polyline points="3 6 5 6 21 6" />
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                </svg>
+              </button>
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="section-actions">
