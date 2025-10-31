@@ -46,6 +46,8 @@ const PhotoModal: React.FC<PhotoModalProps> = ({
   const touchStartX = useRef<number | null>(null);
   const touchStartY = useRef<number | null>(null);
   const modalOpenTimeRef = useRef<number | null>(Date.now());
+  const imageContainerRef = useRef<HTMLDivElement>(null);
+  const [imageBounds, setImageBounds] = useState<{width: number; left: number} | null>(null);
 
   // For image URLs, don't include query strings to improve caching (especially on iOS)
   const imageQueryString = ``;
@@ -81,6 +83,58 @@ const PhotoModal: React.FC<PhotoModalProps> = ({
     const baseUrl = photo.album === 'homepage' ? '/' : `/album/${photo.album}`;
     return `${SITE_URL}${baseUrl}?photo=${encodeURIComponent(filename || '')}`;
   }, []);
+
+  // Calculate actual image bounds for aligning controls
+  const updateImageBounds = useCallback(() => {
+    if (!imageContainerRef.current) return;
+    
+    const img = imageContainerRef.current.querySelector('img');
+    if (!img || !img.complete || !img.naturalWidth) return;
+    
+    // Get the image container element
+    const imageContainer = imageContainerRef.current.querySelector('.modal-image-container');
+    if (!imageContainer) return;
+    
+    // Get actual rendered dimensions of the image (accounting for objectFit: contain)
+    const containerRect = imageContainer.getBoundingClientRect();
+    const imgAspect = img.naturalWidth / img.naturalHeight;
+    const containerAspect = containerRect.width / containerRect.height;
+    
+    let renderedWidth, renderedLeft;
+    
+    if (imgAspect > containerAspect) {
+      // Image is wider - constrained by width
+      renderedWidth = containerRect.width;
+      renderedLeft = 0;
+    } else {
+      // Image is taller - constrained by height
+      renderedWidth = containerRect.height * imgAspect;
+      renderedLeft = (containerRect.width - renderedWidth) / 2;
+    }
+    
+    setImageBounds({
+      width: renderedWidth,
+      left: renderedLeft
+    });
+  }, []);
+
+  // Update bounds when thumbnail loads
+  const handleThumbnailLoad = useCallback(() => {
+    setThumbnailLoaded(true);
+    updateImageBounds();
+  }, [updateImageBounds]);
+
+  // Update bounds on window resize
+  useEffect(() => {
+    updateImageBounds();
+    window.addEventListener('resize', updateImageBounds);
+    return () => window.removeEventListener('resize', updateImageBounds);
+  }, [updateImageBounds]);
+
+  // Update bounds when photo changes
+  useEffect(() => {
+    updateImageBounds();
+  }, [selectedPhoto.id, updateImageBounds]);
 
   // Handle copy link
   const handleCopyLink = useCallback(async (photo: Photo) => {
@@ -365,7 +419,7 @@ const PhotoModal: React.FC<PhotoModalProps> = ({
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
       >
-        <div className="modal-container">
+        <div className="modal-container" ref={imageContainerRef}>
           <ModalControls
             show={thumbnailLoaded}
             showInfo={showInfo}
@@ -377,6 +431,7 @@ const PhotoModal: React.FC<PhotoModalProps> = ({
             onToggleFullscreen={toggleFullscreen}
             onClose={handleClose}
             selectedPhoto={selectedPhoto}
+            style={imageBounds ? { width: `${imageBounds.width}px`, left: `${imageBounds.left}px` } : {}}
           />
 
           <InfoPanel
@@ -392,13 +447,14 @@ const PhotoModal: React.FC<PhotoModalProps> = ({
             imageQueryString={imageQueryString}
             modalImageLoaded={modalImageLoaded}
             showModalImage={showModalImage}
-            onThumbnailLoad={() => setThumbnailLoaded(true)}
+            onThumbnailLoad={handleThumbnailLoad}
           />
 
           <ModalNavigation
             showHint={showNavigationHint}
             onPrevious={handleNavigatePrev}
             onNext={handleNavigateNext}
+            style={imageBounds ? { width: `${imageBounds.width}px`, left: `${imageBounds.left}px` } : {}}
           />
         </div>
       </div>

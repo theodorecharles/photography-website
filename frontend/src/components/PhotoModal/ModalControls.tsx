@@ -17,6 +17,7 @@ interface ModalControlsProps {
   onToggleFullscreen: () => void;
   onClose: () => void;
   selectedPhoto: Photo;
+  style?: React.CSSProperties;
 }
 
 const ModalControls: React.FC<ModalControlsProps> = ({
@@ -30,11 +31,12 @@ const ModalControls: React.FC<ModalControlsProps> = ({
   onToggleFullscreen,
   onClose,
   selectedPhoto,
+  style,
 }) => {
   return (
     <div
       className="modal-controls-top"
-      style={{ opacity: show ? 1 : 0 }}
+      style={{ opacity: show ? 1 : 0, ...style }}
     >
       {/* Info button */}
       <button

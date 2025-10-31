@@ -9,15 +9,17 @@ interface ModalNavigationProps {
   showHint: boolean;
   onPrevious: () => void;
   onNext: () => void;
+  style?: React.CSSProperties;
 }
 
 const ModalNavigation: React.FC<ModalNavigationProps> = ({
   showHint,
   onPrevious,
   onNext,
+  style,
 }) => {
   return (
-    <div className="modal-navigation-container">
+    <div className="modal-navigation-container" style={style}>
       {showHint && (
         <div className="modal-navigation-hint">
           ← press arrow keys to navigate →
