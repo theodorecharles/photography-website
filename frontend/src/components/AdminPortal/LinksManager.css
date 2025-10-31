@@ -176,6 +176,7 @@
   .link-item {
     padding: 1rem;
     cursor: default;
+    flex-wrap: wrap;
   }
 
   /* Hide drag handle on mobile */
@@ -183,9 +184,24 @@
     display: none;
   }
 
+  /* Make link fields take full width on mobile */
+  .link-item .link-fields {
+    flex-basis: 100%;
+    width: 100%;
+    margin-bottom: 0.75rem;
+  }
+
   /* Show mobile reorder buttons on mobile */
   .mobile-reorder-buttons {
     display: flex;
+    flex: 1;
+  }
+
+  /* Make delete button match reorder button size */
+  .link-item .btn-delete {
+    padding: 0.5rem;
+    min-width: 44px;
+    min-height: 44px;
   }
 
   /* Disable drag-related styles on mobile */
