@@ -12,6 +12,7 @@ import {
   trackPhotoDeleted
 } from '../../utils/analytics';
 import { cacheBustValue } from '../../config';
+import './AlbumsManager.css';
 
 const API_URL = import.meta.env.VITE_API_URL || '';
 
