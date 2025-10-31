@@ -1,0 +1,150 @@
+.links-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.link-item {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  padding: 1.25rem;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: all 0.2s ease;
+  cursor: grab;
+}
+
+.link-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.12);
+  transform: translateY(-1px);
+}
+
+.link-item:active {
+  cursor: grabbing;
+}
+
+.link-item.dragging {
+  opacity: 0;
+  height: 0;
+  padding: 0;
+  margin: 0;
+  border: none;
+  overflow: hidden;
+  cursor: grabbing;
+  pointer-events: none;
+  transition: none;
+}
+
+.drop-preview {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  padding: 1.25rem;
+  margin-bottom: 0.75rem;
+  background: rgba(74, 222, 128, 0.05);
+  border: 2px dashed #4ade80;
+  border-radius: 8px;
+  box-shadow: 0 0 12px rgba(74, 222, 128, 0.3);
+  animation: pulse-box 1s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.drop-preview .link-input {
+  background: rgba(74, 222, 128, 0.1);
+  border-color: #4ade80;
+  color: #4ade80;
+  cursor: default;
+}
+
+.drop-preview .link-input::placeholder {
+  color: #4ade80;
+  opacity: 0.5;
+}
+
+.drop-preview .btn-delete {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.drop-preview .drag-handle {
+  color: #4ade80;
+}
+
+@keyframes pulse-box {
+  0%, 100% {
+    opacity: 1;
+    box-shadow: 0 0 12px rgba(74, 222, 128, 0.3);
+  }
+  50% {
+    opacity: 0.8;
+    box-shadow: 0 0 20px rgba(74, 222, 128, 0.5);
+  }
+}
+
+.drag-handle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+  cursor: grab;
+  padding: 0.25rem;
+  transition: color 0.2s ease;
+}
+
+.drag-handle:hover {
+  color: #4ade80;
+}
+
+.link-item:active .drag-handle {
+  cursor: grabbing;
+}
+
+.link-fields {
+  display: flex;
+  gap: 0.75rem;
+  flex: 1;
+}
+
+.link-input {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  color: #fff;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+.link-input:focus {
+  outline: none;
+  border-color: #4ade80;
+  box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.1);
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.link-input::placeholder {
+  color: #666;
+}
+
+@media (max-width: 768px) {
+  .link-fields {
+    flex-direction: column;
+  }
+
+  .section-actions {
+    flex-direction: column;
+  }
+
+  .section-actions button {
+    width: 100%;
+  }
+
+  .link-item {
+    padding: 1rem;
+  }
+}
