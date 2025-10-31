@@ -174,7 +174,12 @@ export default function Metrics() {
         });
         
         filledData.push({
-          hour: currentHour.toISOString(),
+          hour: currentHour.toLocaleString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            hour: 'numeric',
+            hour12: true
+          }),
           pageviews: existing ? existing.pageviews : 0
         });
         
@@ -433,7 +438,7 @@ export default function Metrics() {
                 <ResponsiveContainer width="100%" height={300}>
                   <AreaChart 
                     data={pageviewsByHour}
-                    margin={{ top: 10, right: 30, left: 0, bottom: 60 }}
+                    margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
                   >
                     <defs>
                       <linearGradient id="colorPageviews" x1="0" y1="0" x2="0" y2="1">
@@ -450,33 +455,7 @@ export default function Metrics() {
                       textAnchor="end"
                       height={80}
                       tick={{ fill: '#9ca3af' }}
-                      interval={Math.max(Math.floor(pageviewsByHour.length / (timeRange <= 7 ? 12 : 24)), 0)}
-                      tickFormatter={(value: string) => {
-                        const date = new Date(value);
-                        if (timeRange <= 7) {
-                          // For 7 days or less, show "Oct 31 9PM"
-                          return date.toLocaleString('en-US', {
-                            month: 'short',
-                            day: 'numeric',
-                            hour: 'numeric',
-                            hour12: true
-                          });
-                        } else if (timeRange <= 30) {
-                          // For 30 days, show "10/31 9PM"
-                          return date.toLocaleString('en-US', {
-                            month: 'numeric',
-                            day: 'numeric',
-                            hour: 'numeric',
-                            hour12: true
-                          });
-                        } else {
-                          // For longer periods, show just "10/31"
-                          return date.toLocaleString('en-US', {
-                            month: 'numeric',
-                            day: 'numeric'
-                          });
-                        }
-                      }}
+                      interval={Math.max(Math.floor(pageviewsByHour.length / 20), 0)}
                     />
                     <YAxis 
                       stroke="#9ca3af"
@@ -494,17 +473,6 @@ export default function Metrics() {
                       }}
                       labelStyle={{ color: '#f9fafb', fontWeight: 600 }}
                       itemStyle={{ color: secondaryColor }}
-                      labelFormatter={(label: string) => {
-                        const date = new Date(label);
-                        return date.toLocaleString('en-US', {
-                          month: 'short',
-                          day: 'numeric',
-                          year: 'numeric',
-                          hour: 'numeric',
-                          minute: '2-digit',
-                          hour12: true
-                        });
-                      }}
                       formatter={(value: number) => [value, 'Pageviews']}
                     />
                     <Area 
