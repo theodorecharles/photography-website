@@ -170,45 +170,47 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   const pollOptimization = async (filenames: string[]) => {
     const checkStatus = async () => {
       try {
-        const res = await fetch(`${API_URL}/api/photos/optimization-status`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
-          body: JSON.stringify({ photoIds: filenames }), // Backend expects 'photoIds' field
+        // Check each thumbnail URL to see if it exists (returns 200 instead of 404)
+        const checkPromises = filenames.map(async (filename) => {
+          const thumbnailUrl = `${API_URL}/optimized/thumbnail/${selectedAlbum}/${filename}`;
+          try {
+            const res = await fetch(thumbnailUrl, { method: 'HEAD' });
+            return { filename, completed: res.ok };
+          } catch {
+            return { filename, completed: false };
+          }
         });
 
-        if (res.ok) {
-          const data = await res.json();
-          console.log('Optimization status response:', data);
-          const completed = data.completed || [];
-          
-          setOptimizingPhotos(prev => {
-            const updated = new Set(prev);
-            completed.forEach((filename: string) => {
-              // Match the format used when adding (album/filename)
-              const fullId = filename.includes('/') ? filename : `${selectedAlbum}/${filename}`;
-              console.log('Removing from optimizingPhotos:', fullId);
-              updated.delete(fullId);
-            });
-            return updated;
+        const results = await Promise.all(checkPromises);
+        const completed = results.filter(r => r.completed).map(r => r.filename);
+        
+        console.log(`Optimization check: ${completed.length}/${filenames.length} thumbnails ready`);
+        
+        // Remove completed photos from optimizing set
+        setOptimizingPhotos(prev => {
+          const updated = new Set(prev);
+          completed.forEach((filename: string) => {
+            const fullId = filename.includes('/') ? filename : `${selectedAlbum}/${filename}`;
+            console.log('Thumbnail ready, removing from optimizingPhotos:', fullId);
+            updated.delete(fullId);
           });
+          return updated;
+        });
 
-          if (completed.length < filenames.length) {
-            console.log(`Still optimizing: ${completed.length}/${filenames.length} complete`);
-            setTimeout(checkStatus, 2000);
-          } else {
-            console.log('All photos optimized, reloading...');
-            if (selectedAlbum) {
-              await loadPhotos(selectedAlbum);
-            }
+        if (completed.length < filenames.length) {
+          setTimeout(checkStatus, 2000);
+        } else {
+          console.log('All thumbnails ready!');
+          if (selectedAlbum) {
+            await loadPhotos(selectedAlbum);
           }
         }
       } catch (err) {
-        console.error('Failed to check optimization status:', err);
+        console.error('Failed to check thumbnail status:', err);
       }
     };
 
-    console.log('Starting optimization polling for:', filenames);
+    console.log('Starting thumbnail polling for:', filenames);
     setTimeout(checkStatus, 2000);
   };
 
