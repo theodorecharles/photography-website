@@ -451,11 +451,28 @@ export default function Metrics() {
                       dataKey="hour" 
                       stroke="#9ca3af"
                       style={{ fontSize: '0.75rem', fill: '#9ca3af' }}
-                      angle={-45}
-                      textAnchor="end"
-                      height={80}
+                      height={40}
                       tick={{ fill: '#9ca3af' }}
-                      interval={Math.max(Math.floor(pageviewsByHour.length / 20), 0)}
+                      ticks={pageviewsByHour
+                        .map((d) => {
+                          const date = new Date(d.hour);
+                          const hour = date.getHours();
+                          // Show only 12am, 6am, 12pm, 6pm
+                          if (hour % 6 === 0) {
+                            return d.hour;
+                          }
+                          return null;
+                        })
+                        .filter((v): v is string => v !== null)}
+                      tickFormatter={(value: string) => {
+                        const date = new Date(value);
+                        const hour = date.getHours();
+                        if (hour === 0) return '12am';
+                        if (hour === 6) return '6am';
+                        if (hour === 12) return '12pm';
+                        if (hour === 18) return '6pm';
+                        return '';
+                      }}
                     />
                     <YAxis 
                       stroke="#9ca3af"
