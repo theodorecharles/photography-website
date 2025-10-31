@@ -54,6 +54,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
   >({});
   const [copiedLink, setCopiedLink] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [showModalImage, setShowModalImage] = useState(false);
   const modalOpenTimeRef = useRef<number | null>(null);
   const touchStartX = useRef<number | null>(null);
   const touchStartY = useRef<number | null>(null);
@@ -101,6 +102,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
     console.log('[PERF] Click handler started', t0);
     
     setModalImageLoaded(false);
+    setShowModalImage(false); // Don't show modal image initially
     const t1 = performance.now();
     console.log('[PERF] setModalImageLoaded called', t1 - t0);
     
@@ -290,7 +292,19 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
   // Reset modal image loaded state when photo changes
   useEffect(() => {
     setModalImageLoaded(false);
+    setShowModalImage(false);
   }, [selectedPhoto?.id]);
+  
+  // Load modal image AFTER thumbnail is painted
+  useEffect(() => {
+    if (selectedPhoto && !showModalImage) {
+      console.log('[PERF] Starting to load modal image after initial render', performance.now());
+      // Wait for next frame to ensure thumbnail is painted
+      requestAnimationFrame(() => {
+        setShowModalImage(true);
+      });
+    }
+  }, [selectedPhoto, showModalImage]);
 
   // Auto-open photo from URL query parameter
   useEffect(() => {
@@ -1022,8 +1036,36 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
                 src={`${API_URL}${selectedPhoto.thumbnail}${imageQueryString}`}
                 alt={`${selectedPhoto.album} photography by Ted Charles - ${selectedPhoto.title}`}
                 title={selectedPhoto.title}
-                style={{ display: 'block', opacity: 1 }}
+                className="modal-placeholder"
+                style={{ opacity: modalImageLoaded ? 0 : 1 }}
               />
+              {showModalImage && (
+                <img
+                  ref={(img) => {
+                    if (img) {
+                      console.log('[PERF] Modal image mounted', performance.now());
+                      if (img.complete && img.naturalHeight !== 0) {
+                        console.log('[PERF] Modal image already complete', performance.now());
+                        setModalImageLoaded(true);
+                      }
+                    }
+                  }}
+                  src={`${API_URL}${selectedPhoto.src}${imageQueryString}`}
+                  alt={`${selectedPhoto.album} photography by Ted Charles - ${selectedPhoto.title}`}
+                  title={selectedPhoto.title}
+                  loading="eager"
+                  decoding="async"
+                  onLoad={() => {
+                    console.log('[PERF] Modal image loaded', performance.now());
+                    setModalImageLoaded(true);
+                  }}
+                  onError={() => {
+                    console.error('Failed to load modal image:', selectedPhoto.src);
+                    trackError(`Failed to load image: ${selectedPhoto.id}`, 'modal_image_load');
+                  }}
+                  style={{ opacity: modalImageLoaded ? 1 : 0 }}
+                />
+              )}
             </div>
           </div>
         </div>
