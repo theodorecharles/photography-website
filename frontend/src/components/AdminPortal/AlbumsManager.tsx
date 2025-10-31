@@ -45,12 +45,34 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   const [optimizationErrors, setOptimizationErrors] = useState<Record<string, string>>({});
   const [optimizationComplete, setOptimizationComplete] = useState(false);
 
+  // Load optimization settings from API on mount
+  useEffect(() => {
+    loadOptimizationSettings();
+  }, []);
+
   // Load photos when album is selected
   useEffect(() => {
     if (selectedAlbum) {
       loadPhotos(selectedAlbum);
     }
   }, [selectedAlbum]);
+
+  const loadOptimizationSettings = async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/image-optimization/settings`, {
+        credentials: 'include',
+      });
+      if (res.ok) {
+        const settings = await res.json();
+        console.log('Loaded optimization settings from API:', settings);
+        setOptimizationSettings(settings);
+      } else {
+        console.warn('Failed to load optimization settings, using defaults');
+      }
+    } catch (err) {
+      console.error('Failed to load optimization settings:', err);
+    }
+  };
 
   const loadPhotos = async (albumName: string) => {
     try {
@@ -313,6 +335,8 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
       if (res.ok) {
         setMessage({ type: 'success', text: 'Optimization settings saved successfully' });
         setOptimizationErrors({});
+        // Reload settings from API to ensure UI matches what's saved
+        await loadOptimizationSettings();
       } else {
         setMessage({ type: 'error', text: 'Failed to save optimization settings' });
       }
