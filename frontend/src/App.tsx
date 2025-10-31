@@ -69,6 +69,8 @@ function App() {
   const [siteName, setSiteName] = useState('Ted Charles');
   const [avatarPath, setAvatarPath] = useState('/photos/derpatar.png');
   const [avatarCacheBust, setAvatarCacheBust] = useState(Date.now());
+  const [primaryColor, setPrimaryColor] = useState('#4ade80');
+  const [secondaryColor, setSecondaryColor] = useState('#3b82f6');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentAlbum, setCurrentAlbum] = useState<string | undefined>(
@@ -88,6 +90,12 @@ function App() {
       delete (window as any).handleRateLimit;
     };
   }, []);
+
+  // Apply theme colors to CSS custom properties
+  useEffect(() => {
+    document.documentElement.style.setProperty('--primary-color', primaryColor);
+    document.documentElement.style.setProperty('--secondary-color', secondaryColor);
+  }, [primaryColor, secondaryColor]);
 
   // Show footer after initial content loads
   useEffect(() => {
@@ -153,6 +161,8 @@ function App() {
       setExternalLinks(externalLinksData.externalLinks);
       setSiteName(brandingData.siteName || 'Ted Charles');
       setAvatarPath(brandingData.avatarPath || '/photos/derpatar.png');
+      setPrimaryColor(brandingData.primaryColor || '#4ade80');
+      setSecondaryColor(brandingData.secondaryColor || '#3b82f6');
       setAvatarCacheBust(Date.now()); // Update cache bust when branding refreshes
       setError(null);
     } catch (err) {
