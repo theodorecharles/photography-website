@@ -131,8 +131,12 @@
   color: #666;
 }
 
-.mobile-reorder-buttons {
+.mobile-controls {
   display: none;
+}
+
+.mobile-reorder-buttons {
+  display: flex;
   gap: 0.5rem;
 }
 
@@ -160,6 +164,30 @@
   cursor: not-allowed;
 }
 
+.btn-delete-mobile {
+  display: none;
+  padding: 0.5rem 1rem;
+  background: rgba(220, 38, 38, 0.1);
+  border: 1px solid rgba(220, 38, 38, 0.3);
+  border-radius: 6px;
+  color: #dc2626;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.875rem;
+  font-weight: 500;
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.btn-delete-mobile:hover {
+  background: rgba(220, 38, 38, 0.2);
+  border-color: #dc2626;
+}
+
+.btn-delete-desktop {
+  display: flex;
+}
+
 @media (max-width: 768px) {
   .link-fields {
     flex-direction: column;
@@ -176,6 +204,7 @@
   .link-item {
     padding: 1rem;
     cursor: default;
+    position: relative;
   }
 
   /* Hide drag handle on mobile */
@@ -183,9 +212,29 @@
     display: none;
   }
 
-  /* Show mobile reorder buttons on mobile */
-  .mobile-reorder-buttons {
+  /* Hide desktop delete button on mobile */
+  .btn-delete-desktop {
+    display: none;
+  }
+
+  /* Show mobile controls */
+  .mobile-controls {
     display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    gap: 0.5rem;
+  }
+
+  /* Show mobile delete button */
+  .btn-delete-mobile {
+    display: block;
+  }
+
+  /* Adjust link fields to leave space for buttons on the right */
+  .link-item .link-fields {
+    padding-right: 7rem;
   }
 
   /* Disable drag-related styles on mobile */
