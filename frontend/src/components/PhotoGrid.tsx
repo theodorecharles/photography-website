@@ -58,8 +58,6 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
   const [showModalImage, setShowModalImage] = useState(false);
   const [thumbnailLoaded, setThumbnailLoaded] = useState(false);
   const modalOpenTimeRef = useRef<number | null>(null);
-  const touchStartX = useRef<number | null>(null);
-  const touchStartY = useRef<number | null>(null);
 
   // Get query parameters from current URL for API calls (not for images)
   const queryParams = new URLSearchParams(location.search);
@@ -278,57 +276,6 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
     } finally {
       setLoadingExif(false);
     }
-  };
-
-  // Handle touch swipe for mobile navigation
-  const handleTouchStart = (e: React.TouchEvent) => {
-    touchStartX.current = e.touches[0].clientX;
-    touchStartY.current = e.touches[0].clientY;
-  };
-
-  const handleTouchEnd = (e: React.TouchEvent) => {
-    if (!touchStartX.current || !touchStartY.current || !selectedPhoto) return;
-
-    const touchEndX = e.changedTouches[0].clientX;
-    const touchEndY = e.changedTouches[0].clientY;
-    const deltaX = touchEndX - touchStartX.current;
-    const deltaY = touchEndY - touchStartY.current;
-
-    // Ensure horizontal swipe is more dominant than vertical
-    if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
-      if (deltaX > 0) {
-        // Swipe right - go to previous photo
-        const currentIndex = photos.findIndex((p) => p.id === selectedPhoto.id);
-        const prevIndex = (currentIndex - 1 + photos.length) % photos.length;
-        const prevPhoto = photos[prevIndex];
-        const viewDuration = modalOpenTimeRef.current ? Date.now() - modalOpenTimeRef.current : undefined;
-        setModalImageLoaded(false);
-        setSelectedPhoto(prevPhoto);
-        updateURLWithPhoto(prevPhoto);
-        setExifData(null);
-        modalOpenTimeRef.current = Date.now();
-        setTimeout(() => {
-          trackPhotoNavigation('previous', prevPhoto.id, prevPhoto.album, prevPhoto.title, viewDuration);
-        }, 0);
-      } else {
-        // Swipe left - go to next photo
-        const currentIndex = photos.findIndex((p) => p.id === selectedPhoto.id);
-        const nextIndex = (currentIndex + 1) % photos.length;
-        const nextPhoto = photos[nextIndex];
-        const viewDuration = modalOpenTimeRef.current ? Date.now() - modalOpenTimeRef.current : undefined;
-        setModalImageLoaded(false);
-        setSelectedPhoto(nextPhoto);
-        updateURLWithPhoto(nextPhoto);
-        setExifData(null);
-        modalOpenTimeRef.current = Date.now();
-        setTimeout(() => {
-          trackPhotoNavigation('next', nextPhoto.id, nextPhoto.album, nextPhoto.title, viewDuration);
-        }, 0);
-      }
-    }
-
-    touchStartX.current = null;
-    touchStartY.current = null;
   };
 
   // Auto-fetch EXIF data when navigating between photos if info panel is open
@@ -826,8 +773,6 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
           onNavigatePrev={handleNavigatePrev}
           onNavigateNext={handleNavigateNext}
           onThumbnailLoad={handleThumbnailLoad}
-          onTouchStart={handleTouchStart}
-          onTouchEnd={handleTouchEnd}
           onModalClick={handleModalContentClick}
         />
       )}
