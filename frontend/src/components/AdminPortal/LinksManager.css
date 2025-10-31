@@ -35,12 +35,14 @@
 
 .link-item.drag-over {
   position: relative;
+  margin-top: 3rem;
+  transition: margin-top 0.2s ease;
 }
 
 .link-item.drag-over::before {
   content: '';
   position: absolute;
-  top: -4px;
+  top: -1.5rem;
   left: 0;
   right: 0;
   height: 4px;
