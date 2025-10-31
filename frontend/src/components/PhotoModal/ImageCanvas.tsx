@@ -25,24 +25,6 @@ const ImageCanvas: React.FC<ImageCanvasProps> = ({
 }) => {
   return (
     <div className="modal-image-container">
-      {/* Thumbnail - shows first */}
-      <img
-        onLoad={onThumbnailLoad}
-        src={`${apiUrl}${photo.thumbnail}${imageQueryString}`}
-        alt={`${photo.album} photography by Ted Charles - ${photo.title}`}
-        title={photo.title}
-        style={{
-          width: '100%',
-          height: '100%',
-          maxWidth: 'calc(100vw - 30px)',
-          maxHeight: 'calc(100vh - 100px)',
-          objectFit: 'contain',
-          display: 'block',
-          opacity: modalImageLoaded ? 0 : 1,
-          transition: 'opacity 0.3s ease',
-        }}
-      />
-      
       {/* Modal optimized image - overlays on top when loaded */}
       {showModalImage && (
         <img
@@ -59,10 +41,27 @@ const ImageCanvas: React.FC<ImageCanvasProps> = ({
             maxHeight: 'calc(100vh - 100px)',
             objectFit: 'contain',
             opacity: modalImageLoaded ? 1 : 0,
-            pointerEvents: modalImageLoaded ? 'auto' : 'none'
+            pointerEvents: modalImageLoaded ? 'auto' : 'none',
+            transition: 'opacity 0.3s ease',
           }}
         />
       )}
+
+      {/* Thumbnail - shows first */}
+      <img
+        onLoad={onThumbnailLoad}
+        src={`${apiUrl}${photo.thumbnail}${imageQueryString}`}
+        alt={`${photo.album} photography by Ted Charles - ${photo.title}`}
+        title={photo.title}
+        style={{
+          width: '100%',
+          height: '100%',
+          maxWidth: 'calc(100vw - 30px)',
+          maxHeight: 'calc(100vh - 100px)',
+          objectFit: 'contain',
+          display: 'block',
+        }}
+      />
     </div>
   );
 };
