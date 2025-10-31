@@ -54,13 +54,14 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
 
   const loadPhotos = async (albumName: string) => {
     try {
-      const res = await fetch(`${API_URL}/api/photos/${albumName}`, {
+      const res = await fetch(`${API_URL}/api/albums/${albumName}/photos`, {
         credentials: 'include',
       });
       const photos = await res.json();
       setAlbumPhotos(photos);
     } catch (err) {
       console.error('Failed to load photos:', err);
+      setAlbumPhotos([]); // Set to empty array on error to prevent map errors
     }
   };
 
