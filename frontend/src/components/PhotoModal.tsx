@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 
 const API_URL = import.meta.env.VITE_API_URL || '';
 
@@ -50,8 +50,6 @@ interface PhotoModalProps {
   onNavigatePrev: () => void;
   onNavigateNext: () => void;
   onThumbnailLoad: () => void;
-  onTouchStart: (e: React.TouchEvent) => void;
-  onTouchEnd: (e: React.TouchEvent) => void;
   onModalClick: (e: React.MouseEvent) => void;
 }
 
@@ -76,14 +74,43 @@ const PhotoModal: React.FC<PhotoModalProps> = ({
   onNavigatePrev,
   onNavigateNext,
   onThumbnailLoad,
-  onTouchStart,
-  onTouchEnd,
   onModalClick,
 }) => {
+  const touchStartX = useRef<number | null>(null);
+  const touchStartY = useRef<number | null>(null);
+
   const formatFileSize = (bytes: number): string => {
     if (bytes < 1024) return bytes + ' B';
     if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
     return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (!touchStartX.current || !touchStartY.current) return;
+
+    const touchEndX = e.changedTouches[0].clientX;
+    const touchEndY = e.changedTouches[0].clientY;
+    const deltaX = touchEndX - touchStartX.current;
+    const deltaY = touchEndY - touchStartY.current;
+
+    // Ensure horizontal swipe is more dominant than vertical
+    if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
+      if (deltaX > 0) {
+        // Swipe right - go to previous photo
+        onNavigatePrev();
+      } else {
+        // Swipe left - go to next photo
+        onNavigateNext();
+      }
+    }
+
+    touchStartX.current = null;
+    touchStartY.current = null;
   };
 
   return (
@@ -96,8 +123,8 @@ const PhotoModal: React.FC<PhotoModalProps> = ({
         key={selectedPhoto.id}
         className="modal-content"
         onClick={onModalClick}
-        onTouchStart={onTouchStart}
-        onTouchEnd={onTouchEnd}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
       >
         <div className="modal-container">
           {/* Top controls: info, copy, download, fullscreen, close */}
