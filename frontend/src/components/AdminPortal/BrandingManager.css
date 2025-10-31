@@ -27,7 +27,7 @@
 }
 
 .branding-label {
-  color: #4ade80;
+  color: var(--primary-color);
   font-size: 0.875rem;
   font-weight: 600;
   text-transform: uppercase;
@@ -56,8 +56,8 @@
 .branding-input:focus,
 .branding-textarea:focus {
   outline: none;
-  border-color: #4ade80;
-  box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.1);
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-color) 10%, transparent);
   background: rgba(0, 0, 0, 0.5);
 }
 
@@ -82,14 +82,7 @@
   width: 120px;
   height: 120px;
   object-fit: cover;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.current-avatar-preview:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
 }
 
 .upload-avatar-btn {
