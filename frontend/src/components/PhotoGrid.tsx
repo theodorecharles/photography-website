@@ -89,15 +89,30 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
   }, [getPhotoPermalink]);
 
   const handlePhotoClick = (photo: Photo) => {
+    const t0 = performance.now();
+    console.log('[PERF] Click handler started', t0);
+    
     setModalImageLoaded(false);
+    const t1 = performance.now();
+    console.log('[PERF] setModalImageLoaded called', t1 - t0);
+    
     setSelectedPhoto(photo);
+    const t2 = performance.now();
+    console.log('[PERF] setSelectedPhoto called', t2 - t1);
+    
     updateURLWithPhoto(photo);
+    const t3 = performance.now();
+    console.log('[PERF] updateURLWithPhoto called', t3 - t2);
+    
     modalOpenTimeRef.current = Date.now();
     
     // Defer analytics to after render to avoid blocking on cellular
     setTimeout(() => {
       trackPhotoClick(photo.id, photo.album, photo.title);
     }, 0);
+    
+    const t4 = performance.now();
+    console.log('[PERF] Click handler finished', t4 - t0);
   };
 
   const handleCloseModal = useCallback(async () => {
@@ -975,6 +990,19 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
                 </button>
               </div>
               <img
+                ref={(img) => {
+                  if (img) {
+                    console.log('[PERF] Thumbnail img ref mounted', performance.now());
+                    console.log('[PERF] Thumbnail img.complete:', img.complete);
+                    console.log('[PERF] Thumbnail img.naturalHeight:', img.naturalHeight);
+                  }
+                }}
+                onLoadStart={() => {
+                  console.log('[PERF] Thumbnail loadstart event', performance.now());
+                }}
+                onLoad={() => {
+                  console.log('[PERF] Thumbnail load event', performance.now());
+                }}
                 src={`${API_URL}${selectedPhoto.thumbnail}${imageQueryString}`}
                 alt={`${selectedPhoto.album} photography by Ted Charles - ${selectedPhoto.title}`}
                 title={selectedPhoto.title}
