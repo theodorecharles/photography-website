@@ -22,6 +22,8 @@ const LinksManager: React.FC<LinksManagerProps> = ({
   setMessage,
 }) => {
   const [saving, setSaving] = useState(false);
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
 
   const handleAddLink = () => {
     setExternalLinks([...externalLinks, { title: '', url: '' }]);
@@ -35,6 +37,46 @@ const LinksManager: React.FC<LinksManagerProps> = ({
     const newLinks = [...externalLinks];
     newLinks[index][field] = value;
     setExternalLinks(newLinks);
+  };
+
+  const handleDragStart = (index: number) => {
+    setDraggedIndex(index);
+  };
+
+  const handleDragOver = (e: React.DragEvent, index: number) => {
+    e.preventDefault();
+    setDragOverIndex(index);
+  };
+
+  const handleDragLeave = () => {
+    setDragOverIndex(null);
+  };
+
+  const handleDrop = (e: React.DragEvent, dropIndex: number) => {
+    e.preventDefault();
+    
+    if (draggedIndex === null || draggedIndex === dropIndex) {
+      setDraggedIndex(null);
+      setDragOverIndex(null);
+      return;
+    }
+
+    const newLinks = [...externalLinks];
+    const draggedItem = newLinks[draggedIndex];
+    
+    // Remove from old position
+    newLinks.splice(draggedIndex, 1);
+    // Insert at new position
+    newLinks.splice(dropIndex, 0, draggedItem);
+    
+    setExternalLinks(newLinks);
+    setDraggedIndex(null);
+    setDragOverIndex(null);
+  };
+
+  const handleDragEnd = () => {
+    setDraggedIndex(null);
+    setDragOverIndex(null);
   };
 
   const handleSaveLinks = async () => {
@@ -78,7 +120,22 @@ const LinksManager: React.FC<LinksManagerProps> = ({
       
       <div className="links-list">
         {externalLinks.map((link, index) => (
-          <div key={index} className="link-item">
+          <div
+            key={index}
+            className={`link-item ${draggedIndex === index ? 'dragging' : ''} ${dragOverIndex === index ? 'drag-over' : ''}`}
+            draggable
+            onDragStart={() => handleDragStart(index)}
+            onDragOver={(e) => handleDragOver(e, index)}
+            onDragLeave={handleDragLeave}
+            onDrop={(e) => handleDrop(e, index)}
+            onDragEnd={handleDragEnd}
+          >
+            <div className="drag-handle" title="Drag to reorder">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <line x1="3" y1="9" x2="21" y2="9" />
+                <line x1="3" y1="15" x2="21" y2="15" />
+              </svg>
+            </div>
             <div className="link-fields">
               <input
                 type="text"
