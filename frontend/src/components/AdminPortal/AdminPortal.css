@@ -27,7 +27,7 @@
   justify-content: space-between;
   align-items: center;
   position: relative;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
 }
 
 .admin-header .btn-logout {
@@ -101,8 +101,8 @@
 
 .tab-button.active {
   color: #fff;
-  background: rgba(74, 222, 128, 0.15);
-  border-color: #4ade80;
+  background: color-mix(in srgb, var(--primary-color) 15%, transparent);
+  border-color: var(--primary-color);
 }
 
 
@@ -150,16 +150,17 @@
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+  background: var(--primary-color);
   color: #000;
   font-weight: 600;
-  box-shadow: 0 4px 12px rgba(74, 222, 128, 0.3);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--primary-color) 30%, transparent);
   transition: all 0.2s ease;
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
-  box-shadow: 0 6px 16px rgba(74, 222, 128, 0.4);
+  background: var(--primary-color);
+  filter: brightness(0.9);
+  box-shadow: 0 6px 16px color-mix(in srgb, var(--primary-color) 40%, transparent);
   transform: translateY(-1px);
 }
 
@@ -183,15 +184,16 @@
 }
 
 .btn-logout {
-  background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
-  color: white;
-  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+  background: #181818;
+  color: #f6f6f6;
+  border: 1px solid #3d3d3d;
   transition: all 0.2s ease;
 }
 
 .btn-logout:hover {
-  background: linear-gradient(135deg, #c82333 0%, #a71e2a 100%);
-  box-shadow: 0 6px 16px rgba(220, 53, 69, 0.4);
+  background: #3d3d3d;
+  border-color: #4d4d4d;
+  color: #c8c8c8;
   transform: translateY(-1px);
 }
 
@@ -269,7 +271,7 @@
   display: flex;
   justify-content: center;
   margin-bottom: 1.5rem;
-  color: #4ade80;
+  color: var(--primary-color);
 }
 
 .auth-card h2 {
@@ -377,7 +379,7 @@
   content: '✓';
   position: absolute;
   left: 0;
-  color: #4ade80;
+  color: var(--primary-color);
   font-weight: bold;
 }
 
@@ -430,7 +432,7 @@
   width: 40px;
   height: 40px;
   border: 3px solid rgba(255, 255, 255, 0.1);
-  border-top: 3px solid #4ade80;
+  border-top: 3px solid var(--primary-color);
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
