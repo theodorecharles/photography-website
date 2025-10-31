@@ -59,29 +59,29 @@
   transform: none;
 }
 
-/* 2 columns for tablets */
-@media (min-width: 600px) {
+/* 2 columns for tablets - this is dynamically controlled by PhotoGrid.tsx */
+@media (min-width: 512px) {
   .photo-grid {
     grid-template-columns: repeat(2, 1fr);
     margin-top: 54px;
   }
 }
 
-/* 3 columns for small desktops */
+/* 3 columns for small desktops - this is dynamically controlled by PhotoGrid.tsx */
 @media (min-width: 900px) {
   .photo-grid {
     grid-template-columns: repeat(3, 1fr);
   }
 }
 
-/* 4 columns for large desktops */
+/* 4 columns for large desktops - this is dynamically controlled by PhotoGrid.tsx */
 @media (min-width: 1200px) {
   .photo-grid {
     grid-template-columns: repeat(4, 1fr);
   }
 }
 
-/* 5 columns for extra large screens */
+/* 5 columns for extra large screens - this is dynamically controlled by PhotoGrid.tsx */
 @media (min-width: 1600px) {
   .photo-grid {
     grid-template-columns: repeat(5, 1fr);
@@ -89,7 +89,7 @@
 }
 
 /* Mobile-specific adjustments */
-@media (max-width: 599px) {
+@media (max-width: 511px) {
   .photo-grid {
     padding: 0;
     margin-top: 0;
