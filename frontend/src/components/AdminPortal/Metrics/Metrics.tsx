@@ -174,12 +174,7 @@ export default function Metrics() {
         });
         
         filledData.push({
-          hour: currentHour.toLocaleString('en-US', {
-            month: 'short',
-            day: 'numeric',
-            hour: 'numeric',
-            hour12: true
-          }),
+          hour: currentHour.toISOString(),
           pageviews: existing ? existing.pageviews : 0
         });
         
@@ -451,12 +446,12 @@ export default function Metrics() {
                       dataKey="hour" 
                       stroke="#9ca3af"
                       style={{ fontSize: '0.875rem', fill: '#9ca3af' }}
-                      interval="preserveStartEnd"
                       tick={{ fill: '#9ca3af' }}
                       ticks={pageviewsByHour
                         .filter((d) => {
                           const date = new Date(d.hour);
-                          return date.getHours() === 0; // Show only midnight hours
+                          const localHour = date.getHours();
+                          return localHour === 0; // Show only midnight hours
                         })
                         .map((d) => d.hour)}
                       tickFormatter={(value: string) => {
