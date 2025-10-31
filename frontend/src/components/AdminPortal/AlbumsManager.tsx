@@ -132,20 +132,25 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
 
       if (res.ok) {
         const result = await res.json();
+        console.log('Upload result:', result);
         setMessage({ type: 'success', text: `${files.length} photo(s) uploaded!` });
         const photoTitles = Array.from(files).map(f => f.name);
         trackPhotoUploaded(selectedAlbum, files.length, photoTitles);
         
         // Track optimizing photos - ensure format matches photo.id (album/filename)
         if (result.photoIds) {
+          console.log('Backend returned photoIds:', result.photoIds);
           result.photoIds.forEach((id: string) => {
             // If id is just filename, prepend album name to match photo.id format
             const fullId = id.includes('/') ? id : `${selectedAlbum}/${id}`;
+            console.log('Adding to optimizingPhotos:', fullId);
             setOptimizingPhotos(prev => new Set([...prev, fullId]));
           });
           
           // Poll for completion
           pollOptimization(result.photoIds);
+        } else {
+          console.warn('No photoIds in upload result');
         }
 
         await loadPhotos(selectedAlbum);
@@ -427,6 +432,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                   {albumPhotos.map((photo) => {
                     const imageUrl = `${API_URL}${photo.thumbnail}?i=${cacheBustValue}`;
                     const isOptimizing = optimizingPhotos.has(photo.id);
+                    console.log(`Photo ${photo.id} - isOptimizing: ${isOptimizing}, optimizingPhotos:`, Array.from(optimizingPhotos));
                     return (
                     <div key={photo.id} className="admin-photo-item">
                       {isOptimizing ? (
