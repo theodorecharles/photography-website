@@ -65,10 +65,9 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.95);
-  /* Removed backdrop-filter - causes 1-3 second delay on iOS Safari */
-  /* backdrop-filter: blur(8px); */
-  /* -webkit-backdrop-filter: blur(8px); */
+  background-color: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -77,6 +76,8 @@
 
 .modal.fullscreen {
   background-color: #000;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 
 /* Prevent body scrolling when modal is open */
