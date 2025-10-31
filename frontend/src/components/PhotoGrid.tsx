@@ -1059,7 +1059,13 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
                   src={`${API_URL}${selectedPhoto.thumbnail}${imageQueryString}`}
                   alt={`${selectedPhoto.album} photography by Ted Charles - ${selectedPhoto.title}`}
                   title={selectedPhoto.title}
-                  style={{ display: 'block', opacity: 1 }}
+                  style={{ 
+                    display: 'block', 
+                    opacity: 1,
+                    maxWidth: '90vw',
+                    maxHeight: '80vh',
+                    objectFit: 'contain'
+                  }}
                 />
               )}
               {showModalImage && modalImageLoaded && (
@@ -1067,7 +1073,13 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
                   src={`${API_URL}${selectedPhoto.src}${imageQueryString}`}
                   alt={`${selectedPhoto.album} photography by Ted Charles - ${selectedPhoto.title}`}
                   title={selectedPhoto.title}
-                  style={{ display: 'block', opacity: 1 }}
+                  style={{ 
+                    display: 'block', 
+                    opacity: 1,
+                    maxWidth: '90vw',
+                    maxHeight: '80vh',
+                    objectFit: 'contain'
+                  }}
                 />
               )}
             </div>
