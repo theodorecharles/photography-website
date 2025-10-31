@@ -295,16 +295,34 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
     setShowModalImage(false);
   }, [selectedPhoto?.id]);
   
-  // Load modal image AFTER thumbnail is painted
+  // Preload modal image AFTER thumbnail is painted, but keep it out of DOM until loaded
   useEffect(() => {
     if (selectedPhoto && !showModalImage) {
-      console.log('[PERF] Starting to load modal image after initial render', performance.now());
-      // Wait for next frame to ensure thumbnail is painted
-      requestAnimationFrame(() => {
+      console.log('[PERF] Starting to preload modal image', performance.now());
+      
+      // Preload the image using Image() object (not in DOM)
+      const img = new Image();
+      const modalUrl = `${API_URL}${selectedPhoto.src}${imageQueryString}`;
+      
+      img.onload = () => {
+        console.log('[PERF] Modal image preloaded successfully', performance.now());
+        setModalImageLoaded(true);
+        // Now add to DOM since it's loaded
         setShowModalImage(true);
+      };
+      
+      img.onerror = () => {
+        console.error('[PERF] Modal image preload failed', performance.now());
+        // Show thumbnail only
+      };
+      
+      // Start loading in background
+      requestAnimationFrame(() => {
+        console.log('[PERF] Starting image preload', performance.now());
+        img.src = modalUrl;
       });
     }
-  }, [selectedPhoto, showModalImage]);
+  }, [selectedPhoto, showModalImage, imageQueryString]);
 
   // Auto-open photo from URL query parameter
   useEffect(() => {
@@ -1039,31 +1057,12 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
                 className="modal-placeholder"
                 style={{ opacity: modalImageLoaded ? 0 : 1 }}
               />
-              {showModalImage && (
+              {showModalImage && modalImageLoaded && (
                 <img
-                  ref={(img) => {
-                    if (img) {
-                      console.log('[PERF] Modal image mounted', performance.now());
-                      if (img.complete && img.naturalHeight !== 0) {
-                        console.log('[PERF] Modal image already complete', performance.now());
-                        setModalImageLoaded(true);
-                      }
-                    }
-                  }}
                   src={`${API_URL}${selectedPhoto.src}${imageQueryString}`}
                   alt={`${selectedPhoto.album} photography by Ted Charles - ${selectedPhoto.title}`}
                   title={selectedPhoto.title}
-                  loading="eager"
-                  decoding="async"
-                  onLoad={() => {
-                    console.log('[PERF] Modal image loaded', performance.now());
-                    setModalImageLoaded(true);
-                  }}
-                  onError={() => {
-                    console.error('Failed to load modal image:', selectedPhoto.src);
-                    trackError(`Failed to load image: ${selectedPhoto.id}`, 'modal_image_load');
-                  }}
-                  style={{ opacity: modalImageLoaded ? 1 : 0 }}
+                  style={{ opacity: 1 }}
                 />
               )}
             </div>
