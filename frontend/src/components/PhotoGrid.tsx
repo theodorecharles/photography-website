@@ -343,7 +343,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
         
         console.log('[PERF] Starting image preload', performance.now());
         img.src = modalUrl;
-      }, 250);
+      }, 5000);
       
       return () => clearTimeout(timer);
     }
