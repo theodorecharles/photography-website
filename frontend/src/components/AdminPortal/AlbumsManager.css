@@ -266,6 +266,31 @@
   border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
+/* Mobile optimization for admin sections */
+@media (max-width: 768px) {
+  .admin-section {
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+  }
+
+  .admin-section h2 {
+    font-size: 1.3rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-section {
+    padding: 0.75rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+  }
+
+  .admin-section h2 {
+    font-size: 1.2rem;
+  }
+}
+
 .admin-section h2 {
   color: #fff;
   font-size: 1.6rem;

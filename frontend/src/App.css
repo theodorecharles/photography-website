@@ -128,14 +128,28 @@ body {
   transform: translateY(0);
 }
 
+@media (max-width: 768px) {
+  .main-content {
+    padding: 0.75rem;
+  }
+}
+
 @media (max-width: 599px) {
   .main-content {
     margin-top: 54px;
+    padding: 0.5rem;
     padding-bottom: 2rem;
   }
   
   .main-content-title {
     display: block;
+  }
+}
+
+@media (max-width: 480px) {
+  .main-content {
+    padding: 0.375rem;
+    padding-bottom: 2rem;
   }
 }
 
