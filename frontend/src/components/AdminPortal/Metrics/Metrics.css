@@ -441,10 +441,23 @@
     padding: 0.4rem 0.75rem;
   }
 
+  /* Reduce section padding for more space */
+  .metrics-section {
+    padding: 1rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+  }
+
+  .metrics-section h3 {
+    font-size: 0.8rem;
+    margin-bottom: 0.75rem;
+  }
+
   /* Keep three columns on mobile */
   .metrics-summary {
     grid-template-columns: repeat(3, 1fr);
     gap: 0.5rem;
+    margin-bottom: 1rem;
   }
 
   .metric-card {
@@ -468,6 +481,14 @@
     font-size: 0.7rem;
   }
 
+  /* Make charts full-width on mobile */
+  .chart-container {
+    margin-left: -1rem;
+    margin-right: -1rem;
+    padding-left: 0.25rem;
+    padding-right: 0.25rem;
+  }
+
   .line-chart {
     height: 200px;
   }
@@ -476,13 +497,45 @@
     font-size: 0.6rem;
   }
 
+  /* Make tables full-width on mobile */
   .metrics-table {
     font-size: 0.85rem;
+    margin-left: -1rem;
+    margin-right: -1rem;
+    border-left: none;
+    border-right: none;
+    border-radius: 0;
   }
 
   .metrics-table th,
   .metrics-table td {
     padding: 0.5rem 0.75rem;
+  }
+
+  .metrics-table th:first-child,
+  .metrics-table td:first-child {
+    padding-left: 1rem;
+  }
+
+  .metrics-table th:last-child,
+  .metrics-table td:last-child {
+    padding-right: 1rem;
+  }
+
+  /* Adjust photo thumbnails on mobile */
+  .photo-thumbnail-small {
+    width: 50px;
+    height: 50px;
+  }
+
+  .photo-thumbnail-preview {
+    display: none; /* Hide hover preview on mobile */
+  }
+
+  /* Reduce footer size */
+  .metrics-footer {
+    font-size: 0.75rem;
+    padding: 0.75rem;
   }
 }
 
@@ -490,6 +543,11 @@
   .time-range-select {
     font-size: 0.8rem;
     padding: 0.35rem 0.6rem;
+  }
+
+  /* Further reduce padding on small mobile */
+  .metrics-section {
+    padding: 0.75rem;
   }
 
   /* Keep three columns even on small mobile */
@@ -517,6 +575,36 @@
 
   .metric-label {
     font-size: 0.65rem;
+  }
+
+  /* Maximize chart space */
+  .chart-container {
+    margin-left: -0.75rem;
+    margin-right: -0.75rem;
+    padding-left: 0.125rem;
+    padding-right: 0.125rem;
+  }
+
+  /* Maximize table space */
+  .metrics-table {
+    margin-left: -0.75rem;
+    margin-right: -0.75rem;
+  }
+
+  .metrics-table th,
+  .metrics-table td {
+    padding: 0.4rem 0.5rem;
+    font-size: 0.8rem;
+  }
+
+  .metrics-table th:first-child,
+  .metrics-table td:first-child {
+    padding-left: 0.75rem;
+  }
+
+  .metrics-table th:last-child,
+  .metrics-table td:last-child {
+    padding-right: 0.75rem;
   }
 
   .line-chart {
