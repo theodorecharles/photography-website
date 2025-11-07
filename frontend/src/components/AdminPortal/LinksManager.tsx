@@ -163,7 +163,7 @@ const LinksManager: React.FC<LinksManagerProps> = ({
       <div className="links-list">
         {externalLinks.map((link, index) => (
           <div 
-            key={`${link.title}-${link.url}-${index}`}
+            key={index}
             className="link-wrapper"
             onDragEnter={(e) => {
               e.preventDefault();

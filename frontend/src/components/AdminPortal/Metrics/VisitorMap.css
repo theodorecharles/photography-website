@@ -212,13 +212,22 @@
 
 /* Responsive Design */
 @media (max-width: 768px) {
+  /* Make map full-width on mobile */
+  .visitor-map-wrapper {
+    margin-left: -1rem;
+    margin-right: -1rem;
+    border-radius: 0;
+  }
+
   .visitor-map {
     height: 400px;
+    border-radius: 0;
   }
 
   .visitor-map-loading,
   .visitor-map-empty {
     height: 400px;
+    border-radius: 0;
   }
 
   .visitor-map-legend {
@@ -243,6 +252,12 @@
 }
 
 @media (max-width: 480px) {
+  /* Make map full-width on small mobile */
+  .visitor-map-wrapper {
+    margin-left: -0.75rem;
+    margin-right: -0.75rem;
+  }
+
   .visitor-map {
     height: 300px;
   }
