@@ -83,12 +83,14 @@ if [ -f "$CONFIG_FILE" ] && command -v jq &> /dev/null; then
     if [ "$TELEGRAM_ENABLED" = "true" ]; then
         TELEGRAM_BOT_TOKEN=$(jq -r '.notifications.telegram.botToken // ""' "$CONFIG_FILE")
         TELEGRAM_CHAT_ID=$(jq -r '.notifications.telegram.chatId // ""' "$CONFIG_FILE")
+        SITE_URL=$(jq -r '.environment.backend.allowedOrigins[1] // ""' "$CONFIG_FILE")
         
         if [ -n "$TELEGRAM_BOT_TOKEN" ] && [ -n "$TELEGRAM_CHAT_ID" ]; then
             log "Sending deployment notification to Telegram..."
             NOTIFICATION_TEXT="✅ Photography Website deployed successfully!
 
 🌐 Branch: $CURRENT_BRANCH
+🔗 URL: $SITE_URL
 📦 Commit: $COMMIT_HASH
 💬 $COMMIT_MSG"
 
