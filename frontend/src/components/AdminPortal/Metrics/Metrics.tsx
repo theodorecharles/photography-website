@@ -239,10 +239,6 @@ export default function Metrics() {
     return new Date(timestamp / 1000).toLocaleDateString();
   };
 
-  const truncateUrl = (url: string, maxLength: number = 80) => {
-    if (url.length <= maxLength) return url;
-    return url.substring(0, maxLength) + '...';
-  };
 
   const toggleRowExpansion = (tableName: string, rowIndex: number) => {
     setExpandedRows(prev => {
@@ -720,8 +716,8 @@ export default function Metrics() {
                   <thead>
                     <tr>
                       <th>Referrer</th>
-                      <th className="text-right">Visits</th>
-                      <th className="text-right">% of Total</th>
+                      <th className="text-right" style={{ width: '80px' }}>Visits</th>
+                      <th className="text-right" style={{ width: '80px' }}>% of Total</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -740,7 +736,7 @@ export default function Metrics() {
                             style={{ cursor: 'pointer' }}
                           >
                             <td className="referrer" title={referrer.referrer}>
-                              {truncateUrl(referrer.referrer)}
+                              {referrer.referrer}
                             </td>
                             <td className="text-right">{formatNumber(referrer.count)}</td>
                             <td className="text-right">{percentage}%</td>
