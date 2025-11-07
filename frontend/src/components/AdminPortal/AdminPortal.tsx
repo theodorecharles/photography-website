@@ -233,6 +233,12 @@ export default function AdminPortal() {
               Albums
             </button>
             <button
+              className={`tab-button ${activeTab === 'metrics' ? 'active' : ''}`}
+              onClick={() => navigate('/admin/metrics')}
+            >
+              Metrics
+            </button>
+            <button
               className={`tab-button ${activeTab === 'links' ? 'active' : ''}`}
               onClick={() => navigate('/admin/links')}
             >
@@ -243,12 +249,6 @@ export default function AdminPortal() {
               onClick={() => navigate('/admin/branding')}
             >
               Branding
-            </button>
-            <button
-              className={`tab-button ${activeTab === 'metrics' ? 'active' : ''}`}
-              onClick={() => navigate('/admin/metrics')}
-            >
-              Metrics
             </button>
           </div>
         </div>

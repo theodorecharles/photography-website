@@ -22,9 +22,6 @@ const LinksManager: React.FC<LinksManagerProps> = ({
   setMessage,
 }) => {
   const [saving, setSaving] = useState(false);
-  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
-  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
-  const [dropPosition, setDropPosition] = useState<'before' | 'after'>('before');
 
   const handleAddLink = () => {
     setExternalLinks([...externalLinks, { title: '', url: '' }]);
@@ -38,69 +35,6 @@ const LinksManager: React.FC<LinksManagerProps> = ({
     const newLinks = [...externalLinks];
     newLinks[index][field] = value;
     setExternalLinks(newLinks);
-  };
-
-  const handleDragStart = (index: number) => {
-    setDraggedIndex(index);
-  };
-
-  const handleDragEnterItem = (e: React.DragEvent, index: number) => {
-    if (draggedIndex === null || draggedIndex === index) {
-      return;
-    }
-    
-    // Determine if we're in the top or bottom half of the item
-    const rect = e.currentTarget.getBoundingClientRect();
-    const midpoint = rect.top + rect.height / 2;
-    const position = e.clientY < midpoint ? 'before' : 'after';
-    
-    setDragOverIndex(index);
-    setDropPosition(position);
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    
-    if (draggedIndex === null || dragOverIndex === null) {
-      setDraggedIndex(null);
-      setDragOverIndex(null);
-      return;
-    }
-
-    // Calculate actual drop position
-    let dropIndex = dragOverIndex;
-    if (dropPosition === 'after') {
-      dropIndex = dragOverIndex + 1;
-    }
-    
-    // Adjust if dragging from before the drop position
-    if (draggedIndex < dropIndex) {
-      dropIndex--;
-    }
-
-    if (draggedIndex === dropIndex) {
-      setDraggedIndex(null);
-      setDragOverIndex(null);
-      return;
-    }
-
-    // Reorder on drop
-    const newLinks = [...externalLinks];
-    const draggedItem = newLinks[draggedIndex];
-    
-    // Remove from current position
-    newLinks.splice(draggedIndex, 1);
-    // Insert at new position
-    newLinks.splice(dropIndex, 0, draggedItem);
-    
-    setExternalLinks(newLinks);
-    setDraggedIndex(null);
-    setDragOverIndex(null);
-  };
-
-  const handleDragEnd = () => {
-    setDraggedIndex(null);
-    setDragOverIndex(null);
   };
 
   const handleMoveUp = (index: number) => {
@@ -162,68 +96,8 @@ const LinksManager: React.FC<LinksManagerProps> = ({
       
       <div className="links-list">
         {externalLinks.map((link, index) => (
-          <div 
-            key={index}
-            className="link-wrapper"
-            onDragEnter={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              handleDragEnterItem(e, index);
-            }}
-            onDragOver={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-            }}
-            onDrop={handleDrop}
-          >
-            {/* Show drop preview before this item if hovering top half */}
-            {dragOverIndex === index && draggedIndex !== null && draggedIndex !== index && dropPosition === 'before' && (
-              <div className="drop-preview">
-                <div className="drag-handle">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <line x1="3" y1="9" x2="21" y2="9" />
-                    <line x1="3" y1="15" x2="21" y2="15" />
-                  </svg>
-                </div>
-                <div className="link-fields">
-                  <input
-                    type="text"
-                    placeholder="Title"
-                    value={externalLinks[draggedIndex].title}
-                    className="link-input"
-                    readOnly
-                    disabled
-                  />
-                  <input
-                    type="text"
-                    placeholder="URL"
-                    value={externalLinks[draggedIndex].url}
-                    className="link-input"
-                    readOnly
-                    disabled
-                  />
-                </div>
-                <button className="btn-delete" disabled>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <polyline points="3 6 5 6 21 6" />
-                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                  </svg>
-                </button>
-              </div>
-            )}
-            
-            <div
-              className={`link-item ${draggedIndex === index ? 'dragging' : ''}`}
-              draggable
-              onDragStart={() => handleDragStart(index)}
-              onDragEnd={handleDragEnd}
-            >
-              <div className="drag-handle" title="Drag to reorder">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <line x1="3" y1="9" x2="21" y2="9" />
-                  <line x1="3" y1="15" x2="21" y2="15" />
-                </svg>
-              </div>
+          <div key={index} className="link-wrapper">
+            <div className="link-item">
               <div className="link-fields">
                 <input
                   type="text"
@@ -240,8 +114,8 @@ const LinksManager: React.FC<LinksManagerProps> = ({
                   className="link-input"
                 />
               </div>
-              <div className="mobile-controls">
-                <div className="mobile-reorder-buttons">
+              <div className="link-controls">
+                <div className="reorder-buttons">
                   <button
                     onClick={() => handleMoveUp(index)}
                     className="btn-reorder"
@@ -265,59 +139,13 @@ const LinksManager: React.FC<LinksManagerProps> = ({
                 </div>
                 <button
                   onClick={() => handleDeleteLink(index)}
-                  className="btn-delete-mobile"
+                  className="btn-delete-link"
                   title="Delete link"
                 >
                   Delete
                 </button>
               </div>
-              <button
-                onClick={() => handleDeleteLink(index)}
-                className="btn-delete btn-delete-desktop"
-                title="Delete link"
-              >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <polyline points="3 6 5 6 21 6" />
-                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                </svg>
-              </button>
             </div>
-            
-            {/* Show drop preview after this item if hovering bottom half */}
-            {dragOverIndex === index && draggedIndex !== null && draggedIndex !== index && dropPosition === 'after' && (
-              <div className="drop-preview">
-                <div className="drag-handle">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <line x1="3" y1="9" x2="21" y2="9" />
-                    <line x1="3" y1="15" x2="21" y2="15" />
-                  </svg>
-                </div>
-                <div className="link-fields">
-                  <input
-                    type="text"
-                    placeholder="Title"
-                    value={externalLinks[draggedIndex].title}
-                    className="link-input"
-                    readOnly
-                    disabled
-                  />
-                  <input
-                    type="text"
-                    placeholder="URL"
-                    value={externalLinks[draggedIndex].url}
-                    className="link-input"
-                    readOnly
-                    disabled
-                  />
-                </div>
-                <button className="btn-delete" disabled>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <polyline points="3 6 5 6 21 6" />
-                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                  </svg>
-                </button>
-              </div>
-            )}
           </div>
         ))}
       </div>

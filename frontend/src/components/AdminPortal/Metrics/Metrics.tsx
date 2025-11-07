@@ -71,6 +71,7 @@ export default function Metrics() {
   const [visitorLocations, setVisitorLocations] = useState<VisitorLocation[]>([]);
   const [loadingLocations, setLoadingLocations] = useState(false);
   const [expandedRows, setExpandedRows] = useState<Record<string, Set<number>>>({});
+  const [expandedTables, setExpandedTables] = useState<Record<string, boolean>>({});
 
   const loadStats = useCallback(async () => {
     setLoading(true);
@@ -238,10 +239,6 @@ export default function Metrics() {
     return new Date(timestamp / 1000).toLocaleDateString();
   };
 
-  const truncateUrl = (url: string, maxLength: number = 40) => {
-    if (url.length <= maxLength) return url;
-    return url.substring(0, maxLength) + '...';
-  };
 
   const toggleRowExpansion = (tableName: string, rowIndex: number) => {
     setExpandedRows(prev => {
@@ -250,18 +247,54 @@ export default function Metrics() {
         newExpanded[tableName] = new Set();
       }
       const tableExpanded = new Set(newExpanded[tableName]);
+      const isExpanding = !tableExpanded.has(rowIndex);
+      
       if (tableExpanded.has(rowIndex)) {
         tableExpanded.delete(rowIndex);
       } else {
         tableExpanded.add(rowIndex);
       }
       newExpanded[tableName] = tableExpanded;
+      
+      // Scroll expanded row into view
+      if (isExpanding) {
+        setTimeout(() => {
+          // Find the specific table by data attribute and get its rows
+          const table = document.querySelector(`.metrics-table[data-table-name="${tableName}"]`);
+          if (table) {
+            const rows = table.querySelectorAll('tbody tr.clickable-row');
+            const targetRow = rows[rowIndex];
+            if (targetRow) {
+              const nextRow = targetRow.nextElementSibling;
+              if (nextRow && nextRow.classList.contains('expanded-content-row')) {
+                nextRow.scrollIntoView({ 
+                  behavior: 'smooth', 
+                  block: 'nearest',
+                  inline: 'nearest'
+                });
+              }
+            }
+          }
+        }, 50);
+      }
+      
       return newExpanded;
     });
   };
 
   const isRowExpanded = (tableName: string, rowIndex: number): boolean => {
     return expandedRows[tableName]?.has(rowIndex) || false;
+  };
+
+  const toggleTableExpansion = (tableName: string) => {
+    setExpandedTables(prev => ({
+      ...prev,
+      [tableName]: !prev[tableName]
+    }));
+  };
+
+  const isTableExpanded = (tableName: string): boolean => {
+    return expandedTables[tableName] || false;
   };
 
   if (loading && !stats) {
@@ -348,9 +381,14 @@ export default function Metrics() {
             <VisitorMap locations={visitorLocations} loading={loadingLocations} />
           </div>
 
-          {/* Visitors Over Time Chart */}
-          <div className="metrics-section">
-            <h3>Unique Visitors Over Time</h3>
+          {/* Charts Grid - Side by Side on Desktop */}
+          <div className="metrics-grid">
+            {/* Visitors Over Time Chart */}
+            <div className="metrics-section">
+              <h3>Unique Visitors Over Time</h3>
+              <p style={{ color: '#9ca3af', fontSize: '0.85rem', marginBottom: '0.75rem' }}>
+                Daily breakdown of unique visitors
+              </p>
             {loadingTimeSeries ? (
               <div className="chart-loading">Loading chart data...</div>
             ) : visitorsOverTime.length > 0 ? (
@@ -424,7 +462,7 @@ export default function Metrics() {
           <div className="metrics-section">
             <h3>Pageviews per Hour</h3>
             <p style={{ color: '#9ca3af', fontSize: '0.85rem', marginBottom: '0.75rem' }}>
-              Hourly breakdown of page views showing traffic patterns throughout the day
+              Hourly breakdown of page views
             </p>
             {loadingPageviewsByHour ? (
               <div className="chart-loading">Loading chart data...</div>
@@ -495,17 +533,22 @@ export default function Metrics() {
             ) : (
               <div className="no-data">No hourly pageview data available for this time range</div>
             )}
+            </div>
           </div>
 
-          {/* Top Pictures by View Duration */}
-          <div className="metrics-section">
+          {/* Tables Grid - Most Engaging Pictures and Top Pages */}
+          <div className="metrics-grid">
+            {/* Top Pictures by View Duration */}
+            <div className="metrics-section">
             <h3>Most Engaging Pictures</h3>
             <p style={{ color: '#9ca3af', fontSize: '0.85rem', marginBottom: '0.75rem' }}>
               Pictures ranked by total time spent viewing
             </p>
             {stats.topPicturesByDuration && stats.topPicturesByDuration.length > 0 ? (
-              <div className="metrics-table">
-                <table>
+              <>
+              <div className={`metrics-table-container ${isTableExpanded('pictures') ? 'expanded' : ''}`}>
+                <div className="metrics-table" data-table-name="pictures">
+                  <table>
                   <thead>
                     <tr>
                       <th>Thumbnail</th>
@@ -572,19 +615,32 @@ export default function Metrics() {
                       );
                     })}
                   </tbody>
-                </table>
+                  </table>
+                </div>
               </div>
+              <button 
+                className="view-more-btn" 
+                onClick={() => toggleTableExpansion('pictures')}
+              >
+                {isTableExpanded('pictures') ? 'View Less ▲' : 'View More ▼'}
+              </button>
+              </>
             ) : (
               <div className="no-data">No picture view duration data available</div>
             )}
-          </div>
+            </div>
 
-          {/* Top Pages */}
-          <div className="metrics-section">
-            <h3>Top Pages</h3>
-            {stats.topPages.length > 0 ? (
-              <div className="metrics-table">
-                <table>
+            {/* Top Pages */}
+            <div className="metrics-section">
+              <h3>Top Pages</h3>
+              <p style={{ color: '#9ca3af', fontSize: '0.85rem', marginBottom: '0.75rem' }}>
+                Pages ranked by total views
+              </p>
+              {stats.topPages.length > 0 ? (
+                <>
+                <div className={`metrics-table-container ${isTableExpanded('pages') ? 'expanded' : ''}`}>
+                  <div className="metrics-table" data-table-name="pages">
+                    <table>
                   <thead>
                     <tr>
                       <th>Page Path</th>
@@ -631,24 +687,37 @@ export default function Metrics() {
                       );
                     })}
                   </tbody>
-                </table>
-              </div>
-            ) : (
-              <div className="no-data">No page view data available</div>
-            )}
+                    </table>
+                  </div>
+                </div>
+                <button 
+                  className="view-more-btn" 
+                  onClick={() => toggleTableExpansion('pages')}
+                >
+                  {isTableExpanded('pages') ? 'View Less ▲' : 'View More ▼'}
+                </button>
+                </>
+              ) : (
+                <div className="no-data">No page view data available</div>
+              )}
+            </div>
           </div>
 
-          {/* Top Referrers */}
-          <div className="metrics-section">
-            <h3>Top Referrers</h3>
-            {stats.topReferrers.length > 0 ? (
-              <div className="metrics-table">
-                <table>
+          {/* Tables Grid - Top Referrers and Event Types */}
+          <div className="metrics-grid">
+            {/* Top Referrers */}
+            <div className="metrics-section">
+              <h3>Top Referrers</h3>
+              {stats.topReferrers.length > 0 ? (
+                <>
+                <div className={`metrics-table-container ${isTableExpanded('referrers') ? 'expanded' : ''}`}>
+                  <div className="metrics-table" data-table-name="referrers">
+                    <table>
                   <thead>
                     <tr>
                       <th>Referrer</th>
-                      <th className="text-right">Visits</th>
-                      <th className="text-right">% of Total</th>
+                      <th className="text-right" style={{ width: '80px' }}>Visits</th>
+                      <th className="text-right" style={{ width: '80px' }}>% of Total</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -667,7 +736,7 @@ export default function Metrics() {
                             style={{ cursor: 'pointer' }}
                           >
                             <td className="referrer" title={referrer.referrer}>
-                              {truncateUrl(referrer.referrer)}
+                              {referrer.referrer}
                             </td>
                             <td className="text-right">{formatNumber(referrer.count)}</td>
                             <td className="text-right">{percentage}%</td>
@@ -696,19 +765,29 @@ export default function Metrics() {
                       );
                     })}
                   </tbody>
-                </table>
-              </div>
-            ) : (
-              <div className="no-data">No referrer data available</div>
-            )}
-          </div>
+                    </table>
+                  </div>
+                </div>
+                <button 
+                  className="view-more-btn" 
+                  onClick={() => toggleTableExpansion('referrers')}
+                >
+                  {isTableExpanded('referrers') ? 'View Less ▲' : 'View More ▼'}
+                </button>
+                </>
+              ) : (
+                <div className="no-data">No referrer data available</div>
+              )}
+            </div>
 
-          {/* Event Types Distribution */}
-          <div className="metrics-section">
-            <h3>Event Types</h3>
-            {stats.eventTypes.length > 0 ? (
-              <div className="metrics-table">
-                <table>
+            {/* Event Types Distribution */}
+            <div className="metrics-section">
+              <h3>Event Types</h3>
+              {stats.eventTypes.length > 0 ? (
+                <>
+                <div className={`metrics-table-container ${isTableExpanded('events') ? 'expanded' : ''}`}>
+                  <div className="metrics-table" data-table-name="events">
+                    <table>
                   <thead>
                     <tr>
                       <th>Event Type</th>
@@ -756,11 +835,20 @@ export default function Metrics() {
                       );
                     })}
                   </tbody>
-                </table>
-              </div>
-            ) : (
-              <div className="no-data">No event data available</div>
-            )}
+                    </table>
+                  </div>
+                </div>
+                <button 
+                  className="view-more-btn" 
+                  onClick={() => toggleTableExpansion('events')}
+                >
+                  {isTableExpanded('events') ? 'View Less ▲' : 'View More ▼'}
+                </button>
+                </>
+              ) : (
+                <div className="no-data">No event data available</div>
+              )}
+            </div>
           </div>
 
           {/* Footer Info */}
