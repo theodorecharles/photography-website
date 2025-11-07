@@ -218,6 +218,7 @@
   .visitor-map-wrapper {
     margin-left: -1rem;
     margin-right: -1rem;
+    margin-bottom: -1rem;
     border-radius: 0;
     width: calc(100% + 2rem);
   }
@@ -259,6 +260,7 @@
   .visitor-map-wrapper {
     margin-left: -0.75rem;
     margin-right: -0.75rem;
+    margin-bottom: -0.75rem;
     width: calc(100% + 1.5rem);
   }
 
