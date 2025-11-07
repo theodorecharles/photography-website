@@ -7,10 +7,7 @@
     "backend": {
       "port": 3001,
       "photosDir": "photos",
-      "allowedOrigins": [
-        "http://localhost:5173",
-        "http://localhost:3000"
-      ]
+      "allowedOrigins": ["http://localhost:5173", "http://localhost:3000"]
     },
     "optimization": {
       "concurrency": 4,
@@ -40,9 +37,7 @@
         "clientSecret": "your-google-client-secret"
       },
       "sessionSecret": "your-session-secret-here",
-      "authorizedEmails": [
-        "your-email@example.com"
-      ]
+      "authorizedEmails": ["your-email@example.com"]
     }
   },
   "branding": {
@@ -63,6 +58,13 @@
       "stream": "website",
       "username": "your-username",
       "password": "your-password"
+    }
+  },
+  "notifications": {
+    "telegram": {
+      "enabled": false,
+      "botToken": "your-telegram-bot-token",
+      "chatId": "your-telegram-chat-id"
     }
   },
   "externalLinks": [
