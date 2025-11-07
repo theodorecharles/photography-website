@@ -59,6 +59,7 @@
   font-size: 1.1rem;
   font-weight: 600;
   word-break: break-word;
+  text-transform: capitalize;
 }
 
 .btn-delete-small {
@@ -115,6 +116,7 @@
   font-size: 1.2rem;
   margin: 0;
   font-weight: 600;
+  text-transform: capitalize;
 }
 
 .upload-controls {

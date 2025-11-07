@@ -27,7 +27,7 @@
 }
 
 .time-range-select {
-  padding: 0.75rem 1rem;
+  padding: 0.75rem 2.25rem 0.75rem 1rem;
   border: 1.5px solid rgba(255, 255, 255, 0.1);
   border-radius: 6px;
   background: rgba(0, 0, 0, 0.4);
@@ -35,18 +35,26 @@
   font-size: 0.95rem;
   cursor: pointer;
   transition: all 0.2s ease;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 1rem;
+  width: 155px;
 }
 
 .time-range-select:hover {
   border-color: rgba(255, 255, 255, 0.15);
-  background: rgba(0, 0, 0, 0.45);
+  background-color: rgba(0, 0, 0, 0.45);
 }
 
 .time-range-select:focus {
   outline: none;
   border-color: var(--primary-color);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-color) 10%, transparent);
-  background: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.5);
 }
 
 /* Summary Cards */
@@ -104,15 +112,27 @@
   font-weight: 500;
 }
 
+/* Grid Layout for Side-by-Side Sections */
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
 /* Sections */
 .metrics-section {
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 8px;
   padding: 1.5rem;
-  margin-bottom: 1.5rem;
   transition: all 0.2s ease;
   overflow: visible;
+}
+
+/* Standalone sections (not in grid) need margin */
+.admin-section > .metrics-section {
+  margin-bottom: 1.5rem;
 }
 
 .metrics-section:hover {
@@ -140,6 +160,41 @@
   padding: 2rem;
   color: #9ca3af;
   font-size: 0.9rem;
+}
+
+/* Table Container with Scrolling */
+.metrics-table-container {
+  max-height: 400px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  border-radius: 8px;
+  margin-bottom: 0;
+}
+
+.metrics-table-container.expanded {
+  max-height: none;
+}
+
+/* View More Button */
+.view-more-btn {
+  display: none;
+  width: 100%;
+  padding: 0.75rem;
+  margin-top: 0.75rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  color: var(--primary-color);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.view-more-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--primary-color);
+  transform: translateY(-1px);
 }
 
 /* Table Styles */
@@ -209,10 +264,11 @@
 
 .metrics-table .referrer {
   color: #ffffff;
-  max-width: 300px;
+  max-width: 500px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  font-size: 0.875rem;
 }
 
 /* Ensure the entire table is responsive */
@@ -419,6 +475,35 @@
 
 /* Responsive Design */
 @media (max-width: 768px) {
+  /* Stack grid on mobile */
+  .metrics-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  /* Show view more button on mobile */
+  .view-more-btn {
+    display: block;
+  }
+
+  /* Table container on mobile - fixed height when not expanded */
+  .metrics-table-container:not(.expanded) {
+    max-height: 400px;
+    overflow-y: hidden;
+    position: relative;
+  }
+
+  .metrics-table-container:not(.expanded)::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: linear-gradient(to bottom, transparent, rgba(45, 45, 45, 0.95));
+    pointer-events: none;
+  }
+
   .metrics-header-wrapper {
     gap: 1rem;
   }
@@ -445,7 +530,6 @@
   .metrics-section {
     padding: 1rem;
     border-radius: 6px;
-    margin-bottom: 1rem;
   }
 
   .metrics-section h3 {

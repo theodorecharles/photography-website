@@ -479,7 +479,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                   <div 
                     key={album.name} 
                     className={`album-card ${selectedAlbum === album.name ? 'selected' : ''}`}
-                    onClick={() => setSelectedAlbum(album.name)}
+                    onClick={() => setSelectedAlbum(selectedAlbum === album.name ? null : album.name)}
                   >
                     <div className="album-card-header">
                       <h4>{album.name}</h4>
@@ -494,9 +494,6 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                         ×
                       </button>
                     </div>
-                    {selectedAlbum === album.name && (
-                      <div className="album-badge">Selected</div>
-                    )}
                   </div>
                 ))}
               </div>
@@ -577,7 +574,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
         <p className="section-description">Configure image quality and run optimization</p>
         
         <div className="form-group" style={{ maxWidth: '300px', marginBottom: '2rem' }}>
-          <label className="branding-label">Concurrency (1-16)</label>
+          <label className="branding-label" style={{ marginBottom: '0.75rem', display: 'block' }}>Concurrency (1-16)</label>
           <input
             type="number"
             min="1"
