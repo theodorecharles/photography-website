@@ -7,7 +7,7 @@ on:
 jobs:
   deploy:
     name: Run update.sh on prod VM
-    runs-on: [self-hosted, prod]
+    runs-on: [self-hosted, prod, photography-website]
     steps:
       - uses: actions/checkout@v4
       - name: Make script executable and run
