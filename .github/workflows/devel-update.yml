@@ -12,5 +12,5 @@ jobs:
       - uses: actions/checkout@v4
       - name: Make script executable and run
         run: |
-          cd /home/ted/
-          ./update.sh
+          cd /home/ted/photography-website/
+          ./restart.sh
