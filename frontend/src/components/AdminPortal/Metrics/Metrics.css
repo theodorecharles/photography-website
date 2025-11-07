@@ -229,6 +229,16 @@
   font-variant-numeric: tabular-nums;
 }
 
+.metrics-table th:first-child,
+.metrics-table td:first-child {
+  padding-left: 1.5rem;
+}
+
+.metrics-table th:last-child,
+.metrics-table td:last-child {
+  padding-right: 1.5rem;
+}
+
 .metrics-table tbody tr {
   transition: all 0.15s ease;
 }
@@ -264,7 +274,7 @@
 
 .metrics-table .referrer {
   color: #ffffff;
-  max-width: 500px;
+  max-width: 900px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -368,7 +378,7 @@
 
 /* Photo thumbnail in table */
 .photo-thumbnail-cell {
-  padding: 0.5rem 1rem !important;
+  padding: 0.5rem 1.5rem !important;
 }
 
 .photo-thumbnail-wrapper {
@@ -598,12 +608,12 @@
 
   .metrics-table th:first-child,
   .metrics-table td:first-child {
-    padding-left: 1rem;
+    padding-left: 1.5rem;
   }
 
   .metrics-table th:last-child,
   .metrics-table td:last-child {
-    padding-right: 1rem;
+    padding-right: 1.5rem;
   }
 
   /* Adjust photo thumbnails on mobile */
@@ -683,12 +693,12 @@
 
   .metrics-table th:first-child,
   .metrics-table td:first-child {
-    padding-left: 0.75rem;
+    padding-left: 1.5rem;
   }
 
   .metrics-table th:last-child,
   .metrics-table td:last-child {
-    padding-right: 0.75rem;
+    padding-right: 1.5rem;
   }
 
   .line-chart {
