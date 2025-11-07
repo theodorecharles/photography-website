@@ -69,5 +69,49 @@ if ! pm2 restart ecosystem.config.cjs --update-env; then
     fi
 fi
 
-# Display PM2 process list
+# Get commit information for notification
+COMMIT_HASH=$(git rev-parse --short HEAD)
+COMMIT_MSG=$(git log -1 --pretty=%B | head -n 1)
+
 log "Deployment completed successfully!"
+
+# Send Telegram notification if enabled in config
+CONFIG_FILE="config/config.json"
+if [ -f "$CONFIG_FILE" ] && command -v jq &> /dev/null; then
+    TELEGRAM_ENABLED=$(jq -r '.notifications.telegram.enabled // false' "$CONFIG_FILE")
+    
+    if [ "$TELEGRAM_ENABLED" = "true" ]; then
+        TELEGRAM_BOT_TOKEN=$(jq -r '.notifications.telegram.botToken // ""' "$CONFIG_FILE")
+        TELEGRAM_CHAT_ID=$(jq -r '.notifications.telegram.chatId // ""' "$CONFIG_FILE")
+        SITE_URL=$(jq -r '.environment.backend.allowedOrigins[0] // ""' "$CONFIG_FILE")
+        
+        if [ -n "$TELEGRAM_BOT_TOKEN" ] && [ -n "$TELEGRAM_CHAT_ID" ]; then
+            log "Sending deployment notification to Telegram..."
+            NOTIFICATION_TEXT="✅ Photography Website deployed successfully!
+
+🌐 Branch: $CURRENT_BRANCH
+🔗 URL: $SITE_URL
+📦 Commit: $COMMIT_HASH
+💬 $COMMIT_MSG"
+
+            if curl -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+                 -d "chat_id=${TELEGRAM_CHAT_ID}" \
+                 -d "text=$NOTIFICATION_TEXT" \
+                 --silent --output /dev/null --fail; then
+                log "Telegram notification sent successfully!"
+            else
+                log "Warning: Failed to send Telegram notification"
+            fi
+        else
+            log "Skipping Telegram notification (credentials not configured in config.json)"
+        fi
+    else
+        log "Skipping Telegram notification (disabled in config.json)"
+    fi
+else
+    if [ ! -f "$CONFIG_FILE" ]; then
+        log "Skipping Telegram notification (config.json not found)"
+    elif ! command -v jq &> /dev/null; then
+        log "Skipping Telegram notification (jq not installed)"
+    fi
+fi
