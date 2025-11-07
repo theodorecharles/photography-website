@@ -113,6 +113,3 @@ else
         log "Skipping Telegram notification (jq not installed)"
     fi
 fi
-
-# Display PM2 status
-pm2 list
