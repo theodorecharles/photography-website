@@ -25,6 +25,11 @@ optimized/
 config/config.json
 config/config.local.json
 
+# Database (persist image metadata across updates)
+image-metadata.db
+image-metadata.db-shm
+image-metadata.db-wal
+
 # Logs
 npm-debug.log*
 yarn-debug.log*

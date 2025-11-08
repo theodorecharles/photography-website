@@ -12,6 +12,7 @@ import LinksManager from './LinksManager';
 import BrandingManager from './BrandingManager';
 import AlbumsManager from './AlbumsManager';
 import Metrics from './Metrics/Metrics';
+import ConfigManager from './ConfigManager';
 import {
   trackLoginSucceeded,
   trackLogout,
@@ -29,6 +30,7 @@ export default function AdminPortal() {
     if (location.pathname.includes('/links')) return 'links';
     if (location.pathname.includes('/branding')) return 'branding';
     if (location.pathname.includes('/metrics')) return 'metrics';
+    if (location.pathname.includes('/config')) return 'config';
     return 'albums';
   };
   const activeTab = getActiveTab();
@@ -250,12 +252,30 @@ export default function AdminPortal() {
             >
               Branding
             </button>
+            <button
+              className={`tab-button ${activeTab === 'config' ? 'active' : ''}`}
+              onClick={() => navigate('/admin/config')}
+            >
+              Config
+            </button>
           </div>
         </div>
 
         {message && (
-          <div className={`message message-${message.type}`}>
-            {message.text}
+          <div className={`toast toast-${message.type}`}>
+            <div className="toast-content">
+              <span className="toast-icon">
+                {message.type === 'success' ? '✓' : '⚠'}
+              </span>
+              <span className="toast-text">{message.text}</span>
+              <button 
+                className="toast-close"
+                onClick={() => setMessage(null)}
+                aria-label="Close notification"
+              >
+                ×
+              </button>
+            </div>
           </div>
         )}
 
@@ -284,6 +304,12 @@ export default function AdminPortal() {
           <AlbumsManager
             albums={albums}
             loadAlbums={loadAlbums}
+            setMessage={setMessage}
+          />
+        )}
+
+        {activeTab === 'config' && (
+          <ConfigManager
             setMessage={setMessage}
           />
         )}

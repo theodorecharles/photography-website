@@ -61,5 +61,5 @@ export interface Photo {
   download: string;
 }
 
-export type Tab = 'branding' | 'links' | 'albums' | 'metrics';
+export type Tab = 'branding' | 'links' | 'albums' | 'metrics' | 'config';
 
