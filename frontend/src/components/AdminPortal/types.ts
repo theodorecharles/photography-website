@@ -58,8 +58,9 @@ export interface Photo {
   album: string;
   src: string;
   thumbnail: string;
+  modal: string;
   download: string;
 }
 
-export type Tab = 'branding' | 'links' | 'albums' | 'metrics';
+export type Tab = 'branding' | 'links' | 'albums' | 'metrics' | 'config';
 

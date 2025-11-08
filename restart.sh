@@ -70,6 +70,12 @@ if ! ./optimize_images.sh; then
     handle_error "Image optimization failed"
 fi
 
+# Install root dependencies (for generate-ai-titles.js script)
+log "Installing root dependencies..."
+if ! npm install; then
+    handle_error "Root npm install failed"
+fi
+
 # Backend deployment process
 log "Installing backend dependencies..."
 cd backend || handle_error "Failed to cd into backend directory"

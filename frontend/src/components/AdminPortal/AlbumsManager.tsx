@@ -3,8 +3,8 @@
  * Manages photo albums, photo uploads, and image optimization settings
  */
 
-import { useState, useEffect, useRef } from 'react';
-import { Album, Photo, ImageOptimizationSettings } from './types';
+import { useState, useEffect } from 'react';
+import { Album, Photo } from './types';
 import { 
   trackAlbumCreated,
   trackAlbumDeleted,
@@ -32,43 +32,10 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   const [selectedAlbum, setSelectedAlbum] = useState<string | null>(null);
   const [albumPhotos, setAlbumPhotos] = useState<Photo[]>([]);
   const [optimizingPhotos, setOptimizingPhotos] = useState<Set<string>>(new Set());
-  const [optimizationSettings, setOptimizationSettings] = useState<ImageOptimizationSettings>({
-    concurrency: 4,
-    images: {
-      thumbnail: { quality: 60, maxDimension: 512 },
-      modal: { quality: 85, maxDimension: 2048 },
-      download: { quality: 95, maxDimension: 4096 },
-    }
-  });
-  const [optimizationErrors, setOptimizationErrors] = useState<Record<string, string>>({});
-  const [optimizationComplete, setOptimizationComplete] = useState(false);
-  const [optimizationLogs, setOptimizationLogs] = useState<string[]>([]);
-  const [isOptimizationRunning, setIsOptimizationRunning] = useState(false);
-  
-  // Refs for auto-scrolling
-  const logContainerRef = useRef<HTMLDivElement>(null);
-  const optimizationSectionRef = useRef<HTMLDivElement>(null);
-
-  // Auto-scroll logs to bottom when they update
-  useEffect(() => {
-    if (logContainerRef.current && isOptimizationRunning) {
-      logContainerRef.current.scrollTop = logContainerRef.current.scrollHeight;
-    }
-  }, [optimizationLogs, isOptimizationRunning]);
-
-  // Scroll page down when logs first appear
-  useEffect(() => {
-    if (optimizationLogs.length === 1 && isOptimizationRunning) {
-      setTimeout(() => {
-        optimizationSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
-      }, 100);
-    }
-  }, [optimizationLogs.length, isOptimizationRunning]);
-
-  // Load optimization settings from API on mount
-  useEffect(() => {
-    loadOptimizationSettings();
-  }, []);
+  const [photoTitles, setPhotoTitles] = useState<Record<string, string | null>>({});
+  const [editingPhoto, setEditingPhoto] = useState<Photo | null>(null);
+  const [editTitleValue, setEditTitleValue] = useState('');
+  const [showEditModal, setShowEditModal] = useState(false);
 
   // Load photos when album is selected
   useEffect(() => {
@@ -77,22 +44,6 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     }
   }, [selectedAlbum]);
 
-  const loadOptimizationSettings = async () => {
-    try {
-      const res = await fetch(`${API_URL}/api/image-optimization/settings`, {
-        credentials: 'include',
-      });
-      if (res.ok) {
-        const settings = await res.json();
-        setOptimizationSettings(settings);
-      } else {
-        console.warn('Failed to load optimization settings, using defaults');
-      }
-    } catch (err) {
-      console.error('Failed to load optimization settings:', err);
-    }
-  };
-
   const loadPhotos = async (albumName: string) => {
     try {
       const res = await fetch(`${API_URL}/api/albums/${albumName}/photos`, {
@@ -100,9 +51,75 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
       });
       const photos = await res.json();
       setAlbumPhotos(photos);
+      
+      // Load AI titles for all photos
+      loadPhotoTitles(albumName, photos);
     } catch (err) {
       console.error('Failed to load photos:', err);
       setAlbumPhotos([]); // Set to empty array on error to prevent map errors
+    }
+  };
+
+  const loadPhotoTitles = async (albumName: string, photos: Photo[]) => {
+    const titles: Record<string, string | null> = {};
+    
+    for (const photo of photos) {
+      try {
+        const filename = photo.id.split('/').pop();
+        const res = await fetch(`${API_URL}/api/image-metadata/${albumName}/${filename}`, {
+          credentials: 'include',
+        });
+        
+        if (res.ok) {
+          const data = await res.json();
+          titles[photo.id] = data.title || null;
+        } else {
+          titles[photo.id] = null;
+        }
+      } catch (err) {
+        titles[photo.id] = null;
+      }
+    }
+    
+    setPhotoTitles(titles);
+  };
+
+  const handleOpenEditModal = (photo: Photo) => {
+    setEditingPhoto(photo);
+    setEditTitleValue(photoTitles[photo.id] || '');
+    setShowEditModal(true);
+  };
+
+  const handleCloseEditModal = () => {
+    setShowEditModal(false);
+    setEditingPhoto(null);
+    setEditTitleValue('');
+  };
+
+  const handleSaveTitle = async () => {
+    if (!editingPhoto) return;
+
+    const filename = editingPhoto.id.split('/').pop();
+    const album = editingPhoto.album;
+
+    try {
+      const res = await fetch(`${API_URL}/api/image-metadata/${album}/${filename}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ title: editTitleValue || null, description: null }),
+      });
+
+      if (res.ok) {
+        setPhotoTitles(prev => ({ ...prev, [editingPhoto.id]: editTitleValue || null }));
+        setMessage({ type: 'success', text: 'Title updated successfully!' });
+        handleCloseEditModal();
+      } else {
+        setMessage({ type: 'error', text: 'Failed to update title' });
+      }
+    } catch (err) {
+      console.error('Failed to save title:', err);
+      setMessage({ type: 'error', text: 'Network error occurred' });
     }
   };
 
@@ -270,175 +287,6 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     }
   };
 
-  const validateOptimizationSettings = () => {
-    const errors: Record<string, string> = {};
-    
-    // Validate concurrency
-    if (optimizationSettings.concurrency === null || optimizationSettings.concurrency === undefined || optimizationSettings.concurrency === '' as any) {
-      errors.concurrency = 'Value required';
-    } else if (optimizationSettings.concurrency < 1 || optimizationSettings.concurrency > 32) {
-      errors.concurrency = 'Must be between 1 and 32';
-    }
-    
-    // Validate thumbnail quality
-    if (optimizationSettings.images.thumbnail.quality === null || optimizationSettings.images.thumbnail.quality === undefined || optimizationSettings.images.thumbnail.quality === '' as any) {
-      errors.thumbnailQuality = 'Value required';
-    } else if (optimizationSettings.images.thumbnail.quality < 0 || optimizationSettings.images.thumbnail.quality > 100) {
-      errors.thumbnailQuality = 'Must be between 0 and 100';
-    }
-    
-    // Validate thumbnail maxDimension
-    if (optimizationSettings.images.thumbnail.maxDimension === null || optimizationSettings.images.thumbnail.maxDimension === undefined || optimizationSettings.images.thumbnail.maxDimension === '' as any) {
-      errors.thumbnailMaxDimension = 'Value required';
-    } else if (optimizationSettings.images.thumbnail.maxDimension < 128 || optimizationSettings.images.thumbnail.maxDimension > 4096) {
-      errors.thumbnailMaxDimension = 'Must be between 128 and 4096';
-    }
-    
-    // Validate modal quality
-    if (optimizationSettings.images.modal.quality === null || optimizationSettings.images.modal.quality === undefined || optimizationSettings.images.modal.quality === '' as any) {
-      errors.modalQuality = 'Value required';
-    } else if (optimizationSettings.images.modal.quality < 0 || optimizationSettings.images.modal.quality > 100) {
-      errors.modalQuality = 'Must be between 0 and 100';
-    }
-    
-    // Validate modal maxDimension
-    if (optimizationSettings.images.modal.maxDimension === null || optimizationSettings.images.modal.maxDimension === undefined || optimizationSettings.images.modal.maxDimension === '' as any) {
-      errors.modalMaxDimension = 'Value required';
-    } else if (optimizationSettings.images.modal.maxDimension < 512 || optimizationSettings.images.modal.maxDimension > 8192) {
-      errors.modalMaxDimension = 'Must be between 512 and 8192';
-    }
-    
-    // Validate download quality
-    if (optimizationSettings.images.download.quality === null || optimizationSettings.images.download.quality === undefined || optimizationSettings.images.download.quality === '' as any) {
-      errors.downloadQuality = 'Value required';
-    } else if (optimizationSettings.images.download.quality < 0 || optimizationSettings.images.download.quality > 100) {
-      errors.downloadQuality = 'Must be between 0 and 100';
-    }
-    
-    // Validate download maxDimension
-    if (optimizationSettings.images.download.maxDimension === null || optimizationSettings.images.download.maxDimension === undefined || optimizationSettings.images.download.maxDimension === '' as any) {
-      errors.downloadMaxDimension = 'Value required';
-    } else if (optimizationSettings.images.download.maxDimension < 1024 || optimizationSettings.images.download.maxDimension > 16384) {
-      errors.downloadMaxDimension = 'Must be between 1024 and 16384';
-    }
-    
-    setOptimizationErrors(errors);
-    return Object.keys(errors).length === 0;
-  };
-
-  const handleSaveOptimizationSettings = async () => {
-    // Validate before saving
-    if (!validateOptimizationSettings()) {
-      setMessage({ type: 'error', text: 'Please fix validation errors before saving' });
-      return;
-    }
-    
-    setSaving(true);
-    try {
-      const res = await fetch(`${API_URL}/api/image-optimization/settings`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify(optimizationSettings),
-      });
-      
-      if (res.ok) {
-        setMessage({ type: 'success', text: 'Optimization settings saved successfully' });
-        setOptimizationErrors({});
-        // Reload settings from API to ensure UI matches what's saved
-        await loadOptimizationSettings();
-      } else {
-        setMessage({ type: 'error', text: 'Failed to save optimization settings' });
-      }
-    } catch (err) {
-      console.error('Failed to save optimization settings:', err);
-      setMessage({ type: 'error', text: 'Failed to save optimization settings' });
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const handleRunOptimization = async (force: boolean = false) => {
-    if (!confirm(force ? 'Force regenerate ALL images? This will take a while.' : 'Run image optimization on all photos?')) return;
-
-    setIsOptimizationRunning(true);
-    setOptimizationComplete(false);
-    setOptimizationLogs([]);
-    setMessage(null);
-    
-    // Scroll to optimization section
-    setTimeout(() => {
-      optimizationSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
-    }, 100);
-
-    try {
-      const res = await fetch(`${API_URL}/api/image-optimization/optimize`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ force }),
-      });
-
-      if (!res.ok) {
-        setMessage({ type: 'error', text: 'Failed to start optimization' });
-        setIsOptimizationRunning(false);
-        return;
-      }
-
-      // Parse SSE stream
-      const reader = res.body?.getReader();
-      const decoder = new TextDecoder();
-      
-      if (!reader) {
-        setMessage({ type: 'error', text: 'Failed to read response stream' });
-        setIsOptimizationRunning(false);
-        return;
-      }
-
-      let buffer = '';
-      
-      while (true) {
-        const { done, value } = await reader.read();
-        
-        if (done) break;
-        
-        buffer += decoder.decode(value, { stream: true });
-        const lines = buffer.split('\n');
-        buffer = lines.pop() || ''; // Keep incomplete line in buffer
-        
-        for (const line of lines) {
-          if (line.startsWith('data: ')) {
-            try {
-              const data = JSON.parse(line.slice(6));
-              
-              if (data.type === 'stdout' || data.type === 'stderr') {
-                setOptimizationLogs(prev => [...prev, data.message]);
-              } else if (data.type === 'complete') {
-                setOptimizationComplete(true);
-                // Filter out "Generating" entries when complete
-                setOptimizationLogs(prev => prev.filter(log => !log.startsWith('Generating')));
-                setMessage({ 
-                  type: data.exitCode === 0 ? 'success' : 'error', 
-                  text: data.exitCode === 0 ? 'Optimization completed successfully!' : 'Optimization failed' 
-                });
-              } else if (data.type === 'error') {
-                setMessage({ type: 'error', text: data.message });
-              }
-            } catch (e) {
-              console.error('Failed to parse SSE data:', e);
-            }
-          }
-        }
-      }
-    } catch (err) {
-      console.error('Optimization error:', err);
-      setMessage({ type: 'error', text: 'Network error occurred' });
-    } finally {
-      setIsOptimizationRunning(false);
-    }
-  };
 
   return (
     <>
@@ -543,21 +391,33 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                         />
                       )}
                       <div className="photo-overlay">
-                        <span className="photo-title">{photo.title}</span>
-                        <button
-                          onClick={() => {
-                            const filename = photo.id.split('/').pop() || photo.id;
-                            handleDeletePhoto(photo.album, filename, photo.title);
-                          }}
-                          className="btn-delete-photo"
-                          title="Delete photo"
-                          disabled={isOptimizing}
-                        >
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <polyline points="3 6 5 6 21 6" />
-                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                          </svg>
-                        </button>
+                        <div className="photo-actions">
+                          <button
+                            onClick={() => handleOpenEditModal(photo)}
+                            className="btn-edit-photo"
+                            title="Edit title"
+                            disabled={isOptimizing}
+                          >
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                            </svg>
+                          </button>
+                          <button
+                            onClick={() => {
+                              const filename = photo.id.split('/').pop() || photo.id;
+                              handleDeletePhoto(photo.album, filename, photo.title);
+                            }}
+                            className="btn-delete-photo"
+                            title="Delete photo"
+                            disabled={isOptimizing}
+                          >
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <polyline points="3 6 5 6 21 6" />
+                              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                            </svg>
+                          </button>
+                        </div>
                       </div>
                     </div>
                   );
@@ -568,144 +428,71 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
           )}
         </div>
       </section>
-      
-      <section className="admin-section" ref={optimizationSectionRef}>
-        <h2>⚙️ Image Optimization</h2>
-        <p className="section-description">Configure image quality and run optimization</p>
-        
-        <div className="form-group" style={{ maxWidth: '300px', marginBottom: '2rem' }}>
-          <label className="branding-label" style={{ marginBottom: '0.75rem', display: 'block' }}>Concurrency (1-16)</label>
-          <input
-            type="number"
-            min="1"
-            max="16"
-            value={optimizationSettings.concurrency}
-            onChange={(e) => {
-              const value = e.target.value === '' ? '' : parseInt(e.target.value);
-              setOptimizationSettings({
-                ...optimizationSettings,
-                concurrency: value as any
-              });
-              if (optimizationErrors.concurrency) {
-                const { concurrency, ...rest } = optimizationErrors;
-                setOptimizationErrors(rest);
-              }
-            }}
-            onFocus={(e) => e.target.select()}
-            className="branding-input"
-            style={{
-              borderColor: optimizationErrors.concurrency ? '#dc3545' : undefined
-            }}
-          />
-          {optimizationErrors.concurrency && (
-            <p style={{ color: '#dc3545', fontSize: '0.85rem', marginTop: '0.25rem' }}>
-              {optimizationErrors.concurrency}
-            </p>
-          )}
-        </div>
-        
-        <div className="optimization-grid">
-          {['thumbnail', 'modal', 'download'].map((type) => (
-            <div key={type} className="optimization-group">
-              <h4>{type.charAt(0).toUpperCase() + type.slice(1)}</h4>
-              <div className="form-group">
-                <label>Quality (0-100)</label>
-                <input
-                  type="number"
-                  min="0"
-                  max="100"
-                  value={optimizationSettings.images[type as keyof typeof optimizationSettings.images].quality}
-                  onChange={(e) => {
-                    const value = e.target.value === '' ? '' : parseInt(e.target.value);
-                    setOptimizationSettings({
-                      ...optimizationSettings,
-                      images: { 
-                        ...optimizationSettings.images, 
-                        [type]: { 
-                          ...optimizationSettings.images[type as keyof typeof optimizationSettings.images], 
-                          quality: value as any 
-                        } 
-                      }
-                    });
-                  }}
-                  onFocus={(e) => e.target.select()}
+
+      {/* Edit Title Modal */}
+      {showEditModal && editingPhoto && (
+        <div className="modal-backdrop" onClick={handleCloseEditModal}>
+          <div className="edit-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="edit-modal-header">
+              <h3>Edit Photo Title</h3>
+              <button 
+                className="modal-close-btn"
+                onClick={handleCloseEditModal}
+                title="Close"
+              >
+                ×
+              </button>
+            </div>
+            
+            <div className="edit-modal-body">
+              <div className="edit-modal-photo">
+                <img 
+                  src={`${API_URL}${editingPhoto.thumbnail}?i=${cacheBustValue}`}
+                  alt={editingPhoto.title}
                 />
               </div>
-              <div className="form-group">
-                <label>Max Dimension (px)</label>
+              
+              <div className="edit-modal-info">
+                <label className="edit-modal-label">
+                  Filename: <span className="filename-display">{editingPhoto.id.split('/').pop()}</span>
+                </label>
+                
+                <label className="edit-modal-label">AI Title</label>
                 <input
-                  type="number"
-                  min="128"
-                  value={optimizationSettings.images[type as keyof typeof optimizationSettings.images].maxDimension}
-                  onChange={(e) => {
-                    const value = e.target.value === '' ? '' : parseInt(e.target.value);
-                    setOptimizationSettings({
-                      ...optimizationSettings,
-                      images: { 
-                        ...optimizationSettings.images, 
-                        [type]: { 
-                          ...optimizationSettings.images[type as keyof typeof optimizationSettings.images], 
-                          maxDimension: value as any 
-                        } 
-                      }
-                    });
+                  type="text"
+                  value={editTitleValue}
+                  onChange={(e) => setEditTitleValue(e.target.value)}
+                  className="edit-modal-input"
+                  placeholder="Enter AI title..."
+                  autoFocus
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      handleSaveTitle();
+                    } else if (e.key === 'Escape') {
+                      handleCloseEditModal();
+                    }
                   }}
-                  onFocus={(e) => e.target.select()}
                 />
               </div>
             </div>
-          ))}
-        </div>
-
-        {optimizationLogs.length > 0 && (
-          <div style={{ marginTop: '2rem' }}>
-            <div 
-              ref={logContainerRef}
-              style={{
-                backgroundColor: '#000',
-                color: '#d4d4d4',
-                padding: '1rem',
-                borderRadius: '4px',
-                border: '1px solid #333',
-                fontFamily: "'Modern DOS', monospace",
-                fontSize: '0.85rem',
-                ...(isOptimizationRunning ? { height: '400px', overflowY: 'auto' } : {}),
-                whiteSpace: 'pre-wrap',
-                wordBreak: 'break-all'
-              }}>
-              {optimizationLogs.map((log, index) => (
-                <div key={index}>{log}</div>
-              ))}
-              {isOptimizationRunning && (
-                <div style={{ marginTop: '0.5rem', color: '#4ade80' }}>⏳ Running...</div>
-              )}
+            
+            <div className="edit-modal-footer">
+              <button 
+                className="btn-secondary"
+                onClick={handleCloseEditModal}
+              >
+                Cancel
+              </button>
+              <button 
+                className="btn-primary"
+                onClick={handleSaveTitle}
+              >
+                Save Title
+              </button>
             </div>
           </div>
-        )}
-
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem', marginTop: '2rem' }}>
-          <button
-            className="btn-primary"
-            onClick={handleSaveOptimizationSettings}
-            disabled={saving || isOptimizationRunning}
-          >
-            {saving ? 'Saving...' : 'Save Settings'}
-          </button>
-          
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <button
-              onClick={() => handleRunOptimization(true)}
-              disabled={saving || isOptimizationRunning}
-              className="btn-force-regenerate"
-            >
-              {isOptimizationRunning ? 'Running...' : 'Force Regenerate All'}
-            </button>
-            {optimizationComplete && !isOptimizationRunning && (
-              <span style={{ color: 'var(--primary-color)', fontSize: '1.5rem' }}>✓</span>
-            )}
-          </div>
         </div>
-      </section>
+      )}
     </>
   );
 };
