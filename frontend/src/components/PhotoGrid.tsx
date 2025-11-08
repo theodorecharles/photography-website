@@ -20,6 +20,7 @@ interface Photo {
   id: string;
   src: string;
   thumbnail: string;
+  modal: string;
   download: string;
   title: string;
   album: string;
