@@ -58,6 +58,7 @@ export interface Photo {
   album: string;
   src: string;
   thumbnail: string;
+  modal: string;
   download: string;
 }
 
