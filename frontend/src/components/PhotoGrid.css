@@ -59,11 +59,23 @@
   transform: none;
 }
 
+@media (max-width: 511px) {
+  .photo-grid {
+    padding-top: 54px;
+  }
+}
+
 /* 2 columns for tablets - this is dynamically controlled by PhotoGrid.tsx */
 @media (min-width: 512px) {
   .photo-grid {
     grid-template-columns: repeat(2, 1fr);
     margin-top: 54px;
+  }
+}
+
+@media (max-width: 599px) {
+  .photo-grid {
+    margin-top: 0px;
   }
 }
 
