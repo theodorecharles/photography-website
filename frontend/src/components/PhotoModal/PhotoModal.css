@@ -244,6 +244,34 @@
   height: 20px;
 }
 
+/* Image Title */
+.modal-image-title {
+  position: absolute;
+  top: 0;
+  left: 180px; /* Space for left buttons (info + copy + download) */
+  right: 130px; /* Space for right buttons (fullscreen + close) */
+  transform: translateY(calc(-100% - 0.5rem));
+  color: white;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-align: center;
+  z-index: 1002;
+  animation: fadeIn 0.3s ease-out;
+  line-height: 1.2;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Hide title when viewport is too narrow to prevent button overlap */
+@media (max-width: 650px) {
+  .modal-image-title {
+    display: none;
+  }
+}
+
 /* Mobile-specific adjustments */
 @media (max-width: 599px) {
   .modal-image-container {

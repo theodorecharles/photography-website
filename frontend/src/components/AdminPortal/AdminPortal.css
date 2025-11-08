@@ -9,6 +9,121 @@
   position: relative;
 }
 
+/* Toast Notification */
+.toast {
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  z-index: 9999;
+  min-width: 300px;
+  max-width: 500px;
+  padding: 1rem 1.25rem;
+  border-radius: 8px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  animation: slideInRight 0.3s ease-out;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(400px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.toast-content {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.toast-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.toast-text {
+  flex: 1;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.toast-close {
+  background: none;
+  border: none;
+  color: inherit;
+  font-size: 1.75rem;
+  line-height: 1;
+  padding: 0;
+  margin-left: 0.5rem;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toast-close:hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.toast-close:active {
+  transform: scale(0.95);
+}
+
+.toast-success {
+  background: linear-gradient(135deg, rgba(26, 77, 46, 0.95) 0%, rgba(20, 60, 36, 0.95) 100%);
+  border: 1.5px solid var(--primary-color);
+  color: var(--primary-color);
+}
+
+.toast-success .toast-icon {
+  color: var(--primary-color);
+}
+
+.toast-error {
+  background: linear-gradient(135deg, rgba(77, 26, 26, 0.95) 0%, rgba(60, 20, 20, 0.95) 100%);
+  border: 1.5px solid #f87171;
+  color: #f87171;
+}
+
+.toast-error .toast-icon {
+  color: #f87171;
+}
+
+/* Mobile responsive */
+@media (max-width: 600px) {
+  .toast {
+    top: 70px;
+    right: 10px;
+    left: 10px;
+    min-width: unset;
+    max-width: unset;
+  }
+  
+  @keyframes slideInRight {
+    from {
+      transform: translateY(-100px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+}
+
 @media (min-width: 600px) {
   .admin-portal {
     margin-top: 54px;

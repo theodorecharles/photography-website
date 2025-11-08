@@ -11,6 +11,7 @@ interface InfoPanelProps {
   photo: Photo;
   exifData: ExifData | null;
   loadingExif: boolean;
+  imageTitle?: string | null;
   style?: React.CSSProperties;
 }
 
@@ -25,12 +26,19 @@ const InfoPanel: React.FC<InfoPanelProps> = ({
   photo,
   exifData,
   loadingExif,
+  imageTitle,
   style,
 }) => {
   if (!show) return null;
 
   return (
     <div className="modal-info-panel" style={style}>
+      {imageTitle && (
+        <div className="info-item" style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: '0.5rem' }}>
+          <span className="info-value">{imageTitle}</span>
+        </div>
+      )}
+      
       <div className="info-item">
         <span className="info-label">File:</span>
         <span className="info-value">{photo.id.split('/').pop()}</span>

@@ -38,6 +38,10 @@ import authRouter from "./routes/auth.ts";
 import externalLinksRouter from "./routes/external-links.ts";
 import brandingRouter from "./routes/branding.ts";
 import imageOptimizationRouter from "./routes/image-optimization.ts";
+import configRouter from "./routes/config.ts";
+import imageMetadataRouter from "./routes/image-metadata.ts";
+import aiTitlesRouter from "./routes/ai-titles.ts";
+import systemRouter from "./routes/system.ts";
 
 // Get the current directory path for ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -45,6 +49,9 @@ const __dirname = path.dirname(__filename);
 
 // Validate production security before starting
 validateProductionSecurity();
+
+// Initialize database lazily (on first use) to avoid ESM/CommonJS issues
+// The database module will be imported when needed by routes
 
 // Initialize Express application
 const app = express();
@@ -271,6 +278,10 @@ app.use('/api/external-links', externalLinksRouter);
 app.use('/api/branding', brandingRouter);
 app.use('/api/metrics', metricsRouter);
 app.use('/api/image-optimization', imageOptimizationRouter);
+app.use('/api/config', configRouter);
+app.use('/api/image-metadata', imageMetadataRouter);
+app.use('/api/ai-titles', aiTitlesRouter);
+app.use('/api/system', systemRouter);
 app.use(albumsRouter);
 app.use('/api/albums', albumManagementRouter);
 app.use(externalPagesRouter);
