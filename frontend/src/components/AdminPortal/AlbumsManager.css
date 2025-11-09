@@ -851,12 +851,6 @@
 }
 
 /* Upload State Styles */
-.uploading-images-grid {
-  margin-bottom: 2rem;
-  padding-bottom: 2rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
 .uploading-photo-item {
   position: relative;
 }

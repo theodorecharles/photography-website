@@ -185,6 +185,106 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     }
   };
 
+  const uploadSingleImage = async (file: File, filename: string): Promise<void> => {
+    // Check file size (100MB limit)
+    if (file.size > 100 * 1024 * 1024) {
+      setUploadingImages(prev => prev.map(img => 
+        img.filename === filename 
+          ? { ...img, state: 'error' as UploadState, error: 'File too large (max 100MB)' }
+          : img
+      ));
+      showToast(`Error: ${filename} is too large (max 100MB)`, 'error');
+      return;
+    }
+    
+    // Update state to uploading
+    setUploadingImages(prev => prev.map(img => 
+      img.filename === filename ? { ...img, state: 'uploading' as UploadState } : img
+    ));
+
+    try {
+      const formData = new FormData();
+      formData.append('photo', file);
+
+      // Use XMLHttpRequest for progress tracking
+      const uploadResult = await new Promise<{ success: boolean; filename?: string; error?: string }>((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        
+        // Track upload progress
+        xhr.upload.addEventListener('progress', (e) => {
+          if (e.lengthComputable) {
+            const percentComplete = Math.round((e.loaded / e.total) * 100);
+            setUploadingImages(prev => prev.map(img => 
+              img.filename === filename ? { ...img, progress: percentComplete } : img
+            ));
+          }
+        });
+
+        xhr.addEventListener('load', () => {
+          if (xhr.status >= 200 && xhr.status < 300) {
+            try {
+              const result = JSON.parse(xhr.responseText);
+              resolve(result);
+            } catch {
+              reject(new Error('Failed to parse response'));
+            }
+          } else {
+            try {
+              const error = JSON.parse(xhr.responseText);
+              resolve({ success: false, error: error.error || 'Upload failed', filename });
+            } catch {
+              resolve({ success: false, error: 'Upload failed', filename });
+            }
+          }
+        });
+
+        xhr.addEventListener('error', () => {
+          reject(new Error('Network error occurred'));
+        });
+
+        xhr.open('POST', `${API_URL}/api/albums/${selectedAlbum}/upload`);
+        xhr.withCredentials = true;
+        xhr.send(formData);
+      });
+
+      if (uploadResult.success) {
+        // Update state to optimizing
+        setUploadingImages(prev => prev.map(img => 
+          img.filename === filename ? { ...img, state: 'optimizing' as UploadState, progress: 100 } : img
+        ));
+        
+        // Wait a moment and check if thumbnail exists
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        const thumbnailUrl = `${API_URL}/optimized/thumbnail/${selectedAlbum}/${filename}?i=${Date.now()}`;
+        
+        // Update state to complete with thumbnail
+        setUploadingImages(prev => prev.map(img => 
+          img.filename === filename 
+            ? { ...img, state: 'complete' as UploadState, thumbnailUrl }
+            : img
+        ));
+        
+        trackPhotoUploaded(selectedAlbum!, 1, [filename]);
+      } else {
+        // Upload or optimization failed
+        setUploadingImages(prev => prev.map(img => 
+          img.filename === filename 
+            ? { ...img, state: 'error' as UploadState, error: uploadResult.error || 'Upload failed' }
+            : img
+        ));
+        showToast(`Error processing ${filename}: ${uploadResult.error}`, 'error');
+      }
+    } catch (err: any) {
+      setUploadingImages(prev => prev.map(img => 
+        img.filename === filename 
+          ? { ...img, state: 'error' as UploadState, error: err.message || 'Network error' }
+          : img
+      ));
+      showToast(`Error uploading ${filename}: ${err.message || 'Network error'}`, 'error');
+    }
+  };
+
   const handleUploadPhotos = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || !selectedAlbum) return;
@@ -202,113 +302,21 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     // Clear the input
     e.target.value = '';
 
-    // Upload files one at a time
-    for (let i = 0; i < newUploadingImages.length; i++) {
-      const uploadingImage = newUploadingImages[i];
-      
-      // Check file size (100MB limit)
-      if (uploadingImage.file.size > 100 * 1024 * 1024) {
-        setUploadingImages(prev => prev.map((img, idx) => 
-          idx === i 
-            ? { ...img, state: 'error' as UploadState, error: 'File too large (max 100MB)' }
-            : img
-        ));
-        showToast(`Error: ${uploadingImage.filename} is too large (max 100MB)`, 'error');
-        continue;
-      }
-      
-      // Update state to uploading
-      setUploadingImages(prev => prev.map((img, idx) => 
-        idx === i ? { ...img, state: 'uploading' as UploadState } : img
-      ));
-
-      try {
-        const formData = new FormData();
-        formData.append('photo', uploadingImage.file);
-
-        // Use XMLHttpRequest for progress tracking
-        const uploadResult = await new Promise<{ success: boolean; filename?: string; error?: string }>((resolve, reject) => {
-          const xhr = new XMLHttpRequest();
-          
-          // Track upload progress
-          xhr.upload.addEventListener('progress', (e) => {
-            if (e.lengthComputable) {
-              const percentComplete = Math.round((e.loaded / e.total) * 100);
-              setUploadingImages(prev => prev.map((img, idx) => 
-                idx === i ? { ...img, progress: percentComplete } : img
-              ));
-            }
-          });
-
-          xhr.addEventListener('load', () => {
-            if (xhr.status >= 200 && xhr.status < 300) {
-              try {
-                const result = JSON.parse(xhr.responseText);
-                resolve(result);
-              } catch {
-                reject(new Error('Failed to parse response'));
-              }
-            } else {
-              try {
-                const error = JSON.parse(xhr.responseText);
-                resolve({ success: false, error: error.error || 'Upload failed', filename: uploadingImage.filename });
-              } catch {
-                resolve({ success: false, error: 'Upload failed', filename: uploadingImage.filename });
-              }
-            }
-          });
-
-          xhr.addEventListener('error', () => {
-            reject(new Error('Network error occurred'));
-          });
-
-          xhr.open('POST', `${API_URL}/api/albums/${selectedAlbum}/upload`);
-          xhr.withCredentials = true;
-          xhr.send(formData);
-        });
-
-        if (uploadResult.success) {
-          // Update state to optimizing
-          setUploadingImages(prev => prev.map((img, idx) => 
-            idx === i ? { ...img, state: 'optimizing' as UploadState, progress: 100 } : img
-          ));
-          
-          // Wait a moment and check if thumbnail exists
-          await new Promise(resolve => setTimeout(resolve, 1000));
-          
-          const thumbnailUrl = `${API_URL}/optimized/thumbnail/${selectedAlbum}/${uploadingImage.filename}?i=${Date.now()}`;
-          
-          // Update state to complete with thumbnail
-          setUploadingImages(prev => prev.map((img, idx) => 
-            idx === i 
-              ? { ...img, state: 'complete' as UploadState, thumbnailUrl }
-              : img
-          ));
-          
-          trackPhotoUploaded(selectedAlbum, 1, [uploadingImage.filename]);
-        } else {
-          // Upload or optimization failed
-          setUploadingImages(prev => prev.map((img, idx) => 
-            idx === i 
-              ? { ...img, state: 'error' as UploadState, error: uploadResult.error || 'Upload failed' }
-              : img
-          ));
-          showToast(`Error processing ${uploadingImage.filename}: ${uploadResult.error}`, 'error');
-        }
-      } catch (err: any) {
-        setUploadingImages(prev => prev.map((img, idx) => 
-          idx === i 
-            ? { ...img, state: 'error' as UploadState, error: err.message || 'Network error' }
-            : img
-        ));
-        showToast(`Error uploading ${uploadingImage.filename}: ${err.message || 'Network error'}`, 'error');
-      }
-    }
+    // Upload all files in parallel
+    const uploadPromises = newUploadingImages.map(img => uploadSingleImage(img.file, img.filename));
+    
+    // Wait for all uploads to complete
+    await Promise.all(uploadPromises);
 
     // Reload photos after all uploads complete
     if (selectedAlbum) {
       await loadPhotos(selectedAlbum);
     }
+    
+    // Clear uploading images after a brief delay to show final state
+    setTimeout(() => {
+      setUploadingImages([]);
+    }, 2000);
     
     setMessage({ type: 'success', text: `Upload complete! Processed ${newUploadingImages.length} image(s)` });
   };
@@ -433,116 +441,106 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                 </div>
               )}
 
-              {uploadingImages.length > 0 && (
-                <div className="uploading-images-grid">
-                  <h4 style={{ marginBottom: '1rem', color: '#666' }}>Uploading Images</h4>
-                  <div className="photos-grid">
-                    {uploadingImages.map((img, idx) => (
-                      <div key={idx} className="admin-photo-item uploading-photo-item">
-                        {img.state === 'queued' && (
-                          <div className="photo-state-overlay">
-                            <div className="state-icon">⏳</div>
-                            <span className="state-text">Queued</span>
-                          </div>
-                        )}
-                        {img.state === 'uploading' && (
-                          <div className="photo-state-overlay">
-                            <div className="spinner"></div>
-                            <span className="state-text">Uploading {img.progress}%</span>
-                          </div>
-                        )}
-                        {img.state === 'optimizing' && (
-                          <div className="photo-state-overlay">
-                            <div className="spinner"></div>
-                            <span className="state-text">Optimizing...</span>
-                          </div>
-                        )}
-                        {img.state === 'complete' && img.thumbnailUrl && (
-                          <>
-                            <img 
-                              src={img.thumbnailUrl}
-                              alt={img.filename}
-                              className="admin-photo-thumbnail"
-                            />
-                            <div className="photo-complete-badge">✓</div>
-                          </>
-                        )}
-                        {img.state === 'error' && (
-                          <div className="photo-state-overlay error">
-                            <div className="state-icon">⚠️</div>
-                            <span className="state-text">Error</span>
-                            <span className="error-message">{img.error}</span>
-                          </div>
-                        )}
-                        <div className="photo-filename">{img.filename}</div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
               {albumPhotos.length === 0 && uploadingImages.length === 0 ? (
                 <p style={{ color: '#888', marginTop: '1rem' }}>
                   No photos in this album yet. Upload some to get started!
                 </p>
               ) : (
-                albumPhotos.length > 0 && (
-                  <>
-                    <h4 style={{ marginTop: '2rem', marginBottom: '1rem', color: '#666' }}>Album Photos</h4>
-                    <div className="photos-grid">
-                      {albumPhotos.map((photo) => {
-                        const imageUrl = `${API_URL}${photo.thumbnail}?i=${cacheBustValue}`;
-                        return (
-                        <div key={photo.id} className="admin-photo-item">
+                <div className="photos-grid">
+                  {/* Show uploading images first */}
+                  {uploadingImages.map((img, idx) => (
+                    <div key={`uploading-${idx}`} className="admin-photo-item uploading-photo-item">
+                      {img.state === 'queued' && (
+                        <div className="photo-state-overlay">
+                          <div className="state-icon">⏳</div>
+                          <span className="state-text">Queued</span>
+                        </div>
+                      )}
+                      {img.state === 'uploading' && (
+                        <div className="photo-state-overlay">
+                          <div className="spinner"></div>
+                          <span className="state-text">Uploading {img.progress}%</span>
+                        </div>
+                      )}
+                      {img.state === 'optimizing' && (
+                        <div className="photo-state-overlay">
+                          <div className="spinner"></div>
+                          <span className="state-text">Optimizing...</span>
+                        </div>
+                      )}
+                      {img.state === 'complete' && img.thumbnailUrl && (
+                        <>
                           <img 
-                            src={imageUrl}
-                            alt={photo.title}
+                            src={img.thumbnailUrl}
+                            alt={img.filename}
                             className="admin-photo-thumbnail"
                           />
-                          <div className="photo-overlay">
-                            <div className="photo-actions">
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  e.preventDefault();
-                                  handleOpenEditModal(photo);
-                                }}
-                                onTouchEnd={(e) => {
-                                  // Handle touch events for iOS Safari
-                                  e.stopPropagation();
-                                  e.preventDefault();
-                                  handleOpenEditModal(photo);
-                                }}
-                                className="btn-edit-photo"
-                                title="Edit title"
-                                type="button"
-                              >
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-                                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-                                </svg>
-                              </button>
-                              <button
-                                onClick={() => {
-                                  const filename = photo.id.split('/').pop() || photo.id;
-                                  handleDeletePhoto(photo.album, filename, photo.title);
-                                }}
-                                className="btn-delete-photo"
-                                title="Delete photo"
-                              >
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                  <polyline points="3 6 5 6 21 6" />
-                                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                                </svg>
-                              </button>
-                            </div>
+                          <div className="photo-complete-badge">✓</div>
+                        </>
+                      )}
+                      {img.state === 'error' && (
+                        <div className="photo-state-overlay error">
+                          <div className="state-icon">⚠️</div>
+                          <span className="state-text">Error</span>
+                          <span className="error-message">{img.error}</span>
+                        </div>
+                      )}
+                      <div className="photo-filename">{img.filename}</div>
+                    </div>
+                  ))}
+                  
+                  {/* Show existing album photos */}
+                  {albumPhotos.map((photo) => {
+                    const imageUrl = `${API_URL}${photo.thumbnail}?i=${cacheBustValue}`;
+                    return (
+                      <div key={photo.id} className="admin-photo-item">
+                        <img 
+                          src={imageUrl}
+                          alt={photo.title}
+                          className="admin-photo-thumbnail"
+                        />
+                        <div className="photo-overlay">
+                          <div className="photo-actions">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                handleOpenEditModal(photo);
+                              }}
+                              onTouchEnd={(e) => {
+                                // Handle touch events for iOS Safari
+                                e.stopPropagation();
+                                e.preventDefault();
+                                handleOpenEditModal(photo);
+                              }}
+                              className="btn-edit-photo"
+                              title="Edit title"
+                              type="button"
+                            >
+                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                              </svg>
+                            </button>
+                            <button
+                              onClick={() => {
+                                const filename = photo.id.split('/').pop() || photo.id;
+                                handleDeletePhoto(photo.album, filename, photo.title);
+                              }}
+                              className="btn-delete-photo"
+                              title="Delete photo"
+                            >
+                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <polyline points="3 6 5 6 21 6" />
+                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                              </svg>
+                            </button>
                           </div>
                         </div>
-                      );
-                      })}
-                    </div>
-                  </>
-                )
+                      </div>
+                    );
+                  })}
+                </div>
               )}
             </div>
           )}
