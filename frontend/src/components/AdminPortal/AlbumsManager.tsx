@@ -213,7 +213,8 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     }
   };
 
-  const uploadSingleImage = async (file: File, filename: string): Promise<void> => {
+  const uploadSingleImage = async (file: File, filename: string, targetAlbum?: string): Promise<void> => {
+    const albumToUse = targetAlbum || selectedAlbum;
     // Check file size (100MB limit)
     if (file.size > 100 * 1024 * 1024) {
       setUploadingImages(prev => prev.map(img => 
@@ -282,13 +283,13 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                       ));
                     } else if (data.type === 'complete') {
                       // Optimization complete (in background)
-                      const thumbnailUrl = `${API_URL}/optimized/thumbnail/${selectedAlbum}/${filename}?i=${Date.now()}`;
+                      const thumbnailUrl = `${API_URL}/optimized/thumbnail/${albumToUse}/${filename}?i=${Date.now()}`;
                       setUploadingImages(prev => prev.map(img => 
                         img.filename === filename 
                           ? { ...img, state: 'complete' as UploadState, thumbnailUrl, optimizeProgress: 100 } 
                           : img
                       ));
-                      trackPhotoUploaded(selectedAlbum!, 1, [filename]);
+                      trackPhotoUploaded(albumToUse!, 1, [filename]);
                     } else if (data.type === 'error') {
                       // Error occurred
                       setUploadingImages(prev => prev.map(img => 
@@ -314,7 +315,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
             reject(new Error('Network error occurred'));
           });
 
-          xhr.open('POST', `${API_URL}/api/albums/${selectedAlbum}/upload`);
+          xhr.open('POST', `${API_URL}/api/albums/${albumToUse}/upload`);
           xhr.withCredentials = true;
           xhr.send(formData);
         });
@@ -328,8 +329,9 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     }
   };
 
-  const processFiles = async (files: FileList | File[]) => {
-    if (!files || files.length === 0 || !selectedAlbum) return;
+  const processFiles = async (files: FileList | File[], targetAlbum?: string) => {
+    const albumToUse = targetAlbum || selectedAlbum;
+    if (!files || files.length === 0 || !albumToUse) return;
 
     // Filter for image files only
     const imageFiles = Array.from(files).filter(file => 
@@ -358,7 +360,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     // Upload files sequentially (one at a time)
     // But let optimizations run in parallel in the background
     for (const img of newUploadingImages) {
-      await uploadSingleImage(img.file, img.filename);
+      await uploadSingleImage(img.file, img.filename, albumToUse);
       // Note: uploadSingleImage starts optimization in background (non-blocking)
       // So multiple optimizations can run simultaneously while we upload the next file
     }
@@ -385,8 +387,8 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     });
 
     // Reload photos after all uploads and optimizations complete
-    if (selectedAlbum) {
-      await loadPhotos(selectedAlbum);
+    if (albumToUse) {
+      await loadPhotos(albumToUse);
     }
 
     // Clear uploading images after reload to prevent duplicates
@@ -574,8 +576,8 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
       await loadAlbums();
       window.dispatchEvent(new Event('albums-updated'));
 
-      // Now upload the files
-      await processFiles(imageFiles);
+      // Now upload the files with the newly created album name
+      await processFiles(imageFiles, albumName);
       
     } catch (err) {
       console.error('Failed to create album:', err);
