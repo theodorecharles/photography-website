@@ -266,13 +266,15 @@
   pointer-events: none; /* Don't block button clicks */
 }
 
-/* On narrow screens, show title centered above buttons */
+/* On narrow screens, show title centered above buttons - halfway to header */
 @media (max-width: 650px) {
   .modal-image-title {
     left: 0;
     right: 0;
     text-align: center;
-    transform: translateY(calc(-200% - 0.75rem)); /* Move further up to be above buttons */
+    top: auto;
+    bottom: 100%; /* Start at top of image */
+    transform: translateY(-3rem); /* Move up to midpoint between buttons and header */
     padding: 0 1rem; /* Add padding for narrow screens */
   }
 }
