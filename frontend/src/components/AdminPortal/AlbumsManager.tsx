@@ -91,44 +91,41 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
       });
       const photos = await res.json();
       setAlbumPhotos(photos);
-      
-      // Load AI titles for all photos
-      loadPhotoTitles(albumName, photos);
     } catch (err) {
       console.error('Failed to load photos:', err);
       setAlbumPhotos([]); // Set to empty array on error to prevent map errors
     }
   };
 
-  const loadPhotoTitles = async (albumName: string, photos: Photo[]) => {
-    const titles: Record<string, string | null> = {};
+  const handleOpenEditModal = async (photo: Photo) => {
+    setEditingPhoto(photo);
+    setShowEditModal(true);
     
-    for (const photo of photos) {
-      try {
-        const filename = photo.id.split('/').pop();
-        if (!filename) continue;
-        const res = await fetch(`${API_URL}/api/image-metadata/${encodeURIComponent(albumName)}/${encodeURIComponent(filename)}`, {
-          credentials: 'include',
-        });
-        
-        if (res.ok) {
-          const data = await res.json();
-          titles[photo.id] = data.title || null;
-        } else {
-          titles[photo.id] = null;
-        }
-      } catch (err) {
-        titles[photo.id] = null;
-      }
+    // Load the title for this specific photo when opening the modal
+    const filename = photo.id.split('/').pop();
+    if (!filename) {
+      setEditTitleValue('');
+      return;
     }
     
-    setPhotoTitles(titles);
-  };
-
-  const handleOpenEditModal = (photo: Photo) => {
-    setEditingPhoto(photo);
-    setEditTitleValue(photoTitles[photo.id] || '');
-    setShowEditModal(true);
+    try {
+      const res = await fetch(`${API_URL}/api/image-metadata/${encodeURIComponent(photo.album)}/${encodeURIComponent(filename)}`, {
+        credentials: 'include',
+      });
+      
+      if (res.ok) {
+        const data = await res.json();
+        setEditTitleValue(data.title || '');
+        // Update the cached title
+        setPhotoTitles(prev => ({ ...prev, [photo.id]: data.title || null }));
+      } else {
+        // No metadata exists yet, start with empty
+        setEditTitleValue('');
+      }
+    } catch (err) {
+      console.error('Failed to load photo title:', err);
+      setEditTitleValue('');
+    }
   };
 
   const handleCloseEditModal = () => {
