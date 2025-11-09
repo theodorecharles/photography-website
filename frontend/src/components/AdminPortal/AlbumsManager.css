@@ -158,6 +158,14 @@
   opacity: 1;
 }
 
+/* Make overlay visible on touch devices (mobile/tablet) */
+@media (hover: none) and (pointer: coarse) {
+  .photo-overlay {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
 .admin-photo-thumbnail {
   position: absolute;
   top: 0;
@@ -200,6 +208,8 @@
   align-items: center;
   justify-content: center;
   padding: 0;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .btn-delete-photo:hover {
@@ -537,6 +547,8 @@
   align-items: center;
   justify-content: center;
   padding: 0;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .btn-edit-photo:hover:not(:disabled) {
