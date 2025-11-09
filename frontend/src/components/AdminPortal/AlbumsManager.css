@@ -620,6 +620,15 @@
   pointer-events: auto !important;
 }
 
+/* Force display for modal backdrop - override any other rules */
+div.modal-backdrop[data-modal-open="true"] {
+  display: flex !important;
+}
+
+body > .modal-backdrop {
+  display: flex !important;
+}
+
 /* Fallback for iOS Safari - disable backdrop-filter if it causes issues */
 @supports not (backdrop-filter: blur(8px)) {
   .modal-backdrop {

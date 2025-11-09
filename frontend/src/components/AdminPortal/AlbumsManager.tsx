@@ -3,7 +3,7 @@
  * Manages photo albums, photo uploads, and image optimization settings
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { Album, Photo } from './types';
 import { 
@@ -37,6 +37,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   const [editingPhoto, setEditingPhoto] = useState<Photo | null>(null);
   const [editTitleValue, setEditTitleValue] = useState('');
   const [showEditModal, setShowEditModal] = useState(false);
+  const modalRef = useRef<HTMLDivElement>(null);
 
   // Load photos when album is selected
   useEffect(() => {
@@ -46,8 +47,15 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   }, [selectedAlbum]);
 
   // Debug: Show toast when modal state changes and check DOM - all info in one toast
+  // Also force display via ref
   useEffect(() => {
-    if (showEditModal && editingPhoto) {
+    if (showEditModal && editingPhoto && modalRef.current) {
+      // Force display via direct DOM manipulation
+      const element = modalRef.current;
+      element.style.display = 'flex';
+      element.style.visibility = 'visible';
+      element.style.opacity = '1';
+      
       // Wait a bit for React to render, then collect all info
       setTimeout(() => {
         const modal = document.querySelector('.modal-backdrop');
@@ -490,10 +498,23 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
       {/* Edit Title Modal - Rendered via Portal to avoid iOS positioning issues */}
       {showEditModal && editingPhoto && createPortal(
         <div 
+          ref={modalRef}
           className="modal-backdrop" 
           onClick={handleCloseEditModal}
           data-modal-open="true"
-          style={{ display: 'flex' }}
+          style={{ 
+            display: 'flex',
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            width: '100%',
+            height: '100%',
+            zIndex: 99999,
+            visibility: 'visible',
+            opacity: 1
+          } as React.CSSProperties}
         >
           <div className="edit-modal" onClick={(e) => e.stopPropagation()}>
             <div className="edit-modal-header">
