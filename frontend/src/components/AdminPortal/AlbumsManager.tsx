@@ -27,6 +27,7 @@ interface UploadingImage {
   thumbnailUrl?: string;
   error?: string;
   progress?: number;
+  optimizeProgress?: number; // 0-100 for optimization progress
 }
 
 interface AlbumsManagerProps {
@@ -248,24 +249,64 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
       });
 
       if (uploadResult.success) {
-        // Update state to optimizing
+        // Update state to optimizing with 0% progress
         setUploadingImages(prev => prev.map(img => 
-          img.filename === filename ? { ...img, state: 'optimizing' as UploadState, progress: 100 } : img
+          img.filename === filename ? { ...img, state: 'optimizing' as UploadState, progress: 100, optimizeProgress: 0 } : img
         ));
         
-        // Wait a moment and check if thumbnail exists
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        // Poll for optimization progress
+        const pollProgress = async () => {
+          const maxAttempts = 60; // 60 seconds max
+          const pollInterval = 500; // Check every 500ms
+          
+          for (let attempt = 0; attempt < maxAttempts; attempt++) {
+            await new Promise(resolve => setTimeout(resolve, pollInterval));
+            
+            // Check which files exist by attempting HEAD requests
+            const thumbCheck = fetch(`${API_URL}/optimized/thumbnail/${selectedAlbum}/${filename}`, { method: 'HEAD' })
+              .then(res => res.ok).catch(() => false);
+            const modalCheck = fetch(`${API_URL}/optimized/modal/${selectedAlbum}/${filename}`, { method: 'HEAD' })
+              .then(res => res.ok).catch(() => false);
+            const downloadCheck = fetch(`${API_URL}/optimized/download/${selectedAlbum}/${filename}`, { method: 'HEAD' })
+              .then(res => res.ok).catch(() => false);
+            
+            const [thumbExists, modalExists, downloadExists] = await Promise.all([thumbCheck, modalCheck, downloadCheck]);
+            
+            let optimizeProgress = 0;
+            if (thumbExists) optimizeProgress = 33;
+            if (modalExists) optimizeProgress = 66;
+            if (downloadExists) optimizeProgress = 100;
+            
+            // Update progress
+            setUploadingImages(prev => prev.map(img => 
+              img.filename === filename ? { ...img, optimizeProgress } : img
+            ));
+            
+            // If all files exist, we're done
+            if (downloadExists) {
+              const thumbnailUrl = `${API_URL}/optimized/thumbnail/${selectedAlbum}/${filename}?i=${Date.now()}`;
+              
+              setUploadingImages(prev => prev.map(img => 
+                img.filename === filename 
+                  ? { ...img, state: 'complete' as UploadState, thumbnailUrl, optimizeProgress: 100 }
+                  : img
+              ));
+              
+              trackPhotoUploaded(selectedAlbum!, 1, [filename]);
+              return;
+            }
+          }
+          
+          // Timeout - treat as error
+          setUploadingImages(prev => prev.map(img => 
+            img.filename === filename 
+              ? { ...img, state: 'error' as UploadState, error: 'Optimization timeout' }
+              : img
+          ));
+          showToast(`Optimization timeout for ${filename}`, 'error');
+        };
         
-        const thumbnailUrl = `${API_URL}/optimized/thumbnail/${selectedAlbum}/${filename}?i=${Date.now()}`;
-        
-        // Update state to complete with thumbnail
-        setUploadingImages(prev => prev.map(img => 
-          img.filename === filename 
-            ? { ...img, state: 'complete' as UploadState, thumbnailUrl }
-            : img
-        ));
-        
-        trackPhotoUploaded(selectedAlbum!, 1, [filename]);
+        pollProgress();
       } else {
         // Upload or optimization failed
         setUploadingImages(prev => prev.map(img => 
@@ -495,7 +536,32 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                       )}
                       {img.state === 'optimizing' && (
                         <div className="photo-state-overlay">
-                          <div className="spinner"></div>
+                          <div className="progress-circle">
+                            <svg className="progress-ring" width="60" height="60">
+                              <circle
+                                className="progress-ring-circle-bg"
+                                stroke="rgba(255, 255, 255, 0.1)"
+                                strokeWidth="4"
+                                fill="transparent"
+                                r="26"
+                                cx="30"
+                                cy="30"
+                              />
+                              <circle
+                                className="progress-ring-circle"
+                                stroke="var(--primary-color)"
+                                strokeWidth="4"
+                                fill="transparent"
+                                r="26"
+                                cx="30"
+                                cy="30"
+                                strokeDasharray={`${2 * Math.PI * 26}`}
+                                strokeDashoffset={`${2 * Math.PI * 26 * (1 - (img.optimizeProgress || 0) / 100)}`}
+                                style={{ transition: 'stroke-dashoffset 0.3s ease' }}
+                              />
+                            </svg>
+                            <span className="progress-percentage">{img.optimizeProgress || 0}%</span>
+                          </div>
                           <span className="state-text">Optimizing...</span>
                         </div>
                       )}

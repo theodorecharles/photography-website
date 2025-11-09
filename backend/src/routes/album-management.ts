@@ -263,45 +263,31 @@ router.post("/:album/upload", requireAuth, upload.single('photo'), async (req: R
       return;
     }
 
-    // Trigger optimization for this single image using the new script
+    // Trigger optimization for this single image in the background
     const projectRoot = path.resolve(__dirname, '../../../');
     const scriptPath = path.join(projectRoot, 'optimize_new_image.sh');
 
     if (fs.existsSync(scriptPath)) {
-      // Run script synchronously to detect optimization errors
-      try {
-        await execFileAsync('bash', [scriptPath, sanitizedAlbum, file.originalname], { 
-          cwd: projectRoot,
-          timeout: 60000 // 60 second timeout
-        });
-        
-        res.json({ 
-          success: true, 
-          filename: file.originalname,
-          message: 'Photo uploaded and optimized successfully.' 
-        });
-      } catch (optimizeError: any) {
-        console.error('Optimization error:', optimizeError);
-        
-        // Check if it's a corrupt/invalid image
-        const isCorruptImage = optimizeError.stderr && 
-          (optimizeError.stderr.includes('corrupt') || 
-           optimizeError.stderr.includes('invalid') ||
-           optimizeError.stderr.includes('decode'));
-        
-        res.status(500).json({ 
-          error: isCorruptImage ? 'Image file is corrupt or invalid' : 'Failed to optimize image',
-          filename: file.originalname
-        });
-      }
-    } else {
-      // If script doesn't exist, still return success for upload
-      res.json({ 
-        success: true, 
-        filename: file.originalname,
-        message: 'Photo uploaded (optimization script not found).' 
+      // Run script in background (don't wait for completion)
+      execFile('bash', [scriptPath, sanitizedAlbum, file.originalname], { 
+        cwd: projectRoot,
+        timeout: 60000 // 60 second timeout
+      }, (error, stdout, stderr) => {
+        if (error) {
+          console.error(`Optimization error for ${file.originalname}:`, error);
+          if (stderr) console.error('stderr:', stderr);
+        } else {
+          console.log(`Optimization complete for ${file.originalname}`);
+        }
       });
     }
+
+    // Return immediately - frontend will poll for optimization progress
+    res.json({ 
+      success: true, 
+      filename: file.originalname,
+      message: 'Photo uploaded successfully. Optimization in progress.' 
+    });
   } catch (error) {
     console.error('Error uploading photo:', error);
     res.status(500).json({ error: 'Failed to upload photo' });
