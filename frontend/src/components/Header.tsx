@@ -33,16 +33,6 @@ interface HeaderProps {
 }
 
 /**
- * Helper function to format album name to title case
- */
-const toTitleCase = (str: string): string => {
-  return str
-    .split(' ')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-    .join(' ');
-};
-
-/**
  * Navigation component handles the dropdown menus for albums and links
  */
 function Navigation({
@@ -156,7 +146,7 @@ function Navigation({
       {currentAlbum && currentAlbum.length > 0 && (
         <div className="nav-center">
           <h1 className="album-title">
-            {toTitleCase(currentAlbum)}
+            {currentAlbum}
           </h1>
         </div>
       )}
@@ -197,7 +187,7 @@ function Navigation({
                     trackAlbumNavigation(album, 'header');
                   }}
                 >
-                  {toTitleCase(album)}
+                  {album}
                 </Link>
               ))}
             </div>

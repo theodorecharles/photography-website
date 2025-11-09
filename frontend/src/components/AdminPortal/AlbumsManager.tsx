@@ -19,6 +19,14 @@ const API_URL = import.meta.env.VITE_API_URL || '';
 
 type UploadState = 'queued' | 'uploading' | 'optimizing' | 'complete' | 'error';
 
+// Helper function to format album name to title case
+const toTitleCase = (str: string): string => {
+  return str
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(' ');
+};
+
 interface UploadingImage {
   file: File;
   filename: string;
@@ -159,7 +167,8 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     if (!newAlbumName.trim()) return;
 
     try {
-      const albumName = newAlbumName.trim();
+      // Apply title case to the album name before creating
+      const albumName = toTitleCase(newAlbumName.trim());
       const res = await fetch(`${API_URL}/api/albums`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -168,13 +177,12 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
       });
 
       if (res.ok) {
-        const displayName = newAlbumName;
         setNewAlbumName('');
-        trackAlbumCreated(displayName);
+        trackAlbumCreated(albumName);
         
         // Select the album immediately - sessionStorage will persist it across refresh
         setSelectedAlbum(albumName);
-        setMessage({ type: 'success', text: `Album "${displayName}" created!` });
+        setMessage({ type: 'success', text: `Album "${albumName}" created!` });
         
         // Trigger refresh of header navigation
         await loadAlbums();
@@ -549,8 +557,8 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
       return;
     }
 
-    // Create the album
-    const albumName = folderName.trim();
+    // Create the album with title case
+    const albumName = toTitleCase(folderName.trim());
     
     try {
       const res = await fetch(`${API_URL}/api/albums`, {
@@ -569,7 +577,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
       // Album created successfully
       trackAlbumCreated(folderName);
       setSelectedAlbum(albumName);
-      setMessage({ type: 'success', text: `Album "${folderName}" created! Uploading ${imageFiles.length} image(s)...` });
+      setMessage({ type: 'success', text: `Album "${albumName}" created! Uploading ${imageFiles.length} image(s)...` });
       
       // Load albums locally (don't dispatch event yet - it would cause a refresh and interrupt upload)
       await loadAlbums();
