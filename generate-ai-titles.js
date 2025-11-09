@@ -50,11 +50,11 @@ function initDatabase() {
   return db;
 }
 
-async function generateImageTitle(openai, thumbnailPath, album, filename, db) {
+async function generateImageTitle(openai, thumbnailPath, album, filename, db, existingTitles) {
   try {
-    // Check if title already exists
-    const existing = db.prepare('SELECT title FROM image_metadata WHERE album = ? AND filename = ?').get(album, filename);
-    if (existing && existing.title) {
+    // Check if title already exists (in-memory lookup)
+    const key = `${album}:${filename}`;
+    if (existingTitles.has(key)) {
       console.log(`Skipping ${album}/${filename} - already has title`);
       skippedCount++;
       return null;
@@ -145,6 +145,12 @@ async function scanAndGenerateTitles() {
   const db = initDatabase();
   console.log('✓ Database initialized');
   
+  // Load all existing titles into memory (one query instead of thousands)
+  console.log('Loading existing titles from database...');
+  const existingRows = db.prepare('SELECT album, filename FROM image_metadata WHERE title IS NOT NULL').all();
+  const existingTitles = new Set(existingRows.map(row => `${row.album}:${row.filename}`));
+  console.log(`✓ Found ${existingTitles.size} existing titles`);
+  
   // Scan optimized/thumbnail directory
   const thumbnailDir = path.join(__dirname, 'optimized/thumbnail');
   
@@ -171,7 +177,7 @@ async function scanAndGenerateTitles() {
     
     for (const filename of images) {
       const thumbnailPath = path.join(albumPath, filename);
-      await generateImageTitle(openai, thumbnailPath, album, filename, db);
+      await generateImageTitle(openai, thumbnailPath, album, filename, db, existingTitles);
       
       // Add a small delay to avoid rate limiting
       await new Promise(resolve => setTimeout(resolve, 500));
