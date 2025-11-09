@@ -28,20 +28,30 @@ const AdminPortal = lazy(() => import("./components/AdminPortal"));
 const AuthError = lazy(() => import("./components/Misc/AuthError"));
 const NotFound = lazy(() => import("./components/Misc/NotFound"));
 
+// Helper function to format album name to title case
+const toTitleCase = (str: string): string => {
+  return str
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(' ');
+};
+
 // AlbumRoute component handles the routing for individual album pages
 function AlbumRoute() {
   const { album } = useParams();
-  const albumTitle = album ? album.charAt(0).toUpperCase() + album.slice(1) : "";
+  // Decode URI-encoded album name and format to title case
+  const decodedAlbum = album ? decodeURIComponent(album) : "";
+  const albumTitle = decodedAlbum ? toTitleCase(decodedAlbum) : "";
   
   return (
     <>
       <SEO 
         title={`${albumTitle} - Ted Charles Photography`}
-        description={`View ${albumTitle} photos from Ted Charles' photography portfolio. Professional ${album} photography.`}
+        description={`View ${albumTitle} photos from Ted Charles' photography portfolio. Professional ${decodedAlbum} photography.`}
         url={`${SITE_URL}/album/${album}`}
         image={`${SITE_URL}/photos/derpatar.png`}
       />
-      <PhotoGrid album={album || ""} />
+      <PhotoGrid album={decodedAlbum} />
     </>
   );
 }
@@ -112,11 +122,12 @@ function App() {
     const path = location.pathname;
     if (path.startsWith("/album/")) {
       // Extract album name, handling trailing slashes and removing any extra path segments
-      const albumName = path.split("/album/")[1].split("/")[0].split("?")[0].trim();
+      const encodedAlbum = path.split("/album/")[1].split("/")[0].split("?")[0].trim();
       // Only set if album name is not empty
-      if (albumName) {
+      if (encodedAlbum) {
+        const albumName = decodeURIComponent(encodedAlbum);
         setCurrentAlbum(albumName);
-        trackPageView(path, `${albumName.charAt(0).toUpperCase() + albumName.slice(1)} - Album`);
+        trackPageView(path, `${toTitleCase(albumName)} - Album`);
       } else {
         setCurrentAlbum(undefined);
         trackPageView(path);
@@ -240,7 +251,7 @@ function App() {
       <main className="main-content">
         {currentAlbum && currentAlbum.length > 0 && (
           <h1 className="main-content-title">
-            {currentAlbum.charAt(0).toUpperCase() + currentAlbum.slice(1)}
+            {toTitleCase(currentAlbum)}
           </h1>
         )}
         <StructuredData />
@@ -299,13 +310,13 @@ function App() {
           <Footer
             albums={albums}
             externalLinks={externalLinks}
-            currentAlbum={
-              location.pathname === "/"
-                ? "homepage"
-                : location.pathname.startsWith("/album/")
-                ? location.pathname.split("/album/")[1].split("/")[0].split("?")[0].trim() || undefined
-                : undefined
-            }
+          currentAlbum={
+            location.pathname === "/"
+              ? "homepage"
+              : location.pathname.startsWith("/album/")
+              ? decodeURIComponent(location.pathname.split("/album/")[1].split("/")[0].split("?")[0].trim()) || undefined
+              : undefined
+          }
           />
         </div>
       )}
