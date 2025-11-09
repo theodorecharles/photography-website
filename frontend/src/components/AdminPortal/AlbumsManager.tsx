@@ -85,9 +85,11 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   };
 
   const handleOpenEditModal = (photo: Photo) => {
+    console.log('Opening edit modal for photo:', photo.id);
     setEditingPhoto(photo);
     setEditTitleValue(photoTitles[photo.id] || '');
     setShowEditModal(true);
+    console.log('Modal state set to true');
   };
 
   const handleCloseEditModal = () => {
@@ -442,7 +444,12 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
 
       {/* Edit Title Modal */}
       {showEditModal && editingPhoto && (
-        <div className="modal-backdrop" onClick={handleCloseEditModal}>
+        <div 
+          className="modal-backdrop" 
+          onClick={handleCloseEditModal}
+          data-modal-open="true"
+          style={{ display: 'flex' }}
+        >
           <div className="edit-modal" onClick={(e) => e.stopPropagation()}>
             <div className="edit-modal-header">
               <h3>Edit Photo Title</h3>
