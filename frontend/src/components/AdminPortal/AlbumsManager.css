@@ -610,7 +610,7 @@
   align-items: center !important;
   justify-content: center !important;
   padding: 1rem;
-  animation: fadeIn 0.2s ease-out;
+  /* animation: fadeIn 0.2s ease-out; */ /* Temporarily disabled to debug */
   -webkit-transform: translateZ(0);
   transform: translateZ(0);
   overflow-y: auto;
