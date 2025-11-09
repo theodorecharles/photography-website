@@ -4,6 +4,7 @@
  */
 
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Album, Photo } from './types';
 import { 
   trackAlbumCreated,
@@ -393,10 +394,21 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                       <div className="photo-overlay">
                         <div className="photo-actions">
                           <button
-                            onClick={() => handleOpenEditModal(photo)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              e.preventDefault();
+                              handleOpenEditModal(photo);
+                            }}
+                            onTouchEnd={(e) => {
+                              // Handle touch events for iOS Safari
+                              e.stopPropagation();
+                              e.preventDefault();
+                              handleOpenEditModal(photo);
+                            }}
                             className="btn-edit-photo"
                             title="Edit title"
                             disabled={isOptimizing}
+                            type="button"
                           >
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                               <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
@@ -429,9 +441,12 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
         </div>
       </section>
 
-      {/* Edit Title Modal */}
-      {showEditModal && editingPhoto && (
-        <div className="modal-backdrop" onClick={handleCloseEditModal}>
+      {/* Edit Title Modal - Use Portal to escape admin-container z-index stacking context */}
+      {showEditModal && editingPhoto && createPortal(
+        <div 
+          className="edit-title-modal" 
+          onClick={handleCloseEditModal}
+        >
           <div className="edit-modal" onClick={(e) => e.stopPropagation()}>
             <div className="edit-modal-header">
               <h3>Edit Photo Title</h3>
@@ -491,7 +506,8 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );
