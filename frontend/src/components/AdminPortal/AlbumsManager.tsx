@@ -29,6 +29,8 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   setMessage,
 }) => {
   const [saving, setSaving] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadSpeed, setUploadSpeed] = useState(0);
   const [newAlbumName, setNewAlbumName] = useState('');
   const [selectedAlbum, setSelectedAlbum] = useState<string | null>(null);
   const [albumPhotos, setAlbumPhotos] = useState<Photo[]>([]);
@@ -179,46 +181,106 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     if (!files || !selectedAlbum) return;
 
     setSaving(true);
+    setUploadProgress(0);
+    setUploadSpeed(0);
+    
     const formData = new FormData();
     Array.from(files).forEach(file => formData.append('photos', file));
 
+    // Track upload speed
+    let lastLoaded = 0;
+    let lastTime = Date.now();
+
     try {
-      const res = await fetch(`${API_URL}/api/albums/${selectedAlbum}/upload`, {
-        method: 'POST',
-        credentials: 'include',
-        body: formData,
+      // Use XMLHttpRequest for progress tracking
+      const xhr = new XMLHttpRequest();
+      
+      // Track upload progress
+      xhr.upload.addEventListener('progress', (e) => {
+        if (e.lengthComputable) {
+          const percentComplete = Math.round((e.loaded / e.total) * 100);
+          setUploadProgress(percentComplete);
+          
+          // Calculate upload speed
+          const currentTime = Date.now();
+          const timeDiff = (currentTime - lastTime) / 1000; // in seconds
+          const loadedDiff = e.loaded - lastLoaded;
+          
+          if (timeDiff > 0.5) { // Update speed every 0.5 seconds
+            const speed = loadedDiff / timeDiff; // bytes per second
+            setUploadSpeed(speed);
+            lastTime = currentTime;
+            lastLoaded = e.loaded;
+          }
+        }
       });
 
-      if (res.ok) {
-        const result = await res.json();
-        setMessage({ type: 'success', text: `${files.length} photo(s) uploaded!` });
-        const photoTitles = Array.from(files).map(f => f.name);
-        trackPhotoUploaded(selectedAlbum, files.length, photoTitles);
-        
-        // Backend returns 'files' array, not 'photoIds'
-        const uploadedFiles = result.files || result.photoIds || [];
-        if (uploadedFiles.length > 0) {
-          uploadedFiles.forEach((filename: string) => {
-            // Prepend album name to match photo.id format (album/filename)
-            const fullId = filename.includes('/') ? filename : `${selectedAlbum}/${filename}`;
-            setOptimizingPhotos(prev => new Set([...prev, fullId]));
-          });
+      // Handle completion
+      xhr.addEventListener('load', async () => {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          const result = JSON.parse(xhr.responseText);
+          setMessage({ type: 'success', text: `${files.length} photo(s) uploaded!` });
+          const photoTitles = Array.from(files).map(f => f.name);
+          trackPhotoUploaded(selectedAlbum, files.length, photoTitles);
           
-          // Poll for completion
-          pollOptimization(uploadedFiles);
-        } else {
-          console.warn('No files in upload result');
-        }
+          // Backend returns 'files' array, not 'photoIds'
+          const uploadedFiles = result.files || result.photoIds || [];
+          if (uploadedFiles.length > 0) {
+            uploadedFiles.forEach((filename: string) => {
+              // Prepend album name to match photo.id format (album/filename)
+              const fullId = filename.includes('/') ? filename : `${selectedAlbum}/${filename}`;
+              setOptimizingPhotos(prev => new Set([...prev, fullId]));
+            });
+            
+            // Poll for completion
+            pollOptimization(uploadedFiles);
+          } else {
+            console.warn('No files in upload result');
+          }
 
-        await loadPhotos(selectedAlbum);
-      } else {
-        const error = await res.json();
-        setMessage({ type: 'error', text: error.error || 'Upload failed' });
-      }
+          await loadPhotos(selectedAlbum);
+        } else {
+          try {
+            const error = JSON.parse(xhr.responseText);
+            setMessage({ type: 'error', text: error.error || 'Upload failed' });
+          } catch {
+            setMessage({ type: 'error', text: 'Upload failed' });
+          }
+        }
+        
+        setSaving(false);
+        setUploadProgress(0);
+        setUploadSpeed(0);
+        e.target.value = '';
+      });
+
+      // Handle errors
+      xhr.addEventListener('error', () => {
+        setMessage({ type: 'error', text: 'Network error occurred' });
+        setSaving(false);
+        setUploadProgress(0);
+        setUploadSpeed(0);
+        e.target.value = '';
+      });
+
+      // Handle abort
+      xhr.addEventListener('abort', () => {
+        setMessage({ type: 'error', text: 'Upload cancelled' });
+        setSaving(false);
+        setUploadProgress(0);
+        setUploadSpeed(0);
+        e.target.value = '';
+      });
+
+      // Open connection and send
+      xhr.open('POST', `${API_URL}/api/albums/${selectedAlbum}/upload`);
+      xhr.withCredentials = true;
+      xhr.send(formData);
     } catch (err) {
       setMessage({ type: 'error', text: 'Network error occurred' });
-    } finally {
       setSaving(false);
+      setUploadProgress(0);
+      setUploadSpeed(0);
       e.target.value = '';
     }
   };
@@ -367,6 +429,28 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                   </label>
                 </div>
               </div>
+
+              {saving && (
+                <div className="upload-progress-container">
+                  <div className="upload-progress-info">
+                    <span className="upload-progress-percent">{uploadProgress}%</span>
+                    {uploadSpeed > 0 && (
+                      <span className="upload-speed">
+                        {uploadSpeed < 1024 * 1024 
+                          ? `${(uploadSpeed / 1024).toFixed(1)} KB/s`
+                          : `${(uploadSpeed / (1024 * 1024)).toFixed(1)} MB/s`
+                        }
+                      </span>
+                    )}
+                  </div>
+                  <div className="upload-progress-bar">
+                    <div 
+                      className="upload-progress-fill"
+                      style={{ width: `${uploadProgress}%` }}
+                    ></div>
+                  </div>
+                </div>
+              )}
 
               {albumPhotos.length === 0 ? (
                 <p style={{ color: '#888', marginTop: '1rem' }}>

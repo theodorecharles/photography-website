@@ -471,6 +471,16 @@ const PhotoModal: React.FC<PhotoModalProps> = ({
     };
   }, []);
 
+  // Precache all thumbnails for smooth navigation
+  useEffect(() => {
+    // Preload all thumbnails in the background
+    photos.forEach((photo) => {
+      const img = new Image();
+      img.src = `${API_URL}${photo.thumbnail}${imageQueryString}`;
+      // No need to do anything on load - browser will cache it automatically
+    });
+  }, [photos, imageQueryString]);
+
   // Preload modal image after delay
   useEffect(() => {
     if (selectedPhoto && !showModalImage) {
