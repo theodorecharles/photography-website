@@ -84,7 +84,6 @@ async function flushQueue(useBeacon = false): Promise<void> {
 
   // Take all events from the queue
   const eventsToSend = [...eventQueue];
-  const eventCount = eventsToSend.length;
   eventQueue = [];
 
   // Clear the flush timer if it exists
