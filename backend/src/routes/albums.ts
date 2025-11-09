@@ -26,11 +26,11 @@ const sanitizePath = (input: string): string | null => {
   ) {
     return null;
   }
-  // Only allow alphanumeric characters, hyphens, and underscores
-  if (!/^[a-zA-Z0-9_-]+$/.test(input)) {
+  // Allow alphanumeric characters, spaces, hyphens, and underscores
+  if (!/^[a-zA-Z0-9 _-]+$/.test(input)) {
     return null;
   }
-  return input;
+  return input.trim();
 };
 
 /**
