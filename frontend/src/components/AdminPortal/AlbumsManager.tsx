@@ -3,7 +3,7 @@
  * Manages photo albums, photo uploads, and image optimization settings
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { Album, Photo } from './types';
 import { 
@@ -17,6 +17,26 @@ import './AlbumsManager.css';
 
 const API_URL = import.meta.env.VITE_API_URL || '';
 
+type UploadState = 'queued' | 'uploading' | 'optimizing' | 'complete' | 'error';
+
+// Helper function to format album name to title case
+const toTitleCase = (str: string): string => {
+  return str
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(' ');
+};
+
+interface UploadingImage {
+  file: File;
+  filename: string;
+  state: UploadState;
+  thumbnailUrl?: string;
+  error?: string;
+  progress?: number;
+  optimizeProgress?: number; // 0-100 for optimization progress
+}
+
 interface AlbumsManagerProps {
   albums: Album[];
   loadAlbums: () => Promise<void>;
@@ -28,17 +48,33 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   loadAlbums,
   setMessage,
 }) => {
-  const [saving, setSaving] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
-  const [uploadSpeed, setUploadSpeed] = useState(0);
+  const [uploadingImages, setUploadingImages] = useState<UploadingImage[]>([]);
+  const uploadingImagesRef = useRef<UploadingImage[]>([]);
   const [newAlbumName, setNewAlbumName] = useState('');
-  const [selectedAlbum, setSelectedAlbum] = useState<string | null>(null);
+  const [selectedAlbum, setSelectedAlbum] = useState<string | null>(() => {
+    // Restore selected album from sessionStorage on mount
+    return sessionStorage.getItem('selectedAlbum');
+  });
   const [albumPhotos, setAlbumPhotos] = useState<Photo[]>([]);
-  const [optimizingPhotos, setOptimizingPhotos] = useState<Set<string>>(new Set());
-  const [photoTitles, setPhotoTitles] = useState<Record<string, string | null>>({});
   const [editingPhoto, setEditingPhoto] = useState<Photo | null>(null);
   const [editTitleValue, setEditTitleValue] = useState('');
   const [showEditModal, setShowEditModal] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const [isMainDropZoneDragging, setIsMainDropZoneDragging] = useState(false);
+
+  // Keep ref in sync with state
+  useEffect(() => {
+    uploadingImagesRef.current = uploadingImages;
+  }, [uploadingImages]);
+
+  // Persist selected album to sessionStorage whenever it changes
+  useEffect(() => {
+    if (selectedAlbum) {
+      sessionStorage.setItem('selectedAlbum', selectedAlbum);
+    } else {
+      sessionStorage.removeItem('selectedAlbum');
+    }
+  }, [selectedAlbum]);
 
   // Load photos when album is selected
   useEffect(() => {
@@ -49,48 +85,44 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
 
   const loadPhotos = async (albumName: string) => {
     try {
-      const res = await fetch(`${API_URL}/api/albums/${albumName}/photos`, {
+      const res = await fetch(`${API_URL}/api/albums/${encodeURIComponent(albumName)}/photos`, {
         credentials: 'include',
       });
       const photos = await res.json();
       setAlbumPhotos(photos);
-      
-      // Load AI titles for all photos
-      loadPhotoTitles(albumName, photos);
     } catch (err) {
       console.error('Failed to load photos:', err);
       setAlbumPhotos([]); // Set to empty array on error to prevent map errors
     }
   };
 
-  const loadPhotoTitles = async (albumName: string, photos: Photo[]) => {
-    const titles: Record<string, string | null> = {};
+  const handleOpenEditModal = async (photo: Photo) => {
+    setEditingPhoto(photo);
+    setShowEditModal(true);
     
-    for (const photo of photos) {
-      try {
-        const filename = photo.id.split('/').pop();
-        const res = await fetch(`${API_URL}/api/image-metadata/${albumName}/${filename}`, {
-          credentials: 'include',
-        });
-        
-        if (res.ok) {
-          const data = await res.json();
-          titles[photo.id] = data.title || null;
-        } else {
-          titles[photo.id] = null;
-        }
-      } catch (err) {
-        titles[photo.id] = null;
-      }
+    // Load the title for this specific photo when opening the modal
+    const filename = photo.id.split('/').pop();
+    if (!filename) {
+      setEditTitleValue('');
+      return;
     }
     
-    setPhotoTitles(titles);
-  };
-
-  const handleOpenEditModal = (photo: Photo) => {
-    setEditingPhoto(photo);
-    setEditTitleValue(photoTitles[photo.id] || '');
-    setShowEditModal(true);
+    try {
+      const res = await fetch(`${API_URL}/api/image-metadata/${encodeURIComponent(photo.album)}/${encodeURIComponent(filename)}`, {
+        credentials: 'include',
+      });
+      
+      if (res.ok) {
+        const data = await res.json();
+        setEditTitleValue(data.title || '');
+      } else {
+        // No metadata exists yet, start with empty
+        setEditTitleValue('');
+      }
+    } catch (err) {
+      console.error('Failed to load photo title:', err);
+      setEditTitleValue('');
+    }
   };
 
   const handleCloseEditModal = () => {
@@ -105,8 +137,13 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     const filename = editingPhoto.id.split('/').pop();
     const album = editingPhoto.album;
 
+    if (!filename) {
+      setMessage({ type: 'error', text: 'Invalid photo filename' });
+      return;
+    }
+
     try {
-      const res = await fetch(`${API_URL}/api/image-metadata/${album}/${filename}`, {
+      const res = await fetch(`${API_URL}/api/image-metadata/${encodeURIComponent(album)}/${encodeURIComponent(filename)}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -114,7 +151,6 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
       });
 
       if (res.ok) {
-        setPhotoTitles(prev => ({ ...prev, [editingPhoto.id]: editTitleValue || null }));
         setMessage({ type: 'success', text: 'Title updated successfully!' });
         handleCloseEditModal();
       } else {
@@ -130,17 +166,24 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     if (!newAlbumName.trim()) return;
 
     try {
+      // Apply title case to the album name before creating
+      const albumName = toTitleCase(newAlbumName.trim());
       const res = await fetch(`${API_URL}/api/albums`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ name: newAlbumName.toLowerCase().trim() }),
+        body: JSON.stringify({ name: albumName }),
       });
 
       if (res.ok) {
         setNewAlbumName('');
-        setMessage({ type: 'success', text: `Album "${newAlbumName}" created!` });
-        trackAlbumCreated(newAlbumName);
+        trackAlbumCreated(albumName);
+        
+        // Select the album immediately - sessionStorage will persist it across refresh
+        setSelectedAlbum(albumName);
+        setMessage({ type: 'success', text: `Album "${albumName}" created!` });
+        
+        // Trigger refresh of header navigation
         await loadAlbums();
         window.dispatchEvent(new Event('albums-updated'));
       } else {
@@ -156,7 +199,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     if (!confirm(`Delete album "${albumName}" and all its photos?`)) return;
 
     try {
-      const res = await fetch(`${API_URL}/api/albums/${albumName}`, {
+      const res = await fetch(`${API_URL}/api/albums/${encodeURIComponent(albumName)}`, {
         method: 'DELETE',
         credentials: 'include',
       });
@@ -176,163 +219,390 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     }
   };
 
-  const handleUploadPhotos = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files || !selectedAlbum) return;
-
-    setSaving(true);
-    setUploadProgress(0);
-    setUploadSpeed(0);
+  const uploadSingleImage = async (file: File, filename: string, targetAlbum?: string): Promise<void> => {
+    const albumToUse = targetAlbum || selectedAlbum;
+    // Check file size (100MB limit)
+    if (file.size > 100 * 1024 * 1024) {
+      setUploadingImages(prev => prev.map(img => 
+        img.filename === filename 
+          ? { ...img, state: 'error' as UploadState, error: 'File too large (max 100MB)' }
+          : img
+      ));
+      setMessage({ type: 'error', text: `Error: ${filename} is too large (max 100MB)` });
+      return;
+    }
     
-    const formData = new FormData();
-    Array.from(files).forEach(file => formData.append('photos', file));
+    // Update state to uploading
+    setUploadingImages(prev => prev.map(img => 
+      img.filename === filename ? { ...img, state: 'uploading' as UploadState } : img
+    ));
 
-    // Track upload speed
-    let lastLoaded = 0;
-    let lastTime = Date.now();
+      try {
+        const formData = new FormData();
+        formData.append('photo', file);
 
-    try {
-      // Use XMLHttpRequest for progress tracking
-      const xhr = new XMLHttpRequest();
-      
-      // Track upload progress
-      xhr.upload.addEventListener('progress', (e) => {
-        if (e.lengthComputable) {
-          const percentComplete = Math.round((e.loaded / e.total) * 100);
-          setUploadProgress(percentComplete);
+        // Use XMLHttpRequest for upload progress and SSE response
+        await new Promise<void>((resolve, reject) => {
+          const xhr = new XMLHttpRequest();
+          let uploadComplete = false;
           
-          // Calculate upload speed
-          const currentTime = Date.now();
-          const timeDiff = (currentTime - lastTime) / 1000; // in seconds
-          const loadedDiff = e.loaded - lastLoaded;
-          
-          if (timeDiff > 0.5) { // Update speed every 0.5 seconds
-            const speed = loadedDiff / timeDiff; // bytes per second
-            setUploadSpeed(speed);
-            lastTime = currentTime;
-            lastLoaded = e.loaded;
+          // Track upload progress
+          xhr.upload.addEventListener('progress', (e) => {
+            if (e.lengthComputable) {
+              const percentComplete = Math.round((e.loaded / e.total) * 100);
+              setUploadingImages(prev => prev.map(img => 
+                img.filename === filename ? { ...img, progress: percentComplete } : img
+              ));
+            }
+          });
+
+          // Handle SSE response stream
+          xhr.addEventListener('readystatechange', () => {
+            if (xhr.readyState === XMLHttpRequest.LOADING || xhr.readyState === XMLHttpRequest.DONE) {
+              const responseText = xhr.responseText;
+              const lines = responseText.split('\n');
+              
+              lines.forEach((line) => {
+                if (line.startsWith('data: ')) {
+                  try {
+                    const data = JSON.parse(line.substring(6));
+                    
+                    if (data.type === 'uploaded') {
+                      // Upload complete, start optimizing
+                      setUploadingImages(prev => prev.map(img => 
+                        img.filename === filename 
+                          ? { ...img, state: 'optimizing' as UploadState, progress: 100, optimizeProgress: 0 } 
+                          : img
+                      ));
+                      // Resolve immediately after upload completes
+                      // Optimization will continue in background
+                      if (!uploadComplete) {
+                        uploadComplete = true;
+                        resolve();
+                      }
+                    } else if (data.type === 'progress') {
+                      // Update optimization progress (in background)
+                      setUploadingImages(prev => prev.map(img => 
+                        img.filename === filename 
+                          ? { ...img, optimizeProgress: data.progress } 
+                          : img
+                      ));
+                    } else if (data.type === 'complete') {
+                      // Optimization complete (in background)
+                      const thumbnailUrl = `${API_URL}/optimized/thumbnail/${albumToUse}/${filename}?i=${Date.now()}`;
+                      setUploadingImages(prev => prev.map(img => 
+                        img.filename === filename 
+                          ? { ...img, state: 'complete' as UploadState, thumbnailUrl, optimizeProgress: 100 } 
+                          : img
+                      ));
+                      trackPhotoUploaded(albumToUse!, 1, [filename]);
+                    } else if (data.type === 'error') {
+                      // Error occurred
+                      setUploadingImages(prev => prev.map(img => 
+                        img.filename === filename 
+                          ? { ...img, state: 'error' as UploadState, error: data.error } 
+                          : img
+                      ));
+                      setMessage({ type: 'error', text: `Error processing ${filename}: ${data.error}` });
+                      if (!uploadComplete) {
+                        uploadComplete = true;
+                        reject(new Error(data.error));
+                      }
+                    }
+                  } catch (e) {
+                    // Ignore parse errors for incomplete data
+                  }
+                }
+              });
+            }
+          });
+
+          xhr.addEventListener('error', () => {
+            reject(new Error('Network error occurred'));
+          });
+
+          if (!albumToUse) {
+            reject(new Error('No album selected'));
+            return;
           }
-        }
-      });
 
-      // Handle completion
-      xhr.addEventListener('load', async () => {
-        if (xhr.status >= 200 && xhr.status < 300) {
-          const result = JSON.parse(xhr.responseText);
-          setMessage({ type: 'success', text: `${files.length} photo(s) uploaded!` });
-          const photoTitles = Array.from(files).map(f => f.name);
-          trackPhotoUploaded(selectedAlbum, files.length, photoTitles);
-          
-          // Backend returns 'files' array, not 'photoIds'
-          const uploadedFiles = result.files || result.photoIds || [];
-          if (uploadedFiles.length > 0) {
-            uploadedFiles.forEach((filename: string) => {
-              // Prepend album name to match photo.id format (album/filename)
-              const fullId = filename.includes('/') ? filename : `${selectedAlbum}/${filename}`;
-              setOptimizingPhotos(prev => new Set([...prev, fullId]));
-            });
-            
-            // Poll for completion
-            pollOptimization(uploadedFiles);
-          } else {
-            console.warn('No files in upload result');
-          }
-
-          await loadPhotos(selectedAlbum);
-        } else {
-          try {
-            const error = JSON.parse(xhr.responseText);
-            setMessage({ type: 'error', text: error.error || 'Upload failed' });
-          } catch {
-            setMessage({ type: 'error', text: 'Upload failed' });
-          }
-        }
-        
-        setSaving(false);
-        setUploadProgress(0);
-        setUploadSpeed(0);
-        e.target.value = '';
-      });
-
-      // Handle errors
-      xhr.addEventListener('error', () => {
-        setMessage({ type: 'error', text: 'Network error occurred' });
-        setSaving(false);
-        setUploadProgress(0);
-        setUploadSpeed(0);
-        e.target.value = '';
-      });
-
-      // Handle abort
-      xhr.addEventListener('abort', () => {
-        setMessage({ type: 'error', text: 'Upload cancelled' });
-        setSaving(false);
-        setUploadProgress(0);
-        setUploadSpeed(0);
-        e.target.value = '';
-      });
-
-      // Open connection and send
-      xhr.open('POST', `${API_URL}/api/albums/${selectedAlbum}/upload`);
-      xhr.withCredentials = true;
-      xhr.send(formData);
-    } catch (err) {
-      setMessage({ type: 'error', text: 'Network error occurred' });
-      setSaving(false);
-      setUploadProgress(0);
-      setUploadSpeed(0);
-      e.target.value = '';
+          xhr.open('POST', `${API_URL}/api/albums/${encodeURIComponent(albumToUse)}/upload`);
+          xhr.withCredentials = true;
+          xhr.send(formData);
+        });
+    } catch (err: any) {
+      setUploadingImages(prev => prev.map(img => 
+        img.filename === filename 
+          ? { ...img, state: 'error' as UploadState, error: err.message || 'Network error' }
+          : img
+      ));
+      setMessage({ type: 'error', text: `Error uploading ${filename}: ${err.message || 'Network error'}` });
     }
   };
 
-  const pollOptimization = async (filenames: string[]) => {
-    const checkStatus = async () => {
-      try {
-        // Check each thumbnail URL to see if it exists (returns 200 instead of 404)
-        const checkPromises = filenames.map(async (filename) => {
-          const thumbnailUrl = `${API_URL}/optimized/thumbnail/${selectedAlbum}/${filename}`;
-          try {
-            const res = await fetch(thumbnailUrl, { method: 'HEAD' });
-            return { filename, completed: res.ok };
-          } catch {
-            return { filename, completed: false };
+  const processFiles = async (files: FileList | File[], targetAlbum?: string) => {
+    const albumToUse = targetAlbum || selectedAlbum;
+    if (!files || files.length === 0 || !albumToUse) return;
+
+    // Filter for image files only
+    const imageFiles = Array.from(files).filter(file => 
+      file.type.startsWith('image/')
+    );
+
+    if (imageFiles.length === 0) {
+      setMessage({ type: 'error', text: 'No valid image files selected' });
+      return;
+    }
+
+    if (imageFiles.length < files.length) {
+      setMessage({ type: 'error', text: `${files.length - imageFiles.length} non-image file(s) skipped` });
+    }
+
+    // Initialize all files as queued
+    const newUploadingImages: UploadingImage[] = imageFiles.map(file => ({
+      file,
+      filename: file.name,
+      state: 'queued' as UploadState,
+      progress: 0
+    }));
+    
+    setUploadingImages(newUploadingImages);
+
+    // Upload files sequentially (one at a time)
+    // But let optimizations run in parallel in the background
+    for (const img of newUploadingImages) {
+      await uploadSingleImage(img.file, img.filename, albumToUse);
+      // Note: uploadSingleImage starts optimization in background (non-blocking)
+      // So multiple optimizations can run simultaneously while we upload the next file
+    }
+
+    // Wait for all optimizations to complete
+    // Check every second until all images are done (complete or error)
+    await new Promise<void>((resolve) => {
+      const checkComplete = setInterval(() => {
+        const allDone = uploadingImagesRef.current.every(img => 
+          img.state === 'complete' || img.state === 'error'
+        );
+        
+        if (allDone) {
+          clearInterval(checkComplete);
+          resolve();
+        }
+      }, 1000);
+      
+      // Timeout after 2 minutes
+      setTimeout(() => {
+        clearInterval(checkComplete);
+        resolve();
+      }, 120000);
+    });
+
+    // Reload photos after all uploads and optimizations complete
+    if (albumToUse) {
+      await loadPhotos(albumToUse);
+    }
+
+    // Clear uploading images after reload to prevent duplicates
+    setUploadingImages([]);
+    
+    setMessage({ type: 'success', text: `Upload complete! Processed ${newUploadingImages.length} image(s)` });
+  };
+
+  const handleUploadPhotos = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+    
+    await processFiles(files);
+    
+    // Clear the input
+    e.target.value = '';
+  };
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDrop = async (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+
+    if (!selectedAlbum || uploadingImages.length > 0) return;
+
+    const files = e.dataTransfer.files;
+    if (files && files.length > 0) {
+      await processFiles(files);
+    }
+  };
+
+  // Recursively read all files from a directory entry
+  const readDirectoryRecursive = async (dirEntry: any): Promise<File[]> => {
+    const files: File[] = [];
+    const dirReader = dirEntry.createReader();
+    
+    return new Promise((resolve) => {
+      const readEntries = () => {
+        dirReader.readEntries(async (entries: any[]) => {
+          if (entries.length === 0) {
+            resolve(files);
+            return;
           }
-        });
 
-        const results = await Promise.all(checkPromises);
-        const completed = results.filter(r => r.completed).map(r => r.filename);
-        
-        
-        // Remove completed photos from optimizing set
-        setOptimizingPhotos(prev => {
-          const updated = new Set(prev);
-          completed.forEach((filename: string) => {
-            const fullId = filename.includes('/') ? filename : `${selectedAlbum}/${filename}`;
-            updated.delete(fullId);
-          });
-          return updated;
-        });
+          for (const entry of entries) {
+            if (entry.isFile) {
+              // Get the file
+              const file: File = await new Promise((resolveFile) => {
+                entry.file((f: File) => resolveFile(f));
+              });
+              
+              // Only add image files
+              if (file.type.startsWith('image/')) {
+                files.push(file);
+              }
+            } else if (entry.isDirectory) {
+              // Recursively read subdirectory
+              const subFiles = await readDirectoryRecursive(entry);
+              files.push(...subFiles);
+            }
+          }
 
-        if (completed.length < filenames.length) {
-          setTimeout(checkStatus, 2000);
-        } else {
-          if (selectedAlbum) {
-            await loadPhotos(selectedAlbum);
+          // Read next batch of entries
+          readEntries();
+        });
+      };
+
+      readEntries();
+    });
+  };
+
+  // Process dropped items (handles folders)
+  const processDroppedItems = async (items: DataTransferItemList): Promise<{ files: File[], folderName: string | null }> => {
+    const allFiles: File[] = [];
+    let folderName: string | null = null;
+
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
+      if (item.kind === 'file') {
+        const entry = item.webkitGetAsEntry();
+        
+        if (entry) {
+          if (entry.isDirectory) {
+            // It's a folder - get the folder name
+            if (!folderName) {
+              folderName = entry.name;
+            }
+            // Recursively read all files
+            const files = await readDirectoryRecursive(entry);
+            allFiles.push(...files);
+          } else if (entry.isFile) {
+            // It's a single file
+            const file = item.getAsFile();
+            if (file && file.type.startsWith('image/')) {
+              allFiles.push(file);
+            }
           }
         }
-      } catch (err) {
-        console.error('Failed to check thumbnail status:', err);
       }
-    };
+    }
 
-    setTimeout(checkStatus, 2000);
+    return { files: allFiles, folderName };
+  };
+
+  const handleMainDropZoneDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsMainDropZoneDragging(true);
+  };
+
+  const handleMainDropZoneDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    // Only set to false if we're actually leaving the drop zone (not entering a child)
+    if (e.currentTarget === e.target) {
+      setIsMainDropZoneDragging(false);
+    }
+  };
+
+  const handleMainDropZoneDrop = async (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsMainDropZoneDragging(false);
+
+    if (uploadingImages.length > 0) {
+      setMessage({ type: 'error', text: 'Upload already in progress' });
+      return;
+    }
+
+    // Process dropped items (handles folders and files)
+    const { files: imageFiles, folderName } = await processDroppedItems(e.dataTransfer.items);
+    
+    if (imageFiles.length === 0) {
+      setMessage({ type: 'error', text: 'No image files found in dropped folder' });
+      return;
+    }
+
+    // If album is selected, upload to that album
+    if (selectedAlbum) {
+      await processFiles(imageFiles);
+      return;
+    }
+
+    // No album selected - try to create one from folder name
+    if (!folderName) {
+      setMessage({ type: 'error', text: 'Please drag a folder or select an album first' });
+      return;
+    }
+
+    // Create the album with title case
+    const albumName = toTitleCase(folderName.trim());
+    
+    try {
+      const res = await fetch(`${API_URL}/api/albums`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ name: albumName }),
+      });
+
+      if (!res.ok) {
+        const error = await res.json();
+        setMessage({ type: 'error', text: error.error || 'Failed to create album' });
+        return;
+      }
+
+      // Album created successfully
+      trackAlbumCreated(folderName);
+      setSelectedAlbum(albumName);
+      setMessage({ type: 'success', text: `Album "${albumName}" created! Uploading ${imageFiles.length} image(s)...` });
+      
+      // Load albums locally (don't dispatch event yet - it would cause a refresh and interrupt upload)
+      await loadAlbums();
+
+      // Upload the files with the newly created album name
+      await processFiles(imageFiles, albumName);
+      
+      // NOW trigger global refresh after uploads complete
+      window.dispatchEvent(new Event('albums-updated'));
+      
+    } catch (err) {
+      console.error('Failed to create album:', err);
+      setMessage({ type: 'error', text: 'Failed to create album' });
+    }
   };
 
   const handleDeletePhoto = async (album: string, filename: string, photoTitle: string = '') => {
     if (!confirm(`Delete this photo?`)) return;
 
     try {
-      const res = await fetch(`${API_URL}/api/albums/${album}/photos/${filename}`, {
+      const res = await fetch(`${API_URL}/api/albums/${encodeURIComponent(album)}/photos/${encodeURIComponent(filename)}`, {
         method: 'DELETE',
         credentials: 'include',
       });
@@ -358,23 +628,44 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
         <p className="section-description">Manage your photo albums and upload new images</p>
         
         <div className="albums-management">
-          <div className="create-album">
-            <h3>Create New Album</h3>
-            <div className="album-input-group">
+          <div className="create-album-section">
+            <div className="create-album">
+              <h3>Create New Album</h3>
+              <div className="album-input-group">
               <input
                 type="text"
                 value={newAlbumName}
                 onChange={(e) => setNewAlbumName(e.target.value)}
-                placeholder="Album name (e.g., nature, portraits)"
+                placeholder="Album name (e.g., Nature Photos, Street Portraits)"
                 className="branding-input"
                 onKeyDown={(e) => e.key === 'Enter' && handleCreateAlbum()}
               />
-              <button 
-                onClick={handleCreateAlbum}
-                className="btn-primary"
-              >
-                Create Album
-              </button>
+                <button 
+                  onClick={handleCreateAlbum}
+                  className="btn-primary"
+                >
+                  Create Album
+                </button>
+              </div>
+            </div>
+
+            <div 
+              className={`main-drop-zone ${isMainDropZoneDragging ? 'dragging' : ''} ${uploadingImages.length > 0 ? 'disabled' : ''}`}
+              onDragOver={uploadingImages.length > 0 ? undefined : handleMainDropZoneDragOver}
+              onDragLeave={uploadingImages.length > 0 ? undefined : handleMainDropZoneDragLeave}
+              onDrop={uploadingImages.length > 0 ? undefined : handleMainDropZoneDrop}
+            >
+              <div className="drop-zone-icon">📁</div>
+              <div className="drop-zone-text">
+                <strong>{uploadingImages.length > 0 ? 'Upload in progress...' : 'Drop folder here'}</strong>
+                <span className="drop-zone-hint">
+                  {uploadingImages.length > 0 
+                    ? 'Please wait for current upload to complete'
+                    : selectedAlbum 
+                      ? `Add images to "${selectedAlbum}"` 
+                      : 'Create album from folder name'}
+                </span>
+              </div>
             </div>
           </div>
 
@@ -412,111 +703,235 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
           </div>
 
           {selectedAlbum && (
-            <div className="album-photos">
+            <div 
+              className={`album-photos ${isDragging ? 'drag-over' : ''}`}
+              onDragOver={uploadingImages.length > 0 ? undefined : handleDragOver}
+              onDragLeave={uploadingImages.length > 0 ? undefined : handleDragLeave}
+              onDrop={uploadingImages.length > 0 ? undefined : handleDrop}
+            >
               <div className="photos-header">
                 <h3>Photos in "{selectedAlbum}"</h3>
                 <div className="upload-controls">
                   <label className="btn-primary upload-btn">
-                    {saving ? 'Uploading...' : '+ Upload Photos'}
+                    {uploadingImages.length > 0 ? 'Uploading...' : '+ Upload Photos'}
                     <input
                       type="file"
                       multiple
                       accept="image/*"
                       onChange={handleUploadPhotos}
-                      disabled={saving}
+                      disabled={uploadingImages.length > 0}
                       style={{ display: 'none' }}
                     />
                   </label>
                 </div>
               </div>
 
-              {saving && (
+              {isDragging && uploadingImages.length === 0 && (
+                <div className="drop-overlay">
+                  <div className="drop-overlay-content">
+                    <div className="drop-icon">📁</div>
+                    <p>Drop images here to upload</p>
+                  </div>
+                </div>
+              )}
+
+              {uploadingImages.length > 0 && (
                 <div className="upload-progress-container">
                   <div className="upload-progress-info">
-                    <span className="upload-progress-percent">{uploadProgress}%</span>
-                    {uploadSpeed > 0 && (
-                      <span className="upload-speed">
-                        {uploadSpeed < 1024 * 1024 
-                          ? `${(uploadSpeed / 1024).toFixed(1)} KB/s`
-                          : `${(uploadSpeed / (1024 * 1024)).toFixed(1)} MB/s`
-                        }
-                      </span>
-                    )}
+                    <span className="upload-progress-percent">
+                      {uploadingImages.filter(img => img.state === 'complete' || img.state === 'error').length} / {uploadingImages.length} complete
+                    </span>
                   </div>
                   <div className="upload-progress-bar">
                     <div 
                       className="upload-progress-fill"
-                      style={{ width: `${uploadProgress}%` }}
+                      style={{ 
+                        width: `${(uploadingImages.filter(img => img.state === 'complete' || img.state === 'error').length / uploadingImages.length) * 100}%` 
+                      }}
                     ></div>
                   </div>
                 </div>
               )}
 
-              {albumPhotos.length === 0 ? (
+              {/* Show error summary at the top */}
+              {uploadingImages.some(img => img.state === 'error') && (
+                <div className="upload-errors-summary">
+                  <div className="errors-summary-header">
+                    <span className="error-icon">⚠️</span>
+                    <strong>Failed Uploads ({uploadingImages.filter(img => img.state === 'error').length})</strong>
+                  </div>
+                  <div className="error-files-list">
+                    {uploadingImages
+                      .filter(img => img.state === 'error')
+                      .map((img, idx) => (
+                        <div key={`error-${idx}`} className="error-file-item">
+                          <div className="error-file-info">
+                            <span className="error-filename">{img.filename}</span>
+                            <span className="error-reason">{img.error || 'Upload failed'}</span>
+                          </div>
+                          <button
+                            className="error-dismiss-btn"
+                            onClick={() => {
+                              setUploadingImages(prev => prev.filter(i => i.filename !== img.filename));
+                            }}
+                            title="Dismiss"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))}
+                  </div>
+                </div>
+              )}
+
+              {albumPhotos.length === 0 && uploadingImages.length === 0 ? (
                 <p style={{ color: '#888', marginTop: '1rem' }}>
                   No photos in this album yet. Upload some to get started!
                 </p>
               ) : (
                 <div className="photos-grid">
+                  {/* Show uploading images first */}
+                  {uploadingImages.map((img, idx) => (
+                    <div key={`uploading-${idx}`} className="admin-photo-item uploading-photo-item">
+                      {img.state === 'queued' && (
+                        <div className="photo-state-overlay">
+                          <div className="state-icon">⏳</div>
+                          <span className="state-text">Queued</span>
+                        </div>
+                      )}
+                      {img.state === 'uploading' && (
+                        <div className="photo-state-overlay">
+                          <div className="progress-circle">
+                            <svg className="progress-ring" width="60" height="60">
+                              <circle
+                                className="progress-ring-circle-bg"
+                                stroke="rgba(255, 255, 255, 0.1)"
+                                strokeWidth="4"
+                                fill="transparent"
+                                r="26"
+                                cx="30"
+                                cy="30"
+                              />
+                              <circle
+                                className="progress-ring-circle"
+                                stroke="var(--primary-color)"
+                                strokeWidth="4"
+                                fill="transparent"
+                                r="26"
+                                cx="30"
+                                cy="30"
+                                strokeDasharray={`${2 * Math.PI * 26}`}
+                                strokeDashoffset={`${2 * Math.PI * 26 * (1 - (img.progress || 0) / 100)}`}
+                                style={{ transition: 'stroke-dashoffset 0.3s ease' }}
+                              />
+                            </svg>
+                            <span className="progress-percentage">{img.progress}%</span>
+                          </div>
+                          <span className="state-text">Uploading...</span>
+                        </div>
+                      )}
+                      {img.state === 'optimizing' && (
+                        <div className="photo-state-overlay">
+                          <div className="progress-circle">
+                            <svg className="progress-ring" width="60" height="60">
+                              <circle
+                                className="progress-ring-circle-bg"
+                                stroke="rgba(255, 255, 255, 0.1)"
+                                strokeWidth="4"
+                                fill="transparent"
+                                r="26"
+                                cx="30"
+                                cy="30"
+                              />
+                              <circle
+                                className="progress-ring-circle"
+                                stroke="var(--primary-color)"
+                                strokeWidth="4"
+                                fill="transparent"
+                                r="26"
+                                cx="30"
+                                cy="30"
+                                strokeDasharray={`${2 * Math.PI * 26}`}
+                                strokeDashoffset={`${2 * Math.PI * 26 * (1 - (img.optimizeProgress || 0) / 100)}`}
+                                style={{ transition: 'stroke-dashoffset 0.3s ease' }}
+                              />
+                            </svg>
+                            <span className="progress-percentage">{img.optimizeProgress || 0}%</span>
+                          </div>
+                          <span className="state-text">Optimizing...</span>
+                        </div>
+                      )}
+                      {img.state === 'complete' && img.thumbnailUrl && (
+                        <>
+                          <img 
+                            src={img.thumbnailUrl}
+                            alt={img.filename}
+                            className="admin-photo-thumbnail"
+                          />
+                          <div className="photo-complete-badge">✓</div>
+                        </>
+                      )}
+                      {img.state === 'error' && (
+                        <div className="photo-state-overlay error">
+                          <div className="state-icon">⚠️</div>
+                          <span className="state-text">Error</span>
+                          <span className="error-message">{img.error}</span>
+                        </div>
+                      )}
+                      <div className="photo-filename">{img.filename}</div>
+                    </div>
+                  ))}
+                  
+                  {/* Show existing album photos */}
                   {albumPhotos.map((photo) => {
                     const imageUrl = `${API_URL}${photo.thumbnail}?i=${cacheBustValue}`;
-                    const isOptimizing = optimizingPhotos.has(photo.id);
                     return (
-                    <div key={photo.id} className="admin-photo-item">
-                      {isOptimizing ? (
-                        <div className="photo-optimizing">
-                          <div className="spinner"></div>
-                          <span>Optimizing...</span>
-                        </div>
-                      ) : (
+                      <div key={photo.id} className="admin-photo-item">
                         <img 
                           src={imageUrl}
                           alt={photo.title}
                           className="admin-photo-thumbnail"
                         />
-                      )}
-                      <div className="photo-overlay">
-                        <div className="photo-actions">
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              e.preventDefault();
-                              handleOpenEditModal(photo);
-                            }}
-                            onTouchEnd={(e) => {
-                              // Handle touch events for iOS Safari
-                              e.stopPropagation();
-                              e.preventDefault();
-                              handleOpenEditModal(photo);
-                            }}
-                            className="btn-edit-photo"
-                            title="Edit title"
-                            disabled={isOptimizing}
-                            type="button"
-                          >
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-                              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-                            </svg>
-                          </button>
-                          <button
-                            onClick={() => {
-                              const filename = photo.id.split('/').pop() || photo.id;
-                              handleDeletePhoto(photo.album, filename, photo.title);
-                            }}
-                            className="btn-delete-photo"
-                            title="Delete photo"
-                            disabled={isOptimizing}
-                          >
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                              <polyline points="3 6 5 6 21 6" />
-                              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                            </svg>
-                          </button>
+                        <div className="photo-overlay">
+                          <div className="photo-actions">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                handleOpenEditModal(photo);
+                              }}
+                              onTouchEnd={(e) => {
+                                // Handle touch events for iOS Safari
+                                e.stopPropagation();
+                                e.preventDefault();
+                                handleOpenEditModal(photo);
+                              }}
+                              className="btn-edit-photo"
+                              title="Edit title"
+                              type="button"
+                            >
+                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                              </svg>
+                            </button>
+                            <button
+                              onClick={() => {
+                                const filename = photo.id.split('/').pop() || photo.id;
+                                handleDeletePhoto(photo.album, filename, photo.title);
+                              }}
+                              className="btn-delete-photo"
+                              title="Delete photo"
+                            >
+                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <polyline points="3 6 5 6 21 6" />
+                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                              </svg>
+                            </button>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  );
+                    );
                   })}
                 </div>
               )}

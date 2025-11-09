@@ -7,7 +7,7 @@ import { Router, Request, Response } from "express";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import { execFile } from "child_process";
+import { execFile, spawn } from "child_process";
 import { promisify } from "util";
 import multer from "multer";
 import os from "os";
@@ -62,16 +62,17 @@ const requireAuth = (req: Request, res: Response, next: Function) => {
 };
 
 /**
- * Sanitize album/photo name
+ * Sanitize album/photo name - allows letters, numbers, spaces, hyphens, and underscores
  */
 const sanitizeName = (name: string): string | null => {
   if (!name || name.includes("..") || name.includes("/") || name.includes("\\")) {
     return null;
   }
-  if (!/^[a-zA-Z0-9_-]+$/.test(name)) {
+  // Allow alphanumeric characters, spaces, hyphens, and underscores
+  if (!/^[a-zA-Z0-9 _-]+$/.test(name)) {
     return null;
   }
-  return name;
+  return name.trim();
 };
 
 /**
@@ -101,7 +102,7 @@ router.post("/", requireAuth, async (req: Request, res: Response): Promise<void>
 
     const sanitizedName = sanitizeName(name);
     if (!sanitizedName) {
-      res.status(400).json({ error: 'Invalid album name. Use only letters, numbers, hyphens, and underscores.' });
+      res.status(400).json({ error: 'Invalid album name. Use only letters, numbers, spaces, hyphens, and underscores.' });
       return;
     }
 
@@ -218,9 +219,9 @@ router.delete("/:album/photos/:photo", requireAuth, async (req: Request, res: Re
 });
 
 /**
- * Upload photos to an album
+ * Upload a single photo to an album with SSE progress updates
  */
-router.post("/:album/upload", requireAuth, upload.array('photos'), async (req: Request, res: Response): Promise<void> => {
+router.post("/:album/upload", requireAuth, upload.single('photo'), async (req: Request, res: Response): Promise<void> => {
   try {
     const { album } = req.params;
     
@@ -230,9 +231,9 @@ router.post("/:album/upload", requireAuth, upload.array('photos'), async (req: R
       return;
     }
 
-    const files = req.files as Express.Multer.File[];
-    if (!files || files.length === 0) {
-      res.status(400).json({ error: 'No files uploaded' });
+    const file = req.file as Express.Multer.File;
+    if (!file) {
+      res.status(400).json({ error: 'No file uploaded' });
       return;
     }
 
@@ -244,59 +245,106 @@ router.post("/:album/upload", requireAuth, upload.array('photos'), async (req: R
       return;
     }
 
-    const uploadedFiles: string[] = [];
+    const destPath = path.join(albumPath, file.originalname);
     
-    // Move files from temp to album directory
-    for (const file of files) {
-      const destPath = path.join(albumPath, file.originalname);
+    try {
+      // Use read + write to handle symlinks and cross-filesystem moves
+      const data = fs.readFileSync(file.path);
+      fs.writeFileSync(destPath, data);
+      fs.unlinkSync(file.path);
+    } catch (err) {
+      console.error(`Failed to move file ${file.originalname}:`, err);
+      // Clean up temp file if copy failed
       try {
-        // Use read + write to handle symlinks and cross-filesystem moves
-        const data = fs.readFileSync(file.path);
-        fs.writeFileSync(destPath, data);
         fs.unlinkSync(file.path);
-        uploadedFiles.push(file.originalname);
-      } catch (err) {
-        console.error(`Failed to move file ${file.originalname}:`, err);
-        // Clean up temp file if copy failed
-        try {
-          fs.unlinkSync(file.path);
-        } catch (cleanupErr) {
-          // Ignore cleanup errors
-        }
-        throw err;
+      } catch (cleanupErr) {
+        // Ignore cleanup errors
       }
+      res.status(500).json({ error: 'Failed to save file' });
+      return;
     }
 
-    // Trigger optimization in background
+    // Set up SSE headers
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+    res.flushHeaders();
+
+    // Send initial success message
+    res.write(`data: ${JSON.stringify({ type: 'uploaded', filename: file.originalname })}\n\n`);
+
+    // Trigger optimization with SSE progress streaming
     const projectRoot = path.resolve(__dirname, '../../../');
-    const scriptPath = path.join(projectRoot, 'optimize_images.sh');
+    const scriptPath = path.join(projectRoot, 'optimize_new_image.sh');
 
     if (fs.existsSync(scriptPath)) {
-      // Run script from project root directory using execFile to prevent command injection
-      execFile('bash', [scriptPath], { cwd: projectRoot }, (error, stdout, stderr) => {
-        if (error) {
-          console.error('Optimization error:', error);
-          if (stderr) console.error('stderr:', stderr);
-        } else {
-          console.log('Optimization complete');
-          if (stdout) console.log('stdout:', stdout);
-        }
+      const child = spawn('bash', [scriptPath, sanitizedAlbum, file.originalname], { 
+        cwd: projectRoot
       });
-    }
 
-    res.json({ 
-      success: true, 
-      files: uploadedFiles,
-      message: 'Photos uploaded successfully. Optimization started in background.' 
-    });
+      // Stream stdout for progress updates
+      child.stdout.on('data', (data) => {
+        const lines = data.toString().split('\n');
+        lines.forEach((line: string) => {
+          if (line.trim()) {
+            // Check for PROGRESS: messages
+            if (line.startsWith('PROGRESS:')) {
+              const parts = line.substring(9).split(':');
+              const progress = parseInt(parts[0]);
+              const message = parts.slice(1).join(':');
+              res.write(`data: ${JSON.stringify({ 
+                type: 'progress', 
+                progress, 
+                message,
+                filename: file.originalname 
+              })}\n\n`);
+            }
+          }
+        });
+      });
+
+      // Handle completion
+      child.on('close', (code) => {
+        if (code === 0) {
+          res.write(`data: ${JSON.stringify({ 
+            type: 'complete', 
+            filename: file.originalname 
+          })}\n\n`);
+        } else {
+          res.write(`data: ${JSON.stringify({ 
+            type: 'error', 
+            error: 'Optimization failed',
+            filename: file.originalname 
+          })}\n\n`);
+        }
+        res.end();
+      });
+
+      // Handle errors
+      child.on('error', (error) => {
+        res.write(`data: ${JSON.stringify({ 
+          type: 'error', 
+          error: error.message,
+          filename: file.originalname 
+        })}\n\n`);
+        res.end();
+      });
+    } else {
+      res.write(`data: ${JSON.stringify({ 
+        type: 'error', 
+        error: 'Optimization script not found',
+        filename: file.originalname 
+      })}\n\n`);
+      res.end();
+    }
   } catch (error) {
-    console.error('Error uploading photos:', error);
-    res.status(500).json({ error: 'Failed to upload photos' });
+    console.error('Error uploading photo:', error);
+    res.status(500).json({ error: 'Failed to upload photo' });
   }
 });
 
 /**
- * Trigger optimization for an album
+ * Trigger optimization for all albums
  */
 router.post("/:album/optimize", requireAuth, async (req: Request, res: Response): Promise<void> => {
   try {
@@ -310,7 +358,7 @@ router.post("/:album/optimize", requireAuth, async (req: Request, res: Response)
 
     // Get project root (two levels up from backend/src)
     const projectRoot = path.resolve(__dirname, '../../../');
-    const scriptPath = path.join(projectRoot, 'optimize_images.sh');
+    const scriptPath = path.join(projectRoot, 'optimize_all_images.sh');
 
     if (!fs.existsSync(scriptPath)) {
       res.status(500).json({ error: 'Optimization script not found' });
