@@ -44,6 +44,13 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     }
   }, [selectedAlbum]);
 
+  // Debug: Show toast when modal state changes
+  useEffect(() => {
+    if (showEditModal && editingPhoto) {
+      setMessage({ type: 'success', text: `Modal should be visible! Photo: ${editingPhoto.id}` });
+    }
+  }, [showEditModal, editingPhoto]);
+
   const loadPhotos = async (albumName: string) => {
     try {
       const res = await fetch(`${API_URL}/api/albums/${albumName}/photos`, {
@@ -86,10 +93,16 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
 
   const handleOpenEditModal = (photo: Photo) => {
     console.log('Opening edit modal for photo:', photo.id);
+    setMessage({ type: 'success', text: `Edit button clicked! Opening modal for: ${photo.id}` });
     setEditingPhoto(photo);
     setEditTitleValue(photoTitles[photo.id] || '');
     setShowEditModal(true);
-    console.log('Modal state set to true');
+    console.log('Modal state set to true, showEditModal:', true, 'editingPhoto:', photo.id);
+    
+    // Also log after a short delay to see if state updates
+    setTimeout(() => {
+      console.log('After timeout - showEditModal should be true');
+    }, 100);
   };
 
   const handleCloseEditModal = () => {
@@ -397,14 +410,20 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
+                              e.preventDefault();
+                              setMessage({ type: 'success', text: 'Edit button onClick fired!' });
                               handleOpenEditModal(photo);
                             }}
-                            onTouchEnd={(e) => {
-                              // Handle touch events for iOS Safari - prevent double-firing
+                            onTouchStart={(e) => {
                               e.stopPropagation();
-                              if (!showEditModal) {
-                                handleOpenEditModal(photo);
-                              }
+                              setMessage({ type: 'success', text: 'Edit button onTouchStart fired!' });
+                            }}
+                            onTouchEnd={(e) => {
+                              // Handle touch events for iOS Safari
+                              e.stopPropagation();
+                              e.preventDefault();
+                              setMessage({ type: 'success', text: 'Edit button onTouchEnd fired!' });
+                              handleOpenEditModal(photo);
                             }}
                             className="btn-edit-photo"
                             title="Edit title"
