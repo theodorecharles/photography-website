@@ -52,22 +52,26 @@ handle_error() {
 }
 
 # Create thumbnail version
+echo "PROGRESS:0:Starting optimization"
 echo "Generating thumbnail for: $ALBUM_NAME/$IMAGE_FILENAME"
 if ! convert "$SOURCE_IMAGE" -resize "${THUMBNAIL_MAX_DIM}x${THUMBNAIL_MAX_DIM}>" -quality $THUMBNAIL_QUALITY "$THUMB_PATH" 2>&1; then
     handle_error
 fi
+echo "PROGRESS:33:Thumbnail complete"
 
 # Create modal version
 echo "Generating modal for: $ALBUM_NAME/$IMAGE_FILENAME"
 if ! convert "$SOURCE_IMAGE" -resize "${MODAL_MAX_DIM}x${MODAL_MAX_DIM}>" -quality $MODAL_QUALITY "$MODAL_PATH" 2>&1; then
     handle_error
 fi
+echo "PROGRESS:66:Modal complete"
 
 # Create download version
 echo "Generating download for: $ALBUM_NAME/$IMAGE_FILENAME"
 if ! convert "$SOURCE_IMAGE" -resize "${DOWNLOAD_MAX_DIM}x${DOWNLOAD_MAX_DIM}>" -quality $DOWNLOAD_QUALITY "$DOWNLOAD_PATH" 2>&1; then
     handle_error
 fi
+echo "PROGRESS:100:Download complete"
 
 echo "Successfully optimized: $ALBUM_NAME/$IMAGE_FILENAME"
 exit 0
