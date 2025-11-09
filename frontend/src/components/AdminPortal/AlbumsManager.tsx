@@ -13,7 +13,6 @@ import {
   trackPhotoDeleted
 } from '../../utils/analytics';
 import { cacheBustValue } from '../../config';
-import { showToast } from '../../utils/toast';
 import './AlbumsManager.css';
 
 const API_URL = import.meta.env.VITE_API_URL || '';
@@ -222,7 +221,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
           ? { ...img, state: 'error' as UploadState, error: 'File too large (max 100MB)' }
           : img
       ));
-      showToast(`Error: ${filename} is too large (max 100MB)`, 'error');
+      setMessage({ type: 'error', text: `Error: ${filename} is too large (max 100MB)` });
       return;
     }
     
@@ -297,7 +296,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                           ? { ...img, state: 'error' as UploadState, error: data.error } 
                           : img
                       ));
-                      showToast(`Error processing ${filename}: ${data.error}`, 'error');
+                      setMessage({ type: 'error', text: `Error processing ${filename}: ${data.error}` });
                       if (!uploadComplete) {
                         uploadComplete = true;
                         reject(new Error(data.error));
@@ -325,7 +324,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
           ? { ...img, state: 'error' as UploadState, error: err.message || 'Network error' }
           : img
       ));
-      showToast(`Error uploading ${filename}: ${err.message || 'Network error'}`, 'error');
+      setMessage({ type: 'error', text: `Error uploading ${filename}: ${err.message || 'Network error'}` });
     }
   };
 
@@ -339,12 +338,12 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     );
 
     if (imageFiles.length === 0) {
-      showToast('No valid image files selected', 'error');
+      setMessage({ type: 'error', text: 'No valid image files selected' });
       return;
     }
 
     if (imageFiles.length < files.length) {
-      showToast(`${files.length - imageFiles.length} non-image file(s) skipped`, 'error');
+      setMessage({ type: 'error', text: `${files.length - imageFiles.length} non-image file(s) skipped` });
     }
 
     // Initialize all files as queued
@@ -526,7 +525,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     setIsMainDropZoneDragging(false);
 
     if (uploadingImages.length > 0) {
-      showToast('Upload already in progress', 'error');
+      setMessage({ type: 'error', text: 'Upload already in progress' });
       return;
     }
 
@@ -534,7 +533,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     const { files: imageFiles, folderName } = await processDroppedItems(e.dataTransfer.items);
     
     if (imageFiles.length === 0) {
-      showToast('No image files found in dropped folder', 'error');
+      setMessage({ type: 'error', text: 'No image files found in dropped folder' });
       return;
     }
 
@@ -546,7 +545,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
 
     // No album selected - try to create one from folder name
     if (!folderName) {
-      showToast('Please drag a folder or select an album first', 'error');
+      setMessage({ type: 'error', text: 'Please drag a folder or select an album first' });
       return;
     }
 
@@ -563,7 +562,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
 
       if (!res.ok) {
         const error = await res.json();
-        showToast(error.error || 'Failed to create album', 'error');
+        setMessage({ type: 'error', text: error.error || 'Failed to create album' });
         return;
       }
 
@@ -581,7 +580,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
       
     } catch (err) {
       console.error('Failed to create album:', err);
-      showToast('Failed to create album', 'error');
+      setMessage({ type: 'error', text: 'Failed to create album' });
     }
   };
 
@@ -734,6 +733,37 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                         width: `${(uploadingImages.filter(img => img.state === 'complete' || img.state === 'error').length / uploadingImages.length) * 100}%` 
                       }}
                     ></div>
+                  </div>
+                </div>
+              )}
+
+              {/* Show error summary at the top */}
+              {uploadingImages.some(img => img.state === 'error') && (
+                <div className="upload-errors-summary">
+                  <div className="errors-summary-header">
+                    <span className="error-icon">⚠️</span>
+                    <strong>Failed Uploads ({uploadingImages.filter(img => img.state === 'error').length})</strong>
+                  </div>
+                  <div className="error-files-list">
+                    {uploadingImages
+                      .filter(img => img.state === 'error')
+                      .map((img, idx) => (
+                        <div key={`error-${idx}`} className="error-file-item">
+                          <div className="error-file-info">
+                            <span className="error-filename">{img.filename}</span>
+                            <span className="error-reason">{img.error || 'Upload failed'}</span>
+                          </div>
+                          <button
+                            className="error-dismiss-btn"
+                            onClick={() => {
+                              setUploadingImages(prev => prev.filter(i => i.filename !== img.filename));
+                            }}
+                            title="Dismiss"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))}
                   </div>
                 </div>
               )}
