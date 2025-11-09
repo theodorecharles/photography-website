@@ -56,7 +56,6 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     return sessionStorage.getItem('selectedAlbum');
   });
   const [albumPhotos, setAlbumPhotos] = useState<Photo[]>([]);
-  const [photoTitles, setPhotoTitles] = useState<Record<string, string | null>>({});
   const [editingPhoto, setEditingPhoto] = useState<Photo | null>(null);
   const [editTitleValue, setEditTitleValue] = useState('');
   const [showEditModal, setShowEditModal] = useState(false);
@@ -116,8 +115,6 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
       if (res.ok) {
         const data = await res.json();
         setEditTitleValue(data.title || '');
-        // Update the cached title
-        setPhotoTitles(prev => ({ ...prev, [photo.id]: data.title || null }));
       } else {
         // No metadata exists yet, start with empty
         setEditTitleValue('');
