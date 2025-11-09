@@ -266,10 +266,14 @@
   pointer-events: none; /* Don't block button clicks */
 }
 
-/* Hide title when viewport is too narrow to prevent button overlap */
+/* On narrow screens, show title centered above buttons */
 @media (max-width: 650px) {
   .modal-image-title {
-    display: none;
+    left: 0;
+    right: 0;
+    text-align: center;
+    transform: translateY(calc(-200% - 0.75rem)); /* Move further up to be above buttons */
+    padding: 0 1rem; /* Add padding for narrow screens */
   }
 }
 
