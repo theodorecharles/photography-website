@@ -218,9 +218,9 @@ router.delete("/:album/photos/:photo", requireAuth, async (req: Request, res: Re
 });
 
 /**
- * Upload photos to an album
+ * Upload a single photo to an album
  */
-router.post("/:album/upload", requireAuth, upload.array('photos'), async (req: Request, res: Response): Promise<void> => {
+router.post("/:album/upload", requireAuth, upload.single('photo'), async (req: Request, res: Response): Promise<void> => {
   try {
     const { album } = req.params;
     
@@ -230,9 +230,9 @@ router.post("/:album/upload", requireAuth, upload.array('photos'), async (req: R
       return;
     }
 
-    const files = req.files as Express.Multer.File[];
-    if (!files || files.length === 0) {
-      res.status(400).json({ error: 'No files uploaded' });
+    const file = req.file as Express.Multer.File;
+    if (!file) {
+      res.status(400).json({ error: 'No file uploaded' });
       return;
     }
 
@@ -244,59 +244,72 @@ router.post("/:album/upload", requireAuth, upload.array('photos'), async (req: R
       return;
     }
 
-    const uploadedFiles: string[] = [];
+    const destPath = path.join(albumPath, file.originalname);
     
-    // Move files from temp to album directory
-    for (const file of files) {
-      const destPath = path.join(albumPath, file.originalname);
+    try {
+      // Use read + write to handle symlinks and cross-filesystem moves
+      const data = fs.readFileSync(file.path);
+      fs.writeFileSync(destPath, data);
+      fs.unlinkSync(file.path);
+    } catch (err) {
+      console.error(`Failed to move file ${file.originalname}:`, err);
+      // Clean up temp file if copy failed
       try {
-        // Use read + write to handle symlinks and cross-filesystem moves
-        const data = fs.readFileSync(file.path);
-        fs.writeFileSync(destPath, data);
         fs.unlinkSync(file.path);
-        uploadedFiles.push(file.originalname);
-      } catch (err) {
-        console.error(`Failed to move file ${file.originalname}:`, err);
-        // Clean up temp file if copy failed
-        try {
-          fs.unlinkSync(file.path);
-        } catch (cleanupErr) {
-          // Ignore cleanup errors
-        }
-        throw err;
+      } catch (cleanupErr) {
+        // Ignore cleanup errors
       }
+      res.status(500).json({ error: 'Failed to save file' });
+      return;
     }
 
-    // Trigger optimization in background
+    // Trigger optimization for this single image using the new script
     const projectRoot = path.resolve(__dirname, '../../../');
-    const scriptPath = path.join(projectRoot, 'optimize_images.sh');
+    const scriptPath = path.join(projectRoot, 'optimize_new_image.sh');
 
     if (fs.existsSync(scriptPath)) {
-      // Run script from project root directory using execFile to prevent command injection
-      execFile('bash', [scriptPath], { cwd: projectRoot }, (error, stdout, stderr) => {
-        if (error) {
-          console.error('Optimization error:', error);
-          if (stderr) console.error('stderr:', stderr);
-        } else {
-          console.log('Optimization complete');
-          if (stdout) console.log('stdout:', stdout);
-        }
+      // Run script synchronously to detect optimization errors
+      try {
+        await execFileAsync('bash', [scriptPath, sanitizedAlbum, file.originalname], { 
+          cwd: projectRoot,
+          timeout: 60000 // 60 second timeout
+        });
+        
+        res.json({ 
+          success: true, 
+          filename: file.originalname,
+          message: 'Photo uploaded and optimized successfully.' 
+        });
+      } catch (optimizeError: any) {
+        console.error('Optimization error:', optimizeError);
+        
+        // Check if it's a corrupt/invalid image
+        const isCorruptImage = optimizeError.stderr && 
+          (optimizeError.stderr.includes('corrupt') || 
+           optimizeError.stderr.includes('invalid') ||
+           optimizeError.stderr.includes('decode'));
+        
+        res.status(500).json({ 
+          error: isCorruptImage ? 'Image file is corrupt or invalid' : 'Failed to optimize image',
+          filename: file.originalname
+        });
+      }
+    } else {
+      // If script doesn't exist, still return success for upload
+      res.json({ 
+        success: true, 
+        filename: file.originalname,
+        message: 'Photo uploaded (optimization script not found).' 
       });
     }
-
-    res.json({ 
-      success: true, 
-      files: uploadedFiles,
-      message: 'Photos uploaded successfully. Optimization started in background.' 
-    });
   } catch (error) {
-    console.error('Error uploading photos:', error);
-    res.status(500).json({ error: 'Failed to upload photos' });
+    console.error('Error uploading photo:', error);
+    res.status(500).json({ error: 'Failed to upload photo' });
   }
 });
 
 /**
- * Trigger optimization for an album
+ * Trigger optimization for all albums
  */
 router.post("/:album/optimize", requireAuth, async (req: Request, res: Response): Promise<void> => {
   try {
@@ -310,7 +323,7 @@ router.post("/:album/optimize", requireAuth, async (req: Request, res: Response)
 
     // Get project root (two levels up from backend/src)
     const projectRoot = path.resolve(__dirname, '../../../');
-    const scriptPath = path.join(projectRoot, 'optimize_images.sh');
+    const scriptPath = path.join(projectRoot, 'optimize_all_images.sh');
 
     if (!fs.existsSync(scriptPath)) {
       res.status(500).json({ error: 'Optimization script not found' });

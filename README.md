@@ -106,11 +106,13 @@ mkdir -p photos/homepage photos/nature photos/portfolio
 4. **Optimize images**
 
 ```bash
-chmod +x optimize_images.sh
-./optimize_images.sh
+chmod +x optimize_all_images.sh
+./optimize_all_images.sh
 ```
 
-This creates three versions: thumbnail (400px), modal (1920px), download (4096px).
+This creates three versions: thumbnail (512px), modal (2048px), download (4096px).
+
+> **Note:** For single image optimization (used automatically during uploads), there's also `optimize_new_image.sh` that optimizes one image at a time.
 
 5. **Start development**
 
@@ -243,10 +245,11 @@ photography-website/
 ├── photos/              # Original photos (not in Git)
 ├── optimized/           # Generated images (not in Git)
 ├── config/
-│   └── config.json      # Main configuration
-├── optimize_images.sh   # Image optimization
-├── restart.sh          # Deployment script
-└── ecosystem.config.cjs # PM2 config
+│   └── config.json          # Main configuration
+├── optimize_all_images.sh   # Bulk image optimization
+├── optimize_new_image.sh    # Single image optimization
+├── restart.sh              # Deployment script
+└── ecosystem.config.cjs    # PM2 config
 ```
 
 ---
@@ -262,7 +265,7 @@ photography-website/
 ```bash
 mkdir photos/new-album
 cp *.jpg photos/new-album/
-./optimize_images.sh
+./optimize_all_images.sh
 ```
 
 **View logs:**
@@ -324,7 +327,7 @@ npx @redocly/cli preview-docs backend/openapi.yaml
 
 **Images not showing:**
 ```bash
-./optimize_images.sh
+./optimize_all_images.sh
 chmod -R 755 optimized/
 ```
 

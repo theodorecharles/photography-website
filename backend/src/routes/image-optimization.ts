@@ -119,7 +119,7 @@ router.post('/optimize', requireAuth, (req, res) => {
   res.write('data: {"type":"connected","message":"Connected to optimization stream"}\n\n');
   
   // Build command
-  const scriptPath = path.resolve(__dirname, '../../../optimize_images.sh');
+  const scriptPath = path.resolve(__dirname, '../../../optimize_all_images.sh');
   const args = force ? ['--force'] : [];
   
   // Check if script exists
