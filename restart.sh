@@ -66,7 +66,7 @@ fi
 
 # Run image optimization script
 log "Starting image optimization..."
-if ! ./optimize_images.sh; then
+if ! ./optimize_all_images.sh; then
     handle_error "Image optimization failed"
 fi
 
