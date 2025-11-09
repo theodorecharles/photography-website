@@ -157,13 +157,19 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
       if (res.ok) {
         const displayName = newAlbumName;
         setNewAlbumName('');
-        setMessage({ type: 'success', text: `Album "${displayName}" created!` });
         trackAlbumCreated(displayName);
         
-        // Set selected album first, then load albums
-        setSelectedAlbum(albumName);
+        // Load albums first to update the list
         await loadAlbums();
         window.dispatchEvent(new Event('albums-updated'));
+        
+        // Then select the new album after a brief delay to ensure state has settled
+        // This prevents React from deselecting it during reconciliation
+        requestAnimationFrame(() => {
+          setSelectedAlbum(albumName);
+          // Set message after selection to prevent interference
+          setMessage({ type: 'success', text: `Album "${displayName}" created!` });
+        });
       } else {
         const error = await res.json();
         setMessage({ type: 'error', text: error.error || 'Failed to create album' });
