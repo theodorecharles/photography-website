@@ -430,31 +430,77 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     }
   };
 
-  // Extract folder name from dragged files
-  const extractFolderName = (files: FileList): string | null => {
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i];
-      // Check for webkitRelativePath (when folder is dragged)
-      if (file.webkitRelativePath) {
-        const pathParts = file.webkitRelativePath.split('/');
-        if (pathParts.length > 1) {
-          return pathParts[0]; // Return the root folder name
+  // Recursively read all files from a directory entry
+  const readDirectoryRecursive = async (dirEntry: any): Promise<File[]> => {
+    const files: File[] = [];
+    const dirReader = dirEntry.createReader();
+    
+    return new Promise((resolve) => {
+      const readEntries = () => {
+        dirReader.readEntries(async (entries: any[]) => {
+          if (entries.length === 0) {
+            resolve(files);
+            return;
+          }
+
+          for (const entry of entries) {
+            if (entry.isFile) {
+              // Get the file
+              const file: File = await new Promise((resolveFile) => {
+                entry.file((f: File) => resolveFile(f));
+              });
+              
+              // Only add image files
+              if (file.type.startsWith('image/')) {
+                files.push(file);
+              }
+            } else if (entry.isDirectory) {
+              // Recursively read subdirectory
+              const subFiles = await readDirectoryRecursive(entry);
+              files.push(...subFiles);
+            }
+          }
+
+          // Read next batch of entries
+          readEntries();
+        });
+      };
+
+      readEntries();
+    });
+  };
+
+  // Process dropped items (handles folders)
+  const processDroppedItems = async (items: DataTransferItemList): Promise<{ files: File[], folderName: string | null }> => {
+    const allFiles: File[] = [];
+    let folderName: string | null = null;
+
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
+      if (item.kind === 'file') {
+        const entry = item.webkitGetAsEntry();
+        
+        if (entry) {
+          if (entry.isDirectory) {
+            // It's a folder - get the folder name
+            if (!folderName) {
+              folderName = entry.name;
+            }
+            // Recursively read all files
+            const files = await readDirectoryRecursive(entry);
+            allFiles.push(...files);
+          } else if (entry.isFile) {
+            // It's a single file
+            const file = item.getAsFile();
+            if (file && file.type.startsWith('image/')) {
+              allFiles.push(file);
+            }
+          }
         }
       }
     }
-    return null;
-  };
 
-  // Extract all image files from nested folders
-  const extractImageFiles = (files: FileList): File[] => {
-    const imageFiles: File[] = [];
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i];
-      if (file.type.startsWith('image/')) {
-        imageFiles.push(file);
-      }
-    }
-    return imageFiles;
+    return { files: allFiles, folderName };
   };
 
   const handleMainDropZoneDragOver = (e: React.DragEvent<HTMLDivElement>) => {
@@ -482,14 +528,11 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
       return;
     }
 
-    const files = e.dataTransfer.files;
-    if (!files || files.length === 0) return;
-
-    // Extract all image files
-    const imageFiles = extractImageFiles(files);
+    // Process dropped items (handles folders and files)
+    const { files: imageFiles, folderName } = await processDroppedItems(e.dataTransfer.items);
     
     if (imageFiles.length === 0) {
-      showToast('No image files found', 'error');
+      showToast('No image files found in dropped folder', 'error');
       return;
     }
 
@@ -500,10 +543,8 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     }
 
     // No album selected - try to create one from folder name
-    const folderName = extractFolderName(files);
-    
     if (!folderName) {
-      showToast('Please select an album or drag a folder with a name', 'error');
+      showToast('Please drag a folder or select an album first', 'error');
       return;
     }
 
