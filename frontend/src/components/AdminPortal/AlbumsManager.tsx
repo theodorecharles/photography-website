@@ -86,7 +86,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
 
   const loadPhotos = async (albumName: string) => {
     try {
-      const res = await fetch(`${API_URL}/api/albums/${albumName}/photos`, {
+      const res = await fetch(`${API_URL}/api/albums/${encodeURIComponent(albumName)}/photos`, {
         credentials: 'include',
       });
       const photos = await res.json();
@@ -106,7 +106,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     for (const photo of photos) {
       try {
         const filename = photo.id.split('/').pop();
-        const res = await fetch(`${API_URL}/api/image-metadata/${albumName}/${filename}`, {
+        const res = await fetch(`${API_URL}/api/image-metadata/${encodeURIComponent(albumName)}/${encodeURIComponent(filename)}`, {
           credentials: 'include',
         });
         
@@ -143,7 +143,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     const album = editingPhoto.album;
 
     try {
-      const res = await fetch(`${API_URL}/api/image-metadata/${album}/${filename}`, {
+      const res = await fetch(`${API_URL}/api/image-metadata/${encodeURIComponent(album)}/${encodeURIComponent(filename)}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -200,7 +200,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     if (!confirm(`Delete album "${albumName}" and all its photos?`)) return;
 
     try {
-      const res = await fetch(`${API_URL}/api/albums/${albumName}`, {
+      const res = await fetch(`${API_URL}/api/albums/${encodeURIComponent(albumName)}`, {
         method: 'DELETE',
         credentials: 'include',
       });
@@ -322,7 +322,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
             reject(new Error('Network error occurred'));
           });
 
-          xhr.open('POST', `${API_URL}/api/albums/${albumToUse}/upload`);
+          xhr.open('POST', `${API_URL}/api/albums/${encodeURIComponent(albumToUse)}/upload`);
           xhr.withCredentials = true;
           xhr.send(formData);
         });
@@ -598,7 +598,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     if (!confirm(`Delete this photo?`)) return;
 
     try {
-      const res = await fetch(`${API_URL}/api/albums/${album}/photos/${filename}`, {
+      const res = await fetch(`${API_URL}/api/albums/${encodeURIComponent(album)}/photos/${encodeURIComponent(filename)}`, {
         method: 'DELETE',
         credentials: 'include',
       });
