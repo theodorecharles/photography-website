@@ -219,8 +219,12 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     }
   };
 
-  const uploadSingleImage = async (file: File, filename: string, targetAlbum?: string): Promise<void> => {
+  const uploadSingleImage = async (file: File, filename: string, targetAlbum?: string, retryCount = 0): Promise<void> => {
     const albumToUse = targetAlbum || selectedAlbum;
+    const MAX_RETRIES = 3;
+    const RETRY_DELAY = 1000; // Start with 1 second
+    const SSE_TIMEOUT = 300000; // 5 minutes timeout for SSE connection
+    
     // Check file size (100MB limit)
     if (file.size > 100 * 1024 * 1024) {
       setUploadingImages(prev => prev.map(img => 
@@ -232,9 +236,15 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
       return;
     }
     
-    // Update state to uploading
+    // Update state to uploading (show retry attempt if retrying)
     setUploadingImages(prev => prev.map(img => 
-      img.filename === filename ? { ...img, state: 'uploading' as UploadState } : img
+      img.filename === filename 
+        ? { 
+            ...img, 
+            state: 'uploading' as UploadState,
+            error: retryCount > 0 ? `Retry attempt ${retryCount}/${MAX_RETRIES}` : undefined
+          } 
+        : img
     ));
 
       try {
@@ -245,9 +255,21 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
         await new Promise<void>((resolve, reject) => {
           const xhr = new XMLHttpRequest();
           let uploadComplete = false;
+          let lastActivityTime = Date.now();
+          
+          // Set up SSE timeout detection
+          const timeoutChecker = setInterval(() => {
+            const timeSinceActivity = Date.now() - lastActivityTime;
+            if (timeSinceActivity > SSE_TIMEOUT && !uploadComplete) {
+              clearInterval(timeoutChecker);
+              xhr.abort();
+              reject(new Error(`Connection timeout (no activity for ${Math.round(SSE_TIMEOUT / 1000)}s)`));
+            }
+          }, 5000); // Check every 5 seconds
           
           // Track upload progress
           xhr.upload.addEventListener('progress', (e) => {
+            lastActivityTime = Date.now();
             if (e.lengthComputable) {
               const percentComplete = Math.round((e.loaded / e.total) * 100);
               setUploadingImages(prev => prev.map(img => 
@@ -258,6 +280,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
 
           // Handle SSE response stream
           xhr.addEventListener('readystatechange', () => {
+            lastActivityTime = Date.now();
             if (xhr.readyState === XMLHttpRequest.LOADING || xhr.readyState === XMLHttpRequest.DONE) {
               const responseText = xhr.responseText;
               const lines = responseText.split('\n');
@@ -289,6 +312,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                       ));
                     } else if (data.type === 'complete') {
                       // Optimization complete (in background)
+                      clearInterval(timeoutChecker);
                       const thumbnailUrl = `${API_URL}/optimized/thumbnail/${albumToUse}/${filename}?i=${Date.now()}`;
                       setUploadingImages(prev => prev.map(img => 
                         img.filename === filename 
@@ -298,6 +322,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                       trackPhotoUploaded(albumToUse!, 1, [filename]);
                     } else if (data.type === 'error') {
                       // Error occurred
+                      clearInterval(timeoutChecker);
                       setUploadingImages(prev => prev.map(img => 
                         img.filename === filename 
                           ? { ...img, state: 'error' as UploadState, error: data.error } 
@@ -317,11 +342,38 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
             }
           });
 
+          // Handle network errors
           xhr.addEventListener('error', () => {
-            reject(new Error('Network error occurred'));
+            clearInterval(timeoutChecker);
+            const statusText = xhr.status ? `HTTP ${xhr.status}` : 'Network connection failed';
+            reject(new Error(`${statusText} - Unable to reach server`));
+          });
+          
+          // Handle abort
+          xhr.addEventListener('abort', () => {
+            clearInterval(timeoutChecker);
+            reject(new Error('Connection aborted'));
+          });
+          
+          // Handle HTTP errors
+          xhr.addEventListener('load', () => {
+            if (xhr.status >= 400 && xhr.status < 600) {
+              clearInterval(timeoutChecker);
+              let errorMsg = `HTTP ${xhr.status}`;
+              try {
+                const errorData = JSON.parse(xhr.responseText);
+                if (errorData.error) {
+                  errorMsg += `: ${errorData.error}`;
+                }
+              } catch (e) {
+                errorMsg += `: ${xhr.statusText || 'Server error'}`;
+              }
+              reject(new Error(errorMsg));
+            }
           });
 
           if (!albumToUse) {
+            clearInterval(timeoutChecker);
             reject(new Error('No album selected'));
             return;
           }
@@ -331,12 +383,33 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
           xhr.send(formData);
         });
     } catch (err: any) {
+      // Check if we should retry
+      const isRetryable = err.message?.includes('timeout') || 
+                          err.message?.includes('Network connection failed') ||
+                          err.message?.includes('Connection aborted') ||
+                          err.message?.includes('Unable to reach server');
+      
+      if (isRetryable && retryCount < MAX_RETRIES) {
+        // Wait before retrying (exponential backoff)
+        const delay = RETRY_DELAY * Math.pow(2, retryCount);
+        console.log(`Retrying ${filename} in ${delay}ms (attempt ${retryCount + 1}/${MAX_RETRIES})`);
+        setMessage({ type: 'info', text: `Retrying ${filename} in ${Math.round(delay / 1000)}s...` });
+        
+        await new Promise(resolve => setTimeout(resolve, delay));
+        return uploadSingleImage(file, filename, targetAlbum, retryCount + 1);
+      }
+      
+      // Max retries exceeded or non-retryable error
+      const errorMsg = retryCount >= MAX_RETRIES 
+        ? `${err.message || 'Network error'} (failed after ${MAX_RETRIES} retries)`
+        : err.message || 'Network error';
+        
       setUploadingImages(prev => prev.map(img => 
         img.filename === filename 
-          ? { ...img, state: 'error' as UploadState, error: err.message || 'Network error' }
+          ? { ...img, state: 'error' as UploadState, error: errorMsg }
           : img
       ));
-      setMessage({ type: 'error', text: `Error uploading ${filename}: ${err.message || 'Network error'}` });
+      setMessage({ type: 'error', text: `Error uploading ${filename}: ${errorMsg}` });
     }
   };
 
