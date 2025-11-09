@@ -146,7 +146,7 @@ function Navigation({
       {currentAlbum && currentAlbum.length > 0 && (
         <div className="nav-center">
           <h1 className="album-title">
-            {currentAlbum.charAt(0).toUpperCase() + currentAlbum.slice(1)}
+            {currentAlbum}
           </h1>
         </div>
       )}
@@ -187,7 +187,7 @@ function Navigation({
                     trackAlbumNavigation(album, 'header');
                   }}
                 >
-                  {album.charAt(0).toUpperCase() + album.slice(1)}
+                  {album}
                 </Link>
               ))}
             </div>
