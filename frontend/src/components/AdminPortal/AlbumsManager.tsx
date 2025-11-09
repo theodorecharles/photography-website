@@ -4,6 +4,7 @@
  */
 
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Album, Photo } from './types';
 import { 
   trackAlbumCreated,
@@ -440,12 +441,11 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
         </div>
       </section>
 
-      {/* Edit Title Modal - Try without Portal first to see if that's the issue */}
-      {showEditModal && editingPhoto && (
+      {/* Edit Title Modal - Use Portal to escape admin-container z-index stacking context */}
+      {showEditModal && editingPhoto && createPortal(
         <div 
           className="modal-backdrop" 
           onClick={handleCloseEditModal}
-          data-modal-open="true"
         >
           <div className="edit-modal" onClick={(e) => e.stopPropagation()}>
             <div className="edit-modal-header">
@@ -506,7 +506,8 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );
