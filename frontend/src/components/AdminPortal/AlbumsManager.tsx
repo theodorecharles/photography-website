@@ -4,6 +4,7 @@
  */
 
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Album, Photo } from './types';
 import { 
   trackAlbumCreated,
@@ -461,8 +462,8 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
         </div>
       </section>
 
-      {/* Edit Title Modal */}
-      {showEditModal && editingPhoto && (
+      {/* Edit Title Modal - Rendered via Portal to avoid iOS positioning issues */}
+      {showEditModal && editingPhoto && createPortal(
         <div 
           className="modal-backdrop" 
           onClick={handleCloseEditModal}
@@ -528,7 +529,8 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );
