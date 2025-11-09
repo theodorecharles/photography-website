@@ -308,15 +308,13 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     // Wait for all uploads to complete
     await Promise.all(uploadPromises);
 
+    // Clear uploading images immediately before reload to prevent duplicates
+    setUploadingImages([]);
+
     // Reload photos after all uploads complete
     if (selectedAlbum) {
       await loadPhotos(selectedAlbum);
     }
-    
-    // Clear uploading images after a brief delay to show final state
-    setTimeout(() => {
-      setUploadingImages([]);
-    }, 2000);
     
     setMessage({ type: 'success', text: `Upload complete! Processed ${newUploadingImages.length} image(s)` });
   };
