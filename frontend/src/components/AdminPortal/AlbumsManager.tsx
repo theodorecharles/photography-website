@@ -151,7 +151,6 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
       });
 
       if (res.ok) {
-        setPhotoTitles(prev => ({ ...prev, [editingPhoto.id]: editTitleValue || null }));
         setMessage({ type: 'success', text: 'Title updated successfully!' });
         handleCloseEditModal();
       } else {
