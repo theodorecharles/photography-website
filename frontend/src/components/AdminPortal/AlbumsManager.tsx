@@ -106,6 +106,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     for (const photo of photos) {
       try {
         const filename = photo.id.split('/').pop();
+        if (!filename) continue;
         const res = await fetch(`${API_URL}/api/image-metadata/${encodeURIComponent(albumName)}/${encodeURIComponent(filename)}`, {
           credentials: 'include',
         });
@@ -141,6 +142,11 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
 
     const filename = editingPhoto.id.split('/').pop();
     const album = editingPhoto.album;
+
+    if (!filename) {
+      setMessage({ type: 'error', text: 'Invalid photo filename' });
+      return;
+    }
 
     try {
       const res = await fetch(`${API_URL}/api/image-metadata/${encodeURIComponent(album)}/${encodeURIComponent(filename)}`, {
@@ -321,6 +327,11 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
           xhr.addEventListener('error', () => {
             reject(new Error('Network error occurred'));
           });
+
+          if (!albumToUse) {
+            reject(new Error('No album selected'));
+            return;
+          }
 
           xhr.open('POST', `${API_URL}/api/albums/${encodeURIComponent(albumToUse)}/upload`);
           xhr.withCredentials = true;
