@@ -45,54 +45,49 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     }
   }, [selectedAlbum]);
 
-  // Debug: Show toast when modal state changes and check DOM
+  // Debug: Show toast when modal state changes and check DOM - all info in one toast
   useEffect(() => {
     if (showEditModal && editingPhoto) {
-      setMessage({ type: 'success', text: `State: showEditModal=${showEditModal}, photo=${editingPhoto.id}` });
-      
-      // Check if modal is in DOM after a short delay
+      // Wait a bit for React to render, then collect all info
       setTimeout(() => {
         const modal = document.querySelector('.modal-backdrop');
         const modalInBody = document.body.querySelector('.modal-backdrop');
         const modalInRoot = document.getElementById('root')?.querySelector('.modal-backdrop');
+        const viewportHeight = window.innerHeight;
+        const viewportWidth = window.innerWidth;
         
-        let debugInfo = `DOM Check:\n`;
-        debugInfo += `In document: ${!!modal}\n`;
-        debugInfo += `In body: ${!!modalInBody}\n`;
-        debugInfo += `In root: ${!!modalInRoot}\n`;
+        let debugInfo = `=== MODAL DEBUG ===\n`;
+        debugInfo += `State: showEditModal=${showEditModal}\n`;
+        debugInfo += `Photo: ${editingPhoto.id}\n\n`;
+        debugInfo += `DOM Location:\n`;
+        debugInfo += `  In document: ${!!modal}\n`;
+        debugInfo += `  In body: ${!!modalInBody}\n`;
+        debugInfo += `  In root: ${!!modalInRoot}\n\n`;
         
         if (modal) {
           const rect = (modal as HTMLElement).getBoundingClientRect();
           const styles = window.getComputedStyle(modal as Element);
-          debugInfo += `Position: ${rect.top},${rect.left}\n`;
-          debugInfo += `Size: ${rect.width}x${rect.height}\n`;
-          debugInfo += `Display: ${styles.display}\n`;
-          debugInfo += `Visibility: ${styles.visibility}\n`;
-          debugInfo += `Opacity: ${styles.opacity}\n`;
-          debugInfo += `Z-index: ${styles.zIndex}\n`;
-          debugInfo += `Position: ${styles.position}`;
+          debugInfo += `Position & Size:\n`;
+          debugInfo += `  Top: ${rect.top}, Left: ${rect.left}\n`;
+          debugInfo += `  Width: ${rect.width}, Height: ${rect.height}\n`;
+          debugInfo += `  Viewport: ${viewportWidth}x${viewportHeight}\n\n`;
+          debugInfo += `CSS Properties:\n`;
+          debugInfo += `  Display: ${styles.display}\n`;
+          debugInfo += `  Visibility: ${styles.visibility}\n`;
+          debugInfo += `  Opacity: ${styles.opacity}\n`;
+          debugInfo += `  Z-index: ${styles.zIndex}\n`;
+          debugInfo += `  Position: ${styles.position}\n`;
+          debugInfo += `  Top: ${styles.top}\n`;
+          debugInfo += `  Left: ${styles.left}\n`;
+          debugInfo += `  Width: ${styles.width}\n`;
+          debugInfo += `  Height: ${styles.height}`;
           
           setMessage({ type: 'success', text: debugInfo });
         } else {
-          setMessage({ type: 'error', text: debugInfo + '\nModal NOT in DOM!' });
+          debugInfo += `❌ Modal NOT found in DOM!`;
+          setMessage({ type: 'error', text: debugInfo });
         }
-      }, 300);
-      
-      // Check again after longer delay
-      setTimeout(() => {
-        const modal = document.querySelector('.modal-backdrop');
-        if (modal) {
-          const rect = (modal as HTMLElement).getBoundingClientRect();
-          const viewportHeight = window.innerHeight;
-          const viewportWidth = window.innerWidth;
-          setMessage({ 
-            type: 'success', 
-            text: `After 1s: Modal at ${rect.top},${rect.left}\nViewport: ${viewportWidth}x${viewportHeight}\nModal: ${rect.width}x${rect.height}` 
-          });
-        } else {
-          setMessage({ type: 'error', text: 'After 1s: Modal still NOT in DOM!' });
-        }
-      }, 1000);
+      }, 500);
     }
   }, [showEditModal, editingPhoto]);
 
@@ -137,15 +132,9 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   };
 
   const handleOpenEditModal = (photo: Photo) => {
-    setMessage({ type: 'success', text: `Opening modal for: ${photo.id}` });
     setEditingPhoto(photo);
     setEditTitleValue(photoTitles[photo.id] || '');
     setShowEditModal(true);
-    
-    // Check state immediately after setting
-    setTimeout(() => {
-      setMessage({ type: 'success', text: `State set! showEditModal should be true now` });
-    }, 50);
   };
 
   const handleCloseEditModal = () => {
@@ -454,18 +443,12 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                             onClick={(e) => {
                               e.stopPropagation();
                               e.preventDefault();
-                              setMessage({ type: 'success', text: 'Edit button onClick fired!' });
                               handleOpenEditModal(photo);
-                            }}
-                            onTouchStart={(e) => {
-                              e.stopPropagation();
-                              setMessage({ type: 'success', text: 'Edit button onTouchStart fired!' });
                             }}
                             onTouchEnd={(e) => {
                               // Handle touch events for iOS Safari
                               e.stopPropagation();
                               e.preventDefault();
-                              setMessage({ type: 'success', text: 'Edit button onTouchEnd fired!' });
                               handleOpenEditModal(photo);
                             }}
                             className="btn-edit-photo"
