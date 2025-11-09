@@ -25,11 +25,11 @@
 
 .modal-content {
   position: relative;
-  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 0;
+  pointer-events: none; /* Let clicks pass through to backdrop */
 }
 
 .modal-container {
@@ -38,6 +38,7 @@
   height: 100%;
   max-width: calc(-30px + 100vw);
   max-height: calc(-100px + 100vh);
+  pointer-events: auto; /* Re-enable pointer events for actual content */
 }
 
 /* Image container - nearly full screen with gaps for controls */
