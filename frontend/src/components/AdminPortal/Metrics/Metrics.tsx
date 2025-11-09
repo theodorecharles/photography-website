@@ -60,6 +60,18 @@ export default function Metrics() {
     .getPropertyValue('--secondary-color')
     .trim() || '#3b82f6';
 
+  // Helper function to normalize album names from old lowercase to new capitalized format
+  const normalizeAlbumName = (albumName: string): string => {
+    const albumMap: Record<string, string> = {
+      'animals': 'Animals',
+      'people': 'People',
+      'nature': 'Nature',
+      'japan': 'Japan',
+      'random': 'Random'
+    };
+    return albumMap[albumName.toLowerCase()] || albumName;
+  };
+
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -560,7 +572,9 @@ export default function Metrics() {
                   <tbody>
                     {stats.topPicturesByDuration.map((picture, index) => {
                       // Extract album and photo name from photo_id (e.g., "people/08053-00001.jpg")
-                      const [albumName, photoName] = picture.photo_id.split('/');
+                      const [rawAlbumName, photoName] = picture.photo_id.split('/');
+                      // Normalize album name to handle old lowercase data
+                      const albumName = normalizeAlbumName(rawAlbumName);
                       const photoUrl = `/album/${albumName}?photo=${encodeURIComponent(photoName)}`;
                       const thumbnailUrl = `${API_URL}/photos/${albumName}/${photoName}`;
                       const expanded = isRowExpanded('pictures', index);

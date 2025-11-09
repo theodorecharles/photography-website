@@ -136,6 +136,13 @@
   color: #6b7280;
 }
 
+/* Hide drop zone on mobile/iPhone */
+@media (max-width: 1024px) {
+  .main-drop-zone {
+    display: none;
+  }
+}
+
 .drop-zone-icon {
   font-size: 3.5rem;
   opacity: 0.9;
@@ -419,6 +426,15 @@
 
 .upload-btn {
   cursor: pointer;
+  /* Hide upload button on desktop */
+  display: none;
+}
+
+/* Show upload button only on mobile/tablet */
+@media (max-width: 1024px) {
+  .upload-btn {
+    display: inline-block;
+  }
 }
 
 .upload-btn:disabled {
