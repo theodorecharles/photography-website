@@ -50,22 +50,12 @@ function initDatabase() {
   return db;
 }
 
-async function generateImageTitle(openai, thumbnailPath, album, filename, db, existingTitles) {
+async function generateImageTitle(openai, thumbnailPath, album, filename, db) {
   try {
-    // Check if title already exists (in-memory lookup)
-    const key = `${album}:${filename}`;
-    if (existingTitles.has(key)) {
-      console.log(`Skipping ${album}/${filename} - already has title`);
-      skippedCount++;
-      return null;
-    }
-    
     // Read the thumbnail image and convert to base64
     const imageBuffer = fs.readFileSync(thumbnailPath);
     const base64Image = imageBuffer.toString('base64');
     const mimeType = thumbnailPath.endsWith('.png') ? 'image/png' : 'image/jpeg';
-    
-    console.log(`Generating title for: ${album}/${filename}`);
     
     // Call OpenAI Vision API
     const response = await openai.chat.completions.create({
@@ -94,7 +84,7 @@ async function generateImageTitle(openai, thumbnailPath, album, filename, db, ex
     let title = response.choices[0]?.message?.content?.trim();
     
     if (!title) {
-      console.error(`Failed to generate title for ${album}/${filename}`);
+      console.error(`  ✗ Failed to generate title (empty response)`);
       errorCount++;
       return null;
     }
@@ -115,12 +105,12 @@ async function generateImageTitle(openai, thumbnailPath, album, filename, db, ex
     
     stmt.run(album, filename, title);
     
-    console.log(`✓ Generated: "${title}"`);
+    console.log(`  ✓ "${title}"`);
     processedCount++;
     
     return title;
   } catch (error) {
-    console.error(`Error processing ${album}/${filename}:`, error.message);
+    console.error(`  ✗ Error:`, error.message);
     errorCount++;
     return null;
   }
@@ -165,19 +155,47 @@ async function scanAndGenerateTitles() {
     .map(dirent => dirent.name);
   
   console.log(`Found ${albums.length} albums`);
-  console.log('Starting AI title generation...\n');
+  console.log('Scanning for images that need titles...\n');
   
-  // Process each album
+  // First pass: identify all images that need titles
+  const imagesToProcess = [];
+  
   for (const album of albums) {
     const albumPath = path.join(thumbnailDir, album);
     const images = fs.readdirSync(albumPath)
       .filter(file => /\.(jpg|jpeg|png)$/i.test(file));
     
-    console.log(`\nProcessing album: ${album} (${images.length} images)`);
-    
     for (const filename of images) {
-      const thumbnailPath = path.join(albumPath, filename);
-      await generateImageTitle(openai, thumbnailPath, album, filename, db, existingTitles);
+      const key = `${album}:${filename}`;
+      if (existingTitles.has(key)) {
+        skippedCount++;
+      } else {
+        const thumbnailPath = path.join(albumPath, filename);
+        imagesToProcess.push({ album, filename, thumbnailPath });
+      }
+    }
+  }
+  
+  console.log(`✓ Found ${imagesToProcess.length} images that need titles (skipping ${skippedCount} with existing titles)`);
+  
+  if (imagesToProcess.length === 0) {
+    console.log('\nNo images to process!');
+    db.close();
+    return;
+  }
+  
+  console.log('\nStarting AI title generation...\n');
+  
+  // Second pass: generate titles for images that need them
+  for (let i = 0; i < imagesToProcess.length; i++) {
+    const { album, filename, thumbnailPath } = imagesToProcess[i];
+    console.log(`[${i + 1}/${imagesToProcess.length}] Processing: ${album}/${filename}`);
+    
+    await generateImageTitle(openai, thumbnailPath, album, filename, db);
+    
+    // Add delay between API calls to avoid rate limiting
+    if (i < imagesToProcess.length - 1) {
+      await new Promise(resolve => setTimeout(resolve, 500));
     }
   }
   
