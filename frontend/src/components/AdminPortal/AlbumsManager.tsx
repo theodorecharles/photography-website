@@ -638,18 +638,20 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
             </div>
 
             <div 
-              className={`main-drop-zone ${isMainDropZoneDragging ? 'dragging' : ''}`}
-              onDragOver={handleMainDropZoneDragOver}
-              onDragLeave={handleMainDropZoneDragLeave}
-              onDrop={handleMainDropZoneDrop}
+              className={`main-drop-zone ${isMainDropZoneDragging ? 'dragging' : ''} ${uploadingImages.length > 0 ? 'disabled' : ''}`}
+              onDragOver={uploadingImages.length > 0 ? undefined : handleMainDropZoneDragOver}
+              onDragLeave={uploadingImages.length > 0 ? undefined : handleMainDropZoneDragLeave}
+              onDrop={uploadingImages.length > 0 ? undefined : handleMainDropZoneDrop}
             >
               <div className="drop-zone-icon">📁</div>
               <div className="drop-zone-text">
-                <strong>Drop folder here</strong>
+                <strong>{uploadingImages.length > 0 ? 'Upload in progress...' : 'Drop folder here'}</strong>
                 <span className="drop-zone-hint">
-                  {selectedAlbum 
-                    ? `Add images to "${selectedAlbum}"` 
-                    : 'Create album from folder name'}
+                  {uploadingImages.length > 0 
+                    ? 'Please wait for current upload to complete'
+                    : selectedAlbum 
+                      ? `Add images to "${selectedAlbum}"` 
+                      : 'Create album from folder name'}
                 </span>
               </div>
             </div>
@@ -690,10 +692,10 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
 
           {selectedAlbum && (
             <div 
-              className={`album-photos ${isDragging ? 'drag-over' : ''}`}
-              onDragOver={handleDragOver}
-              onDragLeave={handleDragLeave}
-              onDrop={handleDrop}
+              className={`album-photos ${isDragging ? 'drag-over' : ''} ${uploadingImages.length > 0 ? 'upload-disabled' : ''}`}
+              onDragOver={uploadingImages.length > 0 ? undefined : handleDragOver}
+              onDragLeave={uploadingImages.length > 0 ? undefined : handleDragLeave}
+              onDrop={uploadingImages.length > 0 ? undefined : handleDrop}
             >
               <div className="photos-header">
                 <h3>Photos in "{selectedAlbum}"</h3>
