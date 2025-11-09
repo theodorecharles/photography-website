@@ -444,7 +444,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
       {/* Edit Title Modal - Use Portal to escape admin-container z-index stacking context */}
       {showEditModal && editingPhoto && createPortal(
         <div 
-          className="modal-backdrop" 
+          className="edit-title-modal" 
           onClick={handleCloseEditModal}
         >
           <div className="edit-modal" onClick={(e) => e.stopPropagation()}>
