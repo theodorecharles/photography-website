@@ -457,13 +457,13 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                   Filename: <span className="filename-display">{editingPhoto.id.split('/').pop()}</span>
                 </label>
                 
-                <label className="edit-modal-label">AI Title</label>
+                <label className="edit-modal-label">Title</label>
                 <input
                   type="text"
                   value={editTitleValue}
                   onChange={(e) => setEditTitleValue(e.target.value)}
                   className="edit-modal-input"
-                  placeholder="Enter AI title..."
+                  placeholder="Enter title..."
                   autoFocus
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') {
