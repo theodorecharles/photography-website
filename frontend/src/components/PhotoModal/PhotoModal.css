@@ -36,8 +36,8 @@
   position: relative;
   width: 100%;
   height: 100%;
-  max-width: calc(-30px + 100vw);
-  max-height: calc(-100px + 100vh);
+  max-width: calc(100vw - 20px);
+  max-height: calc(100vh - 100px);
   pointer-events: auto; /* Re-enable pointer events for actual content */
 }
 
@@ -46,8 +46,8 @@
   position: relative;
   width: 100%;
   height: 100%;
-  max-width: calc(-30px + 100vw); /* 40px gap on each side */
-  max-height: calc(-100px + 100vh); /* 80px gap on top and bottom for controls */
+  max-width: calc(100vw - 20px); /* 10px gap on each side */
+  max-height: calc(100vh - 100px); /* Gap on top and bottom for controls */
   display: flex;
   flex-direction: column;
 }
