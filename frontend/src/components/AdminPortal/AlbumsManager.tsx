@@ -318,9 +318,6 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     const files = e.target.files;
     if (!files || !selectedAlbum) return;
 
-    // Save scroll position before upload
-    const scrollPosition = window.scrollY;
-
     // Initialize all files as queued
     const newUploadingImages: UploadingImage[] = Array.from(files).map(file => ({
       file,
@@ -370,11 +367,6 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
 
     // Clear uploading images after reload to prevent duplicates
     setUploadingImages([]);
-
-    // Restore scroll position to prevent jump
-    requestAnimationFrame(() => {
-      window.scrollTo({ top: scrollPosition, behavior: 'instant' });
-    });
     
     setMessage({ type: 'success', text: `Upload complete! Processed ${newUploadingImages.length} image(s)` });
   };
