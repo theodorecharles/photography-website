@@ -302,6 +302,14 @@ router.post("/:album/upload", requireAuth, upload.single('photo'), async (req: R
           }
         });
       });
+      
+      // Log stderr for debugging
+      child.stderr.on('data', (data) => {
+        const errorOutput = data.toString().trim();
+        if (errorOutput) {
+          console.error(`[${sanitizedAlbum}/${file.originalname}] Optimization stderr:`, errorOutput);
+        }
+      });
 
       // Handle completion
       child.on('close', (code) => {
