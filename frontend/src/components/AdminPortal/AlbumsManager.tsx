@@ -282,8 +282,8 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
               img.filename === filename ? { ...img, optimizeProgress } : img
             ));
             
-            // If all files exist, we're done
-            if (downloadExists) {
+            // Only mark as complete if ALL THREE files exist
+            if (thumbExists && modalExists && downloadExists) {
               const thumbnailUrl = `${API_URL}/optimized/thumbnail/${selectedAlbum}/${filename}?i=${Date.now()}`;
               
               setUploadingImages(prev => prev.map(img => 
