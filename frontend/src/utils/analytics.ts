@@ -23,20 +23,45 @@ interface AnalyticsEvent {
 }
 
 let analyticsEnabled = false;
+let eventQueue: AnalyticsEvent[] = [];
+let flushTimer: ReturnType<typeof setTimeout> | null = null;
+const FLUSH_INTERVAL = 5000; // 5 seconds
+const BATCH_SIZE = 20; // events
 
 /**
  * Initialize analytics
  */
 export function initAnalytics(enabled: boolean) {
   analyticsEnabled = enabled;
+
+  if (enabled) {
+    // Flush events when page is being unloaded
+    window.addEventListener('beforeunload', () => {
+      flushQueue(true);
+    });
+
+    // Flush events when page visibility changes (e.g., user switches tabs or minimizes)
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'hidden') {
+        flushQueue(true);
+      }
+    });
+
+    // Flush events on page freeze (mobile browsers)
+    window.addEventListener('pagehide', () => {
+      flushQueue(true);
+    });
+  }
 }
 
 /**
  * Get base event data that's common to all events
  */
 function getBaseEventData(): Partial<AnalyticsEvent> {
+  const timestamp = new Date().toISOString();
   return {
-    timestamp: new Date().toISOString(),
+    timestamp,
+    _timestamp: Date.now() * 1000000, // OpenObserve expects nanoseconds for timestamp override
     page_url: window.location.href,
     page_path: window.location.pathname,
     referrer: document.referrer || 'direct',
@@ -49,10 +74,64 @@ function getBaseEventData(): Partial<AnalyticsEvent> {
 }
 
 /**
- * Send an event to the backend API which forwards to OpenObserve
- * The backend validates the request origin to prevent unauthorized tracking
+ * Flush the event queue by sending all queued events to the backend
  */
-async function sendEvent(eventData: Partial<AnalyticsEvent>) {
+async function flushQueue(useBeacon = false): Promise<void> {
+  if (eventQueue.length === 0) {
+    return;
+  }
+
+  // Take all events from the queue
+  const eventsToSend = [...eventQueue];
+  eventQueue = [];
+
+  // Clear the flush timer if it exists
+  if (flushTimer) {
+    clearTimeout(flushTimer);
+    flushTimer = null;
+  }
+
+  try {
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+    };
+    
+    // Use sendBeacon for page unload if available, otherwise use fetch
+    if (useBeacon && navigator.sendBeacon) {
+      const blob = new Blob([JSON.stringify(eventsToSend)], { type: 'application/json' });
+      navigator.sendBeacon(`${API_URL}/api/analytics/track`, blob);
+    } else {
+      await fetch(`${API_URL}/api/analytics/track`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(eventsToSend),
+        credentials: 'include', // Include cookies for session-based validation
+        keepalive: useBeacon, // Keep request alive during page unload
+      });
+    }
+  } catch (error) {
+    // Silently fail - don't break the app if analytics fails
+    console.debug('Analytics tracking failed:', error);
+  }
+}
+
+/**
+ * Schedule a flush of the event queue
+ */
+function scheduleFlush() {
+  if (flushTimer) {
+    return; // Timer already scheduled
+  }
+
+  flushTimer = setTimeout(() => {
+    flushQueue();
+  }, FLUSH_INTERVAL);
+}
+
+/**
+ * Queue an event and flush if needed
+ */
+async function queueEvent(eventData: Partial<AnalyticsEvent>) {
   if (!analyticsEnabled) {
     return;
   }
@@ -62,22 +141,23 @@ async function sendEvent(eventData: Partial<AnalyticsEvent>) {
     ...eventData,
   } as AnalyticsEvent;
 
-  try {
-    const payload = JSON.stringify([event]);
-    const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
-    };
-    
-    await fetch(`${API_URL}/api/analytics/track`, {
-      method: 'POST',
-      headers,
-      body: payload,
-      credentials: 'include', // Include cookies for session-based validation
-    });
-  } catch (error) {
-    // Silently fail - don't break the app if analytics fails
-    console.debug('Analytics tracking failed:', error);
+  eventQueue.push(event);
+
+  // Flush immediately if we've reached the batch size
+  if (eventQueue.length >= BATCH_SIZE) {
+    await flushQueue();
+  } else {
+    // Schedule a flush if not already scheduled
+    scheduleFlush();
   }
+}
+
+/**
+ * Send an event (now queued for batching)
+ * The backend validates the request origin to prevent unauthorized tracking
+ */
+async function sendEvent(eventData: Partial<AnalyticsEvent>) {
+  return queueEvent(eventData);
 }
 
 /**
