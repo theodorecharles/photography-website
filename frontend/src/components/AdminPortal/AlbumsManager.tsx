@@ -3,7 +3,7 @@
  * Manages photo albums, photo uploads, and image optimization settings
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { Album, Photo } from './types';
 import { 
@@ -42,6 +42,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   setMessage,
 }) => {
   const [uploadingImages, setUploadingImages] = useState<UploadingImage[]>([]);
+  const uploadingImagesRef = useRef<UploadingImage[]>([]);
   const [newAlbumName, setNewAlbumName] = useState('');
   const [selectedAlbum, setSelectedAlbum] = useState<string | null>(null);
   const [albumPhotos, setAlbumPhotos] = useState<Photo[]>([]);
@@ -49,6 +50,11 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   const [editingPhoto, setEditingPhoto] = useState<Photo | null>(null);
   const [editTitleValue, setEditTitleValue] = useState('');
   const [showEditModal, setShowEditModal] = useState(false);
+
+  // Keep ref in sync with state
+  useEffect(() => {
+    uploadingImagesRef.current = uploadingImages;
+  }, [uploadingImages]);
 
   // Load photos when album is selected
   useEffect(() => {
@@ -346,13 +352,36 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     // Clear the input
     e.target.value = '';
 
-    // Upload all files in parallel
-    const uploadPromises = newUploadingImages.map(img => uploadSingleImage(img.file, img.filename));
-    
-    // Wait for all uploads to complete
-    await Promise.all(uploadPromises);
+    // Upload files sequentially (one at a time)
+    // But let optimizations run in parallel in the background
+    for (const img of newUploadingImages) {
+      await uploadSingleImage(img.file, img.filename);
+      // Note: uploadSingleImage starts optimization in background (non-blocking)
+      // So multiple optimizations can run simultaneously while we upload the next file
+    }
 
-    // Reload photos after all uploads complete
+    // Wait for all optimizations to complete
+    // Check every second until all images are done (complete or error)
+    await new Promise<void>((resolve) => {
+      const checkComplete = setInterval(() => {
+        const allDone = uploadingImagesRef.current.every(img => 
+          img.state === 'complete' || img.state === 'error'
+        );
+        
+        if (allDone) {
+          clearInterval(checkComplete);
+          resolve();
+        }
+      }, 1000);
+      
+      // Timeout after 2 minutes
+      setTimeout(() => {
+        clearInterval(checkComplete);
+        resolve();
+      }, 120000);
+    });
+
+    // Reload photos after all uploads and optimizations complete
     if (selectedAlbum) {
       await loadPhotos(selectedAlbum);
     }
