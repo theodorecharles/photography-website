@@ -146,6 +146,23 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
             cssRulesInfo = '\n(Could not check CSS rules)';
           }
           
+          // Check parent elements
+          let parentInfo = '';
+          let current: HTMLElement | null = modal.parentElement;
+          let depth = 0;
+          while (current && depth < 5) {
+            const parentStyles = window.getComputedStyle(current);
+            parentInfo += `\nParent ${depth}: ${current.tagName}.${current.className}\n`;
+            parentInfo += `  Display: ${parentStyles.display}\n`;
+            parentInfo += `  Visibility: ${parentStyles.visibility}\n`;
+            parentInfo += `  Opacity: ${parentStyles.opacity}\n`;
+            if (parentStyles.display === 'none') {
+              parentInfo += `  ⚠️ PARENT IS HIDING MODAL!\n`;
+            }
+            current = current.parentElement;
+            depth++;
+          }
+          
           debugInfo += `CSS Properties:\n`;
           debugInfo += `  Display: ${styles.display}\n`;
           debugInfo += `  Visibility: ${styles.visibility}\n`;
@@ -154,6 +171,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
           debugInfo += `  Position: ${styles.position}\n`;
           debugInfo += `  Inline style: ${inlineStyle.substring(0, 150)}`;
           debugInfo += `\n\nMatching CSS Rules:${cssRulesInfo}`;
+          debugInfo += `\n\nParent Elements:${parentInfo}`;
           
           setMessage({ type: 'success', text: debugInfo });
         } else {
