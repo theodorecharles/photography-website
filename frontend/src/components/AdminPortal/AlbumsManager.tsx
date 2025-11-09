@@ -146,11 +146,12 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     if (!newAlbumName.trim()) return;
 
     try {
+      const albumName = newAlbumName.toLowerCase().trim();
       const res = await fetch(`${API_URL}/api/albums`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ name: newAlbumName.toLowerCase().trim() }),
+        body: JSON.stringify({ name: albumName }),
       });
 
       if (res.ok) {
@@ -158,6 +159,8 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
         setMessage({ type: 'success', text: `Album "${newAlbumName}" created!` });
         trackAlbumCreated(newAlbumName);
         await loadAlbums();
+        // Auto-select the newly created album
+        setSelectedAlbum(albumName);
         window.dispatchEvent(new Event('albums-updated'));
       } else {
         const error = await res.json();
