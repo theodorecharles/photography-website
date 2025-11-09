@@ -25,11 +25,11 @@
 
 .modal-content {
   position: relative;
-  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 0;
+  pointer-events: none; /* Let clicks pass through to backdrop */
 }
 
 .modal-container {
@@ -38,6 +38,7 @@
   height: 100%;
   max-width: calc(-30px + 100vw);
   max-height: calc(-100px + 100vh);
+  pointer-events: auto; /* Re-enable pointer events for actual content */
 }
 
 /* Image container - nearly full screen with gaps for controls */
@@ -266,10 +267,16 @@
   pointer-events: none; /* Don't block button clicks */
 }
 
-/* Hide title when viewport is too narrow to prevent button overlap */
+/* On narrow screens, show title centered above buttons - halfway to header */
 @media (max-width: 650px) {
   .modal-image-title {
-    display: none;
+    left: 0;
+    right: 0;
+    text-align: center;
+    top: auto;
+    bottom: 100%; /* Start at top of image */
+    transform: translateY(-3rem); /* Move up to midpoint between buttons and header */
+    padding: 0 1rem; /* Add padding for narrow screens */
   }
 }
 
