@@ -393,7 +393,8 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
         // Wait before retrying (exponential backoff)
         const delay = RETRY_DELAY * Math.pow(2, retryCount);
         console.log(`Retrying ${filename} in ${delay}ms (attempt ${retryCount + 1}/${MAX_RETRIES})`);
-        setMessage({ type: 'info', text: `Retrying ${filename} in ${Math.round(delay / 1000)}s...` });
+        // Note: Using 'success' type for retry message since 'info' type doesn't exist
+        setMessage({ type: 'success', text: `Retrying ${filename} in ${Math.round(delay / 1000)}s...` });
         
         await new Promise(resolve => setTimeout(resolve, delay));
         return uploadSingleImage(file, filename, targetAlbum, retryCount + 1);
