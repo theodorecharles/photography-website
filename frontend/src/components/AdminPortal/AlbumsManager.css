@@ -4,6 +4,14 @@
   gap: 2rem;
 }
 
+.create-album-section {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 2rem;
+  align-items: start;
+  margin-bottom: 2rem;
+}
+
 .create-album h3,
 .albums-list h3 {
   color: #e5e7eb;
@@ -16,6 +24,62 @@
   display: flex;
   gap: 1rem;
   align-items: center;
+}
+
+.main-drop-zone {
+  background: rgba(255, 255, 255, 0.03);
+  border: 2px dashed rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  padding: 2rem;
+  min-width: 280px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.main-drop-zone:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.main-drop-zone.dragging {
+  background: rgba(74, 222, 128, 0.1);
+  border-color: var(--primary-color);
+  border-style: solid;
+  border-width: 3px;
+  transform: scale(1.02);
+}
+
+.drop-zone-icon {
+  font-size: 3rem;
+  opacity: 0.7;
+  transition: transform 0.2s ease;
+}
+
+.main-drop-zone.dragging .drop-zone-icon {
+  animation: bounce 0.6s ease-in-out infinite alternate;
+}
+
+.drop-zone-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  text-align: center;
+}
+
+.drop-zone-text strong {
+  color: #e5e7eb;
+  font-size: 1rem;
+}
+
+.drop-zone-hint {
+  color: #9ca3af;
+  font-size: 0.875rem;
 }
 
 .album-grid {

@@ -54,6 +54,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   const [editTitleValue, setEditTitleValue] = useState('');
   const [showEditModal, setShowEditModal] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const [isMainDropZoneDragging, setIsMainDropZoneDragging] = useState(false);
 
   // Keep ref in sync with state
   useEffect(() => {
@@ -429,6 +430,118 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     }
   };
 
+  // Extract folder name from dragged files
+  const extractFolderName = (files: FileList): string | null => {
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      // Check for webkitRelativePath (when folder is dragged)
+      if (file.webkitRelativePath) {
+        const pathParts = file.webkitRelativePath.split('/');
+        if (pathParts.length > 1) {
+          return pathParts[0]; // Return the root folder name
+        }
+      }
+    }
+    return null;
+  };
+
+  // Extract all image files from nested folders
+  const extractImageFiles = (files: FileList): File[] => {
+    const imageFiles: File[] = [];
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      if (file.type.startsWith('image/')) {
+        imageFiles.push(file);
+      }
+    }
+    return imageFiles;
+  };
+
+  const handleMainDropZoneDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsMainDropZoneDragging(true);
+  };
+
+  const handleMainDropZoneDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    // Only set to false if we're actually leaving the drop zone (not entering a child)
+    if (e.currentTarget === e.target) {
+      setIsMainDropZoneDragging(false);
+    }
+  };
+
+  const handleMainDropZoneDrop = async (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsMainDropZoneDragging(false);
+
+    if (uploadingImages.length > 0) {
+      showToast('Upload already in progress', 'error');
+      return;
+    }
+
+    const files = e.dataTransfer.files;
+    if (!files || files.length === 0) return;
+
+    // Extract all image files
+    const imageFiles = extractImageFiles(files);
+    
+    if (imageFiles.length === 0) {
+      showToast('No image files found', 'error');
+      return;
+    }
+
+    // If album is selected, upload to that album
+    if (selectedAlbum) {
+      await processFiles(imageFiles);
+      return;
+    }
+
+    // No album selected - try to create one from folder name
+    const folderName = extractFolderName(files);
+    
+    if (!folderName) {
+      showToast('Please select an album or drag a folder with a name', 'error');
+      return;
+    }
+
+    // Create the album
+    const albumName = folderName.toLowerCase().trim();
+    
+    try {
+      const res = await fetch(`${API_URL}/api/albums`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ name: albumName }),
+      });
+
+      if (!res.ok) {
+        const error = await res.json();
+        showToast(error.error || 'Failed to create album', 'error');
+        return;
+      }
+
+      // Album created successfully
+      trackAlbumCreated(folderName);
+      setSelectedAlbum(albumName);
+      setMessage({ type: 'success', text: `Album "${folderName}" created with ${imageFiles.length} image(s)!` });
+      
+      // Trigger refresh of header navigation
+      await loadAlbums();
+      window.dispatchEvent(new Event('albums-updated'));
+
+      // Now upload the files
+      await processFiles(imageFiles);
+      
+    } catch (err) {
+      console.error('Failed to create album:', err);
+      showToast('Failed to create album', 'error');
+    }
+  };
+
   const handleDeletePhoto = async (album: string, filename: string, photoTitle: string = '') => {
     if (!confirm(`Delete this photo?`)) return;
 
@@ -459,23 +572,42 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
         <p className="section-description">Manage your photo albums and upload new images</p>
         
         <div className="albums-management">
-          <div className="create-album">
-            <h3>Create New Album</h3>
-            <div className="album-input-group">
-              <input
-                type="text"
-                value={newAlbumName}
-                onChange={(e) => setNewAlbumName(e.target.value)}
-                placeholder="Album name (e.g., nature, portraits)"
-                className="branding-input"
-                onKeyDown={(e) => e.key === 'Enter' && handleCreateAlbum()}
-              />
-              <button 
-                onClick={handleCreateAlbum}
-                className="btn-primary"
-              >
-                Create Album
-              </button>
+          <div className="create-album-section">
+            <div className="create-album">
+              <h3>Create New Album</h3>
+              <div className="album-input-group">
+                <input
+                  type="text"
+                  value={newAlbumName}
+                  onChange={(e) => setNewAlbumName(e.target.value)}
+                  placeholder="Album name (e.g., nature, portraits)"
+                  className="branding-input"
+                  onKeyDown={(e) => e.key === 'Enter' && handleCreateAlbum()}
+                />
+                <button 
+                  onClick={handleCreateAlbum}
+                  className="btn-primary"
+                >
+                  Create Album
+                </button>
+              </div>
+            </div>
+
+            <div 
+              className={`main-drop-zone ${isMainDropZoneDragging ? 'dragging' : ''}`}
+              onDragOver={handleMainDropZoneDragOver}
+              onDragLeave={handleMainDropZoneDragLeave}
+              onDrop={handleMainDropZoneDrop}
+            >
+              <div className="drop-zone-icon">📁</div>
+              <div className="drop-zone-text">
+                <strong>Drop folder here</strong>
+                <span className="drop-zone-hint">
+                  {selectedAlbum 
+                    ? `Add images to "${selectedAlbum}"` 
+                    : 'Create album from folder name'}
+                </span>
+              </div>
             </div>
           </div>
 
