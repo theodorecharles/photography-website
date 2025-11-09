@@ -164,6 +164,11 @@
     opacity: 1;
     pointer-events: auto;
   }
+  
+  /* Prevent image from capturing touches when overlay is visible */
+  .admin-photo-item .admin-photo-thumbnail {
+    pointer-events: none;
+  }
 }
 
 .admin-photo-thumbnail {
@@ -193,6 +198,8 @@
   padding: 0.75rem;
   opacity: 0;
   transition: opacity 0.2s ease;
+  z-index: 10;
+  pointer-events: auto;
 }
 
 .btn-delete-photo {
@@ -532,6 +539,9 @@
   gap: 0.5rem;
   justify-content: center;
   align-items: center;
+  pointer-events: auto;
+  position: relative;
+  z-index: 11;
 }
 
 .btn-edit-photo {
@@ -549,6 +559,29 @@
   padding: 0;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
+  position: relative;
+  z-index: 12;
+  pointer-events: auto;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.btn-edit-photo svg {
+  pointer-events: none;
+}
+
+/* Increase touch target size on mobile for better tapability */
+@media (hover: none) and (pointer: coarse) {
+  .btn-edit-photo {
+    min-width: 44px;
+    min-height: 44px;
+    padding: 6px;
+  }
+  
+  .btn-edit-photo svg {
+    pointer-events: none;
+    user-select: none;
+  }
 }
 
 .btn-edit-photo:hover:not(:disabled) {

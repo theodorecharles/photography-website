@@ -84,7 +84,11 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     setPhotoTitles(titles);
   };
 
-  const handleOpenEditModal = (photo: Photo) => {
+  const handleOpenEditModal = (photo: Photo, event?: React.MouseEvent | React.TouchEvent) => {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
     setEditingPhoto(photo);
     setEditTitleValue(photoTitles[photo.id] || '');
     setShowEditModal(true);
@@ -390,13 +394,27 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                           className="admin-photo-thumbnail"
                         />
                       )}
-                      <div className="photo-overlay">
+                      <div 
+                        className="photo-overlay"
+                        onTouchStart={(e) => {
+                          // Only stop propagation if not clicking on a button
+                          if ((e.target as HTMLElement).closest('button')) {
+                            return;
+                          }
+                          e.stopPropagation();
+                        }}
+                      >
                         <div className="photo-actions">
                           <button
-                            onClick={() => handleOpenEditModal(photo)}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              handleOpenEditModal(photo, e);
+                            }}
                             className="btn-edit-photo"
                             title="Edit title"
                             disabled={isOptimizing}
+                            type="button"
                           >
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                               <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
