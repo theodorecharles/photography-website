@@ -53,6 +53,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   const [editingPhoto, setEditingPhoto] = useState<Photo | null>(null);
   const [editTitleValue, setEditTitleValue] = useState('');
   const [showEditModal, setShowEditModal] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
 
   // Keep ref in sync with state
   useEffect(() => {
@@ -326,12 +327,25 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     }
   };
 
-  const handleUploadPhotos = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files || !selectedAlbum) return;
+  const processFiles = async (files: FileList | File[]) => {
+    if (!files || files.length === 0 || !selectedAlbum) return;
+
+    // Filter for image files only
+    const imageFiles = Array.from(files).filter(file => 
+      file.type.startsWith('image/')
+    );
+
+    if (imageFiles.length === 0) {
+      showToast('No valid image files selected', 'error');
+      return;
+    }
+
+    if (imageFiles.length < files.length) {
+      showToast(`${files.length - imageFiles.length} non-image file(s) skipped`, 'error');
+    }
 
     // Initialize all files as queued
-    const newUploadingImages: UploadingImage[] = Array.from(files).map(file => ({
+    const newUploadingImages: UploadingImage[] = imageFiles.map(file => ({
       file,
       filename: file.name,
       state: 'queued' as UploadState,
@@ -339,9 +353,6 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     }));
     
     setUploadingImages(newUploadingImages);
-    
-    // Clear the input
-    e.target.value = '';
 
     // Upload files sequentially (one at a time)
     // But let optimizations run in parallel in the background
@@ -381,6 +392,41 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     setUploadingImages([]);
     
     setMessage({ type: 'success', text: `Upload complete! Processed ${newUploadingImages.length} image(s)` });
+  };
+
+  const handleUploadPhotos = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+    
+    await processFiles(files);
+    
+    // Clear the input
+    e.target.value = '';
+  };
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDrop = async (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+
+    if (!selectedAlbum || uploadingImages.length > 0) return;
+
+    const files = e.dataTransfer.files;
+    if (files && files.length > 0) {
+      await processFiles(files);
+    }
   };
 
   const handleDeletePhoto = async (album: string, filename: string, photoTitle: string = '') => {
@@ -467,7 +513,12 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
           </div>
 
           {selectedAlbum && (
-            <div className="album-photos">
+            <div 
+              className={`album-photos ${isDragging ? 'drag-over' : ''}`}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+            >
               <div className="photos-header">
                 <h3>Photos in "{selectedAlbum}"</h3>
                 <div className="upload-controls">
@@ -484,6 +535,15 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                   </label>
                 </div>
               </div>
+
+              {isDragging && (
+                <div className="drop-overlay">
+                  <div className="drop-overlay-content">
+                    <div className="drop-icon">📁</div>
+                    <p>Drop images here to upload</p>
+                  </div>
+                </div>
+              )}
 
               {uploadingImages.length > 0 && (
                 <div className="upload-progress-container">
