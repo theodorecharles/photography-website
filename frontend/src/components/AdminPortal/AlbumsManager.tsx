@@ -209,119 +209,91 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
       img.filename === filename ? { ...img, state: 'uploading' as UploadState } : img
     ));
 
-    try {
-      const formData = new FormData();
-      formData.append('photo', file);
+      try {
+        const formData = new FormData();
+        formData.append('photo', file);
 
-      // Use XMLHttpRequest for progress tracking
-      const uploadResult = await new Promise<{ success: boolean; filename?: string; error?: string }>((resolve, reject) => {
-        const xhr = new XMLHttpRequest();
-        
-        // Track upload progress
-        xhr.upload.addEventListener('progress', (e) => {
-          if (e.lengthComputable) {
-            const percentComplete = Math.round((e.loaded / e.total) * 100);
-            setUploadingImages(prev => prev.map(img => 
-              img.filename === filename ? { ...img, progress: percentComplete } : img
-            ));
-          }
-        });
-
-        xhr.addEventListener('load', () => {
-          if (xhr.status >= 200 && xhr.status < 300) {
-            try {
-              const result = JSON.parse(xhr.responseText);
-              resolve(result);
-            } catch {
-              reject(new Error('Failed to parse response'));
-            }
-          } else {
-            try {
-              const error = JSON.parse(xhr.responseText);
-              resolve({ success: false, error: error.error || 'Upload failed', filename });
-            } catch {
-              resolve({ success: false, error: 'Upload failed', filename });
-            }
-          }
-        });
-
-        xhr.addEventListener('error', () => {
-          reject(new Error('Network error occurred'));
-        });
-
-        xhr.open('POST', `${API_URL}/api/albums/${selectedAlbum}/upload`);
-        xhr.withCredentials = true;
-        xhr.send(formData);
-      });
-
-      if (uploadResult.success) {
-        // Update state to optimizing with 0% progress
-        setUploadingImages(prev => prev.map(img => 
-          img.filename === filename ? { ...img, state: 'optimizing' as UploadState, progress: 100, optimizeProgress: 0 } : img
-        ));
-        
-        // Poll for optimization progress
-        const pollProgress = async () => {
-          const maxAttempts = 60; // 60 seconds max
-          const pollInterval = 500; // Check every 500ms
+        // Use XMLHttpRequest for upload progress and SSE response
+        await new Promise<void>((resolve, reject) => {
+          const xhr = new XMLHttpRequest();
           
-          for (let attempt = 0; attempt < maxAttempts; attempt++) {
-            await new Promise(resolve => setTimeout(resolve, pollInterval));
-            
-            // Check which files exist by attempting HEAD requests
-            const thumbCheck = fetch(`${API_URL}/optimized/thumbnail/${selectedAlbum}/${filename}`, { method: 'HEAD' })
-              .then(res => res.ok).catch(() => false);
-            const modalCheck = fetch(`${API_URL}/optimized/modal/${selectedAlbum}/${filename}`, { method: 'HEAD' })
-              .then(res => res.ok).catch(() => false);
-            const downloadCheck = fetch(`${API_URL}/optimized/download/${selectedAlbum}/${filename}`, { method: 'HEAD' })
-              .then(res => res.ok).catch(() => false);
-            
-            const [thumbExists, modalExists, downloadExists] = await Promise.all([thumbCheck, modalCheck, downloadCheck]);
-            
-            let optimizeProgress = 0;
-            if (thumbExists) optimizeProgress = 33;
-            if (modalExists) optimizeProgress = 66;
-            if (downloadExists) optimizeProgress = 100;
-            
-            // Update progress
-            setUploadingImages(prev => prev.map(img => 
-              img.filename === filename ? { ...img, optimizeProgress } : img
-            ));
-            
-            // Only mark as complete if ALL THREE files exist
-            if (thumbExists && modalExists && downloadExists) {
-              const thumbnailUrl = `${API_URL}/optimized/thumbnail/${selectedAlbum}/${filename}?i=${Date.now()}`;
-              
+          // Track upload progress
+          xhr.upload.addEventListener('progress', (e) => {
+            if (e.lengthComputable) {
+              const percentComplete = Math.round((e.loaded / e.total) * 100);
               setUploadingImages(prev => prev.map(img => 
-                img.filename === filename 
-                  ? { ...img, state: 'complete' as UploadState, thumbnailUrl, optimizeProgress: 100 }
-                  : img
+                img.filename === filename ? { ...img, progress: percentComplete } : img
               ));
-              
-              trackPhotoUploaded(selectedAlbum!, 1, [filename]);
-              return;
             }
-          }
-          
-          // Timeout - treat as error
-          setUploadingImages(prev => prev.map(img => 
-            img.filename === filename 
-              ? { ...img, state: 'error' as UploadState, error: 'Optimization timeout' }
-              : img
-          ));
-          showToast(`Optimization timeout for ${filename}`, 'error');
-        };
-        
-        pollProgress();
-      } else {
-        // Upload or optimization failed
-        setUploadingImages(prev => prev.map(img => 
-          img.filename === filename 
-            ? { ...img, state: 'error' as UploadState, error: uploadResult.error || 'Upload failed' }
-            : img
-        ));
-        showToast(`Error processing ${filename}: ${uploadResult.error}`, 'error');
-      }
+          });
+
+          // Handle SSE response stream
+          xhr.addEventListener('readystatechange', () => {
+            if (xhr.readyState === XMLHttpRequest.LOADING || xhr.readyState === XMLHttpRequest.DONE) {
+              const responseText = xhr.responseText;
+              const lines = responseText.split('\n');
+              
+              lines.forEach((line) => {
+                if (line.startsWith('data: ')) {
+                  try {
+                    const data = JSON.parse(line.substring(6));
+                    
+                    if (data.type === 'uploaded') {
+                      // Upload complete, start optimizing
+                      setUploadingImages(prev => prev.map(img => 
+                        img.filename === filename 
+                          ? { ...img, state: 'optimizing' as UploadState, progress: 100, optimizeProgress: 0 } 
+                          : img
+                      ));
+                    } else if (data.type === 'progress') {
+                      // Update optimization progress
+                      setUploadingImages(prev => prev.map(img => 
+                        img.filename === filename 
+                          ? { ...img, optimizeProgress: data.progress } 
+                          : img
+                      ));
+                    } else if (data.type === 'complete') {
+                      // Optimization complete
+                      const thumbnailUrl = `${API_URL}/optimized/thumbnail/${selectedAlbum}/${filename}?i=${Date.now()}`;
+                      setUploadingImages(prev => prev.map(img => 
+                        img.filename === filename 
+                          ? { ...img, state: 'complete' as UploadState, thumbnailUrl, optimizeProgress: 100 } 
+                          : img
+                      ));
+                      trackPhotoUploaded(selectedAlbum!, 1, [filename]);
+                    } else if (data.type === 'error') {
+                      // Error occurred
+                      setUploadingImages(prev => prev.map(img => 
+                        img.filename === filename 
+                          ? { ...img, state: 'error' as UploadState, error: data.error } 
+                          : img
+                      ));
+                      showToast(`Error processing ${filename}: ${data.error}`, 'error');
+                    }
+                  } catch (e) {
+                    // Ignore parse errors for incomplete data
+                  }
+                }
+              });
+            }
+          });
+
+          xhr.addEventListener('load', () => {
+            if (xhr.status >= 200 && xhr.status < 300) {
+              resolve();
+            } else {
+              reject(new Error('Upload failed'));
+            }
+          });
+
+          xhr.addEventListener('error', () => {
+            reject(new Error('Network error occurred'));
+          });
+
+          xhr.open('POST', `${API_URL}/api/albums/${selectedAlbum}/upload`);
+          xhr.withCredentials = true;
+          xhr.send(formData);
+        });
     } catch (err: any) {
       setUploadingImages(prev => prev.map(img => 
         img.filename === filename 

@@ -7,7 +7,7 @@ import { Router, Request, Response } from "express";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import { execFile } from "child_process";
+import { execFile, spawn } from "child_process";
 import { promisify } from "util";
 import multer from "multer";
 import os from "os";
@@ -218,7 +218,7 @@ router.delete("/:album/photos/:photo", requireAuth, async (req: Request, res: Re
 });
 
 /**
- * Upload a single photo to an album
+ * Upload a single photo to an album with SSE progress updates
  */
 router.post("/:album/upload", requireAuth, upload.single('photo'), async (req: Request, res: Response): Promise<void> => {
   try {
@@ -263,31 +263,79 @@ router.post("/:album/upload", requireAuth, upload.single('photo'), async (req: R
       return;
     }
 
-    // Trigger optimization for this single image in the background
+    // Set up SSE headers
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+    res.flushHeaders();
+
+    // Send initial success message
+    res.write(`data: ${JSON.stringify({ type: 'uploaded', filename: file.originalname })}\n\n`);
+
+    // Trigger optimization with SSE progress streaming
     const projectRoot = path.resolve(__dirname, '../../../');
     const scriptPath = path.join(projectRoot, 'optimize_new_image.sh');
 
     if (fs.existsSync(scriptPath)) {
-      // Run script in background (don't wait for completion)
-      execFile('bash', [scriptPath, sanitizedAlbum, file.originalname], { 
-        cwd: projectRoot,
-        timeout: 60000 // 60 second timeout
-      }, (error, stdout, stderr) => {
-        if (error) {
-          console.error(`Optimization error for ${file.originalname}:`, error);
-          if (stderr) console.error('stderr:', stderr);
-        } else {
-          console.log(`Optimization complete for ${file.originalname}`);
-        }
+      const child = spawn('bash', [scriptPath, sanitizedAlbum, file.originalname], { 
+        cwd: projectRoot
       });
-    }
 
-    // Return immediately - frontend will poll for optimization progress
-    res.json({ 
-      success: true, 
-      filename: file.originalname,
-      message: 'Photo uploaded successfully. Optimization in progress.' 
-    });
+      // Stream stdout for progress updates
+      child.stdout.on('data', (data) => {
+        const lines = data.toString().split('\n');
+        lines.forEach((line: string) => {
+          if (line.trim()) {
+            // Check for PROGRESS: messages
+            if (line.startsWith('PROGRESS:')) {
+              const parts = line.substring(9).split(':');
+              const progress = parseInt(parts[0]);
+              const message = parts.slice(1).join(':');
+              res.write(`data: ${JSON.stringify({ 
+                type: 'progress', 
+                progress, 
+                message,
+                filename: file.originalname 
+              })}\n\n`);
+            }
+          }
+        });
+      });
+
+      // Handle completion
+      child.on('close', (code) => {
+        if (code === 0) {
+          res.write(`data: ${JSON.stringify({ 
+            type: 'complete', 
+            filename: file.originalname 
+          })}\n\n`);
+        } else {
+          res.write(`data: ${JSON.stringify({ 
+            type: 'error', 
+            error: 'Optimization failed',
+            filename: file.originalname 
+          })}\n\n`);
+        }
+        res.end();
+      });
+
+      // Handle errors
+      child.on('error', (error) => {
+        res.write(`data: ${JSON.stringify({ 
+          type: 'error', 
+          error: error.message,
+          filename: file.originalname 
+        })}\n\n`);
+        res.end();
+      });
+    } else {
+      res.write(`data: ${JSON.stringify({ 
+        type: 'error', 
+        error: 'Optimization script not found',
+        filename: file.originalname 
+      })}\n\n`);
+      res.end();
+    }
   } catch (error) {
     console.error('Error uploading photo:', error);
     res.status(500).json({ error: 'Failed to upload photo' });
