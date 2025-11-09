@@ -159,7 +159,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     if (!newAlbumName.trim()) return;
 
     try {
-      const albumName = newAlbumName.toLowerCase().trim();
+      const albumName = newAlbumName.trim();
       const res = await fetch(`${API_URL}/api/albums`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -550,7 +550,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     }
 
     // Create the album
-    const albumName = folderName.toLowerCase().trim();
+    const albumName = folderName.trim();
     
     try {
       const res = await fetch(`${API_URL}/api/albums`, {
@@ -620,14 +620,14 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
             <div className="create-album">
               <h3>Create New Album</h3>
               <div className="album-input-group">
-                <input
-                  type="text"
-                  value={newAlbumName}
-                  onChange={(e) => setNewAlbumName(e.target.value)}
-                  placeholder="Album name (e.g., nature, portraits)"
-                  className="branding-input"
-                  onKeyDown={(e) => e.key === 'Enter' && handleCreateAlbum()}
-                />
+              <input
+                type="text"
+                value={newAlbumName}
+                onChange={(e) => setNewAlbumName(e.target.value)}
+                placeholder="Album name (e.g., Nature Photos, Street Portraits)"
+                className="branding-input"
+                onKeyDown={(e) => e.key === 'Enter' && handleCreateAlbum()}
+              />
                 <button 
                   onClick={handleCreateAlbum}
                   className="btn-primary"

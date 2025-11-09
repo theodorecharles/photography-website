@@ -62,16 +62,17 @@ const requireAuth = (req: Request, res: Response, next: Function) => {
 };
 
 /**
- * Sanitize album/photo name
+ * Sanitize album/photo name - allows letters, numbers, spaces, hyphens, and underscores
  */
 const sanitizeName = (name: string): string | null => {
   if (!name || name.includes("..") || name.includes("/") || name.includes("\\")) {
     return null;
   }
-  if (!/^[a-zA-Z0-9_-]+$/.test(name)) {
+  // Allow alphanumeric characters, spaces, hyphens, and underscores
+  if (!/^[a-zA-Z0-9 _-]+$/.test(name)) {
     return null;
   }
-  return name;
+  return name.trim();
 };
 
 /**
@@ -101,7 +102,7 @@ router.post("/", requireAuth, async (req: Request, res: Response): Promise<void>
 
     const sanitizedName = sanitizeName(name);
     if (!sanitizedName) {
-      res.status(400).json({ error: 'Invalid album name. Use only letters, numbers, hyphens, and underscores.' });
+      res.status(400).json({ error: 'Invalid album name. Use only letters, numbers, spaces, hyphens, and underscores.' });
       return;
     }
 
