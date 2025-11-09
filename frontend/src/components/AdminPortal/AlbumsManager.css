@@ -101,6 +101,59 @@
   margin-top: 2rem;
   padding-top: 2rem;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.album-photos.drag-over {
+  border-color: var(--primary-color);
+  border-width: 2px;
+  background: rgba(74, 222, 128, 0.05);
+  border-radius: 8px;
+  padding: 2rem;
+}
+
+.drop-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(4px);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  pointer-events: none;
+}
+
+.drop-overlay-content {
+  text-align: center;
+  color: var(--primary-color);
+}
+
+.drop-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  animation: bounce 0.6s ease-in-out infinite alternate;
+}
+
+@keyframes bounce {
+  from {
+    transform: translateY(0px);
+  }
+  to {
+    transform: translateY(-10px);
+  }
+}
+
+.drop-overlay-content p {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .photos-header {
