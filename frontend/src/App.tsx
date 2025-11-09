@@ -28,26 +28,17 @@ const AdminPortal = lazy(() => import("./components/AdminPortal"));
 const AuthError = lazy(() => import("./components/Misc/AuthError"));
 const NotFound = lazy(() => import("./components/Misc/NotFound"));
 
-// Helper function to format album name to title case
-const toTitleCase = (str: string): string => {
-  return str
-    .split(' ')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-    .join(' ');
-};
-
 // AlbumRoute component handles the routing for individual album pages
 function AlbumRoute() {
   const { album } = useParams();
-  // Decode URI-encoded album name and format to title case
+  // Decode URI-encoded album name
   const decodedAlbum = album ? decodeURIComponent(album) : "";
-  const albumTitle = decodedAlbum ? toTitleCase(decodedAlbum) : "";
   
   return (
     <>
       <SEO 
-        title={`${albumTitle} - Ted Charles Photography`}
-        description={`View ${albumTitle} photos from Ted Charles' photography portfolio. Professional ${decodedAlbum} photography.`}
+        title={`${decodedAlbum} - Ted Charles Photography`}
+        description={`View ${decodedAlbum} photos from Ted Charles' photography portfolio. Professional ${decodedAlbum} photography.`}
         url={`${SITE_URL}/album/${album}`}
         image={`${SITE_URL}/photos/derpatar.png`}
       />
@@ -127,7 +118,7 @@ function App() {
       if (encodedAlbum) {
         const albumName = decodeURIComponent(encodedAlbum);
         setCurrentAlbum(albumName);
-        trackPageView(path, `${toTitleCase(albumName)} - Album`);
+        trackPageView(path, `${albumName} - Album`);
       } else {
         setCurrentAlbum(undefined);
         trackPageView(path);
@@ -251,7 +242,7 @@ function App() {
       <main className="main-content">
         {currentAlbum && currentAlbum.length > 0 && (
           <h1 className="main-content-title">
-            {toTitleCase(currentAlbum)}
+            {currentAlbum}
           </h1>
         )}
         <StructuredData />
