@@ -758,7 +758,9 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                     onClick={() => setSelectedAlbum(selectedAlbum === album.name ? null : album.name)}
                   >
                     <div className="album-card-header">
-                      <h4>{album.name}</h4>
+                      <h4>
+                        <span className="album-name">{album.name}</span>
+                      </h4>
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
@@ -770,6 +772,11 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                         ×
                       </button>
                     </div>
+                    {album.photoCount !== undefined && (
+                      <div className="album-badge">
+                        {album.photoCount} {album.photoCount === 1 ? 'photo' : 'photos'}
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
