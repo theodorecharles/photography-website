@@ -33,8 +33,7 @@ const upload = multer({
     }
   }),
   limits: {
-    fileSize: 50 * 1024 * 1024, // 50MB per file
-    files: 20, // Maximum 20 files per request
+    fileSize: 100 * 1024 * 1024, // 100MB per file
     fieldSize: 10 * 1024, // 10KB for field values (form data)
     fields: 10 // Maximum 10 non-file fields
   },
@@ -221,7 +220,7 @@ router.delete("/:album/photos/:photo", requireAuth, async (req: Request, res: Re
 /**
  * Upload photos to an album
  */
-router.post("/:album/upload", requireAuth, upload.array('photos', 20), async (req: Request, res: Response): Promise<void> => {
+router.post("/:album/upload", requireAuth, upload.array('photos'), async (req: Request, res: Response): Promise<void> => {
   try {
     const { album } = req.params;
     
