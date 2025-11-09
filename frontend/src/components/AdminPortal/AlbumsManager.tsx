@@ -216,6 +216,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
         // Use XMLHttpRequest for upload progress and SSE response
         await new Promise<void>((resolve, reject) => {
           const xhr = new XMLHttpRequest();
+          let uploadComplete = false;
           
           // Track upload progress
           xhr.upload.addEventListener('progress', (e) => {
@@ -245,15 +246,21 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                           ? { ...img, state: 'optimizing' as UploadState, progress: 100, optimizeProgress: 0 } 
                           : img
                       ));
+                      // Resolve immediately after upload completes
+                      // Optimization will continue in background
+                      if (!uploadComplete) {
+                        uploadComplete = true;
+                        resolve();
+                      }
                     } else if (data.type === 'progress') {
-                      // Update optimization progress
+                      // Update optimization progress (in background)
                       setUploadingImages(prev => prev.map(img => 
                         img.filename === filename 
                           ? { ...img, optimizeProgress: data.progress } 
                           : img
                       ));
                     } else if (data.type === 'complete') {
-                      // Optimization complete
+                      // Optimization complete (in background)
                       const thumbnailUrl = `${API_URL}/optimized/thumbnail/${selectedAlbum}/${filename}?i=${Date.now()}`;
                       setUploadingImages(prev => prev.map(img => 
                         img.filename === filename 
@@ -269,20 +276,16 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                           : img
                       ));
                       showToast(`Error processing ${filename}: ${data.error}`, 'error');
+                      if (!uploadComplete) {
+                        uploadComplete = true;
+                        reject(new Error(data.error));
+                      }
                     }
                   } catch (e) {
                     // Ignore parse errors for incomplete data
                   }
                 }
               });
-            }
-          });
-
-          xhr.addEventListener('load', () => {
-            if (xhr.status >= 200 && xhr.status < 300) {
-              resolve();
-            } else {
-              reject(new Error('Upload failed'));
             }
           });
 
