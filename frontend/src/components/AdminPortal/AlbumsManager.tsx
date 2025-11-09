@@ -155,13 +155,17 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
       });
 
       if (res.ok) {
+        const displayName = newAlbumName;
         setNewAlbumName('');
-        setMessage({ type: 'success', text: `Album "${newAlbumName}" created!` });
-        trackAlbumCreated(newAlbumName);
+        setMessage({ type: 'success', text: `Album "${displayName}" created!` });
+        trackAlbumCreated(displayName);
         await loadAlbums();
-        // Auto-select the newly created album
-        setSelectedAlbum(albumName);
         window.dispatchEvent(new Event('albums-updated'));
+        
+        // Auto-select the newly created album after a small delay to ensure state updates
+        setTimeout(() => {
+          setSelectedAlbum(albumName);
+        }, 100);
       } else {
         const error = await res.json();
         setMessage({ type: 'error', text: error.error || 'Failed to create album' });
