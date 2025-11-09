@@ -178,9 +178,6 @@ async function scanAndGenerateTitles() {
     for (const filename of images) {
       const thumbnailPath = path.join(albumPath, filename);
       await generateImageTitle(openai, thumbnailPath, album, filename, db, existingTitles);
-      
-      // Add a small delay to avoid rate limiting
-      await new Promise(resolve => setTimeout(resolve, 500));
     }
   }
   
