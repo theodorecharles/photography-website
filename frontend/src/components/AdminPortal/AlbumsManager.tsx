@@ -155,6 +155,8 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
       
       // Wait a bit for React to render, then collect all info
       setTimeout(() => {
+        if (!editingPhoto) return; // Guard clause
+        
         const modal = document.querySelector('.modal-backdrop') as HTMLElement;
         const modalInBody = document.body.querySelector('.modal-backdrop') as HTMLElement;
         const modalInRoot = document.getElementById('root')?.querySelector('.modal-backdrop') as HTMLElement;
