@@ -203,6 +203,21 @@ export function deleteImageMetadata(album: string, filename: string): boolean {
 }
 
 /**
+ * Delete all image metadata for an album
+ */
+export function deleteAlbumMetadata(album: string): number {
+  const db = getDatabase();
+  
+  const stmt = db.prepare(`
+    DELETE FROM image_metadata 
+    WHERE album = ?
+  `);
+  
+  const result = stmt.run(album);
+  return result.changes;
+}
+
+/**
  * Close the database connection
  */
 export function closeDatabase(): void {

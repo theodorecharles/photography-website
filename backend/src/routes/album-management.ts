@@ -12,6 +12,7 @@ import { promisify } from "util";
 import multer from "multer";
 import os from "os";
 import { csrfProtection } from "../security.js";
+import { deleteAlbumMetadata, deleteImageMetadata } from "../database.js";
 
 const router = Router();
 const execFileAsync = promisify(execFile);
@@ -157,6 +158,10 @@ router.delete("/:album", requireAuth, async (req: Request, res: Response): Promi
       }
     });
 
+    // Delete all metadata for this album from database
+    const deletedCount = deleteAlbumMetadata(sanitizedAlbum);
+    console.log(`✓ Deleted ${deletedCount} metadata entries for album: ${sanitizedAlbum}`);
+
     res.json({ success: true });
   } catch (error) {
     console.error('Error deleting album:', error);
@@ -199,6 +204,12 @@ router.delete("/:album/photos/:photo", requireAuth, async (req: Request, res: Re
         fs.unlinkSync(optimizedPath);
       }
     });
+
+    // Delete metadata from database
+    const deleted = deleteImageMetadata(sanitizedAlbum, sanitizedPhoto);
+    if (deleted) {
+      console.log(`✓ Deleted metadata for photo: ${sanitizedAlbum}/${sanitizedPhoto}`);
+    }
 
     res.json({ success: true });
   } catch (error) {
