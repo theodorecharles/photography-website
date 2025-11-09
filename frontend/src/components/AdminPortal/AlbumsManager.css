@@ -137,7 +137,7 @@
 }
 
 /* Hide drop zone on mobile/iPhone */
-@media (max-width: 1024px) {
+@media (max-width: 640px) {
   .main-drop-zone {
     display: none;
   }
@@ -426,8 +426,6 @@
 
 .upload-btn {
   cursor: pointer;
-  /* Hide upload button on desktop */
-  display: none;
 }
 
 /* Show upload button only on mobile/tablet */
