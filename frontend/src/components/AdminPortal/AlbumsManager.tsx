@@ -47,20 +47,59 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   }, [selectedAlbum]);
 
   // Debug: Show toast when modal state changes and check DOM - all info in one toast
-  // Also force display via ref
+  // Also force display via direct DOM query and manipulation + injected style tag
   useEffect(() => {
-    if (showEditModal && editingPhoto && modalRef.current) {
-      // Force display via direct DOM manipulation
-      const element = modalRef.current;
-      element.style.display = 'flex';
-      element.style.visibility = 'visible';
-      element.style.opacity = '1';
+    if (showEditModal && editingPhoto) {
+      // Inject a style tag with the most specific rule possible
+      let styleId = 'force-modal-display';
+      let styleTag = document.getElementById(styleId);
+      if (!styleTag) {
+        styleTag = document.createElement('style');
+        styleTag.id = styleId;
+        styleTag.textContent = `
+          body > .modal-backdrop,
+          body > div.modal-backdrop,
+          .modal-backdrop[data-modal-open="true"],
+          div.modal-backdrop[data-modal-open="true"] {
+            display: flex !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+          }
+        `;
+        document.head.appendChild(styleTag);
+      }
+      
+      // Use requestAnimationFrame to ensure DOM is ready, then force display
+      const forceDisplay = () => {
+        const modal = document.querySelector('.modal-backdrop') as HTMLElement;
+        if (modal) {
+          // Force display via inline style (highest specificity)
+          modal.style.display = 'flex';
+          modal.style.visibility = 'visible';
+          modal.style.opacity = '1';
+          
+          // Also try setting it again after a frame
+          requestAnimationFrame(() => {
+            if (modal) {
+              modal.style.display = 'flex';
+              modal.style.visibility = 'visible';
+              modal.style.opacity = '1';
+            }
+          });
+        }
+      };
+      
+      // Try multiple times to catch it
+      requestAnimationFrame(forceDisplay);
+      setTimeout(forceDisplay, 10);
+      setTimeout(forceDisplay, 50);
+      setTimeout(forceDisplay, 100);
       
       // Wait a bit for React to render, then collect all info
       setTimeout(() => {
-        const modal = document.querySelector('.modal-backdrop');
-        const modalInBody = document.body.querySelector('.modal-backdrop');
-        const modalInRoot = document.getElementById('root')?.querySelector('.modal-backdrop');
+        const modal = document.querySelector('.modal-backdrop') as HTMLElement;
+        const modalInBody = document.body.querySelector('.modal-backdrop') as HTMLElement;
+        const modalInRoot = document.getElementById('root')?.querySelector('.modal-backdrop') as HTMLElement;
         const viewportHeight = window.innerHeight;
         const viewportWidth = window.innerWidth;
         
@@ -73,8 +112,15 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
         debugInfo += `  In root: ${!!modalInRoot}\n\n`;
         
         if (modal) {
-          const rect = (modal as HTMLElement).getBoundingClientRect();
-          const styles = window.getComputedStyle(modal as Element);
+          // Force display one more time before checking
+          modal.style.display = 'flex';
+          modal.style.visibility = 'visible';
+          modal.style.opacity = '1';
+          
+          const rect = modal.getBoundingClientRect();
+          const styles = window.getComputedStyle(modal);
+          const inlineStyle = modal.getAttribute('style') || '';
+          
           debugInfo += `Position & Size:\n`;
           debugInfo += `  Top: ${rect.top}, Left: ${rect.left}\n`;
           debugInfo += `  Width: ${rect.width}, Height: ${rect.height}\n`;
@@ -85,10 +131,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
           debugInfo += `  Opacity: ${styles.opacity}\n`;
           debugInfo += `  Z-index: ${styles.zIndex}\n`;
           debugInfo += `  Position: ${styles.position}\n`;
-          debugInfo += `  Top: ${styles.top}\n`;
-          debugInfo += `  Left: ${styles.left}\n`;
-          debugInfo += `  Width: ${styles.width}\n`;
-          debugInfo += `  Height: ${styles.height}`;
+          debugInfo += `  Inline style: ${inlineStyle.substring(0, 150)}`;
           
           setMessage({ type: 'success', text: debugInfo });
         } else {
