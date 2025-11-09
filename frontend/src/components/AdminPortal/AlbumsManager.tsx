@@ -3,8 +3,7 @@
  * Manages photo albums, photo uploads, and image optimization settings
  */
 
-import { useState, useEffect, useRef } from 'react';
-import { createPortal } from 'react-dom';
+import { useState, useEffect } from 'react';
 import { Album, Photo } from './types';
 import { 
   trackAlbumCreated,
@@ -37,7 +36,6 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   const [editingPhoto, setEditingPhoto] = useState<Photo | null>(null);
   const [editTitleValue, setEditTitleValue] = useState('');
   const [showEditModal, setShowEditModal] = useState(false);
-  const modalRef = useRef<HTMLDivElement>(null);
 
   // Load photos when album is selected
   useEffect(() => {
@@ -45,156 +43,6 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
       loadPhotos(selectedAlbum);
     }
   }, [selectedAlbum]);
-
-  // Debug: Show toast when modal state changes and check DOM - all info in one toast
-  // Also force display via direct DOM query and manipulation + injected style tag
-  useEffect(() => {
-    if (showEditModal && editingPhoto) {
-      // Inject a style tag with the most specific rule possible
-      let styleId = 'force-modal-display';
-      let styleTag = document.getElementById(styleId);
-      if (!styleTag) {
-        styleTag = document.createElement('style');
-        styleTag.id = styleId;
-        styleTag.textContent = `
-          body > .modal-backdrop,
-          body > div.modal-backdrop,
-          .modal-backdrop[data-modal-open="true"],
-          div.modal-backdrop[data-modal-open="true"] {
-            display: flex !important;
-            visibility: visible !important;
-            opacity: 1 !important;
-          }
-        `;
-        document.head.appendChild(styleTag);
-      }
-      
-      // Use requestAnimationFrame to ensure DOM is ready, then force display
-      // Keep trying until it sticks (but limit attempts to avoid infinite loop)
-      let attempts = 0;
-      const maxAttempts = 10;
-      
-      const forceDisplay = () => {
-        attempts++;
-        const modal = document.querySelector('.modal-backdrop') as HTMLElement;
-        if (modal) {
-          // Force display via inline style (highest specificity)
-          modal.style.setProperty('display', 'flex', 'important');
-          modal.style.setProperty('visibility', 'visible', 'important');
-          modal.style.setProperty('opacity', '1', 'important');
-          
-          // Also set directly as fallback
-          modal.style.display = 'flex';
-          modal.style.visibility = 'visible';
-          modal.style.opacity = '1';
-          
-          // Check if it worked, if not try again
-          const computed = window.getComputedStyle(modal);
-          if (computed.display === 'none' && attempts < maxAttempts) {
-            // Still none, try again after a short delay
-            setTimeout(forceDisplay, 50);
-          }
-        } else if (attempts < maxAttempts) {
-          // Element not found yet, try again
-          setTimeout(forceDisplay, 50);
-        }
-      };
-      
-      // Start trying
-      requestAnimationFrame(forceDisplay);
-      setTimeout(forceDisplay, 50);
-      setTimeout(forceDisplay, 150);
-      
-      // Wait a bit for React to render, then collect all info
-      setTimeout(() => {
-        if (!editingPhoto) return; // Guard clause
-        
-        const modal = document.querySelector('.modal-backdrop') as HTMLElement;
-        const modalInBody = document.body.querySelector('.modal-backdrop') as HTMLElement;
-        const modalInRoot = document.getElementById('root')?.querySelector('.modal-backdrop') as HTMLElement;
-        const viewportHeight = window.innerHeight;
-        const viewportWidth = window.innerWidth;
-        
-        let debugInfo = `=== MODAL DEBUG ===\n`;
-        debugInfo += `State: showEditModal=${showEditModal}\n`;
-        debugInfo += `Photo: ${editingPhoto.id}\n\n`;
-        debugInfo += `DOM Location:\n`;
-        debugInfo += `  In document: ${!!modal}\n`;
-        debugInfo += `  In body: ${!!modalInBody}\n`;
-        debugInfo += `  In root: ${!!modalInRoot}\n\n`;
-        
-        if (modal) {
-          // Force display one more time before checking
-          modal.style.display = 'flex';
-          modal.style.visibility = 'visible';
-          modal.style.opacity = '1';
-          
-          const rect = modal.getBoundingClientRect();
-          const styles = window.getComputedStyle(modal);
-          const inlineStyle = modal.getAttribute('style') || '';
-          
-          debugInfo += `Position & Size:\n`;
-          debugInfo += `  Top: ${rect.top}, Left: ${rect.left}\n`;
-          debugInfo += `  Width: ${rect.width}, Height: ${rect.height}\n`;
-          debugInfo += `  Viewport: ${viewportWidth}x${viewportHeight}\n\n`;
-          // Check which CSS rule is winning
-          let cssRulesInfo = '';
-          try {
-            const allSheets = Array.from(document.styleSheets);
-            for (const sheet of allSheets) {
-              try {
-                const rules = Array.from(sheet.cssRules || []);
-                for (const rule of rules) {
-                  if (rule instanceof CSSStyleRule) {
-                    if (modal.matches(rule.selectorText)) {
-                      cssRulesInfo += `\nRule: ${rule.selectorText}\n`;
-                      cssRulesInfo += `  Display: ${rule.style.display || 'not set'}\n`;
-                    }
-                  }
-                }
-              } catch (e) {
-                // Cross-origin stylesheet, skip
-              }
-            }
-          } catch (e) {
-            cssRulesInfo = '\n(Could not check CSS rules)';
-          }
-          
-          // Check parent elements
-          let parentInfo = '';
-          let current: HTMLElement | null = modal.parentElement;
-          let depth = 0;
-          while (current && depth < 5) {
-            const parentStyles = window.getComputedStyle(current);
-            parentInfo += `\nParent ${depth}: ${current.tagName}.${current.className}\n`;
-            parentInfo += `  Display: ${parentStyles.display}\n`;
-            parentInfo += `  Visibility: ${parentStyles.visibility}\n`;
-            parentInfo += `  Opacity: ${parentStyles.opacity}\n`;
-            if (parentStyles.display === 'none') {
-              parentInfo += `  ⚠️ PARENT IS HIDING MODAL!\n`;
-            }
-            current = current.parentElement;
-            depth++;
-          }
-          
-          debugInfo += `CSS Properties:\n`;
-          debugInfo += `  Display: ${styles.display}\n`;
-          debugInfo += `  Visibility: ${styles.visibility}\n`;
-          debugInfo += `  Opacity: ${styles.opacity}\n`;
-          debugInfo += `  Z-index: ${styles.zIndex}\n`;
-          debugInfo += `  Position: ${styles.position}\n`;
-          debugInfo += `  Inline style: ${inlineStyle.substring(0, 150)}`;
-          debugInfo += `\n\nMatching CSS Rules:${cssRulesInfo}`;
-          debugInfo += `\n\nParent Elements:${parentInfo}`;
-          
-          setMessage({ type: 'success', text: debugInfo });
-        } else {
-          debugInfo += `❌ Modal NOT found in DOM!`;
-          setMessage({ type: 'error', text: debugInfo });
-        }
-      }, 500);
-    }
-  }, [showEditModal, editingPhoto]);
 
   const loadPhotos = async (albumName: string) => {
     try {
@@ -592,26 +440,12 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
         </div>
       </section>
 
-      {/* Edit Title Modal - Rendered via Portal to avoid iOS positioning issues */}
-      {showEditModal && editingPhoto && createPortal(
+      {/* Edit Title Modal - Try without Portal first to see if that's the issue */}
+      {showEditModal && editingPhoto && (
         <div 
-          ref={modalRef}
           className="modal-backdrop" 
           onClick={handleCloseEditModal}
           data-modal-open="true"
-          style={{ 
-            display: 'flex !important' as any,
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            width: '100%',
-            height: '100%',
-            zIndex: 99999,
-            visibility: 'visible',
-            opacity: 1
-          } as React.CSSProperties}
         >
           <div className="edit-modal" onClick={(e) => e.stopPropagation()}>
             <div className="edit-modal-header">
@@ -672,8 +506,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
               </button>
             </div>
           </div>
-        </div>,
-        document.body
+        </div>
       )}
     </>
   );
