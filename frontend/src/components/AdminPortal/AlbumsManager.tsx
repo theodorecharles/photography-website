@@ -86,11 +86,9 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   };
 
   const handleOpenEditModal = (photo: Photo) => {
-    console.log('Opening modal for:', photo.id);
     setEditingPhoto(photo);
     setEditTitleValue(photoTitles[photo.id] || '');
     setShowEditModal(true);
-    console.log('State set - showEditModal should be true');
   };
 
   const handleCloseEditModal = () => {
