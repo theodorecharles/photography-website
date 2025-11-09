@@ -136,6 +136,13 @@
   color: #6b7280;
 }
 
+/* Hide drop zone on mobile/iPhone */
+@media (max-width: 640px) {
+  .main-drop-zone {
+    display: none;
+  }
+}
+
 .drop-zone-icon {
   font-size: 3.5rem;
   opacity: 0.9;
@@ -419,6 +426,13 @@
 
 .upload-btn {
   cursor: pointer;
+}
+
+/* Show upload button only on mobile/tablet */
+@media (max-width: 1024px) {
+  .upload-btn {
+    display: inline-block;
+  }
 }
 
 .upload-btn:disabled {
@@ -1023,19 +1037,23 @@
 }
 
 .edit-modal-body {
-  padding: 1.5rem;
+  padding: 0.5rem 1.5rem 1.5rem 1.5rem;
   overflow-y: auto;
   max-height: calc(90vh - 180px);
 }
 
 .edit-modal-photo {
-  width: 100%;
+  width: calc(100% + 2rem);
+  margin-left: -1rem;
+  margin-right: -1rem;
   max-height: 400px;
-  border-radius: 8px;
+  border-radius: 0;
   overflow: hidden;
   margin-bottom: 1.5rem;
   background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   display: flex;
   align-items: center;
   justify-content: center;
