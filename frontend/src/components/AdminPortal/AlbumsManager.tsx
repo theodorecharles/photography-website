@@ -84,11 +84,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     setPhotoTitles(titles);
   };
 
-  const handleOpenEditModal = (photo: Photo, event?: React.MouseEvent | React.TouchEvent) => {
-    if (event) {
-      event.preventDefault();
-      event.stopPropagation();
-    }
+  const handleOpenEditModal = (photo: Photo) => {
     setEditingPhoto(photo);
     setEditTitleValue(photoTitles[photo.id] || '');
     setShowEditModal(true);
@@ -394,22 +390,19 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                           className="admin-photo-thumbnail"
                         />
                       )}
-                      <div 
-                        className="photo-overlay"
-                        onTouchStart={(e) => {
-                          // Only stop propagation if not clicking on a button
-                          if ((e.target as HTMLElement).closest('button')) {
-                            return;
-                          }
-                          e.stopPropagation();
-                        }}
-                      >
+                      <div className="photo-overlay">
                         <div className="photo-actions">
                           <button
                             onClick={(e) => {
-                              e.preventDefault();
                               e.stopPropagation();
-                              handleOpenEditModal(photo, e);
+                              handleOpenEditModal(photo);
+                            }}
+                            onTouchEnd={(e) => {
+                              // Handle touch events for iOS Safari - prevent double-firing
+                              e.stopPropagation();
+                              if (!showEditModal) {
+                                handleOpenEditModal(photo);
+                              }
                             }}
                             className="btn-edit-photo"
                             title="Edit title"

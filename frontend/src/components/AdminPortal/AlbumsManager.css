@@ -162,7 +162,11 @@
 @media (hover: none) and (pointer: coarse) {
   .photo-overlay {
     opacity: 1;
-    pointer-events: auto;
+    pointer-events: none; /* Overlay itself doesn't capture, but children do */
+  }
+  
+  .photo-overlay .photo-actions {
+    pointer-events: auto; /* Buttons are clickable */
   }
   
   /* Prevent image from capturing touches when overlay is visible */
@@ -199,6 +203,10 @@
   opacity: 0;
   transition: opacity 0.2s ease;
   z-index: 10;
+  pointer-events: none;
+}
+
+.admin-photo-item:hover .photo-overlay {
   pointer-events: auto;
 }
 
@@ -570,19 +578,6 @@
   pointer-events: none;
 }
 
-/* Increase touch target size on mobile for better tapability */
-@media (hover: none) and (pointer: coarse) {
-  .btn-edit-photo {
-    min-width: 44px;
-    min-height: 44px;
-    padding: 6px;
-  }
-  
-  .btn-edit-photo svg {
-    pointer-events: none;
-    user-select: none;
-  }
-}
 
 .btn-edit-photo:hover:not(:disabled) {
   background: var(--primary-color);
