@@ -692,7 +692,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
 
           {selectedAlbum && (
             <div 
-              className={`album-photos ${isDragging ? 'drag-over' : ''} ${uploadingImages.length > 0 ? 'upload-disabled' : ''}`}
+              className={`album-photos ${isDragging ? 'drag-over' : ''}`}
               onDragOver={uploadingImages.length > 0 ? undefined : handleDragOver}
               onDragLeave={uploadingImages.length > 0 ? undefined : handleDragLeave}
               onDrop={uploadingImages.length > 0 ? undefined : handleDrop}
@@ -714,7 +714,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                 </div>
               </div>
 
-              {isDragging && (
+              {isDragging && uploadingImages.length === 0 && (
                 <div className="drop-overlay">
                   <div className="drop-overlay-content">
                     <div className="drop-icon">📁</div>
