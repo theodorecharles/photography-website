@@ -70,11 +70,15 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
       }
       
       // Use requestAnimationFrame to ensure DOM is ready, then force display
+      // Keep trying until it sticks (but limit attempts to avoid infinite loop)
+      let attempts = 0;
+      const maxAttempts = 10;
+      
       const forceDisplay = () => {
+        attempts++;
         const modal = document.querySelector('.modal-backdrop') as HTMLElement;
         if (modal) {
           // Force display via inline style (highest specificity)
-          // Use setProperty with important flag
           modal.style.setProperty('display', 'flex', 'important');
           modal.style.setProperty('visibility', 'visible', 'important');
           modal.style.setProperty('opacity', '1', 'important');
@@ -83,10 +87,20 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
           modal.style.display = 'flex';
           modal.style.visibility = 'visible';
           modal.style.opacity = '1';
+          
+          // Check if it worked, if not try again
+          const computed = window.getComputedStyle(modal);
+          if (computed.display === 'none' && attempts < maxAttempts) {
+            // Still none, try again after a short delay
+            setTimeout(forceDisplay, 50);
+          }
+        } else if (attempts < maxAttempts) {
+          // Element not found yet, try again
+          setTimeout(forceDisplay, 50);
         }
       };
       
-      // Try to force display a few times, but not too many to avoid freezing
+      // Start trying
       requestAnimationFrame(forceDisplay);
       setTimeout(forceDisplay, 50);
       setTimeout(forceDisplay, 150);
@@ -586,7 +600,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
           onClick={handleCloseEditModal}
           data-modal-open="true"
           style={{ 
-            display: 'flex',
+            display: 'flex !important' as any,
             position: 'fixed',
             top: 0,
             left: 0,
