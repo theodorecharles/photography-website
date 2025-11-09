@@ -366,6 +366,32 @@
   }
 }
 
+/* Circular progress indicator */
+.progress-circle {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.progress-ring {
+  transform: rotate(-90deg);
+}
+
+.progress-ring-circle {
+  transition: stroke-dashoffset 0.3s ease;
+}
+
+.progress-percentage {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--primary-color);
+}
+
 /* Optimization section */
 .optimization-settings {
   background: linear-gradient(135deg, #2d2d2d 0%, #262626 100%);

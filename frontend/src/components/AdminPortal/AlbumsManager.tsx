@@ -289,6 +289,9 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     const files = e.target.files;
     if (!files || !selectedAlbum) return;
 
+    // Save scroll position before upload
+    const scrollPosition = window.scrollY;
+
     // Initialize all files as queued
     const newUploadingImages: UploadingImage[] = Array.from(files).map(file => ({
       file,
@@ -308,13 +311,18 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     // Wait for all uploads to complete
     await Promise.all(uploadPromises);
 
-    // Clear uploading images immediately before reload to prevent duplicates
-    setUploadingImages([]);
-
     // Reload photos after all uploads complete
     if (selectedAlbum) {
       await loadPhotos(selectedAlbum);
     }
+
+    // Clear uploading images after reload to prevent duplicates
+    setUploadingImages([]);
+
+    // Restore scroll position to prevent jump
+    requestAnimationFrame(() => {
+      window.scrollTo({ top: scrollPosition, behavior: 'instant' });
+    });
     
     setMessage({ type: 'success', text: `Upload complete! Processed ${newUploadingImages.length} image(s)` });
   };
@@ -456,8 +464,33 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                       )}
                       {img.state === 'uploading' && (
                         <div className="photo-state-overlay">
-                          <div className="spinner"></div>
-                          <span className="state-text">Uploading {img.progress}%</span>
+                          <div className="progress-circle">
+                            <svg className="progress-ring" width="60" height="60">
+                              <circle
+                                className="progress-ring-circle-bg"
+                                stroke="rgba(255, 255, 255, 0.1)"
+                                strokeWidth="4"
+                                fill="transparent"
+                                r="26"
+                                cx="30"
+                                cy="30"
+                              />
+                              <circle
+                                className="progress-ring-circle"
+                                stroke="var(--primary-color)"
+                                strokeWidth="4"
+                                fill="transparent"
+                                r="26"
+                                cx="30"
+                                cy="30"
+                                strokeDasharray={`${2 * Math.PI * 26}`}
+                                strokeDashoffset={`${2 * Math.PI * 26 * (1 - (img.progress || 0) / 100)}`}
+                                style={{ transition: 'stroke-dashoffset 0.3s ease' }}
+                              />
+                            </svg>
+                            <span className="progress-percentage">{img.progress}%</span>
+                          </div>
+                          <span className="state-text">Uploading...</span>
                         </div>
                       )}
                       {img.state === 'optimizing' && (
