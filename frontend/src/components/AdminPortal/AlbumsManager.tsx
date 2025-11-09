@@ -569,14 +569,16 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
       // Album created successfully
       trackAlbumCreated(folderName);
       setSelectedAlbum(albumName);
-      setMessage({ type: 'success', text: `Album "${folderName}" created with ${imageFiles.length} image(s)!` });
+      setMessage({ type: 'success', text: `Album "${folderName}" created! Uploading ${imageFiles.length} image(s)...` });
       
-      // Trigger refresh of header navigation
+      // Load albums locally (don't dispatch event yet - it would cause a refresh and interrupt upload)
       await loadAlbums();
-      window.dispatchEvent(new Event('albums-updated'));
 
-      // Now upload the files with the newly created album name
+      // Upload the files with the newly created album name
       await processFiles(imageFiles, albumName);
+      
+      // NOW trigger global refresh after uploads complete
+      window.dispatchEvent(new Event('albums-updated'));
       
     } catch (err) {
       console.error('Failed to create album:', err);
