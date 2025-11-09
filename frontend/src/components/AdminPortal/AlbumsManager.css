@@ -592,7 +592,7 @@
 }
 
 /* Edit Title Modal - Simple approach like PhotoModal */
-.modal-backdrop {
+.edit-title-modal {
   position: fixed;
   top: 0;
   left: 0;
@@ -612,7 +612,7 @@
 
 /* Fallback for iOS Safari - disable backdrop-filter if it causes issues */
 @supports not (backdrop-filter: blur(8px)) {
-  .modal-backdrop {
+  .edit-title-modal {
     background: rgba(0, 0, 0, 0.9);
   }
 }
