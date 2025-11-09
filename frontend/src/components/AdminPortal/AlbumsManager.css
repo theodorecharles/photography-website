@@ -1037,7 +1037,7 @@
 }
 
 .edit-modal-body {
-  padding: 1.5rem;
+  padding: 0.5rem 1.5rem 1.5rem 1.5rem;
   overflow-y: auto;
   max-height: calc(90vh - 180px);
 }
@@ -1057,7 +1057,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 10px;
 }
 
 .edit-modal-photo img {
