@@ -7,7 +7,7 @@
  */
 
 import { API_URL } from '../config';
-import { showToast } from './toast';
+// import { showToast } from './toast'; // Disabled - working correctly
 
 interface AnalyticsEvent {
   event_type: string;
@@ -98,14 +98,6 @@ async function flushQueue(useBeacon = false): Promise<void> {
       'Content-Type': 'application/json',
     };
     
-    // Show toast notification about the dispatch
-    const reason = useBeacon ? 'page exit' : eventCount >= BATCH_SIZE ? 'batch full' : 'timer';
-    showToast(
-      `📊 Dispatching ${eventCount} event${eventCount > 1 ? 's' : ''} (${reason})`,
-      'info',
-      2000
-    );
-    
     // Use sendBeacon for page unload if available, otherwise use fetch
     if (useBeacon && navigator.sendBeacon) {
       const blob = new Blob([JSON.stringify(eventsToSend)], { type: 'application/json' });
@@ -119,11 +111,7 @@ async function flushQueue(useBeacon = false): Promise<void> {
         keepalive: useBeacon, // Keep request alive during page unload
       });
     }
-    
-    showToast(`✅ Sent ${eventCount} event${eventCount > 1 ? 's' : ''} successfully`, 'success', 2000);
   } catch (error) {
-    // Show error toast
-    showToast(`❌ Failed to send ${eventCount} event${eventCount > 1 ? 's' : ''}`, 'error', 3000);
     // Silently fail - don't break the app if analytics fails
     console.debug('Analytics tracking failed:', error);
   }
