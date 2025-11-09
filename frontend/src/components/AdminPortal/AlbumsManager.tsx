@@ -47,7 +47,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   }, [selectedAlbum]);
 
   // Debug: Show toast when modal state changes and check DOM - all info in one toast
-  // Also force display via direct DOM query and manipulation + injected style tag + MutationObserver
+  // Also force display via direct DOM query and manipulation + injected style tag
   useEffect(() => {
     if (showEditModal && editingPhoto) {
       // Inject a style tag with the most specific rule possible
@@ -86,72 +86,10 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
         }
       };
       
-      // Set up MutationObserver to watch for style/class changes and re-apply
-      // Also watch for the element being added to DOM
-      let observer: MutationObserver | null = null;
-      
-      const setupObserver = () => {
-        const modal = document.querySelector('.modal-backdrop') as HTMLElement;
-        if (modal && !observer) {
-          observer = new MutationObserver((mutations) => {
-            mutations.forEach((mutation) => {
-              const target = mutation.target as HTMLElement;
-              if (target.classList.contains('modal-backdrop')) {
-                const computed = window.getComputedStyle(target);
-                if (computed.display === 'none') {
-                  // Something changed it back to none, force it again
-                  target.style.setProperty('display', 'flex', 'important');
-                  target.style.display = 'flex';
-                  target.style.visibility = 'visible';
-                  target.style.opacity = '1';
-                }
-              }
-            });
-          });
-          
-          observer.observe(modal, {
-            attributes: true,
-            attributeFilter: ['style', 'class'],
-            subtree: false
-          });
-          
-          // Also observe body for when element is added
-          const bodyObserver = new MutationObserver(() => {
-            const modal = document.querySelector('.modal-backdrop') as HTMLElement;
-            if (modal) {
-              modal.style.setProperty('display', 'flex', 'important');
-              modal.style.display = 'flex';
-            }
-          });
-          
-          bodyObserver.observe(document.body, {
-            childList: true,
-            subtree: true
-          });
-          
-          // Cleanup body observer after a delay
-          setTimeout(() => bodyObserver.disconnect(), 2000);
-        }
-      };
-      
-      // Try to set up observer multiple times
-      requestAnimationFrame(setupObserver);
-      setTimeout(setupObserver, 50);
-      setTimeout(setupObserver, 100);
-      
-      // Try multiple times to catch it
+      // Try to force display a few times, but not too many to avoid freezing
       requestAnimationFrame(forceDisplay);
-      setTimeout(forceDisplay, 10);
       setTimeout(forceDisplay, 50);
-      setTimeout(forceDisplay, 100);
-      setTimeout(forceDisplay, 200);
-      
-      // Cleanup observer
-      return () => {
-        if (observer) {
-          observer.disconnect();
-        }
-      };
+      setTimeout(forceDisplay, 150);
       
       // Wait a bit for React to render, then collect all info
       setTimeout(() => {
