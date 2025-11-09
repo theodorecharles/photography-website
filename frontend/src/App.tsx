@@ -294,19 +294,21 @@ function App() {
           </Routes>
         </Suspense>
       </main>
-      <div className={`footer-wrapper ${showFooter ? 'visible' : ''}`}>
-        <Footer
-          albums={albums}
-          externalLinks={externalLinks}
-          currentAlbum={
-            location.pathname === "/"
-              ? "homepage"
-              : location.pathname.startsWith("/album/")
-              ? location.pathname.split("/album/")[1].split("/")[0].split("?")[0].trim() || undefined
-              : undefined
-          }
-        />
-      </div>
+      {!location.pathname.startsWith('/admin') && (
+        <div className={`footer-wrapper ${showFooter ? 'visible' : ''}`}>
+          <Footer
+            albums={albums}
+            externalLinks={externalLinks}
+            currentAlbum={
+              location.pathname === "/"
+                ? "homepage"
+                : location.pathname.startsWith("/album/")
+                ? location.pathname.split("/album/")[1].split("/")[0].split("?")[0].trim() || undefined
+                : undefined
+            }
+          />
+        </div>
+      )}
     </div>
   );
 }
