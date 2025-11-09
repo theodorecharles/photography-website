@@ -187,11 +187,9 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     const formData = new FormData();
     Array.from(files).forEach(file => formData.append('photos', file));
 
-    // Calculate total size for speed tracking
-    const totalSize = Array.from(files).reduce((sum, file) => sum + file.size, 0);
-    let startTime = Date.now();
+    // Track upload speed
     let lastLoaded = 0;
-    let lastTime = startTime;
+    let lastTime = Date.now();
 
     try {
       // Use XMLHttpRequest for progress tracking
