@@ -36,8 +36,8 @@ router.post('/track', async (req, res): Promise<void> => {
       return;
     }
 
-    // Construct the full URL: {endpoint}{organization}/{stream}/_json
-    const analyticsUrl = `${endpoint}${organization}/${stream}/_json`;
+    // Construct the full URL: {endpoint}{organization}/{stream}/_multi
+    const analyticsUrl = `${endpoint}${organization}/${stream}/_multi`;
 
     // Validate origin - only allow requests from allowed origins
     const origin = req.get('Origin') || req.get('Referer');
@@ -74,7 +74,9 @@ router.post('/track', async (req, res): Promise<void> => {
     }));
 
     // Forward the event(s) to OpenObserve with authentication
+    // Use newline-delimited JSON format for _multi endpoint
     const credentials = Buffer.from(`${username}:${password}`).toString('base64');
+    const ndjsonPayload = eventsWithIp.map((event: any) => JSON.stringify(event)).join('\n');
     
     const response = await fetch(analyticsUrl, {
       method: 'POST',
@@ -82,7 +84,7 @@ router.post('/track', async (req, res): Promise<void> => {
         'Content-Type': 'application/json',
         'Authorization': `Basic ${credentials}`,
       },
-      body: JSON.stringify(eventsWithIp),
+      body: ndjsonPayload,
     });
 
       if (!response.ok) {
