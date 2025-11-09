@@ -42,13 +42,7 @@
 }
 
 .visitor-map .leaflet-control-attribution {
-  background-color: rgba(45, 45, 45, 0.8);
-  color: #9ca3af;
-  font-size: 0.7rem;
-}
-
-.visitor-map .leaflet-control-attribution a {
-  color: var(--secondary-color);
+  display: none !important;
 }
 
 /* Popup Styles */
