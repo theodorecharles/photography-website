@@ -322,6 +322,12 @@ const server = app.listen(PORT, bindHost, () => {
   console.log(`Photos directory: ${photosDir}`);
 });
 
+// Set server timeout to 10 minutes for long-running SSE connections
+// (image optimization can take a while for large images)
+server.timeout = 600000; // 10 minutes
+server.keepAliveTimeout = 610000; // Slightly longer than timeout
+server.headersTimeout = 620000; // Slightly longer than keepAliveTimeout
+
 // Handle server errors
 server.on('error', (error: NodeJS.ErrnoException) => {
   if (error.code === 'EADDRINUSE') {
