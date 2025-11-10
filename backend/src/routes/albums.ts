@@ -202,7 +202,7 @@ router.get("/api/albums", (req: Request, res) => {
       const state = updatedAlbumStates.find(a => a.name === albumName);
       return {
         name: albumName,
-        published: state?.published ?? true
+        published: state?.published ?? false
       };
     });
     res.json(albumsWithState);
