@@ -209,19 +209,40 @@ function App() {
   useEffect(() => {
     fetchData();
 
-    // Listen for admin changes to refresh navigation
-    const handleNavigationUpdate = () => {
-      fetchData();
+    // Silent update for navigation without triggering loading state
+    const updateNavigationSilently = async () => {
+      try {
+        const albumsResponse = await fetchWithRateLimitCheck(`${API_URL}/api/albums`);
+        if (albumsResponse.ok) {
+          const albumsData = await albumsResponse.json();
+          const albumNames = Array.isArray(albumsData) 
+            ? albumsData
+                .filter((album: string | { name: string; published: boolean }) => {
+                  if (typeof album === 'string') return true;
+                  return album.published === true;
+                })
+                .map((album: string | { name: string; published: boolean }) => 
+                  typeof album === 'string' ? album : album.name
+                )
+                .filter((album: string) => album !== "homepage")
+            : [];
+          setAlbums(albumNames);
+        }
+      } catch (err) {
+        // Silently fail - don't disrupt user experience
+        console.error('Failed to update navigation:', err);
+      }
     };
 
-    window.addEventListener('albums-updated', handleNavigationUpdate);
-    window.addEventListener('external-links-updated', handleNavigationUpdate);
-    window.addEventListener('branding-updated', handleNavigationUpdate);
+    // Listen for admin changes to refresh navigation silently
+    window.addEventListener('albums-updated', updateNavigationSilently);
+    window.addEventListener('external-links-updated', fetchData);
+    window.addEventListener('branding-updated', fetchData);
     
     return () => {
-      window.removeEventListener('albums-updated', handleNavigationUpdate);
-      window.removeEventListener('external-links-updated', handleNavigationUpdate);
-      window.removeEventListener('branding-updated', handleNavigationUpdate);
+      window.removeEventListener('albums-updated', updateNavigationSilently);
+      window.removeEventListener('external-links-updated', fetchData);
+      window.removeEventListener('branding-updated', fetchData);
     };
   }, []);
 
