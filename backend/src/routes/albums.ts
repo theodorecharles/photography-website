@@ -260,11 +260,63 @@ router.get("/api/random-photos", (req: Request, res) => {
   // Check if user is authenticated
   const isAuthenticated = req.isAuthenticated && req.isAuthenticated();
   
-  // Get ALL photos from ALL albums (include unpublished if authenticated)
-  const photos = getAllPhotos(photosDir, isAuthenticated);
+  // Get albums from database based on auth status
+  let albumsToFetch: string[];
+  if (isAuthenticated) {
+    // For authenticated users, get all albums
+    albumsToFetch = getAllAlbums().map(a => a.name);
+  } else {
+    // For non-authenticated users, only get published albums
+    albumsToFetch = getPublishedAlbums().map(a => a.name);
+  }
   
-  console.log(`API /api/random-photos: Returning ${photos.length} photos`);
-  res.json(photos);
+  // Filter out homepage
+  albumsToFetch = albumsToFetch.filter(name => name !== 'homepage');
+  
+  const allPhotos: {
+    id: string;
+    title: string;
+    album: string;
+    src: string;
+    thumbnail: string;
+    download: string;
+  }[] = [];
+
+  // Get photos from each album
+  albumsToFetch.forEach((album) => {
+    const albumPath = path.join(photosDir, album);
+    
+    // Check if album directory exists
+    if (!fs.existsSync(albumPath) || !fs.statSync(albumPath).isDirectory()) {
+      return; // Skip non-existent directories
+    }
+    
+    const files = fs
+      .readdirSync(albumPath)
+      .filter((file) => /\.(jpg|jpeg|png|gif)$/i.test(file));
+
+    files.forEach((file) => {
+      // Generate title from filename by removing extension and replacing separators
+      const title = file
+        .replace(/\.[^/.]+$/, '') // Remove extension
+        .replace(/[-_]/g, ' '); // Replace hyphens and underscores with spaces
+
+      allPhotos.push({
+        id: `${album}/${file}`, // Make ID unique across albums
+        title: title,
+        album: album,
+        src: `/optimized/modal/${album}/${file}`,
+        thumbnail: `/optimized/thumbnail/${album}/${file}`,
+        download: `/optimized/download/${album}/${file}`,
+      });
+    });
+  });
+
+  console.log(`API /api/random-photos: Returning ${allPhotos.length} photos from ${albumsToFetch.length} albums`);
+  
+  // Shuffle all photos for random order
+  const shuffledPhotos = shuffleArray(allPhotos);
+  res.json(shuffledPhotos);
 });
 
 // Get EXIF data for a specific photo
