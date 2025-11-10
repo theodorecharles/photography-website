@@ -156,9 +156,15 @@
 
 .titles-output-content {
   font-family: 'Modern DOS', 'Courier New', monospace;
-  font-size: 0.5rem;
+  font-size: 0.75rem;
   line-height: 1.4;
   color: #e5e7eb;
+}
+
+@media (max-width: 600px) {
+  .titles-output-content {
+    font-size: 0.5rem;
+  }
 }
 
 .output-line {
