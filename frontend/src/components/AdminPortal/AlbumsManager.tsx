@@ -350,8 +350,24 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
       el.classList.add('shuffling-active');
     });
     
+    // Calculate speed multiplier based on album size
+    const albumSize = albumPhotos.length;
+    let speedMultiplier = 1.0;
+    
+    if (albumSize <= 20) {
+      speedMultiplier = 1.0; // Normal speed for small albums
+    } else if (albumSize <= 40) {
+      speedMultiplier = 0.7; // 1.43x faster
+    } else if (albumSize <= 60) {
+      speedMultiplier = 0.5; // 2x faster
+    } else if (albumSize <= 100) {
+      speedMultiplier = 0.35; // 2.86x faster
+    } else {
+      speedMultiplier = 0.25; // 4x faster for very large albums
+    }
+    
     // Start continuous shuffling with progressive speed increase
-    let currentInterval = 100; // Start at 100ms between swaps
+    let currentInterval = 100 * speedMultiplier; // Adjust base speed by album size
     
     const startShuffling = (interval: number) => {
       if (shuffleIntervalRef.current) {
