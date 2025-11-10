@@ -217,9 +217,11 @@ router.get("/api/albums", (req: Request, res) => {
   }
 });
 
-// Get photos in a specific album
+// Get photos in a specific album (with pagination support)
 router.get("/api/albums/:album/photos", (req: Request, res): void => {
   const { album } = req.params;
+  const page = parseInt(req.query.page as string) || 1;
+  const limit = parseInt(req.query.limit as string) || 50; // Default 50 photos per page
 
   // Sanitize album parameter to prevent path traversal
   const sanitizedAlbum = sanitizePath(album);
@@ -249,8 +251,24 @@ router.get("/api/albums/:album/photos", (req: Request, res): void => {
     return;
   }
 
-  const photos = getPhotosInAlbum(photosDir, sanitizedAlbum);
-  res.json(photos);
+  const allPhotos = getPhotosInAlbum(photosDir, sanitizedAlbum);
+  const total = allPhotos.length;
+  
+  // Paginate results
+  const startIndex = (page - 1) * limit;
+  const endIndex = startIndex + limit;
+  const photos = allPhotos.slice(startIndex, endIndex);
+  
+  res.json({
+    photos,
+    pagination: {
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
+      hasMore: endIndex < total
+    }
+  });
 });
 
 // Get all photos from all albums in random order
