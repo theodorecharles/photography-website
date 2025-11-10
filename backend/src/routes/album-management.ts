@@ -19,6 +19,7 @@ import {
   deleteAlbumState,
   setAlbumPublished 
 } from "../database.js";
+import { invalidateAlbumCache } from "./albums.js";
 
 const router = Router();
 const execFileAsync = promisify(execFile);
@@ -176,6 +177,9 @@ router.delete("/:album", requireAuth, async (req: Request, res: Response): Promi
     deleteAlbumState(sanitizedAlbum);
     console.log(`✓ Deleted album state for: ${sanitizedAlbum}`);
 
+    // Invalidate cache for this album
+    invalidateAlbumCache(sanitizedAlbum);
+
     res.json({ success: true });
   } catch (error) {
     console.error('Error deleting album:', error);
@@ -224,6 +228,9 @@ router.delete("/:album/photos/:photo", requireAuth, async (req: Request, res: Re
     if (deleted) {
       console.log(`✓ Deleted metadata for photo: ${sanitizedAlbum}/${sanitizedPhoto}`);
     }
+
+    // Invalidate cache for this album
+    invalidateAlbumCache(sanitizedAlbum);
 
     res.json({ success: true });
   } catch (error) {
@@ -328,6 +335,9 @@ router.post("/:album/upload", requireAuth, upload.single('photo'), async (req: R
       // Handle completion
       child.on('close', (code) => {
         if (code === 0) {
+          // Invalidate cache for this album since we added a photo
+          invalidateAlbumCache(sanitizedAlbum);
+          
           res.write(`data: ${JSON.stringify({ 
             type: 'complete', 
             filename: file.originalname 
