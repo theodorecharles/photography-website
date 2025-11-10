@@ -34,7 +34,7 @@ interface Photo {
   exif?: any; // EXIF data from exifr library
 }
 
-const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
+const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound }) => {
   const location = useLocation();
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
