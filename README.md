@@ -176,12 +176,19 @@ pm2 startup
 
 ### Automated Deployment
 
+**Via GitHub Actions (recommended):**
+
+Push to `master` (prod) or `devel` branch, and GitHub Actions automatically:
+- Pulls latest changes on the target VM
+- Runs the restart script with full deployment
+
+**Manual deployment:**
 ```bash
-./restart.sh  # Full deployment automation
+git pull origin <branch>
+./restart.sh
 ```
 
-This script handles:
-- Pull latest changes from Git (with fast-forward only)
+The `restart.sh` script handles:
 - Install all dependencies (root, backend, frontend)
 - Optimize all images
 - Build both frontend and backend
