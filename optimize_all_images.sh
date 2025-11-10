@@ -4,10 +4,18 @@ IFS=$'\n\t'        # Set Internal Field Separator for safer word splitting
 
 # Parse command line arguments
 FORCE_MODE=false
-for arg in "$@"; do
-    case $arg in
+CONCURRENCY_OVERRIDE=""
+while [[ $# -gt 0 ]]; do
+    case $1 in
         --force)
             FORCE_MODE=true
+            shift
+            ;;
+        --concurrency)
+            CONCURRENCY_OVERRIDE="$2"
+            shift 2
+            ;;
+        *)
             shift
             ;;
     esac
@@ -15,6 +23,9 @@ done
 
 # Read configuration from config.json
 CONFIG_FILE="config/config.json"
+
+# Read photos directory from config (backend.photosDir)
+PHOTOS_DIR=$(grep -A 5 '"backend"' "$CONFIG_FILE" 2>/dev/null | grep '"photosDir"' | sed -E 's/.*"photosDir"[[:space:]]*:[[:space:]]*"([^"]+)".*/\1/' || echo "photos")
 
 # Read image optimization settings from config.json (nested under optimization.images)
 THUMBNAIL_QUALITY=$(grep -A 20 '"optimization"' "$CONFIG_FILE" 2>/dev/null | grep -A 15 '"images"' | grep -A 2 '"thumbnail"' | grep '"quality"' | grep -o '[0-9]*' | head -1 || echo "60")
@@ -26,8 +37,12 @@ MODAL_MAX_DIM=$(grep -A 20 '"optimization"' "$CONFIG_FILE" 2>/dev/null | grep -A
 DOWNLOAD_QUALITY=$(grep -A 20 '"optimization"' "$CONFIG_FILE" 2>/dev/null | grep -A 15 '"images"' | grep -A 2 '"download"' | grep '"quality"' | grep -o '[0-9]*' | head -1 || echo "100")
 DOWNLOAD_MAX_DIM=$(grep -A 20 '"optimization"' "$CONFIG_FILE" 2>/dev/null | grep -A 15 '"images"' | grep -A 2 '"download"' | grep '"maxDimension"' | grep -o '[0-9]*' | head -1 || echo "4096")
 
-# Read concurrency from config.json, default to 4 if not found
-CONCURRENCY=$(grep -A 2 '"optimization"' "$CONFIG_FILE" 2>/dev/null | grep '"concurrency"' | grep -o '[0-9]*' | head -1 || echo "4")
+# Read concurrency from config.json, default to 4 if not found, or use command line override
+if [ -n "$CONCURRENCY_OVERRIDE" ]; then
+    CONCURRENCY=$CONCURRENCY_OVERRIDE
+else
+    CONCURRENCY=$(grep -A 2 '"optimization"' "$CONFIG_FILE" 2>/dev/null | grep '"concurrency"' | grep -o '[0-9]*' | head -1 || echo "4")
+fi
 
 # Animation state files
 STATE_DIR=$(mktemp -d)
@@ -50,49 +65,68 @@ done
 
 # Cleanup function
 cleanup() {
-    echo "done" > "$STATUS_FILE"
+    [ -f "$STATUS_FILE" ] && echo "done" > "$STATUS_FILE" 2>/dev/null
     wait  # Wait for background processes
-    rm -f "$PROGRESS_FILE.lock" 2>/dev/null
-    rm -rf "$STATE_DIR"
+    rmdir "$PROGRESS_FILE.lock" 2>/dev/null
+    [ -d "$STATE_DIR" ] && rm -rf "$STATE_DIR" 2>/dev/null
 }
 trap cleanup EXIT INT TERM
 
-# Function to count total images that need processing
+# Function to count total images that need processing (optimized for large image sets)
 count_images() {
     local dir="$1"
     local count=0
     
-    for file in "$dir"/*; do
-        if [ -d "$file" ]; then
-            count=$((count + $(count_images "$file")))
-        elif [[ "$file" =~ \.(jpg|jpeg|png)$ ]]; then
-            # Count how many versions need to be created (max 3 per file)
-            local relative_path=${file#photos/}
+    if [ "$FORCE_MODE" = true ]; then
+        # In force mode, just count all images × 3 (much faster)
+        local total_images=$(find -L "$dir" -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" \) 2>/dev/null | wc -l)
+        count=$((total_images * 3))
+    else
+        # Fast counting using find
+        local temp_file=$(mktemp)
+        find -L "$dir" -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" \) 2>/dev/null | while read -r file; do
+            local relative_path=${file#${PHOTOS_DIR}/}
             local album_path=$(dirname "$relative_path")
             local filename=$(basename "$file")
             
-            if [ "$FORCE_MODE" = true ]; then
-                # In force mode, always count all 3 versions
-                count=$((count + 3))
-            else
-                # Only count versions that don't exist
-                [ ! -f "optimized/thumbnail/$album_path/$filename" ] && count=$((count + 1))
-                [ ! -f "optimized/modal/$album_path/$filename" ] && count=$((count + 1))
-                [ ! -f "optimized/download/$album_path/$filename" ] && count=$((count + 1))
-            fi
-        fi
-    done
+            local versions_needed=0
+            [ ! -f "optimized/thumbnail/$album_path/$filename" ] && versions_needed=$((versions_needed + 1))
+            [ ! -f "optimized/modal/$album_path/$filename" ] && versions_needed=$((versions_needed + 1))
+            [ ! -f "optimized/download/$album_path/$filename" ] && versions_needed=$((versions_needed + 1))
+            
+            echo "$versions_needed"
+        done | awk '{sum += $1} END {print sum}' > "$temp_file"
+        
+        count=$(cat "$temp_file")
+        rm -f "$temp_file"
+    fi
     
-    echo "$count"
+    echo "${count:-0}"
 }
 
 # Function to atomically increment progress counter
 increment_progress() {
-    (
-        flock -x 200
-        local progress=$(cat "$PROGRESS_FILE")
-        echo $((progress + 1)) > "$PROGRESS_FILE"
-    ) 200>"$PROGRESS_FILE.lock"
+    # Use a simple lock file approach with retries
+    local lockfile="$PROGRESS_FILE.lock"
+    local max_attempts=100
+    local attempt=0
+    
+    while [ $attempt -lt $max_attempts ]; do
+        if mkdir "$lockfile" 2>/dev/null; then
+            # Got the lock
+            local progress=$(cat "$PROGRESS_FILE" 2>/dev/null || echo "0")
+            echo $((progress + 1)) > "$PROGRESS_FILE"
+            rmdir "$lockfile"
+            return 0
+        fi
+        # Lock is held, wait a tiny bit
+        sleep 0.01
+        attempt=$((attempt + 1))
+    done
+    
+    # Timeout, but still try to increment
+    local progress=$(cat "$PROGRESS_FILE" 2>/dev/null || echo "0")
+    echo $((progress + 1)) > "$PROGRESS_FILE"
 }
 
 # Get next available thread ID
@@ -118,7 +152,7 @@ release_thread_id() {
 process_single_image() {
     local file="$1"
     local thread_id=$(get_thread_id)
-        local relative_path=${file#photos/}
+        local relative_path=${file#${PHOTOS_DIR}/}
         local album_path=$(dirname "$relative_path")
         local filename=$(basename "$file")
         
@@ -171,24 +205,22 @@ process_single_image() {
     release_thread_id "$thread_id"
 }
 
-# Function to collect albums and their images
+# Function to collect albums and their images (optimized - single find command)
 collect_albums() {
     local base_dir="$1"
     
-    # Find all album directories (subdirectories of photos)
-    for album_dir in "$base_dir"/*/; do
-        if [ -d "$album_dir" ]; then
-            local album_name=$(basename "$album_dir")
-            
-            # Check if this album has any images
-            local album_images=$(find "$album_dir" -maxdepth 1 -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" \))
-            
-            if [ -n "$album_images" ]; then
-                echo "ALBUM:$album_name"
-                echo "$album_images"
-            fi
-        fi
-    done
+    # Use single find command, sort by album, then group (much faster than per-album finds)
+    # -L follows symlinks
+    find -L "$base_dir" -mindepth 2 -maxdepth 2 -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" \) 2>/dev/null | sort | \
+    awk -F/ '{
+        album = $(NF-1)
+        if (album != prev_album) {
+            if (prev_album != "") print ""
+            print "ALBUM:" album
+            prev_album = album
+        }
+        print $0
+    }'
 }
 
 # Function to process a single album
@@ -248,7 +280,7 @@ process_directory() {
         elif [ -n "$line" ]; then
             album_images+=("$line")
         fi
-    done < <(collect_albums "photos")
+    done < <(collect_albums "$PHOTOS_DIR")
     
     # Process last album
     if [ -n "$current_album" ] && [ ${#album_images[@]} -gt 0 ]; then
@@ -393,8 +425,8 @@ animate_display() {
 }
 
 # Check if photos directory exists
-if [ ! -d "photos" ]; then
-    echo "ERROR: Photos directory does not exist"
+if [ ! -d "$PHOTOS_DIR" ]; then
+    echo "ERROR: Photos directory ($PHOTOS_DIR) does not exist"
     exit 1
 fi
 
@@ -405,22 +437,16 @@ mkdir -p optimized/{thumbnail,modal,download} 2>/dev/null || {
 }
 
 # Count total images to process
-total_count=$(count_images "photos")
+total_count=$(count_images "$PHOTOS_DIR")
 echo "$total_count" > "$TOTAL_FILE"
 
-# Count total original images for final summary (count from each album directory)
-total_original=0
-for album_dir in photos/*/; do
-    if [ -d "$album_dir" ]; then
-        count=$(find "$album_dir" -maxdepth 1 -type f \( -name "*.jpg" -o -name "*.JPG" -o -name "*.jpeg" -o -name "*.JPEG" -o -name "*.png" -o -name "*.PNG" \) 2>/dev/null | wc -l | tr -d ' ')
-        total_original=$((total_original + count))
-    fi
-done
+# Count total original images for final summary (faster single find)
+total_original=$(find -L "$PHOTOS_DIR" -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" \) 2>/dev/null | wc -l)
 echo "$total_original" > "$STATE_DIR/total_original"
 
 # Start image processing in background
 (
-process_directory "photos"
+process_directory "$PHOTOS_DIR"
     exit_code=$?
     echo "done" > "$STATUS_FILE"
     exit $exit_code

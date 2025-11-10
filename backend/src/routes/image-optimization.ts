@@ -119,7 +119,7 @@ router.post('/optimize', requireAuth, (req, res) => {
   res.write('data: {"type":"connected","message":"Connected to optimization stream"}\n\n');
   
   // Build command
-  const scriptPath = path.resolve(__dirname, '../../../optimize_all_images.sh');
+  const scriptPath = path.resolve(__dirname, '../../../optimize_all_images.js');
   const args = force ? ['--force'] : [];
   
   // Check if script exists
@@ -130,9 +130,8 @@ router.post('/optimize', requireAuth, (req, res) => {
   }
   
   // Spawn the optimization script
-  const child = spawn(scriptPath, args, {
+  const child = spawn('node', [scriptPath, ...args], {
     cwd: path.resolve(__dirname, '../../../'),
-    shell: true,
     env: { ...process.env, TERM: 'dumb' } // Disable terminal colors/animations
   });
   
