@@ -576,7 +576,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
 
     // Reload photos after all uploads and optimizations complete
     if (albumToUse) {
-      await loadPhotos(albumToUse);
+      await loadPhotos(albumToUse, 1, true);
     }
 
     // Clear uploading images after reload to prevent duplicates
@@ -787,7 +787,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
       if (res.ok) {
         setMessage({ type: 'success', text: 'Photo deleted' });
         trackPhotoDeleted(album, filename, photoTitle || filename);
-        await loadPhotos(album);
+        await loadPhotos(album, 1, true);
       } else {
         const error = await res.json();
         setMessage({ type: 'error', text: error.error || 'Failed to delete photo' });
