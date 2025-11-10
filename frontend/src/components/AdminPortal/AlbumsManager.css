@@ -535,6 +535,10 @@
   max-width: 700px;
 }
 
+.album-actions-grid.hide-preview .album-publish-toggle-header {
+  grid-column: 1 / -1;
+}
+
 @media (max-width: 768px) {
   .album-actions-grid {
     grid-template-columns: 1fr;
