@@ -142,6 +142,42 @@ router.get('/status', requireAuth, (req, res) => {
   }
 });
 
+// POST /api/image-optimization/stop - Stop running optimization job
+router.post('/stop', requireAuth, (req, res) => {
+  if (!runningOptimizationJob || runningOptimizationJob.isComplete) {
+    return res.json({ success: false, message: 'No running job to stop' });
+  }
+  
+  try {
+    // Kill the process
+    if (runningOptimizationJob.process) {
+      runningOptimizationJob.process.kill('SIGTERM');
+      console.log('[Optimization] Job stopped by user');
+    }
+    
+    // Mark as complete and broadcast to all clients
+    const stopMsg = JSON.stringify({ type: 'error', message: 'Job stopped by user' });
+    runningOptimizationJob.output.push(stopMsg);
+    runningOptimizationJob.isComplete = true;
+    broadcastToClients(runningOptimizationJob, stopMsg);
+    
+    // Close all client connections
+    runningOptimizationJob.clients.forEach(client => {
+      try {
+        client.end();
+      } catch (err) {
+        // Ignore errors
+      }
+    });
+    runningOptimizationJob.clients.clear();
+    
+    res.json({ success: true, message: 'Job stopped successfully' });
+  } catch (error: any) {
+    console.error('[Optimization] Error stopping job:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
 // POST /api/image-optimization/optimize - Run optimization script with SSE
 router.post('/optimize', requireAuth, (req, res) => {
   const { force } = req.body;
