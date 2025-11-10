@@ -58,6 +58,17 @@ router.post('/generate', requireAuth, (req, res) => {
     lines.forEach((line: string) => {
       console.log('[AI Titles]', line);
       
+      // Parse waiting status like: WAITING:5
+      const waitingMatch = line.match(/^WAITING:(\d+)$/);
+      if (waitingMatch) {
+        const seconds = parseInt(waitingMatch[1]);
+        res.write(`data: ${JSON.stringify({ 
+          type: 'waiting',
+          seconds: seconds
+        })}\n\n`);
+        return;
+      }
+      
       // Parse progress from lines like: [150/3000] (5%) Album/image.jpg
       const progressMatch = line.match(/^\[(\d+)\/(\d+)\]\s*\((\d+)%\)/);
       if (progressMatch) {

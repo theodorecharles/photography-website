@@ -119,12 +119,25 @@ async function generateImageTitle(openai, thumbnailPath, album, filename, db, re
     // Handle rate limiting with exponential backoff
     if (error.status === 429 && retryCount < 5) {
       const retryAfter = error.headers?.['retry-after'];
-      const waitTime = retryAfter 
+      let waitTime = retryAfter 
         ? parseInt(retryAfter) * 1000 
         : Math.pow(2, retryCount) * 1000; // Exponential backoff: 1s, 2s, 4s, 8s, 16s
       
-      console.error(`  ⚠ Rate limited, waiting ${Math.ceil(waitTime / 1000)}s before retry...`);
-      await new Promise(resolve => setTimeout(resolve, waitTime));
+      // Double the wait time to be extra safe
+      waitTime = waitTime * 2;
+      
+      const waitSeconds = Math.ceil(waitTime / 1000);
+      
+      // Output special format for frontend to parse
+      console.log(`RATE_LIMIT_WAIT:${waitSeconds}`);
+      
+      // Countdown
+      for (let i = waitSeconds; i > 0; i--) {
+        if (!isTTY) {
+          console.log(`RATE_LIMIT_COUNTDOWN:${i}`);
+        }
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      }
       
       return generateImageTitle(openai, thumbnailPath, album, filename, db, retryCount + 1);
     }
