@@ -257,21 +257,10 @@ router.get("/api/albums/:album/photos", (req: Request, res): void => {
 router.get("/api/random-photos", (req: Request, res) => {
   const photosDir = req.app.get("photosDir");
   
-  // Check if user is authenticated
-  const isAuthenticated = req.isAuthenticated && req.isAuthenticated();
-  
-  // Get albums from database based on auth status
-  let albumsToFetch: string[];
-  if (isAuthenticated) {
-    // For authenticated users, get all albums
-    albumsToFetch = getAllAlbums().map(a => a.name);
-  } else {
-    // For non-authenticated users, only get published albums
-    albumsToFetch = getPublishedAlbums().map(a => a.name);
-  }
-  
-  // Filter out homepage
-  albumsToFetch = albumsToFetch.filter(name => name !== 'homepage');
+  // Always only return photos from published albums (even for authenticated users)
+  const albumsToFetch = getPublishedAlbums()
+    .map(a => a.name)
+    .filter(name => name !== 'homepage');
   
   const allPhotos: {
     id: string;
