@@ -226,6 +226,9 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
       event.stopPropagation();
     }
     
+    // Save current scroll position
+    const scrollPosition = window.scrollY;
+    
     try {
       const newPublished = !currentPublished;
       const res = await fetch(`${API_URL}/api/albums/${encodeURIComponent(albumName)}/publish`, {
@@ -240,8 +243,11 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
           type: 'success', 
           text: `Album "${albumName}" ${newPublished ? 'published' : 'unpublished'}` 
         });
-        // Don't await - let it run in background to prevent scroll
-        loadAlbums();
+        // Reload albums and restore scroll position
+        await loadAlbums();
+        requestAnimationFrame(() => {
+          window.scrollTo(0, scrollPosition);
+        });
         window.dispatchEvent(new Event('albums-updated'));
       } else {
         const error = await res.json();
