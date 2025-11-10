@@ -92,7 +92,39 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
 
   useEffect(() => {
     loadConfig();
+    checkForRunningJobs();
   }, []);
+  
+  // Check for running jobs on mount and reconnect if needed
+  const checkForRunningJobs = async () => {
+    try {
+      // Check AI titles job
+      const titlesRes = await fetch(`${API_URL}/api/ai-titles/status`, {
+        credentials: 'include'
+      });
+      if (titlesRes.ok) {
+        const titlesStatus = await titlesRes.json();
+        if (titlesStatus.running && !titlesStatus.isComplete) {
+          console.log('Reconnecting to AI titles job...');
+          handleGenerateTitles();
+        }
+      }
+      
+      // Check optimization job
+      const optRes = await fetch(`${API_URL}/api/image-optimization/status`, {
+        credentials: 'include'
+      });
+      if (optRes.ok) {
+        const optStatus = await optRes.json();
+        if (optStatus.running && !optStatus.isComplete) {
+          console.log('Reconnecting to optimization job...');
+          handleRunOptimization(true);
+        }
+      }
+    } catch (err) {
+      console.error('Error checking for running jobs:', err);
+    }
+  };
 
   // Auto-scroll optimization output to bottom when new logs arrive
   useEffect(() => {
