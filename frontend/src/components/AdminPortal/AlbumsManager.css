@@ -445,8 +445,6 @@
 .album-photos {
   position: relative;
   transition: border-color 0.2s ease, background-color 0.2s ease;
-  max-height: calc(100vh - 200px);
-  overflow-y: auto;
 }
 
 .album-photos.drag-over {
