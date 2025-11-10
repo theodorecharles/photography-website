@@ -11,6 +11,7 @@ import { API_URL, cacheBustValue } from "../config";
 import { trackPhotoClick, trackError } from "../utils/analytics";
 import { fetchWithRateLimitCheck } from "../utils/fetchWrapper";
 import PhotoModal from "./PhotoModal";
+import NotFound from "./Misc/NotFound";
 
 interface PhotoGridProps {
   album: string;
@@ -356,18 +357,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
 
   if (error) {
     if (error === "ALBUM_NOT_FOUND") {
-      return (
-        <div className="error" style={{ textAlign: 'center', padding: '4rem 2rem' }}>
-          <h1 style={{ fontSize: '4rem', marginBottom: '1rem' }}>404</h1>
-          <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>Album Not Found</h2>
-          <p style={{ color: '#888', marginBottom: '2rem' }}>
-            This album doesn't exist or is not currently available.
-          </p>
-          <a href="/" style={{ color: 'var(--primary-color)', textDecoration: 'none' }}>
-            ← Back to Home
-          </a>
-        </div>
-      );
+      return <NotFound />;
     }
     return <div className="error">Error: {error}</div>;
   }
