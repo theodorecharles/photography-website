@@ -160,10 +160,19 @@ function App() {
       const brandingData = await brandingResponse.json();
 
       // Handle both array of strings (for non-authenticated) and array of objects (for authenticated)
+      // Only show published albums in the main navigation, even for authenticated users
       const albumNames = Array.isArray(albumsData) 
-        ? albumsData.map((album: string | { name: string; published: boolean }) => 
-            typeof album === 'string' ? album : album.name
-          ).filter((album: string) => album !== "homepage")
+        ? albumsData
+            .filter((album: string | { name: string; published: boolean }) => {
+              // If it's a string, include it (legacy behavior)
+              if (typeof album === 'string') return true;
+              // If it's an object, only include if published
+              return album.published !== false;
+            })
+            .map((album: string | { name: string; published: boolean }) => 
+              typeof album === 'string' ? album : album.name
+            )
+            .filter((album: string) => album !== "homepage")
         : [];
       
       setAlbums(albumNames);

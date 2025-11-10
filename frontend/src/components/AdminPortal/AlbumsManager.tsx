@@ -219,7 +219,13 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     }
   };
 
-  const handleTogglePublished = async (albumName: string, currentPublished: boolean) => {
+  const handleTogglePublished = async (albumName: string, currentPublished: boolean, event?: React.MouseEvent) => {
+    // Prevent default behavior and stop propagation
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    
     try {
       const newPublished = !currentPublished;
       const res = await fetch(`${API_URL}/api/albums/${encodeURIComponent(albumName)}/publish`, {
@@ -234,7 +240,8 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
           type: 'success', 
           text: `Album "${albumName}" ${newPublished ? 'published' : 'unpublished'}` 
         });
-        await loadAlbums();
+        // Don't await - let it run in background to prevent scroll
+        loadAlbums();
         window.dispatchEvent(new Event('albums-updated'));
       } else {
         const error = await res.json();
@@ -822,7 +829,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                             checked={album.published !== false}
                             onChange={(e) => {
                               e.stopPropagation();
-                              handleTogglePublished(album.name, album.published !== false);
+                              handleTogglePublished(album.name, album.published !== false, e as any);
                             }}
                           />
                           <span className="toggle-slider"></span>
