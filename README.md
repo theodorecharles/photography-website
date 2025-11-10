@@ -65,7 +65,6 @@ A modern, secure photography portfolio website built with React 19, TypeScript, 
 ### Prerequisites
 
 - **Node.js** 18+
-- **ImageMagick**: `brew install imagemagick` (macOS) or `sudo apt-get install imagemagick` (Linux)
 - **Google OAuth credentials** (optional, for admin features)
 
 ### Installation
@@ -110,16 +109,21 @@ mkdir -p photos/homepage photos/nature photos/portfolio
 4. **Optimize images**
 
 ```bash
-chmod +x optimize_all_images.sh
-./optimize_all_images.sh
+node optimize_all_images.js
 ```
 
 This creates three versions: thumbnail (512px), modal (2048px), download (4096px).
 
-> **Note:** For single image optimization (used automatically during uploads), there's also `optimize_new_image.sh` that optimizes one image at a time.
+> **Note:** For single image optimization (used automatically during uploads), there's also `optimize_new_image.js` that optimizes one image at a time.
 
 5. **Start development**
 
+```bash
+# Single command to run both frontend and backend
+npm run dev
+```
+
+Or if you prefer separate terminals:
 ```bash
 # Terminal 1 - Backend
 cd backend && npm run dev
@@ -292,7 +296,7 @@ Main config file: `config/config.json` (copy from `config/config.example.json`)
 
 **Frontend:** React 19, TypeScript, React Router 7, Vite 6, Recharts  
 **Backend:** Express 5, TypeScript, Passport.js, Multer  
-**Image Processing:** ImageMagick  
+**Image Processing:** Sharp (Node.js)  
 **Analytics:** OpenObserve
 
 ---
@@ -321,8 +325,8 @@ photography-website/
 ├── build.js                # Unified build script
 ├── generate-ai-titles.js   # AI title generation
 ├── image-metadata.db       # SQLite database
-├── optimize_all_images.sh  # Bulk image optimization
-├── optimize_new_image.sh   # Single image optimization
+├── optimize_all_images.js  # Bulk image optimization
+├── optimize_new_image.js   # Single image optimization
 ├── restart.sh             # Automated deployment
 ├── ecosystem.config.cjs   # PM2 configuration
 └── package.json           # Root dependencies
@@ -341,7 +345,7 @@ photography-website/
 ```bash
 mkdir photos/new-album
 cp *.jpg photos/new-album/
-./optimize_all_images.sh
+node optimize_all_images.js
 ```
 
 **Generate AI titles (optional):**
@@ -415,7 +419,7 @@ See backend source code in `backend/src/routes/` for complete API implementation
 
 **Images not showing:**
 ```bash
-./optimize_all_images.sh
+node optimize_all_images.js
 chmod -R 755 optimized/
 ```
 

@@ -505,7 +505,7 @@
 .photos-header {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: stretch;
   margin-bottom: 2rem;
   gap: 1.5rem;
   padding: 1.5rem;
@@ -531,41 +531,41 @@
 }
 
 .album-actions-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  grid-template-rows: repeat(2, auto);
+  display: flex;
+  flex-direction: column;
   gap: 0.75rem;
   width: 100%;
-  max-width: 700px;
+  max-width: 100%;
 }
 
-.album-actions-grid.hide-preview .album-publish-toggle-header {
-  grid-column: 1 / -1;
-}
-
-@media (max-width: 768px) {
+@media (min-width: 769px) {
   .album-actions-grid {
-    grid-template-columns: 1fr;
+    flex-direction: row;
+    align-items: stretch;
+  }
+  
+  .album-actions-grid .btn-action-item {
+    flex: 1;
+    min-width: 0;
   }
 }
 
-.album-publish-toggle-header {
+.btn-action-item {
   display: flex;
-  align-items: stretch;
+  align-items: center;
+  justify-content: center;
 }
 
-.album-publish-toggle-header .toggle-switch {
+.toggle-switch.btn-action-item {
   background: rgba(255, 255, 255, 0.05);
-  padding: 0.6rem 1rem;
+  padding: 0.75rem 1.5rem;
   border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.15);
   transition: all 0.2s ease;
-  flex: 1;
-  justify-content: center;
-  display: flex;
+  cursor: pointer;
 }
 
-.album-publish-toggle-header .toggle-switch:hover {
+.toggle-switch.btn-action-item:hover {
   background: rgba(255, 255, 255, 0.08);
   border-color: rgba(255, 255, 255, 0.2);
   transform: translateY(-1px);
@@ -1558,4 +1558,232 @@
 .error-dismiss-btn:hover {
   background: rgba(239, 68, 68, 0.3);
   border-color: rgba(239, 68, 68, 0.5);
+}
+
+/* ===================================== */
+/* Photo Reordering Styles              */
+/* ===================================== */
+
+/* Draggable photo item - dnd-kit handles transforms */
+.admin-photo-item {
+  cursor: grab;
+  position: relative;
+  /* Smooth transition for all animations */
+  transition: transform 200ms ease;
+}
+
+.admin-photo-item:active {
+  cursor: grabbing;
+}
+
+.admin-photo-item.dragging {
+  opacity: 0.5;
+  z-index: 1000;
+  transform: scale(1.05);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.admin-photo-item.shuffling-active {
+  transition: transform 200ms ease !important;
+}
+
+.admin-photo-item.shuffling-active[style*="translate"] {
+  transform: scale(0.85) var(--transform) !important;
+}
+
+/* Mobile reorder controls */
+.photo-reorder-controls-mobile {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  display: none;
+  flex-direction: column;
+  gap: 4px;
+  z-index: 10;
+}
+
+@media (max-width: 640px) {
+  .photo-reorder-controls-mobile {
+    display: flex;
+  }
+  
+  /* Disable drag on mobile */
+  .admin-photo-item {
+    cursor: default;
+  }
+  
+  .admin-photo-item:active {
+    cursor: default;
+  }
+}
+
+.btn-reorder-mobile {
+  background: rgba(0, 0, 0, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: var(--primary-color);
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1.2rem;
+  font-weight: bold;
+  transition: all 0.2s ease;
+  padding: 0;
+  line-height: 1;
+}
+
+.btn-reorder-mobile:hover:not(:disabled) {
+  background: var(--primary-color);
+  color: #000;
+  border-color: var(--primary-color);
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(74, 222, 128, 0.3);
+}
+
+.btn-reorder-mobile:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* Cancel order button */
+.btn-cancel-order {
+  background: rgba(239, 68, 68, 0.15) !important;
+  border: 1.5px solid rgba(239, 68, 68, 0.3) !important;
+  color: #ef4444 !important;
+}
+
+.btn-cancel-order:hover:not(:disabled) {
+  background: rgba(239, 68, 68, 0.25) !important;
+  border-color: rgba(239, 68, 68, 0.5) !important;
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.btn-cancel-order:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Shuffle order button */
+@property --shuffle-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+.btn-shuffle-order {
+  --shuffle-angle: 0deg;
+  background: rgba(139, 92, 246, 0.15) !important;
+  border: 1.5px solid rgba(139, 92, 246, 0.3) !important;
+  border-radius: 8px !important;
+  color: #8b5cf6 !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
+  position: relative;
+  z-index: 1;
+}
+
+.btn-shuffle-order::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 8px;
+  padding: 2px;
+  background: conic-gradient(
+    from var(--shuffle-angle),
+    rgba(255, 0, 0, 0.6),
+    rgba(255, 127, 0, 0.6),
+    rgba(255, 255, 0, 0.6),
+    rgba(0, 255, 0, 0.6),
+    rgba(0, 0, 255, 0.6),
+    rgba(75, 0, 130, 0.6),
+    rgba(148, 0, 211, 0.6),
+    rgba(255, 0, 0, 0.6)
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  z-index: -1;
+  opacity: 0;
+  filter: blur(1px);
+  transition: opacity 0.3s ease;
+}
+
+.btn-shuffle-order:hover:not(:disabled) {
+  background: rgba(139, 92, 246, 0.25) !important;
+  color: white !important;
+  transform: scale(1.05);
+  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.4);
+}
+
+.btn-shuffle-order:hover:not(:disabled)::before {
+  opacity: 1;
+  animation: rotate-shuffle-border 3s linear infinite;
+}
+
+.btn-shuffle-order.shuffling-active:hover:not(:disabled)::before {
+  animation: rotate-shuffle-border 0.4s linear infinite;
+}
+
+.btn-shuffle-order.shuffling-slowing:hover:not(:disabled)::before {
+  animation: rotate-shuffle-border 1.2s linear infinite;
+}
+
+.btn-shuffle-order:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@keyframes rotate-shuffle-border {
+  to {
+    --shuffle-angle: 360deg;
+  }
+}
+
+/* Save order button */
+.btn-save-order {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 8px rgba(74, 222, 128, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 16px rgba(74, 222, 128, 0.5);
+  }
+}
+
+.btn-save-order:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 16px rgba(74, 222, 128, 0.4) !important;
+}
+
+/* Unsaved changes indicator matching ConfigManager */
+.unsaved-indicator {
+  color: #fbbf24;
+  font-size: 0.85rem;
+  font-weight: 500;
+  font-style: italic;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.unsaved-indicator::before {
+  content: '●';
+  font-size: 0.75rem;
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
 }
