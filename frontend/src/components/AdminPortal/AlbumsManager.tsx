@@ -61,6 +61,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   const [showEditModal, setShowEditModal] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [isMainDropZoneDragging, setIsMainDropZoneDragging] = useState(false);
+  const [animatingAlbum, setAnimatingAlbum] = useState<string | null>(null);
 
   // Keep ref in sync with state
   useEffect(() => {
@@ -226,8 +227,8 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
       event.stopPropagation();
     }
     
-    // Save current scroll position
-    const scrollPosition = window.scrollY;
+    // Trigger animation
+    setAnimatingAlbum(albumName);
     
     try {
       const newPublished = !currentPublished;
@@ -239,22 +240,28 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
       });
 
       if (res.ok) {
+        // Wait for animation to complete (600ms)
+        await new Promise(resolve => setTimeout(resolve, 600));
+        
         setMessage({ 
           type: 'success', 
           text: `Album "${albumName}" ${newPublished ? 'published' : 'unpublished'}` 
         });
-        // Reload albums and restore scroll position
+        
+        // Reload albums
         await loadAlbums();
-        requestAnimationFrame(() => {
-          window.scrollTo(0, scrollPosition);
-        });
         window.dispatchEvent(new Event('albums-updated'));
+        
+        // Clear animation
+        setAnimatingAlbum(null);
       } else {
         const error = await res.json();
         setMessage({ type: 'error', text: error.error || 'Failed to update album' });
+        setAnimatingAlbum(null);
       }
     } catch (err) {
       setMessage({ type: 'error', text: 'Network error occurred' });
+      setAnimatingAlbum(null);
     }
   };
 
@@ -793,7 +800,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                 {albums.map((album) => (
                   <div 
                     key={album.name} 
-                    className={`album-card ${selectedAlbum === album.name ? 'selected' : ''} ${album.published === false ? 'unpublished' : ''}`}
+                    className={`album-card ${selectedAlbum === album.name ? 'selected' : ''} ${album.published === false ? 'unpublished' : ''} ${animatingAlbum === album.name ? 'animating' : ''}`}
                     onClick={() => setSelectedAlbum(selectedAlbum === album.name ? null : album.name)}
                   >
                     <div className="album-card-header">
