@@ -121,18 +121,12 @@ const getAllPhotos = (photosDir: string, includeUnpublished: boolean = false) =>
     
     // Filter out unpublished albums unless explicitly requested
     if (!includeUnpublished) {
-      const publishedAlbumStates = getPublishedAlbums();
-      const publishedNames = new Set(publishedAlbumStates.map(a => a.name));
       const allAlbumStates = getAllAlbums();
-      const unpublishedNames = new Set(allAlbumStates.filter(a => !a.published).map(a => a.name));
       
       allAlbums = allAlbums.filter(album => {
-        // Exclude if explicitly unpublished
-        if (unpublishedNames.has(album)) {
-          return false;
-        }
-        // Include if explicitly published or not in DB (legacy albums)
-        return publishedNames.has(album) || !allAlbumStates.some(a => a.name === album);
+        const state = allAlbumStates.find(a => a.name === album);
+        // Only include albums that are explicitly published
+        return state?.published === true;
       });
     }
     
@@ -208,7 +202,7 @@ router.get("/api/albums", (req: Request, res) => {
       const state = updatedAlbumStates.find(a => a.name === albumName);
       return {
         name: albumName,
-        published: state?.published ?? true
+        published: state?.published ?? false
       };
     });
     res.json(albumsWithState);
