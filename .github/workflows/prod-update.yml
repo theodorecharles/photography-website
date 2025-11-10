@@ -9,8 +9,14 @@ jobs:
     name: Run update.sh on prod VM
     runs-on: [self-hosted, prod, photography-website]
     steps:
-      - uses: actions/checkout@v4
-      - name: Make script executable and run
+      - name: Pull latest changes from GitHub
+        run: |
+          cd /home/ted/photography-website/
+          CURRENT_BRANCH=$(git branch --show-current)
+          echo "Current branch: $CURRENT_BRANCH"
+          git pull --ff-only origin "$CURRENT_BRANCH"
+      
+      - name: Run deployment script
         run: |
           cd /home/ted/photography-website/
           ./restart.sh
