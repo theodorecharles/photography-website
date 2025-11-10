@@ -171,7 +171,7 @@ function App() {
               // If it's a string, include it (legacy behavior)
               if (typeof album === 'string') return true;
               // If it's an object, only include if published
-              return album.published !== false;
+              return album.published === true;
             })
             .map((album: string | { name: string; published: boolean }) => 
               typeof album === 'string' ? album : album.name
