@@ -15,6 +15,7 @@ import NotFound from "./Misc/NotFound";
 
 interface PhotoGridProps {
   album: string;
+  onAlbumNotFound?: () => void;
 }
 
 interface Photo {
@@ -357,6 +358,10 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
 
   if (error) {
     if (error === "ALBUM_NOT_FOUND") {
+      // Notify parent component to hide album title
+      if (onAlbumNotFound) {
+        onAlbumNotFound();
+      }
       return <NotFound />;
     }
     return <div className="error">Error: {error}</div>;

@@ -29,7 +29,7 @@ const AuthError = lazy(() => import("./components/Misc/AuthError"));
 const NotFound = lazy(() => import("./components/Misc/NotFound"));
 
 // AlbumRoute component handles the routing for individual album pages
-function AlbumRoute() {
+function AlbumRoute({ onAlbumNotFound }: { onAlbumNotFound: () => void }) {
   const { album } = useParams();
   // Decode URI-encoded album name
   const decodedAlbum = album ? decodeURIComponent(album) : "";
@@ -42,7 +42,7 @@ function AlbumRoute() {
         url={`${SITE_URL}/album/${album}`}
         image={`${SITE_URL}/photos/derpatar.png`}
       />
-      <PhotoGrid album={decodedAlbum} />
+      <PhotoGrid album={decodedAlbum} onAlbumNotFound={onAlbumNotFound} />
     </>
   );
 }
@@ -78,6 +78,7 @@ function App() {
     undefined
   );
   const [showFooter, setShowFooter] = useState(false);
+  const [hideAlbumTitle, setHideAlbumTitle] = useState(false);
   const location = useLocation();
 
   // Global rate limit handler - any component can trigger this
@@ -111,6 +112,9 @@ function App() {
   // Update current album based on route changes and track page views
   useEffect(() => {
     const path = location.pathname;
+    // Reset hideAlbumTitle when route changes
+    setHideAlbumTitle(false);
+    
     if (path.startsWith("/album/")) {
       // Extract album name, handling trailing slashes and removing any extra path segments
       const encodedAlbum = path.split("/album/")[1].split("/")[0].split("?")[0].trim();
@@ -256,7 +260,7 @@ function App() {
       />
 
       <main className="main-content">
-        {currentAlbum && currentAlbum.length > 0 && (
+        {currentAlbum && currentAlbum.length > 0 && !hideAlbumTitle && (
           <h1 className="main-content-title">
             {currentAlbum}
           </h1>
@@ -270,7 +274,7 @@ function App() {
                 <PhotoGrid album="homepage" />
               </>
             } />
-            <Route path="/album/:album" element={<AlbumRoute />} />
+            <Route path="/album/:album" element={<AlbumRoute onAlbumNotFound={() => setHideAlbumTitle(true)} />} />
             <Route path="/license" element={
               <>
                 <SEO 
