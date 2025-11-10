@@ -11,9 +11,11 @@ import { API_URL, cacheBustValue } from "../config";
 import { trackPhotoClick, trackError } from "../utils/analytics";
 import { fetchWithRateLimitCheck } from "../utils/fetchWrapper";
 import PhotoModal from "./PhotoModal";
+import NotFound from "./Misc/NotFound";
 
 interface PhotoGridProps {
   album: string;
+  onAlbumNotFound?: () => void;
 }
 
 interface Photo {
@@ -32,7 +34,7 @@ interface Photo {
   exif?: any; // EXIF data from exifr library
 }
 
-const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
+const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound }) => {
   const location = useLocation();
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
@@ -111,6 +113,9 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
             `${API_URL}/api/albums/${album}/photos${queryString}`
           );
           if (!response.ok) {
+            if (response.status === 404) {
+              throw new Error("ALBUM_NOT_FOUND");
+            }
             throw new Error("Failed to fetch photos");
           }
           const data = await response.json();
@@ -352,6 +357,13 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
   }
 
   if (error) {
+    if (error === "ALBUM_NOT_FOUND") {
+      // Notify parent component to hide album title
+      if (onAlbumNotFound) {
+        onAlbumNotFound();
+      }
+      return <NotFound />;
+    }
     return <div className="error">Error: {error}</div>;
   }
 

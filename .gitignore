@@ -25,7 +25,11 @@ optimized/
 config/config.json
 config/config.local.json
 
-# Database (persist image metadata across updates)
+# Database (persist gallery data across updates)
+gallery.db
+gallery.db-shm
+gallery.db-wal
+# Legacy database files (can be removed after migration)
 image-metadata.db
 image-metadata.db-shm
 image-metadata.db-wal

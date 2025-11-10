@@ -29,7 +29,7 @@ const AuthError = lazy(() => import("./components/Misc/AuthError"));
 const NotFound = lazy(() => import("./components/Misc/NotFound"));
 
 // AlbumRoute component handles the routing for individual album pages
-function AlbumRoute() {
+function AlbumRoute({ onAlbumNotFound }: { onAlbumNotFound: () => void }) {
   const { album } = useParams();
   // Decode URI-encoded album name
   const decodedAlbum = album ? decodeURIComponent(album) : "";
@@ -42,7 +42,7 @@ function AlbumRoute() {
         url={`${SITE_URL}/album/${album}`}
         image={`${SITE_URL}/photos/derpatar.png`}
       />
-      <PhotoGrid album={decodedAlbum} />
+      <PhotoGrid album={decodedAlbum} onAlbumNotFound={onAlbumNotFound} />
     </>
   );
 }
@@ -78,6 +78,7 @@ function App() {
     undefined
   );
   const [showFooter, setShowFooter] = useState(false);
+  const [hideAlbumTitle, setHideAlbumTitle] = useState(false);
   const location = useLocation();
 
   // Global rate limit handler - any component can trigger this
@@ -111,6 +112,9 @@ function App() {
   // Update current album based on route changes and track page views
   useEffect(() => {
     const path = location.pathname;
+    // Reset hideAlbumTitle when route changes
+    setHideAlbumTitle(false);
+    
     if (path.startsWith("/album/")) {
       // Extract album name, handling trailing slashes and removing any extra path segments
       const encodedAlbum = path.split("/album/")[1].split("/")[0].split("?")[0].trim();
@@ -159,7 +163,23 @@ function App() {
       const externalLinksData = await externalLinksResponse.json();
       const brandingData = await brandingResponse.json();
 
-      setAlbums(albumsData.filter((album: string) => album !== "homepage"));
+      // Handle both array of strings (for non-authenticated) and array of objects (for authenticated)
+      // Only show published albums in the main navigation, even for authenticated users
+      const albumNames = Array.isArray(albumsData) 
+        ? albumsData
+            .filter((album: string | { name: string; published: boolean }) => {
+              // If it's a string, include it (legacy behavior)
+              if (typeof album === 'string') return true;
+              // If it's an object, only include if published
+              return album.published === true;
+            })
+            .map((album: string | { name: string; published: boolean }) => 
+              typeof album === 'string' ? album : album.name
+            )
+            .filter((album: string) => album !== "homepage")
+        : [];
+      
+      setAlbums(albumNames);
       setExternalLinks(externalLinksData.externalLinks);
       setSiteName(brandingData.siteName || 'Ted Charles');
       setAvatarPath(brandingData.avatarPath || '/photos/derpatar.png');
@@ -189,19 +209,40 @@ function App() {
   useEffect(() => {
     fetchData();
 
-    // Listen for admin changes to refresh navigation
-    const handleNavigationUpdate = () => {
-      fetchData();
+    // Silent update for navigation without triggering loading state
+    const updateNavigationSilently = async () => {
+      try {
+        const albumsResponse = await fetchWithRateLimitCheck(`${API_URL}/api/albums`);
+        if (albumsResponse.ok) {
+          const albumsData = await albumsResponse.json();
+          const albumNames = Array.isArray(albumsData) 
+            ? albumsData
+                .filter((album: string | { name: string; published: boolean }) => {
+                  if (typeof album === 'string') return true;
+                  return album.published === true;
+                })
+                .map((album: string | { name: string; published: boolean }) => 
+                  typeof album === 'string' ? album : album.name
+                )
+                .filter((album: string) => album !== "homepage")
+            : [];
+          setAlbums(albumNames);
+        }
+      } catch (err) {
+        // Silently fail - don't disrupt user experience
+        console.error('Failed to update navigation:', err);
+      }
     };
 
-    window.addEventListener('albums-updated', handleNavigationUpdate);
-    window.addEventListener('external-links-updated', handleNavigationUpdate);
-    window.addEventListener('branding-updated', handleNavigationUpdate);
+    // Listen for admin changes to refresh navigation silently
+    window.addEventListener('albums-updated', updateNavigationSilently);
+    window.addEventListener('external-links-updated', fetchData);
+    window.addEventListener('branding-updated', fetchData);
     
     return () => {
-      window.removeEventListener('albums-updated', handleNavigationUpdate);
-      window.removeEventListener('external-links-updated', handleNavigationUpdate);
-      window.removeEventListener('branding-updated', handleNavigationUpdate);
+      window.removeEventListener('albums-updated', updateNavigationSilently);
+      window.removeEventListener('external-links-updated', fetchData);
+      window.removeEventListener('branding-updated', fetchData);
     };
   }, []);
 
@@ -240,7 +281,7 @@ function App() {
       />
 
       <main className="main-content">
-        {currentAlbum && currentAlbum.length > 0 && (
+        {currentAlbum && currentAlbum.length > 0 && !hideAlbumTitle && (
           <h1 className="main-content-title">
             {currentAlbum}
           </h1>
@@ -254,7 +295,7 @@ function App() {
                 <PhotoGrid album="homepage" />
               </>
             } />
-            <Route path="/album/:album" element={<AlbumRoute />} />
+            <Route path="/album/:album" element={<AlbumRoute onAlbumNotFound={() => setHideAlbumTitle(true)} />} />
             <Route path="/license" element={
               <>
                 <SEO 

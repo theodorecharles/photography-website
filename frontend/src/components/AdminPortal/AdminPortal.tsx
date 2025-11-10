@@ -134,8 +134,16 @@ export default function AdminPortal() {
       const res = await fetch(`${API_URL}/api/albums`, {
         credentials: 'include',
       });
-      const albumNames = await res.json();
-      const albumsList: Album[] = albumNames.map((name: string) => ({ name }));
+      const albumsData = await res.json();
+      
+      // Handle both array of strings and array of objects with published state
+      const albumsList: Album[] = albumsData.map((album: string | { name: string; published: boolean }) => {
+        if (typeof album === 'string') {
+          return { name: album, published: true };
+        }
+        return album;
+      });
+      
       setAlbums(albumsList);
     } catch (err) {
       console.error('Failed to load albums:', err);

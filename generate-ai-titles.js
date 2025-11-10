@@ -20,7 +20,7 @@ const CONFIG_PATH = path.join(__dirname, 'config/config.json');
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 const Database = require('better-sqlite3');
-const DB_PATH = path.join(__dirname, 'image-metadata.db');
+const DB_PATH = path.join(__dirname, 'gallery.db');
 
 let processedCount = 0;
 let skippedCount = 0;

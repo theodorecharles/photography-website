@@ -61,6 +61,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   const [showEditModal, setShowEditModal] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [isMainDropZoneDragging, setIsMainDropZoneDragging] = useState(false);
+  const [animatingAlbum, setAnimatingAlbum] = useState<string | null>(null);
 
   // Keep ref in sync with state
   useEffect(() => {
@@ -216,6 +217,66 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
       }
     } catch (err) {
       setMessage({ type: 'error', text: 'Network error occurred' });
+    }
+  };
+
+  const handleTogglePublished = async (albumName: string, currentPublished: boolean, event?: React.MouseEvent) => {
+    // Prevent default behavior and stop propagation
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    
+    // Save scroll position
+    const scrollPosition = window.scrollY;
+    
+    // Trigger animation
+    setAnimatingAlbum(albumName);
+    const newPublished = !currentPublished;
+    
+    try {
+      const res = await fetch(`${API_URL}/api/albums/${encodeURIComponent(albumName)}/publish`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ published: newPublished }),
+      });
+
+      if (res.ok) {
+        // Wait for animation to complete (300ms for flip to middle)
+        await new Promise(resolve => setTimeout(resolve, 300));
+        
+        // Update albums state
+        await loadAlbums();
+        
+        // Wait for rest of animation
+        await new Promise(resolve => setTimeout(resolve, 300));
+        
+        setMessage({ 
+          type: 'success', 
+          text: `Album "${albumName}" ${newPublished ? 'published' : 'unpublished'}` 
+        });
+        
+        // Update navigation dropdown silently
+        window.dispatchEvent(new Event('albums-updated'));
+        
+        // Clear animation and restore scroll
+        setAnimatingAlbum(null);
+        requestAnimationFrame(() => {
+          window.scrollTo(0, scrollPosition);
+        });
+      } else {
+        const error = await res.json();
+        setMessage({ type: 'error', text: error.error || 'Failed to update album' });
+        setAnimatingAlbum(null);
+        // Revert optimistic update
+        await loadAlbums();
+      }
+    } catch (err) {
+      setMessage({ type: 'error', text: 'Network error occurred' });
+      setAnimatingAlbum(null);
+      // Revert optimistic update
+      await loadAlbums();
     }
   };
 
@@ -754,29 +815,24 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                 {albums.map((album) => (
                   <div 
                     key={album.name} 
-                    className={`album-card ${selectedAlbum === album.name ? 'selected' : ''}`}
+                    className={`album-card ${selectedAlbum === album.name ? 'selected' : ''} ${album.published === false ? 'unpublished' : ''} ${animatingAlbum === album.name ? 'animating' : ''}`}
                     onClick={() => setSelectedAlbum(selectedAlbum === album.name ? null : album.name)}
                   >
                     <div className="album-card-header">
                       <h4>
                         <span className="album-name">{album.name}</span>
+                        {album.published === false && (
+                          <span className="unpublished-badge" title="Not visible to public">
+                            🔒
+                          </span>
+                        )}
                       </h4>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDeleteAlbum(album.name);
-                        }}
-                        className="btn-delete-small"
-                        title="Delete album"
-                      >
-                        ×
-                      </button>
+                      {album.photoCount !== undefined && (
+                        <div className="album-badge">
+                          {album.photoCount} {album.photoCount === 1 ? 'photo' : 'photos'}
+                        </div>
+                      )}
                     </div>
-                    {album.photoCount !== undefined && (
-                      <div className="album-badge">
-                        {album.photoCount} {album.photoCount === 1 ? 'photo' : 'photos'}
-                      </div>
-                    )}
                   </div>
                 ))}
               </div>
@@ -791,10 +847,53 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
               onDrop={uploadingImages.length > 0 ? undefined : handleDrop}
             >
               <div className="photos-header">
-                <h3>Photos in "{selectedAlbum}"</h3>
-                <div className="upload-controls">
-                  <label className="btn-primary upload-btn">
-                    {uploadingImages.length > 0 ? 'Uploading...' : '+ Upload Photos'}
+                <div className={`album-actions-grid ${albums.find(a => a.name === selectedAlbum)?.published !== false ? 'hide-preview' : ''}`}>
+                  <div className="album-publish-toggle-header">
+                    <label 
+                      className="toggle-switch"
+                      title={albums.find(a => a.name === selectedAlbum)?.published === false ? "Publish album (make visible to public)" : "Unpublish album (hide from public)"}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={albums.find(a => a.name === selectedAlbum)?.published !== false}
+                        onChange={(e) => {
+                          handleTogglePublished(selectedAlbum, albums.find(a => a.name === selectedAlbum)?.published !== false, e as any);
+                        }}
+                      />
+                      <span className="toggle-slider"></span>
+                      <span className="toggle-label">
+                        {albums.find(a => a.name === selectedAlbum)?.published === false ? 'Unpublished' : 'Published'}
+                      </span>
+                    </label>
+                  </div>
+                  {albums.find(a => a.name === selectedAlbum)?.published === false && (
+                    <button
+                      onClick={() => window.open(`/album/${selectedAlbum}`, '_blank')}
+                      className="btn-action btn-preview"
+                      title="Preview album"
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                        <circle cx="12" cy="12" r="3"/>
+                      </svg>
+                      Preview Album
+                    </button>
+                  )}
+                  <button
+                    onClick={() => handleDeleteAlbum(selectedAlbum)}
+                    className="btn-action btn-delete"
+                    title="Delete album"
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+                    </svg>
+                    Delete Album
+                  </button>
+                  <label className="btn-action btn-upload">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
+                    </svg>
+                    {uploadingImages.length > 0 ? 'Uploading...' : 'Upload Photos'}
                     <input
                       type="file"
                       multiple
