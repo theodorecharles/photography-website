@@ -847,7 +847,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
               onDrop={uploadingImages.length > 0 ? undefined : handleDrop}
             >
               <div className="photos-header">
-                <div className="album-actions-grid">
+                <div className={`album-actions-grid ${albums.find(a => a.name === selectedAlbum)?.published !== false ? 'hide-preview' : ''}`}>
                   <div className="album-publish-toggle-header">
                     <label 
                       className="toggle-switch"
@@ -866,17 +866,19 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                       </span>
                     </label>
                   </div>
-                  <button
-                    onClick={() => window.open(`/album/${selectedAlbum}`, '_blank')}
-                    className="btn-action btn-preview"
-                    title="Preview album"
-                  >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                      <circle cx="12" cy="12" r="3"/>
-                    </svg>
-                    Preview Album
-                  </button>
+                  {albums.find(a => a.name === selectedAlbum)?.published === false && (
+                    <button
+                      onClick={() => window.open(`/album/${selectedAlbum}`, '_blank')}
+                      className="btn-action btn-preview"
+                      title="Preview album"
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                        <circle cx="12" cy="12" r="3"/>
+                      </svg>
+                      Preview Album
+                    </button>
+                  )}
                   <button
                     onClick={() => handleDeleteAlbum(selectedAlbum)}
                     className="btn-action btn-delete"
