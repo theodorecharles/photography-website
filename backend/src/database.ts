@@ -141,6 +141,7 @@ export function getAlbumMetadata(album: string): Array<{
   filename: string;
   title: string | null;
   description: string | null;
+  sort_order: number | null;
   created_at: string;
   updated_at: string;
 }> {
@@ -149,7 +150,10 @@ export function getAlbumMetadata(album: string): Array<{
   const stmt = db.prepare(`
     SELECT * FROM image_metadata 
     WHERE album = ?
-    ORDER BY filename
+    ORDER BY 
+      CASE WHEN sort_order IS NULL THEN 1 ELSE 0 END,
+      sort_order ASC,
+      filename ASC
   `);
   
   return stmt.all(album) as any[];
@@ -364,6 +368,37 @@ export function deleteAlbumState(name: string): boolean {
   
   const result = stmt.run(name);
   return result.changes > 0;
+}
+
+/**
+ * Update sort order for multiple images in an album
+ */
+export function updateImageSortOrder(album: string, imageOrders: { filename: string; sort_order: number }[]): boolean {
+  const db = getDatabase();
+  
+  try {
+    // Use a transaction for atomic updates
+    const transaction = db.transaction(() => {
+      const stmt = db.prepare(`
+        INSERT INTO image_metadata (album, filename, sort_order)
+        VALUES (?, ?, ?)
+        ON CONFLICT(album, filename) 
+        DO UPDATE SET 
+          sort_order = excluded.sort_order,
+          updated_at = CURRENT_TIMESTAMP
+      `);
+      
+      for (const { filename, sort_order } of imageOrders) {
+        stmt.run(album, filename, sort_order);
+      }
+    });
+    
+    transaction();
+    return true;
+  } catch (error) {
+    console.error('Error updating image sort order:', error);
+    return false;
+  }
 }
 
 /**

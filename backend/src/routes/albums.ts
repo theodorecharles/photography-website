@@ -8,7 +8,7 @@ import { Router, Request } from "express";
 import fs from "fs";
 import path from "path";
 import exifr from "exifr";
-import { getAlbumState, getPublishedAlbums, getAllAlbums, saveAlbum } from "../database.js";
+import { getAlbumState, getPublishedAlbums, getAllAlbums, saveAlbum, getAlbumMetadata } from "../database.js";
 
 const router = Router();
 
@@ -83,22 +83,44 @@ const getPhotosInAlbum = (photosDir: string, album: string) => {
       .readdirSync(albumPath)
       .filter((file) => /\.(jpg|jpeg|png|gif)$/i.test(file));
 
+    // Get metadata from database (includes sort_order)
+    const metadata = getAlbumMetadata(album);
+    const metadataMap = new Map(metadata.map(m => [m.filename, m]));
+
     // Use optimized images for all albums
-    return files.map((file) => {
+    const photos = files.map((file) => {
+      const meta = metadataMap.get(file);
+      
       // Generate title from filename by removing extension and replacing separators
-      const title = file
+      const defaultTitle = file
         .replace(/\.[^/.]+$/, '') // Remove extension
         .replace(/[-_]/g, ' '); // Replace hyphens and underscores with spaces
 
       return {
         id: `${album}/${file}`, // Make ID unique and consistent with getAllPhotos
-        title: title,
+        title: meta?.title || defaultTitle,
         album: album,
         src: `/optimized/modal/${album}/${file}`,
         thumbnail: `/optimized/thumbnail/${album}/${file}`,
         download: `/optimized/download/${album}/${file}`,
+        sort_order: meta?.sort_order ?? null,
       };
     });
+    
+    // Sort by custom order if available, otherwise by filename
+    photos.sort((a, b) => {
+      // Photos with sort_order come first
+      if (a.sort_order !== null && b.sort_order !== null) {
+        return a.sort_order - b.sort_order;
+      }
+      if (a.sort_order !== null) return -1;
+      if (b.sort_order !== null) return 1;
+      
+      // Fall back to filename sorting for photos without sort_order
+      return a.id.localeCompare(b.id);
+    });
+    
+    return photos;
   } catch (error) {
     console.error(`Error reading album ${album}:`, error);
     return [];

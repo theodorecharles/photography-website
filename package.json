@@ -1,10 +1,12 @@
 {
   "type": "module",
   "scripts": {
+    "dev": "concurrently --kill-others --names \"BACKEND,FRONTEND\" --prefix-colors \"blue,green\" \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\"",
     "build": "node build.js"
   },
   "devDependencies": {
-    "@types/node": "^22.15.2"
+    "@types/node": "^22.15.2",
+    "concurrently": "^9.1.2"
   },
   "dependencies": {
     "better-sqlite3": "^12.4.1",

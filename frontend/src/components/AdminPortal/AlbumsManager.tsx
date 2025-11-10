@@ -14,10 +14,149 @@ import {
 } from '../../utils/analytics';
 import { cacheBustValue } from '../../config';
 import './AlbumsManager.css';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+  DragOverlay,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  rectSortingStrategy,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 const API_URL = import.meta.env.VITE_API_URL || '';
 
 type UploadState = 'queued' | 'uploading' | 'optimizing' | 'complete' | 'error';
+
+// Sortable Photo Item Component
+interface SortablePhotoItemProps {
+  photo: Photo;
+  index: number;
+  onEdit: (photo: Photo) => void;
+  onDelete: (album: string, filename: string, title: string) => void;
+  onMoveUp: (index: number) => void;
+  onMoveDown: (index: number) => void;
+  totalPhotos: number;
+}
+
+const SortablePhotoItem: React.FC<SortablePhotoItemProps> = ({
+  photo,
+  index,
+  onEdit,
+  onDelete,
+  onMoveUp,
+  onMoveDown,
+  totalPhotos,
+}) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: photo.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  const imageUrl = `${API_URL}${photo.thumbnail}?i=${cacheBustValue}`;
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`admin-photo-item ${isDragging ? 'dragging' : ''}`}
+      {...attributes}
+      {...listeners}
+    >
+      <img
+        src={imageUrl}
+        alt={photo.title}
+        className="admin-photo-thumbnail"
+      />
+
+      {/* Reorder controls (mobile) */}
+      <div className="photo-reorder-controls-mobile">
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onMoveUp(index);
+          }}
+          disabled={index === 0}
+          className="btn-reorder-mobile"
+          title="Move up"
+          type="button"
+        >
+          ↑
+        </button>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onMoveDown(index);
+          }}
+          disabled={index === totalPhotos - 1}
+          className="btn-reorder-mobile"
+          title="Move down"
+          type="button"
+        >
+          ↓
+        </button>
+      </div>
+
+      <div className="photo-overlay">
+        <div className="photo-actions">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
+              onEdit(photo);
+            }}
+            onTouchEnd={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
+              onEdit(photo);
+            }}
+            className="btn-edit-photo"
+            title="Edit title"
+            type="button"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+            </svg>
+          </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              const filename = photo.id.split('/').pop() || photo.id;
+              onDelete(photo.album, filename, photo.title);
+            }}
+            className="btn-delete-photo"
+            title="Delete photo"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <polyline points="3 6 5 6 21 6" />
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 // Helper function to format album name to title case
 const toTitleCase = (str: string): string => {
@@ -53,12 +192,28 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   const [newAlbumName, setNewAlbumName] = useState('');
   const [selectedAlbum, setSelectedAlbum] = useState<string | null>(null);
   const [albumPhotos, setAlbumPhotos] = useState<Photo[]>([]);
+  const [originalPhotoOrder, setOriginalPhotoOrder] = useState<Photo[]>([]);
   const [editingPhoto, setEditingPhoto] = useState<Photo | null>(null);
   const [editTitleValue, setEditTitleValue] = useState('');
   const [showEditModal, setShowEditModal] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [isMainDropZoneDragging, setIsMainDropZoneDragging] = useState(false);
   const [animatingAlbum, setAnimatingAlbum] = useState<string | null>(null);
+  const [savingOrder, setSavingOrder] = useState(false);
+  const [hasEverDragged, setHasEverDragged] = useState(false);
+  const [activeId, setActiveId] = useState<string | null>(null);
+
+  // Configure dnd-kit sensors
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8, // Require 8px movement before drag starts
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   // Keep ref in sync with state
   useEffect(() => {
@@ -81,10 +236,99 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
       const data = await res.json();
       const photos = Array.isArray(data) ? data : (data.photos || []);
       setAlbumPhotos(photos);
+      setOriginalPhotoOrder(photos); // Store original order for comparison
+      setHasEverDragged(false); // Reset drag state when loading new album
     } catch (err) {
       console.error('Failed to load photos:', err);
       setAlbumPhotos([]);
+      setOriginalPhotoOrder([]);
+      setHasEverDragged(false);
     }
+  };
+
+  // Check if photo order has changed or if user has started dragging
+  const hasOrderChanged = () => {
+    if (!hasEverDragged) return false;
+    if (albumPhotos.length !== originalPhotoOrder.length) return false;
+    return albumPhotos.some((photo, index) => photo.id !== originalPhotoOrder[index].id);
+  };
+
+  // Handle drag start for dnd-kit
+  const handleDragStart = (event: DragEndEvent) => {
+    setHasEverDragged(true); // Mark that user has started dragging
+    setActiveId(event.active.id as string);
+  };
+
+  // Handle drag end for dnd-kit
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      setAlbumPhotos((items) => {
+        const oldIndex = items.findIndex((item) => item.id === active.id);
+        const newIndex = items.findIndex((item) => item.id === over.id);
+
+        return arrayMove(items, oldIndex, newIndex);
+      });
+    }
+    
+    setActiveId(null);
+  };
+
+  // Handle move up (mobile)
+  const handleMovePhotoUp = (index: number) => {
+    if (index === 0) return;
+    setHasEverDragged(true); // Mark that user has reordered
+    const newPhotos = [...albumPhotos];
+    [newPhotos[index - 1], newPhotos[index]] = [newPhotos[index], newPhotos[index - 1]];
+    setAlbumPhotos(newPhotos);
+  };
+
+  // Handle move down (mobile)
+  const handleMovePhotoDown = (index: number) => {
+    if (index === albumPhotos.length - 1) return;
+    setHasEverDragged(true); // Mark that user has reordered
+    const newPhotos = [...albumPhotos];
+    [newPhotos[index], newPhotos[index + 1]] = [newPhotos[index + 1], newPhotos[index]];
+    setAlbumPhotos(newPhotos);
+  };
+
+  // Save photo order
+  const handleSavePhotoOrder = async () => {
+    if (!selectedAlbum) return;
+    
+    setSavingOrder(true);
+    try {
+      const photoOrder = albumPhotos.map((photo) => ({
+        filename: photo.id.split('/').pop() || photo.id
+      }));
+
+      const res = await fetch(`${API_URL}/api/albums/${encodeURIComponent(selectedAlbum)}/photo-order`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ photoOrder }),
+      });
+
+      if (res.ok) {
+        setMessage({ type: 'success', text: 'Photo order saved!' });
+        setOriginalPhotoOrder(albumPhotos); // Update original order
+        setHasEverDragged(false); // Reset drag state after save
+      } else {
+        setMessage({ type: 'error', text: 'Failed to save photo order' });
+      }
+    } catch (err) {
+      console.error('Failed to save photo order:', err);
+      setMessage({ type: 'error', text: 'Network error occurred' });
+    } finally {
+      setSavingOrder(false);
+    }
+  };
+
+  // Cancel photo order changes
+  const handleCancelPhotoOrder = () => {
+    setAlbumPhotos(originalPhotoOrder);
+    setHasEverDragged(false); // Reset drag state
   };
 
   const handleOpenEditModal = async (photo: Photo) => {
@@ -544,18 +788,27 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   };
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    // Only handle file drops, not photo reordering
+    if (!e.dataTransfer.types.includes('Files')) return;
+    
     e.preventDefault();
     e.stopPropagation();
     setIsDragging(true);
   };
 
   const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    // Only handle file drops, not photo reordering
+    if (!e.dataTransfer.types.includes('Files')) return;
+    
     e.preventDefault();
     e.stopPropagation();
     setIsDragging(false);
   };
 
   const handleDrop = async (e: React.DragEvent<HTMLDivElement>) => {
+    // Only handle file drops, not photo reordering
+    if (!e.dataTransfer.types.includes('Files')) return;
+    
     e.preventDefault();
     e.stopPropagation();
     setIsDragging(false);
@@ -832,30 +1085,29 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
               onDrop={uploadingImages.length > 0 ? undefined : handleDrop}
             >
               <div className="photos-header">
-                <div className={`album-actions-grid ${albums.find(a => a.name === selectedAlbum)?.published !== false ? 'hide-preview' : ''}`}>
-                  <div className="album-publish-toggle-header">
-                    <label 
-                      className="toggle-switch"
-                      title={albums.find(a => a.name === selectedAlbum)?.published === false ? "Publish album (make visible to public)" : "Unpublish album (hide from public)"}
-                    >
-                      <input
-                        type="checkbox"
-                        checked={albums.find(a => a.name === selectedAlbum)?.published !== false}
-                        onChange={(e) => {
-                          handleTogglePublished(selectedAlbum, albums.find(a => a.name === selectedAlbum)?.published !== false, e as any);
-                        }}
-                      />
-                      <span className="toggle-slider"></span>
-                      <span className="toggle-label">
-                        {albums.find(a => a.name === selectedAlbum)?.published === false ? 'Unpublished' : 'Published'}
-                      </span>
-                    </label>
-                  </div>
+                <div className="album-actions-grid">
+                  <label 
+                    className="toggle-switch btn-action-item"
+                    title={albums.find(a => a.name === selectedAlbum)?.published === false ? "Publish album (make visible to public)" : "Unpublish album (hide from public)"}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={albums.find(a => a.name === selectedAlbum)?.published !== false}
+                      onChange={(e) => {
+                        handleTogglePublished(selectedAlbum, albums.find(a => a.name === selectedAlbum)?.published !== false, e as any);
+                      }}
+                    />
+                    <span className="toggle-slider"></span>
+                    <span className="toggle-label">
+                      {albums.find(a => a.name === selectedAlbum)?.published === false ? 'Unpublished' : 'Published'}
+                    </span>
+                  </label>
+                  
                   {albums.find(a => a.name === selectedAlbum)?.published === false && (
                     <button
                       onClick={() => window.open(`/album/${selectedAlbum}`, '_blank')}
-                      className="btn-action btn-preview"
-                      title="Preview album"
+                      className="btn-action btn-preview btn-action-item"
+                      title="Preview unpublished album"
                     >
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
@@ -864,9 +1116,10 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                       Preview Album
                     </button>
                   )}
+                  
                   <button
                     onClick={() => handleDeleteAlbum(selectedAlbum)}
-                    className="btn-action btn-delete"
+                    className="btn-action btn-delete btn-action-item"
                     title="Delete album"
                   >
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -874,7 +1127,8 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                     </svg>
                     Delete Album
                   </button>
-                  <label className="btn-action btn-upload">
+                  
+                  <label className="btn-action btn-upload btn-action-item">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
                     </svg>
@@ -889,6 +1143,37 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                     />
                   </label>
                 </div>
+                
+                {hasOrderChanged() && (
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '1rem' }}>
+                    <button
+                      onClick={handleCancelPhotoOrder}
+                      disabled={savingOrder}
+                      className="btn-action btn-cancel-order"
+                      title="Cancel changes"
+                    >
+                      Cancel
+                    </button>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                      <span className="unsaved-indicator">
+                        Unsaved changes
+                      </span>
+                      <button
+                        onClick={handleSavePhotoOrder}
+                        disabled={savingOrder}
+                        className="btn-action btn-save-order"
+                        title="Save photo order"
+                        style={{ 
+                          background: 'linear-gradient(135deg, var(--primary-color), color-mix(in srgb, var(--primary-color) 80%, white))',
+                          color: '#000',
+                          fontWeight: 600
+                        }}
+                      >
+                        {savingOrder ? 'Saving...' : 'Save Order'}
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {isDragging && uploadingImages.length === 0 && (
@@ -954,9 +1239,15 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                   No photos in this album yet. Upload some to get started!
                 </p>
               ) : (
-                <div className="photos-grid">
-                  {/* Show uploading images first */}
-                  {uploadingImages.map((img, idx) => (
+                <DndContext
+                  sensors={sensors}
+                  collisionDetection={closestCenter}
+                  onDragStart={handleDragStart}
+                  onDragEnd={handleDragEnd}
+                >
+                  <div className="photos-grid">
+                    {/* Show uploading images first */}
+                    {uploadingImages.map((img, idx) => (
                     <div key={`uploading-${idx}`} className="admin-photo-item uploading-photo-item">
                       {img.state === 'queued' && (
                         <div className="photo-state-overlay">
@@ -1045,60 +1336,36 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                       )}
                       <div className="photo-filename">{img.filename}</div>
                     </div>
-                  ))}
-                  
-                  {/* Show existing album photos */}
-                  {albumPhotos.map((photo) => {
-                    const imageUrl = `${API_URL}${photo.thumbnail}?i=${cacheBustValue}`;
-                    return (
-                      <div key={photo.id} className="admin-photo-item">
-                        <img 
-                          src={imageUrl}
-                          alt={photo.title}
+                    ))}
+                    
+                    {/* Show existing album photos with drag and drop */}
+                    <SortableContext items={albumPhotos.map(p => p.id)} strategy={rectSortingStrategy}>
+                      {albumPhotos.map((photo, index) => (
+                        <SortablePhotoItem
+                          key={photo.id}
+                          photo={photo}
+                          index={index}
+                          onEdit={handleOpenEditModal}
+                          onDelete={handleDeletePhoto}
+                          onMoveUp={handleMovePhotoUp}
+                          onMoveDown={handleMovePhotoDown}
+                          totalPhotos={albumPhotos.length}
+                        />
+                      ))}
+                    </SortableContext>
+                  </div>
+                  <DragOverlay>
+                    {activeId ? (
+                      <div className="admin-photo-item dragging" style={{ cursor: 'grabbing' }}>
+                        <img
+                          src={`${API_URL}${albumPhotos.find(p => p.id === activeId)?.thumbnail}?i=${cacheBustValue}`}
+                          alt="Dragging"
                           className="admin-photo-thumbnail"
                         />
-                        <div className="photo-overlay">
-                          <div className="photo-actions">
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                e.preventDefault();
-                                handleOpenEditModal(photo);
-                              }}
-                              onTouchEnd={(e) => {
-                                // Handle touch events for iOS Safari
-                                e.stopPropagation();
-                                e.preventDefault();
-                                handleOpenEditModal(photo);
-                              }}
-                              className="btn-edit-photo"
-                              title="Edit title"
-                              type="button"
-                            >
-                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-                              </svg>
-                            </button>
-                            <button
-                              onClick={() => {
-                                const filename = photo.id.split('/').pop() || photo.id;
-                                handleDeletePhoto(photo.album, filename, photo.title);
-                              }}
-                              className="btn-delete-photo"
-                              title="Delete photo"
-                            >
-                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <polyline points="3 6 5 6 21 6" />
-                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                              </svg>
-                            </button>
-                          </div>
-                        </div>
                       </div>
-                    );
-                  })}
-                </div>
+                    ) : null}
+                  </DragOverlay>
+                </DndContext>
               )}
             </div>
           )}

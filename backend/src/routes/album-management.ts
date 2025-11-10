@@ -17,7 +17,8 @@ import {
   deleteImageMetadata, 
   saveAlbum, 
   deleteAlbumState,
-  setAlbumPublished 
+  setAlbumPublished,
+  updateImageSortOrder
 } from "../database.js";
 import { invalidateAlbumCache } from "./albums.js";
 
@@ -460,6 +461,58 @@ router.post("/:album/optimize", requireAuth, async (req: Request, res: Response)
   } catch (error) {
     console.error('Error triggering optimization:', error);
     res.status(500).json({ error: 'Failed to trigger optimization' });
+  }
+});
+
+/**
+ * Update photo order in an album
+ */
+router.post("/:album/photo-order", requireAuth, async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { album } = req.params;
+    const { photoOrder } = req.body;
+    
+    const sanitizedAlbum = sanitizeName(album);
+    if (!sanitizedAlbum) {
+      res.status(400).json({ error: 'Invalid album name' });
+      return;
+    }
+
+    // Validate photoOrder array
+    if (!Array.isArray(photoOrder)) {
+      res.status(400).json({ error: 'photoOrder must be an array' });
+      return;
+    }
+
+    // Sanitize and validate each photo filename
+    const imageOrders = photoOrder.map((item, index) => {
+      const sanitizedFilename = sanitizePhotoName(item.filename);
+      if (!sanitizedFilename) {
+        throw new Error(`Invalid photo filename: ${item.filename}`);
+      }
+      return {
+        filename: sanitizedFilename,
+        sort_order: index
+      };
+    });
+
+    // Update the sort order in the database
+    const success = updateImageSortOrder(sanitizedAlbum, imageOrders);
+    
+    if (!success) {
+      res.status(500).json({ error: 'Failed to update photo order' });
+      return;
+    }
+
+    // Invalidate cache for this album
+    invalidateAlbumCache(sanitizedAlbum);
+    
+    console.log(`✓ Updated photo order for album: ${sanitizedAlbum} (${imageOrders.length} photos)`);
+
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Error updating photo order:', error);
+    res.status(500).json({ error: 'Failed to update photo order' });
   }
 });
 
