@@ -460,10 +460,15 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
         }
       }
     } catch (err) {
+      if (err instanceof Error && err.name === 'AbortError') {
+        // User cancelled, message already set
+        return;
+      }
       console.error('Optimization error:', err);
       setMessage({ type: 'error', text: 'Network error occurred' });
     } finally {
       setIsOptimizationRunning(false);
+      optimizationAbortController.current = null;
     }
   };
 
