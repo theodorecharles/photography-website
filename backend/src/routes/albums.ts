@@ -257,6 +257,19 @@ router.get("/api/albums/:album/photos", (req: Request, res): void => {
 router.get("/api/random-photos", (req: Request, res) => {
   const photosDir = req.app.get("photosDir");
   
+  // Auto-sync filesystem albums to database before fetching photos
+  const allAlbums = getAlbums(photosDir);
+  const allAlbumStates = getAllAlbums();
+  const albumsInDB = new Set(allAlbumStates.map(a => a.name));
+  
+  for (const albumName of allAlbums) {
+    if (!albumsInDB.has(albumName) && albumName !== 'homepage') {
+      // Auto-add missing albums as unpublished (for manually created folders)
+      saveAlbum(albumName, false);
+      console.log(`Auto-synced album to database: ${albumName} (unpublished - manually created folder)`);
+    }
+  }
+  
   // Check if user is authenticated
   const isAuthenticated = req.isAuthenticated && req.isAuthenticated();
   
