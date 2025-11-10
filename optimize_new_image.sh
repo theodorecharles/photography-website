@@ -16,6 +16,9 @@ IMAGE_FILENAME="$2"
 # Read configuration from config.json
 CONFIG_FILE="config/config.json"
 
+# Read photos directory from config (backend.photosDir)
+PHOTOS_DIR=$(grep -A 5 '"backend"' "$CONFIG_FILE" 2>/dev/null | grep '"photosDir"' | sed -E 's/.*"photosDir"[[:space:]]*:[[:space:]]*"([^"]+)".*/\1/' || echo "photos")
+
 # Read image optimization settings from config.json (nested under optimization.images)
 THUMBNAIL_QUALITY=$(grep -A 20 '"optimization"' "$CONFIG_FILE" 2>/dev/null | grep -A 15 '"images"' | grep -A 2 '"thumbnail"' | grep '"quality"' | grep -o '[0-9]*' | head -1 || echo "60")
 THUMBNAIL_MAX_DIM=$(grep -A 20 '"optimization"' "$CONFIG_FILE" 2>/dev/null | grep -A 15 '"images"' | grep -A 2 '"thumbnail"' | grep '"maxDimension"' | grep -o '[0-9]*' | head -1 || echo "512")
@@ -27,7 +30,7 @@ DOWNLOAD_QUALITY=$(grep -A 20 '"optimization"' "$CONFIG_FILE" 2>/dev/null | grep
 DOWNLOAD_MAX_DIM=$(grep -A 20 '"optimization"' "$CONFIG_FILE" 2>/dev/null | grep -A 15 '"images"' | grep -A 2 '"download"' | grep '"maxDimension"' | grep -o '[0-9]*' | head -1 || echo "4096")
 
 # Define paths
-SOURCE_IMAGE="photos/$ALBUM_NAME/$IMAGE_FILENAME"
+SOURCE_IMAGE="$PHOTOS_DIR/$ALBUM_NAME/$IMAGE_FILENAME"
 
 # Check if source image exists
 if [ ! -f "$SOURCE_IMAGE" ]; then
