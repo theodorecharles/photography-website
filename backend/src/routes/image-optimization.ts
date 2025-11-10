@@ -140,7 +140,20 @@ router.post('/optimize', requireAuth, (req, res) => {
     const lines = data.toString().split('\n');
     lines.forEach((line: string) => {
       if (line.trim()) {
-        res.write(`data: ${JSON.stringify({ type: 'stdout', message: line })}\n\n`);
+        // Parse progress from lines like: [150/3000] (5%) Album/image.jpg [type]
+        const progressMatch = line.match(/^\[(\d+)\/(\d+)\]\s*\((\d+)%\)/);
+        if (progressMatch) {
+          const [, current, total, percent] = progressMatch;
+          res.write(`data: ${JSON.stringify({ 
+            type: 'progress', 
+            current: parseInt(current),
+            total: parseInt(total),
+            percent: parseInt(percent),
+            message: line 
+          })}\n\n`);
+        } else {
+          res.write(`data: ${JSON.stringify({ type: 'stdout', message: line })}\n\n`);
+        }
       }
     });
   });

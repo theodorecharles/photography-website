@@ -78,6 +78,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
   const [optimizationLogs, setOptimizationLogs] = useState<string[]>([]);
   const [isOptimizationRunning, setIsOptimizationRunning] = useState(false);
   const [optimizationComplete, setOptimizationComplete] = useState(false);
+  const [optimizationProgress, setOptimizationProgress] = useState(0);
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [restartingBackend, setRestartingBackend] = useState(false);
   const [restartingFrontend, setRestartingFrontend] = useState(false);
@@ -317,6 +318,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
     setIsOptimizationRunning(true);
     setOptimizationComplete(false);
     setOptimizationLogs([]);
+    setOptimizationProgress(0);
     setMessage(null);
 
     // Scroll to regenerate button to show output
@@ -376,7 +378,10 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
             try {
               const data = JSON.parse(line.slice(6));
               
-              if (data.type === 'stdout' || data.type === 'stderr') {
+              if (data.type === 'progress') {
+                setOptimizationProgress(data.percent);
+                setOptimizationLogs(prev => [...prev, data.message]);
+              } else if (data.type === 'stdout' || data.type === 'stderr') {
                 setOptimizationLogs(prev => [...prev, data.message]);
               } else if (data.type === 'complete') {
                 // Only mark as complete and show final message for the last completion
@@ -669,6 +674,38 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
               <h4 style={{ color: '#e5e7eb', margin: 0, fontSize: '1rem', fontWeight: 600 }}>Regenerate All Images</h4>
               <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                {isOptimizationRunning && (
+                  <div className="progress-circle" style={{ width: '60px', height: '60px' }}>
+                    <svg className="progress-ring" width="60" height="60">
+                      <circle
+                        className="progress-ring-circle"
+                        stroke="rgba(255, 255, 255, 0.1)"
+                        strokeWidth="4"
+                        fill="transparent"
+                        r="26"
+                        cx="30"
+                        cy="30"
+                      />
+                      <circle
+                        className="progress-ring-circle"
+                        stroke="var(--primary-color)"
+                        strokeWidth="4"
+                        fill="transparent"
+                        r="26"
+                        cx="30"
+                        cy="30"
+                        strokeDasharray={`${2 * Math.PI * 26}`}
+                        strokeDashoffset={`${2 * Math.PI * 26 * (1 - optimizationProgress / 100)}`}
+                        style={{ 
+                          transition: 'stroke-dashoffset 0.3s ease',
+                          transform: 'rotate(-90deg)',
+                          transformOrigin: '50% 50%'
+                        }}
+                      />
+                    </svg>
+                    <span className="progress-percentage" style={{ fontSize: '0.9rem' }}>{optimizationProgress}%</span>
+                  </div>
+                )}
                 <button
                   type="button"
                   onClick={() => handleRunOptimization(true)}
