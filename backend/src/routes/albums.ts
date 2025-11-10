@@ -230,6 +230,15 @@ router.get("/api/albums/:album/photos", (req: Request, res): void => {
     return;
   }
 
+  const photosDir = req.app.get("photosDir");
+  const albumPath = path.join(photosDir, sanitizedAlbum);
+  
+  // Check if album directory exists
+  if (!fs.existsSync(albumPath) || !fs.statSync(albumPath).isDirectory()) {
+    res.status(404).json({ error: "Album not found" });
+    return;
+  }
+
   // Check if user is authenticated
   const isAuthenticated = req.isAuthenticated && req.isAuthenticated();
   
@@ -242,7 +251,6 @@ router.get("/api/albums/:album/photos", (req: Request, res): void => {
     return;
   }
 
-  const photosDir = req.app.get("photosDir");
   const photos = getPhotosInAlbum(photosDir, sanitizedAlbum);
   res.json(photos);
 });
