@@ -51,10 +51,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   const [uploadingImages, setUploadingImages] = useState<UploadingImage[]>([]);
   const uploadingImagesRef = useRef<UploadingImage[]>([]);
   const [newAlbumName, setNewAlbumName] = useState('');
-  const [selectedAlbum, setSelectedAlbum] = useState<string | null>(() => {
-    // Restore selected album from sessionStorage on mount
-    return sessionStorage.getItem('selectedAlbum');
-  });
+  const [selectedAlbum, setSelectedAlbum] = useState<string | null>(null);
   const [albumPhotos, setAlbumPhotos] = useState<Photo[]>([]);
   const [editingPhoto, setEditingPhoto] = useState<Photo | null>(null);
   const [editTitleValue, setEditTitleValue] = useState('');
@@ -67,15 +64,6 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   useEffect(() => {
     uploadingImagesRef.current = uploadingImages;
   }, [uploadingImages]);
-
-  // Persist selected album to sessionStorage whenever it changes
-  useEffect(() => {
-    if (selectedAlbum) {
-      sessionStorage.setItem('selectedAlbum', selectedAlbum);
-    } else {
-      sessionStorage.removeItem('selectedAlbum');
-    }
-  }, [selectedAlbum]);
 
   // Load photos when album is selected
   useEffect(() => {
