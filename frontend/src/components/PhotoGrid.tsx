@@ -119,8 +119,10 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound }) => {
             throw new Error("Failed to fetch photos");
           }
           const data = await response.json();
+          // Handle both paginated and non-paginated responses
+          const photosArray = data.photos || data;
           // Sort photos by creation date, newest first
-          const sortedPhotos = data.sort((a: Photo, b: Photo) => {
+          const sortedPhotos = photosArray.sort((a: Photo, b: Photo) => {
             if (!a.metadata || !b.metadata) return 0;
             return (
               new Date(b.metadata.created).getTime() -
