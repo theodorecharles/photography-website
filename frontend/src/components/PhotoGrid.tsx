@@ -4,7 +4,7 @@
  * and provides functionality for viewing photos in a modal.
  */
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useLocation } from "react-router-dom";
 import "./PhotoGrid.css";
 import { API_URL, cacheBustValue } from "../config";
@@ -353,6 +353,12 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound }) => {
     hasReachedBottomRef.current = false;
   }, [photos]);
 
+  // Memoize the column distribution to avoid recomputing on every render
+  const distributedColumns = useMemo(
+    () => distributePhotos(photos, numColumns),
+    [photos, numColumns, imageDimensions]
+  );
+
   if (loading) {
     return <div className="loading">Loading photos...</div>;
   }
@@ -370,7 +376,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound }) => {
 
   return (
     <div className="photo-grid" style={{ gridTemplateColumns: `repeat(${numColumns}, 1fr)` }}>
-      {distributePhotos(photos, numColumns).map((column, columnIndex) => (
+      {distributedColumns.map((column, columnIndex) => (
         <div 
           key={columnIndex} 
           className="photo-column"
