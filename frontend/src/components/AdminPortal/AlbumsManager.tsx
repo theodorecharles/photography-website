@@ -331,6 +331,107 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     setHasEverDragged(false); // Reset drag state
   };
 
+  const shuffleIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const slowdownTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const speedupTimeoutsRef = useRef<NodeJS.Timeout[]>([]);
+
+  // Speed up animation when button is pressed and start shuffling
+  const handleShuffleMouseDown = (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (savingOrder) return;
+    
+    setHasEverDragged(true); // Mark that user has reordered
+    
+    const button = e.currentTarget;
+    button.classList.add('shuffling-active');
+    
+    // Add zoom class to all photos during shuffle
+    const photoElements = document.querySelectorAll('.admin-photo-item');
+    photoElements.forEach((el) => {
+      el.classList.add('shuffling-active');
+    });
+    
+    // Start continuous shuffling with progressive speed increase
+    let currentInterval = 100; // Start at 100ms between swaps
+    
+    const startShuffling = (interval: number) => {
+      if (shuffleIntervalRef.current) {
+        clearInterval(shuffleIntervalRef.current);
+      }
+      
+      shuffleIntervalRef.current = setInterval(() => {
+        setAlbumPhotos((currentPhotos) => {
+          const newOrder = [...currentPhotos];
+          // Pick two random indices
+          const i = Math.floor(Math.random() * newOrder.length);
+          const j = Math.floor(Math.random() * newOrder.length);
+          
+          // Swap them
+          if (i !== j) {
+            [newOrder[i], newOrder[j]] = [newOrder[j], newOrder[i]];
+          }
+          
+          return newOrder;
+        });
+      }, interval);
+    };
+    
+    startShuffling(currentInterval);
+    
+    // Speed up by 20% every 500ms for 3 seconds (6 iterations)
+    for (let i = 1; i <= 6; i++) {
+      const timeout = setTimeout(() => {
+        currentInterval = currentInterval * 0.8; // Reduce interval by 20% = 20% faster
+        startShuffling(currentInterval);
+      }, i * 500);
+      speedupTimeoutsRef.current.push(timeout);
+    }
+  };
+
+  // Stop shuffling and slow down animation when button is released
+  const handleShuffleMouseUp = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const button = e.currentTarget;
+    
+    // Clear all speedup timeouts
+    speedupTimeoutsRef.current.forEach(timeout => clearTimeout(timeout));
+    speedupTimeoutsRef.current = [];
+    
+    // Stop shuffling
+    if (shuffleIntervalRef.current) {
+      clearInterval(shuffleIntervalRef.current);
+      shuffleIntervalRef.current = null;
+    }
+    
+    // Remove zoom class from photos
+    const photoElements = document.querySelectorAll('.admin-photo-item');
+    setTimeout(() => {
+      photoElements.forEach((el) => {
+        el.classList.remove('shuffling-active');
+      });
+    }, 200);
+    
+    // Transition to medium speed
+    button.classList.remove('shuffling-active');
+    button.classList.add('shuffling-slowing');
+    
+    // Return to normal speed
+    slowdownTimeoutRef.current = setTimeout(() => {
+      button.classList.remove('shuffling-slowing');
+    }, 1000);
+  };
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (shuffleIntervalRef.current) {
+        clearInterval(shuffleIntervalRef.current);
+      }
+      if (slowdownTimeoutRef.current) {
+        clearTimeout(slowdownTimeoutRef.current);
+      }
+      speedupTimeoutsRef.current.forEach(timeout => clearTimeout(timeout));
+    };
+  }, []);
+
   const handleOpenEditModal = async (photo: Photo) => {
     setEditingPhoto(photo);
     setShowEditModal(true);
@@ -1146,14 +1247,43 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                 
                 {hasOrderChanged() && (
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '1rem' }}>
-                    <button
-                      onClick={handleCancelPhotoOrder}
-                      disabled={savingOrder}
-                      className="btn-action btn-cancel-order"
-                      title="Cancel changes"
-                    >
-                      Cancel
-                    </button>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                      <button
+                        onClick={handleCancelPhotoOrder}
+                        disabled={savingOrder}
+                        className="btn-action btn-cancel-order"
+                        title="Cancel changes"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        onMouseDown={handleShuffleMouseDown}
+                        onMouseUp={handleShuffleMouseUp}
+                        onMouseLeave={handleShuffleMouseUp}
+                        disabled={savingOrder}
+                        className="btn-action btn-shuffle-order"
+                        title="Hold to shuffle photos"
+                      >
+                        <svg 
+                          width="16" 
+                          height="16" 
+                          viewBox="0 0 24 24" 
+                          fill="none" 
+                          stroke="currentColor" 
+                          strokeWidth="2" 
+                          strokeLinecap="round" 
+                          strokeLinejoin="round"
+                          style={{ marginRight: '0.5rem' }}
+                        >
+                          <polyline points="16 3 21 3 21 8"></polyline>
+                          <line x1="4" y1="20" x2="21" y2="3"></line>
+                          <polyline points="21 16 21 21 16 21"></polyline>
+                          <line x1="15" y1="15" x2="21" y2="21"></line>
+                          <line x1="4" y1="4" x2="9" y2="9"></line>
+                        </svg>
+                        Shuffle
+                      </button>
+                    </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                       <span className="unsaved-indicator">
                         Unsaved changes

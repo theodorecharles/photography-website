@@ -1583,6 +1583,14 @@
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
 }
 
+.admin-photo-item.shuffling-active {
+  transition: transform 200ms ease !important;
+}
+
+.admin-photo-item.shuffling-active[style*="translate"] {
+  transform: scale(0.85) var(--transform) !important;
+}
+
 /* Mobile reorder controls */
 .photo-reorder-controls-mobile {
   position: absolute;
@@ -1657,6 +1665,82 @@
 .btn-cancel-order:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+/* Shuffle order button */
+@property --shuffle-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+.btn-shuffle-order {
+  --shuffle-angle: 0deg;
+  background: rgba(139, 92, 246, 0.15) !important;
+  border: 1.5px solid rgba(139, 92, 246, 0.3) !important;
+  border-radius: 8px !important;
+  color: #8b5cf6 !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
+  position: relative;
+  z-index: 1;
+}
+
+.btn-shuffle-order::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 8px;
+  padding: 2px;
+  background: conic-gradient(
+    from var(--shuffle-angle),
+    rgba(255, 0, 0, 0.6),
+    rgba(255, 127, 0, 0.6),
+    rgba(255, 255, 0, 0.6),
+    rgba(0, 255, 0, 0.6),
+    rgba(0, 0, 255, 0.6),
+    rgba(75, 0, 130, 0.6),
+    rgba(148, 0, 211, 0.6),
+    rgba(255, 0, 0, 0.6)
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  z-index: -1;
+  opacity: 0;
+  filter: blur(1px);
+  transition: opacity 0.3s ease;
+}
+
+.btn-shuffle-order:hover:not(:disabled) {
+  background: rgba(139, 92, 246, 0.25) !important;
+  color: white !important;
+  transform: scale(1.05);
+  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.4);
+}
+
+.btn-shuffle-order:hover:not(:disabled)::before {
+  opacity: 1;
+  animation: rotate-shuffle-border 3s linear infinite;
+}
+
+.btn-shuffle-order.shuffling-active:hover:not(:disabled)::before {
+  animation: rotate-shuffle-border 0.4s linear infinite;
+}
+
+.btn-shuffle-order.shuffling-slowing:hover:not(:disabled)::before {
+  animation: rotate-shuffle-border 1.2s linear infinite;
+}
+
+.btn-shuffle-order:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@keyframes rotate-shuffle-border {
+  to {
+    --shuffle-angle: 360deg;
+  }
 }
 
 /* Save order button */
