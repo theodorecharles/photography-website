@@ -445,7 +445,11 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
         titlesAbortController.current = null;
       }
       
+      // Clear output and reset state
       setGeneratingTitles(false);
+      setTitlesOutput([]);
+      setTitlesProgress(0);
+      setTitlesWaiting(null);
       setMessage({ type: 'success', text: 'AI title generation stopped' });
     } catch (err) {
       console.error('Failed to stop AI titles job:', err);
@@ -470,7 +474,11 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
         optimizationAbortController.current = null;
       }
       
+      // Clear output and reset state
       setIsOptimizationRunning(false);
+      setOptimizationLogs([]);
+      setOptimizationProgress(0);
+      setOptimizationComplete(false);
       setMessage({ type: 'success', text: 'Optimization job stopped' });
     } catch (err) {
       console.error('Failed to stop optimization job:', err);
