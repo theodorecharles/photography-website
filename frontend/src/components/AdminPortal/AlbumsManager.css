@@ -516,6 +516,12 @@
   max-width: 700px;
 }
 
+@media (max-width: 768px) {
+  .album-actions-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .album-publish-toggle-header {
   display: flex;
   align-items: stretch;
