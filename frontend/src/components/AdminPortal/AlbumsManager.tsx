@@ -351,20 +351,10 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     });
     
     // Calculate speed multiplier based on album size
+    // Speed increases linearly with album size: speed = base_speed * (num_photos / 20)
+    // Since interval is inverse of speed: interval = base_interval / (num_photos / 20)
     const albumSize = albumPhotos.length;
-    let speedMultiplier = 1.0;
-    
-    if (albumSize <= 20) {
-      speedMultiplier = 1.0; // Normal speed for small albums
-    } else if (albumSize <= 40) {
-      speedMultiplier = 0.7; // 1.43x faster
-    } else if (albumSize <= 60) {
-      speedMultiplier = 0.5; // 2x faster
-    } else if (albumSize <= 100) {
-      speedMultiplier = 0.35; // 2.86x faster
-    } else {
-      speedMultiplier = 0.25; // 4x faster for very large albums
-    }
+    const speedMultiplier = 20 / Math.max(albumSize, 1); // Prevent division by zero
     
     // Start continuous shuffling with progressive speed increase
     let currentInterval = 100 * speedMultiplier; // Adjust base speed by album size
