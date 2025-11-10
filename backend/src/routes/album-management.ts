@@ -12,7 +12,13 @@ import { promisify } from "util";
 import multer from "multer";
 import os from "os";
 import { csrfProtection } from "../security.js";
-import { deleteAlbumMetadata, deleteImageMetadata } from "../database.js";
+import { 
+  deleteAlbumMetadata, 
+  deleteImageMetadata, 
+  saveAlbum, 
+  deleteAlbumState,
+  setAlbumPublished 
+} from "../database.js";
 
 const router = Router();
 const execFileAsync = promisify(execFile);
@@ -117,6 +123,10 @@ router.post("/", requireAuth, async (req: Request, res: Response): Promise<void>
     // Create album directory
     fs.mkdirSync(albumPath, { recursive: true });
 
+    // Create album in database as unpublished by default
+    saveAlbum(sanitizedName, false);
+    console.log(`✓ Created unpublished album: ${sanitizedName}`);
+
     res.json({ success: true, album: sanitizedName });
   } catch (error) {
     console.error('Error creating album:', error);
@@ -161,6 +171,10 @@ router.delete("/:album", requireAuth, async (req: Request, res: Response): Promi
     // Delete all metadata for this album from database
     const deletedCount = deleteAlbumMetadata(sanitizedAlbum);
     console.log(`✓ Deleted ${deletedCount} metadata entries for album: ${sanitizedAlbum}`);
+
+    // Delete album state from database
+    deleteAlbumState(sanitizedAlbum);
+    console.log(`✓ Deleted album state for: ${sanitizedAlbum}`);
 
     res.json({ success: true });
   } catch (error) {
@@ -348,6 +362,49 @@ router.post("/:album/upload", requireAuth, upload.single('photo'), async (req: R
   } catch (error) {
     console.error('Error uploading photo:', error);
     res.status(500).json({ error: 'Failed to upload photo' });
+  }
+});
+
+/**
+ * Toggle album published state
+ */
+router.patch("/:album/publish", requireAuth, async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { album } = req.params;
+    const { published } = req.body;
+    
+    const sanitizedAlbum = sanitizeName(album);
+    if (!sanitizedAlbum) {
+      res.status(400).json({ error: 'Invalid album name' });
+      return;
+    }
+
+    if (typeof published !== 'boolean') {
+      res.status(400).json({ error: 'Published state must be a boolean' });
+      return;
+    }
+
+    const photosDir = req.app.get("photosDir");
+    const albumPath = path.join(photosDir, sanitizedAlbum);
+    
+    if (!fs.existsSync(albumPath)) {
+      res.status(404).json({ error: 'Album not found' });
+      return;
+    }
+
+    // Update or create album state
+    saveAlbum(sanitizedAlbum, published);
+    
+    console.log(`✓ Set album "${sanitizedAlbum}" published state to: ${published}`);
+
+    res.json({ 
+      success: true, 
+      album: sanitizedAlbum,
+      published 
+    });
+  } catch (error) {
+    console.error('Error updating album published state:', error);
+    res.status(500).json({ error: 'Failed to update album published state' });
   }
 });
 
