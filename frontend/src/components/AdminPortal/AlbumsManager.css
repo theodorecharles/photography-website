@@ -301,6 +301,25 @@
   min-height: 80px;
   display: flex;
   flex-direction: column;
+  transform-style: preserve-3d;
+}
+
+.album-card.animating {
+  animation: flipCard 0.6s ease-in-out;
+  pointer-events: none;
+}
+
+@keyframes flipCard {
+  0% {
+    transform: rotateY(0deg) scale(1);
+  }
+  50% {
+    transform: rotateY(90deg) scale(1.05);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+  }
+  100% {
+    transform: rotateY(0deg) scale(1);
+  }
 }
 
 .album-card::before {
