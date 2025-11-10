@@ -227,11 +227,14 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
       event.stopPropagation();
     }
     
+    // Save scroll position
+    const scrollPosition = window.scrollY;
+    
     // Trigger animation
     setAnimatingAlbum(albumName);
+    const newPublished = !currentPublished;
     
     try {
-      const newPublished = !currentPublished;
       const res = await fetch(`${API_URL}/api/albums/${encodeURIComponent(albumName)}/publish`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
@@ -240,28 +243,39 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
       });
 
       if (res.ok) {
-        // Wait for animation to complete (600ms)
-        await new Promise(resolve => setTimeout(resolve, 600));
+        // Wait for animation to complete (300ms for flip to middle)
+        await new Promise(resolve => setTimeout(resolve, 300));
+        
+        // Update albums state
+        await loadAlbums();
+        
+        // Wait for rest of animation
+        await new Promise(resolve => setTimeout(resolve, 300));
         
         setMessage({ 
           type: 'success', 
           text: `Album "${albumName}" ${newPublished ? 'published' : 'unpublished'}` 
         });
         
-        // Reload albums
-        await loadAlbums();
         window.dispatchEvent(new Event('albums-updated'));
         
-        // Clear animation
+        // Clear animation and restore scroll
         setAnimatingAlbum(null);
+        requestAnimationFrame(() => {
+          window.scrollTo(0, scrollPosition);
+        });
       } else {
         const error = await res.json();
         setMessage({ type: 'error', text: error.error || 'Failed to update album' });
         setAnimatingAlbum(null);
+        // Revert optimistic update
+        await loadAlbums();
       }
     } catch (err) {
       setMessage({ type: 'error', text: 'Network error occurred' });
       setAnimatingAlbum(null);
+      // Revert optimistic update
+      await loadAlbums();
     }
   };
 
