@@ -71,6 +71,45 @@ router.get('/status', requireAuth, (req, res) => {
 });
 
 /**
+ * POST /api/ai-titles/stop
+ * Stop running AI titles generation job
+ */
+router.post('/stop', requireAuth, (req, res) => {
+  if (!runningJobs.aiTitles || runningJobs.aiTitles.isComplete) {
+    return res.json({ success: false, message: 'No running job to stop' });
+  }
+  
+  try {
+    // Kill the process
+    if (runningJobs.aiTitles.process) {
+      runningJobs.aiTitles.process.kill('SIGTERM');
+      console.log('[AI Titles] Job stopped by user');
+    }
+    
+    // Mark as complete and broadcast to all clients
+    const stopMsg = '__ERROR__ Job stopped by user';
+    runningJobs.aiTitles.output.push(stopMsg);
+    runningJobs.aiTitles.isComplete = true;
+    broadcastToClients(runningJobs.aiTitles, stopMsg);
+    
+    // Close all client connections
+    runningJobs.aiTitles.clients.forEach(client => {
+      try {
+        client.end();
+      } catch (err) {
+        // Ignore errors
+      }
+    });
+    runningJobs.aiTitles.clients.clear();
+    
+    res.json({ success: true, message: 'Job stopped successfully' });
+  } catch (error: any) {
+    console.error('[AI Titles] Error stopping job:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+/**
  * POST /api/ai-titles/generate
  * Generate AI titles for all images
  * Streams output using Server-Sent Events
