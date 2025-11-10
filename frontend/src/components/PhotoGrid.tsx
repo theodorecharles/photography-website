@@ -108,28 +108,56 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound }) => {
           const randomPhotos = await response.json();
           setPhotos(randomPhotos);
         } else {
-          // For specific album pages, fetch photos normally
-          const response = await fetchWithRateLimitCheck(
-            `${API_URL}/api/albums/${album}/photos${queryString}`
+          // For specific album pages, load first 20 photos immediately
+          const firstResponse = await fetchWithRateLimitCheck(
+            `${API_URL}/api/albums/${album}/photos?page=1&limit=20${queryString ? '&' + queryString.slice(1) : ''}`
           );
-          if (!response.ok) {
-            if (response.status === 404) {
+          if (!firstResponse.ok) {
+            if (firstResponse.status === 404) {
               throw new Error("ALBUM_NOT_FOUND");
             }
             throw new Error("Failed to fetch photos");
           }
-          const data = await response.json();
-          // Handle both paginated and non-paginated responses
-          const photosArray = data.photos || data;
-          // Sort photos by creation date, newest first
-          const sortedPhotos = photosArray.sort((a: Photo, b: Photo) => {
+          const firstData = await firstResponse.json();
+          const firstPhotos = firstData.photos || firstData;
+          
+          // Sort and display first 20 photos immediately
+          const sortedFirst = firstPhotos.sort((a: Photo, b: Photo) => {
             if (!a.metadata || !b.metadata) return 0;
             return (
               new Date(b.metadata.created).getTime() -
               new Date(a.metadata.created).getTime()
             );
           });
-          setPhotos(sortedPhotos);
+          setPhotos(sortedFirst);
+
+          // Load remaining pages in the background
+          if (firstData.pagination?.hasMore) {
+            const totalPages = firstData.pagination.totalPages;
+            
+            // Fetch remaining pages sequentially
+            for (let page = 2; page <= totalPages; page++) {
+              const response = await fetchWithRateLimitCheck(
+                `${API_URL}/api/albums/${album}/photos?page=${page}&limit=20${queryString ? '&' + queryString.slice(1) : ''}`
+              );
+              if (response.ok) {
+                const data = await response.json();
+                const newPhotos = data.photos || data;
+                
+                // Append and sort all photos
+                setPhotos(prev => {
+                  const combined = [...prev, ...newPhotos];
+                  return combined.sort((a: Photo, b: Photo) => {
+                    if (!a.metadata || !b.metadata) return 0;
+                    return (
+                      new Date(b.metadata.created).getTime() -
+                      new Date(a.metadata.created).getTime()
+                    );
+                  });
+                });
+              }
+            }
+          }
         }
 
         setError(null);
