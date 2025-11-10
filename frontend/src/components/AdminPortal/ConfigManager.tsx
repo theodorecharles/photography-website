@@ -188,6 +188,28 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
     }
   };
 
+  // Store abort controllers to allow stopping jobs
+  const titlesAbortController = useRef<AbortController | null>(null);
+  const optimizationAbortController = useRef<AbortController | null>(null);
+
+  const handleStopTitles = () => {
+    if (titlesAbortController.current) {
+      titlesAbortController.current.abort();
+      titlesAbortController.current = null;
+      setGeneratingTitles(false);
+      setMessage({ type: 'error', text: 'AI title generation stopped by user' });
+    }
+  };
+
+  const handleStopOptimization = () => {
+    if (optimizationAbortController.current) {
+      optimizationAbortController.current.abort();
+      optimizationAbortController.current = null;
+      setIsOptimizationRunning(false);
+      setMessage({ type: 'error', text: 'Image optimization stopped by user' });
+    }
+  };
+
   const handleGenerateTitles = async () => {
     setGeneratingTitles(true);
     setTitlesOutput([]);
@@ -205,9 +227,13 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
     }, 100);
 
     try {
+      const abortController = new AbortController();
+      titlesAbortController.current = abortController;
+
       const res = await fetch(`${API_URL}/api/ai-titles/generate`, {
         method: 'POST',
         credentials: 'include',
+        signal: abortController.signal,
       });
 
       if (!res.ok) {
@@ -236,9 +262,11 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
             if (data === '__COMPLETE__') {
               setMessage({ type: 'success', text: 'AI title generation completed successfully!' });
               setGeneratingTitles(false);
+              titlesAbortController.current = null;
             } else if (data.startsWith('__ERROR__')) {
               setMessage({ type: 'error', text: data.substring(10) });
               setGeneratingTitles(false);
+              titlesAbortController.current = null;
             } else {
               // Try to parse JSON progress data
               try {
@@ -258,10 +286,15 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
         }
       }
     } catch (err) {
+      if (err instanceof Error && err.name === 'AbortError') {
+        // User cancelled, message already set
+        return;
+      }
       const errorMessage = err instanceof Error ? err.message : 'Error generating titles';
       setMessage({ type: 'error', text: errorMessage });
       console.error('Failed to generate titles:', err);
       setGeneratingTitles(false);
+      titlesAbortController.current = null;
     }
   };
 
@@ -346,11 +379,15 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
     }, 100);
 
     try {
+      const abortController = new AbortController();
+      optimizationAbortController.current = abortController;
+
       const res = await fetch(`${API_URL}/api/image-optimization/optimize`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify({ force }),
+        signal: abortController.signal,
       });
 
       if (!res.ok) {
@@ -363,6 +400,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
         }
         setMessage({ type: 'error', text: `${errorMessage} (Status: ${res.status})` });
         setIsOptimizationRunning(false);
+        optimizationAbortController.current = null;
         return;
       }
 
@@ -587,15 +625,26 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
                   <span className="progress-percentage" style={{ fontSize: '0.9rem' }}>{titlesProgress}%</span>
                 </div>
               )}
-              <button
-                type="button"
-                onClick={handleGenerateTitles}
-                disabled={generatingTitles || !config.openai?.apiKey}
-                className="btn-secondary"
-                style={{ whiteSpace: 'nowrap' }}
-              >
-                {generatingTitles ? 'Generating...' : 'Generate AI Titles'}
-              </button>
+              {!generatingTitles ? (
+                <button
+                  type="button"
+                  onClick={handleGenerateTitles}
+                  disabled={!config.openai?.apiKey}
+                  className="btn-secondary"
+                  style={{ whiteSpace: 'nowrap' }}
+                >
+                  Generate AI Titles
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleStopTitles}
+                  className="btn-delete"
+                  style={{ whiteSpace: 'nowrap' }}
+                >
+                  Stop
+                </button>
+              )}
             </div>
             {generatingTitles && (
               <div className="titles-output" ref={titlesOutputRef}>
@@ -752,14 +801,23 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
                     <span className="progress-percentage" style={{ fontSize: '0.9rem' }}>{optimizationProgress}%</span>
                   </div>
                 )}
-                <button
-                  type="button"
-                  onClick={() => handleRunOptimization(true)}
-                  disabled={isOptimizationRunning}
-                  className="btn-force-regenerate"
-                >
-                  {isOptimizationRunning ? 'Running...' : 'Force Regenerate All'}
-                </button>
+                {!isOptimizationRunning ? (
+                  <button
+                    type="button"
+                    onClick={() => handleRunOptimization(true)}
+                    className="btn-force-regenerate"
+                  >
+                    Force Regenerate All
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={handleStopOptimization}
+                    className="btn-delete"
+                  >
+                    Stop
+                  </button>
+                )}
                 {optimizationComplete && !isOptimizationRunning && (
                   <span style={{ color: 'var(--primary-color)', fontSize: '1.5rem' }}>✓</span>
                 )}
