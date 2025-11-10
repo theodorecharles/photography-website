@@ -18,8 +18,10 @@ A modern, secure photography portfolio website built with React 19, TypeScript, 
 - 📊 **Analytics Dashboard** - Built-in OpenObserve integration with recharts
 - 🔗 **Links Manager** - Configure external navigation links
 - 🖼️ **Photo Upload** - Upload up to 20 photos with automatic optimization
+- 🤖 **AI Title Generation** - Optional OpenAI integration for photo descriptions
 - 🔍 **SEO Optimized** - Dynamic sitemap, meta tags, structured data
 - 🔒 **Security Hardened** - CSRF protection, rate limiting, input validation
+- 📲 **Telegram Notifications** - Deployment status alerts via Telegram bot
 
 ---
 
@@ -96,6 +98,8 @@ Edit `config/config.json` with your settings:
 node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 ```
 
+**Note:** See [Configuration](#configuration) for complete config structure with environment-specific settings.
+
 3. **Add your photos**
 
 ```bash
@@ -145,6 +149,17 @@ Access at `/admin` → Sign in with Google → Manage everything:
 
 ### Build
 
+**Using the unified build script (recommended):**
+```bash
+npm run build
+```
+
+This runs `build.js` which automatically:
+- Builds both frontend and backend
+- Injects config values as environment variables
+- Updates robots.txt with your sitemap URL
+
+**Or build individually:**
 ```bash
 cd backend && npm run build
 cd ../frontend && npm run build
@@ -162,8 +177,16 @@ pm2 startup
 ### Automated Deployment
 
 ```bash
-./restart.sh  # Pulls code, optimizes images, builds, restarts
+./restart.sh  # Full deployment automation
 ```
+
+This script handles:
+- Pull latest changes from Git (with fast-forward only)
+- Install all dependencies (root, backend, frontend)
+- Optimize all images
+- Build both frontend and backend
+- Restart services via PM2
+- Send Telegram notifications on success/failure
 
 **Set production mode:**
 ```bash
@@ -176,33 +199,74 @@ Update `config.json` production section with your domain and HTTPS settings.
 
 ## Configuration
 
-Main config file: `config/config.json`
+Main config file: `config/config.json` (copy from `config/config.example.json`)
 
+**Structure:**
 ```json
 {
+  "environment": {
+    "frontend": {
+      "port": 3000,
+      "apiUrl": "http://localhost:3001"
+    },
+    "backend": {
+      "port": 3001,
+      "photosDir": "photos",
+      "allowedOrigins": ["http://localhost:5173"]
+    },
+    "optimization": {
+      "concurrency": 4,
+      "images": {
+        "thumbnail": { "quality": 60, "maxDimension": 512 },
+        "modal": { "quality": 90, "maxDimension": 2048 },
+        "download": { "quality": 100, "maxDimension": 4096 }
+      }
+    },
+    "security": {
+      "allowedHosts": ["localhost:3000"],
+      "rateLimitWindowMs": 1000,
+      "rateLimitMaxRequests": 30
+    },
+    "auth": {
+      "google": {
+        "clientId": "your-client-id",
+        "clientSecret": "your-client-secret"
+      },
+      "sessionSecret": "generate-random-secret",
+      "authorizedEmails": ["your-email@example.com"]
+    }
+  },
   "branding": {
     "siteName": "Your Name",
+    "avatarPath": "/photos/avatar.png",
     "primaryColor": "#4ade80",
-    "metaDescription": "Your photography portfolio"
-  },
-  "auth": {
-    "google": {
-      "clientId": "your-client-id.apps.googleusercontent.com",
-      "clientSecret": "your-client-secret"
-    },
-    "sessionSecret": "generate-random-secret",
-    "authorizedEmails": ["your-email@example.com"]
+    "secondaryColor": "#22c55e",
+    "metaDescription": "Photography portfolio",
+    "metaKeywords": "photography, portfolio",
+    "faviconPath": "/favicon.ico"
   },
   "analytics": {
+    "scriptPath": "",
     "openobserve": {
       "enabled": false,
       "endpoint": "https://log.yourdomain.com/api/",
-      "organization": "your-organization-id",
+      "organization": "your-org",
       "stream": "website",
-      "username": "your-username",
-      "password": "your-password",
+      "username": "user",
+      "password": "pass"
     }
-  }
+  },
+  "notifications": {
+    "telegram": {
+      "enabled": false,
+      "botToken": "your-bot-token",
+      "chatId": "your-chat-id"
+    }
+  },
+  "externalLinks": [
+    { "title": "My Blog", "url": "https://blog.example.com" },
+    { "title": "Login", "url": "/admin" }
+  ]
 }
 ```
 
@@ -235,21 +299,26 @@ photography-website/
 │   │   ├── server.ts    # Main server
 │   │   ├── routes/      # API endpoints
 │   │   └── security.ts  # Security middleware
-│   ├── openapi.yaml     # API specification
-│   └── API.md           # API documentation
+│   └── package.json
 ├── frontend/            # React app
 │   ├── src/
 │   │   ├── App.tsx
 │   │   └── components/
-│   └── dist/            # Production build
+│   ├── dist/            # Production build
+│   └── package.json
 ├── photos/              # Original photos (not in Git)
 ├── optimized/           # Generated images (not in Git)
 ├── config/
-│   └── config.json          # Main configuration
-├── optimize_all_images.sh   # Bulk image optimization
-├── optimize_new_image.sh    # Single image optimization
-├── restart.sh              # Deployment script
-└── ecosystem.config.cjs    # PM2 config
+│   ├── config.json          # Main configuration
+│   └── config.example.json  # Config template
+├── build.js                # Unified build script
+├── generate-ai-titles.js   # AI title generation
+├── image-metadata.db       # SQLite database
+├── optimize_all_images.sh  # Bulk image optimization
+├── optimize_new_image.sh   # Single image optimization
+├── restart.sh             # Automated deployment
+├── ecosystem.config.cjs   # PM2 configuration
+└── package.json           # Root dependencies
 ```
 
 ---
@@ -268,6 +337,12 @@ cp *.jpg photos/new-album/
 ./optimize_all_images.sh
 ```
 
+**Generate AI titles (optional):**
+```bash
+# Add OpenAI API key to config.json first
+node generate-ai-titles.js
+```
+
 **View logs:**
 ```bash
 pm2 logs
@@ -280,27 +355,33 @@ pm2 restart all
 
 ---
 
-## API Documentation
+## API Endpoints
 
-Complete API reference: `backend/API.md`  
-OpenAPI specification: `backend/openapi.yaml`
-
-**Quick examples:**
+**Key endpoints:**
 ```bash
-# List albums
-curl http://localhost:3001/api/albums
+# Public endpoints
+GET  /api/albums                    # List all albums
+GET  /api/albums/:album/photos      # Get photos in album
+GET  /api/branding                  # Get branding config
+GET  /api/external-links            # Get navigation links
+GET  /api/sitemap.xml               # SEO sitemap
+GET  /api/health                    # Health check
 
-# Get photos in album
-curl http://localhost:3001/api/albums/nature/photos
+# Admin endpoints (require authentication)
+POST /api/admin/albums              # Create album
+POST /api/admin/upload              # Upload photos
+DEL  /api/admin/albums/:album       # Delete album
+PUT  /api/admin/branding            # Update branding
+GET  /api/admin/metrics             # Get analytics
 
-# Health check
-curl http://localhost:3001/api/health
+# Authentication
+GET  /api/auth/google               # Initiate OAuth
+GET  /api/auth/google/callback      # OAuth callback
+GET  /api/auth/user                 # Get current user
+POST /api/auth/logout               # Logout
 ```
 
-View interactive docs:
-```bash
-npx @redocly/cli preview-docs backend/openapi.yaml
-```
+See backend source code in `backend/src/routes/` for complete API implementation.
 
 ---
 
@@ -359,7 +440,6 @@ You are free to share and adapt with attribution.
 
 - **📦 Repository:** [github.com/theodoreroddy/photography-website](https://github.com/theodoreroddy/photography-website)
 - **🐛 Issues:** [GitHub Issues](https://github.com/theodoreroddy/photography-website/issues)
-- **📖 API Docs:** See `backend/API.md`
 - **📧 Contact:** [me@tedcharles.net](mailto:me@tedcharles.net)
 
 ---
