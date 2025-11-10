@@ -1,10 +1,20 @@
 #!/usr/bin/env node
 
+// Increase Node.js thread pool size for better parallelism
+process.env.UV_THREADPOOL_SIZE = process.env.UV_THREADPOOL_SIZE || '32';
+
 import fs from 'fs/promises';
 import { readFileSync } from 'fs';
 import path from 'path';
 import sharp from 'sharp';
 import cliProgress from 'cli-progress';
+import os from 'os';
+import pLimit from 'p-limit';
+
+// Configure sharp to use all available CPU cores and aggressive settings
+sharp.concurrency(os.cpus().length);
+sharp.cache(false); // Disable cache to use more CPU
+sharp.simd(true);   // Enable SIMD
 
 // Parse command line arguments
 const args = process.argv.slice(2);
@@ -94,63 +104,39 @@ async function processVersion(image, version, quality, maxDim) {
   await fs.mkdir(outputDir, { recursive: true });
   
   // Use sharp for fast image processing
-  await sharp(sourcePath)
+  // Read file into buffer first to reduce I/O blocking
+  const buffer = await fs.readFile(sourcePath);
+  await sharp(buffer)
     .resize(maxDim, maxDim, {
       fit: 'inside',
-      withoutEnlargement: true
+      withoutEnlargement: true,
+      kernel: 'lanczos3' // More CPU-intensive resampling
     })
-    .jpeg({ quality, mozjpeg: true })
+    .jpeg({ 
+      quality, 
+      mozjpeg: true,
+      optimiseCoding: true,
+      optimizeScans: true
+    })
     .toFile(outputPath);
 }
 
-// Process a single image (all three versions)
-async function processImage(image, needs) {
-  const [needsThumb, needsModal, needsDownload] = needs;
-  
+// Process a single image version (one of three)
+async function processImageVersion(image, versionType, quality, maxDim) {
   try {
-    const tasks = [];
-    
-    if (needsThumb) {
-      tasks.push(processVersion(image, 'thumbnail', thumbnailQuality, thumbnailMaxDim));
-    }
-    if (needsModal) {
-      tasks.push(processVersion(image, 'modal', modalQuality, modalMaxDim));
-    }
-    if (needsDownload) {
-      tasks.push(processVersion(image, 'download', downloadQuality, downloadMaxDim));
-    }
-    
-    if (tasks.length > 0) {
-      await Promise.all(tasks);
-      stats.processed += tasks.length;
-    } else {
-      stats.skipped++;
-    }
+    await processVersion(image, versionType, quality, maxDim);
+    stats.processed++;
   } catch (error) {
     stats.errors++;
-    console.error(`\nError processing ${image.album}/${image.filename}:`, error.message);
+    console.error(`\nError processing ${image.album}/${image.filename} (${versionType}):`, error.message);
   }
 }
 
-// Simple concurrency limiter
+// Use p-limit for proper concurrency control
 async function processConcurrently(items, concurrency, fn) {
-  const results = [];
-  const executing = [];
-  
-  for (const item of items) {
-    const promise = fn(item).then(() => {
-      executing.splice(executing.indexOf(promise), 1);
-    });
-    
-    results.push(promise);
-    executing.push(promise);
-    
-    if (executing.length >= concurrency) {
-      await Promise.race(executing);
-    }
-  }
-  
-  await Promise.all(results);
+  const limit = pLimit(concurrency);
+  const promises = items.map(item => limit(() => fn(item)));
+  await Promise.all(promises);
 }
 
 // Main function
@@ -206,25 +192,31 @@ async function main() {
     filename: ''
   });
   
-  // Process each album
-  for (const album of albums) {
-    const albumImages = imageNeeds.filter(({ img }) => img.album === album.name);
-    const albumToProcess = albumImages.filter(({ needs }) => needs.some(n => n));
-    
-    if (albumToProcess.length === 0) continue;
-    
-    progressBar.update({ album: album.name });
-    
-    await processConcurrently(
-      albumToProcess,
-      concurrency,
-      async ({ img, needs }) => {
-        progressBar.update({ filename: img.filename });
-        await processImage(img, needs);
-        progressBar.increment(needs.filter(n => n).length);
-      }
-    );
+  // Build list of all versions to process
+  const versionTasks = [];
+  for (const { img, needs } of toProcess) {
+    const [needsThumb, needsModal, needsDownload] = needs;
+    if (needsThumb) {
+      versionTasks.push({ img, type: 'thumbnail', quality: thumbnailQuality, maxDim: thumbnailMaxDim });
+    }
+    if (needsModal) {
+      versionTasks.push({ img, type: 'modal', quality: modalQuality, maxDim: modalMaxDim });
+    }
+    if (needsDownload) {
+      versionTasks.push({ img, type: 'download', quality: downloadQuality, maxDim: downloadMaxDim });
+    }
   }
+  
+  // Process all versions concurrently (each version is a separate task)
+  await processConcurrently(
+    versionTasks,
+    concurrency,
+    async (task) => {
+      progressBar.update({ album: task.img.album, filename: `${task.img.filename} [${task.type}]` });
+      await processImageVersion(task.img, task.type, task.quality, task.maxDim);
+      progressBar.increment(1);
+    }
+  );
   
   progressBar.stop();
   

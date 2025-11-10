@@ -60,7 +60,7 @@ log "Current branch: $CURRENT_BRANCH"
 
 # Run image optimization script
 log "Starting image optimization..."
-if ! ./optimize_all_images.sh; then
+if ! ./optimize_all_images.js; then
     handle_error "Image optimization failed"
 fi
 
