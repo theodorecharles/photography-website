@@ -819,7 +819,6 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
               onDrop={uploadingImages.length > 0 ? undefined : handleDrop}
             >
               <div className="photos-header">
-                <h3>Album Details</h3>
                 <div className="album-actions-grid">
                   <div className="album-publish-toggle-header">
                     <label 
