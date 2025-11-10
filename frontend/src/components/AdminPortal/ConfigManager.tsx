@@ -76,6 +76,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
   const [generatingTitles, setGeneratingTitles] = useState(false);
   const [titlesOutput, setTitlesOutput] = useState<string[]>([]);
   const [titlesProgress, setTitlesProgress] = useState(0);
+  const [titlesWaiting, setTitlesWaiting] = useState<number | null>(null);
   const [optimizationLogs, setOptimizationLogs] = useState<string[]>([]);
   const [isOptimizationRunning, setIsOptimizationRunning] = useState(false);
   const [optimizationComplete, setOptimizationComplete] = useState(false);
@@ -273,7 +274,10 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
                 const parsed = JSON.parse(data);
                 if (parsed.type === 'progress') {
                   setTitlesProgress(parsed.percent);
+                  setTitlesWaiting(null);
                   setTitlesOutput((prev) => [...prev, parsed.message]);
+                } else if (parsed.type === 'waiting') {
+                  setTitlesWaiting(parsed.seconds);
                 } else {
                   setTitlesOutput((prev) => [...prev, data]);
                 }
@@ -645,9 +649,9 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
                   type="button"
                   onClick={handleStopTitles}
                   className="btn-delete"
-                  style={{ whiteSpace: 'nowrap' }}
+                  style={{ whiteSpace: 'nowrap', height: '38px' }}
                 >
-                  Stop
+                  {titlesWaiting !== null ? `Waiting... ${titlesWaiting}s` : 'Stop'}
                 </button>
               )}
             </div>
@@ -819,6 +823,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
                     type="button"
                     onClick={handleStopOptimization}
                     className="btn-delete"
+                    style={{ height: '38px' }}
                   >
                     Stop
                   </button>
