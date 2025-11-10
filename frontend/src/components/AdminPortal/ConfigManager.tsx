@@ -428,21 +428,53 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
   const titlesAbortController = useRef<AbortController | null>(null);
   const optimizationAbortController = useRef<AbortController | null>(null);
 
-  const handleStopTitles = () => {
-    if (titlesAbortController.current) {
-      titlesAbortController.current.abort();
-      titlesAbortController.current = null;
+  const handleStopTitles = async () => {
+    try {
+      // Call backend to kill the process
+      await fetch(`${API_URL}/api/ai-titles/stop`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      // Abort the SSE connection
+      if (titlesAbortController.current) {
+        titlesAbortController.current.abort();
+        titlesAbortController.current = null;
+      }
+      
       setGeneratingTitles(false);
-      setMessage({ type: 'error', text: 'AI title generation stopped by user' });
+      setMessage({ type: 'success', text: 'AI title generation stopped' });
+    } catch (err) {
+      console.error('Failed to stop AI titles job:', err);
+      setMessage({ type: 'error', text: 'Failed to stop AI titles job' });
     }
   };
 
-  const handleStopOptimization = () => {
-    if (optimizationAbortController.current) {
-      optimizationAbortController.current.abort();
-      optimizationAbortController.current = null;
+  const handleStopOptimization = async () => {
+    try {
+      // Call backend to kill the process
+      await fetch(`${API_URL}/api/image-optimization/stop`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      // Abort the SSE connection
+      if (optimizationAbortController.current) {
+        optimizationAbortController.current.abort();
+        optimizationAbortController.current = null;
+      }
+      
       setIsOptimizationRunning(false);
-      setMessage({ type: 'error', text: 'Image optimization stopped by user' });
+      setMessage({ type: 'success', text: 'Optimization job stopped' });
+    } catch (err) {
+      console.error('Failed to stop optimization job:', err);
+      setMessage({ type: 'error', text: 'Failed to stop optimization job' });
     }
   };
 
