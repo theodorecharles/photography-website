@@ -509,10 +509,11 @@
 
 .album-actions-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, auto);
   gap: 0.75rem;
   width: 100%;
-  max-width: 600px;
+  max-width: 700px;
 }
 
 @media (max-width: 768px) {
@@ -523,7 +524,7 @@
 
 .album-publish-toggle-header {
   display: flex;
-  align-items: center;
+  align-items: stretch;
 }
 
 .album-publish-toggle-header .toggle-switch {
@@ -532,8 +533,9 @@
   border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.15);
   transition: all 0.2s ease;
-  width: 100%;
+  flex: 1;
   justify-content: center;
+  display: flex;
 }
 
 .album-publish-toggle-header .toggle-switch:hover {
