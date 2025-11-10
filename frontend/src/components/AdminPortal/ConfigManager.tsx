@@ -649,9 +649,9 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
                   type="button"
                   onClick={handleStopTitles}
                   className="btn-delete"
-                  style={{ whiteSpace: 'nowrap', height: '38px' }}
+                  style={{ whiteSpace: 'nowrap' }}
                 >
-                  {titlesWaiting !== null ? `Waiting... ${titlesWaiting}s` : 'Stop'}
+                  Stop
                 </button>
               )}
             </div>
@@ -665,7 +665,9 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
                     <div className="output-line">Starting AI title generation...</div>
                   )}
                   {generatingTitles && (
-                    <div className="output-line" style={{ marginTop: '0.5rem', color: '#4ade80' }}>⏳ Running...</div>
+                    <div className="output-line" style={{ marginTop: '0.5rem', color: titlesWaiting !== null ? '#fbbf24' : '#4ade80' }}>
+                      ⏳ {titlesWaiting !== null ? `Waiting... ${titlesWaiting}s` : 'Running...'}
+                    </div>
                   )}
                 </div>
               </div>
@@ -823,7 +825,6 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
                     type="button"
                     onClick={handleStopOptimization}
                     className="btn-delete"
-                    style={{ height: '38px' }}
                   >
                     Stop
                   </button>
