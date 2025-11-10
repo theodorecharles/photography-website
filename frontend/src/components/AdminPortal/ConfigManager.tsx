@@ -824,7 +824,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
             </div>
           </div>
           <p className="config-section-description">
-            Configure OpenAI API integration for generating AI-powered image titles
+            Configure OpenAI API integration for generating image titles
           </p>
           <div className="branding-group">
             <label className="branding-label">API Key</label>
