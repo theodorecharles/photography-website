@@ -206,14 +206,14 @@ async function scanAndGenerateTitles() {
   console.log('\nStarting AI title generation...\n');
   
   // Concurrent processing with rate limiting
-  // OpenAI Tier 1: 500 RPM (requests per minute) = ~8 requests per second
-  // Use 5 concurrent to be conservative and avoid hitting limits
-  const concurrency = 5;
+  // OpenAI Tier 1: 500 RPM (requests per minute)
+  // Target 400 RPM to be safe = 6.67 requests/second
+  // With 2 concurrent and 300ms delay = 6.67 req/sec = 400 RPM
+  const concurrency = 2;
   const limit = pLimit(concurrency);
   
   // Add delay between requests to respect rate limits
-  // 500 RPM = 1 request per 120ms, with 5 concurrent = 600ms between batches
-  const delayBetweenRequests = 150; // 150ms delay
+  const delayBetweenRequests = 300; // 300ms delay = safe rate
   
   let completed = 0;
   const total = imagesToProcess.length;
