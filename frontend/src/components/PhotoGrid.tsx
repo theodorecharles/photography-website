@@ -107,6 +107,8 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound }) => {
           }
           const randomPhotos = await response.json();
           setPhotos(randomPhotos);
+          setError(null);
+          setLoading(false);
         } else {
           // For specific album pages, load first 20 photos immediately
           const firstResponse = await fetchWithRateLimitCheck(
@@ -130,37 +132,43 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound }) => {
             );
           });
           setPhotos(sortedFirst);
+          setError(null);
+          setLoading(false); // Stop loading spinner after first page
 
-          // Load remaining pages in the background
+          // Load remaining pages in the background (don't await)
           if (firstData.pagination?.hasMore) {
             const totalPages = firstData.pagination.totalPages;
             
-            // Fetch remaining pages sequentially
-            for (let page = 2; page <= totalPages; page++) {
-              const response = await fetchWithRateLimitCheck(
-                `${API_URL}/api/albums/${album}/photos?page=${page}&limit=20${queryString ? '&' + queryString.slice(1) : ''}`
-              );
-              if (response.ok) {
-                const data = await response.json();
-                const newPhotos = data.photos || data;
-                
-                // Append and sort all photos
-                setPhotos(prev => {
-                  const combined = [...prev, ...newPhotos];
-                  return combined.sort((a: Photo, b: Photo) => {
-                    if (!a.metadata || !b.metadata) return 0;
-                    return (
-                      new Date(b.metadata.created).getTime() -
-                      new Date(a.metadata.created).getTime()
-                    );
-                  });
-                });
+            // Fetch remaining pages sequentially in background
+            (async () => {
+              for (let page = 2; page <= totalPages; page++) {
+                try {
+                  const response = await fetchWithRateLimitCheck(
+                    `${API_URL}/api/albums/${album}/photos?page=${page}&limit=20${queryString ? '&' + queryString.slice(1) : ''}`
+                  );
+                  if (response.ok) {
+                    const data = await response.json();
+                    const newPhotos = data.photos || data;
+                    
+                    // Append and sort all photos
+                    setPhotos(prev => {
+                      const combined = [...prev, ...newPhotos];
+                      return combined.sort((a: Photo, b: Photo) => {
+                        if (!a.metadata || !b.metadata) return 0;
+                        return (
+                          new Date(b.metadata.created).getTime() -
+                          new Date(a.metadata.created).getTime()
+                        );
+                      });
+                    });
+                  }
+                } catch (err) {
+                  console.error(`Failed to load page ${page}:`, err);
+                }
               }
-            }
+            })();
           }
         }
-
-        setError(null);
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : "An error occurred";
         // Don't log rate limit errors (already handled globally)
@@ -170,7 +178,6 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound }) => {
         setError(errorMessage);
         setPhotos([]);
         trackError(errorMessage, `photo_fetch_${album}`);
-      } finally {
         setLoading(false);
       }
     };
