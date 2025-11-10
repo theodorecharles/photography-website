@@ -819,30 +819,8 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
               onDrop={uploadingImages.length > 0 ? undefined : handleDrop}
             >
               <div className="photos-header">
-                <h3>Photos in "{selectedAlbum}"</h3>
-                <div className="upload-controls">
-                  <button
-                    onClick={() => window.open(`/album/${selectedAlbum}`, '_blank')}
-                    className="btn-secondary"
-                    title="Preview album"
-                  >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                      <circle cx="12" cy="12" r="3"/>
-                    </svg>
-                    Preview
-                  </button>
-                  <label className="btn-primary upload-btn">
-                    {uploadingImages.length > 0 ? 'Uploading...' : '+ Upload Photos'}
-                    <input
-                      type="file"
-                      multiple
-                      accept="image/*"
-                      onChange={handleUploadPhotos}
-                      disabled={uploadingImages.length > 0}
-                      style={{ display: 'none' }}
-                    />
-                  </label>
+                <h3>Album Details</h3>
+                <div className="album-actions-grid">
                   <div className="album-publish-toggle-header">
                     <label 
                       className="toggle-switch"
@@ -862,15 +840,40 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                     </label>
                   </div>
                   <button
+                    onClick={() => window.open(`/album/${selectedAlbum}`, '_blank')}
+                    className="btn-action btn-preview"
+                    title="Preview album"
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                      <circle cx="12" cy="12" r="3"/>
+                    </svg>
+                    Preview Album
+                  </button>
+                  <button
                     onClick={() => handleDeleteAlbum(selectedAlbum)}
-                    className="btn-danger"
+                    className="btn-action btn-delete"
                     title="Delete album"
                   >
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
                     </svg>
-                    Delete
+                    Delete Album
                   </button>
+                  <label className="btn-action btn-upload">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
+                    </svg>
+                    {uploadingImages.length > 0 ? 'Uploading...' : 'Upload Photos'}
+                    <input
+                      type="file"
+                      multiple
+                      accept="image/*"
+                      onChange={handleUploadPhotos}
+                      disabled={uploadingImages.length > 0}
+                      style={{ display: 'none' }}
+                    />
+                  </label>
                 </div>
               </div>
 
