@@ -231,6 +231,7 @@ router.get("/api/albums", (req: Request, res) => {
 
 // Get photos in a specific album
 router.get("/api/albums/:album/photos", (req: Request, res): void => {
+  const startTime = Date.now();
   const { album } = req.params;
 
   // Sanitize album parameter to prevent path traversal
@@ -266,14 +267,17 @@ router.get("/api/albums/:album/photos", (req: Request, res): void => {
   const now = Date.now();
   
   if (cached && (now - cached.timestamp) < CACHE_TTL) {
-    console.log(`Cache hit for album: ${sanitizedAlbum}`);
+    const duration = Date.now() - startTime;
+    console.log(`Cache hit for album: ${sanitizedAlbum} (${cached.photos.length} photos, ${duration}ms)`);
     res.json(cached.photos);
     return;
   }
 
   // Cache miss or expired - fetch from filesystem
   console.log(`Cache miss for album: ${sanitizedAlbum}`);
+  const fetchStart = Date.now();
   const photos = getPhotosInAlbum(photosDir, sanitizedAlbum);
+  const fetchDuration = Date.now() - fetchStart;
   
   // Store in cache
   albumCache.set(sanitizedAlbum, {
@@ -281,6 +285,8 @@ router.get("/api/albums/:album/photos", (req: Request, res): void => {
     timestamp: now
   });
   
+  const totalDuration = Date.now() - startTime;
+  console.log(`Fetched ${photos.length} photos in ${fetchDuration}ms, total request: ${totalDuration}ms`);
   res.json(photos);
 });
 
