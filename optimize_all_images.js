@@ -217,7 +217,6 @@ async function main() {
   
   // Track progress
   let completed = 0;
-  const lastReportedPercent = { value: -1 };
   
   // Process all versions concurrently (each version is a separate task)
   await processConcurrently(
@@ -233,12 +232,9 @@ async function main() {
       if (progressBar) {
         progressBar.increment(1);
       } else {
-        // For non-TTY, output progress every 5%
+        // For non-TTY, output every image completion
         const percent = Math.floor((completed / totalVersions) * 100);
-        if (percent > lastReportedPercent.value && percent % 5 === 0) {
-          console.log(`Progress: ${completed}/${totalVersions} (${percent}%) - ${task.img.album}/${task.img.filename} [${task.type}]`);
-          lastReportedPercent.value = percent;
-        }
+        console.log(`[${completed}/${totalVersions}] (${percent}%) ${task.img.album}/${task.img.filename} [${task.type}]`);
       }
     }
   );
