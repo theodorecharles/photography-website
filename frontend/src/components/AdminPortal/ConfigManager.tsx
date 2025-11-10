@@ -106,7 +106,11 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
         const titlesStatus = await titlesRes.json();
         if (titlesStatus.running && !titlesStatus.isComplete) {
           console.log('Reconnecting to AI titles job...');
-          handleGenerateTitles();
+          setGeneratingTitles(true);
+          setTitlesOutput(titlesStatus.output || []);
+          
+          // Reconnect to the SSE stream
+          reconnectToTitlesJob();
         }
       }
       
@@ -118,11 +122,141 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
         const optStatus = await optRes.json();
         if (optStatus.running && !optStatus.isComplete) {
           console.log('Reconnecting to optimization job...');
-          handleRunOptimization(true);
+          setIsOptimizationRunning(true);
+          setOptimizationLogs(optStatus.output || []);
+          
+          // Reconnect to the SSE stream
+          reconnectToOptimizationJob();
         }
       }
     } catch (err) {
       console.error('Error checking for running jobs:', err);
+    }
+  };
+  
+  // Reconnect to AI titles SSE stream
+  const reconnectToTitlesJob = async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/ai-titles/generate`, {
+        method: 'POST',
+        credentials: 'include',
+      });
+
+      if (!res.ok) {
+        throw new Error('Failed to reconnect to AI title generation');
+      }
+
+      const reader = res.body?.getReader();
+      const decoder = new TextDecoder();
+
+      if (!reader) {
+        throw new Error('No response body');
+      }
+
+      while (true) {
+        const { done, value } = await reader.read();
+        
+        if (done) break;
+
+        const chunk = decoder.decode(value);
+        const lines = chunk.split('\n');
+
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            const data = line.substring(6);
+            
+            if (data === '__COMPLETE__') {
+              setMessage({ type: 'success', text: 'AI title generation completed successfully!' });
+              setGeneratingTitles(false);
+              titlesAbortController.current = null;
+            } else if (data.startsWith('__ERROR__')) {
+              setMessage({ type: 'error', text: data.substring(10) });
+              setGeneratingTitles(false);
+              titlesAbortController.current = null;
+            } else {
+              try {
+                const parsed = JSON.parse(data);
+                if (parsed.type === 'progress') {
+                  setTitlesProgress(parsed.percent);
+                  setTitlesWaiting(null);
+                  setTitlesOutput((prev) => [...prev, parsed.message]);
+                } else if (parsed.type === 'waiting') {
+                  setTitlesWaiting(parsed.seconds);
+                } else {
+                  setTitlesOutput((prev) => [...prev, data]);
+                }
+              } catch {
+                setTitlesOutput((prev) => [...prev, data]);
+              }
+            }
+          }
+        }
+      }
+    } catch (err) {
+      console.error('Failed to reconnect to titles job:', err);
+    }
+  };
+  
+  // Reconnect to optimization SSE stream
+  const reconnectToOptimizationJob = async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/image-optimization/optimize`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ force: true }),
+      });
+
+      if (!res.ok) {
+        setIsOptimizationRunning(false);
+        return;
+      }
+
+      const reader = res.body?.getReader();
+      const decoder = new TextDecoder();
+      
+      if (!reader) {
+        setIsOptimizationRunning(false);
+        return;
+      }
+
+      let buffer = '';
+      
+      while (true) {
+        const { done, value } = await reader.read();
+        
+        if (done) break;
+        
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop() || '';
+        
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            try {
+              const data = JSON.parse(line.slice(6));
+              
+              if (data.type === 'progress') {
+                setOptimizationProgress(data.percent);
+                setOptimizationLogs(prev => [...prev, data.message]);
+              } else if (data.type === 'stdout' || data.type === 'stderr') {
+                setOptimizationLogs(prev => [...prev, data.message]);
+              } else if (data.type === 'complete') {
+                setOptimizationComplete(true);
+                setIsOptimizationRunning(false);
+                optimizationAbortController.current = null;
+              } else if (data.type === 'error') {
+                setMessage({ type: 'error', text: data.message });
+              }
+            } catch (e) {
+              console.error('Failed to parse SSE data:', e);
+            }
+          }
+        }
+      }
+    } catch (err) {
+      console.error('Failed to reconnect to optimization job:', err);
+      setIsOptimizationRunning(false);
     }
   };
 
