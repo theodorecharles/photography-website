@@ -62,6 +62,10 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   const [isDragging, setIsDragging] = useState(false);
   const [isMainDropZoneDragging, setIsMainDropZoneDragging] = useState(false);
   const [animatingAlbum, setAnimatingAlbum] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const photosContainerRef = useRef<HTMLDivElement>(null);
 
   // Keep ref in sync with state
   useEffect(() => {
@@ -80,20 +84,58 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   // Load photos when album is selected
   useEffect(() => {
     if (selectedAlbum) {
-      loadPhotos(selectedAlbum);
+      setAlbumPhotos([]);
+      setCurrentPage(1);
+      setHasMore(true);
+      loadPhotos(selectedAlbum, 1, true);
     }
   }, [selectedAlbum]);
 
-  const loadPhotos = async (albumName: string) => {
+  // Infinite scroll handler
+  useEffect(() => {
+    if (!selectedAlbum || !hasMore || isLoadingMore) return;
+
+    const container = photosContainerRef.current;
+    if (!container) return;
+
+    const handleScroll = () => {
+      const { scrollTop, scrollHeight, clientHeight } = container;
+      // Load more when scrolled to 80% of the way down
+      if (scrollTop + clientHeight >= scrollHeight * 0.8) {
+        loadPhotos(selectedAlbum, currentPage + 1, false);
+      }
+    };
+
+    container.addEventListener('scroll', handleScroll);
+    return () => container.removeEventListener('scroll', handleScroll);
+  }, [selectedAlbum, currentPage, hasMore, isLoadingMore]);
+
+  const loadPhotos = async (albumName: string, page: number, reset: boolean = false) => {
+    if (isLoadingMore && !reset) return;
+    
     try {
-      const res = await fetch(`${API_URL}/api/albums/${encodeURIComponent(albumName)}/photos`, {
-        credentials: 'include',
-      });
-      const photos = await res.json();
-      setAlbumPhotos(photos);
+      setIsLoadingMore(true);
+      const res = await fetch(
+        `${API_URL}/api/albums/${encodeURIComponent(albumName)}/photos?page=${page}&limit=50`,
+        { credentials: 'include' }
+      );
+      const data = await res.json();
+      
+      if (reset) {
+        setAlbumPhotos(data.photos);
+      } else {
+        setAlbumPhotos(prev => [...prev, ...data.photos]);
+      }
+      
+      setCurrentPage(page);
+      setHasMore(data.pagination.hasMore);
     } catch (err) {
       console.error('Failed to load photos:', err);
-      setAlbumPhotos([]); // Set to empty array on error to prevent map errors
+      if (reset) {
+        setAlbumPhotos([]);
+      }
+    } finally {
+      setIsLoadingMore(false);
     }
   };
 
@@ -841,6 +883,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
 
           {selectedAlbum && (
             <div 
+              ref={photosContainerRef}
               className={`album-photos ${isDragging ? 'drag-over' : ''}`}
               onDragOver={uploadingImages.length > 0 ? undefined : handleDragOver}
               onDragLeave={uploadingImages.length > 0 ? undefined : handleDragLeave}
@@ -1113,6 +1156,14 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                       </div>
                     );
                   })}
+                </div>
+              )}
+              
+              {/* Loading indicator for infinite scroll */}
+              {isLoadingMore && (
+                <div style={{ padding: '2rem', textAlign: 'center', color: '#888' }}>
+                  <div style={{ fontSize: '1.5rem' }}>⏳</div>
+                  <div>Loading more photos...</div>
                 </div>
               )}
             </div>
