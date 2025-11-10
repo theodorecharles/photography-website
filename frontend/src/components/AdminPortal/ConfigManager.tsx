@@ -75,6 +75,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
   const [savingSection, setSavingSection] = useState<string | null>(null);
   const [generatingTitles, setGeneratingTitles] = useState(false);
   const [titlesOutput, setTitlesOutput] = useState<string[]>([]);
+  const [titlesProgress, setTitlesProgress] = useState(0);
   const [optimizationLogs, setOptimizationLogs] = useState<string[]>([]);
   const [isOptimizationRunning, setIsOptimizationRunning] = useState(false);
   const [optimizationComplete, setOptimizationComplete] = useState(false);
@@ -190,6 +191,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
   const handleGenerateTitles = async () => {
     setGeneratingTitles(true);
     setTitlesOutput([]);
+    setTitlesProgress(0);
     setMessage(null);
 
     // Scroll to OpenAI section to show output
@@ -238,7 +240,19 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
               setMessage({ type: 'error', text: data.substring(10) });
               setGeneratingTitles(false);
             } else {
-              setTitlesOutput((prev) => [...prev, data]);
+              // Try to parse JSON progress data
+              try {
+                const parsed = JSON.parse(data);
+                if (parsed.type === 'progress') {
+                  setTitlesProgress(parsed.percent);
+                  setTitlesOutput((prev) => [...prev, parsed.message]);
+                } else {
+                  setTitlesOutput((prev) => [...prev, data]);
+                }
+              } catch {
+                // Not JSON, treat as plain text
+                setTitlesOutput((prev) => [...prev, data]);
+              }
             }
           }
         }
@@ -541,6 +555,38 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
                 placeholder="sk-..."
                 style={{ flex: 1, minWidth: '300px' }}
               />
+              {generatingTitles && (
+                <div className="progress-circle" style={{ width: '60px', height: '60px' }}>
+                  <svg className="progress-ring" width="60" height="60">
+                    <circle
+                      className="progress-ring-circle"
+                      stroke="rgba(255, 255, 255, 0.1)"
+                      strokeWidth="4"
+                      fill="transparent"
+                      r="26"
+                      cx="30"
+                      cy="30"
+                    />
+                    <circle
+                      className="progress-ring-circle"
+                      stroke="var(--primary-color)"
+                      strokeWidth="4"
+                      fill="transparent"
+                      r="26"
+                      cx="30"
+                      cy="30"
+                      strokeDasharray={`${2 * Math.PI * 26}`}
+                      strokeDashoffset={`${2 * Math.PI * 26 * (1 - titlesProgress / 100)}`}
+                      style={{ 
+                        transition: 'stroke-dashoffset 0.3s ease',
+                        transform: 'rotate(-90deg)',
+                        transformOrigin: '50% 50%'
+                      }}
+                    />
+                  </svg>
+                  <span className="progress-percentage" style={{ fontSize: '0.9rem' }}>{titlesProgress}%</span>
+                </div>
+              )}
               <button
                 type="button"
                 onClick={handleGenerateTitles}

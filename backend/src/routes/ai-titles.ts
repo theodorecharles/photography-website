@@ -57,7 +57,21 @@ router.post('/generate', requireAuth, (req, res) => {
     const lines = data.toString().split('\n').filter((line: string) => line.trim());
     lines.forEach((line: string) => {
       console.log('[AI Titles]', line);
-      res.write(`data: ${line}\n\n`);
+      
+      // Parse progress from lines like: [150/3000] (5%) Album/image.jpg
+      const progressMatch = line.match(/^\[(\d+)\/(\d+)\]\s*\((\d+)%\)/);
+      if (progressMatch) {
+        const [, current, total, percent] = progressMatch;
+        res.write(`data: ${JSON.stringify({ 
+          type: 'progress', 
+          current: parseInt(current),
+          total: parseInt(total),
+          percent: parseInt(percent),
+          message: line 
+        })}\n\n`);
+      } else {
+        res.write(`data: ${line}\n\n`);
+      }
     });
   });
 
