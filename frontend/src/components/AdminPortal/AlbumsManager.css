@@ -394,6 +394,10 @@
   content: '📂';
 }
 
+.album-card.unpublished h4::before {
+  content: '🔒';
+}
+
 .btn-delete-small {
   background: rgba(220, 53, 69, 0.1);
   border: 1px solid rgba(220, 53, 69, 0.3);
