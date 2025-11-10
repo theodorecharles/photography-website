@@ -107,7 +107,23 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
         if (titlesStatus.running && !titlesStatus.isComplete) {
           console.log('Reconnecting to AI titles job...');
           setGeneratingTitles(true);
-          setTitlesOutput(titlesStatus.output || []);
+          
+          // Parse stored output
+          const parsedOutput: string[] = [];
+          for (const item of titlesStatus.output || []) {
+            try {
+              const parsed = JSON.parse(item);
+              if (parsed.type === 'progress') {
+                setTitlesProgress(parsed.percent);
+                parsedOutput.push(parsed.message);
+              } else if (parsed.type === 'waiting') {
+                setTitlesWaiting(parsed.seconds);
+              }
+            } catch {
+              parsedOutput.push(item);
+            }
+          }
+          setTitlesOutput(parsedOutput);
           
           // Reconnect to the SSE stream
           reconnectToTitlesJob();
@@ -123,7 +139,23 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
         if (optStatus.running && !optStatus.isComplete) {
           console.log('Reconnecting to optimization job...');
           setIsOptimizationRunning(true);
-          setOptimizationLogs(optStatus.output || []);
+          
+          // Parse stored output
+          const parsedOutput: string[] = [];
+          for (const item of optStatus.output || []) {
+            try {
+              const parsed = JSON.parse(item);
+              if (parsed.type === 'progress') {
+                setOptimizationProgress(parsed.percent);
+                parsedOutput.push(parsed.message);
+              } else if (parsed.type === 'stdout' || parsed.type === 'stderr') {
+                parsedOutput.push(parsed.message);
+              }
+            } catch {
+              parsedOutput.push(item);
+            }
+          }
+          setOptimizationLogs(parsedOutput);
           
           // Reconnect to the SSE stream
           reconnectToOptimizationJob();
