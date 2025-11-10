@@ -168,10 +168,15 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
   
   // Reconnect to AI titles SSE stream
   const reconnectToTitlesJob = async () => {
+    // Create new abort controller for this reconnection
+    const controller = new AbortController();
+    titlesAbortController.current = controller;
+    
     try {
       const res = await fetch(`${API_URL}/api/ai-titles/generate`, {
         method: 'POST',
         credentials: 'include',
+        signal: controller.signal,
       });
 
       if (!res.ok) {
@@ -224,23 +229,37 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
           }
         }
       }
-    } catch (err) {
-      console.error('Failed to reconnect to titles job:', err);
+    } catch (err: any) {
+      if (err.name === 'AbortError') {
+        console.log('AI titles job stopped by user');
+        setGeneratingTitles(false);
+        titlesAbortController.current = null;
+      } else {
+        console.error('Failed to reconnect to titles job:', err);
+        setGeneratingTitles(false);
+        titlesAbortController.current = null;
+      }
     }
   };
   
   // Reconnect to optimization SSE stream
   const reconnectToOptimizationJob = async () => {
+    // Create new abort controller for this reconnection
+    const controller = new AbortController();
+    optimizationAbortController.current = controller;
+    
     try {
       const res = await fetch(`${API_URL}/api/image-optimization/optimize`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify({ force: true }),
+        signal: controller.signal,
       });
 
       if (!res.ok) {
         setIsOptimizationRunning(false);
+        optimizationAbortController.current = null;
         return;
       }
 
@@ -249,6 +268,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
       
       if (!reader) {
         setIsOptimizationRunning(false);
+        optimizationAbortController.current = null;
         return;
       }
 
@@ -279,6 +299,8 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
                 optimizationAbortController.current = null;
               } else if (data.type === 'error') {
                 setMessage({ type: 'error', text: data.message });
+                setIsOptimizationRunning(false);
+                optimizationAbortController.current = null;
               }
             } catch (e) {
               console.error('Failed to parse SSE data:', e);
@@ -286,9 +308,16 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
           }
         }
       }
-    } catch (err) {
-      console.error('Failed to reconnect to optimization job:', err);
-      setIsOptimizationRunning(false);
+    } catch (err: any) {
+      if (err.name === 'AbortError') {
+        console.log('Optimization job stopped by user');
+        setIsOptimizationRunning(false);
+        optimizationAbortController.current = null;
+      } else {
+        console.error('Failed to reconnect to optimization job:', err);
+        setIsOptimizationRunning(false);
+        optimizationAbortController.current = null;
+      }
     }
   };
 
