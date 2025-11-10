@@ -799,58 +799,66 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                           </span>
                         )}
                       </h4>
-                      <div className="album-card-actions">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            window.open(`/album/${album.name}`, '_blank');
-                          }}
-                          className="btn-preview"
-                          title="Preview album"
-                        >
-                          👁️
-                        </button>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDeleteAlbum(album.name);
-                          }}
-                          className="btn-delete-small"
-                          title="Delete album"
-                        >
-                          ×
-                        </button>
-                      </div>
+                      {album.photoCount !== undefined && (
+                        <div className="album-badge">
+                          {album.photoCount} {album.photoCount === 1 ? 'photo' : 'photos'}
+                        </div>
+                      )}
                     </div>
-                    <div className="album-card-footer">
-                      <div className="album-info">
-                        {album.photoCount !== undefined && (
-                          <div className="album-badge">
-                            {album.photoCount} {album.photoCount === 1 ? 'photo' : 'photos'}
-                          </div>
-                        )}
-                      </div>
-                      <div className="album-publish-toggle">
-                        <label 
-                          className="toggle-switch"
-                          onClick={(e) => e.stopPropagation()}
-                          title={album.published === false ? "Publish album (make visible to public)" : "Unpublish album (hide from public)"}
-                        >
-                          <input
-                            type="checkbox"
-                            checked={album.published !== false}
-                            onChange={(e) => {
+                    
+                    {selectedAlbum === album.name && (
+                      <div className="album-card-actions-expanded">
+                        <div className="album-action-buttons">
+                          <button
+                            onClick={(e) => {
                               e.stopPropagation();
-                              handleTogglePublished(album.name, album.published !== false, e as any);
+                              window.open(`/album/${album.name}`, '_blank');
                             }}
-                          />
-                          <span className="toggle-slider"></span>
-                          <span className="toggle-label">
-                            {album.published === false ? 'Unpublished' : 'Published'}
-                          </span>
-                        </label>
+                            className="btn-action btn-preview"
+                            title="Preview album"
+                          >
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                              <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                            Preview
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteAlbum(album.name);
+                            }}
+                            className="btn-action btn-delete"
+                            title="Delete album"
+                          >
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+                            </svg>
+                            Delete
+                          </button>
+                        </div>
+                        <div className="album-publish-toggle">
+                          <label 
+                            className="toggle-switch"
+                            onClick={(e) => e.stopPropagation()}
+                            title={album.published === false ? "Publish album (make visible to public)" : "Unpublish album (hide from public)"}
+                          >
+                            <input
+                              type="checkbox"
+                              checked={album.published !== false}
+                              onChange={(e) => {
+                                e.stopPropagation();
+                                handleTogglePublished(album.name, album.published !== false, e as any);
+                              }}
+                            />
+                            <span className="toggle-slider"></span>
+                            <span className="toggle-label">
+                              {album.published === false ? 'Unpublished' : 'Published'}
+                            </span>
+                          </label>
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </div>
                 ))}
               </div>
