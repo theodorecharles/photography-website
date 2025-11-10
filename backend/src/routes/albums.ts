@@ -85,9 +85,6 @@ const getPhotosInAlbum = (photosDir: string, album: string) => {
 
     // Use optimized images for all albums
     return files.map((file) => {
-      const filePath = path.join(albumPath, file);
-      const stats = fs.statSync(filePath);
-
       // Generate title from filename by removing extension and replacing separators
       const title = file
         .replace(/\.[^/.]+$/, '') // Remove extension
@@ -100,11 +97,6 @@ const getPhotosInAlbum = (photosDir: string, album: string) => {
         src: `/optimized/modal/${album}/${file}`,
         thumbnail: `/optimized/thumbnail/${album}/${file}`,
         download: `/optimized/download/${album}/${file}`,
-        metadata: {
-          created: stats.birthtime,
-          modified: stats.mtime,
-          size: stats.size,
-        },
       };
     });
   } catch (error) {
