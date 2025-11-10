@@ -12,6 +12,26 @@ import { getAlbumState, getPublishedAlbums, getAllAlbums, saveAlbum } from "../d
 
 const router = Router();
 
+// In-memory cache for album photos
+interface CacheEntry {
+  photos: any[];
+  timestamp: number;
+}
+
+const albumCache = new Map<string, CacheEntry>();
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
+// Function to invalidate cache for an album
+export const invalidateAlbumCache = (albumName?: string) => {
+  if (albumName) {
+    albumCache.delete(albumName);
+    console.log(`Cache invalidated for album: ${albumName}`);
+  } else {
+    albumCache.clear();
+    console.log('All album caches cleared');
+  }
+};
+
 /**
  * Sanitize path input to prevent directory traversal attacks.
  * @param input - User-provided path component
@@ -65,9 +85,6 @@ const getPhotosInAlbum = (photosDir: string, album: string) => {
 
     // Use optimized images for all albums
     return files.map((file) => {
-      const filePath = path.join(albumPath, file);
-      const stats = fs.statSync(filePath);
-
       // Generate title from filename by removing extension and replacing separators
       const title = file
         .replace(/\.[^/.]+$/, '') // Remove extension
@@ -80,11 +97,6 @@ const getPhotosInAlbum = (photosDir: string, album: string) => {
         src: `/optimized/modal/${album}/${file}`,
         thumbnail: `/optimized/thumbnail/${album}/${file}`,
         download: `/optimized/download/${album}/${file}`,
-        metadata: {
-          created: stats.birthtime,
-          modified: stats.mtime,
-          size: stats.size,
-        },
       };
     });
   } catch (error) {
@@ -219,6 +231,7 @@ router.get("/api/albums", (req: Request, res) => {
 
 // Get photos in a specific album
 router.get("/api/albums/:album/photos", (req: Request, res): void => {
+  const startTime = Date.now();
   const { album } = req.params;
 
   // Sanitize album parameter to prevent path traversal
@@ -249,7 +262,31 @@ router.get("/api/albums/:album/photos", (req: Request, res): void => {
     return;
   }
 
+  // Check cache first
+  const cached = albumCache.get(sanitizedAlbum);
+  const now = Date.now();
+  
+  if (cached && (now - cached.timestamp) < CACHE_TTL) {
+    const duration = Date.now() - startTime;
+    console.log(`Cache hit for album: ${sanitizedAlbum} (${cached.photos.length} photos, ${duration}ms)`);
+    res.json(cached.photos);
+    return;
+  }
+
+  // Cache miss or expired - fetch from filesystem
+  console.log(`Cache miss for album: ${sanitizedAlbum}`);
+  const fetchStart = Date.now();
   const photos = getPhotosInAlbum(photosDir, sanitizedAlbum);
+  const fetchDuration = Date.now() - fetchStart;
+  
+  // Store in cache
+  albumCache.set(sanitizedAlbum, {
+    photos,
+    timestamp: now
+  });
+  
+  const totalDuration = Date.now() - startTime;
+  console.log(`Fetched ${photos.length} photos in ${fetchDuration}ms, total request: ${totalDuration}ms`);
   res.json(photos);
 });
 

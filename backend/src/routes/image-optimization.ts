@@ -14,6 +14,30 @@ const router = express.Router();
 // Apply CSRF protection to all routes in this router
 router.use(csrfProtection);
 
+// Track running optimization job
+interface RunningJob {
+  process: any;
+  output: string[];
+  clients: Set<any>;
+  startTime: number;
+  isComplete: boolean;
+}
+
+let runningOptimizationJob: RunningJob | null = null;
+
+// Broadcast message to all connected clients
+function broadcastToClients(job: RunningJob | null, message: string) {
+  if (!job) return;
+  
+  job.clients.forEach(client => {
+    try {
+      client.write(`data: ${message}\n\n`);
+    } catch (err) {
+      // Client disconnected, will be cleaned up
+    }
+  });
+}
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -105,9 +129,85 @@ router.put('/settings', requireAuth, (req, res) => {
   }
 });
 
+// GET /api/image-optimization/status - Check if optimization is running
+router.get('/status', requireAuth, (req, res) => {
+  if (runningOptimizationJob) {
+    res.json({ 
+      running: true, 
+      output: runningOptimizationJob.output,
+      isComplete: runningOptimizationJob.isComplete
+    });
+  } else {
+    res.json({ running: false });
+  }
+});
+
+// POST /api/image-optimization/stop - Stop running optimization job
+router.post('/stop', requireAuth, (req: any, res: any) => {
+  if (!runningOptimizationJob || runningOptimizationJob.isComplete) {
+    return res.json({ success: false, message: 'No running job to stop' });
+  }
+  
+  try {
+    // Kill the process
+    if (runningOptimizationJob.process) {
+      runningOptimizationJob.process.kill('SIGTERM');
+      console.log('[Optimization] Job stopped by user');
+    }
+    
+    // Mark as complete and broadcast to all clients
+    const stopMsg = JSON.stringify({ type: 'error', message: 'Job stopped by user' });
+    runningOptimizationJob.output.push(stopMsg);
+    runningOptimizationJob.isComplete = true;
+    broadcastToClients(runningOptimizationJob, stopMsg);
+    
+    // Close all client connections
+    runningOptimizationJob.clients.forEach(client => {
+      try {
+        client.end();
+      } catch (err) {
+        // Ignore errors
+      }
+    });
+    runningOptimizationJob.clients.clear();
+    
+    res.json({ success: true, message: 'Job stopped successfully' });
+  } catch (error: any) {
+    console.error('[Optimization] Error stopping job:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
 // POST /api/image-optimization/optimize - Run optimization script with SSE
 router.post('/optimize', requireAuth, (req, res) => {
   const { force } = req.body;
+  
+  // If already running, reconnect to existing job
+  if (runningOptimizationJob && !runningOptimizationJob.isComplete) {
+    console.log('[Optimization] Reconnecting to existing job');
+    
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+    res.flushHeaders();
+    
+    // Send all previous output
+    runningOptimizationJob.output.forEach(line => {
+      res.write(`data: ${line}\n\n`);
+    });
+    
+    // Add this client to the broadcast list
+    runningOptimizationJob.clients.add(res);
+    
+    // Remove client when they disconnect
+    req.on('close', () => {
+      if (runningOptimizationJob) {
+        runningOptimizationJob.clients.delete(res);
+      }
+    });
+    
+    return;
+  }
   
   // Set up SSE headers
   res.setHeader('Content-Type', 'text/event-stream');
@@ -116,10 +216,20 @@ router.post('/optimize', requireAuth, (req, res) => {
   res.flushHeaders();
   
   // Send initial connection message
-  res.write('data: {"type":"connected","message":"Connected to optimization stream"}\n\n');
+  const connectMsg = '{"type":"connected","message":"Connected to optimization stream"}';
+  res.write(`data: ${connectMsg}\n\n`);
+  
+  // Create job tracking
+  runningOptimizationJob = {
+    process: null,
+    output: [connectMsg],
+    clients: new Set([res]),
+    startTime: Date.now(),
+    isComplete: false
+  };
   
   // Build command
-  const scriptPath = path.resolve(__dirname, '../../../optimize_all_images.sh');
+  const scriptPath = path.resolve(__dirname, '../../../optimize_all_images.js');
   const args = force ? ['--force'] : [];
   
   // Check if script exists
@@ -130,10 +240,18 @@ router.post('/optimize', requireAuth, (req, res) => {
   }
   
   // Spawn the optimization script
-  const child = spawn(scriptPath, args, {
+  const child = spawn('node', [scriptPath, ...args], {
     cwd: path.resolve(__dirname, '../../../'),
-    shell: true,
     env: { ...process.env, TERM: 'dumb' } // Disable terminal colors/animations
+  });
+  
+  runningOptimizationJob.process = child;
+  
+  // Remove client when they disconnect
+  req.on('close', () => {
+    if (runningOptimizationJob) {
+      runningOptimizationJob.clients.delete(res);
+    }
   });
   
   // Stream stdout
@@ -141,7 +259,28 @@ router.post('/optimize', requireAuth, (req, res) => {
     const lines = data.toString().split('\n');
     lines.forEach((line: string) => {
       if (line.trim()) {
-        res.write(`data: ${JSON.stringify({ type: 'stdout', message: line })}\n\n`);
+        let output = '';
+        
+        // Parse progress from lines like: [150/3000] (5%) Album/image.jpg [type]
+        const progressMatch = line.match(/^\[(\d+)\/(\d+)\]\s*\((\d+)%\)/);
+        if (progressMatch) {
+          const [, current, total, percent] = progressMatch;
+          output = JSON.stringify({ 
+            type: 'progress', 
+            current: parseInt(current),
+            total: parseInt(total),
+            percent: parseInt(percent),
+            message: line 
+          });
+        } else {
+          output = JSON.stringify({ type: 'stdout', message: line });
+        }
+        
+        // Store output and broadcast to all clients
+        if (runningOptimizationJob) {
+          runningOptimizationJob.output.push(output);
+          broadcastToClients(runningOptimizationJob, output);
+        }
       }
     });
   });
@@ -158,27 +297,55 @@ router.post('/optimize', requireAuth, (req, res) => {
   
   // Handle process completion
   child.on('close', (code) => {
-    res.write(`data: ${JSON.stringify({ 
+    const completeMsg = JSON.stringify({ 
       type: 'complete', 
       message: `Process exited with code ${code}`,
       exitCode: code 
-    })}\n\n`);
-    res.end();
+    });
+    
+    if (runningOptimizationJob) {
+      runningOptimizationJob.output.push(completeMsg);
+      runningOptimizationJob.isComplete = true;
+      
+      // Broadcast to all clients and close connections
+      broadcastToClients(runningOptimizationJob, completeMsg);
+      runningOptimizationJob.clients.forEach(client => {
+        try {
+          client.end();
+        } catch (err) {
+          // Ignore errors
+        }
+      });
+      runningOptimizationJob.clients.clear();
+      
+      // Clean up after 5 minutes
+      setTimeout(() => {
+        runningOptimizationJob = null;
+      }, 5 * 60 * 1000);
+    }
   });
   
   // Handle errors
   child.on('error', (error) => {
-    res.write(`data: ${JSON.stringify({ 
+    const errorMsg = JSON.stringify({ 
       type: 'error', 
       message: `Failed to start process: ${error.message}` 
-    })}\n\n`);
-    res.end();
-  });
-  
-  // Clean up on client disconnect
-  req.on('close', () => {
-    if (!child.killed) {
-      child.kill();
+    });
+    
+    if (runningOptimizationJob) {
+      runningOptimizationJob.output.push(errorMsg);
+      runningOptimizationJob.isComplete = true;
+      
+      // Broadcast to all clients and close connections
+      broadcastToClients(runningOptimizationJob, errorMsg);
+      runningOptimizationJob.clients.forEach(client => {
+        try {
+          client.end();
+        } catch (err) {
+          // Ignore errors
+        }
+      });
+      runningOptimizationJob.clients.clear();
     }
   });
 });

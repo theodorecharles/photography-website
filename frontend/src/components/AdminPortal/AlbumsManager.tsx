@@ -51,10 +51,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   const [uploadingImages, setUploadingImages] = useState<UploadingImage[]>([]);
   const uploadingImagesRef = useRef<UploadingImage[]>([]);
   const [newAlbumName, setNewAlbumName] = useState('');
-  const [selectedAlbum, setSelectedAlbum] = useState<string | null>(() => {
-    // Restore selected album from sessionStorage on mount
-    return sessionStorage.getItem('selectedAlbum');
-  });
+  const [selectedAlbum, setSelectedAlbum] = useState<string | null>(null);
   const [albumPhotos, setAlbumPhotos] = useState<Photo[]>([]);
   const [editingPhoto, setEditingPhoto] = useState<Photo | null>(null);
   const [editTitleValue, setEditTitleValue] = useState('');
@@ -68,15 +65,6 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     uploadingImagesRef.current = uploadingImages;
   }, [uploadingImages]);
 
-  // Persist selected album to sessionStorage whenever it changes
-  useEffect(() => {
-    if (selectedAlbum) {
-      sessionStorage.setItem('selectedAlbum', selectedAlbum);
-    } else {
-      sessionStorage.removeItem('selectedAlbum');
-    }
-  }, [selectedAlbum]);
-
   // Load photos when album is selected
   useEffect(() => {
     if (selectedAlbum) {
@@ -86,14 +74,16 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
 
   const loadPhotos = async (albumName: string) => {
     try {
-      const res = await fetch(`${API_URL}/api/albums/${encodeURIComponent(albumName)}/photos`, {
-        credentials: 'include',
-      });
-      const photos = await res.json();
+      const res = await fetch(
+        `${API_URL}/api/albums/${encodeURIComponent(albumName)}/photos`,
+        { credentials: 'include' }
+      );
+      const data = await res.json();
+      const photos = Array.isArray(data) ? data : (data.photos || []);
       setAlbumPhotos(photos);
     } catch (err) {
       console.error('Failed to load photos:', err);
-      setAlbumPhotos([]); // Set to empty array on error to prevent map errors
+      setAlbumPhotos([]);
     }
   };
 
@@ -821,11 +811,6 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                     <div className="album-card-header">
                       <h4>
                         <span className="album-name">{album.name}</span>
-                        {album.published === false && (
-                          <span className="unpublished-badge" title="Not visible to public">
-                            🔒
-                          </span>
-                        )}
                       </h4>
                       {album.photoCount !== undefined && (
                         <div className="album-badge">
