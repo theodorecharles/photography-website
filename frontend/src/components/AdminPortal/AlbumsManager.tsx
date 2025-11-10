@@ -799,16 +799,28 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                           </span>
                         )}
                       </h4>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDeleteAlbum(album.name);
-                        }}
-                        className="btn-delete-small"
-                        title="Delete album"
-                      >
-                        ×
-                      </button>
+                      <div className="album-card-actions">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            window.open(`/album/${album.name}`, '_blank');
+                          }}
+                          className="btn-preview"
+                          title="Preview album"
+                        >
+                          👁️
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteAlbum(album.name);
+                          }}
+                          className="btn-delete-small"
+                          title="Delete album"
+                        >
+                          ×
+                        </button>
+                      </div>
                     </div>
                     <div className="album-card-footer">
                       <div className="album-info">
