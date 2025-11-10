@@ -602,38 +602,6 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
                 placeholder="sk-..."
                 style={{ flex: 1, minWidth: '300px' }}
               />
-              {generatingTitles && (
-                <div className="progress-circle" style={{ width: '60px', height: '60px' }}>
-                  <svg className="progress-ring" width="60" height="60">
-                    <circle
-                      className="progress-ring-circle"
-                      stroke="rgba(255, 255, 255, 0.1)"
-                      strokeWidth="4"
-                      fill="transparent"
-                      r="26"
-                      cx="30"
-                      cy="30"
-                    />
-                    <circle
-                      className="progress-ring-circle"
-                      stroke="var(--primary-color)"
-                      strokeWidth="4"
-                      fill="transparent"
-                      r="26"
-                      cx="30"
-                      cy="30"
-                      strokeDasharray={`${2 * Math.PI * 26}`}
-                      strokeDashoffset={`${2 * Math.PI * 26 * (1 - titlesProgress / 100)}`}
-                      style={{ 
-                        transition: 'stroke-dashoffset 0.3s ease',
-                        transform: 'rotate(-90deg)',
-                        transformOrigin: '50% 50%'
-                      }}
-                    />
-                  </svg>
-                  <span className="progress-percentage" style={{ fontSize: '0.9rem' }}>{titlesProgress}%</span>
-                </div>
-              )}
               {!generatingTitles ? (
                 <button
                   type="button"
@@ -648,29 +616,56 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
                 <button
                   type="button"
                   onClick={handleStopTitles}
-                  className="btn-delete"
-                  style={{ whiteSpace: 'nowrap' }}
+                  className="btn-secondary"
+                  style={{ 
+                    whiteSpace: 'nowrap',
+                    backgroundColor: '#dc2626',
+                    borderColor: '#dc2626'
+                  }}
                 >
                   Stop
                 </button>
               )}
             </div>
             {generatingTitles && (
-              <div className="titles-output" ref={titlesOutputRef}>
-                <div className="titles-output-content">
-                  {titlesOutput.map((line, index) => (
-                    <div key={index} className="output-line">{line}</div>
-                  ))}
-                  {titlesOutput.length === 0 && (
-                    <div className="output-line">Starting AI title generation...</div>
-                  )}
-                  {generatingTitles && (
-                    <div className="output-line" style={{ marginTop: '0.5rem', color: titlesWaiting !== null ? '#fbbf24' : '#4ade80' }}>
-                      ⏳ {titlesWaiting !== null ? `Waiting... ${titlesWaiting}s` : 'Running...'}
-                    </div>
-                  )}
+              <>
+                <div style={{ marginTop: '1rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', fontSize: '0.9rem' }}>
+                    <span style={{ color: '#9ca3af' }}>Progress</span>
+                    <span style={{ color: 'var(--primary-color)', fontWeight: 600 }}>{titlesProgress}%</span>
+                  </div>
+                  <div style={{ 
+                    width: '100%', 
+                    height: '8px', 
+                    backgroundColor: 'rgba(255, 255, 255, 0.1)', 
+                    borderRadius: '4px',
+                    overflow: 'hidden'
+                  }}>
+                    <div style={{ 
+                      height: '100%', 
+                      width: `${titlesProgress}%`, 
+                      backgroundColor: 'var(--primary-color)',
+                      transition: 'width 0.3s ease',
+                      borderRadius: '4px'
+                    }} />
+                  </div>
                 </div>
-              </div>
+                <div className="titles-output" ref={titlesOutputRef}>
+                  <div className="titles-output-content">
+                    {titlesOutput.map((line, index) => (
+                      <div key={index} className="output-line">{line}</div>
+                    ))}
+                    {titlesOutput.length === 0 && (
+                      <div className="output-line">Starting AI title generation...</div>
+                    )}
+                    {generatingTitles && (
+                      <div className="output-line" style={{ marginTop: '0.5rem', color: titlesWaiting !== null ? '#fbbf24' : '#4ade80' }}>
+                        ⏳ {titlesWaiting !== null ? `Waiting... ${titlesWaiting}s` : 'Running...'}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </>
             )}
           </div>
         </div>
@@ -780,38 +775,6 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
               <h4 style={{ color: '#e5e7eb', margin: 0, fontSize: '1rem', fontWeight: 600 }}>Regenerate All Images</h4>
               <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                {isOptimizationRunning && (
-                  <div className="progress-circle" style={{ width: '60px', height: '60px' }}>
-                    <svg className="progress-ring" width="60" height="60">
-                      <circle
-                        className="progress-ring-circle"
-                        stroke="rgba(255, 255, 255, 0.1)"
-                        strokeWidth="4"
-                        fill="transparent"
-                        r="26"
-                        cx="30"
-                        cy="30"
-                      />
-                      <circle
-                        className="progress-ring-circle"
-                        stroke="var(--primary-color)"
-                        strokeWidth="4"
-                        fill="transparent"
-                        r="26"
-                        cx="30"
-                        cy="30"
-                        strokeDasharray={`${2 * Math.PI * 26}`}
-                        strokeDashoffset={`${2 * Math.PI * 26 * (1 - optimizationProgress / 100)}`}
-                        style={{ 
-                          transition: 'stroke-dashoffset 0.3s ease',
-                          transform: 'rotate(-90deg)',
-                          transformOrigin: '50% 50%'
-                        }}
-                      />
-                    </svg>
-                    <span className="progress-percentage" style={{ fontSize: '0.9rem' }}>{optimizationProgress}%</span>
-                  </div>
-                )}
                 {!isOptimizationRunning ? (
                   <button
                     type="button"
@@ -824,7 +787,11 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
                   <button
                     type="button"
                     onClick={handleStopOptimization}
-                    className="btn-delete"
+                    className="btn-force-regenerate"
+                    style={{ 
+                      backgroundColor: '#dc2626',
+                      borderColor: '#dc2626'
+                    }}
                   >
                     Stop
                   </button>
@@ -836,16 +803,41 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
             </div>
 
             {optimizationLogs.length > 0 && (
-              <div className="titles-output" style={{ maxHeight: '500px' }} ref={optimizationOutputRef}>
-                <div className="titles-output-content">
-                  {optimizationLogs.map((log, index) => (
-                    <div key={index} className="output-line">{log}</div>
-                  ))}
-                  {isOptimizationRunning && (
-                    <div className="output-line" style={{ marginTop: '0.5rem', color: '#4ade80' }}>⏳ Running...</div>
-                  )}
+              <>
+                {isOptimizationRunning && (
+                  <div style={{ marginTop: '1rem' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', fontSize: '0.9rem' }}>
+                      <span style={{ color: '#9ca3af' }}>Progress</span>
+                      <span style={{ color: 'var(--primary-color)', fontWeight: 600 }}>{optimizationProgress}%</span>
+                    </div>
+                    <div style={{ 
+                      width: '100%', 
+                      height: '8px', 
+                      backgroundColor: 'rgba(255, 255, 255, 0.1)', 
+                      borderRadius: '4px',
+                      overflow: 'hidden'
+                    }}>
+                      <div style={{ 
+                        height: '100%', 
+                        width: `${optimizationProgress}%`, 
+                        backgroundColor: 'var(--primary-color)',
+                        transition: 'width 0.3s ease',
+                        borderRadius: '4px'
+                      }} />
+                    </div>
+                  </div>
+                )}
+                <div className="titles-output" style={{ maxHeight: '500px' }} ref={optimizationOutputRef}>
+                  <div className="titles-output-content">
+                    {optimizationLogs.map((log, index) => (
+                      <div key={index} className="output-line">{log}</div>
+                    ))}
+                    {isOptimizationRunning && (
+                      <div className="output-line" style={{ marginTop: '0.5rem', color: '#4ade80' }}>⏳ Running...</div>
+                    )}
+                  </div>
                 </div>
-              </div>
+              </>
             )}
           </div>
         </div>
