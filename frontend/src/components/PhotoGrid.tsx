@@ -111,6 +111,9 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
             `${API_URL}/api/albums/${album}/photos${queryString}`
           );
           if (!response.ok) {
+            if (response.status === 404) {
+              throw new Error("ALBUM_NOT_FOUND");
+            }
             throw new Error("Failed to fetch photos");
           }
           const data = await response.json();
@@ -352,6 +355,20 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album }) => {
   }
 
   if (error) {
+    if (error === "ALBUM_NOT_FOUND") {
+      return (
+        <div className="error" style={{ textAlign: 'center', padding: '4rem 2rem' }}>
+          <h1 style={{ fontSize: '4rem', marginBottom: '1rem' }}>404</h1>
+          <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>Album Not Found</h2>
+          <p style={{ color: '#888', marginBottom: '2rem' }}>
+            This album doesn't exist or is not currently available.
+          </p>
+          <a href="/" style={{ color: 'var(--primary-color)', textDecoration: 'none' }}>
+            ← Back to Home
+          </a>
+        </div>
+      );
+    }
     return <div className="error">Error: {error}</div>;
   }
 
