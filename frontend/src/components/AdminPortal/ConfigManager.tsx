@@ -294,17 +294,25 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
 
   // Auto-scroll optimization output to bottom when new logs arrive
   useEffect(() => {
-    if (optimizationOutputRef.current) {
-      optimizationOutputRef.current.scrollTop = optimizationOutputRef.current.scrollHeight;
+    if (optimizationOutputRef.current && isOptimizationRunning) {
+      setTimeout(() => {
+        if (optimizationOutputRef.current) {
+          optimizationOutputRef.current.scrollTop = optimizationOutputRef.current.scrollHeight;
+        }
+      }, 0);
     }
-  }, [optimizationLogs]);
+  }, [optimizationLogs, isOptimizationRunning]);
 
   // Auto-scroll titles output to bottom when new lines arrive
   useEffect(() => {
-    if (titlesOutputRef.current) {
-      titlesOutputRef.current.scrollTop = titlesOutputRef.current.scrollHeight;
+    if (titlesOutputRef.current && generatingTitles) {
+      setTimeout(() => {
+        if (titlesOutputRef.current) {
+          titlesOutputRef.current.scrollTop = titlesOutputRef.current.scrollHeight;
+        }
+      }, 0);
     }
-  }, [titlesOutput]);
+  }, [titlesOutput, generatingTitles]);
 
   const loadConfig = async () => {
     try {
