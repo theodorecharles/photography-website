@@ -97,10 +97,15 @@ fi
 # Return to project root
 cd ..
 
-# Run database migration
-log "Running database migration..."
+# Run database migrations
+log "Running database migrations..."
 if ! node migrate-database.js; then
     handle_error "Database migration failed"
+fi
+
+log "Running sort_order migration..."
+if ! node migrate-add-sort-order.js; then
+    handle_error "Sort order migration failed"
 fi
 
 # Restart both services using PM2 ecosystem file
