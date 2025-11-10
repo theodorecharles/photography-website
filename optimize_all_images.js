@@ -141,17 +141,17 @@ async function processConcurrently(items, concurrency, fn) {
 
 // Main function
 async function main() {
-  console.log('🖼️  Image Optimization Starting...');
-  console.log(`📁 Photos directory: ${photosDir}`);
-  console.log(`⚙️  Concurrency: ${concurrency}`);
-  console.log(`🔄 Force mode: ${forceMode ? 'YES' : 'NO'}`);
+  console.log('Image Optimization Starting...');
+  console.log(`Photos directory: ${photosDir}`);
+  console.log(`Concurrency: ${concurrency}`);
+  console.log(`Force mode: ${forceMode ? 'YES' : 'NO'}`);
   console.log('');
   
   // Check if photos directory exists
   try {
     await fs.access(photosDir);
   } catch (error) {
-    console.error(`❌ Photos directory not found: ${photosDir}`);
+    console.error(`ERROR: Photos directory not found: ${photosDir}`);
     process.exit(1);
   }
   
@@ -161,28 +161,28 @@ async function main() {
   await fs.mkdir('optimized/download', { recursive: true });
   
   // Get all images
-  console.log('📋 Scanning for images...');
+  console.log('Scanning for images...');
   const albums = await getImageFiles(photosDir);
   const allImages = albums.flatMap(a => a.images);
-  console.log(`   Found ${allImages.length} images in ${albums.length} albums\n`);
+  console.log(`Found ${allImages.length} images in ${albums.length} albums\n`);
   
   if (allImages.length === 0) {
-    console.log('✅ No images to process');
+    console.log('No images to process');
     return;
   }
   
   // Count how many need processing
-  console.log('🔍 Checking which images need processing...');
+  console.log('Checking which images need processing...');
   const imageNeeds = await Promise.all(
     allImages.map(async img => ({ img, needs: await needsProcessing(img) }))
   );
   const toProcess = imageNeeds.filter(({ needs }) => needs.some(n => n));
   const totalVersions = toProcess.reduce((sum, { needs }) => sum + needs.filter(n => n).length, 0);
   
-  console.log(`   ${totalVersions} versions need to be created\n`);
+  console.log(`${totalVersions} versions need to be created\n`);
   
   if (totalVersions === 0) {
-    console.log('✅ All images already optimized');
+    console.log('All images already optimized');
     return;
   }
   
@@ -222,16 +222,16 @@ async function main() {
   
   // Print summary
   const elapsed = ((Date.now() - stats.startTime) / 1000).toFixed(1);
-  console.log('\n✅ Optimization Complete!');
-  console.log(`   Processed: ${stats.processed} versions`);
-  console.log(`   Skipped: ${stats.skipped} versions (already exist)`);
+  console.log('\nOptimization Complete!');
+  console.log(`Processed: ${stats.processed} versions`);
+  console.log(`Skipped: ${stats.skipped} versions (already exist)`);
   if (stats.errors > 0) {
-    console.log(`   Errors: ${stats.errors}`);
+    console.log(`Errors: ${stats.errors}`);
   }
-  console.log(`   Time: ${elapsed}s`);
+  console.log(`Time: ${elapsed}s`);
 }
 
 main().catch(error => {
-  console.error('❌ Fatal error:', error);
+  console.error('FATAL ERROR:', error);
   process.exit(1);
 });
