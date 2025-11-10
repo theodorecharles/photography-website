@@ -811,11 +811,6 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                     <div className="album-card-header">
                       <h4>
                         <span className="album-name">{album.name}</span>
-                        {album.published === false && (
-                          <span className="unpublished-badge" title="Not visible to public">
-                            🔒
-                          </span>
-                        )}
                       </h4>
                       {album.photoCount !== undefined && (
                         <div className="album-badge">
