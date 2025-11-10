@@ -74,7 +74,7 @@ router.get('/status', requireAuth, (req, res) => {
  * POST /api/ai-titles/stop
  * Stop running AI titles generation job
  */
-router.post('/stop', requireAuth, (req, res) => {
+router.post('/stop', requireAuth, (req: any, res: any) => {
   if (!runningJobs.aiTitles || runningJobs.aiTitles.isComplete) {
     return res.json({ success: false, message: 'No running job to stop' });
   }

@@ -143,7 +143,7 @@ router.get('/status', requireAuth, (req, res) => {
 });
 
 // POST /api/image-optimization/stop - Stop running optimization job
-router.post('/stop', requireAuth, (req, res) => {
+router.post('/stop', requireAuth, (req: any, res: any) => {
   if (!runningOptimizationJob || runningOptimizationJob.isComplete) {
     return res.json({ success: false, message: 'No running job to stop' });
   }
