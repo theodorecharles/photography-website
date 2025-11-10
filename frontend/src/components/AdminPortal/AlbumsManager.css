@@ -358,6 +358,40 @@
   flex: 1;
 }
 
+.album-card-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.btn-preview {
+  background: rgba(74, 222, 128, 0.1);
+  border: 1px solid rgba(74, 222, 128, 0.3);
+  color: #4ade80;
+  width: 28px;
+  height: 28px;
+  border-radius: 5px;
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  flex-shrink: 0;
+  opacity: 0.7;
+}
+
+.btn-preview:hover {
+  background: #4ade80;
+  border-color: #4ade80;
+  opacity: 1;
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(74, 222, 128, 0.3);
+}
+
 .album-card h4 {
   color: #fff;
   margin: 0;

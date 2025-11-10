@@ -8,7 +8,7 @@ import { Router, Request } from "express";
 import fs from "fs";
 import path from "path";
 import exifr from "exifr";
-import { getAlbumState, getPublishedAlbums, getAllAlbums } from "../database.js";
+import { getAlbumState, getPublishedAlbums, getAllAlbums, saveAlbum } from "../database.js";
 
 const router = Router();
 
@@ -184,33 +184,39 @@ router.get("/api/albums", (req: Request, res) => {
   const photosDir = req.app.get("photosDir");
   const allAlbums = getAlbums(photosDir);
   
+  // Sync filesystem albums to database (auto-add any missing albums as unpublished)
+  const allAlbumStates = getAllAlbums();
+  const albumsInDB = new Set(allAlbumStates.map(a => a.name));
+  
+  for (const albumName of allAlbums) {
+    if (!albumsInDB.has(albumName) && albumName !== 'homepage') {
+      // Auto-add missing albums as unpublished (for manually created folders)
+      saveAlbum(albumName, false);
+      console.log(`Auto-synced album to database: ${albumName} (unpublished - manually created folder)`);
+    }
+  }
+  
+  // Re-fetch album states after sync
+  const updatedAlbumStates = getAllAlbums();
+  
   // Check if user is authenticated
   const isAuthenticated = req.isAuthenticated && req.isAuthenticated();
   
   if (isAuthenticated) {
     // For authenticated users, return all albums with their published state
-    const albumStates = getAllAlbums();
     const albumsWithState = allAlbums.map((albumName: string) => {
-      const state = albumStates.find(a => a.name === albumName);
+      const state = updatedAlbumStates.find(a => a.name === albumName);
       return {
         name: albumName,
-        published: state?.published ?? true // Default to published for albums not in DB yet
+        published: state?.published ?? true
       };
     });
     res.json(albumsWithState);
   } else {
     // For non-authenticated users, only return published albums
-    const allAlbumStates = getAllAlbums();
-    
-    // Filter filesystem albums to only include published ones
     const publishedAlbums = allAlbums.filter((albumName: string) => {
-      const state = allAlbumStates.find(a => a.name === albumName);
-      // If album is in DB, check its published state
-      if (state) {
-        return state.published;
-      }
-      // For albums not in DB, treat as published (legacy behavior for albums created before this feature)
-      return true;
+      const state = updatedAlbumStates.find(a => a.name === albumName);
+      return state?.published === true;
     });
     
     res.json(publishedAlbums);
