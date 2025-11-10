@@ -200,19 +200,17 @@ router.get("/api/albums", (req: Request, res) => {
     res.json(albumsWithState);
   } else {
     // For non-authenticated users, only return published albums
-    const publishedAlbumStates = getPublishedAlbums();
-    const publishedNames = new Set(publishedAlbumStates.map(a => a.name));
+    const allAlbumStates = getAllAlbums();
     
     // Filter filesystem albums to only include published ones
     const publishedAlbums = allAlbums.filter((albumName: string) => {
-      const state = publishedAlbumStates.find(a => a.name === albumName);
-      // If album is in DB, check its published state; otherwise include it (legacy behavior)
+      const state = allAlbumStates.find(a => a.name === albumName);
+      // If album is in DB, check its published state
       if (state) {
         return state.published;
       }
-      // For albums not in DB, check if they would have been auto-published
-      // (this handles migration - albums existing before this feature are treated as published)
-      return !publishedAlbumStates.some(a => a.name === albumName);
+      // For albums not in DB, treat as published (legacy behavior for albums created before this feature)
+      return true;
     });
     
     res.json(publishedAlbums);
