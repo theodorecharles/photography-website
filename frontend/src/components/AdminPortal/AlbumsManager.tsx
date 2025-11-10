@@ -257,8 +257,6 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
           text: `Album "${albumName}" ${newPublished ? 'published' : 'unpublished'}` 
         });
         
-        window.dispatchEvent(new Event('albums-updated'));
-        
         // Clear animation and restore scroll
         setAnimatingAlbum(null);
         requestAnimationFrame(() => {
