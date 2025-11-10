@@ -12,6 +12,26 @@ import { getAlbumState, getPublishedAlbums, getAllAlbums, saveAlbum } from "../d
 
 const router = Router();
 
+// In-memory cache for album photos
+interface CacheEntry {
+  photos: any[];
+  timestamp: number;
+}
+
+const albumCache = new Map<string, CacheEntry>();
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
+// Function to invalidate cache for an album
+export const invalidateAlbumCache = (albumName?: string) => {
+  if (albumName) {
+    albumCache.delete(albumName);
+    console.log(`Cache invalidated for album: ${albumName}`);
+  } else {
+    albumCache.clear();
+    console.log('All album caches cleared');
+  }
+};
+
 /**
  * Sanitize path input to prevent directory traversal attacks.
  * @param input - User-provided path component
@@ -249,7 +269,26 @@ router.get("/api/albums/:album/photos", (req: Request, res): void => {
     return;
   }
 
+  // Check cache first
+  const cached = albumCache.get(sanitizedAlbum);
+  const now = Date.now();
+  
+  if (cached && (now - cached.timestamp) < CACHE_TTL) {
+    console.log(`Cache hit for album: ${sanitizedAlbum}`);
+    res.json(cached.photos);
+    return;
+  }
+
+  // Cache miss or expired - fetch from filesystem
+  console.log(`Cache miss for album: ${sanitizedAlbum}`);
   const photos = getPhotosInAlbum(photosDir, sanitizedAlbum);
+  
+  // Store in cache
+  albumCache.set(sanitizedAlbum, {
+    photos,
+    timestamp: now
+  });
+  
   res.json(photos);
 });
 
