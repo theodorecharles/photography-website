@@ -54,7 +54,7 @@ function initDatabase() {
   return db;
 }
 
-async function generateImageTitle(openai, thumbnailPath, album, filename, db) {
+async function generateImageTitle(openai, thumbnailPath, album, filename, db, retryCount = 0) {
   try {
     // Read the thumbnail image and convert to base64
     const imageBuffer = fs.readFileSync(thumbnailPath);
@@ -116,6 +116,19 @@ async function generateImageTitle(openai, thumbnailPath, album, filename, db) {
     
     return title;
   } catch (error) {
+    // Handle rate limiting with exponential backoff
+    if (error.status === 429 && retryCount < 5) {
+      const retryAfter = error.headers?.['retry-after'];
+      const waitTime = retryAfter 
+        ? parseInt(retryAfter) * 1000 
+        : Math.pow(2, retryCount) * 1000; // Exponential backoff: 1s, 2s, 4s, 8s, 16s
+      
+      console.error(`  ⚠ Rate limited, waiting ${Math.ceil(waitTime / 1000)}s before retry...`);
+      await new Promise(resolve => setTimeout(resolve, waitTime));
+      
+      return generateImageTitle(openai, thumbnailPath, album, filename, db, retryCount + 1);
+    }
+    
     console.error(`  ✗ Error:`, error.message);
     errorCount++;
     return null;
@@ -193,9 +206,14 @@ async function scanAndGenerateTitles() {
   console.log('\nStarting AI title generation...\n');
   
   // Concurrent processing with rate limiting
-  // OpenAI allows up to 30k requests/min for gpt-4o-mini, so 10-20 concurrent is safe
-  const concurrency = 15;
+  // OpenAI Tier 1: 500 RPM (requests per minute) = ~8 requests per second
+  // Use 5 concurrent to be conservative and avoid hitting limits
+  const concurrency = 5;
   const limit = pLimit(concurrency);
+  
+  // Add delay between requests to respect rate limits
+  // 500 RPM = 1 request per 120ms, with 5 concurrent = 600ms between batches
+  const delayBetweenRequests = 150; // 150ms delay
   
   let completed = 0;
   const total = imagesToProcess.length;
@@ -207,6 +225,11 @@ async function scanAndGenerateTitles() {
       
       if (isTTY) {
         console.log(`[${index + 1}/${total}] Processing: ${album}/${filename}`);
+      }
+      
+      // Add small delay between requests to avoid bursting
+      if (index > 0) {
+        await new Promise(resolve => setTimeout(resolve, delayBetweenRequests));
       }
       
       await generateImageTitle(openai, thumbnailPath, album, filename, db);
