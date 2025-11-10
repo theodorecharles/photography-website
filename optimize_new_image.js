@@ -4,6 +4,10 @@ import fs from 'fs/promises';
 import { readFileSync } from 'fs';
 import path from 'path';
 import sharp from 'sharp';
+import os from 'os';
+
+// Configure sharp to use all available CPU cores
+sharp.concurrency(os.cpus().length);
 
 // Parse command line arguments
 const args = process.argv.slice(2);
