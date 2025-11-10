@@ -58,16 +58,16 @@ handle_error() {
 CURRENT_BRANCH=$(git branch --show-current)
 log "Current branch: $CURRENT_BRANCH"
 
+# Install root dependencies (for optimization and AI scripts)
+log "Installing root dependencies..."
+if ! npm install; then
+    handle_error "Root npm install failed"
+fi
+
 # Run image optimization script
 log "Starting image optimization..."
 if ! ./optimize_all_images.js; then
     handle_error "Image optimization failed"
-fi
-
-# Install root dependencies (for generate-ai-titles.js script)
-log "Installing root dependencies..."
-if ! npm install; then
-    handle_error "Root npm install failed"
 fi
 
 # Backend deployment process
