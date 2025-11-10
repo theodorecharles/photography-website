@@ -21,6 +21,7 @@ router.use(csrfProtection);
 interface RunningJob {
   process: any;
   output: string[];
+  clients: Set<any>; // All connected SSE clients
   startTime: number;
   isComplete: boolean;
 }
@@ -29,6 +30,19 @@ const runningJobs = {
   aiTitles: null as RunningJob | null,
   optimization: null as RunningJob | null
 };
+
+// Broadcast message to all connected clients
+function broadcastToClients(job: RunningJob | null, message: string) {
+  if (!job) return;
+  
+  job.clients.forEach(client => {
+    try {
+      client.write(`data: ${message}\n\n`);
+    } catch (err) {
+      // Client disconnected, will be cleaned up
+    }
+  });
+}
 
 /**
  * Middleware to check if user is authenticated
@@ -75,6 +89,16 @@ router.post('/generate', requireAuth, (req, res) => {
       res.write(`data: ${line}\n\n`);
     });
     
+    // Add this client to the broadcast list
+    runningJobs.aiTitles.clients.add(res);
+    
+    // Remove client when they disconnect
+    req.on('close', () => {
+      if (runningJobs.aiTitles) {
+        runningJobs.aiTitles.clients.delete(res);
+      }
+    });
+    
     return;
   }
 
@@ -95,6 +119,7 @@ router.post('/generate', requireAuth, (req, res) => {
   runningJobs.aiTitles = {
     process: null,
     output: [],
+    clients: new Set([res]),
     startTime: Date.now(),
     isComplete: false
   };
@@ -106,6 +131,13 @@ router.post('/generate', requireAuth, (req, res) => {
   });
   
   runningJobs.aiTitles.process = child;
+  
+  // Remove client when they disconnect
+  req.on('close', () => {
+    if (runningJobs.aiTitles) {
+      runningJobs.aiTitles.clients.delete(res);
+    }
+  });
 
   // Send stdout data as SSE events
   child.stdout.on('data', (data) => {
@@ -141,11 +173,11 @@ router.post('/generate', requireAuth, (req, res) => {
         }
       }
       
-      // Store output and send to client
+      // Store output and broadcast to all clients
       if (runningJobs.aiTitles) {
         runningJobs.aiTitles.output.push(output);
+        broadcastToClients(runningJobs.aiTitles, output);
       }
-      res.write(`data: ${output}\n\n`);
     });
   });
 
@@ -168,14 +200,22 @@ router.post('/generate', requireAuth, (req, res) => {
       runningJobs.aiTitles.output.push(completeMsg);
       runningJobs.aiTitles.isComplete = true;
       
+      // Broadcast to all clients and close connections
+      broadcastToClients(runningJobs.aiTitles, completeMsg);
+      runningJobs.aiTitles.clients.forEach(client => {
+        try {
+          client.end();
+        } catch (err) {
+          // Ignore errors
+        }
+      });
+      runningJobs.aiTitles.clients.clear();
+      
       // Clean up after 5 minutes
       setTimeout(() => {
         runningJobs.aiTitles = null;
       }, 5 * 60 * 1000);
     }
-    
-    res.write(`data: ${completeMsg}\n\n`);
-    res.end();
   });
 
   // Handle errors
@@ -186,15 +226,18 @@ router.post('/generate', requireAuth, (req, res) => {
     if (runningJobs.aiTitles) {
       runningJobs.aiTitles.output.push(errorMsg);
       runningJobs.aiTitles.isComplete = true;
+      
+      // Broadcast to all clients and close connections
+      broadcastToClients(runningJobs.aiTitles, errorMsg);
+      runningJobs.aiTitles.clients.forEach(client => {
+        try {
+          client.end();
+        } catch (err) {
+          // Ignore errors
+        }
+      });
+      runningJobs.aiTitles.clients.clear();
     }
-    
-    res.write(`data: ${errorMsg}\n\n`);
-    res.end();
-  });
-
-  // Handle client disconnect - DON'T kill the process
-  req.on('close', () => {
-    console.log('[AI Titles] Client disconnected, process continues running');
   });
 });
 

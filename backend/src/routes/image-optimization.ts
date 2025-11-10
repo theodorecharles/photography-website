@@ -18,11 +18,25 @@ router.use(csrfProtection);
 interface RunningJob {
   process: any;
   output: string[];
+  clients: Set<any>;
   startTime: number;
   isComplete: boolean;
 }
 
 let runningOptimizationJob: RunningJob | null = null;
+
+// Broadcast message to all connected clients
+function broadcastToClients(job: RunningJob | null, message: string) {
+  if (!job) return;
+  
+  job.clients.forEach(client => {
+    try {
+      client.write(`data: ${message}\n\n`);
+    } catch (err) {
+      // Client disconnected, will be cleaned up
+    }
+  });
+}
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -146,6 +160,16 @@ router.post('/optimize', requireAuth, (req, res) => {
       res.write(`data: ${line}\n\n`);
     });
     
+    // Add this client to the broadcast list
+    runningOptimizationJob.clients.add(res);
+    
+    // Remove client when they disconnect
+    req.on('close', () => {
+      if (runningOptimizationJob) {
+        runningOptimizationJob.clients.delete(res);
+      }
+    });
+    
     return;
   }
   
@@ -163,6 +187,7 @@ router.post('/optimize', requireAuth, (req, res) => {
   runningOptimizationJob = {
     process: null,
     output: [connectMsg],
+    clients: new Set([res]),
     startTime: Date.now(),
     isComplete: false
   };
@@ -186,6 +211,13 @@ router.post('/optimize', requireAuth, (req, res) => {
   
   runningOptimizationJob.process = child;
   
+  // Remove client when they disconnect
+  req.on('close', () => {
+    if (runningOptimizationJob) {
+      runningOptimizationJob.clients.delete(res);
+    }
+  });
+  
   // Stream stdout
   child.stdout.on('data', (data) => {
     const lines = data.toString().split('\n');
@@ -208,11 +240,11 @@ router.post('/optimize', requireAuth, (req, res) => {
           output = JSON.stringify({ type: 'stdout', message: line });
         }
         
-        // Store output and send to client
+        // Store output and broadcast to all clients
         if (runningOptimizationJob) {
           runningOptimizationJob.output.push(output);
+          broadcastToClients(runningOptimizationJob, output);
         }
-        res.write(`data: ${output}\n\n`);
       }
     });
   });
@@ -239,14 +271,22 @@ router.post('/optimize', requireAuth, (req, res) => {
       runningOptimizationJob.output.push(completeMsg);
       runningOptimizationJob.isComplete = true;
       
+      // Broadcast to all clients and close connections
+      broadcastToClients(runningOptimizationJob, completeMsg);
+      runningOptimizationJob.clients.forEach(client => {
+        try {
+          client.end();
+        } catch (err) {
+          // Ignore errors
+        }
+      });
+      runningOptimizationJob.clients.clear();
+      
       // Clean up after 5 minutes
       setTimeout(() => {
         runningOptimizationJob = null;
       }, 5 * 60 * 1000);
     }
-    
-    res.write(`data: ${completeMsg}\n\n`);
-    res.end();
   });
   
   // Handle errors
@@ -259,15 +299,18 @@ router.post('/optimize', requireAuth, (req, res) => {
     if (runningOptimizationJob) {
       runningOptimizationJob.output.push(errorMsg);
       runningOptimizationJob.isComplete = true;
+      
+      // Broadcast to all clients and close connections
+      broadcastToClients(runningOptimizationJob, errorMsg);
+      runningOptimizationJob.clients.forEach(client => {
+        try {
+          client.end();
+        } catch (err) {
+          // Ignore errors
+        }
+      });
+      runningOptimizationJob.clients.clear();
     }
-    
-    res.write(`data: ${errorMsg}\n\n`);
-    res.end();
-  });
-  
-  // Handle client disconnect - DON'T kill the process
-  req.on('close', () => {
-    console.log('[Optimization] Client disconnected, process continues running');
   });
 });
 
