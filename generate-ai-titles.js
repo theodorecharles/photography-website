@@ -128,14 +128,9 @@ async function generateImageTitle(openai, thumbnailPath, album, filename, db, re
       
       const waitSeconds = Math.ceil(waitTime / 1000);
       
-      // Output special format for frontend to parse
-      console.log(`RATE_LIMIT_WAIT:${waitSeconds}`);
-      
-      // Countdown
+      // Countdown with output for each second
       for (let i = waitSeconds; i > 0; i--) {
-        if (!isTTY) {
-          console.log(`RATE_LIMIT_COUNTDOWN:${i}`);
-        }
+        console.log(`WAITING:${i}`);
         await new Promise(resolve => setTimeout(resolve, 1000));
       }
       
