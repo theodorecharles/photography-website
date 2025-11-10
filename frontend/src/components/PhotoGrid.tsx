@@ -4,7 +4,7 @@
  * and provides functionality for viewing photos in a modal.
  */
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useLocation } from "react-router-dom";
 import "./PhotoGrid.css";
 import { API_URL, cacheBustValue } from "../config";
@@ -97,8 +97,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound }) => {
         setLoading(true);
 
         if (album === "homepage") {
-          // Use the random photos endpoint for homepage to show all photos
-          // Not passing count parameter to get all photos from all albums
+          // Use the random photos endpoint for homepage
           const response = await fetchWithRateLimitCheck(
             `${API_URL}/api/random-photos${queryString}`
           );
@@ -108,7 +107,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound }) => {
           const randomPhotos = await response.json();
           setPhotos(randomPhotos);
         } else {
-          // For specific album pages, fetch photos normally
+          // Fetch all photos from the album
           const response = await fetchWithRateLimitCheck(
             `${API_URL}/api/albums/${album}/photos${queryString}`
           );
@@ -119,8 +118,10 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound }) => {
             throw new Error("Failed to fetch photos");
           }
           const data = await response.json();
-          // Sort photos by creation date, newest first
-          const sortedPhotos = data.sort((a: Photo, b: Photo) => {
+          const photosArray = Array.isArray(data) ? data : (data.photos || []);
+          
+          // Sort photos by creation date
+          const sortedPhotos = photosArray.sort((a: Photo, b: Photo) => {
             if (!a.metadata || !b.metadata) return 0;
             return (
               new Date(b.metadata.created).getTime() -
@@ -352,6 +353,12 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound }) => {
     hasReachedBottomRef.current = false;
   }, [photos]);
 
+  // Memoize the column distribution to avoid recomputing on every render
+  const distributedColumns = useMemo(
+    () => distributePhotos(photos, numColumns),
+    [photos, numColumns, imageDimensions]
+  );
+
   if (loading) {
     return <div className="loading">Loading photos...</div>;
   }
@@ -369,7 +376,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound }) => {
 
   return (
     <div className="photo-grid" style={{ gridTemplateColumns: `repeat(${numColumns}, 1fr)` }}>
-      {distributePhotos(photos, numColumns).map((column, columnIndex) => (
+      {distributedColumns.map((column, columnIndex) => (
         <div 
           key={columnIndex} 
           className="photo-column"

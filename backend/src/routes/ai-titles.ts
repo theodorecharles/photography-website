@@ -17,6 +17,33 @@ const router = express.Router();
 // Apply CSRF protection to all routes
 router.use(csrfProtection);
 
+// Track running jobs
+interface RunningJob {
+  process: any;
+  output: string[];
+  clients: Set<any>; // All connected SSE clients
+  startTime: number;
+  isComplete: boolean;
+}
+
+const runningJobs = {
+  aiTitles: null as RunningJob | null,
+  optimization: null as RunningJob | null
+};
+
+// Broadcast message to all connected clients
+function broadcastToClients(job: RunningJob | null, message: string) {
+  if (!job) return;
+  
+  job.clients.forEach(client => {
+    try {
+      client.write(`data: ${message}\n\n`);
+    } catch (err) {
+      // Client disconnected, will be cleaned up
+    }
+  });
+}
+
 /**
  * Middleware to check if user is authenticated
  */
@@ -28,11 +55,92 @@ function requireAuth(req: any, res: any, next: any) {
 }
 
 /**
+ * GET /api/ai-titles/status
+ * Check if AI title generation is currently running
+ */
+router.get('/status', requireAuth, (req, res) => {
+  if (runningJobs.aiTitles) {
+    res.json({ 
+      running: true, 
+      output: runningJobs.aiTitles.output,
+      isComplete: runningJobs.aiTitles.isComplete
+    });
+  } else {
+    res.json({ running: false });
+  }
+});
+
+/**
+ * POST /api/ai-titles/stop
+ * Stop running AI titles generation job
+ */
+router.post('/stop', requireAuth, (req: any, res: any) => {
+  if (!runningJobs.aiTitles || runningJobs.aiTitles.isComplete) {
+    return res.json({ success: false, message: 'No running job to stop' });
+  }
+  
+  try {
+    // Kill the process
+    if (runningJobs.aiTitles.process) {
+      runningJobs.aiTitles.process.kill('SIGTERM');
+      console.log('[AI Titles] Job stopped by user');
+    }
+    
+    // Mark as complete and broadcast to all clients
+    const stopMsg = '__ERROR__ Job stopped by user';
+    runningJobs.aiTitles.output.push(stopMsg);
+    runningJobs.aiTitles.isComplete = true;
+    broadcastToClients(runningJobs.aiTitles, stopMsg);
+    
+    // Close all client connections
+    runningJobs.aiTitles.clients.forEach(client => {
+      try {
+        client.end();
+      } catch (err) {
+        // Ignore errors
+      }
+    });
+    runningJobs.aiTitles.clients.clear();
+    
+    res.json({ success: true, message: 'Job stopped successfully' });
+  } catch (error: any) {
+    console.error('[AI Titles] Error stopping job:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+/**
  * POST /api/ai-titles/generate
  * Generate AI titles for all images
  * Streams output using Server-Sent Events
  */
 router.post('/generate', requireAuth, (req, res) => {
+  // If already running, reconnect to existing job
+  if (runningJobs.aiTitles && !runningJobs.aiTitles.isComplete) {
+    console.log('[AI Titles] Reconnecting to existing job');
+    
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+    
+    // Send all previous output
+    runningJobs.aiTitles.output.forEach(line => {
+      res.write(`data: ${line}\n\n`);
+    });
+    
+    // Add this client to the broadcast list
+    runningJobs.aiTitles.clients.add(res);
+    
+    // Remove client when they disconnect
+    req.on('close', () => {
+      if (runningJobs.aiTitles) {
+        runningJobs.aiTitles.clients.delete(res);
+      }
+    });
+    
+    return;
+  }
+
   // Set headers for Server-Sent Events
   res.setHeader('Content-Type', 'text/event-stream');
   res.setHeader('Cache-Control', 'no-cache');
@@ -46,10 +154,28 @@ router.post('/generate', requireAuth, (req, res) => {
   console.log('[AI Titles] Script path:', scriptPath);
   console.log('[AI Titles] Working directory:', projectRoot);
 
+  // Create job tracking
+  runningJobs.aiTitles = {
+    process: null,
+    output: [],
+    clients: new Set([res]),
+    startTime: Date.now(),
+    isComplete: false
+  };
+
   // Spawn the Node.js process to run the script
   const child = spawn('node', [scriptPath], {
     cwd: projectRoot,
     env: { ...process.env },
+  });
+  
+  runningJobs.aiTitles.process = child;
+  
+  // Remove client when they disconnect
+  req.on('close', () => {
+    if (runningJobs.aiTitles) {
+      runningJobs.aiTitles.clients.delete(res);
+    }
   });
 
   // Send stdout data as SSE events
@@ -57,7 +183,40 @@ router.post('/generate', requireAuth, (req, res) => {
     const lines = data.toString().split('\n').filter((line: string) => line.trim());
     lines.forEach((line: string) => {
       console.log('[AI Titles]', line);
-      res.write(`data: ${line}\n\n`);
+      
+      let output = '';
+      
+      // Parse waiting status like: WAITING:5
+      const waitingMatch = line.match(/^WAITING:(\d+)$/);
+      if (waitingMatch) {
+        const seconds = parseInt(waitingMatch[1]);
+        output = JSON.stringify({ 
+          type: 'waiting',
+          seconds: seconds
+        });
+      } 
+      // Parse progress from lines like: [150/3000] (5%) Album/image.jpg
+      else {
+        const progressMatch = line.match(/^\[(\d+)\/(\d+)\]\s*\((\d+)%\)/);
+        if (progressMatch) {
+          const [, current, total, percent] = progressMatch;
+          output = JSON.stringify({ 
+            type: 'progress', 
+            current: parseInt(current),
+            total: parseInt(total),
+            percent: parseInt(percent),
+            message: line 
+          });
+        } else {
+          output = line;
+        }
+      }
+      
+      // Store output and broadcast to all clients
+      if (runningJobs.aiTitles) {
+        runningJobs.aiTitles.output.push(output);
+        broadcastToClients(runningJobs.aiTitles, output);
+      }
     });
   });
 
@@ -74,26 +233,50 @@ router.post('/generate', requireAuth, (req, res) => {
   child.on('close', (code) => {
     console.log(`[AI Titles] Process exited with code ${code}`);
     
-    if (code === 0) {
-      res.write(`data: __COMPLETE__\n\n`);
-    } else {
-      res.write(`data: __ERROR__ Process exited with code ${code}\n\n`);
-    }
+    const completeMsg = code === 0 ? '__COMPLETE__' : `__ERROR__ Process exited with code ${code}`;
     
-    res.end();
+    if (runningJobs.aiTitles) {
+      runningJobs.aiTitles.output.push(completeMsg);
+      runningJobs.aiTitles.isComplete = true;
+      
+      // Broadcast to all clients and close connections
+      broadcastToClients(runningJobs.aiTitles, completeMsg);
+      runningJobs.aiTitles.clients.forEach(client => {
+        try {
+          client.end();
+        } catch (err) {
+          // Ignore errors
+        }
+      });
+      runningJobs.aiTitles.clients.clear();
+      
+      // Clean up after 5 minutes
+      setTimeout(() => {
+        runningJobs.aiTitles = null;
+      }, 5 * 60 * 1000);
+    }
   });
 
   // Handle errors
   child.on('error', (error) => {
     console.error('[AI Titles] Failed to start process:', error);
-    res.write(`data: __ERROR__ ${error.message}\n\n`);
-    res.end();
-  });
-
-  // Handle client disconnect
-  req.on('close', () => {
-    console.log('[AI Titles] Client disconnected, killing process');
-    child.kill();
+    const errorMsg = `__ERROR__ ${error.message}`;
+    
+    if (runningJobs.aiTitles) {
+      runningJobs.aiTitles.output.push(errorMsg);
+      runningJobs.aiTitles.isComplete = true;
+      
+      // Broadcast to all clients and close connections
+      broadcastToClients(runningJobs.aiTitles, errorMsg);
+      runningJobs.aiTitles.clients.forEach(client => {
+        try {
+          client.end();
+        } catch (err) {
+          // Ignore errors
+        }
+      });
+      runningJobs.aiTitles.clients.clear();
+    }
   });
 });
 

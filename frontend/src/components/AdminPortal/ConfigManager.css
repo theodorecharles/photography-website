@@ -7,6 +7,28 @@
   font-style: normal;
 }
 
+/* Progress circle for optimization */
+.progress-circle {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.progress-ring-circle {
+  transition: stroke-dashoffset 0.3s ease;
+}
+
+.progress-percentage {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--primary-color);
+}
+
 .config-grid {
   display: flex;
   flex-direction: column;
@@ -134,7 +156,7 @@
 
 .titles-output-content {
   font-family: 'Modern DOS', 'Courier New', monospace;
-  font-size: 1rem;
+  font-size: 0.85rem;
   line-height: 1.6;
   color: #e5e7eb;
 }

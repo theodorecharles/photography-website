@@ -19,6 +19,7 @@ import {
   deleteAlbumState,
   setAlbumPublished 
 } from "../database.js";
+import { invalidateAlbumCache } from "./albums.js";
 
 const router = Router();
 const execFileAsync = promisify(execFile);
@@ -176,6 +177,9 @@ router.delete("/:album", requireAuth, async (req: Request, res: Response): Promi
     deleteAlbumState(sanitizedAlbum);
     console.log(`✓ Deleted album state for: ${sanitizedAlbum}`);
 
+    // Invalidate cache for this album
+    invalidateAlbumCache(sanitizedAlbum);
+
     res.json({ success: true });
   } catch (error) {
     console.error('Error deleting album:', error);
@@ -224,6 +228,9 @@ router.delete("/:album/photos/:photo", requireAuth, async (req: Request, res: Re
     if (deleted) {
       console.log(`✓ Deleted metadata for photo: ${sanitizedAlbum}/${sanitizedPhoto}`);
     }
+
+    // Invalidate cache for this album
+    invalidateAlbumCache(sanitizedAlbum);
 
     res.json({ success: true });
   } catch (error) {
@@ -289,10 +296,10 @@ router.post("/:album/upload", requireAuth, upload.single('photo'), async (req: R
 
     // Trigger optimization with SSE progress streaming
     const projectRoot = path.resolve(__dirname, '../../../');
-    const scriptPath = path.join(projectRoot, 'optimize_new_image.sh');
+    const scriptPath = path.join(projectRoot, 'optimize_new_image.js');
 
     if (fs.existsSync(scriptPath)) {
-      const child = spawn('bash', [scriptPath, sanitizedAlbum, file.originalname], { 
+      const child = spawn('node', [scriptPath, sanitizedAlbum, file.originalname], { 
         cwd: projectRoot
       });
 
@@ -328,6 +335,9 @@ router.post("/:album/upload", requireAuth, upload.single('photo'), async (req: R
       // Handle completion
       child.on('close', (code) => {
         if (code === 0) {
+          // Invalidate cache for this album since we added a photo
+          invalidateAlbumCache(sanitizedAlbum);
+          
           res.write(`data: ${JSON.stringify({ 
             type: 'complete', 
             filename: file.originalname 
@@ -423,7 +433,7 @@ router.post("/:album/optimize", requireAuth, async (req: Request, res: Response)
 
     // Get project root (two levels up from backend/src)
     const projectRoot = path.resolve(__dirname, '../../../');
-    const scriptPath = path.join(projectRoot, 'optimize_all_images.sh');
+    const scriptPath = path.join(projectRoot, 'optimize_all_images.js');
 
     if (!fs.existsSync(scriptPath)) {
       res.status(500).json({ error: 'Optimization script not found' });
@@ -435,7 +445,7 @@ router.post("/:album/optimize", requireAuth, async (req: Request, res: Response)
     const photosDir = req.app.get("photosDir");
     const albumPath = path.join(photosDir, sanitizedAlbum);
     
-    execFile('bash', [scriptPath, albumPath], (error, stdout, stderr) => {
+    execFile('node', [scriptPath, albumPath], (error, stdout, stderr) => {
       if (error) {
         console.error('Optimization error:', error);
       } else {

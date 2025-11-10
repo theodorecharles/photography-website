@@ -9,6 +9,7 @@ import OpenAI from 'openai';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import pLimit from 'p-limit';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -25,6 +26,9 @@ const DB_PATH = path.join(__dirname, 'gallery.db');
 let processedCount = 0;
 let skippedCount = 0;
 let errorCount = 0;
+
+// Check if we're running in a TTY or piped/SSE
+const isTTY = process.stdout.isTTY;
 
 function initDatabase() {
   const db = new Database(DB_PATH);
@@ -50,7 +54,7 @@ function initDatabase() {
   return db;
 }
 
-async function generateImageTitle(openai, thumbnailPath, album, filename, db) {
+async function generateImageTitle(openai, thumbnailPath, album, filename, db, retryCount = 0) {
   try {
     // Read the thumbnail image and convert to base64
     const imageBuffer = fs.readFileSync(thumbnailPath);
@@ -105,11 +109,34 @@ async function generateImageTitle(openai, thumbnailPath, album, filename, db) {
     
     stmt.run(album, filename, title);
     
-    console.log(`  ✓ "${title}"`);
+    if (isTTY) {
+      console.log(`  ✓ "${title}"`);
+    }
     processedCount++;
     
     return title;
   } catch (error) {
+    // Handle rate limiting with exponential backoff
+    if (error.status === 429 && retryCount < 5) {
+      const retryAfter = error.headers?.['retry-after'];
+      let waitTime = retryAfter 
+        ? parseInt(retryAfter) * 1000 
+        : Math.pow(2, retryCount) * 1000; // Exponential backoff: 1s, 2s, 4s, 8s, 16s
+      
+      // Double the wait time to be extra safe
+      waitTime = waitTime * 2;
+      
+      const waitSeconds = Math.ceil(waitTime / 1000);
+      
+      // Countdown with output for each second
+      for (let i = waitSeconds; i > 0; i--) {
+        console.log(`WAITING:${i}`);
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      }
+      
+      return generateImageTitle(openai, thumbnailPath, album, filename, db, retryCount + 1);
+    }
+    
     console.error(`  ✗ Error:`, error.message);
     errorCount++;
     return null;
@@ -186,28 +213,63 @@ async function scanAndGenerateTitles() {
   
   console.log('\nStarting AI title generation...\n');
   
-  // Second pass: generate titles for images that need them
-  for (let i = 0; i < imagesToProcess.length; i++) {
-    const { album, filename, thumbnailPath } = imagesToProcess[i];
-    console.log(`[${i + 1}/${imagesToProcess.length}] Processing: ${album}/${filename}`);
-    
-    await generateImageTitle(openai, thumbnailPath, album, filename, db);
-    
-    // Add delay between API calls to avoid rate limiting
-    if (i < imagesToProcess.length - 1) {
-      await new Promise(resolve => setTimeout(resolve, 500));
-    }
-  }
+  // Concurrent processing with rate limiting
+  // OpenAI Tier 1: 500 RPM (requests per minute)
+  // Target 400 RPM to be safe = 6.67 requests/second
+  // With 2 concurrent and 300ms delay = 6.67 req/sec = 400 RPM
+  const concurrency = 2;
+  const limit = pLimit(concurrency);
+  
+  // Add delay between requests to respect rate limits
+  const delayBetweenRequests = 300; // 300ms delay = safe rate
+  
+  let completed = 0;
+  const total = imagesToProcess.length;
+  
+  // Second pass: generate titles for images that need them (in parallel)
+  const tasks = imagesToProcess.map((item, index) => 
+    limit(async () => {
+      const { album, filename, thumbnailPath } = item;
+      
+      if (isTTY) {
+        console.log(`[${index + 1}/${total}] Processing: ${album}/${filename}`);
+      }
+      
+      // Add small delay between requests to avoid bursting
+      if (index > 0) {
+        await new Promise(resolve => setTimeout(resolve, delayBetweenRequests));
+      }
+      
+      await generateImageTitle(openai, thumbnailPath, album, filename, db);
+      completed++;
+      
+      // Report progress for non-TTY (SSE streaming)
+      if (!isTTY) {
+        const percent = Math.floor((completed / total) * 100);
+        console.log(`[${completed}/${total}] (${percent}%) ${album}/${filename}`);
+      }
+    })
+  );
+  
+  await Promise.all(tasks);
   
   db.close();
   
-  console.log('\n' + '='.repeat(50));
+  if (isTTY) {
+    console.log('\n' + '='.repeat(50));
+  } else {
+    console.log('');
+  }
   console.log('AI Title Generation Complete!');
-  console.log('='.repeat(50));
+  if (isTTY) {
+    console.log('='.repeat(50));
+  }
   console.log(`Processed: ${processedCount}`);
   console.log(`Skipped: ${skippedCount}`);
   console.log(`Errors: ${errorCount}`);
-  console.log('='.repeat(50));
+  if (isTTY) {
+    console.log('='.repeat(50));
+  }
 }
 
 // Main execution

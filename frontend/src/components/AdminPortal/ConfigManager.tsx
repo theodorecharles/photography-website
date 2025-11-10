@@ -75,9 +75,12 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
   const [savingSection, setSavingSection] = useState<string | null>(null);
   const [generatingTitles, setGeneratingTitles] = useState(false);
   const [titlesOutput, setTitlesOutput] = useState<string[]>([]);
+  const [titlesProgress, setTitlesProgress] = useState(0);
+  const [titlesWaiting, setTitlesWaiting] = useState<number | null>(null);
   const [optimizationLogs, setOptimizationLogs] = useState<string[]>([]);
   const [isOptimizationRunning, setIsOptimizationRunning] = useState(false);
   const [optimizationComplete, setOptimizationComplete] = useState(false);
+  const [optimizationProgress, setOptimizationProgress] = useState(0);
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [restartingBackend, setRestartingBackend] = useState(false);
   const [restartingFrontend, setRestartingFrontend] = useState(false);
@@ -89,21 +92,256 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
 
   useEffect(() => {
     loadConfig();
+    checkForRunningJobs();
   }, []);
+  
+  // Check for running jobs on mount and reconnect if needed
+  const checkForRunningJobs = async () => {
+    try {
+      // Check AI titles job
+      const titlesRes = await fetch(`${API_URL}/api/ai-titles/status`, {
+        credentials: 'include'
+      });
+      if (titlesRes.ok) {
+        const titlesStatus = await titlesRes.json();
+        if (titlesStatus.running && !titlesStatus.isComplete) {
+          console.log('Reconnecting to AI titles job...');
+          setGeneratingTitles(true);
+          
+          // Parse stored output
+          const parsedOutput: string[] = [];
+          for (const item of titlesStatus.output || []) {
+            try {
+              const parsed = JSON.parse(item);
+              if (parsed.type === 'progress') {
+                setTitlesProgress(parsed.percent);
+                parsedOutput.push(parsed.message);
+              } else if (parsed.type === 'waiting') {
+                setTitlesWaiting(parsed.seconds);
+              }
+            } catch {
+              parsedOutput.push(item);
+            }
+          }
+          setTitlesOutput(parsedOutput);
+          
+          // Reconnect to the SSE stream
+          reconnectToTitlesJob();
+        }
+      }
+      
+      // Check optimization job
+      const optRes = await fetch(`${API_URL}/api/image-optimization/status`, {
+        credentials: 'include'
+      });
+      if (optRes.ok) {
+        const optStatus = await optRes.json();
+        if (optStatus.running && !optStatus.isComplete) {
+          console.log('Reconnecting to optimization job...');
+          setIsOptimizationRunning(true);
+          
+          // Parse stored output
+          const parsedOutput: string[] = [];
+          for (const item of optStatus.output || []) {
+            try {
+              const parsed = JSON.parse(item);
+              if (parsed.type === 'progress') {
+                setOptimizationProgress(parsed.percent);
+                parsedOutput.push(parsed.message);
+              } else if (parsed.type === 'stdout' || parsed.type === 'stderr') {
+                parsedOutput.push(parsed.message);
+              }
+            } catch {
+              parsedOutput.push(item);
+            }
+          }
+          setOptimizationLogs(parsedOutput);
+          
+          // Reconnect to the SSE stream
+          reconnectToOptimizationJob();
+        }
+      }
+    } catch (err) {
+      console.error('Error checking for running jobs:', err);
+    }
+  };
+  
+  // Reconnect to AI titles SSE stream
+  const reconnectToTitlesJob = async () => {
+    // Create new abort controller for this reconnection
+    const controller = new AbortController();
+    titlesAbortController.current = controller;
+    
+    try {
+      const res = await fetch(`${API_URL}/api/ai-titles/generate`, {
+        method: 'POST',
+        credentials: 'include',
+        signal: controller.signal,
+      });
+
+      if (!res.ok) {
+        throw new Error('Failed to reconnect to AI title generation');
+      }
+
+      const reader = res.body?.getReader();
+      const decoder = new TextDecoder();
+
+      if (!reader) {
+        throw new Error('No response body');
+      }
+
+      while (true) {
+        const { done, value } = await reader.read();
+        
+        if (done) break;
+
+        const chunk = decoder.decode(value);
+        const lines = chunk.split('\n');
+
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            const data = line.substring(6);
+            
+            if (data === '__COMPLETE__') {
+              setMessage({ type: 'success', text: 'AI title generation completed successfully!' });
+              setGeneratingTitles(false);
+              titlesAbortController.current = null;
+            } else if (data.startsWith('__ERROR__')) {
+              setMessage({ type: 'error', text: data.substring(10) });
+              setGeneratingTitles(false);
+              titlesAbortController.current = null;
+            } else {
+              try {
+                const parsed = JSON.parse(data);
+                if (parsed.type === 'progress') {
+                  setTitlesProgress(parsed.percent);
+                  setTitlesWaiting(null);
+                  setTitlesOutput((prev) => [...prev, parsed.message]);
+                } else if (parsed.type === 'waiting') {
+                  setTitlesWaiting(parsed.seconds);
+                } else {
+                  setTitlesOutput((prev) => [...prev, data]);
+                }
+              } catch {
+                setTitlesOutput((prev) => [...prev, data]);
+              }
+            }
+          }
+        }
+      }
+    } catch (err: any) {
+      if (err.name === 'AbortError') {
+        console.log('AI titles job stopped by user');
+        setGeneratingTitles(false);
+        titlesAbortController.current = null;
+      } else {
+        console.error('Failed to reconnect to titles job:', err);
+        setGeneratingTitles(false);
+        titlesAbortController.current = null;
+      }
+    }
+  };
+  
+  // Reconnect to optimization SSE stream
+  const reconnectToOptimizationJob = async () => {
+    // Create new abort controller for this reconnection
+    const controller = new AbortController();
+    optimizationAbortController.current = controller;
+    
+    try {
+      const res = await fetch(`${API_URL}/api/image-optimization/optimize`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ force: true }),
+        signal: controller.signal,
+      });
+
+      if (!res.ok) {
+        setIsOptimizationRunning(false);
+        optimizationAbortController.current = null;
+        return;
+      }
+
+      const reader = res.body?.getReader();
+      const decoder = new TextDecoder();
+      
+      if (!reader) {
+        setIsOptimizationRunning(false);
+        optimizationAbortController.current = null;
+        return;
+      }
+
+      let buffer = '';
+      
+      while (true) {
+        const { done, value } = await reader.read();
+        
+        if (done) break;
+        
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop() || '';
+        
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            try {
+              const data = JSON.parse(line.slice(6));
+              
+              if (data.type === 'progress') {
+                setOptimizationProgress(data.percent);
+                setOptimizationLogs(prev => [...prev, data.message]);
+              } else if (data.type === 'stdout' || data.type === 'stderr') {
+                setOptimizationLogs(prev => [...prev, data.message]);
+              } else if (data.type === 'complete') {
+                setOptimizationComplete(true);
+                setIsOptimizationRunning(false);
+                optimizationAbortController.current = null;
+              } else if (data.type === 'error') {
+                setMessage({ type: 'error', text: data.message });
+                setIsOptimizationRunning(false);
+                optimizationAbortController.current = null;
+              }
+            } catch (e) {
+              console.error('Failed to parse SSE data:', e);
+            }
+          }
+        }
+      }
+    } catch (err: any) {
+      if (err.name === 'AbortError') {
+        console.log('Optimization job stopped by user');
+        setIsOptimizationRunning(false);
+        optimizationAbortController.current = null;
+      } else {
+        console.error('Failed to reconnect to optimization job:', err);
+        setIsOptimizationRunning(false);
+        optimizationAbortController.current = null;
+      }
+    }
+  };
 
   // Auto-scroll optimization output to bottom when new logs arrive
   useEffect(() => {
-    if (optimizationOutputRef.current) {
-      optimizationOutputRef.current.scrollTop = optimizationOutputRef.current.scrollHeight;
+    if (optimizationOutputRef.current && isOptimizationRunning) {
+      setTimeout(() => {
+        if (optimizationOutputRef.current) {
+          optimizationOutputRef.current.scrollTop = optimizationOutputRef.current.scrollHeight;
+        }
+      }, 0);
     }
-  }, [optimizationLogs]);
+  }, [optimizationLogs, isOptimizationRunning]);
 
   // Auto-scroll titles output to bottom when new lines arrive
   useEffect(() => {
-    if (titlesOutputRef.current) {
-      titlesOutputRef.current.scrollTop = titlesOutputRef.current.scrollHeight;
+    if (titlesOutputRef.current && generatingTitles) {
+      setTimeout(() => {
+        if (titlesOutputRef.current) {
+          titlesOutputRef.current.scrollTop = titlesOutputRef.current.scrollHeight;
+        }
+      }, 0);
     }
-  }, [titlesOutput]);
+  }, [titlesOutput, generatingTitles]);
 
   const loadConfig = async () => {
     try {
@@ -186,9 +424,64 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
     }
   };
 
+  // Store abort controllers to allow stopping jobs
+  const titlesAbortController = useRef<AbortController | null>(null);
+  const optimizationAbortController = useRef<AbortController | null>(null);
+
+  const handleStopTitles = async () => {
+    try {
+      // Call backend to kill the process
+      await fetch(`${API_URL}/api/ai-titles/stop`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      // Abort the SSE connection
+      if (titlesAbortController.current) {
+        titlesAbortController.current.abort();
+        titlesAbortController.current = null;
+      }
+      
+      setGeneratingTitles(false);
+      setMessage({ type: 'success', text: 'AI title generation stopped' });
+    } catch (err) {
+      console.error('Failed to stop AI titles job:', err);
+      setMessage({ type: 'error', text: 'Failed to stop AI titles job' });
+    }
+  };
+
+  const handleStopOptimization = async () => {
+    try {
+      // Call backend to kill the process
+      await fetch(`${API_URL}/api/image-optimization/stop`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      // Abort the SSE connection
+      if (optimizationAbortController.current) {
+        optimizationAbortController.current.abort();
+        optimizationAbortController.current = null;
+      }
+      
+      setIsOptimizationRunning(false);
+      setMessage({ type: 'success', text: 'Optimization job stopped' });
+    } catch (err) {
+      console.error('Failed to stop optimization job:', err);
+      setMessage({ type: 'error', text: 'Failed to stop optimization job' });
+    }
+  };
+
   const handleGenerateTitles = async () => {
     setGeneratingTitles(true);
     setTitlesOutput([]);
+    setTitlesProgress(0);
     setMessage(null);
 
     // Scroll to OpenAI section to show output
@@ -202,9 +495,13 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
     }, 100);
 
     try {
+      const abortController = new AbortController();
+      titlesAbortController.current = abortController;
+
       const res = await fetch(`${API_URL}/api/ai-titles/generate`, {
         method: 'POST',
         credentials: 'include',
+        signal: abortController.signal,
       });
 
       if (!res.ok) {
@@ -233,20 +530,42 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
             if (data === '__COMPLETE__') {
               setMessage({ type: 'success', text: 'AI title generation completed successfully!' });
               setGeneratingTitles(false);
+              titlesAbortController.current = null;
             } else if (data.startsWith('__ERROR__')) {
               setMessage({ type: 'error', text: data.substring(10) });
               setGeneratingTitles(false);
+              titlesAbortController.current = null;
             } else {
-              setTitlesOutput((prev) => [...prev, data]);
+              // Try to parse JSON progress data
+              try {
+                const parsed = JSON.parse(data);
+                if (parsed.type === 'progress') {
+                  setTitlesProgress(parsed.percent);
+                  setTitlesWaiting(null);
+                  setTitlesOutput((prev) => [...prev, parsed.message]);
+                } else if (parsed.type === 'waiting') {
+                  setTitlesWaiting(parsed.seconds);
+                } else {
+                  setTitlesOutput((prev) => [...prev, data]);
+                }
+              } catch {
+                // Not JSON, treat as plain text
+                setTitlesOutput((prev) => [...prev, data]);
+              }
             }
           }
         }
       }
     } catch (err) {
+      if (err instanceof Error && err.name === 'AbortError') {
+        // User cancelled, message already set
+        return;
+      }
       const errorMessage = err instanceof Error ? err.message : 'Error generating titles';
       setMessage({ type: 'error', text: errorMessage });
       console.error('Failed to generate titles:', err);
       setGeneratingTitles(false);
+      titlesAbortController.current = null;
     }
   };
 
@@ -317,6 +636,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
     setIsOptimizationRunning(true);
     setOptimizationComplete(false);
     setOptimizationLogs([]);
+    setOptimizationProgress(0);
     setMessage(null);
 
     // Scroll to regenerate button to show output
@@ -330,11 +650,15 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
     }, 100);
 
     try {
+      const abortController = new AbortController();
+      optimizationAbortController.current = abortController;
+
       const res = await fetch(`${API_URL}/api/image-optimization/optimize`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify({ force }),
+        signal: abortController.signal,
       });
 
       if (!res.ok) {
@@ -347,6 +671,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
         }
         setMessage({ type: 'error', text: `${errorMessage} (Status: ${res.status})` });
         setIsOptimizationRunning(false);
+        optimizationAbortController.current = null;
         return;
       }
 
@@ -376,7 +701,10 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
             try {
               const data = JSON.parse(line.slice(6));
               
-              if (data.type === 'stdout' || data.type === 'stderr') {
+              if (data.type === 'progress') {
+                setOptimizationProgress(data.percent);
+                setOptimizationLogs(prev => [...prev, data.message]);
+              } else if (data.type === 'stdout' || data.type === 'stderr') {
                 setOptimizationLogs(prev => [...prev, data.message]);
               } else if (data.type === 'complete') {
                 // Only mark as complete and show final message for the last completion
@@ -403,10 +731,15 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
         }
       }
     } catch (err) {
+      if (err instanceof Error && err.name === 'AbortError') {
+        // User cancelled, message already set
+        return;
+      }
       console.error('Optimization error:', err);
       setMessage({ type: 'error', text: 'Network error occurred' });
     } finally {
       setIsOptimizationRunning(false);
+      optimizationAbortController.current = null;
     }
   };
 
@@ -523,7 +856,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
             </div>
           </div>
           <p className="config-section-description">
-            Configure OpenAI API integration for generating AI-powered image titles
+            Configure OpenAI API integration for generating image titles
           </p>
           <div className="branding-group">
             <label className="branding-label">API Key</label>
@@ -536,30 +869,70 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
                 placeholder="sk-..."
                 style={{ flex: 1, minWidth: '300px' }}
               />
-              <button
-                type="button"
-                onClick={handleGenerateTitles}
-                disabled={generatingTitles || !config.openai?.apiKey}
-                className="btn-secondary"
-                style={{ whiteSpace: 'nowrap' }}
-              >
-                {generatingTitles ? 'Generating...' : 'Generate AI Titles'}
-              </button>
+              {!generatingTitles ? (
+                <button
+                  type="button"
+                  onClick={handleGenerateTitles}
+                  disabled={!config.openai?.apiKey}
+                  className="btn-secondary"
+                  style={{ whiteSpace: 'nowrap' }}
+                >
+                  Generate AI Titles
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleStopTitles}
+                  className="btn-secondary"
+                  style={{ 
+                    whiteSpace: 'nowrap',
+                    backgroundColor: '#dc2626',
+                    borderColor: '#dc2626'
+                  }}
+                >
+                  Stop
+                </button>
+              )}
             </div>
             {generatingTitles && (
-              <div className="titles-output" ref={titlesOutputRef}>
-                <div className="titles-output-content">
-                  {titlesOutput.map((line, index) => (
-                    <div key={index} className="output-line">{line}</div>
-                  ))}
-                  {titlesOutput.length === 0 && (
-                    <div className="output-line">Starting AI title generation...</div>
-                  )}
-                  {generatingTitles && (
-                    <div className="output-line" style={{ marginTop: '0.5rem', color: '#4ade80' }}>⏳ Running...</div>
-                  )}
+              <>
+                <div style={{ marginTop: '1rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', fontSize: '0.9rem' }}>
+                    <span style={{ color: '#9ca3af' }}>Progress</span>
+                    <span style={{ color: 'var(--primary-color)', fontWeight: 600 }}>{titlesProgress}%</span>
+                  </div>
+                  <div style={{ 
+                    width: '100%', 
+                    height: '8px', 
+                    backgroundColor: 'rgba(255, 255, 255, 0.1)', 
+                    borderRadius: '4px',
+                    overflow: 'hidden'
+                  }}>
+                    <div style={{ 
+                      height: '100%', 
+                      width: `${titlesProgress}%`, 
+                      backgroundColor: 'var(--primary-color)',
+                      transition: 'width 0.3s ease',
+                      borderRadius: '4px'
+                    }} />
+                  </div>
                 </div>
-              </div>
+                <div className="titles-output" ref={titlesOutputRef}>
+                  <div className="titles-output-content">
+                    {titlesOutput.map((line, index) => (
+                      <div key={index} className="output-line">{line}</div>
+                    ))}
+                    {titlesOutput.length === 0 && (
+                      <div className="output-line">Starting AI title generation...</div>
+                    )}
+                    {generatingTitles && (
+                      <div className="output-line" style={{ marginTop: '0.5rem', color: titlesWaiting !== null ? '#fbbf24' : '#4ade80' }}>
+                        ⏳ {titlesWaiting !== null ? `Waiting... ${titlesWaiting}s` : 'Running...'}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </>
             )}
           </div>
         </div>
@@ -669,14 +1042,27 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
               <h4 style={{ color: '#e5e7eb', margin: 0, fontSize: '1rem', fontWeight: 600 }}>Regenerate All Images</h4>
               <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                <button
-                  type="button"
-                  onClick={() => handleRunOptimization(true)}
-                  disabled={isOptimizationRunning}
-                  className="btn-force-regenerate"
-                >
-                  {isOptimizationRunning ? 'Running...' : 'Force Regenerate All'}
-                </button>
+                {!isOptimizationRunning ? (
+                  <button
+                    type="button"
+                    onClick={() => handleRunOptimization(true)}
+                    className="btn-force-regenerate"
+                  >
+                    Force Regenerate All
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={handleStopOptimization}
+                    className="btn-force-regenerate"
+                    style={{ 
+                      backgroundColor: '#dc2626',
+                      borderColor: '#dc2626'
+                    }}
+                  >
+                    Stop
+                  </button>
+                )}
                 {optimizationComplete && !isOptimizationRunning && (
                   <span style={{ color: 'var(--primary-color)', fontSize: '1.5rem' }}>✓</span>
                 )}
@@ -684,16 +1070,41 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
             </div>
 
             {optimizationLogs.length > 0 && (
-              <div className="titles-output" style={{ maxHeight: '500px' }} ref={optimizationOutputRef}>
-                <div className="titles-output-content">
-                  {optimizationLogs.map((log, index) => (
-                    <div key={index} className="output-line">{log}</div>
-                  ))}
-                  {isOptimizationRunning && (
-                    <div className="output-line" style={{ marginTop: '0.5rem', color: '#4ade80' }}>⏳ Running...</div>
-                  )}
+              <>
+                {isOptimizationRunning && (
+                  <div style={{ marginTop: '1rem' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', fontSize: '0.9rem' }}>
+                      <span style={{ color: '#9ca3af' }}>Progress</span>
+                      <span style={{ color: 'var(--primary-color)', fontWeight: 600 }}>{optimizationProgress}%</span>
+                    </div>
+                    <div style={{ 
+                      width: '100%', 
+                      height: '8px', 
+                      backgroundColor: 'rgba(255, 255, 255, 0.1)', 
+                      borderRadius: '4px',
+                      overflow: 'hidden'
+                    }}>
+                      <div style={{ 
+                        height: '100%', 
+                        width: `${optimizationProgress}%`, 
+                        backgroundColor: 'var(--primary-color)',
+                        transition: 'width 0.3s ease',
+                        borderRadius: '4px'
+                      }} />
+                    </div>
+                  </div>
+                )}
+                <div className="titles-output" style={{ maxHeight: '500px' }} ref={optimizationOutputRef}>
+                  <div className="titles-output-content">
+                    {optimizationLogs.map((log, index) => (
+                      <div key={index} className="output-line">{log}</div>
+                    ))}
+                    {isOptimizationRunning && (
+                      <div className="output-line" style={{ marginTop: '0.5rem', color: '#4ade80' }}>⏳ Running...</div>
+                    )}
+                  </div>
                 </div>
-              </div>
+              </>
             )}
           </div>
         </div>
