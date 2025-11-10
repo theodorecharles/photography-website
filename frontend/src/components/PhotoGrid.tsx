@@ -97,8 +97,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound }) => {
         setLoading(true);
 
         if (album === "homepage") {
-          // Use the random photos endpoint for homepage to show all photos
-          // Not passing count parameter to get all photos from all albums
+          // Use the random photos endpoint for homepage
           const response = await fetchWithRateLimitCheck(
             `${API_URL}/api/random-photos${queryString}`
           );
@@ -107,68 +106,32 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound }) => {
           }
           const randomPhotos = await response.json();
           setPhotos(randomPhotos);
-          setError(null);
-          setLoading(false);
         } else {
-          // For specific album pages, load first 20 photos immediately
-          const firstResponse = await fetchWithRateLimitCheck(
-            `${API_URL}/api/albums/${album}/photos?page=1&limit=20${queryString ? '&' + queryString.slice(1) : ''}`
+          // Fetch all photos from the album
+          const response = await fetchWithRateLimitCheck(
+            `${API_URL}/api/albums/${album}/photos${queryString}`
           );
-          if (!firstResponse.ok) {
-            if (firstResponse.status === 404) {
+          if (!response.ok) {
+            if (response.status === 404) {
               throw new Error("ALBUM_NOT_FOUND");
             }
             throw new Error("Failed to fetch photos");
           }
-          const firstData = await firstResponse.json();
-          const firstPhotos = firstData.photos || firstData;
+          const data = await response.json();
+          const photosArray = Array.isArray(data) ? data : (data.photos || []);
           
-          // Sort and display first 20 photos immediately
-          const sortedFirst = firstPhotos.sort((a: Photo, b: Photo) => {
+          // Sort photos by creation date
+          const sortedPhotos = photosArray.sort((a: Photo, b: Photo) => {
             if (!a.metadata || !b.metadata) return 0;
             return (
               new Date(b.metadata.created).getTime() -
               new Date(a.metadata.created).getTime()
             );
           });
-          setPhotos(sortedFirst);
-          setError(null);
-          setLoading(false); // Stop loading spinner after first page
-
-          // Load remaining pages in the background (don't await)
-          if (firstData.pagination?.hasMore) {
-            const totalPages = firstData.pagination.totalPages;
-            
-            // Fetch remaining pages sequentially in background
-            (async () => {
-              for (let page = 2; page <= totalPages; page++) {
-                try {
-                  const response = await fetchWithRateLimitCheck(
-                    `${API_URL}/api/albums/${album}/photos?page=${page}&limit=20${queryString ? '&' + queryString.slice(1) : ''}`
-                  );
-                  if (response.ok) {
-                    const data = await response.json();
-                    const newPhotos = data.photos || data;
-                    
-                    // Append and sort all photos
-                    setPhotos(prev => {
-                      const combined = [...prev, ...newPhotos];
-                      return combined.sort((a: Photo, b: Photo) => {
-                        if (!a.metadata || !b.metadata) return 0;
-                        return (
-                          new Date(b.metadata.created).getTime() -
-                          new Date(a.metadata.created).getTime()
-                        );
-                      });
-                    });
-                  }
-                } catch (err) {
-                  console.error(`Failed to load page ${page}:`, err);
-                }
-              }
-            })();
-          }
+          setPhotos(sortedPhotos);
         }
+
+        setError(null);
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : "An error occurred";
         // Don't log rate limit errors (already handled globally)
@@ -178,6 +141,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound }) => {
         setError(errorMessage);
         setPhotos([]);
         trackError(errorMessage, `photo_fetch_${album}`);
+      } finally {
         setLoading(false);
       }
     };

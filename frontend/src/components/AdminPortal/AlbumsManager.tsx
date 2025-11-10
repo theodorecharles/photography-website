@@ -86,32 +86,13 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
 
   const loadPhotos = async (albumName: string) => {
     try {
-      // Load first page (20 photos) immediately
-      const firstRes = await fetch(
-        `${API_URL}/api/albums/${encodeURIComponent(albumName)}/photos?page=1&limit=20`,
+      const res = await fetch(
+        `${API_URL}/api/albums/${encodeURIComponent(albumName)}/photos`,
         { credentials: 'include' }
       );
-      const firstData = await firstRes.json();
-      const photos = firstData.photos || firstData;
+      const data = await res.json();
+      const photos = Array.isArray(data) ? data : (data.photos || []);
       setAlbumPhotos(photos);
-
-      // If there are more pages, fetch them all in the background
-      if (firstData.pagination?.hasMore) {
-        const totalPages = firstData.pagination.totalPages;
-        
-        // Fetch remaining pages sequentially
-        for (let page = 2; page <= totalPages; page++) {
-          const res = await fetch(
-            `${API_URL}/api/albums/${encodeURIComponent(albumName)}/photos?page=${page}&limit=20`,
-            { credentials: 'include' }
-          );
-          const data = await res.json();
-          const newPhotos = data.photos || data;
-          
-          // Append new photos to existing ones
-          setAlbumPhotos(prev => [...prev, ...newPhotos]);
-        }
-      }
     } catch (err) {
       console.error('Failed to load photos:', err);
       setAlbumPhotos([]);
