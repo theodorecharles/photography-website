@@ -219,6 +219,32 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     }
   };
 
+  const handleTogglePublished = async (albumName: string, currentPublished: boolean) => {
+    try {
+      const newPublished = !currentPublished;
+      const res = await fetch(`${API_URL}/api/albums/${encodeURIComponent(albumName)}/publish`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ published: newPublished }),
+      });
+
+      if (res.ok) {
+        setMessage({ 
+          type: 'success', 
+          text: `Album "${albumName}" ${newPublished ? 'published' : 'unpublished'}` 
+        });
+        await loadAlbums();
+        window.dispatchEvent(new Event('albums-updated'));
+      } else {
+        const error = await res.json();
+        setMessage({ type: 'error', text: error.error || 'Failed to update album' });
+      }
+    } catch (err) {
+      setMessage({ type: 'error', text: 'Network error occurred' });
+    }
+  };
+
   const uploadSingleImage = async (file: File, filename: string, targetAlbum?: string, retryCount = 0): Promise<void> => {
     const albumToUse = targetAlbum || selectedAlbum;
     const MAX_RETRIES = 3;
@@ -754,12 +780,17 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                 {albums.map((album) => (
                   <div 
                     key={album.name} 
-                    className={`album-card ${selectedAlbum === album.name ? 'selected' : ''}`}
+                    className={`album-card ${selectedAlbum === album.name ? 'selected' : ''} ${album.published === false ? 'unpublished' : ''}`}
                     onClick={() => setSelectedAlbum(selectedAlbum === album.name ? null : album.name)}
                   >
                     <div className="album-card-header">
                       <h4>
                         <span className="album-name">{album.name}</span>
+                        {album.published === false && (
+                          <span className="unpublished-badge" title="Not visible to public">
+                            🔒
+                          </span>
+                        )}
                       </h4>
                       <button
                         onClick={(e) => {
@@ -772,11 +803,35 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                         ×
                       </button>
                     </div>
-                    {album.photoCount !== undefined && (
-                      <div className="album-badge">
-                        {album.photoCount} {album.photoCount === 1 ? 'photo' : 'photos'}
+                    <div className="album-card-footer">
+                      <div className="album-info">
+                        {album.photoCount !== undefined && (
+                          <div className="album-badge">
+                            {album.photoCount} {album.photoCount === 1 ? 'photo' : 'photos'}
+                          </div>
+                        )}
                       </div>
-                    )}
+                      <div className="album-publish-toggle">
+                        <label 
+                          className="toggle-switch"
+                          onClick={(e) => e.stopPropagation()}
+                          title={album.published === false ? "Publish album (make visible to public)" : "Unpublish album (hide from public)"}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={album.published !== false}
+                            onChange={(e) => {
+                              e.stopPropagation();
+                              handleTogglePublished(album.name, album.published !== false);
+                            }}
+                          />
+                          <span className="toggle-slider"></span>
+                          <span className="toggle-label">
+                            {album.published === false ? 'Unpublished' : 'Published'}
+                          </span>
+                        </label>
+                      </div>
+                    </div>
                   </div>
                 ))}
               </div>

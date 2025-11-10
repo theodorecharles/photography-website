@@ -159,7 +159,14 @@ function App() {
       const externalLinksData = await externalLinksResponse.json();
       const brandingData = await brandingResponse.json();
 
-      setAlbums(albumsData.filter((album: string) => album !== "homepage"));
+      // Handle both array of strings (for non-authenticated) and array of objects (for authenticated)
+      const albumNames = Array.isArray(albumsData) 
+        ? albumsData.map((album: string | { name: string; published: boolean }) => 
+            typeof album === 'string' ? album : album.name
+          ).filter((album: string) => album !== "homepage")
+        : [];
+      
+      setAlbums(albumNames);
       setExternalLinks(externalLinksData.externalLinks);
       setSiteName(brandingData.siteName || 'Ted Charles');
       setAvatarPath(brandingData.avatarPath || '/photos/derpatar.png');

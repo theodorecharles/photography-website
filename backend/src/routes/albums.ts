@@ -4,10 +4,11 @@
  * as well as helper functions for file system operations.
  */
 
-import { Router } from "express";
+import { Router, Request } from "express";
 import fs from "fs";
 import path from "path";
 import exifr from "exifr";
+import { getAlbumState, getPublishedAlbums, getAllAlbums } from "../database.js";
 
 const router = Router();
 
@@ -107,15 +108,34 @@ const shuffleArray = <T>(array: T[]): T[] => {
 };
 
 /**
- * Helper function to get all photos from all albums.
+ * Helper function to get all photos from all albums (filtered by published state).
  * @param photosDir - Path to the photos directory
+ * @param includeUnpublished - Whether to include unpublished albums (admin only)
  * @returns Array of all photo objects with their paths and album information
  */
-const getAllPhotos = (photosDir: string) => {
+const getAllPhotos = (photosDir: string, includeUnpublished: boolean = false) => {
   try {
-    const allAlbums = getAlbums(photosDir).filter(
+    let allAlbums = getAlbums(photosDir).filter(
       (album) => album !== "homepage"
     );
+    
+    // Filter out unpublished albums unless explicitly requested
+    if (!includeUnpublished) {
+      const publishedAlbumStates = getPublishedAlbums();
+      const publishedNames = new Set(publishedAlbumStates.map(a => a.name));
+      const allAlbumStates = getAllAlbums();
+      const unpublishedNames = new Set(allAlbumStates.filter(a => !a.published).map(a => a.name));
+      
+      allAlbums = allAlbums.filter(album => {
+        // Exclude if explicitly unpublished
+        if (unpublishedNames.has(album)) {
+          return false;
+        }
+        // Include if explicitly published or not in DB (legacy albums)
+        return publishedNames.has(album) || !allAlbumStates.some(a => a.name === album);
+      });
+    }
+    
     const allPhotos: {
       id: string;
       title: string;
@@ -159,15 +179,48 @@ const getAllPhotos = (photosDir: string) => {
   }
 };
 
-// Get all albums
-router.get("/api/albums", (req, res) => {
+// Get all albums (filtered by published state for non-authenticated users)
+router.get("/api/albums", (req: Request, res) => {
   const photosDir = req.app.get("photosDir");
-  const albums = getAlbums(photosDir);
-  res.json(albums);
+  const allAlbums = getAlbums(photosDir);
+  
+  // Check if user is authenticated
+  const isAuthenticated = req.isAuthenticated && req.isAuthenticated();
+  
+  if (isAuthenticated) {
+    // For authenticated users, return all albums with their published state
+    const albumStates = getAllAlbums();
+    const albumsWithState = allAlbums.map((albumName: string) => {
+      const state = albumStates.find(a => a.name === albumName);
+      return {
+        name: albumName,
+        published: state?.published ?? true // Default to published for albums not in DB yet
+      };
+    });
+    res.json(albumsWithState);
+  } else {
+    // For non-authenticated users, only return published albums
+    const publishedAlbumStates = getPublishedAlbums();
+    const publishedNames = new Set(publishedAlbumStates.map(a => a.name));
+    
+    // Filter filesystem albums to only include published ones
+    const publishedAlbums = allAlbums.filter((albumName: string) => {
+      const state = publishedAlbumStates.find(a => a.name === albumName);
+      // If album is in DB, check its published state; otherwise include it (legacy behavior)
+      if (state) {
+        return state.published;
+      }
+      // For albums not in DB, check if they would have been auto-published
+      // (this handles migration - albums existing before this feature are treated as published)
+      return !publishedAlbumStates.some(a => a.name === albumName);
+    });
+    
+    res.json(publishedAlbums);
+  }
 });
 
 // Get photos in a specific album
-router.get("/api/albums/:album/photos", (req, res): void => {
+router.get("/api/albums/:album/photos", (req: Request, res): void => {
   const { album } = req.params;
 
   // Sanitize album parameter to prevent path traversal
@@ -177,17 +230,32 @@ router.get("/api/albums/:album/photos", (req, res): void => {
     return;
   }
 
+  // Check if user is authenticated
+  const isAuthenticated = req.isAuthenticated && req.isAuthenticated();
+  
+  // Check album published state
+  const albumState = getAlbumState(sanitizedAlbum);
+  
+  // If album is unpublished and user is not authenticated, deny access
+  if (albumState && !albumState.published && !isAuthenticated) {
+    res.status(404).json({ error: "Album not found" });
+    return;
+  }
+
   const photosDir = req.app.get("photosDir");
   const photos = getPhotosInAlbum(photosDir, sanitizedAlbum);
   res.json(photos);
 });
 
 // Get all photos from all albums in random order
-router.get("/api/random-photos", (req, res) => {
+router.get("/api/random-photos", (req: Request, res) => {
   const photosDir = req.app.get("photosDir");
   
-  // Get ALL photos from ALL albums
-  const photos = getAllPhotos(photosDir);
+  // Check if user is authenticated
+  const isAuthenticated = req.isAuthenticated && req.isAuthenticated();
+  
+  // Get ALL photos from ALL albums (include unpublished if authenticated)
+  const photos = getAllPhotos(photosDir, isAuthenticated);
   
   console.log(`API /api/random-photos: Returning ${photos.length} photos`);
   res.json(photos);

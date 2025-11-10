@@ -50,6 +50,7 @@ export interface ImageOptimizationSettings {
 export interface Album {
   name: string;
   photoCount?: number;
+  published?: boolean;
 }
 
 export interface Photo {

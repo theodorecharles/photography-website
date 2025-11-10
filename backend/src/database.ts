@@ -14,7 +14,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Database file path (in project root)
-const DB_PATH = path.join(__dirname, '..', '..', 'image-metadata.db');
+const DB_PATH = path.join(__dirname, '..', '..', 'gallery.db');
 
 let db: any = null;
 
@@ -38,6 +38,17 @@ export function initializeDatabase(): any {
   
   // Enable foreign keys
   db.pragma('foreign_keys = ON');
+  
+  // Create albums table
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS albums (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL UNIQUE,
+      published BOOLEAN NOT NULL DEFAULT 0,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
   
   // Create image_metadata table
   db.exec(`
@@ -215,6 +226,144 @@ export function deleteAlbumMetadata(album: string): number {
   
   const result = stmt.run(album);
   return result.changes;
+}
+
+/**
+ * Create or update an album in the database
+ */
+export function saveAlbum(name: string, published: boolean = false): void {
+  const db = getDatabase();
+  
+  const stmt = db.prepare(`
+    INSERT INTO albums (name, published)
+    VALUES (?, ?)
+    ON CONFLICT(name) 
+    DO UPDATE SET 
+      published = excluded.published,
+      updated_at = CURRENT_TIMESTAMP
+  `);
+  
+  stmt.run(name, published ? 1 : 0);
+}
+
+/**
+ * Get album state by name
+ */
+export function getAlbumState(name: string): {
+  id: number;
+  name: string;
+  published: boolean;
+  created_at: string;
+  updated_at: string;
+} | undefined {
+  const db = getDatabase();
+  
+  const stmt = db.prepare(`
+    SELECT * FROM albums 
+    WHERE name = ?
+  `);
+  
+  const result = stmt.get(name) as any;
+  if (result) {
+    result.published = Boolean(result.published);
+  }
+  return result;
+}
+
+/**
+ * Get all albums with their published state
+ */
+export function getAllAlbums(): Array<{
+  id: number;
+  name: string;
+  published: boolean;
+  created_at: string;
+  updated_at: string;
+}> {
+  const db = getDatabase();
+  
+  const stmt = db.prepare(`
+    SELECT * FROM albums 
+    ORDER BY name
+  `);
+  
+  const results = stmt.all() as any[];
+  return results.map(result => ({
+    ...result,
+    published: Boolean(result.published)
+  }));
+}
+
+/**
+ * Get only published albums
+ */
+export function getPublishedAlbums(): Array<{
+  id: number;
+  name: string;
+  published: boolean;
+  created_at: string;
+  updated_at: string;
+}> {
+  const db = getDatabase();
+  
+  const stmt = db.prepare(`
+    SELECT * FROM albums 
+    WHERE published = 1
+    ORDER BY name
+  `);
+  
+  const results = stmt.all() as any[];
+  return results.map(result => ({
+    ...result,
+    published: Boolean(result.published)
+  }));
+}
+
+/**
+ * Toggle album published state
+ */
+export function toggleAlbumPublished(name: string): boolean {
+  const db = getDatabase();
+  
+  const stmt = db.prepare(`
+    UPDATE albums 
+    SET published = NOT published, updated_at = CURRENT_TIMESTAMP
+    WHERE name = ?
+  `);
+  
+  const result = stmt.run(name);
+  return result.changes > 0;
+}
+
+/**
+ * Set album published state
+ */
+export function setAlbumPublished(name: string, published: boolean): boolean {
+  const db = getDatabase();
+  
+  const stmt = db.prepare(`
+    UPDATE albums 
+    SET published = ?, updated_at = CURRENT_TIMESTAMP
+    WHERE name = ?
+  `);
+  
+  const result = stmt.run(published ? 1 : 0, name);
+  return result.changes > 0;
+}
+
+/**
+ * Delete an album from the database
+ */
+export function deleteAlbumState(name: string): boolean {
+  const db = getDatabase();
+  
+  const stmt = db.prepare(`
+    DELETE FROM albums 
+    WHERE name = ?
+  `);
+  
+  const result = stmt.run(name);
+  return result.changes > 0;
 }
 
 /**
