@@ -14,6 +14,16 @@ const router = express.Router();
 // Apply CSRF protection to all routes in this router
 router.use(csrfProtection);
 
+// Track running optimization job
+interface RunningJob {
+  process: any;
+  output: string[];
+  startTime: number;
+  isComplete: boolean;
+}
+
+let runningOptimizationJob: RunningJob | null = null;
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -105,9 +115,39 @@ router.put('/settings', requireAuth, (req, res) => {
   }
 });
 
+// GET /api/image-optimization/status - Check if optimization is running
+router.get('/status', requireAuth, (req, res) => {
+  if (runningOptimizationJob) {
+    res.json({ 
+      running: true, 
+      output: runningOptimizationJob.output,
+      isComplete: runningOptimizationJob.isComplete
+    });
+  } else {
+    res.json({ running: false });
+  }
+});
+
 // POST /api/image-optimization/optimize - Run optimization script with SSE
 router.post('/optimize', requireAuth, (req, res) => {
   const { force } = req.body;
+  
+  // If already running, reconnect to existing job
+  if (runningOptimizationJob && !runningOptimizationJob.isComplete) {
+    console.log('[Optimization] Reconnecting to existing job');
+    
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+    res.flushHeaders();
+    
+    // Send all previous output
+    runningOptimizationJob.output.forEach(line => {
+      res.write(`data: ${line}\n\n`);
+    });
+    
+    return;
+  }
   
   // Set up SSE headers
   res.setHeader('Content-Type', 'text/event-stream');
@@ -116,7 +156,16 @@ router.post('/optimize', requireAuth, (req, res) => {
   res.flushHeaders();
   
   // Send initial connection message
-  res.write('data: {"type":"connected","message":"Connected to optimization stream"}\n\n');
+  const connectMsg = '{"type":"connected","message":"Connected to optimization stream"}';
+  res.write(`data: ${connectMsg}\n\n`);
+  
+  // Create job tracking
+  runningOptimizationJob = {
+    process: null,
+    output: [connectMsg],
+    startTime: Date.now(),
+    isComplete: false
+  };
   
   // Build command
   const scriptPath = path.resolve(__dirname, '../../../optimize_all_images.js');
@@ -135,25 +184,35 @@ router.post('/optimize', requireAuth, (req, res) => {
     env: { ...process.env, TERM: 'dumb' } // Disable terminal colors/animations
   });
   
+  runningOptimizationJob.process = child;
+  
   // Stream stdout
   child.stdout.on('data', (data) => {
     const lines = data.toString().split('\n');
     lines.forEach((line: string) => {
       if (line.trim()) {
+        let output = '';
+        
         // Parse progress from lines like: [150/3000] (5%) Album/image.jpg [type]
         const progressMatch = line.match(/^\[(\d+)\/(\d+)\]\s*\((\d+)%\)/);
         if (progressMatch) {
           const [, current, total, percent] = progressMatch;
-          res.write(`data: ${JSON.stringify({ 
+          output = JSON.stringify({ 
             type: 'progress', 
             current: parseInt(current),
             total: parseInt(total),
             percent: parseInt(percent),
             message: line 
-          })}\n\n`);
+          });
         } else {
-          res.write(`data: ${JSON.stringify({ type: 'stdout', message: line })}\n\n`);
+          output = JSON.stringify({ type: 'stdout', message: line });
         }
+        
+        // Store output and send to client
+        if (runningOptimizationJob) {
+          runningOptimizationJob.output.push(output);
+        }
+        res.write(`data: ${output}\n\n`);
       }
     });
   });
@@ -170,28 +229,45 @@ router.post('/optimize', requireAuth, (req, res) => {
   
   // Handle process completion
   child.on('close', (code) => {
-    res.write(`data: ${JSON.stringify({ 
+    const completeMsg = JSON.stringify({ 
       type: 'complete', 
       message: `Process exited with code ${code}`,
       exitCode: code 
-    })}\n\n`);
+    });
+    
+    if (runningOptimizationJob) {
+      runningOptimizationJob.output.push(completeMsg);
+      runningOptimizationJob.isComplete = true;
+      
+      // Clean up after 5 minutes
+      setTimeout(() => {
+        runningOptimizationJob = null;
+      }, 5 * 60 * 1000);
+    }
+    
+    res.write(`data: ${completeMsg}\n\n`);
     res.end();
   });
   
   // Handle errors
   child.on('error', (error) => {
-    res.write(`data: ${JSON.stringify({ 
+    const errorMsg = JSON.stringify({ 
       type: 'error', 
       message: `Failed to start process: ${error.message}` 
-    })}\n\n`);
+    });
+    
+    if (runningOptimizationJob) {
+      runningOptimizationJob.output.push(errorMsg);
+      runningOptimizationJob.isComplete = true;
+    }
+    
+    res.write(`data: ${errorMsg}\n\n`);
     res.end();
   });
   
-  // Clean up on client disconnect
+  // Handle client disconnect - DON'T kill the process
   req.on('close', () => {
-    if (!child.killed) {
-      child.kill();
-    }
+    console.log('[Optimization] Client disconnected, process continues running');
   });
 });
 
