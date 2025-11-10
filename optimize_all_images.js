@@ -43,13 +43,19 @@ let stats = {
   startTime: Date.now()
 };
 
-// Progress bar
-const progressBar = new cliProgress.SingleBar({
-  format: 'Progress |{bar}| {percentage}% | {value}/{total} | {album} | {filename}',
-  barCompleteChar: '\u2588',
-  barIncompleteChar: '\u2591',
-  hideCursor: true
-});
+// Check if we're running in a TTY (interactive terminal) or piped/SSE
+const isTTY = process.stdout.isTTY;
+
+// Progress bar (only for TTY)
+let progressBar = null;
+if (isTTY) {
+  progressBar = new cliProgress.SingleBar({
+    format: 'Progress |{bar}| {percentage}% | {value}/{total} | {album} | {filename}',
+    barCompleteChar: '\u2588',
+    barIncompleteChar: '\u2591',
+    hideCursor: true
+  });
+}
 
 // Get all image files from a directory
 async function getImageFiles(dir) {
@@ -186,11 +192,13 @@ async function main() {
     return;
   }
   
-  // Start progress bar
-  progressBar.start(totalVersions, 0, {
-    album: '',
-    filename: ''
-  });
+  // Start progress tracking
+  if (progressBar) {
+    progressBar.start(totalVersions, 0, {
+      album: '',
+      filename: ''
+    });
+  }
   
   // Build list of all versions to process
   const versionTasks = [];
@@ -207,18 +215,37 @@ async function main() {
     }
   }
   
+  // Track progress
+  let completed = 0;
+  const lastReportedPercent = { value: -1 };
+  
   // Process all versions concurrently (each version is a separate task)
   await processConcurrently(
     versionTasks,
     concurrency,
     async (task) => {
-      progressBar.update({ album: task.img.album, filename: `${task.img.filename} [${task.type}]` });
+      if (progressBar) {
+        progressBar.update({ album: task.img.album, filename: `${task.img.filename} [${task.type}]` });
+      }
       await processImageVersion(task.img, task.type, task.quality, task.maxDim);
-      progressBar.increment(1);
+      completed++;
+      
+      if (progressBar) {
+        progressBar.increment(1);
+      } else {
+        // For non-TTY, output progress every 5%
+        const percent = Math.floor((completed / totalVersions) * 100);
+        if (percent > lastReportedPercent.value && percent % 5 === 0) {
+          console.log(`Progress: ${completed}/${totalVersions} (${percent}%) - ${task.img.album}/${task.img.filename} [${task.type}]`);
+          lastReportedPercent.value = percent;
+        }
+      }
     }
   );
   
-  progressBar.stop();
+  if (progressBar) {
+    progressBar.stop();
+  }
   
   // Print summary
   const elapsed = ((Date.now() - stats.startTime) / 1000).toFixed(1);
