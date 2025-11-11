@@ -276,6 +276,8 @@
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 1rem;
   margin-top: 1.25rem;
+  /* Prevent scrolling during drag operations */
+  touch-action: none;
 }
 
 @media (max-width: 1200px) {
@@ -451,6 +453,8 @@
 .album-photos {
   position: relative;
   transition: border-color 0.2s ease, background-color 0.2s ease;
+  /* Prevent scrolling during drag operations */
+  touch-action: none;
 }
 
 .album-photos.drag-over {
@@ -641,6 +645,8 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: 1.25rem;
+  /* Prevent scrolling during drag operations */
+  touch-action: none;
 }
 
 @media (max-width: 768px) {
