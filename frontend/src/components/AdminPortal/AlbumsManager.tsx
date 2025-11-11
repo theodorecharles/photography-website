@@ -350,6 +350,9 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   const handlePhotoDragStart = (event: DragEndEvent) => {
     setHasEverDragged(true); // Mark that user has started dragging
     setActiveId(event.active.id as string);
+    // Prevent scrolling during drag on mobile
+    document.body.style.overflow = 'hidden';
+    document.body.style.touchAction = 'none';
   };
 
   // Handle drag end for photos
@@ -366,11 +369,17 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     }
     
     setActiveId(null);
+    // Re-enable scrolling after drag
+    document.body.style.overflow = '';
+    document.body.style.touchAction = '';
   };
 
   // Handle drag start for albums
   const handleAlbumDragStart = (event: DragEndEvent) => {
     setActiveAlbumId(event.active.id as string);
+    // Prevent scrolling during drag on mobile
+    document.body.style.overflow = 'hidden';
+    document.body.style.touchAction = 'none';
   };
 
   // Handle drag end for albums with auto-save
@@ -378,6 +387,9 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     const { active, over } = event;
     
     setActiveAlbumId(null);
+    // Re-enable scrolling after drag
+    document.body.style.overflow = '';
+    document.body.style.touchAction = '';
 
     if (over && active.id !== over.id) {
       const oldIndex = localAlbums.findIndex((album) => album.name === active.id);
