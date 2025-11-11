@@ -115,6 +115,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
 
   // SSE Output Toaster state
   const [isToasterCollapsed, setIsToasterCollapsed] = useState(false);
+  const [isToasterMaximized, setIsToasterMaximized] = useState(false);
 
   // Section collapse state - all collapsed by default
   const [showBranding, setShowBranding] = useState(false);
@@ -710,7 +711,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
       setTitlesOutput([]);
       setTitlesProgress(0);
       setTitlesWaiting(null);
-      setMessage({ type: "success", text: "AI title generation stopped" });
+      // No success message - stopping is user-initiated
     } catch (err) {
       console.error("Failed to stop AI titles job:", err);
       setMessage({ type: "error", text: "Failed to stop AI titles job" });
@@ -739,7 +740,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
       setOptimizationLogs([]);
       setOptimizationProgress(0);
       setOptimizationComplete(false);
-      setMessage({ type: "success", text: "Optimization job stopped" });
+      // No success message - stopping is user-initiated
     } catch (err) {
       console.error("Failed to stop optimization job:", err);
       setMessage({ type: "error", text: "Failed to stop optimization job" });
@@ -3634,7 +3635,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
 
       {/* Floating SSE Output Toaster (Picture-in-Picture style) */}
       {isAnyJobRunning && (
-        <div className={`sse-toaster ${isToasterCollapsed ? 'collapsed' : 'expanded'}`}>
+        <div className={`sse-toaster ${isToasterCollapsed ? 'collapsed' : 'expanded'} ${isToasterMaximized ? 'maximized' : ''}`}>
           <div className="sse-toaster-header">
             <div className="sse-toaster-title">
               <span className="sse-toaster-icon">⚙️</span>
@@ -3645,27 +3646,49 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
                 {generatingTitles ? titlesProgress : optimizationProgress}%
               </span>
             </div>
-            <button
-              className="sse-toaster-collapse-btn"
-              onClick={() => setIsToasterCollapsed(!isToasterCollapsed)}
-              title={isToasterCollapsed ? "Expand" : "Collapse"}
-            >
-              {isToasterCollapsed ? "▼" : "▲"}
-            </button>
+            <div className="sse-toaster-actions">
+              <button
+                className="sse-toaster-stop-btn"
+                onClick={generatingTitles ? handleStopTitles : handleStopOptimization}
+                title="Stop"
+              >
+                ⏹
+              </button>
+              <button
+                className="sse-toaster-maximize-btn"
+                onClick={() => {
+                  setIsToasterMaximized(!isToasterMaximized);
+                  if (!isToasterMaximized) {
+                    setIsToasterCollapsed(false); // Auto-expand when maximizing
+                  }
+                }}
+                title={isToasterMaximized ? "Restore" : "Maximize"}
+              >
+                {isToasterMaximized ? "⊡" : "⊞"}
+              </button>
+              <button
+                className="sse-toaster-collapse-btn"
+                onClick={() => setIsToasterCollapsed(!isToasterCollapsed)}
+                title={isToasterCollapsed ? "Expand" : "Collapse"}
+                disabled={isToasterMaximized}
+              >
+                {isToasterCollapsed ? "▼" : "▲"}
+              </button>
+            </div>
+          </div>
+
+          {/* Progress Bar - always visible */}
+          <div className="sse-toaster-progress-bar-container">
+            <div
+              className="sse-toaster-progress-bar"
+              style={{
+                width: `${generatingTitles ? titlesProgress : optimizationProgress}%`,
+              }}
+            />
           </div>
 
           {!isToasterCollapsed && (
             <>
-              {/* Progress Bar */}
-              <div className="sse-toaster-progress-bar-container">
-                <div
-                  className="sse-toaster-progress-bar"
-                  style={{
-                    width: `${generatingTitles ? titlesProgress : optimizationProgress}%`,
-                  }}
-                />
-              </div>
-
               {/* Output Console */}
               <div
                 className="sse-toaster-output"
