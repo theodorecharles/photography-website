@@ -1,16 +1,10 @@
 /**
- * Settings Component
- * Unified settings management for branding, links, OpenAI, optimization, and advanced config
+ * Config Manager Component
+ * Manages all configuration settings from config.json
  */
 
 import { useState, useEffect, useRef } from "react";
 import "./ConfigManager.css";
-import { BrandingConfig, ExternalLink } from "./types";
-import {
-  trackBrandingUpdate,
-  trackAvatarUpload,
-  trackExternalLinksUpdate,
-} from "../../utils/analytics";
 
 const API_URL = import.meta.env.VITE_API_URL || "";
 
@@ -77,21 +71,9 @@ interface ConfigData {
 
 interface ConfigManagerProps {
   setMessage: (message: { type: "success" | "error"; text: string }) => void;
-  branding: BrandingConfig;
-  setBranding: (branding: BrandingConfig) => void;
-  loadBranding: () => Promise<void>;
-  externalLinks: ExternalLink[];
-  setExternalLinks: (links: ExternalLink[]) => void;
 }
 
-const ConfigManager: React.FC<ConfigManagerProps> = ({
-  setMessage,
-  branding,
-  setBranding,
-  loadBranding,
-  externalLinks,
-  setExternalLinks,
-}) => {
+const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
   const [config, setConfig] = useState<ConfigData | null>(null);
   const [originalConfig, setOriginalConfig] = useState<ConfigData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -104,15 +86,15 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
   const [isOptimizationRunning, setIsOptimizationRunning] = useState(false);
   const [optimizationComplete, setOptimizationComplete] = useState(false);
   const [optimizationProgress, setOptimizationProgress] = useState(0);
+
+  // Section collapse state - collapsed by default on mobile
+  const isMobile = window.matchMedia("(max-width: 768px)").matches;
+  const [showOpenAI, setShowOpenAI] = useState(!isMobile);
+  const [showImageOptimization, setShowImageOptimization] = useState(!isMobile);
   const [showAdvanced, setShowAdvanced] = useState(false);
+
   const [restartingBackend, setRestartingBackend] = useState(false);
   const [restartingFrontend, setRestartingFrontend] = useState(false);
-
-  // Branding and Links state
-  const [savingBranding, setSavingBranding] = useState(false);
-  const [pendingAvatarFile, setPendingAvatarFile] = useState<File | null>(null);
-  const [avatarPreviewUrl, setAvatarPreviewUrl] = useState<string | null>(null);
-  const [savingLinks, setSavingLinks] = useState(false);
 
   // Refs for auto-scroll and scroll-into-view
   const optimizationOutputRef = useRef<HTMLDivElement>(null);
@@ -1022,18 +1004,30 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
               justifyContent: "space-between",
               alignItems: "center",
               marginBottom: "0.5rem",
+              cursor: "pointer",
+              padding: "1rem",
+              background: "rgba(255, 255, 255, 0.02)",
+              borderRadius: "8px",
+              border: "1px solid rgba(255, 255, 255, 0.05)",
             }}
+            onClick={() => setShowOpenAI(!showOpenAI)}
           >
             <h3 className="config-section-title" style={{ margin: 0 }}>
-              OpenAI
+              {showOpenAI ? "▼" : "▶"} OpenAI
             </h3>
+            <span style={{ color: "#888", fontSize: "0.9rem" }}>
+              {showOpenAI ? "Click to collapse" : "Click to expand"}
+            </span>
           </div>
-          <p className="config-section-description">
+          <p
+            className="config-section-description"
+            style={{ marginTop: "0.5rem" }}
+          >
             Configure OpenAI API integration for generating image titles
           </p>
 
-          {/* Two-column layout on desktop */}
-          <div className="openai-settings-grid">
+          {showOpenAI && (
+            <div className="openai-settings-grid">
             {/* Left: API Key Section */}
             <div className="openai-section">
               <label className="openai-section-label">API KEY</label>
@@ -1141,21 +1135,42 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
               </div>
             </div>
           </div>
+          )}
         </div>
 
         {/* Image Optimization Settings */}
         <div className="config-group full-width">
-          <h3
-            className="config-section-title"
-            style={{ margin: 0, marginBottom: "0.5rem" }}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: "0.5rem",
+              cursor: "pointer",
+              padding: "1rem",
+              background: "rgba(255, 255, 255, 0.02)",
+              borderRadius: "8px",
+              border: "1px solid rgba(255, 255, 255, 0.05)",
+            }}
+            onClick={() => setShowImageOptimization(!showImageOptimization)}
           >
-            Image Optimization
-          </h3>
-          <p className="config-section-description">
+            <h3 className="config-section-title" style={{ margin: 0 }}>
+              {showImageOptimization ? "▼" : "▶"} Image Optimization
+            </h3>
+            <span style={{ color: "#888", fontSize: "0.9rem" }}>
+              {showImageOptimization ? "Click to collapse" : "Click to expand"}
+            </span>
+          </div>
+          <p
+            className="config-section-description"
+            style={{ marginTop: "0.5rem" }}
+          >
             Control quality and dimensions for thumbnail, modal, and download
             versions of your images. Higher quality means larger file sizes.
           </p>
 
+          {showImageOptimization && (
+            <>
           {/* Grid of optimization subsections */}
           <div className="config-grid-inner">
             {/* Thumbnail Settings */}
@@ -1455,6 +1470,16 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
               >
                 Maximum number of images to process simultaneously. Higher
                 values speed up batch processing but use more CPU and memory.
+              </p>
+              <p
+                style={{
+                  fontSize: "0.85rem",
+                  color: "#888",
+                  marginTop: "0",
+                  marginBottom: "1rem",
+                }}
+              >
+
                 Rule of thumb: ~4× your logical CPU cores (e.g., 64 for a
                 24-core CPU with hyperthreading = 48 logical cores).
                 Recommended: 8-16 for typical systems, 32-64 for
@@ -1478,6 +1503,8 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
               </div>
             </div>
           </div>
+          </>
+          )}
         </div>
 
         {/* Advanced Settings - Collapsible */}
