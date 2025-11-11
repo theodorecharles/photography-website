@@ -14,7 +14,7 @@ interface BrandingManagerProps {
   branding: BrandingConfig;
   setBranding: (branding: BrandingConfig) => void;
   loadBranding: () => Promise<void>;
-  setMessage: (message: { type: 'success' | 'error'; text: string } | null) => void;
+  setMessage: (message: { type: 'success' | 'error'; text: string }) => void;
 }
 
 const BrandingManager: React.FC<BrandingManagerProps> = ({

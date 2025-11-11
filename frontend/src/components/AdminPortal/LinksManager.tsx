@@ -13,7 +13,7 @@ const API_URL = import.meta.env.VITE_API_URL || '';
 interface LinksManagerProps {
   externalLinks: ExternalLink[];
   setExternalLinks: (links: ExternalLink[]) => void;
-  setMessage: (message: { type: 'success' | 'error'; text: string } | null) => void;
+  setMessage: (message: { type: 'success' | 'error'; text: string }) => void;
 }
 
 const LinksManager: React.FC<LinksManagerProps> = ({
