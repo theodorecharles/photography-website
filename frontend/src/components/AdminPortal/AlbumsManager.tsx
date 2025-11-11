@@ -772,7 +772,24 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   const speedupTimeoutsRef = useRef<NodeJS.Timeout[]>([]);
   const shuffleButtonRef = useRef<HTMLButtonElement | null>(null);
 
-  // Speed up animation when button is pressed and start shuffling
+  // Single click shuffle - instantly shuffle all photos
+  const handleShuffleClick = () => {
+    if (savingOrder) return;
+    
+    setHasEverDragged(true); // Mark that user has reordered
+    
+    // Fisher-Yates shuffle algorithm for complete randomization
+    setAlbumPhotos((currentPhotos) => {
+      const newOrder = [...currentPhotos];
+      for (let i = newOrder.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [newOrder[i], newOrder[j]] = [newOrder[j], newOrder[i]];
+      }
+      return newOrder;
+    });
+  };
+
+  // Speed up animation when button is pressed and held - start continuous shuffling
   const handleShuffleStart = () => {
     if (savingOrder) return;
     
@@ -844,9 +861,19 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     }
   };
 
+  const shuffleClickTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const isLongPressRef = useRef(false);
+
   const handleShuffleMouseDown = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
     shuffleButtonRef.current = e.currentTarget;
-    handleShuffleStart();
+    isLongPressRef.current = false;
+    
+    // Start long press after 200ms
+    shuffleClickTimeoutRef.current = setTimeout(() => {
+      isLongPressRef.current = true;
+      handleShuffleStart();
+    }, 200);
   };
 
   // Stop shuffling and slow down animation when button is released
@@ -889,7 +916,21 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   };
 
   const handleShuffleMouseUp = () => {
-    handleShuffleEnd();
+    // Clear the long press timeout
+    if (shuffleClickTimeoutRef.current) {
+      clearTimeout(shuffleClickTimeoutRef.current);
+      shuffleClickTimeoutRef.current = null;
+    }
+    
+    // If it was a long press, end the animation
+    if (isLongPressRef.current) {
+      handleShuffleEnd();
+    } else {
+      // It was a quick click - do instant shuffle
+      handleShuffleClick();
+    }
+    
+    isLongPressRef.current = false;
   };
 
   // Cleanup on unmount
@@ -900,6 +941,9 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
       }
       if (slowdownTimeoutRef.current) {
         clearTimeout(slowdownTimeoutRef.current);
+      }
+      if (shuffleClickTimeoutRef.current) {
+        clearTimeout(shuffleClickTimeoutRef.current);
       }
       speedupTimeoutsRef.current.forEach(timeout => clearTimeout(timeout));
     };
@@ -1646,19 +1690,6 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                 
                 {hasOrderChanged() && (
                   <div className="photo-order-controls">
-                    <div className="photo-order-row photo-order-row-primary">
-                      <span className="unsaved-indicator">
-                        Unsaved changes
-                      </span>
-                      <button
-                        onClick={handleSavePhotoOrder}
-                        disabled={savingOrder}
-                        className="btn-action btn-save-order"
-                        title="Save photo order"
-                      >
-                        {savingOrder ? 'Saving...' : 'Save Order'}
-                      </button>
-                    </div>
                     <div className="photo-order-row photo-order-row-secondary">
                       <button
                         onClick={handleCancelPhotoOrder}
@@ -1675,15 +1706,28 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                         onTouchStart={(e) => {
                           e.preventDefault();
                           shuffleButtonRef.current = e.currentTarget;
-                          handleShuffleStart();
+                          isLongPressRef.current = false;
+                          shuffleClickTimeoutRef.current = setTimeout(() => {
+                            isLongPressRef.current = true;
+                            handleShuffleStart();
+                          }, 200);
                         }}
                         onTouchEnd={(e) => {
                           e.preventDefault();
-                          handleShuffleEnd();
+                          if (shuffleClickTimeoutRef.current) {
+                            clearTimeout(shuffleClickTimeoutRef.current);
+                            shuffleClickTimeoutRef.current = null;
+                          }
+                          if (isLongPressRef.current) {
+                            handleShuffleEnd();
+                          } else {
+                            handleShuffleClick();
+                          }
+                          isLongPressRef.current = false;
                         }}
                         disabled={savingOrder}
                         className="btn-action btn-shuffle-order"
-                        title="Hold to shuffle photos"
+                        title="Click to shuffle, hold to animate"
                       >
                         <svg 
                           width="16" 
@@ -1703,6 +1747,19 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                           <line x1="4" y1="4" x2="9" y2="9"></line>
                         </svg>
                         Shuffle
+                      </button>
+                    </div>
+                    <div className="photo-order-row photo-order-row-primary">
+                      <span className="unsaved-indicator">
+                        Unsaved changes
+                      </span>
+                      <button
+                        onClick={handleSavePhotoOrder}
+                        disabled={savingOrder}
+                        className="btn-action btn-save-order"
+                        title="Save photo order"
+                      >
+                        {savingOrder ? 'Saving...' : 'Save Order'}
                       </button>
                     </div>
                   </div>
