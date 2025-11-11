@@ -249,7 +249,12 @@ function App() {
 
   // Loading and error states
   if (loading) {
-    return <div className="loading">Loading albums...</div>;
+    return (
+      <div className="photo-grid-loading">
+        <div className="loading-spinner"></div>
+        <p>Loading albums...</p>
+      </div>
+    );
   }
 
   if (error) {
