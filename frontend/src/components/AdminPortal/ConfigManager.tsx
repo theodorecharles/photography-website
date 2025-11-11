@@ -575,22 +575,24 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
 
   // Validate OpenAI API key
   const validateOpenAIKey = async (apiKey: string): Promise<boolean> => {
-    if (!apiKey || apiKey.trim() === '') {
-      return true; // Empty key is valid (user might want to remove it)
-    }
-
     try {
-      // Make a simple API call to validate the key
-      const response = await fetch('https://api.openai.com/v1/models', {
-        method: 'GET',
+      const response = await fetch(`${API_URL}/api/config/validate-openai-key`, {
+        method: "POST",
         headers: {
-          'Authorization': `Bearer ${apiKey}`,
+          "Content-Type": "application/json",
         },
+        credentials: "include",
+        body: JSON.stringify({ apiKey }),
       });
 
-      return response.ok;
+      if (!response.ok) {
+        return false;
+      }
+
+      const data = await response.json();
+      return data.valid;
     } catch (error) {
-      console.error('Error validating OpenAI key:', error);
+      console.error("Error validating OpenAI key:", error);
       return false;
     }
   };
@@ -601,10 +603,9 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
     // Validate OpenAI API key before saving
     if (sectionName === "OpenAI" && config.openai?.apiKey) {
       setSavingSection(sectionName);
-      setMessage({ type: "success", text: "Validating OpenAI API key..." });
 
       const isValid = await validateOpenAIKey(config.openai.apiKey);
-      
+
       if (!isValid) {
         setMessage({
           type: "error",
