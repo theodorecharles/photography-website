@@ -13,12 +13,8 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Load config
-const configPath = path.join(__dirname, '../config/config.json');
-const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-
-// Get API URL from config or use default
-const API_URL = process.env.API_URL || config.environment?.backend?.apiUrl || 'http://localhost:3001';
+// Get API URL from environment or use default
+const API_URL = process.env.API_URL || 'http://localhost:3001';
 const OUTPUT_DIR = path.join(__dirname, '../frontend/public/albums-data');
 
 console.log('🚀 Starting static JSON generation...');
