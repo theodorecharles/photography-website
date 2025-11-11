@@ -46,7 +46,6 @@ const BrandingManager: React.FC<BrandingManagerProps> = ({
 
   const handleSaveBranding = async () => {
     setSavingBranding(true);
-    setMessage(null);
     
     try {
       // Keep track of the updated branding data to send
