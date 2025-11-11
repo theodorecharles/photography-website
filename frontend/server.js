@@ -102,8 +102,121 @@ app.use(express.static(path.join(__dirname, "dist")));
 
 // Handle client-side routing (catch-all for React routes)
 // This must come AFTER all other routes
-app.get("*", (req, res) => {
+app.get("*", async (req, res) => {
   const indexPath = path.join(__dirname, "dist", "index.html");
+  
+  // Check if this is a shared album link
+  const sharedMatch = req.path.match(/^\/shared\/([a-f0-9]{64})$/i);
+  if (sharedMatch) {
+    const secretKey = sharedMatch[1];
+    
+    try {
+      // Fetch shared album data from backend
+      const apiUrl = config.frontend.apiUrl;
+      const response = await fetch(`${apiUrl}/api/shared/${secretKey}`);
+      
+      if (response.ok) {
+        const data = await response.json();
+        const albumName = data.album;
+        const photos = data.photos || [];
+        
+        // Get first photo as preview image
+        const firstPhoto = photos[0];
+        
+        if (firstPhoto) {
+          // Escape HTML special characters
+          const escapeHtml = (str) => str
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+          
+          const safeAlbumName = escapeHtml(albumName);
+          const albumTitleCase = albumName.charAt(0).toUpperCase() + albumName.slice(1);
+          
+          // Build URLs
+          let siteUrl;
+          if (apiUrl.includes('localhost')) {
+            siteUrl = apiUrl.replace(':3001', ':3000');
+          } else {
+            siteUrl = apiUrl.replace(/api(-dev)?\./, 'www$1.');
+          }
+          
+          const thumbnailUrl = `${apiUrl}/optimized/thumbnail/${albumName}/${firstPhoto.filename}`;
+          const pageUrl = `${siteUrl}/shared/${secretKey}`;
+          
+          // Log meta tag injection
+          console.log(`[Meta Injection] Shared album link detected:`);
+          console.log(`  Album: ${albumName}`);
+          console.log(`  Secret Key: ${secretKey}`);
+          console.log(`  Preview Image: ${thumbnailUrl}`);
+          console.log(`  Page URL: ${pageUrl}`);
+          
+          // Read and modify index.html
+          const html = fs.readFileSync(indexPath, 'utf8');
+          const modifiedHtml = html
+            .replace(
+              /<title>.*?<\/title>/,
+              `<title>${safeAlbumName} - Shared Album - Ted Charles Photography</title>`
+            )
+            .replace(
+              /<meta name="title" content=".*?" \/>/,
+              `<meta name="title" content="${safeAlbumName} - Shared Album" />`
+            )
+            .replace(
+              /<meta name="description" content=".*?" \/>/,
+              `<meta name="description" content="View the ${safeAlbumName} album shared by Ted Charles. ${photos.length} photo${photos.length !== 1 ? 's' : ''} available." />`
+            )
+            .replace(
+              /<link rel="canonical" href=".*?" \/>/,
+              `<link rel="canonical" href="${pageUrl}" />`
+            )
+            .replace(
+              /<meta property="og:type" content=".*?" \/>/,
+              `<meta property="og:type" content="article" />`
+            )
+            .replace(
+              /<meta property="og:url" content=".*?" \/>/,
+              `<meta property="og:url" content="${pageUrl}" />`
+            )
+            .replace(
+              /<meta property="og:title" content=".*?" \/>/,
+              `<meta property="og:title" content="${albumTitleCase} - Shared Album" />`
+            )
+            .replace(
+              /<meta property="og:description" content=".*?" \/>/,
+              `<meta property="og:description" content="View the ${albumTitleCase} album shared by Ted Charles. ${photos.length} photo${photos.length !== 1 ? 's' : ''} available." />`
+            )
+            .replace(
+              /<meta property="og:image" content=".*?" \/>/,
+              `<meta property="og:image" content="${thumbnailUrl}" />\n    <meta property="og:image:secure_url" content="${thumbnailUrl.replace('http://', 'https://')}" />\n    <meta property="og:image:alt" content="${safeAlbumName} - Photography by Ted Charles" />\n    <meta property="og:image:type" content="image/jpeg" />`
+            )
+            .replace(
+              /<meta property="twitter:url" content=".*?" \/>/,
+              `<meta property="twitter:url" content="${pageUrl}" />`
+            )
+            .replace(
+              /<meta property="twitter:title" content=".*?" \/>/,
+              `<meta property="twitter:title" content="${albumTitleCase} - Shared Album" />`
+            )
+            .replace(
+              /<meta property="twitter:description" content=".*?" \/>/,
+              `<meta property="twitter:description" content="View the ${albumTitleCase} album shared by Ted Charles. ${photos.length} photos available." />`
+            )
+            .replace(
+              /<meta property="twitter:image" content=".*?" \/>/,
+              `<meta property="twitter:image" content="${thumbnailUrl}" />`
+            );
+          
+          return res.send(modifiedHtml);
+        }
+      }
+    } catch (error) {
+      console.error('[Meta Injection] Error fetching shared album data:', error);
+      // Fall through to default index.html
+    }
+  }
   
   // Check if this is a photo permalink (album route with photo parameter)
   const urlPath = req.path;
