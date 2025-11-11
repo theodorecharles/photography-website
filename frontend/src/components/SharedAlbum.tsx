@@ -4,7 +4,7 @@
  */
 
 import { useEffect, useState } from 'react';
-import { useParams, Navigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import PhotoGrid from './PhotoGrid';
 import { API_URL } from '../config';
 import ExpiredLink from './Misc/ExpiredLink';
@@ -14,10 +14,17 @@ interface Photo {
   id: string;
   src: string;
   thumbnail: string;
+  modal: string;
   download: string;
   title: string;
   album: string;
-  sort_order: number | null;
+  sort_order?: number | null;
+  metadata?: {
+    created: string;
+    modified: string;
+    size: number;
+  };
+  exif?: any;
 }
 
 export default function SharedAlbum() {
