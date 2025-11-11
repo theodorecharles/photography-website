@@ -388,6 +388,30 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
           JSON.stringify(originalConfig.environment.optimization)
         );
 
+      case "Thumbnail":
+        return (
+          JSON.stringify(config.environment.optimization.images.thumbnail) !==
+          JSON.stringify(originalConfig.environment.optimization.images.thumbnail)
+        );
+
+      case "Modal":
+        return (
+          JSON.stringify(config.environment.optimization.images.modal) !==
+          JSON.stringify(originalConfig.environment.optimization.images.modal)
+        );
+
+      case "Download":
+        return (
+          JSON.stringify(config.environment.optimization.images.download) !==
+          JSON.stringify(originalConfig.environment.optimization.images.download)
+        );
+
+      case "Concurrency":
+        return (
+          config.environment.optimization.concurrency !==
+          originalConfig.environment.optimization.concurrency
+        );
+
       case "Backend":
         return (
           JSON.stringify(config.environment.backend) !==
@@ -1117,18 +1141,31 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
                 }}
               >
                 <label className="openai-section-label">THUMBNAIL</label>
-                {hasUnsavedChanges("Image Optimization") && (
-                  <button
-                    type="button"
-                    onClick={() => handleSaveSection("Image Optimization")}
-                    disabled={savingSection !== null}
-                    className="btn-primary"
-                    style={{ padding: "0.4rem 0.8rem", fontSize: "0.85rem" }}
-                  >
-                    {savingSection === "Image Optimization"
-                      ? "Saving..."
-                      : "Save"}
-                  </button>
+                {hasUnsavedChanges("Thumbnail") && (
+                  <div style={{ display: "flex", gap: "0.5rem" }}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setConfig(originalConfig);
+                      }}
+                      disabled={savingSection !== null}
+                      className="btn-secondary"
+                      style={{ padding: "0.4rem 0.8rem", fontSize: "0.85rem" }}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleSaveSection("Thumbnail")}
+                      disabled={savingSection !== null}
+                      className="btn-primary"
+                      style={{ padding: "0.4rem 0.8rem", fontSize: "0.85rem" }}
+                    >
+                      {savingSection === "Thumbnail"
+                        ? "Saving..."
+                        : "Save"}
+                    </button>
+                  </div>
                 )}
               </div>
               <div className="branding-group">
@@ -1191,18 +1228,31 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
                 }}
               >
                 <label className="openai-section-label">MODAL</label>
-                {hasUnsavedChanges("Image Optimization") && (
-                  <button
-                    type="button"
-                    onClick={() => handleSaveSection("Image Optimization")}
-                    disabled={savingSection !== null}
-                    className="btn-primary"
-                    style={{ padding: "0.4rem 0.8rem", fontSize: "0.85rem" }}
-                  >
-                    {savingSection === "Image Optimization"
-                      ? "Saving..."
-                      : "Save"}
-                  </button>
+                {hasUnsavedChanges("Modal") && (
+                  <div style={{ display: "flex", gap: "0.5rem" }}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setConfig(originalConfig);
+                      }}
+                      disabled={savingSection !== null}
+                      className="btn-secondary"
+                      style={{ padding: "0.4rem 0.8rem", fontSize: "0.85rem" }}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleSaveSection("Modal")}
+                      disabled={savingSection !== null}
+                      className="btn-primary"
+                      style={{ padding: "0.4rem 0.8rem", fontSize: "0.85rem" }}
+                    >
+                      {savingSection === "Modal"
+                        ? "Saving..."
+                        : "Save"}
+                    </button>
+                  </div>
                 )}
               </div>
               <div className="branding-group">
@@ -1262,18 +1312,31 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
                 }}
               >
                 <label className="openai-section-label">DOWNLOAD</label>
-                {hasUnsavedChanges("Image Optimization") && (
-                  <button
-                    type="button"
-                    onClick={() => handleSaveSection("Image Optimization")}
-                    disabled={savingSection !== null}
-                    className="btn-primary"
-                    style={{ padding: "0.4rem 0.8rem", fontSize: "0.85rem" }}
-                  >
-                    {savingSection === "Image Optimization"
-                      ? "Saving..."
-                      : "Save"}
-                  </button>
+                {hasUnsavedChanges("Download") && (
+                  <div style={{ display: "flex", gap: "0.5rem" }}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setConfig(originalConfig);
+                      }}
+                      disabled={savingSection !== null}
+                      className="btn-secondary"
+                      style={{ padding: "0.4rem 0.8rem", fontSize: "0.85rem" }}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleSaveSection("Download")}
+                      disabled={savingSection !== null}
+                      className="btn-primary"
+                      style={{ padding: "0.4rem 0.8rem", fontSize: "0.85rem" }}
+                    >
+                      {savingSection === "Download"
+                        ? "Saving..."
+                        : "Save"}
+                    </button>
+                  </div>
                 )}
               </div>
               <div className="branding-group">
@@ -1335,20 +1398,37 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
                 }}
               >
                 <label className="openai-section-label">CONCURRENCY</label>
-                {hasUnsavedChanges("Image Optimization") && (
-                  <button
-                    type="button"
-                    onClick={() => handleSaveSection("Image Optimization")}
-                    disabled={savingSection !== null}
-                    className="btn-primary"
-                    style={{ padding: "0.4rem 0.8rem", fontSize: "0.85rem" }}
-                  >
-                    {savingSection === "Image Optimization"
-                      ? "Saving..."
-                      : "Save"}
-                  </button>
+                {hasUnsavedChanges("Concurrency") && (
+                  <div style={{ display: "flex", gap: "0.5rem" }}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setConfig(originalConfig);
+                      }}
+                      disabled={savingSection !== null}
+                      className="btn-secondary"
+                      style={{ padding: "0.4rem 0.8rem", fontSize: "0.85rem" }}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleSaveSection("Concurrency")}
+                      disabled={savingSection !== null}
+                      className="btn-primary"
+                      style={{ padding: "0.4rem 0.8rem", fontSize: "0.85rem" }}
+                    >
+                      {savingSection === "Concurrency"
+                        ? "Saving..."
+                        : "Save"}
+                    </button>
+                  </div>
                 )}
               </div>
+              <p style={{ fontSize: "0.85rem", color: "#888", marginTop: "0", marginBottom: "1rem" }}>
+                Maximum number of images to process simultaneously. Higher values speed up batch processing but use more CPU and memory. 
+                Recommended: 2-4 for most systems, 1-2 for low-end servers, 4-8 for high-performance machines.
+              </p>
               <div className="branding-group">
                 <label className="branding-label">Max Parallel Jobs</label>
                 <input
@@ -1361,276 +1441,11 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
                     )
                   }
                   className="branding-input"
+                  min="1"
+                  max="16"
                 />
               </div>
             </div>
-          </div>
-
-          {/* Force Regenerate All Titles */}
-          <div
-            style={{
-              marginTop: "2rem",
-              paddingTop: "2rem",
-              borderTop: "1px solid rgba(255, 255, 255, 0.1)",
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginBottom: "1rem",
-              }}
-            >
-              <h4
-                style={{
-                  color: "#e5e7eb",
-                  margin: 0,
-                  fontSize: "1rem",
-                  fontWeight: 600,
-                }}
-              >
-                Regenerate All Titles
-              </h4>
-              <div
-                style={{ display: "flex", alignItems: "center", gap: "1rem" }}
-              >
-                {!generatingTitles ? (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (
-                        confirm(
-                          "⚠️ This will regenerate ALL image titles and overwrite any custom titles you have set. This action cannot be undone.\n\nAre you sure you want to continue?"
-                        )
-                      ) {
-                        handleGenerateTitles();
-                      }
-                    }}
-                    disabled={!config.openai?.apiKey}
-                    className="btn-force-regenerate"
-                  >
-                    Force Regenerate All
-                  </button>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={handleStopTitles}
-                    className="btn-force-regenerate"
-                    style={{
-                      backgroundColor: "#dc2626",
-                      borderColor: "#dc2626",
-                    }}
-                  >
-                    Stop
-                  </button>
-                )}
-              </div>
-            </div>
-
-            {generatingTitles && (
-              <>
-                <div style={{ marginTop: "1rem" }}>
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      marginBottom: "0.5rem",
-                      fontSize: "0.9rem",
-                    }}
-                  >
-                    <span style={{ color: "#9ca3af" }}>Progress</span>
-                    <span
-                      style={{ color: "var(--primary-color)", fontWeight: 600 }}
-                    >
-                      {titlesProgress}%
-                    </span>
-                  </div>
-                  <div
-                    style={{
-                      width: "100%",
-                      height: "8px",
-                      backgroundColor: "rgba(255, 255, 255, 0.1)",
-                      borderRadius: "4px",
-                      overflow: "hidden",
-                    }}
-                  >
-                    <div
-                      style={{
-                        height: "100%",
-                        width: `${titlesProgress}%`,
-                        backgroundColor: "var(--primary-color)",
-                        transition: "width 0.3s ease",
-                        borderRadius: "4px",
-                      }}
-                    />
-                  </div>
-                </div>
-                <div
-                  className="titles-output"
-                  style={{ maxHeight: "500px" }}
-                  ref={titlesOutputRef}
-                >
-                  <div className="titles-output-content">
-                    {titlesOutput.map((line, index) => (
-                      <div key={index} className="output-line">
-                        {line}
-                      </div>
-                    ))}
-                    {titlesOutput.length === 0 && (
-                      <div className="output-line">
-                        Starting AI title generation...
-                      </div>
-                    )}
-                    {generatingTitles && (
-                      <div
-                        className="output-line"
-                        style={{
-                          marginTop: "0.5rem",
-                          color: titlesWaiting !== null ? "#fbbf24" : "#4ade80",
-                        }}
-                      >
-                        ⏳{" "}
-                        {titlesWaiting !== null
-                          ? `Waiting... ${titlesWaiting}s`
-                          : "Running..."}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </>
-            )}
-          </div>
-
-          {/* Force Regenerate All Images */}
-          <div
-            style={{
-              marginTop: "2rem",
-              paddingTop: "2rem",
-              borderTop: "1px solid rgba(255, 255, 255, 0.1)",
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginBottom: "1rem",
-              }}
-            >
-              <h4
-                style={{
-                  color: "#e5e7eb",
-                  margin: 0,
-                  fontSize: "1rem",
-                  fontWeight: 600,
-                }}
-              >
-                Regenerate All Images
-              </h4>
-              <div
-                style={{ display: "flex", alignItems: "center", gap: "1rem" }}
-              >
-                {!isOptimizationRunning ? (
-                  <button
-                    type="button"
-                    onClick={() => handleRunOptimization(true)}
-                    className="btn-force-regenerate"
-                  >
-                    Force Regenerate All
-                  </button>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={handleStopOptimization}
-                    className="btn-force-regenerate"
-                    style={{
-                      backgroundColor: "#dc2626",
-                      borderColor: "#dc2626",
-                    }}
-                  >
-                    Stop
-                  </button>
-                )}
-                {optimizationComplete && !isOptimizationRunning && (
-                  <span
-                    style={{
-                      color: "var(--primary-color)",
-                      fontSize: "1.5rem",
-                    }}
-                  >
-                    ✓
-                  </span>
-                )}
-              </div>
-            </div>
-
-            {optimizationLogs.length > 0 && (
-              <>
-                {isOptimizationRunning && (
-                  <div style={{ marginTop: "1rem" }}>
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        marginBottom: "0.5rem",
-                        fontSize: "0.9rem",
-                      }}
-                    >
-                      <span style={{ color: "#9ca3af" }}>Progress</span>
-                      <span
-                        style={{
-                          color: "var(--primary-color)",
-                          fontWeight: 600,
-                        }}
-                      >
-                        {optimizationProgress}%
-                      </span>
-                    </div>
-                    <div
-                      style={{
-                        width: "100%",
-                        height: "8px",
-                        backgroundColor: "rgba(255, 255, 255, 0.1)",
-                        borderRadius: "4px",
-                        overflow: "hidden",
-                      }}
-                    >
-                      <div
-                        style={{
-                          height: "100%",
-                          width: `${optimizationProgress}%`,
-                          backgroundColor: "var(--primary-color)",
-                          transition: "width 0.3s ease",
-                          borderRadius: "4px",
-                        }}
-                      />
-                    </div>
-                  </div>
-                )}
-                <div
-                  className="titles-output"
-                  style={{ maxHeight: "500px" }}
-                  ref={optimizationOutputRef}
-                >
-                  <div className="titles-output-content">
-                    {optimizationLogs.map((log, index) => (
-                      <div key={index} className="output-line">
-                        {log}
-                      </div>
-                    ))}
-                    {isOptimizationRunning && (
-                      <div
-                        className="output-line"
-                        style={{ marginTop: "0.5rem", color: "#4ade80" }}
-                      >
-                        ⏳ Running...
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </>
-            )}
           </div>
         </div>
 
@@ -1673,7 +1488,8 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
                   marginTop: "1rem",
                   marginBottom: "2rem",
                   padding: "1rem 1.5rem",
-                  background: "linear-gradient(135deg, rgba(220, 38, 38, 0.15) 0%, rgba(153, 27, 27, 0.15) 100%)",
+                  background:
+                    "linear-gradient(135deg, rgba(220, 38, 38, 0.15) 0%, rgba(153, 27, 27, 0.15) 100%)",
                   border: "2px solid rgba(220, 38, 38, 0.5)",
                   borderRadius: "8px",
                   display: "flex",
@@ -1698,6 +1514,239 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
                     Make sure you know what you're doing!
                   </div>
                 </div>
+              </div>
+
+              {/* Force Regenerate All Titles */}
+              <div className="openai-section" style={{ marginBottom: "2rem" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginBottom: "0.75rem",
+                  }}
+                >
+                  <label className="openai-section-label">REGENERATE ALL TITLES</label>
+                  <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+                    {!generatingTitles ? (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (
+                            confirm(
+                              "⚠️ This will regenerate ALL image titles and overwrite any custom titles you have set. This action cannot be undone.\n\nAre you sure you want to continue?"
+                            )
+                          ) {
+                            handleGenerateTitles();
+                          }
+                        }}
+                        disabled={!config.openai?.apiKey}
+                        className="btn-force-regenerate"
+                      >
+                        Force Regenerate All
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={handleStopTitles}
+                        className="btn-force-regenerate"
+                        style={{
+                          backgroundColor: "#dc2626",
+                          borderColor: "#dc2626",
+                        }}
+                      >
+                        Stop
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {generatingTitles && (
+                  <>
+                    <div style={{ marginTop: "1rem" }}>
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          marginBottom: "0.5rem",
+                          fontSize: "0.9rem",
+                        }}
+                      >
+                        <span style={{ color: "#9ca3af" }}>Progress</span>
+                        <span
+                          style={{ color: "var(--primary-color)", fontWeight: 600 }}
+                        >
+                          {titlesProgress}%
+                        </span>
+                      </div>
+                      <div
+                        style={{
+                          width: "100%",
+                          height: "8px",
+                          backgroundColor: "rgba(255, 255, 255, 0.1)",
+                          borderRadius: "4px",
+                          overflow: "hidden",
+                        }}
+                      >
+                        <div
+                          style={{
+                            height: "100%",
+                            width: `${titlesProgress}%`,
+                            backgroundColor: "var(--primary-color)",
+                            transition: "width 0.3s ease",
+                            borderRadius: "4px",
+                          }}
+                        />
+                      </div>
+                    </div>
+                    <div
+                      className="titles-output"
+                      style={{ maxHeight: "500px" }}
+                      ref={titlesOutputRef}
+                    >
+                      <div className="titles-output-content">
+                        {titlesOutput.map((line, index) => (
+                          <div key={index} className="output-line">
+                            {line}
+                          </div>
+                        ))}
+                        {titlesOutput.length === 0 && (
+                          <div className="output-line">
+                            Starting AI title generation...
+                          </div>
+                        )}
+                        {generatingTitles && (
+                          <div
+                            className="output-line"
+                            style={{
+                              marginTop: "0.5rem",
+                              color: titlesWaiting !== null ? "#fbbf24" : "#4ade80",
+                            }}
+                          >
+                            ⏳{" "}
+                            {titlesWaiting !== null
+                              ? `Waiting... ${titlesWaiting}s`
+                              : "Running..."}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+
+              {/* Force Regenerate All Images */}
+              <div className="openai-section" style={{ marginBottom: "2rem" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginBottom: "0.75rem",
+                  }}
+                >
+                  <label className="openai-section-label">REGENERATE ALL IMAGES</label>
+                  <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+                    {!isOptimizationRunning ? (
+                      <button
+                        type="button"
+                        onClick={() => handleRunOptimization(true)}
+                        className="btn-force-regenerate"
+                      >
+                        Force Regenerate All
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={handleStopOptimization}
+                        className="btn-force-regenerate"
+                        style={{
+                          backgroundColor: "#dc2626",
+                          borderColor: "#dc2626",
+                        }}
+                      >
+                        Stop
+                      </button>
+                    )}
+                    {optimizationComplete && !isOptimizationRunning && (
+                      <span
+                        style={{
+                          color: "var(--primary-color)",
+                          fontSize: "1.5rem",
+                        }}
+                      >
+                        ✓
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                {optimizationLogs.length > 0 && (
+                  <>
+                    {isOptimizationRunning && (
+                      <div style={{ marginTop: "1rem" }}>
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            marginBottom: "0.5rem",
+                            fontSize: "0.9rem",
+                          }}
+                        >
+                          <span style={{ color: "#9ca3af" }}>Progress</span>
+                          <span
+                            style={{
+                              color: "var(--primary-color)",
+                              fontWeight: 600,
+                            }}
+                          >
+                            {optimizationProgress}%
+                          </span>
+                        </div>
+                        <div
+                          style={{
+                            width: "100%",
+                            height: "8px",
+                            backgroundColor: "rgba(255, 255, 255, 0.1)",
+                            borderRadius: "4px",
+                            overflow: "hidden",
+                          }}
+                        >
+                          <div
+                            style={{
+                              height: "100%",
+                              width: `${optimizationProgress}%`,
+                              backgroundColor: "var(--primary-color)",
+                              transition: "width 0.3s ease",
+                              borderRadius: "4px",
+                            }}
+                          />
+                        </div>
+                      </div>
+                    )}
+                    <div
+                      className="titles-output"
+                      style={{ maxHeight: "500px" }}
+                      ref={optimizationOutputRef}
+                    >
+                      <div className="titles-output-content">
+                        {optimizationLogs.map((log, index) => (
+                          <div key={index} className="output-line">
+                            {log}
+                          </div>
+                        ))}
+                        {isOptimizationRunning && (
+                          <div
+                            className="output-line"
+                            style={{ marginTop: "0.5rem", color: "#4ade80" }}
+                          >
+                            ⏳ Running...
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
 
               {/* Backend Settings */}
