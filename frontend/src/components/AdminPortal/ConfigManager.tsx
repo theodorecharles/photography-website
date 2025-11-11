@@ -3,10 +3,10 @@
  * Manages all configuration settings from config.json
  */
 
-import { useState, useEffect, useRef } from 'react';
-import './ConfigManager.css';
+import { useState, useEffect, useRef } from "react";
+import "./ConfigManager.css";
 
-const API_URL = import.meta.env.VITE_API_URL || '';
+const API_URL = import.meta.env.VITE_API_URL || "";
 
 interface EnvironmentConfig {
   frontend: {
@@ -21,9 +21,9 @@ interface EnvironmentConfig {
   optimization: {
     concurrency: number;
     images: {
-      thumbnail: { quality: number; maxDimension: number; };
-      modal: { quality: number; maxDimension: number; };
-      download: { quality: number; maxDimension: number; };
+      thumbnail: { quality: number; maxDimension: number };
+      modal: { quality: number; maxDimension: number };
+      download: { quality: number; maxDimension: number };
     };
   };
   security: {
@@ -70,7 +70,7 @@ interface ConfigData {
 }
 
 interface ConfigManagerProps {
-  setMessage: (message: { type: 'success' | 'error'; text: string }) => void;
+  setMessage: (message: { type: "success" | "error"; text: string }) => void;
 }
 
 const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
@@ -89,7 +89,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [restartingBackend, setRestartingBackend] = useState(false);
   const [restartingFrontend, setRestartingFrontend] = useState(false);
-  
+
   // Refs for auto-scroll and scroll-into-view
   const optimizationOutputRef = useRef<HTMLDivElement>(null);
   const titlesOutputRef = useRef<HTMLDivElement>(null);
@@ -99,29 +99,29 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
     loadConfig();
     checkForRunningJobs();
   }, []);
-  
+
   // Check for running jobs on mount and reconnect if needed
   const checkForRunningJobs = async () => {
     try {
       // Check AI titles job
       const titlesRes = await fetch(`${API_URL}/api/ai-titles/status`, {
-        credentials: 'include'
+        credentials: "include",
       });
       if (titlesRes.ok) {
         const titlesStatus = await titlesRes.json();
         if (titlesStatus.running && !titlesStatus.isComplete) {
-          console.log('Reconnecting to AI titles job...');
+          console.log("Reconnecting to AI titles job...");
           setGeneratingTitles(true);
-          
+
           // Parse stored output
           const parsedOutput: string[] = [];
           for (const item of titlesStatus.output || []) {
             try {
               const parsed = JSON.parse(item);
-              if (parsed.type === 'progress') {
+              if (parsed.type === "progress") {
                 setTitlesProgress(parsed.percent);
                 parsedOutput.push(parsed.message);
-              } else if (parsed.type === 'waiting') {
+              } else if (parsed.type === "waiting") {
                 setTitlesWaiting(parsed.seconds);
               }
             } catch {
@@ -129,31 +129,31 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
             }
           }
           setTitlesOutput(parsedOutput);
-          
+
           // Reconnect to the SSE stream
           reconnectToTitlesJob();
         }
       }
-      
+
       // Check optimization job
       const optRes = await fetch(`${API_URL}/api/image-optimization/status`, {
-        credentials: 'include'
+        credentials: "include",
       });
       if (optRes.ok) {
         const optStatus = await optRes.json();
         if (optStatus.running && !optStatus.isComplete) {
-          console.log('Reconnecting to optimization job...');
+          console.log("Reconnecting to optimization job...");
           setIsOptimizationRunning(true);
-          
+
           // Parse stored output
           const parsedOutput: string[] = [];
           for (const item of optStatus.output || []) {
             try {
               const parsed = JSON.parse(item);
-              if (parsed.type === 'progress') {
+              if (parsed.type === "progress") {
                 setOptimizationProgress(parsed.percent);
                 parsedOutput.push(parsed.message);
-              } else if (parsed.type === 'stdout' || parsed.type === 'stderr') {
+              } else if (parsed.type === "stdout" || parsed.type === "stderr") {
                 parsedOutput.push(parsed.message);
               }
             } catch {
@@ -161,68 +161,71 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
             }
           }
           setOptimizationLogs(parsedOutput);
-          
+
           // Reconnect to the SSE stream
           reconnectToOptimizationJob();
         }
       }
     } catch (err) {
-      console.error('Error checking for running jobs:', err);
+      console.error("Error checking for running jobs:", err);
     }
   };
-  
+
   // Reconnect to AI titles SSE stream
   const reconnectToTitlesJob = async () => {
     // Create new abort controller for this reconnection
     const controller = new AbortController();
     titlesAbortController.current = controller;
-    
+
     try {
       const res = await fetch(`${API_URL}/api/ai-titles/generate`, {
-        method: 'POST',
-        credentials: 'include',
+        method: "POST",
+        credentials: "include",
         signal: controller.signal,
       });
 
       if (!res.ok) {
-        throw new Error('Failed to reconnect to AI title generation');
+        throw new Error("Failed to reconnect to AI title generation");
       }
 
       const reader = res.body?.getReader();
       const decoder = new TextDecoder();
 
       if (!reader) {
-        throw new Error('No response body');
+        throw new Error("No response body");
       }
 
       while (true) {
         const { done, value } = await reader.read();
-        
+
         if (done) break;
 
         const chunk = decoder.decode(value);
-        const lines = chunk.split('\n');
+        const lines = chunk.split("\n");
 
         for (const line of lines) {
-          if (line.startsWith('data: ')) {
+          if (line.startsWith("data: ")) {
             const data = line.substring(6);
-            
-            if (data === '__COMPLETE__') {
-              setMessage({ type: 'success', text: 'AI title generation completed successfully!' });
+
+            if (data === "__COMPLETE__") {
+              setMessage({
+                type: "success",
+                text: "AI title generation completed successfully!",
+              });
               setGeneratingTitles(false);
               titlesAbortController.current = null;
-            } else if (data.startsWith('__ERROR__')) {
-              setMessage({ type: 'error', text: data.substring(10) });
+            } else if (data.startsWith("__ERROR__")) {
+              setMessage({ type: "error", text: data.substring(10) });
               setGeneratingTitles(false);
               titlesAbortController.current = null;
             } else {
               try {
                 const parsed = JSON.parse(data);
-                if (parsed.type === 'progress') {
+                if (parsed.type === "progress") {
                   setTitlesProgress(parsed.percent);
                   setTitlesWaiting(null);
                   setTitlesOutput((prev) => [...prev, parsed.message]);
-                } else if (parsed.type === 'waiting') {
+                } else if (parsed.type === "waiting") {
                   setTitlesWaiting(parsed.seconds);
                 } else {
                   setTitlesOutput((prev) => [...prev, data]);
@@ -235,29 +238,29 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
         }
       }
     } catch (err: any) {
-      if (err.name === 'AbortError') {
-        console.log('AI titles job stopped by user');
+      if (err.name === "AbortError") {
+        console.log("AI titles job stopped by user");
         setGeneratingTitles(false);
         titlesAbortController.current = null;
       } else {
-        console.error('Failed to reconnect to titles job:', err);
+        console.error("Failed to reconnect to titles job:", err);
         setGeneratingTitles(false);
         titlesAbortController.current = null;
       }
     }
   };
-  
+
   // Reconnect to optimization SSE stream
   const reconnectToOptimizationJob = async () => {
     // Create new abort controller for this reconnection
     const controller = new AbortController();
     optimizationAbortController.current = controller;
-    
+
     try {
       const res = await fetch(`${API_URL}/api/image-optimization/optimize`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ force: true }),
         signal: controller.signal,
       });
@@ -270,56 +273,56 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
 
       const reader = res.body?.getReader();
       const decoder = new TextDecoder();
-      
+
       if (!reader) {
         setIsOptimizationRunning(false);
         optimizationAbortController.current = null;
         return;
       }
 
-      let buffer = '';
-      
+      let buffer = "";
+
       while (true) {
         const { done, value } = await reader.read();
-        
+
         if (done) break;
-        
+
         buffer += decoder.decode(value, { stream: true });
-        const lines = buffer.split('\n');
-        buffer = lines.pop() || '';
-        
+        const lines = buffer.split("\n");
+        buffer = lines.pop() || "";
+
         for (const line of lines) {
-          if (line.startsWith('data: ')) {
+          if (line.startsWith("data: ")) {
             try {
               const data = JSON.parse(line.slice(6));
-              
-              if (data.type === 'progress') {
+
+              if (data.type === "progress") {
                 setOptimizationProgress(data.percent);
-                setOptimizationLogs(prev => [...prev, data.message]);
-              } else if (data.type === 'stdout' || data.type === 'stderr') {
-                setOptimizationLogs(prev => [...prev, data.message]);
-              } else if (data.type === 'complete') {
+                setOptimizationLogs((prev) => [...prev, data.message]);
+              } else if (data.type === "stdout" || data.type === "stderr") {
+                setOptimizationLogs((prev) => [...prev, data.message]);
+              } else if (data.type === "complete") {
                 setOptimizationComplete(true);
                 setIsOptimizationRunning(false);
                 optimizationAbortController.current = null;
-              } else if (data.type === 'error') {
-                setMessage({ type: 'error', text: data.message });
+              } else if (data.type === "error") {
+                setMessage({ type: "error", text: data.message });
                 setIsOptimizationRunning(false);
                 optimizationAbortController.current = null;
               }
             } catch (e) {
-              console.error('Failed to parse SSE data:', e);
+              console.error("Failed to parse SSE data:", e);
             }
           }
         }
       }
     } catch (err: any) {
-      if (err.name === 'AbortError') {
-        console.log('Optimization job stopped by user');
+      if (err.name === "AbortError") {
+        console.log("Optimization job stopped by user");
         setIsOptimizationRunning(false);
         optimizationAbortController.current = null;
       } else {
-        console.error('Failed to reconnect to optimization job:', err);
+        console.error("Failed to reconnect to optimization job:", err);
         setIsOptimizationRunning(false);
         optimizationAbortController.current = null;
       }
@@ -331,7 +334,8 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
     if (optimizationOutputRef.current && isOptimizationRunning) {
       setTimeout(() => {
         if (optimizationOutputRef.current) {
-          optimizationOutputRef.current.scrollTop = optimizationOutputRef.current.scrollHeight;
+          optimizationOutputRef.current.scrollTop =
+            optimizationOutputRef.current.scrollHeight;
         }
       }, 0);
     }
@@ -342,7 +346,8 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
     if (titlesOutputRef.current && generatingTitles) {
       setTimeout(() => {
         if (titlesOutputRef.current) {
-          titlesOutputRef.current.scrollTop = titlesOutputRef.current.scrollHeight;
+          titlesOutputRef.current.scrollTop =
+            titlesOutputRef.current.scrollHeight;
         }
       }, 0);
     }
@@ -351,19 +356,19 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
   const loadConfig = async () => {
     try {
       const res = await fetch(`${API_URL}/api/config`, {
-        credentials: 'include',
+        credentials: "include",
       });
-      
+
       if (res.ok) {
         const data = await res.json();
         setConfig(data);
         setOriginalConfig(JSON.parse(JSON.stringify(data))); // Deep clone
       } else {
-        setMessage({ type: 'error', text: 'Failed to load configuration' });
+        setMessage({ type: "error", text: "Failed to load configuration" });
       }
     } catch (err) {
-      console.error('Failed to load config:', err);
-      setMessage({ type: 'error', text: 'Failed to load configuration' });
+      console.error("Failed to load config:", err);
+      setMessage({ type: "error", text: "Failed to load configuration" });
     } finally {
       setLoading(false);
     }
@@ -373,25 +378,40 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
     if (!config || !originalConfig) return false;
 
     switch (sectionName) {
-      case 'OpenAI':
+      case "OpenAI":
         // Only check API key, not the auto-generate toggle (which auto-saves)
         return config.openai?.apiKey !== originalConfig.openai?.apiKey;
-      
-      case 'Image Optimization':
-        return JSON.stringify(config.environment.optimization) !== JSON.stringify(originalConfig.environment.optimization);
-      
-      case 'Backend':
-        return JSON.stringify(config.environment.backend) !== JSON.stringify(originalConfig.environment.backend);
-      
-      case 'Frontend':
-        return JSON.stringify(config.environment.frontend) !== JSON.stringify(originalConfig.environment.frontend);
-      
-      case 'Security':
-        return JSON.stringify(config.environment.security) !== JSON.stringify(originalConfig.environment.security);
-      
-      case 'Authentication':
-        return JSON.stringify(config.environment.auth) !== JSON.stringify(originalConfig.environment.auth);
-      
+
+      case "Image Optimization":
+        return (
+          JSON.stringify(config.environment.optimization) !==
+          JSON.stringify(originalConfig.environment.optimization)
+        );
+
+      case "Backend":
+        return (
+          JSON.stringify(config.environment.backend) !==
+          JSON.stringify(originalConfig.environment.backend)
+        );
+
+      case "Frontend":
+        return (
+          JSON.stringify(config.environment.frontend) !==
+          JSON.stringify(originalConfig.environment.frontend)
+        );
+
+      case "Security":
+        return (
+          JSON.stringify(config.environment.security) !==
+          JSON.stringify(originalConfig.environment.security)
+        );
+
+      case "Authentication":
+        return (
+          JSON.stringify(config.environment.auth) !==
+          JSON.stringify(originalConfig.environment.auth)
+        );
+
       default:
         return false;
     }
@@ -399,31 +419,37 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
 
   const handleSaveSection = async (sectionName: string) => {
     if (!config) return;
-    
+
     setSavingSection(sectionName);
-    
+
     try {
       const res = await fetch(`${API_URL}/api/config`, {
-        method: 'PUT',
+        method: "PUT",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        credentials: 'include',
+        credentials: "include",
         body: JSON.stringify(config),
       });
 
       if (res.ok) {
-        setMessage({ type: 'success', text: `${sectionName} settings saved!` });
+        setMessage({ type: "success", text: `${sectionName} settings saved!` });
         // Update original config after successful save
         setOriginalConfig(JSON.parse(JSON.stringify(config)));
       } else {
-        const errorData = await res.json().catch(() => ({ error: 'Unknown error' }));
-        setMessage({ type: 'error', text: errorData.error || 'Failed to save configuration' });
+        const errorData = await res
+          .json()
+          .catch(() => ({ error: "Unknown error" }));
+        setMessage({
+          type: "error",
+          text: errorData.error || "Failed to save configuration",
+        });
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Error saving configuration';
-      setMessage({ type: 'error', text: errorMessage });
-      console.error('Failed to save config:', err);
+      const errorMessage =
+        err instanceof Error ? err.message : "Error saving configuration";
+      setMessage({ type: "error", text: errorMessage });
+      console.error("Failed to save config:", err);
     } finally {
       setSavingSection(null);
     }
@@ -437,28 +463,28 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
     try {
       // Call backend to kill the process
       await fetch(`${API_URL}/api/ai-titles/stop`, {
-        method: 'POST',
-        credentials: 'include',
+        method: "POST",
+        credentials: "include",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       });
-      
+
       // Abort the SSE connection
       if (titlesAbortController.current) {
         titlesAbortController.current.abort();
         titlesAbortController.current = null;
       }
-      
+
       // Clear output and reset state
       setGeneratingTitles(false);
       setTitlesOutput([]);
       setTitlesProgress(0);
       setTitlesWaiting(null);
-      setMessage({ type: 'success', text: 'AI title generation stopped' });
+      setMessage({ type: "success", text: "AI title generation stopped" });
     } catch (err) {
-      console.error('Failed to stop AI titles job:', err);
-      setMessage({ type: 'error', text: 'Failed to stop AI titles job' });
+      console.error("Failed to stop AI titles job:", err);
+      setMessage({ type: "error", text: "Failed to stop AI titles job" });
     }
   };
 
@@ -466,28 +492,28 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
     try {
       // Call backend to kill the process
       await fetch(`${API_URL}/api/image-optimization/stop`, {
-        method: 'POST',
-        credentials: 'include',
+        method: "POST",
+        credentials: "include",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       });
-      
+
       // Abort the SSE connection
       if (optimizationAbortController.current) {
         optimizationAbortController.current.abort();
         optimizationAbortController.current = null;
       }
-      
+
       // Clear output and reset state
       setIsOptimizationRunning(false);
       setOptimizationLogs([]);
       setOptimizationProgress(0);
       setOptimizationComplete(false);
-      setMessage({ type: 'success', text: 'Optimization job stopped' });
+      setMessage({ type: "success", text: "Optimization job stopped" });
     } catch (err) {
-      console.error('Failed to stop optimization job:', err);
-      setMessage({ type: 'error', text: 'Failed to stop optimization job' });
+      console.error("Failed to stop optimization job:", err);
+      setMessage({ type: "error", text: "Failed to stop optimization job" });
     }
   };
 
@@ -501,8 +527,9 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
       if (titlesOutputRef.current) {
         const yOffset = -100; // Offset to account for header
         const element = titlesOutputRef.current;
-        const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
-        window.scrollTo({ top: y, behavior: 'smooth' });
+        const y =
+          element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+        window.scrollTo({ top: y, behavior: "smooth" });
       }
     }, 100);
 
@@ -511,51 +538,54 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
       titlesAbortController.current = abortController;
 
       const res = await fetch(`${API_URL}/api/ai-titles/generate`, {
-        method: 'POST',
-        credentials: 'include',
+        method: "POST",
+        credentials: "include",
         signal: abortController.signal,
       });
 
       if (!res.ok) {
-        throw new Error('Failed to start AI title generation');
+        throw new Error("Failed to start AI title generation");
       }
 
       const reader = res.body?.getReader();
       const decoder = new TextDecoder();
 
       if (!reader) {
-        throw new Error('No response body');
+        throw new Error("No response body");
       }
 
       while (true) {
         const { done, value } = await reader.read();
-        
+
         if (done) break;
 
         const chunk = decoder.decode(value);
-        const lines = chunk.split('\n');
+        const lines = chunk.split("\n");
 
         for (const line of lines) {
-          if (line.startsWith('data: ')) {
+          if (line.startsWith("data: ")) {
             const data = line.substring(6);
-            
-            if (data === '__COMPLETE__') {
-              setMessage({ type: 'success', text: 'AI title generation completed successfully!' });
+
+            if (data === "__COMPLETE__") {
+              setMessage({
+                type: "success",
+                text: "AI title generation completed successfully!",
+              });
               setGeneratingTitles(false);
               titlesAbortController.current = null;
-            } else if (data.startsWith('__ERROR__')) {
-              setMessage({ type: 'error', text: data.substring(10) });
+            } else if (data.startsWith("__ERROR__")) {
+              setMessage({ type: "error", text: data.substring(10) });
               setGeneratingTitles(false);
               titlesAbortController.current = null;
             } else {
               // Try to parse JSON progress data
               try {
                 const parsed = JSON.parse(data);
-                if (parsed.type === 'progress') {
+                if (parsed.type === "progress") {
                   setTitlesProgress(parsed.percent);
                   setTitlesWaiting(null);
                   setTitlesOutput((prev) => [...prev, parsed.message]);
-                } else if (parsed.type === 'waiting') {
+                } else if (parsed.type === "waiting") {
                   setTitlesWaiting(parsed.seconds);
                 } else {
                   setTitlesOutput((prev) => [...prev, data]);
@@ -569,44 +599,55 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
         }
       }
     } catch (err) {
-      if (err instanceof Error && err.name === 'AbortError') {
+      if (err instanceof Error && err.name === "AbortError") {
         // User cancelled, message already set
         return;
       }
-      const errorMessage = err instanceof Error ? err.message : 'Error generating titles';
-      setMessage({ type: 'error', text: errorMessage });
-      console.error('Failed to generate titles:', err);
+      const errorMessage =
+        err instanceof Error ? err.message : "Error generating titles";
+      setMessage({ type: "error", text: errorMessage });
+      console.error("Failed to generate titles:", err);
       setGeneratingTitles(false);
       titlesAbortController.current = null;
     }
   };
 
   const handleRestartBackend = async () => {
-    if (!confirm('⚠️ Restart the backend server? This will temporarily disconnect all users.')) return;
+    if (
+      !confirm(
+        "⚠️ Restart the backend server? This will temporarily disconnect all users."
+      )
+    )
+      return;
 
     setRestartingBackend(true);
 
     try {
       const res = await fetch(`${API_URL}/api/system/restart/backend`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
       });
 
       if (res.ok) {
-        setMessage({ 
-          type: 'success', 
-          text: 'Backend server restarting... Please wait 5-10 seconds and refresh the page.' 
+        setMessage({
+          type: "success",
+          text: "Backend server restarting... Please wait 5-10 seconds and refresh the page.",
         });
       } else {
-        const errorData = await res.json().catch(() => ({ error: 'Unknown error' }));
-        setMessage({ type: 'error', text: errorData.error || 'Failed to restart backend' });
+        const errorData = await res
+          .json()
+          .catch(() => ({ error: "Unknown error" }));
+        setMessage({
+          type: "error",
+          text: errorData.error || "Failed to restart backend",
+        });
       }
     } catch (err) {
       // Expected error since server is restarting
-      setMessage({ 
-        type: 'success', 
-        text: 'Backend server restarting... Please wait 5-10 seconds and refresh the page.' 
+      setMessage({
+        type: "success",
+        text: "Backend server restarting... Please wait 5-10 seconds and refresh the page.",
       });
     } finally {
       setRestartingBackend(false);
@@ -614,34 +655,52 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
   };
 
   const handleRestartFrontend = async () => {
-    if (!confirm('⚠️ Restart the frontend server? This requires manual restart if in development mode.')) return;
+    if (
+      !confirm(
+        "⚠️ Restart the frontend server? This requires manual restart if in development mode."
+      )
+    )
+      return;
 
     setRestartingFrontend(true);
 
     try {
       const res = await fetch(`${API_URL}/api/system/restart/frontend`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
       });
 
       if (res.ok) {
         const data = await res.json();
-        setMessage({ type: 'success', text: data.message });
+        setMessage({ type: "success", text: data.message });
       } else {
-        const errorData = await res.json().catch(() => ({ error: 'Unknown error' }));
-        setMessage({ type: 'error', text: errorData.error || 'Failed to restart frontend' });
+        const errorData = await res
+          .json()
+          .catch(() => ({ error: "Unknown error" }));
+        setMessage({
+          type: "error",
+          text: errorData.error || "Failed to restart frontend",
+        });
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Network error occurred';
-      setMessage({ type: 'error', text: errorMessage });
+      const errorMessage =
+        err instanceof Error ? err.message : "Network error occurred";
+      setMessage({ type: "error", text: errorMessage });
     } finally {
       setRestartingFrontend(false);
     }
   };
 
   const handleRunOptimization = async (force: boolean = false) => {
-    if (!confirm(force ? 'Force regenerate ALL images? This will take a while.' : 'Run image optimization on all photos?')) return;
+    if (
+      !confirm(
+        force
+          ? "Force regenerate ALL images? This will take a while."
+          : "Run image optimization on all photos?"
+      )
+    )
+      return;
 
     setIsOptimizationRunning(true);
     setOptimizationComplete(false);
@@ -653,8 +712,9 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
       if (regenerateButtonRef.current) {
         const yOffset = -100; // Offset to account for header
         const element = regenerateButtonRef.current;
-        const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
-        window.scrollTo({ top: y, behavior: 'smooth' });
+        const y =
+          element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+        window.scrollTo({ top: y, behavior: "smooth" });
       }
     }, 100);
 
@@ -663,22 +723,25 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
       optimizationAbortController.current = abortController;
 
       const res = await fetch(`${API_URL}/api/image-optimization/optimize`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ force }),
         signal: abortController.signal,
       });
 
       if (!res.ok) {
-        let errorMessage = 'Failed to start optimization';
+        let errorMessage = "Failed to start optimization";
         try {
           const errorData = await res.json();
           errorMessage = errorData.error || errorMessage;
         } catch (e) {
           // If response isn't JSON, use default message
         }
-        setMessage({ type: 'error', text: `${errorMessage} (Status: ${res.status})` });
+        setMessage({
+          type: "error",
+          text: `${errorMessage} (Status: ${res.status})`,
+        });
         setIsOptimizationRunning(false);
         optimizationAbortController.current = null;
         return;
@@ -687,65 +750,70 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
       // Parse SSE stream
       const reader = res.body?.getReader();
       const decoder = new TextDecoder();
-      
+
       if (!reader) {
-        setMessage({ type: 'error', text: 'Failed to read response stream' });
+        setMessage({ type: "error", text: "Failed to read response stream" });
         setIsOptimizationRunning(false);
         return;
       }
 
-      let buffer = '';
-      
+      let buffer = "";
+
       while (true) {
         const { done, value } = await reader.read();
-        
+
         if (done) break;
-        
+
         buffer += decoder.decode(value, { stream: true });
-        const lines = buffer.split('\n');
-        buffer = lines.pop() || ''; // Keep incomplete line in buffer
-        
+        const lines = buffer.split("\n");
+        buffer = lines.pop() || ""; // Keep incomplete line in buffer
+
         for (const line of lines) {
-          if (line.startsWith('data: ')) {
+          if (line.startsWith("data: ")) {
             try {
               const data = JSON.parse(line.slice(6));
-              
-              if (data.type === 'progress') {
+
+              if (data.type === "progress") {
                 setOptimizationProgress(data.percent);
-                setOptimizationLogs(prev => [...prev, data.message]);
-              } else if (data.type === 'stdout' || data.type === 'stderr') {
-                setOptimizationLogs(prev => [...prev, data.message]);
-              } else if (data.type === 'complete') {
+                setOptimizationLogs((prev) => [...prev, data.message]);
+              } else if (data.type === "stdout" || data.type === "stderr") {
+                setOptimizationLogs((prev) => [...prev, data.message]);
+              } else if (data.type === "complete") {
                 // Only mark as complete and show final message for the last completion
                 // (AI title generation is the final step)
-                if (data.message.includes('AI title generation')) {
+                if (data.message.includes("AI title generation")) {
                   setOptimizationComplete(true);
                   // Filter out "Generating" entries when complete
-                  setOptimizationLogs(prev => prev.filter(log => !log.startsWith('Generating')));
-                  setMessage({ 
-                    type: data.exitCode === 0 ? 'success' : 'error', 
-                    text: data.exitCode === 0 ? 'Optimization and AI title generation completed!' : 'AI title generation failed' 
+                  setOptimizationLogs((prev) =>
+                    prev.filter((log) => !log.startsWith("Generating"))
+                  );
+                  setMessage({
+                    type: data.exitCode === 0 ? "success" : "error",
+                    text:
+                      data.exitCode === 0
+                        ? "Optimization and AI title generation completed!"
+                        : "AI title generation failed",
                   });
                 } else {
                   // This is the intermediate optimization completion message
-                  setOptimizationLogs(prev => [...prev, data.message]);
+                  setOptimizationLogs((prev) => [...prev, data.message]);
                 }
-              } else if (data.type === 'error') {
-                setMessage({ type: 'error', text: data.message });
+              } else if (data.type === "error") {
+                setMessage({ type: "error", text: data.message });
               }
             } catch (e) {
-              console.error('Failed to parse SSE data:', e);
+              console.error("Failed to parse SSE data:", e);
             }
           }
         }
       }
     } catch (err) {
-      if (err instanceof Error && err.name === 'AbortError') {
+      if (err instanceof Error && err.name === "AbortError") {
         // User cancelled, message already set
         return;
       }
-      console.error('Optimization error:', err);
-      setMessage({ type: 'error', text: 'Network error occurred' });
+      console.error("Optimization error:", err);
+      setMessage({ type: "error", text: "Network error occurred" });
     } finally {
       setIsOptimizationRunning(false);
       optimizationAbortController.current = null;
@@ -754,15 +822,15 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
 
   const updateConfig = (path: string[], value: any) => {
     if (!config) return;
-    
+
     const newConfig = { ...config };
     let current: any = newConfig;
-    
+
     for (let i = 0; i < path.length - 1; i++) {
       current[path[i]] = { ...current[path[i]] };
       current = current[path[i]];
     }
-    
+
     current[path[path.length - 1]] = value;
     setConfig(newConfig);
   };
@@ -770,42 +838,45 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
   // Auto-save handler for AI toggle (like published toggle for albums)
   const handleToggleAutoAI = async () => {
     if (!config) return;
-    
+
     const newValue = !(config.ai?.autoGenerateTitlesOnUpload || false);
-    
+
     // Optimistically update UI
     const newConfig = {
       ...config,
       ai: {
         ...config.ai,
-        autoGenerateTitlesOnUpload: newValue
-      }
+        autoGenerateTitlesOnUpload: newValue,
+      },
     };
     setConfig(newConfig);
-    
+
     try {
       const res = await fetch(`${API_URL}/api/config`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify(newConfig),
       });
 
       if (res.ok) {
         // Update original config to match
         setOriginalConfig(JSON.parse(JSON.stringify(newConfig)));
-        setMessage({ 
-          type: 'success', 
-          text: `Auto-generate AI titles ${newValue ? 'enabled' : 'disabled'}` 
+        setMessage({
+          type: "success",
+          text: `Auto-generate AI titles ${newValue ? "enabled" : "disabled"}`,
         });
       } else {
         const error = await res.json();
-        setMessage({ type: 'error', text: error.error || 'Failed to update setting' });
+        setMessage({
+          type: "error",
+          text: error.error || "Failed to update setting",
+        });
         // Revert on error
         setConfig(config);
       }
     } catch (err) {
-      setMessage({ type: 'error', text: 'Network error occurred' });
+      setMessage({ type: "error", text: "Network error occurred" });
       // Revert on error
       setConfig(config);
     }
@@ -813,15 +884,15 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
 
   const updateArrayItem = (path: string[], index: number, value: string) => {
     if (!config) return;
-    
+
     const newConfig = { ...config };
     let current: any = newConfig;
-    
+
     for (let i = 0; i < path.length - 1; i++) {
       current[path[i]] = { ...current[path[i]] };
       current = current[path[i]];
     }
-    
+
     const array = [...current[path[path.length - 1]]];
     array[index] = value;
     current[path[path.length - 1]] = array;
@@ -830,32 +901,32 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
 
   const addArrayItem = (path: string[]) => {
     if (!config) return;
-    
+
     const newConfig = { ...config };
     let current: any = newConfig;
-    
+
     for (let i = 0; i < path.length - 1; i++) {
       current[path[i]] = { ...current[path[i]] };
       current = current[path[i]];
     }
-    
+
     const array = [...current[path[path.length - 1]]];
-    array.push('');
+    array.push("");
     current[path[path.length - 1]] = array;
     setConfig(newConfig);
   };
 
   const removeArrayItem = (path: string[], index: number) => {
     if (!config) return;
-    
+
     const newConfig = { ...config };
     let current: any = newConfig;
-    
+
     for (let i = 0; i < path.length - 1; i++) {
       current[path[i]] = { ...current[path[i]] };
       current = current[path[i]];
     }
-    
+
     const array = [...current[path[path.length - 1]]];
     array.splice(index, 1);
     current[path[path.length - 1]] = array;
@@ -886,18 +957,29 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
   return (
     <section className="admin-section">
       <h2>⚙️ Configuration</h2>
-      <p className="section-description">Manage server configuration settings</p>
-      
+      <p className="section-description">
+        Manage server configuration settings
+      </p>
+
       <div className="config-grid">
         {/* OpenAI Settings */}
         <div className="config-group full-width">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-            <h3 className="config-section-title" style={{ margin: 0 }}>OpenAI</h3>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: "0.5rem",
+            }}
+          >
+            <h3 className="config-section-title" style={{ margin: 0 }}>
+              OpenAI
+            </h3>
           </div>
           <p className="config-section-description">
             Configure OpenAI API integration for generating image titles
           </p>
-          
+
           {/* Two-column layout on desktop */}
           <div className="openai-settings-grid">
             {/* Left: API Key Section */}
@@ -905,23 +987,31 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
               <label className="openai-section-label">API KEY</label>
               <input
                 type="password"
-                value={config.openai?.apiKey || ''}
-                onChange={(e) => updateConfig(['openai', 'apiKey'], e.target.value)}
+                value={config.openai?.apiKey || ""}
+                onChange={(e) =>
+                  updateConfig(["openai", "apiKey"], e.target.value)
+                }
                 className="branding-input"
                 placeholder="sk-..."
               />
-              
+
               {/* Save/Cancel buttons */}
-              {hasUnsavedChanges('OpenAI') && (
-                <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
+              {hasUnsavedChanges("OpenAI") && (
+                <div
+                  style={{
+                    display: "flex",
+                    gap: "0.5rem",
+                    marginTop: "0.5rem",
+                  }}
+                >
                   <button
                     type="button"
-                    onClick={() => handleSaveSection('OpenAI')}
+                    onClick={() => handleSaveSection("OpenAI")}
                     disabled={savingSection !== null}
                     className="btn-primary"
                     style={{ flex: 1 }}
                   >
-                    {savingSection === 'OpenAI' ? 'Saving...' : 'Save'}
+                    {savingSection === "OpenAI" ? "Saving..." : "Save"}
                   </button>
                   <button
                     type="button"
@@ -937,78 +1027,103 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
                 </div>
               )}
             </div>
-            
+
             {/* Right: Auto-generate Toggle Section */}
             <div className="openai-section">
-              <label className="openai-section-label">Auto-generate AI Titles on Upload</label>
+              <label className="openai-section-label">
+                Auto-generate AI Titles on Upload
+              </label>
               <div className="ai-toggle-container">
                 <div className="ai-toggle-controls">
                   <button
                     type="button"
                     onClick={handleToggleAutoAI}
-                    className={`toggle-button ${config.ai?.autoGenerateTitlesOnUpload ? 'active' : ''}`}
+                    className={`toggle-button ${
+                      config.ai?.autoGenerateTitlesOnUpload ? "active" : ""
+                    }`}
                     style={{
-                      width: '48px',
-                      height: '24px',
-                      borderRadius: '12px',
-                      border: 'none',
-                      cursor: 'pointer',
-                      position: 'relative',
-                      transition: 'background-color 0.2s',
-                      backgroundColor: config.ai?.autoGenerateTitlesOnUpload ? 'var(--primary-color)' : 'rgba(255, 255, 255, 0.1)',
-                      flexShrink: 0
+                      width: "48px",
+                      height: "24px",
+                      borderRadius: "12px",
+                      border: "none",
+                      cursor: "pointer",
+                      position: "relative",
+                      transition: "background-color 0.2s",
+                      backgroundColor: config.ai?.autoGenerateTitlesOnUpload
+                        ? "var(--primary-color)"
+                        : "rgba(255, 255, 255, 0.1)",
+                      flexShrink: 0,
                     }}
                   >
-                    <span style={{
-                      position: 'absolute',
-                      top: '2px',
-                      left: config.ai?.autoGenerateTitlesOnUpload ? '26px' : '2px',
-                      width: '20px',
-                      height: '20px',
-                      borderRadius: '50%',
-                      backgroundColor: 'white',
-                      transition: 'left 0.2s',
-                      boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
-                    }} />
+                    <span
+                      style={{
+                        position: "absolute",
+                        top: "2px",
+                        left: config.ai?.autoGenerateTitlesOnUpload
+                          ? "26px"
+                          : "2px",
+                        width: "20px",
+                        height: "20px",
+                        borderRadius: "50%",
+                        backgroundColor: "white",
+                        transition: "left 0.2s",
+                        boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
+                      }}
+                    />
                   </button>
-                  <span style={{ 
-                    color: config.ai?.autoGenerateTitlesOnUpload ? 'var(--primary-color)' : '#888',
-                    fontSize: '0.9rem',
-                    fontWeight: 600,
-                    flexShrink: 0
-                  }}>
-                    {config.ai?.autoGenerateTitlesOnUpload ? 'Enabled' : 'Disabled'}
+                  <span
+                    style={{
+                      color: config.ai?.autoGenerateTitlesOnUpload
+                        ? "var(--primary-color)"
+                        : "#888",
+                      fontSize: "0.9rem",
+                      fontWeight: 600,
+                      flexShrink: 0,
+                    }}
+                  >
+                    {config.ai?.autoGenerateTitlesOnUpload
+                      ? "Enabled"
+                      : "Disabled"}
                   </span>
                 </div>
               </div>
-              <p style={{ fontSize: '0.85rem', color: '#888', marginTop: '0.5rem', marginBottom: 0 }}>
-                Automatically generate AI titles for newly uploaded images after optimization completes. Saves immediately when toggled.
-              </p>
             </div>
           </div>
         </div>
 
         {/* Image Optimization Settings */}
         <div className="config-group full-width">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-            <h3 className="config-section-title" style={{ margin: 0 }}>Image Optimization</h3>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-              {hasUnsavedChanges('Image Optimization') && (
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: "0.5rem",
+            }}
+          >
+            <h3 className="config-section-title" style={{ margin: 0 }}>
+              Image Optimization
+            </h3>
+            <div
+              style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}
+            >
+              {hasUnsavedChanges("Image Optimization") && (
                 <span className="unsaved-indicator">Unsaved changes</span>
               )}
               <button
                 type="button"
-                onClick={() => handleSaveSection('Image Optimization')}
+                onClick={() => handleSaveSection("Image Optimization")}
                 disabled={savingSection !== null}
                 className="btn-primary"
-                style={{ padding: '0.5rem 1rem', fontSize: '0.9rem' }}
+                style={{ padding: "0.5rem 1rem", fontSize: "0.9rem" }}
               >
-                {savingSection === 'Image Optimization' ? 'Saving...' : 'Save'}
+                {savingSection === "Image Optimization" ? "Saving..." : "Save"}
               </button>
             </div>
           </div>
           <p className="config-section-description">
-            Control quality and dimensions for thumbnail, modal, and download versions of your images. Higher quality means larger file sizes.
+            Control quality and dimensions for thumbnail, modal, and download
+            versions of your images. Higher quality means larger file sizes.
           </p>
           <div className="config-grid-inner">
             <div className="branding-group">
@@ -1016,7 +1131,18 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
               <input
                 type="number"
                 value={config.environment.optimization.images.thumbnail.quality}
-                onChange={(e) => updateConfig(['environment', 'optimization', 'images', 'thumbnail', 'quality'], parseInt(e.target.value))}
+                onChange={(e) =>
+                  updateConfig(
+                    [
+                      "environment",
+                      "optimization",
+                      "images",
+                      "thumbnail",
+                      "quality",
+                    ],
+                    parseInt(e.target.value)
+                  )
+                }
                 className="branding-input"
                 min="1"
                 max="100"
@@ -1027,8 +1153,21 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
               <label className="branding-label">Thumbnail Max Dimension</label>
               <input
                 type="number"
-                value={config.environment.optimization.images.thumbnail.maxDimension}
-                onChange={(e) => updateConfig(['environment', 'optimization', 'images', 'thumbnail', 'maxDimension'], parseInt(e.target.value))}
+                value={
+                  config.environment.optimization.images.thumbnail.maxDimension
+                }
+                onChange={(e) =>
+                  updateConfig(
+                    [
+                      "environment",
+                      "optimization",
+                      "images",
+                      "thumbnail",
+                      "maxDimension",
+                    ],
+                    parseInt(e.target.value)
+                  )
+                }
                 className="branding-input"
               />
             </div>
@@ -1038,7 +1177,18 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
               <input
                 type="number"
                 value={config.environment.optimization.images.modal.quality}
-                onChange={(e) => updateConfig(['environment', 'optimization', 'images', 'modal', 'quality'], parseInt(e.target.value))}
+                onChange={(e) =>
+                  updateConfig(
+                    [
+                      "environment",
+                      "optimization",
+                      "images",
+                      "modal",
+                      "quality",
+                    ],
+                    parseInt(e.target.value)
+                  )
+                }
                 className="branding-input"
                 min="1"
                 max="100"
@@ -1049,8 +1199,21 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
               <label className="branding-label">Modal Max Dimension</label>
               <input
                 type="number"
-                value={config.environment.optimization.images.modal.maxDimension}
-                onChange={(e) => updateConfig(['environment', 'optimization', 'images', 'modal', 'maxDimension'], parseInt(e.target.value))}
+                value={
+                  config.environment.optimization.images.modal.maxDimension
+                }
+                onChange={(e) =>
+                  updateConfig(
+                    [
+                      "environment",
+                      "optimization",
+                      "images",
+                      "modal",
+                      "maxDimension",
+                    ],
+                    parseInt(e.target.value)
+                  )
+                }
                 className="branding-input"
               />
             </div>
@@ -1060,7 +1223,18 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
               <input
                 type="number"
                 value={config.environment.optimization.images.download.quality}
-                onChange={(e) => updateConfig(['environment', 'optimization', 'images', 'download', 'quality'], parseInt(e.target.value))}
+                onChange={(e) =>
+                  updateConfig(
+                    [
+                      "environment",
+                      "optimization",
+                      "images",
+                      "download",
+                      "quality",
+                    ],
+                    parseInt(e.target.value)
+                  )
+                }
                 className="branding-input"
                 min="1"
                 max="100"
@@ -1071,8 +1245,21 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
               <label className="branding-label">Download Max Dimension</label>
               <input
                 type="number"
-                value={config.environment.optimization.images.download.maxDimension}
-                onChange={(e) => updateConfig(['environment', 'optimization', 'images', 'download', 'maxDimension'], parseInt(e.target.value))}
+                value={
+                  config.environment.optimization.images.download.maxDimension
+                }
+                onChange={(e) =>
+                  updateConfig(
+                    [
+                      "environment",
+                      "optimization",
+                      "images",
+                      "download",
+                      "maxDimension",
+                    ],
+                    parseInt(e.target.value)
+                  )
+                }
                 className="branding-input"
               />
             </div>
@@ -1082,22 +1269,55 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
               <input
                 type="number"
                 value={config.environment.optimization.concurrency}
-                onChange={(e) => updateConfig(['environment', 'optimization', 'concurrency'], parseInt(e.target.value))}
+                onChange={(e) =>
+                  updateConfig(
+                    ["environment", "optimization", "concurrency"],
+                    parseInt(e.target.value)
+                  )
+                }
                 className="branding-input"
               />
             </div>
           </div>
 
           {/* Force Regenerate All Titles */}
-          <div style={{ marginTop: '2rem', paddingTop: '2rem', borderTop: '1px solid rgba(255, 255, 255, 0.1)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-              <h4 style={{ color: '#e5e7eb', margin: 0, fontSize: '1rem', fontWeight: 600 }}>Regenerate All Titles</h4>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <div
+            style={{
+              marginTop: "2rem",
+              paddingTop: "2rem",
+              borderTop: "1px solid rgba(255, 255, 255, 0.1)",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: "1rem",
+              }}
+            >
+              <h4
+                style={{
+                  color: "#e5e7eb",
+                  margin: 0,
+                  fontSize: "1rem",
+                  fontWeight: 600,
+                }}
+              >
+                Regenerate All Titles
+              </h4>
+              <div
+                style={{ display: "flex", alignItems: "center", gap: "1rem" }}
+              >
                 {!generatingTitles ? (
                   <button
                     type="button"
                     onClick={() => {
-                      if (confirm('⚠️ This will regenerate ALL image titles and overwrite any custom titles you have set. This action cannot be undone.\n\nAre you sure you want to continue?')) {
+                      if (
+                        confirm(
+                          "⚠️ This will regenerate ALL image titles and overwrite any custom titles you have set. This action cannot be undone.\n\nAre you sure you want to continue?"
+                        )
+                      ) {
                         handleGenerateTitles();
                       }
                     }}
@@ -1111,9 +1331,9 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
                     type="button"
                     onClick={handleStopTitles}
                     className="btn-force-regenerate"
-                    style={{ 
-                      backgroundColor: '#dc2626',
-                      borderColor: '#dc2626'
+                    style={{
+                      backgroundColor: "#dc2626",
+                      borderColor: "#dc2626",
                     }}
                   >
                     Stop
@@ -1124,38 +1344,70 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
 
             {generatingTitles && (
               <>
-                <div style={{ marginTop: '1rem' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', fontSize: '0.9rem' }}>
-                    <span style={{ color: '#9ca3af' }}>Progress</span>
-                    <span style={{ color: 'var(--primary-color)', fontWeight: 600 }}>{titlesProgress}%</span>
+                <div style={{ marginTop: "1rem" }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      marginBottom: "0.5rem",
+                      fontSize: "0.9rem",
+                    }}
+                  >
+                    <span style={{ color: "#9ca3af" }}>Progress</span>
+                    <span
+                      style={{ color: "var(--primary-color)", fontWeight: 600 }}
+                    >
+                      {titlesProgress}%
+                    </span>
                   </div>
-                  <div style={{ 
-                    width: '100%', 
-                    height: '8px', 
-                    backgroundColor: 'rgba(255, 255, 255, 0.1)', 
-                    borderRadius: '4px',
-                    overflow: 'hidden'
-                  }}>
-                    <div style={{ 
-                      height: '100%', 
-                      width: `${titlesProgress}%`, 
-                      backgroundColor: 'var(--primary-color)',
-                      transition: 'width 0.3s ease',
-                      borderRadius: '4px'
-                    }} />
+                  <div
+                    style={{
+                      width: "100%",
+                      height: "8px",
+                      backgroundColor: "rgba(255, 255, 255, 0.1)",
+                      borderRadius: "4px",
+                      overflow: "hidden",
+                    }}
+                  >
+                    <div
+                      style={{
+                        height: "100%",
+                        width: `${titlesProgress}%`,
+                        backgroundColor: "var(--primary-color)",
+                        transition: "width 0.3s ease",
+                        borderRadius: "4px",
+                      }}
+                    />
                   </div>
                 </div>
-                <div className="titles-output" style={{ maxHeight: '500px' }} ref={titlesOutputRef}>
+                <div
+                  className="titles-output"
+                  style={{ maxHeight: "500px" }}
+                  ref={titlesOutputRef}
+                >
                   <div className="titles-output-content">
                     {titlesOutput.map((line, index) => (
-                      <div key={index} className="output-line">{line}</div>
+                      <div key={index} className="output-line">
+                        {line}
+                      </div>
                     ))}
                     {titlesOutput.length === 0 && (
-                      <div className="output-line">Starting AI title generation...</div>
+                      <div className="output-line">
+                        Starting AI title generation...
+                      </div>
                     )}
                     {generatingTitles && (
-                      <div className="output-line" style={{ marginTop: '0.5rem', color: titlesWaiting !== null ? '#fbbf24' : '#4ade80' }}>
-                        ⏳ {titlesWaiting !== null ? `Waiting... ${titlesWaiting}s` : 'Running...'}
+                      <div
+                        className="output-line"
+                        style={{
+                          marginTop: "0.5rem",
+                          color: titlesWaiting !== null ? "#fbbf24" : "#4ade80",
+                        }}
+                      >
+                        ⏳{" "}
+                        {titlesWaiting !== null
+                          ? `Waiting... ${titlesWaiting}s`
+                          : "Running..."}
                       </div>
                     )}
                   </div>
@@ -1165,10 +1417,34 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
           </div>
 
           {/* Force Regenerate All Images */}
-          <div style={{ marginTop: '2rem', paddingTop: '2rem', borderTop: '1px solid rgba(255, 255, 255, 0.1)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-              <h4 style={{ color: '#e5e7eb', margin: 0, fontSize: '1rem', fontWeight: 600 }}>Regenerate All Images</h4>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <div
+            style={{
+              marginTop: "2rem",
+              paddingTop: "2rem",
+              borderTop: "1px solid rgba(255, 255, 255, 0.1)",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: "1rem",
+              }}
+            >
+              <h4
+                style={{
+                  color: "#e5e7eb",
+                  margin: 0,
+                  fontSize: "1rem",
+                  fontWeight: 600,
+                }}
+              >
+                Regenerate All Images
+              </h4>
+              <div
+                style={{ display: "flex", alignItems: "center", gap: "1rem" }}
+              >
                 {!isOptimizationRunning ? (
                   <button
                     type="button"
@@ -1182,16 +1458,23 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
                     type="button"
                     onClick={handleStopOptimization}
                     className="btn-force-regenerate"
-                    style={{ 
-                      backgroundColor: '#dc2626',
-                      borderColor: '#dc2626'
+                    style={{
+                      backgroundColor: "#dc2626",
+                      borderColor: "#dc2626",
                     }}
                   >
                     Stop
                   </button>
                 )}
                 {optimizationComplete && !isOptimizationRunning && (
-                  <span style={{ color: 'var(--primary-color)', fontSize: '1.5rem' }}>✓</span>
+                  <span
+                    style={{
+                      color: "var(--primary-color)",
+                      fontSize: "1.5rem",
+                    }}
+                  >
+                    ✓
+                  </span>
                 )}
               </div>
             </div>
@@ -1199,35 +1482,64 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
             {optimizationLogs.length > 0 && (
               <>
                 {isOptimizationRunning && (
-                  <div style={{ marginTop: '1rem' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', fontSize: '0.9rem' }}>
-                      <span style={{ color: '#9ca3af' }}>Progress</span>
-                      <span style={{ color: 'var(--primary-color)', fontWeight: 600 }}>{optimizationProgress}%</span>
+                  <div style={{ marginTop: "1rem" }}>
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        marginBottom: "0.5rem",
+                        fontSize: "0.9rem",
+                      }}
+                    >
+                      <span style={{ color: "#9ca3af" }}>Progress</span>
+                      <span
+                        style={{
+                          color: "var(--primary-color)",
+                          fontWeight: 600,
+                        }}
+                      >
+                        {optimizationProgress}%
+                      </span>
                     </div>
-                    <div style={{ 
-                      width: '100%', 
-                      height: '8px', 
-                      backgroundColor: 'rgba(255, 255, 255, 0.1)', 
-                      borderRadius: '4px',
-                      overflow: 'hidden'
-                    }}>
-                      <div style={{ 
-                        height: '100%', 
-                        width: `${optimizationProgress}%`, 
-                        backgroundColor: 'var(--primary-color)',
-                        transition: 'width 0.3s ease',
-                        borderRadius: '4px'
-                      }} />
+                    <div
+                      style={{
+                        width: "100%",
+                        height: "8px",
+                        backgroundColor: "rgba(255, 255, 255, 0.1)",
+                        borderRadius: "4px",
+                        overflow: "hidden",
+                      }}
+                    >
+                      <div
+                        style={{
+                          height: "100%",
+                          width: `${optimizationProgress}%`,
+                          backgroundColor: "var(--primary-color)",
+                          transition: "width 0.3s ease",
+                          borderRadius: "4px",
+                        }}
+                      />
                     </div>
                   </div>
                 )}
-                <div className="titles-output" style={{ maxHeight: '500px' }} ref={optimizationOutputRef}>
+                <div
+                  className="titles-output"
+                  style={{ maxHeight: "500px" }}
+                  ref={optimizationOutputRef}
+                >
                   <div className="titles-output-content">
                     {optimizationLogs.map((log, index) => (
-                      <div key={index} className="output-line">{log}</div>
+                      <div key={index} className="output-line">
+                        {log}
+                      </div>
                     ))}
                     {isOptimizationRunning && (
-                      <div className="output-line" style={{ marginTop: '0.5rem', color: '#4ade80' }}>⏳ Running...</div>
+                      <div
+                        className="output-line"
+                        style={{ marginTop: "0.5rem", color: "#4ade80" }}
+                      >
+                        ⏳ Running...
+                      </div>
                     )}
                   </div>
                 </div>
@@ -1238,54 +1550,84 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
 
         {/* Advanced Settings - Collapsible */}
         <div className="config-group full-width">
-          <div 
-            style={{ 
-              display: 'flex', 
-              justifyContent: 'space-between', 
-              alignItems: 'center', 
-              marginBottom: '0.5rem',
-              cursor: 'pointer',
-              padding: '1rem',
-              background: 'rgba(255, 255, 255, 0.02)',
-              borderRadius: '8px',
-              border: '1px solid rgba(255, 255, 255, 0.05)'
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: "0.5rem",
+              cursor: "pointer",
+              padding: "1rem",
+              background: "rgba(255, 255, 255, 0.02)",
+              borderRadius: "8px",
+              border: "1px solid rgba(255, 255, 255, 0.05)",
             }}
             onClick={() => setShowAdvanced(!showAdvanced)}
           >
             <h3 className="config-section-title" style={{ margin: 0 }}>
-              {showAdvanced ? '▼' : '▶'} Advanced Settings
+              {showAdvanced ? "▼" : "▶"} Advanced Settings
             </h3>
-            <span style={{ color: '#888', fontSize: '0.9rem' }}>
-              {showAdvanced ? 'Click to collapse' : 'Click to expand'}
+            <span style={{ color: "#888", fontSize: "0.9rem" }}>
+              {showAdvanced ? "Click to collapse" : "Click to expand"}
             </span>
           </div>
-          <p className="config-section-description" style={{ marginTop: '0.5rem' }}>
-            Backend, frontend, security, and authentication settings. ⚠️ Changing these may require a server restart.
+          <p
+            className="config-section-description"
+            style={{ marginTop: "0.5rem" }}
+          >
+            Backend, frontend, security, and authentication settings. ⚠️
+            Changing these may require a server restart.
           </p>
 
           {showAdvanced && (
             <>
               {/* Backend Settings */}
-              <div style={{ marginBottom: '2rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                  <h4 style={{ color: 'var(--primary-color)', margin: 0, fontSize: '1.1rem', fontWeight: 600 }}>Backend</h4>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                    {hasUnsavedChanges('Backend') && (
+              <div style={{ marginBottom: "2rem" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginBottom: "0.5rem",
+                  }}
+                >
+                  <h4
+                    style={{
+                      color: "var(--primary-color)",
+                      margin: 0,
+                      fontSize: "1.1rem",
+                      fontWeight: 600,
+                    }}
+                  >
+                    Backend
+                  </h4>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.75rem",
+                    }}
+                  >
+                    {hasUnsavedChanges("Backend") && (
                       <span className="unsaved-indicator">Unsaved changes</span>
                     )}
                     <button
                       type="button"
-                      onClick={(e) => { e.stopPropagation(); handleSaveSection('Backend'); }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleSaveSection("Backend");
+                      }}
                       disabled={savingSection !== null}
                       className="btn-primary"
-                      style={{ padding: '0.5rem 1rem', fontSize: '0.9rem' }}
+                      style={{ padding: "0.5rem 1rem", fontSize: "0.9rem" }}
                     >
-                      {savingSection === 'Backend' ? 'Saving...' : 'Save'}
+                      {savingSection === "Backend" ? "Saving..." : "Save"}
                     </button>
                   </div>
                 </div>
                 <p className="config-section-description">
-                  Server configuration including port, photos directory, and CORS allowed origins
+                  Server configuration including port, photos directory, and
+                  CORS allowed origins
                 </p>
                 <div className="config-grid-inner">
                   <div className="branding-group">
@@ -1293,7 +1635,12 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
                     <input
                       type="number"
                       value={config.environment.backend.port}
-                      onChange={(e) => updateConfig(['environment', 'backend', 'port'], parseInt(e.target.value))}
+                      onChange={(e) =>
+                        updateConfig(
+                          ["environment", "backend", "port"],
+                          parseInt(e.target.value)
+                        )
+                      }
                       className="branding-input"
                     />
                   </div>
@@ -1303,78 +1650,149 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
                     <input
                       type="text"
                       value={config.environment.backend.photosDir}
-                      onChange={(e) => updateConfig(['environment', 'backend', 'photosDir'], e.target.value)}
+                      onChange={(e) =>
+                        updateConfig(
+                          ["environment", "backend", "photosDir"],
+                          e.target.value
+                        )
+                      }
                       className="branding-input"
                     />
                   </div>
 
                   <div className="branding-group full-width">
                     <label className="branding-label">Allowed Origins</label>
-                    {config.environment.backend.allowedOrigins.map((origin, index) => (
-                      <div key={index} className="array-item">
-                        <input
-                          type="text"
-                          value={origin}
-                          onChange={(e) => updateArrayItem(['environment', 'backend', 'allowedOrigins'], index, e.target.value)}
-                          className="branding-input"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => removeArrayItem(['environment', 'backend', 'allowedOrigins'], index)}
-                          className="btn-remove"
-                        >
-                          ×
-                        </button>
-                      </div>
-                    ))}
+                    {config.environment.backend.allowedOrigins.map(
+                      (origin, index) => (
+                        <div key={index} className="array-item">
+                          <input
+                            type="text"
+                            value={origin}
+                            onChange={(e) =>
+                              updateArrayItem(
+                                ["environment", "backend", "allowedOrigins"],
+                                index,
+                                e.target.value
+                              )
+                            }
+                            className="branding-input"
+                          />
+                          <button
+                            type="button"
+                            onClick={() =>
+                              removeArrayItem(
+                                ["environment", "backend", "allowedOrigins"],
+                                index
+                              )
+                            }
+                            className="btn-remove"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      )
+                    )}
                     <button
                       type="button"
-                      onClick={() => addArrayItem(['environment', 'backend', 'allowedOrigins'])}
+                      onClick={() =>
+                        addArrayItem([
+                          "environment",
+                          "backend",
+                          "allowedOrigins",
+                        ])
+                      }
                       className="btn-add"
                     >
                       + Add Origin
                     </button>
                   </div>
                 </div>
-                
+
                 {/* Backend Restart Button */}
-                <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid rgba(255, 255, 255, 0.05)' }}>
+                <div
+                  style={{
+                    marginTop: "1rem",
+                    paddingTop: "1rem",
+                    borderTop: "1px solid rgba(255, 255, 255, 0.05)",
+                  }}
+                >
                   <button
                     type="button"
                     onClick={handleRestartBackend}
                     disabled={restartingBackend}
                     className="btn-secondary"
-                    style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.5rem",
+                    }}
                   >
-                    🔄 {restartingBackend ? 'Restarting...' : 'Restart Backend Server'}
+                    🔄{" "}
+                    {restartingBackend
+                      ? "Restarting..."
+                      : "Restart Backend Server"}
                   </button>
-                  <p style={{ fontSize: '0.85rem', color: '#888', marginTop: '0.5rem', marginBottom: 0 }}>
-                    Server will restart automatically if using a process manager (pm2, nodemon, systemd)
+                  <p
+                    style={{
+                      fontSize: "0.85rem",
+                      color: "#888",
+                      marginTop: "0.5rem",
+                      marginBottom: 0,
+                    }}
+                  >
+                    Server will restart automatically if using a process manager
+                    (pm2, nodemon, systemd)
                   </p>
                 </div>
               </div>
 
               {/* Frontend Settings */}
-              <div style={{ marginBottom: '2rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                  <h4 style={{ color: 'var(--primary-color)', margin: 0, fontSize: '1.1rem', fontWeight: 600 }}>Frontend</h4>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                    {hasUnsavedChanges('Frontend') && (
+              <div style={{ marginBottom: "2rem" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginBottom: "0.5rem",
+                  }}
+                >
+                  <h4
+                    style={{
+                      color: "var(--primary-color)",
+                      margin: 0,
+                      fontSize: "1.1rem",
+                      fontWeight: 600,
+                    }}
+                  >
+                    Frontend
+                  </h4>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.75rem",
+                    }}
+                  >
+                    {hasUnsavedChanges("Frontend") && (
                       <span className="unsaved-indicator">Unsaved changes</span>
                     )}
                     <button
                       type="button"
-                      onClick={(e) => { e.stopPropagation(); handleSaveSection('Frontend'); }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleSaveSection("Frontend");
+                      }}
                       disabled={savingSection !== null}
                       className="btn-primary"
-                      style={{ padding: '0.5rem 1rem', fontSize: '0.9rem' }}
+                      style={{ padding: "0.5rem 1rem", fontSize: "0.9rem" }}
                     >
-                      {savingSection === 'Frontend' ? 'Saving...' : 'Save'}
+                      {savingSection === "Frontend" ? "Saving..." : "Save"}
                     </button>
                   </div>
                 </div>
                 <p className="config-section-description">
-                  Frontend development server port and API URL for connecting to the backend
+                  Frontend development server port and API URL for connecting to
+                  the backend
                 </p>
                 <div className="config-grid-inner">
                   <div className="branding-group">
@@ -1382,7 +1800,12 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
                     <input
                       type="number"
                       value={config.environment.frontend.port}
-                      onChange={(e) => updateConfig(['environment', 'frontend', 'port'], parseInt(e.target.value))}
+                      onChange={(e) =>
+                        updateConfig(
+                          ["environment", "frontend", "port"],
+                          parseInt(e.target.value)
+                        )
+                      }
                       className="branding-input"
                     />
                   </div>
@@ -1392,183 +1815,332 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
                     <input
                       type="text"
                       value={config.environment.frontend.apiUrl}
-                      onChange={(e) => updateConfig(['environment', 'frontend', 'apiUrl'], e.target.value)}
+                      onChange={(e) =>
+                        updateConfig(
+                          ["environment", "frontend", "apiUrl"],
+                          e.target.value
+                        )
+                      }
                       className="branding-input"
                     />
                   </div>
                 </div>
-                
+
                 {/* Frontend Restart Button */}
-                <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid rgba(255, 255, 255, 0.05)' }}>
+                <div
+                  style={{
+                    marginTop: "1rem",
+                    paddingTop: "1rem",
+                    borderTop: "1px solid rgba(255, 255, 255, 0.05)",
+                  }}
+                >
                   <button
                     type="button"
                     onClick={handleRestartFrontend}
                     disabled={restartingFrontend}
                     className="btn-secondary"
-                    style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.5rem",
+                    }}
                   >
-                    🔄 {restartingFrontend ? 'Restarting...' : 'Restart Frontend Server'}
+                    🔄{" "}
+                    {restartingFrontend
+                      ? "Restarting..."
+                      : "Restart Frontend Server"}
                   </button>
-                  <p style={{ fontSize: '0.85rem', color: '#888', marginTop: '0.5rem', marginBottom: 0 }}>
-                    In development, manually restart your dev server. In production, use your process manager.
+                  <p
+                    style={{
+                      fontSize: "0.85rem",
+                      color: "#888",
+                      marginTop: "0.5rem",
+                      marginBottom: 0,
+                    }}
+                  >
+                    In development, manually restart your dev server. In
+                    production, use your process manager.
                   </p>
                 </div>
               </div>
 
               {/* Security Settings */}
-              <div style={{ marginBottom: '2rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                  <h4 style={{ color: 'var(--primary-color)', margin: 0, fontSize: '1.1rem', fontWeight: 600 }}>Security</h4>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                    {hasUnsavedChanges('Security') && (
+              <div style={{ marginBottom: "2rem" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginBottom: "0.5rem",
+                  }}
+                >
+                  <h4
+                    style={{
+                      color: "var(--primary-color)",
+                      margin: 0,
+                      fontSize: "1.1rem",
+                      fontWeight: 600,
+                    }}
+                  >
+                    Security
+                  </h4>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.75rem",
+                    }}
+                  >
+                    {hasUnsavedChanges("Security") && (
                       <span className="unsaved-indicator">Unsaved changes</span>
                     )}
                     <button
                       type="button"
-                      onClick={(e) => { e.stopPropagation(); handleSaveSection('Security'); }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleSaveSection("Security");
+                      }}
                       disabled={savingSection !== null}
                       className="btn-primary"
-                      style={{ padding: '0.5rem 1rem', fontSize: '0.9rem' }}
+                      style={{ padding: "0.5rem 1rem", fontSize: "0.9rem" }}
                     >
-                      {savingSection === 'Security' ? 'Saving...' : 'Save'}
+                      {savingSection === "Security" ? "Saving..." : "Save"}
                     </button>
                   </div>
                 </div>
                 <p className="config-section-description">
-                  Rate limiting and allowed hosts for protecting against abuse and unauthorized access
+                  Rate limiting and allowed hosts for protecting against abuse
+                  and unauthorized access
                 </p>
                 <div className="config-grid-inner">
-            <div className="branding-group">
-              <label className="branding-label">Rate Limit Window (ms)</label>
-              <input
-                type="number"
-                value={config.environment.security.rateLimitWindowMs}
-                onChange={(e) => updateConfig(['environment', 'security', 'rateLimitWindowMs'], parseInt(e.target.value))}
-                className="branding-input"
-              />
-            </div>
+                  <div className="branding-group">
+                    <label className="branding-label">
+                      Rate Limit Window (ms)
+                    </label>
+                    <input
+                      type="number"
+                      value={config.environment.security.rateLimitWindowMs}
+                      onChange={(e) =>
+                        updateConfig(
+                          ["environment", "security", "rateLimitWindowMs"],
+                          parseInt(e.target.value)
+                        )
+                      }
+                      className="branding-input"
+                    />
+                  </div>
 
-            <div className="branding-group">
-              <label className="branding-label">Rate Limit Max Requests</label>
-              <input
-                type="number"
-                value={config.environment.security.rateLimitMaxRequests}
-                onChange={(e) => updateConfig(['environment', 'security', 'rateLimitMaxRequests'], parseInt(e.target.value))}
-                className="branding-input"
-              />
-            </div>
+                  <div className="branding-group">
+                    <label className="branding-label">
+                      Rate Limit Max Requests
+                    </label>
+                    <input
+                      type="number"
+                      value={config.environment.security.rateLimitMaxRequests}
+                      onChange={(e) =>
+                        updateConfig(
+                          ["environment", "security", "rateLimitMaxRequests"],
+                          parseInt(e.target.value)
+                        )
+                      }
+                      className="branding-input"
+                    />
+                  </div>
 
-            <div className="branding-group full-width">
-              <label className="branding-label">Allowed Hosts</label>
-              {config.environment.security.allowedHosts.map((host, index) => (
-                <div key={index} className="array-item">
-                  <input
-                    type="text"
-                    value={host}
-                    onChange={(e) => updateArrayItem(['environment', 'security', 'allowedHosts'], index, e.target.value)}
-                    className="branding-input"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => removeArrayItem(['environment', 'security', 'allowedHosts'], index)}
-                    className="btn-remove"
-                  >
-                    ×
-                  </button>
+                  <div className="branding-group full-width">
+                    <label className="branding-label">Allowed Hosts</label>
+                    {config.environment.security.allowedHosts.map(
+                      (host, index) => (
+                        <div key={index} className="array-item">
+                          <input
+                            type="text"
+                            value={host}
+                            onChange={(e) =>
+                              updateArrayItem(
+                                ["environment", "security", "allowedHosts"],
+                                index,
+                                e.target.value
+                              )
+                            }
+                            className="branding-input"
+                          />
+                          <button
+                            type="button"
+                            onClick={() =>
+                              removeArrayItem(
+                                ["environment", "security", "allowedHosts"],
+                                index
+                              )
+                            }
+                            className="btn-remove"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      )
+                    )}
+                    <button
+                      type="button"
+                      onClick={() =>
+                        addArrayItem([
+                          "environment",
+                          "security",
+                          "allowedHosts",
+                        ])
+                      }
+                      className="btn-add"
+                    >
+                      + Add Host
+                    </button>
+                  </div>
                 </div>
-              ))}
-              <button
-                type="button"
-                onClick={() => addArrayItem(['environment', 'security', 'allowedHosts'])}
-                className="btn-add"
-              >
-                + Add Host
-              </button>
-            </div>
-          </div>
-        </div>
+              </div>
 
               {/* Auth Settings */}
-              <div style={{ marginBottom: '2rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                  <h4 style={{ color: 'var(--primary-color)', margin: 0, fontSize: '1.1rem', fontWeight: 600 }}>Authentication</h4>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                    {hasUnsavedChanges('Authentication') && (
+              <div style={{ marginBottom: "2rem" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginBottom: "0.5rem",
+                  }}
+                >
+                  <h4
+                    style={{
+                      color: "var(--primary-color)",
+                      margin: 0,
+                      fontSize: "1.1rem",
+                      fontWeight: 600,
+                    }}
+                  >
+                    Authentication
+                  </h4>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.75rem",
+                    }}
+                  >
+                    {hasUnsavedChanges("Authentication") && (
                       <span className="unsaved-indicator">Unsaved changes</span>
                     )}
                     <button
                       type="button"
-                      onClick={(e) => { e.stopPropagation(); handleSaveSection('Authentication'); }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleSaveSection("Authentication");
+                      }}
                       disabled={savingSection !== null}
                       className="btn-primary"
-                      style={{ padding: '0.5rem 1rem', fontSize: '0.9rem' }}
+                      style={{ padding: "0.5rem 1rem", fontSize: "0.9rem" }}
                     >
-                      {savingSection === 'Authentication' ? 'Saving...' : 'Save'}
+                      {savingSection === "Authentication"
+                        ? "Saving..."
+                        : "Save"}
                     </button>
                   </div>
                 </div>
                 <p className="config-section-description">
-                  Google OAuth credentials and authorized email addresses for admin access
+                  Google OAuth credentials and authorized email addresses for
+                  admin access
                 </p>
                 <div className="config-grid-inner">
-            <div className="branding-group">
-              <label className="branding-label">Google Client ID</label>
-              <input
-                type="text"
-                value={config.environment.auth.google.clientId}
-                onChange={(e) => updateConfig(['environment', 'auth', 'google', 'clientId'], e.target.value)}
-                className="branding-input"
-              />
-            </div>
+                  <div className="branding-group">
+                    <label className="branding-label">Google Client ID</label>
+                    <input
+                      type="text"
+                      value={config.environment.auth.google.clientId}
+                      onChange={(e) =>
+                        updateConfig(
+                          ["environment", "auth", "google", "clientId"],
+                          e.target.value
+                        )
+                      }
+                      className="branding-input"
+                    />
+                  </div>
 
-            <div className="branding-group">
-              <label className="branding-label">Google Client Secret</label>
-              <input
-                type="password"
-                value={config.environment.auth.google.clientSecret}
-                onChange={(e) => updateConfig(['environment', 'auth', 'google', 'clientSecret'], e.target.value)}
-                className="branding-input"
-              />
-            </div>
+                  <div className="branding-group">
+                    <label className="branding-label">
+                      Google Client Secret
+                    </label>
+                    <input
+                      type="password"
+                      value={config.environment.auth.google.clientSecret}
+                      onChange={(e) =>
+                        updateConfig(
+                          ["environment", "auth", "google", "clientSecret"],
+                          e.target.value
+                        )
+                      }
+                      className="branding-input"
+                    />
+                  </div>
 
-            <div className="branding-group">
-              <label className="branding-label">Session Secret</label>
-              <input
-                type="password"
-                value={config.environment.auth.sessionSecret}
-                onChange={(e) => updateConfig(['environment', 'auth', 'sessionSecret'], e.target.value)}
-                className="branding-input"
-              />
-            </div>
+                  <div className="branding-group">
+                    <label className="branding-label">Session Secret</label>
+                    <input
+                      type="password"
+                      value={config.environment.auth.sessionSecret}
+                      onChange={(e) =>
+                        updateConfig(
+                          ["environment", "auth", "sessionSecret"],
+                          e.target.value
+                        )
+                      }
+                      className="branding-input"
+                    />
+                  </div>
 
-            <div className="branding-group full-width">
-              <label className="branding-label">Authorized Emails</label>
-              {config.environment.auth.authorizedEmails.map((email, index) => (
-                <div key={index} className="array-item">
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => updateArrayItem(['environment', 'auth', 'authorizedEmails'], index, e.target.value)}
-                    className="branding-input"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => removeArrayItem(['environment', 'auth', 'authorizedEmails'], index)}
-                    className="btn-remove"
-                  >
-                    ×
-                  </button>
+                  <div className="branding-group full-width">
+                    <label className="branding-label">Authorized Emails</label>
+                    {config.environment.auth.authorizedEmails.map(
+                      (email, index) => (
+                        <div key={index} className="array-item">
+                          <input
+                            type="email"
+                            value={email}
+                            onChange={(e) =>
+                              updateArrayItem(
+                                ["environment", "auth", "authorizedEmails"],
+                                index,
+                                e.target.value
+                              )
+                            }
+                            className="branding-input"
+                          />
+                          <button
+                            type="button"
+                            onClick={() =>
+                              removeArrayItem(
+                                ["environment", "auth", "authorizedEmails"],
+                                index
+                              )
+                            }
+                            className="btn-remove"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      )
+                    )}
+                    <button
+                      type="button"
+                      onClick={() =>
+                        addArrayItem([
+                          "environment",
+                          "auth",
+                          "authorizedEmails",
+                        ])
+                      }
+                      className="btn-add"
+                    >
+                      + Add Email
+                    </button>
+                  </div>
                 </div>
-              ))}
-              <button
-                type="button"
-                onClick={() => addArrayItem(['environment', 'auth', 'authorizedEmails'])}
-                className="btn-add"
-              >
-                + Add Email
-              </button>
-            </div>
-          </div>
               </div>
             </>
           )}
@@ -1579,4 +2151,3 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
 };
 
 export default ConfigManager;
-
