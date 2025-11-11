@@ -53,15 +53,18 @@
   
   /* Make buttons full width and equal (50/50 split) */
   .photo-order-row-secondary .btn-action {
-    flex: 1;
+    flex: 1 1 0;
+    min-width: 0;
   }
   
   .photo-order-row-primary .btn-action {
-    flex: 1;
+    flex: 1 1 0;
+    min-width: 0;
   }
   
   .photo-order-row-primary .unsaved-indicator {
-    flex: 1;
+    flex: 1 1 0;
+    min-width: 0;
     text-align: left;
   }
 }
