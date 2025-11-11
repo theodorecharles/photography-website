@@ -116,6 +116,9 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
   // SSE Output Toaster state
   const [isToasterCollapsed, setIsToasterCollapsed] = useState(false);
   const [isToasterMaximized, setIsToasterMaximized] = useState(false);
+  const [toasterPosition, setToasterPosition] = useState<'top-right' | 'top-left' | 'bottom-right' | 'bottom-left'>('top-right');
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStart, setDragStart] = useState<{ x: number; y: number } | null>(null);
 
   // Section collapse state - all collapsed by default
   const [showBranding, setShowBranding] = useState(false);
@@ -126,6 +129,40 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
 
   const [restartingBackend, setRestartingBackend] = useState(false);
   const [restartingFrontend, setRestartingFrontend] = useState(false);
+
+  // Toaster drag handlers
+  const handleToasterDragStart = (e: React.MouseEvent) => {
+    if (isToasterMaximized || window.innerWidth <= 768) return; // Don't drag when maximized or on mobile
+    setIsDragging(true);
+    setDragStart({ x: e.clientX, y: e.clientY });
+  };
+
+  const handleToasterDragEnd = (e: React.MouseEvent) => {
+    if (!isDragging || !dragStart) return;
+    
+    setIsDragging(false);
+    
+    // Calculate which corner to snap to based on mouse position
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+    const x = e.clientX;
+    const y = e.clientY;
+    
+    const isLeft = x < viewportWidth / 2;
+    const isTop = y < viewportHeight / 2;
+    
+    if (isTop && isLeft) {
+      setToasterPosition('top-left');
+    } else if (isTop && !isLeft) {
+      setToasterPosition('top-right');
+    } else if (!isTop && isLeft) {
+      setToasterPosition('bottom-left');
+    } else {
+      setToasterPosition('bottom-right');
+    }
+    
+    setDragStart(null);
+  };
 
   // Branding and Links state
   const [originalBranding, setOriginalBranding] = useState<BrandingConfig>(branding);
@@ -2682,7 +2719,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
                         }}
                         className="btn-secondary"
                         style={{ flex: "1 1 auto", minWidth: "200px" }}
-                        disabled={isOptimizationRunning}
+                        disabled={isAnyJobRunning}
                       >
                         Backfill Missing Titles
                       </button>
@@ -3635,8 +3672,15 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
 
       {/* Floating SSE Output Toaster (Picture-in-Picture style) */}
       {isAnyJobRunning && (
-        <div className={`sse-toaster ${isToasterCollapsed ? 'collapsed' : 'expanded'} ${isToasterMaximized ? 'maximized' : ''}`}>
-          <div className="sse-toaster-header">
+        <div 
+          className={`sse-toaster ${isToasterCollapsed ? 'collapsed' : 'expanded'} ${isToasterMaximized ? 'maximized' : ''} ${toasterPosition} ${isDragging ? 'dragging' : ''}`}
+          onMouseUp={handleToasterDragEnd}
+        >
+          <div 
+            className="sse-toaster-header"
+            onMouseDown={handleToasterDragStart}
+            style={{ cursor: isToasterMaximized || window.innerWidth <= 768 ? 'default' : 'move' }}
+          >
             <div className="sse-toaster-title">
               <span className="sse-toaster-icon">⚙️</span>
               <span className="sse-toaster-label">
@@ -3744,33 +3788,6 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
             </>
           )}
 
-          {/* Collapsed view - show only last 2 lines */}
-          {isToasterCollapsed && (
-            <div className="sse-toaster-collapsed-preview">
-              {generatingTitles ? (
-                <>
-                  {titlesOutput.slice(-2).map((line, index) => (
-                    <div key={index} className="output-line-preview">
-                      {line}
-                    </div>
-                  ))}
-                  {titlesOutput.length === 0 && (
-                    <div className="output-line-preview">
-                      Starting AI title generation...
-                    </div>
-                  )}
-                </>
-              ) : (
-                <>
-                  {optimizationLogs.slice(-2).map((log, index) => (
-                    <div key={index} className="output-line-preview">
-                      {log}
-                    </div>
-                  ))}
-                </>
-              )}
-            </div>
-          )}
         </div>
       )}
       {/* End Floating SSE Output Toaster */}
