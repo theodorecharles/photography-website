@@ -2346,70 +2346,63 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
 
             {/* Force Regenerate All Titles */}
             <div className="openai-section" style={{ marginBottom: "2rem" }}>
+              <label className="openai-section-label" style={{ display: "block", marginBottom: "0.75rem" }}>TITLE GENERATION</label>
               <div
                 style={{
                   display: "flex",
-                  justifyContent: "space-between",
                   alignItems: "center",
+                  gap: "0.75rem",
+                  flexWrap: "wrap",
                   marginBottom: "0.75rem",
                 }}
               >
-                <label className="openai-section-label">TITLE GENERATION</label>
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "0.75rem",
-                  }}
-                >
-                  {!config.openai?.apiKey ? (
+                {!config.openai?.apiKey ? (
+                  <button
+                    type="button"
+                    onClick={handleSetupOpenAI}
+                    className="btn-secondary"
+                  >
+                    Set Up OpenAI
+                  </button>
+                ) : !generatingTitles ? (
+                  <>
                     <button
                       type="button"
-                      onClick={handleSetupOpenAI}
+                      onClick={() => {
+                        handleGenerateTitles(false);
+                      }}
                       className="btn-secondary"
                     >
-                      Set Up OpenAI
+                      Backfill Missing Titles
                     </button>
-                  ) : !generatingTitles ? (
-                    <>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          handleGenerateTitles(false);
-                        }}
-                        className="btn-secondary"
-                      >
-                        Backfill Missing Titles
-                      </button>
-                      <button
-                        type="button"
-                        onClick={async () => {
-                          const confirmed = await showConfirmation(
-                            "⚠️ This will regenerate ALL image titles and overwrite any custom titles you have set. This action cannot be undone.\n\nAre you sure you want to continue?"
-                          );
-                          if (confirmed) {
-                            handleGenerateTitles(true);
-                          }
-                        }}
-                        className="btn-force-regenerate"
-                      >
-                        Force Regenerate All
-                      </button>
-                    </>
-                  ) : (
                     <button
                       type="button"
-                      onClick={handleStopTitles}
-                      className="btn-force-regenerate"
-                      style={{
-                        backgroundColor: "#dc2626",
-                        borderColor: "#dc2626",
+                      onClick={async () => {
+                        const confirmed = await showConfirmation(
+                          "⚠️ This will regenerate ALL image titles and overwrite any custom titles you have set. This action cannot be undone.\n\nAre you sure you want to continue?"
+                        );
+                        if (confirmed) {
+                          handleGenerateTitles(true);
+                        }
                       }}
+                      className="btn-force-regenerate"
                     >
-                      Stop
+                      Force Regenerate All
                     </button>
-                  )}
-                </div>
+                  </>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={handleStopTitles}
+                    className="btn-force-regenerate"
+                    style={{
+                      backgroundColor: "#dc2626",
+                      borderColor: "#dc2626",
+                    }}
+                  >
+                    Stop
+                  </button>
+                )}
               </div>
 
               {generatingTitles && titlesOutput.length > 0 && (
@@ -2492,56 +2485,49 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
 
             {/* Force Regenerate All Images */}
             <div className="openai-section" style={{ marginBottom: "2rem" }}>
+              <label className="openai-section-label" style={{ display: "block", marginBottom: "0.75rem" }}>
+                REGENERATE ALL IMAGES
+              </label>
               <div
                 style={{
                   display: "flex",
-                  justifyContent: "space-between",
                   alignItems: "center",
+                  gap: "1rem",
+                  flexWrap: "wrap",
                   marginBottom: "0.75rem",
                 }}
               >
-                <label className="openai-section-label">
-                  REGENERATE ALL IMAGES
-                </label>
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "1rem",
-                  }}
-                >
-                  {!isOptimizationRunning ? (
-                    <button
-                      type="button"
-                      onClick={() => handleRunOptimization(true)}
-                      className="btn-force-regenerate"
-                    >
-                      Force Regenerate All
-                    </button>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={handleStopOptimization}
-                      className="btn-force-regenerate"
-                      style={{
-                        backgroundColor: "#dc2626",
-                        borderColor: "#dc2626",
-                      }}
-                    >
-                      Stop
-                    </button>
-                  )}
-                  {optimizationComplete && !isOptimizationRunning && (
-                    <span
-                      style={{
-                        color: "var(--primary-color)",
-                        fontSize: "1.5rem",
-                      }}
-                    >
-                      ✓
-                    </span>
-                  )}
-                </div>
+                {!isOptimizationRunning ? (
+                  <button
+                    type="button"
+                    onClick={() => handleRunOptimization(true)}
+                    className="btn-force-regenerate"
+                  >
+                    Force Regenerate All
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={handleStopOptimization}
+                    className="btn-force-regenerate"
+                    style={{
+                      backgroundColor: "#dc2626",
+                      borderColor: "#dc2626",
+                    }}
+                  >
+                    Stop
+                  </button>
+                )}
+                {optimizationComplete && !isOptimizationRunning && (
+                  <span
+                    style={{
+                      color: "var(--primary-color)",
+                      fontSize: "1.5rem",
+                    }}
+                  >
+                    ✓
+                  </span>
+                )}
               </div>
 
               {optimizationLogs.length > 0 && (
@@ -2624,18 +2610,35 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
               >
                 <label className="openai-section-label">BACKEND</label>
                 {hasUnsavedChanges("Backend") && (
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleSaveSection("Backend");
-                    }}
-                    disabled={savingSection !== null}
-                    className="btn-primary"
-                    style={{ padding: "0.4rem 0.8rem", fontSize: "0.85rem" }}
-                  >
-                    {savingSection === "Backend" ? "Saving..." : "Save"}
-                  </button>
+                  <div style={{ display: "flex", gap: "0.5rem" }}>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setConfig(originalConfig);
+                      }}
+                      disabled={savingSection !== null}
+                      className="btn-secondary"
+                      style={{
+                        padding: "0.4rem 0.8rem",
+                        fontSize: "0.85rem",
+                      }}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleSaveSection("Backend");
+                      }}
+                      disabled={savingSection !== null}
+                      className="btn-primary"
+                      style={{ padding: "0.4rem 0.8rem", fontSize: "0.85rem" }}
+                    >
+                      {savingSection === "Backend" ? "Saving..." : "Save"}
+                    </button>
+                  </div>
                 )}
               </div>
               <p
@@ -2774,18 +2777,35 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
               >
                 <label className="openai-section-label">FRONTEND</label>
                 {hasUnsavedChanges("Frontend") && (
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleSaveSection("Frontend");
-                    }}
-                    disabled={savingSection !== null}
-                    className="btn-primary"
-                    style={{ padding: "0.4rem 0.8rem", fontSize: "0.85rem" }}
-                  >
-                    {savingSection === "Frontend" ? "Saving..." : "Save"}
-                  </button>
+                  <div style={{ display: "flex", gap: "0.5rem" }}>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setConfig(originalConfig);
+                      }}
+                      disabled={savingSection !== null}
+                      className="btn-secondary"
+                      style={{
+                        padding: "0.4rem 0.8rem",
+                        fontSize: "0.85rem",
+                      }}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleSaveSection("Frontend");
+                      }}
+                      disabled={savingSection !== null}
+                      className="btn-primary"
+                      style={{ padding: "0.4rem 0.8rem", fontSize: "0.85rem" }}
+                    >
+                      {savingSection === "Frontend" ? "Saving..." : "Save"}
+                    </button>
+                  </div>
                 )}
               </div>
               <p
@@ -2881,18 +2901,35 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
               >
                 <label className="openai-section-label">SECURITY</label>
                 {hasUnsavedChanges("Security") && (
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleSaveSection("Security");
-                    }}
-                    disabled={savingSection !== null}
-                    className="btn-primary"
-                    style={{ padding: "0.4rem 0.8rem", fontSize: "0.85rem" }}
-                  >
-                    {savingSection === "Security" ? "Saving..." : "Save"}
-                  </button>
+                  <div style={{ display: "flex", gap: "0.5rem" }}>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setConfig(originalConfig);
+                      }}
+                      disabled={savingSection !== null}
+                      className="btn-secondary"
+                      style={{
+                        padding: "0.4rem 0.8rem",
+                        fontSize: "0.85rem",
+                      }}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleSaveSection("Security");
+                      }}
+                      disabled={savingSection !== null}
+                      className="btn-primary"
+                      style={{ padding: "0.4rem 0.8rem", fontSize: "0.85rem" }}
+                    >
+                      {savingSection === "Security" ? "Saving..." : "Save"}
+                    </button>
+                  </div>
                 )}
               </div>
               <p
@@ -2998,18 +3035,35 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
               >
                 <label className="openai-section-label">AUTHENTICATION</label>
                 {hasUnsavedChanges("Authentication") && (
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleSaveSection("Authentication");
-                    }}
-                    disabled={savingSection !== null}
-                    className="btn-primary"
-                    style={{ padding: "0.4rem 0.8rem", fontSize: "0.85rem" }}
-                  >
-                    {savingSection === "Authentication" ? "Saving..." : "Save"}
-                  </button>
+                  <div style={{ display: "flex", gap: "0.5rem" }}>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setConfig(originalConfig);
+                      }}
+                      disabled={savingSection !== null}
+                      className="btn-secondary"
+                      style={{
+                        padding: "0.4rem 0.8rem",
+                        fontSize: "0.85rem",
+                      }}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleSaveSection("Authentication");
+                      }}
+                      disabled={savingSection !== null}
+                      className="btn-primary"
+                      style={{ padding: "0.4rem 0.8rem", fontSize: "0.85rem" }}
+                    >
+                      {savingSection === "Authentication" ? "Saving..." : "Save"}
+                    </button>
+                  </div>
                 )}
               </div>
               <p
@@ -3126,18 +3180,35 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
               >
                 <label className="openai-section-label">ANALYTICS</label>
                 {hasUnsavedChanges("Analytics") && (
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleSaveSection("Analytics");
-                    }}
-                    disabled={savingSection !== null}
-                    className="btn-primary"
-                    style={{ padding: "0.4rem 0.8rem", fontSize: "0.85rem" }}
-                  >
-                    {savingSection === "Analytics" ? "Saving..." : "Save"}
-                  </button>
+                  <div style={{ display: "flex", gap: "0.5rem" }}>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setConfig(originalConfig);
+                      }}
+                      disabled={savingSection !== null}
+                      className="btn-secondary"
+                      style={{
+                        padding: "0.4rem 0.8rem",
+                        fontSize: "0.85rem",
+                      }}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleSaveSection("Analytics");
+                      }}
+                      disabled={savingSection !== null}
+                      className="btn-primary"
+                      style={{ padding: "0.4rem 0.8rem", fontSize: "0.85rem" }}
+                    >
+                      {savingSection === "Analytics" ? "Saving..." : "Save"}
+                    </button>
+                  </div>
                 )}
               </div>
               <p
