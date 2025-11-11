@@ -843,7 +843,7 @@
 
 .section-description {
   color: #b4b4b4;
-  margin-bottom: 2.5rem;
+  /* margin-bottom: 2.5rem; */
   font-size: 1.05rem;
   line-height: 1.6;
   max-width: 800px;
@@ -1721,26 +1721,26 @@
 
 .btn-shuffle-order:hover:not(:disabled)::before {
   opacity: 1;
-  animation: rotate-shuffle-border 3s linear infinite;
+  animation: rotate-shuffle-border var(--animation-speed, 3s) linear infinite;
 }
 
 .btn-shuffle-order.shuffling-active:hover:not(:disabled)::before {
-  animation: rotate-shuffle-border 0.4s linear infinite;
+  animation: rotate-shuffle-border var(--animation-speed, 0.4s) linear infinite;
 }
 
 .btn-shuffle-order.shuffling-slowing:hover:not(:disabled)::before {
-  animation: rotate-shuffle-border 1.2s linear infinite;
-}
-
-.btn-shuffle-order:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+  animation: rotate-shuffle-border var(--animation-speed, 1.2s) linear infinite;
 }
 
 @keyframes rotate-shuffle-border {
   to {
     --shuffle-angle: 360deg;
   }
+}
+
+.btn-shuffle-order:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 /* Save order button */
@@ -1787,3 +1787,74 @@
     opacity: 0.4;
   }
 }
+
+/* Ghost album tile styles */
+.ghost-album-tile {
+  border: 2px dashed rgba(74, 222, 128, 0.4) !important;
+  background: linear-gradient(135deg, rgba(74, 222, 128, 0.05) 0%, rgba(74, 222, 128, 0.02) 100%) !important;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  height: 80px;
+}
+
+.ghost-album-tile:hover {
+  border-color: rgba(74, 222, 128, 0.6) !important;
+  background: linear-gradient(135deg, rgba(74, 222, 128, 0.1) 0%, rgba(74, 222, 128, 0.05) 100%) !important;
+  transform: scale(1.02);
+}
+
+.ghost-album-tile.drag-over-ghost {
+  border-color: rgba(74, 222, 128, 0.8) !important;
+  background: linear-gradient(135deg, rgba(74, 222, 128, 0.15) 0%, rgba(74, 222, 128, 0.08) 100%) !important;
+  transform: scale(1.05);
+}
+
+.ghost-tile-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  color: rgba(74, 222, 128, 0.9);
+  padding: 1rem;
+}
+
+.ghost-tile-text {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.ghost-tile-hint {
+  font-size: 0.85rem;
+  color: rgba(74, 222, 128, 0.7);
+  font-style: italic;
+}
+
+/* Album tile drop overlay */
+.album-drop-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(74, 222, 128, 0.15);
+  backdrop-filter: blur(4px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  color: var(--primary-color);
+  font-weight: 500;
+  border-radius: inherit;
+  z-index: 10;
+}
+
+.album-card.drag-over-album {
+  border-color: var(--primary-color) !important;
+  transform: scale(1.05);
+  box-shadow: 0 8px 24px rgba(74, 222, 128, 0.3);
+}
+

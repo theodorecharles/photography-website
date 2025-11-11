@@ -18,15 +18,113 @@ import {
   saveAlbum, 
   deleteAlbumState,
   setAlbumPublished,
-  updateImageSortOrder
+  updateImageSortOrder,
+  saveImageMetadata,
+  updateAlbumSortOrder
 } from "../database.js";
 import { invalidateAlbumCache } from "./albums.js";
+import OpenAI from "openai";
 
 const router = Router();
 const execFileAsync = promisify(execFile);
 
 // Apply CSRF protection to all routes in this router
 router.use(csrfProtection);
+
+/**
+ * Generate AI title for a single image
+ */
+async function generateAITitleForImage(
+  apiKey: string,
+  album: string,
+  filename: string,
+  projectRoot: string,
+  res: Response
+): Promise<void> {
+  try {
+    const openai = new OpenAI({ apiKey });
+    
+    // Path to the thumbnail image
+    const thumbnailPath = path.join(projectRoot, 'optimized', 'thumbnail', album, filename);
+    
+    if (!fs.existsSync(thumbnailPath)) {
+      res.write(`data: ${JSON.stringify({ 
+        type: 'ai-error', 
+        filename,
+        error: 'Thumbnail not found' 
+      })}\n\n`);
+      return;
+    }
+    
+    // Read the thumbnail image and convert to base64
+    const imageBuffer = fs.readFileSync(thumbnailPath);
+    const base64Image = imageBuffer.toString('base64');
+    const mimeType = thumbnailPath.endsWith('.png') ? 'image/png' : 'image/jpeg';
+    
+    res.write(`data: ${JSON.stringify({ 
+      type: 'ai-processing', 
+      filename 
+    })}\n\n`);
+    
+    // Call OpenAI Vision API
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      messages: [
+        {
+          role: "user",
+          content: [
+            {
+              type: "text",
+              text: "Generate a short, descriptive title for this photograph (maximum 8 words). Be specific and descriptive, capturing the key subject and mood. Return only the title, no quotes or extra text."
+            },
+            {
+              type: "image_url",
+              image_url: {
+                url: `data:${mimeType};base64,${base64Image}`,
+                detail: "low"
+              }
+            }
+          ]
+        }
+      ],
+      max_tokens: 50
+    });
+    
+    let title = response.choices[0]?.message?.content?.trim();
+    
+    if (!title) {
+      res.write(`data: ${JSON.stringify({ 
+        type: 'ai-error', 
+        filename,
+        error: 'Empty response from OpenAI' 
+      })}\n\n`);
+      return;
+    }
+    
+    // Remove surrounding quotes if present
+    title = title.replace(/^["']|["']$/g, '');
+    title = title.trim();
+    
+    // Save to database
+    saveImageMetadata(album, filename, title, null);
+    
+    res.write(`data: ${JSON.stringify({ 
+      type: 'ai-complete', 
+      filename,
+      title 
+    })}\n\n`);
+    
+    console.log(`✓ Generated AI title for ${album}/${filename}: "${title}"`);
+    
+  } catch (error: any) {
+    console.error(`Error generating AI title for ${album}/${filename}:`, error);
+    res.write(`data: ${JSON.stringify({ 
+      type: 'ai-error', 
+      filename,
+      error: error.message || 'Failed to generate AI title' 
+    })}\n\n`);
+  }
+}
 
 // Configure multer for file uploads
 const upload = multer({
@@ -154,15 +252,15 @@ router.delete("/:album", requireAuth, async (req: Request, res: Response): Promi
     
     const albumPath = path.join(photosDir, sanitizedAlbum);
     
-    if (!fs.existsSync(albumPath)) {
-      res.status(404).json({ error: 'Album not found' });
-      return;
+    // Delete from photos directory (if it exists)
+    if (fs.existsSync(albumPath)) {
+      fs.rmSync(albumPath, { recursive: true, force: true });
+      console.log(`✓ Deleted directory: ${sanitizedAlbum}`);
+    } else {
+      console.log(`⚠ Directory not found (already deleted?): ${sanitizedAlbum}`);
     }
 
-    // Delete from photos directory
-    fs.rmSync(albumPath, { recursive: true, force: true });
-
-    // Delete from optimized directory
+    // Delete from optimized directory (if exists)
     ['thumbnail', 'modal', 'download'].forEach(dir => {
       const optimizedPath = path.join(optimizedDir, dir, sanitizedAlbum);
       if (fs.existsSync(optimizedPath)) {
@@ -175,8 +273,12 @@ router.delete("/:album", requireAuth, async (req: Request, res: Response): Promi
     console.log(`✓ Deleted ${deletedCount} metadata entries for album: ${sanitizedAlbum}`);
 
     // Delete album state from database
-    deleteAlbumState(sanitizedAlbum);
-    console.log(`✓ Deleted album state for: ${sanitizedAlbum}`);
+    const albumDeleted = deleteAlbumState(sanitizedAlbum);
+    if (albumDeleted) {
+      console.log(`✓ Deleted album state for: ${sanitizedAlbum}`);
+    } else {
+      console.log(`⚠ Album state not found in database: ${sanitizedAlbum}`);
+    }
 
     // Invalidate cache for this album
     invalidateAlbumCache(sanitizedAlbum);
@@ -334,8 +436,13 @@ router.post("/:album/upload", requireAuth, upload.single('photo'), async (req: R
       });
 
       // Handle completion
-      child.on('close', (code) => {
+      child.on('close', async (code) => {
         if (code === 0) {
+          // Add image to database (with null title initially)
+          // This ensures the image shows up even if AI generation is disabled
+          saveImageMetadata(sanitizedAlbum, file.originalname, null, null);
+          console.log(`✓ Added ${sanitizedAlbum}/${file.originalname} to database`);
+          
           // Invalidate cache for this album since we added a photo
           invalidateAlbumCache(sanitizedAlbum);
           
@@ -343,6 +450,32 @@ router.post("/:album/upload", requireAuth, upload.single('photo'), async (req: R
             type: 'complete', 
             filename: file.originalname 
           })}\n\n`);
+          
+          // Check if auto-generate AI titles is enabled
+          try {
+            const configPath = path.join(projectRoot, 'config/config.json');
+            const configData = fs.readFileSync(configPath, 'utf8');
+            const config = JSON.parse(configData);
+            
+            if (config.ai?.autoGenerateTitlesOnUpload && config.openai?.apiKey) {
+              res.write(`data: ${JSON.stringify({ 
+                type: 'ai-generating', 
+                filename: file.originalname 
+              })}\n\n`);
+              
+              // This will update the existing database entry with the AI-generated title
+              await generateAITitleForImage(
+                config.openai.apiKey,
+                sanitizedAlbum,
+                file.originalname,
+                projectRoot,
+                res
+              );
+            }
+          } catch (err) {
+            console.error('Error checking AI config:', err);
+            // Don't fail the upload if AI generation fails
+          }
         } else {
           res.write(`data: ${JSON.stringify({ 
             type: 'error', 
@@ -513,6 +646,40 @@ router.post("/:album/photo-order", requireAuth, async (req: Request, res: Respon
   } catch (error) {
     console.error('Error updating photo order:', error);
     res.status(500).json({ error: 'Failed to update photo order' });
+  }
+});
+
+/**
+ * Update album sort order
+ */
+router.put('/sort-order', requireAuth, async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { albumOrders } = req.body;
+    
+    if (!Array.isArray(albumOrders)) {
+      res.status(400).json({ error: 'Invalid album orders data' });
+      return;
+    }
+    
+    // Validate each entry has name and sort_order
+    for (const entry of albumOrders) {
+      if (typeof entry.name !== 'string' || typeof entry.sort_order !== 'number') {
+        res.status(400).json({ error: 'Each album must have name and sort_order' });
+        return;
+      }
+    }
+    
+    const success = updateAlbumSortOrder(albumOrders);
+    
+    if (success) {
+      console.log(`✓ Updated sort order for ${albumOrders.length} albums`);
+      res.json({ success: true });
+    } else {
+      res.status(500).json({ error: 'Failed to update album order' });
+    }
+  } catch (error) {
+    console.error('Error updating album order:', error);
+    res.status(500).json({ error: 'Failed to update album order' });
   }
 });
 
