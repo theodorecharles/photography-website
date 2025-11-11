@@ -107,12 +107,11 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
   const [optimizationComplete, setOptimizationComplete] = useState(false);
   const [optimizationProgress, setOptimizationProgress] = useState(0);
 
-  // Section collapse state - collapsed by default on mobile
-  const isMobile = window.matchMedia("(max-width: 768px)").matches;
-  const [showBranding, setShowBranding] = useState(!isMobile);
-  const [showLinks, setShowLinks] = useState(!isMobile);
-  const [showOpenAI, setShowOpenAI] = useState(!isMobile);
-  const [showImageOptimization, setShowImageOptimization] = useState(!isMobile);
+  // Section collapse state - all collapsed by default
+  const [showBranding, setShowBranding] = useState(false);
+  const [showLinks, setShowLinks] = useState(false);
+  const [showOpenAI, setShowOpenAI] = useState(false);
+  const [showImageOptimization, setShowImageOptimization] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
 
   const [restartingBackend, setRestartingBackend] = useState(false);
