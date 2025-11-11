@@ -493,6 +493,8 @@
 }
 
 .sse-toaster.maximized .sse-toaster-output {
+  height: calc(100vh - 240px);
+  min-height: calc(100vh - 240px);
   max-height: calc(100vh - 240px);
 }
 
@@ -579,6 +581,8 @@
   }
 
   .sse-toaster.maximized .sse-toaster-output {
+    height: calc(100vh - 200px);
+    min-height: calc(100vh - 200px);
     max-height: calc(100vh - 200px);
   }
 }
