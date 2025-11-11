@@ -42,23 +42,11 @@ export default function ShareModal({ album, onClose }: ShareModalProps) {
     setError(null);
 
     try {
-      // Get CSRF token
-      const csrfResponse = await fetch(`${API_URL}/api/auth/csrf`, {
-        credentials: 'include',
-      });
-
-      if (!csrfResponse.ok) {
-        throw new Error('Failed to get CSRF token');
-      }
-
-      const { csrfToken } = await csrfResponse.json();
-
-      // Create share link
+      // Create share link (no CSRF token needed - auth is checked via session)
       const response = await fetch(`${API_URL}/api/share-links/create`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-CSRF-Token': csrfToken,
         },
         credentials: 'include',
         body: JSON.stringify({
@@ -73,6 +61,13 @@ export default function ShareModal({ album, onClose }: ShareModalProps) {
 
       const data = await response.json();
       setShareLink(data.shareLink);
+      
+      // Auto-copy to clipboard after generation
+      const url = `${SITE_URL}/shared/${data.shareLink.secretKey}`;
+      navigator.clipboard.writeText(url).then(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      });
     } catch (err) {
       console.error('Error generating share link:', err);
       setError(err instanceof Error ? err.message : 'Failed to generate share link');
@@ -148,7 +143,7 @@ export default function ShareModal({ album, onClose }: ShareModalProps) {
                 onClick={generateShareLink}
                 disabled={loading}
               >
-                {loading ? 'Generating...' : 'Generate Share Link'}
+                {loading ? 'Copying...' : 'Copy Link'}
               </button>
             </>
           ) : (
