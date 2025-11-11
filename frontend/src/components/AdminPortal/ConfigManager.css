@@ -1,8 +1,8 @@
 /* Config Manager Styles - matching Branding styles */
 
 @font-face {
-  font-family: 'Modern DOS';
-  src: url('/fonts/ModernDOS8x16.ttf') format('truetype');
+  font-family: "Modern DOS";
+  src: url("/fonts/ModernDOS8x16.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
 }
@@ -33,18 +33,53 @@
   margin-top: 1.5rem;
   display: flex;
   flex-direction: column;
-  gap: 2rem;
   margin-bottom: 2rem;
 }
 
 .config-group {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  margin-bottom: 1rem;
 }
 
 .config-group.full-width {
   width: 100%;
+}
+
+/* OpenAI Settings Grid - Side by side on desktop */
+.openai-settings-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .openai-settings-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.openai-section {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.05) 0%,
+    rgba(255, 255, 255, 0.02) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.openai-section-label {
+  color: var(--primary-color);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.25rem;
 }
 
 .config-section-title {
@@ -76,13 +111,14 @@
 }
 
 .unsaved-indicator::before {
-  content: '●';
+  content: "●";
   font-size: 0.75rem;
   animation: pulse-dot 2s ease-in-out infinite;
 }
 
 @keyframes pulse-dot {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
   }
   50% {
@@ -156,7 +192,7 @@
 }
 
 .titles-output-content {
-  font-family: 'Modern DOS', 'Courier New', monospace;
+  font-family: "Modern DOS", "Courier New", monospace;
   font-size: 0.75rem;
   line-height: 1.4;
   color: #e5e7eb;
@@ -228,16 +264,16 @@
     grid-template-columns: 1fr;
     gap: 1rem;
   }
-  
+
   .ai-toggle-container {
     flex-wrap: wrap;
     gap: 0.75rem;
   }
-  
+
   .ai-toggle-title {
     font-size: 0.9rem;
   }
-  
+
   .ai-toggle-controls {
     gap: 0.5rem;
   }
@@ -247,14 +283,27 @@
   .ai-toggle-container {
     align-items: flex-start;
   }
-  
+
   .ai-toggle-label {
     flex-basis: 100%;
     margin-bottom: 0.5rem;
   }
-  
+
   .ai-toggle-controls {
     margin-left: 0;
   }
 }
 
+/* Collapsible Section */
+.collapsible-content {
+  overflow: hidden;
+}
+
+.collapsible-content.collapsed {
+  max-height: 0 !important;
+}
+
+.collapsible-content.expanded {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}

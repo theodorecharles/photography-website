@@ -48,6 +48,45 @@ router.get('/', requireAuth, (req, res) => {
 });
 
 /**
+ * POST /api/config/validate-openai-key
+ * Validate OpenAI API key
+ */
+router.post('/validate-openai-key', requireAuth, express.json(), async (req, res) => {
+  try {
+    const { apiKey } = req.body;
+    
+    if (!apiKey || typeof apiKey !== 'string' || apiKey.trim() === '') {
+      res.json({ valid: true }); // Empty key is considered valid (for removal)
+      return;
+    }
+    
+    console.log('[OpenAI Validation] Testing API key...');
+    
+    // Test the API key by calling OpenAI's models endpoint
+    const response = await fetch('https://api.openai.com/v1/models', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+      },
+    });
+    
+    console.log('[OpenAI Validation] Response status:', response.status);
+    console.log('[OpenAI Validation] Response ok:', response.ok);
+    
+    // If not ok, log the error details
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('[OpenAI Validation] Error response:', errorText);
+    }
+    
+    res.json({ valid: response.ok });
+  } catch (error) {
+    console.error('[OpenAI Validation] Exception:', error);
+    res.json({ valid: false });
+  }
+});
+
+/**
  * PUT /api/config
  * Update configuration
  */
