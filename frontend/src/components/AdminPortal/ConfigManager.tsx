@@ -119,6 +119,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
   const [toasterPosition, setToasterPosition] = useState<'top-right' | 'top-left' | 'bottom-right' | 'bottom-left'>('top-right');
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState<{ x: number; y: number } | null>(null);
+  const [dragOffset, setDragOffset] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
 
   // Section collapse state - all collapsed by default
   const [showBranding, setShowBranding] = useState(false);
@@ -133,8 +134,18 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
   // Toaster drag handlers
   const handleToasterDragStart = (e: React.MouseEvent) => {
     if (isToasterMaximized || window.innerWidth <= 768) return; // Don't drag when maximized or on mobile
+    e.preventDefault();
     setIsDragging(true);
     setDragStart({ x: e.clientX, y: e.clientY });
+    setDragOffset({ x: 0, y: 0 });
+  };
+
+  const handleToasterDrag = (e: React.MouseEvent) => {
+    if (!isDragging || !dragStart) return;
+    
+    const offsetX = e.clientX - dragStart.x;
+    const offsetY = e.clientY - dragStart.y;
+    setDragOffset({ x: offsetX, y: offsetY });
   };
 
   const handleToasterDragEnd = (e: React.MouseEvent) => {
@@ -162,6 +173,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
     }
     
     setDragStart(null);
+    setDragOffset({ x: 0, y: 0 });
   };
 
   // Branding and Links state
@@ -3674,7 +3686,12 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
       {isAnyJobRunning && (
         <div 
           className={`sse-toaster ${isToasterCollapsed ? 'collapsed' : 'expanded'} ${isToasterMaximized ? 'maximized' : ''} ${toasterPosition} ${isDragging ? 'dragging' : ''}`}
+          onMouseMove={handleToasterDrag}
           onMouseUp={handleToasterDragEnd}
+          style={isDragging && !isToasterMaximized ? {
+            transform: `translate(${dragOffset.x}px, ${dragOffset.y}px)`,
+            transition: 'none'
+          } : undefined}
         >
           <div 
             className="sse-toaster-header"
@@ -3708,7 +3725,29 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
                 }}
                 title={isToasterMaximized ? "Restore" : "Maximize"}
               >
-                {isToasterMaximized ? "⊡" : "⊞"}
+                {isToasterMaximized ? (
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3" />
+                  </svg>
+                ) : (
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3" />
+                  </svg>
+                )}
               </button>
               <button
                 className="sse-toaster-collapse-btn"
