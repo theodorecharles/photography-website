@@ -338,15 +338,18 @@
   transition: opacity 0.3s ease;
 }
 
-.album-card:hover {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 100%);
-  border-color: rgba(255, 255, 255, 0.2);
-  transform: translateY(-4px);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
-}
+/* Only show hover on desktop, not on touch devices */
+@media (hover: hover) and (pointer: fine) {
+  .album-card:hover {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 100%);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
+  }
 
-.album-card:hover::before {
-  opacity: 1;
+  .album-card:hover::before {
+    opacity: 1;
+  }
 }
 
 .album-card.selected {
