@@ -42,6 +42,7 @@ import configRouter from "./routes/config.ts";
 import imageMetadataRouter from "./routes/image-metadata.ts";
 import aiTitlesRouter from "./routes/ai-titles.ts";
 import systemRouter from "./routes/system.ts";
+import shareLinksRouter from "./routes/share-links.ts";
 
 // Get the current directory path for ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -139,7 +140,7 @@ app.use(
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Analytics-Signature'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Analytics-Signature', 'X-CSRF-Token'],
   })
 );
 
@@ -282,6 +283,7 @@ app.use('/api/config', configRouter);
 app.use('/api/image-metadata', imageMetadataRouter);
 app.use('/api/ai-titles', aiTitlesRouter);
 app.use('/api/system', systemRouter);
+app.use('/api/share-links', shareLinksRouter);
 app.use(albumsRouter);
 app.use('/api/albums', albumManagementRouter);
 app.use(externalPagesRouter);

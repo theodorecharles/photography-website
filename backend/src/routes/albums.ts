@@ -16,7 +16,9 @@ import {
   getAlbumMetadata,
   getAlbumsFromMetadata,
   getImagesInAlbum,
-  getImagesFromPublishedAlbums
+  getImagesFromPublishedAlbums,
+  getShareLinkBySecret,
+  isShareLinkExpired
 } from "../database.js";
 
 const router = Router();
@@ -322,6 +324,51 @@ router.get("/api/random-photos", (req: Request, res) => {
   // Shuffle all photos for random order
   const shuffledPhotos = shuffleArray(allPhotos);
   res.json(shuffledPhotos);
+});
+
+// Get shared album by secret key
+router.get("/api/shared/:secretKey", async (req: Request, res): Promise<void> => {
+  const { secretKey } = req.params;
+
+  // Validate secret key format (64 hex characters)
+  if (!secretKey || !/^[a-f0-9]{64}$/i.test(secretKey)) {
+    res.status(404).json({ error: "Invalid share link" });
+    return;
+  }
+
+  // Look up the share link
+  const shareLink = getShareLinkBySecret(secretKey);
+  
+  if (!shareLink) {
+    res.status(404).json({ error: "Share link not found" });
+    return;
+  }
+
+  // Check if expired
+  if (isShareLinkExpired(shareLink)) {
+    res.status(410).json({ error: "Share link has expired", expired: true });
+    return;
+  }
+
+  // Get the album name
+  const album = shareLink.album;
+  const photosDir = req.app.get("photosDir");
+  const albumPath = path.join(photosDir, album);
+  
+  // Check if album directory exists
+  if (!fs.existsSync(albumPath) || !fs.statSync(albumPath).isDirectory()) {
+    res.status(404).json({ error: "Album not found" });
+    return;
+  }
+
+  // Return album info and photos (bypass published check)
+  const photos = getPhotosInAlbum(photosDir, album);
+  
+  res.json({
+    album,
+    photos,
+    expiresAt: shareLink.expires_at
+  });
 });
 
 // Get EXIF data for a specific photo
