@@ -43,6 +43,7 @@ export default function SharedAlbum() {
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [expiresAt, setExpiresAt] = useState<string | null>(null);
   const [messages, setMessages] = useState<ToastMessage[]>([]);
+  const [timeRemaining, setTimeRemaining] = useState<string>('');
 
   useEffect(() => {
     const validateShareLink = async () => {
@@ -98,9 +99,12 @@ export default function SharedAlbum() {
     setMessages(prev => prev.filter(m => m.id !== id));
   };
 
-  // Countdown timer for expiration warnings
+  // Countdown timer for expiration warnings and display
   useEffect(() => {
-    if (!expiresAt) return; // No expiration
+    if (!expiresAt) {
+      setTimeRemaining('');
+      return; // No expiration
+    }
 
     const shownWarnings = new Set<string>();
 
@@ -110,6 +114,21 @@ export default function SharedAlbum() {
       const timeLeft = expiresAtTime - now;
       const secondsLeft = Math.floor(timeLeft / 1000);
       const minutesLeft = Math.floor(timeLeft / 60000);
+      const hoursLeft = Math.floor(timeLeft / 3600000);
+
+      // Update countdown display
+      if (timeLeft <= 0) {
+        setTimeRemaining('EXPIRED');
+      } else if (hoursLeft > 0) {
+        const mins = Math.floor((timeLeft % 3600000) / 60000);
+        const secs = Math.floor((timeLeft % 60000) / 1000);
+        setTimeRemaining(`${hoursLeft}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`);
+      } else if (minutesLeft > 0) {
+        const secs = Math.floor((timeLeft % 60000) / 1000);
+        setTimeRemaining(`${minutesLeft}:${secs.toString().padStart(2, '0')}`);
+      } else {
+        setTimeRemaining(`0:${secondsLeft.toString().padStart(2, '0')}`);
+      }
 
       if (timeLeft <= 0 && !shownWarnings.has('expired')) {
         shownWarnings.add('expired');
@@ -172,6 +191,16 @@ export default function SharedAlbum() {
         avatarCacheBust={0}
       />
       <PhotoGrid album={albumName} initialPhotos={photos} />
+      
+      {/* Countdown timer at bottom */}
+      {timeRemaining && (
+        <div className="countdown-timer">
+          <span className="countdown-label">Time remaining:</span>
+          <span className={`countdown-value ${timeRemaining === 'EXPIRED' ? 'expired' : ''}`}>
+            {timeRemaining}
+          </span>
+        </div>
+      )}
       
       {/* Toast notifications */}
       <div className="toast-container">
@@ -311,6 +340,70 @@ export default function SharedAlbum() {
             right: 10px;
             left: 10px;
             min-width: auto;
+          }
+        }
+
+        /* Countdown timer */
+        .countdown-timer {
+          position: fixed;
+          bottom: 20px;
+          left: 50%;
+          transform: translateX(-50%);
+          background: linear-gradient(135deg, rgba(26, 26, 26, 0.95) 0%, rgba(15, 15, 15, 0.95) 100%);
+          border: 1.5px solid rgba(255, 255, 255, 0.2);
+          padding: 0.75rem 1.5rem;
+          border-radius: 8px;
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+          z-index: 1000;
+        }
+
+        .countdown-label {
+          color: rgba(255, 255, 255, 0.7);
+          font-size: 0.9rem;
+          font-weight: 500;
+        }
+
+        .countdown-value {
+          font-family: 'SF Mono', 'Monaco', 'Cascadia Code', 'Courier New', monospace;
+          font-size: 1.2rem;
+          font-weight: 600;
+          color: #4ade80;
+          min-width: 60px;
+          text-align: center;
+        }
+
+        .countdown-value.expired {
+          color: #f87171;
+          animation: pulse 0.5s infinite;
+        }
+
+        @keyframes pulse {
+          0%, 100% {
+            opacity: 1;
+          }
+          50% {
+            opacity: 0.5;
+          }
+        }
+
+        @media (max-width: 600px) {
+          .countdown-timer {
+            bottom: 10px;
+            padding: 0.5rem 1rem;
+          }
+
+          .countdown-label {
+            font-size: 0.8rem;
+          }
+
+          .countdown-value {
+            font-size: 1rem;
+            min-width: 50px;
           }
         }
       `}</style>
