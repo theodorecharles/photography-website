@@ -115,9 +115,6 @@ interface SortablePhotoItemProps {
   index: number;
   onEdit: (photo: Photo) => void;
   onDelete: (album: string, filename: string, title: string) => void;
-  onMoveUp: (index: number) => void;
-  onMoveDown: (index: number) => void;
-  totalPhotos: number;
 }
 
 const SortablePhotoItem: React.FC<SortablePhotoItemProps> = ({
@@ -125,9 +122,6 @@ const SortablePhotoItem: React.FC<SortablePhotoItemProps> = ({
   index,
   onEdit,
   onDelete,
-  onMoveUp,
-  onMoveDown,
-  totalPhotos,
 }) => {
   const {
     attributes,
@@ -159,34 +153,6 @@ const SortablePhotoItem: React.FC<SortablePhotoItemProps> = ({
         alt={photo.title}
         className="admin-photo-thumbnail"
       />
-
-      {/* Reorder controls (mobile) */}
-      <div className="photo-reorder-controls-mobile">
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onMoveUp(index);
-          }}
-          disabled={index === 0}
-          className="btn-reorder-mobile"
-          title="Move up"
-          type="button"
-        >
-          ↑
-        </button>
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onMoveDown(index);
-          }}
-          disabled={index === totalPhotos - 1}
-          className="btn-reorder-mobile"
-          title="Move down"
-          type="button"
-        >
-          ↓
-        </button>
-      </div>
 
       <div className="photo-overlay">
         <div className="photo-actions">
@@ -625,23 +591,6 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     }
   };
 
-  // Handle move up (mobile)
-  const handleMovePhotoUp = (index: number) => {
-    if (index === 0) return;
-    setHasEverDragged(true); // Mark that user has reordered
-    const newPhotos = [...albumPhotos];
-    [newPhotos[index - 1], newPhotos[index]] = [newPhotos[index], newPhotos[index - 1]];
-    setAlbumPhotos(newPhotos);
-  };
-
-  // Handle move down (mobile)
-  const handleMovePhotoDown = (index: number) => {
-    if (index === albumPhotos.length - 1) return;
-    setHasEverDragged(true); // Mark that user has reordered
-    const newPhotos = [...albumPhotos];
-    [newPhotos[index], newPhotos[index + 1]] = [newPhotos[index + 1], newPhotos[index]];
-    setAlbumPhotos(newPhotos);
-  };
 
   // Save photo order
   const handleSavePhotoOrder = async () => {
@@ -1756,9 +1705,6 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                           index={index}
                           onEdit={handleOpenEditModal}
                           onDelete={handleDeletePhoto}
-                          onMoveUp={handleMovePhotoUp}
-                          onMoveDown={handleMovePhotoDown}
-                          totalPhotos={albumPhotos.length}
                         />
                       ))}
                     </SortableContext>
