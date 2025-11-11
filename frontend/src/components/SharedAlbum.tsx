@@ -10,7 +10,6 @@ import { API_URL } from '../config';
 import ExpiredLink from './Misc/ExpiredLink';
 import NotFound from './Misc/NotFound';
 import Header from './Header';
-import Footer from './Footer';
 import '../App.css'; // Import for main-content-title styles
 
 interface Photo {
@@ -213,8 +212,6 @@ export default function SharedAlbum() {
         )}
         <PhotoGrid album={albumName} initialPhotos={photos} />
       </main>
-      
-      <Footer albums={[]} externalLinks={[]} currentAlbum={albumName} />
       
       {/* Countdown timer at bottom */}
       {timeRemaining && (
