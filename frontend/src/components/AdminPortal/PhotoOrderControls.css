@@ -24,7 +24,7 @@
   justify-content: flex-start;
 }
 
-/* Desktop: single row layout */
+/* Desktop: single row layout with cancel/shuffle on left, unsaved/save on right */
 @media (min-width: 769px) {
   .photo-order-controls {
     flex-direction: row;
@@ -35,9 +35,19 @@
   .photo-order-row {
     flex: 0 0 auto;
   }
+  
+  /* Secondary row (cancel/shuffle) stays on the left */
+  .photo-order-row-secondary {
+    order: 1;
+  }
+  
+  /* Primary row (unsaved/save) goes to the right */
+  .photo-order-row-primary {
+    order: 2;
+  }
 }
 
-/* Mobile: use grid for exact alignment */
+/* Mobile: use grid for exact alignment with cancel/shuffle on bottom */
 @media (max-width: 768px) {
   .photo-order-controls {
     display: grid;
@@ -51,6 +61,16 @@
     grid-template-columns: 1fr 1fr;
     gap: 0.75rem;
     width: 100%;
+  }
+  
+  /* Primary row (unsaved/save) on top */
+  .photo-order-row-primary {
+    order: 1;
+  }
+  
+  /* Secondary row (cancel/shuffle) on bottom */
+  .photo-order-row-secondary {
+    order: 2;
   }
   
   .photo-order-row-primary .unsaved-indicator {
