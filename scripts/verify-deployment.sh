@@ -96,9 +96,20 @@ fi
 
 echo ""
 
+# Read ports from config.json if it exists
+CONFIG_FILE="config/config.json"
+if [ -f "$CONFIG_FILE" ]; then
+    BACKEND_PORT=$(node -e "console.log(JSON.parse(require('fs').readFileSync('$CONFIG_FILE', 'utf8')).environment.backend.port)" 2>/dev/null || echo "3001")
+    FRONTEND_PORT=$(node -e "console.log(JSON.parse(require('fs').readFileSync('$CONFIG_FILE', 'utf8')).environment.frontend.port)" 2>/dev/null || echo "3000")
+else
+    echo -e "${YELLOW}⚠${NC}  config.json not found, using default ports"
+    BACKEND_PORT=3001
+    FRONTEND_PORT=3000
+fi
+
 # Check if backend is responding
 echo "🌐 Checking backend API..."
-BACKEND_URL="http://localhost:3001/api/health"
+BACKEND_URL="http://localhost:${BACKEND_PORT}/api/health"
 
 if curl -s -f "$BACKEND_URL" > /dev/null 2>&1; then
     echo -e "${GREEN}✓${NC} Backend API responding"
@@ -112,7 +123,7 @@ echo ""
 
 # Check if frontend is responding
 echo "🖥️  Checking frontend..."
-FRONTEND_URL="http://localhost:3000"
+FRONTEND_URL="http://localhost:${FRONTEND_PORT}"
 
 if curl -s -f "$FRONTEND_URL" > /dev/null 2>&1; then
     echo -e "${GREEN}✓${NC} Frontend responding"

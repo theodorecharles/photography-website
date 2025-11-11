@@ -13,8 +13,21 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Get API URL from environment or use default
-const API_URL = process.env.API_URL || 'http://localhost:3001';
+// Try to load config.json for backend port, fall back to environment or defaults
+let API_URL = process.env.API_URL;
+
+if (!API_URL) {
+  try {
+    const configPath = path.join(__dirname, '../config/config.json');
+    const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+    const backendPort = config.environment.backend.port || 3001;
+    API_URL = `http://localhost:${backendPort}`;
+  } catch (error) {
+    // config.json doesn't exist, use default
+    API_URL = 'http://localhost:3001';
+  }
+}
+
 const OUTPUT_DIR = path.join(__dirname, '../frontend/public/albums-data');
 
 console.log('🚀 Starting static JSON generation...');
