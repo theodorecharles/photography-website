@@ -15,7 +15,7 @@ import {
 } from 'recharts';
 import { API_URL } from '../../../config';
 import { fetchWithRateLimitCheck } from '../../../utils/fetchWrapper';
-import VisitorMap from './VisitorMap';
+import SimpleVisitorMap from './SimpleVisitorMap';
 import './Metrics.css';
 
 interface Stats {
@@ -390,7 +390,7 @@ export default function Metrics() {
             <p style={{ color: '#9ca3af', fontSize: '0.85rem', marginBottom: '0.75rem' }}>
               Geographic distribution of visitors based on their IP addresses
             </p>
-            <VisitorMap locations={visitorLocations} loading={loadingLocations} />
+            <SimpleVisitorMap locations={visitorLocations} loading={loadingLocations} />
           </div>
 
           {/* Charts Grid - Side by Side on Desktop */}
