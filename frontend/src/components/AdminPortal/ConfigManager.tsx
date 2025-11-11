@@ -113,6 +113,9 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
   // Helper to check if any job is running
   const isAnyJobRunning = generatingTitles || isOptimizationRunning;
 
+  // SSE Output Toaster state
+  const [isToasterCollapsed, setIsToasterCollapsed] = useState(false);
+
   // Section collapse state - all collapsed by default
   const [showBranding, setShowBranding] = useState(false);
   const [showLinks, setShowLinks] = useState(false);
@@ -2774,110 +2777,6 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
             </div>
             {/* End Title Generation and Optimized Images Grid */}
 
-            {/* Unified SSE Output Section */}
-            {isAnyJobRunning && (
-              <div className="sse-output-section">
-                <label className="openai-section-label" style={{ marginBottom: "1rem" }}>
-                  {generatingTitles ? "TITLE GENERATION OUTPUT" : "IMAGE OPTIMIZATION OUTPUT"}
-                </label>
-                
-                {/* Progress Bar */}
-                <div style={{ marginBottom: "1rem" }}>
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      marginBottom: "0.5rem",
-                      fontSize: "0.9rem",
-                    }}
-                  >
-                    <span style={{ color: "#9ca3af" }}>Progress</span>
-                    <span
-                      style={{
-                        color: "var(--primary-color)",
-                        fontWeight: 600,
-                      }}
-                    >
-                      {generatingTitles ? titlesProgress : optimizationProgress}%
-                    </span>
-                  </div>
-                  <div
-                    style={{
-                      width: "100%",
-                      height: "8px",
-                      backgroundColor: "rgba(255, 255, 255, 0.1)",
-                      borderRadius: "4px",
-                      overflow: "hidden",
-                    }}
-                  >
-                    <div
-                      style={{
-                        height: "100%",
-                        width: `${generatingTitles ? titlesProgress : optimizationProgress}%`,
-                        backgroundColor: "var(--primary-color)",
-                        transition: "width 0.3s ease",
-                        borderRadius: "4px",
-                      }}
-                    />
-                  </div>
-                </div>
-
-                {/* Output Console */}
-                <div
-                  className="titles-output"
-                  style={{ maxHeight: "500px" }}
-                  ref={generatingTitles ? titlesOutputRef : optimizationOutputRef}
-                >
-                  <div className="titles-output-content">
-                    {generatingTitles ? (
-                      <>
-                        {titlesOutput.map((line, index) => (
-                          <div key={index} className="output-line">
-                            {line}
-                          </div>
-                        ))}
-                        {titlesOutput.length === 0 && (
-                          <div className="output-line">
-                            Starting AI title generation...
-                          </div>
-                        )}
-                        {generatingTitles && (
-                          <div
-                            className="output-line"
-                            style={{
-                              marginTop: "0.5rem",
-                              color: titlesWaiting !== null ? "#fbbf24" : "#4ade80",
-                            }}
-                          >
-                            ⏳{" "}
-                            {titlesWaiting !== null
-                              ? `Waiting... ${titlesWaiting}s`
-                              : "Running..."}
-                          </div>
-                        )}
-                      </>
-                    ) : (
-                      <>
-                        {optimizationLogs.map((log, index) => (
-                          <div key={index} className="output-line">
-                            {log}
-                          </div>
-                        ))}
-                        {isOptimizationRunning && (
-                          <div
-                            className="output-line"
-                            style={{ marginTop: "0.5rem", color: "#4ade80" }}
-                          >
-                            ⏳ Running...
-                          </div>
-                        )}
-                      </>
-                    )}
-                  </div>
-                </div>
-              </div>
-            )}
-            {/* End Unified SSE Output Section */}
 
             {/* Backend Settings */}
             <div className="openai-section" style={{ marginBottom: "2rem" }}>
@@ -3732,6 +3631,126 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
           </div>
         </div>
       )}
+
+      {/* Floating SSE Output Toaster (Picture-in-Picture style) */}
+      {isAnyJobRunning && (
+        <div className={`sse-toaster ${isToasterCollapsed ? 'collapsed' : 'expanded'}`}>
+          <div className="sse-toaster-header">
+            <div className="sse-toaster-title">
+              <span className="sse-toaster-icon">⚙️</span>
+              <span className="sse-toaster-label">
+                {generatingTitles ? "Title Generation" : "Image Optimization"}
+              </span>
+              <span className="sse-toaster-progress">
+                {generatingTitles ? titlesProgress : optimizationProgress}%
+              </span>
+            </div>
+            <button
+              className="sse-toaster-collapse-btn"
+              onClick={() => setIsToasterCollapsed(!isToasterCollapsed)}
+              title={isToasterCollapsed ? "Expand" : "Collapse"}
+            >
+              {isToasterCollapsed ? "▼" : "▲"}
+            </button>
+          </div>
+
+          {!isToasterCollapsed && (
+            <>
+              {/* Progress Bar */}
+              <div className="sse-toaster-progress-bar-container">
+                <div
+                  className="sse-toaster-progress-bar"
+                  style={{
+                    width: `${generatingTitles ? titlesProgress : optimizationProgress}%`,
+                  }}
+                />
+              </div>
+
+              {/* Output Console */}
+              <div
+                className="sse-toaster-output"
+                ref={generatingTitles ? titlesOutputRef : optimizationOutputRef}
+              >
+                <div className="sse-toaster-output-content">
+                  {generatingTitles ? (
+                    <>
+                      {titlesOutput.map((line, index) => (
+                        <div key={index} className="output-line">
+                          {line}
+                        </div>
+                      ))}
+                      {titlesOutput.length === 0 && (
+                        <div className="output-line">
+                          Starting AI title generation...
+                        </div>
+                      )}
+                      {generatingTitles && (
+                        <div
+                          className="output-line"
+                          style={{
+                            marginTop: "0.5rem",
+                            color: titlesWaiting !== null ? "#fbbf24" : "#4ade80",
+                          }}
+                        >
+                          ⏳{" "}
+                          {titlesWaiting !== null
+                            ? `Waiting... ${titlesWaiting}s`
+                            : "Running..."}
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      {optimizationLogs.map((log, index) => (
+                        <div key={index} className="output-line">
+                          {log}
+                        </div>
+                      ))}
+                      {isOptimizationRunning && (
+                        <div
+                          className="output-line"
+                          style={{ marginTop: "0.5rem", color: "#4ade80" }}
+                        >
+                          ⏳ Running...
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* Collapsed view - show only last 2 lines */}
+          {isToasterCollapsed && (
+            <div className="sse-toaster-collapsed-preview">
+              {generatingTitles ? (
+                <>
+                  {titlesOutput.slice(-2).map((line, index) => (
+                    <div key={index} className="output-line-preview">
+                      {line}
+                    </div>
+                  ))}
+                  {titlesOutput.length === 0 && (
+                    <div className="output-line-preview">
+                      Starting AI title generation...
+                    </div>
+                  )}
+                </>
+              ) : (
+                <>
+                  {optimizationLogs.slice(-2).map((log, index) => (
+                    <div key={index} className="output-line-preview">
+                      {log}
+                    </div>
+                  ))}
+                </>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+      {/* End Floating SSE Output Toaster */}
     </section>
   );
 };

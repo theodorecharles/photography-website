@@ -232,25 +232,206 @@
   background: rgba(255, 255, 255, 0.3);
 }
 
-/* Unified SSE Output Section */
-.sse-output-section {
-  width: 100%;
-  margin-bottom: 2rem;
-  padding: 1.5rem;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1.5px solid rgba(255, 255, 255, 0.08);
-  border-radius: 8px;
-  animation: slideIn 0.3s ease-out;
+/* Floating SSE Output Toaster (Picture-in-Picture style) */
+.sse-toaster {
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  width: 450px;
+  max-width: calc(100vw - 40px);
+  background: linear-gradient(135deg, #1a1a1a 0%, #0d0d0d 100%);
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6),
+              0 0 0 1px rgba(255, 255, 255, 0.05);
+  z-index: 9999;
+  backdrop-filter: blur(10px);
+  animation: slideInFromRight 0.3s ease-out;
+  transition: height 0.3s ease-out;
 }
 
-@keyframes slideIn {
+@keyframes slideInFromRight {
   from {
     opacity: 0;
-    transform: translateY(-10px);
+    transform: translateX(100px);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateX(0);
+  }
+}
+
+.sse-toaster.expanded {
+  height: auto;
+  max-height: 600px;
+}
+
+.sse-toaster.collapsed {
+  height: auto;
+}
+
+.sse-toaster-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 12px 12px 0 0;
+}
+
+.sse-toaster-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+}
+
+.sse-toaster-icon {
+  font-size: 1.25rem;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.sse-toaster-label {
+  font-weight: 600;
+  color: #fff;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.sse-toaster-progress {
+  color: var(--primary-color);
+  font-weight: 700;
+  font-size: 1rem;
+  margin-left: auto;
+}
+
+.sse-toaster-collapse-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #fff;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+  padding: 0;
+}
+
+.sse-toaster-collapse-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: var(--primary-color);
+  transform: scale(1.05);
+}
+
+.sse-toaster-progress-bar-container {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+}
+
+.sse-toaster-progress-bar {
+  height: 100%;
+  background: var(--primary-color);
+  transition: width 0.3s ease;
+  box-shadow: 0 0 10px rgba(74, 222, 128, 0.5);
+}
+
+.sse-toaster-output {
+  padding: 1rem;
+  max-height: 450px;
+  overflow-y: auto;
+  background: #000000;
+}
+
+.sse-toaster-output-content {
+  font-family: "Modern DOS", "Courier New", monospace;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  color: #e5e7eb;
+}
+
+.sse-toaster-collapsed-preview {
+  padding: 1rem 1.25rem;
+  background: #000000;
+  border-radius: 0 0 12px 12px;
+  min-height: 60px;
+}
+
+.output-line-preview {
+  font-family: "Modern DOS", "Courier New", monospace;
+  font-size: 0.7rem;
+  line-height: 1.4;
+  color: #9ca3af;
+  margin-bottom: 0.25rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.output-line-preview:last-child {
+  margin-bottom: 0;
+}
+
+/* Scrollbar styling for toaster output */
+.sse-toaster-output::-webkit-scrollbar {
+  width: 8px;
+}
+
+.sse-toaster-output::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+.sse-toaster-output::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+.sse-toaster-output::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Responsive adjustments for toaster */
+@media (max-width: 768px) {
+  .sse-toaster {
+    width: calc(100vw - 40px);
+    right: 20px;
+    top: 70px;
+  }
+
+  .sse-toaster-output {
+    max-height: 300px;
+  }
+
+  .sse-toaster.expanded {
+    max-height: 400px;
+  }
+}
+
+@media (max-width: 600px) {
+  .sse-toaster-output-content,
+  .output-line-preview {
+    font-size: 0.65rem;
+  }
+
+  .sse-toaster-label {
+    font-size: 0.85rem;
   }
 }
 
