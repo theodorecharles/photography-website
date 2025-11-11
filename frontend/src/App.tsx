@@ -248,7 +248,8 @@ function App() {
   }, []);
 
   // Loading and error states
-  if (loading) {
+  // Skip loading state for admin routes - they handle their own loading
+  if (loading && !location.pathname.startsWith('/admin')) {
     return (
       <div className="photo-grid-loading">
         <div className="loading-spinner"></div>
@@ -293,7 +294,12 @@ function App() {
           </h1>
         )}
         <StructuredData />
-        <Suspense fallback={<div className="loading">Loading...</div>}>
+        <Suspense fallback={
+          <div className="photo-grid-loading">
+            <div className="loading-spinner"></div>
+            <p>Loading...</p>
+          </div>
+        }>
           <Routes>
             <Route path="/" element={
               <>

@@ -2,7 +2,8 @@
   "type": "module",
   "scripts": {
     "dev": "concurrently --kill-others --names \"BACKEND,FRONTEND\" --prefix-colors \"blue,green\" \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\"",
-    "build": "node build.js"
+    "build": "node build.js",
+    "generate-static-json": "node scripts/generate-static-json.js"
   },
   "devDependencies": {
     "@types/node": "^22.15.2",

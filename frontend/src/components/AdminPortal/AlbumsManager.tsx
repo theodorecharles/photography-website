@@ -338,6 +338,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   const uploadingImagesRef = useRef<UploadingImage[]>([]);
   const [selectedAlbum, setSelectedAlbum] = useState<string | null>(null);
   const [albumPhotos, setAlbumPhotos] = useState<Photo[]>([]);
+  const [loadingPhotos, setLoadingPhotos] = useState(false);
   const [originalPhotoOrder, setOriginalPhotoOrder] = useState<Photo[]>([]);
   const [editingPhoto, setEditingPhoto] = useState<Photo | null>(null);
   const [editTitleValue, setEditTitleValue] = useState('');
@@ -440,6 +441,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   }, [selectedAlbum]);
 
   const loadPhotos = async (albumName: string) => {
+    setLoadingPhotos(true);
     try {
       // Add cache-busting parameter to ensure fresh data
       const cacheBust = Date.now();
@@ -458,6 +460,8 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
       setAlbumPhotos([]);
       setOriginalPhotoOrder([]);
       setHasEverDragged(false);
+    } finally {
+      setLoadingPhotos(false);
     }
   };
 
@@ -1839,7 +1843,12 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                 </div>
               )}
 
-              {albumPhotos.length === 0 && uploadingImages.length === 0 ? (
+              {loadingPhotos ? (
+                <div className="loading-container" style={{ marginTop: '2rem' }}>
+                  <div className="loading-spinner"></div>
+                  <p>Loading photos...</p>
+                </div>
+              ) : albumPhotos.length === 0 && uploadingImages.length === 0 ? (
                 <p style={{ color: '#888', marginTop: '1rem' }}>
                   No photos in this album yet. Upload some to get started!
                 </p>

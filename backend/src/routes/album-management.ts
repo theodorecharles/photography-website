@@ -23,6 +23,7 @@ import {
   updateAlbumSortOrder
 } from "../database.js";
 import { invalidateAlbumCache } from "./albums.js";
+import { generateStaticJSONFiles } from "./static-json.js";
 import OpenAI from "openai";
 
 const router = Router();
@@ -227,6 +228,10 @@ router.post("/", requireAuth, async (req: Request, res: Response): Promise<void>
     saveAlbum(sanitizedName, false);
     console.log(`✓ Created unpublished album: ${sanitizedName}`);
 
+    // Regenerate static JSON files
+    const appRoot = req.app.get('appRoot');
+    generateStaticJSONFiles(appRoot);
+
     res.json({ success: true, album: sanitizedName });
   } catch (error) {
     console.error('Error creating album:', error);
@@ -283,6 +288,10 @@ router.delete("/:album", requireAuth, async (req: Request, res: Response): Promi
     // Invalidate cache for this album
     invalidateAlbumCache(sanitizedAlbum);
 
+    // Regenerate static JSON files
+    const appRoot = req.app.get('appRoot');
+    generateStaticJSONFiles(appRoot);
+
     res.json({ success: true });
   } catch (error) {
     console.error('Error deleting album:', error);
@@ -334,6 +343,10 @@ router.delete("/:album/photos/:photo", requireAuth, async (req: Request, res: Re
 
     // Invalidate cache for this album
     invalidateAlbumCache(sanitizedAlbum);
+
+    // Regenerate static JSON files
+    const appRoot = req.app.get('appRoot');
+    generateStaticJSONFiles(appRoot);
 
     res.json({ success: true });
   } catch (error) {
@@ -476,6 +489,10 @@ router.post("/:album/upload", requireAuth, upload.single('photo'), async (req: R
             console.error('Error checking AI config:', err);
             // Don't fail the upload if AI generation fails
           }
+          
+          // Regenerate static JSON files after successful upload
+          const appRoot = req.app.get('appRoot');
+          generateStaticJSONFiles(appRoot);
         } else {
           res.write(`data: ${JSON.stringify({ 
             type: 'error', 
@@ -540,6 +557,10 @@ router.patch("/:album/publish", requireAuth, async (req: Request, res: Response)
     saveAlbum(sanitizedAlbum, published);
     
     console.log(`✓ Set album "${sanitizedAlbum}" published state to: ${published}`);
+
+    // Regenerate static JSON files
+    const appRoot = req.app.get('appRoot');
+    generateStaticJSONFiles(appRoot);
 
     res.json({ 
       success: true, 
@@ -642,6 +663,10 @@ router.post("/:album/photo-order", requireAuth, async (req: Request, res: Respon
     
     console.log(`✓ Updated photo order for album: ${sanitizedAlbum} (${imageOrders.length} photos)`);
 
+    // Regenerate static JSON files
+    const appRoot = req.app.get('appRoot');
+    generateStaticJSONFiles(appRoot);
+
     res.json({ success: true });
   } catch (error) {
     console.error('Error updating photo order:', error);
@@ -673,6 +698,11 @@ router.put('/sort-order', requireAuth, async (req: Request, res: Response): Prom
     
     if (success) {
       console.log(`✓ Updated sort order for ${albumOrders.length} albums`);
+      
+      // Regenerate static JSON files
+      const appRoot = req.app.get('appRoot');
+      generateStaticJSONFiles(appRoot);
+      
       res.json({ success: true });
     } else {
       res.status(500).json({ error: 'Failed to update album order' });
