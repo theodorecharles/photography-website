@@ -28,6 +28,32 @@ export default function ShareModal({ album, onClose }: ShareModalProps) {
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
+  const copyToClipboard = async (text: string) => {
+    try {
+      // Try modern clipboard API first
+      await navigator.clipboard.writeText(text);
+      return true;
+    } catch (err) {
+      // Fallback to older method
+      try {
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        textArea.style.top = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        const successful = document.execCommand('copy');
+        document.body.removeChild(textArea);
+        return successful;
+      } catch (fallbackErr) {
+        console.error('Fallback clipboard copy failed:', fallbackErr);
+        return false;
+      }
+    }
+  };
+
   const generateAndCopyLink = async () => {
     setLoading(true);
     setError(null);
@@ -55,9 +81,14 @@ export default function ShareModal({ album, onClose }: ShareModalProps) {
       
       // Copy to clipboard
       const url = `${SITE_URL}/shared/${data.shareLink.secretKey}`;
-      await navigator.clipboard.writeText(url);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 3000);
+      const copySuccess = await copyToClipboard(url);
+      
+      if (copySuccess) {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 3000);
+      } else {
+        setError('Failed to copy link to clipboard. Please try again.');
+      }
     } catch (err) {
       console.error('Error generating share link:', err);
       setError(err instanceof Error ? err.message : 'Failed to generate share link');
@@ -106,18 +137,13 @@ export default function ShareModal({ album, onClose }: ShareModalProps) {
           {error && <div className="share-error">{error}</div>}
           {copied && <div className="share-success-inline">✓ Link copied to clipboard!</div>}
 
-          <div className="share-modal-actions">
-            <button
-              className="generate-button"
-              onClick={generateAndCopyLink}
-              disabled={loading}
-            >
-              {loading ? 'Copying...' : 'Copy Link'}
-            </button>
-            <button className="done-button" onClick={onClose}>
-              Done
-            </button>
-          </div>
+          <button
+            className="generate-button"
+            onClick={generateAndCopyLink}
+            disabled={loading}
+          >
+            {loading ? 'Copying...' : 'Copy Link'}
+          </button>
         </div>
       </div>
     </div>

@@ -121,14 +121,8 @@
   font-weight: 500;
 }
 
-.share-modal-actions {
-  display: flex;
-  gap: 0.75rem;
-  margin-top: 1rem;
-}
-
 .generate-button {
-  flex: 1;
+  width: 100%;
   padding: 0.875rem;
   background-color: #8b5cf6;
   color: #ffffff;
@@ -138,6 +132,7 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
+  margin-top: 1rem;
 }
 
 .generate-button:hover:not(:disabled) {
