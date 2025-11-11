@@ -251,7 +251,8 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   const photoSensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 8, // Require 8px movement before drag starts
+        delay: 250, // Require 250ms hold before drag starts
+        tolerance: 5, // Allow 5px movement during the delay
       },
     }),
     useSensor(KeyboardSensor, {
@@ -263,7 +264,8 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   const albumSensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 8,
+        delay: 250, // Require 250ms hold before drag starts
+        tolerance: 5, // Allow 5px movement during the delay
       },
     }),
     useSensor(KeyboardSensor, {
