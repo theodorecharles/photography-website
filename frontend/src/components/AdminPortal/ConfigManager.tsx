@@ -1093,19 +1093,29 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
 
         {/* Image Optimization Settings */}
         <div className="config-group full-width">
-          <h3 className="config-section-title" style={{ margin: 0, marginBottom: "0.5rem" }}>
+          <h3
+            className="config-section-title"
+            style={{ margin: 0, marginBottom: "0.5rem" }}
+          >
             Image Optimization
           </h3>
           <p className="config-section-description">
             Control quality and dimensions for thumbnail, modal, and download
             versions of your images. Higher quality means larger file sizes.
           </p>
-          
+
           {/* Grid of optimization subsections */}
           <div className="config-grid-inner">
             {/* Thumbnail Settings */}
             <div className="openai-section">
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem" }}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  marginBottom: "0.75rem",
+                }}
+              >
                 <label className="openai-section-label">THUMBNAIL</label>
                 {hasUnsavedChanges("Image Optimization") && (
                   <button
@@ -1115,7 +1125,9 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
                     className="btn-primary"
                     style={{ padding: "0.4rem 0.8rem", fontSize: "0.85rem" }}
                   >
-                    {savingSection === "Image Optimization" ? "Saving..." : "Save"}
+                    {savingSection === "Image Optimization"
+                      ? "Saving..."
+                      : "Save"}
                   </button>
                 )}
               </div>
@@ -1123,7 +1135,9 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
                 <label className="branding-label">Quality</label>
                 <input
                   type="number"
-                  value={config.environment.optimization.images.thumbnail.quality}
+                  value={
+                    config.environment.optimization.images.thumbnail.quality
+                  }
                   onChange={(e) =>
                     updateConfig(
                       [
@@ -1146,7 +1160,8 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
                 <input
                   type="number"
                   value={
-                    config.environment.optimization.images.thumbnail.maxDimension
+                    config.environment.optimization.images.thumbnail
+                      .maxDimension
                   }
                   onChange={(e) =>
                     updateConfig(
@@ -1167,7 +1182,14 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
 
             {/* Modal Settings */}
             <div className="openai-section">
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem" }}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  marginBottom: "0.75rem",
+                }}
+              >
                 <label className="openai-section-label">MODAL</label>
                 {hasUnsavedChanges("Image Optimization") && (
                   <button
@@ -1177,7 +1199,9 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
                     className="btn-primary"
                     style={{ padding: "0.4rem 0.8rem", fontSize: "0.85rem" }}
                   >
-                    {savingSection === "Image Optimization" ? "Saving..." : "Save"}
+                    {savingSection === "Image Optimization"
+                      ? "Saving..."
+                      : "Save"}
                   </button>
                 )}
               </div>
@@ -1229,7 +1253,14 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
 
             {/* Download Settings */}
             <div className="openai-section">
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem" }}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  marginBottom: "0.75rem",
+                }}
+              >
                 <label className="openai-section-label">DOWNLOAD</label>
                 {hasUnsavedChanges("Image Optimization") && (
                   <button
@@ -1239,7 +1270,9 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
                     className="btn-primary"
                     style={{ padding: "0.4rem 0.8rem", fontSize: "0.85rem" }}
                   >
-                    {savingSection === "Image Optimization" ? "Saving..." : "Save"}
+                    {savingSection === "Image Optimization"
+                      ? "Saving..."
+                      : "Save"}
                   </button>
                 )}
               </div>
@@ -1247,7 +1280,9 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
                 <label className="branding-label">Quality</label>
                 <input
                   type="number"
-                  value={config.environment.optimization.images.download.quality}
+                  value={
+                    config.environment.optimization.images.download.quality
+                  }
                   onChange={(e) =>
                     updateConfig(
                       [
@@ -1291,7 +1326,14 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
 
             {/* Concurrency Settings */}
             <div className="openai-section">
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem" }}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  marginBottom: "0.75rem",
+                }}
+              >
                 <label className="openai-section-label">CONCURRENCY</label>
                 {hasUnsavedChanges("Image Optimization") && (
                   <button
@@ -1301,7 +1343,9 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
                     className="btn-primary"
                     style={{ padding: "0.4rem 0.8rem", fontSize: "0.85rem" }}
                   >
-                    {savingSection === "Image Optimization" ? "Saving..." : "Save"}
+                    {savingSection === "Image Optimization"
+                      ? "Saving..."
+                      : "Save"}
                   </button>
                 )}
               </div>
@@ -1623,36 +1667,51 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
 
           {showAdvanced && (
             <>
+              {/* Danger Zone Warning */}
+              <div
+                style={{
+                  marginTop: "1rem",
+                  marginBottom: "2rem",
+                  padding: "1rem 1.5rem",
+                  background: "linear-gradient(135deg, rgba(220, 38, 38, 0.15) 0%, rgba(153, 27, 27, 0.15) 100%)",
+                  border: "2px solid rgba(220, 38, 38, 0.5)",
+                  borderRadius: "8px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "1rem",
+                }}
+              >
+                <span style={{ fontSize: "1.5rem" }}>⚠️</span>
+                <div>
+                  <div
+                    style={{
+                      color: "#fca5a5",
+                      fontWeight: 700,
+                      fontSize: "1rem",
+                      letterSpacing: "0.1em",
+                      marginBottom: "0.25rem",
+                    }}
+                  >
+                    [ DANGER ZONE ]
+                  </div>
+                  <div style={{ color: "#fecaca", fontSize: "0.9rem" }}>
+                    Make sure you know what you're doing!
+                  </div>
+                </div>
+              </div>
+
               {/* Backend Settings */}
-              <div style={{ marginBottom: "2rem" }}>
+              <div className="openai-section" style={{ marginBottom: "2rem" }}>
                 <div
                   style={{
                     display: "flex",
                     justifyContent: "space-between",
                     alignItems: "center",
-                    marginBottom: "0.5rem",
+                    marginBottom: "0.75rem",
                   }}
                 >
-                  <h4
-                    style={{
-                      color: "var(--primary-color)",
-                      margin: 0,
-                      fontSize: "1.1rem",
-                      fontWeight: 600,
-                    }}
-                  >
-                    Backend
-                  </h4>
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "0.75rem",
-                    }}
-                  >
-                    {hasUnsavedChanges("Backend") && (
-                      <span className="unsaved-indicator">Unsaved changes</span>
-                    )}
+                  <label className="openai-section-label">BACKEND</label>
+                  {hasUnsavedChanges("Backend") && (
                     <button
                       type="button"
                       onClick={(e) => {
@@ -1661,13 +1720,20 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
                       }}
                       disabled={savingSection !== null}
                       className="btn-primary"
-                      style={{ padding: "0.5rem 1rem", fontSize: "0.9rem" }}
+                      style={{ padding: "0.4rem 0.8rem", fontSize: "0.85rem" }}
                     >
                       {savingSection === "Backend" ? "Saving..." : "Save"}
                     </button>
-                  </div>
+                  )}
                 </div>
-                <p className="config-section-description">
+                <p
+                  style={{
+                    fontSize: "0.85rem",
+                    color: "#888",
+                    marginTop: "0",
+                    marginBottom: "1rem",
+                  }}
+                >
                   Server configuration including port, photos directory, and
                   CORS allowed origins
                 </p>
@@ -1789,35 +1855,17 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
               </div>
 
               {/* Frontend Settings */}
-              <div style={{ marginBottom: "2rem" }}>
+              <div className="openai-section" style={{ marginBottom: "2rem" }}>
                 <div
                   style={{
                     display: "flex",
                     justifyContent: "space-between",
                     alignItems: "center",
-                    marginBottom: "0.5rem",
+                    marginBottom: "0.75rem",
                   }}
                 >
-                  <h4
-                    style={{
-                      color: "var(--primary-color)",
-                      margin: 0,
-                      fontSize: "1.1rem",
-                      fontWeight: 600,
-                    }}
-                  >
-                    Frontend
-                  </h4>
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "0.75rem",
-                    }}
-                  >
-                    {hasUnsavedChanges("Frontend") && (
-                      <span className="unsaved-indicator">Unsaved changes</span>
-                    )}
+                  <label className="openai-section-label">FRONTEND</label>
+                  {hasUnsavedChanges("Frontend") && (
                     <button
                       type="button"
                       onClick={(e) => {
@@ -1826,13 +1874,20 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
                       }}
                       disabled={savingSection !== null}
                       className="btn-primary"
-                      style={{ padding: "0.5rem 1rem", fontSize: "0.9rem" }}
+                      style={{ padding: "0.4rem 0.8rem", fontSize: "0.85rem" }}
                     >
                       {savingSection === "Frontend" ? "Saving..." : "Save"}
                     </button>
-                  </div>
+                  )}
                 </div>
-                <p className="config-section-description">
+                <p
+                  style={{
+                    fontSize: "0.85rem",
+                    color: "#888",
+                    marginTop: "0",
+                    marginBottom: "1rem",
+                  }}
+                >
                   Frontend development server port and API URL for connecting to
                   the backend
                 </p>
@@ -1907,35 +1962,17 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
               </div>
 
               {/* Security Settings */}
-              <div style={{ marginBottom: "2rem" }}>
+              <div className="openai-section" style={{ marginBottom: "2rem" }}>
                 <div
                   style={{
                     display: "flex",
                     justifyContent: "space-between",
                     alignItems: "center",
-                    marginBottom: "0.5rem",
+                    marginBottom: "0.75rem",
                   }}
                 >
-                  <h4
-                    style={{
-                      color: "var(--primary-color)",
-                      margin: 0,
-                      fontSize: "1.1rem",
-                      fontWeight: 600,
-                    }}
-                  >
-                    Security
-                  </h4>
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "0.75rem",
-                    }}
-                  >
-                    {hasUnsavedChanges("Security") && (
-                      <span className="unsaved-indicator">Unsaved changes</span>
-                    )}
+                  <label className="openai-section-label">SECURITY</label>
+                  {hasUnsavedChanges("Security") && (
                     <button
                       type="button"
                       onClick={(e) => {
@@ -1944,13 +1981,20 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
                       }}
                       disabled={savingSection !== null}
                       className="btn-primary"
-                      style={{ padding: "0.5rem 1rem", fontSize: "0.9rem" }}
+                      style={{ padding: "0.4rem 0.8rem", fontSize: "0.85rem" }}
                     >
                       {savingSection === "Security" ? "Saving..." : "Save"}
                     </button>
-                  </div>
+                  )}
                 </div>
-                <p className="config-section-description">
+                <p
+                  style={{
+                    fontSize: "0.85rem",
+                    color: "#888",
+                    marginTop: "0",
+                    marginBottom: "1rem",
+                  }}
+                >
                   Rate limiting and allowed hosts for protecting against abuse
                   and unauthorized access
                 </p>
@@ -2039,35 +2083,17 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
               </div>
 
               {/* Auth Settings */}
-              <div style={{ marginBottom: "2rem" }}>
+              <div className="openai-section" style={{ marginBottom: "2rem" }}>
                 <div
                   style={{
                     display: "flex",
                     justifyContent: "space-between",
                     alignItems: "center",
-                    marginBottom: "0.5rem",
+                    marginBottom: "0.75rem",
                   }}
                 >
-                  <h4
-                    style={{
-                      color: "var(--primary-color)",
-                      margin: 0,
-                      fontSize: "1.1rem",
-                      fontWeight: 600,
-                    }}
-                  >
-                    Authentication
-                  </h4>
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "0.75rem",
-                    }}
-                  >
-                    {hasUnsavedChanges("Authentication") && (
-                      <span className="unsaved-indicator">Unsaved changes</span>
-                    )}
+                  <label className="openai-section-label">AUTHENTICATION</label>
+                  {hasUnsavedChanges("Authentication") && (
                     <button
                       type="button"
                       onClick={(e) => {
@@ -2076,15 +2102,22 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
                       }}
                       disabled={savingSection !== null}
                       className="btn-primary"
-                      style={{ padding: "0.5rem 1rem", fontSize: "0.9rem" }}
+                      style={{ padding: "0.4rem 0.8rem", fontSize: "0.85rem" }}
                     >
                       {savingSection === "Authentication"
                         ? "Saving..."
                         : "Save"}
                     </button>
-                  </div>
+                  )}
                 </div>
-                <p className="config-section-description">
+                <p
+                  style={{
+                    fontSize: "0.85rem",
+                    color: "#888",
+                    marginTop: "0",
+                    marginBottom: "1rem",
+                  }}
+                >
                   Google OAuth credentials and authorized email addresses for
                   admin access
                 </p>
