@@ -1740,6 +1740,9 @@
 /* Save order button */
 .btn-save-order {
   animation: pulse-glow 2s ease-in-out infinite;
+  background: linear-gradient(135deg, var(--primary-color), color-mix(in srgb, var(--primary-color) 80%, white)) !important;
+  color: #000 !important;
+  font-weight: 600;
 }
 
 @keyframes pulse-glow {

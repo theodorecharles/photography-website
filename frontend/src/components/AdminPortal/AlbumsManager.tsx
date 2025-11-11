@@ -1623,11 +1623,6 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                         disabled={savingOrder}
                         className="btn-action btn-save-order"
                         title="Save photo order"
-                        style={{ 
-                          background: 'linear-gradient(135deg, var(--primary-color), color-mix(in srgb, var(--primary-color) 80%, white))',
-                          color: '#000',
-                          fontWeight: 600
-                        }}
                       >
                         {savingOrder ? 'Saving...' : 'Save Order'}
                       </button>
