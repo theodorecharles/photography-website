@@ -167,7 +167,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
 
   // Track original external links when they change from parent
   useEffect(() => {
-    setOriginalExternalLinks(JSON.parse(JSON.stringify(externalLinks)));
+    setOriginalExternalLinks(structuredClone(externalLinks));
   }, [externalLinks.length]); // Only update when length changes to avoid infinite loops
 
   // Function to scroll to and highlight OpenAI API key input
@@ -490,7 +490,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
       if (res.ok) {
         const data = await res.json();
         setConfig(data);
-        setOriginalConfig(JSON.parse(JSON.stringify(data))); // Deep clone
+        setOriginalConfig(structuredClone(data));
       } else {
         setMessage({ type: "error", text: "Failed to load configuration" });
       }
@@ -646,7 +646,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
       if (res.ok) {
         setMessage({ type: "success", text: `${sectionName} settings saved!` });
         // Update original config after successful save
-        setOriginalConfig(JSON.parse(JSON.stringify(config)));
+        setOriginalConfig(structuredClone(config));
       } else {
         const errorData = await res
           .json()
@@ -1031,7 +1031,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
   };
 
   const handleCancelLinks = () => {
-    setExternalLinks(JSON.parse(JSON.stringify(originalExternalLinks))); // Deep clone
+    setExternalLinks(structuredClone(originalExternalLinks));
     setMessage({ type: "success", text: "Changes cancelled" });
   };
 
@@ -1050,7 +1050,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
 
       if (res.ok) {
         // Update original links after successful save
-        setOriginalExternalLinks(JSON.parse(JSON.stringify(externalLinks)));
+        setOriginalExternalLinks(structuredClone(externalLinks));
         setMessage({
           type: "success",
           text: "External links saved successfully!",
@@ -1247,7 +1247,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
 
       if (res.ok) {
         // Update original config to match
-        setOriginalConfig(JSON.parse(JSON.stringify(newConfig)));
+        setOriginalConfig(structuredClone(newConfig));
         setMessage({
           type: "success",
           text: `Auto-generate AI titles ${newValue ? "enabled" : "disabled"}`,
