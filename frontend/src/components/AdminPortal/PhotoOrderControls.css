@@ -45,6 +45,7 @@
   
   .photo-order-row-primary {
     width: 100%;
+    gap: 0; /* Remove gap to match button widths */
   }
   
   .photo-order-row-secondary {
@@ -66,5 +67,6 @@
     flex: 1 1 0;
     min-width: 0;
     text-align: left;
+    padding-right: 0.75rem; /* Add padding instead of gap */
   }
 }
