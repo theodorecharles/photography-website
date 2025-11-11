@@ -401,7 +401,6 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
     if (!config) return;
     
     setSavingSection(sectionName);
-    setMessage(null);
     
     try {
       const res = await fetch(`${API_URL}/api/config`, {
@@ -496,7 +495,6 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
     setGeneratingTitles(true);
     setTitlesOutput([]);
     setTitlesProgress(0);
-    setMessage(null);
 
     // Scroll to OpenAI section to show output
     setTimeout(() => {
@@ -587,7 +585,6 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
     if (!confirm('⚠️ Restart the backend server? This will temporarily disconnect all users.')) return;
 
     setRestartingBackend(true);
-    setMessage(null);
 
     try {
       const res = await fetch(`${API_URL}/api/system/restart/backend`, {
@@ -620,7 +617,6 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
     if (!confirm('⚠️ Restart the frontend server? This requires manual restart if in development mode.')) return;
 
     setRestartingFrontend(true);
-    setMessage(null);
 
     try {
       const res = await fetch(`${API_URL}/api/system/restart/frontend`, {
@@ -651,7 +647,6 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
     setOptimizationComplete(false);
     setOptimizationLogs([]);
     setOptimizationProgress(0);
-    setMessage(null);
 
     // Scroll to regenerate button to show output
     setTimeout(() => {

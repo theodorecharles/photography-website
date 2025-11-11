@@ -57,7 +57,6 @@ const LinksManager: React.FC<LinksManagerProps> = ({
 
   const handleSaveLinks = async () => {
     setSaving(true);
-    setMessage(null);
     
     try {
       const res = await fetch(`${API_URL}/api/external-links`, {
