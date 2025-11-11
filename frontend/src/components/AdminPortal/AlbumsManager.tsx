@@ -1558,8 +1558,14 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
               <div style={{background: 'red', color: 'white', padding: '20px', fontSize: '24px', fontWeight: 'bold', marginBottom: '20px'}}>
                 🚨 SELECTED ALBUM: {selectedAlbum} 🚨
               </div>
-              <div className="photos-header">
-                <div className="album-actions-grid">
+              <div style={{background: 'blue', color: 'yellow', padding: '10px', fontSize: '18px', marginBottom: '10px'}}>
+                📸 PHOTOS HEADER DIV
+              </div>
+              <div className="photos-header" style={{border: '5px solid lime', padding: '10px'}}>
+                <div style={{background: 'orange', color: 'black', padding: '10px', fontSize: '16px', marginBottom: '10px'}}>
+                  🎛️ ALBUM ACTIONS GRID START
+                </div>
+                <div className="album-actions-grid" style={{border: '3px dashed magenta'}}>
                   <label 
                     className="toggle-switch btn-action-item"
                     title={localAlbums.find(a => a.name === selectedAlbum)?.published === false ? "Publish album (make visible to public)" : "Unpublish album (hide from public)"}
