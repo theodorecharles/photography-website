@@ -20,6 +20,7 @@ const EXPIRATION_OPTIONS = [
   { label: '1 week', minutes: 10080 },
   { label: '1 month', minutes: 43200 },
   { label: 'Forever', minutes: null },
+  { label: 'Custom...', minutes: -1 }, // Special value for custom
 ];
 
 export default function ShareModal({ album, onClose }: ShareModalProps) {
@@ -28,6 +29,8 @@ export default function ShareModal({ album, onClose }: ShareModalProps) {
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [generatedLink, setGeneratedLink] = useState<string | null>(null);
+  const [isCustom, setIsCustom] = useState(false);
+  const [customMinutes, setCustomMinutes] = useState<string>('');
 
   const generateLink = async (expirationMinutes: number | null) => {
     setLoading(true);
@@ -70,8 +73,25 @@ export default function ShareModal({ album, onClose }: ShareModalProps) {
 
   // Regenerate link when expiration changes
   const handleExpirationChange = (newExpiration: number | null) => {
+    if (newExpiration === -1) {
+      // Custom option selected
+      setIsCustom(true);
+      return;
+    }
+    setIsCustom(false);
+    setCustomMinutes('');
     setSelectedExpiration(newExpiration);
     generateLink(newExpiration);
+  };
+
+  const handleCustomMinutesSubmit = () => {
+    const minutes = parseInt(customMinutes);
+    if (isNaN(minutes) || minutes <= 0) {
+      setError('Please enter a valid number of minutes');
+      return;
+    }
+    setSelectedExpiration(minutes);
+    generateLink(minutes);
   };
 
   const handleCopyClick = async () => {
@@ -106,7 +126,7 @@ export default function ShareModal({ album, onClose }: ShareModalProps) {
             <label htmlFor="expiration">Link expires in:</label>
             <select
               id="expiration"
-              value={selectedExpiration === null ? 'null' : selectedExpiration}
+              value={isCustom ? -1 : (selectedExpiration === null ? 'null' : selectedExpiration)}
               onChange={(e) => {
                 const value = e.target.value;
                 const newExpiration = value === 'null' ? null : parseInt(value);
@@ -124,6 +144,32 @@ export default function ShareModal({ album, onClose }: ShareModalProps) {
               ))}
             </select>
           </div>
+
+          {isCustom && (
+            <div className="custom-minutes-input">
+              <label htmlFor="customMinutes">
+                Custom minutes: {selectedExpiration && !loading && `(${selectedExpiration} min)`}
+              </label>
+              <div className="custom-input-group">
+                <input
+                  type="number"
+                  id="customMinutes"
+                  value={customMinutes}
+                  onChange={(e) => setCustomMinutes(e.target.value)}
+                  placeholder="Enter minutes"
+                  min="1"
+                  autoFocus
+                />
+                <button
+                  className="apply-custom-button"
+                  onClick={handleCustomMinutesSubmit}
+                  disabled={!customMinutes || loading}
+                >
+                  Apply
+                </button>
+              </div>
+            </div>
+          )}
 
           {error && <div className="share-error">{error}</div>}
           {copied && <div className="share-success-inline">✓ Link copied to clipboard!</div>}
