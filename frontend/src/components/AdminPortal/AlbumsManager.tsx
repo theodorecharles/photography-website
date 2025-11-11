@@ -179,8 +179,6 @@ const SortablePhotoItem: React.FC<SortablePhotoItemProps> = ({
     const touch = e.touches[0];
     touchStartPos.current = { x: touch.clientX, y: touch.clientY };
     hasMoved.current = false;
-    // Close overlay if tapping on a different photo or already open
-    setShowOverlay(false);
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
@@ -198,10 +196,24 @@ const SortablePhotoItem: React.FC<SortablePhotoItemProps> = ({
   };
 
   const handleTouchEnd = (e: React.TouchEvent) => {
-    // Only show overlay if it was a tap without movement
+    // Only act if it was a tap without movement
     if (touchStartPos.current && !hasMoved.current) {
       e.preventDefault(); // Prevent ghost clicks
-      setShowOverlay(true);
+      
+      // Check if tap hit a button
+      const target = e.target as HTMLElement;
+      const clickedButton = target.closest('.btn-edit-photo, .btn-delete-photo');
+      
+      if (clickedButton) {
+        // Tapped a button - let the button handler deal with it
+        // Don't change overlay state
+      } else if (showOverlay) {
+        // Overlay is showing and tapped elsewhere - hide it
+        setShowOverlay(false);
+      } else {
+        // Overlay is hidden - show it
+        setShowOverlay(true);
+      }
     }
     touchStartPos.current = null;
     hasMoved.current = false;
@@ -213,9 +225,11 @@ const SortablePhotoItem: React.FC<SortablePhotoItemProps> = ({
     setShowOverlay(false);
   };
 
-  // Close overlay when tapping outside
+  // Close overlay when clicking outside buttons (desktop)
   const handleOverlayClick = (e: React.MouseEvent) => {
-    if ((e.target as HTMLElement).classList.contains('photo-overlay')) {
+    const target = e.target as HTMLElement;
+    // Close if clicked overlay itself or anything except the buttons
+    if (!target.closest('.btn-edit-photo, .btn-delete-photo')) {
       setShowOverlay(false);
     }
   };
