@@ -3,7 +3,7 @@
  * Modal for creating and managing share links for unpublished albums
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { API_URL, SITE_URL } from '../../config';
 import './ShareModal.css';
 
@@ -24,12 +24,12 @@ const EXPIRATION_OPTIONS = [
 
 export default function ShareModal({ album, onClose }: ShareModalProps) {
   const [selectedExpiration, setSelectedExpiration] = useState<number | null>(1440); // Default: 1 day
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true); // Start loading immediately
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [generatedLink, setGeneratedLink] = useState<string | null>(null);
 
-  const handleGenerateLink = async () => {
+  const generateLink = async (expirationMinutes: number | null) => {
     setLoading(true);
     setError(null);
     setCopied(false);
@@ -44,7 +44,7 @@ export default function ShareModal({ album, onClose }: ShareModalProps) {
         credentials: 'include',
         body: JSON.stringify({
           album,
-          expirationMinutes: selectedExpiration,
+          expirationMinutes,
         }),
       });
 
@@ -61,6 +61,17 @@ export default function ShareModal({ album, onClose }: ShareModalProps) {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Generate link immediately on mount
+  useEffect(() => {
+    generateLink(selectedExpiration);
+  }, []);
+
+  // Regenerate link when expiration changes
+  const handleExpirationChange = (newExpiration: number | null) => {
+    setSelectedExpiration(newExpiration);
+    generateLink(newExpiration);
   };
 
   const handleCopyClick = async () => {
@@ -98,8 +109,10 @@ export default function ShareModal({ album, onClose }: ShareModalProps) {
               value={selectedExpiration === null ? 'null' : selectedExpiration}
               onChange={(e) => {
                 const value = e.target.value;
-                setSelectedExpiration(value === 'null' ? null : parseInt(value));
+                const newExpiration = value === 'null' ? null : parseInt(value);
+                handleExpirationChange(newExpiration);
               }}
+              disabled={loading}
             >
               {EXPIRATION_OPTIONS.map((option) => (
                 <option
@@ -113,37 +126,15 @@ export default function ShareModal({ album, onClose }: ShareModalProps) {
           </div>
 
           {error && <div className="share-error">{error}</div>}
+          {copied && <div className="share-success-inline">✓ Link copied to clipboard!</div>}
 
-          {!generatedLink ? (
-            <button
-              className="generate-button"
-              onClick={handleGenerateLink}
-              disabled={loading}
-            >
-              {loading ? 'Generating...' : 'Generate Link'}
-            </button>
-          ) : (
-            <>
-              {copied && <div className="share-success-inline">✓ Copied!</div>}
-              
-              <div className="share-link-container">
-                <input
-                  type="text"
-                  value={generatedLink}
-                  readOnly
-                  onClick={(e) => (e.target as HTMLInputElement).select()}
-                  className="share-link-input"
-                />
-                <button
-                  className="copy-button"
-                  onClick={handleCopyClick}
-                  title="Copy to clipboard"
-                >
-                  {copied ? '✓' : 'Copy'}
-                </button>
-              </div>
-            </>
-          )}
+          <button
+            className="copy-link-button"
+            onClick={handleCopyClick}
+            disabled={loading || !generatedLink}
+          >
+            {loading ? 'Generating...' : 'Copy Link'}
+          </button>
         </div>
       </div>
     </div>
