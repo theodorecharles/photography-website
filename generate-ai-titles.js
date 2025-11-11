@@ -144,6 +144,9 @@ async function generateImageTitle(openai, thumbnailPath, album, filename, db, re
 }
 
 async function scanAndGenerateTitles() {
+  // Parse command line arguments
+  const forceRegenerate = process.argv.includes('--force');
+  
   // Read config to get OpenAI API key
   const configData = fs.readFileSync(CONFIG_PATH, 'utf8');
   const config = JSON.parse(configData);
@@ -163,10 +166,15 @@ async function scanAndGenerateTitles() {
   console.log('✓ Database initialized');
   
   // Load all existing titles into memory (one query instead of thousands)
-  console.log('Loading existing titles from database...');
-  const existingRows = db.prepare('SELECT album, filename FROM image_metadata WHERE title IS NOT NULL').all();
-  const existingTitles = new Set(existingRows.map(row => `${row.album}:${row.filename}`));
-  console.log(`✓ Found ${existingTitles.size} existing titles`);
+  let existingTitles = new Set();
+  if (!forceRegenerate) {
+    console.log('Loading existing titles from database...');
+    const existingRows = db.prepare('SELECT album, filename FROM image_metadata WHERE title IS NOT NULL').all();
+    existingTitles = new Set(existingRows.map(row => `${row.album}:${row.filename}`));
+    console.log(`✓ Found ${existingTitles.size} existing titles`);
+  } else {
+    console.log('⚠️  FORCE REGENERATE MODE: Will overwrite all existing titles');
+  }
   
   // Scan optimized/thumbnail directory
   const thumbnailDir = path.join(__dirname, 'optimized/thumbnail');
@@ -203,7 +211,11 @@ async function scanAndGenerateTitles() {
     }
   }
   
-  console.log(`✓ Found ${imagesToProcess.length} images that need titles (skipping ${skippedCount} with existing titles)`);
+  if (forceRegenerate) {
+    console.log(`✓ Found ${imagesToProcess.length} images to regenerate`);
+  } else {
+    console.log(`✓ Found ${imagesToProcess.length} images that need titles (skipping ${skippedCount} with existing titles)`);
+  }
   
   if (imagesToProcess.length === 0) {
     console.log('\nNo images to process!');

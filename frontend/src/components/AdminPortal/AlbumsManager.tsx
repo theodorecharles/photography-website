@@ -112,7 +112,7 @@ const SortableAlbumCard: React.FC<SortableAlbumCardProps> = ({
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    opacity: isDragging ? 0.5 : 1,
+    opacity: isDragging ? 0 : 1,
   };
 
   return (
@@ -240,7 +240,7 @@ const SortablePhotoItem: React.FC<SortablePhotoItemProps> = ({
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    opacity: isDragging ? 0.5 : 1,
+    opacity: isDragging ? 0 : 1,
   };
 
   const imageUrl = `${API_URL}${photo.thumbnail}?i=${cacheBustValue}`;
@@ -359,12 +359,18 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   // Ref for ghost tile file input
   const ghostTileFileInputRef = useRef<HTMLInputElement>(null);
 
+  // Detect if device supports touch
+  const isTouchDevice = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+  
   // Configure dnd-kit sensors for photos
+  // Desktop: minimal delay for instant drag, mobile: longer delay to differentiate tap vs drag
   const photoSensors = useSensors(
     useSensor(PointerSensor, {
-      activationConstraint: {
-        delay: 300, // Require 300ms hold before drag starts (increased from 250ms)
-        tolerance: 8, // Allow 8px movement during the delay (increased from 5px)
+      activationConstraint: isTouchDevice ? {
+        delay: 300, // Mobile: require 300ms hold before drag starts
+        tolerance: 8, // Mobile: allow 8px movement during the delay
+      } : {
+        distance: 5, // Desktop: require 5px movement to start drag (prevents accidental drags on click)
       },
     }),
     useSensor(KeyboardSensor, {
@@ -375,9 +381,11 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   // Configure dnd-kit sensors for albums
   const albumSensors = useSensors(
     useSensor(PointerSensor, {
-      activationConstraint: {
-        delay: 300, // Require 300ms hold before drag starts (increased from 250ms)
-        tolerance: 8, // Allow 8px movement during the delay (increased from 5px)
+      activationConstraint: isTouchDevice ? {
+        delay: 300, // Mobile: require 300ms hold before drag starts
+        tolerance: 8, // Mobile: allow 8px movement during the delay
+      } : {
+        distance: 5, // Desktop: require 5px movement to start drag (prevents accidental drags on click)
       },
     }),
     useSensor(KeyboardSensor, {
@@ -764,7 +772,24 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   const speedupTimeoutsRef = useRef<NodeJS.Timeout[]>([]);
   const shuffleButtonRef = useRef<HTMLButtonElement | null>(null);
 
-  // Speed up animation when button is pressed and start shuffling
+  // Single click shuffle - instantly shuffle all photos
+  const handleShuffleClick = () => {
+    if (savingOrder) return;
+    
+    setHasEverDragged(true); // Mark that user has reordered
+    
+    // Fisher-Yates shuffle algorithm for complete randomization
+    setAlbumPhotos((currentPhotos) => {
+      const newOrder = [...currentPhotos];
+      for (let i = newOrder.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [newOrder[i], newOrder[j]] = [newOrder[j], newOrder[i]];
+      }
+      return newOrder;
+    });
+  };
+
+  // Speed up animation when button is pressed and held - start continuous shuffling
   const handleShuffleStart = () => {
     if (savingOrder) return;
     
@@ -836,9 +861,19 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     }
   };
 
+  const shuffleClickTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const isLongPressRef = useRef(false);
+
   const handleShuffleMouseDown = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
     shuffleButtonRef.current = e.currentTarget;
-    handleShuffleStart();
+    isLongPressRef.current = false;
+    
+    // Start long press after 200ms
+    shuffleClickTimeoutRef.current = setTimeout(() => {
+      isLongPressRef.current = true;
+      handleShuffleStart();
+    }, 200);
   };
 
   // Stop shuffling and slow down animation when button is released
@@ -881,7 +916,36 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   };
 
   const handleShuffleMouseUp = () => {
-    handleShuffleEnd();
+    // Clear the long press timeout
+    if (shuffleClickTimeoutRef.current) {
+      clearTimeout(shuffleClickTimeoutRef.current);
+      shuffleClickTimeoutRef.current = null;
+    }
+    
+    // If it was a long press, end the animation
+    if (isLongPressRef.current) {
+      handleShuffleEnd();
+    } else {
+      // It was a quick click - do instant shuffle
+      handleShuffleClick();
+    }
+    
+    isLongPressRef.current = false;
+  };
+
+  const handleShuffleMouseLeave = () => {
+    // Clear the long press timeout
+    if (shuffleClickTimeoutRef.current) {
+      clearTimeout(shuffleClickTimeoutRef.current);
+      shuffleClickTimeoutRef.current = null;
+    }
+    
+    // If animation is running, just stop it (don't do instant shuffle)
+    if (isLongPressRef.current) {
+      handleShuffleEnd();
+    }
+    
+    isLongPressRef.current = false;
   };
 
   // Cleanup on unmount
@@ -892,6 +956,9 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
       }
       if (slowdownTimeoutRef.current) {
         clearTimeout(slowdownTimeoutRef.current);
+      }
+      if (shuffleClickTimeoutRef.current) {
+        clearTimeout(shuffleClickTimeoutRef.current);
       }
       speedupTimeoutsRef.current.forEach(timeout => clearTimeout(timeout));
     };
@@ -1557,36 +1624,31 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
             >
               <div className="photos-header">
                 <div className="album-actions-grid">
-                  <label 
-                    className="toggle-switch btn-action-item"
-                    title={localAlbums.find(a => a.name === selectedAlbum)?.published === false ? "Publish album (make visible to public)" : "Unpublish album (hide from public)"}
-                  >
+                  <label className="btn-action btn-upload btn-action-item">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
+                    </svg>
+                    {uploadingImages.length > 0 ? 'Uploading...' : 'Upload Photos'}
                     <input
-                      type="checkbox"
-                      checked={localAlbums.find(a => a.name === selectedAlbum)?.published !== false}
-                      onChange={(e) => {
-                        handleTogglePublished(selectedAlbum, localAlbums.find(a => a.name === selectedAlbum)?.published !== false, e as any);
-                      }}
+                      type="file"
+                      multiple
+                      accept="image/*"
+                      onChange={handleUploadPhotos}
+                      disabled={uploadingImages.length > 0}
+                      style={{ display: 'none' }}
                     />
-                    <span className="toggle-slider"></span>
-                    <span className="toggle-label">
-                      {localAlbums.find(a => a.name === selectedAlbum)?.published === false ? 'Unpublished' : 'Published'}
-                    </span>
                   </label>
                   
-                  {!localAlbums.find(a => a.name === selectedAlbum)?.published && (
-                    <button
-                      onClick={() => window.open(`/album/${selectedAlbum}`, '_blank')}
-                      className="btn-action btn-preview btn-action-item"
-                      title="Preview unpublished album"
-                    >
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                        <circle cx="12" cy="12" r="3"/>
-                      </svg>
-                      Preview Album
-                    </button>
-                  )}
+                  <button
+                    onClick={() => handleDeleteAlbum(selectedAlbum)}
+                    className="btn-action btn-delete btn-action-item"
+                    title="Delete album"
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+                    </svg>
+                    Delete Album
+                  </button>
                   
                   {/* Only show share button for unpublished albums */}
                   {!localAlbums.find(a => a.name === selectedAlbum)?.published && (
@@ -1609,48 +1671,40 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                     </button>
                   )}
                   
-                  <button
-                    onClick={() => handleDeleteAlbum(selectedAlbum)}
-                    className="btn-action btn-delete btn-action-item"
-                    title="Delete album"
-                  >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
-                    </svg>
-                    Delete Album
-                  </button>
+                  {!localAlbums.find(a => a.name === selectedAlbum)?.published && (
+                    <button
+                      onClick={() => window.open(`/album/${selectedAlbum}`, '_blank')}
+                      className="btn-action btn-preview btn-action-item"
+                      title="Preview unpublished album"
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                        <circle cx="12" cy="12" r="3"/>
+                      </svg>
+                      Preview Album
+                    </button>
+                  )}
                   
-                  <label className="btn-action btn-upload btn-action-item">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
-                    </svg>
-                    {uploadingImages.length > 0 ? 'Uploading...' : 'Upload Photos'}
+                  <label 
+                    className="toggle-switch btn-action-item"
+                    title={localAlbums.find(a => a.name === selectedAlbum)?.published === false ? "Publish album (make visible to public)" : "Unpublish album (hide from public)"}
+                  >
                     <input
-                      type="file"
-                      multiple
-                      accept="image/*"
-                      onChange={handleUploadPhotos}
-                      disabled={uploadingImages.length > 0}
-                      style={{ display: 'none' }}
+                      type="checkbox"
+                      checked={localAlbums.find(a => a.name === selectedAlbum)?.published !== false}
+                      onChange={(e) => {
+                        handleTogglePublished(selectedAlbum, localAlbums.find(a => a.name === selectedAlbum)?.published !== false, e as any);
+                      }}
                     />
+                    <span className="toggle-slider"></span>
+                    <span className="toggle-label">
+                      {localAlbums.find(a => a.name === selectedAlbum)?.published === false ? 'Unpublished' : 'Published'}
+                    </span>
                   </label>
                 </div>
                 
                 {hasOrderChanged() && (
                   <div className="photo-order-controls">
-                    <div className="photo-order-row photo-order-row-primary">
-                      <span className="unsaved-indicator">
-                        Unsaved changes
-                      </span>
-                      <button
-                        onClick={handleSavePhotoOrder}
-                        disabled={savingOrder}
-                        className="btn-action btn-save-order"
-                        title="Save photo order"
-                      >
-                        {savingOrder ? 'Saving...' : 'Save Order'}
-                      </button>
-                    </div>
                     <div className="photo-order-row photo-order-row-secondary">
                       <button
                         onClick={handleCancelPhotoOrder}
@@ -1663,19 +1717,32 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                       <button
                         onMouseDown={handleShuffleMouseDown}
                         onMouseUp={handleShuffleMouseUp}
-                        onMouseLeave={handleShuffleMouseUp}
+                        onMouseLeave={handleShuffleMouseLeave}
                         onTouchStart={(e) => {
                           e.preventDefault();
                           shuffleButtonRef.current = e.currentTarget;
-                          handleShuffleStart();
+                          isLongPressRef.current = false;
+                          shuffleClickTimeoutRef.current = setTimeout(() => {
+                            isLongPressRef.current = true;
+                            handleShuffleStart();
+                          }, 200);
                         }}
                         onTouchEnd={(e) => {
                           e.preventDefault();
-                          handleShuffleEnd();
+                          if (shuffleClickTimeoutRef.current) {
+                            clearTimeout(shuffleClickTimeoutRef.current);
+                            shuffleClickTimeoutRef.current = null;
+                          }
+                          if (isLongPressRef.current) {
+                            handleShuffleEnd();
+                          } else {
+                            handleShuffleClick();
+                          }
+                          isLongPressRef.current = false;
                         }}
                         disabled={savingOrder}
                         className="btn-action btn-shuffle-order"
-                        title="Hold to shuffle photos"
+                        title="Click to shuffle, hold to animate"
                       >
                         <svg 
                           width="16" 
@@ -1695,6 +1762,19 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                           <line x1="4" y1="4" x2="9" y2="9"></line>
                         </svg>
                         Shuffle
+                      </button>
+                    </div>
+                    <div className="photo-order-row photo-order-row-primary">
+                      <span className="unsaved-indicator">
+                        Unsaved changes
+                      </span>
+                      <button
+                        onClick={handleSavePhotoOrder}
+                        disabled={savingOrder}
+                        className="btn-action btn-save-order"
+                        title="Save photo order"
+                      >
+                        {savingOrder ? 'Saving...' : 'Save Order'}
                       </button>
                     </div>
                   </div>
