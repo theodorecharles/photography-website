@@ -168,7 +168,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
   const handleSetupOpenAI = () => {
     // Expand the OpenAI section
     setShowOpenAI(true);
-    
+
     // Wait for the section to expand, then scroll and focus
     setTimeout(() => {
       if (openAISectionRef.current) {
@@ -178,19 +178,20 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
           element.getBoundingClientRect().top + window.pageYOffset + yOffset;
         window.scrollTo({ top: y, behavior: "smooth" });
       }
-      
+
       // Focus and highlight the input field
       setTimeout(() => {
         if (apiKeyInputRef.current) {
           apiKeyInputRef.current.focus();
-          apiKeyInputRef.current.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.5)';
-          apiKeyInputRef.current.style.borderColor = 'rgba(59, 130, 246, 0.8)';
-          
+          apiKeyInputRef.current.style.boxShadow =
+            "0 0 0 3px rgba(59, 130, 246, 0.5)";
+          apiKeyInputRef.current.style.borderColor = "rgba(59, 130, 246, 0.8)";
+
           // Remove highlight after 2 seconds
           setTimeout(() => {
             if (apiKeyInputRef.current) {
-              apiKeyInputRef.current.style.boxShadow = '';
-              apiKeyInputRef.current.style.borderColor = '';
+              apiKeyInputRef.current.style.boxShadow = "";
+              apiKeyInputRef.current.style.borderColor = "";
             }
           }, 2000);
         }
@@ -202,6 +203,24 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
     loadConfig();
     checkForRunningJobs();
   }, []);
+
+  // Automatically disable auto-generate when API key is removed
+  useEffect(() => {
+    if (
+      config &&
+      !config.openai?.apiKey &&
+      config.ai?.autoGenerateTitlesOnUpload
+    ) {
+      const newConfig = {
+        ...config,
+        ai: {
+          ...config.ai,
+          autoGenerateTitlesOnUpload: false,
+        },
+      };
+      setConfig(newConfig);
+    }
+  }, [config?.openai?.apiKey]);
 
   // Check for running jobs on mount and reconnect if needed
   const checkForRunningJobs = async () => {
@@ -1135,6 +1154,15 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
   const handleToggleAutoAI = async () => {
     if (!config) return;
 
+    // Don't allow toggling if no API key is set
+    if (!config.openai?.apiKey) {
+      setMessage({
+        type: "error",
+        text: "OpenAI API key is required for auto-generating titles",
+      });
+      return;
+    }
+
     const newValue = !(config.ai?.autoGenerateTitlesOnUpload || false);
 
     // Optimistically update UI
@@ -1697,6 +1725,12 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
                     <button
                       type="button"
                       onClick={handleToggleAutoAI}
+                      disabled={!config.openai?.apiKey}
+                      title={
+                        !config.openai?.apiKey
+                          ? "OpenAI API key is required"
+                          : ""
+                      }
                       className={`toggle-button ${
                         config.ai?.autoGenerateTitlesOnUpload ? "active" : ""
                       }`}
@@ -1705,12 +1739,15 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
                         height: "24px",
                         borderRadius: "12px",
                         border: "none",
-                        cursor: "pointer",
+                        cursor: config.openai?.apiKey
+                          ? "pointer"
+                          : "not-allowed",
                         position: "relative",
                         transition: "background-color 0.2s",
                         backgroundColor: config.ai?.autoGenerateTitlesOnUpload
                           ? "var(--primary-color)"
                           : "rgba(255, 255, 255, 0.1)",
+                        opacity: config.openai?.apiKey ? 1 : 0.5,
                         flexShrink: 0,
                       }}
                     >
@@ -1737,6 +1774,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
                           : "#888",
                         fontSize: "0.9rem",
                         fontWeight: 600,
+                        opacity: config.openai?.apiKey ? 1 : 0.5,
                         flexShrink: 0,
                       }}
                     >
@@ -1746,6 +1784,18 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
                     </span>
                   </div>
                 </div>
+                {!config.openai?.apiKey && (
+                  <p
+                    style={{
+                      fontSize: "0.85rem",
+                      color: "#fbbf24",
+                      marginTop: "0.5rem",
+                      marginBottom: 0,
+                    }}
+                  >
+                    ⚠️ API key required to enable auto-generation
+                  </p>
+                )}
               </div>
             </div>
           </div>
