@@ -9,12 +9,19 @@
   position: relative;
 }
 
+/* Toast Notification Container */
+.toast-container {
+  position: fixed;
+  top: 0;
+  right: 20px;
+  z-index: 9999;
+  pointer-events: none;
+}
+
 /* Toast Notification */
 .toast {
   position: fixed;
-  top: 80px;
   right: 20px;
-  z-index: 9999;
   min-width: 300px;
   max-width: 500px;
   padding: 1rem 1.25rem;
@@ -23,6 +30,8 @@
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   animation: slideInRight 0.3s ease-out;
+  transition: top 0.3s ease;
+  pointer-events: all;
 }
 
 @keyframes slideInRight {
@@ -104,8 +113,12 @@
 
 /* Mobile responsive */
 @media (max-width: 600px) {
+  .toast-container {
+    right: 10px;
+    left: 10px;
+  }
+  
   .toast {
-    top: 70px;
     right: 10px;
     left: 10px;
     min-width: unset;

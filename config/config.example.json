@@ -60,6 +60,9 @@
       "password": "your-password"
     }
   },
+  "ai": {
+    "autoGenerateTitlesOnUpload": false
+  },
   "notifications": {
     "telegram": {
       "enabled": false,

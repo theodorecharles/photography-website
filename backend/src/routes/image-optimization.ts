@@ -209,6 +209,15 @@ router.post('/optimize', requireAuth, (req, res) => {
     return;
   }
   
+  // Create job tracking IMMEDIATELY to prevent race condition
+  runningOptimizationJob = {
+    process: null,
+    output: [],
+    clients: new Set([res]),
+    startTime: Date.now(),
+    isComplete: false
+  };
+  
   // Set up SSE headers
   res.setHeader('Content-Type', 'text/event-stream');
   res.setHeader('Cache-Control', 'no-cache');
@@ -218,15 +227,7 @@ router.post('/optimize', requireAuth, (req, res) => {
   // Send initial connection message
   const connectMsg = '{"type":"connected","message":"Connected to optimization stream"}';
   res.write(`data: ${connectMsg}\n\n`);
-  
-  // Create job tracking
-  runningOptimizationJob = {
-    process: null,
-    output: [connectMsg],
-    clients: new Set([res]),
-    startTime: Date.now(),
-    isComplete: false
-  };
+  runningOptimizationJob.output.push(connectMsg);
   
   // Build command
   const scriptPath = path.resolve(__dirname, '../../../optimize_all_images.js');
@@ -290,7 +291,13 @@ router.post('/optimize', requireAuth, (req, res) => {
     const lines = data.toString().split('\n');
     lines.forEach((line: string) => {
       if (line.trim()) {
-        res.write(`data: ${JSON.stringify({ type: 'stderr', message: line })}\n\n`);
+        const errorOutput = JSON.stringify({ type: 'stderr', message: line });
+        
+        // Store output and broadcast to all clients
+        if (runningOptimizationJob) {
+          runningOptimizationJob.output.push(errorOutput);
+          broadcastToClients(runningOptimizationJob, errorOutput);
+        }
       }
     });
   });
