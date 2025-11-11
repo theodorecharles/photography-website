@@ -9,6 +9,7 @@ import PhotoGrid from './PhotoGrid';
 import { API_URL } from '../config';
 import ExpiredLink from './Misc/ExpiredLink';
 import NotFound from './Misc/NotFound';
+import Header from './Header';
 
 interface Photo {
   id: string;
@@ -27,6 +28,12 @@ interface Photo {
   exif?: any;
 }
 
+interface ToastMessage {
+  id: number;
+  type: 'success' | 'error';
+  text: string;
+}
+
 export default function SharedAlbum() {
   const { secretKey } = useParams();
   const [loading, setLoading] = useState(true);
@@ -35,8 +42,7 @@ export default function SharedAlbum() {
   const [albumName, setAlbumName] = useState<string | null>(null);
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [expiresAt, setExpiresAt] = useState<string | null>(null);
-  const [showWarning, setShowWarning] = useState(false);
-  const [warningMessage, setWarningMessage] = useState('');
+  const [messages, setMessages] = useState<ToastMessage[]>([]);
 
   useEffect(() => {
     const validateShareLink = async () => {
@@ -77,9 +83,26 @@ export default function SharedAlbum() {
     validateShareLink();
   }, [secretKey]);
 
+  // Helper to add a toast message
+  const addMessage = (message: { type: 'success' | 'error'; text: string }) => {
+    const newMessage = { ...message, id: Date.now() + Math.random() };
+    setMessages(prev => [newMessage, ...prev]);
+    
+    // Auto-dismiss after 5 seconds
+    setTimeout(() => {
+      setMessages(prev => prev.filter(m => m.id !== newMessage.id));
+    }, 5000);
+  };
+
+  const removeMessage = (id: number) => {
+    setMessages(prev => prev.filter(m => m.id !== id));
+  };
+
   // Countdown timer for expiration warnings
   useEffect(() => {
     if (!expiresAt) return; // No expiration
+
+    const shownWarnings = new Set<string>();
 
     const checkExpiration = () => {
       const now = Date.now();
@@ -88,40 +111,34 @@ export default function SharedAlbum() {
       const secondsLeft = Math.floor(timeLeft / 1000);
       const minutesLeft = Math.floor(timeLeft / 60000);
 
-      if (timeLeft <= 0) {
-        setShowWarning(true);
-        setWarningMessage('EXPIRED!!!');
+      if (timeLeft <= 0 && !shownWarnings.has('expired')) {
+        shownWarnings.add('expired');
+        addMessage({ type: 'error', text: 'EXPIRED!!!' });
         setTimeout(() => {
           setExpired(true);
         }, 2000);
         return;
       }
 
-      // Show warnings at specific times
-      if (secondsLeft === 5) {
-        setShowWarning(true);
-        setWarningMessage('5 seconds left!');
-        setTimeout(() => setShowWarning(false), 3000);
-      } else if (secondsLeft === 10) {
-        setShowWarning(true);
-        setWarningMessage('10 seconds left!');
-        setTimeout(() => setShowWarning(false), 3000);
-      } else if (secondsLeft === 30) {
-        setShowWarning(true);
-        setWarningMessage('30 seconds left to look at this album!');
-        setTimeout(() => setShowWarning(false), 3000);
-      } else if (minutesLeft === 1 && secondsLeft >= 58 && secondsLeft <= 60) {
-        setShowWarning(true);
-        setWarningMessage('1 minute left!');
-        setTimeout(() => setShowWarning(false), 3000);
-      } else if (minutesLeft === 2 && secondsLeft >= 118 && secondsLeft <= 120) {
-        setShowWarning(true);
-        setWarningMessage('2 minutes left to look at this album!');
-        setTimeout(() => setShowWarning(false), 3000);
-      } else if (minutesLeft === 5 && secondsLeft >= 298 && secondsLeft <= 300) {
-        setShowWarning(true);
-        setWarningMessage('5 minutes left to look at this album!');
-        setTimeout(() => setShowWarning(false), 3000);
+      // Show warnings at specific times (only once per warning)
+      if (secondsLeft === 5 && !shownWarnings.has('5s')) {
+        shownWarnings.add('5s');
+        addMessage({ type: 'error', text: '⏰ 5 seconds left!' });
+      } else if (secondsLeft === 10 && !shownWarnings.has('10s')) {
+        shownWarnings.add('10s');
+        addMessage({ type: 'error', text: '⏰ 10 seconds left!' });
+      } else if (secondsLeft === 30 && !shownWarnings.has('30s')) {
+        shownWarnings.add('30s');
+        addMessage({ type: 'error', text: '⏰ 30 seconds left to look at this album!' });
+      } else if (minutesLeft === 1 && secondsLeft >= 58 && secondsLeft <= 60 && !shownWarnings.has('1m')) {
+        shownWarnings.add('1m');
+        addMessage({ type: 'error', text: '⏰ 1 minute left!' });
+      } else if (minutesLeft === 2 && secondsLeft >= 118 && secondsLeft <= 120 && !shownWarnings.has('2m')) {
+        shownWarnings.add('2m');
+        addMessage({ type: 'error', text: '⏰ 2 minutes left to look at this album!' });
+      } else if (minutesLeft === 5 && secondsLeft >= 298 && secondsLeft <= 300 && !shownWarnings.has('5m')) {
+        shownWarnings.add('5m');
+        addMessage({ type: 'error', text: '⏰ 5 minutes left to look at this album!' });
       }
     };
 
@@ -144,49 +161,156 @@ export default function SharedAlbum() {
     return <NotFound />;
   }
 
-  const albumTitle = albumName.charAt(0).toUpperCase() + albumName.slice(1);
-
   return (
     <>
-      {showWarning && (
-        <div className="expiration-toast" style={{
-          position: 'fixed',
-          top: '20px',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          background: warningMessage === 'EXPIRED!!!' ? '#dc2626' : '#f59e0b',
-          color: 'white',
-          padding: '1rem 2rem',
-          borderRadius: '8px',
-          fontSize: '1.2rem',
-          fontWeight: 'bold',
-          zIndex: 10000,
-          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
-          animation: 'slideDown 0.3s ease-out'
-        }}>
-          ⏰ {warningMessage}
-        </div>
-      )}
-      <div style={{ padding: '2rem 0 1rem 0', textAlign: 'center' }}>
-        <h1 style={{ 
-          fontSize: '2rem', 
-          fontWeight: '600', 
-          color: 'white',
-          margin: 0
-        }}>
-          {albumTitle}
-        </h1>
-      </div>
+      <Header 
+        albums={[]} 
+        externalLinks={[]} 
+        currentAlbum={albumName}
+        siteName=""
+        avatarPath=""
+        avatarCacheBust={0}
+      />
       <PhotoGrid album={albumName} initialPhotos={photos} />
+      
+      {/* Toast notifications */}
+      <div className="toast-container">
+        {messages.map((message, index) => (
+          <div 
+            key={message.id} 
+            className={`toast toast-${message.type}`}
+            style={{ top: `${80 + index * 80}px` }}
+          >
+            <div className="toast-content">
+              <span className="toast-icon">
+                {message.type === 'success' ? '✓' : '⚠'}
+              </span>
+              <span className="toast-text">{message.text}</span>
+              <button 
+                className="toast-close"
+                onClick={() => removeMessage(message.id)}
+                aria-label="Close notification"
+              >
+                ×
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+      
       <style>{`
-        @keyframes slideDown {
+        /* Toast Notification Container */
+        .toast-container {
+          position: fixed;
+          top: 0;
+          right: 20px;
+          z-index: 9999;
+          pointer-events: none;
+        }
+
+        /* Toast Notification */
+        .toast {
+          position: fixed;
+          right: 20px;
+          min-width: 300px;
+          max-width: 500px;
+          padding: 1rem 1.25rem;
+          border-radius: 8px;
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.2);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          animation: slideInRight 0.3s ease-out;
+          transition: top 0.3s ease;
+          pointer-events: all;
+        }
+
+        @keyframes slideInRight {
           from {
-            transform: translateX(-50%) translateY(-100%);
+            transform: translateX(400px);
             opacity: 0;
           }
           to {
-            transform: translateX(-50%) translateY(0);
+            transform: translateX(0);
             opacity: 1;
+          }
+        }
+
+        .toast-content {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+        }
+
+        .toast-icon {
+          font-size: 1.5rem;
+          flex-shrink: 0;
+          line-height: 1;
+        }
+
+        .toast-text {
+          flex: 1;
+          font-size: 0.95rem;
+          line-height: 1.5;
+        }
+
+        .toast-close {
+          background: none;
+          border: none;
+          color: inherit;
+          font-size: 1.75rem;
+          line-height: 1;
+          padding: 0;
+          margin-left: 0.5rem;
+          cursor: pointer;
+          opacity: 0.6;
+          transition: opacity 0.2s ease, transform 0.2s ease;
+          flex-shrink: 0;
+          width: 24px;
+          height: 24px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .toast-close:hover {
+          opacity: 1;
+          transform: scale(1.1);
+        }
+
+        .toast-close:active {
+          transform: scale(0.95);
+        }
+
+        .toast-success {
+          background: linear-gradient(135deg, rgba(26, 77, 46, 0.95) 0%, rgba(20, 60, 36, 0.95) 100%);
+          border: 1.5px solid #4ade80;
+          color: #4ade80;
+        }
+
+        .toast-success .toast-icon {
+          color: #4ade80;
+        }
+
+        .toast-error {
+          background: linear-gradient(135deg, rgba(77, 26, 26, 0.95) 0%, rgba(60, 20, 20, 0.95) 100%);
+          border: 1.5px solid #f87171;
+          color: #f87171;
+        }
+
+        .toast-error .toast-icon {
+          color: #f87171;
+        }
+
+        @media (max-width: 600px) {
+          .toast-container {
+            right: 10px;
+            left: 10px;
+          }
+          
+          .toast {
+            right: 10px;
+            left: 10px;
+            min-width: auto;
           }
         }
       `}</style>
