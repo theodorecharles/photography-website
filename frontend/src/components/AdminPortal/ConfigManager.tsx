@@ -105,6 +105,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
   const [titlesOutput, setTitlesOutput] = useState<string[]>([]);
   const [titlesProgress, setTitlesProgress] = useState(0);
   const [titlesWaiting, setTitlesWaiting] = useState<number | null>(null);
+  const [hasMissingTitles, setHasMissingTitles] = useState(false);
   const [optimizationLogs, setOptimizationLogs] = useState<string[]>([]);
   const [isOptimizationRunning, setIsOptimizationRunning] = useState(false);
   const [optimizationComplete, setOptimizationComplete] = useState(false);

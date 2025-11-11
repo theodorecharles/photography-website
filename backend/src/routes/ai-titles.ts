@@ -71,6 +71,31 @@ router.get('/status', requireAuth, (req, res) => {
 });
 
 /**
+ * GET /api/ai-titles/check-missing
+ * Check if there are images with missing titles
+ */
+router.get('/check-missing', requireAuth, (req, res) => {
+  try {
+    const metadataDb = getMetadataDb();
+    
+    // Count images without titles
+    const result = metadataDb.prepare(`
+      SELECT COUNT(*) as count
+      FROM image_metadata
+      WHERE title IS NULL OR title = ''
+    `).get() as { count: number };
+    
+    res.json({ 
+      hasMissingTitles: result.count > 0,
+      missingCount: result.count
+    });
+  } catch (error: any) {
+    console.error('[AI Titles] Error checking missing titles:', error);
+    res.status(500).json({ error: 'Failed to check missing titles' });
+  }
+});
+
+/**
  * POST /api/ai-titles/stop
  * Stop running AI titles generation job
  */
