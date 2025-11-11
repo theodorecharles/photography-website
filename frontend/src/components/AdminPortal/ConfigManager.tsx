@@ -604,11 +604,14 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
       const abortController = new AbortController();
       titlesAbortController.current = abortController;
 
-      const res = await fetch(`${API_URL}/api/ai-titles/generate?forceRegenerate=${forceRegenerate}`, {
-        method: "POST",
-        credentials: "include",
-        signal: abortController.signal,
-      });
+      const res = await fetch(
+        `${API_URL}/api/ai-titles/generate?forceRegenerate=${forceRegenerate}`,
+        {
+          method: "POST",
+          credentials: "include",
+          signal: abortController.signal,
+        }
+      );
 
       if (!res.ok) {
         throw new Error("Failed to start AI title generation");
@@ -2193,9 +2196,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
                   marginBottom: "0.75rem",
                 }}
               >
-                <label className="openai-section-label">
-                  TITLE GENERATION
-                </label>
+                <label className="openai-section-label">TITLE GENERATION</label>
                 <div
                   style={{
                     display: "flex",
@@ -2212,7 +2213,6 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
                         }}
                         disabled={!config.openai?.apiKey}
                         className="btn-secondary"
-                        style={{ fontSize: "0.85rem" }}
                       >
                         Backfill Missing Titles
                       </button>
