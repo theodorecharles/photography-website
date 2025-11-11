@@ -671,16 +671,26 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
-.admin-photo-item:hover {
-  transform: translateY(-4px) scale(1.02);
-  border-color: rgba(255, 255, 255, 0.2);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-}
-
-/* Only show hover on desktop, not on touch devices */
+/* Only show hover effects on desktop, not on touch devices */
 @media (hover: hover) and (pointer: fine) {
+  .admin-photo-item:hover {
+    transform: translateY(-4px) scale(1.02);
+    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  }
+
   .admin-photo-item:hover .photo-overlay {
     opacity: 1;
+  }
+}
+
+/* On mobile, scale when overlay is shown */
+@media (hover: none) and (pointer: coarse) {
+  .admin-photo-item.show-overlay {
+    transform: scale(1.02);
+    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   }
 }
 
