@@ -115,6 +115,8 @@ router.post('/stop', requireAuth, (req: any, res: any) => {
  * Streams output using Server-Sent Events
  */
 router.post('/generate', requireAuth, (req, res) => {
+  const forceRegenerate = req.query.forceRegenerate === 'true';
+  
   // If already running, reconnect to existing job
   if (runningJobs.aiTitles && !runningJobs.aiTitles.isComplete) {
     console.log('[AI Titles] Reconnecting to existing job');
@@ -160,11 +162,18 @@ router.post('/generate', requireAuth, (req, res) => {
   const scriptPath = path.join(projectRoot, 'generate-ai-titles.js');
 
   console.log('[AI Titles] Starting generation...');
+  console.log('[AI Titles] Force regenerate:', forceRegenerate);
   console.log('[AI Titles] Script path:', scriptPath);
   console.log('[AI Titles] Working directory:', projectRoot);
 
+  // Build script arguments
+  const scriptArgs = [scriptPath];
+  if (forceRegenerate) {
+    scriptArgs.push('--force');
+  }
+
   // Spawn the Node.js process to run the script
-  const child = spawn('node', [scriptPath], {
+  const child = spawn('node', scriptArgs, {
     cwd: projectRoot,
     env: { ...process.env },
   });

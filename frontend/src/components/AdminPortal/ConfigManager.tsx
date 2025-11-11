@@ -584,7 +584,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
     }
   };
 
-  const handleGenerateTitles = async () => {
+  const handleGenerateTitles = async (forceRegenerate = false) => {
     setGeneratingTitles(true);
     setTitlesOutput([]);
     setTitlesProgress(0);
@@ -604,7 +604,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
       const abortController = new AbortController();
       titlesAbortController.current = abortController;
 
-      const res = await fetch(`${API_URL}/api/ai-titles/generate`, {
+      const res = await fetch(`${API_URL}/api/ai-titles/generate?forceRegenerate=${forceRegenerate}`, {
         method: "POST",
         credentials: "include",
         signal: abortController.signal,
@@ -2194,32 +2194,45 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
                 }}
               >
                 <label className="openai-section-label">
-                  REGENERATE ALL TITLES
+                  TITLE GENERATION
                 </label>
                 <div
                   style={{
                     display: "flex",
                     alignItems: "center",
-                    gap: "1rem",
+                    gap: "0.75rem",
                   }}
                 >
                   {!generatingTitles ? (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        if (
-                          confirm(
-                            "⚠️ This will regenerate ALL image titles and overwrite any custom titles you have set. This action cannot be undone.\n\nAre you sure you want to continue?"
-                          )
-                        ) {
-                          handleGenerateTitles();
-                        }
-                      }}
-                      disabled={!config.openai?.apiKey}
-                      className="btn-force-regenerate"
-                    >
-                      Force Regenerate All
-                    </button>
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          handleGenerateTitles(false);
+                        }}
+                        disabled={!config.openai?.apiKey}
+                        className="btn-secondary"
+                        style={{ fontSize: "0.85rem" }}
+                      >
+                        Backfill Missing Titles
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (
+                            confirm(
+                              "⚠️ This will regenerate ALL image titles and overwrite any custom titles you have set. This action cannot be undone.\n\nAre you sure you want to continue?"
+                            )
+                          ) {
+                            handleGenerateTitles(true);
+                          }
+                        }}
+                        disabled={!config.openai?.apiKey}
+                        className="btn-force-regenerate"
+                      >
+                        Force Regenerate All
+                      </button>
+                    </>
                   ) : (
                     <button
                       type="button"
