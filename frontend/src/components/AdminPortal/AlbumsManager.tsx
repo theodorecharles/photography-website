@@ -91,7 +91,7 @@ const SortableAlbumCard: React.FC<SortableAlbumCardProps> = ({
     }
   };
 
-  const handleTouchEnd = (e: React.TouchEvent) => {
+  const handleTouchEnd = () => {
     // Only trigger onClick if it was a tap without movement
     if (touchStartPos.current && !hasMoved.current) {
       onClick();
@@ -100,7 +100,7 @@ const SortableAlbumCard: React.FC<SortableAlbumCardProps> = ({
     hasMoved.current = false;
   };
 
-  const handleClick = (e: React.MouseEvent) => {
+  const handleClick = () => {
     // For desktop, use normal click
     onClick();
   };
