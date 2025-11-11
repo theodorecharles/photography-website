@@ -27,6 +27,7 @@ const License = lazy(() => import("./components/Misc/License"));
 const AdminPortal = lazy(() => import("./components/AdminPortal"));
 const AuthError = lazy(() => import("./components/Misc/AuthError"));
 const NotFound = lazy(() => import("./components/Misc/NotFound"));
+const SharedAlbum = lazy(() => import("./components/SharedAlbum"));
 
 // AlbumRoute component handles the routing for individual album pages
 function AlbumRoute({ onAlbumNotFound }: { onAlbumNotFound: () => void }) {
@@ -322,6 +323,7 @@ function App() {
                 <AuthError />
               </>
             } />
+            <Route path="/shared/:secretKey" element={<SharedAlbum />} />
             <Route path="/primes" element={<PrimesRedirect />} />
             <Route path="/primes/*" element={<PrimesRedirect />} />
             <Route path="*" element={
