@@ -359,12 +359,18 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   // Ref for ghost tile file input
   const ghostTileFileInputRef = useRef<HTMLInputElement>(null);
 
+  // Detect if device supports touch
+  const isTouchDevice = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+  
   // Configure dnd-kit sensors for photos
+  // Desktop: minimal delay for instant drag, mobile: longer delay to differentiate tap vs drag
   const photoSensors = useSensors(
     useSensor(PointerSensor, {
-      activationConstraint: {
-        delay: 300, // Require 300ms hold before drag starts (increased from 250ms)
-        tolerance: 8, // Allow 8px movement during the delay (increased from 5px)
+      activationConstraint: isTouchDevice ? {
+        delay: 300, // Mobile: require 300ms hold before drag starts
+        tolerance: 8, // Mobile: allow 8px movement during the delay
+      } : {
+        distance: 5, // Desktop: require 5px movement to start drag (prevents accidental drags on click)
       },
     }),
     useSensor(KeyboardSensor, {
@@ -375,9 +381,11 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   // Configure dnd-kit sensors for albums
   const albumSensors = useSensors(
     useSensor(PointerSensor, {
-      activationConstraint: {
-        delay: 300, // Require 300ms hold before drag starts (increased from 250ms)
-        tolerance: 8, // Allow 8px movement during the delay (increased from 5px)
+      activationConstraint: isTouchDevice ? {
+        delay: 300, // Mobile: require 300ms hold before drag starts
+        tolerance: 8, // Mobile: allow 8px movement during the delay
+      } : {
+        distance: 5, // Desktop: require 5px movement to start drag (prevents accidental drags on click)
       },
     }),
     useSensor(KeyboardSensor, {
