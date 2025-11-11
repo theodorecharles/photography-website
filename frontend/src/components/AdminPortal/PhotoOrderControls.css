@@ -51,8 +51,17 @@
     width: 100%;
   }
   
-  /* Make buttons full width and equal */
+  /* Make buttons full width and equal (50/50 split) */
   .photo-order-row-secondary .btn-action {
     flex: 1;
+  }
+  
+  .photo-order-row-primary .btn-action {
+    flex: 1;
+  }
+  
+  .photo-order-row-primary .unsaved-indicator {
+    flex: 1;
+    text-align: left;
   }
 }
