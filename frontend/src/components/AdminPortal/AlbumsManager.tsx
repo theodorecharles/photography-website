@@ -15,6 +15,7 @@ import {
 import { cacheBustValue } from '../../config';
 import { fetchWithRateLimitCheck } from '../../utils/fetchWrapper';
 import './AlbumsManager.css';
+import './PhotoOrderControls.css';
 import {
   DndContext,
   closestCenter,
@@ -345,6 +346,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   const [savingOrder, setSavingOrder] = useState(false);
   const [hasEverDragged, setHasEverDragged] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [isShuffling, setIsShuffling] = useState(false);
   
   // State for drag-and-drop on album tiles
   const [dragOverAlbum, setDragOverAlbum] = useState<string | null>(null);
@@ -757,13 +759,15 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   const shuffleButtonRef = useRef<HTMLButtonElement | null>(null);
 
   // Speed up animation when button is pressed and start shuffling
-  const handleShuffleMouseDown = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleShuffleStart = () => {
     if (savingOrder) return;
     
     setHasEverDragged(true); // Mark that user has reordered
+    setIsShuffling(true); // Mark shuffling state for mobile grid scaling
     
-    const button = e.currentTarget;
-    shuffleButtonRef.current = button;
+    const button = shuffleButtonRef.current;
+    if (!button) return;
+    
     button.classList.add('shuffling-active');
     
     // Add zoom class to all photos during shuffle
@@ -826,9 +830,15 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     }
   };
 
+  const handleShuffleMouseDown = (e: React.MouseEvent<HTMLButtonElement>) => {
+    shuffleButtonRef.current = e.currentTarget;
+    handleShuffleStart();
+  };
+
   // Stop shuffling and slow down animation when button is released
-  const handleShuffleMouseUp = (e: React.MouseEvent<HTMLButtonElement>) => {
-    const button = e.currentTarget;
+  const handleShuffleEnd = () => {
+    const button = shuffleButtonRef.current;
+    if (!button) return;
     
     // Clear all speedup timeouts
     speedupTimeoutsRef.current.forEach(timeout => clearTimeout(timeout));
@@ -860,7 +870,12 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
       button.classList.remove('shuffling-slowing');
       button.style.removeProperty('--animation-speed');
       shuffleButtonRef.current = null;
+      setIsShuffling(false); // End shuffling state
     }, 1000);
+  };
+
+  const handleShuffleMouseUp = (e: React.MouseEvent<HTMLButtonElement>) => {
+    handleShuffleEnd();
   };
 
   // Cleanup on unmount
@@ -1595,8 +1610,26 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                 </div>
                 
                 {hasOrderChanged() && (
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '1rem' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  <div className="photo-order-controls">
+                    <div className="photo-order-row photo-order-row-primary">
+                      <span className="unsaved-indicator">
+                        Unsaved changes
+                      </span>
+                      <button
+                        onClick={handleSavePhotoOrder}
+                        disabled={savingOrder}
+                        className="btn-action btn-save-order"
+                        title="Save photo order"
+                        style={{ 
+                          background: 'linear-gradient(135deg, var(--primary-color), color-mix(in srgb, var(--primary-color) 80%, white))',
+                          color: '#000',
+                          fontWeight: 600
+                        }}
+                      >
+                        {savingOrder ? 'Saving...' : 'Save Order'}
+                      </button>
+                    </div>
+                    <div className="photo-order-row photo-order-row-secondary">
                       <button
                         onClick={handleCancelPhotoOrder}
                         disabled={savingOrder}
@@ -1609,6 +1642,15 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                         onMouseDown={handleShuffleMouseDown}
                         onMouseUp={handleShuffleMouseUp}
                         onMouseLeave={handleShuffleMouseUp}
+                        onTouchStart={(e) => {
+                          e.preventDefault();
+                          shuffleButtonRef.current = e.currentTarget;
+                          handleShuffleStart();
+                        }}
+                        onTouchEnd={(e) => {
+                          e.preventDefault();
+                          handleShuffleEnd();
+                        }}
                         disabled={savingOrder}
                         className="btn-action btn-shuffle-order"
                         title="Hold to shuffle photos"
@@ -1631,24 +1673,6 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                           <line x1="4" y1="4" x2="9" y2="9"></line>
                         </svg>
                         Shuffle
-                      </button>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                      <span className="unsaved-indicator">
-                        Unsaved changes
-                      </span>
-                      <button
-                        onClick={handleSavePhotoOrder}
-                        disabled={savingOrder}
-                        className="btn-action btn-save-order"
-                        title="Save photo order"
-                        style={{ 
-                          background: 'linear-gradient(135deg, var(--primary-color), color-mix(in srgb, var(--primary-color) 80%, white))',
-                          color: '#000',
-                          fontWeight: 600
-                        }}
-                      >
-                        {savingOrder ? 'Saving...' : 'Save Order'}
                       </button>
                     </div>
                   </div>
@@ -1724,7 +1748,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                   onDragStart={handlePhotoDragStart}
                   onDragEnd={handlePhotoDragEnd}
                 >
-                  <div className="photos-grid">
+                  <div className={`photos-grid ${isShuffling ? 'shuffling-grid' : ''}`}>
                     {/* Show uploading images first */}
                     {uploadingImages.map((img, idx) => (
                     <div key={`uploading-${idx}`} className="admin-photo-item uploading-photo-item">
