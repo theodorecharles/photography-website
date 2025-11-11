@@ -29,7 +29,7 @@ export default function ShareModal({ album, onClose }: ShareModalProps) {
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [generatedLink, setGeneratedLink] = useState<string | null>(null);
-  const [showCustomInput, setShowCustomInput] = useState(false);
+  const [isCustom, setIsCustom] = useState(false);
   const [customMinutes, setCustomMinutes] = useState<string>('');
 
   const generateLink = async (expirationMinutes: number | null) => {
@@ -75,11 +75,11 @@ export default function ShareModal({ album, onClose }: ShareModalProps) {
   const handleExpirationChange = (newExpiration: number | null) => {
     if (newExpiration === -1) {
       // Custom option selected
-      setShowCustomInput(true);
-      setSelectedExpiration(null);
+      setIsCustom(true);
       return;
     }
-    setShowCustomInput(false);
+    setIsCustom(false);
+    setCustomMinutes('');
     setSelectedExpiration(newExpiration);
     generateLink(newExpiration);
   };
@@ -91,7 +91,6 @@ export default function ShareModal({ album, onClose }: ShareModalProps) {
       return;
     }
     setSelectedExpiration(minutes);
-    setShowCustomInput(false);
     generateLink(minutes);
   };
 
@@ -127,7 +126,7 @@ export default function ShareModal({ album, onClose }: ShareModalProps) {
             <label htmlFor="expiration">Link expires in:</label>
             <select
               id="expiration"
-              value={showCustomInput ? -1 : (selectedExpiration === null ? 'null' : selectedExpiration)}
+              value={isCustom ? -1 : (selectedExpiration === null ? 'null' : selectedExpiration)}
               onChange={(e) => {
                 const value = e.target.value;
                 const newExpiration = value === 'null' ? null : parseInt(value);
@@ -146,9 +145,11 @@ export default function ShareModal({ album, onClose }: ShareModalProps) {
             </select>
           </div>
 
-          {showCustomInput && (
+          {isCustom && (
             <div className="custom-minutes-input">
-              <label htmlFor="customMinutes">Custom minutes:</label>
+              <label htmlFor="customMinutes">
+                Custom minutes: {selectedExpiration && !loading && `(${selectedExpiration} min)`}
+              </label>
               <div className="custom-input-group">
                 <input
                   type="number"
@@ -162,7 +163,7 @@ export default function ShareModal({ album, onClose }: ShareModalProps) {
                 <button
                   className="apply-custom-button"
                   onClick={handleCustomMinutesSubmit}
-                  disabled={!customMinutes}
+                  disabled={!customMinutes || loading}
                 >
                   Apply
                 </button>
