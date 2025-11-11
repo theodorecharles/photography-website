@@ -110,6 +110,9 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
   const [optimizationComplete, setOptimizationComplete] = useState(false);
   const [optimizationProgress, setOptimizationProgress] = useState(0);
 
+  // Helper to check if any job is running
+  const isAnyJobRunning = generatingTitles || isOptimizationRunning;
+
   // Section collapse state - all collapsed by default
   const [showBranding, setShowBranding] = useState(false);
   const [showLinks, setShowLinks] = useState(false);
@@ -2662,6 +2665,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
                       onClick={handleSetupOpenAI}
                       className="btn-secondary"
                       style={{ flex: "1 1 auto", minWidth: "200px" }}
+                      disabled={isOptimizationRunning}
                     >
                       Set Up OpenAI
                     </button>
@@ -2674,6 +2678,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
                         }}
                         className="btn-secondary"
                         style={{ flex: "1 1 auto", minWidth: "200px" }}
+                        disabled={isOptimizationRunning}
                       >
                         Backfill Missing Titles
                       </button>
@@ -2689,6 +2694,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
                         }}
                         className="btn-force-regenerate"
                         style={{ flex: "1 1 auto", minWidth: "200px" }}
+                        disabled={isOptimizationRunning}
                       >
                         Force Regenerate All
                       </button>
@@ -2709,83 +2715,6 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
                     </button>
                   )}
                 </div>
-
-                {generatingTitles && titlesOutput.length > 0 && (
-                  <>
-                    <div style={{ marginTop: "1rem" }}>
-                      <div
-                        style={{
-                          display: "flex",
-                          justifyContent: "space-between",
-                          marginBottom: "0.5rem",
-                          fontSize: "0.9rem",
-                        }}
-                      >
-                        <span style={{ color: "#9ca3af" }}>Progress</span>
-                        <span
-                          style={{
-                            color: "var(--primary-color)",
-                            fontWeight: 600,
-                          }}
-                        >
-                          {titlesProgress}%
-                        </span>
-                      </div>
-                      <div
-                        style={{
-                          width: "100%",
-                          height: "8px",
-                          backgroundColor: "rgba(255, 255, 255, 0.1)",
-                          borderRadius: "4px",
-                          overflow: "hidden",
-                        }}
-                      >
-                        <div
-                          style={{
-                            height: "100%",
-                            width: `${titlesProgress}%`,
-                            backgroundColor: "var(--primary-color)",
-                            transition: "width 0.3s ease",
-                            borderRadius: "4px",
-                          }}
-                        />
-                      </div>
-                    </div>
-                    <div
-                      className="titles-output"
-                      style={{ maxHeight: "500px" }}
-                      ref={titlesOutputRef}
-                    >
-                      <div className="titles-output-content">
-                        {titlesOutput.map((line, index) => (
-                          <div key={index} className="output-line">
-                            {line}
-                          </div>
-                        ))}
-                        {titlesOutput.length === 0 && (
-                          <div className="output-line">
-                            Starting AI title generation...
-                          </div>
-                        )}
-                        {generatingTitles && (
-                          <div
-                            className="output-line"
-                            style={{
-                              marginTop: "0.5rem",
-                              color:
-                                titlesWaiting !== null ? "#fbbf24" : "#4ade80",
-                            }}
-                          >
-                            ⏳{" "}
-                            {titlesWaiting !== null
-                              ? `Waiting... ${titlesWaiting}s`
-                              : "Running..."}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </>
-                )}
               </div>
 
               {/* Optimized Images */}
@@ -2811,6 +2740,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
                       onClick={() => handleRunOptimization(true)}
                       className="btn-force-regenerate"
                       style={{ flex: "1 1 auto", minWidth: "200px" }}
+                      disabled={generatingTitles}
                     >
                       Force Regenerate All
                     </button>
@@ -2840,56 +2770,94 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
                     </span>
                   )}
                 </div>
+              </div>
+            </div>
+            {/* End Title Generation and Optimized Images Grid */}
 
-                {optimizationLogs.length > 0 && (
-                  <>
-                    {isOptimizationRunning && (
-                      <div style={{ marginTop: "1rem" }}>
-                        <div
-                          style={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                            marginBottom: "0.5rem",
-                            fontSize: "0.9rem",
-                          }}
-                        >
-                          <span style={{ color: "#9ca3af" }}>Progress</span>
-                          <span
+            {/* Unified SSE Output Section */}
+            {isAnyJobRunning && (
+              <div className="sse-output-section">
+                <label className="openai-section-label" style={{ marginBottom: "1rem" }}>
+                  {generatingTitles ? "TITLE GENERATION OUTPUT" : "IMAGE OPTIMIZATION OUTPUT"}
+                </label>
+                
+                {/* Progress Bar */}
+                <div style={{ marginBottom: "1rem" }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      marginBottom: "0.5rem",
+                      fontSize: "0.9rem",
+                    }}
+                  >
+                    <span style={{ color: "#9ca3af" }}>Progress</span>
+                    <span
+                      style={{
+                        color: "var(--primary-color)",
+                        fontWeight: 600,
+                      }}
+                    >
+                      {generatingTitles ? titlesProgress : optimizationProgress}%
+                    </span>
+                  </div>
+                  <div
+                    style={{
+                      width: "100%",
+                      height: "8px",
+                      backgroundColor: "rgba(255, 255, 255, 0.1)",
+                      borderRadius: "4px",
+                      overflow: "hidden",
+                    }}
+                  >
+                    <div
+                      style={{
+                        height: "100%",
+                        width: `${generatingTitles ? titlesProgress : optimizationProgress}%`,
+                        backgroundColor: "var(--primary-color)",
+                        transition: "width 0.3s ease",
+                        borderRadius: "4px",
+                      }}
+                    />
+                  </div>
+                </div>
+
+                {/* Output Console */}
+                <div
+                  className="titles-output"
+                  style={{ maxHeight: "500px" }}
+                  ref={generatingTitles ? titlesOutputRef : optimizationOutputRef}
+                >
+                  <div className="titles-output-content">
+                    {generatingTitles ? (
+                      <>
+                        {titlesOutput.map((line, index) => (
+                          <div key={index} className="output-line">
+                            {line}
+                          </div>
+                        ))}
+                        {titlesOutput.length === 0 && (
+                          <div className="output-line">
+                            Starting AI title generation...
+                          </div>
+                        )}
+                        {generatingTitles && (
+                          <div
+                            className="output-line"
                             style={{
-                              color: "var(--primary-color)",
-                              fontWeight: 600,
+                              marginTop: "0.5rem",
+                              color: titlesWaiting !== null ? "#fbbf24" : "#4ade80",
                             }}
                           >
-                            {optimizationProgress}%
-                          </span>
-                        </div>
-                        <div
-                          style={{
-                            width: "100%",
-                            height: "8px",
-                            backgroundColor: "rgba(255, 255, 255, 0.1)",
-                            borderRadius: "4px",
-                            overflow: "hidden",
-                          }}
-                        >
-                          <div
-                            style={{
-                              height: "100%",
-                              width: `${optimizationProgress}%`,
-                              backgroundColor: "var(--primary-color)",
-                              transition: "width 0.3s ease",
-                              borderRadius: "4px",
-                            }}
-                          />
-                        </div>
-                      </div>
-                    )}
-                    <div
-                      className="titles-output"
-                      style={{ maxHeight: "500px" }}
-                      ref={optimizationOutputRef}
-                    >
-                      <div className="titles-output-content">
+                            ⏳{" "}
+                            {titlesWaiting !== null
+                              ? `Waiting... ${titlesWaiting}s`
+                              : "Running..."}
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      <>
                         {optimizationLogs.map((log, index) => (
                           <div key={index} className="output-line">
                             {log}
@@ -2903,13 +2871,13 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
                             ⏳ Running...
                           </div>
                         )}
-                      </div>
-                    </div>
-                  </>
-                )}
+                      </>
+                    )}
+                  </div>
+                </div>
               </div>
-            </div>
-            {/* End Title Generation and Optimized Images Grid */}
+            )}
+            {/* End Unified SSE Output Section */}
 
             {/* Backend Settings */}
             <div className="openai-section" style={{ marginBottom: "2rem" }}>
