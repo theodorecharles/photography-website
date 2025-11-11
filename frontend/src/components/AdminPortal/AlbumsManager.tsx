@@ -1565,10 +1565,23 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                 <div style={{background: 'orange', color: 'black', padding: '10px', fontSize: '16px', marginBottom: '10px'}}>
                   🎛️ ALBUM ACTIONS GRID START
                 </div>
-                <div className="album-actions-grid" style={{border: '3px dashed magenta'}}>
+                <div className="album-actions-grid" style={{
+                  border: '3px dashed magenta',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '10px',
+                  minHeight: '200px',
+                  background: 'rgba(255,255,255,0.1)'
+                }}>
                   <label 
                     className="toggle-switch btn-action-item"
                     title={localAlbums.find(a => a.name === selectedAlbum)?.published === false ? "Publish album (make visible to public)" : "Unpublish album (hide from public)"}
+                    style={{
+                      display: 'block',
+                      visibility: 'visible',
+                      opacity: 1,
+                      position: 'relative'
+                    }}
                   >
                     <input
                       type="checkbox"
@@ -1610,8 +1623,16 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                       backgroundColor: '#8b5cf6',
                       color: 'white',
                       fontWeight: 'bold',
-                      fontSize: '16px',
-                      border: '3px solid #a78bfa'
+                      fontSize: '20px',
+                      border: '5px solid #a78bfa',
+                      padding: '20px',
+                      display: 'block',
+                      visibility: 'visible',
+                      opacity: 1,
+                      position: 'relative',
+                      minHeight: '60px',
+                      width: '100%',
+                      zIndex: 9999
                     }}
                   >
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
