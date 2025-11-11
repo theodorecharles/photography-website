@@ -121,7 +121,7 @@
   font-weight: 500;
 }
 
-.copy-link-button {
+.generate-button {
   width: 100%;
   padding: 0.875rem;
   background-color: #8b5cf6;
@@ -135,19 +135,66 @@
   margin-top: 1rem;
 }
 
-.copy-link-button:hover:not(:disabled) {
+.generate-button:hover:not(:disabled) {
   background-color: #7c3aed;
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
 }
 
-.copy-link-button:active:not(:disabled) {
+.generate-button:active:not(:disabled) {
   transform: translateY(0);
 }
 
-.copy-link-button:disabled {
+.generate-button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+.share-link-container {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.share-link-input {
+  flex: 1;
+  padding: 0.75rem;
+  background-color: #1e1e1e;
+  border: 1px solid #3a3a3a;
+  border-radius: 8px;
+  color: #ffffff;
+  font-size: 0.875rem;
+  font-family: 'SF Mono', 'Monaco', 'Cascadia Code', 'Courier New', monospace;
+}
+
+.share-link-input:focus {
+  outline: none;
+  border-color: #8b5cf6;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+}
+
+.copy-button {
+  padding: 0.75rem 1.5rem;
+  background-color: #8b5cf6;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  min-width: 70px;
+}
+
+.copy-button:hover {
+  background-color: #7c3aed;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+}
+
+.copy-button:active {
+  transform: translateY(0);
 }
 
 .share-success {
