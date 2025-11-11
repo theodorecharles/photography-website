@@ -150,6 +150,62 @@
   cursor: not-allowed;
 }
 
+.custom-minutes-input {
+  margin-top: 1rem;
+}
+
+.custom-minutes-input label {
+  display: block;
+  color: #e5e7eb;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.custom-input-group {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.custom-input-group input {
+  flex: 1;
+  padding: 0.75rem;
+  background-color: #1e1e1e;
+  border: 1px solid #3a3a3a;
+  border-radius: 8px;
+  color: #ffffff;
+  font-size: 1rem;
+}
+
+.custom-input-group input:focus {
+  outline: none;
+  border-color: #8b5cf6;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+}
+
+.apply-custom-button {
+  padding: 0.75rem 1.5rem;
+  background-color: #8b5cf6;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.apply-custom-button:hover:not(:disabled) {
+  background-color: #7c3aed;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+}
+
+.apply-custom-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .share-success {
   text-align: center;
   margin-bottom: 1.5rem;
