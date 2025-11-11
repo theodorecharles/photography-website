@@ -1238,10 +1238,12 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
             </span>
           </div>
 
-          <div 
-            className={`collapsible-content ${showBranding ? 'expanded' : 'collapsed'}`}
-            style={{ 
-              maxHeight: showBranding ? '10000px' : '0'
+          <div
+            className={`collapsible-content ${
+              showBranding ? "expanded" : "collapsed"
+            }`}
+            style={{
+              maxHeight: showBranding ? "10000px" : "0",
             }}
           >
             <div className="branding-grid">
@@ -1420,98 +1422,100 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
             </span>
           </div>
 
-          <div 
-            className={`collapsible-content ${showLinks ? 'expanded' : 'collapsed'}`}
-            style={{ 
-              maxHeight: showLinks ? '10000px' : '0'
+          <div
+            className={`collapsible-content ${
+              showLinks ? "expanded" : "collapsed"
+            }`}
+            style={{
+              maxHeight: showLinks ? "10000px" : "0",
             }}
           >
-              <div className="links-list">
-                {externalLinks.map((link, index) => (
-                  <div key={index} className="link-wrapper">
-                    <div className="link-item">
-                      <div className="link-fields">
-                        <input
-                          type="text"
-                          placeholder="Title"
-                          value={link.title}
-                          onChange={(e) =>
-                            handleLinkChange(index, "title", e.target.value)
-                          }
-                          className="link-input"
-                        />
-                        <input
-                          type="text"
-                          placeholder="URL"
-                          value={link.url}
-                          onChange={(e) =>
-                            handleLinkChange(index, "url", e.target.value)
-                          }
-                          className="link-input"
-                        />
-                      </div>
-                      <div className="link-controls">
-                        <div className="reorder-buttons">
-                          <button
-                            onClick={() => handleMoveUp(index)}
-                            className="btn-reorder"
-                            title="Move up"
-                            disabled={index === 0}
-                          >
-                            <svg
-                              width="20"
-                              height="20"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                            >
-                              <polyline points="18 15 12 9 6 15" />
-                            </svg>
-                          </button>
-                          <button
-                            onClick={() => handleMoveDown(index)}
-                            className="btn-reorder"
-                            title="Move down"
-                            disabled={index === externalLinks.length - 1}
-                          >
-                            <svg
-                              width="20"
-                              height="20"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                            >
-                              <polyline points="6 9 12 15 18 9" />
-                            </svg>
-                          </button>
-                        </div>
+            <div className="links-list">
+              {externalLinks.map((link, index) => (
+                <div key={index} className="link-wrapper">
+                  <div className="link-item">
+                    <div className="link-fields">
+                      <input
+                        type="text"
+                        placeholder="Title"
+                        value={link.title}
+                        onChange={(e) =>
+                          handleLinkChange(index, "title", e.target.value)
+                        }
+                        className="link-input"
+                      />
+                      <input
+                        type="text"
+                        placeholder="URL"
+                        value={link.url}
+                        onChange={(e) =>
+                          handleLinkChange(index, "url", e.target.value)
+                        }
+                        className="link-input"
+                      />
+                    </div>
+                    <div className="link-controls">
+                      <div className="reorder-buttons">
                         <button
-                          onClick={() => handleDeleteLink(index)}
-                          className="btn-delete-link"
-                          title="Delete link"
+                          onClick={() => handleMoveUp(index)}
+                          className="btn-reorder"
+                          title="Move up"
+                          disabled={index === 0}
                         >
-                          Delete
+                          <svg
+                            width="20"
+                            height="20"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                          >
+                            <polyline points="18 15 12 9 6 15" />
+                          </svg>
+                        </button>
+                        <button
+                          onClick={() => handleMoveDown(index)}
+                          className="btn-reorder"
+                          title="Move down"
+                          disabled={index === externalLinks.length - 1}
+                        >
+                          <svg
+                            width="20"
+                            height="20"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                          >
+                            <polyline points="6 9 12 15 18 9" />
+                          </svg>
                         </button>
                       </div>
+                      <button
+                        onClick={() => handleDeleteLink(index)}
+                        className="btn-delete-link"
+                        title="Delete link"
+                      >
+                        Delete
+                      </button>
                     </div>
                   </div>
-                ))}
-              </div>
+                </div>
+              ))}
+            </div>
 
-              <div className="section-actions">
-                <button onClick={handleAddLink} className="btn-secondary">
-                  + Add Link
-                </button>
-                <button
-                  onClick={handleSaveLinks}
-                  className="btn-primary"
-                  disabled={savingLinks}
-                >
-                  {savingLinks ? "Saving..." : "Save Changes"}
-                </button>
-              </div>
+            <div className="section-actions">
+              <button onClick={handleAddLink} className="btn-secondary">
+                + Add Link
+              </button>
+              <button
+                onClick={handleSaveLinks}
+                className="btn-primary"
+                disabled={savingLinks}
+              >
+                {savingLinks ? "Saving..." : "Save Changes"}
+              </button>
+            </div>
           </div>
         </div>
 
@@ -1561,10 +1565,12 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
             </span>
           </div>
 
-          <div 
-            className={`collapsible-content ${showOpenAI ? 'expanded' : 'collapsed'}`}
-            style={{ 
-              maxHeight: showOpenAI ? '10000px' : '0'
+          <div
+            className={`collapsible-content ${
+              showOpenAI ? "expanded" : "collapsed"
+            }`}
+            style={{
+              maxHeight: showOpenAI ? "10000px" : "0",
             }}
           >
             <div className="openai-settings-grid">
@@ -1712,7 +1718,9 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
                 strokeWidth="2"
                 style={{
                   transition: "transform 0.2s",
-                  transform: showImageOptimization ? "rotate(90deg)" : "rotate(0deg)",
+                  transform: showImageOptimization
+                    ? "rotate(90deg)"
+                    : "rotate(0deg)",
                 }}
               >
                 <polyline points="9 18 15 12 9 6" />
@@ -1724,372 +1732,368 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
             </span>
           </div>
 
-          <div 
-            className={`collapsible-content ${showImageOptimization ? 'expanded' : 'collapsed'}`}
-            style={{ 
-              maxHeight: showImageOptimization ? '10000px' : '0'
+          <div
+            className={`collapsible-content ${
+              showImageOptimization ? "expanded" : "collapsed"
+            }`}
+            style={{
+              maxHeight: showImageOptimization ? "10000px" : "0",
             }}
           >
-              {/* Grid of optimization subsections */}
-              <div className="config-grid-inner">
-                {/* Thumbnail Settings */}
-                <div className="openai-section">
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      marginBottom: "0.75rem",
-                    }}
-                  >
-                    <label className="openai-section-label">THUMBNAIL</label>
-                    {hasUnsavedChanges("Thumbnail") && (
-                      <div style={{ display: "flex", gap: "0.5rem" }}>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setConfig(originalConfig);
-                          }}
-                          disabled={savingSection !== null}
-                          className="btn-secondary"
-                          style={{
-                            padding: "0.4rem 0.8rem",
-                            fontSize: "0.85rem",
-                          }}
-                        >
-                          Cancel
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleSaveSection("Thumbnail")}
-                          disabled={savingSection !== null}
-                          className="btn-primary"
-                          style={{
-                            padding: "0.4rem 0.8rem",
-                            fontSize: "0.85rem",
-                          }}
-                        >
-                          {savingSection === "Thumbnail" ? "Saving..." : "Save"}
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                  <div className="branding-group">
-                    <label className="branding-label">Quality</label>
-                    <input
-                      type="number"
-                      value={
-                        config.environment.optimization.images.thumbnail.quality
-                      }
-                      onChange={(e) =>
-                        updateConfig(
-                          [
-                            "environment",
-                            "optimization",
-                            "images",
-                            "thumbnail",
-                            "quality",
-                          ],
-                          parseInt(e.target.value)
-                        )
-                      }
-                      className="branding-input"
-                      min="1"
-                      max="100"
-                    />
-                  </div>
-                  <div className="branding-group">
-                    <label className="branding-label">Max Dimension</label>
-                    <input
-                      type="number"
-                      value={
-                        config.environment.optimization.images.thumbnail
-                          .maxDimension
-                      }
-                      onChange={(e) =>
-                        updateConfig(
-                          [
-                            "environment",
-                            "optimization",
-                            "images",
-                            "thumbnail",
-                            "maxDimension",
-                          ],
-                          parseInt(e.target.value)
-                        )
-                      }
-                      className="branding-input"
-                    />
-                  </div>
+            {/* Grid of optimization subsections */}
+            <div className="config-grid-inner">
+              {/* Thumbnail Settings */}
+              <div className="openai-section">
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginBottom: "0.75rem",
+                  }}
+                >
+                  <label className="openai-section-label">THUMBNAIL</label>
+                  {hasUnsavedChanges("Thumbnail") && (
+                    <div style={{ display: "flex", gap: "0.5rem" }}>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setConfig(originalConfig);
+                        }}
+                        disabled={savingSection !== null}
+                        className="btn-secondary"
+                        style={{
+                          padding: "0.4rem 0.8rem",
+                          fontSize: "0.85rem",
+                        }}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleSaveSection("Thumbnail")}
+                        disabled={savingSection !== null}
+                        className="btn-primary"
+                        style={{
+                          padding: "0.4rem 0.8rem",
+                          fontSize: "0.85rem",
+                        }}
+                      >
+                        {savingSection === "Thumbnail" ? "Saving..." : "Save"}
+                      </button>
+                    </div>
+                  )}
                 </div>
-
-                {/* Modal Settings */}
-                <div className="openai-section">
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      marginBottom: "0.75rem",
-                    }}
-                  >
-                    <label className="openai-section-label">MODAL</label>
-                    {hasUnsavedChanges("Modal") && (
-                      <div style={{ display: "flex", gap: "0.5rem" }}>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setConfig(originalConfig);
-                          }}
-                          disabled={savingSection !== null}
-                          className="btn-secondary"
-                          style={{
-                            padding: "0.4rem 0.8rem",
-                            fontSize: "0.85rem",
-                          }}
-                        >
-                          Cancel
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleSaveSection("Modal")}
-                          disabled={savingSection !== null}
-                          className="btn-primary"
-                          style={{
-                            padding: "0.4rem 0.8rem",
-                            fontSize: "0.85rem",
-                          }}
-                        >
-                          {savingSection === "Modal" ? "Saving..." : "Save"}
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                  <div className="branding-group">
-                    <label className="branding-label">Quality</label>
-                    <input
-                      type="number"
-                      value={
-                        config.environment.optimization.images.modal.quality
-                      }
-                      onChange={(e) =>
-                        updateConfig(
-                          [
-                            "environment",
-                            "optimization",
-                            "images",
-                            "modal",
-                            "quality",
-                          ],
-                          parseInt(e.target.value)
-                        )
-                      }
-                      className="branding-input"
-                      min="1"
-                      max="100"
-                    />
-                  </div>
-                  <div className="branding-group">
-                    <label className="branding-label">Max Dimension</label>
-                    <input
-                      type="number"
-                      value={
-                        config.environment.optimization.images.modal
-                          .maxDimension
-                      }
-                      onChange={(e) =>
-                        updateConfig(
-                          [
-                            "environment",
-                            "optimization",
-                            "images",
-                            "modal",
-                            "maxDimension",
-                          ],
-                          parseInt(e.target.value)
-                        )
-                      }
-                      className="branding-input"
-                    />
-                  </div>
+                <div className="branding-group">
+                  <label className="branding-label">Quality</label>
+                  <input
+                    type="number"
+                    value={
+                      config.environment.optimization.images.thumbnail.quality
+                    }
+                    onChange={(e) =>
+                      updateConfig(
+                        [
+                          "environment",
+                          "optimization",
+                          "images",
+                          "thumbnail",
+                          "quality",
+                        ],
+                        parseInt(e.target.value)
+                      )
+                    }
+                    className="branding-input"
+                    min="1"
+                    max="100"
+                  />
                 </div>
-
-                {/* Download Settings */}
-                <div className="openai-section">
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      marginBottom: "0.75rem",
-                    }}
-                  >
-                    <label className="openai-section-label">DOWNLOAD</label>
-                    {hasUnsavedChanges("Download") && (
-                      <div style={{ display: "flex", gap: "0.5rem" }}>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setConfig(originalConfig);
-                          }}
-                          disabled={savingSection !== null}
-                          className="btn-secondary"
-                          style={{
-                            padding: "0.4rem 0.8rem",
-                            fontSize: "0.85rem",
-                          }}
-                        >
-                          Cancel
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleSaveSection("Download")}
-                          disabled={savingSection !== null}
-                          className="btn-primary"
-                          style={{
-                            padding: "0.4rem 0.8rem",
-                            fontSize: "0.85rem",
-                          }}
-                        >
-                          {savingSection === "Download" ? "Saving..." : "Save"}
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                  <div className="branding-group">
-                    <label className="branding-label">Quality</label>
-                    <input
-                      type="number"
-                      value={
-                        config.environment.optimization.images.download.quality
-                      }
-                      onChange={(e) =>
-                        updateConfig(
-                          [
-                            "environment",
-                            "optimization",
-                            "images",
-                            "download",
-                            "quality",
-                          ],
-                          parseInt(e.target.value)
-                        )
-                      }
-                      className="branding-input"
-                      min="1"
-                      max="100"
-                    />
-                  </div>
-                  <div className="branding-group">
-                    <label className="branding-label">Max Dimension</label>
-                    <input
-                      type="number"
-                      value={
-                        config.environment.optimization.images.download
-                          .maxDimension
-                      }
-                      onChange={(e) =>
-                        updateConfig(
-                          [
-                            "environment",
-                            "optimization",
-                            "images",
-                            "download",
-                            "maxDimension",
-                          ],
-                          parseInt(e.target.value)
-                        )
-                      }
-                      className="branding-input"
-                    />
-                  </div>
-                </div>
-
-                {/* Concurrency Settings */}
-                <div className="openai-section">
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      marginBottom: "0.75rem",
-                    }}
-                  >
-                    <label className="openai-section-label">CONCURRENCY</label>
-                    {hasUnsavedChanges("Concurrency") && (
-                      <div style={{ display: "flex", gap: "0.5rem" }}>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setConfig(originalConfig);
-                          }}
-                          disabled={savingSection !== null}
-                          className="btn-secondary"
-                          style={{
-                            padding: "0.4rem 0.8rem",
-                            fontSize: "0.85rem",
-                          }}
-                        >
-                          Cancel
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleSaveSection("Concurrency")}
-                          disabled={savingSection !== null}
-                          className="btn-primary"
-                          style={{
-                            padding: "0.4rem 0.8rem",
-                            fontSize: "0.85rem",
-                          }}
-                        >
-                          {savingSection === "Concurrency"
-                            ? "Saving..."
-                            : "Save"}
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                  <p
-                    style={{
-                      fontSize: "0.85rem",
-                      color: "#888",
-                      marginTop: "0",
-                      marginBottom: "1rem",
-                    }}
-                  >
-                    Maximum number of images to process simultaneously. Higher
-                    values speed up batch processing but use more CPU and
-                    memory.
-                  </p>
-                  <p
-                    style={{
-                      fontSize: "0.85rem",
-                      color: "#888",
-                      marginTop: "0",
-                      marginBottom: "1rem",
-                    }}
-                  >
-                    Rule of thumb: ~4× your logical CPU cores. Recommended: 8-16
-                    for typical systems, 32-64 for high-performance servers.
-                  </p>
-                  <div className="branding-group">
-                    <label className="branding-label">Max Parallel Jobs</label>
-                    <input
-                      type="number"
-                      value={config.environment.optimization.concurrency}
-                      onChange={(e) =>
-                        updateConfig(
-                          ["environment", "optimization", "concurrency"],
-                          parseInt(e.target.value)
-                        )
-                      }
-                      className="branding-input"
-                      min="1"
-                      max="256"
-                    />
-                  </div>
+                <div className="branding-group">
+                  <label className="branding-label">Max Dimension</label>
+                  <input
+                    type="number"
+                    value={
+                      config.environment.optimization.images.thumbnail
+                        .maxDimension
+                    }
+                    onChange={(e) =>
+                      updateConfig(
+                        [
+                          "environment",
+                          "optimization",
+                          "images",
+                          "thumbnail",
+                          "maxDimension",
+                        ],
+                        parseInt(e.target.value)
+                      )
+                    }
+                    className="branding-input"
+                  />
                 </div>
               </div>
+
+              {/* Modal Settings */}
+              <div className="openai-section">
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginBottom: "0.75rem",
+                  }}
+                >
+                  <label className="openai-section-label">MODAL</label>
+                  {hasUnsavedChanges("Modal") && (
+                    <div style={{ display: "flex", gap: "0.5rem" }}>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setConfig(originalConfig);
+                        }}
+                        disabled={savingSection !== null}
+                        className="btn-secondary"
+                        style={{
+                          padding: "0.4rem 0.8rem",
+                          fontSize: "0.85rem",
+                        }}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleSaveSection("Modal")}
+                        disabled={savingSection !== null}
+                        className="btn-primary"
+                        style={{
+                          padding: "0.4rem 0.8rem",
+                          fontSize: "0.85rem",
+                        }}
+                      >
+                        {savingSection === "Modal" ? "Saving..." : "Save"}
+                      </button>
+                    </div>
+                  )}
+                </div>
+                <div className="branding-group">
+                  <label className="branding-label">Quality</label>
+                  <input
+                    type="number"
+                    value={config.environment.optimization.images.modal.quality}
+                    onChange={(e) =>
+                      updateConfig(
+                        [
+                          "environment",
+                          "optimization",
+                          "images",
+                          "modal",
+                          "quality",
+                        ],
+                        parseInt(e.target.value)
+                      )
+                    }
+                    className="branding-input"
+                    min="1"
+                    max="100"
+                  />
+                </div>
+                <div className="branding-group">
+                  <label className="branding-label">Max Dimension</label>
+                  <input
+                    type="number"
+                    value={
+                      config.environment.optimization.images.modal.maxDimension
+                    }
+                    onChange={(e) =>
+                      updateConfig(
+                        [
+                          "environment",
+                          "optimization",
+                          "images",
+                          "modal",
+                          "maxDimension",
+                        ],
+                        parseInt(e.target.value)
+                      )
+                    }
+                    className="branding-input"
+                  />
+                </div>
+              </div>
+
+              {/* Download Settings */}
+              <div className="openai-section">
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginBottom: "0.75rem",
+                  }}
+                >
+                  <label className="openai-section-label">DOWNLOAD</label>
+                  {hasUnsavedChanges("Download") && (
+                    <div style={{ display: "flex", gap: "0.5rem" }}>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setConfig(originalConfig);
+                        }}
+                        disabled={savingSection !== null}
+                        className="btn-secondary"
+                        style={{
+                          padding: "0.4rem 0.8rem",
+                          fontSize: "0.85rem",
+                        }}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleSaveSection("Download")}
+                        disabled={savingSection !== null}
+                        className="btn-primary"
+                        style={{
+                          padding: "0.4rem 0.8rem",
+                          fontSize: "0.85rem",
+                        }}
+                      >
+                        {savingSection === "Download" ? "Saving..." : "Save"}
+                      </button>
+                    </div>
+                  )}
+                </div>
+                <div className="branding-group">
+                  <label className="branding-label">Quality</label>
+                  <input
+                    type="number"
+                    value={
+                      config.environment.optimization.images.download.quality
+                    }
+                    onChange={(e) =>
+                      updateConfig(
+                        [
+                          "environment",
+                          "optimization",
+                          "images",
+                          "download",
+                          "quality",
+                        ],
+                        parseInt(e.target.value)
+                      )
+                    }
+                    className="branding-input"
+                    min="1"
+                    max="100"
+                  />
+                </div>
+                <div className="branding-group">
+                  <label className="branding-label">Max Dimension</label>
+                  <input
+                    type="number"
+                    value={
+                      config.environment.optimization.images.download
+                        .maxDimension
+                    }
+                    onChange={(e) =>
+                      updateConfig(
+                        [
+                          "environment",
+                          "optimization",
+                          "images",
+                          "download",
+                          "maxDimension",
+                        ],
+                        parseInt(e.target.value)
+                      )
+                    }
+                    className="branding-input"
+                  />
+                </div>
+              </div>
+
+              {/* Concurrency Settings */}
+              <div className="openai-section">
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginBottom: "0.75rem",
+                  }}
+                >
+                  <label className="openai-section-label">CONCURRENCY</label>
+                  {hasUnsavedChanges("Concurrency") && (
+                    <div style={{ display: "flex", gap: "0.5rem" }}>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setConfig(originalConfig);
+                        }}
+                        disabled={savingSection !== null}
+                        className="btn-secondary"
+                        style={{
+                          padding: "0.4rem 0.8rem",
+                          fontSize: "0.85rem",
+                        }}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleSaveSection("Concurrency")}
+                        disabled={savingSection !== null}
+                        className="btn-primary"
+                        style={{
+                          padding: "0.4rem 0.8rem",
+                          fontSize: "0.85rem",
+                        }}
+                      >
+                        {savingSection === "Concurrency" ? "Saving..." : "Save"}
+                      </button>
+                    </div>
+                  )}
+                </div>
+                <p
+                  style={{
+                    fontSize: "0.85rem",
+                    color: "#888",
+                    marginTop: "0",
+                    marginBottom: "1rem",
+                  }}
+                >
+                  Maximum number of images to process simultaneously. Higher
+                  values speed up batch processing but use more CPU and memory.
+                </p>
+                <p
+                  style={{
+                    fontSize: "0.85rem",
+                    color: "#888",
+                    marginTop: "0",
+                    marginBottom: "1rem",
+                  }}
+                >
+                  Rule of thumb: ~4× your logical CPU cores. Recommended: 8-16
+                  for typical systems, 32-64 for high-performance servers.
+                </p>
+                <div className="branding-group">
+                  <label className="branding-label">Max Parallel Jobs</label>
+                  <input
+                    type="number"
+                    value={config.environment.optimization.concurrency}
+                    onChange={(e) =>
+                      updateConfig(
+                        ["environment", "optimization", "concurrency"],
+                        parseInt(e.target.value)
+                      )
+                    }
+                    className="branding-input"
+                    min="1"
+                    max="256"
+                  />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -2139,101 +2143,236 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
             </span>
           </div>
 
-          <div 
-            className={`collapsible-content ${showAdvanced ? 'expanded' : 'collapsed'}`}
-            style={{ 
-              maxHeight: showAdvanced ? '10000px' : '0'
+          <div
+            className={`collapsible-content ${
+              showAdvanced ? "expanded" : "collapsed"
+            }`}
+            style={{
+              maxHeight: showAdvanced ? "10000px" : "0",
             }}
           >
-              {/* Danger Zone Warning */}
-              <div
-                style={{
-                  marginTop: "1rem",
-                  marginBottom: "2rem",
-                  padding: "1rem 1.5rem",
-                  background:
-                    "linear-gradient(135deg, rgba(220, 38, 38, 0.15) 0%, rgba(153, 27, 27, 0.15) 100%)",
-                  border: "2px solid rgba(220, 38, 38, 0.5)",
-                  borderRadius: "8px",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "1rem",
-                }}
-              >
-                <span style={{ fontSize: "1.5rem" }}>⚠️</span>
-                <div>
-                  <div
-                    style={{
-                      color: "#fca5a5",
-                      fontWeight: 700,
-                      fontSize: "1rem",
-                      letterSpacing: "0.1em",
-                      marginBottom: "0.25rem",
-                    }}
-                  >
-                    [ DANGER ZONE ]
-                  </div>
-                  <div style={{ color: "#fecaca", fontSize: "0.9rem" }}>
-                    Make sure you know what you're doing!
-                  </div>
+            {/* Danger Zone Warning */}
+            <div
+              style={{
+                marginTop: "1rem",
+                marginBottom: "2rem",
+                padding: "1rem 1.5rem",
+                background:
+                  "linear-gradient(135deg, rgba(220, 38, 38, 0.15) 0%, rgba(153, 27, 27, 0.15) 100%)",
+                border: "2px solid rgba(220, 38, 38, 0.5)",
+                borderRadius: "8px",
+                display: "flex",
+                alignItems: "center",
+                gap: "1rem",
+              }}
+            >
+              <span style={{ fontSize: "1.5rem" }}>⚠️</span>
+              <div>
+                <div
+                  style={{
+                    color: "#fca5a5",
+                    fontWeight: 700,
+                    fontSize: "1rem",
+                    letterSpacing: "0.1em",
+                    marginBottom: "0.25rem",
+                  }}
+                >
+                  [ DANGER ZONE ]
+                </div>
+                <div style={{ color: "#fecaca", fontSize: "0.9rem" }}>
+                  Make sure you know what you're doing!
                 </div>
               </div>
+            </div>
 
-              {/* Force Regenerate All Titles */}
-              <div className="openai-section" style={{ marginBottom: "2rem" }}>
+            {/* Force Regenerate All Titles */}
+            <div className="openai-section" style={{ marginBottom: "2rem" }}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  marginBottom: "0.75rem",
+                }}
+              >
+                <label className="openai-section-label">
+                  REGENERATE ALL TITLES
+                </label>
                 <div
                   style={{
                     display: "flex",
-                    justifyContent: "space-between",
                     alignItems: "center",
-                    marginBottom: "0.75rem",
+                    gap: "1rem",
                   }}
                 >
-                  <label className="openai-section-label">
-                    REGENERATE ALL TITLES
-                  </label>
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "1rem",
-                    }}
-                  >
-                    {!generatingTitles ? (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          if (
-                            confirm(
-                              "⚠️ This will regenerate ALL image titles and overwrite any custom titles you have set. This action cannot be undone.\n\nAre you sure you want to continue?"
-                            )
-                          ) {
-                            handleGenerateTitles();
-                          }
-                        }}
-                        disabled={!config.openai?.apiKey}
-                        className="btn-force-regenerate"
-                      >
-                        Force Regenerate All
-                      </button>
-                    ) : (
-                      <button
-                        type="button"
-                        onClick={handleStopTitles}
-                        className="btn-force-regenerate"
-                        style={{
-                          backgroundColor: "#dc2626",
-                          borderColor: "#dc2626",
-                        }}
-                      >
-                        Stop
-                      </button>
-                    )}
-                  </div>
+                  {!generatingTitles ? (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (
+                          confirm(
+                            "⚠️ This will regenerate ALL image titles and overwrite any custom titles you have set. This action cannot be undone.\n\nAre you sure you want to continue?"
+                          )
+                        ) {
+                          handleGenerateTitles();
+                        }
+                      }}
+                      disabled={!config.openai?.apiKey}
+                      className="btn-force-regenerate"
+                    >
+                      Force Regenerate All
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={handleStopTitles}
+                      className="btn-force-regenerate"
+                      style={{
+                        backgroundColor: "#dc2626",
+                        borderColor: "#dc2626",
+                      }}
+                    >
+                      Stop
+                    </button>
+                  )}
                 </div>
+              </div>
 
-                {generatingTitles && (
-                  <>
+              {generatingTitles && (
+                <>
+                  <div style={{ marginTop: "1rem" }}>
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        marginBottom: "0.5rem",
+                        fontSize: "0.9rem",
+                      }}
+                    >
+                      <span style={{ color: "#9ca3af" }}>Progress</span>
+                      <span
+                        style={{
+                          color: "var(--primary-color)",
+                          fontWeight: 600,
+                        }}
+                      >
+                        {titlesProgress}%
+                      </span>
+                    </div>
+                    <div
+                      style={{
+                        width: "100%",
+                        height: "8px",
+                        backgroundColor: "rgba(255, 255, 255, 0.1)",
+                        borderRadius: "4px",
+                        overflow: "hidden",
+                      }}
+                    >
+                      <div
+                        style={{
+                          height: "100%",
+                          width: `${titlesProgress}%`,
+                          backgroundColor: "var(--primary-color)",
+                          transition: "width 0.3s ease",
+                          borderRadius: "4px",
+                        }}
+                      />
+                    </div>
+                  </div>
+                  <div
+                    className="titles-output"
+                    style={{ maxHeight: "500px" }}
+                    ref={titlesOutputRef}
+                  >
+                    <div className="titles-output-content">
+                      {titlesOutput.map((line, index) => (
+                        <div key={index} className="output-line">
+                          {line}
+                        </div>
+                      ))}
+                      {titlesOutput.length === 0 && (
+                        <div className="output-line">
+                          Starting AI title generation...
+                        </div>
+                      )}
+                      {generatingTitles && (
+                        <div
+                          className="output-line"
+                          style={{
+                            marginTop: "0.5rem",
+                            color:
+                              titlesWaiting !== null ? "#fbbf24" : "#4ade80",
+                          }}
+                        >
+                          ⏳{" "}
+                          {titlesWaiting !== null
+                            ? `Waiting... ${titlesWaiting}s`
+                            : "Running..."}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+
+            {/* Force Regenerate All Images */}
+            <div className="openai-section" style={{ marginBottom: "2rem" }}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  marginBottom: "0.75rem",
+                }}
+              >
+                <label className="openai-section-label">
+                  REGENERATE ALL IMAGES
+                </label>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "1rem",
+                  }}
+                >
+                  {!isOptimizationRunning ? (
+                    <button
+                      type="button"
+                      onClick={() => handleRunOptimization(true)}
+                      className="btn-force-regenerate"
+                    >
+                      Force Regenerate All
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={handleStopOptimization}
+                      className="btn-force-regenerate"
+                      style={{
+                        backgroundColor: "#dc2626",
+                        borderColor: "#dc2626",
+                      }}
+                    >
+                      Stop
+                    </button>
+                  )}
+                  {optimizationComplete && !isOptimizationRunning && (
+                    <span
+                      style={{
+                        color: "var(--primary-color)",
+                        fontSize: "1.5rem",
+                      }}
+                    >
+                      ✓
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {optimizationLogs.length > 0 && (
+                <>
+                  {isOptimizationRunning && (
                     <div style={{ marginTop: "1rem" }}>
                       <div
                         style={{
@@ -2250,7 +2389,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
                             fontWeight: 600,
                           }}
                         >
-                          {titlesProgress}%
+                          {optimizationProgress}%
                         </span>
                       </div>
                       <div
@@ -2265,7 +2404,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
                         <div
                           style={{
                             height: "100%",
-                            width: `${titlesProgress}%`,
+                            width: `${optimizationProgress}%`,
                             backgroundColor: "var(--primary-color)",
                             transition: "width 0.3s ease",
                             borderRadius: "4px",
@@ -2273,844 +2412,698 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
                         />
                       </div>
                     </div>
-                    <div
-                      className="titles-output"
-                      style={{ maxHeight: "500px" }}
-                      ref={titlesOutputRef}
-                    >
-                      <div className="titles-output-content">
-                        {titlesOutput.map((line, index) => (
-                          <div key={index} className="output-line">
-                            {line}
-                          </div>
-                        ))}
-                        {titlesOutput.length === 0 && (
-                          <div className="output-line">
-                            Starting AI title generation...
-                          </div>
-                        )}
-                        {generatingTitles && (
-                          <div
-                            className="output-line"
-                            style={{
-                              marginTop: "0.5rem",
-                              color:
-                                titlesWaiting !== null ? "#fbbf24" : "#4ade80",
-                            }}
-                          >
-                            ⏳{" "}
-                            {titlesWaiting !== null
-                              ? `Waiting... ${titlesWaiting}s`
-                              : "Running..."}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </>
-                )}
-              </div>
-
-              {/* Force Regenerate All Images */}
-              <div className="openai-section" style={{ marginBottom: "2rem" }}>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    marginBottom: "0.75rem",
-                  }}
-                >
-                  <label className="openai-section-label">
-                    REGENERATE ALL IMAGES
-                  </label>
+                  )}
                   <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "1rem",
-                    }}
+                    className="titles-output"
+                    style={{ maxHeight: "500px" }}
+                    ref={optimizationOutputRef}
                   >
-                    {!isOptimizationRunning ? (
-                      <button
-                        type="button"
-                        onClick={() => handleRunOptimization(true)}
-                        className="btn-force-regenerate"
-                      >
-                        Force Regenerate All
-                      </button>
-                    ) : (
-                      <button
-                        type="button"
-                        onClick={handleStopOptimization}
-                        className="btn-force-regenerate"
-                        style={{
-                          backgroundColor: "#dc2626",
-                          borderColor: "#dc2626",
-                        }}
-                      >
-                        Stop
-                      </button>
-                    )}
-                    {optimizationComplete && !isOptimizationRunning && (
-                      <span
-                        style={{
-                          color: "var(--primary-color)",
-                          fontSize: "1.5rem",
-                        }}
-                      >
-                        ✓
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-                {optimizationLogs.length > 0 && (
-                  <>
-                    {isOptimizationRunning && (
-                      <div style={{ marginTop: "1rem" }}>
-                        <div
-                          style={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                            marginBottom: "0.5rem",
-                            fontSize: "0.9rem",
-                          }}
-                        >
-                          <span style={{ color: "#9ca3af" }}>Progress</span>
-                          <span
-                            style={{
-                              color: "var(--primary-color)",
-                              fontWeight: 600,
-                            }}
-                          >
-                            {optimizationProgress}%
-                          </span>
+                    <div className="titles-output-content">
+                      {optimizationLogs.map((log, index) => (
+                        <div key={index} className="output-line">
+                          {log}
                         </div>
+                      ))}
+                      {isOptimizationRunning && (
                         <div
-                          style={{
-                            width: "100%",
-                            height: "8px",
-                            backgroundColor: "rgba(255, 255, 255, 0.1)",
-                            borderRadius: "4px",
-                            overflow: "hidden",
-                          }}
+                          className="output-line"
+                          style={{ marginTop: "0.5rem", color: "#4ade80" }}
                         >
-                          <div
-                            style={{
-                              height: "100%",
-                              width: `${optimizationProgress}%`,
-                              backgroundColor: "var(--primary-color)",
-                              transition: "width 0.3s ease",
-                              borderRadius: "4px",
-                            }}
-                          />
+                          ⏳ Running...
                         </div>
-                      </div>
-                    )}
-                    <div
-                      className="titles-output"
-                      style={{ maxHeight: "500px" }}
-                      ref={optimizationOutputRef}
-                    >
-                      <div className="titles-output-content">
-                        {optimizationLogs.map((log, index) => (
-                          <div key={index} className="output-line">
-                            {log}
-                          </div>
-                        ))}
-                        {isOptimizationRunning && (
-                          <div
-                            className="output-line"
-                            style={{ marginTop: "0.5rem", color: "#4ade80" }}
-                          >
-                            ⏳ Running...
-                          </div>
-                        )}
-                      </div>
+                      )}
                     </div>
-                  </>
+                  </div>
+                </>
+              )}
+            </div>
+
+            {/* Backend Settings */}
+            <div className="openai-section" style={{ marginBottom: "2rem" }}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  marginBottom: "0.75rem",
+                }}
+              >
+                <label className="openai-section-label">BACKEND</label>
+                {hasUnsavedChanges("Backend") && (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleSaveSection("Backend");
+                    }}
+                    disabled={savingSection !== null}
+                    className="btn-primary"
+                    style={{ padding: "0.4rem 0.8rem", fontSize: "0.85rem" }}
+                  >
+                    {savingSection === "Backend" ? "Saving..." : "Save"}
+                  </button>
                 )}
               </div>
-
-              {/* Backend Settings */}
-              <div className="openai-section" style={{ marginBottom: "2rem" }}>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    marginBottom: "0.75rem",
-                  }}
-                >
-                  <label className="openai-section-label">BACKEND</label>
-                  {hasUnsavedChanges("Backend") && (
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleSaveSection("Backend");
-                      }}
-                      disabled={savingSection !== null}
-                      className="btn-primary"
-                      style={{ padding: "0.4rem 0.8rem", fontSize: "0.85rem" }}
-                    >
-                      {savingSection === "Backend" ? "Saving..." : "Save"}
-                    </button>
-                  )}
-                </div>
-                <p
-                  style={{
-                    fontSize: "0.85rem",
-                    color: "#888",
-                    marginTop: "0",
-                    marginBottom: "1rem",
-                  }}
-                >
-                  Server configuration including port, photos directory, and
-                  CORS allowed origins
-                </p>
-                <div className="config-grid-inner">
-                  <div className="branding-group">
-                    <label className="branding-label">Port</label>
-                    <input
-                      type="number"
-                      value={config.environment.backend.port}
-                      onChange={(e) =>
-                        updateConfig(
-                          ["environment", "backend", "port"],
-                          parseInt(e.target.value)
-                        )
-                      }
-                      className="branding-input"
-                    />
-                  </div>
-
-                  <div className="branding-group">
-                    <label className="branding-label">Photos Directory</label>
-                    <input
-                      type="text"
-                      value={config.environment.backend.photosDir}
-                      onChange={(e) =>
-                        updateConfig(
-                          ["environment", "backend", "photosDir"],
-                          e.target.value
-                        )
-                      }
-                      className="branding-input"
-                    />
-                  </div>
-
-                  <div className="branding-group full-width">
-                    <label className="branding-label">Allowed Origins</label>
-                    {config.environment.backend.allowedOrigins.map(
-                      (origin, index) => (
-                        <div key={index} className="array-item">
-                          <input
-                            type="text"
-                            value={origin}
-                            onChange={(e) =>
-                              updateArrayItem(
-                                ["environment", "backend", "allowedOrigins"],
-                                index,
-                                e.target.value
-                              )
-                            }
-                            className="branding-input"
-                          />
-                          <button
-                            type="button"
-                            onClick={() =>
-                              removeArrayItem(
-                                ["environment", "backend", "allowedOrigins"],
-                                index
-                              )
-                            }
-                            className="btn-remove"
-                          >
-                            ×
-                          </button>
-                        </div>
+              <p
+                style={{
+                  fontSize: "0.85rem",
+                  color: "#888",
+                  marginTop: "0",
+                  marginBottom: "1rem",
+                }}
+              >
+                Server configuration including port, photos directory, and CORS
+                allowed origins
+              </p>
+              <div className="config-grid-inner">
+                <div className="branding-group">
+                  <label className="branding-label">Port</label>
+                  <input
+                    type="number"
+                    value={config.environment.backend.port}
+                    onChange={(e) =>
+                      updateConfig(
+                        ["environment", "backend", "port"],
+                        parseInt(e.target.value)
                       )
-                    )}
-                    <button
-                      type="button"
-                      onClick={() =>
-                        addArrayItem([
-                          "environment",
-                          "backend",
-                          "allowedOrigins",
-                        ])
-                      }
-                      className="btn-add"
-                    >
-                      + Add Origin
-                    </button>
-                  </div>
+                    }
+                    className="branding-input"
+                  />
                 </div>
 
-                {/* Backend Restart Button */}
-                <div
-                  style={{
-                    marginTop: "1rem",
-                    paddingTop: "1rem",
-                    borderTop: "1px solid rgba(255, 255, 255, 0.05)",
-                  }}
-                >
+                <div className="branding-group">
+                  <label className="branding-label">Photos Directory</label>
+                  <input
+                    type="text"
+                    value={config.environment.backend.photosDir}
+                    onChange={(e) =>
+                      updateConfig(
+                        ["environment", "backend", "photosDir"],
+                        e.target.value
+                      )
+                    }
+                    className="branding-input"
+                  />
+                </div>
+
+                <div className="branding-group full-width">
+                  <label className="branding-label">Allowed Origins</label>
+                  {config.environment.backend.allowedOrigins.map(
+                    (origin, index) => (
+                      <div key={index} className="array-item">
+                        <input
+                          type="text"
+                          value={origin}
+                          onChange={(e) =>
+                            updateArrayItem(
+                              ["environment", "backend", "allowedOrigins"],
+                              index,
+                              e.target.value
+                            )
+                          }
+                          className="branding-input"
+                        />
+                        <button
+                          type="button"
+                          onClick={() =>
+                            removeArrayItem(
+                              ["environment", "backend", "allowedOrigins"],
+                              index
+                            )
+                          }
+                          className="btn-remove"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    )
+                  )}
                   <button
                     type="button"
-                    onClick={handleRestartBackend}
-                    disabled={restartingBackend}
-                    className="btn-secondary"
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "0.5rem",
-                    }}
+                    onClick={() =>
+                      addArrayItem(["environment", "backend", "allowedOrigins"])
+                    }
+                    className="btn-add"
                   >
-                    🔄{" "}
-                    {restartingBackend
-                      ? "Restarting..."
-                      : "Restart Backend Server"}
+                    + Add Origin
                   </button>
-                  <p
-                    style={{
-                      fontSize: "0.85rem",
-                      color: "#888",
-                      marginTop: "0.5rem",
-                      marginBottom: 0,
-                    }}
-                  >
-                    Server will restart automatically if using a process manager
-                    (pm2, nodemon, systemd)
-                  </p>
                 </div>
               </div>
 
-              {/* Frontend Settings */}
-              <div className="openai-section" style={{ marginBottom: "2rem" }}>
-                <div
+              {/* Backend Restart Button */}
+              <div
+                style={{
+                  marginTop: "1rem",
+                  paddingTop: "1rem",
+                  borderTop: "1px solid rgba(255, 255, 255, 0.05)",
+                }}
+              >
+                <button
+                  type="button"
+                  onClick={handleRestartBackend}
+                  disabled={restartingBackend}
+                  className="btn-secondary"
                   style={{
                     display: "flex",
-                    justifyContent: "space-between",
                     alignItems: "center",
-                    marginBottom: "0.75rem",
+                    gap: "0.5rem",
                   }}
                 >
-                  <label className="openai-section-label">FRONTEND</label>
-                  {hasUnsavedChanges("Frontend") && (
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleSaveSection("Frontend");
-                      }}
-                      disabled={savingSection !== null}
-                      className="btn-primary"
-                      style={{ padding: "0.4rem 0.8rem", fontSize: "0.85rem" }}
-                    >
-                      {savingSection === "Frontend" ? "Saving..." : "Save"}
-                    </button>
-                  )}
-                </div>
+                  🔄{" "}
+                  {restartingBackend
+                    ? "Restarting..."
+                    : "Restart Backend Server"}
+                </button>
                 <p
                   style={{
                     fontSize: "0.85rem",
                     color: "#888",
-                    marginTop: "0",
-                    marginBottom: "1rem",
+                    marginTop: "0.5rem",
+                    marginBottom: 0,
                   }}
                 >
-                  Frontend development server port and API URL for connecting to
-                  the backend
+                  Server will restart automatically if using a process manager
+                  (pm2, nodemon, systemd)
                 </p>
-                <div className="config-grid-inner">
-                  <div className="branding-group">
-                    <label className="branding-label">Port</label>
-                    <input
-                      type="number"
-                      value={config.environment.frontend.port}
-                      onChange={(e) =>
-                        updateConfig(
-                          ["environment", "frontend", "port"],
-                          parseInt(e.target.value)
-                        )
-                      }
-                      className="branding-input"
-                    />
-                  </div>
+              </div>
+            </div>
 
-                  <div className="branding-group">
-                    <label className="branding-label">API URL</label>
-                    <input
-                      type="text"
-                      value={config.environment.frontend.apiUrl}
-                      onChange={(e) =>
-                        updateConfig(
-                          ["environment", "frontend", "apiUrl"],
-                          e.target.value
-                        )
-                      }
-                      className="branding-input"
-                    />
-                  </div>
-                </div>
-
-                {/* Frontend Restart Button */}
-                <div
-                  style={{
-                    marginTop: "1rem",
-                    paddingTop: "1rem",
-                    borderTop: "1px solid rgba(255, 255, 255, 0.05)",
-                  }}
-                >
+            {/* Frontend Settings */}
+            <div className="openai-section" style={{ marginBottom: "2rem" }}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  marginBottom: "0.75rem",
+                }}
+              >
+                <label className="openai-section-label">FRONTEND</label>
+                {hasUnsavedChanges("Frontend") && (
                   <button
                     type="button"
-                    onClick={handleRestartFrontend}
-                    disabled={restartingFrontend}
-                    className="btn-secondary"
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "0.5rem",
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleSaveSection("Frontend");
                     }}
+                    disabled={savingSection !== null}
+                    className="btn-primary"
+                    style={{ padding: "0.4rem 0.8rem", fontSize: "0.85rem" }}
                   >
-                    🔄{" "}
-                    {restartingFrontend
-                      ? "Restarting..."
-                      : "Restart Frontend Server"}
+                    {savingSection === "Frontend" ? "Saving..." : "Save"}
                   </button>
-                  <p
-                    style={{
-                      fontSize: "0.85rem",
-                      color: "#888",
-                      marginTop: "0.5rem",
-                      marginBottom: 0,
+                )}
+              </div>
+              <p
+                style={{
+                  fontSize: "0.85rem",
+                  color: "#888",
+                  marginTop: "0",
+                  marginBottom: "1rem",
+                }}
+              >
+                Frontend development server port and API URL for connecting to
+                the backend
+              </p>
+              <div className="config-grid-inner">
+                <div className="branding-group">
+                  <label className="branding-label">Port</label>
+                  <input
+                    type="number"
+                    value={config.environment.frontend.port}
+                    onChange={(e) =>
+                      updateConfig(
+                        ["environment", "frontend", "port"],
+                        parseInt(e.target.value)
+                      )
+                    }
+                    className="branding-input"
+                  />
+                </div>
+
+                <div className="branding-group">
+                  <label className="branding-label">API URL</label>
+                  <input
+                    type="text"
+                    value={config.environment.frontend.apiUrl}
+                    onChange={(e) =>
+                      updateConfig(
+                        ["environment", "frontend", "apiUrl"],
+                        e.target.value
+                      )
+                    }
+                    className="branding-input"
+                  />
+                </div>
+              </div>
+
+              {/* Frontend Restart Button */}
+              <div
+                style={{
+                  marginTop: "1rem",
+                  paddingTop: "1rem",
+                  borderTop: "1px solid rgba(255, 255, 255, 0.05)",
+                }}
+              >
+                <button
+                  type="button"
+                  onClick={handleRestartFrontend}
+                  disabled={restartingFrontend}
+                  className="btn-secondary"
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.5rem",
+                  }}
+                >
+                  🔄{" "}
+                  {restartingFrontend
+                    ? "Restarting..."
+                    : "Restart Frontend Server"}
+                </button>
+                <p
+                  style={{
+                    fontSize: "0.85rem",
+                    color: "#888",
+                    marginTop: "0.5rem",
+                    marginBottom: 0,
+                  }}
+                >
+                  In development, manually restart your dev server. In
+                  production, use your process manager.
+                </p>
+              </div>
+            </div>
+
+            {/* Security Settings */}
+            <div className="openai-section" style={{ marginBottom: "2rem" }}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  marginBottom: "0.75rem",
+                }}
+              >
+                <label className="openai-section-label">SECURITY</label>
+                {hasUnsavedChanges("Security") && (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleSaveSection("Security");
                     }}
+                    disabled={savingSection !== null}
+                    className="btn-primary"
+                    style={{ padding: "0.4rem 0.8rem", fontSize: "0.85rem" }}
                   >
-                    In development, manually restart your dev server. In
-                    production, use your process manager.
-                  </p>
-                </div>
+                    {savingSection === "Security" ? "Saving..." : "Save"}
+                  </button>
+                )}
               </div>
-
-              {/* Security Settings */}
-              <div className="openai-section" style={{ marginBottom: "2rem" }}>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    marginBottom: "0.75rem",
-                  }}
-                >
-                  <label className="openai-section-label">SECURITY</label>
-                  {hasUnsavedChanges("Security") && (
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleSaveSection("Security");
-                      }}
-                      disabled={savingSection !== null}
-                      className="btn-primary"
-                      style={{ padding: "0.4rem 0.8rem", fontSize: "0.85rem" }}
-                    >
-                      {savingSection === "Security" ? "Saving..." : "Save"}
-                    </button>
-                  )}
-                </div>
-                <p
-                  style={{
-                    fontSize: "0.85rem",
-                    color: "#888",
-                    marginTop: "0",
-                    marginBottom: "1rem",
-                  }}
-                >
-                  Rate limiting and allowed hosts for protecting against abuse
-                  and unauthorized access
-                </p>
-                <div className="config-grid-inner">
-                  <div className="branding-group">
-                    <label className="branding-label">
-                      Rate Limit Window (ms)
-                    </label>
-                    <input
-                      type="number"
-                      value={config.environment.security.rateLimitWindowMs}
-                      onChange={(e) =>
-                        updateConfig(
-                          ["environment", "security", "rateLimitWindowMs"],
-                          parseInt(e.target.value)
-                        )
-                      }
-                      className="branding-input"
-                    />
-                  </div>
-
-                  <div className="branding-group">
-                    <label className="branding-label">
-                      Rate Limit Max Requests
-                    </label>
-                    <input
-                      type="number"
-                      value={config.environment.security.rateLimitMaxRequests}
-                      onChange={(e) =>
-                        updateConfig(
-                          ["environment", "security", "rateLimitMaxRequests"],
-                          parseInt(e.target.value)
-                        )
-                      }
-                      className="branding-input"
-                    />
-                  </div>
-
-                  <div className="branding-group full-width">
-                    <label className="branding-label">Allowed Hosts</label>
-                    {config.environment.security.allowedHosts.map(
-                      (host, index) => (
-                        <div key={index} className="array-item">
-                          <input
-                            type="text"
-                            value={host}
-                            onChange={(e) =>
-                              updateArrayItem(
-                                ["environment", "security", "allowedHosts"],
-                                index,
-                                e.target.value
-                              )
-                            }
-                            className="branding-input"
-                          />
-                          <button
-                            type="button"
-                            onClick={() =>
-                              removeArrayItem(
-                                ["environment", "security", "allowedHosts"],
-                                index
-                              )
-                            }
-                            className="btn-remove"
-                          >
-                            ×
-                          </button>
-                        </div>
+              <p
+                style={{
+                  fontSize: "0.85rem",
+                  color: "#888",
+                  marginTop: "0",
+                  marginBottom: "1rem",
+                }}
+              >
+                Rate limiting and allowed hosts for protecting against abuse and
+                unauthorized access
+              </p>
+              <div className="config-grid-inner">
+                <div className="branding-group">
+                  <label className="branding-label">
+                    Rate Limit Window (ms)
+                  </label>
+                  <input
+                    type="number"
+                    value={config.environment.security.rateLimitWindowMs}
+                    onChange={(e) =>
+                      updateConfig(
+                        ["environment", "security", "rateLimitWindowMs"],
+                        parseInt(e.target.value)
                       )
-                    )}
-                    <button
-                      type="button"
-                      onClick={() =>
-                        addArrayItem([
-                          "environment",
-                          "security",
-                          "allowedHosts",
-                        ])
-                      }
-                      className="btn-add"
-                    >
-                      + Add Host
-                    </button>
-                  </div>
+                    }
+                    className="branding-input"
+                  />
                 </div>
-              </div>
 
-              {/* Auth Settings */}
-              <div className="openai-section" style={{ marginBottom: "2rem" }}>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    marginBottom: "0.75rem",
-                  }}
-                >
-                  <label className="openai-section-label">AUTHENTICATION</label>
-                  {hasUnsavedChanges("Authentication") && (
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleSaveSection("Authentication");
-                      }}
-                      disabled={savingSection !== null}
-                      className="btn-primary"
-                      style={{ padding: "0.4rem 0.8rem", fontSize: "0.85rem" }}
-                    >
-                      {savingSection === "Authentication"
-                        ? "Saving..."
-                        : "Save"}
-                    </button>
-                  )}
-                </div>
-                <p
-                  style={{
-                    fontSize: "0.85rem",
-                    color: "#888",
-                    marginTop: "0",
-                    marginBottom: "1rem",
-                  }}
-                >
-                  Google OAuth credentials and authorized email addresses for
-                  admin access
-                </p>
-                <div className="config-grid-inner">
-                  <div className="branding-group">
-                    <label className="branding-label">Google Client ID</label>
-                    <input
-                      type="text"
-                      value={config.environment.auth.google.clientId}
-                      onChange={(e) =>
-                        updateConfig(
-                          ["environment", "auth", "google", "clientId"],
-                          e.target.value
-                        )
-                      }
-                      className="branding-input"
-                    />
-                  </div>
-
-                  <div className="branding-group">
-                    <label className="branding-label">
-                      Google Client Secret
-                    </label>
-                    <input
-                      type="password"
-                      value={config.environment.auth.google.clientSecret}
-                      onChange={(e) =>
-                        updateConfig(
-                          ["environment", "auth", "google", "clientSecret"],
-                          e.target.value
-                        )
-                      }
-                      className="branding-input"
-                    />
-                  </div>
-
-                  <div className="branding-group">
-                    <label className="branding-label">Session Secret</label>
-                    <input
-                      type="password"
-                      value={config.environment.auth.sessionSecret}
-                      onChange={(e) =>
-                        updateConfig(
-                          ["environment", "auth", "sessionSecret"],
-                          e.target.value
-                        )
-                      }
-                      className="branding-input"
-                    />
-                  </div>
-
-                  <div className="branding-group full-width">
-                    <label className="branding-label">Authorized Emails</label>
-                    {config.environment.auth.authorizedEmails.map(
-                      (email, index) => (
-                        <div key={index} className="array-item">
-                          <input
-                            type="email"
-                            value={email}
-                            onChange={(e) =>
-                              updateArrayItem(
-                                ["environment", "auth", "authorizedEmails"],
-                                index,
-                                e.target.value
-                              )
-                            }
-                            className="branding-input"
-                          />
-                          <button
-                            type="button"
-                            onClick={() =>
-                              removeArrayItem(
-                                ["environment", "auth", "authorizedEmails"],
-                                index
-                              )
-                            }
-                            className="btn-remove"
-                          >
-                            ×
-                          </button>
-                        </div>
+                <div className="branding-group">
+                  <label className="branding-label">
+                    Rate Limit Max Requests
+                  </label>
+                  <input
+                    type="number"
+                    value={config.environment.security.rateLimitMaxRequests}
+                    onChange={(e) =>
+                      updateConfig(
+                        ["environment", "security", "rateLimitMaxRequests"],
+                        parseInt(e.target.value)
                       )
-                    )}
-                    <button
-                      type="button"
-                      onClick={() =>
-                        addArrayItem([
-                          "environment",
-                          "auth",
-                          "authorizedEmails",
-                        ])
-                      }
-                      className="btn-add"
-                    >
-                      + Add Email
-                    </button>
-                  </div>
+                    }
+                    className="branding-input"
+                  />
+                </div>
+
+                <div className="branding-group full-width">
+                  <label className="branding-label">Allowed Hosts</label>
+                  {config.environment.security.allowedHosts.map(
+                    (host, index) => (
+                      <div key={index} className="array-item">
+                        <input
+                          type="text"
+                          value={host}
+                          onChange={(e) =>
+                            updateArrayItem(
+                              ["environment", "security", "allowedHosts"],
+                              index,
+                              e.target.value
+                            )
+                          }
+                          className="branding-input"
+                        />
+                        <button
+                          type="button"
+                          onClick={() =>
+                            removeArrayItem(
+                              ["environment", "security", "allowedHosts"],
+                              index
+                            )
+                          }
+                          className="btn-remove"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    )
+                  )}
+                  <button
+                    type="button"
+                    onClick={() =>
+                      addArrayItem(["environment", "security", "allowedHosts"])
+                    }
+                    className="btn-add"
+                  >
+                    + Add Host
+                  </button>
                 </div>
               </div>
+            </div>
 
-              {/* Analytics Settings */}
-              <div className="openai-section" style={{ marginBottom: "2rem" }}>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    marginBottom: "0.75rem",
-                  }}
-                >
-                  <label className="openai-section-label">ANALYTICS</label>
-                  {hasUnsavedChanges("Analytics") && (
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleSaveSection("Analytics");
-                      }}
-                      disabled={savingSection !== null}
-                      className="btn-primary"
-                      style={{ padding: "0.4rem 0.8rem", fontSize: "0.85rem" }}
-                    >
-                      {savingSection === "Analytics" ? "Saving..." : "Save"}
-                    </button>
-                  )}
+            {/* Auth Settings */}
+            <div className="openai-section" style={{ marginBottom: "2rem" }}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  marginBottom: "0.75rem",
+                }}
+              >
+                <label className="openai-section-label">AUTHENTICATION</label>
+                {hasUnsavedChanges("Authentication") && (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleSaveSection("Authentication");
+                    }}
+                    disabled={savingSection !== null}
+                    className="btn-primary"
+                    style={{ padding: "0.4rem 0.8rem", fontSize: "0.85rem" }}
+                  >
+                    {savingSection === "Authentication" ? "Saving..." : "Save"}
+                  </button>
+                )}
+              </div>
+              <p
+                style={{
+                  fontSize: "0.85rem",
+                  color: "#888",
+                  marginTop: "0",
+                  marginBottom: "1rem",
+                }}
+              >
+                Google OAuth credentials and authorized email addresses for
+                admin access
+              </p>
+              <div className="config-grid-inner">
+                <div className="branding-group">
+                  <label className="branding-label">Google Client ID</label>
+                  <input
+                    type="text"
+                    value={config.environment.auth.google.clientId}
+                    onChange={(e) =>
+                      updateConfig(
+                        ["environment", "auth", "google", "clientId"],
+                        e.target.value
+                      )
+                    }
+                    className="branding-input"
+                  />
                 </div>
-                <p
-                  style={{
-                    fontSize: "0.85rem",
-                    color: "#888",
-                    marginTop: "0",
-                    marginBottom: "1rem",
-                  }}
-                >
-                  Analytics tracking configuration including OpenObserve integration
-                </p>
-                <div className="config-grid-inner">
-                  <div className="branding-group">
-                    <label className="branding-label">Script Path</label>
-                    <input
-                      type="text"
-                      value={config.analytics.scriptPath}
-                      onChange={(e) =>
-                        updateConfig(["analytics", "scriptPath"], e.target.value)
-                      }
-                      className="branding-input"
-                      placeholder="/analytics.js"
-                    />
-                  </div>
 
-                  <div className="branding-group">
-                    <label className="branding-label">HMAC Secret</label>
-                    <input
-                      type="password"
-                      value={config.analytics.hmacSecret}
-                      onChange={(e) =>
-                        updateConfig(["analytics", "hmacSecret"], e.target.value)
-                      }
-                      className="branding-input"
-                      placeholder="Secret key for HMAC"
-                    />
-                  </div>
+                <div className="branding-group">
+                  <label className="branding-label">Google Client Secret</label>
+                  <input
+                    type="password"
+                    value={config.environment.auth.google.clientSecret}
+                    onChange={(e) =>
+                      updateConfig(
+                        ["environment", "auth", "google", "clientSecret"],
+                        e.target.value
+                      )
+                    }
+                    className="branding-input"
+                  />
+                </div>
 
-                  <div className="branding-group full-width">
-                    <label className="branding-label">
+                <div className="branding-group">
+                  <label className="branding-label">Session Secret</label>
+                  <input
+                    type="password"
+                    value={config.environment.auth.sessionSecret}
+                    onChange={(e) =>
+                      updateConfig(
+                        ["environment", "auth", "sessionSecret"],
+                        e.target.value
+                      )
+                    }
+                    className="branding-input"
+                  />
+                </div>
+
+                <div className="branding-group full-width">
+                  <label className="branding-label">Authorized Emails</label>
+                  {config.environment.auth.authorizedEmails.map(
+                    (email, index) => (
+                      <div key={index} className="array-item">
+                        <input
+                          type="email"
+                          value={email}
+                          onChange={(e) =>
+                            updateArrayItem(
+                              ["environment", "auth", "authorizedEmails"],
+                              index,
+                              e.target.value
+                            )
+                          }
+                          className="branding-input"
+                        />
+                        <button
+                          type="button"
+                          onClick={() =>
+                            removeArrayItem(
+                              ["environment", "auth", "authorizedEmails"],
+                              index
+                            )
+                          }
+                          className="btn-remove"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    )
+                  )}
+                  <button
+                    type="button"
+                    onClick={() =>
+                      addArrayItem(["environment", "auth", "authorizedEmails"])
+                    }
+                    className="btn-add"
+                  >
+                    + Add Email
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Analytics Settings */}
+            <div className="openai-section" style={{ marginBottom: "2rem" }}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  marginBottom: "0.75rem",
+                }}
+              >
+                <label className="openai-section-label">ANALYTICS</label>
+                {hasUnsavedChanges("Analytics") && (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleSaveSection("Analytics");
+                    }}
+                    disabled={savingSection !== null}
+                    className="btn-primary"
+                    style={{ padding: "0.4rem 0.8rem", fontSize: "0.85rem" }}
+                  >
+                    {savingSection === "Analytics" ? "Saving..." : "Save"}
+                  </button>
+                )}
+              </div>
+              <p
+                style={{
+                  fontSize: "0.85rem",
+                  color: "#888",
+                  marginTop: "0",
+                  marginBottom: "1rem",
+                }}
+              >
+                Analytics tracking configuration including OpenObserve
+                integration
+              </p>
+              <div className="config-grid-inner">
+                <div className="branding-group">
+                  <label className="branding-label">Script Path</label>
+                  <input
+                    type="text"
+                    value={config.analytics.scriptPath}
+                    onChange={(e) =>
+                      updateConfig(["analytics", "scriptPath"], e.target.value)
+                    }
+                    className="branding-input"
+                    placeholder="/analytics.js"
+                  />
+                </div>
+
+                <div className="branding-group">
+                  <label className="branding-label">HMAC Secret</label>
+                  <input
+                    type="password"
+                    value={config.analytics.hmacSecret}
+                    onChange={(e) =>
+                      updateConfig(["analytics", "hmacSecret"], e.target.value)
+                    }
+                    className="branding-input"
+                    placeholder="Secret key for HMAC"
+                  />
+                </div>
+
+                <div className="branding-group full-width">
+                  <label className="branding-label">
+                    <input
+                      type="checkbox"
+                      checked={config.analytics.openobserve.enabled}
+                      onChange={(e) =>
+                        updateConfig(
+                          ["analytics", "openobserve", "enabled"],
+                          e.target.checked
+                        )
+                      }
+                      style={{ marginRight: "0.5rem" }}
+                    />
+                    Enable OpenObserve Integration
+                  </label>
+                </div>
+
+                {config.analytics.openobserve.enabled && (
+                  <>
+                    <div className="branding-group">
+                      <label className="branding-label">
+                        OpenObserve Endpoint
+                      </label>
                       <input
-                        type="checkbox"
-                        checked={config.analytics.openobserve.enabled}
+                        type="text"
+                        value={config.analytics.openobserve.endpoint}
                         onChange={(e) =>
                           updateConfig(
-                            ["analytics", "openobserve", "enabled"],
-                            e.target.checked
+                            ["analytics", "openobserve", "endpoint"],
+                            e.target.value
                           )
                         }
-                        style={{ marginRight: "0.5rem" }}
+                        className="branding-input"
+                        placeholder="https://api.openobserve.ai"
                       />
-                      Enable OpenObserve Integration
-                    </label>
-                  </div>
+                    </div>
 
-                  {config.analytics.openobserve.enabled && (
-                    <>
-                      <div className="branding-group">
-                        <label className="branding-label">OpenObserve Endpoint</label>
-                        <input
-                          type="text"
-                          value={config.analytics.openobserve.endpoint}
-                          onChange={(e) =>
-                            updateConfig(
-                              ["analytics", "openobserve", "endpoint"],
-                              e.target.value
-                            )
-                          }
-                          className="branding-input"
-                          placeholder="https://api.openobserve.ai"
-                        />
-                      </div>
+                    <div className="branding-group">
+                      <label className="branding-label">Organization</label>
+                      <input
+                        type="text"
+                        value={config.analytics.openobserve.organization}
+                        onChange={(e) =>
+                          updateConfig(
+                            ["analytics", "openobserve", "organization"],
+                            e.target.value
+                          )
+                        }
+                        className="branding-input"
+                      />
+                    </div>
 
-                      <div className="branding-group">
-                        <label className="branding-label">Organization</label>
-                        <input
-                          type="text"
-                          value={config.analytics.openobserve.organization}
-                          onChange={(e) =>
-                            updateConfig(
-                              ["analytics", "openobserve", "organization"],
-                              e.target.value
-                            )
-                          }
-                          className="branding-input"
-                        />
-                      </div>
+                    <div className="branding-group">
+                      <label className="branding-label">Stream</label>
+                      <input
+                        type="text"
+                        value={config.analytics.openobserve.stream}
+                        onChange={(e) =>
+                          updateConfig(
+                            ["analytics", "openobserve", "stream"],
+                            e.target.value
+                          )
+                        }
+                        className="branding-input"
+                      />
+                    </div>
 
-                      <div className="branding-group">
-                        <label className="branding-label">Stream</label>
-                        <input
-                          type="text"
-                          value={config.analytics.openobserve.stream}
-                          onChange={(e) =>
-                            updateConfig(
-                              ["analytics", "openobserve", "stream"],
-                              e.target.value
-                            )
-                          }
-                          className="branding-input"
-                        />
-                      </div>
+                    <div className="branding-group">
+                      <label className="branding-label">Username</label>
+                      <input
+                        type="text"
+                        value={config.analytics.openobserve.username}
+                        onChange={(e) =>
+                          updateConfig(
+                            ["analytics", "openobserve", "username"],
+                            e.target.value
+                          )
+                        }
+                        className="branding-input"
+                      />
+                    </div>
 
-                      <div className="branding-group">
-                        <label className="branding-label">Username</label>
-                        <input
-                          type="text"
-                          value={config.analytics.openobserve.username}
-                          onChange={(e) =>
-                            updateConfig(
-                              ["analytics", "openobserve", "username"],
-                              e.target.value
-                            )
-                          }
-                          className="branding-input"
-                        />
-                      </div>
-
-                      <div className="branding-group">
-                        <label className="branding-label">Password</label>
-                        <input
-                          type="password"
-                          value={config.analytics.openobserve.password}
-                          onChange={(e) =>
-                            updateConfig(
-                              ["analytics", "openobserve", "password"],
-                              e.target.value
-                            )
-                          }
-                          className="branding-input"
-                        />
-                      </div>
-                    </>
-                  )}
-                </div>
+                    <div className="branding-group">
+                      <label className="branding-label">Password</label>
+                      <input
+                        type="password"
+                        value={config.analytics.openobserve.password}
+                        onChange={(e) =>
+                          updateConfig(
+                            ["analytics", "openobserve", "password"],
+                            e.target.value
+                          )
+                        }
+                        className="branding-input"
+                      />
+                    </div>
+                  </>
+                )}
               </div>
+            </div>
           </div>
         </div>
       </div>
