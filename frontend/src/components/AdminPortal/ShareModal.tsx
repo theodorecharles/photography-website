@@ -29,32 +29,6 @@ export default function ShareModal({ album, onClose }: ShareModalProps) {
   const [copied, setCopied] = useState(false);
   const [generatedLink, setGeneratedLink] = useState<string | null>(null);
 
-  const copyToClipboard = async (text: string) => {
-    try {
-      // Try modern clipboard API first
-      await navigator.clipboard.writeText(text);
-      return true;
-    } catch (err) {
-      // Fallback to older method
-      try {
-        const textArea = document.createElement('textarea');
-        textArea.value = text;
-        textArea.style.position = 'fixed';
-        textArea.style.left = '-999999px';
-        textArea.style.top = '-999999px';
-        document.body.appendChild(textArea);
-        textArea.focus();
-        textArea.select();
-        const successful = document.execCommand('copy');
-        document.body.removeChild(textArea);
-        return successful;
-      } catch (fallbackErr) {
-        console.error('Fallback clipboard copy failed:', fallbackErr);
-        return false;
-      }
-    }
-  };
-
   const generateLink = async () => {
     setLoading(true);
     setError(null);
@@ -81,13 +55,6 @@ export default function ShareModal({ album, onClose }: ShareModalProps) {
       const data = await response.json();
       const url = `${SITE_URL}/shared/${data.shareLink.secretKey}`;
       setGeneratedLink(url);
-      
-      // Try to copy to clipboard automatically
-      const copySuccess = await copyToClipboard(url);
-      if (copySuccess) {
-        setCopied(true);
-        setTimeout(() => setCopied(false), 3000);
-      }
     } catch (err) {
       console.error('Error generating share link:', err);
       setError(err instanceof Error ? err.message : 'Failed to generate share link');
@@ -99,10 +66,12 @@ export default function ShareModal({ album, onClose }: ShareModalProps) {
   const handleCopyClick = async () => {
     if (!generatedLink) return;
     
-    const copySuccess = await copyToClipboard(generatedLink);
-    if (copySuccess) {
+    try {
+      await navigator.clipboard.writeText(generatedLink);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy link:', err);
     }
   };
 
