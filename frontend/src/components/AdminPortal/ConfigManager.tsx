@@ -984,82 +984,6 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
               <p style={{ fontSize: '0.85rem', color: '#888', marginTop: '0.5rem', marginBottom: 0 }}>
                 Automatically generate AI titles for newly uploaded images after optimization completes. Saves immediately when toggled.
               </p>
-              
-              {/* Force Regenerate button */}
-              {!generatingTitles ? (
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (confirm('⚠️ This will regenerate ALL image titles and overwrite any custom titles you have set. This action cannot be undone.\n\nAre you sure you want to continue?')) {
-                      handleGenerateTitles();
-                    }
-                  }}
-                  disabled={!config.openai?.apiKey}
-                  className="btn-secondary"
-                  style={{ 
-                    marginTop: '0.5rem',
-                    backgroundColor: '#dc2626',
-                    borderColor: '#dc2626',
-                    color: 'white'
-                  }}
-                >
-                  Force Regenerate All Titles
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  onClick={handleStopTitles}
-                  className="btn-secondary"
-                  style={{ 
-                    marginTop: '0.5rem',
-                    backgroundColor: '#dc2626',
-                    borderColor: '#dc2626'
-                  }}
-                >
-                  Stop
-                </button>
-              )}
-              
-              {generatingTitles && (
-                <>
-                  <div style={{ marginTop: '1rem' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', fontSize: '0.9rem' }}>
-                      <span style={{ color: '#9ca3af' }}>Progress</span>
-                      <span style={{ color: 'var(--primary-color)', fontWeight: 600 }}>{titlesProgress}%</span>
-                    </div>
-                    <div style={{ 
-                      width: '100%', 
-                      height: '8px', 
-                      backgroundColor: 'rgba(255, 255, 255, 0.1)', 
-                      borderRadius: '4px',
-                      overflow: 'hidden'
-                    }}>
-                      <div style={{ 
-                        height: '100%', 
-                        width: `${titlesProgress}%`, 
-                        backgroundColor: 'var(--primary-color)',
-                        transition: 'width 0.3s ease',
-                        borderRadius: '4px'
-                      }} />
-                    </div>
-                  </div>
-                  <div className="titles-output" ref={titlesOutputRef}>
-                    <div className="titles-output-content">
-                      {titlesOutput.map((line, index) => (
-                        <div key={index} className="output-line">{line}</div>
-                      ))}
-                      {titlesOutput.length === 0 && (
-                        <div className="output-line">Starting AI title generation...</div>
-                      )}
-                      {generatingTitles && (
-                        <div className="output-line" style={{ marginTop: '0.5rem', color: titlesWaiting !== null ? '#fbbf24' : '#4ade80' }}>
-                          ⏳ {titlesWaiting !== null ? `Waiting... ${titlesWaiting}s` : 'Running...'}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </>
-              )}
             </div>
           </div>
         </div>
@@ -1164,7 +1088,83 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
             </div>
           </div>
 
-          {/* Force Regenerate All */}
+          {/* Force Regenerate All Titles */}
+          <div style={{ marginTop: '2rem', paddingTop: '2rem', borderTop: '1px solid rgba(255, 255, 255, 0.1)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+              <h4 style={{ color: '#e5e7eb', margin: 0, fontSize: '1rem', fontWeight: 600 }}>Regenerate All Titles</h4>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                {!generatingTitles ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (confirm('⚠️ This will regenerate ALL image titles and overwrite any custom titles you have set. This action cannot be undone.\n\nAre you sure you want to continue?')) {
+                        handleGenerateTitles();
+                      }
+                    }}
+                    disabled={!config.openai?.apiKey}
+                    className="btn-force-regenerate"
+                  >
+                    Force Regenerate All
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={handleStopTitles}
+                    className="btn-force-regenerate"
+                    style={{ 
+                      backgroundColor: '#dc2626',
+                      borderColor: '#dc2626'
+                    }}
+                  >
+                    Stop
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {generatingTitles && (
+              <>
+                <div style={{ marginTop: '1rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', fontSize: '0.9rem' }}>
+                    <span style={{ color: '#9ca3af' }}>Progress</span>
+                    <span style={{ color: 'var(--primary-color)', fontWeight: 600 }}>{titlesProgress}%</span>
+                  </div>
+                  <div style={{ 
+                    width: '100%', 
+                    height: '8px', 
+                    backgroundColor: 'rgba(255, 255, 255, 0.1)', 
+                    borderRadius: '4px',
+                    overflow: 'hidden'
+                  }}>
+                    <div style={{ 
+                      height: '100%', 
+                      width: `${titlesProgress}%`, 
+                      backgroundColor: 'var(--primary-color)',
+                      transition: 'width 0.3s ease',
+                      borderRadius: '4px'
+                    }} />
+                  </div>
+                </div>
+                <div className="titles-output" style={{ maxHeight: '500px' }} ref={titlesOutputRef}>
+                  <div className="titles-output-content">
+                    {titlesOutput.map((line, index) => (
+                      <div key={index} className="output-line">{line}</div>
+                    ))}
+                    {titlesOutput.length === 0 && (
+                      <div className="output-line">Starting AI title generation...</div>
+                    )}
+                    {generatingTitles && (
+                      <div className="output-line" style={{ marginTop: '0.5rem', color: titlesWaiting !== null ? '#fbbf24' : '#4ade80' }}>
+                        ⏳ {titlesWaiting !== null ? `Waiting... ${titlesWaiting}s` : 'Running...'}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+
+          {/* Force Regenerate All Images */}
           <div style={{ marginTop: '2rem', paddingTop: '2rem', borderTop: '1px solid rgba(255, 255, 255, 0.1)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
               <h4 style={{ color: '#e5e7eb', margin: 0, fontSize: '1rem', fontWeight: 600 }}>Regenerate All Images</h4>
