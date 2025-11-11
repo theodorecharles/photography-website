@@ -911,26 +911,37 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
           <p className="config-section-description">
             Configure OpenAI API integration for generating image titles
           </p>
-          <div className="branding-group">
-            <label className="branding-label">API Key</label>
-            <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'flex-start', flexWrap: 'wrap' }}>
+          
+          {/* Two-column layout on desktop */}
+          <div className="openai-settings-grid">
+            {/* Left: API Key Section */}
+            <div className="openai-section">
+              <label className="openai-section-label">API KEY</label>
               <input
                 type="password"
                 value={config.openai?.apiKey || ''}
                 onChange={(e) => updateConfig(['openai', 'apiKey'], e.target.value)}
                 className="branding-input"
                 placeholder="sk-..."
-                style={{ flex: 1, minWidth: '300px' }}
               />
               {!generatingTitles ? (
                 <button
                   type="button"
-                  onClick={handleGenerateTitles}
+                  onClick={() => {
+                    if (confirm('⚠️ This will regenerate ALL image titles and overwrite any custom titles you have set. This action cannot be undone.\n\nAre you sure you want to continue?')) {
+                      handleGenerateTitles();
+                    }
+                  }}
                   disabled={!config.openai?.apiKey}
                   className="btn-secondary"
-                  style={{ whiteSpace: 'nowrap' }}
+                  style={{ 
+                    whiteSpace: 'nowrap',
+                    backgroundColor: '#dc2626',
+                    borderColor: '#dc2626',
+                    color: 'white'
+                  }}
                 >
-                  Generate AI Titles
+                  Force Regenerate All Titles
                 </button>
               ) : (
                 <button
@@ -946,97 +957,95 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
                   Stop
                 </button>
               )}
-            </div>
-            {generatingTitles && (
-              <>
-                <div style={{ marginTop: '1rem' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', fontSize: '0.9rem' }}>
-                    <span style={{ color: '#9ca3af' }}>Progress</span>
-                    <span style={{ color: 'var(--primary-color)', fontWeight: 600 }}>{titlesProgress}%</span>
-                  </div>
-                  <div style={{ 
-                    width: '100%', 
-                    height: '8px', 
-                    backgroundColor: 'rgba(255, 255, 255, 0.1)', 
-                    borderRadius: '4px',
-                    overflow: 'hidden'
-                  }}>
+              {generatingTitles && (
+                <>
+                  <div style={{ marginTop: '1rem' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', fontSize: '0.9rem' }}>
+                      <span style={{ color: '#9ca3af' }}>Progress</span>
+                      <span style={{ color: 'var(--primary-color)', fontWeight: 600 }}>{titlesProgress}%</span>
+                    </div>
                     <div style={{ 
-                      height: '100%', 
-                      width: `${titlesProgress}%`, 
-                      backgroundColor: 'var(--primary-color)',
-                      transition: 'width 0.3s ease',
-                      borderRadius: '4px'
-                    }} />
+                      width: '100%', 
+                      height: '8px', 
+                      backgroundColor: 'rgba(255, 255, 255, 0.1)', 
+                      borderRadius: '4px',
+                      overflow: 'hidden'
+                    }}>
+                      <div style={{ 
+                        height: '100%', 
+                        width: `${titlesProgress}%`, 
+                        backgroundColor: 'var(--primary-color)',
+                        transition: 'width 0.3s ease',
+                        borderRadius: '4px'
+                      }} />
+                    </div>
                   </div>
-                </div>
-                <div className="titles-output" ref={titlesOutputRef}>
-                  <div className="titles-output-content">
-                    {titlesOutput.map((line, index) => (
-                      <div key={index} className="output-line">{line}</div>
-                    ))}
-                    {titlesOutput.length === 0 && (
-                      <div className="output-line">Starting AI title generation...</div>
-                    )}
-                    {generatingTitles && (
-                      <div className="output-line" style={{ marginTop: '0.5rem', color: titlesWaiting !== null ? '#fbbf24' : '#4ade80' }}>
-                        ⏳ {titlesWaiting !== null ? `Waiting... ${titlesWaiting}s` : 'Running...'}
-                      </div>
-                    )}
+                  <div className="titles-output" ref={titlesOutputRef}>
+                    <div className="titles-output-content">
+                      {titlesOutput.map((line, index) => (
+                        <div key={index} className="output-line">{line}</div>
+                      ))}
+                      {titlesOutput.length === 0 && (
+                        <div className="output-line">Starting AI title generation...</div>
+                      )}
+                      {generatingTitles && (
+                        <div className="output-line" style={{ marginTop: '0.5rem', color: titlesWaiting !== null ? '#fbbf24' : '#4ade80' }}>
+                          ⏳ {titlesWaiting !== null ? `Waiting... ${titlesWaiting}s` : 'Running...'}
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
-              </>
-            )}
-          </div>
-          
-          {/* Auto-generate AI Titles on Upload */}
-          <div className="branding-group" style={{ marginTop: '1.5rem', paddingTop: '1.5rem', borderTop: '1px solid rgba(255, 255, 255, 0.05)' }}>
-            <div className="ai-toggle-container">
-              <div className="ai-toggle-label">
-                <span className="ai-toggle-title">Auto-generate AI Titles on Upload</span>
-              </div>
-              <div className="ai-toggle-controls">
-                <button
-                  type="button"
-                  onClick={handleToggleAutoAI}
-                  className={`toggle-button ${config.ai?.autoGenerateTitlesOnUpload ? 'active' : ''}`}
-                  style={{
-                    width: '48px',
-                    height: '24px',
-                    borderRadius: '12px',
-                    border: 'none',
-                    cursor: 'pointer',
-                    position: 'relative',
-                    transition: 'background-color 0.2s',
-                    backgroundColor: config.ai?.autoGenerateTitlesOnUpload ? 'var(--primary-color)' : 'rgba(255, 255, 255, 0.1)',
-                    flexShrink: 0
-                  }}
-                >
-                  <span style={{
-                    position: 'absolute',
-                    top: '2px',
-                    left: config.ai?.autoGenerateTitlesOnUpload ? '26px' : '2px',
-                    width: '20px',
-                    height: '20px',
-                    borderRadius: '50%',
-                    backgroundColor: 'white',
-                    transition: 'left 0.2s',
-                    boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
-                  }} />
-                </button>
-                <span style={{ 
-                  color: config.ai?.autoGenerateTitlesOnUpload ? 'var(--primary-color)' : '#888',
-                  fontSize: '0.9rem',
-                  fontWeight: 600,
-                  flexShrink: 0
-                }}>
-                  {config.ai?.autoGenerateTitlesOnUpload ? 'Enabled' : 'Disabled'}
-                </span>
-              </div>
+                </>
+              )}
             </div>
-            <p style={{ fontSize: '0.85rem', color: '#888', marginTop: '0.5rem', marginBottom: 0 }}>
-              Automatically generate AI titles for newly uploaded images after optimization completes. Saves immediately when toggled.
-            </p>
+            
+            {/* Right: Auto-generate Toggle Section */}
+            <div className="openai-section">
+              <label className="openai-section-label">Auto-generate AI Titles on Upload</label>
+              <div className="ai-toggle-container">
+                <div className="ai-toggle-controls">
+                  <button
+                    type="button"
+                    onClick={handleToggleAutoAI}
+                    className={`toggle-button ${config.ai?.autoGenerateTitlesOnUpload ? 'active' : ''}`}
+                    style={{
+                      width: '48px',
+                      height: '24px',
+                      borderRadius: '12px',
+                      border: 'none',
+                      cursor: 'pointer',
+                      position: 'relative',
+                      transition: 'background-color 0.2s',
+                      backgroundColor: config.ai?.autoGenerateTitlesOnUpload ? 'var(--primary-color)' : 'rgba(255, 255, 255, 0.1)',
+                      flexShrink: 0
+                    }}
+                  >
+                    <span style={{
+                      position: 'absolute',
+                      top: '2px',
+                      left: config.ai?.autoGenerateTitlesOnUpload ? '26px' : '2px',
+                      width: '20px',
+                      height: '20px',
+                      borderRadius: '50%',
+                      backgroundColor: 'white',
+                      transition: 'left 0.2s',
+                      boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                    }} />
+                  </button>
+                  <span style={{ 
+                    color: config.ai?.autoGenerateTitlesOnUpload ? 'var(--primary-color)' : '#888',
+                    fontSize: '0.9rem',
+                    fontWeight: 600,
+                    flexShrink: 0
+                  }}>
+                    {config.ai?.autoGenerateTitlesOnUpload ? 'Enabled' : 'Disabled'}
+                  </span>
+                </div>
+              </div>
+              <p style={{ fontSize: '0.85rem', color: '#888', marginTop: '0.5rem', marginBottom: 0 }}>
+                Automatically generate AI titles for newly uploaded images after optimization completes. Saves immediately when toggled.
+              </p>
+            </div>
           </div>
         </div>
 
