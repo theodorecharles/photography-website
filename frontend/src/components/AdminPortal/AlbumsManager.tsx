@@ -1576,6 +1576,20 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                   <div style={{background: 'cyan', color: 'black', padding: '30px', fontSize: '24px', fontWeight: 'bold', border: '5px solid red'}}>
                     ⚡ INSIDE MAGENTA BOX ⚡
                   </div>
+                  
+                  <button style={{
+                    background: 'red',
+                    color: 'yellow',
+                    padding: '30px',
+                    fontSize: '30px',
+                    fontWeight: 'bold',
+                    border: '10px solid white',
+                    cursor: 'pointer',
+                    minHeight: '100px'
+                  }} onClick={() => alert('TEST BUTTON CLICKED!')}>
+                    🚨 CLICK THIS TEST BUTTON 🚨
+                  </button>
+                  
                   <label 
                     className="toggle-switch btn-action-item"
                     title={localAlbums.find(a => a.name === selectedAlbum)?.published === false ? "Publish album (make visible to public)" : "Unpublish album (hide from public)"}
