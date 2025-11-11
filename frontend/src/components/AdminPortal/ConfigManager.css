@@ -297,8 +297,6 @@
 /* Collapsible Section Animations */
 .collapsible-content {
   overflow: hidden;
-  padding-top: 1rem;
-  padding-bottom: 1rem;
   transition: max-height 0.5s ease-in-out;
 }
 
@@ -307,4 +305,6 @@
 }
 
 .collapsible-content.expanded {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
 }
