@@ -13,6 +13,7 @@ import {
   trackAvatarUpload,
   trackExternalLinksUpdate,
 } from "../../utils/analytics";
+import { PasswordInput } from "./PasswordInput";
 
 const API_URL = import.meta.env.VITE_API_URL || "";
 
@@ -1752,9 +1753,8 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
               {/* Left: API Key Section */}
               <div className="openai-section">
                 <label className="openai-section-label">API KEY</label>
-                <input
-                  ref={apiKeyInputRef}
-                  type="password"
+                <PasswordInput
+                  inputRef={apiKeyInputRef}
                   value={config.openai?.apiKey || ""}
                   onChange={(e) =>
                     updateConfig(["openai", "apiKey"], e.target.value)
@@ -3163,8 +3163,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
 
                 <div className="branding-group">
                   <label className="branding-label">Google Client Secret</label>
-                  <input
-                    type="password"
+                  <PasswordInput
                     value={config.environment.auth.google.clientSecret}
                     onChange={(e) =>
                       updateConfig(
@@ -3178,8 +3177,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
 
                 <div className="branding-group">
                   <label className="branding-label">Session Secret</label>
-                  <input
-                    type="password"
+                  <PasswordInput
                     value={config.environment.auth.sessionSecret}
                     onChange={(e) =>
                       updateConfig(
@@ -3306,8 +3304,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
 
                 <div className="branding-group">
                   <label className="branding-label">HMAC Secret</label>
-                  <input
-                    type="password"
+                  <PasswordInput
                     value={config.analytics.hmacSecret}
                     onChange={(e) =>
                       updateConfig(["analytics", "hmacSecret"], e.target.value)
@@ -3401,8 +3398,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
 
                     <div className="branding-group">
                       <label className="branding-label">Password</label>
-                      <input
-                        type="password"
+                      <PasswordInput
                         value={config.analytics.openobserve.password}
                         onChange={(e) =>
                           updateConfig(

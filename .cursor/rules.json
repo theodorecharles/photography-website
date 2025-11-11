@@ -42,6 +42,16 @@
       ],
       "files": ["backend/src/routes/ai-titles.ts", "backend/src/routes/image-optimization.ts"]
     },
+    "sseTimeouts": {
+      "rule": "SSE connections must disable response timeouts and proxy buffering",
+      "rationale": "Prevents network timeout errors on long-running operations (uploads, optimization, AI generation)",
+      "pattern": [
+        "res.setHeader('X-Accel-Buffering', 'no') to disable proxy buffering",
+        "res.setTimeout(0) to disable response timeout",
+        "Apply to ALL SSE endpoints immediately after setting other headers"
+      ],
+      "files": ["backend/src/routes/ai-titles.ts", "backend/src/routes/image-optimization.ts", "backend/src/routes/album-management.ts"]
+    },
     "authentication": {
       "rule": "Use requireAuth middleware for all admin endpoints",
       "implementation": "req.isAuthenticated() checks if user is logged in via Google OAuth",
@@ -66,7 +76,8 @@
       "location": "backend/src/database.ts",
       "tables": {
         "albums": "Album names and published state",
-        "image_metadata": "Image filenames, titles, descriptions, sort_order per album"
+        "image_metadata": "Image filenames, titles, descriptions, sort_order per album",
+        "share_links": "Shareable album links with secret keys and expiration"
       },
       "performance": [
         "WAL mode enabled for better concurrency",
@@ -103,6 +114,8 @@
       "GET /api/albums/:album/photos - Get photos in album",
       "GET /api/random-photos - Shuffled photos from published albums",
       "GET /api/photos/:album/:filename/exif - EXIF data",
+      "GET /api/shared/:secretKey - View shared album (public access)",
+      "GET /api/preview-grid/shared/:secretKey - 2x2 preview for shared album",
       "GET /sitemap.xml - SEO sitemap",
       "GET /api/health - Health check"
     ],
@@ -113,6 +126,8 @@
       "POST /api/albums/upload - Upload photos",
       "POST /api/album-management/albums - Create/rename/delete albums",
       "PUT /api/album-management/albums/:album/publish - Toggle published state",
+      "POST /api/album-management/:album/share - Create share link",
+      "DELETE /api/album-management/share/:shareId - Delete share link",
       "All /api/analytics/* - Analytics queries",
       "All /api/branding/* - Branding config",
       "All /api/config/* - Site config"
@@ -143,7 +158,24 @@
     "singleClient": "Don't write to 'res' directly in child process handlers - use broadcast",
     "cacheStaleness": "Remember to invalidate album cache when images change",
     "missingAuth": "Don't forget requireAuth middleware on admin endpoints",
-    "directFilesystemAccess": "Photos stored in filesystem, metadata in database - keep in sync"
+    "directFilesystemAccess": "Photos stored in filesystem, metadata in database - keep in sync",
+    "sseTimeouts": "Always disable timeouts on SSE responses with res.setTimeout(0)",
+    "mapTiles": "Use correct CartoDB tile URL format without {r} placeholder"
+  },
+  "uiPatterns": {
+    "passwordInput": {
+      "rule": "Use PasswordInput component for all password/secret fields",
+      "features": ["Eye toggle for visibility", "Copy to clipboard button", "Ref forwarding support"],
+      "location": "frontend/src/components/AdminPortal/PasswordInput.tsx",
+      "usage": "Replace type='password' inputs with <PasswordInput /> in settings pages"
+    },
+    "visitorMap": {
+      "provider": "CartoDB dark_all tiles via Leaflet",
+      "url": "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png",
+      "note": "Do not use {r} placeholder in tile URL - it causes black screen",
+      "subdomains": ["a", "b", "c", "d"],
+      "location": "frontend/src/components/AdminPortal/Metrics/VisitorMap.tsx"
+    }
   },
   "deprecatedRules": {
     "note": "The old component-specific rules are removed. Focus on backend architecture patterns which are more critical and harder to debug."
