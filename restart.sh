@@ -108,6 +108,11 @@ if ! node migrate-add-sort-order.js; then
     handle_error "Sort order migration failed"
 fi
 
+log "Running share links migration..."
+if ! node migrate-add-share-links.js; then
+    handle_error "Share links migration failed"
+fi
+
 # Restart both services using PM2 ecosystem file
 log "Restarting services with PM2 using ecosystem config..."
 if ! pm2 restart ecosystem.config.cjs --update-env; then
