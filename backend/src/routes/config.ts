@@ -60,6 +60,8 @@ router.post('/validate-openai-key', requireAuth, express.json(), async (req, res
       return;
     }
     
+    console.log('[OpenAI Validation] Testing API key...');
+    
     // Test the API key by calling OpenAI's models endpoint
     const response = await fetch('https://api.openai.com/v1/models', {
       method: 'GET',
@@ -68,9 +70,18 @@ router.post('/validate-openai-key', requireAuth, express.json(), async (req, res
       },
     });
     
+    console.log('[OpenAI Validation] Response status:', response.status);
+    console.log('[OpenAI Validation] Response ok:', response.ok);
+    
+    // If not ok, log the error details
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('[OpenAI Validation] Error response:', errorText);
+    }
+    
     res.json({ valid: response.ok });
   } catch (error) {
-    console.error('Error validating OpenAI key:', error);
+    console.error('[OpenAI Validation] Exception:', error);
     res.json({ valid: false });
   }
 });

@@ -576,14 +576,17 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
   // Validate OpenAI API key
   const validateOpenAIKey = async (apiKey: string): Promise<boolean> => {
     try {
-      const response = await fetch(`${API_URL}/api/config/validate-openai-key`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify({ apiKey }),
-      });
+      const response = await fetch(
+        `${API_URL}/api/config/validate-openai-key`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({ apiKey }),
+        }
+      );
 
       if (!response.ok) {
         return false;
