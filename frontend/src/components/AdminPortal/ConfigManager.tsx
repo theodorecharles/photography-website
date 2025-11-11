@@ -1323,13 +1323,16 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
 
   if (loading) {
     return (
-      <div className="loading-container" style={{ 
-        minHeight: '400px', 
-        display: 'flex', 
-        flexDirection: 'column', 
-        justifyContent: 'center', 
-        alignItems: 'center' 
-      }}>
+      <div
+        className="loading-container"
+        style={{
+          minHeight: "400px",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
         <div className="loading-spinner"></div>
         <p>Loading settings...</p>
       </div>
