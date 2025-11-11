@@ -1,10 +1,16 @@
 /**
- * Config Manager Component
- * Manages all configuration settings from config.json
+ * Settings Component
+ * Unified settings management for branding, links, OpenAI, optimization, and advanced config
  */
 
 import { useState, useEffect, useRef } from "react";
 import "./ConfigManager.css";
+import { BrandingConfig, ExternalLink } from "./types";
+import {
+  trackBrandingUpdate,
+  trackAvatarUpload,
+  trackExternalLinksUpdate,
+} from "../../utils/analytics";
 
 const API_URL = import.meta.env.VITE_API_URL || "";
 
@@ -71,9 +77,21 @@ interface ConfigData {
 
 interface ConfigManagerProps {
   setMessage: (message: { type: "success" | "error"; text: string }) => void;
+  branding: BrandingConfig;
+  setBranding: (branding: BrandingConfig) => void;
+  loadBranding: () => Promise<void>;
+  externalLinks: ExternalLink[];
+  setExternalLinks: (links: ExternalLink[]) => void;
 }
 
-const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
+const ConfigManager: React.FC<ConfigManagerProps> = ({
+  setMessage,
+  branding,
+  setBranding,
+  loadBranding,
+  externalLinks,
+  setExternalLinks,
+}) => {
   const [config, setConfig] = useState<ConfigData | null>(null);
   const [originalConfig, setOriginalConfig] = useState<ConfigData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -89,12 +107,20 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
 
   // Section collapse state - collapsed by default on mobile
   const isMobile = window.matchMedia("(max-width: 768px)").matches;
+  const [showBranding, setShowBranding] = useState(!isMobile);
+  const [showLinks, setShowLinks] = useState(!isMobile);
   const [showOpenAI, setShowOpenAI] = useState(!isMobile);
   const [showImageOptimization, setShowImageOptimization] = useState(!isMobile);
   const [showAdvanced, setShowAdvanced] = useState(false);
 
   const [restartingBackend, setRestartingBackend] = useState(false);
   const [restartingFrontend, setRestartingFrontend] = useState(false);
+
+  // Branding and Links state
+  const [savingBranding, setSavingBranding] = useState(false);
+  const [pendingAvatarFile, setPendingAvatarFile] = useState<File | null>(null);
+  const [avatarPreviewUrl, setAvatarPreviewUrl] = useState<string | null>(null);
+  const [savingLinks, setSavingLinks] = useState(false);
 
   // Refs for auto-scroll and scroll-into-view
   const optimizationOutputRef = useRef<HTMLDivElement>(null);
@@ -726,6 +752,168 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
     }
   };
 
+  // ===== Branding Handlers =====
+  const handleAvatarFileSelect = (file: File) => {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setAvatarPreviewUrl(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+    setPendingAvatarFile(file);
+  };
+
+  const handleBrandingChange = (field: keyof BrandingConfig, value: string) => {
+    setBranding({
+      ...branding,
+      [field]: value,
+    });
+  };
+
+  const handleSaveBranding = async () => {
+    setSavingBranding(true);
+
+    try {
+      let updatedBranding = { ...branding };
+
+      // Upload avatar if there's a pending file
+      if (pendingAvatarFile) {
+        const formData = new FormData();
+        formData.append("avatar", pendingAvatarFile);
+
+        const avatarRes = await fetch(`${API_URL}/api/branding/upload-avatar`, {
+          method: "POST",
+          credentials: "include",
+          body: formData,
+        });
+
+        if (avatarRes.ok) {
+          const data = await avatarRes.json();
+          updatedBranding.avatarPath = data.avatarPath;
+          setBranding({
+            ...branding,
+            avatarPath: data.avatarPath,
+          });
+          trackAvatarUpload();
+          setPendingAvatarFile(null);
+          setAvatarPreviewUrl(null);
+        } else {
+          const errorData = await avatarRes
+            .json()
+            .catch(() => ({ error: "Unknown error" }));
+          throw new Error(errorData.error || "Failed to upload avatar");
+        }
+      }
+
+      // Save branding settings
+      const res = await fetch(`${API_URL}/api/branding`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(updatedBranding),
+      });
+
+      if (res.ok) {
+        setMessage({
+          type: "success",
+          text: "Branding settings saved successfully!",
+        });
+        const updatedFields = Object.keys(branding).filter(
+          (key) => branding[key as keyof BrandingConfig]
+        );
+        trackBrandingUpdate(updatedFields);
+        await loadBranding();
+        window.dispatchEvent(new Event("branding-updated"));
+      } else {
+        const errorData = await res
+          .json()
+          .catch(() => ({ error: "Unknown error" }));
+        setMessage({
+          type: "error",
+          text: errorData.error || "Failed to save branding settings",
+        });
+      }
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error ? err.message : "Error saving branding settings";
+      setMessage({ type: "error", text: errorMessage });
+    } finally {
+      setSavingBranding(false);
+    }
+  };
+
+  // ===== Links Handlers =====
+  const handleAddLink = () => {
+    setExternalLinks([...externalLinks, { title: "", url: "" }]);
+  };
+
+  const handleDeleteLink = (index: number) => {
+    setExternalLinks(externalLinks.filter((_, i) => i !== index));
+  };
+
+  const handleLinkChange = (
+    index: number,
+    field: "title" | "url",
+    value: string
+  ) => {
+    const newLinks = [...externalLinks];
+    newLinks[index][field] = value;
+    setExternalLinks(newLinks);
+  };
+
+  const handleMoveUp = (index: number) => {
+    if (index === 0) return;
+    const newLinks = [...externalLinks];
+    const temp = newLinks[index];
+    newLinks[index] = newLinks[index - 1];
+    newLinks[index - 1] = temp;
+    setExternalLinks(newLinks);
+  };
+
+  const handleMoveDown = (index: number) => {
+    if (index === externalLinks.length - 1) return;
+    const newLinks = [...externalLinks];
+    const temp = newLinks[index];
+    newLinks[index] = newLinks[index + 1];
+    newLinks[index + 1] = temp;
+    setExternalLinks(newLinks);
+  };
+
+  const handleSaveLinks = async () => {
+    setSavingLinks(true);
+
+    try {
+      const res = await fetch(`${API_URL}/api/external-links`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({ links: externalLinks }),
+      });
+
+      if (res.ok) {
+        setMessage({
+          type: "success",
+          text: "External links saved successfully!",
+        });
+        trackExternalLinksUpdate(externalLinks.length);
+        window.dispatchEvent(new Event("external-links-updated"));
+      } else {
+        const errorData = await res.json();
+        setMessage({
+          type: "error",
+          text: errorData.error || "Failed to save external links",
+        });
+      }
+    } catch (error) {
+      setMessage({ type: "error", text: "Network error occurred" });
+    } finally {
+      setSavingLinks(false);
+    }
+  };
+
   const handleRunOptimization = async (force: boolean = false) => {
     if (
       !confirm(
@@ -990,12 +1178,295 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
 
   return (
     <section className="admin-section">
-      <h2>⚙️ Configuration</h2>
+      <h2>⚙️ Settings</h2>
       <p className="section-description">
-        Manage server configuration settings
+        Manage branding, links, and system configuration
       </p>
 
       <div className="config-grid">
+        {/* Branding Settings */}
+        <div className="config-group full-width">
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: "0.5rem",
+              cursor: "pointer",
+              padding: "1rem",
+              background: "rgba(255, 255, 255, 0.02)",
+              borderRadius: "8px",
+              border: "1px solid rgba(255, 255, 255, 0.05)",
+            }}
+            onClick={() => setShowBranding(!showBranding)}
+          >
+            <h3 className="config-section-title" style={{ margin: 0 }}>
+              {showBranding ? "▼" : "▶"} Branding
+            </h3>
+            <span style={{ color: "#888", fontSize: "0.9rem" }}>
+              {showBranding ? "Click to collapse" : "Click to expand"}
+            </span>
+          </div>
+          <p
+            className="config-section-description"
+            style={{ marginTop: "0.5rem" }}
+          >
+            Customize your site's appearance, colors, and branding
+          </p>
+
+          {showBranding && (
+            <div className="branding-grid">
+              <div className="branding-group">
+                <div className="avatar-upload-container">
+                  {(avatarPreviewUrl || branding.avatarPath) && (
+                    <img
+                      src={
+                        avatarPreviewUrl ||
+                        `${API_URL}${branding.avatarPath}?v=${Date.now()}`
+                      }
+                      alt="Current avatar"
+                      className="current-avatar-preview"
+                      key={avatarPreviewUrl || branding.avatarPath}
+                    />
+                  )}
+                  <label className="btn-secondary upload-avatar-btn">
+                    {pendingAvatarFile ? "Upload Logo" : "Edit Logo"}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          handleAvatarFileSelect(file);
+                        }
+                      }}
+                      style={{ display: "none" }}
+                      disabled={savingBranding}
+                    />
+                  </label>
+                </div>
+              </div>
+
+              <div className="branding-group">
+                <label className="branding-label">Site Name</label>
+                <input
+                  type="text"
+                  value={branding.siteName}
+                  onChange={(e) =>
+                    handleBrandingChange("siteName", e.target.value)
+                  }
+                  className="branding-input"
+                  placeholder="Your site name"
+                />
+              </div>
+
+              <div className="branding-group">
+                <label className="branding-label">Primary Color</label>
+                <div className="color-input-group">
+                  <input
+                    type="color"
+                    value={branding.primaryColor}
+                    onChange={(e) =>
+                      handleBrandingChange("primaryColor", e.target.value)
+                    }
+                    className="color-picker"
+                  />
+                  <input
+                    type="text"
+                    value={branding.primaryColor}
+                    onChange={(e) =>
+                      handleBrandingChange("primaryColor", e.target.value)
+                    }
+                    className="branding-input color-text"
+                    placeholder="#4ade80"
+                  />
+                </div>
+              </div>
+
+              <div className="branding-group">
+                <label className="branding-label">Secondary Color</label>
+                <div className="color-input-group">
+                  <input
+                    type="color"
+                    value={branding.secondaryColor}
+                    onChange={(e) =>
+                      handleBrandingChange("secondaryColor", e.target.value)
+                    }
+                    className="color-picker"
+                  />
+                  <input
+                    type="text"
+                    value={branding.secondaryColor}
+                    onChange={(e) =>
+                      handleBrandingChange("secondaryColor", e.target.value)
+                    }
+                    className="branding-input color-text"
+                    placeholder="#3b82f6"
+                  />
+                </div>
+              </div>
+
+              <div className="branding-group full-width">
+                <label className="branding-label">Meta Description</label>
+                <textarea
+                  value={branding.metaDescription}
+                  onChange={(e) =>
+                    handleBrandingChange("metaDescription", e.target.value)
+                  }
+                  className="branding-textarea"
+                  placeholder="Brief description of your site for search engines"
+                  rows={3}
+                />
+              </div>
+
+              <div className="branding-group full-width">
+                <label className="branding-label">Meta Keywords</label>
+                <input
+                  type="text"
+                  value={branding.metaKeywords}
+                  onChange={(e) =>
+                    handleBrandingChange("metaKeywords", e.target.value)
+                  }
+                  className="branding-input"
+                  placeholder="photography, portfolio, your name (comma separated)"
+                />
+              </div>
+
+              <div className="section-actions">
+                <button
+                  onClick={handleSaveBranding}
+                  className="btn-primary"
+                  disabled={savingBranding}
+                >
+                  {savingBranding ? "Saving..." : "Save"}
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* External Links Settings */}
+        <div className="config-group full-width">
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: "0.5rem",
+              cursor: "pointer",
+              padding: "1rem",
+              background: "rgba(255, 255, 255, 0.02)",
+              borderRadius: "8px",
+              border: "1px solid rgba(255, 255, 255, 0.05)",
+            }}
+            onClick={() => setShowLinks(!showLinks)}
+          >
+            <h3 className="config-section-title" style={{ margin: 0 }}>
+              {showLinks ? "▼" : "▶"} Links
+            </h3>
+            <span style={{ color: "#888", fontSize: "0.9rem" }}>
+              {showLinks ? "Click to collapse" : "Click to expand"}
+            </span>
+          </div>
+          <p
+            className="config-section-description"
+            style={{ marginTop: "0.5rem" }}
+          >
+            Manage links shown in the navigation menu
+          </p>
+
+          {showLinks && (
+            <>
+              <div className="links-list">
+                {externalLinks.map((link, index) => (
+                  <div key={index} className="link-wrapper">
+                    <div className="link-item">
+                      <div className="link-fields">
+                        <input
+                          type="text"
+                          placeholder="Title"
+                          value={link.title}
+                          onChange={(e) =>
+                            handleLinkChange(index, "title", e.target.value)
+                          }
+                          className="link-input"
+                        />
+                        <input
+                          type="text"
+                          placeholder="URL"
+                          value={link.url}
+                          onChange={(e) =>
+                            handleLinkChange(index, "url", e.target.value)
+                          }
+                          className="link-input"
+                        />
+                      </div>
+                      <div className="link-controls">
+                        <div className="reorder-buttons">
+                          <button
+                            onClick={() => handleMoveUp(index)}
+                            className="btn-reorder"
+                            title="Move up"
+                            disabled={index === 0}
+                          >
+                            <svg
+                              width="20"
+                              height="20"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                            >
+                              <polyline points="18 15 12 9 6 15" />
+                            </svg>
+                          </button>
+                          <button
+                            onClick={() => handleMoveDown(index)}
+                            className="btn-reorder"
+                            title="Move down"
+                            disabled={index === externalLinks.length - 1}
+                          >
+                            <svg
+                              width="20"
+                              height="20"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                            >
+                              <polyline points="6 9 12 15 18 9" />
+                            </svg>
+                          </button>
+                        </div>
+                        <button
+                          onClick={() => handleDeleteLink(index)}
+                          className="btn-delete-link"
+                          title="Delete link"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="section-actions">
+                <button onClick={handleAddLink} className="btn-secondary">
+                  + Add Link
+                </button>
+                <button
+                  onClick={handleSaveLinks}
+                  className="btn-primary"
+                  disabled={savingLinks}
+                >
+                  {savingLinks ? "Saving..." : "Save Changes"}
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+
         {/* OpenAI Settings */}
         <div className="config-group full-width">
           <div
@@ -1028,113 +1499,113 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
 
           {showOpenAI && (
             <div className="openai-settings-grid">
-            {/* Left: API Key Section */}
-            <div className="openai-section">
-              <label className="openai-section-label">API KEY</label>
-              <input
-                type="password"
-                value={config.openai?.apiKey || ""}
-                onChange={(e) =>
-                  updateConfig(["openai", "apiKey"], e.target.value)
-                }
-                className="branding-input"
-                placeholder="sk-..."
-              />
+              {/* Left: API Key Section */}
+              <div className="openai-section">
+                <label className="openai-section-label">API KEY</label>
+                <input
+                  type="password"
+                  value={config.openai?.apiKey || ""}
+                  onChange={(e) =>
+                    updateConfig(["openai", "apiKey"], e.target.value)
+                  }
+                  className="branding-input"
+                  placeholder="sk-..."
+                />
 
-              {/* Save/Cancel buttons */}
-              {hasUnsavedChanges("OpenAI") && (
-                <div
-                  style={{
-                    display: "flex",
-                    gap: "0.5rem",
-                    marginTop: "0.5rem",
-                  }}
-                >
-                  <button
-                    type="button"
-                    onClick={() => handleSaveSection("OpenAI")}
-                    disabled={savingSection !== null}
-                    className="btn-primary"
-                    style={{ flex: 1 }}
-                  >
-                    {savingSection === "OpenAI" ? "Saving..." : "Save"}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setConfig(originalConfig);
-                    }}
-                    disabled={savingSection !== null}
-                    className="btn-secondary"
-                    style={{ flex: 1 }}
-                  >
-                    Cancel
-                  </button>
-                </div>
-              )}
-            </div>
-
-            {/* Right: Auto-generate Toggle Section */}
-            <div className="openai-section">
-              <label className="openai-section-label">
-                Auto-generate AI Titles on Upload
-              </label>
-              <div className="ai-toggle-container">
-                <div className="ai-toggle-controls">
-                  <button
-                    type="button"
-                    onClick={handleToggleAutoAI}
-                    className={`toggle-button ${
-                      config.ai?.autoGenerateTitlesOnUpload ? "active" : ""
-                    }`}
+                {/* Save/Cancel buttons */}
+                {hasUnsavedChanges("OpenAI") && (
+                  <div
                     style={{
-                      width: "48px",
-                      height: "24px",
-                      borderRadius: "12px",
-                      border: "none",
-                      cursor: "pointer",
-                      position: "relative",
-                      transition: "background-color 0.2s",
-                      backgroundColor: config.ai?.autoGenerateTitlesOnUpload
-                        ? "var(--primary-color)"
-                        : "rgba(255, 255, 255, 0.1)",
-                      flexShrink: 0,
+                      display: "flex",
+                      gap: "0.5rem",
+                      marginTop: "0.5rem",
                     }}
                   >
+                    <button
+                      type="button"
+                      onClick={() => handleSaveSection("OpenAI")}
+                      disabled={savingSection !== null}
+                      className="btn-primary"
+                      style={{ flex: 1 }}
+                    >
+                      {savingSection === "OpenAI" ? "Saving..." : "Save"}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setConfig(originalConfig);
+                      }}
+                      disabled={savingSection !== null}
+                      className="btn-secondary"
+                      style={{ flex: 1 }}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Right: Auto-generate Toggle Section */}
+              <div className="openai-section">
+                <label className="openai-section-label">
+                  Auto-generate AI Titles on Upload
+                </label>
+                <div className="ai-toggle-container">
+                  <div className="ai-toggle-controls">
+                    <button
+                      type="button"
+                      onClick={handleToggleAutoAI}
+                      className={`toggle-button ${
+                        config.ai?.autoGenerateTitlesOnUpload ? "active" : ""
+                      }`}
+                      style={{
+                        width: "48px",
+                        height: "24px",
+                        borderRadius: "12px",
+                        border: "none",
+                        cursor: "pointer",
+                        position: "relative",
+                        transition: "background-color 0.2s",
+                        backgroundColor: config.ai?.autoGenerateTitlesOnUpload
+                          ? "var(--primary-color)"
+                          : "rgba(255, 255, 255, 0.1)",
+                        flexShrink: 0,
+                      }}
+                    >
+                      <span
+                        style={{
+                          position: "absolute",
+                          top: "2px",
+                          left: config.ai?.autoGenerateTitlesOnUpload
+                            ? "26px"
+                            : "2px",
+                          width: "20px",
+                          height: "20px",
+                          borderRadius: "50%",
+                          backgroundColor: "white",
+                          transition: "left 0.2s",
+                          boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
+                        }}
+                      />
+                    </button>
                     <span
                       style={{
-                        position: "absolute",
-                        top: "2px",
-                        left: config.ai?.autoGenerateTitlesOnUpload
-                          ? "26px"
-                          : "2px",
-                        width: "20px",
-                        height: "20px",
-                        borderRadius: "50%",
-                        backgroundColor: "white",
-                        transition: "left 0.2s",
-                        boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
+                        color: config.ai?.autoGenerateTitlesOnUpload
+                          ? "var(--primary-color)"
+                          : "#888",
+                        fontSize: "0.9rem",
+                        fontWeight: 600,
+                        flexShrink: 0,
                       }}
-                    />
-                  </button>
-                  <span
-                    style={{
-                      color: config.ai?.autoGenerateTitlesOnUpload
-                        ? "var(--primary-color)"
-                        : "#888",
-                      fontSize: "0.9rem",
-                      fontWeight: 600,
-                      flexShrink: 0,
-                    }}
-                  >
-                    {config.ai?.autoGenerateTitlesOnUpload
-                      ? "Enabled"
-                      : "Disabled"}
-                  </span>
+                    >
+                      {config.ai?.autoGenerateTitlesOnUpload
+                        ? "Enabled"
+                        : "Disabled"}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
           )}
         </div>
 
@@ -1171,339 +1642,367 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
 
           {showImageOptimization && (
             <>
-          {/* Grid of optimization subsections */}
-          <div className="config-grid-inner">
-            {/* Thumbnail Settings */}
-            <div className="openai-section">
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  marginBottom: "0.75rem",
-                }}
-              >
-                <label className="openai-section-label">THUMBNAIL</label>
-                {hasUnsavedChanges("Thumbnail") && (
-                  <div style={{ display: "flex", gap: "0.5rem" }}>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setConfig(originalConfig);
-                      }}
-                      disabled={savingSection !== null}
-                      className="btn-secondary"
-                      style={{ padding: "0.4rem 0.8rem", fontSize: "0.85rem" }}
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleSaveSection("Thumbnail")}
-                      disabled={savingSection !== null}
-                      className="btn-primary"
-                      style={{ padding: "0.4rem 0.8rem", fontSize: "0.85rem" }}
-                    >
-                      {savingSection === "Thumbnail" ? "Saving..." : "Save"}
-                    </button>
+              {/* Grid of optimization subsections */}
+              <div className="config-grid-inner">
+                {/* Thumbnail Settings */}
+                <div className="openai-section">
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      marginBottom: "0.75rem",
+                    }}
+                  >
+                    <label className="openai-section-label">THUMBNAIL</label>
+                    {hasUnsavedChanges("Thumbnail") && (
+                      <div style={{ display: "flex", gap: "0.5rem" }}>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setConfig(originalConfig);
+                          }}
+                          disabled={savingSection !== null}
+                          className="btn-secondary"
+                          style={{
+                            padding: "0.4rem 0.8rem",
+                            fontSize: "0.85rem",
+                          }}
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleSaveSection("Thumbnail")}
+                          disabled={savingSection !== null}
+                          className="btn-primary"
+                          style={{
+                            padding: "0.4rem 0.8rem",
+                            fontSize: "0.85rem",
+                          }}
+                        >
+                          {savingSection === "Thumbnail" ? "Saving..." : "Save"}
+                        </button>
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
-              <div className="branding-group">
-                <label className="branding-label">Quality</label>
-                <input
-                  type="number"
-                  value={
-                    config.environment.optimization.images.thumbnail.quality
-                  }
-                  onChange={(e) =>
-                    updateConfig(
-                      [
-                        "environment",
-                        "optimization",
-                        "images",
-                        "thumbnail",
-                        "quality",
-                      ],
-                      parseInt(e.target.value)
-                    )
-                  }
-                  className="branding-input"
-                  min="1"
-                  max="100"
-                />
-              </div>
-              <div className="branding-group">
-                <label className="branding-label">Max Dimension</label>
-                <input
-                  type="number"
-                  value={
-                    config.environment.optimization.images.thumbnail
-                      .maxDimension
-                  }
-                  onChange={(e) =>
-                    updateConfig(
-                      [
-                        "environment",
-                        "optimization",
-                        "images",
-                        "thumbnail",
-                        "maxDimension",
-                      ],
-                      parseInt(e.target.value)
-                    )
-                  }
-                  className="branding-input"
-                />
-              </div>
-            </div>
-
-            {/* Modal Settings */}
-            <div className="openai-section">
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  marginBottom: "0.75rem",
-                }}
-              >
-                <label className="openai-section-label">MODAL</label>
-                {hasUnsavedChanges("Modal") && (
-                  <div style={{ display: "flex", gap: "0.5rem" }}>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setConfig(originalConfig);
-                      }}
-                      disabled={savingSection !== null}
-                      className="btn-secondary"
-                      style={{ padding: "0.4rem 0.8rem", fontSize: "0.85rem" }}
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleSaveSection("Modal")}
-                      disabled={savingSection !== null}
-                      className="btn-primary"
-                      style={{ padding: "0.4rem 0.8rem", fontSize: "0.85rem" }}
-                    >
-                      {savingSection === "Modal" ? "Saving..." : "Save"}
-                    </button>
+                  <div className="branding-group">
+                    <label className="branding-label">Quality</label>
+                    <input
+                      type="number"
+                      value={
+                        config.environment.optimization.images.thumbnail.quality
+                      }
+                      onChange={(e) =>
+                        updateConfig(
+                          [
+                            "environment",
+                            "optimization",
+                            "images",
+                            "thumbnail",
+                            "quality",
+                          ],
+                          parseInt(e.target.value)
+                        )
+                      }
+                      className="branding-input"
+                      min="1"
+                      max="100"
+                    />
                   </div>
-                )}
-              </div>
-              <div className="branding-group">
-                <label className="branding-label">Quality</label>
-                <input
-                  type="number"
-                  value={config.environment.optimization.images.modal.quality}
-                  onChange={(e) =>
-                    updateConfig(
-                      [
-                        "environment",
-                        "optimization",
-                        "images",
-                        "modal",
-                        "quality",
-                      ],
-                      parseInt(e.target.value)
-                    )
-                  }
-                  className="branding-input"
-                  min="1"
-                  max="100"
-                />
-              </div>
-              <div className="branding-group">
-                <label className="branding-label">Max Dimension</label>
-                <input
-                  type="number"
-                  value={
-                    config.environment.optimization.images.modal.maxDimension
-                  }
-                  onChange={(e) =>
-                    updateConfig(
-                      [
-                        "environment",
-                        "optimization",
-                        "images",
-                        "modal",
-                        "maxDimension",
-                      ],
-                      parseInt(e.target.value)
-                    )
-                  }
-                  className="branding-input"
-                />
-              </div>
-            </div>
-
-            {/* Download Settings */}
-            <div className="openai-section">
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  marginBottom: "0.75rem",
-                }}
-              >
-                <label className="openai-section-label">DOWNLOAD</label>
-                {hasUnsavedChanges("Download") && (
-                  <div style={{ display: "flex", gap: "0.5rem" }}>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setConfig(originalConfig);
-                      }}
-                      disabled={savingSection !== null}
-                      className="btn-secondary"
-                      style={{ padding: "0.4rem 0.8rem", fontSize: "0.85rem" }}
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleSaveSection("Download")}
-                      disabled={savingSection !== null}
-                      className="btn-primary"
-                      style={{ padding: "0.4rem 0.8rem", fontSize: "0.85rem" }}
-                    >
-                      {savingSection === "Download" ? "Saving..." : "Save"}
-                    </button>
+                  <div className="branding-group">
+                    <label className="branding-label">Max Dimension</label>
+                    <input
+                      type="number"
+                      value={
+                        config.environment.optimization.images.thumbnail
+                          .maxDimension
+                      }
+                      onChange={(e) =>
+                        updateConfig(
+                          [
+                            "environment",
+                            "optimization",
+                            "images",
+                            "thumbnail",
+                            "maxDimension",
+                          ],
+                          parseInt(e.target.value)
+                        )
+                      }
+                      className="branding-input"
+                    />
                   </div>
-                )}
-              </div>
-              <div className="branding-group">
-                <label className="branding-label">Quality</label>
-                <input
-                  type="number"
-                  value={
-                    config.environment.optimization.images.download.quality
-                  }
-                  onChange={(e) =>
-                    updateConfig(
-                      [
-                        "environment",
-                        "optimization",
-                        "images",
-                        "download",
-                        "quality",
-                      ],
-                      parseInt(e.target.value)
-                    )
-                  }
-                  className="branding-input"
-                  min="1"
-                  max="100"
-                />
-              </div>
-              <div className="branding-group">
-                <label className="branding-label">Max Dimension</label>
-                <input
-                  type="number"
-                  value={
-                    config.environment.optimization.images.download.maxDimension
-                  }
-                  onChange={(e) =>
-                    updateConfig(
-                      [
-                        "environment",
-                        "optimization",
-                        "images",
-                        "download",
-                        "maxDimension",
-                      ],
-                      parseInt(e.target.value)
-                    )
-                  }
-                  className="branding-input"
-                />
-              </div>
-            </div>
+                </div>
 
-            {/* Concurrency Settings */}
-            <div className="openai-section">
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  marginBottom: "0.75rem",
-                }}
-              >
-                <label className="openai-section-label">CONCURRENCY</label>
-                {hasUnsavedChanges("Concurrency") && (
-                  <div style={{ display: "flex", gap: "0.5rem" }}>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setConfig(originalConfig);
-                      }}
-                      disabled={savingSection !== null}
-                      className="btn-secondary"
-                      style={{ padding: "0.4rem 0.8rem", fontSize: "0.85rem" }}
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleSaveSection("Concurrency")}
-                      disabled={savingSection !== null}
-                      className="btn-primary"
-                      style={{ padding: "0.4rem 0.8rem", fontSize: "0.85rem" }}
-                    >
-                      {savingSection === "Concurrency" ? "Saving..." : "Save"}
-                    </button>
+                {/* Modal Settings */}
+                <div className="openai-section">
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      marginBottom: "0.75rem",
+                    }}
+                  >
+                    <label className="openai-section-label">MODAL</label>
+                    {hasUnsavedChanges("Modal") && (
+                      <div style={{ display: "flex", gap: "0.5rem" }}>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setConfig(originalConfig);
+                          }}
+                          disabled={savingSection !== null}
+                          className="btn-secondary"
+                          style={{
+                            padding: "0.4rem 0.8rem",
+                            fontSize: "0.85rem",
+                          }}
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleSaveSection("Modal")}
+                          disabled={savingSection !== null}
+                          className="btn-primary"
+                          style={{
+                            padding: "0.4rem 0.8rem",
+                            fontSize: "0.85rem",
+                          }}
+                        >
+                          {savingSection === "Modal" ? "Saving..." : "Save"}
+                        </button>
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
-              <p
-                style={{
-                  fontSize: "0.85rem",
-                  color: "#888",
-                  marginTop: "0",
-                  marginBottom: "1rem",
-                }}
-              >
-                Maximum number of images to process simultaneously. Higher
-                values speed up batch processing but use more CPU and memory.
-              </p>
-              <p
-                style={{
-                  fontSize: "0.85rem",
-                  color: "#888",
-                  marginTop: "0",
-                  marginBottom: "1rem",
-                }}
-              >
+                  <div className="branding-group">
+                    <label className="branding-label">Quality</label>
+                    <input
+                      type="number"
+                      value={
+                        config.environment.optimization.images.modal.quality
+                      }
+                      onChange={(e) =>
+                        updateConfig(
+                          [
+                            "environment",
+                            "optimization",
+                            "images",
+                            "modal",
+                            "quality",
+                          ],
+                          parseInt(e.target.value)
+                        )
+                      }
+                      className="branding-input"
+                      min="1"
+                      max="100"
+                    />
+                  </div>
+                  <div className="branding-group">
+                    <label className="branding-label">Max Dimension</label>
+                    <input
+                      type="number"
+                      value={
+                        config.environment.optimization.images.modal
+                          .maxDimension
+                      }
+                      onChange={(e) =>
+                        updateConfig(
+                          [
+                            "environment",
+                            "optimization",
+                            "images",
+                            "modal",
+                            "maxDimension",
+                          ],
+                          parseInt(e.target.value)
+                        )
+                      }
+                      className="branding-input"
+                    />
+                  </div>
+                </div>
 
-                Rule of thumb: ~4× your logical CPU cores (e.g., 64 for a
-                24-core CPU with hyperthreading = 48 logical cores).
-                Recommended: 8-16 for typical systems, 32-64 for
-                high-performance servers.
-              </p>
-              <div className="branding-group">
-                <label className="branding-label">Max Parallel Jobs</label>
-                <input
-                  type="number"
-                  value={config.environment.optimization.concurrency}
-                  onChange={(e) =>
-                    updateConfig(
-                      ["environment", "optimization", "concurrency"],
-                      parseInt(e.target.value)
-                    )
-                  }
-                  className="branding-input"
-                  min="1"
-                  max="256"
-                />
+                {/* Download Settings */}
+                <div className="openai-section">
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      marginBottom: "0.75rem",
+                    }}
+                  >
+                    <label className="openai-section-label">DOWNLOAD</label>
+                    {hasUnsavedChanges("Download") && (
+                      <div style={{ display: "flex", gap: "0.5rem" }}>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setConfig(originalConfig);
+                          }}
+                          disabled={savingSection !== null}
+                          className="btn-secondary"
+                          style={{
+                            padding: "0.4rem 0.8rem",
+                            fontSize: "0.85rem",
+                          }}
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleSaveSection("Download")}
+                          disabled={savingSection !== null}
+                          className="btn-primary"
+                          style={{
+                            padding: "0.4rem 0.8rem",
+                            fontSize: "0.85rem",
+                          }}
+                        >
+                          {savingSection === "Download" ? "Saving..." : "Save"}
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                  <div className="branding-group">
+                    <label className="branding-label">Quality</label>
+                    <input
+                      type="number"
+                      value={
+                        config.environment.optimization.images.download.quality
+                      }
+                      onChange={(e) =>
+                        updateConfig(
+                          [
+                            "environment",
+                            "optimization",
+                            "images",
+                            "download",
+                            "quality",
+                          ],
+                          parseInt(e.target.value)
+                        )
+                      }
+                      className="branding-input"
+                      min="1"
+                      max="100"
+                    />
+                  </div>
+                  <div className="branding-group">
+                    <label className="branding-label">Max Dimension</label>
+                    <input
+                      type="number"
+                      value={
+                        config.environment.optimization.images.download
+                          .maxDimension
+                      }
+                      onChange={(e) =>
+                        updateConfig(
+                          [
+                            "environment",
+                            "optimization",
+                            "images",
+                            "download",
+                            "maxDimension",
+                          ],
+                          parseInt(e.target.value)
+                        )
+                      }
+                      className="branding-input"
+                    />
+                  </div>
+                </div>
+
+                {/* Concurrency Settings */}
+                <div className="openai-section">
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      marginBottom: "0.75rem",
+                    }}
+                  >
+                    <label className="openai-section-label">CONCURRENCY</label>
+                    {hasUnsavedChanges("Concurrency") && (
+                      <div style={{ display: "flex", gap: "0.5rem" }}>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setConfig(originalConfig);
+                          }}
+                          disabled={savingSection !== null}
+                          className="btn-secondary"
+                          style={{
+                            padding: "0.4rem 0.8rem",
+                            fontSize: "0.85rem",
+                          }}
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleSaveSection("Concurrency")}
+                          disabled={savingSection !== null}
+                          className="btn-primary"
+                          style={{
+                            padding: "0.4rem 0.8rem",
+                            fontSize: "0.85rem",
+                          }}
+                        >
+                          {savingSection === "Concurrency"
+                            ? "Saving..."
+                            : "Save"}
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                  <p
+                    style={{
+                      fontSize: "0.85rem",
+                      color: "#888",
+                      marginTop: "0",
+                      marginBottom: "1rem",
+                    }}
+                  >
+                    Maximum number of images to process simultaneously. Higher
+                    values speed up batch processing but use more CPU and
+                    memory.
+                  </p>
+                  <p
+                    style={{
+                      fontSize: "0.85rem",
+                      color: "#888",
+                      marginTop: "0",
+                      marginBottom: "1rem",
+                    }}
+                  >
+                    Rule of thumb: ~4× your logical CPU cores. Recommended: 8-16
+                    for typical systems, 32-64 for high-performance servers.
+                  </p>
+                  <div className="branding-group">
+                    <label className="branding-label">Max Parallel Jobs</label>
+                    <input
+                      type="number"
+                      value={config.environment.optimization.concurrency}
+                      onChange={(e) =>
+                        updateConfig(
+                          ["environment", "optimization", "concurrency"],
+                          parseInt(e.target.value)
+                        )
+                      }
+                      className="branding-input"
+                      min="1"
+                      max="256"
+                    />
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-          </>
+            </>
           )}
         </div>
 

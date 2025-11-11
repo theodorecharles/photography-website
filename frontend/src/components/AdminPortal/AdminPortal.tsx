@@ -27,10 +27,8 @@ export default function AdminPortal() {
   
   // Determine active tab from URL
   const getActiveTab = (): Tab => {
-    if (location.pathname.includes('/links')) return 'links';
-    if (location.pathname.includes('/branding')) return 'branding';
+    if (location.pathname.includes('/settings')) return 'config';
     if (location.pathname.includes('/metrics')) return 'metrics';
-    if (location.pathname.includes('/config')) return 'config';
     return 'albums';
   };
   const activeTab = getActiveTab();
@@ -257,22 +255,10 @@ export default function AdminPortal() {
               Metrics
             </button>
             <button
-              className={`tab-button ${activeTab === 'links' ? 'active' : ''}`}
-              onClick={() => navigate('/admin/links')}
-            >
-              Links
-            </button>
-            <button
-              className={`tab-button ${activeTab === 'branding' ? 'active' : ''}`}
-              onClick={() => navigate('/admin/branding')}
-            >
-              Branding
-            </button>
-            <button
               className={`tab-button ${activeTab === 'config' ? 'active' : ''}`}
-              onClick={() => navigate('/admin/config')}
+              onClick={() => navigate('/admin/settings')}
             >
-              Config
+              Settings
             </button>
           </div>
         </div>
@@ -305,23 +291,6 @@ export default function AdminPortal() {
           <Metrics />
         )}
 
-        {activeTab === 'branding' && (
-          <BrandingManager
-            branding={branding}
-            setBranding={setBranding}
-            loadBranding={loadBranding}
-            setMessage={addMessage}
-          />
-        )}
-
-        {activeTab === 'links' && (
-          <LinksManager
-            externalLinks={externalLinks}
-            setExternalLinks={setExternalLinks}
-            setMessage={addMessage}
-          />
-        )}
-
         {activeTab === 'albums' && (
           <AlbumsManager
             albums={albums}
@@ -333,6 +302,11 @@ export default function AdminPortal() {
         {activeTab === 'config' && (
           <ConfigManager
             setMessage={addMessage}
+            branding={branding}
+            setBranding={setBranding}
+            loadBranding={loadBranding}
+            externalLinks={externalLinks}
+            setExternalLinks={setExternalLinks}
           />
         )}
       </div>
