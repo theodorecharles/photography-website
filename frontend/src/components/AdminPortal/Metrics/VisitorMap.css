@@ -29,9 +29,9 @@
   height: 100% !important;
 }
 
-/* No filter needed for CartoDB Dark Matter tiles - they're already dark/grayscale */
+/* Apply dark filter to OpenStreetMap tiles to match dark theme */
 .visitor-map .leaflet-tile {
-  /* CartoDB Dark Matter tiles are already optimized for dark themes */
+  filter: brightness(0.6) invert(1) contrast(3) hue-rotate(200deg) saturate(0.3) brightness(0.7);
 }
 
 .visitor-map .leaflet-control-zoom a {
