@@ -177,10 +177,10 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
     setOriginalExternalLinks(structuredClone(externalLinks));
   }, [externalLinks.length]); // Only update when length changes to avoid infinite loops
 
-  // Update original branding when parent branding changes (e.g., after loadBranding)
-  useEffect(() => {
-    setOriginalBranding(branding);
-  }, [branding]);
+  // Initialize originalBranding only on mount
+  // Note: We do NOT sync on every branding change because that would reset
+  // originalBranding while the user is editing, making save/cancel buttons disappear.
+  // originalBranding is updated manually after successful saves in saveBrandingSection().
 
   // Function to scroll to and highlight OpenAI API key input
   const handleSetupOpenAI = () => {
