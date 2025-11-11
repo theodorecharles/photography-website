@@ -933,6 +933,21 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     isLongPressRef.current = false;
   };
 
+  const handleShuffleMouseLeave = () => {
+    // Clear the long press timeout
+    if (shuffleClickTimeoutRef.current) {
+      clearTimeout(shuffleClickTimeoutRef.current);
+      shuffleClickTimeoutRef.current = null;
+    }
+    
+    // If animation is running, just stop it (don't do instant shuffle)
+    if (isLongPressRef.current) {
+      handleShuffleEnd();
+    }
+    
+    isLongPressRef.current = false;
+  };
+
   // Cleanup on unmount
   useEffect(() => {
     return () => {
@@ -1702,7 +1717,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                       <button
                         onMouseDown={handleShuffleMouseDown}
                         onMouseUp={handleShuffleMouseUp}
-                        onMouseLeave={handleShuffleMouseUp}
+                        onMouseLeave={handleShuffleMouseLeave}
                         onTouchStart={(e) => {
                           e.preventDefault();
                           shuffleButtonRef.current = e.currentTarget;
