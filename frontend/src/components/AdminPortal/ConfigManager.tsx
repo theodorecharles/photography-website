@@ -58,14 +58,19 @@ interface AnalyticsConfig {
   hmacSecret: string;
 }
 
+interface AIConfig {
+  autoGenerateTitlesOnUpload: boolean;
+}
+
 interface ConfigData {
   environment: EnvironmentConfig;
   openai: OpenAIConfig;
   analytics: AnalyticsConfig;
+  ai?: AIConfig;
 }
 
 interface ConfigManagerProps {
-  setMessage: (message: { type: 'success' | 'error'; text: string } | null) => void;
+  setMessage: (message: { type: 'success' | 'error'; text: string }) => void;
 }
 
 const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
@@ -369,6 +374,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
 
     switch (sectionName) {
       case 'OpenAI':
+        // Only check API key, not the auto-generate toggle (which auto-saves)
         return config.openai?.apiKey !== originalConfig.openai?.apiKey;
       
       case 'Image Optimization':
@@ -395,7 +401,6 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
     if (!config) return;
     
     setSavingSection(sectionName);
-    setMessage(null);
     
     try {
       const res = await fetch(`${API_URL}/api/config`, {
@@ -490,7 +495,6 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
     setGeneratingTitles(true);
     setTitlesOutput([]);
     setTitlesProgress(0);
-    setMessage(null);
 
     // Scroll to OpenAI section to show output
     setTimeout(() => {
@@ -581,7 +585,6 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
     if (!confirm('⚠️ Restart the backend server? This will temporarily disconnect all users.')) return;
 
     setRestartingBackend(true);
-    setMessage(null);
 
     try {
       const res = await fetch(`${API_URL}/api/system/restart/backend`, {
@@ -614,7 +617,6 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
     if (!confirm('⚠️ Restart the frontend server? This requires manual restart if in development mode.')) return;
 
     setRestartingFrontend(true);
-    setMessage(null);
 
     try {
       const res = await fetch(`${API_URL}/api/system/restart/frontend`, {
@@ -645,7 +647,6 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
     setOptimizationComplete(false);
     setOptimizationLogs([]);
     setOptimizationProgress(0);
-    setMessage(null);
 
     // Scroll to regenerate button to show output
     setTimeout(() => {
@@ -764,6 +765,50 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
     
     current[path[path.length - 1]] = value;
     setConfig(newConfig);
+  };
+
+  // Auto-save handler for AI toggle (like published toggle for albums)
+  const handleToggleAutoAI = async () => {
+    if (!config) return;
+    
+    const newValue = !(config.ai?.autoGenerateTitlesOnUpload || false);
+    
+    // Optimistically update UI
+    const newConfig = {
+      ...config,
+      ai: {
+        ...config.ai,
+        autoGenerateTitlesOnUpload: newValue
+      }
+    };
+    setConfig(newConfig);
+    
+    try {
+      const res = await fetch(`${API_URL}/api/config`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(newConfig),
+      });
+
+      if (res.ok) {
+        // Update original config to match
+        setOriginalConfig(JSON.parse(JSON.stringify(newConfig)));
+        setMessage({ 
+          type: 'success', 
+          text: `Auto-generate AI titles ${newValue ? 'enabled' : 'disabled'}` 
+        });
+      } else {
+        const error = await res.json();
+        setMessage({ type: 'error', text: error.error || 'Failed to update setting' });
+        // Revert on error
+        setConfig(config);
+      }
+    } catch (err) {
+      setMessage({ type: 'error', text: 'Network error occurred' });
+      // Revert on error
+      setConfig(config);
+    }
   };
 
   const updateArrayItem = (path: string[], index: number, value: string) => {
@@ -942,6 +987,52 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
                 </div>
               </>
             )}
+          </div>
+          
+          {/* Auto-generate AI Titles on Upload */}
+          <div className="branding-group" style={{ marginTop: '1.5rem', paddingTop: '1.5rem', borderTop: '1px solid rgba(255, 255, 255, 0.05)' }}>
+            <label className="branding-label" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', cursor: 'pointer' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flex: 1 }}>
+                <span>Auto-generate AI Titles on Upload</span>
+                <button
+                  type="button"
+                  onClick={handleToggleAutoAI}
+                  className={`toggle-button ${config.ai?.autoGenerateTitlesOnUpload ? 'active' : ''}`}
+                  style={{
+                    width: '48px',
+                    height: '24px',
+                    borderRadius: '12px',
+                    border: 'none',
+                    cursor: 'pointer',
+                    position: 'relative',
+                    transition: 'background-color 0.2s',
+                    backgroundColor: config.ai?.autoGenerateTitlesOnUpload ? 'var(--primary-color)' : 'rgba(255, 255, 255, 0.1)'
+                  }}
+                >
+                  <span style={{
+                    position: 'absolute',
+                    top: '2px',
+                    left: config.ai?.autoGenerateTitlesOnUpload ? '26px' : '2px',
+                    width: '20px',
+                    height: '20px',
+                    borderRadius: '50%',
+                    backgroundColor: 'white',
+                    transition: 'left 0.2s',
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                  }} />
+                </button>
+                <span style={{ 
+                  color: config.ai?.autoGenerateTitlesOnUpload ? 'var(--primary-color)' : '#888',
+                  fontSize: '0.9rem',
+                  fontWeight: 600
+                }}>
+                  {config.ai?.autoGenerateTitlesOnUpload ? 'Enabled' : 'Disabled'}
+                </span>
+              </div>
+            </label>
+            <p style={{ fontSize: '0.85rem', color: '#888', marginTop: '0.5rem', marginBottom: 0 }}>
+              Automatically generate AI titles for newly uploaded images after optimization completes. Saves immediately when toggled.
+            </p>
           </div>
         </div>
 

@@ -4,24 +4,26 @@
  */
 
 import { Router } from 'express';
-import fs from 'fs';
-import path from 'path';
+import { getPublishedAlbums } from '../database.js';
 
 const router = Router();
 
-function getAlbums(photosDir: string): string[] {
+/**
+ * Get all published album names from database
+ */
+function getAlbums(): string[] {
   try {
-    return fs.readdirSync(photosDir)
-      .filter(file => fs.statSync(path.join(photosDir, file)).isDirectory())
-      .filter(album => album !== 'homepage');
-  } catch {
+    return getPublishedAlbums()
+      .map(a => a.name)
+      .filter(name => name !== 'homepage');
+  } catch (error) {
+    console.error('Error getting albums for sitemap:', error);
     return [];
   }
 }
 
 router.get('/sitemap.xml', (req, res) => {
-  const photosDir = req.app.get('photosDir');
-  const albums = getAlbums(photosDir);
+  const albums = getAlbums();
   
   // Get base URL from environment (set by build.js from config.json)
   if (!process.env.SITE_URL) {

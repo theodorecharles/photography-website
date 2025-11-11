@@ -1,4 +1,9 @@
 {
+  "projectOverview": {
+    "description": "Photography portfolio website with React 19, TypeScript, Express 5, SQLite",
+    "architecture": "Monorepo with separate frontend and backend. SQLite for data, filesystem for photos",
+    "deployment": "PM2 for production, separate dev servers for development"
+  },
   "development": {
     "serverManagement": {
       "development": "DO NOT use PM2 for development. Run backend and frontend separately: 'cd backend && npm run dev' and 'cd frontend && npm run dev'",
@@ -9,71 +14,138 @@
       "frontend": "Frontend uses Vite for fast HMR in development"
     }
   },
-  "rules": [
-    {
-      "name": "Navigation Component",
-      "description": "Handles the main navigation menu including dropdowns and mobile menu",
-      "files": ["frontend/src/App.tsx"],
-      "patterns": [
-        {
-          "name": "Dropdown Behavior",
-          "description": "Dropdowns should only open on hover if another dropdown is already open",
-          "code": "handleAlbumsHover|handleLinksHover"
-        },
-        {
-          "name": "Scroll Behavior",
-          "description": "Dropdowns should close when the page is scrolled",
-          "code": "useEffect.*handleScroll"
-        }
-      ]
+  "criticalPatterns": {
+    "databaseFirst": {
+      "rule": "ALWAYS query SQLite database instead of scanning filesystem",
+      "rationale": "Filesystem scans are slow and don't scale. Use image_metadata table for images, albums table for albums",
+      "examples": [
+        "Use getImagesInAlbum(album) instead of fs.readdirSync()",
+        "Use getAllAlbums() instead of scanning photos directory",
+        "Use getImagesFromPublishedAlbums() for published content"
+      ],
+      "exceptions": "Only scan filesystem when syncing new uploads to database"
     },
-    {
-      "name": "Photo Grid Component",
-      "description": "Displays photos in a grid layout with modal view",
-      "files": ["frontend/src/components/PhotoGrid.tsx"],
-      "patterns": [
-        {
-          "name": "Modal View",
-          "description": "Clicking a photo opens it in a modal view with navigation",
-          "code": "handlePhotoClick|handleCloseModal"
-        }
-      ]
+    "sseRaceConditions": {
+      "rule": "For SSE (Server-Sent Events) endpoints, create job tracking IMMEDIATELY after checking if job exists",
+      "rationale": "Prevents race condition where two simultaneous requests both think no job exists and spawn duplicate processes",
+      "pattern": "Check if job exists → Create job object → Set headers → Spawn process",
+      "files": ["backend/src/routes/ai-titles.ts", "backend/src/routes/image-optimization.ts"],
+      "antipattern": "Never set headers or start any work before creating the job tracking object"
     },
-    {
-      "name": "API Integration",
-      "description": "Handles data fetching from the backend API",
-      "files": ["frontend/src/App.tsx"],
-      "patterns": [
-        {
-          "name": "Data Fetching",
-          "description": "Fetches albums and external links data on component mount",
-          "code": "fetchData|fetch.*API_URL"
-        }
-      ]
+    "sseBroadcasting": {
+      "rule": "SSE handlers must broadcast to ALL connected clients and store output history",
+      "rationale": "Multiple clients can connect/reconnect. All must receive updates and see previous output",
+      "pattern": [
+        "Store output in job.output array",
+        "Use broadcastToClients(job, message) for all output (stdout, stderr, errors)",
+        "Never write directly to a single res object in data handlers"
+      ],
+      "files": ["backend/src/routes/ai-titles.ts", "backend/src/routes/image-optimization.ts"]
     },
-    {
-      "name": "Mobile Responsiveness",
-      "description": "Handles responsive behavior for mobile devices",
-      "files": ["frontend/src/App.tsx", "frontend/src/App.css"],
-      "patterns": [
-        {
-          "name": "Mobile Menu",
-          "description": "Mobile menu should close on scroll and resize",
-          "code": "isMenuOpen|setIsMenuOpen"
-        }
-      ]
+    "authentication": {
+      "rule": "Use requireAuth middleware for all admin endpoints",
+      "implementation": "req.isAuthenticated() checks if user is logged in via Google OAuth",
+      "files": "All routes in backend/src/routes/ except public endpoints (albums, photos, sitemap, health)"
+    },
+    "csrfProtection": {
+      "rule": "Apply csrfProtection middleware to all routes that modify data",
+      "implementation": "router.use(csrfProtection) at top of route file",
+      "exception": "Read-only GET endpoints don't need CSRF protection",
+      "files": "All routes with POST, PUT, DELETE methods"
+    },
+    "pathSanitization": {
+      "rule": "ALWAYS sanitize user-provided paths to prevent directory traversal",
+      "pattern": "Use sanitizePath() helper that blocks '..' and path separators",
+      "critical": "Album names, filenames, and any path components from user input",
+      "files": ["backend/src/routes/albums.ts", "backend/src/routes/album-management.ts"]
     }
-  ],
-  "filePatterns": {
-    "frontend/src/App.tsx": {
-      "description": "Main application component with routing and layout",
-      "components": ["App", "Navigation", "AlbumRoute"],
-      "dependencies": ["react-router-dom", "PhotoGrid", "Footer", "License"]
+  },
+  "architecturePatterns": {
+    "database": {
+      "description": "SQLite with better-sqlite3 for synchronous operations",
+      "location": "backend/src/database.ts",
+      "tables": {
+        "albums": "Album names and published state",
+        "image_metadata": "Image filenames, titles, descriptions, sort_order per album"
+      },
+      "performance": [
+        "WAL mode enabled for better concurrency",
+        "Indexes on (album, filename)",
+        "Prepared statements for all queries"
+      ],
+      "migrations": "Run migrate-database.js when schema changes"
     },
-    "frontend/src/components/PhotoGrid.tsx": {
-      "description": "Component for displaying photos in a grid with modal view",
-      "components": ["PhotoGrid"],
-      "dependencies": ["react", "API_URL"]
+    "imageOptimization": {
+      "sizes": ["thumbnail (512px)", "modal (2048px)", "download (4096px)"],
+      "location": "optimized/ directory with subdirs for each size and album",
+      "process": "optimize_all_images.js runs via SSE endpoint, tracks progress",
+      "onUpload": "New images auto-optimized during upload via album-management route"
+    },
+    "asyncJobs": {
+      "pattern": "Long-running jobs (AI titles, optimization) use child_process.spawn with SSE streaming",
+      "tracking": "runningJobs object tracks active processes, output history, connected clients",
+      "features": [
+        "Multiple clients can connect/reconnect to same job",
+        "Stop button sends SIGTERM to process",
+        "Jobs auto-cleanup 5 minutes after completion"
+      ],
+      "files": ["backend/src/routes/ai-titles.ts", "backend/src/routes/image-optimization.ts"]
+    },
+    "caching": {
+      "albumPhotos": "5-minute in-memory cache for album photo lists",
+      "invalidation": "Cache cleared on image upload/delete via invalidateAlbumCache()",
+      "file": "backend/src/routes/albums.ts"
     }
+  },
+  "apiEndpoints": {
+    "public": [
+      "GET /api/albums - List albums (filtered by published state)",
+      "GET /api/albums/:album/photos - Get photos in album",
+      "GET /api/random-photos - Shuffled photos from published albums",
+      "GET /api/photos/:album/:filename/exif - EXIF data",
+      "GET /sitemap.xml - SEO sitemap",
+      "GET /api/health - Health check"
+    ],
+    "authenticated": [
+      "POST /api/ai-titles/generate - Generate AI titles (SSE)",
+      "POST /api/ai-titles/stop - Stop AI generation",
+      "POST /api/image-optimization/optimize - Run optimization (SSE)",
+      "POST /api/albums/upload - Upload photos",
+      "POST /api/album-management/albums - Create/rename/delete albums",
+      "PUT /api/album-management/albums/:album/publish - Toggle published state",
+      "All /api/analytics/* - Analytics queries",
+      "All /api/branding/* - Branding config",
+      "All /api/config/* - Site config"
+    ]
+  },
+  "security": {
+    "rules": [
+      "Never trust user input - sanitize all paths and filenames",
+      "Use parameterized SQL queries to prevent injection",
+      "Validate file types before processing uploads",
+      "CSRF tokens required for all state-changing operations",
+      "Email whitelist for Google OAuth (authorizedEmails in config)",
+      "Rate limiting on upload endpoints"
+    ]
+  },
+  "testing": {
+    "beforeCommit": [
+      "Test SSE endpoints with multiple simultaneous connections",
+      "Verify database queries work with empty database",
+      "Check CSRF tokens are sent/validated on protected routes",
+      "Test path sanitization with malicious inputs",
+      "Verify published/unpublished album filtering"
+    ]
+  },
+  "commonPitfalls": {
+    "filesystemScans": "Never use fs.readdirSync() in route handlers - use database queries",
+    "raceConditions": "SSE job creation must happen before any async work",
+    "singleClient": "Don't write to 'res' directly in child process handlers - use broadcast",
+    "cacheStaleness": "Remember to invalidate album cache when images change",
+    "missingAuth": "Don't forget requireAuth middleware on admin endpoints",
+    "directFilesystemAccess": "Photos stored in filesystem, metadata in database - keep in sync"
+  },
+  "deprecatedRules": {
+    "note": "The old component-specific rules are removed. Focus on backend architecture patterns which are more critical and harder to debug."
   }
-} 
+}

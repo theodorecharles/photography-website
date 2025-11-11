@@ -13,6 +13,7 @@ import {
   trackPhotoDeleted
 } from '../../utils/analytics';
 import { cacheBustValue } from '../../config';
+import { fetchWithRateLimitCheck } from '../../utils/fetchWrapper';
 import './AlbumsManager.css';
 import {
   DndContext,
@@ -36,6 +37,77 @@ import { CSS } from '@dnd-kit/utilities';
 const API_URL = import.meta.env.VITE_API_URL || '';
 
 type UploadState = 'queued' | 'uploading' | 'optimizing' | 'complete' | 'error';
+
+// Sortable Album Card Component with drop zone
+interface SortableAlbumCardProps {
+  album: Album;
+  isSelected: boolean;
+  isAnimating: boolean;
+  isDragOver: boolean;
+  onClick: () => void;
+  onDragOver: (e: React.DragEvent) => void;
+  onDragLeave: (e: React.DragEvent) => void;
+  onDrop: (e: React.DragEvent) => void;
+}
+
+const SortableAlbumCard: React.FC<SortableAlbumCardProps> = ({
+  album,
+  isSelected,
+  isAnimating,
+  isDragOver,
+  onClick,
+  onDragOver,
+  onDragLeave,
+  onDrop,
+}) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: album.name });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`album-card ${isSelected ? 'selected' : ''} ${album.published === false ? 'unpublished' : ''} ${isAnimating ? 'animating' : ''} ${isDragging ? 'dragging' : ''} ${isDragOver ? 'drag-over-album' : ''}`}
+      onClick={onClick}
+      onDragOver={onDragOver}
+      onDragLeave={onDragLeave}
+      onDrop={onDrop}
+      {...attributes}
+      {...listeners}
+    >
+      <div className="album-card-header">
+        <h4>
+          <span className="album-name">{album.name}</span>
+        </h4>
+        {album.photoCount !== undefined && (
+          <div className="album-badge">
+            {album.photoCount} {album.photoCount === 1 ? 'photo' : 'photos'}
+          </div>
+        )}
+      </div>
+      {isDragOver && (
+        <div className="album-drop-overlay">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
+          </svg>
+          <span>Drop to upload</span>
+        </div>
+      )}
+    </div>
+  );
+};
 
 // Sortable Photo Item Component
 interface SortablePhotoItemProps {
@@ -158,14 +230,6 @@ const SortablePhotoItem: React.FC<SortablePhotoItemProps> = ({
   );
 };
 
-// Helper function to format album name to title case
-const toTitleCase = (str: string): string => {
-  return str
-    .split(' ')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-    .join(' ');
-};
-
 interface UploadingImage {
   file: File;
   filename: string;
@@ -179,7 +243,7 @@ interface UploadingImage {
 interface AlbumsManagerProps {
   albums: Album[];
   loadAlbums: () => Promise<void>;
-  setMessage: (message: { type: 'success' | 'error'; text: string } | null) => void;
+  setMessage: (message: { type: 'success' | 'error'; text: string }) => void;
 }
 
 const AlbumsManager: React.FC<AlbumsManagerProps> = ({
@@ -187,9 +251,16 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   loadAlbums,
   setMessage,
 }) => {
+  // Local albums state that syncs with props - allows for optimistic updates during drag
+  const [localAlbums, setLocalAlbums] = useState<Album[]>(albums);
+  
+  // Sync local albums with props when props change (from parent load)
+  useEffect(() => {
+    setLocalAlbums(albums);
+  }, [albums]);
+  
   const [uploadingImages, setUploadingImages] = useState<UploadingImage[]>([]);
   const uploadingImagesRef = useRef<UploadingImage[]>([]);
-  const [newAlbumName, setNewAlbumName] = useState('');
   const [selectedAlbum, setSelectedAlbum] = useState<string | null>(null);
   const [albumPhotos, setAlbumPhotos] = useState<Photo[]>([]);
   const [originalPhotoOrder, setOriginalPhotoOrder] = useState<Photo[]>([]);
@@ -197,14 +268,23 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   const [editTitleValue, setEditTitleValue] = useState('');
   const [showEditModal, setShowEditModal] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
-  const [isMainDropZoneDragging, setIsMainDropZoneDragging] = useState(false);
   const [animatingAlbum, setAnimatingAlbum] = useState<string | null>(null);
   const [savingOrder, setSavingOrder] = useState(false);
   const [hasEverDragged, setHasEverDragged] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
+  
+  // State for drag-and-drop on album tiles
+  const [dragOverAlbum, setDragOverAlbum] = useState<string | null>(null);
+  const [isGhostAlbumDragOver, setIsGhostAlbumDragOver] = useState(false);
+  const [showNewAlbumModal, setShowNewAlbumModal] = useState(false);
+  const [newAlbumFiles, setNewAlbumFiles] = useState<File[]>([]);
+  const [newAlbumModalName, setNewAlbumModalName] = useState('');
+  
+  // Ref for ghost tile file input
+  const ghostTileFileInputRef = useRef<HTMLInputElement>(null);
 
-  // Configure dnd-kit sensors
-  const sensors = useSensors(
+  // Configure dnd-kit sensors for photos
+  const photoSensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
         distance: 8, // Require 8px movement before drag starts
@@ -215,10 +295,54 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     })
   );
 
+  // Configure dnd-kit sensors for albums
+  const albumSensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  // State for album drag-and-drop
+  const [activeAlbumId, setActiveAlbumId] = useState<string | null>(null);
+
   // Keep ref in sync with state
   useEffect(() => {
     uploadingImagesRef.current = uploadingImages;
   }, [uploadingImages]);
+
+  // Check if all uploads are complete and reload if needed
+  const checkAndReloadIfComplete = async (albumName: string) => {
+    const current = uploadingImagesRef.current;
+    if (current.length === 0) return;
+    
+    const allDone = current.every(img => 
+      img.state === 'complete' || img.state === 'error'
+    );
+    
+    if (allDone) {
+      console.log(`✅ All ${current.length} images processed, reloading album...`);
+      
+      // Small delay to ensure backend has finished writing
+      await new Promise(resolve => setTimeout(resolve, 300));
+      
+      // Reload albums and photos
+      await loadAlbums();
+      await loadPhotos(albumName);
+      
+      // Dispatch global event
+      window.dispatchEvent(new Event('albums-updated'));
+      
+      // Clear uploading state
+      setUploadingImages([]);
+      
+      console.log(`✅ Reload complete`);
+    }
+  };
 
   // Load photos when album is selected
   useEffect(() => {
@@ -229,12 +353,15 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
 
   const loadPhotos = async (albumName: string) => {
     try {
+      // Add cache-busting parameter to ensure fresh data
+      const cacheBust = Date.now();
       const res = await fetch(
-        `${API_URL}/api/albums/${encodeURIComponent(albumName)}/photos`,
+        `${API_URL}/api/albums/${encodeURIComponent(albumName)}/photos?_=${cacheBust}`,
         { credentials: 'include' }
       );
       const data = await res.json();
       const photos = Array.isArray(data) ? data : (data.photos || []);
+      console.log(`📷 Loaded ${photos.length} photos for album: ${albumName}`);
       setAlbumPhotos(photos);
       setOriginalPhotoOrder(photos); // Store original order for comparison
       setHasEverDragged(false); // Reset drag state when loading new album
@@ -253,14 +380,14 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     return albumPhotos.some((photo, index) => photo.id !== originalPhotoOrder[index].id);
   };
 
-  // Handle drag start for dnd-kit
-  const handleDragStart = (event: DragEndEvent) => {
+  // Handle drag start for photos
+  const handlePhotoDragStart = (event: DragEndEvent) => {
     setHasEverDragged(true); // Mark that user has started dragging
     setActiveId(event.active.id as string);
   };
 
-  // Handle drag end for dnd-kit
-  const handleDragEnd = (event: DragEndEvent) => {
+  // Handle drag end for photos
+  const handlePhotoDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
 
     if (over && active.id !== over.id) {
@@ -273,6 +400,229 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     }
     
     setActiveId(null);
+  };
+
+  // Handle drag start for albums
+  const handleAlbumDragStart = (event: DragEndEvent) => {
+    setActiveAlbumId(event.active.id as string);
+  };
+
+  // Handle drag end for albums with auto-save
+  const handleAlbumDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+    
+    setActiveAlbumId(null);
+
+    if (over && active.id !== over.id) {
+      const oldIndex = localAlbums.findIndex((album) => album.name === active.id);
+      const newIndex = localAlbums.findIndex((album) => album.name === over.id);
+
+      const reorderedAlbums = arrayMove(localAlbums, oldIndex, newIndex);
+      
+      // Optimistically update local state immediately for smooth UX
+      setLocalAlbums(reorderedAlbums);
+      
+      // Save the new order to the backend
+      try {
+        const albumOrders = reorderedAlbums.map((album, index) => ({
+          name: album.name,
+          sort_order: index,
+        }));
+
+        const response = await fetchWithRateLimitCheck(
+          `${API_URL}/api/albums/sort-order`,
+          {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ albumOrders }),
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error('Failed to save album order');
+        }
+
+        // Success! Sync parent state with database
+        await loadAlbums();
+      } catch (error) {
+        console.error('Error saving album order:', error);
+        setMessage({ type: 'error', text: 'Failed to save album order' });
+        // On error, reload to revert to saved order
+        await loadAlbums();
+      }
+    }
+  };
+
+  // Handle drag-and-drop on album tiles to upload photos
+  const handleAlbumTileDragOver = (e: React.DragEvent, albumName: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragOverAlbum(albumName);
+  };
+
+  const handleAlbumTileDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragOverAlbum(null);
+  };
+
+  const handleAlbumTileDrop = async (e: React.DragEvent, albumName: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragOverAlbum(null);
+
+    const files = Array.from(e.dataTransfer.files);
+    if (files.length === 0) return;
+
+    // Filter for image files only
+    const imageFiles = files.filter(file => file.type.startsWith('image/'));
+    if (imageFiles.length === 0) {
+      setMessage({ type: 'error', text: 'No valid image files found' });
+      return;
+    }
+
+    // Upload to the album
+    await handleUploadToAlbum(albumName, imageFiles);
+  };
+
+  // Handle drag-and-drop on ghost tile to create new album
+  const handleGhostTileDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsGhostAlbumDragOver(true);
+  };
+
+  const handleGhostTileDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsGhostAlbumDragOver(false);
+  };
+
+  const handleGhostTileDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsGhostAlbumDragOver(false);
+
+    const files = Array.from(e.dataTransfer.files);
+    if (files.length === 0) return;
+
+    // Filter for image files only
+    const imageFiles = files.filter(file => file.type.startsWith('image/'));
+    if (imageFiles.length === 0) {
+      setMessage({ type: 'error', text: 'No valid image files found' });
+      return;
+    }
+
+    // Show modal to name the new album
+    setNewAlbumFiles(imageFiles);
+    setShowNewAlbumModal(true);
+    setNewAlbumModalName('');
+  };
+
+  // Handle click on ghost tile (for mobile/manual file selection)
+  const handleGhostTileClick = () => {
+    ghostTileFileInputRef.current?.click();
+  };
+
+  // Handle file selection from ghost tile input
+  const handleGhostTileFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    const imageFiles = Array.from(files).filter(file => file.type.startsWith('image/'));
+    if (imageFiles.length === 0) {
+      setMessage({ type: 'error', text: 'No valid image files found' });
+      return;
+    }
+
+    // Show modal to name the new album
+    setNewAlbumFiles(imageFiles);
+    setShowNewAlbumModal(true);
+    setNewAlbumModalName('');
+    
+    // Reset the input
+    e.target.value = '';
+  };
+
+  // Helper function to upload files to a specific album
+  const handleUploadToAlbum = async (albumName: string, files: File[]) => {
+    if (files.length === 0) return;
+
+    console.log(`📤 Starting upload of ${files.length} files to album: ${albumName}`);
+
+    // Prepare uploading images
+    const newUploadingImages: UploadingImage[] = files.map(file => ({
+      file,
+      filename: file.name,
+      state: 'queued' as UploadState,
+      thumbnailUrl: URL.createObjectURL(file)
+    }));
+
+    setUploadingImages(newUploadingImages);
+    setSelectedAlbum(albumName);
+
+    // Upload each file - SSE events will handle state updates
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      console.log(`📤 Uploading file ${i + 1}/${files.length}: ${file.name}`);
+      try {
+        await uploadSingleImage(file, file.name, albumName);
+        console.log(`✅ Upload initiated for: ${file.name}`);
+      } catch (error) {
+        console.error(`❌ Failed to upload ${file.name}:`, error);
+        // Continue with next file even if one fails
+      }
+    }
+
+    // All uploads initiated - SSE events will update state and trigger reload
+    console.log(`✅ All uploads initiated. Processing will complete via SSE events...`);
+  };
+
+  // Handle creating new album from modal
+  const handleCreateAlbumFromModal = async () => {
+    if (!newAlbumModalName.trim()) {
+      setMessage({ type: 'error', text: 'Album name cannot be empty' });
+      return;
+    }
+
+    const sanitized = newAlbumModalName.trim().replace(/[^a-zA-Z0-9\s-]/g, '');
+    if (!sanitized) {
+      setMessage({ type: 'error', text: 'Album name contains no valid characters' });
+      return;
+    }
+
+    try {
+      // Create the album first
+      const res = await fetch(`${API_URL}/api/albums`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ name: sanitized }),
+      });
+
+      if (res.ok) {
+        await loadAlbums();
+        trackAlbumCreated(sanitized);
+        
+        // Close modal and upload files
+        setShowNewAlbumModal(false);
+        setMessage({ type: 'success', text: `Album "${sanitized}" created!` });
+        
+        // Upload the files
+        await handleUploadToAlbum(sanitized, newAlbumFiles);
+        
+        // Clear state
+        setNewAlbumFiles([]);
+        setNewAlbumModalName('');
+      } else {
+        const errorData = await res.json();
+        setMessage({ type: 'error', text: errorData.error || 'Failed to create album' });
+      }
+    } catch (err) {
+      console.error('Failed to create album:', err);
+      setMessage({ type: 'error', text: 'Error creating album' });
+    }
   };
 
   // Handle move up (mobile)
@@ -334,6 +684,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   const shuffleIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const slowdownTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const speedupTimeoutsRef = useRef<NodeJS.Timeout[]>([]);
+  const shuffleButtonRef = useRef<HTMLButtonElement | null>(null);
 
   // Speed up animation when button is pressed and start shuffling
   const handleShuffleMouseDown = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -342,6 +693,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     setHasEverDragged(true); // Mark that user has reordered
     
     const button = e.currentTarget;
+    shuffleButtonRef.current = button;
     button.classList.add('shuffling-active');
     
     // Add zoom class to all photos during shuffle
@@ -358,6 +710,14 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     
     // Start continuous shuffling with progressive speed increase
     let currentInterval = 100 * speedMultiplier; // Adjust base speed by album size
+    let currentAnimationSpeed = 0.4; // Starting animation speed in seconds
+    
+    // Update button border animation speed
+    const updateButtonSpeed = (speed: number) => {
+      if (shuffleButtonRef.current) {
+        shuffleButtonRef.current.style.setProperty('--animation-speed', `${speed}s`);
+      }
+    };
     
     const startShuffling = (interval: number) => {
       if (shuffleIntervalRef.current) {
@@ -382,12 +742,15 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     };
     
     startShuffling(currentInterval);
+    updateButtonSpeed(currentAnimationSpeed);
     
     // Speed up by 20% every 500ms for 3 seconds (6 iterations)
     for (let i = 1; i <= 6; i++) {
       const timeout = setTimeout(() => {
         currentInterval = currentInterval * 0.8; // Reduce interval by 20% = 20% faster
+        currentAnimationSpeed = currentAnimationSpeed * 0.8; // Speed up animation by 20%
         startShuffling(currentInterval);
+        updateButtonSpeed(currentAnimationSpeed);
       }, i * 500);
       speedupTimeoutsRef.current.push(timeout);
     }
@@ -419,9 +782,14 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     button.classList.remove('shuffling-active');
     button.classList.add('shuffling-slowing');
     
+    // Reset animation speed to medium (1.2s)
+    button.style.setProperty('--animation-speed', '1.2s');
+    
     // Return to normal speed
     slowdownTimeoutRef.current = setTimeout(() => {
       button.classList.remove('shuffling-slowing');
+      button.style.removeProperty('--animation-speed');
+      shuffleButtonRef.current = null;
     }, 1000);
   };
 
@@ -500,39 +868,6 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
       }
     } catch (err) {
       console.error('Failed to save title:', err);
-      setMessage({ type: 'error', text: 'Network error occurred' });
-    }
-  };
-
-  const handleCreateAlbum = async () => {
-    if (!newAlbumName.trim()) return;
-
-    try {
-      // Apply title case to the album name before creating
-      const albumName = toTitleCase(newAlbumName.trim());
-      const res = await fetch(`${API_URL}/api/albums`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ name: albumName }),
-      });
-
-      if (res.ok) {
-        setNewAlbumName('');
-        trackAlbumCreated(albumName);
-        
-        // Select the album immediately - sessionStorage will persist it across refresh
-        setSelectedAlbum(albumName);
-        setMessage({ type: 'success', text: `Album "${albumName}" created!` });
-        
-        // Trigger refresh of header navigation
-        await loadAlbums();
-        window.dispatchEvent(new Event('albums-updated'));
-      } else {
-        const error = await res.json();
-        setMessage({ type: 'error', text: error.error || 'Failed to create album' });
-      }
-    } catch (err) {
       setMessage({ type: 'error', text: 'Network error occurred' });
     }
   };
@@ -713,23 +1048,74 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                           : img
                       ));
                     } else if (data.type === 'complete') {
-                      // Optimization complete (in background)
+                      // Optimization complete
                       clearInterval(timeoutChecker);
                       const thumbnailUrl = `${API_URL}/optimized/thumbnail/${albumToUse}/${filename}?i=${Date.now()}`;
+                      setUploadingImages(prev => {
+                        const updated = prev.map(img => 
+                          img.filename === filename 
+                            ? { ...img, state: 'complete' as UploadState, thumbnailUrl, optimizeProgress: 100 } 
+                            : img
+                        );
+                        // Check if all done after state update
+                        setTimeout(() => checkAndReloadIfComplete(albumToUse!), 100);
+                        return updated;
+                      });
+                      trackPhotoUploaded(albumToUse!, 1, [filename]);
+                      // If AI generation follows, we'll update the display
+                    } else if (data.type === 'ai-generating') {
+                      // AI title generation starting - change state back to show progress
                       setUploadingImages(prev => prev.map(img => 
                         img.filename === filename 
-                          ? { ...img, state: 'complete' as UploadState, thumbnailUrl, optimizeProgress: 100 } 
+                          ? { ...img, state: 'optimizing' as UploadState, error: '🤖 Generating AI title...' } 
                           : img
                       ));
-                      trackPhotoUploaded(albumToUse!, 1, [filename]);
+                    } else if (data.type === 'ai-processing') {
+                      // AI title generation in progress
+                      setUploadingImages(prev => prev.map(img => 
+                        img.filename === filename 
+                          ? { ...img, error: '🤖 Generating title...' } 
+                          : img
+                      ));
+                    } else if (data.type === 'ai-complete') {
+                      // AI title generation complete - mark as complete again
+                      console.log(`✨ AI title generated for ${filename}: "${data.title}"`);
+                      setUploadingImages(prev => {
+                        const updated = prev.map(img => 
+                          img.filename === filename 
+                            ? { ...img, state: 'complete' as UploadState, error: undefined } 
+                            : img
+                        );
+                        // Check if all done after state update
+                        setTimeout(() => checkAndReloadIfComplete(albumToUse!), 100);
+                        return updated;
+                      });
+                    } else if (data.type === 'ai-error') {
+                      // AI title generation failed (non-fatal) - mark complete
+                      console.warn(`AI title generation failed for ${filename}:`, data.error);
+                      setUploadingImages(prev => {
+                        const updated = prev.map(img => 
+                          img.filename === filename 
+                            ? { ...img, state: 'complete' as UploadState, error: undefined } 
+                            : img
+                        );
+                        // Check if all done after state update
+                        setTimeout(() => checkAndReloadIfComplete(albumToUse!), 100);
+                        return updated;
+                      });
                     } else if (data.type === 'error') {
                       // Error occurred
                       clearInterval(timeoutChecker);
-                      setUploadingImages(prev => prev.map(img => 
-                        img.filename === filename 
-                          ? { ...img, state: 'error' as UploadState, error: data.error } 
-                          : img
-                      ));
+                      setUploadingImages(prev => {
+                        const updated = prev.map(img => 
+                          img.filename === filename 
+                            ? { ...img, state: 'error' as UploadState, error: data.error } 
+                            : img
+                        );
+                        // Check if all done after state update
+                        setTimeout(() => checkAndReloadIfComplete(albumToUse!), 100);
+                        return updated;
+                      });
                       setMessage({ type: 'error', text: `Error processing ${filename}: ${data.error}` });
                       if (!uploadComplete) {
                         uploadComplete = true;
@@ -969,120 +1355,6 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   };
 
   // Process dropped items (handles folders)
-  const processDroppedItems = async (items: DataTransferItemList): Promise<{ files: File[], folderName: string | null }> => {
-    const allFiles: File[] = [];
-    let folderName: string | null = null;
-
-    for (let i = 0; i < items.length; i++) {
-      const item = items[i];
-      if (item.kind === 'file') {
-        const entry = item.webkitGetAsEntry();
-        
-        if (entry) {
-          if (entry.isDirectory) {
-            // It's a folder - get the folder name
-            if (!folderName) {
-              folderName = entry.name;
-            }
-            // Recursively read all files
-            const files = await readDirectoryRecursive(entry);
-            allFiles.push(...files);
-          } else if (entry.isFile) {
-            // It's a single file
-            const file = item.getAsFile();
-            if (file && file.type.startsWith('image/')) {
-              allFiles.push(file);
-            }
-          }
-        }
-      }
-    }
-
-    return { files: allFiles, folderName };
-  };
-
-  const handleMainDropZoneDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsMainDropZoneDragging(true);
-  };
-
-  const handleMainDropZoneDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    // Only set to false if we're actually leaving the drop zone (not entering a child)
-    if (e.currentTarget === e.target) {
-      setIsMainDropZoneDragging(false);
-    }
-  };
-
-  const handleMainDropZoneDrop = async (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsMainDropZoneDragging(false);
-
-    if (uploadingImages.length > 0) {
-      setMessage({ type: 'error', text: 'Upload already in progress' });
-      return;
-    }
-
-    // Process dropped items (handles folders and files)
-    const { files: imageFiles, folderName } = await processDroppedItems(e.dataTransfer.items);
-    
-    if (imageFiles.length === 0) {
-      setMessage({ type: 'error', text: 'No image files found in dropped folder' });
-      return;
-    }
-
-    // If album is selected, upload to that album
-    if (selectedAlbum) {
-      await processFiles(imageFiles);
-      return;
-    }
-
-    // No album selected - try to create one from folder name
-    if (!folderName) {
-      setMessage({ type: 'error', text: 'Please drag a folder or select an album first' });
-      return;
-    }
-
-    // Create the album with title case
-    const albumName = toTitleCase(folderName.trim());
-    
-    try {
-      const res = await fetch(`${API_URL}/api/albums`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ name: albumName }),
-      });
-
-      if (!res.ok) {
-        const error = await res.json();
-        setMessage({ type: 'error', text: error.error || 'Failed to create album' });
-        return;
-      }
-
-      // Album created successfully
-      trackAlbumCreated(folderName);
-      setSelectedAlbum(albumName);
-      setMessage({ type: 'success', text: `Album "${albumName}" created! Uploading ${imageFiles.length} image(s)...` });
-      
-      // Load albums locally (don't dispatch event yet - it would cause a refresh and interrupt upload)
-      await loadAlbums();
-
-      // Upload the files with the newly created album name
-      await processFiles(imageFiles, albumName);
-      
-      // NOW trigger global refresh after uploads complete
-      window.dispatchEvent(new Event('albums-updated'));
-      
-    } catch (err) {
-      console.error('Failed to create album:', err);
-      setMessage({ type: 'error', text: 'Failed to create album' });
-    }
-  };
-
   const handleDeletePhoto = async (album: string, filename: string, photoTitle: string = '') => {
     if (!confirm(`Delete this photo?`)) return;
 
@@ -1111,77 +1383,78 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
       <section className="admin-section">
         <h2>📸 Albums & Photos</h2>
         <p className="section-description">Manage your photo albums and upload new images</p>
-        
         <div className="albums-management">
-          <div className="create-album-section">
-            <div className="create-album">
-              <h3>Create New Album</h3>
-              <div className="album-input-group">
-              <input
-                type="text"
-                value={newAlbumName}
-                onChange={(e) => setNewAlbumName(e.target.value)}
-                placeholder="Album name (e.g., Nature Photos, Street Portraits)"
-                className="branding-input"
-                onKeyDown={(e) => e.key === 'Enter' && handleCreateAlbum()}
-              />
-                <button 
-                  onClick={handleCreateAlbum}
-                  className="btn-primary"
-                >
-                  Create Album
-                </button>
-              </div>
-            </div>
-
-            <div 
-              className={`main-drop-zone ${isMainDropZoneDragging ? 'dragging' : ''} ${uploadingImages.length > 0 ? 'disabled' : ''}`}
-              onDragOver={uploadingImages.length > 0 ? undefined : handleMainDropZoneDragOver}
-              onDragLeave={uploadingImages.length > 0 ? undefined : handleMainDropZoneDragLeave}
-              onDrop={uploadingImages.length > 0 ? undefined : handleMainDropZoneDrop}
-            >
-              <div className="drop-zone-icon">📁</div>
-              <div className="drop-zone-text">
-                <strong>{uploadingImages.length > 0 ? 'Upload in progress...' : 'Drop folder here'}</strong>
-                <span className="drop-zone-hint">
-                  {uploadingImages.length > 0 
-                    ? 'Please wait for current upload to complete'
-                    : selectedAlbum 
-                      ? `Add images to "${selectedAlbum}"` 
-                      : 'Create album from folder name'}
-                </span>
-              </div>
-            </div>
-          </div>
-
           <div className="albums-list">
-            <h3>Your Albums ({albums.length})</h3>
-            {albums.length === 0 ? (
-              <p style={{ color: '#888', marginTop: '1rem' }}>
-                No albums yet. Create one to get started!
-              </p>
-            ) : (
-              <div className="album-grid">
-                {albums.map((album) => (
-                  <div 
-                    key={album.name} 
-                    className={`album-card ${selectedAlbum === album.name ? 'selected' : ''} ${album.published === false ? 'unpublished' : ''} ${animatingAlbum === album.name ? 'animating' : ''}`}
-                    onClick={() => setSelectedAlbum(selectedAlbum === album.name ? null : album.name)}
-                  >
-                    <div className="album-card-header">
-                      <h4>
-                        <span className="album-name">{album.name}</span>
-                      </h4>
-                      {album.photoCount !== undefined && (
-                        <div className="album-badge">
-                          {album.photoCount} {album.photoCount === 1 ? 'photo' : 'photos'}
-                        </div>
-                      )}
+              <DndContext
+                sensors={albumSensors}
+                collisionDetection={closestCenter}
+                onDragStart={handleAlbumDragStart}
+                onDragEnd={handleAlbumDragEnd}
+              >
+                <SortableContext
+                  items={localAlbums.map((album) => album.name)}
+                  strategy={rectSortingStrategy}
+                >
+                  <div className="album-grid">
+                    {localAlbums.map((album) => (
+                      <SortableAlbumCard
+                        key={album.name}
+                        album={album}
+                        isSelected={selectedAlbum === album.name}
+                        isAnimating={animatingAlbum === album.name}
+                        isDragOver={dragOverAlbum === album.name}
+                        onClick={() => setSelectedAlbum(selectedAlbum === album.name ? null : album.name)}
+                        onDragOver={(e) => handleAlbumTileDragOver(e, album.name)}
+                        onDragLeave={handleAlbumTileDragLeave}
+                        onDrop={(e) => handleAlbumTileDrop(e, album.name)}
+                      />
+                    ))}
+                    
+                    {/* Ghost tile for creating new albums */}
+                    <div 
+                      className={`album-card ghost-album-tile ${isGhostAlbumDragOver ? 'drag-over-ghost' : ''}`}
+                      onClick={handleGhostTileClick}
+                      onDragOver={handleGhostTileDragOver}
+                      onDragLeave={handleGhostTileDragLeave}
+                      onDrop={handleGhostTileDrop}
+                    >
+                      <div className="ghost-tile-content">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <circle cx="12" cy="12" r="10"/>
+                          <path d="M12 8v8M8 12h8"/>
+                        </svg>
+                        {isGhostAlbumDragOver && (
+                          <span className="ghost-tile-hint">Drop to create</span>
+                        )}
+                      </div>
+                      <input
+                        ref={ghostTileFileInputRef}
+                        type="file"
+                        multiple
+                        accept="image/*"
+                        onChange={handleGhostTileFileSelect}
+                        style={{ display: 'none' }}
+                      />
                     </div>
                   </div>
-                ))}
-              </div>
-            )}
+                </SortableContext>
+                <DragOverlay>
+                  {activeAlbumId ? (
+                    <div className="album-card dragging" style={{ cursor: 'grabbing' }}>
+                      <div className="album-card-header">
+                        <h4>
+                          <span className="album-name">{activeAlbumId}</span>
+                        </h4>
+                        {localAlbums.find(a => a.name === activeAlbumId)?.photoCount !== undefined && (
+                          <div className="album-badge">
+                            {localAlbums.find(a => a.name === activeAlbumId)?.photoCount} {localAlbums.find(a => a.name === activeAlbumId)?.photoCount === 1 ? 'photo' : 'photos'}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ) : null}
+                </DragOverlay>
+              </DndContext>
           </div>
 
           {selectedAlbum && (
@@ -1195,22 +1468,22 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                 <div className="album-actions-grid">
                   <label 
                     className="toggle-switch btn-action-item"
-                    title={albums.find(a => a.name === selectedAlbum)?.published === false ? "Publish album (make visible to public)" : "Unpublish album (hide from public)"}
+                    title={localAlbums.find(a => a.name === selectedAlbum)?.published === false ? "Publish album (make visible to public)" : "Unpublish album (hide from public)"}
                   >
                     <input
                       type="checkbox"
-                      checked={albums.find(a => a.name === selectedAlbum)?.published !== false}
+                      checked={localAlbums.find(a => a.name === selectedAlbum)?.published !== false}
                       onChange={(e) => {
-                        handleTogglePublished(selectedAlbum, albums.find(a => a.name === selectedAlbum)?.published !== false, e as any);
+                        handleTogglePublished(selectedAlbum, localAlbums.find(a => a.name === selectedAlbum)?.published !== false, e as any);
                       }}
                     />
                     <span className="toggle-slider"></span>
                     <span className="toggle-label">
-                      {albums.find(a => a.name === selectedAlbum)?.published === false ? 'Unpublished' : 'Published'}
+                      {localAlbums.find(a => a.name === selectedAlbum)?.published === false ? 'Unpublished' : 'Published'}
                     </span>
                   </label>
                   
-                  {albums.find(a => a.name === selectedAlbum)?.published === false && (
+                  {localAlbums.find(a => a.name === selectedAlbum)?.published === false && (
                     <button
                       onClick={() => window.open(`/album/${selectedAlbum}`, '_blank')}
                       className="btn-action btn-preview btn-action-item"
@@ -1376,10 +1649,10 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                 </p>
               ) : (
                 <DndContext
-                  sensors={sensors}
+                  sensors={photoSensors}
                   collisionDetection={closestCenter}
-                  onDragStart={handleDragStart}
-                  onDragEnd={handleDragEnd}
+                  onDragStart={handlePhotoDragStart}
+                  onDragEnd={handlePhotoDragEnd}
                 >
                   <div className="photos-grid">
                     {/* Show uploading images first */}
@@ -1450,7 +1723,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                             </svg>
                             <span className="progress-percentage">{img.optimizeProgress || 0}%</span>
                           </div>
-                          <span className="state-text">Optimizing...</span>
+                          <span className="state-text">{img.error || 'Optimizing...'}</span>
                         </div>
                       )}
                       {img.state === 'complete' && img.thumbnailUrl && (
@@ -1570,6 +1843,71 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                 onClick={handleSaveTitle}
               >
                 Save Title
+              </button>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
+
+      {/* New Album Modal - Use Portal to escape admin-container z-index stacking context */}
+      {showNewAlbumModal && createPortal(
+        <div 
+          className="edit-title-modal" 
+          onClick={() => setShowNewAlbumModal(false)}
+        >
+          <div className="edit-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="edit-modal-header">
+              <h3>Create New Album</h3>
+              <button 
+                className="modal-close-btn"
+                onClick={() => setShowNewAlbumModal(false)}
+                title="Close"
+              >
+                ×
+              </button>
+            </div>
+            
+            <div className="edit-modal-body">
+              <div className="edit-modal-info" style={{ width: '100%' }}>
+                <label className="edit-modal-label">
+                  {newAlbumFiles.length} {newAlbumFiles.length === 1 ? 'photo' : 'photos'} selected
+                </label>
+                
+                <label className="edit-modal-label">Album Name</label>
+                <input
+                  type="text"
+                  value={newAlbumModalName}
+                  onChange={(e) => setNewAlbumModalName(e.target.value)}
+                  className="edit-modal-input"
+                  placeholder="Enter album name..."
+                  autoFocus
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      handleCreateAlbumFromModal();
+                    } else if (e.key === 'Escape') {
+                      setShowNewAlbumModal(false);
+                    }
+                  }}
+                />
+                <p style={{ color: '#888', fontSize: '0.9rem', marginTop: '0.5rem' }}>
+                  A new album will be created with {newAlbumFiles.length} {newAlbumFiles.length === 1 ? 'photo' : 'photos'}
+                </p>
+              </div>
+            </div>
+            
+            <div className="edit-modal-footer">
+              <button
+                onClick={() => setShowNewAlbumModal(false)}
+                className="btn-secondary"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleCreateAlbumFromModal}
+                className="btn-primary"
+              >
+                Create Album
               </button>
             </div>
           </div>
