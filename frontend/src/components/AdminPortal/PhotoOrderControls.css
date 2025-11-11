@@ -4,6 +4,10 @@
   flex-direction: column;
   gap: 0.75rem;
   margin-top: 1rem;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }
 
 .photo-order-row {
@@ -36,7 +40,7 @@
 /* Mobile: stack rows, primary on top */
 @media (max-width: 768px) {
   .photo-order-controls {
-    flex-direction: column-reverse;
+    flex-direction: column;
   }
   
   .photo-order-row-primary {
@@ -45,5 +49,10 @@
   
   .photo-order-row-secondary {
     width: 100%;
+  }
+  
+  /* Make buttons full width and equal */
+  .photo-order-row-secondary .btn-action {
+    flex: 1;
   }
 }
