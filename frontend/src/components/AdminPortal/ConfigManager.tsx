@@ -2350,7 +2350,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
               <div
                 style={{
                   display: "flex",
-                  alignItems: "center",
+                  alignItems: "stretch",
                   gap: "0.75rem",
                   flexWrap: "wrap",
                   marginBottom: "0.75rem",
@@ -2361,6 +2361,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
                     type="button"
                     onClick={handleSetupOpenAI}
                     className="btn-secondary"
+                    style={{ flex: "1 1 auto", minWidth: "200px" }}
                   >
                     Set Up OpenAI
                   </button>
@@ -2372,6 +2373,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
                         handleGenerateTitles(false);
                       }}
                       className="btn-secondary"
+                      style={{ flex: "1 1 auto", minWidth: "200px" }}
                     >
                       Backfill Missing Titles
                     </button>
@@ -2386,6 +2388,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
                         }
                       }}
                       className="btn-force-regenerate"
+                      style={{ flex: "1 1 auto", minWidth: "200px" }}
                     >
                       Force Regenerate All
                     </button>
@@ -2398,6 +2401,8 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
                     style={{
                       backgroundColor: "#dc2626",
                       borderColor: "#dc2626",
+                      flex: "1 1 auto",
+                      minWidth: "200px",
                     }}
                   >
                     Stop
@@ -2502,6 +2507,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
                     type="button"
                     onClick={() => handleRunOptimization(true)}
                     className="btn-force-regenerate"
+                    style={{ flex: "1 1 auto", minWidth: "200px" }}
                   >
                     Force Regenerate All
                   </button>
@@ -2513,6 +2519,8 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
                     style={{
                       backgroundColor: "#dc2626",
                       borderColor: "#dc2626",
+                      flex: "1 1 auto",
+                      minWidth: "200px",
                     }}
                   >
                     Stop
