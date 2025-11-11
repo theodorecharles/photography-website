@@ -991,9 +991,11 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
           
           {/* Auto-generate AI Titles on Upload */}
           <div className="branding-group" style={{ marginTop: '1.5rem', paddingTop: '1.5rem', borderTop: '1px solid rgba(255, 255, 255, 0.05)' }}>
-            <label className="branding-label" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', cursor: 'pointer' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flex: 1 }}>
-                <span>Auto-generate AI Titles on Upload</span>
+            <div className="ai-toggle-container">
+              <div className="ai-toggle-label">
+                <span className="ai-toggle-title">Auto-generate AI Titles on Upload</span>
+              </div>
+              <div className="ai-toggle-controls">
                 <button
                   type="button"
                   onClick={handleToggleAutoAI}
@@ -1006,7 +1008,8 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
                     cursor: 'pointer',
                     position: 'relative',
                     transition: 'background-color 0.2s',
-                    backgroundColor: config.ai?.autoGenerateTitlesOnUpload ? 'var(--primary-color)' : 'rgba(255, 255, 255, 0.1)'
+                    backgroundColor: config.ai?.autoGenerateTitlesOnUpload ? 'var(--primary-color)' : 'rgba(255, 255, 255, 0.1)',
+                    flexShrink: 0
                   }}
                 >
                   <span style={{
@@ -1024,12 +1027,13 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
                 <span style={{ 
                   color: config.ai?.autoGenerateTitlesOnUpload ? 'var(--primary-color)' : '#888',
                   fontSize: '0.9rem',
-                  fontWeight: 600
+                  fontWeight: 600,
+                  flexShrink: 0
                 }}>
                   {config.ai?.autoGenerateTitlesOnUpload ? 'Enabled' : 'Disabled'}
                 </span>
               </div>
-            </label>
+            </div>
             <p style={{ fontSize: '0.85rem', color: '#888', marginTop: '0.5rem', marginBottom: 0 }}>
               Automatically generate AI titles for newly uploaded images after optimization completes. Saves immediately when toggled.
             </p>
