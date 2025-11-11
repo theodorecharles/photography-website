@@ -1555,68 +1555,11 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
               onDragLeave={uploadingImages.length > 0 ? undefined : handleDragLeave}
               onDrop={uploadingImages.length > 0 ? undefined : handleDrop}
             >
-              <div style={{background: 'red', color: 'white', padding: '20px', fontSize: '24px', fontWeight: 'bold', marginBottom: '20px'}}>
-                🚨 SELECTED ALBUM: {selectedAlbum} 🚨
-              </div>
-              <div style={{background: 'blue', color: 'yellow', padding: '10px', fontSize: '18px', marginBottom: '10px'}}>
-                📸 PHOTOS HEADER DIV
-              </div>
-              <div className="photos-header" style={{border: '5px solid lime', padding: '10px'}}>
-                <div style={{background: 'orange', color: 'black', padding: '10px', fontSize: '16px', marginBottom: '10px'}}>
-                  🎛️ ALBUM ACTIONS GRID START
-                </div>
-                <div className="album-actions-grid" style={{
-                  border: '3px dashed magenta',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '10px',
-                  minHeight: '200px',
-                  background: 'rgba(255,255,255,0.1)'
-                }}>
-                  <div style={{background: 'cyan', color: 'black', padding: '30px', fontSize: '24px', fontWeight: 'bold', border: '5px solid red'}}>
-                    ⚡ INSIDE MAGENTA BOX ⚡
-                  </div>
-                  
-                  <button style={{
-                    background: 'red',
-                    color: 'yellow',
-                    padding: '30px',
-                    fontSize: '30px',
-                    fontWeight: 'bold',
-                    border: '10px solid white',
-                    cursor: 'pointer',
-                    minHeight: '100px'
-                  }} onClick={() => alert('TEST BUTTON CLICKED!')}>
-                    🚨 CLICK THIS TEST BUTTON 🚨
-                  </button>
-                  
-                  <button style={{
-                    background: '#8b5cf6',
-                    color: 'white',
-                    padding: '30px',
-                    fontSize: '30px',
-                    fontWeight: 'bold',
-                    border: '10px solid #a78bfa',
-                    cursor: 'pointer',
-                    minHeight: '100px'
-                  }} onClick={() => {
-                    console.log('Share button clicked!');
-                    alert('Opening share modal for: ' + selectedAlbum);
-                    setShareAlbumName(selectedAlbum);
-                    setShowShareModal(true);
-                  }}>
-                    🔗 SHARE ALBUM - {selectedAlbum}
-                  </button>
-                  
+              <div className="photos-header">
+                <div className="album-actions-grid">
                   <label 
                     className="toggle-switch btn-action-item"
                     title={localAlbums.find(a => a.name === selectedAlbum)?.published === false ? "Publish album (make visible to public)" : "Unpublish album (hide from public)"}
-                    style={{
-                      display: 'block',
-                      visibility: 'visible',
-                      opacity: 1,
-                      position: 'relative'
-                    }}
                   >
                     <input
                       type="checkbox"
@@ -1647,28 +1590,11 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                   
                   <button
                     onClick={() => {
-                      console.log('🔗 SHARE BUTTON CLICKED for album:', selectedAlbum);
-                      alert('Share button clicked! Album: ' + selectedAlbum);
                       setShareAlbumName(selectedAlbum);
                       setShowShareModal(true);
                     }}
                     className="btn-action btn-share btn-action-item"
                     title="Generate share link for album"
-                    style={{
-                      backgroundColor: '#8b5cf6',
-                      color: 'white',
-                      fontWeight: 'bold',
-                      fontSize: '20px',
-                      border: '5px solid #a78bfa',
-                      padding: '20px',
-                      display: 'block',
-                      visibility: 'visible',
-                      opacity: 1,
-                      position: 'relative',
-                      minHeight: '60px',
-                      width: '100%',
-                      zIndex: 9999
-                    }}
                   >
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <circle cx="18" cy="5" r="3"/>
@@ -1677,7 +1603,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                       <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
                       <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
                     </svg>
-                    🔗 SHARE ALBUM
+                    Share Album
                   </button>
                   
                   <button
