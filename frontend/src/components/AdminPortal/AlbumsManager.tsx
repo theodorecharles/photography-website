@@ -112,14 +112,12 @@ const SortableAlbumCard: React.FC<SortableAlbumCardProps> = ({
 // Sortable Photo Item Component
 interface SortablePhotoItemProps {
   photo: Photo;
-  index: number;
   onEdit: (photo: Photo) => void;
   onDelete: (album: string, filename: string, title: string) => void;
 }
 
 const SortablePhotoItem: React.FC<SortablePhotoItemProps> = ({
   photo,
-  index,
   onEdit,
   onDelete,
 }) => {
@@ -1710,11 +1708,10 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                     
                     {/* Show existing album photos with drag and drop */}
                     <SortableContext items={albumPhotos.map(p => p.id)} strategy={rectSortingStrategy}>
-                      {albumPhotos.map((photo, index) => (
+                      {albumPhotos.map((photo) => (
                         <SortablePhotoItem
                           key={photo.id}
                           photo={photo}
-                          index={index}
                           onEdit={handleOpenEditModal}
                           onDelete={handleDeletePhoto}
                         />
