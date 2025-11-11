@@ -398,6 +398,40 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   const [activeAlbumId, setActiveAlbumId] = useState<string | null>(null);
   const [showShareModal, setShowShareModal] = useState(false);
   const [shareAlbumName, setShareAlbumName] = useState<string | null>(null);
+  
+  // Confirmation modal state
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [confirmConfig, setConfirmConfig] = useState<{
+    message: string;
+    onConfirm: () => void;
+  } | null>(null);
+
+  // Helper function to show confirmation modal
+  const showConfirmation = (message: string): Promise<boolean> => {
+    return new Promise((resolve) => {
+      setConfirmConfig({
+        message,
+        onConfirm: () => {
+          setShowConfirmModal(false);
+          setConfirmConfig(null);
+          resolve(true);
+        },
+      });
+      setShowConfirmModal(true);
+      // Store reject function for cancel
+      const originalResolve = resolve;
+      (window as any).__modalResolve = originalResolve;
+    });
+  };
+
+  const handleModalCancel = () => {
+    setShowConfirmModal(false);
+    setConfirmConfig(null);
+    if ((window as any).__modalResolve) {
+      (window as any).__modalResolve(false);
+      delete (window as any).__modalResolve;
+    }
+  };
 
   // Keep ref in sync with state
   useEffect(() => {
@@ -1035,7 +1069,8 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   };
 
   const handleDeleteAlbum = async (albumName: string) => {
-    if (!confirm(`Delete album "${albumName}" and all its photos?`)) return;
+    const confirmed = await showConfirmation(`Delete album "${albumName}" and all its photos?\n\nThis action cannot be undone.`);
+    if (!confirmed) return;
 
     try {
       const res = await fetch(`${API_URL}/api/albums/${encodeURIComponent(albumName)}`, {
@@ -1518,7 +1553,8 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
 
   // Process dropped items (handles folders)
   const handleDeletePhoto = async (album: string, filename: string, photoTitle: string = '') => {
-    if (!confirm(`Delete this photo?`)) return;
+    const confirmed = await showConfirmation(`Delete this photo${photoTitle ? ` (${photoTitle})` : ''}?\n\nThis action cannot be undone.`);
+    if (!confirmed) return;
 
     try {
       const res = await fetch(`${API_URL}/api/albums/${encodeURIComponent(album)}/photos/${encodeURIComponent(filename)}`, {
@@ -2123,6 +2159,73 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
             setShareAlbumName(null);
           }}
         />
+      )}
+
+      {/* Confirmation Modal */}
+      {showConfirmModal && confirmConfig && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(0, 0, 0, 0.75)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 10000,
+            padding: "1rem",
+          }}
+          onClick={handleModalCancel}
+        >
+          <div
+            style={{
+              backgroundColor: "#1a1a1a",
+              border: "2px solid rgba(255, 255, 255, 0.2)",
+              borderRadius: "12px",
+              padding: "2rem",
+              maxWidth: "500px",
+              width: "100%",
+              boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5)",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div
+              style={{
+                color: "#e5e7eb",
+                fontSize: "1.1rem",
+                lineHeight: "1.6",
+                marginBottom: "2rem",
+                whiteSpace: "pre-wrap",
+              }}
+            >
+              {confirmConfig.message}
+            </div>
+            <div
+              style={{
+                display: "flex",
+                gap: "1rem",
+                justifyContent: "flex-end",
+              }}
+            >
+              <button
+                onClick={handleModalCancel}
+                className="btn-secondary"
+                style={{ minWidth: "100px" }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmConfig.onConfirm}
+                className="btn-primary"
+                style={{ minWidth: "100px" }}
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </>
   );

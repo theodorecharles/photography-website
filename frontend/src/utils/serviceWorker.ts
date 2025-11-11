@@ -3,6 +3,8 @@
  * Registers and manages the service worker for caching
  */
 
+import { showToast } from './toast';
+
 export function registerServiceWorker() {
   // Only register in production (when served over HTTPS or localhost)
   if ('serviceWorker' in navigator) {
@@ -28,11 +30,8 @@ export function registerServiceWorker() {
                   // New service worker available
                   console.log('📦 New content available! Refresh to update.');
                   
-                  // Optionally notify the user
-                  if (confirm('New content is available! Click OK to refresh.')) {
-                    newWorker.postMessage({ type: 'SKIP_WAITING' });
-                    window.location.reload();
-                  }
+                  // Show toast notification instead of confirm dialog
+                  showToast('New content is available! Refresh the page to update.', 'info');
                 }
               });
             }
