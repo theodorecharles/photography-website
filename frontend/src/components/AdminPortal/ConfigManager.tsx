@@ -125,7 +125,11 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
   const [savingBrandingSection, setSavingBrandingSection] = useState<string | null>(null);
   const [pendingAvatarFile, setPendingAvatarFile] = useState<File | null>(null);
   const [avatarPreviewUrl, setAvatarPreviewUrl] = useState<string | null>(null);
+  const [isDraggingOver, setIsDraggingOver] = useState(false);
   const [savingLinks, setSavingLinks] = useState(false);
+  
+  // Ref for file input
+  const avatarFileInputRef = useRef<HTMLInputElement>(null);
 
   // Confirmation modal state
   const [showConfirmModal, setShowConfirmModal] = useState(false);
@@ -920,6 +924,36 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
     setPendingAvatarFile(file);
   };
 
+  const handleAvatarDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDraggingOver(true);
+  };
+
+  const handleAvatarDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDraggingOver(false);
+  };
+
+  const handleAvatarDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDraggingOver(false);
+
+    const files = e.dataTransfer.files;
+    if (files && files.length > 0) {
+      const file = files[0];
+      if (file.type.startsWith('image/')) {
+        handleAvatarFileSelect(file);
+      }
+    }
+  };
+
+  const handleAvatarClick = () => {
+    avatarFileInputRef.current?.click();
+  };
+
   const handleBrandingChange = (field: keyof BrandingConfig, value: string) => {
     setBranding({
       ...branding,
@@ -1007,6 +1041,16 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
     // Clear avatar upload state
     setPendingAvatarFile(null);
     setAvatarPreviewUrl(null);
+  };
+
+  const hasBrandingChanges = (fields: (keyof BrandingConfig)[]): boolean => {
+    // Check if avatar has pending upload
+    if (fields.includes('avatarPath') && pendingAvatarFile) {
+      return true;
+    }
+    
+    // Check if any field values have changed
+    return fields.some(field => branding[field] !== originalBranding[field]);
   };
 
   // ===== Links Handlers =====
@@ -1477,8 +1521,20 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
             <div className="branding-grid">
               <div className="branding-group">
                 <label className="branding-label">Logo</label>
-                <div className="avatar-upload-container">
-                  {(avatarPreviewUrl || branding.avatarPath) && (
+                <div 
+                  className={`avatar-upload-container ${isDraggingOver ? 'dragging-over' : ''}`}
+                  onDragOver={handleAvatarDragOver}
+                  onDragLeave={handleAvatarDragLeave}
+                  onDrop={handleAvatarDrop}
+                  onClick={handleAvatarClick}
+                  style={{ 
+                    cursor: 'pointer',
+                    position: 'relative',
+                    border: isDraggingOver ? '2px dashed var(--primary-color)' : '2px dashed transparent',
+                    transition: 'border 0.2s ease'
+                  }}
+                >
+                  {(avatarPreviewUrl || branding.avatarPath) ? (
                     <img
                       src={
                         avatarPreviewUrl ||
@@ -1487,40 +1543,64 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
                       alt="Current avatar"
                       className="current-avatar-preview"
                       key={avatarPreviewUrl || branding.avatarPath}
+                      style={{ cursor: 'pointer' }}
                     />
+                  ) : (
+                    <div style={{
+                      width: '120px',
+                      height: '120px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      border: '2px dashed rgba(255, 255, 255, 0.3)',
+                      borderRadius: '8px',
+                      color: 'rgba(255, 255, 255, 0.5)',
+                      fontSize: '0.875rem',
+                      textAlign: 'center',
+                      padding: '1rem'
+                    }}>
+                      <span>Click or drag image here</span>
+                    </div>
                   )}
-                  <label className="btn-secondary upload-avatar-btn">
-                    {pendingAvatarFile ? "Change Logo" : "Edit Logo"}
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) {
-                          handleAvatarFileSelect(file);
-                        }
+                  <input
+                    ref={avatarFileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        handleAvatarFileSelect(file);
+                      }
+                    }}
+                    style={{ display: "none" }}
+                    disabled={savingBrandingSection === 'avatar'}
+                  />
+                </div>
+                {hasBrandingChanges(['avatarPath']) && (
+                  <div className="section-button-group">
+                    <button 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        cancelBrandingSection(['avatarPath']);
                       }}
-                      style={{ display: "none" }}
+                      className="btn-secondary btn-small"
                       disabled={savingBrandingSection === 'avatar'}
-                    />
-                  </label>
-                </div>
-                <div className="section-button-group">
-                  <button 
-                    onClick={() => saveBrandingSection('Logo', ['avatarPath'])} 
-                    className="btn-primary btn-small"
-                    disabled={savingBrandingSection === 'avatar'}
-                  >
-                    {savingBrandingSection === 'avatar' ? 'Saving...' : 'Save'}
-                  </button>
-                  <button 
-                    onClick={() => cancelBrandingSection(['avatarPath'])} 
-                    className="btn-secondary btn-small"
-                    disabled={savingBrandingSection === 'avatar'}
-                  >
-                    Cancel
-                  </button>
-                </div>
+                    >
+                      Cancel
+                    </button>
+                    <button 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        saveBrandingSection('Logo', ['avatarPath']);
+                      }}
+                      className="btn-primary btn-small"
+                      disabled={savingBrandingSection === 'avatar'}
+                    >
+                      {savingBrandingSection === 'avatar' ? 'Saving...' : 'Save'}
+                    </button>
+                  </div>
+                )}
               </div>
 
               <div className="branding-group">
@@ -1535,22 +1615,24 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
                   placeholder="Your site name"
                   disabled={savingBrandingSection === 'siteName'}
                 />
-                <div className="section-button-group">
-                  <button 
-                    onClick={() => saveBrandingSection('Site Name', ['siteName'])} 
-                    className="btn-primary btn-small"
-                    disabled={savingBrandingSection === 'siteName'}
-                  >
-                    {savingBrandingSection === 'siteName' ? 'Saving...' : 'Save'}
-                  </button>
-                  <button 
-                    onClick={() => cancelBrandingSection(['siteName'])} 
-                    className="btn-secondary btn-small"
-                    disabled={savingBrandingSection === 'siteName'}
-                  >
-                    Cancel
-                  </button>
-                </div>
+                {hasBrandingChanges(['siteName']) && (
+                  <div className="section-button-group">
+                    <button 
+                      onClick={() => cancelBrandingSection(['siteName'])} 
+                      className="btn-secondary btn-small"
+                      disabled={savingBrandingSection === 'siteName'}
+                    >
+                      Cancel
+                    </button>
+                    <button 
+                      onClick={() => saveBrandingSection('Site Name', ['siteName'])} 
+                      className="btn-primary btn-small"
+                      disabled={savingBrandingSection === 'siteName'}
+                    >
+                      {savingBrandingSection === 'siteName' ? 'Saving...' : 'Save'}
+                    </button>
+                  </div>
+                )}
               </div>
 
               <div className="branding-group">
@@ -1576,22 +1658,24 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
                     disabled={savingBrandingSection === 'primaryColor'}
                   />
                 </div>
-                <div className="section-button-group">
-                  <button 
-                    onClick={() => saveBrandingSection('Primary Color', ['primaryColor'])} 
-                    className="btn-primary btn-small"
-                    disabled={savingBrandingSection === 'primaryColor'}
-                  >
-                    {savingBrandingSection === 'primaryColor' ? 'Saving...' : 'Save'}
-                  </button>
-                  <button 
-                    onClick={() => cancelBrandingSection(['primaryColor'])} 
-                    className="btn-secondary btn-small"
-                    disabled={savingBrandingSection === 'primaryColor'}
-                  >
-                    Cancel
-                  </button>
-                </div>
+                {hasBrandingChanges(['primaryColor']) && (
+                  <div className="section-button-group">
+                    <button 
+                      onClick={() => cancelBrandingSection(['primaryColor'])} 
+                      className="btn-secondary btn-small"
+                      disabled={savingBrandingSection === 'primaryColor'}
+                    >
+                      Cancel
+                    </button>
+                    <button 
+                      onClick={() => saveBrandingSection('Primary Color', ['primaryColor'])} 
+                      className="btn-primary btn-small"
+                      disabled={savingBrandingSection === 'primaryColor'}
+                    >
+                      {savingBrandingSection === 'primaryColor' ? 'Saving...' : 'Save'}
+                    </button>
+                  </div>
+                )}
               </div>
 
               <div className="branding-group">
@@ -1617,22 +1701,24 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
                     disabled={savingBrandingSection === 'secondaryColor'}
                   />
                 </div>
-                <div className="section-button-group">
-                  <button 
-                    onClick={() => saveBrandingSection('Secondary Color', ['secondaryColor'])} 
-                    className="btn-primary btn-small"
-                    disabled={savingBrandingSection === 'secondaryColor'}
-                  >
-                    {savingBrandingSection === 'secondaryColor' ? 'Saving...' : 'Save'}
-                  </button>
-                  <button 
-                    onClick={() => cancelBrandingSection(['secondaryColor'])} 
-                    className="btn-secondary btn-small"
-                    disabled={savingBrandingSection === 'secondaryColor'}
-                  >
-                    Cancel
-                  </button>
-                </div>
+                {hasBrandingChanges(['secondaryColor']) && (
+                  <div className="section-button-group">
+                    <button 
+                      onClick={() => cancelBrandingSection(['secondaryColor'])} 
+                      className="btn-secondary btn-small"
+                      disabled={savingBrandingSection === 'secondaryColor'}
+                    >
+                      Cancel
+                    </button>
+                    <button 
+                      onClick={() => saveBrandingSection('Secondary Color', ['secondaryColor'])} 
+                      className="btn-primary btn-small"
+                      disabled={savingBrandingSection === 'secondaryColor'}
+                    >
+                      {savingBrandingSection === 'secondaryColor' ? 'Saving...' : 'Save'}
+                    </button>
+                  </div>
+                )}
               </div>
 
               <div className="branding-group">
@@ -1647,22 +1733,24 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
                   rows={3}
                   disabled={savingBrandingSection === 'metaDescription'}
                 />
-                <div className="section-button-group">
-                  <button 
-                    onClick={() => saveBrandingSection('Meta Description', ['metaDescription'])} 
-                    className="btn-primary btn-small"
-                    disabled={savingBrandingSection === 'metaDescription'}
-                  >
-                    {savingBrandingSection === 'metaDescription' ? 'Saving...' : 'Save'}
-                  </button>
-                  <button 
-                    onClick={() => cancelBrandingSection(['metaDescription'])} 
-                    className="btn-secondary btn-small"
-                    disabled={savingBrandingSection === 'metaDescription'}
-                  >
-                    Cancel
-                  </button>
-                </div>
+                {hasBrandingChanges(['metaDescription']) && (
+                  <div className="section-button-group">
+                    <button 
+                      onClick={() => cancelBrandingSection(['metaDescription'])} 
+                      className="btn-secondary btn-small"
+                      disabled={savingBrandingSection === 'metaDescription'}
+                    >
+                      Cancel
+                    </button>
+                    <button 
+                      onClick={() => saveBrandingSection('Meta Description', ['metaDescription'])} 
+                      className="btn-primary btn-small"
+                      disabled={savingBrandingSection === 'metaDescription'}
+                    >
+                      {savingBrandingSection === 'metaDescription' ? 'Saving...' : 'Save'}
+                    </button>
+                  </div>
+                )}
               </div>
 
               <div className="branding-group">
@@ -1677,22 +1765,24 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
                   rows={3}
                   disabled={savingBrandingSection === 'metaKeywords'}
                 />
-                <div className="section-button-group">
-                  <button 
-                    onClick={() => saveBrandingSection('Meta Keywords', ['metaKeywords'])} 
-                    className="btn-primary btn-small"
-                    disabled={savingBrandingSection === 'metaKeywords'}
-                  >
-                    {savingBrandingSection === 'metaKeywords' ? 'Saving...' : 'Save'}
-                  </button>
-                  <button 
-                    onClick={() => cancelBrandingSection(['metaKeywords'])} 
-                    className="btn-secondary btn-small"
-                    disabled={savingBrandingSection === 'metaKeywords'}
-                  >
-                    Cancel
-                  </button>
-                </div>
+                {hasBrandingChanges(['metaKeywords']) && (
+                  <div className="section-button-group">
+                    <button 
+                      onClick={() => cancelBrandingSection(['metaKeywords'])} 
+                      className="btn-secondary btn-small"
+                      disabled={savingBrandingSection === 'metaKeywords'}
+                    >
+                      Cancel
+                    </button>
+                    <button 
+                      onClick={() => saveBrandingSection('Meta Keywords', ['metaKeywords'])} 
+                      className="btn-primary btn-small"
+                      disabled={savingBrandingSection === 'metaKeywords'}
+                    >
+                      {savingBrandingSection === 'metaKeywords' ? 'Saving...' : 'Save'}
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           </div>
