@@ -874,7 +874,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     }, 1000);
   };
 
-  const handleShuffleMouseUp = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleShuffleMouseUp = () => {
     handleShuffleEnd();
   };
 
