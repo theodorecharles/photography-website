@@ -1271,6 +1271,56 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
     }
   };
 
+  // Auto-save handler for OpenObserve toggle
+  const handleToggleOpenObserve = async () => {
+    if (!config) return;
+
+    const newValue = !config.analytics.openobserve.enabled;
+
+    // Optimistically update UI
+    const newConfig = {
+      ...config,
+      analytics: {
+        ...config.analytics,
+        openobserve: {
+          ...config.analytics.openobserve,
+          enabled: newValue,
+        },
+      },
+    };
+    setConfig(newConfig);
+
+    try {
+      const res = await fetch(`${API_URL}/api/config`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(newConfig),
+      });
+
+      if (res.ok) {
+        // Update original config to match
+        setOriginalConfig(structuredClone(newConfig));
+        setMessage({
+          type: "success",
+          text: `OpenObserve integration ${newValue ? "enabled" : "disabled"}`,
+        });
+      } else {
+        const error = await res.json();
+        setMessage({
+          type: "error",
+          text: error.error || "Failed to update setting",
+        });
+        // Revert on error
+        setConfig(config);
+      }
+    } catch (err) {
+      setMessage({ type: "error", text: "Network error occurred" });
+      // Revert on error
+      setConfig(config);
+    }
+  };
+
   const updateArrayItem = (path: string[], index: number, value: string) => {
     if (!config) return;
 
@@ -3316,19 +3366,62 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
 
                 <div className="branding-group full-width">
                   <label className="branding-label">
-                    <input
-                      type="checkbox"
-                      checked={config.analytics.openobserve.enabled}
-                      onChange={(e) =>
-                        updateConfig(
-                          ["analytics", "openobserve", "enabled"],
-                          e.target.checked
-                        )
-                      }
-                      style={{ marginRight: "0.5rem" }}
-                    />
                     Enable OpenObserve Integration
                   </label>
+                  <div className="ai-toggle-container">
+                    <div className="ai-toggle-controls">
+                      <button
+                        type="button"
+                        onClick={handleToggleOpenObserve}
+                        className={`toggle-button ${
+                          config.analytics.openobserve.enabled ? "active" : ""
+                        }`}
+                        style={{
+                          width: "48px",
+                          height: "24px",
+                          borderRadius: "12px",
+                          border: "none",
+                          cursor: "pointer",
+                          position: "relative",
+                          transition: "background-color 0.2s",
+                          backgroundColor: config.analytics.openobserve.enabled
+                            ? "var(--primary-color)"
+                            : "rgba(255, 255, 255, 0.1)",
+                          flexShrink: 0,
+                        }}
+                      >
+                        <span
+                          style={{
+                            position: "absolute",
+                            top: "2px",
+                            left: config.analytics.openobserve.enabled
+                              ? "26px"
+                              : "2px",
+                            width: "20px",
+                            height: "20px",
+                            borderRadius: "50%",
+                            backgroundColor: "white",
+                            transition: "left 0.2s",
+                            boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
+                          }}
+                        />
+                      </button>
+                      <span
+                        style={{
+                          color: config.analytics.openobserve.enabled
+                            ? "var(--primary-color)"
+                            : "#888",
+                          fontSize: "0.9rem",
+                          fontWeight: 600,
+                          flexShrink: 0,
+                        }}
+                      >
+                        {config.analytics.openobserve.enabled
+                          ? "Enabled"
+                          : "Disabled"}
+                      </span>
+                    </div>
+                  </div>
                 </div>
 
                 {config.analytics.openobserve.enabled && (
