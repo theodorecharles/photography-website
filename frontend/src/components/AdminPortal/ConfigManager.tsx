@@ -2153,7 +2153,6 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
             {/* Danger Zone Warning */}
             <div
               style={{
-                marginTop: "1rem",
                 marginBottom: "2rem",
                 padding: "1rem 1.5rem",
                 background:
