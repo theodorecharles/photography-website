@@ -15,13 +15,15 @@ A modern, secure photography portfolio website built with React 19, TypeScript, 
 - 📱 **Fully Responsive** - Beautiful on all devices
 - 🔐 **Google OAuth Admin** - Secure admin panel with email whitelist
 - 🎨 **Visual Branding Manager** - Customize colors, meta tags, and avatar via UI
-- 📊 **Analytics Dashboard** - Built-in OpenObserve integration with recharts
+- 📊 **Analytics Dashboard** - Built-in OpenObserve integration with recharts and visitor map
 - 🔗 **Links Manager** - Configure external navigation links
 - 🖼️ **Photo Upload** - Upload up to 20 photos with automatic optimization
 - 🤖 **AI Title Generation** - Optional OpenAI integration for photo descriptions
 - 🔍 **SEO Optimized** - Dynamic sitemap, meta tags, structured data
 - 🔒 **Security Hardened** - CSRF protection, rate limiting, input validation
 - 📲 **Telegram Notifications** - Deployment status alerts via Telegram bot
+- 🔗 **Share Links** - Generate shareable album links with optional expiration
+- 👁️ **Password Visibility Toggle** - Eye icon to view/copy sensitive settings
 
 ---
 
@@ -140,10 +142,11 @@ cd frontend && npm run dev
 
 Access at `/admin` → Sign in with Google → Manage everything:
 
-- **Albums Tab** - Create/delete albums, upload photos
+- **Albums Tab** - Create/delete albums, upload photos, generate share links
 - **Links Tab** - Manage external navigation links
 - **Branding Tab** - Customize colors, site name, avatar
-- **Metrics Tab** - View analytics and charts
+- **Metrics Tab** - View analytics, charts, and visitor location map
+- **Settings Tab** - Configure OpenAI, optimization, analytics, and authentication
 
 ![Admin interface](screenshots/Admin%20interface%20showing%20album%20management.png)
 
