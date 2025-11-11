@@ -604,6 +604,10 @@
     font-size: 0.85rem;
   }
 
+  .admin-header .btn-logout svg {
+    display: none;
+  }
+
   .admin-header .admin-tabs {
     position: static;
     transform: none;
@@ -620,6 +624,10 @@
     padding: 0.5rem 0.75rem;
     font-size: 0.85rem;
     white-space: nowrap;
+  }
+
+  .tab-button svg {
+    display: none;
   }
 
   .admin-footer {
