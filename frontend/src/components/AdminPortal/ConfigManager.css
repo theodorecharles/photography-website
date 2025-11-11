@@ -324,11 +324,12 @@
 
 .sse-toaster.expanded {
   height: auto;
-  max-height: 600px;
+  max-height: none;
 }
 
 .sse-toaster.collapsed {
   height: auto;
+  max-height: none;
 }
 
 .sse-toaster-header {

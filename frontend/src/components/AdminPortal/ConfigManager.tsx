@@ -239,6 +239,19 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
   // originalBranding while the user is editing, making save/cancel buttons disappear.
   // originalBranding is updated manually after successful saves in saveBrandingSection().
 
+  // Disable page scrolling when toaster is maximized
+  useEffect(() => {
+    if (isToasterMaximized) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isToasterMaximized]);
+
   // Function to scroll to and highlight OpenAI API key input
   const handleSetupOpenAI = () => {
     // Expand the OpenAI section
