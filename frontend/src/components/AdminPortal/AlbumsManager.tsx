@@ -15,6 +15,7 @@ import {
 import { cacheBustValue } from '../../config';
 import { fetchWithRateLimitCheck } from '../../utils/fetchWrapper';
 import './AlbumsManager.css';
+import './PhotoOrderControls.css';
 import {
   DndContext,
   closestCenter,
@@ -69,6 +70,44 @@ const SortableAlbumCard: React.FC<SortableAlbumCardProps> = ({
     isDragging,
   } = useSortable({ id: album.name });
 
+  const touchStartPos = useRef<{ x: number; y: number } | null>(null);
+  const hasMoved = useRef(false);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    const touch = e.touches[0];
+    touchStartPos.current = { x: touch.clientX, y: touch.clientY };
+    hasMoved.current = false;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!touchStartPos.current) return;
+    
+    const touch = e.touches[0];
+    const deltaX = Math.abs(touch.clientX - touchStartPos.current.x);
+    const deltaY = Math.abs(touch.clientY - touchStartPos.current.y);
+    
+    // If moved more than 5px, mark as scrolling/dragging
+    if (deltaX > 5 || deltaY > 5) {
+      hasMoved.current = true;
+    }
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    // Only trigger onClick if it was a tap without movement
+    if (touchStartPos.current && !hasMoved.current) {
+      e.preventDefault(); // Prevent click event from firing
+      onClick();
+    }
+    touchStartPos.current = null;
+    hasMoved.current = false;
+  };
+
+  const handleClick = (e: React.MouseEvent) => {
+    // For desktop only - don't fire if touch already handled it
+    if (e.detail === 0) return; // Triggered by keyboard or already prevented
+    onClick();
+  };
+
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
@@ -80,7 +119,10 @@ const SortableAlbumCard: React.FC<SortableAlbumCardProps> = ({
       ref={setNodeRef}
       style={style}
       className={`album-card ${isSelected ? 'selected' : ''} ${album.published === false ? 'unpublished' : ''} ${isAnimating ? 'animating' : ''} ${isDragging ? 'dragging' : ''} ${isDragOver ? 'drag-over-album' : ''}`}
-      onClick={onClick}
+      onClick={handleClick}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
       onDragOver={onDragOver}
       onDragLeave={onDragLeave}
       onDrop={onDrop}
@@ -112,22 +154,14 @@ const SortableAlbumCard: React.FC<SortableAlbumCardProps> = ({
 // Sortable Photo Item Component
 interface SortablePhotoItemProps {
   photo: Photo;
-  index: number;
   onEdit: (photo: Photo) => void;
   onDelete: (album: string, filename: string, title: string) => void;
-  onMoveUp: (index: number) => void;
-  onMoveDown: (index: number) => void;
-  totalPhotos: number;
 }
 
 const SortablePhotoItem: React.FC<SortablePhotoItemProps> = ({
   photo,
-  index,
   onEdit,
   onDelete,
-  onMoveUp,
-  onMoveDown,
-  totalPhotos,
 }) => {
   const {
     attributes,
@@ -137,6 +171,70 @@ const SortablePhotoItem: React.FC<SortablePhotoItemProps> = ({
     transition,
     isDragging,
   } = useSortable({ id: photo.id });
+
+  const [showOverlay, setShowOverlay] = useState(false);
+  const touchStartPos = useRef<{ x: number; y: number } | null>(null);
+  const hasMoved = useRef(false);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    const touch = e.touches[0];
+    touchStartPos.current = { x: touch.clientX, y: touch.clientY };
+    hasMoved.current = false;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!touchStartPos.current) return;
+    
+    const touch = e.touches[0];
+    const deltaX = Math.abs(touch.clientX - touchStartPos.current.x);
+    const deltaY = Math.abs(touch.clientY - touchStartPos.current.y);
+    
+    // If moved more than 5px, mark as scrolling/dragging
+    if (deltaX > 5 || deltaY > 5) {
+      hasMoved.current = true;
+      setShowOverlay(false); // Hide overlay if user starts scrolling/dragging
+    }
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    // Only act if it was a tap without movement
+    if (touchStartPos.current && !hasMoved.current) {
+      e.preventDefault(); // Prevent ghost clicks
+      
+      // Check if tap hit a button
+      const target = e.target as HTMLElement;
+      const clickedButton = target.closest('.btn-edit-photo, .btn-delete-photo');
+      
+      if (clickedButton) {
+        // Tapped a button - let the button handler deal with it
+        // Don't change overlay state
+      } else if (showOverlay) {
+        // Overlay is showing and tapped elsewhere - hide it
+        setShowOverlay(false);
+      } else {
+        // Overlay is hidden - show it
+        setShowOverlay(true);
+      }
+    }
+    touchStartPos.current = null;
+    hasMoved.current = false;
+  };
+
+  const handleTouchCancel = () => {
+    touchStartPos.current = null;
+    hasMoved.current = false;
+    setShowOverlay(false);
+  };
+
+  // Close overlay when clicking outside buttons (desktop)
+  const handleOverlayClick = (e: React.MouseEvent) => {
+    const target = e.target as HTMLElement;
+    // Close if clicked overlay itself or anything except the buttons
+    if (!target.closest('.btn-edit-photo, .btn-delete-photo')) {
+      setShowOverlay(false);
+    }
+  };
+
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -150,7 +248,11 @@ const SortablePhotoItem: React.FC<SortablePhotoItemProps> = ({
     <div
       ref={setNodeRef}
       style={style}
-      className={`admin-photo-item ${isDragging ? 'dragging' : ''}`}
+      className={`admin-photo-item ${isDragging ? 'dragging' : ''} ${showOverlay ? 'show-overlay' : ''}`}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      onTouchCancel={handleTouchCancel}
       {...attributes}
       {...listeners}
     >
@@ -160,35 +262,7 @@ const SortablePhotoItem: React.FC<SortablePhotoItemProps> = ({
         className="admin-photo-thumbnail"
       />
 
-      {/* Reorder controls (mobile) */}
-      <div className="photo-reorder-controls-mobile">
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onMoveUp(index);
-          }}
-          disabled={index === 0}
-          className="btn-reorder-mobile"
-          title="Move up"
-          type="button"
-        >
-          ↑
-        </button>
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onMoveDown(index);
-          }}
-          disabled={index === totalPhotos - 1}
-          className="btn-reorder-mobile"
-          title="Move down"
-          type="button"
-        >
-          ↓
-        </button>
-      </div>
-
-      <div className="photo-overlay">
+      <div className="photo-overlay" onClick={handleOverlayClick}>
         <div className="photo-actions">
           <button
             onClick={(e) => {
@@ -272,6 +346,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   const [savingOrder, setSavingOrder] = useState(false);
   const [hasEverDragged, setHasEverDragged] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [isShuffling, setIsShuffling] = useState(false);
   
   // State for drag-and-drop on album tiles
   const [dragOverAlbum, setDragOverAlbum] = useState<string | null>(null);
@@ -287,7 +362,8 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   const photoSensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 8, // Require 8px movement before drag starts
+        delay: 300, // Require 300ms hold before drag starts (increased from 250ms)
+        tolerance: 8, // Allow 8px movement during the delay (increased from 5px)
       },
     }),
     useSensor(KeyboardSensor, {
@@ -299,7 +375,8 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   const albumSensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 8,
+        delay: 300, // Require 300ms hold before drag starts (increased from 250ms)
+        tolerance: 8, // Allow 8px movement during the delay (increased from 5px)
       },
     }),
     useSensor(KeyboardSensor, {
@@ -384,6 +461,9 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   const handlePhotoDragStart = (event: DragEndEvent) => {
     setHasEverDragged(true); // Mark that user has started dragging
     setActiveId(event.active.id as string);
+    // Prevent scrolling during drag on mobile
+    document.body.style.overflow = 'hidden';
+    document.body.style.touchAction = 'none';
   };
 
   // Handle drag end for photos
@@ -400,11 +480,17 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     }
     
     setActiveId(null);
+    // Re-enable scrolling after drag
+    document.body.style.overflow = '';
+    document.body.style.touchAction = '';
   };
 
   // Handle drag start for albums
   const handleAlbumDragStart = (event: DragEndEvent) => {
     setActiveAlbumId(event.active.id as string);
+    // Prevent scrolling during drag on mobile
+    document.body.style.overflow = 'hidden';
+    document.body.style.touchAction = 'none';
   };
 
   // Handle drag end for albums with auto-save
@@ -412,6 +498,9 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     const { active, over } = event;
     
     setActiveAlbumId(null);
+    // Re-enable scrolling after drag
+    document.body.style.overflow = '';
+    document.body.style.touchAction = '';
 
     if (over && active.id !== over.id) {
       const oldIndex = localAlbums.findIndex((album) => album.name === active.id);
@@ -445,6 +534,9 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
 
         // Success! Sync parent state with database
         await loadAlbums();
+        
+        // Dispatch global event to update navigation dropdown
+        window.dispatchEvent(new Event('albums-updated'));
       } catch (error) {
         console.error('Error saving album order:', error);
         setMessage({ type: 'error', text: 'Failed to save album order' });
@@ -625,23 +717,6 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     }
   };
 
-  // Handle move up (mobile)
-  const handleMovePhotoUp = (index: number) => {
-    if (index === 0) return;
-    setHasEverDragged(true); // Mark that user has reordered
-    const newPhotos = [...albumPhotos];
-    [newPhotos[index - 1], newPhotos[index]] = [newPhotos[index], newPhotos[index - 1]];
-    setAlbumPhotos(newPhotos);
-  };
-
-  // Handle move down (mobile)
-  const handleMovePhotoDown = (index: number) => {
-    if (index === albumPhotos.length - 1) return;
-    setHasEverDragged(true); // Mark that user has reordered
-    const newPhotos = [...albumPhotos];
-    [newPhotos[index], newPhotos[index + 1]] = [newPhotos[index + 1], newPhotos[index]];
-    setAlbumPhotos(newPhotos);
-  };
 
   // Save photo order
   const handleSavePhotoOrder = async () => {
@@ -687,13 +762,15 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   const shuffleButtonRef = useRef<HTMLButtonElement | null>(null);
 
   // Speed up animation when button is pressed and start shuffling
-  const handleShuffleMouseDown = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleShuffleStart = () => {
     if (savingOrder) return;
     
     setHasEverDragged(true); // Mark that user has reordered
+    setIsShuffling(true); // Mark shuffling state for mobile grid scaling
     
-    const button = e.currentTarget;
-    shuffleButtonRef.current = button;
+    const button = shuffleButtonRef.current;
+    if (!button) return;
+    
     button.classList.add('shuffling-active');
     
     // Add zoom class to all photos during shuffle
@@ -756,9 +833,15 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     }
   };
 
+  const handleShuffleMouseDown = (e: React.MouseEvent<HTMLButtonElement>) => {
+    shuffleButtonRef.current = e.currentTarget;
+    handleShuffleStart();
+  };
+
   // Stop shuffling and slow down animation when button is released
-  const handleShuffleMouseUp = (e: React.MouseEvent<HTMLButtonElement>) => {
-    const button = e.currentTarget;
+  const handleShuffleEnd = () => {
+    const button = shuffleButtonRef.current;
+    if (!button) return;
     
     // Clear all speedup timeouts
     speedupTimeoutsRef.current.forEach(timeout => clearTimeout(timeout));
@@ -790,7 +873,12 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
       button.classList.remove('shuffling-slowing');
       button.style.removeProperty('--animation-speed');
       shuffleButtonRef.current = null;
+      setIsShuffling(false); // End shuffling state
     }, 1000);
+  };
+
+  const handleShuffleMouseUp = () => {
+    handleShuffleEnd();
   };
 
   // Cleanup on unmount
@@ -1525,8 +1613,21 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                 </div>
                 
                 {hasOrderChanged() && (
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '1rem' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  <div className="photo-order-controls">
+                    <div className="photo-order-row photo-order-row-primary">
+                      <span className="unsaved-indicator">
+                        Unsaved changes
+                      </span>
+                      <button
+                        onClick={handleSavePhotoOrder}
+                        disabled={savingOrder}
+                        className="btn-action btn-save-order"
+                        title="Save photo order"
+                      >
+                        {savingOrder ? 'Saving...' : 'Save Order'}
+                      </button>
+                    </div>
+                    <div className="photo-order-row photo-order-row-secondary">
                       <button
                         onClick={handleCancelPhotoOrder}
                         disabled={savingOrder}
@@ -1539,6 +1640,15 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                         onMouseDown={handleShuffleMouseDown}
                         onMouseUp={handleShuffleMouseUp}
                         onMouseLeave={handleShuffleMouseUp}
+                        onTouchStart={(e) => {
+                          e.preventDefault();
+                          shuffleButtonRef.current = e.currentTarget;
+                          handleShuffleStart();
+                        }}
+                        onTouchEnd={(e) => {
+                          e.preventDefault();
+                          handleShuffleEnd();
+                        }}
                         disabled={savingOrder}
                         className="btn-action btn-shuffle-order"
                         title="Hold to shuffle photos"
@@ -1561,24 +1671,6 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                           <line x1="4" y1="4" x2="9" y2="9"></line>
                         </svg>
                         Shuffle
-                      </button>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                      <span className="unsaved-indicator">
-                        Unsaved changes
-                      </span>
-                      <button
-                        onClick={handleSavePhotoOrder}
-                        disabled={savingOrder}
-                        className="btn-action btn-save-order"
-                        title="Save photo order"
-                        style={{ 
-                          background: 'linear-gradient(135deg, var(--primary-color), color-mix(in srgb, var(--primary-color) 80%, white))',
-                          color: '#000',
-                          fontWeight: 600
-                        }}
-                      >
-                        {savingOrder ? 'Saving...' : 'Save Order'}
                       </button>
                     </div>
                   </div>
@@ -1654,7 +1746,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                   onDragStart={handlePhotoDragStart}
                   onDragEnd={handlePhotoDragEnd}
                 >
-                  <div className="photos-grid">
+                  <div className={`photos-grid ${isShuffling ? 'shuffling-grid' : ''}`}>
                     {/* Show uploading images first */}
                     {uploadingImages.map((img, idx) => (
                     <div key={`uploading-${idx}`} className="admin-photo-item uploading-photo-item">
@@ -1749,16 +1841,12 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                     
                     {/* Show existing album photos with drag and drop */}
                     <SortableContext items={albumPhotos.map(p => p.id)} strategy={rectSortingStrategy}>
-                      {albumPhotos.map((photo, index) => (
+                      {albumPhotos.map((photo) => (
                         <SortablePhotoItem
                           key={photo.id}
                           photo={photo}
-                          index={index}
                           onEdit={handleOpenEditModal}
                           onDelete={handleDeletePhoto}
-                          onMoveUp={handleMovePhotoUp}
-                          onMoveDown={handleMovePhotoDown}
-                          totalPhotos={albumPhotos.length}
                         />
                       ))}
                     </SortableContext>

@@ -1,0 +1,61 @@
+/* Photo Order Controls Stacking */
+.photo-order-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+.photo-order-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.photo-order-row-primary {
+  justify-content: space-between;
+}
+
+.photo-order-row-secondary {
+  justify-content: flex-start;
+}
+
+/* Desktop: single row layout */
+@media (min-width: 769px) {
+  .photo-order-controls {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .photo-order-row {
+    flex: 0 0 auto;
+  }
+}
+
+/* Mobile: use grid for exact alignment */
+@media (max-width: 768px) {
+  .photo-order-controls {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  
+  .photo-order-row-primary,
+  .photo-order-row-secondary {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    width: 100%;
+  }
+  
+  .photo-order-row-primary .unsaved-indicator {
+    text-align: left;
+    display: flex;
+    align-items: center;
+  }
+}
