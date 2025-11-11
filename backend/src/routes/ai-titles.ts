@@ -124,6 +124,8 @@ router.post('/generate', requireAuth, (req, res) => {
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
+    res.setHeader('X-Accel-Buffering', 'no'); // Disable proxy buffering
+    res.setTimeout(0); // Disable timeout for this response
     
     // Send all previous output
     runningJobs.aiTitles.output.forEach(line => {
@@ -156,6 +158,8 @@ router.post('/generate', requireAuth, (req, res) => {
   res.setHeader('Content-Type', 'text/event-stream');
   res.setHeader('Cache-Control', 'no-cache');
   res.setHeader('Connection', 'keep-alive');
+  res.setHeader('X-Accel-Buffering', 'no'); // Disable proxy buffering
+  res.setTimeout(0); // Disable timeout for this response
 
   // Get the project root directory (3 levels up from this file)
   const projectRoot = path.resolve(__dirname, '../../..');

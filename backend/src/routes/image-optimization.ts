@@ -189,6 +189,8 @@ router.post('/optimize', requireAuth, (req, res) => {
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
+    res.setHeader('X-Accel-Buffering', 'no'); // Disable proxy buffering
+    res.setTimeout(0); // Disable timeout for this response
     res.flushHeaders();
     
     // Send all previous output
@@ -222,6 +224,8 @@ router.post('/optimize', requireAuth, (req, res) => {
   res.setHeader('Content-Type', 'text/event-stream');
   res.setHeader('Cache-Control', 'no-cache');
   res.setHeader('Connection', 'keep-alive');
+  res.setHeader('X-Accel-Buffering', 'no'); // Disable proxy buffering
+  res.setTimeout(0); // Disable timeout for this response
   res.flushHeaders();
   
   // Send initial connection message
