@@ -8,8 +8,6 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { API_URL } from '../../config';
 import './AdminPortal.css';
 import { AuthStatus, ExternalLink, BrandingConfig, Album, Tab } from './types';
-import LinksManager from './LinksManager';
-import BrandingManager from './BrandingManager';
 import AlbumsManager from './AlbumsManager';
 import Metrics from './Metrics/Metrics';
 import ConfigManager from './ConfigManager';
