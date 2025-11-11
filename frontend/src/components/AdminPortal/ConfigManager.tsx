@@ -96,6 +96,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
 }) => {
   const [config, setConfig] = useState<ConfigData | null>(null);
   const [originalConfig, setOriginalConfig] = useState<ConfigData | null>(null);
+  const [originalExternalLinks, setOriginalExternalLinks] = useState<ExternalLink[]>([]);
   const [loading, setLoading] = useState(true);
   const [savingSection, setSavingSection] = useState<string | null>(null);
   const [generatingTitles, setGeneratingTitles] = useState(false);
@@ -163,6 +164,11 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
       delete (window as any).__modalResolve;
     }
   };
+
+  // Track original external links when they change from parent
+  useEffect(() => {
+    setOriginalExternalLinks(JSON.parse(JSON.stringify(externalLinks)));
+  }, [externalLinks.length]); // Only update when length changes to avoid infinite loops
 
   // Function to scroll to and highlight OpenAI API key input
   const handleSetupOpenAI = () => {
@@ -571,6 +577,12 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
       default:
         return false;
     }
+  };
+
+  const hasUnsavedLinksChanges = (): boolean => {
+    return (
+      JSON.stringify(externalLinks) !== JSON.stringify(originalExternalLinks)
+    );
   };
 
   // Validate OpenAI API key
@@ -1018,18 +1030,9 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
     setExternalLinks(newLinks);
   };
 
-  const handleCancelLinks = async () => {
-    try {
-      const res = await fetch(`${API_URL}/api/external-links`, {
-        credentials: "include",
-      });
-      const data = await res.json();
-      setExternalLinks(data.links || []);
-      setMessage({ type: "success", text: "Changes cancelled" });
-    } catch (err) {
-      console.error("Failed to reload external links:", err);
-      setMessage({ type: "error", text: "Failed to cancel changes" });
-    }
+  const handleCancelLinks = () => {
+    setExternalLinks(JSON.parse(JSON.stringify(originalExternalLinks))); // Deep clone
+    setMessage({ type: "success", text: "Changes cancelled" });
   };
 
   const handleSaveLinks = async () => {
@@ -1046,6 +1049,8 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
       });
 
       if (res.ok) {
+        // Update original links after successful save
+        setOriginalExternalLinks(JSON.parse(JSON.stringify(externalLinks)));
         setMessage({
           type: "success",
           text: "External links saved successfully!",
@@ -1659,20 +1664,24 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
               <button onClick={handleAddLink} className="btn-secondary">
                 + Add Link
               </button>
-              <button
-                onClick={handleCancelLinks}
-                className="btn-secondary"
-                disabled={savingLinks}
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleSaveLinks}
-                className="btn-primary"
-                disabled={savingLinks}
-              >
-                {savingLinks ? "Saving..." : "Save Changes"}
-              </button>
+              {hasUnsavedLinksChanges() && (
+                <>
+                  <button
+                    onClick={handleCancelLinks}
+                    className="btn-secondary"
+                    disabled={savingLinks}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleSaveLinks}
+                    className="btn-primary"
+                    disabled={savingLinks}
+                  >
+                    {savingLinks ? "Saving..." : "Save Changes"}
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </div>
