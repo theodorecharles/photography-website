@@ -172,7 +172,16 @@ export default function AdminPortal() {
     return (
       <div className="admin-portal">
         <div className="admin-container">
-          <div className="loading-container">
+          <div
+            className="loading-container"
+            style={{
+              minHeight: "400px",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
             <div className="loading-spinner"></div>
             <p>Loading site settings...</p>
           </div>
