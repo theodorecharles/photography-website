@@ -1595,6 +1595,11 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                     }}
                     className="btn-action btn-share btn-action-item"
                     title="Generate share link for album"
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.5rem'
+                    }}
                   >
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <circle cx="18" cy="5" r="3"/>
