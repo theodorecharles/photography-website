@@ -654,8 +654,15 @@
 
 @media (max-width: 768px) {
   .photos-grid {
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    grid-template-columns: repeat(2, 1fr);
     gap: 1rem;
+  }
+  
+  /* Scale down to 8 columns when shuffling on mobile */
+  .photos-grid.shuffling-grid {
+    grid-template-columns: repeat(8, 1fr);
+    gap: 0.25rem;
+    transition: all 0.3s ease;
   }
 }
 
