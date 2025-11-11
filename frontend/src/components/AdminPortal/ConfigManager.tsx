@@ -1093,190 +1093,232 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
 
         {/* Image Optimization Settings */}
         <div className="config-group full-width">
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginBottom: "0.5rem",
-            }}
-          >
-            <h3 className="config-section-title" style={{ margin: 0 }}>
-              Image Optimization
-            </h3>
-            <div
-              style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}
-            >
-              {hasUnsavedChanges("Image Optimization") && (
-                <span className="unsaved-indicator">Unsaved changes</span>
-              )}
-              <button
-                type="button"
-                onClick={() => handleSaveSection("Image Optimization")}
-                disabled={savingSection !== null}
-                className="btn-primary"
-                style={{ padding: "0.5rem 1rem", fontSize: "0.9rem" }}
-              >
-                {savingSection === "Image Optimization" ? "Saving..." : "Save"}
-              </button>
-            </div>
-          </div>
+          <h3 className="config-section-title" style={{ margin: 0, marginBottom: "0.5rem" }}>
+            Image Optimization
+          </h3>
           <p className="config-section-description">
             Control quality and dimensions for thumbnail, modal, and download
             versions of your images. Higher quality means larger file sizes.
           </p>
+          
+          {/* Grid of optimization subsections */}
           <div className="config-grid-inner">
-            <div className="branding-group">
-              <label className="branding-label">Thumbnail Quality</label>
-              <input
-                type="number"
-                value={config.environment.optimization.images.thumbnail.quality}
-                onChange={(e) =>
-                  updateConfig(
-                    [
-                      "environment",
-                      "optimization",
-                      "images",
-                      "thumbnail",
-                      "quality",
-                    ],
-                    parseInt(e.target.value)
-                  )
-                }
-                className="branding-input"
-                min="1"
-                max="100"
-              />
+            {/* Thumbnail Settings */}
+            <div className="openai-section">
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem" }}>
+                <label className="openai-section-label">THUMBNAIL</label>
+                {hasUnsavedChanges("Image Optimization") && (
+                  <button
+                    type="button"
+                    onClick={() => handleSaveSection("Image Optimization")}
+                    disabled={savingSection !== null}
+                    className="btn-primary"
+                    style={{ padding: "0.4rem 0.8rem", fontSize: "0.85rem" }}
+                  >
+                    {savingSection === "Image Optimization" ? "Saving..." : "Save"}
+                  </button>
+                )}
+              </div>
+              <div className="branding-group">
+                <label className="branding-label">Quality</label>
+                <input
+                  type="number"
+                  value={config.environment.optimization.images.thumbnail.quality}
+                  onChange={(e) =>
+                    updateConfig(
+                      [
+                        "environment",
+                        "optimization",
+                        "images",
+                        "thumbnail",
+                        "quality",
+                      ],
+                      parseInt(e.target.value)
+                    )
+                  }
+                  className="branding-input"
+                  min="1"
+                  max="100"
+                />
+              </div>
+              <div className="branding-group">
+                <label className="branding-label">Max Dimension</label>
+                <input
+                  type="number"
+                  value={
+                    config.environment.optimization.images.thumbnail.maxDimension
+                  }
+                  onChange={(e) =>
+                    updateConfig(
+                      [
+                        "environment",
+                        "optimization",
+                        "images",
+                        "thumbnail",
+                        "maxDimension",
+                      ],
+                      parseInt(e.target.value)
+                    )
+                  }
+                  className="branding-input"
+                />
+              </div>
             </div>
 
-            <div className="branding-group">
-              <label className="branding-label">Thumbnail Max Dimension</label>
-              <input
-                type="number"
-                value={
-                  config.environment.optimization.images.thumbnail.maxDimension
-                }
-                onChange={(e) =>
-                  updateConfig(
-                    [
-                      "environment",
-                      "optimization",
-                      "images",
-                      "thumbnail",
-                      "maxDimension",
-                    ],
-                    parseInt(e.target.value)
-                  )
-                }
-                className="branding-input"
-              />
+            {/* Modal Settings */}
+            <div className="openai-section">
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem" }}>
+                <label className="openai-section-label">MODAL</label>
+                {hasUnsavedChanges("Image Optimization") && (
+                  <button
+                    type="button"
+                    onClick={() => handleSaveSection("Image Optimization")}
+                    disabled={savingSection !== null}
+                    className="btn-primary"
+                    style={{ padding: "0.4rem 0.8rem", fontSize: "0.85rem" }}
+                  >
+                    {savingSection === "Image Optimization" ? "Saving..." : "Save"}
+                  </button>
+                )}
+              </div>
+              <div className="branding-group">
+                <label className="branding-label">Quality</label>
+                <input
+                  type="number"
+                  value={config.environment.optimization.images.modal.quality}
+                  onChange={(e) =>
+                    updateConfig(
+                      [
+                        "environment",
+                        "optimization",
+                        "images",
+                        "modal",
+                        "quality",
+                      ],
+                      parseInt(e.target.value)
+                    )
+                  }
+                  className="branding-input"
+                  min="1"
+                  max="100"
+                />
+              </div>
+              <div className="branding-group">
+                <label className="branding-label">Max Dimension</label>
+                <input
+                  type="number"
+                  value={
+                    config.environment.optimization.images.modal.maxDimension
+                  }
+                  onChange={(e) =>
+                    updateConfig(
+                      [
+                        "environment",
+                        "optimization",
+                        "images",
+                        "modal",
+                        "maxDimension",
+                      ],
+                      parseInt(e.target.value)
+                    )
+                  }
+                  className="branding-input"
+                />
+              </div>
             </div>
 
-            <div className="branding-group">
-              <label className="branding-label">Modal Quality</label>
-              <input
-                type="number"
-                value={config.environment.optimization.images.modal.quality}
-                onChange={(e) =>
-                  updateConfig(
-                    [
-                      "environment",
-                      "optimization",
-                      "images",
-                      "modal",
-                      "quality",
-                    ],
-                    parseInt(e.target.value)
-                  )
-                }
-                className="branding-input"
-                min="1"
-                max="100"
-              />
+            {/* Download Settings */}
+            <div className="openai-section">
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem" }}>
+                <label className="openai-section-label">DOWNLOAD</label>
+                {hasUnsavedChanges("Image Optimization") && (
+                  <button
+                    type="button"
+                    onClick={() => handleSaveSection("Image Optimization")}
+                    disabled={savingSection !== null}
+                    className="btn-primary"
+                    style={{ padding: "0.4rem 0.8rem", fontSize: "0.85rem" }}
+                  >
+                    {savingSection === "Image Optimization" ? "Saving..." : "Save"}
+                  </button>
+                )}
+              </div>
+              <div className="branding-group">
+                <label className="branding-label">Quality</label>
+                <input
+                  type="number"
+                  value={config.environment.optimization.images.download.quality}
+                  onChange={(e) =>
+                    updateConfig(
+                      [
+                        "environment",
+                        "optimization",
+                        "images",
+                        "download",
+                        "quality",
+                      ],
+                      parseInt(e.target.value)
+                    )
+                  }
+                  className="branding-input"
+                  min="1"
+                  max="100"
+                />
+              </div>
+              <div className="branding-group">
+                <label className="branding-label">Max Dimension</label>
+                <input
+                  type="number"
+                  value={
+                    config.environment.optimization.images.download.maxDimension
+                  }
+                  onChange={(e) =>
+                    updateConfig(
+                      [
+                        "environment",
+                        "optimization",
+                        "images",
+                        "download",
+                        "maxDimension",
+                      ],
+                      parseInt(e.target.value)
+                    )
+                  }
+                  className="branding-input"
+                />
+              </div>
             </div>
 
-            <div className="branding-group">
-              <label className="branding-label">Modal Max Dimension</label>
-              <input
-                type="number"
-                value={
-                  config.environment.optimization.images.modal.maxDimension
-                }
-                onChange={(e) =>
-                  updateConfig(
-                    [
-                      "environment",
-                      "optimization",
-                      "images",
-                      "modal",
-                      "maxDimension",
-                    ],
-                    parseInt(e.target.value)
-                  )
-                }
-                className="branding-input"
-              />
-            </div>
-
-            <div className="branding-group">
-              <label className="branding-label">Download Quality</label>
-              <input
-                type="number"
-                value={config.environment.optimization.images.download.quality}
-                onChange={(e) =>
-                  updateConfig(
-                    [
-                      "environment",
-                      "optimization",
-                      "images",
-                      "download",
-                      "quality",
-                    ],
-                    parseInt(e.target.value)
-                  )
-                }
-                className="branding-input"
-                min="1"
-                max="100"
-              />
-            </div>
-
-            <div className="branding-group">
-              <label className="branding-label">Download Max Dimension</label>
-              <input
-                type="number"
-                value={
-                  config.environment.optimization.images.download.maxDimension
-                }
-                onChange={(e) =>
-                  updateConfig(
-                    [
-                      "environment",
-                      "optimization",
-                      "images",
-                      "download",
-                      "maxDimension",
-                    ],
-                    parseInt(e.target.value)
-                  )
-                }
-                className="branding-input"
-              />
-            </div>
-
-            <div className="branding-group">
-              <label className="branding-label">Concurrency</label>
-              <input
-                type="number"
-                value={config.environment.optimization.concurrency}
-                onChange={(e) =>
-                  updateConfig(
-                    ["environment", "optimization", "concurrency"],
-                    parseInt(e.target.value)
-                  )
-                }
-                className="branding-input"
-              />
+            {/* Concurrency Settings */}
+            <div className="openai-section">
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem" }}>
+                <label className="openai-section-label">CONCURRENCY</label>
+                {hasUnsavedChanges("Image Optimization") && (
+                  <button
+                    type="button"
+                    onClick={() => handleSaveSection("Image Optimization")}
+                    disabled={savingSection !== null}
+                    className="btn-primary"
+                    style={{ padding: "0.4rem 0.8rem", fontSize: "0.85rem" }}
+                  >
+                    {savingSection === "Image Optimization" ? "Saving..." : "Save"}
+                  </button>
+                )}
+              </div>
+              <div className="branding-group">
+                <label className="branding-label">Max Parallel Jobs</label>
+                <input
+                  type="number"
+                  value={config.environment.optimization.concurrency}
+                  onChange={(e) =>
+                    updateConfig(
+                      ["environment", "optimization", "concurrency"],
+                      parseInt(e.target.value)
+                    )
+                  }
+                  className="branding-input"
+                />
+              </div>
             </div>
           </div>
 
