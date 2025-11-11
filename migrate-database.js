@@ -106,7 +106,28 @@ if (albumCount === 0) {
   console.log(`✓ Albums table already has ${albumCount} entries, skipping population`);
 }
 
-// Step 4: Verify image_metadata table exists
+// Step 4: Add sort_order column to albums table if it doesn't exist
+const tableInfo = db.pragma('table_info(albums)');
+const hasSortOrder = tableInfo.some((col) => col.name === 'sort_order');
+
+if (!hasSortOrder) {
+  console.log('✓ Adding sort_order column to albums table...');
+  db.exec(`ALTER TABLE albums ADD COLUMN sort_order INTEGER`);
+  
+  // Set initial sort order based on name (alphabetical)
+  const albums = db.prepare('SELECT id, name FROM albums ORDER BY name').all();
+  const updateStmt = db.prepare('UPDATE albums SET sort_order = ? WHERE id = ?');
+  
+  albums.forEach((album, index) => {
+    updateStmt.run(index, album.id);
+  });
+  
+  console.log(`✓ Added sort_order column and set initial order for ${albums.length} albums`);
+} else {
+  console.log('✓ Albums table already has sort_order column');
+}
+
+// Step 5: Verify image_metadata table exists
 db.exec(`
   CREATE TABLE IF NOT EXISTS image_metadata (
     id INTEGER PRIMARY KEY AUTOINCREMENT,

@@ -51,6 +51,7 @@ export interface Album {
   name: string;
   photoCount?: number;
   published?: boolean;
+  sort_order?: number | null;
 }
 
 export interface Photo {

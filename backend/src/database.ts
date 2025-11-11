@@ -281,6 +281,7 @@ export function getAllAlbums(): Array<{
   id: number;
   name: string;
   published: boolean;
+  sort_order: number | null;
   created_at: string;
   updated_at: string;
 }> {
@@ -288,7 +289,10 @@ export function getAllAlbums(): Array<{
   
   const stmt = db.prepare(`
     SELECT * FROM albums 
-    ORDER BY name
+    ORDER BY 
+      CASE WHEN sort_order IS NULL THEN 1 ELSE 0 END,
+      sort_order ASC,
+      name ASC
   `);
   
   const results = stmt.all() as any[];
@@ -397,6 +401,130 @@ export function updateImageSortOrder(album: string, imageOrders: { filename: str
     return true;
   } catch (error) {
     console.error('Error updating image sort order:', error);
+    return false;
+  }
+}
+
+/**
+ * Get all distinct album names from image_metadata
+ */
+export function getAlbumsFromMetadata(): string[] {
+  const db = getDatabase();
+  
+  const stmt = db.prepare(`
+    SELECT DISTINCT album FROM image_metadata 
+    ORDER BY album
+  `);
+  
+  const results = stmt.all() as Array<{ album: string }>;
+  return results.map(r => r.album);
+}
+
+/**
+ * Get all images from image_metadata for a specific album
+ */
+export function getImagesInAlbum(album: string): Array<{
+  id: number;
+  album: string;
+  filename: string;
+  title: string | null;
+  description: string | null;
+  sort_order: number | null;
+  created_at: string;
+  updated_at: string;
+}> {
+  const db = getDatabase();
+  
+  const stmt = db.prepare(`
+    SELECT * FROM image_metadata 
+    WHERE album = ?
+    ORDER BY 
+      CASE WHEN sort_order IS NULL THEN 1 ELSE 0 END,
+      sort_order ASC,
+      filename ASC
+  `);
+  
+  return stmt.all(album) as any[];
+}
+
+/**
+ * Get all images from published albums
+ */
+export function getImagesFromPublishedAlbums(): Array<{
+  id: number;
+  album: string;
+  filename: string;
+  title: string | null;
+  description: string | null;
+  sort_order: number | null;
+  created_at: string;
+  updated_at: string;
+}> {
+  const db = getDatabase();
+  
+  const stmt = db.prepare(`
+    SELECT im.* FROM image_metadata im
+    INNER JOIN albums a ON im.album = a.name
+    WHERE a.published = 1
+    ORDER BY im.album, im.filename
+  `);
+  
+  return stmt.all() as any[];
+}
+
+/**
+ * Get count of images in an album
+ */
+export function getImageCountInAlbum(album: string): number {
+  const db = getDatabase();
+  
+  const stmt = db.prepare(`
+    SELECT COUNT(*) as count FROM image_metadata 
+    WHERE album = ?
+  `);
+  
+  const result = stmt.get(album) as { count: number };
+  return result.count;
+}
+
+/**
+ * Check if image exists in database
+ */
+export function imageExistsInDB(album: string, filename: string): boolean {
+  const db = getDatabase();
+  
+  const stmt = db.prepare(`
+    SELECT 1 FROM image_metadata 
+    WHERE album = ? AND filename = ?
+  `);
+  
+  return stmt.get(album, filename) !== undefined;
+}
+
+/**
+ * Update sort order for multiple albums
+ */
+export function updateAlbumSortOrder(albumOrders: { name: string; sort_order: number }[]): boolean {
+  const db = getDatabase();
+  
+  try {
+    // Use a transaction for atomic updates
+    const transaction = db.transaction(() => {
+      const stmt = db.prepare(`
+        UPDATE albums 
+        SET sort_order = ?, updated_at = CURRENT_TIMESTAMP
+        WHERE name = ?
+      `);
+      
+      for (const { name, sort_order } of albumOrders) {
+        stmt.run(sort_order, name);
+      }
+    });
+    
+    transaction();
+    return true;
+  } catch (error) {
+    console.error('Error updating album sort order:', error);
     return false;
   }
 }

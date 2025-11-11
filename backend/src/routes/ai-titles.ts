@@ -141,6 +141,15 @@ router.post('/generate', requireAuth, (req, res) => {
     return;
   }
 
+  // Create job tracking IMMEDIATELY to prevent race condition
+  runningJobs.aiTitles = {
+    process: null,
+    output: [],
+    clients: new Set([res]),
+    startTime: Date.now(),
+    isComplete: false
+  };
+
   // Set headers for Server-Sent Events
   res.setHeader('Content-Type', 'text/event-stream');
   res.setHeader('Cache-Control', 'no-cache');
@@ -153,15 +162,6 @@ router.post('/generate', requireAuth, (req, res) => {
   console.log('[AI Titles] Starting generation...');
   console.log('[AI Titles] Script path:', scriptPath);
   console.log('[AI Titles] Working directory:', projectRoot);
-
-  // Create job tracking
-  runningJobs.aiTitles = {
-    process: null,
-    output: [],
-    clients: new Set([res]),
-    startTime: Date.now(),
-    isComplete: false
-  };
 
   // Spawn the Node.js process to run the script
   const child = spawn('node', [scriptPath], {
@@ -225,7 +225,13 @@ router.post('/generate', requireAuth, (req, res) => {
     const lines = data.toString().split('\n').filter((line: string) => line.trim());
     lines.forEach((line: string) => {
       console.error('[AI Titles Error]', line);
-      res.write(`data: ERROR: ${line}\n\n`);
+      const errorOutput = `ERROR: ${line}`;
+      
+      // Store output and broadcast to all clients
+      if (runningJobs.aiTitles) {
+        runningJobs.aiTitles.output.push(errorOutput);
+        broadcastToClients(runningJobs.aiTitles, errorOutput);
+      }
     });
   });
 

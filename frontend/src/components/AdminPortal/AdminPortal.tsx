@@ -47,7 +47,23 @@ export default function AdminPortal() {
     faviconPath: ''
   });
   const [albums, setAlbums] = useState<Album[]>([]);
-  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [messages, setMessages] = useState<Array<{ id: number; type: 'success' | 'error'; text: string }>>([]);
+
+  // Helper to add a new message
+  const addMessage = (message: { type: 'success' | 'error'; text: string }) => {
+    const newMessage = { ...message, id: Date.now() + Math.random() };
+    setMessages(prev => [newMessage, ...prev]); // Add to beginning (newest on top)
+    
+    // Auto-dismiss after 5 seconds
+    setTimeout(() => {
+      setMessages(prev => prev.filter(m => m.id !== newMessage.id));
+    }, 5000);
+  };
+
+  // Helper to remove a specific message
+  const removeMessage = (id: number) => {
+    setMessages(prev => prev.filter(m => m.id !== id));
+  };
 
   // Check authentication on mount
   useEffect(() => {
@@ -87,14 +103,6 @@ export default function AdminPortal() {
       trackAdminTabChange(activeTab);
     }
   }, [activeTab, authStatus]);
-
-  // Auto-dismiss message after 5 seconds
-  useEffect(() => {
-    if (message) {
-      const timer = setTimeout(() => setMessage(null), 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [message]);
 
   const loadExternalLinks = async () => {
     try {
@@ -269,23 +277,29 @@ export default function AdminPortal() {
           </div>
         </div>
 
-        {message && (
-          <div className={`toast toast-${message.type}`}>
-            <div className="toast-content">
-              <span className="toast-icon">
-                {message.type === 'success' ? '✓' : '⚠'}
-              </span>
-              <span className="toast-text">{message.text}</span>
-              <button 
-                className="toast-close"
-                onClick={() => setMessage(null)}
-                aria-label="Close notification"
-              >
-                ×
-              </button>
+        <div className="toast-container">
+          {messages.map((message, index) => (
+            <div 
+              key={message.id} 
+              className={`toast toast-${message.type}`}
+              style={{ top: `${80 + index * 80}px` }}
+            >
+              <div className="toast-content">
+                <span className="toast-icon">
+                  {message.type === 'success' ? '✓' : '⚠'}
+                </span>
+                <span className="toast-text">{message.text}</span>
+                <button 
+                  className="toast-close"
+                  onClick={() => removeMessage(message.id)}
+                  aria-label="Close notification"
+                >
+                  ×
+                </button>
+              </div>
             </div>
-          </div>
-        )}
+          ))}
+        </div>
 
         {activeTab === 'metrics' && (
           <Metrics />
@@ -296,7 +310,7 @@ export default function AdminPortal() {
             branding={branding}
             setBranding={setBranding}
             loadBranding={loadBranding}
-            setMessage={setMessage}
+            setMessage={addMessage}
           />
         )}
 
@@ -304,7 +318,7 @@ export default function AdminPortal() {
           <LinksManager
             externalLinks={externalLinks}
             setExternalLinks={setExternalLinks}
-            setMessage={setMessage}
+            setMessage={addMessage}
           />
         )}
 
@@ -312,13 +326,13 @@ export default function AdminPortal() {
           <AlbumsManager
             albums={albums}
             loadAlbums={loadAlbums}
-            setMessage={setMessage}
+            setMessage={addMessage}
           />
         )}
 
         {activeTab === 'config' && (
           <ConfigManager
-            setMessage={setMessage}
+            setMessage={addMessage}
           />
         )}
       </div>

@@ -8,7 +8,16 @@ import { Router, Request } from "express";
 import fs from "fs";
 import path from "path";
 import exifr from "exifr";
-import { getAlbumState, getPublishedAlbums, getAllAlbums, saveAlbum, getAlbumMetadata } from "../database.js";
+import { 
+  getAlbumState, 
+  getPublishedAlbums, 
+  getAllAlbums, 
+  saveAlbum, 
+  getAlbumMetadata,
+  getAlbumsFromMetadata,
+  getImagesInAlbum,
+  getImagesFromPublishedAlbums
+} from "../database.js";
 
 const router = Router();
 
@@ -55,71 +64,62 @@ const sanitizePath = (input: string): string | null => {
 };
 
 /**
- * Helper function to get all albums from the photos directory.
- * @param photosDir - Path to the photos directory
+ * Helper function to get all albums from the database.
+ * Falls back to filesystem scan if database is empty.
+ * @param photosDir - Path to the photos directory (for fallback only)
  * @returns Array of album names
  */
 const getAlbums = (photosDir: string) => {
   try {
+    // Get albums from database
+    const dbAlbums = getAllAlbums().map(a => a.name);
+    
+    // If database has albums, use those
+    if (dbAlbums.length > 0) {
+      return dbAlbums;
+    }
+    
+    // Fallback to filesystem scan if database is empty (backward compatibility)
+    console.warn('Database has no albums, falling back to filesystem scan');
     return fs
       .readdirSync(photosDir)
       .filter((file) => fs.statSync(path.join(photosDir, file)).isDirectory());
   } catch (error) {
-    console.error("Error reading photos directory:", error);
+    console.error("Error reading albums:", error);
     return [];
   }
 };
 
 /**
- * Helper function to get all photos in a specific album.
- * @param photosDir - Path to the photos directory
+ * Helper function to get all photos in a specific album from database.
+ * @param photosDir - Path to the photos directory (unused, kept for compatibility)
  * @param album - Name of the album to get photos from
  * @returns Array of photo objects with their paths
  */
 const getPhotosInAlbum = (photosDir: string, album: string) => {
   try {
-    const albumPath = path.join(photosDir, album);
-    const files = fs
-      .readdirSync(albumPath)
-      .filter((file) => /\.(jpg|jpeg|png|gif)$/i.test(file));
-
-    // Get metadata from database (includes sort_order)
-    const metadata = getAlbumMetadata(album);
-    const metadataMap = new Map(metadata.map(m => [m.filename, m]));
-
-    // Use optimized images for all albums
-    const photos = files.map((file) => {
-      const meta = metadataMap.get(file);
-      
-      // Generate title from filename by removing extension and replacing separators
-      const defaultTitle = file
+    // Get images from database
+    const images = getImagesInAlbum(album);
+    
+    // Transform to photo objects
+    const photos = images.map((img) => {
+      // Generate default title from filename
+      const defaultTitle = img.filename
         .replace(/\.[^/.]+$/, '') // Remove extension
         .replace(/[-_]/g, ' '); // Replace hyphens and underscores with spaces
 
       return {
-        id: `${album}/${file}`, // Make ID unique and consistent with getAllPhotos
-        title: meta?.title || defaultTitle,
+        id: `${album}/${img.filename}`,
+        title: img.title || defaultTitle,
         album: album,
-        src: `/optimized/modal/${album}/${file}`,
-        thumbnail: `/optimized/thumbnail/${album}/${file}`,
-        download: `/optimized/download/${album}/${file}`,
-        sort_order: meta?.sort_order ?? null,
+        src: `/optimized/modal/${album}/${img.filename}`,
+        thumbnail: `/optimized/thumbnail/${album}/${img.filename}`,
+        download: `/optimized/download/${album}/${img.filename}`,
+        sort_order: img.sort_order ?? null,
       };
     });
     
-    // Sort by custom order if available, otherwise by filename
-    photos.sort((a, b) => {
-      // Photos with sort_order come first
-      if (a.sort_order !== null && b.sort_order !== null) {
-        return a.sort_order - b.sort_order;
-      }
-      if (a.sort_order !== null) return -1;
-      if (b.sort_order !== null) return 1;
-      
-      // Fall back to filename sorting for photos without sort_order
-      return a.id.localeCompare(b.id);
-    });
-    
+    // Photos are already sorted by the database query
     return photos;
   } catch (error) {
     console.error(`Error reading album ${album}:`, error);
@@ -142,62 +142,45 @@ const shuffleArray = <T>(array: T[]): T[] => {
 };
 
 /**
- * Helper function to get all photos from all albums (filtered by published state).
- * @param photosDir - Path to the photos directory
+ * Helper function to get all photos from all albums (filtered by published state) from database.
+ * @param photosDir - Path to the photos directory (unused, kept for compatibility)
  * @param includeUnpublished - Whether to include unpublished albums (admin only)
  * @returns Array of all photo objects with their paths and album information
  */
 const getAllPhotos = (photosDir: string, includeUnpublished: boolean = false) => {
   try {
-    let allAlbums = getAlbums(photosDir).filter(
-      (album) => album !== "homepage"
-    );
+    let images;
     
-    // Filter out unpublished albums unless explicitly requested
-    if (!includeUnpublished) {
-      const allAlbumStates = getAllAlbums();
+    if (includeUnpublished) {
+      // Get all images from all albums
+      const allAlbums = getAllAlbums()
+        .map(a => a.name)
+        .filter(name => name !== 'homepage');
       
-      allAlbums = allAlbums.filter(album => {
-        const state = allAlbumStates.find(a => a.name === album);
-        // Only include albums that are explicitly published
-        return state?.published === true;
-      });
+      images = allAlbums.flatMap(album => getImagesInAlbum(album));
+    } else {
+      // Get only images from published albums
+      images = getImagesFromPublishedAlbums().filter(img => img.album !== 'homepage');
     }
     
-    const allPhotos: {
-      id: string;
-      title: string;
-      album: string;
-      src: string;
-      thumbnail: string;
-      download: string;
-    }[] = [];
+    const allPhotos = images.map((img) => {
+      // Generate title from filename by removing extension and replacing separators
+      const defaultTitle = img.filename
+        .replace(/\.[^/.]+$/, '') // Remove extension
+        .replace(/[-_]/g, ' '); // Replace hyphens and underscores with spaces
 
-    // Get ALL photos from each album
-    allAlbums.forEach((album) => {
-      const albumPath = path.join(photosDir, album);
-      const files = fs
-        .readdirSync(albumPath)
-        .filter((file) => /\.(jpg|jpeg|png|gif)$/i.test(file));
-
-      files.forEach((file) => {
-        // Generate title from filename by removing extension and replacing separators
-        const title = file
-          .replace(/\.[^/.]+$/, '') // Remove extension
-          .replace(/[-_]/g, ' '); // Replace hyphens and underscores with spaces
-
-        allPhotos.push({
-          id: `${album}/${file}`, // Make ID unique across albums
-          title: title,
-          album: album,
-          src: `/optimized/modal/${album}/${file}`,
-          thumbnail: `/optimized/thumbnail/${album}/${file}`,
-          download: `/optimized/download/${album}/${file}`,
-        });
-      });
+      return {
+        id: `${img.album}/${img.filename}`,
+        title: img.title || defaultTitle,
+        album: img.album,
+        src: `/optimized/modal/${img.album}/${img.filename}`,
+        thumbnail: `/optimized/thumbnail/${img.album}/${img.filename}`,
+        download: `/optimized/download/${img.album}/${img.filename}`,
+      };
     });
 
-    console.log(`getAllPhotos: Found ${allPhotos.length} total photos across ${allAlbums.length} albums`);
+    const albumCount = new Set(images.map(i => i.album)).size;
+    console.log(`getAllPhotos: Found ${allPhotos.length} total photos across ${albumCount} albums`);
     
     // Shuffle all photos for random order
     return shuffleArray(allPhotos);
@@ -314,53 +297,27 @@ router.get("/api/albums/:album/photos", (req: Request, res): void => {
 
 // Get all photos from all albums in random order
 router.get("/api/random-photos", (req: Request, res) => {
-  const photosDir = req.app.get("photosDir");
-  
   // Always only return photos from published albums (even for authenticated users)
-  const albumsToFetch = getPublishedAlbums()
-    .map(a => a.name)
-    .filter(name => name !== 'homepage');
+  const images = getImagesFromPublishedAlbums().filter(img => img.album !== 'homepage');
   
-  const allPhotos: {
-    id: string;
-    title: string;
-    album: string;
-    src: string;
-    thumbnail: string;
-    download: string;
-  }[] = [];
+  const allPhotos = images.map((img) => {
+    // Generate title from filename by removing extension and replacing separators
+    const defaultTitle = img.filename
+      .replace(/\.[^/.]+$/, '') // Remove extension
+      .replace(/[-_]/g, ' '); // Replace hyphens and underscores with spaces
 
-  // Get photos from each album
-  albumsToFetch.forEach((album) => {
-    const albumPath = path.join(photosDir, album);
-    
-    // Check if album directory exists
-    if (!fs.existsSync(albumPath) || !fs.statSync(albumPath).isDirectory()) {
-      return; // Skip non-existent directories
-    }
-    
-    const files = fs
-      .readdirSync(albumPath)
-      .filter((file) => /\.(jpg|jpeg|png|gif)$/i.test(file));
-
-    files.forEach((file) => {
-      // Generate title from filename by removing extension and replacing separators
-      const title = file
-        .replace(/\.[^/.]+$/, '') // Remove extension
-        .replace(/[-_]/g, ' '); // Replace hyphens and underscores with spaces
-
-      allPhotos.push({
-        id: `${album}/${file}`, // Make ID unique across albums
-        title: title,
-        album: album,
-        src: `/optimized/modal/${album}/${file}`,
-        thumbnail: `/optimized/thumbnail/${album}/${file}`,
-        download: `/optimized/download/${album}/${file}`,
-      });
-    });
+    return {
+      id: `${img.album}/${img.filename}`,
+      title: img.title || defaultTitle,
+      album: img.album,
+      src: `/optimized/modal/${img.album}/${img.filename}`,
+      thumbnail: `/optimized/thumbnail/${img.album}/${img.filename}`,
+      download: `/optimized/download/${img.album}/${img.filename}`,
+    };
   });
 
-  console.log(`API /api/random-photos: Returning ${allPhotos.length} photos from ${albumsToFetch.length} albums`);
+  const albumCount = new Set(images.map(i => i.album)).size;
+  console.log(`API /api/random-photos: Returning ${allPhotos.length} photos from ${albumCount} albums`);
   
   // Shuffle all photos for random order
   const shuffledPhotos = shuffleArray(allPhotos);
