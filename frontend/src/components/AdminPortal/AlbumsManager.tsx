@@ -1574,7 +1574,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                     </span>
                   </label>
                   
-                  {localAlbums.find(a => a.name === selectedAlbum)?.published === false && (
+                  {!localAlbums.find(a => a.name === selectedAlbum)?.published && (
                     <>
                       <button
                         onClick={() => window.open(`/album/${selectedAlbum}`, '_blank')}
@@ -1589,6 +1589,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                       </button>
                       <button
                         onClick={() => {
+                          console.log('Share button clicked for album:', selectedAlbum);
                           setShareAlbumName(selectedAlbum);
                           setShowShareModal(true);
                         }}
