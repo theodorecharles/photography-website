@@ -244,7 +244,11 @@
               0 0 0 1px rgba(255, 255, 255, 0.05);
   z-index: 9999;
   backdrop-filter: blur(10px);
-  transition: all 0.3s ease-out;
+  transition: top 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              bottom 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              left 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              right 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.3s ease-out;
   user-select: none;
 }
 

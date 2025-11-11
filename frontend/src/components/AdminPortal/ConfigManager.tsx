@@ -135,6 +135,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
   const handleToasterDragStart = (e: React.MouseEvent) => {
     if (isToasterMaximized || window.innerWidth <= 768) return; // Don't drag when maximized or on mobile
     e.preventDefault();
+    e.stopPropagation();
     setIsDragging(true);
     setDragStart({ x: e.clientX, y: e.clientY });
     setDragOffset({ x: 0, y: 0 });
@@ -142,6 +143,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
 
   const handleToasterDrag = (e: React.MouseEvent) => {
     if (!isDragging || !dragStart) return;
+    e.preventDefault();
     
     const offsetX = e.clientX - dragStart.x;
     const offsetY = e.clientY - dragStart.y;
@@ -159,17 +161,25 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
     const x = e.clientX;
     const y = e.clientY;
     
-    const isLeft = x < viewportWidth / 2;
-    const isTop = y < viewportHeight / 2;
+    // Use a more lenient threshold (40% from edges triggers that side)
+    const leftThreshold = viewportWidth * 0.4;
+    const rightThreshold = viewportWidth * 0.6;
+    const topThreshold = viewportHeight * 0.4;
+    const bottomThreshold = viewportHeight * 0.6;
     
-    if (isTop && isLeft) {
-      setToasterPosition('top-left');
-    } else if (isTop && !isLeft) {
-      setToasterPosition('top-right');
-    } else if (!isTop && isLeft) {
+    const isLeft = x < leftThreshold || (x < viewportWidth / 2 && x < rightThreshold);
+    const isRight = x > rightThreshold || (x > viewportWidth / 2 && x > leftThreshold);
+    const isTop = y < topThreshold || (y < viewportHeight / 2 && y < bottomThreshold);
+    const isBottom = y > bottomThreshold || (y > viewportHeight / 2 && y > topThreshold);
+    
+    if (isBottom && isLeft) {
       setToasterPosition('bottom-left');
-    } else {
+    } else if (isBottom && isRight) {
       setToasterPosition('bottom-right');
+    } else if (isTop && isLeft) {
+      setToasterPosition('top-left');
+    } else {
+      setToasterPosition('top-right');
     }
     
     setDragStart(null);
@@ -250,6 +260,61 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
       document.body.style.overflow = '';
     };
   }, [isToasterMaximized]);
+
+  // Global mouse event handlers for better drag tracking
+  useEffect(() => {
+    if (!isDragging) return;
+
+    const handleGlobalMouseMove = (e: MouseEvent) => {
+      if (!dragStart) return;
+      const offsetX = e.clientX - dragStart.x;
+      const offsetY = e.clientY - dragStart.y;
+      setDragOffset({ x: offsetX, y: offsetY });
+    };
+
+    const handleGlobalMouseUp = (e: MouseEvent) => {
+      if (!dragStart) return;
+      setIsDragging(false);
+      
+      // Calculate which corner to snap to based on mouse position
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
+      const x = e.clientX;
+      const y = e.clientY;
+      
+      // Use a more lenient threshold (40% from edges triggers that side)
+      const leftThreshold = viewportWidth * 0.4;
+      const rightThreshold = viewportWidth * 0.6;
+      const topThreshold = viewportHeight * 0.4;
+      const bottomThreshold = viewportHeight * 0.6;
+      
+      const isLeft = x < leftThreshold || (x < viewportWidth / 2 && x < rightThreshold);
+      const isRight = x > rightThreshold || (x > viewportWidth / 2 && x > leftThreshold);
+      const isTop = y < topThreshold || (y < viewportHeight / 2 && y < bottomThreshold);
+      const isBottom = y > bottomThreshold || (y > viewportHeight / 2 && y > topThreshold);
+      
+      if (isBottom && isLeft) {
+        setToasterPosition('bottom-left');
+      } else if (isBottom && isRight) {
+        setToasterPosition('bottom-right');
+      } else if (isTop && isLeft) {
+        setToasterPosition('top-left');
+      } else {
+        setToasterPosition('top-right');
+      }
+      
+      setDragStart(null);
+      setDragOffset({ x: 0, y: 0 });
+    };
+
+    document.addEventListener('mousemove', handleGlobalMouseMove);
+    document.addEventListener('mouseup', handleGlobalMouseUp);
+
+    return () => {
+      document.removeEventListener('mousemove', handleGlobalMouseMove);
+      document.removeEventListener('mouseup', handleGlobalMouseUp);
+    };
+  }, [isDragging, dragStart]);
 
   // Function to scroll to and highlight OpenAI API key input
   const handleSetupOpenAI = () => {
@@ -538,27 +603,35 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
     }
   };
 
-  // Auto-scroll optimization output to bottom when new logs arrive
+  // Auto-scroll optimization output to bottom when new logs arrive (only if already at bottom)
   useEffect(() => {
     if (optimizationOutputRef.current && isOptimizationRunning) {
-      setTimeout(() => {
-        if (optimizationOutputRef.current) {
-          optimizationOutputRef.current.scrollTop =
-            optimizationOutputRef.current.scrollHeight;
-        }
-      }, 0);
+      const element = optimizationOutputRef.current;
+      const isAtBottom = element.scrollHeight - element.scrollTop - element.clientHeight < 50;
+      
+      if (isAtBottom) {
+        setTimeout(() => {
+          if (optimizationOutputRef.current) {
+            optimizationOutputRef.current.scrollTop = optimizationOutputRef.current.scrollHeight;
+          }
+        }, 0);
+      }
     }
   }, [optimizationLogs, isOptimizationRunning]);
 
-  // Auto-scroll titles output to bottom when new lines arrive
+  // Auto-scroll titles output to bottom when new lines arrive (only if already at bottom)
   useEffect(() => {
     if (titlesOutputRef.current && generatingTitles) {
-      setTimeout(() => {
-        if (titlesOutputRef.current) {
-          titlesOutputRef.current.scrollTop =
-            titlesOutputRef.current.scrollHeight;
-        }
-      }, 0);
+      const element = titlesOutputRef.current;
+      const isAtBottom = element.scrollHeight - element.scrollTop - element.clientHeight < 50;
+      
+      if (isAtBottom) {
+        setTimeout(() => {
+          if (titlesOutputRef.current) {
+            titlesOutputRef.current.scrollTop = titlesOutputRef.current.scrollHeight;
+          }
+        }, 0);
+      }
     }
   }, [titlesOutput, generatingTitles]);
 
