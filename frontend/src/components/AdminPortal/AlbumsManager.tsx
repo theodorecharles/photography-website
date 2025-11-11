@@ -1590,6 +1590,24 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                     🚨 CLICK THIS TEST BUTTON 🚨
                   </button>
                   
+                  <button style={{
+                    background: '#8b5cf6',
+                    color: 'white',
+                    padding: '30px',
+                    fontSize: '30px',
+                    fontWeight: 'bold',
+                    border: '10px solid #a78bfa',
+                    cursor: 'pointer',
+                    minHeight: '100px'
+                  }} onClick={() => {
+                    console.log('Share button clicked!');
+                    alert('Opening share modal for: ' + selectedAlbum);
+                    setShareAlbumName(selectedAlbum);
+                    setShowShareModal(true);
+                  }}>
+                    🔗 SHARE ALBUM - {selectedAlbum}
+                  </button>
+                  
                   <label 
                     className="toggle-switch btn-action-item"
                     title={localAlbums.find(a => a.name === selectedAlbum)?.published === false ? "Publish album (make visible to public)" : "Unpublish album (hide from public)"}
