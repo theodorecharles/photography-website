@@ -316,6 +316,57 @@
   margin-left: auto;
 }
 
+.sse-toaster-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.sse-toaster-stop-btn {
+  background: rgba(220, 38, 38, 0.15);
+  border: 1px solid rgba(220, 38, 38, 0.3);
+  color: #ef4444;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  padding: 0;
+}
+
+.sse-toaster-stop-btn:hover {
+  background: rgba(220, 38, 38, 0.25);
+  border-color: #ef4444;
+  transform: scale(1.05);
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.3);
+}
+
+.sse-toaster-maximize-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #fff;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  padding: 0;
+}
+
+.sse-toaster-maximize-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: var(--primary-color);
+  transform: scale(1.05);
+}
+
 .sse-toaster-collapse-btn {
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.15);
@@ -332,10 +383,48 @@
   padding: 0;
 }
 
-.sse-toaster-collapse-btn:hover {
+.sse-toaster-collapse-btn:hover:not(:disabled) {
   background: rgba(255, 255, 255, 0.12);
   border-color: var(--primary-color);
   transform: scale(1.05);
+}
+
+.sse-toaster-collapse-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Maximized state */
+.sse-toaster.maximized {
+  top: 70px;
+  left: 20px;
+  right: 20px;
+  bottom: 20px;
+  width: auto;
+  max-width: none;
+  max-height: calc(100vh - 90px);
+  animation: expandToFull 0.3s ease-out;
+}
+
+@keyframes expandToFull {
+  from {
+    top: 80px;
+    right: 20px;
+    left: auto;
+    bottom: auto;
+    width: 450px;
+  }
+  to {
+    top: 70px;
+    left: 20px;
+    right: 20px;
+    bottom: 20px;
+    width: auto;
+  }
+}
+
+.sse-toaster.maximized .sse-toaster-output {
+  max-height: calc(100vh - 240px);
 }
 
 .sse-toaster-progress-bar-container {
@@ -357,6 +446,7 @@
   max-height: 450px;
   overflow-y: auto;
   background: #000000;
+  border-radius: 0 0 12px 12px;
 }
 
 .sse-toaster-output-content {
@@ -421,6 +511,18 @@
 
   .sse-toaster.expanded {
     max-height: 400px;
+  }
+
+  .sse-toaster.maximized {
+    top: 60px;
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+    max-height: calc(100vh - 70px);
+  }
+
+  .sse-toaster.maximized .sse-toaster-output {
+    max-height: calc(100vh - 200px);
   }
 }
 
