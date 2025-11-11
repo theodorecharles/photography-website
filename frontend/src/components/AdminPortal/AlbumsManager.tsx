@@ -2011,7 +2011,6 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                   onChange={(e) => setEditTitleValue(e.target.value)}
                   className="edit-modal-input"
                   placeholder="Enter title..."
-                  autoFocus
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') {
                       handleSaveTitle();
