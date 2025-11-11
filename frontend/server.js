@@ -143,14 +143,15 @@ app.get("*", async (req, res) => {
             siteUrl = apiUrl.replace(/api(-dev)?\./, 'www$1.');
           }
           
-          const thumbnailUrl = `${apiUrl}/optimized/thumbnail/${albumName}/${firstPhoto.filename}`;
+          // Use 2x2 grid preview image
+          const gridUrl = `${apiUrl}/api/preview-grid/shared/${secretKey}`;
           const pageUrl = `${siteUrl}/shared/${secretKey}`;
           
           // Log meta tag injection
           console.log(`[Meta Injection] Shared album link detected:`);
           console.log(`  Album: ${albumName}`);
           console.log(`  Secret Key: ${secretKey}`);
-          console.log(`  Preview Image: ${thumbnailUrl}`);
+          console.log(`  Preview Image: ${gridUrl}`);
           console.log(`  Page URL: ${pageUrl}`);
           
           // Read and modify index.html
@@ -190,7 +191,7 @@ app.get("*", async (req, res) => {
             )
             .replace(
               /<meta property="og:image" content=".*?" \/>/,
-              `<meta property="og:image" content="${thumbnailUrl}" />\n    <meta property="og:image:secure_url" content="${thumbnailUrl.replace('http://', 'https://')}" />\n    <meta property="og:image:alt" content="${safeAlbumName} - Photography by Ted Charles" />\n    <meta property="og:image:type" content="image/jpeg" />`
+              `<meta property="og:image" content="${gridUrl}" />\n    <meta property="og:image:secure_url" content="${gridUrl.replace('http://', 'https://')}" />\n    <meta property="og:image:alt" content="${safeAlbumName} - Photography by Ted Charles" />\n    <meta property="og:image:type" content="image/jpeg" />\n    <meta property="og:image:width" content="1200" />\n    <meta property="og:image:height" content="630" />`
             )
             .replace(
               /<meta property="twitter:url" content=".*?" \/>/,
@@ -206,7 +207,7 @@ app.get("*", async (req, res) => {
             )
             .replace(
               /<meta property="twitter:image" content=".*?" \/>/,
-              `<meta property="twitter:image" content="${thumbnailUrl}" />`
+              `<meta property="twitter:image" content="${gridUrl}" />`
             );
           
           return res.send(modifiedHtml);
@@ -218,70 +219,175 @@ app.get("*", async (req, res) => {
     }
   }
   
-  // Check if this is a photo permalink (album route with photo parameter)
+  // Check if this is an album route
   const urlPath = req.path;
   const photoParam = req.query.photo;
+  const albumMatch = urlPath.match(/^\/album\/([^\/]+)$/);
   
-  if (urlPath.startsWith('/album/') && photoParam) {
-    // Extract album name from path (e.g., /album/nature -> nature)
-    const albumMatch = urlPath.match(/^\/album\/([^\/]+)/);
-    if (albumMatch) {
-      const albumName = albumMatch[1];
-      const photoFilename = photoParam;
+  // Handle album page (without specific photo)
+  if (albumMatch && !photoParam) {
+    const albumName = albumMatch[1];
+    const apiUrl = config.frontend.apiUrl;
+    
+    try {
+      // Fetch album data to get photo count
+      const response = await fetch(`${apiUrl}/api/albums/${albumName}/photos`);
       
-      // Generate photo title from filename (remove extension, replace separators with spaces)
-      const photoTitle = photoFilename
-        .replace(/\.[^/.]+$/, '') // Remove extension
-        .replace(/[-_]/g, ' '); // Replace hyphens and underscores with spaces
-      
-      // Escape HTML special characters in photo title for safe insertion
-      const escapeHtml = (str) => str
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
-      const safePhotoTitle = escapeHtml(photoTitle);
-      
-      // Build URLs for the photo
-      const apiUrl = config.frontend.apiUrl;
-      // Derive site URL from API URL:
-      // Production: https://api.tedcharles.net -> https://www.tedcharles.net
-      // Development: http://localhost:3001 -> http://localhost:3000
-      // Dev server: https://api-dev.tedcharles.net -> https://www-dev.tedcharles.net
-      let siteUrl;
-      if (apiUrl.includes('localhost')) {
-        siteUrl = apiUrl.replace(':3001', ':3000');
-      } else {
-        // Handle both api. and api-dev. patterns
-        siteUrl = apiUrl.replace(/api(-dev)?\./, 'www$1.');
+      if (response.ok) {
+        const photos = await response.json();
+        
+        if (photos.length > 0) {
+          // Derive site URL
+          let siteUrl;
+          if (apiUrl.includes('localhost')) {
+            siteUrl = apiUrl.replace(':3001', ':3000');
+          } else {
+            siteUrl = apiUrl.replace(/api(-dev)?\./, 'www$1.');
+          }
+          
+          // Use 2x2 grid preview image
+          const gridUrl = `${apiUrl}/api/preview-grid/album/${albumName}`;
+          const pageUrl = `${siteUrl}/album/${albumName}`;
+          const albumTitleCase = albumName.charAt(0).toUpperCase() + albumName.slice(1);
+          
+          console.log(`[Meta Injection] Album page detected:`);
+          console.log(`  Album: ${albumName}`);
+          console.log(`  Photos: ${photos.length}`);
+          console.log(`  Preview Image: ${gridUrl}`);
+          console.log(`  Page URL: ${pageUrl}`);
+          
+          const escapeHtml = (str) => str
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+          
+          const safeAlbumName = escapeHtml(albumTitleCase);
+          
+          // Read and modify HTML
+          const html = fs.readFileSync(indexPath, 'utf8');
+          const modifiedHtml = html
+            .replace(
+              /<title>.*?<\/title>/,
+              `<title>${safeAlbumName} - Ted Charles Photography</title>`
+            )
+            .replace(
+              /<meta name="title" content=".*?" \/>/,
+              `<meta name="title" content="${safeAlbumName} - Photography Collection" />`
+            )
+            .replace(
+              /<meta name="description" content=".*?" \/>/,
+              `<meta name="description" content="Explore ${photos.length} photo${photos.length !== 1 ? 's' : ''} from the ${safeAlbumName} collection by Ted Charles." />`
+            )
+            .replace(
+              /<link rel="canonical" href=".*?" \/>/,
+              `<link rel="canonical" href="${pageUrl}" />`
+            )
+            .replace(
+              /<meta property="og:type" content=".*?" \/>/,
+              `<meta property="og:type" content="website" />`
+            )
+            .replace(
+              /<meta property="og:url" content=".*?" \/>/,
+              `<meta property="og:url" content="${pageUrl}" />`
+            )
+            .replace(
+              /<meta property="og:title" content=".*?" \/>/,
+              `<meta property="og:title" content="${safeAlbumName} - Photography Collection" />`
+            )
+            .replace(
+              /<meta property="og:description" content=".*?" \/>/,
+              `<meta property="og:description" content="Explore ${photos.length} photo${photos.length !== 1 ? 's' : ''} from the ${safeAlbumName} collection." />`
+            )
+            .replace(
+              /<meta property="og:image" content=".*?" \/>/,
+              `<meta property="og:image" content="${gridUrl}" />\n    <meta property="og:image:secure_url" content="${gridUrl.replace('http://', 'https://')}" />\n    <meta property="og:image:alt" content="${safeAlbumName} - Photography by Ted Charles" />\n    <meta property="og:image:type" content="image/jpeg" />\n    <meta property="og:image:width" content="1200" />\n    <meta property="og:image:height" content="630" />`
+            )
+            .replace(
+              /<meta property="twitter:url" content=".*?" \/>/,
+              `<meta property="twitter:url" content="${pageUrl}" />`
+            )
+            .replace(
+              /<meta property="twitter:title" content=".*?" \/>/,
+              `<meta property="twitter:title" content="${safeAlbumName} - Photography Collection" />`
+            )
+            .replace(
+              /<meta property="twitter:description" content=".*?" \/>/,
+              `<meta property="twitter:description" content="Explore ${photos.length} photo${photos.length !== 1 ? 's' : ''} from the ${safeAlbumName} collection." />`
+            )
+            .replace(
+              /<meta property="twitter:image" content=".*?" \/>/,
+              `<meta property="twitter:image" content="${gridUrl}" />`
+            );
+          
+          return res.send(modifiedHtml);
+        }
+      }
+    } catch (error) {
+      console.error('[Meta Injection] Error fetching album data:', error);
+      // Fall through to default handling
+    }
+  }
+  
+  // Handle photo permalink (album route with photo parameter)
+  if (albumMatch && photoParam) {
+    const albumName = albumMatch[1];
+    const photoFilename = photoParam;
+    
+    // Generate photo title from filename (remove extension, replace separators with spaces)
+    const photoTitle = photoFilename
+      .replace(/\.[^/.]+$/, '') // Remove extension
+      .replace(/[-_]/g, ' '); // Replace hyphens and underscores with spaces
+    
+    // Escape HTML special characters in photo title for safe insertion
+    const escapeHtml = (str) => str
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+    const safePhotoTitle = escapeHtml(photoTitle);
+    
+    // Build URLs for the photo
+    const apiUrl = config.frontend.apiUrl;
+    // Derive site URL from API URL:
+    // Production: https://api.tedcharles.net -> https://www.tedcharles.net
+    // Development: http://localhost:3001 -> http://localhost:3000
+    // Dev server: https://api-dev.tedcharles.net -> https://www-dev.tedcharles.net
+    let siteUrl;
+    if (apiUrl.includes('localhost')) {
+      siteUrl = apiUrl.replace(':3001', ':3000');
+    } else {
+      // Handle both api. and api-dev. patterns
+      siteUrl = apiUrl.replace(/api(-dev)?\./, 'www$1.');
+    }
+    
+    // Ensure thumbnail URL uses HTTPS for production (Telegram requirement)
+    // Use full URL with protocol for social media crawlers
+    let thumbnailUrl = `${apiUrl}/optimized/thumbnail/${albumName}/${photoFilename}`;
+    
+    const pageUrl = `${siteUrl}/album/${albumName}?photo=${encodeURIComponent(photoFilename)}`;
+    const albumTitleCase = albumName.charAt(0).toUpperCase() + albumName.slice(1);
+    
+    // Log meta tag injection for debugging
+    console.log(`[Meta Injection] Photo permalink detected:`);
+    console.log(`  Album: ${albumName}`);
+    console.log(`  Photo: ${photoFilename}`);
+    console.log(`  Title: ${photoTitle}`);
+    console.log(`  OG Image: ${thumbnailUrl}`);
+    console.log(`  OG Image (secure): ${thumbnailUrl.replace('http://', 'https://')}`);
+    console.log(`  Page URL: ${pageUrl}`);
+    
+    // Read the index.html file
+    fs.readFile(indexPath, 'utf8', (err, html) => {
+      if (err) {
+        console.error('Error reading index.html:', err);
+        return res.sendFile(indexPath);
       }
       
-      // Ensure thumbnail URL uses HTTPS for production (Telegram requirement)
-      // Use full URL with protocol for social media crawlers
-      let thumbnailUrl = `${apiUrl}/optimized/thumbnail/${albumName}/${photoFilename}`;
-      
-      const pageUrl = `${siteUrl}/album/${albumName}?photo=${encodeURIComponent(photoFilename)}`;
-      const albumTitleCase = albumName.charAt(0).toUpperCase() + albumName.slice(1);
-      
-      // Log meta tag injection for debugging
-      console.log(`[Meta Injection] Photo permalink detected:`);
-      console.log(`  Album: ${albumName}`);
-      console.log(`  Photo: ${photoFilename}`);
-      console.log(`  Title: ${photoTitle}`);
-      console.log(`  OG Image: ${thumbnailUrl}`);
-      console.log(`  OG Image (secure): ${thumbnailUrl.replace('http://', 'https://')}`);
-      console.log(`  Page URL: ${pageUrl}`);
-      
-      // Read the index.html file
-      fs.readFile(indexPath, 'utf8', (err, html) => {
-        if (err) {
-          console.error('Error reading index.html:', err);
-          return res.sendFile(indexPath);
-        }
-        
-        // Replace meta tags with photo-specific content
-        let modifiedHtml = html
+      // Replace meta tags with photo-specific content
+      let modifiedHtml = html
           // Update page title
           .replace(
             /<title>.*?<\/title>/,
@@ -346,13 +452,12 @@ app.get("*", async (req, res) => {
           .replace(
             /<meta property="twitter:image" content=".*?" \/>/,
             `<meta property="twitter:image" content="${thumbnailUrl}" />`
-          );
-        
-        res.send(modifiedHtml);
-      });
+        );
       
-      return;
-    }
+      res.send(modifiedHtml);
+    });
+    
+    return;
   }
   
   // Default: serve the standard index.html

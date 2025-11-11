@@ -43,6 +43,7 @@ import imageMetadataRouter from "./routes/image-metadata.ts";
 import aiTitlesRouter from "./routes/ai-titles.ts";
 import systemRouter from "./routes/system.ts";
 import shareLinksRouter from "./routes/share-links.ts";
+import previewGridRouter from "./routes/preview-grid.ts";
 
 // Get the current directory path for ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -284,6 +285,7 @@ app.use('/api/image-metadata', imageMetadataRouter);
 app.use('/api/ai-titles', aiTitlesRouter);
 app.use('/api/system', systemRouter);
 app.use('/api/share-links', shareLinksRouter);
+app.use('/api/preview-grid', previewGridRouter);
 app.use(albumsRouter);
 app.use('/api/albums', albumManagementRouter);
 app.use(externalPagesRouter);
