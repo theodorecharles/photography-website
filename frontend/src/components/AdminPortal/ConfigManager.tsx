@@ -1241,8 +1241,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
           <div 
             className={`collapsible-content ${showBranding ? 'expanded' : 'collapsed'}`}
             style={{ 
-              maxHeight: showBranding ? '10000px' : '0',
-              paddingTop: showBranding ? '1rem' : '0'
+              maxHeight: showBranding ? '10000px' : '0'
             }}
           >
             <div className="branding-grid">
@@ -1424,8 +1423,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
           <div 
             className={`collapsible-content ${showLinks ? 'expanded' : 'collapsed'}`}
             style={{ 
-              maxHeight: showLinks ? '10000px' : '0',
-              paddingTop: showLinks ? '1rem' : '0'
+              maxHeight: showLinks ? '10000px' : '0'
             }}
           >
               <div className="links-list">
@@ -1566,8 +1564,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
           <div 
             className={`collapsible-content ${showOpenAI ? 'expanded' : 'collapsed'}`}
             style={{ 
-              maxHeight: showOpenAI ? '10000px' : '0',
-              paddingTop: showOpenAI ? '1rem' : '0'
+              maxHeight: showOpenAI ? '10000px' : '0'
             }}
           >
             <div className="openai-settings-grid">
@@ -1730,8 +1727,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
           <div 
             className={`collapsible-content ${showImageOptimization ? 'expanded' : 'collapsed'}`}
             style={{ 
-              maxHeight: showImageOptimization ? '10000px' : '0',
-              paddingTop: showImageOptimization ? '1rem' : '0'
+              maxHeight: showImageOptimization ? '10000px' : '0'
             }}
           >
               {/* Grid of optimization subsections */}
@@ -2146,8 +2142,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
           <div 
             className={`collapsible-content ${showAdvanced ? 'expanded' : 'collapsed'}`}
             style={{ 
-              maxHeight: showAdvanced ? '10000px' : '0',
-              paddingTop: showAdvanced ? '1rem' : '0'
+              maxHeight: showAdvanced ? '10000px' : '0'
             }}
           >
               {/* Danger Zone Warning */}
