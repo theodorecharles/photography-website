@@ -1,10 +1,16 @@
 /**
- * Config Manager Component
- * Manages all configuration settings from config.json
+ * Settings Component
+ * Unified settings management for branding, links, OpenAI, optimization, and advanced config
  */
 
 import { useState, useEffect, useRef } from "react";
 import "./ConfigManager.css";
+import { BrandingConfig, ExternalLink } from "./types";
+import {
+  trackBrandingUpdate,
+  trackAvatarUpload,
+  trackExternalLinksUpdate,
+} from "../../utils/analytics";
 
 const API_URL = import.meta.env.VITE_API_URL || "";
 
@@ -71,9 +77,21 @@ interface ConfigData {
 
 interface ConfigManagerProps {
   setMessage: (message: { type: "success" | "error"; text: string }) => void;
+  branding: BrandingConfig;
+  setBranding: (branding: BrandingConfig) => void;
+  loadBranding: () => Promise<void>;
+  externalLinks: ExternalLink[];
+  setExternalLinks: (links: ExternalLink[]) => void;
 }
 
-const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
+const ConfigManager: React.FC<ConfigManagerProps> = ({
+  setMessage,
+  branding,
+  setBranding,
+  loadBranding,
+  externalLinks,
+  setExternalLinks,
+}) => {
   const [config, setConfig] = useState<ConfigData | null>(null);
   const [originalConfig, setOriginalConfig] = useState<ConfigData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -89,6 +107,12 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [restartingBackend, setRestartingBackend] = useState(false);
   const [restartingFrontend, setRestartingFrontend] = useState(false);
+
+  // Branding and Links state
+  const [savingBranding, setSavingBranding] = useState(false);
+  const [pendingAvatarFile, setPendingAvatarFile] = useState<File | null>(null);
+  const [avatarPreviewUrl, setAvatarPreviewUrl] = useState<string | null>(null);
+  const [savingLinks, setSavingLinks] = useState(false);
 
   // Refs for auto-scroll and scroll-into-view
   const optimizationOutputRef = useRef<HTMLDivElement>(null);
@@ -391,7 +415,9 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
       case "Thumbnail":
         return (
           JSON.stringify(config.environment.optimization.images.thumbnail) !==
-          JSON.stringify(originalConfig.environment.optimization.images.thumbnail)
+          JSON.stringify(
+            originalConfig.environment.optimization.images.thumbnail
+          )
         );
 
       case "Modal":
@@ -403,7 +429,9 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
       case "Download":
         return (
           JSON.stringify(config.environment.optimization.images.download) !==
-          JSON.stringify(originalConfig.environment.optimization.images.download)
+          JSON.stringify(
+            originalConfig.environment.optimization.images.download
+          )
         );
 
       case "Concurrency":
@@ -1161,9 +1189,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
                       className="btn-primary"
                       style={{ padding: "0.4rem 0.8rem", fontSize: "0.85rem" }}
                     >
-                      {savingSection === "Thumbnail"
-                        ? "Saving..."
-                        : "Save"}
+                      {savingSection === "Thumbnail" ? "Saving..." : "Save"}
                     </button>
                   </div>
                 )}
@@ -1248,9 +1274,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
                       className="btn-primary"
                       style={{ padding: "0.4rem 0.8rem", fontSize: "0.85rem" }}
                     >
-                      {savingSection === "Modal"
-                        ? "Saving..."
-                        : "Save"}
+                      {savingSection === "Modal" ? "Saving..." : "Save"}
                     </button>
                   </div>
                 )}
@@ -1332,9 +1356,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
                       className="btn-primary"
                       style={{ padding: "0.4rem 0.8rem", fontSize: "0.85rem" }}
                     >
-                      {savingSection === "Download"
-                        ? "Saving..."
-                        : "Save"}
+                      {savingSection === "Download" ? "Saving..." : "Save"}
                     </button>
                   </div>
                 )}
@@ -1418,16 +1440,25 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
                       className="btn-primary"
                       style={{ padding: "0.4rem 0.8rem", fontSize: "0.85rem" }}
                     >
-                      {savingSection === "Concurrency"
-                        ? "Saving..."
-                        : "Save"}
+                      {savingSection === "Concurrency" ? "Saving..." : "Save"}
                     </button>
                   </div>
                 )}
               </div>
-              <p style={{ fontSize: "0.85rem", color: "#888", marginTop: "0", marginBottom: "1rem" }}>
-                Maximum number of images to process simultaneously. Higher values speed up batch processing but use more CPU and memory. 
-                Recommended: 2-4 for most systems, 1-2 for low-end servers, 4-8 for high-performance machines.
+              <p
+                style={{
+                  fontSize: "0.85rem",
+                  color: "#888",
+                  marginTop: "0",
+                  marginBottom: "1rem",
+                }}
+              >
+                Maximum number of images to process simultaneously. Higher
+                values speed up batch processing but use more CPU and memory.
+                Rule of thumb: ~4× your logical CPU cores (e.g., 64 for a
+                24-core CPU with hyperthreading = 48 logical cores).
+                Recommended: 8-16 for typical systems, 32-64 for
+                high-performance servers.
               </p>
               <div className="branding-group">
                 <label className="branding-label">Max Parallel Jobs</label>
@@ -1442,7 +1473,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
                   }
                   className="branding-input"
                   min="1"
-                  max="16"
+                  max="256"
                 />
               </div>
             </div>
@@ -1526,8 +1557,16 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
                     marginBottom: "0.75rem",
                   }}
                 >
-                  <label className="openai-section-label">REGENERATE ALL TITLES</label>
-                  <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+                  <label className="openai-section-label">
+                    REGENERATE ALL TITLES
+                  </label>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "1rem",
+                    }}
+                  >
                     {!generatingTitles ? (
                       <button
                         type="button"
@@ -1574,7 +1613,10 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
                       >
                         <span style={{ color: "#9ca3af" }}>Progress</span>
                         <span
-                          style={{ color: "var(--primary-color)", fontWeight: 600 }}
+                          style={{
+                            color: "var(--primary-color)",
+                            fontWeight: 600,
+                          }}
                         >
                           {titlesProgress}%
                         </span>
@@ -1620,7 +1662,8 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
                             className="output-line"
                             style={{
                               marginTop: "0.5rem",
-                              color: titlesWaiting !== null ? "#fbbf24" : "#4ade80",
+                              color:
+                                titlesWaiting !== null ? "#fbbf24" : "#4ade80",
                             }}
                           >
                             ⏳{" "}
@@ -1645,8 +1688,16 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
                     marginBottom: "0.75rem",
                   }}
                 >
-                  <label className="openai-section-label">REGENERATE ALL IMAGES</label>
-                  <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+                  <label className="openai-section-label">
+                    REGENERATE ALL IMAGES
+                  </label>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "1rem",
+                    }}
+                  >
                     {!isOptimizationRunning ? (
                       <button
                         type="button"
