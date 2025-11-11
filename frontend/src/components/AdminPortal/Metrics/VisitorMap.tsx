@@ -36,6 +36,7 @@ export default function VisitorMap({ locations, loading }: VisitorMapProps) {
   // Calculate marker size based on visit count
   const getMarkerRadius = (visitCount: number): number => {
     if (maxVisits === 0) return 8;
+    // Scale between 6 and 30 pixels based on visit count for more dramatic difference
     const minRadius = 6;
     const maxRadius = 30;
     const normalized = visitCount / maxVisits;
@@ -45,6 +46,7 @@ export default function VisitorMap({ locations, loading }: VisitorMapProps) {
   // Calculate marker opacity based on visit count
   const getMarkerOpacity = (visitCount: number): number => {
     if (maxVisits === 0) return 0.6;
+    // Scale between 0.4 and 0.9
     const normalized = visitCount / maxVisits;
     return 0.4 + (normalized * 0.5);
   };
@@ -75,8 +77,9 @@ export default function VisitorMap({ locations, loading }: VisitorMapProps) {
     );
   }
 
-  const defaultCenter: [number, number] = [20, 0]; // Center of world
-  const defaultZoom = 2;
+  // Center the map on the United States
+  const defaultCenter: [number, number] = [39.8, -98.6]; // Center of the United States
+  const defaultZoom = 3;
 
   return (
     <div className="visitor-map-wrapper">
@@ -85,19 +88,20 @@ export default function VisitorMap({ locations, loading }: VisitorMapProps) {
         zoom={defaultZoom}
         scrollWheelZoom={false}
         className="visitor-map"
-        style={{ height: '500px', width: '100%' }}
+        style={{ height: '400px', width: '100%' }}
       >
         <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          maxZoom={19}
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+          url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+          subdomains="abcd"
+          maxZoom={20}
         />
         {locations.map((location, index) => (
           <CircleMarker
             key={index}
             center={[location.latitude, location.longitude]}
             radius={getMarkerRadius(location.visit_count)}
-            fillColor={getComputedStyle(document.documentElement).getPropertyValue('--primary-color').trim() || '#4ade80'}
+            fillColor={getComputedStyle(document.documentElement).getPropertyValue('--secondary-color').trim() || '#3b82f6'}
             color="#ffffff"
             weight={2}
             opacity={getMarkerOpacity(location.visit_count)}
@@ -123,6 +127,24 @@ export default function VisitorMap({ locations, loading }: VisitorMapProps) {
           </CircleMarker>
         ))}
       </MapContainer>
+      <div className="visitor-map-legend">
+        <div className="legend-title">Visitor Activity</div>
+        <div className="legend-items">
+          <div className="legend-item">
+            <div className="legend-marker legend-marker-low"></div>
+            <span>Low</span>
+          </div>
+          <div className="legend-item">
+            <div className="legend-marker legend-marker-medium"></div>
+            <span>Medium</span>
+          </div>
+          <div className="legend-item">
+            <div className="legend-marker legend-marker-high"></div>
+            <span>High</span>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
+
