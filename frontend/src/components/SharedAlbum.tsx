@@ -10,6 +10,7 @@ import { API_URL } from '../config';
 import ExpiredLink from './Misc/ExpiredLink';
 import NotFound from './Misc/NotFound';
 import Header from './Header';
+import '../App.css'; // Import for main-content-title styles
 
 interface Photo {
   id: string;
@@ -44,6 +45,9 @@ export default function SharedAlbum() {
   const [expiresAt, setExpiresAt] = useState<string | null>(null);
   const [messages, setMessages] = useState<ToastMessage[]>([]);
   const [timeRemaining, setTimeRemaining] = useState<string>('');
+  const [siteName, setSiteName] = useState<string>('');
+  const [avatarPath, setAvatarPath] = useState<string>('');
+  const [avatarCacheBust, setAvatarCacheBust] = useState<number>(Date.now());
 
   useEffect(() => {
     const validateShareLink = async () => {
@@ -54,6 +58,16 @@ export default function SharedAlbum() {
       }
 
       try {
+        // Load branding
+        const brandingResponse = await fetch(`${API_URL}/api/branding`);
+        if (brandingResponse.ok) {
+          const branding = await brandingResponse.json();
+          setSiteName(branding.siteName);
+          setAvatarPath(branding.avatarPath);
+          setAvatarCacheBust(branding.avatarCacheBust);
+        }
+
+        // Load share link
         const response = await fetch(`${API_URL}/api/shared/${secretKey}`);
         
         if (response.status === 410) {
@@ -142,22 +156,22 @@ export default function SharedAlbum() {
       // Show warnings at specific times (only once per warning)
       if (secondsLeft === 5 && !shownWarnings.has('5s')) {
         shownWarnings.add('5s');
-        addMessage({ type: 'error', text: '⏰ 5 seconds left!' });
+        addMessage({ type: 'error', text: '5 seconds left!' });
       } else if (secondsLeft === 10 && !shownWarnings.has('10s')) {
         shownWarnings.add('10s');
-        addMessage({ type: 'error', text: '⏰ 10 seconds left!' });
+        addMessage({ type: 'error', text: '10 seconds left!' });
       } else if (secondsLeft === 30 && !shownWarnings.has('30s')) {
         shownWarnings.add('30s');
-        addMessage({ type: 'error', text: '⏰ 30 seconds left to look at this album!' });
+        addMessage({ type: 'error', text: '30 seconds left to look at this album!' });
       } else if (minutesLeft === 1 && secondsLeft >= 58 && secondsLeft <= 60 && !shownWarnings.has('1m')) {
         shownWarnings.add('1m');
-        addMessage({ type: 'error', text: '⏰ 1 minute left!' });
+        addMessage({ type: 'error', text: '1 minute left!' });
       } else if (minutesLeft === 2 && secondsLeft >= 118 && secondsLeft <= 120 && !shownWarnings.has('2m')) {
         shownWarnings.add('2m');
-        addMessage({ type: 'error', text: '⏰ 2 minutes left to look at this album!' });
+        addMessage({ type: 'error', text: '2 minutes left to look at this album!' });
       } else if (minutesLeft === 5 && secondsLeft >= 298 && secondsLeft <= 300 && !shownWarnings.has('5m')) {
         shownWarnings.add('5m');
-        addMessage({ type: 'error', text: '⏰ 5 minutes left to look at this album!' });
+        addMessage({ type: 'error', text: '5 minutes left to look at this album!' });
       }
     };
 
@@ -186,17 +200,29 @@ export default function SharedAlbum() {
         albums={[]} 
         externalLinks={[]} 
         currentAlbum={albumName}
-        siteName=""
-        avatarPath=""
-        avatarCacheBust={0}
+        siteName={siteName}
+        avatarPath={avatarPath}
+        avatarCacheBust={avatarCacheBust}
       />
-      <PhotoGrid album={albumName} initialPhotos={photos} />
+      <main className="main-content">
+        {albumName && (
+          <h1 className="main-content-title">
+            {albumName}
+          </h1>
+        )}
+        <PhotoGrid album={albumName} initialPhotos={photos} />
+      </main>
       
       {/* Countdown timer at bottom */}
       {timeRemaining && (
         <div className="countdown-timer">
           <span className="countdown-label">Time remaining:</span>
-          <span className={`countdown-value ${timeRemaining === 'EXPIRED' ? 'expired' : ''}`}>
+          <span className={`countdown-value ${
+            timeRemaining === 'EXPIRED' ? 'expired' : 
+            expiresAt && (new Date(expiresAt).getTime() - Date.now()) < 30000 ? 'critical' :
+            expiresAt && (new Date(expiresAt).getTime() - Date.now()) < 120000 ? 'warning' :
+            ''
+          }`}>
             {timeRemaining}
           </span>
         </div>
@@ -355,11 +381,10 @@ export default function SharedAlbum() {
           border-radius: 8px;
           backdrop-filter: blur(12px);
           -webkit-backdrop-filter: blur(12px);
-          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
           display: flex;
           align-items: center;
           gap: 1rem;
-          z-index: 1000;
+          z-index: 10;
         }
 
         .countdown-label {
@@ -375,6 +400,15 @@ export default function SharedAlbum() {
           color: #4ade80;
           min-width: 60px;
           text-align: center;
+          transition: color 0.3s ease;
+        }
+
+        .countdown-value.warning {
+          color: #f59e0b;
+        }
+
+        .countdown-value.critical {
+          color: #f87171;
         }
 
         .countdown-value.expired {
