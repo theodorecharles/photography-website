@@ -123,10 +123,80 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
   const [avatarPreviewUrl, setAvatarPreviewUrl] = useState<string | null>(null);
   const [savingLinks, setSavingLinks] = useState(false);
 
+  // Confirmation modal state
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [confirmConfig, setConfirmConfig] = useState<{
+    message: string;
+    onConfirm: () => void;
+  } | null>(null);
+
   // Refs for auto-scroll and scroll-into-view
   const optimizationOutputRef = useRef<HTMLDivElement>(null);
   const titlesOutputRef = useRef<HTMLDivElement>(null);
   const regenerateButtonRef = useRef<HTMLDivElement>(null);
+  const openAISectionRef = useRef<HTMLDivElement>(null);
+  const apiKeyInputRef = useRef<HTMLInputElement>(null);
+
+  // Helper function to show confirmation modal
+  const showConfirmation = (message: string): Promise<boolean> => {
+    return new Promise((resolve) => {
+      setConfirmConfig({
+        message,
+        onConfirm: () => {
+          setShowConfirmModal(false);
+          setConfirmConfig(null);
+          resolve(true);
+        },
+      });
+      setShowConfirmModal(true);
+      // Store reject function for cancel
+      const originalResolve = resolve;
+      (window as any).__modalResolve = originalResolve;
+    });
+  };
+
+  const handleModalCancel = () => {
+    setShowConfirmModal(false);
+    setConfirmConfig(null);
+    if ((window as any).__modalResolve) {
+      (window as any).__modalResolve(false);
+      delete (window as any).__modalResolve;
+    }
+  };
+
+  // Function to scroll to and highlight OpenAI API key input
+  const handleSetupOpenAI = () => {
+    // Expand the OpenAI section
+    setShowOpenAI(true);
+    
+    // Wait for the section to expand, then scroll and focus
+    setTimeout(() => {
+      if (openAISectionRef.current) {
+        const yOffset = -100; // Offset to account for header
+        const element = openAISectionRef.current;
+        const y =
+          element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+        window.scrollTo({ top: y, behavior: "smooth" });
+      }
+      
+      // Focus and highlight the input field
+      setTimeout(() => {
+        if (apiKeyInputRef.current) {
+          apiKeyInputRef.current.focus();
+          apiKeyInputRef.current.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.5)';
+          apiKeyInputRef.current.style.borderColor = 'rgba(59, 130, 246, 0.8)';
+          
+          // Remove highlight after 2 seconds
+          setTimeout(() => {
+            if (apiKeyInputRef.current) {
+              apiKeyInputRef.current.style.boxShadow = '';
+              apiKeyInputRef.current.style.borderColor = '';
+            }
+          }, 2000);
+        }
+      }, 400);
+    }, 100);
+  };
 
   useEffect(() => {
     loadConfig();
@@ -683,12 +753,10 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
   };
 
   const handleRestartBackend = async () => {
-    if (
-      !confirm(
-        "⚠️ Restart the backend server? This will temporarily disconnect all users."
-      )
-    )
-      return;
+    const confirmed = await showConfirmation(
+      "⚠️ Restart the backend server? This will temporarily disconnect all users."
+    );
+    if (!confirmed) return;
 
     setRestartingBackend(true);
 
@@ -725,12 +793,10 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
   };
 
   const handleRestartFrontend = async () => {
-    if (
-      !confirm(
-        "⚠️ Restart the frontend server? This requires manual restart if in development mode."
-      )
-    )
-      return;
+    const confirmed = await showConfirmation(
+      "⚠️ Restart the frontend server? This requires manual restart if in development mode."
+    );
+    if (!confirmed) return;
 
     setRestartingFrontend(true);
 
@@ -925,14 +991,12 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
   };
 
   const handleRunOptimization = async (force: boolean = false) => {
-    if (
-      !confirm(
-        force
-          ? "Force regenerate ALL images? This will take a while."
-          : "Run image optimization on all photos?"
-      )
-    )
-      return;
+    const confirmed = await showConfirmation(
+      force
+        ? "Force regenerate ALL images? This will take a while."
+        : "Run image optimization on all photos?"
+    );
+    if (!confirmed) return;
 
     setIsOptimizationRunning(true);
     setOptimizationComplete(false);
@@ -1522,7 +1586,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
         </div>
 
         {/* OpenAI Settings */}
-        <div className="config-group full-width">
+        <div className="config-group full-width" ref={openAISectionRef}>
           <div
             style={{
               display: "flex",
@@ -1580,6 +1644,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
               <div className="openai-section">
                 <label className="openai-section-label">API KEY</label>
                 <input
+                  ref={apiKeyInputRef}
                   type="password"
                   value={config.openai?.apiKey || ""}
                   onChange={(e) =>
@@ -2204,30 +2269,35 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
                     gap: "0.75rem",
                   }}
                 >
-                  {!generatingTitles ? (
+                  {!config.openai?.apiKey ? (
+                    <button
+                      type="button"
+                      onClick={handleSetupOpenAI}
+                      className="btn-secondary"
+                    >
+                      Set Up OpenAI
+                    </button>
+                  ) : !generatingTitles ? (
                     <>
                       <button
                         type="button"
                         onClick={() => {
                           handleGenerateTitles(false);
                         }}
-                        disabled={!config.openai?.apiKey}
                         className="btn-secondary"
                       >
                         Backfill Missing Titles
                       </button>
                       <button
                         type="button"
-                        onClick={() => {
-                          if (
-                            confirm(
-                              "⚠️ This will regenerate ALL image titles and overwrite any custom titles you have set. This action cannot be undone.\n\nAre you sure you want to continue?"
-                            )
-                          ) {
+                        onClick={async () => {
+                          const confirmed = await showConfirmation(
+                            "⚠️ This will regenerate ALL image titles and overwrite any custom titles you have set. This action cannot be undone.\n\nAre you sure you want to continue?"
+                          );
+                          if (confirmed) {
                             handleGenerateTitles(true);
                           }
                         }}
-                        disabled={!config.openai?.apiKey}
                         className="btn-force-regenerate"
                       >
                         Force Regenerate All
@@ -3118,6 +3188,74 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Confirmation Modal */}
+      {showConfirmModal && confirmConfig && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(0, 0, 0, 0.75)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 10000,
+            padding: "1rem",
+          }}
+          onClick={handleModalCancel}
+        >
+          <div
+            style={{
+              backgroundColor: "#1a1a1a",
+              border: "2px solid rgba(255, 255, 255, 0.2)",
+              borderRadius: "12px",
+              padding: "2rem",
+              maxWidth: "500px",
+              width: "100%",
+              boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5)",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div
+              style={{
+                color: "#e5e7eb",
+                fontSize: "1.1rem",
+                lineHeight: "1.6",
+                marginBottom: "2rem",
+                whiteSpace: "pre-wrap",
+              }}
+            >
+              {confirmConfig.message}
+            </div>
+            <div
+              style={{
+                display: "flex",
+                gap: "1rem",
+                justifyContent: "flex-end",
+              }}
+            >
+              <button
+                onClick={handleModalCancel}
+                className="btn-secondary"
+                style={{ minWidth: "100px" }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmConfig.onConfirm}
+                className="btn-primary"
+                style={{ minWidth: "100px" }}
+                autoFocus
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 };
