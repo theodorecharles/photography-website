@@ -6,6 +6,8 @@
   background-color: #252525;
   padding: 2rem 0;
   border-top: 1px solid #444;
+  position: relative;
+  z-index: 100;
 }
 
 .footer-content {

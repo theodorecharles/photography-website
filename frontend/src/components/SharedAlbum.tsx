@@ -204,7 +204,7 @@ export default function SharedAlbum() {
         avatarPath={avatarPath}
         avatarCacheBust={avatarCacheBust}
       />
-      <main className="main-content">
+      <main className="main-content" style={{ paddingTop: '0.5rem' }}>
         {albumName && (
           <h1 className="main-content-title">
             {albumName}
