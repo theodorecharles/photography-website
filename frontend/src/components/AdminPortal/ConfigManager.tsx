@@ -2249,7 +2249,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
                 </div>
               </div>
 
-              {generatingTitles && (
+              {generatingTitles && titlesOutput.length > 0 && (
                 <>
                   <div style={{ marginTop: "1rem" }}>
                     <div
