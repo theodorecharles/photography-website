@@ -72,8 +72,6 @@
 /* Album card styles */
 .album-card {
   position: relative;
-  /* Prevent scrolling on mobile during drag */
-  touch-action: none;
 }
 
 .album-card.unpublished {
@@ -276,8 +274,6 @@
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 1rem;
   margin-top: 1.25rem;
-  /* Prevent scrolling during drag operations */
-  touch-action: none;
 }
 
 @media (max-width: 1200px) {
@@ -453,8 +449,6 @@
 .album-photos {
   position: relative;
   transition: border-color 0.2s ease, background-color 0.2s ease;
-  /* Prevent scrolling during drag operations */
-  touch-action: none;
 }
 
 .album-photos.drag-over {
@@ -645,8 +639,6 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: 1.25rem;
-  /* Prevent scrolling during drag operations */
-  touch-action: none;
 }
 
 @media (max-width: 768px) {
@@ -1578,8 +1570,6 @@
   position: relative;
   /* Smooth transition for all animations */
   transition: transform 200ms ease;
-  /* Prevent scrolling on mobile during drag */
-  touch-action: none;
 }
 
 .admin-photo-item:active {
