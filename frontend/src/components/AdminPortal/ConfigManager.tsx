@@ -3449,21 +3449,6 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
                     </div>
 
                     <div className="branding-group">
-                      <label className="branding-label">Stream</label>
-                      <input
-                        type="text"
-                        value={config.analytics.openobserve.stream}
-                        onChange={(e) =>
-                          updateConfig(
-                            ["analytics", "openobserve", "stream"],
-                            e.target.value
-                          )
-                        }
-                        className="branding-input"
-                      />
-                    </div>
-
-                    <div className="branding-group">
                       <label className="branding-label">Username</label>
                       <input
                         type="text"
@@ -3485,6 +3470,21 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
                         onChange={(e) =>
                           updateConfig(
                             ["analytics", "openobserve", "password"],
+                            e.target.value
+                          )
+                        }
+                        className="branding-input"
+                      />
+                    </div>
+
+                    <div className="branding-group">
+                      <label className="branding-label">Stream</label>
+                      <input
+                        type="text"
+                        value={config.analytics.openobserve.stream}
+                        onChange={(e) =>
+                          updateConfig(
+                            ["analytics", "openobserve", "stream"],
                             e.target.value
                           )
                         }
