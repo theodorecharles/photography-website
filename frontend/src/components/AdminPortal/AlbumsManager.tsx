@@ -1575,38 +1575,37 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                   </label>
                   
                   {!localAlbums.find(a => a.name === selectedAlbum)?.published && (
-                    <>
-                      <button
-                        onClick={() => window.open(`/album/${selectedAlbum}`, '_blank')}
-                        className="btn-action btn-preview btn-action-item"
-                        title="Preview unpublished album"
-                      >
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                          <circle cx="12" cy="12" r="3"/>
-                        </svg>
-                        Preview Album
-                      </button>
-                      <button
-                        onClick={() => {
-                          console.log('Share button clicked for album:', selectedAlbum);
-                          setShareAlbumName(selectedAlbum);
-                          setShowShareModal(true);
-                        }}
-                        className="btn-action btn-share btn-action-item"
-                        title="Generate share link for unpublished album"
-                      >
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <circle cx="18" cy="5" r="3"/>
-                          <circle cx="6" cy="12" r="3"/>
-                          <circle cx="18" cy="19" r="3"/>
-                          <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
-                          <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
-                        </svg>
-                        Share Album
-                      </button>
-                    </>
+                    <button
+                      onClick={() => window.open(`/album/${selectedAlbum}`, '_blank')}
+                      className="btn-action btn-preview btn-action-item"
+                      title="Preview unpublished album"
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                        <circle cx="12" cy="12" r="3"/>
+                      </svg>
+                      Preview Album
+                    </button>
                   )}
+                  
+                  <button
+                    onClick={() => {
+                      console.log('Share button clicked for album:', selectedAlbum);
+                      setShareAlbumName(selectedAlbum);
+                      setShowShareModal(true);
+                    }}
+                    className="btn-action btn-share btn-action-item"
+                    title="Generate share link for album"
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <circle cx="18" cy="5" r="3"/>
+                      <circle cx="6" cy="12" r="3"/>
+                      <circle cx="18" cy="19" r="3"/>
+                      <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
+                      <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+                    </svg>
+                    Share Album
+                  </button>
                   
                   <button
                     onClick={() => handleDeleteAlbum(selectedAlbum)}
