@@ -14,9 +14,9 @@ import {
 } from '../../utils/analytics';
 import { cacheBustValue } from '../../config';
 import { fetchWithRateLimitCheck } from '../../utils/fetchWrapper';
+import ShareModal from './ShareModal';
 import './AlbumsManager.css';
 import './PhotoOrderControls.css';
-import ShareModal from './ShareModal';
 import {
   DndContext,
   closestCenter,
