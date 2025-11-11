@@ -1555,6 +1555,9 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
               onDragLeave={uploadingImages.length > 0 ? undefined : handleDragLeave}
               onDrop={uploadingImages.length > 0 ? undefined : handleDrop}
             >
+              <div style={{background: 'red', color: 'white', padding: '20px', fontSize: '24px', fontWeight: 'bold', marginBottom: '20px'}}>
+                🚨 SELECTED ALBUM: {selectedAlbum} 🚨
+              </div>
               <div className="photos-header">
                 <div className="album-actions-grid">
                   <label 
