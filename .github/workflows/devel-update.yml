@@ -20,3 +20,35 @@ jobs:
         run: |
           cd /home/ted/photography-website/
           ./restart.sh
+      
+      - name: Send failure notification
+        if: failure()
+        run: |
+          cd /home/ted/photography-website/
+          
+          # Read Telegram config
+          TELEGRAM_ENABLED=$(jq -r '.notifications.telegram.enabled // false' config/config.json)
+          
+          if [ "$TELEGRAM_ENABLED" = "true" ]; then
+            TELEGRAM_BOT_TOKEN=$(jq -r '.notifications.telegram.botToken // ""' config/config.json)
+            TELEGRAM_CHAT_ID=$(jq -r '.notifications.telegram.chatId // ""' config/config.json)
+            SITE_URL=$(jq -r '.environment.backend.allowedOrigins[0] // ""' config/config.json)
+            COMMIT_HASH=$(git rev-parse --short HEAD)
+            COMMIT_MSG=$(git log -1 --pretty=%B | head -n 1)
+            
+            if [ -n "$TELEGRAM_BOT_TOKEN" ] && [ -n "$TELEGRAM_CHAT_ID" ]; then
+              MESSAGE="❌ GitHub Actions FAILED on devel!
+
+          🌐 Branch: devel
+          🔗 URL: $SITE_URL
+          📦 Commit: $COMMIT_HASH
+          💬 $COMMIT_MSG
+          
+          Check GitHub Actions for details."
+              
+              curl -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+                   -d "chat_id=${TELEGRAM_CHAT_ID}" \
+                   -d "text=$MESSAGE" \
+                   --silent --output /dev/null || true
+            fi
+          fi
