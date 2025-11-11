@@ -235,8 +235,6 @@
 /* Floating SSE Output Toaster (Picture-in-Picture style) */
 .sse-toaster {
   position: fixed;
-  top: 80px;
-  right: 20px;
   width: 450px;
   max-width: calc(100vw - 40px);
   background: linear-gradient(135deg, #1a1a1a 0%, #0d0d0d 100%);
@@ -246,8 +244,38 @@
               0 0 0 1px rgba(255, 255, 255, 0.05);
   z-index: 9999;
   backdrop-filter: blur(10px);
+  transition: all 0.3s ease-out;
+  user-select: none;
+}
+
+/* Position variants */
+.sse-toaster.top-right {
+  top: 80px;
+  right: 20px;
   animation: slideInFromRight 0.3s ease-out;
-  transition: height 0.3s ease-out;
+}
+
+.sse-toaster.top-left {
+  top: 80px;
+  left: 20px;
+  animation: slideInFromLeft 0.3s ease-out;
+}
+
+.sse-toaster.bottom-right {
+  bottom: 20px;
+  right: 20px;
+  animation: slideInFromBottomRight 0.3s ease-out;
+}
+
+.sse-toaster.bottom-left {
+  bottom: 20px;
+  left: 20px;
+  animation: slideInFromBottomLeft 0.3s ease-out;
+}
+
+.sse-toaster.dragging {
+  opacity: 0.8;
+  transition: opacity 0.1s ease-out;
 }
 
 @keyframes slideInFromRight {
@@ -258,6 +286,39 @@
   to {
     opacity: 1;
     transform: translateX(0);
+  }
+}
+
+@keyframes slideInFromLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-100px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInFromBottomRight {
+  from {
+    opacity: 0;
+    transform: translate(100px, 100px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(0, 0);
+  }
+}
+
+@keyframes slideInFromBottomLeft {
+  from {
+    opacity: 0;
+    transform: translate(-100px, 100px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(0, 0);
   }
 }
 
@@ -314,6 +375,7 @@
   font-weight: 700;
   font-size: 1rem;
   margin-left: auto;
+  margin-right: 1.5rem;
 }
 
 .sse-toaster-actions {
@@ -333,7 +395,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1rem;
+  font-size: 0.7rem;
+  font-weight: 900;
+  line-height: 1;
   transition: all 0.2s ease;
   padding: 0;
 }
@@ -356,7 +420,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1;
   transition: all 0.2s ease;
   padding: 0;
 }
@@ -378,7 +444,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.875rem;
+  font-size: 0.65rem;
+  font-weight: 600;
+  line-height: 1;
   transition: all 0.2s ease;
   padding: 0;
 }
@@ -456,28 +524,6 @@
   color: #e5e7eb;
 }
 
-.sse-toaster-collapsed-preview {
-  padding: 1rem 1.25rem;
-  background: #000000;
-  border-radius: 0 0 12px 12px;
-  min-height: 60px;
-}
-
-.output-line-preview {
-  font-family: "Modern DOS", "Courier New", monospace;
-  font-size: 0.7rem;
-  line-height: 1.4;
-  color: #9ca3af;
-  margin-bottom: 0.25rem;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.output-line-preview:last-child {
-  margin-bottom: 0;
-}
-
 /* Scrollbar styling for toaster output */
 .sse-toaster-output::-webkit-scrollbar {
   width: 8px;
@@ -501,8 +547,14 @@
 @media (max-width: 768px) {
   .sse-toaster {
     width: calc(100vw - 40px);
-    right: 20px;
-    top: 70px;
+    top: 70px !important;
+    right: 20px !important;
+    left: auto !important;
+    bottom: auto !important;
+  }
+
+  .sse-toaster-header {
+    cursor: default !important;
   }
 
   .sse-toaster-output {
@@ -514,10 +566,10 @@
   }
 
   .sse-toaster.maximized {
-    top: 60px;
-    left: 10px;
-    right: 10px;
-    bottom: 10px;
+    top: 60px !important;
+    left: 10px !important;
+    right: 10px !important;
+    bottom: 10px !important;
     max-height: calc(100vh - 70px);
   }
 
