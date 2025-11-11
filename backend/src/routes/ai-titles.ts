@@ -8,6 +8,7 @@ import { spawn } from 'child_process';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { csrfProtection } from '../security.js';
+import { getDatabase } from '../database.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -76,10 +77,10 @@ router.get('/status', requireAuth, (req, res) => {
  */
 router.get('/check-missing', requireAuth, (req, res) => {
   try {
-    const metadataDb = getMetadataDb();
+    const db = getDatabase();
     
     // Count images without titles
-    const result = metadataDb.prepare(`
+    const result = db.prepare(`
       SELECT COUNT(*) as count
       FROM image_metadata
       WHERE title IS NULL OR title = ''
