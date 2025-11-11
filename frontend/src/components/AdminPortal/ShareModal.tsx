@@ -27,8 +27,9 @@ export default function ShareModal({ album, onClose }: ShareModalProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [generatedLink, setGeneratedLink] = useState<string | null>(null);
 
-  const handleCopyLink = async () => {
+  const handleGenerateLink = async () => {
     setLoading(true);
     setError(null);
     setCopied(false);
@@ -53,16 +54,24 @@ export default function ShareModal({ album, onClose }: ShareModalProps) {
 
       const data = await response.json();
       const url = `${SITE_URL}/shared/${data.shareLink.secretKey}`;
-      
-      // Copy to clipboard
-      await navigator.clipboard.writeText(url);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      setGeneratedLink(url);
     } catch (err) {
       console.error('Error generating share link:', err);
       setError(err instanceof Error ? err.message : 'Failed to generate share link');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleCopyClick = async () => {
+    if (!generatedLink) return;
+    
+    try {
+      await navigator.clipboard.writeText(generatedLink);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy link:', err);
     }
   };
 
@@ -104,15 +113,37 @@ export default function ShareModal({ album, onClose }: ShareModalProps) {
           </div>
 
           {error && <div className="share-error">{error}</div>}
-          {copied && <div className="share-success-inline">✓ Link copied to clipboard!</div>}
 
-          <button
-            className="copy-link-button"
-            onClick={handleCopyLink}
-            disabled={loading}
-          >
-            {loading ? 'Copying...' : 'Copy Link'}
-          </button>
+          {!generatedLink ? (
+            <button
+              className="generate-button"
+              onClick={handleGenerateLink}
+              disabled={loading}
+            >
+              {loading ? 'Generating...' : 'Generate Link'}
+            </button>
+          ) : (
+            <>
+              {copied && <div className="share-success-inline">✓ Copied!</div>}
+              
+              <div className="share-link-container">
+                <input
+                  type="text"
+                  value={generatedLink}
+                  readOnly
+                  onClick={(e) => (e.target as HTMLInputElement).select()}
+                  className="share-link-input"
+                />
+                <button
+                  className="copy-button"
+                  onClick={handleCopyClick}
+                  title="Copy to clipboard"
+                >
+                  {copied ? '✓' : 'Copy'}
+                </button>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>
