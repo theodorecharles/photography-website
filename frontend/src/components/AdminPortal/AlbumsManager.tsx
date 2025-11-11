@@ -91,17 +91,19 @@ const SortableAlbumCard: React.FC<SortableAlbumCardProps> = ({
     }
   };
 
-  const handleTouchEnd = () => {
+  const handleTouchEnd = (e: React.TouchEvent) => {
     // Only trigger onClick if it was a tap without movement
     if (touchStartPos.current && !hasMoved.current) {
+      e.preventDefault(); // Prevent click event from firing
       onClick();
     }
     touchStartPos.current = null;
     hasMoved.current = false;
   };
 
-  const handleClick = () => {
-    // For desktop, use normal click
+  const handleClick = (e: React.MouseEvent) => {
+    // For desktop only - don't fire if touch already handled it
+    if (e.detail === 0) return; // Triggered by keyboard or already prevented
     onClick();
   };
 
@@ -177,6 +179,8 @@ const SortablePhotoItem: React.FC<SortablePhotoItemProps> = ({
     const touch = e.touches[0];
     touchStartPos.current = { x: touch.clientX, y: touch.clientY };
     hasMoved.current = false;
+    // Close overlay if tapping on a different photo or already open
+    setShowOverlay(false);
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
@@ -189,12 +193,14 @@ const SortablePhotoItem: React.FC<SortablePhotoItemProps> = ({
     // If moved more than 5px, mark as scrolling/dragging
     if (deltaX > 5 || deltaY > 5) {
       hasMoved.current = true;
+      setShowOverlay(false); // Hide overlay if user starts scrolling/dragging
     }
   };
 
-  const handleTouchEnd = () => {
+  const handleTouchEnd = (e: React.TouchEvent) => {
     // Only show overlay if it was a tap without movement
     if (touchStartPos.current && !hasMoved.current) {
+      e.preventDefault(); // Prevent ghost clicks
       setShowOverlay(true);
     }
     touchStartPos.current = null;

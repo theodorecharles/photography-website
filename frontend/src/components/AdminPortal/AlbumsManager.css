@@ -677,21 +677,24 @@
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
 }
 
-.admin-photo-item:hover .photo-overlay {
-  opacity: 1;
+/* Only show hover on desktop, not on touch devices */
+@media (hover: hover) and (pointer: fine) {
+  .admin-photo-item:hover .photo-overlay {
+    opacity: 1;
+  }
 }
 
-/* On touch devices, only show overlay after press-and-hold (handled by JS) */
+/* On touch devices, only show overlay when explicitly activated by JS */
 @media (hover: none) and (pointer: coarse) {
   .photo-overlay {
-    opacity: 0;
+    opacity: 0 !important;
     pointer-events: none;
     transition: opacity 0.2s ease;
   }
   
   /* Show overlay when active class is added via JS */
   .admin-photo-item.show-overlay .photo-overlay {
-    opacity: 1;
+    opacity: 1 !important;
     pointer-events: none;
   }
   
