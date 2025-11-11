@@ -534,6 +534,9 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
 
         // Success! Sync parent state with database
         await loadAlbums();
+        
+        // Dispatch global event to update navigation dropdown
+        window.dispatchEvent(new Event('albums-updated'));
       } catch (error) {
         console.error('Error saving album order:', error);
         setMessage({ type: 'error', text: 'Failed to save album order' });
