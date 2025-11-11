@@ -77,6 +77,20 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
     setNumColumns(getNumColumns(photos.length));
   }, [photos.length]);
 
+  // Preload first 6 thumbnail images for faster initial render
+  useEffect(() => {
+    if (photos.length > 0) {
+      const preloadCount = Math.min(6, photos.length);
+      photos.slice(0, preloadCount).forEach((photo) => {
+        const link = document.createElement('link');
+        link.rel = 'preload';
+        link.as = 'image';
+        link.href = photo.thumbnail;
+        document.head.appendChild(link);
+      });
+    }
+  }, [photos]);
+
   // Auto-open photo from URL query parameter
   useEffect(() => {
     if (photos.length > 0 && !selectedPhoto) {
@@ -105,6 +119,25 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
       try {
         setLoading(true);
 
+        // Try to fetch from static JSON first for better performance
+        const staticJsonUrl = `/albums-data/${album === "homepage" ? "homepage" : album}.json`;
+        
+        try {
+          const staticResponse = await fetch(staticJsonUrl);
+          if (staticResponse.ok) {
+            const staticPhotos = await staticResponse.json();
+            console.log(`✨ Loaded ${staticPhotos.length} photos from static JSON (${album})`);
+            setPhotos(staticPhotos);
+            setError(null);
+            setLoading(false);
+            return;
+          }
+        } catch (staticError) {
+          // Static JSON not available or failed, fall back to API
+          console.log(`⚠️  Static JSON unavailable for ${album}, falling back to API`);
+        }
+
+        // Fallback to API if static JSON is not available
         if (album === "homepage") {
           // Use the random photos endpoint for homepage
           const response = await fetchWithRateLimitCheck(

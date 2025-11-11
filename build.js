@@ -57,6 +57,20 @@ Sitemap: ${siteUrl}/sitemap.xml
 fs.writeFileSync(robotsTxtPath, robotsTxt);
 console.log(`✓ Updated robots.txt with sitemap: ${siteUrl}/sitemap.xml`);
 
+// Generate static JSON files for albums (requires backend database)
+console.log('\nGenerating static JSON files...');
+try {
+  execSync('node scripts/generate-static-json.js', {
+    cwd: __dirname,
+    stdio: 'inherit',
+    env: { ...process.env }
+  });
+  console.log('✓ Static JSON files generated');
+} catch (error) {
+  console.warn('⚠ Warning: Static JSON generation failed (this is okay if database is not available yet)');
+  console.warn('  You can generate them later with: npm run generate-static-json');
+}
+
 // Build frontend
 console.log('\nBuilding frontend...');
 try {
