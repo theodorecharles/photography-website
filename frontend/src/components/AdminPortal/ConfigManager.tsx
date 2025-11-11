@@ -64,7 +64,6 @@ interface AnalyticsConfig {
     username: string;
     password: string;
   };
-  hmacSecret: string;
 }
 
 interface AIConfig {
@@ -3196,50 +3195,52 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
                 admin access
               </p>
               <div className="config-grid-inner">
-                <div className="branding-group">
-                  <label className="branding-label">Google Client ID</label>
-                  <input
-                    type="text"
-                    value={config.environment.auth.google.clientId}
-                    onChange={(e) =>
-                      updateConfig(
-                        ["environment", "auth", "google", "clientId"],
-                        e.target.value
-                      )
-                    }
-                    className="branding-input"
-                  />
+                <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                  <div className="branding-group" style={{ margin: 0 }}>
+                    <label className="branding-label">Google Client ID</label>
+                    <input
+                      type="text"
+                      value={config.environment.auth.google.clientId}
+                      onChange={(e) =>
+                        updateConfig(
+                          ["environment", "auth", "google", "clientId"],
+                          e.target.value
+                        )
+                      }
+                      className="branding-input"
+                    />
+                  </div>
+
+                  <div className="branding-group" style={{ margin: 0 }}>
+                    <label className="branding-label">Google Client Secret</label>
+                    <PasswordInput
+                      value={config.environment.auth.google.clientSecret}
+                      onChange={(e) =>
+                        updateConfig(
+                          ["environment", "auth", "google", "clientSecret"],
+                          e.target.value
+                        )
+                      }
+                      className="branding-input"
+                    />
+                  </div>
+
+                  <div className="branding-group" style={{ margin: 0 }}>
+                    <label className="branding-label">Session Secret</label>
+                    <PasswordInput
+                      value={config.environment.auth.sessionSecret}
+                      onChange={(e) =>
+                        updateConfig(
+                          ["environment", "auth", "sessionSecret"],
+                          e.target.value
+                        )
+                      }
+                      className="branding-input"
+                    />
+                  </div>
                 </div>
 
-                <div className="branding-group">
-                  <label className="branding-label">Google Client Secret</label>
-                  <PasswordInput
-                    value={config.environment.auth.google.clientSecret}
-                    onChange={(e) =>
-                      updateConfig(
-                        ["environment", "auth", "google", "clientSecret"],
-                        e.target.value
-                      )
-                    }
-                    className="branding-input"
-                  />
-                </div>
-
-                <div className="branding-group">
-                  <label className="branding-label">Session Secret</label>
-                  <PasswordInput
-                    value={config.environment.auth.sessionSecret}
-                    onChange={(e) =>
-                      updateConfig(
-                        ["environment", "auth", "sessionSecret"],
-                        e.target.value
-                      )
-                    }
-                    className="branding-input"
-                  />
-                </div>
-
-                <div className="branding-group full-width">
+                <div className="branding-group" style={{ margin: 0 }}>
                   <label className="branding-label">Authorized Emails</label>
                   {config.environment.auth.authorizedEmails.map(
                     (email, index) => (
@@ -3340,31 +3341,6 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
               </p>
               <div className="config-grid-inner">
                 <div className="branding-group">
-                  <label className="branding-label">Script Path</label>
-                  <input
-                    type="text"
-                    value={config.analytics.scriptPath}
-                    onChange={(e) =>
-                      updateConfig(["analytics", "scriptPath"], e.target.value)
-                    }
-                    className="branding-input"
-                    placeholder="/analytics.js"
-                  />
-                </div>
-
-                <div className="branding-group">
-                  <label className="branding-label">HMAC Secret</label>
-                  <PasswordInput
-                    value={config.analytics.hmacSecret}
-                    onChange={(e) =>
-                      updateConfig(["analytics", "hmacSecret"], e.target.value)
-                    }
-                    className="branding-input"
-                    placeholder="Secret key for HMAC"
-                  />
-                </div>
-
-                <div className="branding-group full-width">
                   <label className="branding-label">
                     Enable OpenObserve Integration
                   </label>
@@ -3422,6 +3398,19 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
                       </span>
                     </div>
                   </div>
+                </div>
+
+                <div className="branding-group">
+                  <label className="branding-label">Script Path</label>
+                  <input
+                    type="text"
+                    value={config.analytics.scriptPath}
+                    onChange={(e) =>
+                      updateConfig(["analytics", "scriptPath"], e.target.value)
+                    }
+                    className="branding-input"
+                    placeholder="/analytics.js"
+                  />
                 </div>
 
                 {config.analytics.openobserve.enabled && (
