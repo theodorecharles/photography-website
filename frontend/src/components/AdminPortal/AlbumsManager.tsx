@@ -243,7 +243,7 @@ interface UploadingImage {
 interface AlbumsManagerProps {
   albums: Album[];
   loadAlbums: () => Promise<void>;
-  setMessage: (message: { type: 'success' | 'error'; text: string } | null) => void;
+  setMessage: (message: { type: 'success' | 'error'; text: string }) => void;
 }
 
 const AlbumsManager: React.FC<AlbumsManagerProps> = ({

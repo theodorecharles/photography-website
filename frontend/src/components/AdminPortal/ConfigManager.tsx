@@ -70,7 +70,7 @@ interface ConfigData {
 }
 
 interface ConfigManagerProps {
-  setMessage: (message: { type: 'success' | 'error'; text: string } | null) => void;
+  setMessage: (message: { type: 'success' | 'error'; text: string }) => void;
 }
 
 const ConfigManager: React.FC<ConfigManagerProps> = ({ setMessage }) => {
