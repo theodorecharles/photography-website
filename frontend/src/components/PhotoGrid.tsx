@@ -16,6 +16,7 @@ import NotFound from "./Misc/NotFound";
 interface PhotoGridProps {
   album: string;
   onAlbumNotFound?: () => void;
+  initialPhotos?: Photo[];
 }
 
 interface Photo {
@@ -34,7 +35,7 @@ interface Photo {
   exif?: any; // EXIF data from exifr library
 }
 
-const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound }) => {
+const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPhotos }) => {
   const location = useLocation();
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
@@ -92,6 +93,14 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound }) => {
   }, [photos]);
 
   useEffect(() => {
+    // If initialPhotos provided, use them directly (for shared albums)
+    if (initialPhotos) {
+      setPhotos(initialPhotos);
+      setLoading(false);
+      setError(null);
+      return;
+    }
+
     const fetchPhotos = async () => {
       try {
         setLoading(true);
@@ -147,7 +156,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound }) => {
     };
 
     fetchPhotos();
-  }, [album, queryString]);
+  }, [album, queryString, initialPhotos]);
 
   const handleImageLoad = (
     e: React.SyntheticEvent<HTMLImageElement>,

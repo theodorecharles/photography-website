@@ -530,6 +530,139 @@ export function updateAlbumSortOrder(albumOrders: { name: string; sort_order: nu
 }
 
 /**
+ * Create a share link for an album
+ */
+export function createShareLink(album: string, expiresAt: string | null): {
+  id: number;
+  album: string;
+  secret_key: string;
+  expires_at: string | null;
+  created_at: string;
+} {
+  const db = getDatabase();
+  
+  // Generate a secure random secret key (32 bytes = 64 hex characters)
+  const crypto = require('crypto');
+  const secretKey = crypto.randomBytes(32).toString('hex');
+  
+  const stmt = db.prepare(`
+    INSERT INTO share_links (album, secret_key, expires_at)
+    VALUES (?, ?, ?)
+  `);
+  
+  const result = stmt.run(album, secretKey, expiresAt);
+  
+  // Return the created share link
+  const getStmt = db.prepare(`
+    SELECT * FROM share_links WHERE id = ?
+  `);
+  
+  return getStmt.get(result.lastInsertRowid) as any;
+}
+
+/**
+ * Get share link by secret key
+ */
+export function getShareLinkBySecret(secretKey: string): {
+  id: number;
+  album: string;
+  secret_key: string;
+  expires_at: string | null;
+  created_at: string;
+} | undefined {
+  const db = getDatabase();
+  
+  const stmt = db.prepare(`
+    SELECT * FROM share_links 
+    WHERE secret_key = ?
+  `);
+  
+  return stmt.get(secretKey) as any;
+}
+
+/**
+ * Check if a share link is expired
+ */
+export function isShareLinkExpired(shareLink: { expires_at: string | null }): boolean {
+  // If expires_at is null, link never expires
+  if (!shareLink.expires_at) {
+    return false;
+  }
+  
+  const now = new Date();
+  const expiresAt = new Date(shareLink.expires_at);
+  
+  return now > expiresAt;
+}
+
+/**
+ * Delete a share link by ID
+ */
+export function deleteShareLink(id: number): boolean {
+  const db = getDatabase();
+  
+  const stmt = db.prepare(`
+    DELETE FROM share_links 
+    WHERE id = ?
+  `);
+  
+  const result = stmt.run(id);
+  return result.changes > 0;
+}
+
+/**
+ * Delete all share links for an album
+ */
+export function deleteShareLinksForAlbum(album: string): number {
+  const db = getDatabase();
+  
+  const stmt = db.prepare(`
+    DELETE FROM share_links 
+    WHERE album = ?
+  `);
+  
+  const result = stmt.run(album);
+  return result.changes;
+}
+
+/**
+ * Get all share links for an album
+ */
+export function getShareLinksForAlbum(album: string): Array<{
+  id: number;
+  album: string;
+  secret_key: string;
+  expires_at: string | null;
+  created_at: string;
+}> {
+  const db = getDatabase();
+  
+  const stmt = db.prepare(`
+    SELECT * FROM share_links 
+    WHERE album = ?
+    ORDER BY created_at DESC
+  `);
+  
+  return stmt.all(album) as any[];
+}
+
+/**
+ * Delete expired share links (cleanup function)
+ */
+export function deleteExpiredShareLinks(): number {
+  const db = getDatabase();
+  
+  const stmt = db.prepare(`
+    DELETE FROM share_links 
+    WHERE expires_at IS NOT NULL 
+    AND expires_at < datetime('now')
+  `);
+  
+  const result = stmt.run();
+  return result.changes;
+}
+
+/**
  * Close the database connection
  */
 export function closeDatabase(): void {
