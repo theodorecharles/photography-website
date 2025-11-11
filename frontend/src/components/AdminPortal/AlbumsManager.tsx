@@ -130,6 +130,67 @@ const SortablePhotoItem: React.FC<SortablePhotoItemProps> = ({
     isDragging,
   } = useSortable({ id: photo.id });
 
+  const [showOverlay, setShowOverlay] = useState(false);
+  const touchTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const touchStartPos = useRef<{ x: number; y: number } | null>(null);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    const touch = e.touches[0];
+    touchStartPos.current = { x: touch.clientX, y: touch.clientY };
+    
+    // Set timer to show overlay after 250ms
+    touchTimerRef.current = setTimeout(() => {
+      setShowOverlay(true);
+    }, 250);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!touchStartPos.current || !touchTimerRef.current) return;
+    
+    const touch = e.touches[0];
+    const deltaX = Math.abs(touch.clientX - touchStartPos.current.x);
+    const deltaY = Math.abs(touch.clientY - touchStartPos.current.y);
+    
+    // If moved more than 5px, cancel the overlay show (user is scrolling)
+    if (deltaX > 5 || deltaY > 5) {
+      clearTimeout(touchTimerRef.current);
+      touchTimerRef.current = null;
+      touchStartPos.current = null;
+    }
+  };
+
+  const handleTouchEnd = () => {
+    if (touchTimerRef.current) {
+      clearTimeout(touchTimerRef.current);
+      touchTimerRef.current = null;
+    }
+    touchStartPos.current = null;
+  };
+
+  const handleTouchCancel = () => {
+    if (touchTimerRef.current) {
+      clearTimeout(touchTimerRef.current);
+      touchTimerRef.current = null;
+    }
+    touchStartPos.current = null;
+    setShowOverlay(false);
+  };
+
+  // Close overlay when tapping outside
+  const handleOverlayClick = (e: React.MouseEvent) => {
+    if ((e.target as HTMLElement).classList.contains('photo-overlay')) {
+      setShowOverlay(false);
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      if (touchTimerRef.current) {
+        clearTimeout(touchTimerRef.current);
+      }
+    };
+  }, []);
+
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
@@ -142,7 +203,11 @@ const SortablePhotoItem: React.FC<SortablePhotoItemProps> = ({
     <div
       ref={setNodeRef}
       style={style}
-      className={`admin-photo-item ${isDragging ? 'dragging' : ''}`}
+      className={`admin-photo-item ${isDragging ? 'dragging' : ''} ${showOverlay ? 'show-overlay' : ''}`}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      onTouchCancel={handleTouchCancel}
       {...attributes}
       {...listeners}
     >
@@ -152,7 +217,7 @@ const SortablePhotoItem: React.FC<SortablePhotoItemProps> = ({
         className="admin-photo-thumbnail"
       />
 
-      <div className="photo-overlay">
+      <div className="photo-overlay" onClick={handleOverlayClick}>
         <div className="photo-actions">
           <button
             onClick={(e) => {
