@@ -1018,9 +1018,23 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
     setExternalLinks(newLinks);
   };
 
+  const handleCancelLinks = async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/external-links`, {
+        credentials: "include",
+      });
+      const data = await res.json();
+      setExternalLinks(data.links || []);
+      setMessage({ type: "success", text: "Changes cancelled" });
+    } catch (err) {
+      console.error("Failed to reload external links:", err);
+      setMessage({ type: "error", text: "Failed to cancel changes" });
+    }
+  };
+
   const handleSaveLinks = async () => {
     setSavingLinks(true);
-
+    
     try {
       const res = await fetch(`${API_URL}/api/external-links`, {
         method: "PUT",
@@ -1644,6 +1658,13 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
             <div className="section-actions">
               <button onClick={handleAddLink} className="btn-secondary">
                 + Add Link
+              </button>
+              <button
+                onClick={handleCancelLinks}
+                className="btn-secondary"
+                disabled={savingLinks}
+              >
+                Cancel
               </button>
               <button
                 onClick={handleSaveLinks}
