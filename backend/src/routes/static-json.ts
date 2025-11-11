@@ -7,9 +7,18 @@ import { Router, Request, Response } from "express";
 import fs from "fs";
 import path from "path";
 import { getAllAlbums, getImagesInAlbum, getImagesFromPublishedAlbums } from "../database.js";
-import { requireAuth } from "../middleware/auth.js";
 
 const router = Router();
+
+/**
+ * Authentication middleware
+ */
+const requireAuth = (req: Request, res: Response, next: Function) => {
+  if (req.isAuthenticated && req.isAuthenticated()) {
+    return next();
+  }
+  res.status(401).json({ error: 'Unauthorized' });
+};
 
 /**
  * Get the output directory for static JSON files
@@ -65,7 +74,8 @@ export function generateStaticJSONFiles(appRoot: string): { success: boolean; er
     ensureOutputDir(outputDir);
 
     // Get all albums
-    const albums = getAllAlbums();
+    const albumsData = getAllAlbums();
+    const albums = albumsData.map(a => a.name);
     console.log(`[Static JSON] Found ${albums.length} albums`);
 
     // Generate JSON for each album
