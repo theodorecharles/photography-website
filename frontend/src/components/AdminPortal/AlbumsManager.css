@@ -621,12 +621,12 @@
   box-shadow: 0 4px 12px rgba(74, 222, 128, 0.2);
 }
 
-.btn-action.btn-share {
+.btn-action.btn-generate-link {
   border-color: rgba(139, 92, 246, 0.3);
   color: #a78bfa;
 }
 
-.btn-action.btn-share:hover {
+.btn-action.btn-generate-link:hover {
   background: rgba(139, 92, 246, 0.1);
   border-color: #8b5cf6;
   transform: translateY(-1px);
