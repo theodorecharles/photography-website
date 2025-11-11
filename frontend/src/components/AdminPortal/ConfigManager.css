@@ -307,3 +307,10 @@
   padding-top: 1rem;
   padding-bottom: 1rem;
 }
+
+/* Regenerate Sections Grid - Side by Side on Desktop */
+@media (min-width: 769px) {
+  .regenerate-sections-grid {
+    grid-template-columns: 1fr 1fr !important;
+  }
+}

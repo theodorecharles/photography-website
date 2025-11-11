@@ -105,6 +105,25 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
       try {
         setLoading(true);
 
+        // Try to fetch from static JSON first for better performance
+        const staticJsonUrl = `/albums-data/${album === "homepage" ? "homepage" : album}.json`;
+        
+        try {
+          const staticResponse = await fetch(staticJsonUrl);
+          if (staticResponse.ok) {
+            const staticPhotos = await staticResponse.json();
+            console.log(`✨ Loaded ${staticPhotos.length} photos from static JSON (${album})`);
+            setPhotos(staticPhotos);
+            setError(null);
+            setLoading(false);
+            return;
+          }
+        } catch (staticError) {
+          // Static JSON not available or failed, fall back to API
+          console.log(`⚠️  Static JSON unavailable for ${album}, falling back to API`);
+        }
+
+        // Fallback to API if static JSON is not available
         if (album === "homepage") {
           // Use the random photos endpoint for homepage
           const response = await fetchWithRateLimitCheck(

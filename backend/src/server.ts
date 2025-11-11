@@ -44,6 +44,7 @@ import aiTitlesRouter from "./routes/ai-titles.ts";
 import systemRouter from "./routes/system.ts";
 import shareLinksRouter from "./routes/share-links.ts";
 import previewGridRouter from "./routes/preview-grid.ts";
+import staticJsonRouter from "./routes/static-json.ts";
 
 // Get the current directory path for ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -272,6 +273,7 @@ app.use(
 // Store directory paths in app for use in routes
 app.set("photosDir", photosDir);
 app.set("optimizedDir", optimizedDir);
+app.set("appRoot", path.resolve(__dirname, '../../'));
 
 // Register route handlers
 // Note: CSRF protection is applied inside individual routers that need it
@@ -286,6 +288,7 @@ app.use('/api/ai-titles', aiTitlesRouter);
 app.use('/api/system', systemRouter);
 app.use('/api/share-links', shareLinksRouter);
 app.use('/api/preview-grid', previewGridRouter);
+app.use('/api/static-json', staticJsonRouter);
 app.use(albumsRouter);
 app.use('/api/albums', albumManagementRouter);
 app.use(externalPagesRouter);

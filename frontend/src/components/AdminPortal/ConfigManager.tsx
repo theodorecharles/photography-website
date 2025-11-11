@@ -2374,8 +2374,17 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
               </div>
             </div>
 
+            {/* Title Generation and Optimized Images Grid */}
+            <div style={{ 
+              display: "grid", 
+              gridTemplateColumns: "1fr",
+              gap: "2rem",
+              marginBottom: "2rem"
+            }}
+            className="regenerate-sections-grid">
+            
             {/* Force Regenerate All Titles */}
-            <div className="openai-section" style={{ marginBottom: "2rem" }}>
+            <div className="openai-section" style={{ marginBottom: "0" }}>
               <label className="openai-section-label" style={{ display: "block", marginBottom: "0.75rem" }}>TITLE GENERATION</label>
               <div
                 style={{
@@ -2518,10 +2527,10 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
               )}
             </div>
 
-            {/* Force Regenerate All Images */}
-            <div className="openai-section" style={{ marginBottom: "2rem" }}>
+            {/* Optimized Images */}
+            <div className="openai-section" style={{ marginBottom: "0" }}>
               <label className="openai-section-label" style={{ display: "block", marginBottom: "0.75rem" }}>
-                REGENERATE ALL IMAGES
+                OPTIMIZED IMAGES
               </label>
               <div
                 style={{
@@ -2635,6 +2644,9 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
                 </>
               )}
             </div>
+            
+            </div>
+            {/* End Title Generation and Optimized Images Grid */}
 
             {/* Backend Settings */}
             <div className="openai-section" style={{ marginBottom: "2rem" }}>
