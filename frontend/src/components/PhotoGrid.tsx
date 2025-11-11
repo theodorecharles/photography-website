@@ -369,7 +369,12 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
   );
 
   if (loading) {
-    return <div className="loading">Loading photos...</div>;
+    return (
+      <div className="photo-grid-loading">
+        <div className="loading-spinner"></div>
+        <p>Loading photos...</p>
+      </div>
+    );
   }
 
   if (error) {
