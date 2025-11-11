@@ -72,6 +72,10 @@
 /* Album card styles */
 .album-card {
   position: relative;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }
 
 .album-card.unpublished {
@@ -670,19 +674,26 @@
   opacity: 1;
 }
 
-/* Make overlay visible on touch devices (mobile/tablet) */
+/* On touch devices, only show overlay after press-and-hold (handled by JS) */
 @media (hover: none) and (pointer: coarse) {
   .photo-overlay {
-    opacity: 1;
-    pointer-events: none; /* Overlay itself doesn't capture, but children do */
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
   }
   
-  .photo-overlay .photo-actions {
-    pointer-events: auto; /* Buttons are clickable */
+  /* Show overlay when active class is added via JS */
+  .admin-photo-item.show-overlay .photo-overlay {
+    opacity: 1;
+    pointer-events: none;
+  }
+  
+  .admin-photo-item.show-overlay .photo-overlay .photo-actions {
+    pointer-events: auto;
   }
   
   /* Prevent image from capturing touches when overlay is visible */
-  .admin-photo-item .admin-photo-thumbnail {
+  .admin-photo-item.show-overlay .admin-photo-thumbnail {
     pointer-events: none;
   }
 }
