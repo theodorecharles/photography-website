@@ -130,18 +130,22 @@ export default function SharedAlbum() {
       const minutesLeft = Math.floor(timeLeft / 60000);
       const hoursLeft = Math.floor(timeLeft / 3600000);
 
-      // Update countdown display
-      if (timeLeft <= 0) {
-        setTimeRemaining('EXPIRED');
-      } else if (hoursLeft > 0) {
-        const mins = Math.floor((timeLeft % 3600000) / 60000);
-        const secs = Math.floor((timeLeft % 60000) / 1000);
-        setTimeRemaining(`${hoursLeft}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`);
-      } else if (minutesLeft > 0) {
-        const secs = Math.floor((timeLeft % 60000) / 1000);
-        setTimeRemaining(`${minutesLeft}:${secs.toString().padStart(2, '0')}`);
+      // Update countdown display - only show when 30 minutes or less remain
+      if (minutesLeft <= 30) {
+        if (timeLeft <= 0) {
+          setTimeRemaining('EXPIRED');
+        } else if (hoursLeft > 0) {
+          const mins = Math.floor((timeLeft % 3600000) / 60000);
+          const secs = Math.floor((timeLeft % 60000) / 1000);
+          setTimeRemaining(`${hoursLeft}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`);
+        } else if (minutesLeft > 0) {
+          const secs = Math.floor((timeLeft % 60000) / 1000);
+          setTimeRemaining(`${minutesLeft}:${secs.toString().padStart(2, '0')}`);
+        } else {
+          setTimeRemaining(`0:${secondsLeft.toString().padStart(2, '0')}`);
+        }
       } else {
-        setTimeRemaining(`0:${secondsLeft.toString().padStart(2, '0')}`);
+        setTimeRemaining(''); // Hide timer when more than 30 minutes left
       }
 
       if (timeLeft <= 0 && !shownWarnings.has('expired')) {
