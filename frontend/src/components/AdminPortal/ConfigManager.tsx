@@ -5,6 +5,8 @@
 
 import { useState, useEffect, useRef } from "react";
 import "./ConfigManager.css";
+import "./BrandingManager.css";
+import "./LinksManager.css";
 import { BrandingConfig, ExternalLink } from "./types";
 import {
   trackBrandingUpdate,
@@ -470,6 +472,12 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
         return (
           JSON.stringify(config.environment.auth) !==
           JSON.stringify(originalConfig.environment.auth)
+        );
+
+      case "Analytics":
+        return (
+          JSON.stringify(config.analytics) !==
+          JSON.stringify(originalConfig.analytics)
         );
 
       default:
@@ -1200,21 +1208,43 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
             }}
             onClick={() => setShowBranding(!showBranding)}
           >
-            <h3 className="config-section-title" style={{ margin: 0 }}>
-              {showBranding ? "▼" : "▶"} Branding
+            <h3
+              className="config-section-title"
+              style={{
+                margin: 0,
+                display: "flex",
+                alignItems: "center",
+                gap: "0.5rem",
+              }}
+            >
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                style={{
+                  transition: "transform 0.2s",
+                  transform: showBranding ? "rotate(90deg)" : "rotate(0deg)",
+                }}
+              >
+                <polyline points="9 18 15 12 9 6" />
+              </svg>
+              Branding
             </h3>
             <span style={{ color: "#888", fontSize: "0.9rem" }}>
               {showBranding ? "Click to collapse" : "Click to expand"}
             </span>
           </div>
-          <p
-            className="config-section-description"
-            style={{ marginTop: "0.5rem" }}
-          >
-            Customize your site's appearance, colors, and branding
-          </p>
 
-          {showBranding && (
+          <div 
+            className={`collapsible-content ${showBranding ? 'expanded' : 'collapsed'}`}
+            style={{ 
+              maxHeight: showBranding ? '10000px' : '0',
+              paddingTop: showBranding ? '1rem' : '0'
+            }}
+          >
             <div className="branding-grid">
               <div className="branding-group">
                 <div className="avatar-upload-container">
@@ -1342,7 +1372,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
                 </button>
               </div>
             </div>
-          )}
+          </div>
         </div>
 
         {/* External Links Settings */}
@@ -1361,22 +1391,43 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
             }}
             onClick={() => setShowLinks(!showLinks)}
           >
-            <h3 className="config-section-title" style={{ margin: 0 }}>
-              {showLinks ? "▼" : "▶"} Links
+            <h3
+              className="config-section-title"
+              style={{
+                margin: 0,
+                display: "flex",
+                alignItems: "center",
+                gap: "0.5rem",
+              }}
+            >
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                style={{
+                  transition: "transform 0.2s",
+                  transform: showLinks ? "rotate(90deg)" : "rotate(0deg)",
+                }}
+              >
+                <polyline points="9 18 15 12 9 6" />
+              </svg>
+              Links
             </h3>
             <span style={{ color: "#888", fontSize: "0.9rem" }}>
               {showLinks ? "Click to collapse" : "Click to expand"}
             </span>
           </div>
-          <p
-            className="config-section-description"
-            style={{ marginTop: "0.5rem" }}
-          >
-            Manage links shown in the navigation menu
-          </p>
 
-          {showLinks && (
-            <>
+          <div 
+            className={`collapsible-content ${showLinks ? 'expanded' : 'collapsed'}`}
+            style={{ 
+              maxHeight: showLinks ? '10000px' : '0',
+              paddingTop: showLinks ? '1rem' : '0'
+            }}
+          >
               <div className="links-list">
                 {externalLinks.map((link, index) => (
                   <div key={index} className="link-wrapper">
@@ -1463,8 +1514,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
                   {savingLinks ? "Saving..." : "Save Changes"}
                 </button>
               </div>
-            </>
-          )}
+          </div>
         </div>
 
         {/* OpenAI Settings */}
@@ -1483,21 +1533,43 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
             }}
             onClick={() => setShowOpenAI(!showOpenAI)}
           >
-            <h3 className="config-section-title" style={{ margin: 0 }}>
-              {showOpenAI ? "▼" : "▶"} OpenAI
+            <h3
+              className="config-section-title"
+              style={{
+                margin: 0,
+                display: "flex",
+                alignItems: "center",
+                gap: "0.5rem",
+              }}
+            >
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                style={{
+                  transition: "transform 0.2s",
+                  transform: showOpenAI ? "rotate(90deg)" : "rotate(0deg)",
+                }}
+              >
+                <polyline points="9 18 15 12 9 6" />
+              </svg>
+              OpenAI
             </h3>
             <span style={{ color: "#888", fontSize: "0.9rem" }}>
               {showOpenAI ? "Click to collapse" : "Click to expand"}
             </span>
           </div>
-          <p
-            className="config-section-description"
-            style={{ marginTop: "0.5rem" }}
-          >
-            Configure OpenAI API integration for generating image titles
-          </p>
 
-          {showOpenAI && (
+          <div 
+            className={`collapsible-content ${showOpenAI ? 'expanded' : 'collapsed'}`}
+            style={{ 
+              maxHeight: showOpenAI ? '10000px' : '0',
+              paddingTop: showOpenAI ? '1rem' : '0'
+            }}
+          >
             <div className="openai-settings-grid">
               {/* Left: API Key Section */}
               <div className="openai-section">
@@ -1606,7 +1678,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
                 </div>
               </div>
             </div>
-          )}
+          </div>
         </div>
 
         {/* Image Optimization Settings */}
@@ -1625,23 +1697,43 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
             }}
             onClick={() => setShowImageOptimization(!showImageOptimization)}
           >
-            <h3 className="config-section-title" style={{ margin: 0 }}>
-              {showImageOptimization ? "▼" : "▶"} Image Optimization
+            <h3
+              className="config-section-title"
+              style={{
+                margin: 0,
+                display: "flex",
+                alignItems: "center",
+                gap: "0.5rem",
+              }}
+            >
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                style={{
+                  transition: "transform 0.2s",
+                  transform: showImageOptimization ? "rotate(90deg)" : "rotate(0deg)",
+                }}
+              >
+                <polyline points="9 18 15 12 9 6" />
+              </svg>
+              Image Optimization
             </h3>
             <span style={{ color: "#888", fontSize: "0.9rem" }}>
               {showImageOptimization ? "Click to collapse" : "Click to expand"}
             </span>
           </div>
-          <p
-            className="config-section-description"
-            style={{ marginTop: "0.5rem" }}
-          >
-            Control quality and dimensions for thumbnail, modal, and download
-            versions of your images. Higher quality means larger file sizes.
-          </p>
 
-          {showImageOptimization && (
-            <>
+          <div 
+            className={`collapsible-content ${showImageOptimization ? 'expanded' : 'collapsed'}`}
+            style={{ 
+              maxHeight: showImageOptimization ? '10000px' : '0',
+              paddingTop: showImageOptimization ? '1rem' : '0'
+            }}
+          >
               {/* Grid of optimization subsections */}
               <div className="config-grid-inner">
                 {/* Thumbnail Settings */}
@@ -2002,8 +2094,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
                   </div>
                 </div>
               </div>
-            </>
-          )}
+          </div>
         </div>
 
         {/* Advanced Settings - Collapsible */}
@@ -2022,23 +2113,43 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
             }}
             onClick={() => setShowAdvanced(!showAdvanced)}
           >
-            <h3 className="config-section-title" style={{ margin: 0 }}>
-              {showAdvanced ? "▼" : "▶"} Advanced Settings
+            <h3
+              className="config-section-title"
+              style={{
+                margin: 0,
+                display: "flex",
+                alignItems: "center",
+                gap: "0.5rem",
+              }}
+            >
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                style={{
+                  transition: "transform 0.2s",
+                  transform: showAdvanced ? "rotate(90deg)" : "rotate(0deg)",
+                }}
+              >
+                <polyline points="9 18 15 12 9 6" />
+              </svg>
+              Advanced Settings
             </h3>
             <span style={{ color: "#888", fontSize: "0.9rem" }}>
               {showAdvanced ? "Click to collapse" : "Click to expand"}
             </span>
           </div>
-          <p
-            className="config-section-description"
-            style={{ marginTop: "0.5rem" }}
-          >
-            Backend, frontend, security, and authentication settings. ⚠️
-            Changing these may require a server restart.
-          </p>
 
-          {showAdvanced && (
-            <>
+          <div 
+            className={`collapsible-content ${showAdvanced ? 'expanded' : 'collapsed'}`}
+            style={{ 
+              maxHeight: showAdvanced ? '10000px' : '0',
+              paddingTop: showAdvanced ? '1rem' : '0'
+            }}
+          >
               {/* Danger Zone Warning */}
               <div
                 style={{
@@ -2843,8 +2954,169 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
                   </div>
                 </div>
               </div>
-            </>
-          )}
+
+              {/* Analytics Settings */}
+              <div className="openai-section" style={{ marginBottom: "2rem" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginBottom: "0.75rem",
+                  }}
+                >
+                  <label className="openai-section-label">ANALYTICS</label>
+                  {hasUnsavedChanges("Analytics") && (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleSaveSection("Analytics");
+                      }}
+                      disabled={savingSection !== null}
+                      className="btn-primary"
+                      style={{ padding: "0.4rem 0.8rem", fontSize: "0.85rem" }}
+                    >
+                      {savingSection === "Analytics" ? "Saving..." : "Save"}
+                    </button>
+                  )}
+                </div>
+                <p
+                  style={{
+                    fontSize: "0.85rem",
+                    color: "#888",
+                    marginTop: "0",
+                    marginBottom: "1rem",
+                  }}
+                >
+                  Analytics tracking configuration including OpenObserve integration
+                </p>
+                <div className="config-grid-inner">
+                  <div className="branding-group">
+                    <label className="branding-label">Script Path</label>
+                    <input
+                      type="text"
+                      value={config.analytics.scriptPath}
+                      onChange={(e) =>
+                        updateConfig(["analytics", "scriptPath"], e.target.value)
+                      }
+                      className="branding-input"
+                      placeholder="/analytics.js"
+                    />
+                  </div>
+
+                  <div className="branding-group">
+                    <label className="branding-label">HMAC Secret</label>
+                    <input
+                      type="password"
+                      value={config.analytics.hmacSecret}
+                      onChange={(e) =>
+                        updateConfig(["analytics", "hmacSecret"], e.target.value)
+                      }
+                      className="branding-input"
+                      placeholder="Secret key for HMAC"
+                    />
+                  </div>
+
+                  <div className="branding-group full-width">
+                    <label className="branding-label">
+                      <input
+                        type="checkbox"
+                        checked={config.analytics.openobserve.enabled}
+                        onChange={(e) =>
+                          updateConfig(
+                            ["analytics", "openobserve", "enabled"],
+                            e.target.checked
+                          )
+                        }
+                        style={{ marginRight: "0.5rem" }}
+                      />
+                      Enable OpenObserve Integration
+                    </label>
+                  </div>
+
+                  {config.analytics.openobserve.enabled && (
+                    <>
+                      <div className="branding-group">
+                        <label className="branding-label">OpenObserve Endpoint</label>
+                        <input
+                          type="text"
+                          value={config.analytics.openobserve.endpoint}
+                          onChange={(e) =>
+                            updateConfig(
+                              ["analytics", "openobserve", "endpoint"],
+                              e.target.value
+                            )
+                          }
+                          className="branding-input"
+                          placeholder="https://api.openobserve.ai"
+                        />
+                      </div>
+
+                      <div className="branding-group">
+                        <label className="branding-label">Organization</label>
+                        <input
+                          type="text"
+                          value={config.analytics.openobserve.organization}
+                          onChange={(e) =>
+                            updateConfig(
+                              ["analytics", "openobserve", "organization"],
+                              e.target.value
+                            )
+                          }
+                          className="branding-input"
+                        />
+                      </div>
+
+                      <div className="branding-group">
+                        <label className="branding-label">Stream</label>
+                        <input
+                          type="text"
+                          value={config.analytics.openobserve.stream}
+                          onChange={(e) =>
+                            updateConfig(
+                              ["analytics", "openobserve", "stream"],
+                              e.target.value
+                            )
+                          }
+                          className="branding-input"
+                        />
+                      </div>
+
+                      <div className="branding-group">
+                        <label className="branding-label">Username</label>
+                        <input
+                          type="text"
+                          value={config.analytics.openobserve.username}
+                          onChange={(e) =>
+                            updateConfig(
+                              ["analytics", "openobserve", "username"],
+                              e.target.value
+                            )
+                          }
+                          className="branding-input"
+                        />
+                      </div>
+
+                      <div className="branding-group">
+                        <label className="branding-label">Password</label>
+                        <input
+                          type="password"
+                          value={config.analytics.openobserve.password}
+                          onChange={(e) =>
+                            updateConfig(
+                              ["analytics", "openobserve", "password"],
+                              e.target.value
+                            )
+                          }
+                          className="branding-input"
+                        />
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+          </div>
         </div>
       </div>
     </section>
