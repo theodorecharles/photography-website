@@ -92,9 +92,9 @@ export default function VisitorMap({ locations, loading }: VisitorMapProps) {
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-          url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png"
-          subdomains={['a', 'b', 'c', 'd']}
-          maxZoom={19}
+          url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+          subdomains="abcd"
+          maxZoom={20}
         />
         {locations.map((location, index) => (
           <CircleMarker
