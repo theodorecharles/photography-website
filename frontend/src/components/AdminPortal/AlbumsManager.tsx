@@ -131,48 +131,40 @@ const SortablePhotoItem: React.FC<SortablePhotoItemProps> = ({
   } = useSortable({ id: photo.id });
 
   const [showOverlay, setShowOverlay] = useState(false);
-  const touchTimerRef = useRef<NodeJS.Timeout | null>(null);
   const touchStartPos = useRef<{ x: number; y: number } | null>(null);
+  const hasMoved = useRef(false);
 
   const handleTouchStart = (e: React.TouchEvent) => {
     const touch = e.touches[0];
     touchStartPos.current = { x: touch.clientX, y: touch.clientY };
-    
-    // Set timer to show overlay after 250ms
-    touchTimerRef.current = setTimeout(() => {
-      setShowOverlay(true);
-    }, 250);
+    hasMoved.current = false;
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
-    if (!touchStartPos.current || !touchTimerRef.current) return;
+    if (!touchStartPos.current) return;
     
     const touch = e.touches[0];
     const deltaX = Math.abs(touch.clientX - touchStartPos.current.x);
     const deltaY = Math.abs(touch.clientY - touchStartPos.current.y);
     
-    // If moved more than 5px, cancel the overlay show (user is scrolling)
+    // If moved more than 5px, mark as scrolling/dragging
     if (deltaX > 5 || deltaY > 5) {
-      clearTimeout(touchTimerRef.current);
-      touchTimerRef.current = null;
-      touchStartPos.current = null;
+      hasMoved.current = true;
     }
   };
 
   const handleTouchEnd = () => {
-    if (touchTimerRef.current) {
-      clearTimeout(touchTimerRef.current);
-      touchTimerRef.current = null;
+    // Only show overlay if it was a tap without movement
+    if (touchStartPos.current && !hasMoved.current) {
+      setShowOverlay(true);
     }
     touchStartPos.current = null;
+    hasMoved.current = false;
   };
 
   const handleTouchCancel = () => {
-    if (touchTimerRef.current) {
-      clearTimeout(touchTimerRef.current);
-      touchTimerRef.current = null;
-    }
     touchStartPos.current = null;
+    hasMoved.current = false;
     setShowOverlay(false);
   };
 
@@ -183,13 +175,6 @@ const SortablePhotoItem: React.FC<SortablePhotoItemProps> = ({
     }
   };
 
-  useEffect(() => {
-    return () => {
-      if (touchTimerRef.current) {
-        clearTimeout(touchTimerRef.current);
-      }
-    };
-  }, []);
 
   const style = {
     transform: CSS.Transform.toString(transform),
