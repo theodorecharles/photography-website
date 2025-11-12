@@ -163,16 +163,11 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
     const x = e.clientX;
     const y = e.clientY;
     
-    // Use a more lenient threshold (40% from edges triggers that side)
-    const leftThreshold = viewportWidth * 0.4;
-    const rightThreshold = viewportWidth * 0.6;
-    const topThreshold = viewportHeight * 0.4;
-    const bottomThreshold = viewportHeight * 0.6;
-    
-    const isLeft = x < leftThreshold || (x < viewportWidth / 2 && x < rightThreshold);
-    const isRight = x > rightThreshold || (x > viewportWidth / 2 && x > leftThreshold);
-    const isTop = y < topThreshold || (y < viewportHeight / 2 && y < bottomThreshold);
-    const isBottom = y > bottomThreshold || (y > viewportHeight / 2 && y > topThreshold);
+    // Simple 50/50 split makes it much easier to reach bottom corners
+    const isLeft = x < viewportWidth / 2;
+    const isRight = x >= viewportWidth / 2;
+    const isTop = y < viewportHeight / 2;
+    const isBottom = y >= viewportHeight / 2;
     
     if (isBottom && isLeft) {
       setToasterPosition('bottom-left');
@@ -295,16 +290,11 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
       const x = e.clientX;
       const y = e.clientY;
       
-      // Use a more lenient threshold (40% from edges triggers that side)
-      const leftThreshold = viewportWidth * 0.4;
-      const rightThreshold = viewportWidth * 0.6;
-      const topThreshold = viewportHeight * 0.4;
-      const bottomThreshold = viewportHeight * 0.6;
-      
-      const isLeft = x < leftThreshold || (x < viewportWidth / 2 && x < rightThreshold);
-      const isRight = x > rightThreshold || (x > viewportWidth / 2 && x > leftThreshold);
-      const isTop = y < topThreshold || (y < viewportHeight / 2 && y < bottomThreshold);
-      const isBottom = y > bottomThreshold || (y > viewportHeight / 2 && y > topThreshold);
+      // Simple 50/50 split makes it much easier to reach bottom corners
+      const isLeft = x < viewportWidth / 2;
+      const isRight = x >= viewportWidth / 2;
+      const isTop = y < viewportHeight / 2;
+      const isBottom = y >= viewportHeight / 2;
       
       if (isBottom && isLeft) {
         setToasterPosition('bottom-left');
@@ -915,6 +905,12 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
     setGeneratingTitles(true);
     setTitlesOutput([]);
     setTitlesProgress(0);
+    
+    // Reset toaster to default state
+    setToasterPosition('top-right');
+    setIsToasterCollapsed(false);
+    setIsToasterMaximized(false);
+    setHasToasterAnimated(false);
 
     // Scroll to OpenAI section to show output
     setTimeout(() => {
@@ -1317,6 +1313,12 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
     setOptimizationComplete(false);
     setOptimizationLogs([]);
     setOptimizationProgress(0);
+    
+    // Reset toaster to default state
+    setToasterPosition('top-right');
+    setIsToasterCollapsed(false);
+    setIsToasterMaximized(false);
+    setHasToasterAnimated(false);
 
     // Scroll to regenerate button to show output
     setTimeout(() => {
