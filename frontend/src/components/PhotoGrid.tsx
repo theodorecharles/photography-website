@@ -480,7 +480,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
         });
 
         if (res.ok) {
-          trackPhotoUploaded(album, file.name);
+          trackPhotoUploaded(album, 1, [file.name]);
           setUploadingImages(prev => prev.filter(img => img.name !== file.name));
         }
       } catch (err) {

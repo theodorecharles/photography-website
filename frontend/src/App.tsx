@@ -82,6 +82,7 @@ function App() {
   );
   const [showFooter, setShowFooter] = useState(false);
   const [hideAlbumTitle, setHideAlbumTitle] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const location = useLocation();
 
   // Global rate limit handler - any component can trigger this
@@ -95,6 +96,26 @@ function App() {
       delete (window as any).handleRateLimit;
     };
   }, []);
+
+  // Check authentication status
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const res = await fetch(`${API_URL}/api/auth/status`, {
+          credentials: 'include',
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setIsAuthenticated(data.authenticated === true);
+        } else {
+          setIsAuthenticated(false);
+        }
+      } catch {
+        setIsAuthenticated(false);
+      }
+    };
+    checkAuth();
+  }, [location.pathname]); // Re-check when route changes
 
   // Apply theme colors to CSS custom properties
   useEffect(() => {
@@ -167,13 +188,14 @@ function App() {
       const brandingData = await brandingResponse.json();
 
       // Handle both array of strings (for non-authenticated) and array of objects (for authenticated)
-      // Only show published albums in the main navigation, even for authenticated users
+      // Show published albums for non-authenticated, show all albums for authenticated users
       const albumNames = Array.isArray(albumsData) 
         ? albumsData
             .filter((album: string | { name: string; published: boolean }) => {
               // If it's a string, include it (legacy behavior)
               if (typeof album === 'string') return true;
-              // If it's an object, only include if published
+              // If it's an object, include all albums if authenticated, only published if not
+              if (isAuthenticated) return true;
               return album.published === true;
             })
             .map((album: string | { name: string; published: boolean }) => 
@@ -222,6 +244,8 @@ function App() {
             ? albumsData
                 .filter((album: string | { name: string; published: boolean }) => {
                   if (typeof album === 'string') return true;
+                  // Include all albums if authenticated, only published if not
+                  if (isAuthenticated) return true;
                   return album.published === true;
                 })
                 .map((album: string | { name: string; published: boolean }) => 
@@ -247,7 +271,7 @@ function App() {
       window.removeEventListener('external-links-updated', fetchData);
       window.removeEventListener('branding-updated', fetchData);
     };
-  }, []);
+  }, [isAuthenticated]); // Re-fetch when authentication changes
 
   // Loading and error states
   // Skip loading state for admin routes - they handle their own loading
