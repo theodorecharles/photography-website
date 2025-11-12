@@ -845,10 +845,12 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
   
   // Register stop handlers with global context
   // Handlers are stable (useCallback with empty deps), so only register once
+  // IMPORTANT: Wrap handlers in arrow functions to prevent React from calling them immediately
+  // (React treats functions passed to setState as updater functions)
   useEffect(() => {
     console.log('[ConfigManager] Registering stop handlers');
-    sseToaster.setStopTitlesHandler(handleStopTitles);
-    sseToaster.setStopOptimizationHandler(handleStopOptimization);
+    sseToaster.setStopTitlesHandler(() => handleStopTitles);
+    sseToaster.setStopOptimizationHandler(() => handleStopOptimization);
     console.log('[ConfigManager] Stop handlers registered');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
