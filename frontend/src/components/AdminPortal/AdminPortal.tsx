@@ -16,12 +16,14 @@ import {
   trackLogout,
   trackAdminTabChange,
 } from '../../utils/analytics';
+import { useSSEToaster } from '../../contexts/SSEToasterContext';
 
 export default function AdminPortal() {
   const navigate = useNavigate();
   const location = useLocation();
   const [authStatus, setAuthStatus] = useState<AuthStatus | null>(null);
   const [loading, setLoading] = useState(true);
+  const sseToaster = useSSEToaster();
   
   // Determine active tab from URL
   const getActiveTab = (): Tab => {
@@ -60,6 +62,44 @@ export default function AdminPortal() {
   const removeMessage = (id: number) => {
     setMessages(prev => prev.filter(m => m.id !== id));
   };
+
+  // Check for running jobs on mount to ensure SSE toaster appears if jobs are running
+  useEffect(() => {
+    const checkForRunningJobs = async () => {
+      try {
+        // Check AI titles job
+        const titlesRes = await fetch(`${API_URL}/api/ai-titles/status`, {
+          credentials: "include",
+        });
+        if (titlesRes.ok) {
+          const titlesStatus = await titlesRes.json();
+          if (titlesStatus.running && !titlesStatus.isComplete) {
+            console.log("[AdminPortal] Found running titles job, ensuring toaster visibility");
+            sseToaster.setGeneratingTitles(true);
+          }
+        }
+
+        // Check optimization job
+        const optRes = await fetch(`${API_URL}/api/image-optimization/status`, {
+          credentials: "include",
+        });
+        if (optRes.ok) {
+          const optStatus = await optRes.json();
+          if (optStatus.running && !optStatus.isComplete) {
+            console.log("[AdminPortal] Found running optimization job, ensuring toaster visibility");
+            sseToaster.setIsOptimizationRunning(true);
+          }
+        }
+      } catch (err) {
+        console.error("[AdminPortal] Failed to check for running jobs:", err);
+      }
+    };
+
+    // Only check if no jobs are currently showing (to avoid interfering with active jobs)
+    if (!sseToaster.generatingTitles && !sseToaster.isOptimizationRunning) {
+      checkForRunningJobs();
+    }
+  }, []);
 
   // Check authentication on mount
   useEffect(() => {
