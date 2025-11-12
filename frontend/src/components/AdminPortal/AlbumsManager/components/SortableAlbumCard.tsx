@@ -18,8 +18,6 @@ interface SortableAlbumCardProps {
   onDragLeave: (e: React.DragEvent) => void;
   onDrop: (e: React.DragEvent) => void;
   onRename?: (albumName: string) => void;
-  onAlbumDragStart?: (e: React.DragEvent) => void;
-  onAlbumDragEnd?: () => void;
 }
 
 const SortableAlbumCard: React.FC<SortableAlbumCardProps> = ({
@@ -32,8 +30,6 @@ const SortableAlbumCard: React.FC<SortableAlbumCardProps> = ({
   onDragLeave,
   onDrop,
   onRename,
-  onAlbumDragStart,
-  onAlbumDragEnd,
 }) => {
   const {
     attributes,
@@ -100,9 +96,6 @@ const SortableAlbumCard: React.FC<SortableAlbumCardProps> = ({
       onDragOver={onDragOver}
       onDragLeave={onDragLeave}
       onDrop={onDrop}
-      onDragStart={onAlbumDragStart}
-      onDragEnd={onAlbumDragEnd}
-      draggable={true}
       {...attributes}
       {...listeners}
     >
