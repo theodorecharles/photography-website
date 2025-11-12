@@ -8,14 +8,14 @@
  */
 
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import "./Header.css";
 import { API_URL } from "../config";
-import { 
-  trackAlbumNavigation, 
-  trackExternalLinkClick, 
-  trackDropdownOpen, 
-  trackDropdownClose 
+import {
+  trackAlbumNavigation,
+  trackExternalLinkClick,
+  trackDropdownOpen,
+  trackDropdownClose
 } from "../utils/analytics";
 
 export interface ExternalLink {
@@ -48,6 +48,8 @@ function Navigation({
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isExternalOpen, setIsExternalOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
   
   // Check if user is authenticated
   useEffect(() => {
@@ -166,10 +168,27 @@ function Navigation({
           </h1>
           {/* Edit Album button - only shown when authenticated and on an album page */}
           {isAuthenticated && currentAlbum !== 'homepage' && (
-            <Link
-              to={`/admin/albums?album=${encodeURIComponent(currentAlbum)}`}
+            <button
+              onClick={() => {
+                const urlParams = new URLSearchParams(location.search);
+                const hasEditParam = urlParams.get('edit') === 'true';
+                
+                if (hasEditParam) {
+                  // Remove edit parameter
+                  urlParams.delete('edit');
+                } else {
+                  // Add edit parameter
+                  urlParams.set('edit', 'true');
+                }
+                
+                const newSearch = urlParams.toString();
+                navigate({
+                  pathname: location.pathname,
+                  search: newSearch ? `?${newSearch}` : '',
+                });
+              }}
               className="edit-album-btn"
-              title="Edit this album"
+              title={location.search.includes('edit=true') ? "Close edit mode" : "Edit this album"}
             >
               <svg
                 viewBox="0 0 24 24"
@@ -183,7 +202,7 @@ function Navigation({
               >
                 <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
               </svg>
-            </Link>
+            </button>
           )}
         </div>
       )}
