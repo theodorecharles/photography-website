@@ -21,6 +21,8 @@ import { StructuredData } from "./components/Misc/StructuredData";
 import { API_URL, SITE_URL } from "./config";
 import { trackPageView, trackError } from "./utils/analytics";
 import { fetchWithRateLimitCheck } from "./utils/fetchWrapper";
+import { SSEToasterProvider } from "./contexts/SSEToasterContext";
+import SSEToaster from "./components/SSEToaster";
 
 // Lazy load components that aren't needed on initial page load
 const License = lazy(() => import("./components/Misc/License"));
@@ -286,6 +288,9 @@ function App() {
         avatarPath={avatarPath}
         avatarCacheBust={avatarCacheBust}
       />
+      
+      {/* Global SSE Toaster - appears across all pages */}
+      <SSEToaster />
 
       <main className="main-content">
         {currentAlbum && currentAlbum.length > 0 && !hideAlbumTitle && (

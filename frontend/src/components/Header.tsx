@@ -47,6 +47,22 @@ function Navigation({
   // State for managing dropdown visibility
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isExternalOpen, setIsExternalOpen] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  
+  // Check if user is authenticated
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const res = await fetch(`${API_URL}/api/auth/status`, {
+          credentials: 'include',
+        });
+        setIsAuthenticated(res.ok);
+      } catch {
+        setIsAuthenticated(false);
+      }
+    };
+    checkAuth();
+  }, []);
 
   // Close dropdowns when page is scrolled
   useEffect(() => {
@@ -192,6 +208,28 @@ function Navigation({
               ))}
             </div>
           </div>
+          
+          {/* Edit Album button - only shown when authenticated and on an album page */}
+          {isAuthenticated && currentAlbum && currentAlbum !== 'homepage' && (
+            <Link
+              to={`/admin/albums?album=${encodeURIComponent(currentAlbum)}`}
+              className="edit-album-btn"
+              title="Edit this album"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                width="16"
+                height="16"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
+              </svg>
+            </Link>
+          )}
         </div>
 
         {/* Right side navigation - External links dropdown */}
