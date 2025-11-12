@@ -392,7 +392,9 @@
 }
 
 .album-rename-btn {
-  display: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 4px;
@@ -403,10 +405,15 @@
   flex-shrink: 0;
 }
 
-.album-card:hover .album-rename-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+/* On desktop, hide by default and show on hover */
+@media (min-width: 769px) {
+  .album-rename-btn {
+    display: none;
+  }
+  
+  .album-card:hover .album-rename-btn {
+    display: inline-flex;
+  }
 }
 
 .album-rename-btn:hover {

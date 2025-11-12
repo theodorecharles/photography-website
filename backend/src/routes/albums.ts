@@ -117,8 +117,8 @@ const getPhotosInAlbum = (photosDir: string, album: string) => {
         id: `${album}/${img.filename}`,
         title: img.title || defaultTitle,
         album: album,
-        src: `/optimized/modal/${album}/${img.filename}`,
         thumbnail: `/optimized/thumbnail/${album}/${img.filename}`,
+        modal: `/optimized/modal/${album}/${img.filename}`,
         download: `/optimized/download/${album}/${img.filename}`,
         sort_order: img.sort_order ?? null,
       };
@@ -178,8 +178,8 @@ const getAllPhotos = (photosDir: string, includeUnpublished: boolean = false) =>
         id: `${img.album}/${img.filename}`,
         title: img.title || defaultTitle,
         album: img.album,
-        src: `/optimized/modal/${img.album}/${img.filename}`,
         thumbnail: `/optimized/thumbnail/${img.album}/${img.filename}`,
+        modal: `/optimized/modal/${img.album}/${img.filename}`,
         download: `/optimized/download/${img.album}/${img.filename}`,
       };
     });
@@ -334,8 +334,8 @@ router.get("/api/random-photos", (req: Request, res) => {
       id: `${img.album}/${img.filename}`,
       title: img.title || defaultTitle,
       album: img.album,
-      src: `/optimized/modal/${img.album}/${img.filename}`,
       thumbnail: `/optimized/thumbnail/${img.album}/${img.filename}`,
+      modal: `/optimized/modal/${img.album}/${img.filename}`,
       download: `/optimized/download/${img.album}/${img.filename}`,
     };
   });

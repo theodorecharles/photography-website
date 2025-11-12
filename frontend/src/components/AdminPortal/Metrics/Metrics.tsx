@@ -576,7 +576,7 @@ export default function Metrics() {
                       // Normalize album name to handle old lowercase data
                       const albumName = normalizeAlbumName(rawAlbumName);
                       const photoUrl = `/album/${albumName}?photo=${encodeURIComponent(photoName)}`;
-                      const thumbnailUrl = `${API_URL}/photos/${albumName}/${photoName}`;
+                      const thumbnailUrl = `${API_URL}/optimized/thumbnail/${albumName}/${photoName}`;
                       const expanded = isRowExpanded('pictures', index);
                       
                       return (

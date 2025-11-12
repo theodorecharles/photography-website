@@ -18,8 +18,9 @@ interface SortableAlbumCardProps {
   onDragOver: (e: React.DragEvent) => void;
   onDragLeave: (e: React.DragEvent) => void;
   onDrop: (e: React.DragEvent) => void;
-  onFolderChange?: (albumName: string, folderId: number | null) => void;
   onRename?: (albumName: string) => void;
+  onDragStart?: (e: React.DragEvent) => void;
+  onDragEnd?: () => void;
 }
 
 const SortableAlbumCard: React.FC<SortableAlbumCardProps> = ({
@@ -32,8 +33,9 @@ const SortableAlbumCard: React.FC<SortableAlbumCardProps> = ({
   onDragOver,
   onDragLeave,
   onDrop,
-  onFolderChange,
   onRename,
+  onDragStart,
+  onDragEnd,
 }) => {
   const {
     attributes,
@@ -100,6 +102,9 @@ const SortableAlbumCard: React.FC<SortableAlbumCardProps> = ({
       onDragOver={onDragOver}
       onDragLeave={onDragLeave}
       onDrop={onDrop}
+      onDragStart={onDragStart}
+      onDragEnd={onDragEnd}
+      draggable={true}
       {...attributes}
       {...listeners}
     >
@@ -127,36 +132,6 @@ const SortableAlbumCard: React.FC<SortableAlbumCardProps> = ({
           </div>
         )}
       </div>
-      {folders.length > 0 && onFolderChange && (
-        <div style={{ marginTop: '0.5rem' }}>
-          <select
-            value={album.folder_id || ''}
-            onChange={(e) => {
-              e.stopPropagation();
-              const folderId = e.target.value ? parseInt(e.target.value) : null;
-              onFolderChange(album.name, folderId);
-            }}
-            onClick={(e) => e.stopPropagation()}
-            style={{
-              width: '100%',
-              padding: '0.25rem',
-              fontSize: '0.85rem',
-              backgroundColor: 'rgba(255, 255, 255, 0.05)',
-              border: '1px solid rgba(255, 255, 255, 0.2)',
-              borderRadius: '4px',
-              color: 'inherit',
-              cursor: 'pointer'
-            }}
-          >
-            <option value="">No folder</option>
-            {folders.map((folder) => (
-              <option key={folder.id} value={folder.id}>
-                📁 {folder.name}
-              </option>
-            ))}
-          </select>
-        </div>
-      )}
       {isDragOver && (
         <div className="album-drop-overlay">
           <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

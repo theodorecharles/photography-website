@@ -108,6 +108,10 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   const [renamingAlbum, setRenamingAlbum] = useState<string | null>(null);
   const [newAlbumName, setNewAlbumName] = useState('');
   
+  // Folder drag-and-drop state
+  const [dragOverFolderId, setDragOverFolderId] = useState<number | null>(null);
+  const [draggingAlbumName, setDraggingAlbumName] = useState<string | null>(null);
+  
   // Ref for ghost tile file input
   const ghostTileFileInputRef = useRef<HTMLInputElement>(null);
 
@@ -1412,6 +1416,50 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     }
   };
 
+  // Handle drag start on album (for folder assignment)
+  const handleAlbumDragStart = (e: React.DragEvent, albumName: string) => {
+    setDraggingAlbumName(albumName);
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', albumName);
+  };
+
+  // Handle drag over folder
+  const handleFolderDragOver = (e: React.DragEvent, folderId: number) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragOverFolderId(folderId);
+  };
+
+  // Handle drag leave folder
+  const handleFolderDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    // Only clear if we're actually leaving the folder card
+    const relatedTarget = e.relatedTarget as HTMLElement;
+    const currentTarget = e.currentTarget as HTMLElement;
+    if (!relatedTarget || !currentTarget.contains(relatedTarget)) {
+      setDragOverFolderId(null);
+    }
+  };
+
+  // Handle drop on folder
+  const handleFolderDrop = async (e: React.DragEvent, folderId: number) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragOverFolderId(null);
+
+    const albumName = draggingAlbumName || e.dataTransfer.getData('text/plain');
+    if (!albumName) return;
+
+    await handleMoveAlbumToFolder(albumName, folderId);
+    setDraggingAlbumName(null);
+  };
+
+  // Handle drag end
+  const handleAlbumDragEnd = () => {
+    setDraggingAlbumName(null);
+    setDragOverFolderId(null);
+  };
+
   const handleOpenRenameModal = (albumName: string) => {
     setRenamingAlbum(albumName);
     setNewAlbumName(albumName);
@@ -1526,12 +1574,16 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
               {localFolders.map((folder) => (
                 <div
                   key={folder.id}
+                  onDragOver={(e) => handleFolderDragOver(e, folder.id)}
+                  onDragLeave={handleFolderDragLeave}
+                  onDrop={(e) => handleFolderDrop(e, folder.id)}
                   style={{
                     padding: '1rem',
-                    border: '2px solid rgba(255, 255, 255, 0.2)',
+                    border: dragOverFolderId === folder.id ? '2px solid #3b82f6' : '2px solid rgba(255, 255, 255, 0.2)',
                     borderRadius: '8px',
-                    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                    position: 'relative'
+                    backgroundColor: dragOverFolderId === folder.id ? 'rgba(59, 130, 246, 0.15)' : 'rgba(255, 255, 255, 0.05)',
+                    position: 'relative',
+                    transition: 'all 0.2s ease'
                   }}
                 >
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '0.5rem' }}>
@@ -1622,8 +1674,9 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                         onDragOver={(e) => handleAlbumTileDragOver(e, album.name)}
                         onDragLeave={handleAlbumTileDragLeave}
                         onDrop={(e) => handleAlbumTileDrop(e, album.name)}
-                        onFolderChange={handleMoveAlbumToFolder}
                         onRename={handleOpenRenameModal}
+                        onDragStart={(e) => handleAlbumDragStart(e, album.name)}
+                        onDragEnd={handleAlbumDragEnd}
                       />
                     ))}
                     
