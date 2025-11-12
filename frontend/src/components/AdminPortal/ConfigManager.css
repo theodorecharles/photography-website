@@ -244,11 +244,15 @@
               0 0 0 1px rgba(255, 255, 255, 0.05);
   z-index: 9999;
   backdrop-filter: blur(10px);
+  user-select: none;
+}
+
+/* Only apply position transitions when snapping after drag (not while dragging or unmounting) */
+.sse-toaster:not(.dragging):not(.initial-animation) {
   transition: top 0.3s cubic-bezier(0.4, 0, 0.2, 1),
               bottom 0.3s cubic-bezier(0.4, 0, 0.2, 1),
               left 0.3s cubic-bezier(0.4, 0, 0.2, 1),
               right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  user-select: none;
 }
 
 /* Position variants */
