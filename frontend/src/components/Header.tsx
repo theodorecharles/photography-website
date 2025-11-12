@@ -294,6 +294,7 @@ function Navigation({
                           onClick={() => setOpenFolderId(openFolderId === folder.id ? null : folder.id)}
                         >
                           {!isFolderPublished && isAuthenticated ? (
+                            // Locked folder icon for unpublished folders
                             <svg
                               viewBox="0 0 24 24"
                               width="16"
@@ -308,7 +309,23 @@ function Navigation({
                               <path d="M10 12V10a2 2 0 0 1 4 0v2"/>
                             </svg>
                           ) : (
-                            <span style={{ marginRight: '6px' }}>📁</span>
+                            // Chevron for published folders
+                            <svg
+                              className={`folder-chevron ${openFolderId === folder.id ? "open" : ""}`}
+                              viewBox="0 0 24 24"
+                              width="14"
+                              height="14"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              style={{ marginRight: '6px' }}
+                            >
+                              <path
+                                d="M9 18l6-6-6-6"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                            </svg>
                           )}
                           {folder.name}
                           <svg
