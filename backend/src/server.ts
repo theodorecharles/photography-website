@@ -4,7 +4,7 @@
  * and defines the main routes for the application.
  */
 
-import express from "express";
+import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
@@ -24,6 +24,11 @@ import config, {
   RATE_LIMIT_MAX_REQUESTS,
 } from "./config.ts";
 import { validateProductionSecurity } from "./security.ts";
+
+// In-memory cache for optimized images (thumbnails + modals)
+const imageCache = new Map<string, { data: Buffer; contentType: string; timestamp: number }>();
+const IMAGE_CACHE_MAX_AGE = 24 * 60 * 60 * 1000; // 24 hours
+const IMAGE_CACHE_MAX_ITEMS = 2000; // Limit cache size (thumbnails + modals)
 
 // Import route handlers
 import albumsRouter from "./routes/albums.ts";
@@ -251,9 +256,70 @@ app.use("/photos", express.static(photosDir, {
   }
 }));
 
-// Serve optimized photos with CORS headers
+// In-memory cache middleware for thumbnails AND modals
+const cacheImageMiddleware = (req: Request, res: Response, next: NextFunction) => {
+  // When mounted under /optimized, req.path is relative to that mount point
+  // So req.path will be /thumbnail/... or /modal/... (without /optimized prefix)
+  if (!req.path.startsWith('/thumbnail/') && !req.path.startsWith('/modal/')) {
+    return next();
+  }
+  
+  const imagePath = path.join(optimizedDir, req.path);
+  const now = Date.now();
+  
+  // Check cache first
+  const cached = imageCache.get(imagePath);
+  if (cached && (now - cached.timestamp) < IMAGE_CACHE_MAX_AGE) {
+    res.setHeader('Content-Type', cached.contentType);
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+    res.setHeader('X-Cache', 'HIT');
+    res.send(cached.data);
+    return;
+  }
+  
+  // Read from disk
+  fs.readFile(imagePath, (err, data) => {
+    if (err) {
+      return next(); // Fall through to express.static
+    }
+    
+    // Limit cache size (LRU-style: remove oldest if at limit)
+    if (imageCache.size >= IMAGE_CACHE_MAX_ITEMS) {
+      const oldestKey = imageCache.keys().next().value;
+      if (oldestKey) imageCache.delete(oldestKey);
+    }
+    
+    // Determine content type from file extension
+    const ext = path.extname(imagePath).toLowerCase();
+    const contentType = ext === '.png' ? 'image/png' : 
+                       ext === '.webp' ? 'image/webp' : 
+                       'image/jpeg';
+    
+    // Store in cache
+    imageCache.set(imagePath, {
+      data: data,
+      contentType: contentType,
+      timestamp: now
+    });
+    
+    const sizeType = req.path.includes('/thumbnail/') ? 'thumbnail' : 'modal';
+    console.log(`[Cache] Cached ${sizeType}: ${path.basename(imagePath)} (${(data.length / 1024).toFixed(1)} KB, total: ${imageCache.size})`);
+    
+    res.setHeader('Content-Type', contentType);
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+    res.setHeader('X-Cache', 'MISS');
+    res.send(data);
+  });
+};
+
+// Serve optimized photos with caching and CORS headers
 app.use(
   "/optimized",
+  cacheImageMiddleware,
   express.static(optimizedDir, {
     maxAge: "1y",
     etag: true,
