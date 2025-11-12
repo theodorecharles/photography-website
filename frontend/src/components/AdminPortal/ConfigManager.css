@@ -572,10 +572,12 @@
 @media (max-width: 768px) {
   .sse-toaster {
     width: calc(100vw - 40px);
-    top: 70px !important;
-    right: 20px !important;
-    left: auto !important;
-    bottom: auto !important;
+    /* Center horizontally at bottom on mobile */
+    left: 50% !important;
+    right: auto !important;
+    bottom: 20px !important;
+    top: auto !important;
+    transform: translateX(-50%);
   }
 
   .sse-toaster-header {
@@ -598,6 +600,7 @@
     right: 10px !important;
     bottom: 10px !important;
     max-height: calc(100vh - 70px);
+    transform: none; /* Remove centering transform when maximized */
   }
 
   .sse-toaster.maximized .sse-toaster-output {
