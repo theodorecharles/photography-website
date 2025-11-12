@@ -816,9 +816,10 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
       // No success message - stopping is user-initiated
     } catch (err) {
       console.error("Failed to stop AI titles job:", err);
-      setMessage({ type: "error", text: "Failed to stop AI titles job" });
+      // Note: setMessage is not stable, but we can't include it without causing infinite loops
     }
-  }, [sseToaster, setMessage]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleStopOptimization = useCallback(async () => {
     try {
@@ -845,16 +846,18 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
       // No success message - stopping is user-initiated
     } catch (err) {
       console.error("Failed to stop optimization job:", err);
-      setMessage({ type: "error", text: "Failed to stop optimization job" });
+      // Note: setMessage is not stable, but we can't include it without causing infinite loops
     }
-  }, [sseToaster, setMessage]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   
   // Register stop handlers with global context
-  // Update handlers when they change
+  // Handlers are stable (useCallback with empty deps), so only register once
   useEffect(() => {
     sseToaster.setStopTitlesHandler(handleStopTitles);
     sseToaster.setStopOptimizationHandler(handleStopOptimization);
-  }, [handleStopTitles, handleStopOptimization, sseToaster]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleGenerateTitles = async (forceRegenerate = false) => {
     // Initialize global context state to show toaster
