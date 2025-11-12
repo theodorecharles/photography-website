@@ -4,6 +4,7 @@
  */
 
 import { useState, useEffect, useRef } from "react";
+import { useSearchParams } from "react-router-dom";
 import "./ConfigManager.css";
 import "./BrandingManager.css";
 import "./LinksManager.css";
@@ -98,6 +99,9 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
   // Get global SSE toaster context
   const sseToaster = useSSEToaster();
   
+  // Get URL search params
+  const [searchParams] = useSearchParams();
+  
   const [config, setConfig] = useState<ConfigData | null>(null);
   const [originalConfig, setOriginalConfig] = useState<ConfigData | null>(null);
   const [originalExternalLinks, setOriginalExternalLinks] = useState<
@@ -181,6 +185,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
   const titlesOutputRef = useRef<HTMLDivElement>(null);
   const regenerateButtonRef = useRef<HTMLDivElement>(null);
   const openAISectionRef = useRef<HTMLDivElement>(null);
+  const linksSectionRef = useRef<HTMLDivElement>(null);
   const apiKeyInputRef = useRef<HTMLInputElement>(null);
 
   // Helper function to show confirmation modal
@@ -220,6 +225,37 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
   // originalBranding while the user is editing, making save/cancel buttons disappear.
   // originalBranding is updated manually after successful saves in saveBrandingSection().
 
+  // Handle section parameter from URL (e.g., ?section=links)
+  useEffect(() => {
+    const section = searchParams.get('section');
+    if (!section) return;
+    
+    // Wait for component to mount and render
+    setTimeout(() => {
+      if (section === 'links') {
+        setShowLinks(true);
+        setTimeout(() => {
+          if (linksSectionRef.current) {
+            const yOffset = -100; // Offset to account for header
+            const element = linksSectionRef.current;
+            const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+            window.scrollTo({ top: y, behavior: "smooth" });
+          }
+        }, 300); // Wait for section to expand
+      } else if (section === 'openai') {
+        setShowOpenAI(true);
+        setTimeout(() => {
+          if (openAISectionRef.current) {
+            const yOffset = -100;
+            const element = openAISectionRef.current;
+            const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+            window.scrollTo({ top: y, behavior: "smooth" });
+          }
+        }, 300);
+      }
+    }, 100);
+  }, [searchParams]);
+  
   // Function to scroll to and highlight OpenAI API key input
   const handleSetupOpenAI = () => {
     // Expand the OpenAI section
@@ -1871,7 +1907,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
         </div>
 
         {/* External Links Settings */}
-        <div className="config-group full-width">
+        <div className="config-group full-width" ref={linksSectionRef}>
           <div
             style={{
               display: "flex",
