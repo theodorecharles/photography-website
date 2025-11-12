@@ -3,7 +3,8 @@
  * Unified settings management for branding, links, OpenAI, optimization, and advanced config
  */
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { useSearchParams } from "react-router-dom";
 import "./ConfigManager.css";
 import "./BrandingManager.css";
 import "./LinksManager.css";
@@ -14,6 +15,7 @@ import {
   trackExternalLinksUpdate,
 } from "../../utils/analytics";
 import { PasswordInput } from "./PasswordInput";
+import { useSSEToaster } from "../../contexts/SSEToasterContext";
 
 const API_URL = import.meta.env.VITE_API_URL || "";
 
@@ -94,6 +96,12 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
   externalLinks,
   setExternalLinks,
 }) => {
+  // Get global SSE toaster context
+  const sseToaster = useSSEToaster();
+  
+  // Get URL search params
+  const [searchParams] = useSearchParams();
+  
   const [config, setConfig] = useState<ConfigData | null>(null);
   const [originalConfig, setOriginalConfig] = useState<ConfigData | null>(null);
   const [originalExternalLinks, setOriginalExternalLinks] = useState<
@@ -101,14 +109,14 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
   >([]);
   const [loading, setLoading] = useState(true);
   const [savingSection, setSavingSection] = useState<string | null>(null);
-  const [generatingTitles, setGeneratingTitles] = useState(false);
-  const [titlesOutput, setTitlesOutput] = useState<string[]>([]);
-  const [titlesProgress, setTitlesProgress] = useState(0);
-  const [titlesWaiting, setTitlesWaiting] = useState<number | null>(null);
-  const [optimizationLogs, setOptimizationLogs] = useState<string[]>([]);
-  const [isOptimizationRunning, setIsOptimizationRunning] = useState(false);
+  
+  // Local state (not related to SSE jobs)
+  const [hasMissingTitles, setHasMissingTitles] = useState(false);
   const [optimizationComplete, setOptimizationComplete] = useState(false);
-  const [optimizationProgress, setOptimizationProgress] = useState(0);
+
+  // Helper to check if any job is running - read directly from global context
+  const isAnyJobRunning = sseToaster.generatingTitles || sseToaster.isOptimizationRunning;
+
 
   // Section collapse state - all collapsed by default
   const [showBranding, setShowBranding] = useState(false);
@@ -143,6 +151,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
   const titlesOutputRef = useRef<HTMLDivElement>(null);
   const regenerateButtonRef = useRef<HTMLDivElement>(null);
   const openAISectionRef = useRef<HTMLDivElement>(null);
+  const linksSectionRef = useRef<HTMLDivElement>(null);
   const apiKeyInputRef = useRef<HTMLInputElement>(null);
 
   // Helper function to show confirmation modal
@@ -177,11 +186,42 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
     setOriginalExternalLinks(structuredClone(externalLinks));
   }, [externalLinks.length]); // Only update when length changes to avoid infinite loops
 
-  // Update original branding when parent branding changes (e.g., after loadBranding)
-  useEffect(() => {
-    setOriginalBranding(branding);
-  }, [branding]);
+  // Initialize originalBranding only on mount
+  // Note: We do NOT sync on every branding change because that would reset
+  // originalBranding while the user is editing, making save/cancel buttons disappear.
+  // originalBranding is updated manually after successful saves in saveBrandingSection().
 
+  // Handle section parameter from URL (e.g., ?section=links)
+  useEffect(() => {
+    const section = searchParams.get('section');
+    if (!section) return;
+    
+    // Wait for component to mount and render
+    setTimeout(() => {
+      if (section === 'links') {
+        setShowLinks(true);
+        setTimeout(() => {
+          if (linksSectionRef.current) {
+            const yOffset = -100; // Offset to account for header
+            const element = linksSectionRef.current;
+            const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+            window.scrollTo({ top: y, behavior: "smooth" });
+          }
+        }, 300); // Wait for section to expand
+      } else if (section === 'openai') {
+        setShowOpenAI(true);
+        setTimeout(() => {
+          if (openAISectionRef.current) {
+            const yOffset = -100;
+            const element = openAISectionRef.current;
+            const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+            window.scrollTo({ top: y, behavior: "smooth" });
+          }
+        }, 300);
+      }
+    }, 100);
+  }, [searchParams]);
+  
   // Function to scroll to and highlight OpenAI API key input
   const handleSetupOpenAI = () => {
     // Expand the OpenAI section
@@ -218,8 +258,17 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
   };
 
   useEffect(() => {
+    console.log('[ConfigManager Mount] generatingTitles:', sseToaster.generatingTitles, 'isOptimizationRunning:', sseToaster.isOptimizationRunning);
     loadConfig();
-    checkForRunningJobs();
+    // Only check for running jobs if there's no job already running in the global context
+    if (!sseToaster.generatingTitles && !sseToaster.isOptimizationRunning) {
+      console.log('[ConfigManager] No active job in context, checking backend for running jobs');
+      checkForRunningJobs();
+    } else {
+      console.log('[ConfigManager] Job already running in context, skipping backend check');
+    }
+    checkMissingTitles();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Automatically disable auto-generate when API key is removed
@@ -251,24 +300,31 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
         const titlesStatus = await titlesRes.json();
         if (titlesStatus.running && !titlesStatus.isComplete) {
           console.log("Reconnecting to AI titles job...");
-          setGeneratingTitles(true);
-
+          
           // Parse stored output
           const parsedOutput: string[] = [];
+          let lastProgress = 0;
+          let lastWaiting: number | null = null;
+          
           for (const item of titlesStatus.output || []) {
             try {
               const parsed = JSON.parse(item);
               if (parsed.type === "progress") {
-                setTitlesProgress(parsed.percent);
+                lastProgress = parsed.percent;
                 parsedOutput.push(parsed.message);
               } else if (parsed.type === "waiting") {
-                setTitlesWaiting(parsed.seconds);
+                lastWaiting = parsed.seconds;
               }
             } catch {
               parsedOutput.push(item);
             }
           }
-          setTitlesOutput(parsedOutput);
+
+          // Update global context to show toaster
+          sseToaster.setGeneratingTitles(true);
+          sseToaster.setTitlesOutput(parsedOutput);
+          sseToaster.setTitlesProgress(lastProgress);
+          sseToaster.setTitlesWaiting(lastWaiting);
 
           // Reconnect to the SSE stream
           reconnectToTitlesJob();
@@ -283,15 +339,16 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
         const optStatus = await optRes.json();
         if (optStatus.running && !optStatus.isComplete) {
           console.log("Reconnecting to optimization job...");
-          setIsOptimizationRunning(true);
 
           // Parse stored output
           const parsedOutput: string[] = [];
+          let lastProgress = 0;
+          
           for (const item of optStatus.output || []) {
             try {
               const parsed = JSON.parse(item);
               if (parsed.type === "progress") {
-                setOptimizationProgress(parsed.percent);
+                lastProgress = parsed.percent;
                 parsedOutput.push(parsed.message);
               } else if (parsed.type === "stdout" || parsed.type === "stderr") {
                 parsedOutput.push(parsed.message);
@@ -300,7 +357,11 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
               parsedOutput.push(item);
             }
           }
-          setOptimizationLogs(parsedOutput);
+
+          // Update global context to show toaster
+          sseToaster.setIsOptimizationRunning(true);
+          sseToaster.setOptimizationLogs(parsedOutput);
+          sseToaster.setOptimizationProgress(lastProgress);
 
           // Reconnect to the SSE stream
           reconnectToOptimizationJob();
@@ -315,7 +376,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
   const reconnectToTitlesJob = async () => {
     // Create new abort controller for this reconnection
     const controller = new AbortController();
-    titlesAbortController.current = controller;
+    sseToaster.titlesAbortController.current = controller;
 
     try {
       const res = await fetch(`${API_URL}/api/ai-titles/generate`, {
@@ -352,26 +413,32 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
                 type: "success",
                 text: "AI title generation completed successfully!",
               });
-              setGeneratingTitles(false);
-              titlesAbortController.current = null;
+              // Update global context only (useEffect will sync to local)
+              sseToaster.setGeneratingTitles(false);
+              sseToaster.titlesAbortController.current = null;
             } else if (data.startsWith("__ERROR__")) {
               setMessage({ type: "error", text: data.substring(10) });
-              setGeneratingTitles(false);
-              titlesAbortController.current = null;
+              // Update global context only (useEffect will sync to local)
+              sseToaster.setGeneratingTitles(false);
+              sseToaster.titlesAbortController.current = null;
             } else {
               try {
                 const parsed = JSON.parse(data);
                 if (parsed.type === "progress") {
-                  setTitlesProgress(parsed.percent);
-                  setTitlesWaiting(null);
-                  setTitlesOutput((prev) => [...prev, parsed.message]);
+                  // Update global context only (useEffect will sync to local)
+                  sseToaster.setTitlesProgress(parsed.percent);
+                  sseToaster.setTitlesWaiting(null);
+                  sseToaster.setTitlesOutput((prev) => [...prev, parsed.message]);
                 } else if (parsed.type === "waiting") {
-                  setTitlesWaiting(parsed.seconds);
+                  // Update global context only (useEffect will sync to local)
+                  sseToaster.setTitlesWaiting(parsed.seconds);
                 } else {
-                  setTitlesOutput((prev) => [...prev, data]);
+                  // Update global context only (useEffect will sync to local)
+                  sseToaster.setTitlesOutput((prev) => [...prev, data]);
                 }
               } catch {
-                setTitlesOutput((prev) => [...prev, data]);
+                // Update global context only (useEffect will sync to local)
+                sseToaster.setTitlesOutput((prev) => [...prev, data]);
               }
             }
           }
@@ -380,12 +447,14 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
     } catch (err: any) {
       if (err.name === "AbortError") {
         console.log("AI titles job stopped by user");
-        setGeneratingTitles(false);
-        titlesAbortController.current = null;
+        // DON'T clear state on abort - this happens during navigation
+        // The stop handler will clear state when explicitly stopped
+        sseToaster.titlesAbortController.current = null;
       } else {
         console.error("Failed to reconnect to titles job:", err);
-        setGeneratingTitles(false);
-        titlesAbortController.current = null;
+        // Only clear state on actual errors, not aborts
+        sseToaster.setGeneratingTitles(false);
+        sseToaster.titlesAbortController.current = null;
       }
     }
   };
@@ -394,7 +463,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
   const reconnectToOptimizationJob = async () => {
     // Create new abort controller for this reconnection
     const controller = new AbortController();
-    optimizationAbortController.current = controller;
+    sseToaster.optimizationAbortController.current = controller;
 
     try {
       const res = await fetch(`${API_URL}/api/image-optimization/optimize`, {
@@ -406,8 +475,9 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
       });
 
       if (!res.ok) {
-        setIsOptimizationRunning(false);
-        optimizationAbortController.current = null;
+        // Update global context only (useEffect will sync to local)
+        sseToaster.setIsOptimizationRunning(false);
+        sseToaster.optimizationAbortController.current = null;
         return;
       }
 
@@ -415,8 +485,9 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
       const decoder = new TextDecoder();
 
       if (!reader) {
-        setIsOptimizationRunning(false);
-        optimizationAbortController.current = null;
+        // Update global context only (useEffect will sync to local)
+        sseToaster.setIsOptimizationRunning(false);
+        sseToaster.optimizationAbortController.current = null;
         return;
       }
 
@@ -437,18 +508,22 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
               const data = JSON.parse(line.slice(6));
 
               if (data.type === "progress") {
-                setOptimizationProgress(data.percent);
-                setOptimizationLogs((prev) => [...prev, data.message]);
+                // Update global context only (useEffect will sync to local)
+                sseToaster.setOptimizationProgress(data.percent);
+                sseToaster.setOptimizationLogs((prev) => [...prev, data.message]);
               } else if (data.type === "stdout" || data.type === "stderr") {
-                setOptimizationLogs((prev) => [...prev, data.message]);
+                // Update global context only (useEffect will sync to local)
+                sseToaster.setOptimizationLogs((prev) => [...prev, data.message]);
               } else if (data.type === "complete") {
                 setOptimizationComplete(true);
-                setIsOptimizationRunning(false);
-                optimizationAbortController.current = null;
+                // Update global context only (useEffect will sync to local)
+                sseToaster.setIsOptimizationRunning(false);
+                sseToaster.optimizationAbortController.current = null;
               } else if (data.type === "error") {
                 setMessage({ type: "error", text: data.message });
-                setIsOptimizationRunning(false);
-                optimizationAbortController.current = null;
+                // Update global context only (useEffect will sync to local)
+                sseToaster.setIsOptimizationRunning(false);
+                sseToaster.optimizationAbortController.current = null;
               }
             } catch (e) {
               console.error("Failed to parse SSE data:", e);
@@ -459,39 +534,49 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
     } catch (err: any) {
       if (err.name === "AbortError") {
         console.log("Optimization job stopped by user");
-        setIsOptimizationRunning(false);
-        optimizationAbortController.current = null;
+        // DON'T clear state on abort - this happens during navigation
+        // The stop handler will clear state when explicitly stopped
+        sseToaster.optimizationAbortController.current = null;
       } else {
         console.error("Failed to reconnect to optimization job:", err);
-        setIsOptimizationRunning(false);
-        optimizationAbortController.current = null;
+        // Only clear state on actual errors, not aborts
+        sseToaster.setIsOptimizationRunning(false);
+        sseToaster.optimizationAbortController.current = null;
       }
     }
   };
 
-  // Auto-scroll optimization output to bottom when new logs arrive
+  // Auto-scroll optimization output to bottom when new logs arrive (only if already at bottom)
   useEffect(() => {
-    if (optimizationOutputRef.current && isOptimizationRunning) {
-      setTimeout(() => {
-        if (optimizationOutputRef.current) {
-          optimizationOutputRef.current.scrollTop =
-            optimizationOutputRef.current.scrollHeight;
-        }
-      }, 0);
+    if (optimizationOutputRef.current && sseToaster.isOptimizationRunning) {
+      const element = optimizationOutputRef.current;
+      const isAtBottom = element.scrollHeight - element.scrollTop - element.clientHeight < 50;
+      
+      if (isAtBottom) {
+        setTimeout(() => {
+          if (optimizationOutputRef.current) {
+            optimizationOutputRef.current.scrollTop = optimizationOutputRef.current.scrollHeight;
+          }
+        }, 0);
+      }
     }
-  }, [optimizationLogs, isOptimizationRunning]);
+  }, [sseToaster.optimizationLogs, sseToaster.isOptimizationRunning]);
 
-  // Auto-scroll titles output to bottom when new lines arrive
+  // Auto-scroll titles output to bottom when new lines arrive (only if already at bottom)
   useEffect(() => {
-    if (titlesOutputRef.current && generatingTitles) {
-      setTimeout(() => {
-        if (titlesOutputRef.current) {
-          titlesOutputRef.current.scrollTop =
-            titlesOutputRef.current.scrollHeight;
-        }
-      }, 0);
+    if (titlesOutputRef.current && sseToaster.generatingTitles) {
+      const element = titlesOutputRef.current;
+      const isAtBottom = element.scrollHeight - element.scrollTop - element.clientHeight < 50;
+      
+      if (isAtBottom) {
+        setTimeout(() => {
+          if (titlesOutputRef.current) {
+            titlesOutputRef.current.scrollTop = titlesOutputRef.current.scrollHeight;
+          }
+        }, 0);
+      }
     }
-  }, [titlesOutput, generatingTitles]);
+  }, [sseToaster.titlesOutput, sseToaster.generatingTitles]);
 
   const loadConfig = async () => {
     try {
@@ -511,6 +596,21 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
       setMessage({ type: "error", text: "Failed to load configuration" });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const checkMissingTitles = async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/ai-titles/check-missing`, {
+        credentials: "include",
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setHasMissingTitles(data.hasMissingTitles);
+      }
+    } catch (err) {
+      console.error("Failed to check missing titles:", err);
     }
   };
 
@@ -678,72 +778,98 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
     }
   };
 
-  // Store abort controllers to allow stopping jobs
-  const titlesAbortController = useRef<AbortController | null>(null);
-  const optimizationAbortController = useRef<AbortController | null>(null);
-
-  const handleStopTitles = async () => {
+  const handleStopTitles = useCallback(async () => {
+    console.log('[handleStopTitles] Called');
     try {
       // Call backend to kill the process
-      await fetch(`${API_URL}/api/ai-titles/stop`, {
+      const response = await fetch(`${API_URL}/api/ai-titles/stop`, {
         method: "POST",
         credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
       });
+      console.log('[handleStopTitles] Backend response:', response.ok);
 
-      // Abort the SSE connection
-      if (titlesAbortController.current) {
-        titlesAbortController.current.abort();
-        titlesAbortController.current = null;
+      // Abort the SSE connection using global context
+      if (sseToaster.titlesAbortController.current) {
+        console.log('[handleStopTitles] Aborting SSE connection');
+        sseToaster.titlesAbortController.current.abort();
+        sseToaster.titlesAbortController.current = null;
       }
 
-      // Clear output and reset state
-      setGeneratingTitles(false);
-      setTitlesOutput([]);
-      setTitlesProgress(0);
-      setTitlesWaiting(null);
-      setMessage({ type: "success", text: "AI title generation stopped" });
+      // Clear output and reset state using global context setters
+      console.log('[handleStopTitles] Clearing global state');
+      sseToaster.setGeneratingTitles(false);
+      sseToaster.setTitlesOutput([]);
+      sseToaster.setTitlesProgress(0);
+      sseToaster.setTitlesWaiting(null);
+      console.log('[handleStopTitles] Done');
+      // No success message - stopping is user-initiated
     } catch (err) {
       console.error("Failed to stop AI titles job:", err);
-      setMessage({ type: "error", text: "Failed to stop AI titles job" });
+      // Note: setMessage is not stable, but we can't include it without causing infinite loops
     }
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  const handleStopOptimization = async () => {
+  const handleStopOptimization = useCallback(async () => {
+    console.log('[handleStopOptimization] Called');
     try {
       // Call backend to kill the process
-      await fetch(`${API_URL}/api/image-optimization/stop`, {
+      const response = await fetch(`${API_URL}/api/image-optimization/stop`, {
         method: "POST",
         credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
       });
+      const result = await response.json();
+      console.log('[handleStopOptimization] Backend response:', result.success);
 
-      // Abort the SSE connection
-      if (optimizationAbortController.current) {
-        optimizationAbortController.current.abort();
-        optimizationAbortController.current = null;
+      // Abort the SSE connection using global context
+      if (sseToaster.optimizationAbortController.current) {
+        console.log('[handleStopOptimization] Aborting SSE connection');
+        sseToaster.optimizationAbortController.current.abort();
+        sseToaster.optimizationAbortController.current = null;
       }
 
-      // Clear output and reset state
-      setIsOptimizationRunning(false);
-      setOptimizationLogs([]);
-      setOptimizationProgress(0);
+      // Clear output and reset state using global context setters
+      console.log('[handleStopOptimization] Clearing global state');
+      sseToaster.setIsOptimizationRunning(false);
+      sseToaster.setOptimizationLogs([]);
+      sseToaster.setOptimizationProgress(0);
       setOptimizationComplete(false);
-      setMessage({ type: "success", text: "Optimization job stopped" });
+      console.log('[handleStopOptimization] Done');
+      // No success message - stopping is user-initiated
     } catch (err) {
       console.error("Failed to stop optimization job:", err);
-      setMessage({ type: "error", text: "Failed to stop optimization job" });
+      // Note: setMessage is not stable, but we can't include it without causing infinite loops
     }
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  
+  // Register stop handlers with global context
+  // Handlers are stable (useCallback with empty deps), so only register once
+  // IMPORTANT: Wrap handlers in arrow functions to prevent React from calling them immediately
+  // (React treats functions passed to setState as updater functions)
+  useEffect(() => {
+    console.log('[ConfigManager] Registering stop handlers');
+    sseToaster.setStopTitlesHandler(() => handleStopTitles);
+    sseToaster.setStopOptimizationHandler(() => handleStopOptimization);
+    console.log('[ConfigManager] Stop handlers registered');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleGenerateTitles = async (forceRegenerate = false) => {
-    setGeneratingTitles(true);
-    setTitlesOutput([]);
-    setTitlesProgress(0);
+    // Initialize global context state to show toaster
+    sseToaster.setGeneratingTitles(true);
+    sseToaster.setTitlesOutput([]);
+    sseToaster.setTitlesProgress(0);
+    sseToaster.setTitlesWaiting(null);
+    
+    // Reset toaster to default state
+    sseToaster.resetToasterState();
 
     // Scroll to OpenAI section to show output
     setTimeout(() => {
@@ -758,7 +884,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
 
     try {
       const abortController = new AbortController();
-      titlesAbortController.current = abortController;
+      sseToaster.titlesAbortController.current = abortController;
 
       const res = await fetch(
         `${API_URL}/api/ai-titles/generate?forceRegenerate=${forceRegenerate}`,
@@ -797,28 +923,36 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
                 type: "success",
                 text: "AI title generation completed successfully!",
               });
-              setGeneratingTitles(false);
-              titlesAbortController.current = null;
+              // Update global context only (useEffect will sync to local)
+              sseToaster.setGeneratingTitles(false);
+              sseToaster.titlesAbortController.current = null;
+              checkMissingTitles(); // Refresh button visibility
             } else if (data.startsWith("__ERROR__")) {
               setMessage({ type: "error", text: data.substring(10) });
-              setGeneratingTitles(false);
-              titlesAbortController.current = null;
+              // Update global context only (useEffect will sync to local)
+              sseToaster.setGeneratingTitles(false);
+              sseToaster.titlesAbortController.current = null;
+              checkMissingTitles(); // Refresh button visibility
             } else {
               // Try to parse JSON progress data
               try {
                 const parsed = JSON.parse(data);
                 if (parsed.type === "progress") {
-                  setTitlesProgress(parsed.percent);
-                  setTitlesWaiting(null);
-                  setTitlesOutput((prev) => [...prev, parsed.message]);
+                  // Update global context only (useEffect will sync to local)
+                  sseToaster.setTitlesProgress(parsed.percent);
+                  sseToaster.setTitlesWaiting(null);
+                  sseToaster.setTitlesOutput((prev) => [...prev, parsed.message]);
                 } else if (parsed.type === "waiting") {
-                  setTitlesWaiting(parsed.seconds);
+                  // Update global context only (useEffect will sync to local)
+                  sseToaster.setTitlesWaiting(parsed.seconds);
                 } else {
-                  setTitlesOutput((prev) => [...prev, data]);
+                  // Update global context only (useEffect will sync to local)
+                  sseToaster.setTitlesOutput((prev) => [...prev, data]);
                 }
               } catch {
                 // Not JSON, treat as plain text
-                setTitlesOutput((prev) => [...prev, data]);
+                // Update global context only (useEffect will sync to local)
+                sseToaster.setTitlesOutput((prev) => [...prev, data]);
               }
             }
           }
@@ -833,8 +967,10 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
         err instanceof Error ? err.message : "Error generating titles";
       setMessage({ type: "error", text: errorMessage });
       console.error("Failed to generate titles:", err);
-      setGeneratingTitles(false);
-      titlesAbortController.current = null;
+      // Update global context only (useEffect will sync to local)
+      sseToaster.setGeneratingTitles(false);
+      sseToaster.titlesAbortController.current = null;
+      checkMissingTitles(); // Refresh button visibility
     }
   };
 
@@ -1139,10 +1275,14 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
     );
     if (!confirmed) return;
 
-    setIsOptimizationRunning(true);
+    // Initialize global context state to show toaster
+    sseToaster.setIsOptimizationRunning(true);
+    sseToaster.setOptimizationLogs([]);
+    sseToaster.setOptimizationProgress(0);
     setOptimizationComplete(false);
-    setOptimizationLogs([]);
-    setOptimizationProgress(0);
+    
+    // Reset toaster to default state
+    sseToaster.resetToasterState();
 
     // Scroll to regenerate button to show output
     setTimeout(() => {
@@ -1157,7 +1297,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
 
     try {
       const abortController = new AbortController();
-      optimizationAbortController.current = abortController;
+      sseToaster.optimizationAbortController.current = abortController;
 
       const res = await fetch(`${API_URL}/api/image-optimization/optimize`, {
         method: "POST",
@@ -1179,8 +1319,9 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
           type: "error",
           text: `${errorMessage} (Status: ${res.status})`,
         });
-        setIsOptimizationRunning(false);
-        optimizationAbortController.current = null;
+        // Update global context only (useEffect will sync to local)
+        sseToaster.setIsOptimizationRunning(false);
+        sseToaster.optimizationAbortController.current = null;
         return;
       }
 
@@ -1190,7 +1331,8 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
 
       if (!reader) {
         setMessage({ type: "error", text: "Failed to read response stream" });
-        setIsOptimizationRunning(false);
+        // Update global context only (useEffect will sync to local)
+        sseToaster.setIsOptimizationRunning(false);
         return;
       }
 
@@ -1211,17 +1353,20 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
               const data = JSON.parse(line.slice(6));
 
               if (data.type === "progress") {
-                setOptimizationProgress(data.percent);
-                setOptimizationLogs((prev) => [...prev, data.message]);
+                // Update global context only (useEffect will sync to local)
+                sseToaster.setOptimizationProgress(data.percent);
+                sseToaster.setOptimizationLogs((prev) => [...prev, data.message]);
               } else if (data.type === "stdout" || data.type === "stderr") {
-                setOptimizationLogs((prev) => [...prev, data.message]);
+                // Update global context only (useEffect will sync to local)
+                sseToaster.setOptimizationLogs((prev) => [...prev, data.message]);
               } else if (data.type === "complete") {
                 // Only mark as complete and show final message for the last completion
                 // (AI title generation is the final step)
                 if (data.message.includes("AI title generation")) {
                   setOptimizationComplete(true);
                   // Filter out "Generating" entries when complete
-                  setOptimizationLogs((prev) =>
+                  // Update global context only (useEffect will sync to local)
+                  sseToaster.setOptimizationLogs((prev) =>
                     prev.filter((log) => !log.startsWith("Generating"))
                   );
                   setMessage({
@@ -1233,7 +1378,8 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
                   });
                 } else {
                   // This is the intermediate optimization completion message
-                  setOptimizationLogs((prev) => [...prev, data.message]);
+                  // Update global context only (useEffect will sync to local)
+                  sseToaster.setOptimizationLogs((prev) => [...prev, data.message]);
                 }
               } else if (data.type === "error") {
                 setMessage({ type: "error", text: data.message });
@@ -1246,14 +1392,15 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
       }
     } catch (err) {
       if (err instanceof Error && err.name === "AbortError") {
-        // User cancelled, message already set
+        // User cancelled or navigated away - DON'T clear state
+        // The stop handler will clear state when explicitly stopped
         return;
       }
       console.error("Optimization error:", err);
       setMessage({ type: "error", text: "Network error occurred" });
-    } finally {
-      setIsOptimizationRunning(false);
-      optimizationAbortController.current = null;
+      // Only clear state on actual errors, not aborts
+      sseToaster.setIsOptimizationRunning(false);
+      sseToaster.optimizationAbortController.current = null;
     }
   };
 
@@ -1506,7 +1653,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
               Branding
             </h3>
             <span style={{ color: "#888", fontSize: "0.9rem" }}>
-              {showBranding ? "Click to collapse" : "Click to expand"}
+              Customize your site's name, subtitle, and avatar
             </span>
           </div>
 
@@ -1789,7 +1936,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
         </div>
 
         {/* External Links Settings */}
-        <div className="config-group full-width">
+        <div className="config-group full-width" ref={linksSectionRef}>
           <div
             style={{
               display: "flex",
@@ -1830,7 +1977,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
               Links
             </h3>
             <span style={{ color: "#888", fontSize: "0.9rem" }}>
-              {showLinks ? "Click to collapse" : "Click to expand"}
+              Manage external links and contact information
             </span>
           </div>
 
@@ -1984,7 +2131,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
               OpenAI
             </h3>
             <span style={{ color: "#888", fontSize: "0.9rem" }}>
-              {showOpenAI ? "Click to collapse" : "Click to expand"}
+              Configure AI-powered title generation
             </span>
           </div>
 
@@ -2173,7 +2320,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
               Image Optimization
             </h3>
             <span style={{ color: "#888", fontSize: "0.9rem" }}>
-              {showImageOptimization ? "Click to collapse" : "Click to expand"}
+              Optimize and manage image processing
             </span>
           </div>
 
@@ -2584,7 +2731,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
               Advanced Settings
             </h3>
             <span style={{ color: "#888", fontSize: "0.9rem" }}>
-              {showAdvanced ? "Click to collapse" : "Click to expand"}
+              System controls and developer options
             </span>
           </div>
 
@@ -2662,21 +2809,25 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
                       onClick={handleSetupOpenAI}
                       className="btn-secondary"
                       style={{ flex: "1 1 auto", minWidth: "200px" }}
+                      disabled={sseToaster.isOptimizationRunning}
                     >
                       Set Up OpenAI
                     </button>
-                  ) : !generatingTitles ? (
+                  ) : !sseToaster.generatingTitles ? (
                     <>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          handleGenerateTitles(false);
-                        }}
-                        className="btn-secondary"
-                        style={{ flex: "1 1 auto", minWidth: "200px" }}
-                      >
-                        Backfill Missing Titles
-                      </button>
+                      {hasMissingTitles && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            handleGenerateTitles(false);
+                          }}
+                          className="btn-secondary"
+                          style={{ flex: "1 1 auto", minWidth: "200px" }}
+                          disabled={isAnyJobRunning}
+                        >
+                          Backfill Missing Titles
+                        </button>
+                      )}
                       <button
                         type="button"
                         onClick={async () => {
@@ -2689,6 +2840,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
                         }}
                         className="btn-force-regenerate"
                         style={{ flex: "1 1 auto", minWidth: "200px" }}
+                        disabled={sseToaster.isOptimizationRunning}
                       >
                         Force Regenerate All
                       </button>
@@ -2709,83 +2861,6 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
                     </button>
                   )}
                 </div>
-
-                {generatingTitles && titlesOutput.length > 0 && (
-                  <>
-                    <div style={{ marginTop: "1rem" }}>
-                      <div
-                        style={{
-                          display: "flex",
-                          justifyContent: "space-between",
-                          marginBottom: "0.5rem",
-                          fontSize: "0.9rem",
-                        }}
-                      >
-                        <span style={{ color: "#9ca3af" }}>Progress</span>
-                        <span
-                          style={{
-                            color: "var(--primary-color)",
-                            fontWeight: 600,
-                          }}
-                        >
-                          {titlesProgress}%
-                        </span>
-                      </div>
-                      <div
-                        style={{
-                          width: "100%",
-                          height: "8px",
-                          backgroundColor: "rgba(255, 255, 255, 0.1)",
-                          borderRadius: "4px",
-                          overflow: "hidden",
-                        }}
-                      >
-                        <div
-                          style={{
-                            height: "100%",
-                            width: `${titlesProgress}%`,
-                            backgroundColor: "var(--primary-color)",
-                            transition: "width 0.3s ease",
-                            borderRadius: "4px",
-                          }}
-                        />
-                      </div>
-                    </div>
-                    <div
-                      className="titles-output"
-                      style={{ maxHeight: "500px" }}
-                      ref={titlesOutputRef}
-                    >
-                      <div className="titles-output-content">
-                        {titlesOutput.map((line, index) => (
-                          <div key={index} className="output-line">
-                            {line}
-                          </div>
-                        ))}
-                        {titlesOutput.length === 0 && (
-                          <div className="output-line">
-                            Starting AI title generation...
-                          </div>
-                        )}
-                        {generatingTitles && (
-                          <div
-                            className="output-line"
-                            style={{
-                              marginTop: "0.5rem",
-                              color:
-                                titlesWaiting !== null ? "#fbbf24" : "#4ade80",
-                            }}
-                          >
-                            ⏳{" "}
-                            {titlesWaiting !== null
-                              ? `Waiting... ${titlesWaiting}s`
-                              : "Running..."}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </>
-                )}
               </div>
 
               {/* Optimized Images */}
@@ -2805,12 +2880,13 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
                     marginBottom: "0.75rem",
                   }}
                 >
-                  {!isOptimizationRunning ? (
+                  {!sseToaster.isOptimizationRunning ? (
                     <button
                       type="button"
                       onClick={() => handleRunOptimization(true)}
                       className="btn-force-regenerate"
                       style={{ flex: "1 1 auto", minWidth: "200px" }}
+                      disabled={sseToaster.generatingTitles}
                     >
                       Force Regenerate All
                     </button>
@@ -2829,7 +2905,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
                       Stop
                     </button>
                   )}
-                  {optimizationComplete && !isOptimizationRunning && (
+                  {optimizationComplete && !sseToaster.isOptimizationRunning && (
                     <span
                       style={{
                         color: "var(--primary-color)",
@@ -2840,76 +2916,10 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
                     </span>
                   )}
                 </div>
-
-                {optimizationLogs.length > 0 && (
-                  <>
-                    {isOptimizationRunning && (
-                      <div style={{ marginTop: "1rem" }}>
-                        <div
-                          style={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                            marginBottom: "0.5rem",
-                            fontSize: "0.9rem",
-                          }}
-                        >
-                          <span style={{ color: "#9ca3af" }}>Progress</span>
-                          <span
-                            style={{
-                              color: "var(--primary-color)",
-                              fontWeight: 600,
-                            }}
-                          >
-                            {optimizationProgress}%
-                          </span>
-                        </div>
-                        <div
-                          style={{
-                            width: "100%",
-                            height: "8px",
-                            backgroundColor: "rgba(255, 255, 255, 0.1)",
-                            borderRadius: "4px",
-                            overflow: "hidden",
-                          }}
-                        >
-                          <div
-                            style={{
-                              height: "100%",
-                              width: `${optimizationProgress}%`,
-                              backgroundColor: "var(--primary-color)",
-                              transition: "width 0.3s ease",
-                              borderRadius: "4px",
-                            }}
-                          />
-                        </div>
-                      </div>
-                    )}
-                    <div
-                      className="titles-output"
-                      style={{ maxHeight: "500px" }}
-                      ref={optimizationOutputRef}
-                    >
-                      <div className="titles-output-content">
-                        {optimizationLogs.map((log, index) => (
-                          <div key={index} className="output-line">
-                            {log}
-                          </div>
-                        ))}
-                        {isOptimizationRunning && (
-                          <div
-                            className="output-line"
-                            style={{ marginTop: "0.5rem", color: "#4ade80" }}
-                          >
-                            ⏳ Running...
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </>
-                )}
               </div>
             </div>
             {/* End Title Generation and Optimized Images Grid */}
+
 
             {/* Backend Settings */}
             <div className="openai-section" style={{ marginBottom: "2rem" }}>
