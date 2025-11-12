@@ -201,7 +201,13 @@ export default function SSEToaster() {
           {((generatingTitles && stopTitlesHandler) || (isOptimizationRunning && stopOptimizationHandler)) && (
             <button
               className="sse-toaster-stop-btn"
-              onClick={generatingTitles ? stopTitlesHandler! : stopOptimizationHandler!}
+              onClick={() => {
+                if (generatingTitles && stopTitlesHandler) {
+                  stopTitlesHandler();
+                } else if (isOptimizationRunning && stopOptimizationHandler) {
+                  stopOptimizationHandler();
+                }
+              }}
               title="Stop"
             >
               ⏹
