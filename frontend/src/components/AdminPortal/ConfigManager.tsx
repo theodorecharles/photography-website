@@ -469,7 +469,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
   const reconnectToOptimizationJob = async () => {
     // Create new abort controller for this reconnection
     const controller = new AbortController();
-    optimizationAbortController.current = controller;
+    sseToaster.optimizationAbortController.current = controller;
 
     try {
       const res = await fetch(`${API_URL}/api/image-optimization/optimize`, {
@@ -482,7 +482,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
 
       if (!res.ok) {
         setIsOptimizationRunning(false);
-        optimizationAbortController.current = null;
+        sseToaster.optimizationAbortController.current = null;
         return;
       }
 
@@ -491,7 +491,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
 
       if (!reader) {
         setIsOptimizationRunning(false);
-        optimizationAbortController.current = null;
+        sseToaster.optimizationAbortController.current = null;
         return;
       }
 
@@ -519,11 +519,11 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
               } else if (data.type === "complete") {
                 setOptimizationComplete(true);
                 setIsOptimizationRunning(false);
-                optimizationAbortController.current = null;
+                sseToaster.optimizationAbortController.current = null;
               } else if (data.type === "error") {
                 setMessage({ type: "error", text: data.message });
                 setIsOptimizationRunning(false);
-                optimizationAbortController.current = null;
+                sseToaster.optimizationAbortController.current = null;
               }
             } catch (e) {
               console.error("Failed to parse SSE data:", e);
@@ -535,11 +535,11 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
       if (err.name === "AbortError") {
         console.log("Optimization job stopped by user");
         setIsOptimizationRunning(false);
-        optimizationAbortController.current = null;
+        sseToaster.optimizationAbortController.current = null;
       } else {
         console.error("Failed to reconnect to optimization job:", err);
         setIsOptimizationRunning(false);
-        optimizationAbortController.current = null;
+        sseToaster.optimizationAbortController.current = null;
       }
     }
   };
@@ -818,9 +818,9 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
       });
 
       // Abort the SSE connection using global context
-      if (sseToaster.optimizationAbortController.current) {
-        sseToaster.optimizationAbortController.current.abort();
-        sseToaster.optimizationAbortController.current = null;
+      if (sseToaster.sseToaster.optimizationAbortController.current) {
+        sseToaster.sseToaster.optimizationAbortController.current.abort();
+        sseToaster.sseToaster.optimizationAbortController.current = null;
       }
 
       // Clear output and reset state
@@ -1274,7 +1274,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
 
     try {
       const abortController = new AbortController();
-      optimizationAbortController.current = abortController;
+      sseToaster.optimizationAbortController.current = abortController;
 
       const res = await fetch(`${API_URL}/api/image-optimization/optimize`, {
         method: "POST",
@@ -1297,7 +1297,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
           text: `${errorMessage} (Status: ${res.status})`,
         });
         setIsOptimizationRunning(false);
-        optimizationAbortController.current = null;
+        sseToaster.optimizationAbortController.current = null;
         return;
       }
 
@@ -1370,7 +1370,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
       setMessage({ type: "error", text: "Network error occurred" });
     } finally {
       setIsOptimizationRunning(false);
-      optimizationAbortController.current = null;
+      sseToaster.optimizationAbortController.current = null;
     }
   };
 

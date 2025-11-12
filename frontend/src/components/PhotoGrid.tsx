@@ -422,45 +422,46 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
   }
 
   return (
-    <div className="photo-grid" style={{ gridTemplateColumns: `repeat(${numColumns}, 1fr)` }}>
-      {distributedColumns.map((column, columnIndex) => (
-        <div 
-          key={columnIndex} 
-          className="photo-column"
-          ref={(el) => { columnRefs.current[columnIndex] = el; }}
-          style={{
-            transform: columnTransforms[columnIndex] 
-              ? `translateY(${columnTransforms[columnIndex]}px)` 
-              : 'none'
-          }}
-        >
-          {column.map((photo) => (
-            <div
-              key={photo.id}
-              className="photo-item"
-              style={{
-                aspectRatio: imageDimensions[photo.id]
-                  ? `${imageDimensions[photo.id].width} / ${
-                      imageDimensions[photo.id].height
-                    }`
-                  : "4 / 3",
-              }}
-              onClick={() => {
-                handlePhotoClick(photo);
-              }}
-            >
-              <img
-                src={`${API_URL}${photo.thumbnail}${imageQueryString}`}
-                alt={`${photo.album} photography by Ted Charles - ${photo.title}`}
-                title={photo.title}
-                loading="lazy"
-                onLoad={(e) => handleImageLoad(e, photo.id)}
-              />
-            </div>
-          ))}
-        </div>
-      ))}
-    </div>
+    <>
+      <div className="photo-grid" style={{ gridTemplateColumns: `repeat(${numColumns}, 1fr)` }}>
+        {distributedColumns.map((column, columnIndex) => (
+          <div 
+            key={columnIndex} 
+            className="photo-column"
+            ref={(el) => { columnRefs.current[columnIndex] = el; }}
+            style={{
+              transform: columnTransforms[columnIndex] 
+                ? `translateY(${columnTransforms[columnIndex]}px)` 
+                : 'none'
+            }}
+          >
+            {column.map((photo) => (
+              <div
+                key={photo.id}
+                className="photo-item"
+                style={{
+                  aspectRatio: imageDimensions[photo.id]
+                    ? `${imageDimensions[photo.id].width} / ${
+                        imageDimensions[photo.id].height
+                      }`
+                    : "4 / 3",
+                }}
+                onClick={() => {
+                  handlePhotoClick(photo);
+                }}
+              >
+                <img
+                  src={`${API_URL}${photo.thumbnail}${imageQueryString}`}
+                  alt={`${photo.album} photography by Ted Charles - ${photo.title}`}
+                  title={photo.title}
+                  loading="lazy"
+                  onLoad={(e) => handleImageLoad(e, photo.id)}
+                />
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
 
       {selectedPhoto && (
         <PhotoModal
