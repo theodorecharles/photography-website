@@ -206,14 +206,14 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
                   currentIndex = nextIndex;
                   
                   if (currentIndex < staticPhotos.length) {
-                    setTimeout(addBatch, 0); // Next tick
+                    setTimeout(addBatch, 16); // ~60fps - one frame per batch
                   } else {
                     setRenderProgress(null); // Done
                   }
                 }
               };
               
-              setTimeout(addBatch, 0);
+              setTimeout(addBatch, 16);
             } else {
               // Small albums - render all at once
               setPhotos(staticPhotos);
@@ -282,14 +282,14 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
                 currentIndex = nextIndex;
                 
                 if (currentIndex < sortedPhotos.length) {
-                  setTimeout(addBatch, 0);
+                  setTimeout(addBatch, 16); // ~60fps - one frame per batch
                 } else {
                   setRenderProgress(null);
                 }
               }
             };
             
-            setTimeout(addBatch, 0);
+            setTimeout(addBatch, 16);
           } else {
             setPhotos(sortedPhotos);
             setAllPhotos(sortedPhotos);
