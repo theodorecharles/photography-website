@@ -41,6 +41,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
   const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState<number>(0);
   const [loading, setLoading] = useState(true);
+  const [renderProgress, setRenderProgress] = useState<{current: number, total: number} | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [imageDimensions, setImageDimensions] = useState<
     Record<string, { width: number; height: number }>
@@ -173,9 +174,37 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
             // Reconstruct full photo objects from optimized array format
             const staticPhotos = staticData.map((data: string[]) => reconstructPhoto(data, album));
             
-            // Render all photos at once
-            setPhotos(staticPhotos);
-            setLoading(false);
+            // For large albums, render in batches while keeping loading screen visible
+            if (staticPhotos.length > 100) {
+              setRenderProgress({ current: 0, total: staticPhotos.length });
+              
+              // Batch render
+              let currentIndex = 0;
+              const batchSize = 50;
+              
+              const addBatch = () => {
+                if (currentIndex < staticPhotos.length) {
+                  const nextIndex = Math.min(currentIndex + batchSize, staticPhotos.length);
+                  setPhotos(staticPhotos.slice(0, nextIndex));
+                  setRenderProgress({ current: nextIndex, total: staticPhotos.length });
+                  currentIndex = nextIndex;
+                  
+                  if (currentIndex < staticPhotos.length) {
+                    setTimeout(addBatch, 0); // As fast as possible
+                  } else {
+                    // All rendered - show the page
+                    setRenderProgress(null);
+                    setLoading(false);
+                  }
+                }
+              };
+              
+              setTimeout(addBatch, 0);
+            } else {
+              // Small albums - render all at once
+              setPhotos(staticPhotos);
+              setLoading(false);
+            }
             
             setError(null);
             return;
@@ -219,8 +248,34 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
             );
           });
           
-          // Render all photos at once
-          setPhotos(sortedPhotos);
+          // For large albums, render in batches while keeping loading screen visible
+          if (sortedPhotos.length > 100) {
+            setRenderProgress({ current: 0, total: sortedPhotos.length });
+            
+            // Batch render
+            let currentIndex = 0;
+            const batchSize = 50;
+            
+            const addBatch = () => {
+              if (currentIndex < sortedPhotos.length) {
+                const nextIndex = Math.min(currentIndex + batchSize, sortedPhotos.length);
+                setPhotos(sortedPhotos.slice(0, nextIndex));
+                setRenderProgress({ current: nextIndex, total: sortedPhotos.length });
+                currentIndex = nextIndex;
+                
+                if (currentIndex < sortedPhotos.length) {
+                  setTimeout(addBatch, 0);
+                } else {
+                  setRenderProgress(null);
+                  setLoading(false);
+                }
+              }
+            };
+            
+            setTimeout(addBatch, 0);
+          } else {
+            setPhotos(sortedPhotos);
+          }
         }
 
         setError(null);
@@ -455,9 +510,31 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
     return (
       <div className="photo-grid-loading">
         <div className="loading-spinner"></div>
-        <div style={{ marginTop: '1rem', color: '#666', fontSize: '0.9rem' }}>
-          Loading album...
-        </div>
+        {renderProgress ? (
+          <div style={{ marginTop: '1.5rem', minWidth: '250px' }}>
+            <div style={{ color: '#666', fontSize: '0.95rem', marginBottom: '8px', fontWeight: 500 }}>
+              Rendering {renderProgress.current} / {renderProgress.total} photos
+            </div>
+            <div style={{
+              width: '100%',
+              height: '6px',
+              background: 'rgba(0,0,0,0.1)',
+              borderRadius: '3px',
+              overflow: 'hidden'
+            }}>
+              <div style={{
+                width: `${(renderProgress.current / renderProgress.total) * 100}%`,
+                height: '100%',
+                background: '#4CAF50',
+                transition: 'width 0.3s ease'
+              }} />
+            </div>
+          </div>
+        ) : (
+          <div style={{ marginTop: '1rem', color: '#666', fontSize: '0.9rem' }}>
+            Loading album...
+          </div>
+        )}
       </div>
     );
   }
