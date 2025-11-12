@@ -247,8 +247,7 @@
   transition: top 0.3s cubic-bezier(0.4, 0, 0.2, 1),
               bottom 0.3s cubic-bezier(0.4, 0, 0.2, 1),
               left 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-              right 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-              opacity 0.3s ease-out;
+              right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   user-select: none;
 }
 
