@@ -329,9 +329,74 @@ export default function Header({
   avatarPath,
   avatarCacheBust,
 }: HeaderProps) {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  // Check if user is authenticated
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const res = await fetch(`${API_URL}/api/auth/status`, {
+          credentials: 'include',
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setIsAuthenticated(data.authenticated === true);
+        } else {
+          setIsAuthenticated(false);
+        }
+      } catch {
+        setIsAuthenticated(false);
+      }
+    };
+    checkAuth();
+  }, [location.pathname]); // Re-check on route change
+
+  // Check if we're in the admin panel
+  const isInAdminPanel = location.pathname.startsWith('/admin');
+
+  // Handle logout
+  const handleLogout = async () => {
+    try {
+      await fetch(`${API_URL}/api/auth/logout`, {
+        method: 'POST',
+        credentials: 'include',
+      });
+      setIsAuthenticated(false);
+      navigate('/');
+      window.location.reload(); // Reload to clear any cached state
+    } catch (err) {
+      console.error('Logout failed:', err);
+    }
+  };
+
   return (
     <header className="header">
       <div className="header-left">
+        {/* Logout button - only shown when authenticated and NOT in admin panel */}
+        {isAuthenticated && !isInAdminPanel && (
+          <button
+            onClick={handleLogout}
+            className="logout-btn"
+            title="Logout"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              width="20"
+              height="20"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+              <polyline points="16 17 21 12 16 7" />
+              <line x1="21" y1="12" x2="9" y2="12" />
+            </svg>
+          </button>
+        )}
         <Link to="/">
           <img
             src={`${API_URL}${avatarPath}?v=${avatarCacheBust}`}
