@@ -87,16 +87,19 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
   const imageQueryString = ``;
 
   const handlePhotoClick = (photo: Photo) => {
-    // If still rendering, finish rendering immediately
-    if (renderProgress && renderProgress.current < renderProgress.total) {
-      setPhotos(allPhotos);
-      setRenderProgress(null);
-    }
-    
+    // Open modal immediately
     setSelectedPhoto(photo);
     const index = photoIndexMap.get(photo.id) ?? 0;
     setSelectedPhotoIndex(index);
     trackPhotoClick(photo.id, photo.album, photo.title);
+    
+    // If still rendering, finish rendering in background
+    if (renderProgress && renderProgress.current < renderProgress.total) {
+      setTimeout(() => {
+        setPhotos(allPhotos);
+        setRenderProgress(null);
+      }, 0);
+    }
   };
 
   const handleNavigatePrev = useCallback(() => {
