@@ -862,7 +862,6 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
   const handleGenerateTitles = async (forceRegenerate = false) => {
     setGeneratingTitles(true);
     setTitlesOutput([]);
-    setTitlesProgress(0);
     
     // Reset toaster to default state
     sseToaster.resetToasterState();
@@ -1274,7 +1273,6 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
     setIsOptimizationRunning(true);
     setOptimizationComplete(false);
     setOptimizationLogs([]);
-    setOptimizationProgress(0);
     
     // Reset toaster to default state
     sseToaster.resetToasterState();
