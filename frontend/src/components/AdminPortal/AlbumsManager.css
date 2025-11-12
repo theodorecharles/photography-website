@@ -1935,15 +1935,23 @@
   padding: 1rem;
 }
 
+.ghost-tile-content svg {
+  margin: 0;
+  display: block;
+}
+
 .ghost-tile-text {
   font-size: 1rem;
   font-weight: 500;
+  margin: 0;
 }
 
 .ghost-tile-hint {
   font-size: 0.85rem;
   color: rgba(74, 222, 128, 0.7);
   font-style: italic;
+  margin: 0;
+  line-height: 1;
 }
 
 /* Disabled ghost tile */
