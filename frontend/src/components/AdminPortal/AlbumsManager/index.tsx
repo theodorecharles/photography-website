@@ -523,25 +523,85 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     setIsGhostAlbumDragOver(false);
   };
 
-  const handleGhostTileDrop = (e: React.DragEvent) => {
+  const handleGhostTileDrop = async (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
     setIsGhostAlbumDragOver(false);
 
-    const files = Array.from(e.dataTransfer.files);
-    if (files.length === 0) return;
+    // Helper function to recursively read files from a directory entry
+    const readDirectoryRecursively = async (entry: any): Promise<File[]> => {
+      const files: File[] = [];
+      
+      if (entry.isFile) {
+        const file: File = await new Promise((resolve, reject) => {
+          entry.file(resolve, reject);
+        });
+        if (file.type.startsWith('image/')) {
+          files.push(file);
+        }
+      } else if (entry.isDirectory) {
+        const reader = entry.createReader();
+        const entries: any[] = await new Promise((resolve, reject) => {
+          reader.readEntries(resolve, reject);
+        });
+        
+        for (const childEntry of entries) {
+          const childFiles = await readDirectoryRecursively(childEntry);
+          files.push(...childFiles);
+        }
+      }
+      
+      return files;
+    };
 
-    // Filter for image files only
-    const imageFiles = files.filter(file => file.type.startsWith('image/'));
-    if (imageFiles.length === 0) {
-      setMessage({ type: 'error', text: 'No valid image files found' });
-      return;
+    try {
+      const items = Array.from(e.dataTransfer.items);
+      const imageFiles: File[] = [];
+      let folderName = '';
+
+      // Check if any items are folders using webkitGetAsEntry
+      for (const item of items) {
+        if (item.kind === 'file') {
+          const entry = item.webkitGetAsEntry();
+          if (entry) {
+            if (entry.isDirectory) {
+              // It's a folder!
+              if (!folderName) {
+                folderName = entry.name; // Use the first folder's name
+              }
+              const files = await readDirectoryRecursively(entry);
+              imageFiles.push(...files);
+            } else if (entry.isFile) {
+              // It's a file
+              const file = item.getAsFile();
+              if (file && file.type.startsWith('image/')) {
+                imageFiles.push(file);
+              }
+            }
+          }
+        }
+      }
+
+      // Fallback to regular files if webkitGetAsEntry didn't work
+      if (imageFiles.length === 0) {
+        const files = Array.from(e.dataTransfer.files);
+        const validImages = files.filter(file => file.type.startsWith('image/'));
+        imageFiles.push(...validImages);
+      }
+
+      if (imageFiles.length === 0) {
+        setMessage({ type: 'error', text: 'No valid image files found' });
+        return;
+      }
+
+      // Show modal to name the new album
+      setNewAlbumFiles(imageFiles);
+      setShowNewAlbumModal(true);
+      setNewAlbumModalName(folderName); // Pre-populate with folder name if available
+    } catch (error) {
+      console.error('Error reading dropped items:', error);
+      setMessage({ type: 'error', text: 'Error reading files' });
     }
-
-    // Show modal to name the new album
-    setNewAlbumFiles(imageFiles);
-    setShowNewAlbumModal(true);
-    setNewAlbumModalName('');
   };
 
   // Handle click on ghost tile (for mobile/manual file selection)
@@ -560,10 +620,23 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
       return;
     }
 
+    // Try to extract folder name from file paths if available
+    let folderName = '';
+    if (imageFiles.length > 0 && 'webkitRelativePath' in imageFiles[0]) {
+      const firstPath = (imageFiles[0] as any).webkitRelativePath || '';
+      if (firstPath) {
+        // Extract the first part of the path (folder name)
+        const parts = firstPath.split('/');
+        if (parts.length > 1) {
+          folderName = parts[0];
+        }
+      }
+    }
+
     // Show modal to name the new album
     setNewAlbumFiles(imageFiles);
     setShowNewAlbumModal(true);
-    setNewAlbumModalName('');
+    setNewAlbumModalName(folderName);
     
     // Reset the input
     e.target.value = '';
