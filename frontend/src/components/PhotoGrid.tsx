@@ -524,6 +524,20 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
     return <div className="error">Error: {error}</div>;
   }
 
+  // Empty state - no photos in the album
+  if (photos.length === 0) {
+    return (
+      <div className="empty-state">
+        <div className="empty-icon">📸</div>
+        <h2>No Photos Yet</h2>
+        <p>This album is empty. Time to add some amazing photos!</p>
+        <a href="/admin" className="empty-state-button">
+          Go to Admin Panel
+        </a>
+      </div>
+    );
+  }
+
   return (
     <>
       <div className="photo-grid" style={{ gridTemplateColumns: `repeat(${numColumns}, 1fr)` }}>

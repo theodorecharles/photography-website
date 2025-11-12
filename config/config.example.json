@@ -7,14 +7,14 @@
     "backend": {
       "port": 3001,
       "photosDir": "photos",
-      "allowedOrigins": ["http://localhost:5173", "http://localhost:3000"]
+      "allowedOrigins": ["http://localhost:3000"]
     },
     "optimization": {
       "concurrency": 4,
       "images": {
         "thumbnail": {
           "quality": 60,
-          "maxDimension": 512
+          "maxDimension": 640
         },
         "modal": {
           "quality": 90,
@@ -27,9 +27,11 @@
       }
     },
     "security": {
-      "allowedHosts": ["localhost:3000", "localhost:5173"],
+      "allowedHosts": ["localhost:3000"],
       "rateLimitWindowMs": 1000,
-      "rateLimitMaxRequests": 30
+      "rateLimitMaxRequests": 30,
+      "redirectFrom": [],
+      "redirectTo": ""
     },
     "auth": {
       "google": {
@@ -58,10 +60,8 @@
       "stream": "website",
       "username": "your-username",
       "password": "your-password"
-    }
-  },
-  "ai": {
-    "autoGenerateTitlesOnUpload": false
+    },
+    "hmacSecret": ""
   },
   "notifications": {
     "telegram": {
@@ -91,5 +91,11 @@
       "title": "Login",
       "url": "/admin"
     }
-  ]
+  ],
+  "openai": {
+    "apiKey": ""
+  },
+  "ai": {
+    "autoGenerateTitlesOnUpload": false
+  }
 }

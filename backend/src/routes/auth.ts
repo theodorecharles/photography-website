@@ -7,6 +7,9 @@ import { Router, Request, Response, NextFunction } from 'express';
 import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import config from '../config.js';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 const router = Router();
 
@@ -50,57 +53,99 @@ interface AuthenticatedUser {
   picture?: string;
 }
 
-// Configure Google OAuth Strategy
-const googleConfig = config.auth?.google;
-const authorizedEmails = config.auth?.authorizedEmails || [];
+// Function to initialize Google OAuth Strategy
+export function initializeGoogleStrategy() {
+  console.log('🔄 Attempting to initialize Google OAuth strategy...');
+  
+  // Reload config to get latest values
+  // Go up one level from backend to project root
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = path.dirname(__filename);
+  const configPath = path.join(__dirname, '../../../config/config.json');
+  
+  let latestConfig;
+  try {
+    const configContent = fs.readFileSync(configPath, 'utf8');
+    latestConfig = JSON.parse(configContent);
+    console.log('✓ Config file loaded successfully');
+  } catch (err) {
+    console.log('⚠️  Could not load config for Google OAuth:', err);
+    return false;
+  }
+  
+  const googleConfig = latestConfig.environment?.auth?.google;
+  const authorizedEmails = latestConfig.environment?.auth?.authorizedEmails || [];
+  const callbackURL = `${latestConfig.environment?.frontend?.apiUrl}/api/auth/google/callback`;
 
-// Derive callback URL from API URL in config
-const callbackURL = `${config.frontend?.apiUrl}/api/auth/google/callback`;
+  console.log('📋 OAuth config check:');
+  console.log('  - Client ID:', googleConfig?.clientId ? '✓ Present' : '✗ Missing');
+  console.log('  - Client Secret:', googleConfig?.clientSecret ? '✓ Present' : '✗ Missing');
+  console.log('  - Authorized Emails:', authorizedEmails.length);
+  console.log('  - Callback URL:', callbackURL);
 
-if (googleConfig?.clientId && googleConfig?.clientSecret) {
-  passport.use(
-    new GoogleStrategy(
-      {
-        clientID: googleConfig.clientId,
-        clientSecret: googleConfig.clientSecret,
-        callbackURL: callbackURL,
-      },
-      (accessToken, refreshToken, profile, done) => {
-        // Extract user information
-        const email = profile.emails?.[0]?.value;
-        
-        if (!email) {
-          return done(new Error('no_email'));
+  if (googleConfig?.clientId && googleConfig?.clientSecret) {
+    // Remove existing strategy if it exists
+    try {
+      passport.unuse('google');
+      console.log('✓ Removed old Google strategy');
+    } catch (e) {
+      // Strategy doesn't exist yet, that's fine
+      console.log('ℹ️  No existing Google strategy to remove');
+    }
+    
+    passport.use(
+      new GoogleStrategy(
+        {
+          clientID: googleConfig.clientId,
+          clientSecret: googleConfig.clientSecret,
+          callbackURL: callbackURL,
+        },
+        (accessToken, refreshToken, profile, done) => {
+          // Extract user information
+          const email = profile.emails?.[0]?.value;
+          
+          if (!email) {
+            return done(new Error('no_email'));
+          }
+
+          // Check if user is authorized
+          if (!authorizedEmails.includes(email)) {
+            return done(new Error('unauthorized'));
+          }
+
+          // Create user object
+          const user: AuthenticatedUser = {
+            id: profile.id,
+            email: email,
+            name: profile.displayName,
+            picture: profile.photos?.[0]?.value,
+          };
+
+          return done(null, user);
         }
+      )
+    );
 
-        // Check if user is authorized
-        if (!authorizedEmails.includes(email)) {
-          return done(new Error('unauthorized'));
-        }
+    // Serialize user for session
+    passport.serializeUser((user: any, done) => {
+      done(null, user);
+    });
 
-        // Create user object
-        const user: AuthenticatedUser = {
-          id: profile.id,
-          email: email,
-          name: profile.displayName,
-          picture: profile.photos?.[0]?.value,
-        };
-
-        return done(null, user);
-      }
-    )
-  );
-
-  // Serialize user for session
-  passport.serializeUser((user: any, done) => {
-    done(null, user);
-  });
-
-  // Deserialize user from session
-  passport.deserializeUser((user: any, done) => {
-    done(null, user);
-  });
+    // Deserialize user from session
+    passport.deserializeUser((user: any, done) => {
+      done(null, user);
+    });
+    
+    console.log('✅ Google OAuth strategy initialized successfully!');
+    return true;
+  } else {
+    console.log('⚠️  Google OAuth not configured - admin login disabled');
+    return false;
+  }
 }
+
+// Initialize Google OAuth Strategy on startup
+initializeGoogleStrategy();
 
 // Middleware to check if user is authenticated
 export const isAuthenticated = (req: Request, res: Response, next: NextFunction) => {
@@ -123,9 +168,22 @@ router.get(
   '/google/callback',
   (req: Request, res: Response, next: NextFunction) => {
     passport.authenticate('google', (err: any, user: any) => {
+      // Reload config to get latest values (in case it was just created by OOBE)
+      let currentConfig = config;
+      try {
+        const __filename = fileURLToPath(import.meta.url);
+        const __dirname = path.dirname(__filename);
+        const configPath = path.join(__dirname, '../../../config/config.json');
+        const configContent = fs.readFileSync(configPath, 'utf8');
+        currentConfig = JSON.parse(configContent);
+      } catch (err) {
+        // Fall back to imported config if reload fails
+        console.warn('[OAuth Callback] Could not reload config, using default');
+      }
+      
       // Derive frontend URL from config
-      const apiUrl = config.frontend?.apiUrl || '';
-      const frontendPort = config.frontend?.port || 3000;
+      const apiUrl = currentConfig.environment?.frontend?.apiUrl || currentConfig.frontend?.apiUrl || '';
+      const frontendPort = currentConfig.environment?.frontend?.port || currentConfig.frontend?.port || 3000;
       const isProduction = apiUrl.startsWith('https://');
       const frontendUrl = isProduction
         ? apiUrl.replace(/^https:\/\/api([-\.])/, 'https://www$1')

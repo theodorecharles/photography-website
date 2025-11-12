@@ -73,9 +73,9 @@ export function generateStaticJSONFiles(appRoot: string): { success: boolean; er
     const outputDir = getOutputDir(appRoot);
     ensureOutputDir(outputDir);
 
-    // Get all albums
+    // Get all albums (excluding homepage directory)
     const albumsData = getAllAlbums();
-    const albums = albumsData.map(a => a.name);
+    const albums = albumsData.map(a => a.name).filter(name => name !== 'homepage');
     console.log(`[Static JSON] Found ${albums.length} albums`);
 
     // Generate JSON for each album

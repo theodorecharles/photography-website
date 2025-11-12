@@ -70,8 +70,56 @@ export function initializeDatabase(): any {
     ON image_metadata(album, filename)
   `);
   
+  // Add sort_order column if it doesn't exist (migration)
+  try {
+    const tableInfo = db.pragma('table_info(image_metadata)');
+    const hasSortOrder = tableInfo.some((col: any) => col.name === 'sort_order');
+    if (!hasSortOrder) {
+      console.log('📝 Adding sort_order column to image_metadata...');
+      db.exec('ALTER TABLE image_metadata ADD COLUMN sort_order INTEGER');
+    }
+  } catch (err) {
+    console.log('⚠️  Could not check/add sort_order column:', err);
+  }
+  
+  // Add sort_order column to albums if it doesn't exist (migration)
+  try {
+    const tableInfo = db.pragma('table_info(albums)');
+    const hasSortOrder = tableInfo.some((col: any) => col.name === 'sort_order');
+    if (!hasSortOrder) {
+      console.log('📝 Adding sort_order column to albums...');
+      db.exec('ALTER TABLE albums ADD COLUMN sort_order INTEGER');
+    }
+  } catch (err) {
+    console.log('⚠️  Could not check/add sort_order column to albums:', err);
+  }
+  
+  // Create share_links table if it doesn't exist
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS share_links (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      album TEXT NOT NULL,
+      secret_key TEXT NOT NULL UNIQUE,
+      expires_at DATETIME,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (album) REFERENCES albums(name) ON DELETE CASCADE
+    )
+  `);
+  
+  // Create index for share links
+  db.exec(`
+    CREATE INDEX IF NOT EXISTS idx_share_links_secret 
+    ON share_links(secret_key)
+  `);
+  
+  db.exec(`
+    CREATE INDEX IF NOT EXISTS idx_share_links_album 
+    ON share_links(album)
+  `);
+  
   console.log('✓ SQLite database initialized at:', DB_PATH);
   console.log('✓ WAL mode enabled for better performance');
+  console.log('✓ All tables and migrations applied');
   
   return db;
 }
