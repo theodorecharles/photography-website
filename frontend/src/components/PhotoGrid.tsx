@@ -508,34 +508,32 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
 
   if (loading) {
     return (
-      <div className="photo-grid-loading">
-        <div className="loading-spinner"></div>
-        {renderProgress ? (
-          <div style={{ marginTop: '1.5rem', minWidth: '250px' }}>
-            <div style={{ color: '#666', fontSize: '0.95rem', marginBottom: '8px', fontWeight: 500 }}>
-              Rendering {renderProgress.current} / {renderProgress.total} photos
-            </div>
+      <>
+        {renderProgress && (
+          <div style={{
+            position: 'fixed',
+            top: '54px', // Below header
+            left: 0,
+            right: 0,
+            height: '3px',
+            background: 'transparent',
+            zIndex: 1000
+          }}>
             <div style={{
-              width: '100%',
-              height: '6px',
-              background: 'rgba(0,0,0,0.1)',
-              borderRadius: '3px',
-              overflow: 'hidden'
-            }}>
-              <div style={{
-                width: `${(renderProgress.current / renderProgress.total) * 100}%`,
-                height: '100%',
-                background: '#4CAF50',
-                transition: 'width 0.3s ease'
-              }} />
-            </div>
+              width: `${(renderProgress.current / renderProgress.total) * 100}%`,
+              height: '100%',
+              background: '#007bff', // Primary blue
+              transition: 'width 0.1s linear'
+            }} />
           </div>
-        ) : (
+        )}
+        <div className="photo-grid-loading">
+          <div className="loading-spinner"></div>
           <div style={{ marginTop: '1rem', color: '#666', fontSize: '0.9rem' }}>
             Loading album...
           </div>
-        )}
-      </div>
+        </div>
+      </>
     );
   }
 
