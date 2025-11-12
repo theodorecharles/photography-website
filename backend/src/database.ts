@@ -50,6 +50,17 @@ export function initializeDatabase(): any {
     )
   `);
   
+  // Create album_folders table
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS album_folders (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL UNIQUE,
+      published BOOLEAN NOT NULL DEFAULT 0,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+  
   // Create image_metadata table
   db.exec(`
     CREATE TABLE IF NOT EXISTS image_metadata (
@@ -92,6 +103,30 @@ export function initializeDatabase(): any {
     }
   } catch (err) {
     console.log('⚠️  Could not check/add sort_order column to albums:', err);
+  }
+  
+  // Add sort_order column to album_folders if it doesn't exist (migration)
+  try {
+    const tableInfo = db.pragma('table_info(album_folders)');
+    const hasSortOrder = tableInfo.some((col: any) => col.name === 'sort_order');
+    if (!hasSortOrder) {
+      console.log('📝 Adding sort_order column to album_folders...');
+      db.exec('ALTER TABLE album_folders ADD COLUMN sort_order INTEGER');
+    }
+  } catch (err) {
+    console.log('⚠️  Could not check/add sort_order column to album_folders:', err);
+  }
+  
+  // Add folder_id column to albums if it doesn't exist (migration)
+  try {
+    const tableInfo = db.pragma('table_info(albums)');
+    const hasFolderId = tableInfo.some((col: any) => col.name === 'folder_id');
+    if (!hasFolderId) {
+      console.log('📝 Adding folder_id column to albums...');
+      db.exec('ALTER TABLE albums ADD COLUMN folder_id INTEGER REFERENCES album_folders(id) ON DELETE SET NULL');
+    }
+  } catch (err) {
+    console.log('⚠️  Could not check/add folder_id column to albums:', err);
   }
   
   // Create share_links table if it doesn't exist
