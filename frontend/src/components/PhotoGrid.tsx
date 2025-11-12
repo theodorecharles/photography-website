@@ -174,19 +174,20 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
             // Reconstruct full photo objects from optimized array format
             const staticPhotos = staticData.map((data: string[]) => reconstructPhoto(data, album));
             
-            // Render photos one at a time with progress
+            // Render photos in batches of 10 with progress
             setRenderProgress({ current: 0, total: staticPhotos.length });
             
             let currentIndex = 0;
+            const batchSize = 10;
             
-            const addPhoto = () => {
+            const addBatch = () => {
               if (currentIndex < staticPhotos.length) {
-                currentIndex++;
+                currentIndex = Math.min(currentIndex + batchSize, staticPhotos.length);
                 setPhotos(staticPhotos.slice(0, currentIndex));
                 setRenderProgress({ current: currentIndex, total: staticPhotos.length });
                 
                 if (currentIndex < staticPhotos.length) {
-                  setTimeout(addPhoto, 0); // As fast as possible
+                  setTimeout(addBatch, 0); // As fast as possible
                 } else {
                   // All rendered - show the page
                   setRenderProgress(null);
@@ -195,7 +196,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
               }
             };
             
-            setTimeout(addPhoto, 0);
+            setTimeout(addBatch, 0);
             
             setError(null);
             return;
@@ -216,19 +217,20 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
           }
           const randomPhotos = await response.json();
           
-          // Render photos one at a time with progress
+          // Render photos in batches of 10 with progress
           setRenderProgress({ current: 0, total: randomPhotos.length });
           
           let currentIndex = 0;
+          const batchSize = 10;
           
-          const addPhoto = () => {
+          const addBatch = () => {
             if (currentIndex < randomPhotos.length) {
-              currentIndex++;
+              currentIndex = Math.min(currentIndex + batchSize, randomPhotos.length);
               setPhotos(randomPhotos.slice(0, currentIndex));
               setRenderProgress({ current: currentIndex, total: randomPhotos.length });
               
               if (currentIndex < randomPhotos.length) {
-                setTimeout(addPhoto, 0);
+                setTimeout(addBatch, 0);
               } else {
                 setRenderProgress(null);
                 setLoading(false);
@@ -236,7 +238,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
             }
           };
           
-          setTimeout(addPhoto, 0);
+          setTimeout(addBatch, 0);
         } else {
           // Fetch all photos from the album
           const response = await fetchWithRateLimitCheck(
@@ -260,19 +262,20 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
             );
           });
           
-          // Render photos one at a time with progress
+          // Render photos in batches of 10 with progress
           setRenderProgress({ current: 0, total: sortedPhotos.length });
           
           let currentIndex = 0;
+          const batchSize = 10;
           
-          const addPhoto = () => {
+          const addBatch = () => {
             if (currentIndex < sortedPhotos.length) {
-              currentIndex++;
+              currentIndex = Math.min(currentIndex + batchSize, sortedPhotos.length);
               setPhotos(sortedPhotos.slice(0, currentIndex));
               setRenderProgress({ current: currentIndex, total: sortedPhotos.length });
               
               if (currentIndex < sortedPhotos.length) {
-                setTimeout(addPhoto, 0);
+                setTimeout(addBatch, 0);
               } else {
                 setRenderProgress(null);
                 setLoading(false);
@@ -280,7 +283,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
             }
           };
           
-          setTimeout(addPhoto, 0);
+          setTimeout(addBatch, 0);
         }
 
         setError(null);

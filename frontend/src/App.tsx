@@ -125,10 +125,13 @@ function App() {
 
   // Show footer after initial content loads
   useEffect(() => {
-    // Wait a bit for images to start loading
+    // Hide footer immediately on navigation
+    setShowFooter(false);
+    
+    // Wait for content to fully render (includes photo grid batching)
     const timer = setTimeout(() => {
       setShowFooter(true);
-    }, 1000);
+    }, 6000); // 6 seconds to account for large album rendering
 
     return () => clearTimeout(timer);
   }, [location.pathname]);
