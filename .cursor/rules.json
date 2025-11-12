@@ -268,7 +268,25 @@
     "lighthouse": "> 90 score",
     "initialLoad": "< 50 KB gzipped (currently 44 KB)",
     "timeToInteractive": "< 2s on 4G",
-    "mainChunk": "< 150 KB uncompressed (currently 124 KB)"
+    "mainChunk": "< 150 KB uncompressed (currently 124 KB)",
+    "firstPaint": "< 1s for large albums (batched rendering)"
+  },
+  "batchedRendering": {
+    "description": "Optimize first paint for large albums by rendering photos in batches",
+    "threshold": "Albums with > 50 photos",
+    "strategy": [
+      "Load all photo metadata from JSON instantly",
+      "Render first 50 photos to DOM immediately (fast initial paint)",
+      "Batch-add remaining photos in 50-photo chunks every 100ms",
+      "Show progress indicator during background loading"
+    ],
+    "benefits": [
+      "First paint in ~0.5s instead of 5s for 930-photo albums",
+      "Page is interactive immediately",
+      "No janky scroll-based loading",
+      "Works with both static JSON and API fallback"
+    ],
+    "file": "frontend/src/components/PhotoGrid.tsx"
   },
   "deprecatedRules": {
     "note": "The old component-specific rules are removed. Focus on backend architecture patterns which are more critical and harder to debug."
