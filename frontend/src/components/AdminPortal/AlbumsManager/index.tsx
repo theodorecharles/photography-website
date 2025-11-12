@@ -33,6 +33,8 @@ import {
   useSensors,
   DragEndEvent,
   DragOverlay,
+  DragOverEvent,
+  useDroppable,
 } from '@dnd-kit/core';
 import {
   arrayMove,
@@ -108,9 +110,8 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   const [renamingAlbum, setRenamingAlbum] = useState<string | null>(null);
   const [newAlbumName, setNewAlbumName] = useState('');
   
-  // Folder drag-and-drop state
+  // Folder drag-and-drop state (for dnd-kit)
   const [dragOverFolderId, setDragOverFolderId] = useState<number | null>(null);
-  const [draggingAlbumName, setDraggingAlbumName] = useState<string | null>(null);
   
   // Ref for ghost tile file input
   const ghostTileFileInputRef = useRef<HTMLInputElement>(null);
@@ -297,14 +298,35 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     document.body.style.touchAction = 'none';
   };
 
+  // Handle drag over for albums (to show folder highlight)
+  const handleAlbumDragOver = (event: DragOverEvent) => {
+    const { over } = event;
+    
+    if (over && String(over.id).startsWith('folder-')) {
+      const folderId = parseInt(String(over.id).replace('folder-', ''));
+      setDragOverFolderId(folderId);
+    } else {
+      setDragOverFolderId(null);
+    }
+  };
+
   // Handle drag end for albums with auto-save
   const handleAlbumDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
     
     setActiveAlbumId(null);
+    setDragOverFolderId(null);
     // Re-enable scrolling after drag
     document.body.style.overflow = '';
     document.body.style.touchAction = '';
+
+    // Check if dropped on a folder
+    if (over && String(over.id).startsWith('folder-')) {
+      const folderId = parseInt(String(over.id).replace('folder-', ''));
+      const albumName = String(active.id);
+      await handleMoveAlbumToFolder(albumName, folderId);
+      return;
+    }
 
     if (over && active.id !== over.id) {
       const oldIndex = localAlbums.findIndex((album) => album.name === active.id);
@@ -1416,48 +1438,41 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     }
   };
 
-  // Handle drag start on album (for folder assignment via native drag-and-drop)
-  const handleAlbumToFolderDragStart = (e: React.DragEvent, albumName: string) => {
-    setDraggingAlbumName(albumName);
-    e.dataTransfer.effectAllowed = 'move';
-    e.dataTransfer.setData('text/plain', albumName);
-  };
+  // Droppable folder component
+  const DroppableFolderCard = ({ folder }: { folder: AlbumFolder }) => {
+    const { setNodeRef } = useDroppable({
+      id: `folder-${folder.id}`,
+    });
 
-  // Handle drag over folder
-  const handleFolderDragOver = (e: React.DragEvent, folderId: number) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragOverFolderId(folderId);
-  };
-
-  // Handle drag leave folder
-  const handleFolderDragLeave = (e: React.DragEvent) => {
-    e.preventDefault();
-    // Only clear if we're actually leaving the folder card
-    const relatedTarget = e.relatedTarget as HTMLElement;
-    const currentTarget = e.currentTarget as HTMLElement;
-    if (!relatedTarget || !currentTarget.contains(relatedTarget)) {
-      setDragOverFolderId(null);
-    }
-  };
-
-  // Handle drop on folder
-  const handleFolderDrop = async (e: React.DragEvent, folderId: number) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragOverFolderId(null);
-
-    const albumName = draggingAlbumName || e.dataTransfer.getData('text/plain');
-    if (!albumName) return;
-
-    await handleMoveAlbumToFolder(albumName, folderId);
-    setDraggingAlbumName(null);
-  };
-
-  // Handle drag end (for folder assignment)
-  const handleAlbumToFolderDragEnd = () => {
-    setDraggingAlbumName(null);
-    setDragOverFolderId(null);
+    return (
+      <div
+        ref={setNodeRef}
+        className={`folder-card ${dragOverFolderId === folder.id ? 'drag-over' : ''}`}
+      >
+        <div className="folder-card-header">
+          <h4 className="folder-card-title">📁 {folder.name}</h4>
+          <button
+            onClick={() => handleDeleteFolder(folder.name)}
+            className="folder-delete-btn"
+            title="Delete folder"
+          >
+            ×
+          </button>
+        </div>
+        <div className="folder-count">
+          {localAlbums.filter(a => a.folder_id === folder.id).length} album(s)
+        </div>
+        <label className="toggle-switch" style={{ marginTop: '0.5rem' }}>
+          <input
+            type="checkbox"
+            checked={folder.published}
+            onChange={() => handleToggleFolderPublished(folder.name, folder.published)}
+          />
+          <span className="toggle-slider"></span>
+          <span className="toggle-label">Published</span>
+        </label>
+      </div>
+    );
   };
 
   const handleOpenRenameModal = (albumName: string) => {
@@ -1572,36 +1587,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '1rem' }}>
               {localFolders.map((folder) => (
-                <div
-                  key={folder.id}
-                  className={`folder-card ${dragOverFolderId === folder.id ? 'drag-over' : ''}`}
-                  onDragOver={(e) => handleFolderDragOver(e, folder.id)}
-                  onDragLeave={handleFolderDragLeave}
-                  onDrop={(e) => handleFolderDrop(e, folder.id)}
-                >
-                  <div className="folder-card-header">
-                    <h4 className="folder-card-title">📁 {folder.name}</h4>
-                    <button
-                      onClick={() => handleDeleteFolder(folder.name)}
-                      className="folder-delete-btn"
-                      title="Delete folder"
-                    >
-                      ×
-                    </button>
-                  </div>
-                  <div className="folder-count">
-                    {localAlbums.filter(a => a.folder_id === folder.id).length} album(s)
-                  </div>
-                  <label className="toggle-switch" style={{ marginTop: '0.5rem' }}>
-                    <input
-                      type="checkbox"
-                      checked={folder.published}
-                      onChange={() => handleToggleFolderPublished(folder.name, folder.published)}
-                    />
-                    <span className="toggle-slider"></span>
-                    <span className="toggle-label">Published</span>
-                  </label>
-                </div>
+                <DroppableFolderCard key={folder.id} folder={folder} />
               ))}
               {/* Add New Folder Button */}
               <div
@@ -1632,6 +1618,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                 sensors={albumSensors}
                 collisionDetection={closestCenter}
                 onDragStart={handleAlbumDragStart}
+                onDragOver={handleAlbumDragOver}
                 onDragEnd={handleAlbumDragEnd}
               >
                 <SortableContext
@@ -1651,8 +1638,6 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                         onDragLeave={handleAlbumTileDragLeave}
                         onDrop={(e) => handleAlbumTileDrop(e, album.name)}
                         onRename={handleOpenRenameModal}
-                        onAlbumDragStart={(e) => handleAlbumToFolderDragStart(e, album.name)}
-                        onAlbumDragEnd={handleAlbumToFolderDragEnd}
                       />
                     ))}
                     
