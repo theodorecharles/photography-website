@@ -4,7 +4,7 @@
  * and provides functionality for viewing photos in a modal.
  */
 
-import { useState, useEffect, useRef, useMemo, startTransition } from "react";
+import { useState, useEffect, useRef, useMemo, useCallback, startTransition } from "react";
 import { useLocation } from "react-router-dom";
 import "./PhotoGrid.css";
 import { API_URL, cacheBustValue } from "../config";
@@ -41,11 +41,22 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
   const [allPhotos, setAllPhotos] = useState<Photo[]>([]); // Store all photos
   const [renderedCount, setRenderedCount] = useState(50); // Track how many are rendered
   const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
+  const [selectedPhotoIndex, setSelectedPhotoIndex] = useState<number>(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [imageDimensions, setImageDimensions] = useState<
     Record<string, { width: number; height: number }>
   >({});
+
+  // Create index map for O(1) lookups
+  const photoIndexMap = useMemo(() => {
+    const photosArray = allPhotos.length > 0 ? allPhotos : photos;
+    const map = new Map<string, number>();
+    photosArray.forEach((photo, index) => {
+      map.set(photo.id, index);
+    });
+    return map;
+  }, [allPhotos, photos]);
 
   // Reconstruct full photo object from optimized array format
   // Format: [filename, title] for albums, [filename, title, album] for homepage
@@ -79,9 +90,27 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
     // Use startTransition to make the click feel instant (non-blocking)
     startTransition(() => {
       setSelectedPhoto(photo);
+      const index = photoIndexMap.get(photo.id) ?? 0;
+      setSelectedPhotoIndex(index);
     });
     trackPhotoClick(photo.id, photo.album, photo.title);
   };
+
+  const handleNavigatePrev = useCallback(() => {
+    const photosArray = allPhotos.length > 0 ? allPhotos : photos;
+    const prevIndex = (selectedPhotoIndex - 1 + photosArray.length) % photosArray.length;
+    const prevPhoto = photosArray[prevIndex];
+    setSelectedPhoto(prevPhoto);
+    setSelectedPhotoIndex(prevIndex);
+  }, [selectedPhotoIndex, allPhotos, photos]);
+
+  const handleNavigateNext = useCallback(() => {
+    const photosArray = allPhotos.length > 0 ? allPhotos : photos;
+    const nextIndex = (selectedPhotoIndex + 1) % photosArray.length;
+    const nextPhoto = photosArray[nextIndex];
+    setSelectedPhoto(nextPhoto);
+    setSelectedPhotoIndex(nextIndex);
+  }, [selectedPhotoIndex, allPhotos, photos]);
 
   const handleCloseModal = () => {
     setSelectedPhoto(null);
@@ -566,8 +595,11 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
       {selectedPhoto && (
         <PhotoModal
           selectedPhoto={selectedPhoto}
-          photos={allPhotos.length > 0 ? allPhotos : photos}
           album={album}
+          currentIndex={selectedPhotoIndex}
+          totalPhotos={allPhotos.length > 0 ? allPhotos.length : photos.length}
+          onNavigatePrev={handleNavigatePrev}
+          onNavigateNext={handleNavigateNext}
           onClose={handleCloseModal}
         />
       )}

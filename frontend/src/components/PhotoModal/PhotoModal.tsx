@@ -3,7 +3,7 @@
  * Main modal orchestrator that combines all sub-components
  */
 
-import React, { useRef, useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useRef, useState, useEffect, useCallback } from 'react';
 import { trackPhotoNavigation, trackPhotoDownload, trackModalClose } from '../../utils/analytics';
 import { fetchWithRateLimitCheck } from '../../utils/fetchWrapper';
 import { SITE_URL, cacheBustValue } from '../../config';
@@ -18,26 +18,23 @@ const API_URL = import.meta.env.VITE_API_URL || '';
 
 interface PhotoModalProps {
   selectedPhoto: Photo;
-  photos: Photo[];
   album: string;
+  currentIndex: number;
+  totalPhotos: number;
+  onNavigatePrev: () => void;
+  onNavigateNext: () => void;
   onClose: () => void;
 }
 
 const PhotoModal: React.FC<PhotoModalProps> = ({
   selectedPhoto: initialPhoto,
-  photos,
   album,
+  currentIndex: _currentIndex, // Unused but kept for future UI features
+  totalPhotos: _totalPhotos, // Unused but kept for future UI features
+  onNavigatePrev,
+  onNavigateNext,
   onClose,
 }) => {
-  // Create index map for O(1) photo lookups (critical for large albums like Wedding Photos with 930 photos)
-  const photoIndexMap = useMemo(() => {
-    const map = new Map<string, number>();
-    photos.forEach((photo, index) => {
-      map.set(photo.id, index);
-    });
-    return map;
-  }, [photos]);
-  
   // Modal-specific state
   const [selectedPhoto, setSelectedPhoto] = useState(initialPhoto);
   const [modalImageLoaded, setModalImageLoaded] = useState(false);
@@ -375,43 +372,39 @@ const PhotoModal: React.FC<PhotoModalProps> = ({
 
   // Navigate to previous photo
   const handleNavigatePrev = useCallback(() => {
-    const currentIndex = photoIndexMap.get(selectedPhoto.id) ?? 0;
-    const prevIndex = (currentIndex - 1 + photos.length) % photos.length;
-    const prevPhoto = photos[prevIndex];
     const viewDuration = modalOpenTimeRef.current ? Date.now() - modalOpenTimeRef.current : undefined;
     
-    setSelectedPhoto(prevPhoto);
-    updateURLWithPhoto(prevPhoto);
     setExifData(null);
     setModalImageLoaded(false);
     setShowModalImage(false);
     setThumbnailLoaded(false);
     modalOpenTimeRef.current = Date.now();
     
+    // Parent handles the actual photo change
+    onNavigatePrev();
+    
     setTimeout(() => {
-      trackPhotoNavigation('previous', prevPhoto.id, prevPhoto.album, prevPhoto.title, viewDuration);
+      trackPhotoNavigation('previous', selectedPhoto.id, selectedPhoto.album, selectedPhoto.title, viewDuration);
     }, 0);
-  }, [photoIndexMap, selectedPhoto, photos, updateURLWithPhoto]);
+  }, [selectedPhoto, onNavigatePrev]);
 
   // Navigate to next photo
   const handleNavigateNext = useCallback(() => {
-    const currentIndex = photoIndexMap.get(selectedPhoto.id) ?? 0;
-    const nextIndex = (currentIndex + 1) % photos.length;
-    const nextPhoto = photos[nextIndex];
     const viewDuration = modalOpenTimeRef.current ? Date.now() - modalOpenTimeRef.current : undefined;
     
-    setSelectedPhoto(nextPhoto);
-    updateURLWithPhoto(nextPhoto);
     setExifData(null);
     setModalImageLoaded(false);
     setShowModalImage(false);
     setThumbnailLoaded(false);
     modalOpenTimeRef.current = Date.now();
     
+    // Parent handles the actual photo change
+    onNavigateNext();
+    
     setTimeout(() => {
-      trackPhotoNavigation('next', nextPhoto.id, nextPhoto.album, nextPhoto.title, viewDuration);
+      trackPhotoNavigation('next', selectedPhoto.id, selectedPhoto.album, selectedPhoto.title, viewDuration);
     }, 0);
-  }, [photoIndexMap, selectedPhoto, photos, updateURLWithPhoto]);
+  }, [selectedPhoto, onNavigateNext]);
 
   // Handle modal content click
   const handleModalContentClick = useCallback((e: React.MouseEvent) => {
@@ -480,15 +473,8 @@ const PhotoModal: React.FC<PhotoModalProps> = ({
     };
   }, []);
 
-  // Precache all thumbnails for smooth navigation
-  useEffect(() => {
-    // Preload all thumbnails in the background
-    photos.forEach((photo) => {
-      const img = new Image();
-      img.src = `${API_URL}${photo.thumbnail}${imageQueryString}`;
-      // No need to do anything on load - browser will cache it automatically
-    });
-  }, [photos, imageQueryString]);
+  // Note: Thumbnail preloading removed since we no longer receive the full photos array
+  // Thumbnails are loaded on-demand and browser caching + server-side caching handles the rest
 
   // Preload modal image after delay
   useEffect(() => {
