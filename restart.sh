@@ -129,6 +129,14 @@ SITE_URL=$(jq -r '.environment.backend.allowedOrigins[0] // ""' "config/config.j
 
 log "Deployment completed successfully!"
 
+# Generate static JSON files for performance optimization
+log "Generating static JSON files..."
+if node scripts/generate-static-json.js; then
+    log "Static JSON generated successfully"
+else
+    log "WARNING: Static JSON generation failed (site will use API fallback)"
+fi
+
 # Send success notification to Telegram
 SUCCESS_NOTIFICATION="✅ Photography Website deployed successfully!
 
