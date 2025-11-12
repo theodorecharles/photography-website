@@ -247,8 +247,8 @@
   user-select: none;
 }
 
-/* Only apply position transitions when snapping after drag (not while dragging or unmounting) */
-.sse-toaster:not(.dragging):not(.initial-animation) {
+/* Only apply position transitions when snapping after drag (not while dragging, unmounting, or maximizing) */
+.sse-toaster:not(.dragging):not(.initial-animation):not(.maximized) {
   transition: top 0.3s cubic-bezier(0.4, 0, 0.2, 1),
               bottom 0.3s cubic-bezier(0.4, 0, 0.2, 1),
               left 0.3s cubic-bezier(0.4, 0, 0.2, 1),
@@ -493,7 +493,6 @@
   width: auto;
   max-width: none;
   max-height: calc(100vh - 90px);
-  animation: expandToFull 0.3s ease-out;
 }
 
 @keyframes expandToFull {

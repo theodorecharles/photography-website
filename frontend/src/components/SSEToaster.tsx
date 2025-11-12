@@ -162,11 +162,11 @@ export default function SSEToaster() {
       setIsToasterCollapsed(false); // Auto-expand when maximizing
     }
     
-    // If we were at the bottom, scroll to bottom after transition
+    // If we were at the bottom, scroll to bottom immediately (no transition)
     if (wasAtBottom && element) {
-      setTimeout(() => {
+      requestAnimationFrame(() => {
         element.scrollTop = element.scrollHeight;
-      }, 350); // Wait for CSS transition (300ms) + small buffer
+      });
     }
   };
 
