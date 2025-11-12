@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useSSEToaster } from '../contexts/SSEToasterContext';
 import './AdminPortal/ConfigManager.css'; // Reuse the CSS
 
@@ -8,6 +8,7 @@ import './AdminPortal/ConfigManager.css'; // Reuse the CSS
  * Features drag-and-drop positioning, collapse/expand, maximize/minimize.
  */
 export default function SSEToaster() {
+  const toasterRef = useRef<HTMLDivElement>(null);
   const {
     generatingTitles,
     titlesOutput,
@@ -61,25 +62,25 @@ export default function SSEToaster() {
     };
 
     const handleGlobalMouseUp = (e: MouseEvent) => {
-      if (!dragStart) return;
+      if (!dragStart || !toasterRef.current) return;
       // Don't prevent default - allow normal interactions
       setIsDragging(false);
       
-      // Calculate which corner to snap to based on mouse position
+      // Calculate which corner to snap to based on toaster's center position (not mouse)
+      const rect = toasterRef.current.getBoundingClientRect();
+      const toasterCenterX = rect.left + rect.width / 2;
+      const toasterCenterY = rect.top + rect.height / 2;
+      
       const viewportWidth = window.innerWidth;
       const viewportHeight = window.innerHeight;
-      const x = e.clientX;
-      const y = e.clientY;
       
-      // Simple 50/50 split makes it much easier to reach bottom corners
-      const isLeft = x < viewportWidth / 2;
-      const isRight = x >= viewportWidth / 2;
-      const isTop = y < viewportHeight / 2;
-      const isBottom = y >= viewportHeight / 2;
+      // Simple 50/50 split based on where the toaster center is
+      const isLeft = toasterCenterX < viewportWidth / 2;
+      const isTop = toasterCenterY < viewportHeight / 2;
       
-      if (isBottom && isLeft) {
+      if (!isTop && isLeft) {
         setToasterPosition('bottom-left');
-      } else if (isBottom && isRight) {
+      } else if (!isTop && !isLeft) {
         setToasterPosition('bottom-right');
       } else if (isTop && isLeft) {
         setToasterPosition('top-left');
@@ -176,6 +177,7 @@ export default function SSEToaster() {
 
   return (
     <div 
+      ref={toasterRef}
       className={`sse-toaster ${isToasterCollapsed ? 'collapsed' : 'expanded'} ${isToasterMaximized ? 'maximized' : ''} ${toasterPosition} ${isDragging ? 'dragging' : ''} ${!hasToasterAnimated ? 'initial-animation' : ''}`}
       style={isDragging && !isToasterMaximized ? {
         transform: `translate(${dragOffset.x}px, ${dragOffset.y}px)`,
