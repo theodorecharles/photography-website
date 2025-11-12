@@ -110,33 +110,12 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
   const [loading, setLoading] = useState(true);
   const [savingSection, setSavingSection] = useState<string | null>(null);
   
-  // Initialize local state from global context (read from global state on mount)
-  const [generatingTitles, setGeneratingTitles] = useState(sseToaster.generatingTitles);
-  const [titlesOutput, setTitlesOutput] = useState<string[]>(sseToaster.titlesOutput);
+  // Local state (not related to SSE jobs)
   const [hasMissingTitles, setHasMissingTitles] = useState(false);
-  const [optimizationLogs, setOptimizationLogs] = useState<string[]>(sseToaster.optimizationLogs);
-  const [isOptimizationRunning, setIsOptimizationRunning] = useState(sseToaster.isOptimizationRunning);
   const [optimizationComplete, setOptimizationComplete] = useState(false);
 
-  // Helper to check if any job is running
-  const isAnyJobRunning = generatingTitles || isOptimizationRunning;
-  
-  // Sync FROM global context TO local state when global state changes from other sources
-  useEffect(() => {
-    setGeneratingTitles(sseToaster.generatingTitles);
-  }, [sseToaster.generatingTitles]);
-  
-  useEffect(() => {
-    setTitlesOutput(sseToaster.titlesOutput);
-  }, [sseToaster.titlesOutput]);
-  
-  useEffect(() => {
-    setIsOptimizationRunning(sseToaster.isOptimizationRunning);
-  }, [sseToaster.isOptimizationRunning]);
-  
-  useEffect(() => {
-    setOptimizationLogs(sseToaster.optimizationLogs);
-  }, [sseToaster.optimizationLogs]);
+  // Helper to check if any job is running - read directly from global context
+  const isAnyJobRunning = sseToaster.generatingTitles || sseToaster.isOptimizationRunning;
 
 
   // Section collapse state - all collapsed by default
@@ -561,7 +540,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
 
   // Auto-scroll optimization output to bottom when new logs arrive (only if already at bottom)
   useEffect(() => {
-    if (optimizationOutputRef.current && isOptimizationRunning) {
+    if (optimizationOutputRef.current && sseToaster.isOptimizationRunning) {
       const element = optimizationOutputRef.current;
       const isAtBottom = element.scrollHeight - element.scrollTop - element.clientHeight < 50;
       
@@ -573,11 +552,11 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
         }, 0);
       }
     }
-  }, [optimizationLogs, isOptimizationRunning]);
+  }, [sseToaster.optimizationLogs, sseToaster.isOptimizationRunning]);
 
   // Auto-scroll titles output to bottom when new lines arrive (only if already at bottom)
   useEffect(() => {
-    if (titlesOutputRef.current && generatingTitles) {
+    if (titlesOutputRef.current && sseToaster.generatingTitles) {
       const element = titlesOutputRef.current;
       const isAtBottom = element.scrollHeight - element.scrollTop - element.clientHeight < 50;
       
@@ -589,7 +568,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
         }, 0);
       }
     }
-  }, [titlesOutput, generatingTitles]);
+  }, [sseToaster.titlesOutput, sseToaster.generatingTitles]);
 
   const loadConfig = async () => {
     try {
@@ -2807,11 +2786,11 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
                       onClick={handleSetupOpenAI}
                       className="btn-secondary"
                       style={{ flex: "1 1 auto", minWidth: "200px" }}
-                      disabled={isOptimizationRunning}
+                      disabled={sseToaster.isOptimizationRunning}
                     >
                       Set Up OpenAI
                     </button>
-                  ) : !generatingTitles ? (
+                  ) : !sseToaster.generatingTitles ? (
                     <>
                       {hasMissingTitles && (
                         <button
@@ -2838,7 +2817,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
                         }}
                         className="btn-force-regenerate"
                         style={{ flex: "1 1 auto", minWidth: "200px" }}
-                        disabled={isOptimizationRunning}
+                        disabled={sseToaster.isOptimizationRunning}
                       >
                         Force Regenerate All
                       </button>
@@ -2878,13 +2857,13 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
                     marginBottom: "0.75rem",
                   }}
                 >
-                  {!isOptimizationRunning ? (
+                  {!sseToaster.isOptimizationRunning ? (
                     <button
                       type="button"
                       onClick={() => handleRunOptimization(true)}
                       className="btn-force-regenerate"
                       style={{ flex: "1 1 auto", minWidth: "200px" }}
-                      disabled={generatingTitles}
+                      disabled={sseToaster.generatingTitles}
                     >
                       Force Regenerate All
                     </button>
@@ -2903,7 +2882,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
                       Stop
                     </button>
                   )}
-                  {optimizationComplete && !isOptimizationRunning && (
+                  {optimizationComplete && !sseToaster.isOptimizationRunning && (
                     <span
                       style={{
                         color: "var(--primary-color)",
