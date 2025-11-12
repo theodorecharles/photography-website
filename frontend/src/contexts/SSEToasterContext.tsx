@@ -10,7 +10,7 @@ interface SSEToasterContextType {
   setTitlesProgress: (value: number) => void;
   titlesWaiting: number | null;
   setTitlesWaiting: (value: number | null) => void;
-  titlesOutputRef: React.RefObject<HTMLDivElement>;
+  titlesOutputRef: React.RefObject<HTMLDivElement | null>;
   titlesAbortController: React.MutableRefObject<AbortController | null>;
   
   // Optimization job state
@@ -20,7 +20,7 @@ interface SSEToasterContextType {
   setOptimizationLogs: (value: string[] | ((prev: string[]) => string[])) => void;
   optimizationProgress: number;
   setOptimizationProgress: (value: number) => void;
-  optimizationOutputRef: React.RefObject<HTMLDivElement>;
+  optimizationOutputRef: React.RefObject<HTMLDivElement | null>;
   optimizationAbortController: React.MutableRefObject<AbortController | null>;
   
   // Toaster UI state
