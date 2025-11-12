@@ -274,7 +274,8 @@
     "initialLoad": "< 50 KB gzipped (currently 44 KB)",
     "timeToInteractive": "< 2s on 4G",
     "mainChunk": "< 150 KB uncompressed (currently 124 KB)",
-    "firstPaint": "< 1s for large albums (batched rendering)"
+    "firstPaint": "< 1s for large albums (batched rendering)",
+    "modalNavigation": "Instant (O(1) lookups via photoIndexMap)"
   },
   "batchedRendering": {
     "description": "Optimize first paint for large albums by rendering photos in batches",
