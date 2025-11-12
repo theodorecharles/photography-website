@@ -44,6 +44,8 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
   const [imageDimensions, setImageDimensions] = useState<
     Record<string, { width: number; height: number }>
   >({});
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [showEditMode, setShowEditMode] = useState(false);
 
   // Get query parameters from current URL for API calls (not for images)
   const queryParams = new URLSearchParams(location.search);
@@ -90,6 +92,33 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
       });
     }
   }, [photos]);
+
+  // Check authentication status
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const res = await fetch(`${API_URL}/api/auth/status`, {
+          credentials: 'include',
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setIsAuthenticated(data.authenticated === true);
+        } else {
+          setIsAuthenticated(false);
+        }
+      } catch {
+        setIsAuthenticated(false);
+      }
+    };
+    checkAuth();
+  }, []);
+
+  // Check for edit mode parameter
+  useEffect(() => {
+    const urlParams = new URLSearchParams(location.search);
+    const editParam = urlParams.get('edit');
+    setShowEditMode(editParam === 'true' && isAuthenticated);
+  }, [location.search, isAuthenticated]);
 
   // Auto-open photo from URL query parameter
   useEffect(() => {
@@ -422,7 +451,48 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
   }
 
   return (
-    <div className="photo-grid" style={{ gridTemplateColumns: `repeat(${numColumns}, 1fr)` }}>
+    <>
+      {/* Album Actions - shown when edit mode is active */}
+      {showEditMode && album !== 'homepage' && (
+        <div className="album-actions-banner">
+          <div className="album-actions-content">
+            <h3>Quick Actions for "{album}"</h3>
+            <div className="album-actions-grid-inline">
+              <button
+                onClick={() => window.open(`/admin/albums?album=${encodeURIComponent(album)}`, '_self')}
+                className="btn-action btn-manage"
+                title="Manage album in admin portal"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <path d="M12 6v6l4 2"/>
+                </svg>
+                Full Album Management
+              </button>
+              <button
+                onClick={() => {
+                  const urlParams = new URLSearchParams(location.search);
+                  urlParams.delete('edit');
+                  window.history.replaceState({}, '', `${location.pathname}${urlParams.toString() ? '?' + urlParams.toString() : ''}`);
+                  setShowEditMode(false);
+                }}
+                className="btn-action btn-close-edit"
+                title="Close edit mode"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <line x1="18" y1="6" x2="6" y2="18"/>
+                  <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+                Close
+              </button>
+            </div>
+            <p className="album-actions-hint">
+              For uploading, deleting, or reordering photos, use the Full Album Management page.
+            </p>
+          </div>
+        </div>
+      )}
+      <div className="photo-grid" style={{ gridTemplateColumns: `repeat(${numColumns}, 1fr)` }}>
       {distributedColumns.map((column, columnIndex) => (
         <div 
           key={columnIndex} 
@@ -460,6 +530,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
           ))}
         </div>
       ))}
+    </div>
 
       {selectedPhoto && (
         <PhotoModal
@@ -469,7 +540,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
           onClose={handleCloseModal}
         />
       )}
-    </div>
+    </>
   );
 };
 
