@@ -27,7 +27,7 @@ interface PhotoModalProps {
 }
 
 const PhotoModal: React.FC<PhotoModalProps> = ({
-  selectedPhoto: initialPhoto,
+  selectedPhoto,
   album,
   currentIndex: _currentIndex, // Unused but kept for future UI features
   totalPhotos: _totalPhotos, // Unused but kept for future UI features
@@ -36,7 +36,6 @@ const PhotoModal: React.FC<PhotoModalProps> = ({
   onClose,
 }) => {
   // Modal-specific state
-  const [selectedPhoto, setSelectedPhoto] = useState(initialPhoto);
   const [modalImageLoaded, setModalImageLoaded] = useState(false);
   const [showModalImage, setShowModalImage] = useState(false);
   const [thumbnailLoaded, setThumbnailLoaded] = useState(false);
@@ -50,11 +49,6 @@ const PhotoModal: React.FC<PhotoModalProps> = ({
   );
   const [imageTitle, setImageTitle] = useState<string | null>(null);
   const [siteName, setSiteName] = useState<string>('Photo');
-  
-  // Sync selectedPhoto state when prop changes (from parent navigation)
-  useEffect(() => {
-    setSelectedPhoto(initialPhoto);
-  }, [initialPhoto]);
   
   const touchStartX = useRef<number | null>(null);
   const touchStartY = useRef<number | null>(null);
@@ -124,9 +118,8 @@ const PhotoModal: React.FC<PhotoModalProps> = ({
     }
   }, []);
 
-  // Update selectedPhoto when prop changes
+  // Reset state when photo changes
   useEffect(() => {
-    setSelectedPhoto(initialPhoto);
     setModalImageLoaded(false);
     setShowModalImage(false);
     setThumbnailLoaded(false);
@@ -135,21 +128,12 @@ const PhotoModal: React.FC<PhotoModalProps> = ({
     modalOpenTimeRef.current = Date.now();
     
     // Update URL with photo parameter
-    updateURLWithPhoto(initialPhoto);
+    updateURLWithPhoto(selectedPhoto);
     
     // Fetch image title
-    fetchImageTitle(initialPhoto);
-  }, [initialPhoto.id, updateURLWithPhoto, fetchImageTitle]);
-
-  // Fetch title when selected photo changes (during navigation)
-  useEffect(() => {
-    // Clear the old title immediately when navigating
-    setImageTitle(null);
-    
-    // Fetch new title
     fetchImageTitle(selectedPhoto);
-    updateURLWithPhoto(selectedPhoto);
-  }, [selectedPhoto.id, fetchImageTitle, updateURLWithPhoto]);
+  }, [selectedPhoto.id, updateURLWithPhoto, fetchImageTitle]);
+
 
   // Calculate actual image bounds for aligning controls
   const updateImageBounds = useCallback(() => {
