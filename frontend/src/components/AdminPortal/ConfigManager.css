@@ -703,3 +703,10 @@
     grid-template-columns: 1fr 1fr !important;
   }
 }
+
+/* Hide section descriptions on mobile */
+@media (max-width: 768px) {
+  .config-section-description {
+    display: none !important;
+  }
+}
