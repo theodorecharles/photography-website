@@ -42,7 +42,6 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState<number>(0);
   const [loading, setLoading] = useState(true);
   const [renderProgress, setRenderProgress] = useState<{current: number, total: number} | null>(null);
-  const [primaryColor, setPrimaryColor] = useState<string>('#4ade80'); // Default green
   const [error, setError] = useState<string | null>(null);
   const [imageDimensions, setImageDimensions] = useState<
     Record<string, { width: number; height: number }>
@@ -109,24 +108,6 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
   const handleCloseModal = () => {
     setSelectedPhoto(null);
   };
-
-  // Fetch primary color from branding
-  useEffect(() => {
-    const fetchBranding = async () => {
-      try {
-        const res = await fetchWithRateLimitCheck(`${API_URL}/api/branding`);
-        if (res.ok) {
-          const data = await res.json();
-          if (data.primaryColor) {
-            setPrimaryColor(data.primaryColor);
-          }
-        }
-      } catch (err) {
-        console.error('Failed to fetch branding:', err);
-      }
-    };
-    fetchBranding();
-  }, []);
 
   // Close modal when album changes
   useEffect(() => {
@@ -546,7 +527,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
             <div style={{
               width: `${(renderProgress.current / renderProgress.total) * 100}%`,
               height: '100%',
-              background: primaryColor,
+              background: 'var(--primary-color)',
               transition: 'width 0.1s linear'
             }} />
           </div>
