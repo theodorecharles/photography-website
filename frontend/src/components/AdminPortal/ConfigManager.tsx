@@ -14,6 +14,7 @@ import {
   trackExternalLinksUpdate,
 } from "../../utils/analytics";
 import { PasswordInput } from "./PasswordInput";
+import { useSSEToaster } from "../../contexts/SSEToasterContext";
 
 const API_URL = import.meta.env.VITE_API_URL || "";
 
