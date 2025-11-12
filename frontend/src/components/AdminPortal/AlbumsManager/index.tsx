@@ -1574,64 +1574,41 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
               {localFolders.map((folder) => (
                 <div
                   key={folder.id}
+                  className={`folder-card ${dragOverFolderId === folder.id ? 'drag-over' : ''}`}
                   onDragOver={(e) => handleFolderDragOver(e, folder.id)}
                   onDragLeave={handleFolderDragLeave}
                   onDrop={(e) => handleFolderDrop(e, folder.id)}
-                  style={{
-                    padding: '1rem',
-                    border: dragOverFolderId === folder.id ? '2px solid #3b82f6' : '2px solid rgba(255, 255, 255, 0.2)',
-                    borderRadius: '8px',
-                    backgroundColor: dragOverFolderId === folder.id ? 'rgba(59, 130, 246, 0.15)' : 'rgba(255, 255, 255, 0.05)',
-                    position: 'relative',
-                    transition: 'all 0.2s ease'
-                  }}
                 >
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '0.5rem' }}>
-                    <h4 style={{ margin: 0, fontSize: '1rem' }}>📁 {folder.name}</h4>
+                  <div className="folder-card-header">
+                    <h4 className="folder-card-title">📁 {folder.name}</h4>
                     <button
                       onClick={() => handleDeleteFolder(folder.name)}
-                      style={{
-                        background: 'transparent',
-                        border: 'none',
-                        color: '#ef4444',
-                        cursor: 'pointer',
-                        padding: '0.25rem',
-                        fontSize: '1.2rem'
-                      }}
+                      className="folder-delete-btn"
                       title="Delete folder"
                     >
                       ×
                     </button>
                   </div>
-                  <div style={{ fontSize: '0.85rem', color: '#888', marginBottom: '0.5rem' }}>
+                  <div className="folder-count">
                     {localAlbums.filter(a => a.folder_id === folder.id).length} album(s)
                   </div>
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9rem', cursor: 'pointer' }}>
+                  <label className="toggle-switch" style={{ marginTop: '0.5rem' }}>
                     <input
                       type="checkbox"
                       checked={folder.published}
                       onChange={() => handleToggleFolderPublished(folder.name, folder.published)}
                     />
-                    Published
+                    <span className="toggle-slider"></span>
+                    <span className="toggle-label">Published</span>
                   </label>
                 </div>
               ))}
               {/* Add New Folder Button */}
               <div
+                className="ghost-folder-tile"
                 onClick={() => setShowFolderModal(true)}
-                style={{
-                  padding: '1rem',
-                  border: '2px dashed rgba(255, 255, 255, 0.3)',
-                  borderRadius: '8px',
-                  backgroundColor: 'rgba(255, 255, 255, 0.02)',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  minHeight: '100px'
-                }}
               >
-                <span style={{ fontSize: '2rem', opacity: 0.5 }}>+</span>
+                <span style={{ fontSize: '2rem', opacity: 0.6 }}>+</span>
               </div>
             </div>
           </div>
