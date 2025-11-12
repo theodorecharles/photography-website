@@ -22,6 +22,7 @@ import { fetchWithRateLimitCheck } from '../../../utils/fetchWrapper';
 import ShareModal from '../ShareModal';
 import SortableAlbumCard from './components/SortableAlbumCard';
 import SortablePhotoItem from './components/SortablePhotoItem';
+import SortableFolderCard from './components/SortableFolderCard';
 import '../AlbumsManager.css';
 import '../PhotoOrderControls.css';
 import {
@@ -34,7 +35,6 @@ import {
   DragEndEvent,
   DragOverlay,
   DragOverEvent,
-  useDroppable,
 } from '@dnd-kit/core';
 import {
   arrayMove,
@@ -110,7 +110,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   const [renamingAlbum, setRenamingAlbum] = useState<string | null>(null);
   const [newAlbumName, setNewAlbumName] = useState('');
   
-  // Folder drag-and-drop state (for dnd-kit)
+  // Folder drag-over state (when an album is dragged over a folder)
   const [dragOverFolderId, setDragOverFolderId] = useState<number | null>(null);
   
   // Ref for ghost tile file input
@@ -152,6 +152,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
 
   // State for album drag-and-drop
   const [activeAlbumId, setActiveAlbumId] = useState<string | null>(null);
+  const [activeFolderId, setActiveFolderId] = useState<number | null>(null);
   const [showShareModal, setShowShareModal] = useState(false);
   const [shareAlbumName, setShareAlbumName] = useState<string | null>(null);
   
@@ -290,84 +291,146 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     document.body.style.touchAction = '';
   };
 
-  // Handle drag start for albums
+  // Handle unified drag start for both albums and folders
   const handleAlbumDragStart = (event: DragEndEvent) => {
-    setActiveAlbumId(event.active.id as string);
+    const { active } = event;
+    const id = String(active.id);
+    
+    if (id.startsWith('folder-')) {
+      const folderId = parseInt(id.replace('folder-', ''));
+      setActiveFolderId(folderId);
+    } else {
+      setActiveAlbumId(id);
+    }
+    
     // Prevent scrolling during drag on mobile
     document.body.style.overflow = 'hidden';
     document.body.style.touchAction = 'none';
   };
 
-  // Handle drag over for albums (to show folder highlight)
+  // Handle drag over (to show folder highlight when album is dragged over)
   const handleAlbumDragOver = (event: DragOverEvent) => {
-    const { over } = event;
+    const { active, over } = event;
     
-    if (over && String(over.id).startsWith('folder-')) {
-      const folderId = parseInt(String(over.id).replace('folder-', ''));
-      setDragOverFolderId(folderId);
+    // Only highlight folders when dragging an album
+    if (over && !String(active.id).startsWith('folder-')) {
+      if (String(over.id).startsWith('folder-drop-')) {
+        const folderId = parseInt(String(over.id).replace('folder-drop-', ''));
+        setDragOverFolderId(folderId);
+      } else {
+        setDragOverFolderId(null);
+      }
     } else {
       setDragOverFolderId(null);
     }
   };
 
-  // Handle drag end for albums with auto-save
+  // Handle unified drag end for both albums and folders
   const handleAlbumDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
+    const activeId = String(active.id);
     
     setActiveAlbumId(null);
+    setActiveFolderId(null);
     setDragOverFolderId(null);
+    
     // Re-enable scrolling after drag
     document.body.style.overflow = '';
     document.body.style.touchAction = '';
 
-    // Check if dropped on a folder
-    if (over && String(over.id).startsWith('folder-')) {
-      const folderId = parseInt(String(over.id).replace('folder-', ''));
-      const albumName = String(active.id);
-      await handleMoveAlbumToFolder(albumName, folderId);
+    if (!over) return;
+
+    const overId = String(over.id);
+
+    // Case 1: Dragging an album onto a folder
+    if (!activeId.startsWith('folder-') && overId.startsWith('folder-drop-')) {
+      const folderId = parseInt(overId.replace('folder-drop-', ''));
+      await handleMoveAlbumToFolder(activeId, folderId);
       return;
     }
 
-    if (over && active.id !== over.id) {
+    // Case 2: Reordering albums
+    if (!activeId.startsWith('folder-') && !overId.startsWith('folder-') && active.id !== over.id) {
       const oldIndex = localAlbums.findIndex((album) => album.name === active.id);
       const newIndex = localAlbums.findIndex((album) => album.name === over.id);
 
-      const reorderedAlbums = arrayMove(localAlbums, oldIndex, newIndex);
-      
-      // Optimistically update local state immediately for smooth UX
-      setLocalAlbums(reorderedAlbums);
-      
-      // Save the new order to the backend
-      try {
-        const albumOrders = reorderedAlbums.map((album, index) => ({
-          name: album.name,
-          sort_order: index,
-        }));
+      if (oldIndex !== -1 && newIndex !== -1) {
+        const reorderedAlbums = arrayMove(localAlbums, oldIndex, newIndex);
+        
+        // Optimistically update local state immediately for smooth UX
+        setLocalAlbums(reorderedAlbums);
+        
+        // Save the new order to the backend
+        try {
+          const albumOrders = reorderedAlbums.map((album, index) => ({
+            name: album.name,
+            sort_order: index,
+          }));
 
-        const response = await fetchWithRateLimitCheck(
-          `${API_URL}/api/albums/sort-order`,
-          {
+          const response = await fetchWithRateLimitCheck(
+            `${API_URL}/api/albums/sort-order`,
+            {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              credentials: 'include',
+              body: JSON.stringify({ albumOrders }),
+            }
+          );
+
+          if (!response.ok) {
+            throw new Error('Failed to save album order');
+          }
+
+          // Success! Sync parent state with database
+          await loadAlbums();
+          
+          // Dispatch global event to update navigation dropdown
+          window.dispatchEvent(new Event('albums-updated'));
+        } catch (error) {
+          console.error('Error saving album order:', error);
+          setMessage({ type: 'error', text: 'Failed to save album order' });
+          // On error, reload to revert to saved order
+          await loadAlbums();
+        }
+      }
+      return;
+    }
+
+    // Case 3: Reordering folders
+    if (activeId.startsWith('folder-') && overId.startsWith('folder-') && active.id !== over.id) {
+      const activeFolderId = parseInt(activeId.replace('folder-', ''));
+      const overFolderId = parseInt(overId.replace('folder-', ''));
+      
+      const oldIndex = localFolders.findIndex((folder) => folder.id === activeFolderId);
+      const newIndex = localFolders.findIndex((folder) => folder.id === overFolderId);
+
+      if (oldIndex !== -1 && newIndex !== -1) {
+        const reorderedFolders = arrayMove(localFolders, oldIndex, newIndex);
+        
+        // Optimistically update local state
+        setLocalFolders(reorderedFolders);
+
+        try {
+          await fetchWithRateLimitCheck(`${API_URL}/api/folders/sort-order`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include',
-            body: JSON.stringify({ albumOrders }),
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error('Failed to save album order');
+            body: JSON.stringify({
+              folders: reorderedFolders.map((folder, index) => ({
+                id: folder.id,
+                sort_order: index,
+              })),
+            }),
+          });
+          
+          // Dispatch global event to update navigation dropdown
+          window.dispatchEvent(new Event('albums-updated'));
+        } catch (err) {
+          console.error('Failed to save folder order:', err);
+          setMessage({ type: 'error', text: 'Failed to save folder order' });
+          // Revert on error
+          await loadAlbums();
         }
-
-        // Success! Sync parent state with database
-        await loadAlbums();
-        
-        // Dispatch global event to update navigation dropdown
-        window.dispatchEvent(new Event('albums-updated'));
-      } catch (error) {
-        console.error('Error saving album order:', error);
-        setMessage({ type: 'error', text: 'Failed to save album order' });
-        // On error, reload to revert to saved order
-        await loadAlbums();
       }
     }
   };
@@ -1438,42 +1501,6 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     }
   };
 
-  // Droppable folder component
-  const DroppableFolderCard = ({ folder }: { folder: AlbumFolder }) => {
-    const { setNodeRef } = useDroppable({
-      id: `folder-${folder.id}`,
-    });
-
-    return (
-      <div
-        ref={setNodeRef}
-        className={`folder-card ${dragOverFolderId === folder.id ? 'drag-over' : ''}`}
-      >
-        <div className="folder-card-header">
-          <h4 className="folder-card-title">📁 {folder.name}</h4>
-          <button
-            onClick={() => handleDeleteFolder(folder.name)}
-            className="folder-delete-btn"
-            title="Delete folder"
-          >
-            ×
-          </button>
-        </div>
-        <div className="folder-count">
-          {localAlbums.filter(a => a.folder_id === folder.id).length} album(s)
-        </div>
-        <label className="toggle-switch" style={{ marginTop: '0.5rem' }}>
-          <input
-            type="checkbox"
-            checked={folder.published}
-            onChange={() => handleToggleFolderPublished(folder.name, folder.published)}
-          />
-          <span className="toggle-slider"></span>
-          <span className="toggle-label">Published</span>
-        </label>
-      </div>
-    );
-  };
 
   const handleOpenRenameModal = (albumName: string) => {
     setRenamingAlbum(albumName);
@@ -1572,55 +1599,69 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
         <h2>📸 Albums & Photos</h2>
         <p className="section-description">Manage your photo albums and upload new images</p>
         
-        {/* Folders Section */}
-        {localFolders.length > 0 && (
-          <div className="folders-section" style={{ marginBottom: '2rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-              <h3 style={{ margin: 0 }}>📁 Folders</h3>
+        {/* Unified Drag-and-Drop Context for Folders and Albums */}
+        <DndContext
+          sensors={albumSensors}
+          collisionDetection={closestCenter}
+          onDragStart={handleAlbumDragStart}
+          onDragOver={handleAlbumDragOver}
+          onDragEnd={handleAlbumDragEnd}
+        >
+          {/* Folders Section */}
+          {localFolders.length > 0 && (
+            <div className="folders-section" style={{ marginBottom: '2rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                <h3 style={{ margin: 0 }}>📁 Folders</h3>
+                <button
+                  onClick={() => setShowFolderModal(true)}
+                  className="btn-action btn-upload"
+                  style={{ minWidth: 'auto', padding: '0.5rem 1rem' }}
+                >
+                  + New Folder
+                </button>
+              </div>
+              <SortableContext
+                items={localFolders.map((folder) => `folder-${folder.id}`)}
+                strategy={rectSortingStrategy}
+              >
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '1rem' }}>
+                  {localFolders.map((folder) => (
+                    <SortableFolderCard
+                      key={folder.id}
+                      folder={folder}
+                      albumCount={localAlbums.filter(a => a.folder_id === folder.id).length}
+                      isDragOver={dragOverFolderId === folder.id}
+                      onDelete={handleDeleteFolder}
+                      onTogglePublished={handleToggleFolderPublished}
+                    />
+                  ))}
+                  {/* Add New Folder Button */}
+                  <div
+                    className="ghost-folder-tile"
+                    onClick={() => setShowFolderModal(true)}
+                  >
+                    <span style={{ fontSize: '2rem', opacity: 0.6 }}>+</span>
+                  </div>
+                </div>
+              </SortableContext>
+            </div>
+          )}
+          
+          {/* Show "Create First Folder" button if no folders exist */}
+          {localFolders.length === 0 && (
+            <div style={{ marginBottom: '2rem', textAlign: 'center' }}>
               <button
                 onClick={() => setShowFolderModal(true)}
                 className="btn-action btn-upload"
-                style={{ minWidth: 'auto', padding: '0.5rem 1rem' }}
               >
-                + New Folder
+                📁 Create First Folder
               </button>
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '1rem' }}>
-              {localFolders.map((folder) => (
-                <DroppableFolderCard key={folder.id} folder={folder} />
-              ))}
-              {/* Add New Folder Button */}
-              <div
-                className="ghost-folder-tile"
-                onClick={() => setShowFolderModal(true)}
-              >
-                <span style={{ fontSize: '2rem', opacity: 0.6 }}>+</span>
-              </div>
-            </div>
-          </div>
-        )}
-        
-        {/* Show "Create First Folder" button if no folders exist */}
-        {localFolders.length === 0 && (
-          <div style={{ marginBottom: '2rem', textAlign: 'center' }}>
-            <button
-              onClick={() => setShowFolderModal(true)}
-              className="btn-action btn-upload"
-            >
-              📁 Create First Folder
-            </button>
-          </div>
-        )}
-        
-        <div className="albums-management">
-          <div className="albums-list">
-              <DndContext
-                sensors={albumSensors}
-                collisionDetection={closestCenter}
-                onDragStart={handleAlbumDragStart}
-                onDragOver={handleAlbumDragOver}
-                onDragEnd={handleAlbumDragEnd}
-              >
+          )}
+          
+          {/* Albums Section */}
+          <div className="albums-management">
+            <div className="albums-list">
                 <SortableContext
                   items={localAlbums.map((album) => album.name)}
                   strategy={rectSortingStrategy}
@@ -1669,24 +1710,36 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                     </div>
                   </div>
                 </SortableContext>
-                <DragOverlay>
-                  {activeAlbumId ? (
-                    <div className="album-card dragging" style={{ cursor: 'grabbing' }}>
-                      <div className="album-card-header">
-                        <h4>
-                          <span className="album-name">{activeAlbumId}</span>
-                        </h4>
-                        {localAlbums.find(a => a.name === activeAlbumId)?.photoCount !== undefined && (
-                          <div className="album-badge">
-                            {localAlbums.find(a => a.name === activeAlbumId)?.photoCount} {localAlbums.find(a => a.name === activeAlbumId)?.photoCount === 1 ? 'photo' : 'photos'}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  ) : null}
-                </DragOverlay>
-              </DndContext>
+            </div>
           </div>
+          
+          {/* Unified Drag Overlay for both albums and folders */}
+          <DragOverlay>
+            {activeAlbumId ? (
+              <div className="album-card dragging" style={{ cursor: 'grabbing' }}>
+                <div className="album-card-header">
+                  <h4>
+                    <span className="album-name">{activeAlbumId}</span>
+                  </h4>
+                  {localAlbums.find(a => a.name === activeAlbumId)?.photoCount !== undefined && (
+                    <div className="album-badge">
+                      {localAlbums.find(a => a.name === activeAlbumId)?.photoCount} {localAlbums.find(a => a.name === activeAlbumId)?.photoCount === 1 ? 'photo' : 'photos'}
+                    </div>
+                  )}
+                </div>
+              </div>
+            ) : activeFolderId ? (
+              <div className="folder-card dragging" style={{ cursor: 'grabbing' }}>
+                <div className="folder-card-header">
+                  <h4 className="folder-card-title">📁 {localFolders.find(f => f.id === activeFolderId)?.name}</h4>
+                </div>
+                <div className="folder-count">
+                  {localAlbums.filter(a => a.folder_id === activeFolderId).length} album(s)
+                </div>
+              </div>
+            ) : null}
+          </DragOverlay>
+        </DndContext>
 
           {selectedAlbum && (
             <div 
@@ -2048,7 +2101,6 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
               )}
             </div>
           )}
-        </div>
       </section>
 
       {/* Edit Title Modal - Use Portal to escape admin-container z-index stacking context */}
