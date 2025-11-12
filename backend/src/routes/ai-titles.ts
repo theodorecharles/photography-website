@@ -8,6 +8,7 @@ import { spawn } from 'child_process';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { csrfProtection } from '../security.js';
+import { getDatabase } from '../database.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -67,6 +68,31 @@ router.get('/status', requireAuth, (req, res) => {
     });
   } else {
     res.json({ running: false });
+  }
+});
+
+/**
+ * GET /api/ai-titles/check-missing
+ * Check if there are images with missing titles
+ */
+router.get('/check-missing', requireAuth, (req, res) => {
+  try {
+    const db = getDatabase();
+    
+    // Count images without titles
+    const result = db.prepare(`
+      SELECT COUNT(*) as count
+      FROM image_metadata
+      WHERE title IS NULL OR title = ''
+    `).get() as { count: number };
+    
+    res.json({ 
+      hasMissingTitles: result.count > 0,
+      missingCount: result.count
+    });
+  } catch (error: any) {
+    console.error('[AI Titles] Error checking missing titles:', error);
+    res.status(500).json({ error: 'Failed to check missing titles' });
   }
 });
 

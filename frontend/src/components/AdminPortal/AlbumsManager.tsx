@@ -5,6 +5,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
+import { useSearchParams } from 'react-router-dom';
 import { Album, Photo } from './types';
 import { 
   trackAlbumCreated,
@@ -326,6 +327,8 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   loadAlbums,
   setMessage,
 }) => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  
   // Local albums state that syncs with props - allows for optimistic updates during drag
   const [localAlbums, setLocalAlbums] = useState<Album[]>(albums);
   
@@ -337,6 +340,17 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   const [uploadingImages, setUploadingImages] = useState<UploadingImage[]>([]);
   const uploadingImagesRef = useRef<UploadingImage[]>([]);
   const [selectedAlbum, setSelectedAlbum] = useState<string | null>(null);
+  
+  // Handle album preselection from URL parameter
+  useEffect(() => {
+    const albumParam = searchParams.get('album');
+    if (albumParam && albums.some(a => a.name === albumParam)) {
+      setSelectedAlbum(albumParam);
+      // Clear the parameter after setting the selection
+      searchParams.delete('album');
+      setSearchParams(searchParams, { replace: true });
+    }
+  }, [albums, searchParams, setSearchParams]);
   const [albumPhotos, setAlbumPhotos] = useState<Photo[]>([]);
   const [loadingPhotos, setLoadingPhotos] = useState(false);
   const [originalPhotoOrder, setOriginalPhotoOrder] = useState<Photo[]>([]);

@@ -8,14 +8,14 @@
  */
 
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import "./Header.css";
 import { API_URL } from "../config";
-import { 
-  trackAlbumNavigation, 
-  trackExternalLinkClick, 
-  trackDropdownOpen, 
-  trackDropdownClose 
+import {
+  trackAlbumNavigation,
+  trackExternalLinkClick,
+  trackDropdownOpen,
+  trackDropdownClose
 } from "../utils/analytics";
 
 export interface ExternalLink {
@@ -47,6 +47,29 @@ function Navigation({
   // State for managing dropdown visibility
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isExternalOpen, setIsExternalOpen] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
+  
+  // Check if user is authenticated
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const res = await fetch(`${API_URL}/api/auth/status`, {
+          credentials: 'include',
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setIsAuthenticated(data.authenticated === true);
+        } else {
+          setIsAuthenticated(false);
+        }
+      } catch {
+        setIsAuthenticated(false);
+      }
+    };
+    checkAuth();
+  }, [location.pathname]); // Re-check when route changes
 
   // Close dropdowns when page is scrolled
   useEffect(() => {
@@ -148,6 +171,29 @@ function Navigation({
           <h1 className="album-title">
             {currentAlbum}
           </h1>
+          {/* Edit Album button - only shown when authenticated and on an album page */}
+          {isAuthenticated && currentAlbum !== 'homepage' && (
+            <button
+              onClick={() => {
+                navigate(`/admin/albums?album=${encodeURIComponent(currentAlbum)}`);
+              }}
+              className="edit-album-btn"
+              title="Edit this album"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                width="16"
+                height="16"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
+              </svg>
+            </button>
+          )}
         </div>
       )}
       <nav className="album-nav">
@@ -234,6 +280,28 @@ function Navigation({
               ))}
             </div>
           </div>
+          
+          {/* Edit Links button - only shown when authenticated */}
+          {isAuthenticated && (
+            <Link
+              to="/admin/settings?section=links"
+              className="edit-album-btn"
+              title="Edit links"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                width="16"
+                height="16"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
+              </svg>
+            </Link>
+          )}
         </div>
       </nav>
     </>
@@ -251,9 +319,74 @@ export default function Header({
   avatarPath,
   avatarCacheBust,
 }: HeaderProps) {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  // Check if user is authenticated
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const res = await fetch(`${API_URL}/api/auth/status`, {
+          credentials: 'include',
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setIsAuthenticated(data.authenticated === true);
+        } else {
+          setIsAuthenticated(false);
+        }
+      } catch {
+        setIsAuthenticated(false);
+      }
+    };
+    checkAuth();
+  }, [location.pathname]); // Re-check on route change
+
+  // Check if we're in the admin panel
+  const isInAdminPanel = location.pathname.startsWith('/admin');
+
+  // Handle logout
+  const handleLogout = async () => {
+    try {
+      await fetch(`${API_URL}/api/auth/logout`, {
+        method: 'POST',
+        credentials: 'include',
+      });
+      setIsAuthenticated(false);
+      navigate('/');
+      window.location.reload(); // Reload to clear any cached state
+    } catch (err) {
+      console.error('Logout failed:', err);
+    }
+  };
+
   return (
     <header className="header">
       <div className="header-left">
+        {/* Logout button - only shown when authenticated and NOT in admin panel */}
+        {isAuthenticated && !isInAdminPanel && (
+          <button
+            onClick={handleLogout}
+            className="logout-btn"
+            title="Logout"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              width="20"
+              height="20"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+              <polyline points="16 17 21 12 16 7" />
+              <line x1="21" y1="12" x2="9" y2="12" />
+            </svg>
+          </button>
+        )}
         <Link to="/">
           <img
             src={`${API_URL}${avatarPath}?v=${avatarCacheBust}`}
