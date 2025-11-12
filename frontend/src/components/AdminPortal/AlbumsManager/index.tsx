@@ -1757,7 +1757,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     <>
       <section className="admin-section">
         <h2>📸 Albums & Photos</h2>
-        <p className="section-description">Manage your photo albums and upload new images</p>
+        <p className="section-description">Manage your photo albums and upload new images. Drag phots or folders</p>
         
         {/* Unified Drag-and-Drop Context for Folders and Albums */}
         <DndContext
@@ -1807,8 +1807,8 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
             </div>
           )}
           
-          {/* Show "Create First Folder" button if no folders exist */}
-          {localFolders.length === 0 && (
+          {/* Show "Create First Folder" button if no folders exist but albums do */}
+          {localFolders.length === 0 && localAlbums.length > 0 && (
             <div style={{ marginBottom: '2rem', textAlign: 'center' }}>
               <button
                 onClick={() => setShowFolderModal(true)}
