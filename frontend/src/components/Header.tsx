@@ -284,6 +284,8 @@ function Navigation({
                       return albumObj.folder_id === folder.id;
                     });
                     
+                    const isFolderPublished = folder.published !== false;
+                    
                     // Show all folders, even if empty
                     return (
                       <div key={folder.id} className="folder-item">
@@ -291,7 +293,24 @@ function Navigation({
                           className="nav-link folder-link"
                           onClick={() => setOpenFolderId(openFolderId === folder.id ? null : folder.id)}
                         >
-                          📁 {folder.name}
+                          {!isFolderPublished && isAuthenticated ? (
+                            <svg
+                              viewBox="0 0 24 24"
+                              width="16"
+                              height="16"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              style={{ marginRight: '6px', opacity: 0.6 }}
+                            >
+                              <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+                              <rect x="8" y="12" width="8" height="6" rx="1" ry="1"/>
+                              <path d="M10 12V10a2 2 0 0 1 4 0v2"/>
+                            </svg>
+                          ) : (
+                            <span style={{ marginRight: '6px' }}>📁</span>
+                          )}
+                          {folder.name}
                           <svg
                             className={`dropdown-arrow ${openFolderId === folder.id ? "open" : ""}`}
                             viewBox="0 0 24 24"
