@@ -18,7 +18,10 @@ import {
   getImagesInAlbum,
   getImagesFromPublishedAlbums,
   getShareLinkBySecret,
-  isShareLinkExpired
+  isShareLinkExpired,
+  getAllFolders,
+  getPublishedFolders,
+  getAlbumsInFolder
 } from "../database.js";
 
 const router = Router();
@@ -215,24 +218,43 @@ router.get("/api/albums", (req: Request, res) => {
   // Check if user is authenticated
   const isAuthenticated = req.isAuthenticated && req.isAuthenticated();
   
+  // Get folders
+  const allFolders = isAuthenticated ? getAllFolders() : getPublishedFolders();
+  
   if (isAuthenticated) {
-    // For authenticated users, return all albums with their published state
+    // For authenticated users, return all albums with their published state and folder info
     const albumsWithState = allAlbums.map((albumName: string) => {
       const state = updatedAlbumStates.find(a => a.name === albumName);
       return {
         name: albumName,
-        published: state?.published ?? false
+        published: state?.published ?? false,
+        folder_id: state?.folder_id ?? null
       };
     });
-    res.json(albumsWithState);
+    res.json({
+      albums: albumsWithState,
+      folders: allFolders
+    });
   } else {
-    // For non-authenticated users, only return published albums
+    // For non-authenticated users, only return published albums and folders
     const publishedAlbums = allAlbums.filter((albumName: string) => {
       const state = updatedAlbumStates.find(a => a.name === albumName);
       return state?.published === true;
     });
     
-    res.json(publishedAlbums);
+    // Group albums by folder for better structure
+    const albumsWithFolder = publishedAlbums.map((albumName: string) => {
+      const state = updatedAlbumStates.find(a => a.name === albumName);
+      return {
+        name: albumName,
+        folder_id: state?.folder_id ?? null
+      };
+    });
+    
+    res.json({
+      albums: albumsWithFolder,
+      folders: allFolders
+    });
   }
 });
 

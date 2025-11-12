@@ -33,6 +33,7 @@ const IMAGE_CACHE_MAX_ITEMS = 2000; // Limit cache size (thumbnails + modals)
 // Import route handlers
 import albumsRouter from "./routes/albums.ts";
 import albumManagementRouter from "./routes/album-management.ts";
+import folderManagementRouter from "./routes/folder-management.ts";
 import externalPagesRouter from "./routes/external-pages.ts";
 import healthRouter from "./routes/health.ts";
 import analyticsRouter from "./routes/analytics.ts";
@@ -357,6 +358,7 @@ app.use('/api/preview-grid', previewGridRouter);
 app.use('/api/static-json', staticJsonRouter);
 app.use(albumsRouter);
 app.use('/api/albums', albumManagementRouter);
+app.use('/api/folders', folderManagementRouter);
 app.use(externalPagesRouter);
 app.use(healthRouter);
 app.use('/api/analytics', analyticsRouter);

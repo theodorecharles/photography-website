@@ -23,8 +23,20 @@ export interface ExternalLink {
   url: string;
 }
 
+export interface AlbumFolder {
+  id: number;
+  name: string;
+  published: boolean;
+}
+
+export interface AlbumWithFolder {
+  name: string;
+  folder_id?: number | null;
+}
+
 interface HeaderProps {
-  albums: string[];
+  albums: string[] | AlbumWithFolder[];
+  folders?: AlbumFolder[];
   externalLinks: ExternalLink[];
   currentAlbum?: string;
   siteName: string;
@@ -37,10 +49,12 @@ interface HeaderProps {
  */
 function Navigation({
   albums,
+  folders,
   externalLinks,
   currentAlbum,
 }: {
-  albums: string[];
+  albums: string[] | AlbumWithFolder[];
+  folders?: AlbumFolder[];
   externalLinks: ExternalLink[];
   currentAlbum?: string;
 }) {
@@ -48,6 +62,7 @@ function Navigation({
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isExternalOpen, setIsExternalOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [openFolderId, setOpenFolderId] = useState<number | null>(null);
   const location = useLocation();
   const navigate = useNavigate();
   
@@ -222,20 +237,109 @@ function Navigation({
               </svg>
             </button>
             <div className={`dropdown-menu ${isDropdownOpen ? "open" : ""}`}>
-              {albums.map((album) => (
-                <Link
-                  key={album}
-                  to={`/album/${album}`}
-                  className="nav-link"
-                  onClick={() => {
-                    trackDropdownClose('albums', 'navigation');
-                    setIsDropdownOpen(false);
-                    trackAlbumNavigation(album, 'header');
-                  }}
-                >
-                  {album}
-                </Link>
-              ))}
+              {folders && folders.length > 0 ? (
+                <>
+                  {/* Albums without folders */}
+                  {albums.filter(album => {
+                    const albumObj = typeof album === 'string' ? { name: album, folder_id: null } : album;
+                    return !albumObj.folder_id;
+                  }).map(album => {
+                    const albumName = typeof album === 'string' ? album : album.name;
+                    return (
+                      <Link
+                        key={albumName}
+                        to={`/album/${albumName}`}
+                        className="nav-link"
+                        onClick={() => {
+                          trackDropdownClose('albums', 'navigation');
+                          setIsDropdownOpen(false);
+                          trackAlbumNavigation(albumName, 'header');
+                        }}
+                      >
+                        {albumName}
+                      </Link>
+                    );
+                  })}
+                  
+                  {/* Folders with nested albums */}
+                  {folders.map(folder => {
+                    const folderAlbums = albums.filter(album => {
+                      const albumObj = typeof album === 'string' ? { name: album, folder_id: null } : album;
+                      return albumObj.folder_id === folder.id;
+                    });
+                    
+                    if (folderAlbums.length === 0) return null;
+                    
+                    return (
+                      <div key={folder.id} className="folder-item">
+                        <button
+                          className="nav-link folder-link"
+                          onClick={() => setOpenFolderId(openFolderId === folder.id ? null : folder.id)}
+                        >
+                          📁 {folder.name}
+                          <svg
+                            className={`dropdown-arrow ${openFolderId === folder.id ? "open" : ""}`}
+                            viewBox="0 0 24 24"
+                            width="12"
+                            height="12"
+                            style={{ marginLeft: 'auto' }}
+                          >
+                            <path
+                              d="M6 9L12 15L18 9"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
+                        </button>
+                        {openFolderId === folder.id && (
+                          <div className="folder-submenu">
+                            {folderAlbums.map(album => {
+                              const albumName = typeof album === 'string' ? album : album.name;
+                              return (
+                                <Link
+                                  key={albumName}
+                                  to={`/album/${albumName}`}
+                                  className="nav-link submenu-link"
+                                  onClick={() => {
+                                    trackDropdownClose('albums', 'navigation');
+                                    setIsDropdownOpen(false);
+                                    setOpenFolderId(null);
+                                    trackAlbumNavigation(albumName, 'header');
+                                  }}
+                                >
+                                  {albumName}
+                                </Link>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </>
+              ) : (
+                // No folders - show flat list
+                albums.map(album => {
+                  const albumName = typeof album === 'string' ? album : album.name;
+                  return (
+                    <Link
+                      key={albumName}
+                      to={`/album/${albumName}`}
+                      className="nav-link"
+                      onClick={() => {
+                        trackDropdownClose('albums', 'navigation');
+                        setIsDropdownOpen(false);
+                        trackAlbumNavigation(albumName, 'header');
+                      }}
+                    >
+                      {albumName}
+                    </Link>
+                  );
+                })
+              )}
             </div>
           </div>
         </div>
@@ -398,6 +502,7 @@ export default function Header({
       </div>
       <Navigation
         albums={albums}
+        folders={folders}
         externalLinks={externalLinks}
         currentAlbum={currentAlbum}
       />

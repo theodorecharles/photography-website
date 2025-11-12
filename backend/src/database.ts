@@ -281,6 +281,7 @@ export function getAllAlbums(): Array<{
   id: number;
   name: string;
   published: boolean;
+  folder_id: number | null;
   sort_order: number | null;
   created_at: string;
   updated_at: string;
@@ -298,7 +299,8 @@ export function getAllAlbums(): Array<{
   const results = stmt.all() as any[];
   return results.map(result => ({
     ...result,
-    published: Boolean(result.published)
+    published: Boolean(result.published),
+    folder_id: result.folder_id ?? null
   }));
 }
 
@@ -660,6 +662,244 @@ export function deleteExpiredShareLinks(): number {
   
   const result = stmt.run();
   return result.changes;
+}
+
+/**
+ * Create or update an album folder in the database
+ */
+export function saveAlbumFolder(name: string, published: boolean = false): void {
+  const db = getDatabase();
+  
+  const stmt = db.prepare(`
+    INSERT INTO album_folders (name, published)
+    VALUES (?, ?)
+    ON CONFLICT(name) 
+    DO UPDATE SET 
+      published = excluded.published,
+      updated_at = CURRENT_TIMESTAMP
+  `);
+  
+  stmt.run(name, published ? 1 : 0);
+}
+
+/**
+ * Get folder state by name
+ */
+export function getFolderState(name: string): {
+  id: number;
+  name: string;
+  published: boolean;
+  sort_order: number | null;
+  created_at: string;
+  updated_at: string;
+} | undefined {
+  const db = getDatabase();
+  
+  const stmt = db.prepare(`
+    SELECT * FROM album_folders 
+    WHERE name = ?
+  `);
+  
+  const result = stmt.get(name) as any;
+  if (result) {
+    result.published = Boolean(result.published);
+  }
+  return result;
+}
+
+/**
+ * Get all album folders with their published state
+ */
+export function getAllFolders(): Array<{
+  id: number;
+  name: string;
+  published: boolean;
+  sort_order: number | null;
+  created_at: string;
+  updated_at: string;
+}> {
+  const db = getDatabase();
+  
+  const stmt = db.prepare(`
+    SELECT * FROM album_folders 
+    ORDER BY 
+      CASE WHEN sort_order IS NULL THEN 1 ELSE 0 END,
+      sort_order ASC,
+      name ASC
+  `);
+  
+  const results = stmt.all() as any[];
+  return results.map(result => ({
+    ...result,
+    published: Boolean(result.published)
+  }));
+}
+
+/**
+ * Get only published folders
+ */
+export function getPublishedFolders(): Array<{
+  id: number;
+  name: string;
+  published: boolean;
+  sort_order: number | null;
+  created_at: string;
+  updated_at: string;
+}> {
+  const db = getDatabase();
+  
+  const stmt = db.prepare(`
+    SELECT * FROM album_folders 
+    WHERE published = 1
+    ORDER BY 
+      CASE WHEN sort_order IS NULL THEN 1 ELSE 0 END,
+      sort_order ASC,
+      name ASC
+  `);
+  
+  const results = stmt.all() as any[];
+  return results.map(result => ({
+    ...result,
+    published: Boolean(result.published)
+  }));
+}
+
+/**
+ * Set folder published state
+ */
+export function setFolderPublished(name: string, published: boolean): boolean {
+  const db = getDatabase();
+  
+  const stmt = db.prepare(`
+    UPDATE album_folders 
+    SET published = ?, updated_at = CURRENT_TIMESTAMP
+    WHERE name = ?
+  `);
+  
+  const result = stmt.run(published ? 1 : 0, name);
+  return result.changes > 0;
+}
+
+/**
+ * Delete a folder from the database
+ * Note: This will set folder_id to NULL for all albums in this folder
+ */
+export function deleteFolderState(name: string): boolean {
+  const db = getDatabase();
+  
+  const stmt = db.prepare(`
+    DELETE FROM album_folders 
+    WHERE name = ?
+  `);
+  
+  const result = stmt.run(name);
+  return result.changes > 0;
+}
+
+/**
+ * Get albums in a specific folder
+ */
+export function getAlbumsInFolder(folderId: number): Array<{
+  id: number;
+  name: string;
+  published: boolean;
+  folder_id: number | null;
+  sort_order: number | null;
+  created_at: string;
+  updated_at: string;
+}> {
+  const db = getDatabase();
+  
+  const stmt = db.prepare(`
+    SELECT * FROM albums 
+    WHERE folder_id = ?
+    ORDER BY 
+      CASE WHEN sort_order IS NULL THEN 1 ELSE 0 END,
+      sort_order ASC,
+      name ASC
+  `);
+  
+  const results = stmt.all(folderId) as any[];
+  return results.map(result => ({
+    ...result,
+    published: Boolean(result.published),
+    folder_id: result.folder_id ?? null
+  }));
+}
+
+/**
+ * Get albums not in any folder
+ */
+export function getAlbumsWithoutFolder(): Array<{
+  id: number;
+  name: string;
+  published: boolean;
+  folder_id: number | null;
+  sort_order: number | null;
+  created_at: string;
+  updated_at: string;
+}> {
+  const db = getDatabase();
+  
+  const stmt = db.prepare(`
+    SELECT * FROM albums 
+    WHERE folder_id IS NULL
+    ORDER BY 
+      CASE WHEN sort_order IS NULL THEN 1 ELSE 0 END,
+      sort_order ASC,
+      name ASC
+  `);
+  
+  const results = stmt.all() as any[];
+  return results.map(result => ({
+    ...result,
+    published: Boolean(result.published),
+    folder_id: null
+  }));
+}
+
+/**
+ * Set album's folder
+ */
+export function setAlbumFolder(albumName: string, folderId: number | null): boolean {
+  const db = getDatabase();
+  
+  const stmt = db.prepare(`
+    UPDATE albums 
+    SET folder_id = ?, updated_at = CURRENT_TIMESTAMP
+    WHERE name = ?
+  `);
+  
+  const result = stmt.run(folderId, albumName);
+  return result.changes > 0;
+}
+
+/**
+ * Update sort order for multiple folders
+ */
+export function updateFolderSortOrder(folderOrders: { name: string; sort_order: number }[]): boolean {
+  const db = getDatabase();
+  
+  try {
+    // Use a transaction for atomic updates
+    const transaction = db.transaction(() => {
+      const stmt = db.prepare(`
+        UPDATE album_folders 
+        SET sort_order = ?, updated_at = CURRENT_TIMESTAMP
+        WHERE name = ?
+      `);
+      
+      for (const { name, sort_order } of folderOrders) {
+        stmt.run(sort_order, name);
+      }
+    });
+    
+    transaction();
+    return true;
+  } catch (error) {
+    console.error('Error updating folder sort order:', error);
+    return false;
+  }
 }
 
 /**
