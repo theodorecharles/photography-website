@@ -156,7 +156,6 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
     if (!isDragging || !dragStart) return;
     
     setIsDragging(false);
-    setIsTransitioningFromDrag(true);
     
     // Calculate which corner to snap to based on mouse position
     const viewportWidth = window.innerWidth;
@@ -175,23 +174,29 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
     const isTop = y < topThreshold || (y < viewportHeight / 2 && y < bottomThreshold);
     const isBottom = y > bottomThreshold || (y > viewportHeight / 2 && y > topThreshold);
     
-    if (isBottom && isLeft) {
-      setToasterPosition('bottom-left');
-    } else if (isBottom && isRight) {
-      setToasterPosition('bottom-right');
-    } else if (isTop && isLeft) {
-      setToasterPosition('top-left');
-    } else {
-      setToasterPosition('top-right');
-    }
+    // Set transitioning flag FIRST, then immediately set new position
+    setIsTransitioningFromDrag(true);
     
-    setDragStart(null);
-    setDragOffset({ x: 0, y: 0 });
-    
-    // Clear the transitioning flag after animation completes
+    // Use setTimeout to ensure state updates properly
     setTimeout(() => {
-      setIsTransitioningFromDrag(false);
-    }, 300);
+      if (isBottom && isLeft) {
+        setToasterPosition('bottom-left');
+      } else if (isBottom && isRight) {
+        setToasterPosition('bottom-right');
+      } else if (isTop && isLeft) {
+        setToasterPosition('top-left');
+      } else {
+        setToasterPosition('top-right');
+      }
+      
+      setDragStart(null);
+      setDragOffset({ x: 0, y: 0 });
+      
+      // Clear the transitioning flag after animation completes
+      setTimeout(() => {
+        setIsTransitioningFromDrag(false);
+      }, 300);
+    }, 0);
   };
 
   // Branding and Links state
@@ -283,7 +288,6 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
     const handleGlobalMouseUp = (e: MouseEvent) => {
       if (!dragStart) return;
       setIsDragging(false);
-      setIsTransitioningFromDrag(true);
       
       // Calculate which corner to snap to based on mouse position
       const viewportWidth = window.innerWidth;
@@ -302,23 +306,29 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
       const isTop = y < topThreshold || (y < viewportHeight / 2 && y < bottomThreshold);
       const isBottom = y > bottomThreshold || (y > viewportHeight / 2 && y > topThreshold);
       
-      if (isBottom && isLeft) {
-        setToasterPosition('bottom-left');
-      } else if (isBottom && isRight) {
-        setToasterPosition('bottom-right');
-      } else if (isTop && isLeft) {
-        setToasterPosition('top-left');
-      } else {
-        setToasterPosition('top-right');
-      }
+      // Set transitioning flag FIRST, then immediately set new position
+      setIsTransitioningFromDrag(true);
       
-      setDragStart(null);
-      setDragOffset({ x: 0, y: 0 });
-      
-      // Clear the transitioning flag after animation completes
+      // Use setTimeout to ensure state updates properly
       setTimeout(() => {
-        setIsTransitioningFromDrag(false);
-      }, 300);
+        if (isBottom && isLeft) {
+          setToasterPosition('bottom-left');
+        } else if (isBottom && isRight) {
+          setToasterPosition('bottom-right');
+        } else if (isTop && isLeft) {
+          setToasterPosition('top-left');
+        } else {
+          setToasterPosition('top-right');
+        }
+        
+        setDragStart(null);
+        setDragOffset({ x: 0, y: 0 });
+        
+        // Clear the transitioning flag after animation completes
+        setTimeout(() => {
+          setIsTransitioningFromDrag(false);
+        }, 300);
+      }, 0);
     };
 
     document.addEventListener('mousemove', handleGlobalMouseMove);
