@@ -32,6 +32,8 @@ export default function SSEToaster() {
     dragOffset,
     setDragOffset,
     hasToasterAnimated,
+    isScrollLocked,
+    setIsScrollLocked,
     stopTitlesHandler,
     stopOptimizationHandler,
   } = useSSEToaster();
@@ -116,45 +118,45 @@ export default function SSEToaster() {
     return () => document.removeEventListener('mouseleave', handleMouseLeave);
   }, [isDragging, setIsDragging, setDragStart, setDragOffset]);
 
-  // Auto-scroll optimization output to bottom when new logs arrive (only if already at bottom or just expanded)
+  // Listen for manual scroll to unlock auto-scroll
   useEffect(() => {
-    if (optimizationOutputRef.current && isOptimizationRunning && !isToasterCollapsed) {
-      const element = optimizationOutputRef.current;
-      // Check if user is at bottom (within 100px for more lenient detection)
-      const isAtBottom = element.scrollHeight - element.scrollTop - element.clientHeight < 100;
-      
-      if (isAtBottom) {
-        // Use requestAnimationFrame for more reliable timing
-        requestAnimationFrame(() => {
-          requestAnimationFrame(() => {
-            if (optimizationOutputRef.current) {
-              optimizationOutputRef.current.scrollTop = optimizationOutputRef.current.scrollHeight;
-            }
-          });
-        });
-      }
-    }
-  }, [optimizationLogs, isOptimizationRunning, isToasterCollapsed, optimizationOutputRef]);
+    const element = generatingTitles ? titlesOutputRef.current : optimizationOutputRef.current;
+    if (!element || isToasterCollapsed) return;
 
-  // Auto-scroll titles output to bottom when new lines arrive (only if already at bottom or just expanded)
-  useEffect(() => {
-    if (titlesOutputRef.current && generatingTitles && !isToasterCollapsed) {
-      const element = titlesOutputRef.current;
-      // Check if user is at bottom (within 100px for more lenient detection)
+    const handleScroll = () => {
+      if (!element) return;
       const isAtBottom = element.scrollHeight - element.scrollTop - element.clientHeight < 100;
       
-      if (isAtBottom) {
-        // Use requestAnimationFrame for more reliable timing
+      // Lock if at bottom, unlock if scrolled up
+      if (isAtBottom && !isScrollLocked) {
+        console.log('[SSEToaster] Re-locking scroll (user scrolled back to bottom)');
+        setIsScrollLocked(true);
+      } else if (!isAtBottom && isScrollLocked) {
+        console.log('[SSEToaster] Unlocking scroll (user scrolled up)');
+        setIsScrollLocked(false);
+      }
+    };
+
+    element.addEventListener('scroll', handleScroll);
+    return () => element.removeEventListener('scroll', handleScroll);
+  }, [generatingTitles, titlesOutputRef, optimizationOutputRef, isToasterCollapsed, isScrollLocked, setIsScrollLocked]);
+
+  // Auto-scroll to bottom when new content arrives (only if scroll-locked)
+  useEffect(() => {
+    if (isScrollLocked && !isToasterCollapsed) {
+      const element = generatingTitles ? titlesOutputRef.current : optimizationOutputRef.current;
+      if (element) {
+        // Use double requestAnimationFrame for reliable timing
         requestAnimationFrame(() => {
           requestAnimationFrame(() => {
-            if (titlesOutputRef.current) {
-              titlesOutputRef.current.scrollTop = titlesOutputRef.current.scrollHeight;
+            if (element) {
+              element.scrollTop = element.scrollHeight;
             }
           });
         });
       }
     }
-  }, [titlesOutput, generatingTitles, isToasterCollapsed, titlesOutputRef]);
+  }, [optimizationLogs, titlesOutput, isScrollLocked, isToasterCollapsed, generatingTitles, titlesOutputRef, optimizationOutputRef]);
 
   // Handle maximize/restore button click
   const handleMaximizeClick = () => {
@@ -183,8 +185,11 @@ export default function SSEToaster() {
     const newCollapsedState = !isToasterCollapsed;
     setIsToasterCollapsed(newCollapsedState);
     
-    // When expanding, scroll to bottom after content has rendered
+    // When expanding, re-activate scroll lock and scroll to bottom
     if (!newCollapsedState) {
+      console.log('[SSEToaster] Expanding - activating scroll lock');
+      setIsScrollLocked(true);
+      
       const outputRef = generatingTitles ? titlesOutputRef : optimizationOutputRef;
       const element = outputRef.current;
       if (element) {
