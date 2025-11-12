@@ -390,7 +390,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
   const reconnectToTitlesJob = async () => {
     // Create new abort controller for this reconnection
     const controller = new AbortController();
-    sseToaster.sseToaster.titlesAbortController.current = controller;
+    sseToaster.titlesAbortController.current = controller;
 
     try {
       const res = await fetch(`${API_URL}/api/ai-titles/generate`, {
@@ -788,9 +788,9 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
       });
 
       // Abort the SSE connection using global context
-      if (sseToaster.sseToaster.titlesAbortController.current) {
-        sseToaster.sseToaster.titlesAbortController.current.abort();
-        sseToaster.sseToaster.titlesAbortController.current = null;
+      if (sseToaster.titlesAbortController.current) {
+        sseToaster.titlesAbortController.current.abort();
+        sseToaster.titlesAbortController.current = null;
       }
 
       // Clear output and reset state
@@ -818,9 +818,9 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
       });
 
       // Abort the SSE connection using global context
-      if (sseToaster.sseToaster.optimizationAbortController.current) {
-        sseToaster.sseToaster.optimizationAbortController.current.abort();
-        sseToaster.sseToaster.optimizationAbortController.current = null;
+      if (sseToaster.optimizationAbortController.current) {
+        sseToaster.optimizationAbortController.current.abort();
+        sseToaster.optimizationAbortController.current = null;
       }
 
       // Clear output and reset state
