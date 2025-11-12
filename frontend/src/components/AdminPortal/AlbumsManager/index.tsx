@@ -102,7 +102,11 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   // Folder management state
   const [showFolderModal, setShowFolderModal] = useState(false);
   const [newFolderName, setNewFolderName] = useState('');
-  const [selectedFolder, setSelectedFolder] = useState<string | null>(null);
+  
+  // Rename album state
+  const [showRenameModal, setShowRenameModal] = useState(false);
+  const [renamingAlbum, setRenamingAlbum] = useState<string | null>(null);
+  const [newAlbumName, setNewAlbumName] = useState('');
   
   // Ref for ghost tile file input
   const ghostTileFileInputRef = useRef<HTMLInputElement>(null);
@@ -1408,6 +1412,72 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     }
   };
 
+  const handleOpenRenameModal = (albumName: string) => {
+    setRenamingAlbum(albumName);
+    setNewAlbumName(albumName);
+    setShowRenameModal(true);
+  };
+
+  const handleRenameAlbum = async () => {
+    if (!renamingAlbum || !newAlbumName.trim()) {
+      setMessage({ type: 'error', text: 'Album name cannot be empty' });
+      return;
+    }
+
+    const sanitized = newAlbumName.trim().replace(/[^a-zA-Z0-9\s-]/g, '');
+    if (!sanitized) {
+      setMessage({ type: 'error', text: 'Album name contains no valid characters' });
+      return;
+    }
+
+    if (sanitized === renamingAlbum) {
+      setMessage({ type: 'error', text: 'New name must be different from current name' });
+      return;
+    }
+
+    // Check if album with new name already exists
+    if (localAlbums.some(a => a.name === sanitized)) {
+      setMessage({ type: 'error', text: 'An album with that name already exists' });
+      return;
+    }
+
+    try {
+      const res = await fetchWithRateLimitCheck(
+        `${API_URL}/api/albums/${encodeURIComponent(renamingAlbum)}/rename`,
+        {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ newName: sanitized }),
+        }
+      );
+
+      if (!res.ok) {
+        const error = await res.json();
+        setMessage({ type: 'error', text: error.error || 'Failed to rename album' });
+        return;
+      }
+
+      setMessage({ type: 'success', text: `Album renamed to "${sanitized}"` });
+      setShowRenameModal(false);
+      setRenamingAlbum(null);
+      setNewAlbumName('');
+      
+      // If the renamed album was selected, update the selection
+      if (selectedAlbum === renamingAlbum) {
+        setSelectedAlbum(sanitized);
+      }
+      
+      await loadAlbums();
+      
+      // Dispatch global event to update navigation dropdown
+      window.dispatchEvent(new Event('albums-updated'));
+    } catch (err) {
+      console.error('Failed to rename album:', err);
+      setMessage({ type: 'error', text: 'Error renaming album' });
+    }
+  };
+
   // Process dropped items (handles folders)
   const handleDeletePhoto = async (album: string, filename: string, photoTitle: string = '') => {
     const confirmed = await showConfirmation(`Delete this photo${photoTitle ? ` (${photoTitle})` : ''}?\n\nThis action cannot be undone.`);
@@ -1553,6 +1623,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                         onDragLeave={handleAlbumTileDragLeave}
                         onDrop={(e) => handleAlbumTileDrop(e, album.name)}
                         onFolderChange={handleMoveAlbumToFolder}
+                        onRename={handleOpenRenameModal}
                       />
                     ))}
                     
@@ -2027,6 +2098,78 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                 onClick={handleSaveTitle}
               >
                 Save Title
+              </button>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
+
+      {/* Rename Album Modal */}
+      {showRenameModal && renamingAlbum && createPortal(
+        <div 
+          className="edit-title-modal" 
+          onClick={() => setShowRenameModal(false)}
+        >
+          <div className="edit-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="edit-modal-header">
+              <h3>Rename Album</h3>
+              <button 
+                className="modal-close-btn"
+                onClick={() => setShowRenameModal(false)}
+                title="Close"
+              >
+                ×
+              </button>
+            </div>
+            
+            <div className="edit-modal-body">
+              <div className="edit-modal-info" style={{ width: '100%' }}>
+                <label className="edit-modal-label">Current Name</label>
+                <div style={{ 
+                  padding: '0.5rem', 
+                  background: 'rgba(255, 255, 255, 0.05)', 
+                  borderRadius: '4px',
+                  marginBottom: '1rem',
+                  color: '#888'
+                }}>
+                  {renamingAlbum}
+                </div>
+                
+                <label className="edit-modal-label">New Name</label>
+                <input
+                  type="text"
+                  value={newAlbumName}
+                  onChange={(e) => setNewAlbumName(e.target.value)}
+                  className="edit-modal-input"
+                  placeholder="Enter new album name..."
+                  autoFocus
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      handleRenameAlbum();
+                    } else if (e.key === 'Escape') {
+                      setShowRenameModal(false);
+                    }
+                  }}
+                />
+                <p style={{ color: '#888', fontSize: '0.9rem', marginTop: '0.5rem' }}>
+                  Only letters, numbers, spaces, hyphens, and underscores are allowed
+                </p>
+              </div>
+            </div>
+            
+            <div className="edit-modal-footer">
+              <button
+                onClick={() => setShowRenameModal(false)}
+                className="btn-secondary"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleRenameAlbum}
+                className="btn-primary"
+              >
+                Rename Album
               </button>
             </div>
           </div>

@@ -20,7 +20,9 @@ import {
   setAlbumPublished,
   updateImageSortOrder,
   saveImageMetadata,
-  updateAlbumSortOrder
+  updateAlbumSortOrder,
+  getAlbumState,
+  getDatabase
 } from "../database.js";
 import { invalidateAlbumCache } from "./albums.js";
 import { generateStaticJSONFiles } from "./static-json.js";
@@ -525,6 +527,126 @@ router.post("/:album/upload", requireAuth, upload.single('photo'), async (req: R
   } catch (error) {
     console.error('Error uploading photo:', error);
     res.status(500).json({ error: 'Failed to upload photo' });
+  }
+});
+
+/**
+ * Rename an album (updates database and moves directories)
+ */
+router.patch("/:album/rename", requireAuth, async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { album } = req.params;
+    const { newName } = req.body;
+    
+    const sanitizedOldName = sanitizeName(album);
+    if (!sanitizedOldName) {
+      res.status(400).json({ error: 'Invalid album name' });
+      return;
+    }
+
+    if (!newName || typeof newName !== 'string') {
+      res.status(400).json({ error: 'New album name is required' });
+      return;
+    }
+
+    const sanitizedNewName = sanitizeName(newName);
+    if (!sanitizedNewName) {
+      res.status(400).json({ error: 'Invalid new album name. Use only letters, numbers, spaces, hyphens, and underscores.' });
+      return;
+    }
+
+    // Check if old album name equals new album name
+    if (sanitizedOldName === sanitizedNewName) {
+      res.status(400).json({ error: 'New name must be different from current name' });
+      return;
+    }
+
+    const photosDir = req.app.get("photosDir");
+    const optimizedDir = req.app.get("optimizedDir");
+    
+    const oldAlbumPath = path.join(photosDir, sanitizedOldName);
+    const newAlbumPath = path.join(photosDir, sanitizedNewName);
+    
+    // Check if old album exists
+    if (!fs.existsSync(oldAlbumPath)) {
+      res.status(404).json({ error: 'Album not found' });
+      return;
+    }
+
+    // Check if new album name already exists
+    if (fs.existsSync(newAlbumPath)) {
+      res.status(400).json({ error: 'An album with that name already exists' });
+      return;
+    }
+
+    // Get album state before renaming
+    const albumState = getAlbumState(sanitizedOldName);
+    if (!albumState) {
+      res.status(404).json({ error: 'Album not found in database' });
+      return;
+    }
+
+    // Rename photos directory
+    fs.renameSync(oldAlbumPath, newAlbumPath);
+    console.log(`✓ Renamed photos directory: ${sanitizedOldName} -> ${sanitizedNewName}`);
+
+    // Rename optimized directories
+    ['thumbnail', 'modal', 'download'].forEach(dir => {
+      const oldOptimizedPath = path.join(optimizedDir, dir, sanitizedOldName);
+      const newOptimizedPath = path.join(optimizedDir, dir, sanitizedNewName);
+      if (fs.existsSync(oldOptimizedPath)) {
+        fs.renameSync(oldOptimizedPath, newOptimizedPath);
+        console.log(`✓ Renamed optimized/${dir}: ${sanitizedOldName} -> ${sanitizedNewName}`);
+      }
+    });
+
+    // Update database
+    const db = getDatabase();
+    
+    // Start transaction
+    const transaction = db.transaction(() => {
+      // Update albums table
+      db.prepare(`
+        UPDATE albums 
+        SET name = ?, updated_at = CURRENT_TIMESTAMP
+        WHERE name = ?
+      `).run(sanitizedNewName, sanitizedOldName);
+      
+      // Update image_metadata table
+      db.prepare(`
+        UPDATE image_metadata 
+        SET album = ?, updated_at = CURRENT_TIMESTAMP
+        WHERE album = ?
+      `).run(sanitizedNewName, sanitizedOldName);
+      
+      // Update share_links table
+      db.prepare(`
+        UPDATE share_links 
+        SET album = ?
+        WHERE album = ?
+      `).run(sanitizedNewName, sanitizedOldName);
+    });
+    
+    transaction();
+    
+    console.log(`✓ Updated database: ${sanitizedOldName} -> ${sanitizedNewName}`);
+
+    // Invalidate cache for both old and new album names
+    invalidateAlbumCache(sanitizedOldName);
+    invalidateAlbumCache(sanitizedNewName);
+
+    // Regenerate static JSON files
+    const appRoot = req.app.get('appRoot');
+    generateStaticJSONFiles(appRoot);
+
+    res.json({ 
+      success: true, 
+      oldName: sanitizedOldName,
+      newName: sanitizedNewName
+    });
+  } catch (error) {
+    console.error('Error renaming album:', error);
+    res.status(500).json({ error: 'Failed to rename album' });
   }
 });
 

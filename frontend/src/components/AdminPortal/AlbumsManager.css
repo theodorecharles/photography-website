@@ -391,6 +391,34 @@
   min-width: 0;
 }
 
+.album-rename-btn {
+  display: none;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  padding: 0.25rem 0.375rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-left: 0.25rem;
+  flex-shrink: 0;
+}
+
+.album-card:hover .album-rename-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.album-rename-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: scale(1.05);
+}
+
+.album-rename-btn svg {
+  display: block;
+}
+
 .album-card h4::before {
   content: '📁';
   font-size: 1.2rem;

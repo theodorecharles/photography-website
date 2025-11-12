@@ -418,7 +418,7 @@ function App() {
       {!location.pathname.startsWith('/admin') && (
         <div className={`footer-wrapper ${showFooter ? 'visible' : ''}`}>
           <Footer
-            albums={albums}
+            albums={Array.isArray(albums) && albums.length > 0 && typeof albums[0] === 'object' ? albums.map(a => typeof a === 'string' ? a : a.name) : albums as string[]}
             externalLinks={externalLinks}
           currentAlbum={
             location.pathname === "/"
