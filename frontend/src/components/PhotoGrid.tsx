@@ -5,10 +5,11 @@
  */
 
 import { useState, useEffect, useRef, useMemo } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import "./PhotoGrid.css";
+import "../components/AdminPortal/AlbumsManager.css";
 import { API_URL, cacheBustValue } from "../config";
-import { trackPhotoClick, trackError } from "../utils/analytics";
+import { trackPhotoClick, trackError, trackAlbumDeleted, trackPhotoUploaded } from "../utils/analytics";
 import { fetchWithRateLimitCheck } from "../utils/fetchWrapper";
 import PhotoModal from "./PhotoModal";
 import NotFound from "./Misc/NotFound";
@@ -46,6 +47,9 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
   >({});
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showEditMode, setShowEditMode] = useState(false);
+  const [albumPublished, setAlbumPublished] = useState(true);
+  const [uploadingImages, setUploadingImages] = useState<Array<{ name: string; progress: number }>>([]);
+  const navigate = useNavigate();
 
   // Get query parameters from current URL for API calls (not for images)
   const queryParams = new URLSearchParams(location.search);
@@ -119,6 +123,31 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
     const editParam = urlParams.get('edit');
     setShowEditMode(editParam === 'true' && isAuthenticated);
   }, [location.search, isAuthenticated]);
+
+  // Fetch album published status
+  useEffect(() => {
+    if (isAuthenticated && album && album !== 'homepage') {
+      const fetchAlbumStatus = async () => {
+        try {
+          const res = await fetch(`${API_URL}/api/albums`, {
+            credentials: 'include',
+          });
+          if (res.ok) {
+            const albums = await res.json();
+            const currentAlbum = albums.find((a: any) => 
+              (typeof a === 'string' ? a : a.name) === album
+            );
+            if (currentAlbum && typeof currentAlbum === 'object') {
+              setAlbumPublished(currentAlbum.published !== false);
+            }
+          }
+        } catch (err) {
+          console.error('Failed to fetch album status:', err);
+        }
+      };
+      fetchAlbumStatus();
+    }
+  }, [isAuthenticated, album]);
 
   // Auto-open photo from URL query parameter
   useEffect(() => {
@@ -430,6 +459,82 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
     [photos, numColumns, imageDimensions]
   );
 
+  // Album management handlers
+  const handleUploadPhotos = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+
+    setUploadingImages(files.map(f => ({ name: f.name, progress: 0 })));
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      const formData = new FormData();
+      formData.append('photos', file);
+      formData.append('album', album);
+
+      try {
+        const res = await fetch(`${API_URL}/api/photos/upload`, {
+          method: 'POST',
+          body: formData,
+          credentials: 'include',
+        });
+
+        if (res.ok) {
+          trackPhotoUploaded(album, file.name);
+          setUploadingImages(prev => prev.filter(img => img.name !== file.name));
+        }
+      } catch (err) {
+        console.error('Upload failed:', err);
+      }
+    }
+
+    // Reload photos
+    setTimeout(() => {
+      window.location.reload();
+    }, 1000);
+  };
+
+  const handleDeleteAlbum = async () => {
+    if (!confirm(`Are you sure you want to delete the album "${album}"? This will delete all photos in this album.`)) {
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API_URL}/api/albums/${encodeURIComponent(album)}`, {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+
+      if (res.ok) {
+        trackAlbumDeleted(album);
+        navigate('/');
+        window.location.reload();
+      }
+    } catch (err) {
+      console.error('Failed to delete album:', err);
+    }
+  };
+
+  const handleTogglePublished = async () => {
+    const newPublished = !albumPublished;
+
+    try {
+      const res = await fetch(`${API_URL}/api/albums/${encodeURIComponent(album)}/publish`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ published: newPublished }),
+      });
+
+      if (res.ok) {
+        setAlbumPublished(newPublished);
+        window.dispatchEvent(new Event('albums-updated'));
+      }
+    } catch (err) {
+      console.error('Failed to toggle published:', err);
+    }
+  };
+
   if (loading) {
     return (
       <div className="photo-grid-loading">
@@ -454,41 +559,48 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
     <>
       {/* Album Actions - shown when edit mode is active */}
       {showEditMode && album !== 'homepage' && (
-        <div className="album-actions-banner">
-          <div className="album-actions-content">
-            <h3>Quick Actions for "{album}"</h3>
-            <div className="album-actions-grid-inline">
-              <button
-                onClick={() => window.open(`/admin/albums?album=${encodeURIComponent(album)}`, '_self')}
-                className="btn-action btn-manage"
-                title="Manage album in admin portal"
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <circle cx="12" cy="12" r="10"/>
-                  <path d="M12 6v6l4 2"/>
-                </svg>
-                Full Album Management
-              </button>
-              <button
-                onClick={() => {
-                  const urlParams = new URLSearchParams(location.search);
-                  urlParams.delete('edit');
-                  window.history.replaceState({}, '', `${location.pathname}${urlParams.toString() ? '?' + urlParams.toString() : ''}`);
-                  setShowEditMode(false);
-                }}
-                className="btn-action btn-close-edit"
-                title="Close edit mode"
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <line x1="18" y1="6" x2="6" y2="18"/>
-                  <line x1="6" y1="6" x2="18" y2="18"/>
-                </svg>
-                Close
-              </button>
-            </div>
-            <p className="album-actions-hint">
-              For uploading, deleting, or reordering photos, use the Full Album Management page.
-            </p>
+        <div className="photos-header">
+          <div className="album-actions-grid">
+            <label className="btn-action btn-upload btn-action-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
+              </svg>
+              {uploadingImages.length > 0 ? 'Uploading...' : 'Upload Photos'}
+              <input
+                type="file"
+                multiple
+                accept="image/*"
+                onChange={handleUploadPhotos}
+                disabled={uploadingImages.length > 0}
+                style={{ display: 'none' }}
+              />
+            </label>
+            
+            <button
+              onClick={handleDeleteAlbum}
+              className="btn-action btn-delete btn-action-item"
+              title="Delete album"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+              </svg>
+              Delete Album
+            </button>
+            
+            <label 
+              className="toggle-switch btn-action-item"
+              title={albumPublished ? "Unpublish album (hide from public)" : "Publish album (make visible to public)"}
+            >
+              <input
+                type="checkbox"
+                checked={albumPublished}
+                onChange={handleTogglePublished}
+              />
+              <span className="toggle-slider"></span>
+              <span className="toggle-label">
+                {albumPublished ? 'Published' : 'Unpublished'}
+              </span>
+            </label>
           </div>
         </div>
       )}
