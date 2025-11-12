@@ -42,6 +42,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState<number>(0);
   const [loading, setLoading] = useState(true);
   const [loadingMessage, setLoadingMessage] = useState<string>("Loading album...");
+  const [loadedImageCount, setLoadedImageCount] = useState<number>(0);
   const [error, setError] = useState<string | null>(null);
   const [imageDimensions, setImageDimensions] = useState<
     Record<string, { width: number; height: number }>
@@ -178,6 +179,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
             
             // Render all photos at once
             setPhotos(staticPhotos);
+            setLoadedImageCount(0); // Reset counter
             
             setError(null);
             setLoading(false);
@@ -200,6 +202,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
           const randomPhotos = await response.json();
           setLoadingMessage(`Rendering ${randomPhotos.length} photos...`);
           setPhotos(randomPhotos);
+          setLoadedImageCount(0); // Reset counter
         } else {
           // Fetch all photos from the album
           const response = await fetchWithRateLimitCheck(
@@ -227,6 +230,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
           
           // Render all photos at once
           setPhotos(sortedPhotos);
+          setLoadedImageCount(0); // Reset counter
         }
 
         setError(null);
@@ -260,6 +264,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
         height: img.naturalHeight,
       },
     }));
+    setLoadedImageCount((prev) => prev + 1);
   };
 
   // Function to get number of columns based on window width and photo count
@@ -520,6 +525,23 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
           </div>
         ))}
       </div>
+
+      {!loading && loadedImageCount < photos.length && (
+        <div style={{
+          position: 'fixed',
+          bottom: '20px',
+          right: '20px',
+          background: 'rgba(0, 0, 0, 0.8)',
+          color: 'white',
+          padding: '12px 20px',
+          borderRadius: '8px',
+          fontSize: '0.9rem',
+          zIndex: 1000,
+          boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
+        }}>
+          Loading images: {loadedImageCount} / {photos.length}
+        </div>
+      )}
 
       {selectedPhoto && (
         <PhotoModal
