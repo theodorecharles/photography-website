@@ -4,7 +4,7 @@
  * and provides functionality for viewing photos in a modal.
  */
 
-import { useState, useEffect, useRef, useMemo, useCallback, startTransition } from "react";
+import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { useLocation } from "react-router-dom";
 import "./PhotoGrid.css";
 import { API_URL, cacheBustValue } from "../config";
@@ -87,12 +87,10 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
   const imageQueryString = ``;
 
   const handlePhotoClick = (photo: Photo) => {
-    // Use startTransition to make the click feel instant (non-blocking)
-    startTransition(() => {
-      setSelectedPhoto(photo);
-      const index = photoIndexMap.get(photo.id) ?? 0;
-      setSelectedPhotoIndex(index);
-    });
+    // Set immediately - this is a high-priority user interaction
+    setSelectedPhoto(photo);
+    const index = photoIndexMap.get(photo.id) ?? 0;
+    setSelectedPhotoIndex(index);
     trackPhotoClick(photo.id, photo.album, photo.title);
   };
 
