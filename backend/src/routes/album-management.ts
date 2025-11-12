@@ -590,8 +590,12 @@ router.patch("/:album/rename", requireAuth, async (req: Request, res: Response):
     // This way if DB update fails, filesystem is unchanged
     const db = getDatabase();
     
-    // Start transaction
+    // Start transaction with foreign keys temporarily disabled
+    // This is needed because share_links has FK to albums(name) without ON UPDATE CASCADE
     const transaction = db.transaction(() => {
+      // Temporarily disable foreign keys for this transaction
+      db.pragma('foreign_keys = OFF');
+      
       // Update albums table
       const result = db.prepare(`
         UPDATE albums 
@@ -616,6 +620,9 @@ router.patch("/:album/rename", requireAuth, async (req: Request, res: Response):
         SET album = ?
         WHERE album = ?
       `).run(sanitizedNewName, sanitizedOldName);
+      
+      // Re-enable foreign keys
+      db.pragma('foreign_keys = ON');
     });
     
     transaction();
