@@ -259,8 +259,12 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
 
   useEffect(() => {
     loadConfig();
-    checkForRunningJobs();
+    // Only check for running jobs if there's no job already running in the global context
+    if (!sseToaster.generatingTitles && !sseToaster.isOptimizationRunning) {
+      checkForRunningJobs();
+    }
     checkMissingTitles();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Automatically disable auto-generate when API key is removed
