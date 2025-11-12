@@ -47,7 +47,9 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
   const [imageDimensions, setImageDimensions] = useState<
     Record<string, { width: number; height: number }>
   >({});
-  const renderIndexRef = useRef<number>(50);
+  const renderIndexRef = useRef<number>(100);
+  const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const isRenderingRef = useRef<boolean>(false);
 
   // Create index map for O(1) lookups (use allPhotos for navigation)
   const photoIndexMap = useMemo(() => {
@@ -115,7 +117,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
   useEffect(() => {
     setSelectedPhoto(null);
     setColumnTransforms([]);
-    renderIndexRef.current = 50;
+    renderIndexRef.current = 100;
   }, [album]);
 
   // Update column count when photos change
@@ -152,34 +154,51 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
     }
   }, [allPhotos]);
   
-  // Scroll-based rendering - add more photos as user scrolls
+  // Scroll-based rendering - add more photos while actively scrolling
   useEffect(() => {
     if (allPhotos.length === 0 || photos.length >= allPhotos.length) {
       return; // Nothing more to render
     }
     
     const handleScroll = () => {
-      // Check if near bottom (within 1000px)
-      const scrollPosition = window.scrollY + window.innerHeight;
-      const threshold = document.documentElement.scrollHeight - 1000;
+      // Clear existing timeout
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
       
-      if (scrollPosition > threshold && renderIndexRef.current < allPhotos.length) {
-        // Add 50 more photos
-        const newIndex = Math.min(renderIndexRef.current + 50, allPhotos.length);
+      // Add 100 more photos immediately if not already rendering
+      if (!isRenderingRef.current && renderIndexRef.current < allPhotos.length) {
+        isRenderingRef.current = true;
+        const newIndex = Math.min(renderIndexRef.current + 100, allPhotos.length);
         renderIndexRef.current = newIndex;
         setPhotos(allPhotos.slice(0, newIndex));
+        
+        // Allow next render after a brief delay
+        setTimeout(() => {
+          isRenderingRef.current = false;
+        }, 50);
       }
+      
+      // Set timeout to detect when scrolling stops
+      scrollTimeoutRef.current = setTimeout(() => {
+        // Scrolling stopped - no more rendering until they scroll again
+      }, 150);
     };
     
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+    };
   }, [allPhotos, photos.length]);
 
   useEffect(() => {
     // If initialPhotos provided, use them directly (for shared albums)
     if (initialPhotos) {
       setAllPhotos(initialPhotos);
-      setPhotos(initialPhotos.slice(0, 50));
+      setPhotos(initialPhotos.slice(0, 100));
       setLoading(false);
       setError(null);
       onLoadComplete?.();
@@ -202,9 +221,9 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
             // Reconstruct full photo objects from optimized array format
             const staticPhotos = staticData.map((data: string[]) => reconstructPhoto(data, album));
             
-            // Show first 50 immediately
+            // Show first 100 immediately
             setAllPhotos(staticPhotos);
-            setPhotos(staticPhotos.slice(0, 50));
+            setPhotos(staticPhotos.slice(0, 100));
             setLoading(false);
             
             setError(null);
@@ -227,7 +246,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
           }
           const randomPhotos = await response.json();
           setAllPhotos(randomPhotos);
-          setPhotos(randomPhotos.slice(0, 50));
+          setPhotos(randomPhotos.slice(0, 100));
         } else {
           // Fetch all photos from the album
           const response = await fetchWithRateLimitCheck(
@@ -251,9 +270,9 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
             );
           });
           
-          // Show first 50 immediately
+          // Show first 100 immediately
           setAllPhotos(sortedPhotos);
-          setPhotos(sortedPhotos.slice(0, 50));
+          setPhotos(sortedPhotos.slice(0, 100));
         }
 
         setError(null);
