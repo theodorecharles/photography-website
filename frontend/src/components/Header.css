@@ -295,6 +295,14 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
+/* Hide edit buttons and logout on mobile */
+@media (max-width: 768px) {
+  .edit-album-btn,
+  .logout-btn {
+    display: none !important;
+  }
+}
+
 /* Mobile responsive styles */
 @media (max-width: 768px) {
   .album-nav {
