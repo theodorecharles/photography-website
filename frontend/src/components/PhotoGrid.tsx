@@ -67,7 +67,6 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
     const photoAlbum = albumFromData || albumName;
     return {
       id: `${photoAlbum}/${filename}`,
-      src: `/photos/${photoAlbum}/${filename}`,
       thumbnail: `/optimized/thumbnail/${photoAlbum}/${filename}`,
       modal: `/optimized/modal/${photoAlbum}/${filename}`,
       download: `/optimized/download/${photoAlbum}/${filename}`,

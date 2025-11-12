@@ -26,7 +26,10 @@ import config, {
 import { validateProductionSecurity } from "./security.ts";
 
 // In-memory cache for optimized images (thumbnails + modals)
-const imageCache = new Map<string, { data: Buffer; contentType: string; timestamp: number }>();
+const imageCache = new Map<
+  string,
+  { data: Buffer; contentType: string; timestamp: number }
+>();
 const IMAGE_CACHE_MAX_AGE = 24 * 60 * 60 * 1000; // 24 hours
 const IMAGE_CACHE_MAX_ITEMS = 2000; // Limit cache size (thumbnails + modals)
 
@@ -67,43 +70,43 @@ const app = express();
 
 // Trust proxy - required for production behind nginx/reverse proxy
 // This allows express to read X-Forwarded-* headers correctly
-app.set('trust proxy', 1);
+app.set("trust proxy", 1);
 
 // HTTPS redirect middleware (production only)
-const isProduction = config.frontend.apiUrl.startsWith('https://');
+const isProduction = config.frontend.apiUrl.startsWith("https://");
 if (isProduction) {
   app.use((req, res, next) => {
     // Check if request is already HTTPS
-    const isSecure = req.secure || req.headers['x-forwarded-proto'] === 'https';
-    
+    const isSecure = req.secure || req.headers["x-forwarded-proto"] === "https";
+
     if (!isSecure) {
       // Redirect to HTTPS
       const httpsUrl = `https://${req.headers.host}${req.url}`;
       return res.redirect(301, httpsUrl);
     }
-    
+
     next();
   });
 }
 
 // Resolve photo directory paths relative to project root
 // PHOTOS_DIR should be relative to where you run the backend (typically backend/ directory)
-let photosDir = path.resolve(__dirname, '../../', PHOTOS_DIR);
-let optimizedDir = path.resolve(__dirname, '../../', OPTIMIZED_DIR);
+let photosDir = path.resolve(__dirname, "../../", PHOTOS_DIR);
+let optimizedDir = path.resolve(__dirname, "../../", OPTIMIZED_DIR);
 
 // Resolve symlinks to get the real path (important for macOS TCC permissions)
 try {
   photosDir = fs.realpathSync(photosDir);
-  console.log('Photos directory (real path):', photosDir);
+  console.log("Photos directory (real path):", photosDir);
 } catch (err) {
-  console.warn('Warning: Could not resolve photos directory:', photosDir);
+  console.warn("Warning: Could not resolve photos directory:", photosDir);
 }
 
 try {
   optimizedDir = fs.realpathSync(optimizedDir);
-  console.log('Optimized directory (real path):', optimizedDir);
+  console.log("Optimized directory (real path):", optimizedDir);
 } catch (err) {
-  console.warn('Warning: Could not resolve optimized directory:', optimizedDir);
+  console.warn("Warning: Could not resolve optimized directory:", optimizedDir);
 }
 
 // Verify directory paths exist
@@ -120,14 +123,14 @@ app.use(
   helmet({
     crossOriginResourcePolicy: { policy: "cross-origin" }, // Allow images to be loaded from different origins
     contentSecurityPolicy: false, // Disable CSP as we're serving images
-    frameguard: { action: 'deny' }, // X-Frame-Options: DENY (prevent clickjacking)
+    frameguard: { action: "deny" }, // X-Frame-Options: DENY (prevent clickjacking)
     noSniff: true, // X-Content-Type-Options: nosniff (prevent MIME type sniffing)
-    referrerPolicy: { policy: 'strict-origin-when-cross-origin' }, // Referrer-Policy
+    referrerPolicy: { policy: "strict-origin-when-cross-origin" }, // Referrer-Policy
     hsts: {
       maxAge: 31536000, // 1 year
       includeSubDomains: true,
-      preload: true
-    }
+      preload: true,
+    },
   })
 );
 
@@ -147,8 +150,13 @@ app.use(
       }
     },
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Analytics-Signature', 'X-CSRF-Token'],
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+      "X-Analytics-Signature",
+      "X-CSRF-Token",
+    ],
   })
 );
 
@@ -172,9 +180,11 @@ app.use(express.json({ limit: "1mb" }));
 // Configure session middleware for authentication
 const sessionSecret = config.auth?.sessionSecret;
 if (!sessionSecret) {
-  console.error('❌ CRITICAL ERROR: SESSION_SECRET is not configured!');
-  console.error('Please set auth.sessionSecret in config.json or SESSION_SECRET environment variable.');
-  console.error('Generate a secure secret with: openssl rand -hex 32');
+  console.error("❌ CRITICAL ERROR: SESSION_SECRET is not configured!");
+  console.error(
+    "Please set auth.sessionSecret in config.json or SESSION_SECRET environment variable."
+  );
+  console.error("Generate a secure secret with: openssl rand -hex 32");
   process.exit(1);
 }
 
@@ -185,32 +195,34 @@ let cookieDomain: string | undefined = undefined;
 try {
   const backendUrl = new URL(config.frontend.apiUrl);
   const hostname = backendUrl.hostname;
-  
-  if (hostname === 'localhost' || hostname === '127.0.0.1') {
+
+  if (hostname === "localhost" || hostname === "127.0.0.1") {
     // For local development, leave domain undefined
     // Setting explicit 'localhost' can cause issues with cookies across ports
     cookieDomain = undefined;
-    console.log('Cookie domain: undefined (localhost development)');
+    console.log("Cookie domain: undefined (localhost development)");
   } else {
     // For production, extract base domain (e.g., 'tedcharles.net' from 'api.tedcharles.net')
     // Set to '.domain.com' to share across subdomains
-    const parts = hostname.split('.');
+    const parts = hostname.split(".");
     if (parts.length >= 2) {
       // Get last two parts (domain.tld)
-      cookieDomain = '.' + parts.slice(-2).join('.');
+      cookieDomain = "." + parts.slice(-2).join(".");
       console.log(`Cookie domain set to: ${cookieDomain}`);
     }
   }
 } catch (err) {
-  console.warn('Could not parse backend URL for cookie domain, using undefined');
+  console.warn(
+    "Could not parse backend URL for cookie domain, using undefined"
+  );
 }
 
 // Use the isProduction variable already defined above (line 56)
 // For localhost, disable SameSite to allow cross-port cookies
 // For production, use 'lax' for OAuth compatibility
-const sameSiteValue = isProduction ? 'lax' : false;
+const sameSiteValue = isProduction ? "lax" : false;
 
-console.log('Session cookie config:', {
+console.log("Session cookie config:", {
   secure: isProduction,
   httpOnly: true,
   sameSite: sameSiteValue,
@@ -240,79 +252,85 @@ app.use(passport.session());
 
 // Debug middleware - log requests to metrics endpoints
 if (!isProduction) {
-  app.use('/api/metrics', (req, res, next) => {
+  app.use("/api/metrics", (req, res, next) => {
     console.log(`[Metrics Request] ${req.method} ${req.path}`);
-    console.log('  Cookies:', req.headers.cookie || 'NONE');
-    console.log('  Session ID:', req.sessionID);
-    console.log('  Authenticated:', req.isAuthenticated());
+    console.log("  Cookies:", req.headers.cookie || "NONE");
+    console.log("  Session ID:", req.sessionID);
+    console.log("  Authenticated:", req.isAuthenticated());
     next();
   });
 }
 
-// Serve original photos with CORS headers
-app.use("/photos", express.static(photosDir, {
-  setHeaders: (res, path) => {
-    res.setHeader("Access-Control-Allow-Origin", "*");
-    res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
-  }
-}));
+// DO NOT serve original photos - only optimized versions should be accessible
+// Original photos are kept private and only optimized versions are served via /optimized
 
 // In-memory cache middleware for thumbnails AND modals
-const cacheImageMiddleware = (req: Request, res: Response, next: NextFunction) => {
+const cacheImageMiddleware = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   // When mounted under /optimized, req.path is relative to that mount point
   // So req.path will be /thumbnail/... or /modal/... (without /optimized prefix)
-  if (!req.path.startsWith('/thumbnail/') && !req.path.startsWith('/modal/')) {
+  if (!req.path.startsWith("/thumbnail/") && !req.path.startsWith("/modal/")) {
     return next();
   }
-  
+
   const imagePath = path.join(optimizedDir, req.path);
   const now = Date.now();
-  
+
   // Check cache first
   const cached = imageCache.get(imagePath);
-  if (cached && (now - cached.timestamp) < IMAGE_CACHE_MAX_AGE) {
-    res.setHeader('Content-Type', cached.contentType);
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
-    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
-    res.setHeader('X-Cache', 'HIT');
+  if (cached && now - cached.timestamp < IMAGE_CACHE_MAX_AGE) {
+    res.setHeader("Content-Type", cached.contentType);
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
+    res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+    res.setHeader("X-Cache", "HIT");
     res.send(cached.data);
     return;
   }
-  
+
   // Read from disk
   fs.readFile(imagePath, (err, data) => {
     if (err) {
       return next(); // Fall through to express.static
     }
-    
+
     // Limit cache size (LRU-style: remove oldest if at limit)
     if (imageCache.size >= IMAGE_CACHE_MAX_ITEMS) {
       const oldestKey = imageCache.keys().next().value;
       if (oldestKey) imageCache.delete(oldestKey);
     }
-    
+
     // Determine content type from file extension
     const ext = path.extname(imagePath).toLowerCase();
-    const contentType = ext === '.png' ? 'image/png' : 
-                       ext === '.webp' ? 'image/webp' : 
-                       'image/jpeg';
-    
+    const contentType =
+      ext === ".png"
+        ? "image/png"
+        : ext === ".webp"
+        ? "image/webp"
+        : "image/jpeg";
+
     // Store in cache
     imageCache.set(imagePath, {
       data: data,
       contentType: contentType,
-      timestamp: now
+      timestamp: now,
     });
-    
-    const sizeType = req.path.includes('/thumbnail/') ? 'thumbnail' : 'modal';
-    console.log(`[Cache] Cached ${sizeType}: ${path.basename(imagePath)} (${(data.length / 1024).toFixed(1)} KB, total: ${imageCache.size})`);
-    
-    res.setHeader('Content-Type', contentType);
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
-    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
-    res.setHeader('X-Cache', 'MISS');
+
+    const sizeType = req.path.includes("/thumbnail/") ? "thumbnail" : "modal";
+    console.log(
+      `[Cache] Cached ${sizeType}: ${path.basename(imagePath)} (${(
+        data.length / 1024
+      ).toFixed(1)} KB, total: ${imageCache.size})`
+    );
+
+    res.setHeader("Content-Type", contentType);
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
+    res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+    res.setHeader("X-Cache", "MISS");
     res.send(data);
   });
 };
@@ -340,56 +358,56 @@ app.use(
 // Store directory paths in app for use in routes
 app.set("photosDir", photosDir);
 app.set("optimizedDir", optimizedDir);
-app.set("appRoot", path.resolve(__dirname, '../../'));
+app.set("appRoot", path.resolve(__dirname, "../../"));
 
 // Register route handlers
 // Note: CSRF protection is applied inside individual routers that need it
-app.use('/api/auth', authRouter);
-app.use('/api/external-links', externalLinksRouter);
-app.use('/api/branding', brandingRouter);
-app.use('/api/metrics', metricsRouter);
-app.use('/api/image-optimization', imageOptimizationRouter);
-app.use('/api/config', configRouter);
-app.use('/api/image-metadata', imageMetadataRouter);
-app.use('/api/ai-titles', aiTitlesRouter);
-app.use('/api/system', systemRouter);
-app.use('/api/share-links', shareLinksRouter);
-app.use('/api/preview-grid', previewGridRouter);
-app.use('/api/static-json', staticJsonRouter);
+app.use("/api/auth", authRouter);
+app.use("/api/external-links", externalLinksRouter);
+app.use("/api/branding", brandingRouter);
+app.use("/api/metrics", metricsRouter);
+app.use("/api/image-optimization", imageOptimizationRouter);
+app.use("/api/config", configRouter);
+app.use("/api/image-metadata", imageMetadataRouter);
+app.use("/api/ai-titles", aiTitlesRouter);
+app.use("/api/system", systemRouter);
+app.use("/api/share-links", shareLinksRouter);
+app.use("/api/preview-grid", previewGridRouter);
+app.use("/api/static-json", staticJsonRouter);
 app.use(albumsRouter);
-app.use('/api/albums', albumManagementRouter);
-app.use('/api/folders', folderManagementRouter);
+app.use("/api/albums", albumManagementRouter);
+app.use("/api/folders", folderManagementRouter);
 app.use(externalPagesRouter);
 app.use(healthRouter);
-app.use('/api/analytics', analyticsRouter);
+app.use("/api/analytics", analyticsRouter);
 app.use(sitemapRouter);
 app.use(yearRouter);
 
 // 404 handler - must come after all routes
 app.use((req, res) => {
-  res.status(404).json({ error: 'Not found' });
+  res.status(404).json({ error: "Not found" });
 });
 
 // Global error handler - must be last
 app.use((err: any, req: any, res: any, next: any) => {
-  console.error('Server error:', err);
-  
+  console.error("Server error:", err);
+
   // Don't leak error details in production (HTTPS = production)
-  const isProduction = config.frontend.apiUrl.startsWith('https://');
-  const message = isProduction 
-    ? 'Internal server error' 
-    : err.message || 'Internal server error';
-  
-  res.status(err.status || 500).json({ 
-    error: message 
+  const isProduction = config.frontend.apiUrl.startsWith("https://");
+  const message = isProduction
+    ? "Internal server error"
+    : err.message || "Internal server error";
+
+  res.status(err.status || 500).json({
+    error: message,
   });
 });
 
 // Start the server
 // For localhost, bind to 127.0.0.1 to avoid macOS permission issues
 // For remote dev/production, bind to 0.0.0.0 to accept external connections
-const isLocalhost = config.frontend.apiUrl.includes('localhost');
-const bindHost = isLocalhost ? '127.0.0.1' : '0.0.0.0';
+const isLocalhost = config.frontend.apiUrl.includes("localhost");
+const bindHost = isLocalhost ? "127.0.0.1" : "0.0.0.0";
 
 const server = app.listen(PORT, bindHost, () => {
   console.log(`Server is running on ${bindHost}:${PORT}`);
@@ -404,13 +422,17 @@ server.keepAliveTimeout = 610000; // Slightly longer than timeout
 server.headersTimeout = 620000; // Slightly longer than keepAliveTimeout
 
 // Handle server errors
-server.on('error', (error: NodeJS.ErrnoException) => {
-  if (error.code === 'EADDRINUSE') {
-    console.error(`Port ${PORT} is already in use. Please free the port or use a different one.`);
-  } else if (error.code === 'EACCES') {
-    console.error(`Permission denied to bind to port ${PORT}. Try using a port above 1024.`);
+server.on("error", (error: NodeJS.ErrnoException) => {
+  if (error.code === "EADDRINUSE") {
+    console.error(
+      `Port ${PORT} is already in use. Please free the port or use a different one.`
+    );
+  } else if (error.code === "EACCES") {
+    console.error(
+      `Permission denied to bind to port ${PORT}. Try using a port above 1024.`
+    );
   } else {
-    console.error('Server error:', error);
+    console.error("Server error:", error);
   }
   process.exit(1);
 });

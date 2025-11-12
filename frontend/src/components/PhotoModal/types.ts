@@ -4,7 +4,6 @@
 
 export interface Photo {
   id: string;
-  src: string;
   thumbnail: string;
   modal: string;
   download: string;
@@ -16,6 +15,8 @@ export interface Photo {
     size: number;
   };
   exif?: any;
+  // Note: 'src' field removed - original photos are not served via API
+  // Only optimized versions (thumbnail, modal, download) are accessible
 }
 
 export interface ExifData {
