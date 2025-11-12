@@ -41,6 +41,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
   const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState<number>(0);
   const [loading, setLoading] = useState(true);
+  const [loadingMessage, setLoadingMessage] = useState<string>("Loading album...");
   const [error, setError] = useState<string | null>(null);
   const [imageDimensions, setImageDimensions] = useState<
     Record<string, { width: number; height: number }>
@@ -170,6 +171,8 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
             const staticData = await staticResponse.json();
             console.log(`✨ Loaded ${staticData.length} photos from optimized static JSON (${album})`);
             
+            setLoadingMessage(`Rendering ${staticData.length} photos...`);
+            
             // Reconstruct full photo objects from optimized array format
             const staticPhotos = staticData.map((data: string[]) => reconstructPhoto(data, album));
             
@@ -195,6 +198,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
             throw new Error("Failed to fetch random photos");
           }
           const randomPhotos = await response.json();
+          setLoadingMessage(`Rendering ${randomPhotos.length} photos...`);
           setPhotos(randomPhotos);
         } else {
           // Fetch all photos from the album
@@ -218,6 +222,8 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
               new Date(a.metadata.created).getTime()
             );
           });
+          
+          setLoadingMessage(`Rendering ${sortedPhotos.length} photos...`);
           
           // Render all photos at once
           setPhotos(sortedPhotos);
@@ -455,7 +461,9 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
     return (
       <div className="photo-grid-loading">
         <div className="loading-spinner"></div>
-        <p>Loading photos...</p>
+        <div style={{ marginTop: '1rem', color: '#666', fontSize: '0.9rem' }}>
+          {loadingMessage}
+        </div>
       </div>
     );
   }
