@@ -411,6 +411,11 @@ router.post("/:album/upload", requireAuth, upload.single('photo'), async (req: R
     res.setTimeout(0); // Disable timeout for this response
     res.flushHeaders();
 
+    // Touch session to keep it alive during long upload/optimization
+    if (req.session) {
+      req.session.touch();
+    }
+
     // Send initial success message
     res.write(`data: ${JSON.stringify({ type: 'uploaded', filename: file.originalname })}\n\n`);
 

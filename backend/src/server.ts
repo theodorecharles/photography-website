@@ -234,6 +234,7 @@ app.use(
     secret: sessionSecret,
     resave: false,
     saveUninitialized: false,
+    rolling: true, // Extend session on every request to prevent expiration during long uploads
     cookie: {
       secure: isProduction, // HTTPS only in production
       httpOnly: true,
