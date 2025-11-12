@@ -663,11 +663,11 @@ router.post("/:album/photo-order", requireAuth, async (req: Request, res: Respon
     // Invalidate cache for this album
     invalidateAlbumCache(sanitizedAlbum);
     
-    console.log(`✓ Updated photo order for album: ${sanitizedAlbum} (${imageOrders.length} photos)`);
-
     // Regenerate static JSON files
     const appRoot = req.app.get('appRoot');
     generateStaticJSONFiles(appRoot);
+    
+    console.log(`✓ Updated photo order for album: ${sanitizedAlbum} (${imageOrders.length} photos)`);
 
     res.json({ success: true });
   } catch (error) {
