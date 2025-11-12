@@ -427,25 +427,43 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
                 type: "success",
                 text: "AI title generation completed successfully!",
               });
+              // Use global context setters
+              sseToaster.setGeneratingTitles(false);
               setGeneratingTitles(false);
               sseToaster.titlesAbortController.current = null;
             } else if (data.startsWith("__ERROR__")) {
               setMessage({ type: "error", text: data.substring(10) });
+              // Use global context setters
+              sseToaster.setGeneratingTitles(false);
               setGeneratingTitles(false);
               sseToaster.titlesAbortController.current = null;
             } else {
               try {
                 const parsed = JSON.parse(data);
                 if (parsed.type === "progress") {
+                  // Use global context setters
+                  sseToaster.setTitlesProgress(parsed.percent);
+                  sseToaster.setTitlesWaiting(null);
+                  sseToaster.setTitlesOutput((prev) => [...prev, parsed.message]);
+                  // Also update local state for consistency
                   setTitlesProgress(parsed.percent);
                   setTitlesWaiting(null);
                   setTitlesOutput((prev) => [...prev, parsed.message]);
                 } else if (parsed.type === "waiting") {
+                  // Use global context setters
+                  sseToaster.setTitlesWaiting(parsed.seconds);
+                  // Also update local state
                   setTitlesWaiting(parsed.seconds);
                 } else {
+                  // Use global context setters
+                  sseToaster.setTitlesOutput((prev) => [...prev, data]);
+                  // Also update local state
                   setTitlesOutput((prev) => [...prev, data]);
                 }
               } catch {
+                // Use global context setters
+                sseToaster.setTitlesOutput((prev) => [...prev, data]);
+                // Also update local state
                 setTitlesOutput((prev) => [...prev, data]);
               }
             }
@@ -455,10 +473,14 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
     } catch (err: any) {
       if (err.name === "AbortError") {
         console.log("AI titles job stopped by user");
+        // Use global context setters
+        sseToaster.setGeneratingTitles(false);
         setGeneratingTitles(false);
         sseToaster.titlesAbortController.current = null;
       } else {
         console.error("Failed to reconnect to titles job:", err);
+        // Use global context setters
+        sseToaster.setGeneratingTitles(false);
         setGeneratingTitles(false);
         sseToaster.titlesAbortController.current = null;
       }
@@ -481,6 +503,8 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
       });
 
       if (!res.ok) {
+        // Use global context setters
+        sseToaster.setIsOptimizationRunning(false);
         setIsOptimizationRunning(false);
         sseToaster.optimizationAbortController.current = null;
         return;
@@ -490,6 +514,8 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
       const decoder = new TextDecoder();
 
       if (!reader) {
+        // Use global context setters
+        sseToaster.setIsOptimizationRunning(false);
         setIsOptimizationRunning(false);
         sseToaster.optimizationAbortController.current = null;
         return;
@@ -512,16 +538,27 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
               const data = JSON.parse(line.slice(6));
 
               if (data.type === "progress") {
+                // Use global context setters
+                sseToaster.setOptimizationProgress(data.percent);
+                sseToaster.setOptimizationLogs((prev) => [...prev, data.message]);
+                // Also update local state
                 setOptimizationProgress(data.percent);
                 setOptimizationLogs((prev) => [...prev, data.message]);
               } else if (data.type === "stdout" || data.type === "stderr") {
+                // Use global context setters
+                sseToaster.setOptimizationLogs((prev) => [...prev, data.message]);
+                // Also update local state
                 setOptimizationLogs((prev) => [...prev, data.message]);
               } else if (data.type === "complete") {
                 setOptimizationComplete(true);
+                // Use global context setters
+                sseToaster.setIsOptimizationRunning(false);
                 setIsOptimizationRunning(false);
                 sseToaster.optimizationAbortController.current = null;
               } else if (data.type === "error") {
                 setMessage({ type: "error", text: data.message });
+                // Use global context setters
+                sseToaster.setIsOptimizationRunning(false);
                 setIsOptimizationRunning(false);
                 sseToaster.optimizationAbortController.current = null;
               }
@@ -534,10 +571,14 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
     } catch (err: any) {
       if (err.name === "AbortError") {
         console.log("Optimization job stopped by user");
+        // Use global context setters
+        sseToaster.setIsOptimizationRunning(false);
         setIsOptimizationRunning(false);
         sseToaster.optimizationAbortController.current = null;
       } else {
         console.error("Failed to reconnect to optimization job:", err);
+        // Use global context setters
+        sseToaster.setIsOptimizationRunning(false);
         setIsOptimizationRunning(false);
         sseToaster.optimizationAbortController.current = null;
       }
@@ -837,14 +878,10 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
   }, []);
   
   // Register stop handlers with global context
+  // Don't cleanup handlers on unmount - they should persist across navigation
   useEffect(() => {
     sseToaster.setStopTitlesHandler(handleStopTitles);
     sseToaster.setStopOptimizationHandler(handleStopOptimization);
-    
-    return () => {
-      sseToaster.setStopTitlesHandler(null);
-      sseToaster.setStopOptimizationHandler(null);
-    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -908,11 +945,15 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
                 type: "success",
                 text: "AI title generation completed successfully!",
               });
+              // Use global context setters
+              sseToaster.setGeneratingTitles(false);
               setGeneratingTitles(false);
               sseToaster.titlesAbortController.current = null;
               checkMissingTitles(); // Refresh button visibility
             } else if (data.startsWith("__ERROR__")) {
               setMessage({ type: "error", text: data.substring(10) });
+              // Use global context setters
+              sseToaster.setGeneratingTitles(false);
               setGeneratingTitles(false);
               sseToaster.titlesAbortController.current = null;
               checkMissingTitles(); // Refresh button visibility
@@ -921,16 +962,30 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
               try {
                 const parsed = JSON.parse(data);
                 if (parsed.type === "progress") {
+                  // Use global context setters
+                  sseToaster.setTitlesProgress(parsed.percent);
+                  sseToaster.setTitlesWaiting(null);
+                  sseToaster.setTitlesOutput((prev) => [...prev, parsed.message]);
+                  // Also update local state
                   setTitlesProgress(parsed.percent);
                   setTitlesWaiting(null);
                   setTitlesOutput((prev) => [...prev, parsed.message]);
                 } else if (parsed.type === "waiting") {
+                  // Use global context setters
+                  sseToaster.setTitlesWaiting(parsed.seconds);
+                  // Also update local state
                   setTitlesWaiting(parsed.seconds);
                 } else {
+                  // Use global context setters
+                  sseToaster.setTitlesOutput((prev) => [...prev, data]);
+                  // Also update local state
                   setTitlesOutput((prev) => [...prev, data]);
                 }
               } catch {
                 // Not JSON, treat as plain text
+                // Use global context setters
+                sseToaster.setTitlesOutput((prev) => [...prev, data]);
+                // Also update local state
                 setTitlesOutput((prev) => [...prev, data]);
               }
             }
@@ -946,6 +1001,8 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
         err instanceof Error ? err.message : "Error generating titles";
       setMessage({ type: "error", text: errorMessage });
       console.error("Failed to generate titles:", err);
+      // Use global context setters
+      sseToaster.setGeneratingTitles(false);
       setGeneratingTitles(false);
       sseToaster.titlesAbortController.current = null;
       checkMissingTitles(); // Refresh button visibility
@@ -1296,6 +1353,8 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
           type: "error",
           text: `${errorMessage} (Status: ${res.status})`,
         });
+        // Use global context setters
+        sseToaster.setIsOptimizationRunning(false);
         setIsOptimizationRunning(false);
         sseToaster.optimizationAbortController.current = null;
         return;
@@ -1307,6 +1366,8 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
 
       if (!reader) {
         setMessage({ type: "error", text: "Failed to read response stream" });
+        // Use global context setters
+        sseToaster.setIsOptimizationRunning(false);
         setIsOptimizationRunning(false);
         return;
       }
@@ -1328,9 +1389,16 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
               const data = JSON.parse(line.slice(6));
 
               if (data.type === "progress") {
+                // Use global context setters
+                sseToaster.setOptimizationProgress(data.percent);
+                sseToaster.setOptimizationLogs((prev) => [...prev, data.message]);
+                // Also update local state
                 setOptimizationProgress(data.percent);
                 setOptimizationLogs((prev) => [...prev, data.message]);
               } else if (data.type === "stdout" || data.type === "stderr") {
+                // Use global context setters
+                sseToaster.setOptimizationLogs((prev) => [...prev, data.message]);
+                // Also update local state
                 setOptimizationLogs((prev) => [...prev, data.message]);
               } else if (data.type === "complete") {
                 // Only mark as complete and show final message for the last completion
@@ -1338,6 +1406,11 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
                 if (data.message.includes("AI title generation")) {
                   setOptimizationComplete(true);
                   // Filter out "Generating" entries when complete
+                  // Use global context setters
+                  sseToaster.setOptimizationLogs((prev) =>
+                    prev.filter((log) => !log.startsWith("Generating"))
+                  );
+                  // Also update local state
                   setOptimizationLogs((prev) =>
                     prev.filter((log) => !log.startsWith("Generating"))
                   );
@@ -1350,6 +1423,9 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
                   });
                 } else {
                   // This is the intermediate optimization completion message
+                  // Use global context setters
+                  sseToaster.setOptimizationLogs((prev) => [...prev, data.message]);
+                  // Also update local state
                   setOptimizationLogs((prev) => [...prev, data.message]);
                 }
               } else if (data.type === "error") {
@@ -1369,6 +1445,8 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
       console.error("Optimization error:", err);
       setMessage({ type: "error", text: "Network error occurred" });
     } finally {
+      // Use global context setters
+      sseToaster.setIsOptimizationRunning(false);
       setIsOptimizationRunning(false);
       sseToaster.optimizationAbortController.current = null;
     }

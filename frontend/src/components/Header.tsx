@@ -175,25 +175,10 @@ function Navigation({
           {isAuthenticated && currentAlbum !== 'homepage' && (
             <button
               onClick={() => {
-                const urlParams = new URLSearchParams(location.search);
-                const hasEditParam = urlParams.get('edit') === 'true';
-                
-                if (hasEditParam) {
-                  // Remove edit parameter
-                  urlParams.delete('edit');
-                } else {
-                  // Add edit parameter
-                  urlParams.set('edit', 'true');
-                }
-                
-                const newSearch = urlParams.toString();
-                navigate({
-                  pathname: location.pathname,
-                  search: newSearch ? `?${newSearch}` : '',
-                });
+                navigate(`/admin/albums?album=${encodeURIComponent(currentAlbum)}`);
               }}
               className="edit-album-btn"
-              title={location.search.includes('edit=true') ? "Close edit mode" : "Edit this album"}
+              title="Edit this album"
             >
               <svg
                 viewBox="0 0 24 24"
