@@ -1691,7 +1691,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
               Branding
             </h3>
             <span style={{ color: "#888", fontSize: "0.9rem" }}>
-              {showBranding ? "Click to collapse" : "Click to expand"}
+              Customize your site's name, subtitle, and avatar
             </span>
           </div>
 
@@ -2015,7 +2015,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
               Links
             </h3>
             <span style={{ color: "#888", fontSize: "0.9rem" }}>
-              {showLinks ? "Click to collapse" : "Click to expand"}
+              Manage external links and contact information
             </span>
           </div>
 
@@ -2169,7 +2169,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
               OpenAI
             </h3>
             <span style={{ color: "#888", fontSize: "0.9rem" }}>
-              {showOpenAI ? "Click to collapse" : "Click to expand"}
+              Configure AI-powered title generation
             </span>
           </div>
 
@@ -2358,7 +2358,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
               Image Optimization
             </h3>
             <span style={{ color: "#888", fontSize: "0.9rem" }}>
-              {showImageOptimization ? "Click to collapse" : "Click to expand"}
+              Optimize and manage image processing
             </span>
           </div>
 
@@ -2769,7 +2769,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
               Advanced Settings
             </h3>
             <span style={{ color: "#888", fontSize: "0.9rem" }}>
-              {showAdvanced ? "Click to collapse" : "Click to expand"}
+              System controls and developer options
             </span>
           </div>
 
