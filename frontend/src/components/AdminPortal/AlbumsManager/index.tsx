@@ -1632,6 +1632,21 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   };
 
   const handleToggleFolderPublished = async (folderName: string, currentPublished: boolean) => {
+    // Check if folder has albums
+    const folder = localFolders.find(f => f.name === folderName);
+    if (!folder) return;
+    
+    const albumsInFolder = localAlbums.filter(album => album.folder_id === folder.id);
+    
+    // Prevent publishing empty folders
+    if (!currentPublished && albumsInFolder.length === 0) {
+      setMessage({ 
+        type: 'error', 
+        text: 'Cannot publish empty folder. Add albums to this folder first.' 
+      });
+      return;
+    }
+    
     const newPublished = !currentPublished;
     
     try {
@@ -1648,6 +1663,9 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
           text: `Folder "${folderName}" ${newPublished ? 'published' : 'unpublished'}` 
         });
         await loadAlbums();
+        
+        // Dispatch global event to update navigation dropdown
+        window.dispatchEvent(new Event('albums-updated'));
       } else {
         const error = await res.json();
         setMessage({ type: 'error', text: error.error || 'Failed to update folder' });

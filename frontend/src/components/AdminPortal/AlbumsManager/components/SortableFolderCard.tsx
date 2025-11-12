@@ -80,11 +80,21 @@ const SortableFolderCard: React.FC<SortableFolderCardProps> = ({
       <div className="folder-count">
         {albumCount} album(s)
       </div>
-      <label className="toggle-switch" style={{ marginTop: '0.5rem' }} onClick={(e) => e.stopPropagation()}>
+      <label 
+        className="toggle-switch" 
+        style={{ 
+          marginTop: '0.5rem',
+          opacity: albumCount === 0 ? 0.5 : 1,
+          cursor: albumCount === 0 ? 'not-allowed' : 'pointer'
+        }} 
+        onClick={(e) => e.stopPropagation()}
+        title={albumCount === 0 ? 'Cannot publish empty folder' : ''}
+      >
         <input
           type="checkbox"
-          checked={folder.published}
+          checked={albumCount > 0 && folder.published}
           onChange={() => onTogglePublished(folder.name, folder.published)}
+          disabled={albumCount === 0}
         />
         <span className="toggle-slider"></span>
         <span className="toggle-label">Published</span>

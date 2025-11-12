@@ -214,6 +214,15 @@ router.patch("/:folder/publish", requireAuth, async (req: Request, res: Response
       return;
     }
 
+    // Prevent publishing empty folders
+    if (published === true) {
+      const albumsInFolder = getAlbumsInFolder(folderState.id);
+      if (albumsInFolder.length === 0) {
+        res.status(400).json({ error: 'Cannot publish empty folder. Add albums to this folder first.' });
+        return;
+      }
+    }
+
     // Update folder state
     const success = setFolderPublished(sanitizedFolder, published);
     
