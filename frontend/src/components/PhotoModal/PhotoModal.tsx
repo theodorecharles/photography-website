@@ -51,6 +51,11 @@ const PhotoModal: React.FC<PhotoModalProps> = ({
   const [imageTitle, setImageTitle] = useState<string | null>(null);
   const [siteName, setSiteName] = useState<string>('Photo');
   
+  // Sync selectedPhoto state when prop changes (from parent navigation)
+  useEffect(() => {
+    setSelectedPhoto(initialPhoto);
+  }, [initialPhoto]);
+  
   const touchStartX = useRef<number | null>(null);
   const touchStartY = useRef<number | null>(null);
   const modalOpenTimeRef = useRef<number | null>(Date.now());
