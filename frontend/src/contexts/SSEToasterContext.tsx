@@ -70,7 +70,7 @@ export function SSEToasterProvider({ children }: { children: ReactNode }) {
   // Toaster UI state
   const [isToasterCollapsed, setIsToasterCollapsed] = useState(false);
   const [isToasterMaximized, setIsToasterMaximized] = useState(false);
-  const [toasterPosition, setToasterPosition] = useState<'top-right' | 'top-left' | 'bottom-right' | 'bottom-left'>('top-right');
+  const [toasterPosition, setToasterPosition] = useState<'top-right' | 'top-left' | 'bottom-right' | 'bottom-left'>('bottom-left');
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState<{ x: number; y: number } | null>(null);
   const [dragOffset, setDragOffset] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
@@ -82,7 +82,7 @@ export function SSEToasterProvider({ children }: { children: ReactNode }) {
   
   // Reset toaster to default state
   const resetToasterState = () => {
-    setToasterPosition('top-right');
+    setToasterPosition('bottom-left');
     setIsToasterCollapsed(false);
     setIsToasterMaximized(false);
     setHasToasterAnimated(false);
