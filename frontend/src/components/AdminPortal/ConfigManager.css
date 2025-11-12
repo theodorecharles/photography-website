@@ -282,6 +282,11 @@
   transition: opacity 0.1s ease-out;
 }
 
+/* Disable slide-in animation when transitioning from drag */
+.sse-toaster.transitioning-from-drag {
+  animation: none !important;
+}
+
 @keyframes slideInFromRight {
   from {
     opacity: 0;

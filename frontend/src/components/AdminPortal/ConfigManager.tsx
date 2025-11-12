@@ -105,6 +105,8 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
   const [titlesOutput, setTitlesOutput] = useState<string[]>([]);
   const [titlesProgress, setTitlesProgress] = useState(0);
   const [titlesWaiting, setTitlesWaiting] = useState<number | null>(null);
+  const [hasMissingTitles, setHasMissingTitles] = useState(false);
+  const [checkingMissingTitles, setCheckingMissingTitles] = useState(true);
   const [optimizationLogs, setOptimizationLogs] = useState<string[]>([]);
   const [isOptimizationRunning, setIsOptimizationRunning] = useState(false);
   const [optimizationComplete, setOptimizationComplete] = useState(false);
@@ -120,6 +122,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState<{ x: number; y: number } | null>(null);
   const [dragOffset, setDragOffset] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const [isTransitioningFromDrag, setIsTransitioningFromDrag] = useState(false);
 
   // Section collapse state - all collapsed by default
   const [showBranding, setShowBranding] = useState(false);
@@ -154,6 +157,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
     if (!isDragging || !dragStart) return;
     
     setIsDragging(false);
+    setIsTransitioningFromDrag(true);
     
     // Calculate which corner to snap to based on mouse position
     const viewportWidth = window.innerWidth;
@@ -184,6 +188,11 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
     
     setDragStart(null);
     setDragOffset({ x: 0, y: 0 });
+    
+    // Clear the transitioning flag after animation completes
+    setTimeout(() => {
+      setIsTransitioningFromDrag(false);
+    }, 300);
   };
 
   // Branding and Links state
@@ -275,6 +284,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
     const handleGlobalMouseUp = (e: MouseEvent) => {
       if (!dragStart) return;
       setIsDragging(false);
+      setIsTransitioningFromDrag(true);
       
       // Calculate which corner to snap to based on mouse position
       const viewportWidth = window.innerWidth;
@@ -305,6 +315,11 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
       
       setDragStart(null);
       setDragOffset({ x: 0, y: 0 });
+      
+      // Clear the transitioning flag after animation completes
+      setTimeout(() => {
+        setIsTransitioningFromDrag(false);
+      }, 300);
     };
 
     document.addEventListener('mousemove', handleGlobalMouseMove);
@@ -354,6 +369,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
   useEffect(() => {
     loadConfig();
     checkForRunningJobs();
+    checkMissingTitles();
   }, []);
 
   // Automatically disable auto-generate when API key is removed
@@ -656,6 +672,23 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
     }
   };
 
+  const checkMissingTitles = async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/ai-titles/check-missing`, {
+        credentials: "include",
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setHasMissingTitles(data.hasMissingTitles);
+      }
+    } catch (err) {
+      console.error("Failed to check missing titles:", err);
+    } finally {
+      setCheckingMissingTitles(false);
+    }
+  };
+
   const hasUnsavedChanges = (sectionName: string): boolean => {
     if (!config || !originalConfig) return false;
 
@@ -941,10 +974,12 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
               });
               setGeneratingTitles(false);
               titlesAbortController.current = null;
+              checkMissingTitles(); // Refresh button visibility
             } else if (data.startsWith("__ERROR__")) {
               setMessage({ type: "error", text: data.substring(10) });
               setGeneratingTitles(false);
               titlesAbortController.current = null;
+              checkMissingTitles(); // Refresh button visibility
             } else {
               // Try to parse JSON progress data
               try {
@@ -977,6 +1012,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
       console.error("Failed to generate titles:", err);
       setGeneratingTitles(false);
       titlesAbortController.current = null;
+      checkMissingTitles(); // Refresh button visibility
     }
   };
 
@@ -2810,17 +2846,19 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
                     </button>
                   ) : !generatingTitles ? (
                     <>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          handleGenerateTitles(false);
-                        }}
-                        className="btn-secondary"
-                        style={{ flex: "1 1 auto", minWidth: "200px" }}
-                        disabled={isAnyJobRunning}
-                      >
-                        Backfill Missing Titles
-                      </button>
+                      {hasMissingTitles && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            handleGenerateTitles(false);
+                          }}
+                          className="btn-secondary"
+                          style={{ flex: "1 1 auto", minWidth: "200px" }}
+                          disabled={isAnyJobRunning}
+                        >
+                          Backfill Missing Titles
+                        </button>
+                      )}
                       <button
                         type="button"
                         onClick={async () => {
@@ -3771,7 +3809,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
       {/* Floating SSE Output Toaster (Picture-in-Picture style) */}
       {isAnyJobRunning && (
         <div 
-          className={`sse-toaster ${isToasterCollapsed ? 'collapsed' : 'expanded'} ${isToasterMaximized ? 'maximized' : ''} ${toasterPosition} ${isDragging ? 'dragging' : ''}`}
+          className={`sse-toaster ${isToasterCollapsed ? 'collapsed' : 'expanded'} ${isToasterMaximized ? 'maximized' : ''} ${toasterPosition} ${isDragging ? 'dragging' : ''} ${isTransitioningFromDrag ? 'transitioning-from-drag' : ''}`}
           onMouseMove={handleToasterDrag}
           onMouseUp={handleToasterDragEnd}
           style={isDragging && !isToasterMaximized ? {
