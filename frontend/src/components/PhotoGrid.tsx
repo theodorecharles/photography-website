@@ -293,8 +293,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
         setError(errorMessage);
         setPhotos([]);
         trackError(errorMessage, `photo_fetch_${album}`);
-      } finally {
-        setLoading(false);
+        setLoading(false); // Only set false on error
       }
     };
 
