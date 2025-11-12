@@ -1,23 +1,29 @@
 /**
- * Albums Manager Component  
- * Manages photo albums, photo uploads, and image optimization settings
+ * Albums Manager - Main Orchestrator
+ * Manages albums, photos, uploads, and image optimization
+ * 
+ * Refactored to use extracted components:
+ * - SortableAlbumCard: Drag-and-drop album cards
+ * - SortablePhotoItem: Drag-and-drop photo thumbnails
  */
 
 import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useSearchParams } from 'react-router-dom';
-import { Album, Photo } from './types';
+import { Album, Photo, UploadingImage, AlbumsManagerProps, UploadState } from './types';
 import { 
   trackAlbumCreated,
   trackAlbumDeleted,
   trackPhotoUploaded,
   trackPhotoDeleted
-} from '../../utils/analytics';
-import { cacheBustValue } from '../../config';
-import { fetchWithRateLimitCheck } from '../../utils/fetchWrapper';
-import ShareModal from './ShareModal';
-import './AlbumsManager.css';
-import './PhotoOrderControls.css';
+} from '../../../utils/analytics';
+import { cacheBustValue } from '../../../config';
+import { fetchWithRateLimitCheck } from '../../../utils/fetchWrapper';
+import ShareModal from '../ShareModal';
+import SortableAlbumCard from './components/SortableAlbumCard';
+import SortablePhotoItem from './components/SortablePhotoItem';
+import '../AlbumsManager.css';
+import '../PhotoOrderControls.css';
 import {
   DndContext,
   closestCenter,
@@ -32,295 +38,10 @@ import {
   arrayMove,
   SortableContext,
   sortableKeyboardCoordinates,
-  useSortable,
   rectSortingStrategy,
 } from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
 
 const API_URL = import.meta.env.VITE_API_URL || '';
-
-type UploadState = 'queued' | 'uploading' | 'optimizing' | 'complete' | 'error';
-
-// Sortable Album Card Component with drop zone
-interface SortableAlbumCardProps {
-  album: Album;
-  isSelected: boolean;
-  isAnimating: boolean;
-  isDragOver: boolean;
-  onClick: () => void;
-  onDragOver: (e: React.DragEvent) => void;
-  onDragLeave: (e: React.DragEvent) => void;
-  onDrop: (e: React.DragEvent) => void;
-}
-
-const SortableAlbumCard: React.FC<SortableAlbumCardProps> = ({
-  album,
-  isSelected,
-  isAnimating,
-  isDragOver,
-  onClick,
-  onDragOver,
-  onDragLeave,
-  onDrop,
-}) => {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: album.name });
-
-  const touchStartPos = useRef<{ x: number; y: number } | null>(null);
-  const hasMoved = useRef(false);
-
-  const handleTouchStart = (e: React.TouchEvent) => {
-    const touch = e.touches[0];
-    touchStartPos.current = { x: touch.clientX, y: touch.clientY };
-    hasMoved.current = false;
-  };
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    if (!touchStartPos.current) return;
-    
-    const touch = e.touches[0];
-    const deltaX = Math.abs(touch.clientX - touchStartPos.current.x);
-    const deltaY = Math.abs(touch.clientY - touchStartPos.current.y);
-    
-    // If moved more than 5px, mark as scrolling/dragging
-    if (deltaX > 5 || deltaY > 5) {
-      hasMoved.current = true;
-    }
-  };
-
-  const handleTouchEnd = (e: React.TouchEvent) => {
-    // Only trigger onClick if it was a tap without movement
-    if (touchStartPos.current && !hasMoved.current) {
-      e.preventDefault(); // Prevent click event from firing
-      onClick();
-    }
-    touchStartPos.current = null;
-    hasMoved.current = false;
-  };
-
-  const handleClick = (e: React.MouseEvent) => {
-    // For desktop only - don't fire if touch already handled it
-    if (e.detail === 0) return; // Triggered by keyboard or already prevented
-    onClick();
-  };
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0 : 1,
-  };
-
-  return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      className={`album-card ${isSelected ? 'selected' : ''} ${album.published === false ? 'unpublished' : ''} ${isAnimating ? 'animating' : ''} ${isDragging ? 'dragging' : ''} ${isDragOver ? 'drag-over-album' : ''}`}
-      onClick={handleClick}
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
-      onDragOver={onDragOver}
-      onDragLeave={onDragLeave}
-      onDrop={onDrop}
-      {...attributes}
-      {...listeners}
-    >
-      <div className="album-card-header">
-        <h4>
-          <span className="album-name">{album.name}</span>
-        </h4>
-        {album.photoCount !== undefined && (
-          <div className="album-badge">
-            {album.photoCount} {album.photoCount === 1 ? 'photo' : 'photos'}
-          </div>
-        )}
-      </div>
-      {isDragOver && (
-        <div className="album-drop-overlay">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
-          </svg>
-          <span>Drop to upload</span>
-        </div>
-      )}
-    </div>
-  );
-};
-
-// Sortable Photo Item Component
-interface SortablePhotoItemProps {
-  photo: Photo;
-  onEdit: (photo: Photo) => void;
-  onDelete: (album: string, filename: string, title: string) => void;
-}
-
-const SortablePhotoItem: React.FC<SortablePhotoItemProps> = ({
-  photo,
-  onEdit,
-  onDelete,
-}) => {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: photo.id });
-
-  const [showOverlay, setShowOverlay] = useState(false);
-  const touchStartPos = useRef<{ x: number; y: number } | null>(null);
-  const hasMoved = useRef(false);
-
-  const handleTouchStart = (e: React.TouchEvent) => {
-    const touch = e.touches[0];
-    touchStartPos.current = { x: touch.clientX, y: touch.clientY };
-    hasMoved.current = false;
-  };
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    if (!touchStartPos.current) return;
-    
-    const touch = e.touches[0];
-    const deltaX = Math.abs(touch.clientX - touchStartPos.current.x);
-    const deltaY = Math.abs(touch.clientY - touchStartPos.current.y);
-    
-    // If moved more than 5px, mark as scrolling/dragging
-    if (deltaX > 5 || deltaY > 5) {
-      hasMoved.current = true;
-      setShowOverlay(false); // Hide overlay if user starts scrolling/dragging
-    }
-  };
-
-  const handleTouchEnd = (e: React.TouchEvent) => {
-    // Only act if it was a tap without movement
-    if (touchStartPos.current && !hasMoved.current) {
-      e.preventDefault(); // Prevent ghost clicks
-      
-      // Check if tap hit a button
-      const target = e.target as HTMLElement;
-      const clickedButton = target.closest('.btn-edit-photo, .btn-delete-photo');
-      
-      if (clickedButton) {
-        // Tapped a button - let the button handler deal with it
-        // Don't change overlay state
-      } else if (showOverlay) {
-        // Overlay is showing and tapped elsewhere - hide it
-        setShowOverlay(false);
-      } else {
-        // Overlay is hidden - show it
-        setShowOverlay(true);
-      }
-    }
-    touchStartPos.current = null;
-    hasMoved.current = false;
-  };
-
-  const handleTouchCancel = () => {
-    touchStartPos.current = null;
-    hasMoved.current = false;
-    setShowOverlay(false);
-  };
-
-  // Close overlay when clicking outside buttons (desktop)
-  const handleOverlayClick = (e: React.MouseEvent) => {
-    const target = e.target as HTMLElement;
-    // Close if clicked overlay itself or anything except the buttons
-    if (!target.closest('.btn-edit-photo, .btn-delete-photo')) {
-      setShowOverlay(false);
-    }
-  };
-
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0 : 1,
-  };
-
-  const imageUrl = `${API_URL}${photo.thumbnail}?i=${cacheBustValue}`;
-
-  return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      className={`admin-photo-item ${isDragging ? 'dragging' : ''} ${showOverlay ? 'show-overlay' : ''}`}
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
-      onTouchCancel={handleTouchCancel}
-      {...attributes}
-      {...listeners}
-    >
-      <img
-        src={imageUrl}
-        alt={photo.title}
-        className="admin-photo-thumbnail"
-      />
-
-      <div className="photo-overlay" onClick={handleOverlayClick}>
-        <div className="photo-actions">
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              e.preventDefault();
-              onEdit(photo);
-            }}
-            onTouchEnd={(e) => {
-              e.stopPropagation();
-              e.preventDefault();
-              onEdit(photo);
-            }}
-            className="btn-edit-photo"
-            title="Edit title"
-            type="button"
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-            </svg>
-          </button>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              const filename = photo.id.split('/').pop() || photo.id;
-              onDelete(photo.album, filename, photo.title);
-            }}
-            className="btn-delete-photo"
-            title="Delete photo"
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <polyline points="3 6 5 6 21 6" />
-              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-            </svg>
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-interface UploadingImage {
-  file: File;
-  filename: string;
-  state: UploadState;
-  thumbnailUrl?: string;
-  error?: string;
-  progress?: number;
-  optimizeProgress?: number; // 0-100 for optimization progress
-}
-
-interface AlbumsManagerProps {
-  albums: Album[];
-  loadAlbums: () => Promise<void>;
-  setMessage: (message: { type: 'success' | 'error'; text: string }) => void;
-}
 
 const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   albums,
