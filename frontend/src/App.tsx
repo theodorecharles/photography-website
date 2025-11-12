@@ -198,8 +198,13 @@ function App() {
             return album.published === true;
           });
         
+        // Filter folders to only show published folders to unauthenticated users
+        const filteredFolders = isAuthenticated
+          ? (albumsData.folders || [])
+          : (albumsData.folders || []).filter((folder: { published: boolean }) => folder.published);
+        
         setAlbums(filteredAlbums);
-        setFolders(albumsData.folders || []);
+        setFolders(filteredFolders);
       } else {
         // Old format (array of strings or objects)
         const albumNames = Array.isArray(albumsData) 
@@ -267,8 +272,13 @@ function App() {
                 return album.published === true;
               });
             
+            // Filter folders to only show published folders to unauthenticated users
+            const filteredFolders = isAuthenticated
+              ? (albumsData.folders || [])
+              : (albumsData.folders || []).filter((folder: { published: boolean }) => folder.published);
+            
             setAlbums(filteredAlbums);
-            setFolders(albumsData.folders || []);
+            setFolders(filteredFolders);
           } else {
             // Old format (array of strings or objects)
             const albumNames = Array.isArray(albumsData) 
