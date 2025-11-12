@@ -577,7 +577,14 @@
     right: auto !important;
     bottom: 20px !important;
     top: auto !important;
-    transform: translateX(-50%);
+    transform: translateX(-50%) !important;
+    /* Disable slide-in animations on mobile */
+    animation: none !important;
+  }
+  
+  /* Keep transform consistent even when transitioning between states */
+  .sse-toaster:not(.dragging):not(.maximized) {
+    transition: opacity 0.3s ease, bottom 0.3s ease !important;
   }
 
   .sse-toaster-header {
@@ -600,7 +607,9 @@
     right: 10px !important;
     bottom: 10px !important;
     max-height: calc(100vh - 70px);
-    transform: none; /* Remove centering transform when maximized */
+    transform: none !important; /* Remove centering transform when maximized */
+    animation: none !important;
+    width: calc(100vw - 20px) !important;
   }
 
   .sse-toaster.maximized .sse-toaster-output {
