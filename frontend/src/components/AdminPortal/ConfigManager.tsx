@@ -447,12 +447,12 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
     } catch (err: any) {
       if (err.name === "AbortError") {
         console.log("AI titles job stopped by user");
-        // Update global context only (useEffect will sync to local)
-        sseToaster.setGeneratingTitles(false);
+        // DON'T clear state on abort - this happens during navigation
+        // The stop handler will clear state when explicitly stopped
         sseToaster.titlesAbortController.current = null;
       } else {
         console.error("Failed to reconnect to titles job:", err);
-        // Update global context only (useEffect will sync to local)
+        // Only clear state on actual errors, not aborts
         sseToaster.setGeneratingTitles(false);
         sseToaster.titlesAbortController.current = null;
       }
@@ -534,12 +534,12 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
     } catch (err: any) {
       if (err.name === "AbortError") {
         console.log("Optimization job stopped by user");
-        // Update global context only (useEffect will sync to local)
-        sseToaster.setIsOptimizationRunning(false);
+        // DON'T clear state on abort - this happens during navigation
+        // The stop handler will clear state when explicitly stopped
         sseToaster.optimizationAbortController.current = null;
       } else {
         console.error("Failed to reconnect to optimization job:", err);
-        // Update global context only (useEffect will sync to local)
+        // Only clear state on actual errors, not aborts
         sseToaster.setIsOptimizationRunning(false);
         sseToaster.optimizationAbortController.current = null;
       }
@@ -1384,13 +1384,13 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
       }
     } catch (err) {
       if (err instanceof Error && err.name === "AbortError") {
-        // User cancelled, message already set
+        // User cancelled or navigated away - DON'T clear state
+        // The stop handler will clear state when explicitly stopped
         return;
       }
       console.error("Optimization error:", err);
       setMessage({ type: "error", text: "Network error occurred" });
-    } finally {
-      // Update global context only (useEffect will sync to local)
+      // Only clear state on actual errors, not aborts
       sseToaster.setIsOptimizationRunning(false);
       sseToaster.optimizationAbortController.current = null;
     }
