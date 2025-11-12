@@ -118,6 +118,11 @@ if ! node migrate-add-album-folders.js; then
     handle_error "Album folders migration failed"
 fi
 
+log "Running share_links foreign key fix migration..."
+if ! node migrate-fix-share-links-fk.js; then
+    handle_error "Share links foreign key fix migration failed"
+fi
+
 # Restart both services using PM2 ecosystem file
 log "Restarting services with PM2 using ecosystem config..."
 if ! pm2 restart ecosystem.config.cjs --update-env; then
