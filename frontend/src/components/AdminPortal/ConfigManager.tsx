@@ -258,10 +258,14 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
   };
 
   useEffect(() => {
+    console.log('[ConfigManager Mount] generatingTitles:', sseToaster.generatingTitles, 'isOptimizationRunning:', sseToaster.isOptimizationRunning);
     loadConfig();
     // Only check for running jobs if there's no job already running in the global context
     if (!sseToaster.generatingTitles && !sseToaster.isOptimizationRunning) {
+      console.log('[ConfigManager] No active job in context, checking backend for running jobs');
       checkForRunningJobs();
+    } else {
+      console.log('[ConfigManager] Job already running in context, skipping backend check');
     }
     checkMissingTitles();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -775,27 +779,32 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
   };
 
   const handleStopTitles = useCallback(async () => {
+    console.log('[handleStopTitles] Called');
     try {
       // Call backend to kill the process
-      await fetch(`${API_URL}/api/ai-titles/stop`, {
+      const response = await fetch(`${API_URL}/api/ai-titles/stop`, {
         method: "POST",
         credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
       });
+      console.log('[handleStopTitles] Backend response:', response.ok);
 
       // Abort the SSE connection using global context
       if (sseToaster.titlesAbortController.current) {
+        console.log('[handleStopTitles] Aborting SSE connection');
         sseToaster.titlesAbortController.current.abort();
         sseToaster.titlesAbortController.current = null;
       }
 
       // Clear output and reset state using global context setters
+      console.log('[handleStopTitles] Clearing global state');
       sseToaster.setGeneratingTitles(false);
       sseToaster.setTitlesOutput([]);
       sseToaster.setTitlesProgress(0);
       sseToaster.setTitlesWaiting(null);
+      console.log('[handleStopTitles] Done');
       // No success message - stopping is user-initiated
     } catch (err) {
       console.error("Failed to stop AI titles job:", err);
@@ -837,8 +846,10 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
   // Register stop handlers with global context
   // Handlers are stable (useCallback with empty deps), so only register once
   useEffect(() => {
+    console.log('[ConfigManager] Registering stop handlers');
     sseToaster.setStopTitlesHandler(handleStopTitles);
     sseToaster.setStopOptimizationHandler(handleStopOptimization);
+    console.log('[ConfigManager] Stop handlers registered');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

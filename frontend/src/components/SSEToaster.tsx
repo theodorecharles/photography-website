@@ -202,9 +202,13 @@ export default function SSEToaster() {
             <button
               className="sse-toaster-stop-btn"
               onClick={() => {
+                console.log('[SSEToaster Stop Button] Clicked. generatingTitles:', generatingTitles, 'stopTitlesHandler:', typeof stopTitlesHandler);
+                console.log('[SSEToaster Stop Button] isOptimizationRunning:', isOptimizationRunning, 'stopOptimizationHandler:', typeof stopOptimizationHandler);
                 if (generatingTitles && stopTitlesHandler) {
+                  console.log('[SSEToaster Stop Button] Calling stopTitlesHandler');
                   stopTitlesHandler();
                 } else if (isOptimizationRunning && stopOptimizationHandler) {
+                  console.log('[SSEToaster Stop Button] Calling stopOptimizationHandler');
                   stopOptimizationHandler();
                 }
               }}
