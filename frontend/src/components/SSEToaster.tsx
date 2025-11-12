@@ -93,6 +93,7 @@ export default function SSEToaster() {
 
     const handleGlobalMouseMove = (e: MouseEvent) => {
       if (!dragStart) return;
+      // Don't prevent default - allow normal interactions
       const offsetX = e.clientX - dragStart.x;
       const offsetY = e.clientY - dragStart.y;
       setDragOffset({ x: offsetX, y: offsetY });
@@ -100,6 +101,7 @@ export default function SSEToaster() {
 
     const handleGlobalMouseUp = (e: MouseEvent) => {
       if (!dragStart) return;
+      // Don't prevent default - allow normal interactions
       setIsDragging(false);
       
       // Calculate which corner to snap to based on mouse position
@@ -128,14 +130,29 @@ export default function SSEToaster() {
       setDragOffset({ x: 0, y: 0 });
     };
 
-    document.addEventListener('mousemove', handleGlobalMouseMove);
-    document.addEventListener('mouseup', handleGlobalMouseUp);
+    // Use capture phase to ensure we don't block other handlers
+    document.addEventListener('mousemove', handleGlobalMouseMove, { capture: false, passive: true });
+    document.addEventListener('mouseup', handleGlobalMouseUp, { capture: false });
 
     return () => {
-      document.removeEventListener('mousemove', handleGlobalMouseMove);
-      document.removeEventListener('mouseup', handleGlobalMouseUp);
+      document.removeEventListener('mousemove', handleGlobalMouseMove, { capture: false });
+      document.removeEventListener('mouseup', handleGlobalMouseUp, { capture: false });
     };
   }, [isDragging, dragStart, setDragOffset, setDragStart, setIsDragging, setToasterPosition]);
+  
+  // Safety: Reset dragging state if mouse leaves window
+  useEffect(() => {
+    const handleMouseLeave = () => {
+      if (isDragging) {
+        setIsDragging(false);
+        setDragStart(null);
+        setDragOffset({ x: 0, y: 0 });
+      }
+    };
+    
+    document.addEventListener('mouseleave', handleMouseLeave);
+    return () => document.removeEventListener('mouseleave', handleMouseLeave);
+  }, [isDragging, setIsDragging, setDragStart, setDragOffset]);
 
   // Auto-scroll optimization output to bottom when new logs arrive (only if already at bottom)
   useEffect(() => {
