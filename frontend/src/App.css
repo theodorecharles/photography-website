@@ -136,14 +136,14 @@ body {
 
 @media (max-width: 511px) {
   .main-content {
-    margin-top: 0;
+    margin-top: 54px;
   }
 }
 
 @media (max-width: 599px) {
   .main-content {
     padding-bottom: 2rem;
-    margin-top: 0;
+    margin-top: 54px;
   }
   
   .main-content-title {
