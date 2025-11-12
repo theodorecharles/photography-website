@@ -183,13 +183,21 @@ export default function SSEToaster() {
     const newCollapsedState = !isToasterCollapsed;
     setIsToasterCollapsed(newCollapsedState);
     
-    // When expanding, scroll to bottom
+    // When expanding, scroll to bottom after content has rendered
     if (!newCollapsedState) {
       const outputRef = generatingTitles ? titlesOutputRef : optimizationOutputRef;
       const element = outputRef.current;
       if (element) {
+        // Wait for multiple frames to ensure content is fully rendered
         requestAnimationFrame(() => {
-          element.scrollTop = element.scrollHeight;
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              if (element) {
+                element.scrollTop = element.scrollHeight;
+                console.log('[SSEToaster] Scrolled to bottom on expand:', element.scrollTop, element.scrollHeight);
+              }
+            });
+          });
         });
       }
     }
