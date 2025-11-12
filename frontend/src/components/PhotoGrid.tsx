@@ -17,6 +17,7 @@ interface PhotoGridProps {
   album: string;
   onAlbumNotFound?: () => void;
   initialPhotos?: Photo[];
+  onLoadComplete?: () => void;
 }
 
 interface Photo {
@@ -35,7 +36,7 @@ interface Photo {
   exif?: any; // EXIF data from exifr library
 }
 
-const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPhotos }) => {
+const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPhotos, onLoadComplete }) => {
   const location = useLocation();
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
@@ -192,6 +193,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
                   // All rendered - show the page
                   setRenderProgress(null);
                   setLoading(false);
+                  onLoadComplete?.();
                 }
               }
             };
@@ -234,6 +236,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
               } else {
                 setRenderProgress(null);
                 setLoading(false);
+                onLoadComplete?.();
               }
             }
           };
@@ -279,6 +282,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
               } else {
                 setRenderProgress(null);
                 setLoading(false);
+                onLoadComplete?.();
               }
             }
           };
