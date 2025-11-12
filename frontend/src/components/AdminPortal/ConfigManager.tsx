@@ -3849,9 +3849,23 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
               <button
                 className="sse-toaster-maximize-btn"
                 onClick={() => {
+                  // Check if we're at the bottom before toggling
+                  const outputRef = generatingTitles ? titlesOutputRef : optimizationOutputRef;
+                  const element = outputRef.current;
+                  const wasAtBottom = element 
+                    ? element.scrollHeight - element.scrollTop - element.clientHeight < 50
+                    : false;
+                  
                   setIsToasterMaximized(!isToasterMaximized);
                   if (!isToasterMaximized) {
                     setIsToasterCollapsed(false); // Auto-expand when maximizing
+                  }
+                  
+                  // If we were at the bottom, scroll to bottom after transition
+                  if (wasAtBottom && element) {
+                    setTimeout(() => {
+                      element.scrollTop = element.scrollHeight;
+                    }, 350); // Wait for CSS transition (300ms) + small buffer
                   }
                 }}
                 title={isToasterMaximized ? "Restore" : "Maximize"}
