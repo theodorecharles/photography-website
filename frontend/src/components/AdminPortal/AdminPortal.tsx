@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { API_URL } from '../../config';
 import './AdminPortal.css';
-import { AuthStatus, ExternalLink, BrandingConfig, Album, Tab } from './types';
+import { AuthStatus, ExternalLink, BrandingConfig, Album, AlbumFolder, Tab } from './types';
 import AlbumsManager from './AlbumsManager';
 import Metrics from './Metrics/Metrics';
 import ConfigManager from './ConfigManager';
@@ -45,6 +45,7 @@ export default function AdminPortal() {
     faviconPath: ''
   });
   const [albums, setAlbums] = useState<Album[]>([]);
+  const [folders, setFolders] = useState<AlbumFolder[]>([]);
   const [messages, setMessages] = useState<Array<{ id: number; type: 'success' | 'error'; text: string }>>([]);
 
   // Helper to add a new message
@@ -178,17 +179,25 @@ export default function AdminPortal() {
       const res = await fetch(`${API_URL}/api/albums`, {
         credentials: 'include',
       });
-      const albumsData = await res.json();
+      const data = await res.json();
       
-      // Handle both array of strings and array of objects with published state
-      const albumsList: Album[] = albumsData.map((album: string | { name: string; published: boolean }) => {
-        if (typeof album === 'string') {
-          return { name: album, published: true };
-        }
-        return album;
-      });
-      
-      setAlbums(albumsList);
+      // New API format: { albums: [...], folders: [...] }
+      // Handle backward compatibility with old array format
+      if (Array.isArray(data)) {
+        // Old format (array of albums)
+        const albumsList: Album[] = data.map((album: string | { name: string; published: boolean }) => {
+          if (typeof album === 'string') {
+            return { name: album, published: true };
+          }
+          return album;
+        });
+        setAlbums(albumsList);
+        setFolders([]);
+      } else {
+        // New format (object with albums and folders)
+        setAlbums(data.albums || []);
+        setFolders(data.folders || []);
+      }
     } catch (err) {
       console.error('Failed to load albums:', err);
     }
@@ -361,6 +370,7 @@ export default function AdminPortal() {
         {activeTab === 'albums' && (
           <AlbumsManager
             albums={albums}
+            folders={folders}
             loadAlbums={loadAlbums}
             setMessage={addMessage}
           />

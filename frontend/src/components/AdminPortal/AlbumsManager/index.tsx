@@ -10,7 +10,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useSearchParams } from 'react-router-dom';
-import { Album, Photo, UploadingImage, AlbumsManagerProps, UploadState } from './types';
+import { Album, AlbumFolder, Photo, UploadingImage, AlbumsManagerProps, UploadState } from './types';
 import { 
   trackAlbumCreated,
   trackAlbumDeleted,
@@ -45,6 +45,7 @@ const API_URL = import.meta.env.VITE_API_URL || '';
 
 const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   albums,
+  folders,
   loadAlbums,
   setMessage,
 }) => {
@@ -52,11 +53,17 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   
   // Local albums state that syncs with props - allows for optimistic updates during drag
   const [localAlbums, setLocalAlbums] = useState<Album[]>(albums);
+  const [localFolders, setLocalFolders] = useState<AlbumFolder[]>(folders);
   
   // Sync local albums with props when props change (from parent load)
   useEffect(() => {
     setLocalAlbums(albums);
   }, [albums]);
+  
+  // Sync local folders with props when props change
+  useEffect(() => {
+    setLocalFolders(folders);
+  }, [folders]);
   
   const [uploadingImages, setUploadingImages] = useState<UploadingImage[]>([]);
   const uploadingImagesRef = useRef<UploadingImage[]>([]);
@@ -91,6 +98,11 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   const [showNewAlbumModal, setShowNewAlbumModal] = useState(false);
   const [newAlbumFiles, setNewAlbumFiles] = useState<File[]>([]);
   const [newAlbumModalName, setNewAlbumModalName] = useState('');
+  
+  // Folder management state
+  const [showFolderModal, setShowFolderModal] = useState(false);
+  const [newFolderName, setNewFolderName] = useState('');
+  const [selectedFolder, setSelectedFolder] = useState<string | null>(null);
   
   // Ref for ghost tile file input
   const ghostTileFileInputRef = useRef<HTMLInputElement>(null);
@@ -1286,6 +1298,116 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     });
   };
 
+  // Folder management handlers
+  const handleCreateFolder = async () => {
+    if (!newFolderName.trim()) {
+      setMessage({ type: 'error', text: 'Folder name cannot be empty' });
+      return;
+    }
+
+    const sanitized = newFolderName.trim().replace(/[^a-zA-Z0-9\s-]/g, '');
+    if (!sanitized) {
+      setMessage({ type: 'error', text: 'Folder name contains no valid characters' });
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API_URL}/api/folders`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ name: sanitized, published: false }),
+      });
+
+      if (res.ok) {
+        setMessage({ type: 'success', text: `Folder "${sanitized}" created!` });
+        setShowFolderModal(false);
+        setNewFolderName('');
+        await loadAlbums();
+      } else {
+        const errorData = await res.json();
+        setMessage({ type: 'error', text: errorData.error || 'Failed to create folder' });
+      }
+    } catch (err) {
+      console.error('Failed to create folder:', err);
+      setMessage({ type: 'error', text: 'Error creating folder' });
+    }
+  };
+
+  const handleDeleteFolder = async (folderName: string) => {
+    const confirmed = await showConfirmation(`Delete folder "${folderName}"?\n\nAlbums in this folder will be moved to the root level. This action cannot be undone.`);
+    if (!confirmed) return;
+
+    try {
+      const res = await fetch(`${API_URL}/api/folders/${encodeURIComponent(folderName)}`, {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+
+      if (res.ok) {
+        setMessage({ type: 'success', text: `Folder "${folderName}" deleted` });
+        await loadAlbums();
+      } else {
+        const error = await res.json();
+        setMessage({ type: 'error', text: error.error || 'Failed to delete folder' });
+      }
+    } catch (err) {
+      setMessage({ type: 'error', text: 'Network error occurred' });
+    }
+  };
+
+  const handleToggleFolderPublished = async (folderName: string, currentPublished: boolean) => {
+    const newPublished = !currentPublished;
+    
+    try {
+      const res = await fetch(`${API_URL}/api/folders/${encodeURIComponent(folderName)}/publish`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ published: newPublished }),
+      });
+
+      if (res.ok) {
+        setMessage({ 
+          type: 'success', 
+          text: `Folder "${folderName}" ${newPublished ? 'published' : 'unpublished'}` 
+        });
+        await loadAlbums();
+      } else {
+        const error = await res.json();
+        setMessage({ type: 'error', text: error.error || 'Failed to update folder' });
+      }
+    } catch (err) {
+      setMessage({ type: 'error', text: 'Network error occurred' });
+    }
+  };
+
+  const handleMoveAlbumToFolder = async (albumName: string, folderId: number | null) => {
+    const folderName = folderId ? localFolders.find(f => f.id === folderId)?.name : 'none';
+    if (!folderName) {
+      setMessage({ type: 'error', text: 'Invalid folder' });
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API_URL}/api/folders/${encodeURIComponent(folderName)}/albums/${encodeURIComponent(albumName)}`, {
+        method: 'PATCH',
+        credentials: 'include',
+      });
+
+      if (res.ok) {
+        const folderDisplayName = folderId ? folderName : 'root level';
+        setMessage({ type: 'success', text: `Moved "${albumName}" to ${folderDisplayName}` });
+        await loadAlbums();
+      } else {
+        const error = await res.json();
+        setMessage({ type: 'error', text: error.error || 'Failed to move album' });
+      }
+    } catch (err) {
+      setMessage({ type: 'error', text: 'Network error occurred' });
+    }
+  };
+
   // Process dropped items (handles folders)
   const handleDeletePhoto = async (album: string, filename: string, photoTitle: string = '') => {
     const confirmed = await showConfirmation(`Delete this photo${photoTitle ? ` (${photoTitle})` : ''}?\n\nThis action cannot be undone.`);
@@ -1316,6 +1438,95 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
       <section className="admin-section">
         <h2>📸 Albums & Photos</h2>
         <p className="section-description">Manage your photo albums and upload new images</p>
+        
+        {/* Folders Section */}
+        {localFolders.length > 0 && (
+          <div className="folders-section" style={{ marginBottom: '2rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+              <h3 style={{ margin: 0 }}>📁 Folders</h3>
+              <button
+                onClick={() => setShowFolderModal(true)}
+                className="btn-action btn-upload"
+                style={{ minWidth: 'auto', padding: '0.5rem 1rem' }}
+              >
+                + New Folder
+              </button>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '1rem' }}>
+              {localFolders.map((folder) => (
+                <div
+                  key={folder.id}
+                  style={{
+                    padding: '1rem',
+                    border: '2px solid rgba(255, 255, 255, 0.2)',
+                    borderRadius: '8px',
+                    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                    position: 'relative'
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '0.5rem' }}>
+                    <h4 style={{ margin: 0, fontSize: '1rem' }}>📁 {folder.name}</h4>
+                    <button
+                      onClick={() => handleDeleteFolder(folder.name)}
+                      style={{
+                        background: 'transparent',
+                        border: 'none',
+                        color: '#ef4444',
+                        cursor: 'pointer',
+                        padding: '0.25rem',
+                        fontSize: '1.2rem'
+                      }}
+                      title="Delete folder"
+                    >
+                      ×
+                    </button>
+                  </div>
+                  <div style={{ fontSize: '0.85rem', color: '#888', marginBottom: '0.5rem' }}>
+                    {localAlbums.filter(a => a.folder_id === folder.id).length} album(s)
+                  </div>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9rem', cursor: 'pointer' }}>
+                    <input
+                      type="checkbox"
+                      checked={folder.published}
+                      onChange={() => handleToggleFolderPublished(folder.name, folder.published)}
+                    />
+                    Published
+                  </label>
+                </div>
+              ))}
+              {/* Add New Folder Button */}
+              <div
+                onClick={() => setShowFolderModal(true)}
+                style={{
+                  padding: '1rem',
+                  border: '2px dashed rgba(255, 255, 255, 0.3)',
+                  borderRadius: '8px',
+                  backgroundColor: 'rgba(255, 255, 255, 0.02)',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  minHeight: '100px'
+                }}
+              >
+                <span style={{ fontSize: '2rem', opacity: 0.5 }}>+</span>
+              </div>
+            </div>
+          </div>
+        )}
+        
+        {/* Show "Create First Folder" button if no folders exist */}
+        {localFolders.length === 0 && (
+          <div style={{ marginBottom: '2rem', textAlign: 'center' }}>
+            <button
+              onClick={() => setShowFolderModal(true)}
+              className="btn-action btn-upload"
+            >
+              📁 Create First Folder
+            </button>
+          </div>
+        )}
+        
         <div className="albums-management">
           <div className="albums-list">
               <DndContext
@@ -1333,6 +1544,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                       <SortableAlbumCard
                         key={album.name}
                         album={album}
+                        folders={localFolders}
                         isSelected={selectedAlbum === album.name}
                         isAnimating={animatingAlbum === album.name}
                         isDragOver={dragOverAlbum === album.name}
@@ -1340,6 +1552,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                         onDragOver={(e) => handleAlbumTileDragOver(e, album.name)}
                         onDragLeave={handleAlbumTileDragLeave}
                         onDrop={(e) => handleAlbumTileDrop(e, album.name)}
+                        onFolderChange={handleMoveAlbumToFolder}
                       />
                     ))}
                     
@@ -1814,6 +2027,67 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                 onClick={handleSaveTitle}
               >
                 Save Title
+              </button>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
+
+      {/* New Folder Modal */}
+      {showFolderModal && createPortal(
+        <div 
+          className="edit-title-modal" 
+          onClick={() => setShowFolderModal(false)}
+        >
+          <div className="edit-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="edit-modal-header">
+              <h3>Create New Folder</h3>
+              <button 
+                className="modal-close-btn"
+                onClick={() => setShowFolderModal(false)}
+                title="Close"
+              >
+                ×
+              </button>
+            </div>
+            
+            <div className="edit-modal-body">
+              <div className="edit-modal-info" style={{ width: '100%' }}>
+                <label className="edit-modal-label">Folder Name</label>
+                <input
+                  type="text"
+                  value={newFolderName}
+                  onChange={(e) => setNewFolderName(e.target.value)}
+                  className="edit-modal-input"
+                  placeholder="Enter folder name..."
+                  autoFocus
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      handleCreateFolder();
+                    } else if (e.key === 'Escape') {
+                      setShowFolderModal(false);
+                    }
+                  }}
+                />
+                <p style={{ color: '#888', fontSize: '0.9rem', marginTop: '0.5rem' }}>
+                  Folders help organize your albums into categories
+                </p>
+              </div>
+            </div>
+            
+            <div className="edit-modal-footer">
+              <button
+                onClick={() => setShowFolderModal(false)}
+                className="btn-secondary"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleCreateFolder}
+                className="btn-primary"
+              >
+                Create Folder
               </button>
             </div>
           </div>

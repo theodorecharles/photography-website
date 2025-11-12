@@ -52,6 +52,16 @@ export interface Album {
   photoCount?: number;
   published?: boolean;
   sort_order?: number | null;
+  folder_id?: number | null;
+}
+
+export interface AlbumFolder {
+  id: number;
+  name: string;
+  published: boolean;
+  sort_order?: number | null;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface Photo {

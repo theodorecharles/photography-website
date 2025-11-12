@@ -72,7 +72,8 @@ function PrimesRedirect() {
  */
 function App() {
   // Application state
-  const [albums, setAlbums] = useState<string[]>([]);
+  const [albums, setAlbums] = useState<string[] | Array<{name: string; folder_id?: number | null}>>([]);
+  const [folders, setFolders] = useState<Array<{id: number; name: string; published: boolean}>>([]);
   const [externalLinks, setExternalLinks] = useState<ExternalLink[]>([]);
   const [siteName, setSiteName] = useState('Ted Charles');
   const [avatarPath, setAvatarPath] = useState('/photos/derpatar.png');
@@ -186,24 +187,38 @@ function App() {
       const externalLinksData = await externalLinksResponse.json();
       const brandingData = await brandingResponse.json();
 
-      // Handle both array of strings (for non-authenticated) and array of objects (for authenticated)
-      // Show published albums for non-authenticated, show all albums for authenticated users
-      const albumNames = Array.isArray(albumsData) 
-        ? albumsData
-            .filter((album: string | { name: string; published: boolean }) => {
-              // If it's a string, include it (legacy behavior)
-              if (typeof album === 'string') return true;
-              // If it's an object, include all albums if authenticated, only published if not
-              if (isAuthenticated) return true;
-              return album.published === true;
-            })
-            .map((album: string | { name: string; published: boolean }) => 
-              typeof album === 'string' ? album : album.name
-            )
-            .filter((album: string) => album !== "homepage")
-        : [];
-      
-      setAlbums(albumNames);
+      // Handle new API format: { albums: [...], folders: [...] } or old format: [...]
+      if (albumsData && typeof albumsData === 'object' && 'albums' in albumsData) {
+        // New format with folders
+        const filteredAlbums = albumsData.albums
+          .filter((album: { name: string; published: boolean; folder_id?: number | null }) => {
+            if (album.name === 'homepage') return false;
+            // Include all albums if authenticated, only published if not
+            if (isAuthenticated) return true;
+            return album.published === true;
+          });
+        
+        setAlbums(filteredAlbums);
+        setFolders(albumsData.folders || []);
+      } else {
+        // Old format (array of strings or objects)
+        const albumNames = Array.isArray(albumsData) 
+          ? albumsData
+              .filter((album: string | { name: string; published: boolean }) => {
+                if (typeof album === 'string') return album !== 'homepage';
+                if (album.name === 'homepage') return false;
+                // If it's an object, include all albums if authenticated, only published if not
+                if (isAuthenticated) return true;
+                return album.published === true;
+              })
+              .map((album: string | { name: string; published: boolean }) => 
+                typeof album === 'string' ? album : album.name
+              )
+          : [];
+        
+        setAlbums(albumNames);
+        setFolders([]);
+      }
       setExternalLinks(externalLinksData.externalLinks);
       setSiteName(brandingData.siteName || 'Ted Charles');
       setAvatarPath(brandingData.avatarPath || '/photos/derpatar.png');
@@ -221,6 +236,7 @@ function App() {
       
       setError(errorMessage);
       setAlbums([]);
+      setFolders([]);
       setExternalLinks([]);
       setSiteName('Ted Charles');
       setAvatarPath('/photos/derpatar.png');
@@ -239,20 +255,39 @@ function App() {
         const albumsResponse = await fetchWithRateLimitCheck(`${API_URL}/api/albums`);
         if (albumsResponse.ok) {
           const albumsData = await albumsResponse.json();
-          const albumNames = Array.isArray(albumsData) 
-            ? albumsData
-                .filter((album: string | { name: string; published: boolean }) => {
-                  if (typeof album === 'string') return true;
-                  // Include all albums if authenticated, only published if not
-                  if (isAuthenticated) return true;
-                  return album.published === true;
-                })
-                .map((album: string | { name: string; published: boolean }) => 
-                  typeof album === 'string' ? album : album.name
-                )
-                .filter((album: string) => album !== "homepage")
-            : [];
-          setAlbums(albumNames);
+          
+          // Handle new API format: { albums: [...], folders: [...] } or old format: [...]
+          if (albumsData && typeof albumsData === 'object' && 'albums' in albumsData) {
+            // New format with folders
+            const filteredAlbums = albumsData.albums
+              .filter((album: { name: string; published: boolean; folder_id?: number | null }) => {
+                if (album.name === 'homepage') return false;
+                // Include all albums if authenticated, only published if not
+                if (isAuthenticated) return true;
+                return album.published === true;
+              });
+            
+            setAlbums(filteredAlbums);
+            setFolders(albumsData.folders || []);
+          } else {
+            // Old format (array of strings or objects)
+            const albumNames = Array.isArray(albumsData) 
+              ? albumsData
+                  .filter((album: string | { name: string; published: boolean }) => {
+                    if (typeof album === 'string') return album !== 'homepage';
+                    if (album.name === 'homepage') return false;
+                    // Include all albums if authenticated, only published if not
+                    if (isAuthenticated) return true;
+                    return album.published === true;
+                  })
+                  .map((album: string | { name: string; published: boolean }) => 
+                    typeof album === 'string' ? album : album.name
+                  )
+              : [];
+            
+            setAlbums(albumNames);
+            setFolders([]);
+          }
         }
       } catch (err) {
         // Silently fail - don't disrupt user experience
@@ -305,6 +340,7 @@ function App() {
     <div className="app">
       <Header
         albums={albums}
+        folders={folders}
         externalLinks={externalLinks}
         currentAlbum={currentAlbum}
         siteName={siteName}

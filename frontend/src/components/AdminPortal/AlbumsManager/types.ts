@@ -2,7 +2,7 @@
  * Shared types for AlbumsManager
  */
 
-import { Album, Photo } from '../types';
+import { Album, AlbumFolder, Photo } from '../types';
 
 export type UploadState = 'queued' | 'uploading' | 'optimizing' | 'complete' | 'error';
 
@@ -18,9 +18,10 @@ export interface UploadingImage {
 
 export interface AlbumsManagerProps {
   albums: Album[];
+  folders: AlbumFolder[];
   loadAlbums: () => Promise<void>;
   setMessage: (message: { type: 'success' | 'error'; text: string }) => void;
 }
 
 // Re-export types from parent
-export type { Album, Photo };
+export type { Album, AlbumFolder, Photo };
