@@ -95,6 +95,9 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
   externalLinks,
   setExternalLinks,
 }) => {
+  // Get global SSE toaster context
+  const sseToaster = useSSEToaster();
+  
   const [config, setConfig] = useState<ConfigData | null>(null);
   const [originalConfig, setOriginalConfig] = useState<ConfigData | null>(null);
   const [originalExternalLinks, setOriginalExternalLinks] = useState<
@@ -114,6 +117,35 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
 
   // Helper to check if any job is running
   const isAnyJobRunning = generatingTitles || isOptimizationRunning;
+  
+  // Sync local state to global context for SSE toaster
+  useEffect(() => {
+    sseToaster.setGeneratingTitles(generatingTitles);
+  }, [generatingTitles, sseToaster]);
+  
+  useEffect(() => {
+    sseToaster.setTitlesOutput(titlesOutput);
+  }, [titlesOutput, sseToaster]);
+  
+  useEffect(() => {
+    sseToaster.setTitlesProgress(titlesProgress);
+  }, [titlesProgress, sseToaster]);
+  
+  useEffect(() => {
+    sseToaster.setTitlesWaiting(titlesWaiting);
+  }, [titlesWaiting, sseToaster]);
+  
+  useEffect(() => {
+    sseToaster.setIsOptimizationRunning(isOptimizationRunning);
+  }, [isOptimizationRunning, sseToaster]);
+  
+  useEffect(() => {
+    sseToaster.setOptimizationLogs(optimizationLogs);
+  }, [optimizationLogs, sseToaster]);
+  
+  useEffect(() => {
+    sseToaster.setOptimizationProgress(optimizationProgress);
+  }, [optimizationProgress, sseToaster]);
 
   // SSE Output Toaster state
   const [isToasterCollapsed, setIsToasterCollapsed] = useState(false);
@@ -901,6 +933,17 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
       setMessage({ type: "error", text: "Failed to stop optimization job" });
     }
   };
+  
+  // Register stop handlers with global context
+  useEffect(() => {
+    sseToaster.setStopTitlesHandler(() => handleStopTitles);
+    sseToaster.setStopOptimizationHandler(() => handleStopOptimization);
+    
+    return () => {
+      sseToaster.setStopTitlesHandler(null);
+      sseToaster.setStopOptimizationHandler(null);
+    };
+  }, [sseToaster]);
 
   const handleGenerateTitles = async (forceRegenerate = false) => {
     setGeneratingTitles(true);
@@ -908,10 +951,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
     setTitlesProgress(0);
     
     // Reset toaster to default state
-    setToasterPosition('top-right');
-    setIsToasterCollapsed(false);
-    setIsToasterMaximized(false);
-    setHasToasterAnimated(false);
+    sseToaster.resetToasterState();
 
     // Scroll to OpenAI section to show output
     setTimeout(() => {
@@ -1316,10 +1356,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
     setOptimizationProgress(0);
     
     // Reset toaster to default state
-    setToasterPosition('top-right');
-    setIsToasterCollapsed(false);
-    setIsToasterMaximized(false);
-    setHasToasterAnimated(false);
+    sseToaster.resetToasterState();
 
     // Scroll to regenerate button to show output
     setTimeout(() => {
