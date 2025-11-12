@@ -6,11 +6,10 @@
 import { useRef } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { Album, AlbumFolder } from '../types';
+import { Album } from '../types';
 
 interface SortableAlbumCardProps {
   album: Album;
-  folders: AlbumFolder[];
   isSelected: boolean;
   isAnimating: boolean;
   isDragOver: boolean;
@@ -19,13 +18,12 @@ interface SortableAlbumCardProps {
   onDragLeave: (e: React.DragEvent) => void;
   onDrop: (e: React.DragEvent) => void;
   onRename?: (albumName: string) => void;
-  onDragStart?: (e: React.DragEvent) => void;
-  onDragEnd?: () => void;
+  onAlbumDragStart?: (e: React.DragEvent) => void;
+  onAlbumDragEnd?: () => void;
 }
 
 const SortableAlbumCard: React.FC<SortableAlbumCardProps> = ({
   album,
-  folders,
   isSelected,
   isAnimating,
   isDragOver,
@@ -34,8 +32,8 @@ const SortableAlbumCard: React.FC<SortableAlbumCardProps> = ({
   onDragLeave,
   onDrop,
   onRename,
-  onDragStart,
-  onDragEnd,
+  onAlbumDragStart,
+  onAlbumDragEnd,
 }) => {
   const {
     attributes,
@@ -102,8 +100,8 @@ const SortableAlbumCard: React.FC<SortableAlbumCardProps> = ({
       onDragOver={onDragOver}
       onDragLeave={onDragLeave}
       onDrop={onDrop}
-      onDragStart={onDragStart}
-      onDragEnd={onDragEnd}
+      onDragStart={onAlbumDragStart}
+      onDragEnd={onAlbumDragEnd}
       draggable={true}
       {...attributes}
       {...listeners}
