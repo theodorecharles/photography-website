@@ -256,6 +256,16 @@
   font-style: italic;
 }
 
+/* Adjust spacing when album actions are shown */
+.photos-header {
+  margin-top: 54px;
+  margin-bottom: 0px;
+}
+
+.photos-header + .photo-grid {
+  margin-top: 0px;
+}
+
 @media (max-width: 768px) {
   .album-actions-banner {
     padding: 1rem;
