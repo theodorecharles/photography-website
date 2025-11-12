@@ -1416,8 +1416,8 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     }
   };
 
-  // Handle drag start on album (for folder assignment)
-  const handleAlbumDragStart = (e: React.DragEvent, albumName: string) => {
+  // Handle drag start on album (for folder assignment via native drag-and-drop)
+  const handleAlbumToFolderDragStart = (e: React.DragEvent, albumName: string) => {
     setDraggingAlbumName(albumName);
     e.dataTransfer.effectAllowed = 'move';
     e.dataTransfer.setData('text/plain', albumName);
@@ -1454,8 +1454,8 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     setDraggingAlbumName(null);
   };
 
-  // Handle drag end
-  const handleAlbumDragEnd = () => {
+  // Handle drag end (for folder assignment)
+  const handleAlbumToFolderDragEnd = () => {
     setDraggingAlbumName(null);
     setDragOverFolderId(null);
   };
@@ -1666,7 +1666,6 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                       <SortableAlbumCard
                         key={album.name}
                         album={album}
-                        folders={localFolders}
                         isSelected={selectedAlbum === album.name}
                         isAnimating={animatingAlbum === album.name}
                         isDragOver={dragOverAlbum === album.name}
@@ -1675,8 +1674,8 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                         onDragLeave={handleAlbumTileDragLeave}
                         onDrop={(e) => handleAlbumTileDrop(e, album.name)}
                         onRename={handleOpenRenameModal}
-                        onDragStart={(e) => handleAlbumDragStart(e, album.name)}
-                        onDragEnd={handleAlbumDragEnd}
+                        onAlbumDragStart={(e) => handleAlbumToFolderDragStart(e, album.name)}
+                        onAlbumDragEnd={handleAlbumToFolderDragEnd}
                       />
                     ))}
                     
