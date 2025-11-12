@@ -30,6 +30,7 @@ const AdminPortal = lazy(() => import("./components/AdminPortal"));
 const AuthError = lazy(() => import("./components/Misc/AuthError"));
 const NotFound = lazy(() => import("./components/Misc/NotFound"));
 const SharedAlbum = lazy(() => import("./components/SharedAlbum"));
+const SetupWizard = lazy(() => import("./components/SetupWizard"));
 
 // AlbumRoute component handles the routing for individual album pages
 function AlbumRoute({ onAlbumNotFound, onLoadComplete }: { onAlbumNotFound: () => void; onLoadComplete: () => void }) {
@@ -88,7 +89,30 @@ function App() {
   const [showFooter, setShowFooter] = useState(false);
   const [hideAlbumTitle, setHideAlbumTitle] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [setupComplete, setSetupComplete] = useState<boolean | null>(null);
   const location = useLocation();
+
+  // Check if initial setup is complete
+  useEffect(() => {
+    const checkSetup = async () => {
+      try {
+        const response = await fetch(`${API_URL}/api/setup/status`);
+        const data = await response.json();
+        setSetupComplete(data.setupComplete);
+        
+        // Only proceed with normal loading if setup is complete
+        if (!data.setupComplete) {
+          setLoading(false);
+        }
+      } catch (err) {
+        console.error('Setup check failed:', err);
+        // Assume setup is complete if check fails (backward compatibility)
+        setSetupComplete(true);
+      }
+    };
+    
+    checkSetup();
+  }, []);
 
   // Global rate limit handler - any component can trigger this
   useEffect(() => {
@@ -252,7 +276,10 @@ function App() {
   };
 
   useEffect(() => {
-    fetchData();
+    // Only fetch data if setup is complete
+    if (setupComplete === true) {
+      fetchData();
+    }
 
     // Silent update for navigation without triggering loading state
     const updateNavigationSilently = async () => {
@@ -315,7 +342,21 @@ function App() {
       window.removeEventListener('external-links-updated', fetchData);
       window.removeEventListener('branding-updated', fetchData);
     };
-  }, [isAuthenticated]); // Re-fetch when authentication changes
+  }, [isAuthenticated, setupComplete]); // Re-fetch when authentication or setup changes
+
+  // Show setup wizard if setup is not complete
+  if (setupComplete === false) {
+    return (
+      <Suspense fallback={
+        <div className="photo-grid-loading">
+          <div className="loading-spinner"></div>
+          <p>Loading setup...</p>
+        </div>
+      }>
+        <SetupWizard />
+      </Suspense>
+    );
+  }
 
   // Loading and error states
   // Skip loading state for admin routes - they handle their own loading

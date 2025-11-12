@@ -88,6 +88,23 @@ const customCollisionDetection: CollisionDetection = (args) => {
   return closestCenter(args);
 };
 
+// Helper function to convert string to title case and sanitize for album names
+const sanitizeAndTitleCase = (str: string): string => {
+  if (!str) return '';
+  
+  // Remove special characters, keep only letters, numbers, spaces, hyphens, and underscores
+  let sanitized = str.replace(/[^a-zA-Z0-9\s\-_]/g, ' ');
+  
+  // Replace multiple spaces with single space
+  sanitized = sanitized.replace(/\s+/g, ' ').trim();
+  
+  // Convert to title case
+  return sanitized
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(' ');
+};
+
 const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   albums,
   folders,
@@ -528,76 +545,104 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     e.stopPropagation();
     setIsGhostAlbumDragOver(false);
 
-    // Helper function to recursively read files from a directory entry
-    const readDirectoryRecursively = async (entry: any): Promise<File[]> => {
-      const files: File[] = [];
-      
-      if (entry.isFile) {
-        const file: File = await new Promise((resolve, reject) => {
-          entry.file(resolve, reject);
-        });
-        if (file.type.startsWith('image/')) {
-          files.push(file);
-        }
-      } else if (entry.isDirectory) {
-        const reader = entry.createReader();
-        const entries: any[] = await new Promise((resolve, reject) => {
-          reader.readEntries(resolve, reject);
-        });
-        
-        for (const childEntry of entries) {
-          const childFiles = await readDirectoryRecursively(childEntry);
-          files.push(...childFiles);
-        }
-      }
-      
-      return files;
-    };
+    // Show loading message
+    setMessage({ type: 'success', text: 'Reading folder contents...' });
 
     try {
-      const items = Array.from(e.dataTransfer.items);
-      const imageFiles: File[] = [];
-      let folderName = '';
+      let imageFiles: File[] = [];
+      let rawFolderName = '';
 
-      // Check if any items are folders using webkitGetAsEntry
-      for (const item of items) {
-        if (item.kind === 'file') {
-          const entry = item.webkitGetAsEntry();
-          if (entry) {
-            if (entry.isDirectory) {
-              // It's a folder!
-              if (!folderName) {
-                folderName = entry.name; // Use the first folder's name
+      // Function to recursively read directory entries with batched reading
+      const readEntryRecursively = async (entry: any): Promise<File[]> => {
+        const files: File[] = [];
+        
+        if (entry.isFile) {
+          return new Promise((resolve) => {
+            entry.file((file: File) => {
+              if (file.type.startsWith('image/')) {
+                files.push(file);
               }
-              const files = await readDirectoryRecursively(entry);
+              resolve(files);
+            });
+          });
+        } else if (entry.isDirectory) {
+          const dirReader = entry.createReader();
+          
+          return new Promise((resolve) => {
+            const readBatch = async () => {
+              dirReader.readEntries(async (entries: any[]) => {
+                if (entries.length === 0) {
+                  resolve(files);
+                  return;
+                }
+                
+                for (const entry of entries) {
+                  const entryFiles = await readEntryRecursively(entry);
+                  files.push(...entryFiles);
+                }
+                
+                // Read next batch (directories may have more than 100 entries)
+                await readBatch();
+              });
+            };
+            
+            readBatch();
+          });
+        }
+        
+        return files;
+      };
+
+      // Check if we have dataTransfer items (better for folder handling)
+      if (e.dataTransfer.items) {
+        const items = Array.from(e.dataTransfer.items);
+        
+        // Process all dropped items
+        for (const item of items) {
+          if (item.kind === 'file') {
+            const entry = item.webkitGetAsEntry?.();
+            if (entry) {
+              if (entry.isDirectory && !rawFolderName) {
+                rawFolderName = entry.name;
+              }
+              const files = await readEntryRecursively(entry);
               imageFiles.push(...files);
-            } else if (entry.isFile) {
-              // It's a file
-              const file = item.getAsFile();
-              if (file && file.type.startsWith('image/')) {
-                imageFiles.push(file);
-              }
             }
           }
         }
       }
 
-      // Fallback to regular files if webkitGetAsEntry didn't work
+      // Fallback for browsers without dataTransfer.items support
       if (imageFiles.length === 0) {
         const files = Array.from(e.dataTransfer.files);
-        const validImages = files.filter(file => file.type.startsWith('image/'));
-        imageFiles.push(...validImages);
+        imageFiles = files.filter(file => file.type.startsWith('image/'));
+        
+        // Try to extract folder name from webkitRelativePath
+        const firstFile = imageFiles[0] as File & { webkitRelativePath?: string };
+        if (firstFile?.webkitRelativePath) {
+          const parts = firstFile.webkitRelativePath.split('/');
+          if (parts.length > 1) {
+            rawFolderName = parts[0];
+          }
+        }
       }
 
+      // Check if we found any image files
       if (imageFiles.length === 0) {
-        setMessage({ type: 'error', text: 'No valid image files found' });
+        setMessage({ type: 'error', text: 'No valid image files found in the dropped folder' });
         return;
       }
 
-      // Show modal to name the new album
+      // Clear loading message
+      setMessage(null);
+
+      // Sanitize and title case the folder name
+      const suggestedAlbumName = sanitizeAndTitleCase(rawFolderName);
+
+      // Show modal to name the new album with suggested name
       setNewAlbumFiles(imageFiles);
       setShowNewAlbumModal(true);
-      setNewAlbumModalName(folderName); // Pre-populate with folder name if available
+      setNewAlbumModalName(suggestedAlbumName);
     } catch (error) {
       console.error('Error reading dropped items:', error);
       setMessage({ type: 'error', text: 'Error reading files' });
@@ -620,23 +665,25 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
       return;
     }
 
-    // Try to extract folder name from file paths if available
-    let folderName = '';
-    if (imageFiles.length > 0 && 'webkitRelativePath' in imageFiles[0]) {
-      const firstPath = (imageFiles[0] as any).webkitRelativePath || '';
-      if (firstPath) {
-        // Extract the first part of the path (folder name)
-        const parts = firstPath.split('/');
-        if (parts.length > 1) {
-          folderName = parts[0];
-        }
+    // Try to extract folder name from the selected files
+    let rawFolderName = '';
+    const firstFile = imageFiles[0] as File & { webkitRelativePath?: string };
+    
+    if (firstFile.webkitRelativePath) {
+      // Extract folder name from path like "FolderName/image.jpg"
+      const parts = firstFile.webkitRelativePath.split('/');
+      if (parts.length > 1) {
+        rawFolderName = parts[0];
       }
     }
 
-    // Show modal to name the new album
+    // Sanitize and title case the folder name
+    const suggestedAlbumName = sanitizeAndTitleCase(rawFolderName);
+
+    // Show modal to name the new album with suggested name
     setNewAlbumFiles(imageFiles);
     setShowNewAlbumModal(true);
-    setNewAlbumModalName(folderName);
+    setNewAlbumModalName(suggestedAlbumName);
     
     // Reset the input
     e.target.value = '';
@@ -1800,20 +1847,22 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                     
                     {/* Ghost tile for creating new albums */}
                     <div 
-                      className={`album-card ghost-album-tile ${isGhostAlbumDragOver ? 'drag-over-ghost' : ''}`}
-                      onClick={handleGhostTileClick}
-                      onDragOver={handleGhostTileDragOver}
-                      onDragLeave={handleGhostTileDragLeave}
-                      onDrop={handleGhostTileDrop}
+                      className={`album-card ghost-album-tile ${isGhostAlbumDragOver ? 'drag-over-ghost' : ''} ${uploadingImages.length > 0 ? 'ghost-tile-disabled' : ''}`}
+                      onClick={uploadingImages.length > 0 ? undefined : handleGhostTileClick}
+                      onDragOver={uploadingImages.length > 0 ? undefined : handleGhostTileDragOver}
+                      onDragLeave={uploadingImages.length > 0 ? undefined : handleGhostTileDragLeave}
+                      onDrop={uploadingImages.length > 0 ? undefined : handleGhostTileDrop}
                     >
                       <div className="ghost-tile-content">
                         <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                           <circle cx="12" cy="12" r="10"/>
                           <path d="M12 8v8M8 12h8"/>
                         </svg>
-                        {isGhostAlbumDragOver && (
+                        {uploadingImages.length > 0 ? (
+                          <span className="ghost-tile-hint">Uploading...</span>
+                        ) : isGhostAlbumDragOver ? (
                           <span className="ghost-tile-hint">Drop to create</span>
-                        )}
+                        ) : null}
                       </div>
                       <input
                         ref={ghostTileFileInputRef}
@@ -1821,6 +1870,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                         multiple
                         accept="image/*"
                         onChange={handleGhostTileFileSelect}
+                        disabled={uploadingImages.length > 0}
                         style={{ display: 'none' }}
                       />
                     </div>

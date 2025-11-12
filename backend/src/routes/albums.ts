@@ -77,7 +77,9 @@ const sanitizePath = (input: string): string | null => {
 const getAlbums = (photosDir: string) => {
   try {
     // Get albums from database
-    const dbAlbums = getAllAlbums().map(a => a.name);
+    const dbAlbums = getAllAlbums()
+      .map(a => a.name)
+      .filter(name => name !== 'homepage'); // Exclude homepage directory
     
     // If database has albums, use those
     if (dbAlbums.length > 0) {
@@ -88,7 +90,10 @@ const getAlbums = (photosDir: string) => {
     console.warn('Database has no albums, falling back to filesystem scan');
     return fs
       .readdirSync(photosDir)
-      .filter((file) => fs.statSync(path.join(photosDir, file)).isDirectory());
+      .filter((file) => {
+        // Exclude homepage directory and only include actual directories
+        return file !== 'homepage' && fs.statSync(path.join(photosDir, file)).isDirectory();
+      });
   } catch (error) {
     console.error("Error reading albums:", error);
     return [];

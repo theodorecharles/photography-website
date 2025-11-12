@@ -22,6 +22,7 @@ import config, {
   ALLOWED_ORIGINS,
   RATE_LIMIT_WINDOW_MS,
   RATE_LIMIT_MAX_REQUESTS,
+  CONFIG_EXISTS,
 } from "./config.ts";
 import { validateProductionSecurity } from "./security.ts";
 
@@ -54,13 +55,18 @@ import systemRouter from "./routes/system.ts";
 import shareLinksRouter from "./routes/share-links.ts";
 import previewGridRouter from "./routes/preview-grid.ts";
 import staticJsonRouter from "./routes/static-json.ts";
+import setupRouter from "./routes/setup.ts";
 
 // Get the current directory path for ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Validate production security before starting
-validateProductionSecurity();
+// Validate production security before starting (skip if in setup mode)
+if (CONFIG_EXISTS) {
+  validateProductionSecurity();
+} else {
+  console.log('⚙️  Setup mode detected - skipping production security validation');
+}
 
 // Initialize database lazily (on first use) to avoid ESM/CommonJS issues
 // The database module will be imported when needed by routes
@@ -180,12 +186,14 @@ app.use(express.json({ limit: "1mb" }));
 // Configure session middleware for authentication
 const sessionSecret = config.auth?.sessionSecret;
 if (!sessionSecret) {
-  console.error("❌ CRITICAL ERROR: SESSION_SECRET is not configured!");
-  console.error(
-    "Please set auth.sessionSecret in config.json or SESSION_SECRET environment variable."
-  );
-  console.error("Generate a secure secret with: openssl rand -hex 32");
-  process.exit(1);
+  if (CONFIG_EXISTS) {
+    console.error('❌ CRITICAL ERROR: SESSION_SECRET is not configured!');
+    console.error('Please set auth.sessionSecret in config.json or SESSION_SECRET environment variable.');
+    console.error('Generate a secure secret with: openssl rand -hex 32');
+    process.exit(1);
+  } else {
+    console.log('⚙️  Using temporary session secret for setup mode');
+  }
 }
 
 // Determine cookie domain based on environment
@@ -375,6 +383,7 @@ app.set("appRoot", path.resolve(__dirname, "../../"));
 
 // Register route handlers
 // Note: CSRF protection is applied inside individual routers that need it
+app.use('/api/setup', setupRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/external-links", externalLinksRouter);
 app.use("/api/branding", brandingRouter);
