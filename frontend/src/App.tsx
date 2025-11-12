@@ -32,7 +32,7 @@ const NotFound = lazy(() => import("./components/Misc/NotFound"));
 const SharedAlbum = lazy(() => import("./components/SharedAlbum"));
 
 // AlbumRoute component handles the routing for individual album pages
-function AlbumRoute({ onAlbumNotFound }: { onAlbumNotFound: () => void }) {
+function AlbumRoute({ onAlbumNotFound, onLoadComplete }: { onAlbumNotFound: () => void; onLoadComplete: () => void }) {
   const { album } = useParams();
   // Decode URI-encoded album name
   const decodedAlbum = album ? decodeURIComponent(album) : "";
@@ -45,7 +45,11 @@ function AlbumRoute({ onAlbumNotFound }: { onAlbumNotFound: () => void }) {
         url={`${SITE_URL}/album/${album}`}
         image={`${SITE_URL}/photos/derpatar.png`}
       />
-      <PhotoGrid album={decodedAlbum} onAlbumNotFound={onAlbumNotFound} />
+      <PhotoGrid 
+        album={decodedAlbum} 
+        onAlbumNotFound={onAlbumNotFound}
+        onLoadComplete={onLoadComplete}
+      />
     </>
   );
 }
@@ -123,17 +127,9 @@ function App() {
     document.documentElement.style.setProperty('--secondary-color', secondaryColor);
   }, [primaryColor, secondaryColor]);
 
-  // Show footer after initial content loads
+  // Hide footer on navigation
   useEffect(() => {
-    // Hide footer immediately on navigation
     setShowFooter(false);
-    
-    // Wait for content to fully render (includes photo grid batching)
-    const timer = setTimeout(() => {
-      setShowFooter(true);
-    }, 6000); // 6 seconds to account for large album rendering
-
-    return () => clearTimeout(timer);
   }, [location.pathname]);
 
   // Update current album based on route changes and track page views
@@ -336,10 +332,13 @@ function App() {
             <Route path="/" element={
               <>
                 <SEO />
-                <PhotoGrid album="homepage" />
+                <PhotoGrid 
+                  album="homepage"
+                  onLoadComplete={() => setShowFooter(true)}
+                />
               </>
             } />
-            <Route path="/album/:album" element={<AlbumRoute onAlbumNotFound={() => setHideAlbumTitle(true)} />} />
+            <Route path="/album/:album" element={<AlbumRoute onAlbumNotFound={() => setHideAlbumTitle(true)} onLoadComplete={() => setShowFooter(true)} />} />
             <Route path="/license" element={
               <>
                 <SEO 
