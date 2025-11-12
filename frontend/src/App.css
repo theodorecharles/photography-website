@@ -136,24 +136,18 @@ body {
 
 @media (max-width: 511px) {
   .main-content {
-    margin-top: 54px;
+    margin-top: 0;
   }
 }
 
 @media (max-width: 599px) {
   .main-content {
     padding-bottom: 2rem;
-    margin-top: 54px;
+    margin-top: 0;
   }
   
   .main-content-title {
     display: block;
-  }
-  
-  /* Add extra margin when album title bar is present */
-  /* The album title bar is ~48px tall (0.75rem * 2 padding + font size) */
-  body:has(.nav-center) .main-content {
-    margin-top: calc(54px + 48px); /* Header + album title bar */
   }
 }
 
