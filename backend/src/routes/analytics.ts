@@ -11,12 +11,8 @@ import config from '../config.ts';
 
 const router = Router();
 
-// Handle OPTIONS preflight for CORS
-router.options('/track', (req, res) => {
-  res.status(200).end();
-});
-
 // POST endpoint to receive analytics events from frontend
+// Note: OPTIONS preflight is handled by global CORS middleware in server.ts
 router.post('/track', async (req, res): Promise<void> => {
   try {
     // Get analytics configuration
