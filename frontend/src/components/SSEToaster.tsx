@@ -244,6 +244,20 @@ export default function SSEToaster() {
           >
             {isToasterCollapsed ? "▼" : "▲"}
           </button>
+          <button
+            className="sse-toaster-close-btn"
+            onClick={() => {
+              // Call the appropriate stop handler to close the job
+              if (generatingTitles && stopTitlesHandler) {
+                stopTitlesHandler();
+              } else if (isOptimizationRunning && stopOptimizationHandler) {
+                stopOptimizationHandler();
+              }
+            }}
+            title="Close"
+          >
+            ✕
+          </button>
         </div>
       </div>
 

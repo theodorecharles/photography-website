@@ -390,7 +390,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
   const reconnectToTitlesJob = async () => {
     // Create new abort controller for this reconnection
     const controller = new AbortController();
-    titlesAbortController.current = controller;
+    sseToaster.sseToaster.titlesAbortController.current = controller;
 
     try {
       const res = await fetch(`${API_URL}/api/ai-titles/generate`, {
@@ -428,11 +428,11 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
                 text: "AI title generation completed successfully!",
               });
               setGeneratingTitles(false);
-              titlesAbortController.current = null;
+              sseToaster.titlesAbortController.current = null;
             } else if (data.startsWith("__ERROR__")) {
               setMessage({ type: "error", text: data.substring(10) });
               setGeneratingTitles(false);
-              titlesAbortController.current = null;
+              sseToaster.titlesAbortController.current = null;
             } else {
               try {
                 const parsed = JSON.parse(data);
@@ -456,11 +456,11 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
       if (err.name === "AbortError") {
         console.log("AI titles job stopped by user");
         setGeneratingTitles(false);
-        titlesAbortController.current = null;
+        sseToaster.titlesAbortController.current = null;
       } else {
         console.error("Failed to reconnect to titles job:", err);
         setGeneratingTitles(false);
-        titlesAbortController.current = null;
+        sseToaster.titlesAbortController.current = null;
       }
     }
   };
@@ -776,10 +776,6 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
     }
   };
 
-  // Store abort controllers to allow stopping jobs
-  const titlesAbortController = useRef<AbortController | null>(null);
-  const optimizationAbortController = useRef<AbortController | null>(null);
-
   const handleStopTitles = useCallback(async () => {
     try {
       // Call backend to kill the process
@@ -791,10 +787,10 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
         },
       });
 
-      // Abort the SSE connection
-      if (titlesAbortController.current) {
-        titlesAbortController.current.abort();
-        titlesAbortController.current = null;
+      // Abort the SSE connection using global context
+      if (sseToaster.sseToaster.titlesAbortController.current) {
+        sseToaster.sseToaster.titlesAbortController.current.abort();
+        sseToaster.sseToaster.titlesAbortController.current = null;
       }
 
       // Clear output and reset state
@@ -821,10 +817,10 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
         },
       });
 
-      // Abort the SSE connection
-      if (optimizationAbortController.current) {
-        optimizationAbortController.current.abort();
-        optimizationAbortController.current = null;
+      // Abort the SSE connection using global context
+      if (sseToaster.optimizationAbortController.current) {
+        sseToaster.optimizationAbortController.current.abort();
+        sseToaster.optimizationAbortController.current = null;
       }
 
       // Clear output and reset state
@@ -873,7 +869,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
 
     try {
       const abortController = new AbortController();
-      titlesAbortController.current = abortController;
+      sseToaster.titlesAbortController.current = abortController;
 
       const res = await fetch(
         `${API_URL}/api/ai-titles/generate?forceRegenerate=${forceRegenerate}`,
@@ -913,12 +909,12 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
                 text: "AI title generation completed successfully!",
               });
               setGeneratingTitles(false);
-              titlesAbortController.current = null;
+              sseToaster.titlesAbortController.current = null;
               checkMissingTitles(); // Refresh button visibility
             } else if (data.startsWith("__ERROR__")) {
               setMessage({ type: "error", text: data.substring(10) });
               setGeneratingTitles(false);
-              titlesAbortController.current = null;
+              sseToaster.titlesAbortController.current = null;
               checkMissingTitles(); // Refresh button visibility
             } else {
               // Try to parse JSON progress data
@@ -951,7 +947,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
       setMessage({ type: "error", text: errorMessage });
       console.error("Failed to generate titles:", err);
       setGeneratingTitles(false);
-      titlesAbortController.current = null;
+      sseToaster.titlesAbortController.current = null;
       checkMissingTitles(); // Refresh button visibility
     }
   };
