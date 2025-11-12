@@ -35,6 +35,29 @@ console.log(`   API URL: ${API_URL}`);
 console.log(`   Output directory: ${OUTPUT_DIR}`);
 
 /**
+ * Wait for backend to be ready
+ */
+async function waitForBackend(maxRetries = 10, delayMs = 1000) {
+  console.log('   Waiting for backend to be ready...');
+  for (let i = 0; i < maxRetries; i++) {
+    try {
+      const response = await fetch(`${API_URL}/api/health`);
+      if (response.ok) {
+        console.log('   ✅ Backend is ready!');
+        return true;
+      }
+    } catch (error) {
+      // Backend not ready yet
+    }
+    if (i < maxRetries - 1) {
+      await new Promise(resolve => setTimeout(resolve, delayMs));
+    }
+  }
+  console.error('   ❌ Backend did not become ready in time');
+  return false;
+}
+
+/**
  * Fetch data from API with error handling
  */
 async function fetchAPI(endpoint) {
@@ -77,6 +100,13 @@ function writeJSON(filename, data) {
  */
 async function generateStaticJSON() {
   try {
+    // Wait for backend to be ready (important after PM2 restart)
+    const isReady = await waitForBackend();
+    if (!isReady) {
+      console.error('❌ Backend not ready, skipping static JSON generation');
+      process.exit(1);
+    }
+    
     ensureOutputDir();
 
     // Fetch all albums
