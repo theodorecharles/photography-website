@@ -331,11 +331,11 @@
 @keyframes slideInFromBottomLeft {
   from {
     opacity: 0;
-    transform: translate(-100px, 100px);
+    transform: translateY(100px);
   }
   to {
     opacity: 1;
-    transform: translate(0, 0);
+    transform: translateY(0);
   }
 }
 
