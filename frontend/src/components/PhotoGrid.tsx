@@ -47,6 +47,22 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
     Record<string, { width: number; height: number }>
   >({});
 
+  // Reconstruct full photo object from optimized array format
+  // Format: [filename, title] for albums, [filename, title, album] for homepage
+  const reconstructPhoto = (data: string[], albumName: string): Photo => {
+    const [filename, title, albumFromData] = data;
+    const photoAlbum = albumFromData || albumName;
+    return {
+      id: `${photoAlbum}/${filename}`,
+      src: `/photos/${photoAlbum}/${filename}`,
+      thumbnail: `/optimized/thumbnail/${photoAlbum}/${filename}`,
+      modal: `/optimized/modal/${photoAlbum}/${filename}`,
+      download: `/optimized/download/${photoAlbum}/${filename}`,
+      title: title,
+      album: photoAlbum
+    };
+  };
+
   // Get query parameters from current URL for API calls (not for images)
   const queryParams = new URLSearchParams(location.search);
   // Remove 'photo' param from API queryString to prevent refetching when opening modals
@@ -127,8 +143,11 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
         try {
           const staticResponse = await fetch(staticJsonUrl);
           if (staticResponse.ok) {
-            const staticPhotos = await staticResponse.json();
-            console.log(`✨ Loaded ${staticPhotos.length} photos from static JSON (${album})`);
+            const staticData = await staticResponse.json();
+            console.log(`✨ Loaded ${staticData.length} photos from optimized static JSON (${album})`);
+            
+            // Reconstruct full photo objects from optimized array format
+            const staticPhotos = staticData.map((data: string[]) => reconstructPhoto(data, album));
             
             // For large albums, render in batches for faster initial paint
             if (staticPhotos.length > 50) {

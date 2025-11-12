@@ -35,22 +35,18 @@ try {
 
   function writeJSON(filename, data) {
     const filepath = path.join(OUTPUT_DIR, filename);
-    fs.writeFileSync(filepath, JSON.stringify(data, null, 2));
-    console.log(`   ✅ Generated: ${filename} (${Array.isArray(data) ? data.length : 'N/A'} items)`);
+    fs.writeFileSync(filepath, JSON.stringify(data));
+    const size = (fs.statSync(filepath).size / 1024).toFixed(1);
+    console.log(`   ✅ Generated: ${filename} (${Array.isArray(data) ? data.length : 'N/A'} items, ${size} KB)`);
   }
 
-  function transformImageToPhoto(image, album) {
-    const filename = image.filename;
-    return {
-      id: `${album}/${filename}`,
-      src: `/photos/${album}/${filename}`,
-      thumbnail: `/optimized/thumbnail/${album}/${filename}`,
-      modal: `/optimized/modal/${album}/${filename}`,
-      download: `/optimized/download/${album}/${filename}`,
-      title: image.title || filename,
-      album: album,
-      metadata: image.metadata || {}
-    };
+  // Optimized format: just [filename, title] arrays
+  // Frontend will reconstruct full photo objects
+  function transformImageToOptimized(image) {
+    return [
+      image.filename,
+      image.title || image.filename
+    ];
   }
 
   // Get all albums (including unpublished)
@@ -70,7 +66,8 @@ try {
         ORDER BY sort_order, filename
       `).all(album);
       
-      const photos = images.map((img) => transformImageToPhoto(img, album));
+      // Generate optimized format: array of [filename, title]
+      const photos = images.map(transformImageToOptimized);
       writeJSON(`${album}.json`, photos);
     } catch (error) {
       console.error(`   ⚠️  Error generating JSON for "${album}":`, error.message);
@@ -92,7 +89,12 @@ try {
         ORDER BY RANDOM()
       `).all(...publishedAlbumNames);
       
-      const photos = images.map((img) => transformImageToPhoto(img, img.album));
+      // Homepage format: [filename, title, album] (need album for multi-album homepage)
+      const photos = images.map(img => [
+        img.filename,
+        img.title || img.filename,
+        img.album
+      ]);
       writeJSON('homepage.json', photos);
     } else {
       writeJSON('homepage.json', []);
