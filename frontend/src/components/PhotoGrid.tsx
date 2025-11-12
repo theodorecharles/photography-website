@@ -559,7 +559,6 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
                   src={`${API_URL}${photo.thumbnail}${imageQueryString}`}
                   alt={`${photo.album} photography by Ted Charles - ${photo.title}`}
                   title={photo.title}
-                  loading="lazy"
                   onLoad={(e) => handleImageLoad(e, photo.id)}
                 />
               </div>
