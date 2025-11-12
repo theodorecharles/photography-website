@@ -58,10 +58,13 @@ const SortableFolderCard: React.FC<SortableFolderCardProps> = ({
       ref={setRefs}
       style={style}
       className={`folder-card ${isDragOver ? 'drag-over' : ''} ${isDragging ? 'dragging' : ''}`}
-      {...attributes}
-      {...listeners}
     >
-      <div className="folder-card-header">
+      <div 
+        className="folder-card-header"
+        {...attributes}
+        {...listeners}
+        style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
+      >
         <h4 className="folder-card-title">📁 {folder.name}</h4>
         <button
           onClick={(e) => {

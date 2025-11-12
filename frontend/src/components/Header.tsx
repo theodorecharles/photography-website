@@ -268,8 +268,7 @@ function Navigation({
                       return albumObj.folder_id === folder.id;
                     });
                     
-                    if (folderAlbums.length === 0) return null;
-                    
+                    // Show all folders, even if empty
                     return (
                       <div key={folder.id} className="folder-item">
                         <button
@@ -296,24 +295,30 @@ function Navigation({
                         </button>
                         {openFolderId === folder.id && (
                           <div className="folder-submenu">
-                            {folderAlbums.map(album => {
-                              const albumName = typeof album === 'string' ? album : album.name;
-                              return (
-                                <Link
-                                  key={albumName}
-                                  to={`/album/${albumName}`}
-                                  className="nav-link submenu-link"
-                                  onClick={() => {
-                                    trackDropdownClose('albums', 'navigation');
-                                    setIsDropdownOpen(false);
-                                    setOpenFolderId(null);
-                                    trackAlbumNavigation(albumName, 'header');
-                                  }}
-                                >
-                                  {albumName}
-                                </Link>
-                              );
-                            })}
+                            {folderAlbums.length > 0 ? (
+                              folderAlbums.map(album => {
+                                const albumName = typeof album === 'string' ? album : album.name;
+                                return (
+                                  <Link
+                                    key={albumName}
+                                    to={`/album/${albumName}`}
+                                    className="nav-link submenu-link"
+                                    onClick={() => {
+                                      trackDropdownClose('albums', 'navigation');
+                                      setIsDropdownOpen(false);
+                                      setOpenFolderId(null);
+                                      trackAlbumNavigation(albumName, 'header');
+                                    }}
+                                  >
+                                    {albumName}
+                                  </Link>
+                                );
+                              })
+                            ) : (
+                              <div className="nav-link submenu-link" style={{ opacity: 0.5, fontStyle: 'italic' }}>
+                                No albums in this folder
+                              </div>
+                            )}
                           </div>
                         )}
                       </div>
