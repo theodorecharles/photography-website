@@ -85,7 +85,7 @@ router.get('/', (req: Request, res: Response) => {
     // Set defaults if not present
     const brandingConfig: BrandingConfig = {
       siteName: branding.siteName || 'Ted Charles',
-      avatarPath: branding.avatarPath || '/photos/derpatar.png',
+      avatarPath: branding.avatarPath || '/photos/avatar.png',
       primaryColor: branding.primaryColor || '#4ade80',
       secondaryColor: branding.secondaryColor || '#22c55e',
       metaDescription: branding.metaDescription || 'Photography portfolio by Ted Charles',

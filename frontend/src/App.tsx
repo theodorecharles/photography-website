@@ -43,7 +43,7 @@ function AlbumRoute({ onAlbumNotFound, onLoadComplete }: { onAlbumNotFound: () =
         title={`${decodedAlbum} - Ted Charles Photography`}
         description={`View ${decodedAlbum} photos from Ted Charles' photography portfolio. Professional ${decodedAlbum} photography.`}
         url={`${SITE_URL}/album/${album}`}
-        image={`${SITE_URL}/photos/derpatar.png`}
+        image={`${SITE_URL}/photos/avatar.png`}
       />
       <PhotoGrid 
         album={decodedAlbum} 
@@ -76,7 +76,7 @@ function App() {
   const [folders, setFolders] = useState<Array<{id: number; name: string; published: boolean}>>([]);
   const [externalLinks, setExternalLinks] = useState<ExternalLink[]>([]);
   const [siteName, setSiteName] = useState('Ted Charles');
-  const [avatarPath, setAvatarPath] = useState('/photos/derpatar.png');
+  const [avatarPath, setAvatarPath] = useState('/photos/avatar.png');
   const [avatarCacheBust, setAvatarCacheBust] = useState(Date.now());
   const [primaryColor, setPrimaryColor] = useState('#4ade80');
   const [secondaryColor, setSecondaryColor] = useState('#3b82f6');
@@ -221,7 +221,7 @@ function App() {
       }
       setExternalLinks(externalLinksData.externalLinks);
       setSiteName(brandingData.siteName || 'Ted Charles');
-      setAvatarPath(brandingData.avatarPath || '/photos/derpatar.png');
+      setAvatarPath(brandingData.avatarPath || '/photos/avatar.png');
       setPrimaryColor(brandingData.primaryColor || '#4ade80');
       setSecondaryColor(brandingData.secondaryColor || '#3b82f6');
       setAvatarCacheBust(Date.now()); // Update cache bust when branding refreshes
@@ -239,7 +239,7 @@ function App() {
       setFolders([]);
       setExternalLinks([]);
       setSiteName('Ted Charles');
-      setAvatarPath('/photos/derpatar.png');
+      setAvatarPath('/photos/avatar.png');
       trackError(errorMessage, 'app_initialization');
     } finally {
       setLoading(false);
