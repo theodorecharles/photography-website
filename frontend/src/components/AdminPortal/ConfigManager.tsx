@@ -121,7 +121,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState<{ x: number; y: number } | null>(null);
   const [dragOffset, setDragOffset] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
-  const [isTransitioningFromDrag, setIsTransitioningFromDrag] = useState(false);
+  const [hasToasterAnimated, setHasToasterAnimated] = useState(false);
 
   // Section collapse state - all collapsed by default
   const [showBranding, setShowBranding] = useState(false);
@@ -174,29 +174,18 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
     const isTop = y < topThreshold || (y < viewportHeight / 2 && y < bottomThreshold);
     const isBottom = y > bottomThreshold || (y > viewportHeight / 2 && y > topThreshold);
     
-    // Set transitioning flag FIRST, then immediately set new position
-    setIsTransitioningFromDrag(true);
+    if (isBottom && isLeft) {
+      setToasterPosition('bottom-left');
+    } else if (isBottom && isRight) {
+      setToasterPosition('bottom-right');
+    } else if (isTop && isLeft) {
+      setToasterPosition('top-left');
+    } else {
+      setToasterPosition('top-right');
+    }
     
-    // Use setTimeout to ensure state updates properly
-    setTimeout(() => {
-      if (isBottom && isLeft) {
-        setToasterPosition('bottom-left');
-      } else if (isBottom && isRight) {
-        setToasterPosition('bottom-right');
-      } else if (isTop && isLeft) {
-        setToasterPosition('top-left');
-      } else {
-        setToasterPosition('top-right');
-      }
-      
-      setDragStart(null);
-      setDragOffset({ x: 0, y: 0 });
-      
-      // Clear the transitioning flag after animation completes
-      setTimeout(() => {
-        setIsTransitioningFromDrag(false);
-      }, 300);
-    }, 0);
+    setDragStart(null);
+    setDragOffset({ x: 0, y: 0 });
   };
 
   // Branding and Links state
@@ -274,6 +263,17 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
     };
   }, [isToasterMaximized]);
 
+  // Mark toaster as animated after initial slide-in completes
+  useEffect(() => {
+    if (isAnyJobRunning && !hasToasterAnimated) {
+      const timer = setTimeout(() => {
+        setHasToasterAnimated(true);
+      }, 300); // Match animation duration
+      
+      return () => clearTimeout(timer);
+    }
+  }, [isAnyJobRunning, hasToasterAnimated]);
+
   // Global mouse event handlers for better drag tracking
   useEffect(() => {
     if (!isDragging) return;
@@ -306,29 +306,18 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
       const isTop = y < topThreshold || (y < viewportHeight / 2 && y < bottomThreshold);
       const isBottom = y > bottomThreshold || (y > viewportHeight / 2 && y > topThreshold);
       
-      // Set transitioning flag FIRST, then immediately set new position
-      setIsTransitioningFromDrag(true);
+      if (isBottom && isLeft) {
+        setToasterPosition('bottom-left');
+      } else if (isBottom && isRight) {
+        setToasterPosition('bottom-right');
+      } else if (isTop && isLeft) {
+        setToasterPosition('top-left');
+      } else {
+        setToasterPosition('top-right');
+      }
       
-      // Use setTimeout to ensure state updates properly
-      setTimeout(() => {
-        if (isBottom && isLeft) {
-          setToasterPosition('bottom-left');
-        } else if (isBottom && isRight) {
-          setToasterPosition('bottom-right');
-        } else if (isTop && isLeft) {
-          setToasterPosition('top-left');
-        } else {
-          setToasterPosition('top-right');
-        }
-        
-        setDragStart(null);
-        setDragOffset({ x: 0, y: 0 });
-        
-        // Clear the transitioning flag after animation completes
-        setTimeout(() => {
-          setIsTransitioningFromDrag(false);
-        }, 300);
-      }, 0);
+      setDragStart(null);
+      setDragOffset({ x: 0, y: 0 });
     };
 
     document.addEventListener('mousemove', handleGlobalMouseMove);
@@ -3816,7 +3805,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
       {/* Floating SSE Output Toaster (Picture-in-Picture style) */}
       {isAnyJobRunning && (
         <div 
-          className={`sse-toaster ${isToasterCollapsed ? 'collapsed' : 'expanded'} ${isToasterMaximized ? 'maximized' : ''} ${toasterPosition} ${isDragging ? 'dragging' : ''} ${isTransitioningFromDrag ? 'transitioning-from-drag' : ''}`}
+          className={`sse-toaster ${isToasterCollapsed ? 'collapsed' : 'expanded'} ${isToasterMaximized ? 'maximized' : ''} ${toasterPosition} ${isDragging ? 'dragging' : ''} ${!hasToasterAnimated ? 'initial-animation' : ''}`}
           onMouseMove={handleToasterDrag}
           onMouseUp={handleToasterDragEnd}
           style={isDragging && !isToasterMaximized ? {

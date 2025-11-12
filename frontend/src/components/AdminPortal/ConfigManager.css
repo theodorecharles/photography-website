@@ -256,35 +256,43 @@
 .sse-toaster.top-right {
   top: 80px;
   right: 20px;
-  animation: slideInFromRight 0.3s ease-out;
 }
 
 .sse-toaster.top-left {
   top: 80px;
   left: 20px;
-  animation: slideInFromLeft 0.3s ease-out;
 }
 
 .sse-toaster.bottom-right {
   bottom: 20px;
   right: 20px;
-  animation: slideInFromBottomRight 0.3s ease-out;
 }
 
 .sse-toaster.bottom-left {
   bottom: 20px;
   left: 20px;
+}
+
+/* Only animate on initial appearance */
+.sse-toaster.initial-animation.top-right {
+  animation: slideInFromRight 0.3s ease-out;
+}
+
+.sse-toaster.initial-animation.top-left {
+  animation: slideInFromLeft 0.3s ease-out;
+}
+
+.sse-toaster.initial-animation.bottom-right {
+  animation: slideInFromBottomRight 0.3s ease-out;
+}
+
+.sse-toaster.initial-animation.bottom-left {
   animation: slideInFromBottomLeft 0.3s ease-out;
 }
 
 .sse-toaster.dragging {
   opacity: 0.8;
   transition: opacity 0.1s ease-out;
-}
-
-/* Disable slide-in animation when transitioning from drag */
-.sse-toaster.transitioning-from-drag {
-  animation: none !important;
 }
 
 @keyframes slideInFromRight {
