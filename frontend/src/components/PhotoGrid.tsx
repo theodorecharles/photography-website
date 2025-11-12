@@ -38,11 +38,9 @@ interface Photo {
 const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPhotos }) => {
   const location = useLocation();
   const [photos, setPhotos] = useState<Photo[]>([]);
-  const [allPhotos, setAllPhotos] = useState<Photo[]>([]); // Store all photos
   const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState<number>(0);
   const [loading, setLoading] = useState(true);
-  const [renderProgress, setRenderProgress] = useState<{current: number, total: number} | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [imageDimensions, setImageDimensions] = useState<
     Record<string, { width: number; height: number }>
@@ -50,13 +48,12 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
 
   // Create index map for O(1) lookups
   const photoIndexMap = useMemo(() => {
-    const photosArray = allPhotos.length > 0 ? allPhotos : photos;
     const map = new Map<string, number>();
-    photosArray.forEach((photo, index) => {
+    photos.forEach((photo, index) => {
       map.set(photo.id, index);
     });
     return map;
-  }, [allPhotos, photos]);
+  }, [photos]);
 
   // Reconstruct full photo object from optimized array format
   // Format: [filename, title] for albums, [filename, title, album] for homepage
@@ -87,36 +84,25 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
   const imageQueryString = ``;
 
   const handlePhotoClick = (photo: Photo) => {
-    // Open modal immediately
     setSelectedPhoto(photo);
     const index = photoIndexMap.get(photo.id) ?? 0;
     setSelectedPhotoIndex(index);
     trackPhotoClick(photo.id, photo.album, photo.title);
-    
-    // If still rendering, finish rendering in background
-    if (renderProgress && renderProgress.current < renderProgress.total) {
-      setTimeout(() => {
-        setPhotos(allPhotos);
-        setRenderProgress(null);
-      }, 0);
-    }
   };
 
   const handleNavigatePrev = useCallback(() => {
-    const photosArray = allPhotos.length > 0 ? allPhotos : photos;
-    const prevIndex = (selectedPhotoIndex - 1 + photosArray.length) % photosArray.length;
-    const prevPhoto = photosArray[prevIndex];
+    const prevIndex = (selectedPhotoIndex - 1 + photos.length) % photos.length;
+    const prevPhoto = photos[prevIndex];
     setSelectedPhoto(prevPhoto);
     setSelectedPhotoIndex(prevIndex);
-  }, [selectedPhotoIndex, allPhotos, photos]);
+  }, [selectedPhotoIndex, photos]);
 
   const handleNavigateNext = useCallback(() => {
-    const photosArray = allPhotos.length > 0 ? allPhotos : photos;
-    const nextIndex = (selectedPhotoIndex + 1) % photosArray.length;
-    const nextPhoto = photosArray[nextIndex];
+    const nextIndex = (selectedPhotoIndex + 1) % photos.length;
+    const nextPhoto = photos[nextIndex];
     setSelectedPhoto(nextPhoto);
     setSelectedPhotoIndex(nextIndex);
-  }, [selectedPhotoIndex, allPhotos, photos]);
+  }, [selectedPhotoIndex, photos]);
 
   const handleCloseModal = () => {
     setSelectedPhoto(null);
@@ -187,39 +173,9 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
             // Reconstruct full photo objects from optimized array format
             const staticPhotos = staticData.map((data: string[]) => reconstructPhoto(data, album));
             
-            // For large albums, render in batches with progress
-            if (staticPhotos.length > 100) {
-              setAllPhotos(staticPhotos);
-              setPhotos(staticPhotos.slice(0, 50));
-              setRenderProgress({ current: 50, total: staticPhotos.length });
-              setLoading(false);
-              
-              // Batch render remaining photos
-              let currentIndex = 50;
-              const batchSize = 50;
-              
-              const addBatch = () => {
-                if (currentIndex < staticPhotos.length) {
-                  const nextIndex = Math.min(currentIndex + batchSize, staticPhotos.length);
-                  setPhotos(staticPhotos.slice(0, nextIndex));
-                  setRenderProgress({ current: nextIndex, total: staticPhotos.length });
-                  currentIndex = nextIndex;
-                  
-                  if (currentIndex < staticPhotos.length) {
-                    setTimeout(addBatch, 16); // ~60fps - one frame per batch
-                  } else {
-                    setRenderProgress(null); // Done
-                  }
-                }
-              };
-              
-              setTimeout(addBatch, 16);
-            } else {
-              // Small albums - render all at once
-              setPhotos(staticPhotos);
-              setAllPhotos(staticPhotos);
-              setLoading(false);
-            }
+            // Render all photos at once
+            setPhotos(staticPhotos);
+            setLoading(false);
             
             setError(null);
             return;
@@ -240,7 +196,6 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
           }
           const randomPhotos = await response.json();
           setPhotos(randomPhotos);
-          setAllPhotos(randomPhotos);
         } else {
           // Fetch all photos from the album
           const response = await fetchWithRateLimitCheck(
@@ -264,36 +219,8 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
             );
           });
           
-          // For large albums, render in batches with progress
-          if (sortedPhotos.length > 100) {
-            setAllPhotos(sortedPhotos);
-            setPhotos(sortedPhotos.slice(0, 50));
-            setRenderProgress({ current: 50, total: sortedPhotos.length });
-            
-            // Batch render remaining photos
-            let currentIndex = 50;
-            const batchSize = 50;
-            
-            const addBatch = () => {
-              if (currentIndex < sortedPhotos.length) {
-                const nextIndex = Math.min(currentIndex + batchSize, sortedPhotos.length);
-                setPhotos(sortedPhotos.slice(0, nextIndex));
-                setRenderProgress({ current: nextIndex, total: sortedPhotos.length });
-                currentIndex = nextIndex;
-                
-                if (currentIndex < sortedPhotos.length) {
-                  setTimeout(addBatch, 16); // ~60fps - one frame per batch
-                } else {
-                  setRenderProgress(null);
-                }
-              }
-            };
-            
-            setTimeout(addBatch, 16);
-          } else {
-            setPhotos(sortedPhotos);
-            setAllPhotos(sortedPhotos);
-          }
+          // Render all photos at once
+          setPhotos(sortedPhotos);
         }
 
         setError(null);
@@ -588,46 +515,12 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
         ))}
       </div>
 
-      {renderProgress && (
-        <div style={{
-          position: 'fixed',
-          bottom: '20px',
-          right: '20px',
-          background: 'rgba(0, 0, 0, 0.85)',
-          color: 'white',
-          padding: '16px 24px',
-          borderRadius: '8px',
-          fontSize: '0.95rem',
-          zIndex: 1000,
-          boxShadow: '0 4px 12px rgba(0,0,0,0.4)',
-          minWidth: '200px'
-        }}>
-          <div style={{ marginBottom: '8px', fontWeight: 500 }}>
-            Rendering {renderProgress.current} / {renderProgress.total} photos
-          </div>
-          <div style={{
-            width: '100%',
-            height: '4px',
-            background: 'rgba(255,255,255,0.2)',
-            borderRadius: '2px',
-            overflow: 'hidden'
-          }}>
-            <div style={{
-              width: `${(renderProgress.current / renderProgress.total) * 100}%`,
-              height: '100%',
-              background: '#4CAF50',
-              transition: 'width 0.3s ease'
-            }} />
-          </div>
-        </div>
-      )}
-
       {selectedPhoto && (
         <PhotoModal
           selectedPhoto={selectedPhoto}
           album={album}
           currentIndex={selectedPhotoIndex}
-          totalPhotos={allPhotos.length > 0 ? allPhotos.length : photos.length}
+          totalPhotos={photos.length}
           onNavigatePrev={handleNavigatePrev}
           onNavigateNext={handleNavigateNext}
           onClose={handleCloseModal}
