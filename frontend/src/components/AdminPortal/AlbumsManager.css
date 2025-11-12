@@ -367,9 +367,9 @@
 .album-card-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  gap: 0.75rem;
-  flex: 1;
+  align-items: start;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
 }
 
 .album-card h4 {
@@ -377,18 +377,21 @@
   margin: 0;
   font-size: 1.05rem;
   font-weight: 600;
-  word-break: keep-all;
+  word-break: break-word;
   overflow-wrap: break-word;
   letter-spacing: -0.01em;
   display: flex;
   align-items: center;
   gap: 0.5rem;
   line-height: 1.3;
+  flex: 1;
+  min-width: 0;
 }
 
 .album-card h4 .album-name {
   flex: 1;
   min-width: 0;
+  word-break: break-word;
 }
 
 .album-rename-btn {
@@ -398,11 +401,11 @@
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 4px;
-  padding: 0.25rem 0.375rem;
+  padding: 0.375rem;
   cursor: pointer;
   transition: all 0.2s ease;
-  margin-left: 0.25rem;
   flex-shrink: 0;
+  align-self: flex-start;
 }
 
 /* On desktop, hide by default and show on hover */
@@ -1833,7 +1836,70 @@
 }
 
 /* Ghost album tile styles */
-.ghost-album-tile {
+/* Folder card styles */
+.folder-card {
+  padding: 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.folder-card:hover {
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.folder-card.drag-over {
+  border-color: #3b82f6 !important;
+  background: rgba(59, 130, 246, 0.15) !important;
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.3) !important;
+}
+
+.folder-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.folder-card-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.folder-delete-btn {
+  background: transparent;
+  border: none;
+  color: #ef4444;
+  cursor: pointer;
+  padding: 0.25rem;
+  font-size: 1.2rem;
+  line-height: 1;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.folder-delete-btn:hover {
+  transform: scale(1.2);
+  color: #dc2626;
+}
+
+.folder-count {
+  font-size: 0.85rem;
+  color: #888;
+  margin-bottom: 0.75rem;
+}
+
+.ghost-album-tile, .ghost-folder-tile {
   border: 2px dashed rgba(74, 222, 128, 0.4) !important;
   background: linear-gradient(135deg, rgba(74, 222, 128, 0.05) 0%, rgba(74, 222, 128, 0.02) 100%) !important;
   cursor: pointer;
@@ -1844,13 +1910,13 @@
   height: 80px;
 }
 
-.ghost-album-tile:hover {
+.ghost-album-tile:hover, .ghost-folder-tile:hover {
   border-color: rgba(74, 222, 128, 0.6) !important;
   background: linear-gradient(135deg, rgba(74, 222, 128, 0.1) 0%, rgba(74, 222, 128, 0.05) 100%) !important;
   transform: scale(1.02);
 }
 
-.ghost-album-tile.drag-over-ghost {
+.ghost-album-tile.drag-over-ghost, .ghost-folder-tile.drag-over-ghost {
   border-color: rgba(74, 222, 128, 0.8) !important;
   background: linear-gradient(135deg, rgba(74, 222, 128, 0.15) 0%, rgba(74, 222, 128, 0.08) 100%) !important;
   transform: scale(1.05);
