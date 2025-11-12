@@ -31,7 +31,6 @@ export default function SSEToaster() {
     dragOffset,
     setDragOffset,
     hasToasterAnimated,
-    setHasToasterAnimated,
     stopTitlesHandler,
     stopOptimizationHandler,
   } = useSSEToaster();
