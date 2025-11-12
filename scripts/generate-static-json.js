@@ -2,138 +2,125 @@
 
 /**
  * Generate static JSON files for all albums
- * This script fetches album data from the backend and saves it as static JSON files
- * for faster client-side loading.
+ * Standalone script that reads directly from SQLite database
  */
 
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { createRequire } from 'module';
+
+const require = createRequire(import.meta.url);
+const Database = require('better-sqlite3');
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Try to load config.json for backend port, fall back to environment or defaults
-let API_URL = process.env.API_URL;
-
-if (!API_URL) {
-  try {
-    const configPath = path.join(__dirname, '../config/config.json');
-    const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-    // Use the configured API URL from frontend config (handles https/http correctly)
-    API_URL = config.environment.frontend.apiUrl;
-  } catch (error) {
-    // config.json doesn't exist, use default
-    API_URL = 'http://localhost:3001';
-  }
-}
-
+const DB_PATH = path.join(__dirname, '../gallery.db');
 const OUTPUT_DIR = path.join(__dirname, '../frontend/public/albums-data');
 
 console.log('🚀 Starting static JSON generation...');
-console.log(`   API URL: ${API_URL}`);
+console.log(`   Database: ${DB_PATH}`);
 console.log(`   Output directory: ${OUTPUT_DIR}`);
 
-/**
- * Wait for backend to be ready
- */
-async function waitForBackend(maxRetries = 10, delayMs = 1000) {
-  console.log('   Waiting for backend to be ready...');
-  for (let i = 0; i < maxRetries; i++) {
-    try {
-      const response = await fetch(`${API_URL}/api/health`);
-      if (response.ok) {
-        console.log('   ✅ Backend is ready!');
-        return true;
-      }
-    } catch (error) {
-      // Backend not ready yet
-    }
-    if (i < maxRetries - 1) {
-      await new Promise(resolve => setTimeout(resolve, delayMs));
-    }
-  }
-  console.error('   ❌ Backend did not become ready in time');
-  return false;
-}
+try {
+  // Open database
+  const db = new Database(DB_PATH, { readonly: true });
 
-/**
- * Fetch data from API with error handling
- */
-async function fetchAPI(endpoint) {
-  const url = `${API_URL}${endpoint}`;
-  console.log(`   Fetching: ${url}`);
-  
-  try {
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-    }
-    return await response.json();
-  } catch (error) {
-    console.error(`   ❌ Error fetching ${endpoint}:`, error.message);
-    throw error;
-  }
-}
-
-/**
- * Ensure output directory exists
- */
-function ensureOutputDir() {
+  // Ensure output directory exists
   if (!fs.existsSync(OUTPUT_DIR)) {
     fs.mkdirSync(OUTPUT_DIR, { recursive: true });
-    console.log(`   Created output directory: ${OUTPUT_DIR}`);
+    console.log(`   Created output directory`);
   }
-}
 
-/**
- * Write JSON file with pretty formatting
- */
-function writeJSON(filename, data) {
-  const filepath = path.join(OUTPUT_DIR, filename);
-  fs.writeFileSync(filepath, JSON.stringify(data, null, 2));
-  console.log(`   ✅ Generated: ${filename} (${data.length || 0} photos)`);
-}
+  function writeJSON(filename, data) {
+    const filepath = path.join(OUTPUT_DIR, filename);
+    fs.writeFileSync(filepath, JSON.stringify(data, null, 2));
+    console.log(`   ✅ Generated: ${filename} (${Array.isArray(data) ? data.length : 'N/A'} items)`);
+  }
 
-/**
- * Generate static JSON for all albums by calling backend endpoint
- */
-async function generateStaticJSON() {
+  function transformImageToPhoto(image, album) {
+    const filename = image.filename;
+    return {
+      id: `${album}/${filename}`,
+      src: `/photos/${album}/${filename}`,
+      thumbnail: `/optimized/thumbnail/${album}/${filename}`,
+      modal: `/optimized/modal/${album}/${filename}`,
+      download: `/optimized/download/${album}/${filename}`,
+      title: image.title || filename,
+      album: album,
+      metadata: image.metadata || {}
+    };
+  }
+
+  // Get all albums (including unpublished)
+  console.log('\n📁 Fetching albums...');
+  const albums = db.prepare('SELECT name FROM albums ORDER BY sort_order, name').all();
+  console.log(`   Found ${albums.length} albums (including unpublished)`);
+
+  // Generate JSON for each album
+  console.log('\n📸 Generating album JSON files...');
+  for (const albumRow of albums) {
+    const album = albumRow.name;
+    try {
+      const images = db.prepare(`
+        SELECT filename, title, description 
+        FROM image_metadata 
+        WHERE album = ? 
+        ORDER BY sort_order, filename
+      `).all(album);
+      
+      const photos = images.map((img) => transformImageToPhoto(img, album));
+      writeJSON(`${album}.json`, photos);
+    } catch (error) {
+      console.error(`   ⚠️  Error generating JSON for "${album}":`, error.message);
+    }
+  }
+
+  // Generate homepage JSON (shuffled photos from published albums only)
+  console.log('\n🏠 Generating homepage JSON...');
   try {
-    // Wait for backend to be ready (important after PM2 restart)
-    const isReady = await waitForBackend();
-    if (!isReady) {
-      console.error('❌ Backend not ready, skipping static JSON generation');
-      process.exit(1);
-    }
+    const publishedAlbums = db.prepare('SELECT name FROM albums WHERE published = 1').all();
+    const publishedAlbumNames = publishedAlbums.map(a => a.name);
     
-    console.log('\n📦 Calling backend generation endpoint...');
-    const response = await fetch(`${API_URL}/api/static-json/generate`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    });
-    
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-    }
-    
-    const result = await response.json();
-    
-    if (result.success) {
-      console.log('✅ Static JSON generation complete!');
-      console.log(`   Total albums: ${result.albumCount}`);
-      console.log(`   Output directory: ${OUTPUT_DIR}`);
+    if (publishedAlbumNames.length > 0) {
+      const placeholders = publishedAlbumNames.map(() => '?').join(',');
+      const images = db.prepare(`
+        SELECT filename, title, description, album 
+        FROM image_metadata 
+        WHERE album IN (${placeholders})
+        ORDER BY RANDOM()
+      `).all(...publishedAlbumNames);
+      
+      const photos = images.map((img) => transformImageToPhoto(img, img.album));
+      writeJSON('homepage.json', photos);
     } else {
-      throw new Error(result.error || 'Unknown error');
+      writeJSON('homepage.json', []);
     }
   } catch (error) {
-    console.error('\n❌ Fatal error:', error.message);
-    process.exit(1);
+    console.error(`   ⚠️  Could not generate homepage.json:`, error.message);
   }
+
+  // Generate albums list
+  console.log('\n📋 Generating albums list...');
+  const albumNames = albums.map(a => a.name);
+  writeJSON('albums-list.json', albumNames);
+
+  // Generate metadata file
+  const metadata = {
+    generatedAt: new Date().toISOString(),
+    albumCount: albums.length,
+    albums: albumNames
+  };
+  writeJSON('_metadata.json', metadata);
+
+  db.close();
+
+  console.log('\n✨ Static JSON generation complete!');
+  console.log(`   Total albums: ${albums.length}`);
+  process.exit(0);
+} catch (error) {
+  console.error('\n❌ Fatal error:', error.message);
+  console.error(error.stack);
+  process.exit(1);
 }
-
-// Run the generator
-generateStaticJSON();
-
