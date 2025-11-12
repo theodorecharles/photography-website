@@ -38,6 +38,8 @@ interface SSEToasterContextType {
   setDragOffset: (value: { x: number; y: number }) => void;
   hasToasterAnimated: boolean;
   setHasToasterAnimated: (value: boolean) => void;
+  isScrollLocked: boolean;
+  setIsScrollLocked: (value: boolean) => void;
   
   // Stop handlers (provided by ConfigManager when mounted)
   stopTitlesHandler: (() => void) | null;
@@ -75,6 +77,7 @@ export function SSEToasterProvider({ children }: { children: ReactNode }) {
   const [dragStart, setDragStart] = useState<{ x: number; y: number } | null>(null);
   const [dragOffset, setDragOffset] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [hasToasterAnimated, setHasToasterAnimated] = useState(false);
+  const [isScrollLocked, setIsScrollLocked] = useState(true); // Start locked by default
   
   // Stop handlers (set by ConfigManager when mounted)
   const [stopTitlesHandler, setStopTitlesHandler] = useState<(() => void) | null>(null);
@@ -86,6 +89,7 @@ export function SSEToasterProvider({ children }: { children: ReactNode }) {
     setIsToasterCollapsed(false);
     setIsToasterMaximized(false);
     setHasToasterAnimated(false);
+    setIsScrollLocked(true); // Re-lock scroll when resetting
   };
   
   // Disable page scrolling when toaster is maximized
@@ -146,6 +150,8 @@ export function SSEToasterProvider({ children }: { children: ReactNode }) {
     setDragOffset,
     hasToasterAnimated,
     setHasToasterAnimated,
+    isScrollLocked,
+    setIsScrollLocked,
     stopTitlesHandler,
     setStopTitlesHandler,
     stopOptimizationHandler,
