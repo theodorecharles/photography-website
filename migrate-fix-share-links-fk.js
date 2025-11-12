@@ -39,6 +39,20 @@ try {
   // Get existing data
   const existingLinks = db.prepare('SELECT * FROM share_links').all();
   
+  // Get all valid album names
+  const validAlbums = new Set(
+    db.prepare('SELECT name FROM albums').all().map(a => a.name)
+  );
+  
+  // Filter out share links that reference non-existent albums
+  const validLinks = existingLinks.filter(link => {
+    if (!validAlbums.has(link.album)) {
+      console.log(`⚠️  Skipping orphaned share link for non-existent album: ${link.album}`);
+      return false;
+    }
+    return true;
+  });
+  
   // Start transaction
   db.exec('BEGIN TRANSACTION');
   
@@ -60,18 +74,21 @@ try {
     )
   `);
   
-  // Restore data
-  if (existingLinks.length > 0) {
+  // Restore valid data only
+  if (validLinks.length > 0) {
     const insertStmt = db.prepare(`
       INSERT INTO share_links (id, album, secret_key, expires_at, created_at)
       VALUES (?, ?, ?, ?, ?)
     `);
     
-    for (const link of existingLinks) {
+    for (const link of validLinks) {
       insertStmt.run(link.id, link.album, link.secret_key, link.expires_at, link.created_at);
     }
     
-    console.log(`✓ Restored ${existingLinks.length} share link(s)`);
+    console.log(`✓ Restored ${validLinks.length} valid share link(s)`);
+    if (existingLinks.length > validLinks.length) {
+      console.log(`⚠️  Skipped ${existingLinks.length - validLinks.length} orphaned share link(s)`);
+    }
   }
   
   // Re-enable foreign keys
