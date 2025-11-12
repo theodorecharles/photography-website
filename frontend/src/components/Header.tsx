@@ -291,9 +291,12 @@ function Navigation({
                       return true;
                     });
                     
+                    // Don't show empty folders in the dropdown
+                    if (folderAlbums.length === 0) return null;
+                    
                     const isFolderPublished = folder.published !== false;
                     
-                    // Show all folders, even if empty
+                    // Show only non-empty folders
                     return (
                       <div key={folder.id} className="folder-item">
                         <button
