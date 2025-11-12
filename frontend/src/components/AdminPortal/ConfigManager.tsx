@@ -113,13 +113,10 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
   // Initialize local state from global context (read from global state on mount)
   const [generatingTitles, setGeneratingTitles] = useState(sseToaster.generatingTitles);
   const [titlesOutput, setTitlesOutput] = useState<string[]>(sseToaster.titlesOutput);
-  const [titlesProgress, setTitlesProgress] = useState(sseToaster.titlesProgress);
-  const [titlesWaiting, setTitlesWaiting] = useState<number | null>(sseToaster.titlesWaiting);
   const [hasMissingTitles, setHasMissingTitles] = useState(false);
   const [optimizationLogs, setOptimizationLogs] = useState<string[]>(sseToaster.optimizationLogs);
   const [isOptimizationRunning, setIsOptimizationRunning] = useState(sseToaster.isOptimizationRunning);
   const [optimizationComplete, setOptimizationComplete] = useState(false);
-  const [optimizationProgress, setOptimizationProgress] = useState(sseToaster.optimizationProgress);
 
   // Helper to check if any job is running
   const isAnyJobRunning = generatingTitles || isOptimizationRunning;
@@ -134,24 +131,12 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
   }, [sseToaster.titlesOutput]);
   
   useEffect(() => {
-    setTitlesProgress(sseToaster.titlesProgress);
-  }, [sseToaster.titlesProgress]);
-  
-  useEffect(() => {
-    setTitlesWaiting(sseToaster.titlesWaiting);
-  }, [sseToaster.titlesWaiting]);
-  
-  useEffect(() => {
     setIsOptimizationRunning(sseToaster.isOptimizationRunning);
   }, [sseToaster.isOptimizationRunning]);
   
   useEffect(() => {
     setOptimizationLogs(sseToaster.optimizationLogs);
   }, [sseToaster.optimizationLogs]);
-  
-  useEffect(() => {
-    setOptimizationProgress(sseToaster.optimizationProgress);
-  }, [sseToaster.optimizationProgress]);
 
 
   // Section collapse state - all collapsed by default
