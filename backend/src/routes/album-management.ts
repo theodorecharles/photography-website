@@ -586,31 +586,22 @@ router.patch("/:album/rename", requireAuth, async (req: Request, res: Response):
       return;
     }
 
-    // Rename photos directory
-    fs.renameSync(oldAlbumPath, newAlbumPath);
-    console.log(`✓ Renamed photos directory: ${sanitizedOldName} -> ${sanitizedNewName}`);
-
-    // Rename optimized directories
-    ['thumbnail', 'modal', 'download'].forEach(dir => {
-      const oldOptimizedPath = path.join(optimizedDir, dir, sanitizedOldName);
-      const newOptimizedPath = path.join(optimizedDir, dir, sanitizedNewName);
-      if (fs.existsSync(oldOptimizedPath)) {
-        fs.renameSync(oldOptimizedPath, newOptimizedPath);
-        console.log(`✓ Renamed optimized/${dir}: ${sanitizedOldName} -> ${sanitizedNewName}`);
-      }
-    });
-
-    // Update database
+    // Update database FIRST before touching filesystem
+    // This way if DB update fails, filesystem is unchanged
     const db = getDatabase();
     
     // Start transaction
     const transaction = db.transaction(() => {
       // Update albums table
-      db.prepare(`
+      const result = db.prepare(`
         UPDATE albums 
         SET name = ?, updated_at = CURRENT_TIMESTAMP
         WHERE name = ?
       `).run(sanitizedNewName, sanitizedOldName);
+      
+      if (result.changes === 0) {
+        throw new Error('Album not found in database');
+      }
       
       // Update image_metadata table
       db.prepare(`
@@ -628,8 +619,22 @@ router.patch("/:album/rename", requireAuth, async (req: Request, res: Response):
     });
     
     transaction();
-    
     console.log(`✓ Updated database: ${sanitizedOldName} -> ${sanitizedNewName}`);
+
+    // Now rename filesystem directories
+    // Rename photos directory
+    fs.renameSync(oldAlbumPath, newAlbumPath);
+    console.log(`✓ Renamed photos directory: ${sanitizedOldName} -> ${sanitizedNewName}`);
+
+    // Rename optimized directories
+    ['thumbnail', 'modal', 'download'].forEach(dir => {
+      const oldOptimizedPath = path.join(optimizedDir, dir, sanitizedOldName);
+      const newOptimizedPath = path.join(optimizedDir, dir, sanitizedNewName);
+      if (fs.existsSync(oldOptimizedPath)) {
+        fs.renameSync(oldOptimizedPath, newOptimizedPath);
+        console.log(`✓ Renamed optimized/${dir}: ${sanitizedOldName} -> ${sanitizedNewName}`);
+      }
+    });
 
     // Invalidate cache for both old and new album names
     invalidateAlbumCache(sanitizedOldName);
