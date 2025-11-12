@@ -113,6 +113,11 @@ if ! node migrate-add-share-links.js; then
     handle_error "Share links migration failed"
 fi
 
+log "Running album folders migration..."
+if ! node migrate-add-album-folders.js; then
+    handle_error "Album folders migration failed"
+fi
+
 # Restart both services using PM2 ecosystem file
 log "Restarting services with PM2 using ecosystem config..."
 if ! pm2 restart ecosystem.config.cjs --update-env; then

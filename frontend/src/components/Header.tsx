@@ -417,6 +417,7 @@ function Navigation({
  */
 export default function Header({
   albums,
+  folders,
   externalLinks,
   currentAlbum,
   siteName,

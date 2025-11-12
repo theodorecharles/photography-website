@@ -19,6 +19,7 @@ interface SortableAlbumCardProps {
   onDragLeave: (e: React.DragEvent) => void;
   onDrop: (e: React.DragEvent) => void;
   onFolderChange?: (albumName: string, folderId: number | null) => void;
+  onRename?: (albumName: string) => void;
 }
 
 const SortableAlbumCard: React.FC<SortableAlbumCardProps> = ({
@@ -32,6 +33,7 @@ const SortableAlbumCard: React.FC<SortableAlbumCardProps> = ({
   onDragLeave,
   onDrop,
   onFolderChange,
+  onRename,
 }) => {
   const {
     attributes,
@@ -104,6 +106,20 @@ const SortableAlbumCard: React.FC<SortableAlbumCardProps> = ({
       <div className="album-card-header">
         <h4>
           <span className="album-name">{album.name}</span>
+          {onRename && (
+            <button
+              className="album-rename-btn"
+              onClick={(e) => {
+                e.stopPropagation();
+                onRename(album.name);
+              }}
+              title="Rename album"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
+              </svg>
+            </button>
+          )}
         </h4>
         {album.photoCount !== undefined && (
           <div className="album-badge">
