@@ -38,6 +38,8 @@ interface Photo {
 const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPhotos }) => {
   const location = useLocation();
   const [photos, setPhotos] = useState<Photo[]>([]);
+  const [allPhotos, setAllPhotos] = useState<Photo[]>([]); // Store all photos
+  const [renderedCount, setRenderedCount] = useState(50); // Track how many are rendered
   const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -127,7 +129,44 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
           if (staticResponse.ok) {
             const staticPhotos = await staticResponse.json();
             console.log(`✨ Loaded ${staticPhotos.length} photos from static JSON (${album})`);
-            setPhotos(staticPhotos);
+            
+            // For large albums, render in batches for faster initial paint
+            if (staticPhotos.length > 50) {
+              console.log(`📸 Large album detected (${staticPhotos.length} photos) - rendering first 50 immediately`);
+              setAllPhotos(staticPhotos);
+              setPhotos(staticPhotos.slice(0, 50));
+              setRenderedCount(50);
+              
+              // Batch-add remaining photos in background
+              setTimeout(() => {
+                let currentIndex = 50;
+                const batchSize = 50;
+                
+                const addBatch = () => {
+                  if (currentIndex < staticPhotos.length) {
+                    const nextBatch = currentIndex + batchSize;
+                    setPhotos(staticPhotos.slice(0, Math.min(nextBatch, staticPhotos.length)));
+                    setRenderedCount(Math.min(nextBatch, staticPhotos.length));
+                    currentIndex = nextBatch;
+                    
+                    // Schedule next batch
+                    if (currentIndex < staticPhotos.length) {
+                      setTimeout(addBatch, 100);
+                    } else {
+                      console.log(`✅ All ${staticPhotos.length} photos rendered`);
+                    }
+                  }
+                };
+                
+                addBatch();
+              }, 100);
+            } else {
+              // Small albums - render all at once
+              setAllPhotos(staticPhotos);
+              setPhotos(staticPhotos);
+              setRenderedCount(staticPhotos.length);
+            }
+            
             setError(null);
             setLoading(false);
             return;
@@ -147,7 +186,9 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
             throw new Error("Failed to fetch random photos");
           }
           const randomPhotos = await response.json();
+          setAllPhotos(randomPhotos);
           setPhotos(randomPhotos);
+          setRenderedCount(randomPhotos.length);
         } else {
           // Fetch all photos from the album
           const response = await fetchWithRateLimitCheck(
@@ -170,7 +211,38 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
               new Date(a.metadata.created).getTime()
             );
           });
-          setPhotos(sortedPhotos);
+          
+          // Apply batching for large API responses too
+          if (sortedPhotos.length > 50) {
+            console.log(`📸 Large album from API (${sortedPhotos.length} photos) - rendering first 50 immediately`);
+            setAllPhotos(sortedPhotos);
+            setPhotos(sortedPhotos.slice(0, 50));
+            setRenderedCount(50);
+            
+            setTimeout(() => {
+              let currentIndex = 50;
+              const batchSize = 50;
+              
+              const addBatch = () => {
+                if (currentIndex < sortedPhotos.length) {
+                  const nextBatch = currentIndex + batchSize;
+                  setPhotos(sortedPhotos.slice(0, Math.min(nextBatch, sortedPhotos.length)));
+                  setRenderedCount(Math.min(nextBatch, sortedPhotos.length));
+                  currentIndex = nextBatch;
+                  
+                  if (currentIndex < sortedPhotos.length) {
+                    setTimeout(addBatch, 100);
+                  }
+                }
+              };
+              
+              addBatch();
+            }, 100);
+          } else {
+            setAllPhotos(sortedPhotos);
+            setPhotos(sortedPhotos);
+            setRenderedCount(sortedPhotos.length);
+          }
         }
 
         setError(null);
@@ -463,10 +535,16 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
         ))}
       </div>
 
+      {renderedCount < allPhotos.length && (
+        <div style={{ textAlign: 'center', padding: '1rem', color: '#888', fontSize: '0.9rem' }}>
+          Loading {renderedCount} of {allPhotos.length} photos...
+        </div>
+      )}
+
       {selectedPhoto && (
         <PhotoModal
           selectedPhoto={selectedPhoto}
-          photos={photos}
+          photos={allPhotos.length > 0 ? allPhotos : photos}
           album={album}
           onClose={handleCloseModal}
         />
