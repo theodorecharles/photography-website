@@ -35,6 +35,9 @@ import {
   DragEndEvent,
   DragOverlay,
   DragOverEvent,
+  pointerWithin,
+  rectIntersection,
+  CollisionDetection,
 } from '@dnd-kit/core';
 import {
   arrayMove,
@@ -44,6 +47,46 @@ import {
 } from '@dnd-kit/sortable';
 
 const API_URL = import.meta.env.VITE_API_URL || '';
+
+/**
+ * Custom collision detection that prioritizes folder drop zones when dragging albums
+ * This ensures albums can be dropped into folders even though folders are also sortable
+ */
+const customCollisionDetection: CollisionDetection = (args) => {
+  const activeId = String(args.active?.id || '');
+  
+  // When dragging an album (not a folder), prioritize folder drop zones
+  if (activeId && !activeId.startsWith('folder-')) {
+    // Get all droppable containers that are folder drop zones
+    const droppableContainers = Array.from(args.droppableContainers.values())
+      .filter(container => String(container.id).startsWith('folder-drop-'));
+    
+    if (droppableContainers.length > 0) {
+      // Use pointerWithin to find if pointer is within any folder drop zone
+      const pointerCollisions = pointerWithin({
+        ...args,
+        droppableContainers,
+      });
+      
+      if (pointerCollisions.length > 0) {
+        return pointerCollisions;
+      }
+      
+      // Fall back to rectIntersection for folders
+      const rectCollisions = rectIntersection({
+        ...args,
+        droppableContainers,
+      });
+      
+      if (rectCollisions.length > 0) {
+        return rectCollisions;
+      }
+    }
+  }
+  
+  // For everything else (folder reordering, album reordering), use closestCenter
+  return closestCenter(args);
+};
 
 const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   albums,
@@ -1602,7 +1645,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
         {/* Unified Drag-and-Drop Context for Folders and Albums */}
         <DndContext
           sensors={albumSensors}
-          collisionDetection={closestCenter}
+          collisionDetection={customCollisionDetection}
           onDragStart={handleAlbumDragStart}
           onDragOver={handleAlbumDragOver}
           onDragEnd={handleAlbumDragEnd}
