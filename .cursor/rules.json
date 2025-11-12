@@ -177,6 +177,91 @@
       "location": "frontend/src/components/AdminPortal/Metrics/VisitorMap.tsx"
     }
   },
+  "bundleSplitting": {
+    "description": "Vite with manual chunk splitting for optimal performance",
+    "configuration": {
+      "react-vendor": "react, react-dom, react-router-dom (45 KB gzipped)",
+      "recharts-vendor": "recharts charting library (92 KB gzipped)",
+      "admin-vendor": "@dnd-kit/*, leaflet, react-leaflet (61 KB gzipped)"
+    },
+    "results": {
+      "initialLoad": "44 KB gzipped (69% reduction from 198 KB)",
+      "adminLoad": "Admin dependencies lazy loaded only when accessing admin panel"
+    },
+    "lazyComponents": ["AdminPortal", "License", "AuthError", "NotFound", "SharedAlbum"],
+    "file": "frontend/vite.config.ts"
+  },
+  "componentRefactoring": {
+    "ConfigManager": {
+      "structure": "Modular sections pattern (was 3,781 lines monolithic)",
+      "orchestrator": "index.tsx manages global state, SSE connections, confirmation modal",
+      "sections": [
+        "BrandingSection.tsx - Site name, logo, colors (460 lines)",
+        "LinksSection.tsx - External links management (258 lines)",
+        "OpenAISection.tsx - AI configuration (421 lines)",
+        "ImageOptimizationSection.tsx - Image processing settings (493 lines)",
+        "AdvancedSettingsSection.tsx - System controls, operations (1,305 lines)"
+      ],
+      "pattern": "Each section manages own state, orchestrator handles cross-cutting concerns"
+    },
+    "AlbumsManager": {
+      "structure": "Orchestrator + reusable components (was 2,249 lines)",
+      "orchestrator": "index.tsx keeps tightly coupled state (DND, SSE, uploads)",
+      "components": [
+        "SortableAlbumCard.tsx - Album card with drag-drop (126 lines)",
+        "SortablePhotoItem.tsx - Photo thumbnail with drag-drop (172 lines)"
+      ],
+      "rationale": "Further splitting would cause prop drilling hell due to tight state coupling"
+    },
+    "refactoringPrinciples": [
+      "Extract shared types to types.ts",
+      "Extract reusable UI components",
+      "Keep tightly coupled state in orchestrator",
+      "Sections manage their own state when independent",
+      "Balance modularity vs coupling - don't over-split"
+    ]
+  },
+  "mobileUX": {
+    "breakpoint": "768px for mobile-specific styles",
+    "hiddenOnMobile": [
+      "Edit buttons in header (< 768px)",
+      "Logout button (< 768px)",
+      "Config section descriptions (< 768px)"
+    ],
+    "sseToaster": {
+      "desktop": "Draggable, snaps to corners, slide-in animations",
+      "mobile": "Centered bottom, no dragging, no animations (prevents jumping)",
+      "implementation": "animation: none !important, transform: translateX(-50%) !important"
+    },
+    "principles": [
+      "Remove duplicate UI elements",
+      "Simplify navigation",
+      "Center-align critical UI",
+      "Disable animations causing jumpy behavior",
+      "Test on < 600px viewport"
+    ]
+  },
+  "documentation": {
+    "rules": {
+      "DO": [
+        "Update .cursor/rules.json with architectural decisions",
+        "Add inline comments for complex logic",
+        "Document API endpoints in this file"
+      ],
+      "DONT": [
+        "Create separate markdown documentation files",
+        "Write summaries of work done (update rules instead)",
+        "Leave TODO comments without issue tracking"
+      ]
+    },
+    "rationale": "Centralized rules are easier to maintain and search than scattered markdown files"
+  },
+  "performanceTargets": {
+    "lighthouse": "> 90 score",
+    "initialLoad": "< 50 KB gzipped (currently 44 KB)",
+    "timeToInteractive": "< 2s on 4G",
+    "mainChunk": "< 150 KB uncompressed (currently 124 KB)"
+  },
   "deprecatedRules": {
     "note": "The old component-specific rules are removed. Focus on backend architecture patterns which are more critical and harder to debug."
   }
