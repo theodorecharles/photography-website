@@ -3,7 +3,7 @@
  * Unified settings management for branding, links, OpenAI, optimization, and advanced config
  */
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 import "./ConfigManager.css";
 import "./BrandingManager.css";
@@ -780,7 +780,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
   const titlesAbortController = useRef<AbortController | null>(null);
   const optimizationAbortController = useRef<AbortController | null>(null);
 
-  const handleStopTitles = async () => {
+  const handleStopTitles = useCallback(async () => {
     try {
       // Call backend to kill the process
       await fetch(`${API_URL}/api/ai-titles/stop`, {
@@ -807,9 +807,9 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
       console.error("Failed to stop AI titles job:", err);
       setMessage({ type: "error", text: "Failed to stop AI titles job" });
     }
-  };
+  }, [setMessage]);
 
-  const handleStopOptimization = async () => {
+  const handleStopOptimization = useCallback(async () => {
     try {
       // Call backend to kill the process
       await fetch(`${API_URL}/api/image-optimization/stop`, {
@@ -836,18 +836,18 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
       console.error("Failed to stop optimization job:", err);
       setMessage({ type: "error", text: "Failed to stop optimization job" });
     }
-  };
+  }, [setMessage]);
   
   // Register stop handlers with global context
   useEffect(() => {
-    sseToaster.setStopTitlesHandler(() => handleStopTitles);
-    sseToaster.setStopOptimizationHandler(() => handleStopOptimization);
+    sseToaster.setStopTitlesHandler(handleStopTitles);
+    sseToaster.setStopOptimizationHandler(handleStopOptimization);
     
     return () => {
       sseToaster.setStopTitlesHandler(null);
       sseToaster.setStopOptimizationHandler(null);
     };
-  }, [sseToaster]);
+  }, [sseToaster, handleStopTitles, handleStopOptimization]);
 
   const handleGenerateTitles = async (forceRegenerate = false) => {
     setGeneratingTitles(true);

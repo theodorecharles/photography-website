@@ -91,13 +91,13 @@ export default function SSEToaster() {
       setDragOffset({ x: 0, y: 0 });
     };
 
-    // Use capture phase to ensure we don't block other handlers
-    document.addEventListener('mousemove', handleGlobalMouseMove, { capture: false, passive: true });
-    document.addEventListener('mouseup', handleGlobalMouseUp, { capture: false });
+    // Add event listeners without options to ensure they're properly removed
+    document.addEventListener('mousemove', handleGlobalMouseMove);
+    document.addEventListener('mouseup', handleGlobalMouseUp);
 
     return () => {
-      document.removeEventListener('mousemove', handleGlobalMouseMove, { capture: false });
-      document.removeEventListener('mouseup', handleGlobalMouseUp, { capture: false });
+      document.removeEventListener('mousemove', handleGlobalMouseMove);
+      document.removeEventListener('mouseup', handleGlobalMouseUp);
     };
   }, [isDragging, dragStart, setDragOffset, setDragStart, setIsDragging, setToasterPosition]);
   
