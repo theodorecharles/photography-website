@@ -3,7 +3,7 @@
  * Main modal orchestrator that combines all sub-components
  */
 
-import React, { useRef, useState, useEffect, useCallback } from 'react';
+import React, { useRef, useState, useEffect, useCallback, useMemo } from 'react';
 import { trackPhotoNavigation, trackPhotoDownload, trackModalClose } from '../../utils/analytics';
 import { fetchWithRateLimitCheck } from '../../utils/fetchWrapper';
 import { SITE_URL, cacheBustValue } from '../../config';
@@ -29,6 +29,14 @@ const PhotoModal: React.FC<PhotoModalProps> = ({
   album,
   onClose,
 }) => {
+  // Create index map for O(1) photo lookups (critical for large albums)
+  const photoIndexMap = useMemo(() => {
+    const map = new Map<string, number>();
+    photos.forEach((photo, index) => {
+      map.set(photo.id, index);
+    });
+    return map;
+  }, [photos]);
   // Modal-specific state
   const [selectedPhoto, setSelectedPhoto] = useState(initialPhoto);
   const [modalImageLoaded, setModalImageLoaded] = useState(false);
@@ -366,7 +374,7 @@ const PhotoModal: React.FC<PhotoModalProps> = ({
 
   // Navigate to previous photo
   const handleNavigatePrev = useCallback(() => {
-    const currentIndex = photos.findIndex((p) => p.id === selectedPhoto.id);
+    const currentIndex = photoIndexMap.get(selectedPhoto.id) ?? 0;
     const prevIndex = (currentIndex - 1 + photos.length) % photos.length;
     const prevPhoto = photos[prevIndex];
     const viewDuration = modalOpenTimeRef.current ? Date.now() - modalOpenTimeRef.current : undefined;
@@ -382,11 +390,11 @@ const PhotoModal: React.FC<PhotoModalProps> = ({
     setTimeout(() => {
       trackPhotoNavigation('previous', prevPhoto.id, prevPhoto.album, prevPhoto.title, viewDuration);
     }, 0);
-  }, [selectedPhoto, photos, updateURLWithPhoto]);
+  }, [photoIndexMap, selectedPhoto, photos, updateURLWithPhoto]);
 
   // Navigate to next photo
   const handleNavigateNext = useCallback(() => {
-    const currentIndex = photos.findIndex((p) => p.id === selectedPhoto.id);
+    const currentIndex = photoIndexMap.get(selectedPhoto.id) ?? 0;
     const nextIndex = (currentIndex + 1) % photos.length;
     const nextPhoto = photos[nextIndex];
     const viewDuration = modalOpenTimeRef.current ? Date.now() - modalOpenTimeRef.current : undefined;
@@ -402,7 +410,7 @@ const PhotoModal: React.FC<PhotoModalProps> = ({
     setTimeout(() => {
       trackPhotoNavigation('next', nextPhoto.id, nextPhoto.album, nextPhoto.title, viewDuration);
     }, 0);
-  }, [selectedPhoto, photos, updateURLWithPhoto]);
+  }, [photoIndexMap, selectedPhoto, photos, updateURLWithPhoto]);
 
   // Handle modal content click
   const handleModalContentClick = useCallback((e: React.MouseEvent) => {
