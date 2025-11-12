@@ -315,25 +315,9 @@
     padding: 0 0.5rem;
   }
 
-  /* Move album title and edit button below header on mobile */
+  /* Hide album title on mobile - duplicate title exists elsewhere with white text */
   .nav-center {
-    position: fixed;
-    top: 54px; /* Below header height */
-    left: 0;
-    right: 0;
-    transform: none;
-    width: 100%;
-    background: rgba(231, 231, 231, 0.95);
-    backdrop-filter: blur(10px);
-    padding: 0.75rem 1rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.8);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    z-index: 999;
-    justify-content: center;
-  }
-
-  .album-title {
-    font-size: 16px;
+    display: none !important;
   }
 }
 
