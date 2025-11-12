@@ -58,7 +58,7 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({
         </svg>
         {title}
       </h3>
-      <span style={{ color: "#888", fontSize: "0.9rem" }}>
+      <span className="config-section-description" style={{ color: "#888", fontSize: "0.9rem" }}>
         {description}
       </span>
     </div>
