@@ -6,6 +6,10 @@ import fs from "fs";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// In-memory cache for JSON files
+const jsonCache = new Map();
+const JSON_CACHE_MAX_AGE = 5 * 60 * 1000; // 5 minutes
+
 // Load configuration
 const configPath = path.join(__dirname, "../config/config.json");
 const configFile = JSON.parse(fs.readFileSync(configPath, "utf8"));
@@ -96,6 +100,39 @@ app.use(
     index: "index.html",
   })
 );
+
+// In-memory JSON cache middleware (before express.static)
+app.get('/albums-data/*.json', (req, res, next) => {
+  const jsonPath = path.join(__dirname, "dist", req.path);
+  const now = Date.now();
+  
+  // Check cache first
+  const cached = jsonCache.get(jsonPath);
+  if (cached && (now - cached.timestamp) < JSON_CACHE_MAX_AGE) {
+    res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Cache-Control', 'public, max-age=300'); // 5 minutes
+    res.setHeader('X-Cache', 'HIT');
+    return res.send(cached.data);
+  }
+  
+  // Read from disk
+  fs.readFile(jsonPath, 'utf8', (err, data) => {
+    if (err) {
+      return next(); // Fall through to express.static
+    }
+    
+    // Store in cache
+    jsonCache.set(jsonPath, {
+      data: data,
+      timestamp: now
+    });
+    
+    res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Cache-Control', 'public, max-age=300'); // 5 minutes
+    res.setHeader('X-Cache', 'MISS');
+    res.send(data);
+  });
+});
 
 // Serve static files from the dist directory
 app.use(express.static(path.join(__dirname, "dist")));
