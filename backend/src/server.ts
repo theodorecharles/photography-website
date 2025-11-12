@@ -263,6 +263,19 @@ if (!isProduction) {
 
 // DO NOT serve original photos - only optimized versions should be accessible
 // Original photos are kept private and only optimized versions are served via /optimized
+// Exception: Serve avatar.png and derpatar.png for branding
+app.get("/photos/:avatarFile(avatar\\.png|derpatar\\.png)", (req: Request, res: Response) => {
+  const avatarFile = req.params.avatarFile;
+  const avatarPath = path.join(photosDir, avatarFile);
+  if (fs.existsSync(avatarPath)) {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
+    res.setHeader("Cache-Control", "public, max-age=3600");
+    res.sendFile(avatarPath);
+  } else {
+    res.status(404).json({ error: "Avatar not found" });
+  }
+});
 
 // In-memory cache middleware for thumbnails AND modals
 const cacheImageMiddleware = (
