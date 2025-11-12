@@ -814,27 +814,33 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
   }, []);
 
   const handleStopOptimization = useCallback(async () => {
+    console.log('[handleStopOptimization] Called');
     try {
       // Call backend to kill the process
-      await fetch(`${API_URL}/api/image-optimization/stop`, {
+      const response = await fetch(`${API_URL}/api/image-optimization/stop`, {
         method: "POST",
         credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
       });
+      const result = await response.json();
+      console.log('[handleStopOptimization] Backend response:', result.success);
 
       // Abort the SSE connection using global context
       if (sseToaster.optimizationAbortController.current) {
+        console.log('[handleStopOptimization] Aborting SSE connection');
         sseToaster.optimizationAbortController.current.abort();
         sseToaster.optimizationAbortController.current = null;
       }
 
       // Clear output and reset state using global context setters
+      console.log('[handleStopOptimization] Clearing global state');
       sseToaster.setIsOptimizationRunning(false);
       sseToaster.setOptimizationLogs([]);
       sseToaster.setOptimizationProgress(0);
       setOptimizationComplete(false);
+      console.log('[handleStopOptimization] Done');
       // No success message - stopping is user-initiated
     } catch (err) {
       console.error("Failed to stop optimization job:", err);
