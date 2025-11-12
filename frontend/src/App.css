@@ -47,6 +47,7 @@ body {
   position: relative;
   width: 100%;
   overflow-x: hidden;
+  flex: 1;
 }
 
 .main-content-title {
@@ -120,6 +121,7 @@ body {
   visibility: hidden;
   transform: translateY(20px);
   transition: opacity 0.6s ease, transform 0.6s ease, visibility 0.6s;
+  margin-top: auto;
 }
 
 .footer-wrapper.visible {
