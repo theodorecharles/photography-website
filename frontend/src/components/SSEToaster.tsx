@@ -47,45 +47,6 @@ export default function SSEToaster() {
     setDragOffset({ x: 0, y: 0 });
   };
 
-  const handleToasterDrag = (e: React.MouseEvent) => {
-    if (!isDragging || !dragStart) return;
-    e.preventDefault();
-    
-    const offsetX = e.clientX - dragStart.x;
-    const offsetY = e.clientY - dragStart.y;
-    setDragOffset({ x: offsetX, y: offsetY });
-  };
-
-  const handleToasterDragEnd = (e: React.MouseEvent) => {
-    if (!isDragging || !dragStart) return;
-    
-    setIsDragging(false);
-    
-    // Calculate which corner to snap to based on mouse position
-    const viewportWidth = window.innerWidth;
-    const viewportHeight = window.innerHeight;
-    const x = e.clientX;
-    const y = e.clientY;
-    
-    // Simple 50/50 split makes it much easier to reach bottom corners
-    const isLeft = x < viewportWidth / 2;
-    const isRight = x >= viewportWidth / 2;
-    const isTop = y < viewportHeight / 2;
-    const isBottom = y >= viewportHeight / 2;
-    
-    if (isBottom && isLeft) {
-      setToasterPosition('bottom-left');
-    } else if (isBottom && isRight) {
-      setToasterPosition('bottom-right');
-    } else if (isTop && isLeft) {
-      setToasterPosition('top-left');
-    } else {
-      setToasterPosition('top-right');
-    }
-    
-    setDragStart(null);
-    setDragOffset({ x: 0, y: 0 });
-  };
 
   // Global mouse event handlers for better drag tracking
   useEffect(() => {
@@ -216,8 +177,6 @@ export default function SSEToaster() {
   return (
     <div 
       className={`sse-toaster ${isToasterCollapsed ? 'collapsed' : 'expanded'} ${isToasterMaximized ? 'maximized' : ''} ${toasterPosition} ${isDragging ? 'dragging' : ''} ${!hasToasterAnimated ? 'initial-animation' : ''}`}
-      onMouseMove={handleToasterDrag}
-      onMouseUp={handleToasterDragEnd}
       style={isDragging && !isToasterMaximized ? {
         transform: `translate(${dragOffset.x}px, ${dragOffset.y}px)`,
         transition: 'none'
