@@ -170,6 +170,23 @@ export default function SSEToaster() {
     }
   };
 
+  // Handle collapse/expand button click
+  const handleCollapseClick = () => {
+    const newCollapsedState = !isToasterCollapsed;
+    setIsToasterCollapsed(newCollapsedState);
+    
+    // When expanding, scroll to bottom
+    if (!newCollapsedState) {
+      const outputRef = generatingTitles ? titlesOutputRef : optimizationOutputRef;
+      const element = outputRef.current;
+      if (element) {
+        requestAnimationFrame(() => {
+          element.scrollTop = element.scrollHeight;
+        });
+      }
+    }
+  };
+
   // Don't render if no job is running
   if (!isAnyJobRunning) {
     return null;
@@ -250,7 +267,7 @@ export default function SSEToaster() {
           </button>
           <button
             className="sse-toaster-collapse-btn"
-            onClick={() => setIsToasterCollapsed(!isToasterCollapsed)}
+            onClick={handleCollapseClick}
             title={isToasterCollapsed ? "Expand" : "Collapse"}
             disabled={isToasterMaximized}
           >
