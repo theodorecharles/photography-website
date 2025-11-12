@@ -281,7 +281,14 @@ function Navigation({
                   {folders.map(folder => {
                     const folderAlbums = albums.filter(album => {
                       const albumObj = typeof album === 'string' ? { name: album, folder_id: null } : album;
-                      return albumObj.folder_id === folder.id;
+                      // Filter by folder ID
+                      if (albumObj.folder_id !== folder.id) return false;
+                      // For unauthenticated users, only show published albums
+                      if (!isAuthenticated) {
+                        const isPublished = typeof album === 'string' ? true : album.published !== false;
+                        return isPublished;
+                      }
+                      return true;
                     });
                     
                     const isFolderPublished = folder.published !== false;
