@@ -106,7 +106,6 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
   const [titlesProgress, setTitlesProgress] = useState(0);
   const [titlesWaiting, setTitlesWaiting] = useState<number | null>(null);
   const [hasMissingTitles, setHasMissingTitles] = useState(false);
-  const [checkingMissingTitles, setCheckingMissingTitles] = useState(true);
   const [optimizationLogs, setOptimizationLogs] = useState<string[]>([]);
   const [isOptimizationRunning, setIsOptimizationRunning] = useState(false);
   const [optimizationComplete, setOptimizationComplete] = useState(false);
@@ -684,8 +683,6 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
       }
     } catch (err) {
       console.error("Failed to check missing titles:", err);
-    } finally {
-      setCheckingMissingTitles(false);
     }
   };
 
