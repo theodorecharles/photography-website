@@ -860,8 +860,11 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
   }, []);
 
   const handleGenerateTitles = async (forceRegenerate = false) => {
-    setGeneratingTitles(true);
-    setTitlesOutput([]);
+    // Initialize global context state to show toaster
+    sseToaster.setGeneratingTitles(true);
+    sseToaster.setTitlesOutput([]);
+    sseToaster.setTitlesProgress(0);
+    sseToaster.setTitlesWaiting(null);
     
     // Reset toaster to default state
     sseToaster.resetToasterState();
@@ -1270,9 +1273,11 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
     );
     if (!confirmed) return;
 
-    setIsOptimizationRunning(true);
+    // Initialize global context state to show toaster
+    sseToaster.setIsOptimizationRunning(true);
+    sseToaster.setOptimizationLogs([]);
+    sseToaster.setOptimizationProgress(0);
     setOptimizationComplete(false);
-    setOptimizationLogs([]);
     
     // Reset toaster to default state
     sseToaster.resetToasterState();
