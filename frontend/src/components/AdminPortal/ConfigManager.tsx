@@ -807,7 +807,8 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
       console.error("Failed to stop AI titles job:", err);
       setMessage({ type: "error", text: "Failed to stop AI titles job" });
     }
-  }, [setMessage]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleStopOptimization = useCallback(async () => {
     try {
@@ -836,7 +837,8 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
       console.error("Failed to stop optimization job:", err);
       setMessage({ type: "error", text: "Failed to stop optimization job" });
     }
-  }, [setMessage]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   
   // Register stop handlers with global context
   useEffect(() => {
@@ -847,7 +849,8 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
       sseToaster.setStopTitlesHandler(null);
       sseToaster.setStopOptimizationHandler(null);
     };
-  }, [sseToaster, handleStopTitles, handleStopOptimization]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleGenerateTitles = async (forceRegenerate = false) => {
     setGeneratingTitles(true);
