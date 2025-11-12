@@ -116,37 +116,45 @@ export default function SSEToaster() {
     return () => document.removeEventListener('mouseleave', handleMouseLeave);
   }, [isDragging, setIsDragging, setDragStart, setDragOffset]);
 
-  // Auto-scroll optimization output to bottom when new logs arrive (only if already at bottom)
+  // Auto-scroll optimization output to bottom when new logs arrive (only if already at bottom or just expanded)
   useEffect(() => {
-    if (optimizationOutputRef.current && isOptimizationRunning) {
+    if (optimizationOutputRef.current && isOptimizationRunning && !isToasterCollapsed) {
       const element = optimizationOutputRef.current;
-      const isAtBottom = element.scrollHeight - element.scrollTop - element.clientHeight < 50;
+      // Check if user is at bottom (within 100px for more lenient detection)
+      const isAtBottom = element.scrollHeight - element.scrollTop - element.clientHeight < 100;
       
       if (isAtBottom) {
-        setTimeout(() => {
-          if (optimizationOutputRef.current) {
-            optimizationOutputRef.current.scrollTop = optimizationOutputRef.current.scrollHeight;
-          }
-        }, 0);
+        // Use requestAnimationFrame for more reliable timing
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            if (optimizationOutputRef.current) {
+              optimizationOutputRef.current.scrollTop = optimizationOutputRef.current.scrollHeight;
+            }
+          });
+        });
       }
     }
-  }, [optimizationLogs, isOptimizationRunning, optimizationOutputRef]);
+  }, [optimizationLogs, isOptimizationRunning, isToasterCollapsed, optimizationOutputRef]);
 
-  // Auto-scroll titles output to bottom when new lines arrive (only if already at bottom)
+  // Auto-scroll titles output to bottom when new lines arrive (only if already at bottom or just expanded)
   useEffect(() => {
-    if (titlesOutputRef.current && generatingTitles) {
+    if (titlesOutputRef.current && generatingTitles && !isToasterCollapsed) {
       const element = titlesOutputRef.current;
-      const isAtBottom = element.scrollHeight - element.scrollTop - element.clientHeight < 50;
+      // Check if user is at bottom (within 100px for more lenient detection)
+      const isAtBottom = element.scrollHeight - element.scrollTop - element.clientHeight < 100;
       
       if (isAtBottom) {
-        setTimeout(() => {
-          if (titlesOutputRef.current) {
-            titlesOutputRef.current.scrollTop = titlesOutputRef.current.scrollHeight;
-          }
-        }, 0);
+        // Use requestAnimationFrame for more reliable timing
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            if (titlesOutputRef.current) {
+              titlesOutputRef.current.scrollTop = titlesOutputRef.current.scrollHeight;
+            }
+          });
+        });
       }
     }
-  }, [titlesOutput, generatingTitles, titlesOutputRef]);
+  }, [titlesOutput, generatingTitles, isToasterCollapsed, titlesOutputRef]);
 
   // Handle maximize/restore button click
   const handleMaximizeClick = () => {
