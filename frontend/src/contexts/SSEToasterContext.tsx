@@ -39,6 +39,12 @@ interface SSEToasterContextType {
   hasToasterAnimated: boolean;
   setHasToasterAnimated: (value: boolean) => void;
   
+  // Stop handlers (provided by ConfigManager when mounted)
+  stopTitlesHandler: (() => void) | null;
+  setStopTitlesHandler: (handler: (() => void) | null) => void;
+  stopOptimizationHandler: (() => void) | null;
+  setStopOptimizationHandler: (handler: (() => void) | null) => void;
+  
   // Helper methods
   resetToasterState: () => void;
 }
@@ -69,6 +75,10 @@ export function SSEToasterProvider({ children }: { children: ReactNode }) {
   const [dragStart, setDragStart] = useState<{ x: number; y: number } | null>(null);
   const [dragOffset, setDragOffset] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [hasToasterAnimated, setHasToasterAnimated] = useState(false);
+  
+  // Stop handlers (set by ConfigManager when mounted)
+  const [stopTitlesHandler, setStopTitlesHandler] = useState<(() => void) | null>(null);
+  const [stopOptimizationHandler, setStopOptimizationHandler] = useState<(() => void) | null>(null);
   
   // Reset toaster to default state
   const resetToasterState = () => {
@@ -136,6 +146,10 @@ export function SSEToasterProvider({ children }: { children: ReactNode }) {
     setDragOffset,
     hasToasterAnimated,
     setHasToasterAnimated,
+    stopTitlesHandler,
+    setStopTitlesHandler,
+    stopOptimizationHandler,
+    setStopOptimizationHandler,
     resetToasterState,
   };
   

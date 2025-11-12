@@ -376,13 +376,16 @@ function App() {
  * AppWrapper component that:
  * - Sets up the router
  * - Includes ScrollToTop component
+ * - Wraps app with SSEToasterProvider for global job state
  * - Renders the main App component
  */
 function AppWrapper() {
   return (
     <Router>
-      <ScrollToTop />
-      <App />
+      <SSEToasterProvider>
+        <ScrollToTop />
+        <App />
+      </SSEToasterProvider>
     </Router>
   );
 }
