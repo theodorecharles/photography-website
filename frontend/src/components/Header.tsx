@@ -164,6 +164,27 @@ function Navigation({
           <h1 className="album-title">
             {currentAlbum}
           </h1>
+          {/* Edit Album button - only shown when authenticated and on an album page */}
+          {isAuthenticated && currentAlbum !== 'homepage' && (
+            <Link
+              to={`/admin/albums?album=${encodeURIComponent(currentAlbum)}`}
+              className="edit-album-btn"
+              title="Edit this album"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                width="16"
+                height="16"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
+              </svg>
+            </Link>
+          )}
         </div>
       )}
       <nav className="album-nav">
@@ -208,28 +229,6 @@ function Navigation({
               ))}
             </div>
           </div>
-          
-          {/* Edit Album button - only shown when authenticated and on an album page */}
-          {isAuthenticated && currentAlbum && currentAlbum !== 'homepage' && (
-            <Link
-              to={`/admin/albums?album=${encodeURIComponent(currentAlbum)}`}
-              className="edit-album-btn"
-              title="Edit this album"
-            >
-              <svg
-                viewBox="0 0 24 24"
-                width="16"
-                height="16"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
-              </svg>
-            </Link>
-          )}
         </div>
 
         {/* Right side navigation - External links dropdown */}
@@ -272,6 +271,28 @@ function Navigation({
               ))}
             </div>
           </div>
+          
+          {/* Edit Links button - only shown when authenticated */}
+          {isAuthenticated && (
+            <Link
+              to="/admin/settings?section=links"
+              className="edit-album-btn"
+              title="Edit links"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                width="16"
+                height="16"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
+              </svg>
+            </Link>
+          )}
         </div>
       </nav>
     </>
