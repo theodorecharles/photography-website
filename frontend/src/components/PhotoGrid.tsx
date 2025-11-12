@@ -4,14 +4,16 @@
  * and provides functionality for viewing photos in a modal.
  */
 
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo, lazy, Suspense, startTransition } from "react";
 import { useLocation } from "react-router-dom";
 import "./PhotoGrid.css";
 import { API_URL, cacheBustValue } from "../config";
 import { trackPhotoClick, trackError } from "../utils/analytics";
 import { fetchWithRateLimitCheck } from "../utils/fetchWrapper";
-import PhotoModal from "./PhotoModal";
 import NotFound from "./Misc/NotFound";
+
+// Lazy load PhotoModal for better initial page load and faster clicks
+const PhotoModal = lazy(() => import("./PhotoModal"));
 
 interface PhotoGridProps {
   album: string;
@@ -76,7 +78,10 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
   const imageQueryString = ``;
 
   const handlePhotoClick = (photo: Photo) => {
-    setSelectedPhoto(photo);
+    // Use startTransition to make the click feel instant (non-blocking)
+    startTransition(() => {
+      setSelectedPhoto(photo);
+    });
     trackPhotoClick(photo.id, photo.album, photo.title);
   };
 
@@ -561,12 +566,14 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
       )}
 
       {selectedPhoto && (
-        <PhotoModal
-          selectedPhoto={selectedPhoto}
-          photos={allPhotos.length > 0 ? allPhotos : photos}
-          album={album}
-          onClose={handleCloseModal}
-        />
+        <Suspense fallback={null}>
+          <PhotoModal
+            selectedPhoto={selectedPhoto}
+            photos={allPhotos.length > 0 ? allPhotos : photos}
+            album={album}
+            onClose={handleCloseModal}
+          />
+        </Suspense>
       )}
     </>
   );
