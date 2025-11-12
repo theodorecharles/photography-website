@@ -96,7 +96,7 @@ function writeJSON(filename, data) {
 }
 
 /**
- * Generate static JSON for all albums
+ * Generate static JSON for all albums by calling backend endpoint
  */
 async function generateStaticJSON() {
   try {
@@ -107,48 +107,27 @@ async function generateStaticJSON() {
       process.exit(1);
     }
     
-    ensureOutputDir();
-
-    // Fetch all albums
-    console.log('\n📁 Fetching albums...');
-    const albums = await fetchAPI('/api/albums');
-    console.log(`   Found ${albums.length} albums`);
-
-    // Generate JSON for each album
-    console.log('\n📸 Generating album JSON files...');
-    for (const album of albums) {
-      try {
-        const photos = await fetchAPI(`/api/albums/${encodeURIComponent(album)}/photos`);
-        writeJSON(`${album}.json`, photos);
-      } catch (error) {
-        console.error(`   ⚠️  Skipping album "${album}": ${error.message}`);
+    console.log('\n📦 Calling backend generation endpoint...');
+    const response = await fetch(`${API_URL}/api/static-json/generate`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
       }
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
-
-    // Generate homepage JSON (random photos)
-    console.log('\n🏠 Generating homepage JSON...');
-    try {
-      const randomPhotos = await fetchAPI('/api/random-photos');
-      writeJSON('homepage.json', randomPhotos);
-    } catch (error) {
-      console.error(`   ⚠️  Could not generate homepage.json: ${error.message}`);
+    
+    const result = await response.json();
+    
+    if (result.success) {
+      console.log('✅ Static JSON generation complete!');
+      console.log(`   Total albums: ${result.albumCount}`);
+      console.log(`   Output directory: ${OUTPUT_DIR}`);
+    } else {
+      throw new Error(result.error || 'Unknown error');
     }
-
-    // Generate albums list
-    console.log('\n📋 Generating albums list...');
-    writeJSON('albums-list.json', albums);
-
-    // Generate metadata file with generation timestamp
-    const metadata = {
-      generatedAt: new Date().toISOString(),
-      albumCount: albums.length,
-      albums: albums
-    };
-    writeJSON('_metadata.json', metadata);
-
-    console.log('\n✨ Static JSON generation complete!');
-    console.log(`   Total albums: ${albums.length}`);
-    console.log(`   Output directory: ${OUTPUT_DIR}`);
   } catch (error) {
     console.error('\n❌ Fatal error:', error.message);
     process.exit(1);
