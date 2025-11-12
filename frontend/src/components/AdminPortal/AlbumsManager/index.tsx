@@ -222,6 +222,10 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     message: string;
     onConfirm: () => void;
   } | null>(null);
+  
+  // Folder deletion modal state
+  const [showDeleteFolderModal, setShowDeleteFolderModal] = useState(false);
+  const [deletingFolderName, setDeletingFolderName] = useState<string | null>(null);
 
   // Helper function to show confirmation modal
   const showConfirmation = (message: string): Promise<boolean> => {
@@ -1587,25 +1591,43 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     }
   };
 
-  const handleDeleteFolder = async (folderName: string) => {
-    const confirmed = await showConfirmation(`Delete folder "${folderName}"?\n\nAlbums in this folder will be moved to the root level. This action cannot be undone.`);
-    if (!confirmed) return;
-
+  const handleDeleteFolder = (folderName: string) => {
+    setDeletingFolderName(folderName);
+    setShowDeleteFolderModal(true);
+  };
+  
+  const handleDeleteFolderWithOption = async (deleteAlbums: boolean) => {
+    if (!deletingFolderName) return;
+    
+    setShowDeleteFolderModal(false);
+    
     try {
-      const res = await fetch(`${API_URL}/api/folders/${encodeURIComponent(folderName)}`, {
+      const url = deleteAlbums
+        ? `${API_URL}/api/folders/${encodeURIComponent(deletingFolderName)}?deleteAlbums=true`
+        : `${API_URL}/api/folders/${encodeURIComponent(deletingFolderName)}`;
+        
+      const res = await fetch(url, {
         method: 'DELETE',
         credentials: 'include',
       });
 
       if (res.ok) {
-        setMessage({ type: 'success', text: `Folder "${folderName}" deleted` });
+        const message = deleteAlbums
+          ? `Folder "${deletingFolderName}" and all its albums deleted`
+          : `Folder "${deletingFolderName}" deleted, albums moved to root`;
+        setMessage({ type: 'success', text: message });
         await loadAlbums();
+        
+        // Dispatch global event to update navigation dropdown
+        window.dispatchEvent(new Event('albums-updated'));
       } else {
         const error = await res.json();
         setMessage({ type: 'error', text: error.error || 'Failed to delete folder' });
       }
     } catch (err) {
       setMessage({ type: 'error', text: 'Network error occurred' });
+    } finally {
+      setDeletingFolderName(null);
     }
   };
 
@@ -1652,6 +1674,9 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
         const folderDisplayName = folderId ? folderName : 'root level';
         setMessage({ type: 'success', text: `Moved "${albumName}" to ${folderDisplayName}` });
         await loadAlbums();
+        
+        // Dispatch global event to update navigation dropdown
+        window.dispatchEvent(new Event('albums-updated'));
       } else {
         const error = await res.json();
         setMessage({ type: 'error', text: error.error || 'Failed to move album' });
@@ -2464,6 +2489,92 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                 className="btn-primary"
               >
                 Create Folder
+              </button>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
+
+      {/* Delete Folder Modal */}
+      {showDeleteFolderModal && deletingFolderName && createPortal(
+        <div 
+          className="edit-title-modal" 
+          onClick={() => {
+            setShowDeleteFolderModal(false);
+            setDeletingFolderName(null);
+          }}
+        >
+          <div className="edit-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="edit-modal-header">
+              <h3>Delete Folder "{deletingFolderName}"</h3>
+              <button 
+                className="modal-close-btn"
+                onClick={() => {
+                  setShowDeleteFolderModal(false);
+                  setDeletingFolderName(null);
+                }}
+                title="Close"
+              >
+                ×
+              </button>
+            </div>
+            
+            <div className="edit-modal-body">
+              <div className="edit-modal-info" style={{ width: '100%' }}>
+                <p style={{ color: '#ccc', marginBottom: '1.5rem', lineHeight: '1.6' }}>
+                  What would you like to do with the albums in this folder?
+                </p>
+                
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                  <button
+                    onClick={() => handleDeleteFolderWithOption(false)}
+                    className="btn-primary"
+                    style={{ 
+                      padding: '1rem',
+                      fontSize: '1rem',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'flex-start',
+                      gap: '0.5rem'
+                    }}
+                  >
+                    <span style={{ fontWeight: 600 }}>Release Albums</span>
+                    <span style={{ fontSize: '0.9rem', opacity: 0.8, fontWeight: 400 }}>
+                      Move albums to root level (albums will not be deleted)
+                    </span>
+                  </button>
+                  
+                  <button
+                    onClick={() => handleDeleteFolderWithOption(true)}
+                    className="btn-delete"
+                    style={{ 
+                      padding: '1rem',
+                      fontSize: '1rem',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'flex-start',
+                      gap: '0.5rem'
+                    }}
+                  >
+                    <span style={{ fontWeight: 600 }}>Delete All Albums</span>
+                    <span style={{ fontSize: '0.9rem', opacity: 0.8, fontWeight: 400 }}>
+                      Permanently delete folder and all albums inside (cannot be undone)
+                    </span>
+                  </button>
+                </div>
+              </div>
+            </div>
+            
+            <div className="edit-modal-footer">
+              <button
+                onClick={() => {
+                  setShowDeleteFolderModal(false);
+                  setDeletingFolderName(null);
+                }}
+                className="btn-secondary"
+              >
+                Cancel
               </button>
             </div>
           </div>

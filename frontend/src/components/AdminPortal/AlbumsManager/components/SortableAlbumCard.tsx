@@ -18,6 +18,7 @@ interface SortableAlbumCardProps {
   onDragLeave: (e: React.DragEvent) => void;
   onDrop: (e: React.DragEvent) => void;
   onRename?: (albumName: string) => void;
+  onRemoveFromFolder?: (albumName: string) => void;
 }
 
 const SortableAlbumCard: React.FC<SortableAlbumCardProps> = ({
@@ -30,6 +31,7 @@ const SortableAlbumCard: React.FC<SortableAlbumCardProps> = ({
   onDragLeave,
   onDrop,
   onRename,
+  onRemoveFromFolder,
 }) => {
   const {
     attributes,
@@ -110,6 +112,21 @@ const SortableAlbumCard: React.FC<SortableAlbumCardProps> = ({
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
+          </svg>
+        </button>
+      )}
+      {onRemoveFromFolder && album.folder_id && (
+        <button
+          className="album-remove-folder-btn"
+          onClick={(e) => {
+            e.stopPropagation();
+            onRemoveFromFolder(album.name);
+          }}
+          title="Remove from folder"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+            <line x1="9" y1="14" x2="15" y2="14"/>
           </svg>
         </button>
       )}

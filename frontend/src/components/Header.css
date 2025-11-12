@@ -235,6 +235,15 @@
   transform: rotate(180deg);
 }
 
+/* Folder chevron icon that rotates when folder is expanded */
+.folder-chevron {
+  transition: transform 0.2s ease-in-out;
+}
+
+.folder-chevron.open {
+  transform: rotate(90deg);
+}
+
 /* Dropdown menu */
 .dropdown-menu {
   position: absolute;
