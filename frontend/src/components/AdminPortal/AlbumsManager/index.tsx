@@ -633,9 +633,6 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
         return;
       }
 
-      // Clear loading message
-      setMessage(null);
-
       // Sanitize and title case the folder name
       const suggestedAlbumName = sanitizeAndTitleCase(rawFolderName);
 
