@@ -66,6 +66,14 @@ export default defineConfig({
           'react-vendor': ['react', 'react-dom', 'react-router-dom'],
           // Split recharts (large charting library) into its own chunk
           'recharts-vendor': ['recharts'],
+          // Split admin-only dependencies (drag-and-drop, maps)
+          'admin-vendor': [
+            '@dnd-kit/core',
+            '@dnd-kit/sortable',
+            '@dnd-kit/utilities',
+            'leaflet',
+            'react-leaflet'
+          ],
         },
       },
     },

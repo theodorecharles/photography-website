@@ -61,7 +61,7 @@
 
 @media (max-width: 511px) {
   .photo-grid {
-    padding-top: 54px;
+    padding-top: 0;
   }
 }
 
