@@ -818,8 +818,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
       console.error("Failed to stop AI titles job:", err);
       setMessage({ type: "error", text: "Failed to stop AI titles job" });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [sseToaster, setMessage]);
 
   const handleStopOptimization = useCallback(async () => {
     try {
@@ -848,16 +847,14 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
       console.error("Failed to stop optimization job:", err);
       setMessage({ type: "error", text: "Failed to stop optimization job" });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [sseToaster, setMessage]);
   
   // Register stop handlers with global context
-  // Don't cleanup handlers on unmount - they should persist across navigation
+  // Update handlers when they change
   useEffect(() => {
     sseToaster.setStopTitlesHandler(handleStopTitles);
     sseToaster.setStopOptimizationHandler(handleStopOptimization);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [handleStopTitles, handleStopOptimization, sseToaster]);
 
   const handleGenerateTitles = async (forceRegenerate = false) => {
     // Initialize global context state to show toaster
