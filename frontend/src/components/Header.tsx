@@ -58,13 +58,18 @@ function Navigation({
         const res = await fetch(`${API_URL}/api/auth/status`, {
           credentials: 'include',
         });
-        setIsAuthenticated(res.ok);
+        if (res.ok) {
+          const data = await res.json();
+          setIsAuthenticated(data.authenticated === true);
+        } else {
+          setIsAuthenticated(false);
+        }
       } catch {
         setIsAuthenticated(false);
       }
     };
     checkAuth();
-  }, []);
+  }, [location.pathname]); // Re-check when route changes
 
   // Close dropdowns when page is scrolled
   useEffect(() => {
