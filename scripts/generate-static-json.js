@@ -20,8 +20,8 @@ if (!API_URL) {
   try {
     const configPath = path.join(__dirname, '../config/config.json');
     const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-    const backendPort = config.environment.backend.port || 3001;
-    API_URL = `http://localhost:${backendPort}`;
+    // Use the configured API URL from frontend config (handles https/http correctly)
+    API_URL = config.environment.frontend.apiUrl;
   } catch (error) {
     // config.json doesn't exist, use default
     API_URL = 'http://localhost:3001';
