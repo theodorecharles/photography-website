@@ -1,0 +1,142 @@
+# Photography Website - Cursor Rules
+
+## Project Overview
+Full-stack photography portfolio with admin panel, analytics, and visitor management.
+
+**Stack:**
+- Frontend: React 19 + TypeScript + Vite
+- Backend: Node.js + Express + SQLite
+- Deployment: PM2 (ecosystem.config.cjs)
+- Build: Vite with manual chunk splitting
+
+## Architecture Decisions
+
+### Bundle Splitting (2025-11-12)
+- **Admin vendor chunk**: dnd-kit, leaflet, react-leaflet (204 KB)
+- **React vendor**: react, react-dom, react-router-dom (45 KB)
+- **Recharts vendor**: recharts (302 KB)
+- **Result**: 69% reduction in initial load (198 KB → 44 KB gzipped)
+- **Lazy loading**: AdminPortal, License, AuthError, NotFound, SharedAlbum
+
+### Component Refactoring (2025-11-12)
+ConfigManager and AlbumsManager were refactored from monolithic files:
+
+**ConfigManager (was 3,781 lines → now modular):**
+```
+ConfigManager/
+├── index.tsx (orchestrator - 756 lines)
+├── types.ts (shared interfaces)
+├── components/
+│   ├── ConfirmationModal.tsx
+│   └── SectionHeader.tsx
+└── sections/
+    ├── BrandingSection.tsx (460 lines)
+    ├── LinksSection.tsx (258 lines)
+    ├── OpenAISection.tsx (421 lines)
+    ├── ImageOptimizationSection.tsx (493 lines)
+    └── AdvancedSettingsSection.tsx (1,305 lines)
+```
+
+**AlbumsManager (was 2,249 lines → now modular):**
+```
+AlbumsManager/
+├── index.tsx (orchestrator - 1,970 lines)
+├── types.ts (shared interfaces)
+└── components/
+    ├── SortableAlbumCard.tsx (126 lines)
+    └── SortablePhotoItem.tsx (172 lines)
+```
+
+**Why these aren't split further:**
+- AlbumsManager has tightly coupled state (DND, SSE, uploads)
+- Further splitting would create "prop drilling hell"
+- Current structure balances modularity vs coupling
+
+## Code Conventions
+
+### Component Organization
+- Extract shared types to `types.ts` in component directory
+- Extract reusable UI components to `components/` subdirectory
+- Keep tightly coupled state in orchestrator component
+- Sections should manage their own state when possible
+
+### Mobile-First Considerations
+- Hide admin UI elements on mobile (< 768px):
+  - Edit buttons in header
+  - Logout button
+  - Config section descriptions
+  - Album title duplicates
+- SSE toaster positioning:
+  - Desktop: draggable, snaps to corners
+  - Mobile: centered bottom, no dragging, no slide animations
+- Use `@media (max-width: 768px)` for mobile breakpoints
+
+### SSE (Server-Sent Events)
+- Context: `SSEToasterContext` provides global state
+- Components: Reconnect to running jobs on mount
+- Mobile: Disable animations (`animation: none !important`)
+- Transform: Keep consistent (`translateX(-50%)` on mobile)
+
+### File Naming
+- Components: PascalCase (e.g., `ConfigManager.tsx`)
+- Utilities: camelCase (e.g., `analytics.ts`)
+- Config: kebab-case (e.g., `config.json`)
+
+### CSS Strategy
+- Component-level CSS files (e.g., `Header.css`)
+- Mobile-first media queries
+- Use `!important` sparingly (only for overriding third-party or complex cascades)
+
+## Build & Deploy
+
+### Commands
+```bash
+# Frontend build
+cd frontend && npm run build
+
+# Backend build
+cd backend && npm run build
+
+# Full restart
+./restart.sh
+
+# PM2 management
+pm2 restart photography-website-backend
+pm2 restart photography-website-frontend
+```
+
+### Bundle Analysis
+Check build output for chunk sizes. Target:
+- Main chunk: < 150 KB (currently 124 KB)
+- Gzipped total for initial load: < 50 KB (currently 44 KB)
+
+## Documentation Guidelines
+
+**DO:**
+- Update this .cursorrules file with architectural decisions
+- Add inline comments for complex logic
+- Document API endpoints in backend code
+
+**DON'T:**
+- Create separate markdown documentation files
+- Write summaries of work done (update rules instead)
+- Leave TODO comments without tracking
+
+## Mobile UX Principles (2025-11-12)
+1. Remove duplicate UI elements on mobile
+2. Simplify navigation (hide advanced features)
+3. Center-align critical UI (SSE toaster)
+4. Disable animations that cause jumpy behavior
+5. Test on actual mobile viewport (< 600px)
+
+## Performance Targets
+- Lighthouse Score: > 90
+- Initial load (gzipped): < 50 KB
+- Time to Interactive: < 2s on 4G
+- Admin load acceptable (users expect more content)
+
+## Recent Optimizations
+- Bundle splitting: 69% reduction in initial load
+- Component refactoring: Improved maintainability
+- Mobile UX fixes: Cleaner, faster mobile experience
+- SSE animations: Fixed jumping/sliding on mobile
