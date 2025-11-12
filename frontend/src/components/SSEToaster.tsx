@@ -61,7 +61,7 @@ export default function SSEToaster() {
       setDragOffset({ x: offsetX, y: offsetY });
     };
 
-    const handleGlobalMouseUp = (e: MouseEvent) => {
+    const handleGlobalMouseUp = () => {
       if (!dragStart || !toasterRef.current) return;
       // Don't prevent default - allow normal interactions
       setIsDragging(false);
