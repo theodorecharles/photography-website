@@ -446,18 +446,38 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
         return;
       }
 
-      const oldIndex = localAlbums.findIndex((album) => album.name === active.id);
-      const newIndex = localAlbums.findIndex((album) => album.name === over.id);
+      // Filter albums to only those in the same context (same folder_id or both null)
+      const contextFolderId = activeAlbum.folder_id;
+      const contextAlbums = localAlbums.filter(
+        (album) => album.folder_id === contextFolderId
+      );
+
+      // Find indices within the context-specific list
+      const oldIndex = contextAlbums.findIndex((album) => album.name === active.id);
+      const newIndex = contextAlbums.findIndex((album) => album.name === over.id);
 
       if (oldIndex !== -1 && newIndex !== -1) {
-        const reorderedAlbums = arrayMove(localAlbums, oldIndex, newIndex);
+        // Reorder only within the context-specific list
+        const reorderedContextAlbums = arrayMove(contextAlbums, oldIndex, newIndex);
+
+        // Update localAlbums: reorder albums within the same context, keep others unchanged
+        const updatedAlbums = localAlbums.map((album) => {
+          if (album.folder_id === contextFolderId) {
+            // Find the new position in the reordered context list
+            const newContextIndex = reorderedContextAlbums.findIndex((a) => a.name === album.name);
+            if (newContextIndex !== -1) {
+              return reorderedContextAlbums[newContextIndex];
+            }
+          }
+          return album;
+        });
         
         // Optimistically update local state immediately for smooth UX
-        setLocalAlbums(reorderedAlbums);
+        setLocalAlbums(updatedAlbums);
         
-        // Save the new order to the backend
+        // Save the new order to the backend - only update albums in this context
         try {
-          const albumOrders = reorderedAlbums.map((album, index) => ({
+          const albumOrders = reorderedContextAlbums.map((album, index) => ({
             name: album.name,
             sort_order: index,
           }));
