@@ -397,10 +397,24 @@ const PhotoModal: React.FC<PhotoModalProps> = ({
 
   // Handle modal content click
   const handleModalContentClick = useCallback((e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (showInfo && !(e.target as HTMLElement).closest('.modal-info-panel') && !(e.target as HTMLElement).closest('.modal-controls-top button')) {
-      setShowInfo(false);
+    const target = e.target as HTMLElement;
+    
+    // Check if click is on the image itself or navigation buttons
+    const isOnImage = target.closest('.modal-image-container img');
+    const isOnNavigation = target.closest('.modal-navigation-button');
+    const isOnControls = target.closest('.modal-controls-top');
+    const isOnInfoPanel = target.closest('.modal-info-panel');
+    
+    // If clicking on image, controls, navigation, or info panel, stop propagation (don't close modal)
+    if (isOnImage || isOnNavigation || isOnControls || isOnInfoPanel) {
+      e.stopPropagation();
+      
+      // Close info panel if clicking outside of it (but on the image area)
+      if (showInfo && isOnImage) {
+        setShowInfo(false);
+      }
     }
+    // Otherwise, let the click bubble up to close the modal (clicking on sides/background)
   }, [showInfo]);
 
   // Handle touch gestures
