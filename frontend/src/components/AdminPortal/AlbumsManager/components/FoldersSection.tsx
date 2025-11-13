@@ -17,13 +17,13 @@ interface FoldersSectionProps {
   dragOverFolderId: number | null;
   placeholderInfo: { folderId: number | null; insertAtIndex: number } | null;
   onDeleteFolder: (folderName: string) => void;
-  onToggleFolderPublished: (folderId: number) => void;
+  onToggleFolderPublished: (folderName: string, currentPublished: boolean) => void;
   onAlbumClick: (albumName: string) => void;
   onAlbumDragOver: (e: React.DragEvent, albumName: string) => void;
   onAlbumDragLeave: (e: React.DragEvent) => void;
   onAlbumDrop: (e: React.DragEvent, albumName: string) => void;
   onAlbumRename: (albumName: string) => void;
-  onCreateAlbumInFolder: (folderId: number, folderName: string) => void;
+  onCreateAlbumInFolder: (folderId: number) => void;
 }
 
 const FoldersSection: React.FC<FoldersSectionProps> = ({

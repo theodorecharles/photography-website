@@ -16,7 +16,7 @@ interface PhotoHandlersProps {
 }
 
 export const createPhotoHandlers = (props: PhotoHandlersProps) => {
-  const { selectedAlbum, loadPhotos, shufflePhotos, setMessage } = props;
+  const { /* selectedAlbum, */ loadPhotos, shufflePhotos, setMessage } = props;
 
   let shuffleInterval: NodeJS.Timeout | null = null;
 

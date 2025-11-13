@@ -526,7 +526,7 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
       {/* Share Modal */}
       {showShareModal && shareAlbumName && (
         <ShareModal
-          albumName={shareAlbumName}
+          album={shareAlbumName}
           onClose={() => setShowShareModal(false)}
         />
       )}

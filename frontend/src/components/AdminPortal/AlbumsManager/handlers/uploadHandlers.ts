@@ -3,7 +3,7 @@
  * Handles photo uploads, drag-and-drop file uploads
  */
 
-import { UploadingImage } from '../types';
+import { UploadingImage, UploadState } from '../types';
 import { trackPhotoUploaded } from '../../../../utils/analytics';
 import { validateImageFiles } from '../utils/albumHelpers';
 
@@ -11,7 +11,7 @@ const API_URL = import.meta.env.VITE_API_URL || '';
 
 interface UploadHandlersProps {
   uploadingImages: UploadingImage[];
-  setUploadingImages: (images: UploadingImage[]) => void;
+  setUploadingImages: React.Dispatch<React.SetStateAction<UploadingImage[]>>;
   uploadingImagesRef: React.MutableRefObject<UploadingImage[]>;
   selectAlbum: (albumName: string) => void;
   setMessage: (message: { type: 'success' | 'error'; text: string }) => void;
@@ -20,9 +20,9 @@ interface UploadHandlersProps {
 
 export const createUploadHandlers = (props: UploadHandlersProps) => {
   const {
-    uploadingImages,
+    // uploadingImages, // not used directly, managed via setUploadingImages
     setUploadingImages,
-    uploadingImagesRef,
+    // uploadingImagesRef, // not used directly
     selectAlbum,
     setMessage,
     loadAlbums,
@@ -47,8 +47,8 @@ export const createUploadHandlers = (props: UploadHandlersProps) => {
       eventSource.onmessage = (event) => {
         const data = JSON.parse(event.data);
         
-        setUploadingImages(prev =>
-          prev.map(img =>
+        setUploadingImages((prev: UploadingImage[]): UploadingImage[] =>
+          prev.map((img: UploadingImage): UploadingImage =>
             img.filename === filename
               ? {
                   ...img,
@@ -64,7 +64,7 @@ export const createUploadHandlers = (props: UploadHandlersProps) => {
         if (data.state === 'complete' || data.state === 'error') {
           eventSource.close();
           if (data.state === 'complete') {
-            trackPhotoUploaded(albumName, filename);
+            trackPhotoUploaded(albumName, 1, [filename]);
             resolve();
           } else {
             reject(new Error(data.error || 'Upload failed'));
@@ -83,10 +83,10 @@ export const createUploadHandlers = (props: UploadHandlersProps) => {
       xhr.upload.onprogress = (e) => {
         if (e.lengthComputable) {
           const percentComplete = Math.round((e.loaded / e.total) * 100);
-          setUploadingImages(prev =>
-            prev.map(img =>
+          setUploadingImages((prev: UploadingImage[]): UploadingImage[] =>
+            prev.map((img: UploadingImage): UploadingImage =>
               img.filename === filename
-                ? { ...img, progress: percentComplete, state: 'uploading' }
+                ? { ...img, progress: percentComplete, state: 'uploading' as UploadState }
                 : img
             )
           );
@@ -168,8 +168,8 @@ export const createUploadHandlers = (props: UploadHandlersProps) => {
     const files = Array.from(e.dataTransfer.files);
     const validation = validateImageFiles(files);
     
-    if (!validation.valid) {
-      setMessage({ type: 'error', text: validation.error || 'Invalid files' });
+    if (validation.valid.length === 0) {
+      setMessage({ type: 'error', text: 'No valid image files found' });
       return;
     }
     

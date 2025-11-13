@@ -21,7 +21,7 @@ import { usePhotoManagement } from './hooks/usePhotoManagement';
 import { useFolderManagement } from './hooks/useFolderManagement';
 import { isValidAlbumName } from './utils/albumHelpers';
 import { customCollisionDetection } from './utils/collisionDetection';
-import { showConfirmation as createConfirmation, handleModalCancel as cancelModal, ConfirmModalConfig } from './utils/modalHelpers';
+import { ConfirmModalConfig } from './utils/modalHelpers';
 import { createDragDropHandlers } from './handlers/dragDropHandlers';
 import { createFolderHandlers } from './handlers/folderHandlers';
 import { createUploadHandlers } from './handlers/uploadHandlers';
@@ -74,10 +74,10 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   const {
     selectedAlbum,
     albumPhotos,
-    setAlbumPhotos,
+    // setAlbumPhotos,
     loadingPhotos,
     hasEverDragged,
-    setHasEverDragged,
+    // setHasEverDragged,
     savingOrder,
     selectAlbum,
     deselectAlbum,
@@ -106,19 +106,14 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   const uploadingImagesRef = useRef<UploadingImage[]>([]);
   
   // Drag-and-drop state (keeping this in component for now)
-  const [isDragging, setIsDragging] = useState(false);
+  const [isDragging] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
-  const [isShuffling, setIsShuffling] = useState(false);
+  const [isShuffling] = useState(false);
   
-  // Extract folder management values
-  const {
-    newFolderName,
-    setNewFolderName,
-    isCreatingFolder,
-  } = folderManagement;
+  // Folder management is handled via folderManagement object
   
   // State for drag-and-drop on album tiles
-  const [dragOverAlbum, setDragOverAlbum] = useState<string | null>(null);
+  const [dragOverAlbum] = useState<string | null>(null);
   const [isGhostAlbumDragOver, setIsGhostAlbumDragOver] = useState(false);
   const [showNewAlbumModal, setShowNewAlbumModal] = useState(false);
   const [newAlbumFiles, setNewAlbumFiles] = useState<File[]>([]);
@@ -147,7 +142,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   } | null>(null);
   
   // Ref to track if we're currently dragging (for touch scroll prevention)
-  const isDraggingRef = useRef(false);
+  // const isDraggingRef = useRef(false); // unused for now
   
   // Ref for ghost tile file input
   const ghostTileFileInputRef = useRef<HTMLInputElement>(null);
@@ -158,21 +153,21 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   // Detect if device supports touch
   const isTouchDevice = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
   
-  // Configure dnd-kit sensors for photos
+  // Configure dnd-kit sensors for photos (unused for now)
   // Desktop: minimal delay for instant drag, mobile: longer delay to differentiate tap vs drag
-  const photoSensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: isTouchDevice ? {
-        delay: 300, // Mobile: require 300ms hold before drag starts
-        tolerance: 8, // Mobile: allow 8px movement during the delay
-      } : {
-        distance: 5, // Desktop: require 5px movement to start drag (prevents accidental drags on click)
-      },
-    }),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
-  );
+  // const photoSensors = useSensors(
+  //   useSensor(PointerSensor, {
+  //     activationConstraint: isTouchDevice ? {
+  //       delay: 300, // Mobile: require 300ms hold before drag starts
+  //       tolerance: 8, // Mobile: allow 8px movement during the delay
+  //     } : {
+  //       distance: 5, // Desktop: require 5px movement to start drag (prevents accidental drags on click)
+  //     },
+  //   }),
+  //   useSensor(KeyboardSensor, {
+  //     coordinateGetter: sortableKeyboardCoordinates,
+  //   })
+  // );
 
   // Configure dnd-kit sensors for albums
   const albumSensors = useSensors(
@@ -197,16 +192,16 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   
   // Confirmation modal state
   const [showConfirmModal, setShowConfirmModal] = useState(false);
-  const [confirmConfig, setConfirmConfig] = useState<ConfirmModalConfig | null>(null);
+  const [confirmConfig] = useState<ConfirmModalConfig | null>(null);
   
   // Folder deletion modal state
   const [showDeleteFolderModal, setShowDeleteFolderModal] = useState(false);
-  const [deletingFolderName, setDeletingFolderName] = useState<string | null>(null);
+  const [deletingFolderName] = useState<string | null>(null);
 
   // Helper function to show confirmation modal (using imported utility)
-  const showConfirmation = (message: string): Promise<boolean> => {
-    return createConfirmation(message, setShowConfirmModal, setConfirmConfig);
-  };
+  // const showConfirmation = (message: string): Promise<boolean> => {
+  //   return createConfirmation(message, setShowConfirmModal, setConfirmConfig);
+  // };
 
 // Initialize all handlers using factory functions
   const dragDropHandlers = createDragDropHandlers({
@@ -262,10 +257,10 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     localAlbums,
     setLocalAlbums,
     albums,
-    folders,
     setHasUnsavedChanges,
     setShowNewAlbumModal,
     setNewAlbumFiles,
+    setNewAlbumModalName,
     setIsGhostAlbumDragOver,
     setTargetFolderId,
     ghostTileFileInputRef,
@@ -285,7 +280,15 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   // This makes it clearer where each handler comes from
 
   // Additional handlers that need to stay inline due to local state dependencies
-  const handleModalCancel = () => cancelModal(setShowConfirmModal, setConfirmConfig);
+  // const handleModalCancel = () => cancelModal(setShowConfirmModal, setConfirmConfig); // unused
+
+  const handleCloseNewAlbumModal = () => {
+    setShowNewAlbumModal(false);
+    setNewAlbumModalName('');
+    setNewAlbumFiles([]);
+    setNewAlbumModalError('');
+    setTargetFolderId(null);
+  };
 
   const handleCreateAlbumFromModal = async () => {
     // Validate album name
@@ -319,13 +322,9 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
       
       if (res.ok) {
         setMessage({ type: 'success', text: `Album "${newAlbumModalName}" created` });
-        trackAlbumCreated(newAlbumModalName, newAlbumFiles.length);
+        trackAlbumCreated(newAlbumModalName);
         await loadAlbums();
-        setShowNewAlbumModal(false);
-        setNewAlbumModalName('');
-        setNewAlbumFiles([]);
-        setNewAlbumModalError('');
-        setTargetFolderId(null);
+        handleCloseNewAlbumModal();
         selectAlbum(newAlbumModalName);
       } else {
         const error = await res.json();
@@ -532,7 +531,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
         localFolders={localFolders}
         localAlbums={localAlbums}
         showNewAlbumModal={showNewAlbumModal}
-        setShowNewAlbumModal={setShowNewAlbumModal}
+        setShowNewAlbumModal={handleCloseNewAlbumModal}
         newAlbumNameInput={newAlbumModalName}
         setNewAlbumNameInput={setNewAlbumModalName}
         newAlbumPublished={newAlbumPublished}

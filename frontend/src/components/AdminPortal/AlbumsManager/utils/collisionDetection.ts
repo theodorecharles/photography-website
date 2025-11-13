@@ -46,17 +46,17 @@ export const customCollisionDetection: CollisionDetection = (args) => {
       let albumsInGrid;
       if (gridId === 'uncategorized-grid') {
         // For uncategorized grid, include albums without a folder
-        albumsInGrid = albumContainers.filter(container => {
-          const id = String(container.id);
+        albumsInGrid = albumContainers.filter(_container => {
+          // const id = String(container.id); // unused for now
           // Check if this album is in the uncategorized section
           // (This would need to be determined by the album's folder_id)
           return true; // Simplified - in real implementation, check folder_id
         });
       } else {
         // For folder grids, only include albums in that specific folder
-        const folderId = gridId.replace('folder-grid-', '');
-        albumsInGrid = albumContainers.filter(container => {
-          const id = String(container.id);
+        // const folderId = gridId.replace('folder-grid-', ''); // unused for now
+        albumsInGrid = albumContainers.filter(_container => {
+          // const id = String(container.id); // unused for now
           // Check if this album belongs to the folder
           // (This would need to be determined by the album's folder_id)
           return true; // Simplified - in real implementation, check folder_id

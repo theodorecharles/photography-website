@@ -15,7 +15,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Load config
-const CONFIG_PATH = path.join(__dirname, 'config/config.json');
+const CONFIG_PATH = path.join(__dirname, '../data/config.json');
 
 // Database setup
 import { createRequire } from 'module';

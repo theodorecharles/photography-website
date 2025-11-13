@@ -36,7 +36,7 @@ export const createDragDropHandlers = (props: DragDropHandlersProps) => {
     setDragOverFolderId,
     setDragOverUncategorized,
     setPlaceholderInfo,
-    uncategorizedSectionRef,
+    // uncategorizedSectionRef, // unused for now
   } = props;
 
   // Photo drag handlers
@@ -169,7 +169,7 @@ export const createDragDropHandlers = (props: DragDropHandlersProps) => {
         setTimeout(() => setAnimatingAlbum(null), 300);
       }
     } else if (isDraggingAlbum(activeId) && overId === 'uncategorized-droppable') {
-      const currentAlbum = localAlbums.find(a => a.name === activeId);
+      // const currentAlbum = localAlbums.find(a => a.name === activeId); // unused
       const updatedAlbums = localAlbums.map(a =>
         a.name === activeId
           ? { ...a, folder_id: null } // Keep existing published state
@@ -185,7 +185,7 @@ export const createDragDropHandlers = (props: DragDropHandlersProps) => {
   };
 
   // Album tile drag handlers (for file drops)
-  const handleAlbumTileDragOver = (e: React.DragEvent, albumName: string) => {
+  const handleAlbumTileDragOver = (e: React.DragEvent, _albumName: string) => {
     e.preventDefault();
     e.stopPropagation();
   };
@@ -195,7 +195,7 @@ export const createDragDropHandlers = (props: DragDropHandlersProps) => {
     e.stopPropagation();
   };
 
-  const handleAlbumTileDrop = async (e: React.DragEvent, albumName: string) => {
+  const handleAlbumTileDrop = async (e: React.DragEvent, _albumName: string) => {
     e.preventDefault();
     e.stopPropagation();
     // Handle file drop on album tile

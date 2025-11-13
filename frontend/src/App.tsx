@@ -31,7 +31,7 @@ import AdminPortal from "./components/AdminPortal";
 // Lazy load other components that aren't needed on initial page load
 const License = lazy(() => import("./components/Misc/License"));
 const AuthError = lazy(() => import("./components/Misc/AuthError"));
-const NotFound = lazy(() => import("./components/Misc/NotFound"));
+import NotFound from "./components/Misc/NotFound";
 const SharedAlbum = lazy(() => import("./components/SharedAlbum"));
 const SetupWizard = lazy(() => import("./components/SetupWizard"));
 
@@ -241,7 +241,8 @@ function App() {
         console.log('🔍 App.tsx fetchData - Filtered albums:', filteredAlbums);
         
         setAlbums(filteredAlbums);
-        setFolders(filteredFolders);
+        // Normalize published field to boolean (SQLite returns 0/1)
+        setFolders(filteredFolders.map(f => ({ ...f, published: !!f.published })));
       } else {
         // Old format (array of strings or objects)
       const albumNames = Array.isArray(albumsData) 
@@ -310,7 +311,8 @@ function App() {
             const filteredFolders = filterFolders(albumsData.folders || [], isAuthenticated);
             
             setAlbums(filteredAlbums);
-            setFolders(filteredFolders);
+            // Normalize published field to boolean (SQLite returns 0/1)
+            setFolders(filteredFolders.map(f => ({ ...f, published: !!f.published })));
           } else {
             // Old format (array of strings or objects)
           const albumNames = Array.isArray(albumsData) 

@@ -72,7 +72,7 @@ const PhotosPanel: React.FC<PhotosPanelProps> = ({
   onDragOver,
   onDragLeave,
   onDrop,
-  setActiveId,
+  // setActiveId, // unused for now
   shuffleButtonRef,
 }) => {
   const photoSensors = useSensors(

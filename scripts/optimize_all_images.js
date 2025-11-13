@@ -23,7 +23,7 @@ const concurrencyArg = args.indexOf('--concurrency');
 const concurrencyOverride = concurrencyArg !== -1 ? parseInt(args[concurrencyArg + 1]) : null;
 
 // Read configuration
-const config = JSON.parse(readFileSync('config/config.json', 'utf8'));
+const config = JSON.parse(readFileSync('data/config.json', 'utf8'));
 const photosDir = config.environment.backend.photosDir || 'photos';
 const concurrency = concurrencyOverride || config.environment.optimization?.concurrency || 4;
 const imageSettings = config.environment.optimization?.images || {};
@@ -92,9 +92,9 @@ async function needsProcessing(image) {
   
   const { album, filename } = image;
   const checks = await Promise.all([
-    fs.access(`optimized/thumbnail/${album}/${filename}`).then(() => false).catch(() => true),
-    fs.access(`optimized/modal/${album}/${filename}`).then(() => false).catch(() => true),
-    fs.access(`optimized/download/${album}/${filename}`).then(() => false).catch(() => true)
+    fs.access(`data/optimized/thumbnail/${album}/${filename}`).then(() => false).catch(() => true),
+    fs.access(`data/optimized/modal/${album}/${filename}`).then(() => false).catch(() => true),
+    fs.access(`data/optimized/download/${album}/${filename}`).then(() => false).catch(() => true)
   ]);
   
   return checks;
@@ -103,7 +103,7 @@ async function needsProcessing(image) {
 // Process a single image version
 async function processVersion(image, version, quality, maxDim) {
   const { album, filename, sourcePath } = image;
-  const outputDir = `optimized/${version}/${album}`;
+  const outputDir = `data/optimized/${version}/${album}`;
   const outputPath = path.join(outputDir, filename);
   
   // Create output directory
@@ -162,9 +162,9 @@ async function main() {
   }
   
   // Create optimized directories
-  await fs.mkdir('optimized/thumbnail', { recursive: true });
-  await fs.mkdir('optimized/modal', { recursive: true });
-  await fs.mkdir('optimized/download', { recursive: true });
+  await fs.mkdir('data/optimized/thumbnail', { recursive: true });
+  await fs.mkdir('data/optimized/modal', { recursive: true });
+  await fs.mkdir('data/optimized/download', { recursive: true });
   
   // Get all images
   console.log('Scanning for images...');

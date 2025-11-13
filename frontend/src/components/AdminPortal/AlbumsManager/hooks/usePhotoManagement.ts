@@ -114,7 +114,7 @@ export const usePhotoManagement = ({ setMessage }: UsePhotoManagementProps) => {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            photos: albumPhotos.map((p) => p.filename),
+            photos: albumPhotos.map((p) => p.id.split('/').pop() || p.id),
           }),
           credentials: 'include',
         }
@@ -176,12 +176,12 @@ export const usePhotoManagement = ({ setMessage }: UsePhotoManagementProps) => {
         // Update local state
         setAlbumPhotos((prev) =>
           prev.map((p) =>
-            p.filename === filename ? { ...p, title: newTitle } : p
+            (p.id.split('/').pop() || p.id) === filename ? { ...p, title: newTitle } : p
           )
         );
         setOriginalPhotoOrder((prev) =>
           prev.map((p) =>
-            p.filename === filename ? { ...p, title: newTitle } : p
+            (p.id.split('/').pop() || p.id) === filename ? { ...p, title: newTitle } : p
           )
         );
         
@@ -211,7 +211,7 @@ export const usePhotoManagement = ({ setMessage }: UsePhotoManagementProps) => {
     if (!editingPhoto) return;
     
     const filename = editingPhoto.id.split('/').pop() || '';
-    const success = await updatePhotoTitle(editingPhoto, filename, editTitleValue);
+    const success = await updatePhotoTitle(filename, editTitleValue);
     if (success) {
       closeEditModal();
     }
