@@ -2,26 +2,7 @@
  * Photo utility functions for PhotoGrid component
  */
 
-export interface Photo {
-  id: string;
-  thumbnail: string;
-  modal: string;
-  download: string;
-  title: string;
-  album: string;
-  metadata?: {
-    created: string;
-    modified: string;
-    size: number;
-  };
-}
-
-export interface ImageDimensions {
-  [photoId: string]: {
-    width: number;
-    height: number;
-  };
-}
+import { Photo, ImageDimensions } from '../types/photo';
 
 /**
  * Reconstruct full photo object from optimized array format

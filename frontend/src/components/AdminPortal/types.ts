@@ -64,15 +64,9 @@ export interface AlbumFolder {
   updated_at: string;
 }
 
-export interface Photo {
-  id: string;
-  title: string;
-  album: string;
-  src: string;
-  thumbnail: string;
-  modal: string;
-  download: string;
-}
+// Photo interface moved to canonical location: types/photo.ts
+// The old version had a 'src' field which is no longer used (originals not served)
+export { Photo } from '../../types/photo';
 
 export type Tab = 'branding' | 'links' | 'albums' | 'metrics' | 'config';
 

@@ -214,7 +214,7 @@ export default function SetupWizard() {
     <div className="setup-wizard">
       <div className="setup-container">
         <div className="setup-header">
-          <h1>📸 Welcome to Your Photography Website</h1>
+          <h1>📸 Setup Galleria</h1>
           <p>Let's get your portfolio set up in just a few steps</p>
         </div>
 

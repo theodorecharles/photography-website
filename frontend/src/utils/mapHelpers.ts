@@ -2,12 +2,8 @@
  * Map visualization utility functions
  */
 
-export interface VisitorLocation {
-  city?: string | null;
-  region?: string | null;
-  country?: string | null;
-  visit_count: number;
-}
+// VisitorLocation interface imported from canonical location
+import type { VisitorLocation } from '../components/AdminPortal/Metrics/types';
 
 /**
  * Calculate marker radius based on visit count and maximum visits
@@ -41,4 +37,7 @@ export const formatLocationName = (loc: VisitorLocation): string => {
   if (loc.country) parts.push(loc.country);
   return parts.join(', ') || 'Unknown Location';
 };
+
+// Re-export for convenience
+export type { VisitorLocation };
 
