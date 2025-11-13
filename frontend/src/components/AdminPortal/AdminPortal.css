@@ -12,16 +12,18 @@
 /* Toast Notification Container */
 .toast-container {
   position: fixed;
-  top: 0;
+  top: 80px;
   right: 20px;
   z-index: 9999;
   pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 /* Toast Notification */
 .toast {
-  position: fixed;
-  right: 20px;
+  position: relative;
   min-width: 300px;
   max-width: 500px;
   padding: 1rem 1.25rem;
@@ -30,7 +32,6 @@
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   animation: slideInRight 0.3s ease-out;
-  transition: top 0.3s ease;
   pointer-events: all;
 }
 

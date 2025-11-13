@@ -344,11 +344,10 @@ export default function AdminPortal() {
         </div>
 
         <div className="toast-container">
-          {messages.map((message, index) => (
+          {messages.map((message) => (
             <div 
               key={message.id} 
               className={`toast toast-${message.type}`}
-              style={{ top: `${80 + index * 80}px` }}
             >
               <div className="toast-content">
                 <span className="toast-icon">
