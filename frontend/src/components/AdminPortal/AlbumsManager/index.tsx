@@ -24,6 +24,7 @@ import SortableAlbumCard from './components/SortableAlbumCard';
 import SortablePhotoItem from './components/SortablePhotoItem';
 import SortableFolderCard from './components/SortableFolderCard';
 import PhotosPanel from './components/PhotosPanel';
+import ModalsCollection from './components/ModalsCollection';
 import { useAlbumManagement } from './hooks/useAlbumManagement';
 import { usePhotoManagement } from './hooks/usePhotoManagement';
 import { useFolderManagement } from './hooks/useFolderManagement';
@@ -2709,457 +2710,47 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
       </section>
 
       {/* Edit Title Modal - Use Portal to escape admin-container z-index stacking context */}
-      {showEditModal && editingPhoto && createPortal(
-        <div 
-          className="edit-title-modal" 
-          onClick={handleCloseEditModal}
-        >
-          <div className="edit-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="edit-modal-header">
-              <h3>Edit Photo Title</h3>
-              <button 
-                className="modal-close-btn"
-                onClick={handleCloseEditModal}
-                title="Close"
-              >
-                ×
-              </button>
-            </div>
-            
-            <div className="edit-modal-body">
-              <div className="edit-modal-photo">
-                <img 
-                  src={`${API_URL}${editingPhoto.thumbnail}?i=${cacheBustValue}`}
-                  alt={editingPhoto.title}
-                />
-              </div>
-              
-              <div className="edit-modal-info">
-                <label className="edit-modal-label">
-                  Filename: <span className="filename-display">{editingPhoto.id.split('/').pop()}</span>
-                </label>
-                
-                <label className="edit-modal-label">Title</label>
-                <input
-                  type="text"
-                  value={editTitleValue}
-                  onChange={(e) => setEditTitleValue(e.target.value)}
-                  className="edit-modal-input"
-                  placeholder="Enter title..."
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      handleSaveTitle();
-                    } else if (e.key === 'Escape') {
-                      handleCloseEditModal();
-                    }
-                  }}
-                />
-              </div>
-            </div>
-            
-            <div className="edit-modal-footer">
-              <button 
-                className="btn-secondary"
-                onClick={handleCloseEditModal}
-              >
-                Cancel
-              </button>
-              <button 
-                className="btn-primary"
-                onClick={handleSaveTitle}
-              >
-                Save Title
-              </button>
-            </div>
-          </div>
-        </div>,
-        document.body
-      )}
-
-      {/* Rename Album Modal */}
-      {showRenameModal && renamingAlbum && createPortal(
-        <div 
-          className="edit-title-modal" 
-          onClick={() => setShowRenameModal(false)}
-        >
-          <div className="edit-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="edit-modal-header">
-              <h3>Rename Album</h3>
-              <button 
-                className="modal-close-btn"
-                onClick={() => setShowRenameModal(false)}
-                title="Close"
-              >
-                ×
-              </button>
-            </div>
-            
-            <div className="edit-modal-body">
-              <div className="edit-modal-info" style={{ width: '100%' }}>
-                <label className="edit-modal-label">Current Name</label>
-                <div style={{ 
-                  padding: '0.5rem', 
-                  background: 'rgba(255, 255, 255, 0.05)', 
-                  borderRadius: '4px',
-                  marginBottom: '1rem',
-                  color: '#888'
-                }}>
-                  {renamingAlbum}
-                </div>
-                
-                <label className="edit-modal-label">New Name</label>
-                <input
-                  type="text"
-                  value={newAlbumName}
-                  onChange={(e) => setNewAlbumName(e.target.value)}
-                  className="edit-modal-input"
-                  placeholder="Enter new album name..."
-                  autoFocus
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      handleRenameAlbum();
-                    } else if (e.key === 'Escape') {
-                      setShowRenameModal(false);
-                    }
-                  }}
-                />
-                <p style={{ color: '#888', fontSize: '0.9rem', marginTop: '0.5rem' }}>
-                  Only letters, numbers, spaces, hyphens, and underscores are allowed
-                </p>
-              </div>
-            </div>
-            
-            <div className="edit-modal-footer">
-              <button
-                onClick={() => setShowRenameModal(false)}
-                className="btn-secondary"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleRenameAlbum}
-                className="btn-primary"
-              >
-                Rename Album
-              </button>
-            </div>
-          </div>
-        </div>,
-        document.body
-      )}
-
-      {/* New Folder Modal */}
-      {showFolderModal && createPortal(
-        <div 
-          className="edit-title-modal" 
-          onClick={() => {
-            setShowFolderModal(false);
-            setFolderModalError('');
-          }}
-        >
-          <div className="edit-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="edit-modal-header">
-              <h3>Create New Folder</h3>
-              <button 
-                className="modal-close-btn"
-                onClick={() => {
-                  setShowFolderModal(false);
-                  setFolderModalError('');
-                }}
-                title="Close"
-              >
-                ×
-              </button>
-            </div>
-            
-            <div className="edit-modal-body">
-              <div className="edit-modal-info" style={{ width: '100%' }}>
-                <label className="edit-modal-label">Folder Name</label>
-                <input
-                  type="text"
-                  value={newFolderName}
-                  onChange={(e) => {
-                    setNewFolderName(e.target.value);
-                    // Clear error when user types
-                    if (folderModalError) setFolderModalError('');
-                  }}
-                  className="edit-modal-input"
-                  placeholder="Enter folder name..."
-                  autoFocus
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      handleCreateFolder();
-                    } else if (e.key === 'Escape') {
-                      setShowFolderModal(false);
-                    }
-                  }}
-                />
-                {folderModalError && (
-                  <p style={{ color: '#ef4444', fontSize: '0.9rem', marginTop: '0.5rem' }}>
-                    {folderModalError}
-                  </p>
-                )}
-                {!folderModalError && (
-                  <p style={{ color: '#888', fontSize: '0.9rem', marginTop: '0.5rem' }}>
-                    Folders help organize your albums into categories
-                  </p>
-                )}
-              </div>
-            </div>
-            
-            <div className="edit-modal-footer">
-              <button
-                onClick={() => {
-                  setShowFolderModal(false);
-                  setFolderModalError('');
-                }}
-                className="btn-secondary"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleCreateFolder}
-                className="btn-primary"
-              >
-                Create Folder
-              </button>
-            </div>
-          </div>
-        </div>,
-        document.body
-      )}
-
-      {/* Delete Folder Modal */}
-      {showDeleteFolderModal && deletingFolderName && createPortal(
-        <div 
-          className="edit-title-modal" 
-          onClick={() => {
-            setShowDeleteFolderModal(false);
-            setDeletingFolderName(null);
-          }}
-        >
-          <div className="edit-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="edit-modal-header">
-              <h3>Delete Folder "{deletingFolderName}"</h3>
-              <button 
-                className="modal-close-btn"
-                onClick={() => {
-                  setShowDeleteFolderModal(false);
-                  setDeletingFolderName(null);
-                }}
-                title="Close"
-              >
-                ×
-              </button>
-            </div>
-            
-            <div className="edit-modal-body">
-              <div className="edit-modal-info" style={{ width: '100%' }}>
-                <p style={{ color: '#ccc', marginBottom: '1.5rem', lineHeight: '1.6' }}>
-                  What would you like to do with the albums in this folder?
-                </p>
-                
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                  <button
-                    onClick={() => handleDeleteFolderWithOption(false)}
-                    className="btn-primary"
-                    style={{ 
-                      padding: '1rem',
-                      fontSize: '1rem',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'flex-start',
-                      gap: '0.5rem'
-                    }}
-                  >
-                    <span style={{ fontWeight: 600 }}>Release Albums</span>
-                    <span style={{ fontSize: '0.9rem', opacity: 0.8, fontWeight: 400 }}>
-                      Move albums to root level (albums will not be deleted)
-                    </span>
-                  </button>
-                  
-                  <button
-                    onClick={() => handleDeleteFolderWithOption(true)}
-                    className="btn-delete"
-                    style={{ 
-                      padding: '1rem',
-                      fontSize: '1rem',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'flex-start',
-                      gap: '0.5rem'
-                    }}
-                  >
-                    <span style={{ fontWeight: 600 }}>Delete All Albums</span>
-                    <span style={{ fontSize: '0.9rem', opacity: 0.8, fontWeight: 400 }}>
-                      Permanently delete folder and all albums inside (cannot be undone)
-                    </span>
-                  </button>
-                </div>
-              </div>
-            </div>
-            
-            <div className="edit-modal-footer">
-              <button
-                onClick={() => {
-                  setShowDeleteFolderModal(false);
-                  setDeletingFolderName(null);
-                }}
-                className="btn-secondary"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>,
-        document.body
-      )}
-
-      {/* New Album Modal - Use Portal to escape admin-container z-index stacking context */}
-      {showNewAlbumModal && createPortal(
-        <div 
-          className="edit-title-modal" 
-          onClick={() => setShowNewAlbumModal(false)}
-        >
-          <div className="edit-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="edit-modal-header">
-              <h3>Create New Album</h3>
-              <button 
-                className="modal-close-btn"
-                onClick={() => setShowNewAlbumModal(false)}
-                title="Close"
-              >
-                ×
-              </button>
-            </div>
-            
-            <div className="edit-modal-body">
-              <div className="edit-modal-info" style={{ width: '100%' }}>
-                <label className="edit-modal-label">
-                  {newAlbumFiles.length} {newAlbumFiles.length === 1 ? 'photo' : 'photos'} selected
-                </label>
-                
-                <label className="edit-modal-label">Album Name</label>
-                <input
-                  type="text"
-                  value={newAlbumModalName}
-                  onChange={(e) => setNewAlbumModalName(e.target.value)}
-                  className="edit-modal-input"
-                  placeholder="Enter album name..."
-                  autoFocus
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      handleCreateAlbumFromModal();
-                    } else if (e.key === 'Escape') {
-                      setShowNewAlbumModal(false);
-                    }
-                  }}
-                />
-                <p style={{ color: '#888', fontSize: '0.9rem', marginTop: '0.5rem' }}>
-                  A new album will be created with {newAlbumFiles.length} {newAlbumFiles.length === 1 ? 'photo' : 'photos'}
-                </p>
-              </div>
-            </div>
-            
-            <div className="edit-modal-footer">
-              <button
-                onClick={() => setShowNewAlbumModal(false)}
-                className="btn-secondary"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleCreateAlbumFromModal}
-                className="btn-primary"
-              >
-                Create Album
-              </button>
-            </div>
-          </div>
-        </div>,
-        document.body
-      )}
-      
-      {showShareModal && shareAlbumName && (
-        <ShareModal
-          album={shareAlbumName}
-          onClose={() => {
-            setShowShareModal(false);
-            setShareAlbumName(null);
-          }}
-        />
-      )}
-
-      {/* Confirmation Modal */}
-      {showConfirmModal && confirmConfig && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: "rgba(0, 0, 0, 0.75)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 10000,
-            padding: "1rem",
-          }}
-          onClick={handleModalCancel}
-        >
-          <div
-            style={{
-              backgroundColor: "#1a1a1a",
-              border: "2px solid rgba(255, 255, 255, 0.2)",
-              borderRadius: "12px",
-              padding: "2rem",
-              maxWidth: "500px",
-              width: "100%",
-              boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5)",
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div
-              style={{
-                color: "#e5e7eb",
-                fontSize: "1.1rem",
-                lineHeight: "1.6",
-                marginBottom: "2rem",
-                whiteSpace: "pre-wrap",
-              }}
-            >
-              {confirmConfig.message}
-            </div>
-            <div
-              style={{
-                display: "flex",
-                gap: "1rem",
-                justifyContent: "flex-end",
-              }}
-            >
-              <button
-                onClick={handleModalCancel}
-                className="btn-secondary"
-                style={{ minWidth: "100px" }}
-              >
-                Cancel
-              </button>
-              <button
-                onClick={confirmConfig.onConfirm}
-                className="btn-primary"
-                style={{ minWidth: "100px" }}
-              >
-                Confirm
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-    </>
+      <ModalsCollection
+        showEditModal={showEditModal}
+        editingPhoto={editingPhoto}
+        editTitleValue={editTitleValue}
+        setEditTitleValue={setEditTitleValue}
+        handleCloseEditModal={handleCloseEditModal}
+        handleSaveTitle={handleSaveTitle}
+        showRenameModal={showRenameModal}
+        renamingAlbum={renamingAlbum}
+        newAlbumName={newAlbumName}
+        setNewAlbumName={setNewAlbumName}
+        setShowRenameModal={setShowRenameModal}
+        handleRenameAlbum={handleRenameAlbum}
+        showFolderModal={showFolderModal}
+        setShowFolderModal={setShowFolderModal}
+        folderModalError={folderModalError}
+        setFolderModalError={setFolderModalError}
+        folderManagement={folderManagement}
+        showDeleteFolderModal={showDeleteFolderModal}
+        deletingFolderName={deletingFolderName}
+        setShowDeleteFolderModal={setShowDeleteFolderModal}
+        handleDeleteFolder={handleDeleteFolder}
+        localFolders={localFolders}
+        localAlbums={localAlbums}
+        showNewAlbumModal={showNewAlbumModal}
+        setShowNewAlbumModal={setShowNewAlbumModal}
+        newAlbumNameInput={newAlbumNameInput}
+        setNewAlbumNameInput={setNewAlbumNameInput}
+        newAlbumPublished={newAlbumPublished}
+        setNewAlbumPublished={setNewAlbumPublished}
+        newAlbumModalError={newAlbumModalError}
+        handleCreateAlbumSubmit={handleCreateAlbumSubmit}
+        showShareModal={showShareModal}
+        shareAlbumName={shareAlbumName}
+        setShowShareModal={setShowShareModal}
+        showConfirmModal={showConfirmModal}
+        confirmConfig={confirmConfig}
+        setShowConfirmModal={setShowConfirmModal}
+      />
+    </section>
   );
 };
 
 export default AlbumsManager;
-
-
