@@ -6,8 +6,9 @@
 
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { API_URL } from '../config';
 import './Footer.css';
+
+const API_URL = import.meta.env.VITE_API_URL || '';
 
 interface FooterProps {
   albums?: string[];
@@ -50,7 +51,7 @@ function Footer({ albums: _albums = [], externalLinks: _externalLinks = [], curr
           <div className="footer-links">
             <Link to="/license" className="footer-link">View License</Link>
             <span className="footer-separator">•</span>
-            <a href={`${API_URL}/api/auth/google`} className="footer-link">Login</a>
+            <Link to="/admin" className="footer-link">Login</Link>
           </div>
         </div>
       </div>
