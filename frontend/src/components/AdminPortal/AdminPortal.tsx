@@ -183,6 +183,27 @@ export default function AdminPortal() {
     }
   }, [activeTab, authStatus]);
 
+  // Listen for albums-updated events from AlbumsManager
+  useEffect(() => {
+    const handleAlbumsUpdated = (event: Event) => {
+      const customEvent = event as CustomEvent;
+      // Don't reload if the event came from AlbumsManager drag operations
+      // AlbumsManager already has the optimistic state
+      if (customEvent.detail?.skipReload) {
+        console.log('📢 AdminPortal: albums-updated event received, skipping reload (optimistic update)');
+        return;
+      }
+      console.log('📢 AdminPortal: albums-updated event received, reloading albums...');
+      loadAlbums();
+    };
+
+    window.addEventListener('albums-updated', handleAlbumsUpdated);
+    
+    return () => {
+      window.removeEventListener('albums-updated', handleAlbumsUpdated);
+    };
+  }, []);
+
   const loadExternalLinks = async () => {
     try {
       const res = await fetch(`${API_URL}/api/external-links`, {

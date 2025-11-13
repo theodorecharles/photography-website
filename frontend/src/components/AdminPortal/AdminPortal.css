@@ -12,12 +12,12 @@
 /* Toast Notification Container */
 .toast-container {
   position: fixed;
-  top: 80px;
+  bottom: 20px;
   right: 20px;
-  z-index: 9999;
+  z-index: 99999;
   pointer-events: none;
   display: flex;
-  flex-direction: column;
+  flex-direction: column-reverse; /* Stack new toasts on top */
   gap: 1rem;
 }
 
@@ -37,11 +37,11 @@
 
 @keyframes slideInRight {
   from {
-    transform: translateX(400px);
+    transform: translateY(100px);
     opacity: 0;
   }
   to {
-    transform: translateX(0);
+    transform: translateY(0);
     opacity: 1;
   }
 }
@@ -128,7 +128,7 @@
   
   @keyframes slideInRight {
     from {
-      transform: translateY(-100px);
+      transform: translateY(100px);
       opacity: 0;
     }
     to {
