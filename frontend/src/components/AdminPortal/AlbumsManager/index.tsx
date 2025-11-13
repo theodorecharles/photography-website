@@ -689,11 +689,11 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
       console.log('📦 Moving to uncategorized grid');
       const album = localAlbums.find(a => a.name === activeId);
       if (album && album.folder_id !== null) {
-        // Update locally without saving
+        // Update locally without saving - preserve published state
         setLocalAlbums(prevAlbums => 
           prevAlbums.map(a => 
             a.name === activeId 
-              ? { ...a, folder_id: null, published: true }
+              ? { ...a, folder_id: null }  // Keep existing published state
               : a
           )
         );
@@ -732,7 +732,8 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
       if (activeAlbum.folder_id !== overAlbum.folder_id) {
         const targetFolderId = overAlbum.folder_id ?? null;
         const targetFolder = targetFolderId ? localFolders.find(f => f.id === targetFolderId) : null;
-        const targetPublishedStatus = targetFolder ? targetFolder.published : true;
+        // If moving to folder, inherit folder's published status; if uncategorized, keep album's current status
+        const targetPublishedStatus = targetFolder ? targetFolder.published : activeAlbum.published;
         
         // Get albums in the target context BEFORE moving
         const targetContextAlbums = localAlbums.filter(
@@ -2260,9 +2261,10 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
       return;
     }
 
-    // Get the target folder's published status (or true if moving to root/uncategorized)
+    // Get the target folder's published status (or keep album's current status if moving to uncategorized)
     const targetFolder = folderId ? localFolders.find(f => f.id === folderId) : null;
-    const targetPublishedStatus = targetFolder ? targetFolder.published : true;
+    const currentAlbum = localAlbums.find(a => a.name === albumName);
+    const targetPublishedStatus = targetFolder ? targetFolder.published : (currentAlbum?.published ?? true);
 
     // Optimistically update the local state immediately for smooth UX
     setLocalAlbums(prevAlbums => 
