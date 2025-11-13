@@ -15,6 +15,8 @@ import {
 } from 'recharts';
 import { API_URL } from '../../../config';
 import { fetchWithRateLimitCheck } from '../../../utils/fetchWrapper';
+import { formatNumber } from '../../../utils/formatters';
+import { normalizeAlbumName, formatDateFromMicroseconds, formatDurationDetailed } from '../../../utils/metricsHelpers';
 import VisitorMap from './VisitorMap';
 import './Metrics.css';
 
@@ -26,18 +28,6 @@ export default function Metrics() {
   const secondaryColor = getComputedStyle(document.documentElement)
     .getPropertyValue('--secondary-color')
     .trim() || '#3b82f6';
-
-  // Helper function to normalize album names from old lowercase to new capitalized format
-  const normalizeAlbumName = (albumName: string): string => {
-    const albumMap: Record<string, string> = {
-      'animals': 'Animals',
-      'people': 'People',
-      'nature': 'Nature',
-      'japan': 'Japan',
-      'random': 'Random'
-    };
-    return albumMap[albumName.toLowerCase()] || albumName;
-  };
 
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
@@ -195,28 +185,6 @@ export default function Metrics() {
     loadVisitorLocations();
   }, [loadStats, loadVisitorsOverTime, loadPageviewsByHour, loadVisitorLocations]);
 
-  const formatNumber = (num: number) => {
-    return num.toLocaleString();
-  };
-
-  const formatDuration = (ms: number) => {
-    const totalSeconds = Math.floor(ms / 1000);
-    const hours = Math.floor(totalSeconds / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
-    const seconds = totalSeconds % 60;
-    
-    // Pad with zeros for consistent formatting
-    const hh = hours.toString().padStart(2, '0');
-    const mm = minutes.toString().padStart(2, '0');
-    const ss = seconds.toString().padStart(2, '0');
-    
-    return `${hh}:${mm}:${ss}`;
-  };
-
-  const formatDate = (timestamp: number) => {
-    // Convert microseconds to milliseconds for proper date formatting
-    return new Date(timestamp / 1000).toLocaleDateString();
-  };
 
 
   const toggleRowExpansion = (tableName: string, rowIndex: number) => {
@@ -345,7 +313,7 @@ export default function Metrics() {
             <div className="metric-card">
               <div className="metric-icon">⏱️</div>
               <div className="metric-content">
-                <div className="metric-value">{formatDuration(stats.totalViewDuration || 0)}</div>
+                <div className="metric-value">{formatDurationDetailed(stats.totalViewDuration || 0)}</div>
                 <div className="metric-label">Total Time Viewing</div>
               </div>
             </div>
@@ -562,8 +530,8 @@ export default function Metrics() {
                                 </div>
                               </div>
                             </td>
-                            <td className="text-right">{formatDuration(picture.total_duration)}</td>
-                            <td className="text-right">{formatDuration(picture.avg_duration)}</td>
+                            <td className="text-right">{formatDurationDetailed(picture.total_duration)}</td>
+                            <td className="text-right">{formatDurationDetailed(picture.avg_duration)}</td>
                             <td className="text-right">{formatNumber(picture.views)}</td>
                           </tr>
                           {expanded && (
@@ -835,7 +803,7 @@ export default function Metrics() {
           {/* Footer Info */}
           <div className="metrics-footer">
             <p>
-              Data from {formatDate(stats.timeRange.start)} to {formatDate(stats.timeRange.end)}
+              Data from {formatDateFromMicroseconds(stats.timeRange.start)} to {formatDateFromMicroseconds(stats.timeRange.end)}
             </p>
           </div>
         </>
