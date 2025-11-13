@@ -22,7 +22,8 @@ import {
   saveImageMetadata,
   updateAlbumSortOrder,
   getAlbumState,
-  getDatabase
+  getDatabase,
+  setAlbumFolder
 } from "../database.js";
 import { invalidateAlbumCache } from "./albums.js";
 import { generateStaticJSONFiles } from "./static-json.js";
@@ -851,6 +852,57 @@ router.put('/sort-order', requireAuth, async (req: Request, res: Response): Prom
   } catch (error) {
     console.error('Error updating album order:', error);
     res.status(500).json({ error: 'Failed to update album order' });
+  }
+});
+
+/**
+ * Move album to folder (or remove from folder)
+ */
+router.put('/:albumName/move', requireAuth, async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { albumName } = req.params;
+    const { folderName, published } = req.body;
+    
+    if (!albumName) {
+      res.status(400).json({ error: 'Album name is required' });
+      return;
+    }
+    
+    // Get folder ID if folderName is provided
+    let folderId: number | null = null;
+    if (folderName) {
+      const db = getDatabase();
+      const folder = db.prepare('SELECT id FROM album_folders WHERE name = ?').get(folderName) as { id: number } | undefined;
+      if (!folder) {
+        res.status(404).json({ error: 'Folder not found' });
+        return;
+      }
+      folderId = folder.id;
+    }
+    
+    // Move album to folder (or remove from folder if folderId is null)
+    const success = setAlbumFolder(albumName, folderId);
+    
+    if (!success) {
+      res.status(500).json({ error: 'Failed to move album' });
+      return;
+    }
+    
+    // Update published status if provided
+    if (typeof published === 'boolean') {
+      setAlbumPublished(albumName, published);
+    }
+    
+    console.log(`✓ Moved album "${albumName}" to folder ${folderName || 'none'}`);
+    
+    // Regenerate static JSON files
+    const appRoot = req.app.get('appRoot');
+    generateStaticJSONFiles(appRoot);
+    
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Error moving album:', error);
+    res.status(500).json({ error: 'Failed to move album' });
   }
 });
 
