@@ -23,6 +23,7 @@ import { trackPageView, trackError } from "./utils/analytics";
 import { fetchWithRateLimitCheck } from "./utils/fetchWrapper";
 import { SSEToasterProvider } from "./contexts/SSEToasterContext";
 import SSEToaster from "./components/SSEToaster";
+import { filterAlbums, filterFolders } from "./utils/albumFilters";
 
 // Import AdminPortal - CSS is handled within the component for dev mode compatibility
 import AdminPortal from "./components/AdminPortal";
@@ -231,22 +232,8 @@ function App() {
       // Handle new API format: { albums: [...], folders: [...] } or old format: [...]
       if (albumsData && typeof albumsData === 'object' && 'albums' in albumsData) {
         // New format with folders
-        const filteredAlbums = albumsData.albums
-          .filter((album: { name: string; published: boolean; folder_id?: number | null }) => {
-            if (album.name === 'homepage') return false;
-            // Include all albums if authenticated, only published if not
-            if (isAuthenticated) return true;
-            return album.published === true;
-          });
-        
-        // Filter folders to only show published folders to unauthenticated users
-        // Note: Backend already returns only published folders for unauthenticated users via getPublishedFolders()
-        // but we double-check here. SQLite returns published as 1/0, so check for truthy value or explicit true
-        const filteredFolders = isAuthenticated
-          ? (albumsData.folders || [])
-          : (albumsData.folders || []).filter((folder: { published: boolean | number }) => 
-              folder.published === true || folder.published === 1
-            );
+        const filteredAlbums = filterAlbums(albumsData.albums || [], isAuthenticated);
+        const filteredFolders = filterFolders(albumsData.folders || [], isAuthenticated);
         
         console.log('🔍 App.tsx fetchData - isAuthenticated:', isAuthenticated);
         console.log('🔍 App.tsx fetchData - Raw folders from backend:', albumsData.folders);
@@ -319,22 +306,8 @@ function App() {
           // Handle new API format: { albums: [...], folders: [...] } or old format: [...]
           if (albumsData && typeof albumsData === 'object' && 'albums' in albumsData) {
             // New format with folders
-            const filteredAlbums = albumsData.albums
-              .filter((album: { name: string; published: boolean; folder_id?: number | null }) => {
-                if (album.name === 'homepage') return false;
-                // Include all albums if authenticated, only published if not
-                if (isAuthenticated) return true;
-                return album.published === true;
-              });
-            
-            // Filter folders to only show published folders to unauthenticated users
-            // Note: Backend already returns only published folders for unauthenticated users via getPublishedFolders()
-            // but we double-check here. SQLite returns published as 1/0, so check for truthy value or explicit true
-            const filteredFolders = isAuthenticated
-              ? (albumsData.folders || [])
-              : (albumsData.folders || []).filter((folder: { published: boolean | number }) => 
-                  folder.published === true || folder.published === 1
-                );
+            const filteredAlbums = filterAlbums(albumsData.albums || [], isAuthenticated);
+            const filteredFolders = filterFolders(albumsData.folders || [], isAuthenticated);
             
             setAlbums(filteredAlbums);
             setFolders(filteredFolders);
