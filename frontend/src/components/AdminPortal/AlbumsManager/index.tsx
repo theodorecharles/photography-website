@@ -719,8 +719,8 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include',
             body: JSON.stringify({
-              folders: reorderedFolders.map((folder, index) => ({
-                id: folder.id,
+              folderOrders: reorderedFolders.map((folder, index) => ({
+                name: folder.name,
                 sort_order: index,
               })),
             }),

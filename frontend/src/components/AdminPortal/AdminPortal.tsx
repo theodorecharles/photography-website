@@ -34,49 +34,7 @@ export default function AdminPortal() {
   const location = useLocation();
   const [authStatus, setAuthStatus] = useState<AuthStatus | null>(null);
   const [loading, setLoading] = useState(true);
-  const [cssReady, setCssReady] = useState(false);
   const sseToaster = useSSEToaster();
-  
-  // Force hard reload in dev mode when navigating to admin to ensure CSS loads
-  useEffect(() => {
-    if (import.meta.env.DEV) {
-      const checkAndReload = async () => {
-        // Wait a moment for Vite to potentially inject CSS
-        await new Promise(resolve => setTimeout(resolve, 200));
-        
-        // Check if CSS is missing by looking for admin styles
-        const hasAdminCSS = Array.from(document.querySelectorAll('style[data-vite-dev-id]'))
-          .some(style => {
-            const id = style.getAttribute('data-vite-dev-id') || '';
-            return id.includes('AdminPortal') || id.includes('AlbumsManager');
-          });
-        
-        // Check if we've already tried reloading (prevent infinite loop)
-        const reloadKey = 'admin-css-reload-attempted';
-        const hasReloaded = sessionStorage.getItem(reloadKey);
-        
-        // If CSS is missing and we haven't reloaded yet, force a hard reload
-        if (!hasAdminCSS && !hasReloaded) {
-          console.log('🔄 CSS missing, forcing hard reload...');
-          sessionStorage.setItem(reloadKey, 'true');
-          // Preserve the current URL when reloading
-          window.location.href = window.location.href;
-          return;
-        }
-        
-        // Clear the flag if CSS is present
-        if (hasAdminCSS && hasReloaded) {
-          sessionStorage.removeItem(reloadKey);
-        }
-        
-        setCssReady(true);
-      };
-      
-      checkAndReload();
-    } else {
-      setCssReady(true);
-    }
-  }, []);
   
   // Determine active tab from URL
   const getActiveTab = (): Tab => {
@@ -274,7 +232,7 @@ export default function AdminPortal() {
     }
   };
 
-  if (loading || !cssReady) {
+  if (loading) {
     return (
       <div className="admin-portal">
         <div className="admin-container">
@@ -290,7 +248,7 @@ export default function AdminPortal() {
             }}
           >
             <div className="loading-spinner"></div>
-            <p>{!cssReady ? 'Loading styles...' : 'Loading site settings...'}</p>
+            <p>Loading site settings...</p>
           </div>
         </div>
       </div>
