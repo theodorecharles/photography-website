@@ -503,26 +503,24 @@
 
 .album-photos {
   position: fixed;
-  top: 0;
-  right: 0;
-  width: calc(100vw - 60px);
+  left: 0;
+  bottom: 0;
+  width: 100vw;
   height: 100vh;
   background: #1e1e1e;
-  border-left: 2px solid rgba(255, 255, 255, 0.1);
-  box-shadow: -4px 0 20px rgba(0, 0, 0, 0.3);
   z-index: 1001;
   overflow-y: auto;
-  transform: translateX(100%);
-  transition: transform 0.3s ease-in-out, border-color 0.2s ease, background-color 0.2s ease;
-  animation: slideIn 0.3s ease-in-out forwards;
+  transform: translateY(100%);
+  transition: transform 0.3s ease-in-out;
+  animation: slideUpFromBottom 0.3s ease-in-out forwards;
 }
 
-@keyframes slideIn {
+@keyframes slideUpFromBottom {
   from {
-    transform: translateX(100%);
+    transform: translateY(100%);
   }
   to {
-    transform: translateX(0);
+    transform: translateY(0);
   }
 }
 
@@ -536,17 +534,7 @@
 }
 
 .album-photos-backdrop {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 60px;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(4px);
-  z-index: 1000;
-  cursor: pointer;
-  opacity: 0;
-  animation: fadeIn 0.3s ease-in-out forwards;
+  display: none;
 }
 
 .album-photos.drag-over {
@@ -601,21 +589,20 @@
 .photos-header {
   display: flex;
   flex-direction: column;
-  align-items: stretch;
-  gap: 1.5rem;
+  gap: 1rem;
   padding: 1.5rem;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+  background: #1e1e1e;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   position: sticky;
   top: 0;
   z-index: 10;
-  backdrop-filter: blur(10px);
 }
 
 .photos-header-top {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 0.5rem;
 }
 
 .photos-panel-title {
@@ -665,32 +652,23 @@
 
 .album-actions-grid {
   display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 0.5rem;
   width: 100%;
-  max-width: 100%;
   user-select: none;
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
 }
 
-@media (min-width: 769px) {
-  .album-actions-grid {
-    flex-direction: row;
-    align-items: stretch;
-  }
-  
-  .album-actions-grid .btn-action-item {
-    flex: 1;
-    min-width: 0;
-  }
-}
-
 .btn-action-item {
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 0.6rem;
+  min-width: 40px;
+  height: 40px;
 }
 
 .toggle-switch.btn-action-item {
