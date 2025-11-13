@@ -92,7 +92,7 @@ const SortableFolderCard: React.FC<SortableFolderCardProps> = ({
           style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
         >
           <h4 className="folder-card-title">
-            {folder.published ? '📁' : '🔒'} {folder.name}
+            {folder.name}
           </h4>
           <div className="folder-count">
             {albumCount} {albumCount === 1 ? 'album' : 'albums'}
