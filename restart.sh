@@ -108,7 +108,7 @@ cd ..
 
 # Run data directory migration (idempotent - safe to run multiple times)
 log "Running data directory migration..."
-if ! node migrate-to-data-directory.js; then
+if ! node scripts/migrate-to-data-directory.js; then
     handle_error "Data directory migration failed"
 fi
 
