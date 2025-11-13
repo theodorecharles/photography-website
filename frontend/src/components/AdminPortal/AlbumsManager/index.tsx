@@ -2228,7 +2228,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                   <div className="folder-card dragging" style={{ cursor: 'grabbing', opacity: 0.95 }}>
                     <div className="folder-card-header">
                       <div className="folder-drag-handle">
-                        <h4 className="folder-card-title">{folder.name}</h4>
+                        <h4 className="folder-card-title">{folder.published ? '📁' : '🔒'} {folder.name}</h4>
                         <div className="folder-count">{folderAlbums.length} {folderAlbums.length === 1 ? 'album' : 'albums'}</div>
                       </div>
                     </div>
@@ -2262,7 +2262,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
               >
                 <div className="photos-header">
                   <div className="photos-header-top">
-                    <h3 className="photos-panel-title">📸 {selectedAlbum}</h3>
+                    <h3 className="photos-panel-title">{selectedAlbum}</h3>
                   </div>
                 <div className="album-actions-grid">
                   <label className="btn-action btn-upload btn-action-item">
