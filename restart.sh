@@ -106,14 +106,7 @@ fi
 # Return to project root
 cd ..
 
-# Run data directory migration (idempotent - safe to run multiple times)
-log "Running data directory migration..."
-if ! node scripts/migrate-to-data-directory.js; then
-    handle_error "Data directory migration failed"
-fi
-
-# Note: Other database migrations exist on oobe branch and will be available after merge
-# This branch only includes the data directory migration for Docker support
+# Note: Database migrations exist on oobe branch and will be available after merge
 
 # Restart both services using PM2 ecosystem file
 log "Restarting services with PM2 using ecosystem config..."
