@@ -382,6 +382,10 @@
   }
 }
 
+.folder-submenu .nav-link {
+  margin-bottom: 0.5rem;
+}
+
 .folder-submenu .nav-link:last-child {
   margin-bottom: 0;
 }
