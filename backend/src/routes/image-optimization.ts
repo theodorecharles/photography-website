@@ -41,8 +41,10 @@ function broadcastToClients(job: RunningJob | null, message: string) {
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+import { DATA_DIR } from '../config.js';
+
 // Path to config.json
-const configPath = path.resolve(__dirname, '../../../config/config.json');
+const configPath = path.join(DATA_DIR, 'config.json');
 
 // Middleware to check if user is authenticated
 const requireAuth = (req: express.Request, res: express.Response, next: express.NextFunction) => {

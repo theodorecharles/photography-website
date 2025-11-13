@@ -48,7 +48,9 @@ const upload = multer({
 router.use(csrfProtection);
 
 // Path to config file - go up from backend/src/routes to project root, then into config
-const configPath = path.resolve(__dirname, '../../../config/config.json');
+import { DATA_DIR } from '../config.js';
+
+const configPath = path.join(DATA_DIR, 'config.json');
 console.log('[Branding Routes] Config path resolved to:', configPath);
 console.log('[Branding Routes] __dirname is:', __dirname);
 

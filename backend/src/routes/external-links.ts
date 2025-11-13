@@ -17,7 +17,9 @@ router.use(csrfProtection);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const configPath = path.join(__dirname, '../../../config/config.json');
+import { DATA_DIR } from '../config.js';
+
+const configPath = path.join(DATA_DIR, 'config.json');
 
 // GET external links - public endpoint for navigation menu
 router.get('/', (req: Request, res: Response) => {

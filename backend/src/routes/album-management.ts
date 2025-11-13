@@ -476,7 +476,8 @@ router.post("/:album/upload", requireAuth, upload.single('photo'), async (req: R
           
           // Check if auto-generate AI titles is enabled
           try {
-            const configPath = path.join(projectRoot, 'config/config.json');
+            const dataDir = process.env.DATA_DIR || path.join(projectRoot, 'data');
+            const configPath = path.join(dataDir, 'config.json');
             const configData = fs.readFileSync(configPath, 'utf8');
             const config = JSON.parse(configData);
             
