@@ -148,6 +148,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     hasUnsavedChanges,
     setHasUnsavedChanges,
     animatingAlbum,
+    setAnimatingAlbum,
   } = albumManagement;
   
   const {
@@ -202,6 +203,8 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   const [showNewAlbumModal, setShowNewAlbumModal] = useState(false);
   const [newAlbumFiles, setNewAlbumFiles] = useState<File[]>([]);
   const [newAlbumModalName, setNewAlbumModalName] = useState('');
+  const [newAlbumPublished, setNewAlbumPublished] = useState(true);
+  const [newAlbumModalError, setNewAlbumModalError] = useState('');
   
   // Folder modal state
   const [showFolderModal, setShowFolderModal] = useState(false);
@@ -372,37 +375,9 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     }
   }, [selectedAlbum]);
 
-  const loadPhotos = async (albumName: string) => {
-    setLoadingPhotos(true);
-    try {
-      // Add cache-busting parameter to ensure fresh data
-      const cacheBust = Date.now();
-      const res = await fetch(
-        `${API_URL}/api/albums/${encodeURIComponent(albumName)}/photos?_=${cacheBust}`,
-        { credentials: 'include' }
-      );
-      const data = await res.json();
-      const photos = Array.isArray(data) ? data : (data.photos || []);
-      console.log(`📷 Loaded ${photos.length} photos for album: ${albumName}`);
-      setAlbumPhotos(photos);
-      setOriginalPhotoOrder(photos); // Store original order for comparison
-      setHasEverDragged(false); // Reset drag state when loading new album
-    } catch (err) {
-      console.error('Failed to load photos:', err);
-      setAlbumPhotos([]);
-      setOriginalPhotoOrder([]);
-      setHasEverDragged(false);
-    } finally {
-      setLoadingPhotos(false);
-    }
-  };
 
-  // Check if photo order has changed or if user has started dragging
-  const hasOrderChanged = () => {
-    if (!hasEverDragged) return false;
-    if (albumPhotos.length !== originalPhotoOrder.length) return false;
-    return albumPhotos.some((photo, index) => photo.id !== originalPhotoOrder[index].id);
-  };
+
+
 
   // Helper function to disable touch scrolling on all scrollable elements
   const disableTouchScroll = () => {
@@ -1197,7 +1172,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     }));
 
     setUploadingImages(newUploadingImages);
-    setSelectedAlbum(albumName);
+    selectAlbum(albumName);
 
     // Upload each file - SSE events will handle state updates
     for (let i = 0; i < files.length; i++) {
@@ -1270,42 +1245,9 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
 
 
   // Save photo order
-  const handleSavePhotoOrder = async () => {
-    if (!selectedAlbum) return;
-    
-    setSavingOrder(true);
-    try {
-      const photoOrder = albumPhotos.map((photo) => ({
-        filename: photo.id.split('/').pop() || photo.id
-      }));
 
-      const res = await fetch(`${API_URL}/api/albums/${encodeURIComponent(selectedAlbum)}/photo-order`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ photoOrder }),
-      });
 
-      if (res.ok) {
-        setMessage({ type: 'success', text: 'Photo order saved!' });
-        setOriginalPhotoOrder(albumPhotos); // Update original order
-        setHasEverDragged(false); // Reset drag state after save
-      } else {
-        setMessage({ type: 'error', text: 'Failed to save photo order' });
-      }
-    } catch (err) {
-      console.error('Failed to save photo order:', err);
-      setMessage({ type: 'error', text: 'Network error occurred' });
-    } finally {
-      setSavingOrder(false);
-    }
-  };
 
-  // Cancel photo order changes
-  const handleCancelPhotoOrder = () => {
-    setAlbumPhotos(originalPhotoOrder);
-    setHasEverDragged(false); // Reset drag state
-  };
 
   const shuffleIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const slowdownTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -1504,71 +1446,11 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     };
   }, []);
 
-  const handleOpenEditModal = async (photo: Photo) => {
-    setEditingPhoto(photo);
-    setShowEditModal(true);
-    
-    // Load the title for this specific photo when opening the modal
-    const filename = photo.id.split('/').pop();
-    if (!filename) {
-      setEditTitleValue('');
-      return;
-    }
-    
-    try {
-      const res = await fetch(`${API_URL}/api/image-metadata/${encodeURIComponent(photo.album)}/${encodeURIComponent(filename)}`, {
-        credentials: 'include',
-      });
-      
-      if (res.ok) {
-        const data = await res.json();
-        setEditTitleValue(data.title || '');
-      } else {
-        // No metadata exists yet, start with empty
-        setEditTitleValue('');
-      }
-    } catch (err) {
-      console.error('Failed to load photo title:', err);
-      setEditTitleValue('');
-    }
-  };
 
-  const handleCloseEditModal = () => {
-    setShowEditModal(false);
-    setEditingPhoto(null);
-    setEditTitleValue('');
-  };
 
-  const handleSaveTitle = async () => {
-    if (!editingPhoto) return;
 
-    const filename = editingPhoto.id.split('/').pop();
-    const album = editingPhoto.album;
 
-    if (!filename) {
-      setMessage({ type: 'error', text: 'Invalid photo filename' });
-      return;
-    }
 
-    try {
-      const res = await fetch(`${API_URL}/api/image-metadata/${encodeURIComponent(album)}/${encodeURIComponent(filename)}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ title: editTitleValue || null, description: null }),
-      });
-
-      if (res.ok) {
-        setMessage({ type: 'success', text: 'Title updated successfully!' });
-        handleCloseEditModal();
-      } else {
-        setMessage({ type: 'error', text: 'Failed to update title' });
-      }
-    } catch (err) {
-      console.error('Failed to save title:', err);
-      setMessage({ type: 'error', text: 'Network error occurred' });
-    }
-  };
 
   const handleDeleteAlbum = async (albumName: string) => {
     // Save any unsaved changes first (pass current localAlbums state)
@@ -1592,7 +1474,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
       if (res.ok) {
         setMessage({ type: 'success', text: `Album "${albumName}" deleted` });
         trackAlbumDeleted(albumName);
-        if (selectedAlbum === albumName) setSelectedAlbum(null);
+        if (selectedAlbum === albumName) deselectAlbum();
         await loadAlbums();
         window.dispatchEvent(new Event('albums-updated'));
       } else {
@@ -2397,7 +2279,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
       
       // If the renamed album was selected, update the selection
       if (selectedAlbum === renamingAlbum) {
-        setSelectedAlbum(sanitized);
+        selectAlbum(sanitized);
       }
       
       await loadAlbums();
@@ -2476,7 +2358,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
             placeholderInfo={placeholderInfo}
             onDeleteFolder={handleDeleteFolder}
             onToggleFolderPublished={handleToggleFolderPublished}
-            onAlbumClick={(albumName) => setSelectedAlbum(selectedAlbum === albumName ? null : albumName)}
+            onAlbumClick={(albumName) => selectedAlbum === albumName ? deselectAlbum() : selectAlbum(albumName)}
             onAlbumDragOver={handleAlbumTileDragOver}
             onAlbumDragLeave={(e) => handleAlbumTileDragLeave(e)}
             onAlbumDrop={handleAlbumTileDrop}
@@ -2495,7 +2377,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
             isGhostAlbumDragOver={isGhostAlbumDragOver}
             uncategorizedSectionRef={uncategorizedSectionRef}
             ghostTileFileInputRef={ghostTileFileInputRef}
-            onAlbumClick={(albumName) => setSelectedAlbum(selectedAlbum === albumName ? null : albumName)}
+            onAlbumClick={(albumName) => selectedAlbum === albumName ? deselectAlbum() : selectAlbum(albumName)}
             onAlbumDragOver={handleAlbumTileDragOver}
             onAlbumDragLeave={handleAlbumTileDragLeave}
             onAlbumDrop={handleAlbumTileDrop}
@@ -2571,15 +2453,15 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                 setShareAlbumName(albumName);
                 setShowShareModal(true);
               }}
-              onSavePhotoOrder={handleSavePhotoOrder}
-              onCancelPhotoOrder={handleCancelPhotoOrder}
+              onSavePhotoOrder={() => photoManagement.savePhotoOrder()}
+              onCancelPhotoOrder={photoManagement.cancelPhotoReorder}
               onShufflePhotos={handleShuffleClick}
               onShuffleStart={handleShuffleStart}
               onShuffleEnd={handleShuffleEnd}
               onPhotoDragStart={handlePhotoDragStart}
               onPhotoDragEnd={handlePhotoDragEnd}
-              onOpenEditModal={handleOpenEditModal}
-              onDeletePhoto={handleDeletePhoto}
+              onOpenEditModal={openEditModal}
+              onDeletePhoto={(filename) => handleDeletePhoto(selectedAlbum!, filename)}
               onDragOver={handleDragOver}
               onDragLeave={handleDragLeave}
               onDrop={handleDrop}
@@ -2587,17 +2469,15 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
               shuffleButtonRef={shuffleButtonRef}
             />
           )}
-          )}
       </section>
 
-      {/* Edit Title Modal - Use Portal to escape admin-container z-index stacking context */}
       <ModalsCollection
         showEditModal={showEditModal}
         editingPhoto={editingPhoto}
         editTitleValue={editTitleValue}
         setEditTitleValue={setEditTitleValue}
-        handleCloseEditModal={handleCloseEditModal}
-        handleSaveTitle={handleSaveTitle}
+        handleCloseEditModal={closeEditModal}
+        handleSaveTitle={handleEditSave}
         showRenameModal={showRenameModal}
         renamingAlbum={renamingAlbum}
         newAlbumName={newAlbumName}
@@ -2608,7 +2488,20 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
         setShowFolderModal={setShowFolderModal}
         folderModalError={folderModalError}
         setFolderModalError={setFolderModalError}
-        folderManagement={folderManagement}
+        folderManagement={{
+          newFolderName: folderManagement.newFolderName,
+          setNewFolderName: folderManagement.setNewFolderName,
+          isCreatingFolder: folderManagement.isCreatingFolder,
+          handleCreateFolder: async () => {
+            const success = await folderManagement.createFolder(folderManagement.newFolderName);
+            if (success) {
+              setShowFolderModal(false);
+              setFolderModalError('');
+            } else {
+              setFolderModalError('Failed to create folder');
+            }
+          },
+        }}
         showDeleteFolderModal={showDeleteFolderModal}
         deletingFolderName={deletingFolderName}
         setShowDeleteFolderModal={setShowDeleteFolderModal}
@@ -2617,12 +2510,12 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
         localAlbums={localAlbums}
         showNewAlbumModal={showNewAlbumModal}
         setShowNewAlbumModal={setShowNewAlbumModal}
-        newAlbumNameInput={newAlbumNameInput}
-        setNewAlbumNameInput={setNewAlbumNameInput}
+        newAlbumNameInput={newAlbumModalName}
+        setNewAlbumNameInput={setNewAlbumModalName}
         newAlbumPublished={newAlbumPublished}
         setNewAlbumPublished={setNewAlbumPublished}
         newAlbumModalError={newAlbumModalError}
-        handleCreateAlbumSubmit={handleCreateAlbumSubmit}
+        handleCreateAlbumSubmit={handleCreateAlbumFromModal}
         showShareModal={showShareModal}
         shareAlbumName={shareAlbumName}
         setShowShareModal={setShowShareModal}
@@ -2630,7 +2523,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
         confirmConfig={confirmConfig}
         setShowConfirmModal={setShowConfirmModal}
       />
-    </section>
+    </>
   );
 };
 

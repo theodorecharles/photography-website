@@ -17,8 +17,8 @@ interface UncategorizedSectionProps {
   placeholderInfo: { folderId: number | null; insertAtIndex: number } | null;
   uploadingImages: UploadingImage[];
   isGhostAlbumDragOver: boolean;
-  uncategorizedSectionRef: React.RefObject<HTMLDivElement>;
-  ghostTileFileInputRef: React.RefObject<HTMLInputElement>;
+  uncategorizedSectionRef: React.RefObject<HTMLDivElement | null>;
+  ghostTileFileInputRef: React.RefObject<HTMLInputElement | null>;
   onAlbumClick: (albumName: string) => void;
   onAlbumDragOver: (e: React.DragEvent, albumName: string) => void;
   onAlbumDragLeave: (e: React.DragEvent) => void;

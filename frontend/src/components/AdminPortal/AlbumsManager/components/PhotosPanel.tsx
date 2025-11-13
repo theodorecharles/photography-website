@@ -5,11 +5,10 @@
  */
 
 import React from 'react';
-import { createPortal } from 'react-dom';
 import { DndContext, DragOverlay, closestCenter, PointerSensor, KeyboardSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { SortableContext, sortableKeyboardCoordinates, rectSortingStrategy } from '@dnd-kit/sortable';
 import SortablePhotoItem from './SortablePhotoItem';
-import { Photo, UploadingImage, UploadState } from '../types';
+import { Photo, UploadingImage } from '../types';
 import { cacheBustValue } from '../../../../config';
 
 const API_URL = import.meta.env.VITE_API_URL || '';
@@ -38,11 +37,11 @@ interface PhotosPanelProps {
   onPhotoDragEnd: (event: any) => void;
   onOpenEditModal: (photo: Photo) => void;
   onDeletePhoto: (filename: string) => void;
-  onDragOver: (e: React.DragEvent) => void;
-  onDragLeave: (e: React.DragEvent) => void;
-  onDrop: (e: React.DragEvent) => void;
+  onDragOver: (e: React.DragEvent<HTMLDivElement>) => void;
+  onDragLeave: (e: React.DragEvent<HTMLDivElement>) => void;
+  onDrop: (e: React.DragEvent<HTMLDivElement>) => void;
   setActiveId: (id: string | null) => void;
-  shuffleButtonRef: React.RefObject<HTMLButtonElement>;
+  shuffleButtonRef: React.RefObject<HTMLButtonElement | null>;
 }
 
 const PhotosPanel: React.FC<PhotosPanelProps> = ({

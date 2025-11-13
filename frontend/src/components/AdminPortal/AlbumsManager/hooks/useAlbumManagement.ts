@@ -195,6 +195,7 @@ export const useAlbumManagement = ({
     hasUnsavedChanges,
     setHasUnsavedChanges,
     animatingAlbum,
+    setAnimatingAlbum,
     createAlbum,
     deleteAlbum,
     toggleAlbumPublished,
