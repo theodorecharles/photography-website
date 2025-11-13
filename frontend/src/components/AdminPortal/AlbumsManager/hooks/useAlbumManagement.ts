@@ -147,10 +147,16 @@ export const useAlbumManagement = ({
 
   const saveAlbumOrder = useCallback(async (): Promise<boolean> => {
     try {
-      const res = await fetchWithRateLimitCheck(`${API_URL}/api/albums/reorder`, {
-        method: 'POST',
+      // Format albums for the API (needs albumOrders array with name and sort_order)
+      const albumOrders = localAlbums.map((album, index) => ({
+        name: album.name,
+        sort_order: index,
+      }));
+
+      const res = await fetchWithRateLimitCheck(`${API_URL}/api/albums/sort-order`, {
+        method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ albums: localAlbums }),
+        body: JSON.stringify({ albumOrders }),
         credentials: 'include',
       });
 
