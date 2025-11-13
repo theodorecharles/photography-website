@@ -236,7 +236,10 @@ export default function AdminPortal() {
         method: 'POST',
         credentials: 'include',
       });
-      window.location.href = '/';
+      // Use React Router navigation instead of full page reload
+      navigate('/');
+      // Force a refresh of the authentication state in App.tsx
+      window.dispatchEvent(new Event('auth-changed'));
     } catch (err) {
       console.error('Logout failed:', err);
     }
