@@ -317,9 +317,10 @@
 
 .folder-link {
   width: 100%;
-  display: flex;
+  display: grid;
+  grid-template-columns: 20px 1fr;
   align-items: center;
-  justify-content: center;
+  justify-items: center;
   padding: 0.75rem 1rem;
   border-radius: 4px;
   background: white;
@@ -331,6 +332,11 @@
   font-size: inherit;
   font-family: inherit;
   text-align: center;
+}
+
+.folder-link svg {
+  justify-self: start;
+  margin-right: 0 !important;
 }
 
 .folder-link:hover,
