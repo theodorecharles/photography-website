@@ -5,29 +5,13 @@
 
 import React from 'react';
 import { Stats } from './types';
+import { formatNumber, formatDuration } from '../../../utils/formatters';
 
 interface StatsCardsProps {
   stats: Stats;
 }
 
-const formatNumber = (num: number) => {
-  return num.toLocaleString();
-};
-
-const formatDuration = (ms: number) => {
-  const totalSeconds = Math.floor(ms / 1000);
-  const hours = Math.floor(totalSeconds / 3600);
-  const minutes = Math.floor((totalSeconds % 3600) / 60);
-  const seconds = totalSeconds % 60;
-
-  if (hours > 0) {
-    return `${hours}h ${minutes}m`;
-  } else if (minutes > 0) {
-    return `${minutes}m ${seconds}s`;
-  } else {
-    return `${seconds}s`;
-  }
-};
+// formatNumber and formatDuration functions moved to utils/formatters.ts
 
 const StatsCards: React.FC<StatsCardsProps> = ({ stats }) => {
   return (

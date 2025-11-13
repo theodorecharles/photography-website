@@ -5,41 +5,13 @@
 
 import { useSearchParams, Link } from 'react-router-dom';
 import './AuthError.css';
+import { getErrorMessage } from '../../utils/errorMessages';
+import { ErrorCircleIcon } from '../icons';
 
 export default function AuthError() {
   const [searchParams] = useSearchParams();
   const reason = searchParams.get('reason') || 'unknown';
-
-  const getErrorMessage = () => {
-    switch (reason) {
-      case 'unauthorized':
-        return {
-          title: 'Login Not Authorized',
-          message: 'Your email address is not authorized to access this system.',
-          details: 'If you believe this is an error, please contact the site administrator.'
-        };
-      case 'failed':
-        return {
-          title: 'Authentication Failed',
-          message: 'Unable to complete the login process.',
-          details: 'Please try again or contact support if the problem persists.'
-        };
-      case 'no_email':
-        return {
-          title: 'Email Required',
-          message: 'No email address was found in your Google account.',
-          details: 'Please ensure your Google account has a valid email address.'
-        };
-      default:
-        return {
-          title: 'Login Error',
-          message: 'An unexpected error occurred during login.',
-          details: 'Please try again later.'
-        };
-    }
-  };
-
-  const error = getErrorMessage();
+  const error = getErrorMessage(reason);
 
   return (
     <div className="auth-error-page">
