@@ -211,10 +211,12 @@ export default function AdminPortal() {
         method: 'POST',
         credentials: 'include',
       });
-      // Use React Router navigation instead of full page reload
-      navigate('/');
-      // Force a refresh of the authentication state in App.tsx
+      // Force auth state update BEFORE navigation to prevent flashing
       window.dispatchEvent(new Event('auth-changed'));
+      // Small delay to let auth state propagate
+      await new Promise(resolve => setTimeout(resolve, 50));
+      // Now navigate
+      navigate('/');
     } catch (err) {
       console.error('Logout failed:', err);
     }

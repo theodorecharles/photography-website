@@ -1,5 +1,7 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
+// CRITICAL: Import admin CSS bundle FIRST, before React starts
+import './admin-bundle.css'
 import App from './App.tsx'
 import { ANALYTICS_ENABLED } from './config'
 import { initAnalytics } from './utils/analytics'
