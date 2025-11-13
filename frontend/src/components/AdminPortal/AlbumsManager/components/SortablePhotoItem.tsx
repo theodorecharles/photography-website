@@ -8,6 +8,7 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Photo } from '../types';
 import { cacheBustValue } from '../../../../config';
+import { EditDocumentIcon, TrashIcon } from '../../../icons';
 
 const API_URL = import.meta.env.VITE_API_URL || '';
 

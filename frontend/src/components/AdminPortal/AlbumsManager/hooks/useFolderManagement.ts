@@ -4,7 +4,7 @@
  */
 
 import { useState, useCallback } from 'react';
-import { AlbumFolder } from '../types';
+// import { AlbumFolder } from '../types'; // not used directly in this file
 import { fetchWithRateLimitCheck } from '../../../../utils/fetchWrapper';
 
 const API_URL = import.meta.env.VITE_API_URL || '';

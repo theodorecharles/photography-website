@@ -75,7 +75,7 @@ export const processAlbumData = (
   }
   
   // Handle old format (array of strings or objects)
-  const albumNames = Array.isArray(albumsData)
+  const albums = Array.isArray(albumsData)
     ? albumsData
         .filter((album: string | Album) => {
           if (typeof album === 'string') return album !== 'homepage';
@@ -84,13 +84,16 @@ export const processAlbumData = (
           if (isAuthenticated) return true;
           return album.published === true;
         })
-        .map((album: string | Album) =>
-          typeof album === 'string' ? album : album.name
-        )
+        .map((album: string | Album): Album => {
+          if (typeof album === 'string') {
+            return { name: album, published: true, folder_id: null };
+          }
+          return album;
+        })
     : [];
 
   return {
-    albums: albumNames,
+    albums,
     folders: [],
   };
 };

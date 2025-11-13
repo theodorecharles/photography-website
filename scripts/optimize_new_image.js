@@ -21,7 +21,7 @@ const albumName = args[0];
 const imageFilename = args[1];
 
 // Read configuration
-const config = JSON.parse(readFileSync('config/config.json', 'utf8'));
+const config = JSON.parse(readFileSync('data/config.json', 'utf8'));
 const photosDir = config.environment.backend.photosDir || 'photos';
 const imageSettings = config.environment.optimization?.images || {};
 
@@ -34,7 +34,7 @@ const downloadMaxDim = imageSettings.download?.maxDimension || 4096;
 
 // Process a single version
 async function processVersion(sourcePath, version, quality, maxDim) {
-  const outputDir = `optimized/${version}/${albumName}`;
+  const outputDir = `data/optimized/${version}/${albumName}`;
   const outputPath = path.join(outputDir, imageFilename);
   
   // Create output directory

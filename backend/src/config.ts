@@ -66,22 +66,34 @@ const defaultConfig = {
   externalLinks: []
 };
 
-let fullConfig;
+// Configuration state that can be reloaded
+let fullConfig: any;
 let configExists = false;
 
-try {
-  if (fs.existsSync(configPath)) {
-    fullConfig = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-    configExists = true;
-    console.log(`✓ Loaded configuration from config.json`);
-  } else {
-    console.log(`⚠️  config.json not found - using defaults for setup mode`);
+// Function to load/reload configuration
+function loadConfig() {
+  try {
+    if (fs.existsSync(configPath)) {
+      fullConfig = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+      configExists = true;
+      console.log(`✓ Loaded configuration from config.json`);
+      return true;
+    } else {
+      console.log(`⚠️  config.json not found - using defaults for setup mode`);
+      fullConfig = defaultConfig;
+      configExists = false;
+      return false;
+    }
+  } catch (error) {
+    console.error(`❌ Failed to load config.json, using defaults:`, error);
     fullConfig = defaultConfig;
+    configExists = false;
+    return false;
   }
-} catch (error) {
-  console.error(`❌ Failed to load config.json, using defaults:`, error);
-  fullConfig = defaultConfig;
 }
+
+// Load config on startup
+loadConfig();
 
 const config = fullConfig.environment;
 
@@ -98,6 +110,28 @@ export const RATE_LIMIT_MAX_REQUESTS = config.security.rateLimitMaxRequests;
 
 // Export flag indicating if config exists
 export const CONFIG_EXISTS = configExists;
+
+// Export function to reload configuration (called after setup wizard completes)
+export function reloadConfig() {
+  console.log('🔄 Reloading configuration...');
+  const success = loadConfig();
+  if (success) {
+    console.log('✅ Configuration reloaded successfully');
+  }
+  return { success, configExists };
+}
+
+// Export function to get current config (always fresh)
+export function getCurrentConfig() {
+  return {
+    ...fullConfig.environment,
+    analytics: fullConfig.analytics,
+    branding: fullConfig.branding,
+    externalLinks: fullConfig.externalLinks,
+    frontend: fullConfig.environment.frontend,
+    configExists
+  };
+}
 
 // Export the full config for routes that need it (analytics, sitemap, etc)
 export default {

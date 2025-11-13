@@ -6,12 +6,8 @@ import { Album, AlbumFolder, Photo } from '../types';
 
 export type UploadState = 'queued' | 'uploading' | 'optimizing' | 'complete' | 'error';
 
-export interface Folder {
-  id: number;
-  name: string;
-  published: boolean;
-  sort_order?: number;
-}
+// Use AlbumFolder from parent types instead of defining a separate Folder interface
+export type Folder = AlbumFolder;
 
 export interface UploadingImage {
   file: File;

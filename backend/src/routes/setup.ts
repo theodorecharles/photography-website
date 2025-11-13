@@ -265,6 +265,18 @@ router.post('/initialize', async (req: Request, res: Response): Promise<void> =>
       // Continue anyway - database will be created on first access
     }
 
+    // Reload backend configuration
+    console.log('\n🔄 Reloading backend configuration...');
+    try {
+      const { reloadConfig } = await import('../config.js');
+      const reloadResult = reloadConfig();
+      if (reloadResult.success) {
+        console.log('  ✓ Configuration reloaded successfully');
+      }
+    } catch (err) {
+      console.error('  ❌ Failed to reload configuration:', err);
+    }
+
     // Initialize Google OAuth strategy with new config
     console.log('\n🔐 Initializing Google OAuth...');
     try {

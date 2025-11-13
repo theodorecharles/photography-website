@@ -40,20 +40,8 @@ export default function AdminPortal() {
   useEffect(() => {
     const loadCSS = async () => {
       try {
-        // Dynamic import to force Vite to inject CSS
-        await Promise.all([
-          import('./AdminPortal.css'),
-          import('./AlbumsManager.css'),
-          import('./PhotoOrderControls.css'),
-          import('./ConfigManager.css'),
-          import('./BrandingManager.css'),
-          import('./LinksManager.css'),
-          import('./ShareModal.css'),
-          import('./PasswordInput.css'),
-          import('./Metrics/Metrics.css'),
-          import('./Metrics/VisitorMap.css'),
-          import('leaflet/dist/leaflet.css'),
-        ]);
+        // Only import AdminPortal.css - other components import their own CSS
+        await import('./AdminPortal.css');
         
         // Wait for browser to process and apply styles
         await new Promise(resolve => requestAnimationFrame(resolve));

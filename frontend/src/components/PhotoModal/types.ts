@@ -3,7 +3,7 @@
  */
 
 // Photo interface moved to canonical location: types/photo.ts
-export { Photo } from '../../types/photo';
+export type { Photo } from '../../types/photo';
 
 export interface ExifData {
   Make?: string;

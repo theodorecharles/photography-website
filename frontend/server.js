@@ -11,7 +11,7 @@ const jsonCache = new Map();
 const JSON_CACHE_MAX_AGE = 5 * 60 * 1000; // 5 minutes
 
 // Load configuration
-const configPath = path.join(__dirname, "../config/config.json");
+const configPath = path.join(__dirname, "../data/config.json");
 const configFile = JSON.parse(fs.readFileSync(configPath, "utf8"));
 const config = configFile.environment;
 
