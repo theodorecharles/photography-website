@@ -15,7 +15,9 @@ const __dirname = path.dirname(__filename);
  * Load configuration with environment variable overrides for sensitive data
  */
 export function loadSecureConfig() {
-  const configPath = path.join(__dirname, '../../config/config.json');
+  // Use DATA_DIR from environment or default to project_root/data
+  const dataDir = process.env.DATA_DIR || path.join(__dirname, '../../data');
+  const configPath = path.join(dataDir, 'config.json');
   const rawConfig = JSON.parse(fs.readFileSync(configPath, 'utf8'));
   
   const envConfig = rawConfig.environment;

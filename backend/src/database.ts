@@ -4,17 +4,10 @@
  */
 
 import { createRequire } from 'module';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import { DB_PATH } from './config.js';
 
 const require = createRequire(import.meta.url);
 const Database = require('better-sqlite3');
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// Database file path (in project root)
-const DB_PATH = path.join(__dirname, '..', '..', 'gallery.db');
 
 let db: any = null;
 

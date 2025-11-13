@@ -37,10 +37,11 @@ const __dirname = path.dirname(__filename);
 router.get('/status', async (req: Request, res: Response): Promise<void> => {
   try {
     const projectRoot = path.join(__dirname, '../../../');
-    const configPath = path.join(projectRoot, 'config/config.json');
-    const dbPath = path.join(projectRoot, 'gallery.db');
-    const photosDir = path.join(projectRoot, 'photos');
-    const optimizedDir = path.join(projectRoot, 'optimized');
+    const dataDir = process.env.DATA_DIR || path.join(projectRoot, 'data');
+    const configPath = path.join(dataDir, 'config.json');
+    const dbPath = path.join(dataDir, 'gallery.db');
+    const photosDir = path.join(dataDir, 'photos');
+    const optimizedDir = path.join(dataDir, 'optimized');
 
     const checks = {
       configExists: fs.existsSync(configPath),
@@ -116,7 +117,8 @@ router.post('/initialize', async (req: Request, res: Response): Promise<void> =>
     }
 
     const projectRoot = path.join(__dirname, '../../../');
-    const configPath = path.join(projectRoot, 'config/config.json');
+    const dataDir = process.env.DATA_DIR || path.join(projectRoot, 'data');
+    const configPath = path.join(dataDir, 'config.json');
     const configExamplePath = path.join(projectRoot, 'config/config.example.json');
 
     // Create config directory if it doesn't exist
@@ -304,7 +306,8 @@ router.post('/upload-avatar', upload.single('avatar'), async (req: Request, res:
     }
     
     const projectRoot = path.join(__dirname, '../../../');
-    const photosDir = path.join(projectRoot, 'photos');
+    const dataDir = process.env.DATA_DIR || path.join(projectRoot, 'data');
+    const photosDir = path.join(dataDir, 'photos');
     
     // Create photos directory if it doesn't exist
     if (!fs.existsSync(photosDir)) {
@@ -319,7 +322,7 @@ router.post('/upload-avatar', upload.single('avatar'), async (req: Request, res:
     fs.writeFileSync(avatarPath, file.buffer);
     
     // Update config.json with avatar path
-    const configPath = path.join(projectRoot, 'config/config.json');
+    const configPath = path.join(dataDir, 'config.json');
     if (fs.existsSync(configPath)) {
       try {
         const configContent = fs.readFileSync(configPath, 'utf8');

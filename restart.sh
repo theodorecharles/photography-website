@@ -14,7 +14,11 @@ log() {
 # Function to send Telegram notification
 send_telegram_notification() {
     local MESSAGE="$1"
-    local CONFIG_FILE="config/config.json"
+    # Try data/config.json first, fall back to old location
+    local CONFIG_FILE="data/config.json"
+    if [ ! -f "$CONFIG_FILE" ]; then
+        CONFIG_FILE="config/config.json"
+    fi
     
     if [ -f "$CONFIG_FILE" ] && command -v jq &> /dev/null; then
         TELEGRAM_ENABLED=$(jq -r '.notifications.telegram.enabled // false' "$CONFIG_FILE")
@@ -40,7 +44,12 @@ handle_error() {
     # Get current branch and commit info
     CURRENT_BRANCH=$(git branch --show-current 2>/dev/null || echo "unknown")
     COMMIT_HASH=$(git rev-parse --short HEAD 2>/dev/null || echo "unknown")
-    SITE_URL=$(jq -r '.environment.backend.allowedOrigins[0] // ""' "config/config.json" 2>/dev/null || echo "")
+    # Try data/config.json first, fall back to old location
+    if [ -f "data/config.json" ]; then
+        SITE_URL=$(jq -r '.environment.backend.allowedOrigins[0] // ""' "data/config.json" 2>/dev/null || echo "")
+    else
+        SITE_URL=$(jq -r '.environment.backend.allowedOrigins[0] // ""' "config/config.json" 2>/dev/null || echo "")
+    fi
     
     # Send error notification to Telegram
     ERROR_NOTIFICATION="❌ Photography Website deployment FAILED!
@@ -97,6 +106,12 @@ fi
 # Return to project root
 cd ..
 
+# Run data directory migration (idempotent - safe to run multiple times)
+log "Running data directory migration..."
+if ! node migrate-to-data-directory.js; then
+    handle_error "Data directory migration failed"
+fi
+
 # Run database migrations
 log "Running database migrations..."
 if ! node migrate-database.js; then
@@ -140,7 +155,12 @@ fi
 # Get commit information for notification
 COMMIT_HASH=$(git rev-parse --short HEAD)
 COMMIT_MSG=$(git log -1 --pretty=%B | head -n 1)
-SITE_URL=$(jq -r '.environment.backend.allowedOrigins[0] // ""' "config/config.json" 2>/dev/null || echo "")
+# Try data/config.json first, fall back to old location
+if [ -f "data/config.json" ]; then
+    SITE_URL=$(jq -r '.environment.backend.allowedOrigins[0] // ""' "data/config.json" 2>/dev/null || echo "")
+else
+    SITE_URL=$(jq -r '.environment.backend.allowedOrigins[0] // ""' "config/config.json" 2>/dev/null || echo "")
+fi
 
 log "Deployment completed successfully!"
 

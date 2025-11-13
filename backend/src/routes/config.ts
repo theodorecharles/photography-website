@@ -17,7 +17,9 @@ const router = express.Router();
 // Apply CSRF protection to all routes
 router.use(csrfProtection);
 
-const CONFIG_PATH = path.join(__dirname, '../../../config/config.json');
+import { DATA_DIR } from '../config.js';
+
+const CONFIG_PATH = path.join(DATA_DIR, 'config.json');
 
 /**
  * Middleware to check if user is authenticated

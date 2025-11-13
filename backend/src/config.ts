@@ -10,8 +10,12 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Centralized data directory for all persistent data
+// This allows easy Docker volume mounting at /data
+export const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, '../../data');
+
 // Load config.json (the single source of truth)
-const configPath = path.join(__dirname, '../../config/config.json');
+const configPath = path.join(DATA_DIR, 'config.json');
 
 // Default configuration for when config.json doesn't exist yet
 const defaultConfig = {
@@ -22,7 +26,7 @@ const defaultConfig = {
     },
     backend: {
       port: 3001,
-      photosDir: "photos",
+      photosDir: path.join(DATA_DIR, "photos"),
       allowedOrigins: ["http://localhost:3000"]
     },
     security: {
@@ -84,7 +88,8 @@ const config = fullConfig.environment;
 // Export values from config.json (environment variables can override)
 export const PORT = process.env.PORT ? parseInt(process.env.PORT) : config.backend.port;
 export const PHOTOS_DIR = process.env.PHOTOS_DIR || config.backend.photosDir;
-export const OPTIMIZED_DIR = 'optimized';
+export const OPTIMIZED_DIR = path.join(DATA_DIR, 'optimized');
+export const DB_PATH = path.join(DATA_DIR, 'gallery.db');
 export const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS 
   ? process.env.ALLOWED_ORIGINS.split(',').map((o: string) => o.trim())
   : config.backend.allowedOrigins;
