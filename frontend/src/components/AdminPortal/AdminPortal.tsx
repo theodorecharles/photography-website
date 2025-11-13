@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { API_URL } from '../../config';
 // CSS will be loaded dynamically to ensure proper loading in dev mode
-import { AuthStatus, ExternalLink, BrandingConfig, Album, AlbumFolder, Tab } from './types';
+import { AuthStatus, ExternalLink, BrandingConfig, Album, AlbumFolder } from './types';
 import AlbumsManager from './AlbumsManager';
 import Metrics from './Metrics/Metrics';
 import ConfigManager from './ConfigManager';
@@ -17,6 +17,7 @@ import {
   trackAdminTabChange,
 } from '../../utils/analytics';
 import { useSSEToaster } from '../../contexts/SSEToasterContext';
+import { getActiveTab } from '../../utils/adminHelpers';
 import {
   CpuIcon,
   GoogleLogoIcon,
@@ -69,12 +70,7 @@ export default function AdminPortal() {
   }, []);
   
   // Determine active tab from URL
-  const getActiveTab = (): Tab => {
-    if (location.pathname.includes('/settings')) return 'config';
-    if (location.pathname.includes('/metrics')) return 'metrics';
-    return 'albums';
-  };
-  const activeTab = getActiveTab();
+  const activeTab = getActiveTab(location.pathname);
   
   // Shared state
   const [externalLinks, setExternalLinks] = useState<ExternalLink[]>([]);
