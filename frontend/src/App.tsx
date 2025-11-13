@@ -24,20 +24,7 @@ import { fetchWithRateLimitCheck } from "./utils/fetchWrapper";
 import { SSEToasterProvider } from "./contexts/SSEToasterContext";
 import SSEToaster from "./components/SSEToaster";
 
-// CRITICAL: Import all admin CSS BEFORE the AdminPortal component
-import "./components/AdminPortal/AdminPortal.css";
-import "./components/AdminPortal/AlbumsManager.css";
-import "./components/AdminPortal/PhotoOrderControls.css";
-import "./components/AdminPortal/ConfigManager.css";
-import "./components/AdminPortal/BrandingManager.css";
-import "./components/AdminPortal/LinksManager.css";
-import "./components/AdminPortal/ShareModal.css";
-import "./components/AdminPortal/PasswordInput.css";
-import "./components/AdminPortal/Metrics/Metrics.css";
-import "./components/AdminPortal/Metrics/VisitorMap.css";
-import "leaflet/dist/leaflet.css";
-
-// Import AdminPortal normally to ensure CSS is always loaded
+// Import AdminPortal - CSS is handled within the component for dev mode compatibility
 import AdminPortal from "./components/AdminPortal";
 
 // Lazy load other components that aren't needed on initial page load
@@ -431,7 +418,6 @@ function App() {
         <div className="error-icon-large">❌</div>
         <h2>Backend Error</h2>
         <p className="error-description">Unable to connect to the server</p>
-        <p className="error-details">{error}</p>
         <button onClick={() => window.location.reload()} className="retry-button">
           Reload Page
         </button>
