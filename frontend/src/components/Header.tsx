@@ -291,13 +291,13 @@ function Navigation({
                             fill="none"
                             stroke="currentColor"
                             strokeWidth="2"
-                            style={{ marginRight: '6px', opacity: 0.6 }}
+                            style={{ marginRight: '6px', opacity: 0.6, flexShrink: 0 }}
                           >
                             <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
                             <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
                           </svg>
                         )}
-                        {albumName}
+                        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0, flex: 1 }}>{albumName}</span>
                       </Link>
                     );
                   })}
@@ -401,13 +401,13 @@ function Navigation({
                                         fill="none"
                                         stroke="currentColor"
                                         strokeWidth="2"
-                                        style={{ marginRight: '6px', opacity: 0.6 }}
+                                        style={{ marginRight: '6px', opacity: 0.6, flexShrink: 0 }}
                                       >
                                         <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
                                         <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
                                       </svg>
                                     )}
-                                    {albumName}
+                                    <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0, flex: 1 }}>{albumName}</span>
                                   </Link>
                                 );
                               })
@@ -446,13 +446,13 @@ function Navigation({
                           fill="none"
                           stroke="currentColor"
                           strokeWidth="2"
-                          style={{ marginRight: '6px', opacity: 0.6 }}
+                          style={{ marginRight: '6px', opacity: 0.6, flexShrink: 0 }}
                         >
                           <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
                           <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
                         </svg>
                       )}
-                      {albumName}
+                      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0, flex: 1 }}>{albumName}</span>
                     </Link>
                   );
                 })
