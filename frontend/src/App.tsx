@@ -223,9 +223,13 @@ function App() {
           });
         
         // Filter folders to only show published folders to unauthenticated users
+        // Note: Backend already returns only published folders for unauthenticated users via getPublishedFolders()
+        // but we double-check here. SQLite returns published as 1/0, so check for truthy value or explicit true
         const filteredFolders = isAuthenticated
           ? (albumsData.folders || [])
-          : (albumsData.folders || []).filter((folder: { published: boolean }) => folder.published);
+          : (albumsData.folders || []).filter((folder: { published: boolean | number }) => 
+              folder.published === true || folder.published === 1
+            );
         
         setAlbums(filteredAlbums);
         setFolders(filteredFolders);
@@ -300,9 +304,13 @@ function App() {
               });
             
             // Filter folders to only show published folders to unauthenticated users
+            // Note: Backend already returns only published folders for unauthenticated users via getPublishedFolders()
+            // but we double-check here. SQLite returns published as 1/0, so check for truthy value or explicit true
             const filteredFolders = isAuthenticated
               ? (albumsData.folders || [])
-              : (albumsData.folders || []).filter((folder: { published: boolean }) => folder.published);
+              : (albumsData.folders || []).filter((folder: { published: boolean | number }) => 
+                  folder.published === true || folder.published === 1
+                );
             
             setAlbums(filteredAlbums);
             setFolders(filteredFolders);
