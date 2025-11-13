@@ -7,7 +7,7 @@
  * - SortablePhotoItem: Drag-and-drop photo thumbnails
  */
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { useSearchParams } from 'react-router-dom';
 import { Album, AlbumFolder, Photo, UploadingImage, AlbumsManagerProps, UploadState } from './types';
@@ -172,6 +172,9 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   const [dragOverFolderId, setDragOverFolderId] = useState<number | null>(null);
   const [dragOverUncategorized, setDragOverUncategorized] = useState(false);
   
+  // Ref to track if we're currently dragging (for touch scroll prevention)
+  const isDraggingRef = useRef(false);
+  
   // Ref for ghost tile file input
   const ghostTileFileInputRef = useRef<HTMLInputElement>(null);
 
@@ -263,6 +266,20 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     uploadingImagesRef.current = uploadingImages;
   }, [uploadingImages]);
 
+  // Cleanup: Remove touch scroll prevention listener on unmount
+  useEffect(() => {
+    return () => {
+      // Remove event listener if component unmounts while dragging
+      document.removeEventListener('touchmove', preventTouchScroll);
+      // Reset dragging state
+      isDraggingRef.current = false;
+      // Restore body styles
+      document.body.style.overflow = '';
+      document.body.style.touchAction = '';
+      document.documentElement.style.touchAction = '';
+    };
+  }, [preventTouchScroll]);
+
   // Check if all uploads are complete and reload if needed
   const checkAndReloadIfComplete = async (albumName: string) => {
     const current = uploadingImagesRef.current;
@@ -331,13 +348,98 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     return albumPhotos.some((photo, index) => photo.id !== originalPhotoOrder[index].id);
   };
 
+  // Helper function to prevent touch scrolling during drag
+  // Memoized with useCallback so cleanup effect can properly reference it
+  const preventTouchScroll = useCallback((e: TouchEvent) => {
+    // Only prevent if we're actually dragging
+    if (isDraggingRef.current) {
+      e.preventDefault();
+    }
+  }, []);
+
+  // Helper function to disable touch scrolling on all scrollable elements
+  const disableTouchScroll = () => {
+    // Mark that we're dragging
+    isDraggingRef.current = true;
+    
+    // Disable body scrolling
+    document.body.style.overflow = 'hidden';
+    document.body.style.touchAction = 'none';
+    document.documentElement.style.touchAction = 'none';
+    
+    // Prevent touchmove events that cause scrolling
+    document.addEventListener('touchmove', preventTouchScroll, { passive: false });
+    
+    // Find and disable all scrollable containers (more efficient: only check common scrollable containers)
+    const scrollableSelectors = [
+      '.admin-section',
+      '.albums-list',
+      '.folders-section',
+      '.uncategorized-section',
+      '.album-photos',
+      '[style*="overflow"]',
+      '[class*="scroll"]'
+    ];
+    
+    scrollableSelectors.forEach((selector) => {
+      try {
+        const elements = document.querySelectorAll(selector);
+        elements.forEach((element) => {
+          const htmlElement = element as HTMLElement;
+          const style = window.getComputedStyle(htmlElement);
+          
+          // Check if element is scrollable
+          if (
+            style.overflow === 'auto' ||
+            style.overflow === 'scroll' ||
+            style.overflowY === 'auto' ||
+            style.overflowY === 'scroll' ||
+            style.overflowX === 'auto' ||
+            style.overflowX === 'scroll'
+          ) {
+            // Store original touch-action if not already stored
+            if (!htmlElement.dataset.originalTouchAction) {
+              htmlElement.dataset.originalTouchAction = style.touchAction || '';
+            }
+            htmlElement.style.touchAction = 'none';
+          }
+        });
+      } catch (e) {
+        // Ignore invalid selectors
+      }
+    });
+  };
+
+  // Helper function to re-enable touch scrolling
+  const enableTouchScroll = () => {
+    // Mark that we're no longer dragging
+    isDraggingRef.current = false;
+    
+    // Remove touchmove prevention
+    document.removeEventListener('touchmove', preventTouchScroll);
+    
+    // Re-enable body scrolling
+    document.body.style.overflow = '';
+    document.body.style.touchAction = '';
+    document.documentElement.style.touchAction = '';
+    
+    // Restore touch-action on all elements that had it modified
+    const elementsWithData = document.querySelectorAll('[data-original-touch-action]');
+    elementsWithData.forEach((element) => {
+      const htmlElement = element as HTMLElement;
+      if (htmlElement.dataset.originalTouchAction !== undefined) {
+        htmlElement.style.touchAction = htmlElement.dataset.originalTouchAction;
+        delete htmlElement.dataset.originalTouchAction;
+      }
+    });
+  };
+
   // Handle drag start for photos
   const handlePhotoDragStart = (event: DragEndEvent) => {
     setHasEverDragged(true); // Mark that user has started dragging
     setActiveId(event.active.id as string);
     // Prevent scrolling during drag on mobile
-    document.body.style.overflow = 'hidden';
-    document.body.style.touchAction = 'none';
+    disableTouchScroll();
   };
 
   // Handle drag end for photos
@@ -355,8 +457,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     
     setActiveId(null);
     // Re-enable scrolling after drag
-    document.body.style.overflow = '';
-    document.body.style.touchAction = '';
+    enableTouchScroll();
   };
 
   // Handle unified drag start for both albums and folders
@@ -372,8 +473,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     }
     
     // Prevent scrolling during drag on mobile
-    document.body.style.overflow = 'hidden';
-    document.body.style.touchAction = 'none';
+    disableTouchScroll();
   };
 
   // Handle drag over (to show folder highlight when album is dragged over)
@@ -410,8 +510,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     setDragOverUncategorized(false);
     
     // Re-enable scrolling after drag
-    document.body.style.overflow = '';
-    document.body.style.touchAction = '';
+    enableTouchScroll();
 
     if (!over) return;
 
