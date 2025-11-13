@@ -252,7 +252,8 @@ router.get("/api/albums", (req: Request, res) => {
       const state = updatedAlbumStates.find(a => a.name === albumName);
       return {
         name: albumName,
-        folder_id: state?.folder_id ?? null
+        folder_id: state?.folder_id ?? null,
+        published: true // Already filtered to published albums
       };
     });
     
