@@ -24,6 +24,9 @@ import SortableAlbumCard from './components/SortableAlbumCard';
 import SortablePhotoItem from './components/SortablePhotoItem';
 import SortableFolderCard from './components/SortableFolderCard';
 import PhotosPanel from './components/PhotosPanel';
+import AlbumToolbar from './components/AlbumToolbar';
+import FoldersSection from './components/FoldersSection';
+import UncategorizedSection from './components/UncategorizedSection';
 import ModalsCollection from './components/ModalsCollection';
 import { useAlbumManagement } from './hooks/useAlbumManagement';
 import { usePhotoManagement } from './hooks/usePhotoManagement';
@@ -2454,178 +2457,56 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
             strategy={rectSortingStrategy}
           >
           
-          {/* Button Bar - Create Folder (left) and Save/Cancel (right) */}
-          <div style={{ 
-            display: 'flex', 
-            justifyContent: 'space-between', 
-            alignItems: 'center', 
-            marginTop: '3rem', 
-            marginBottom: '1rem' 
-          }}>
-            {/* Left side - Create Folder Button */}
-            <div>
-              <button 
-                className="btn-action btn-upload" 
-                onClick={() => setShowFolderModal(true)} 
-                style={{ fontSize: '0.85rem', padding: '0.5rem 1rem' }}
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
-                  <path d="M12 11v6M9 14h6"/>
-                </svg>
-                {localFolders.length === 0 ? 'Create First Folder' : 'New Folder'}
-              </button>
-            </div>
-            
-            {/* Right side - Save/Cancel buttons and unsaved indicator */}
-            {hasUnsavedChanges && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                <span style={{ color: '#fbbf24', fontSize: '0.9rem', fontWeight: 500 }}>
-                  ● Unsaved changes
-                </span>
-                <button
-                  onClick={handleCancelChanges}
-                  className="btn-secondary"
-                  style={{ padding: '0.5rem 1rem' }}
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleSaveChanges}
-                  className="btn-action btn-upload"
-                  style={{ padding: '0.5rem 1.5rem' }}
-                >
-                  Save Changes
-                </button>
-              </div>
-            )}
-          </div>
           
-          {/* Folders Section */}
-          {localFolders.length > 0 && (
-            <div className="folders-section" style={{ marginBottom: '1rem' }}>
-              <SortableContext items={localFolders.map(f => `folder-${f.id}`)} strategy={rectSortingStrategy}>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                  {localFolders.map((folder) => (
-                    <SortableFolderCard
-                      key={folder.id}
-                      folder={folder}
-                      albums={localAlbums.filter(a => a.folder_id === folder.id)}
-                      selectedAlbum={selectedAlbum}
-                      animatingAlbum={animatingAlbum}
-                      dragOverAlbum={dragOverAlbum}
-                      isDragOver={dragOverFolderId === folder.id}
-                      showPlaceholderAtIndex={placeholderInfo?.folderId === folder.id ? placeholderInfo?.insertAtIndex : undefined}
-                      onDelete={handleDeleteFolder}
-                      onTogglePublished={handleToggleFolderPublished}
-                      onAlbumClick={(albumName) => setSelectedAlbum(selectedAlbum === albumName ? null : albumName)}
-                      onAlbumDragOver={handleAlbumTileDragOver}
-                      onAlbumDragLeave={(e) => handleAlbumTileDragLeave(e)}
-                      onAlbumDrop={handleAlbumTileDrop}
-                      onAlbumRename={(albumName) => handleOpenRenameModal(albumName)}
-                      onCreateAlbumInFolder={handleCreateAlbumInFolder}
-                    />
-                  ))}
-                </div>
-              </SortableContext>
-            </div>
-          )}
+          <AlbumToolbar
+            hasUnsavedChanges={hasUnsavedChanges}
+            localFoldersCount={localFolders.length}
+            onCreateFolder={() => setShowFolderModal(true)}
+            onSaveChanges={handleSaveChanges}
+            onCancelChanges={handleCancelChanges}
+          />
           
-          {/* Albums Section - Uncategorized */}
-          <div className="albums-management">
-            <div className="albums-list">
-              <div 
-                ref={uncategorizedSectionRef}
-                className={`uncategorized-section ${dragOverUncategorized ? 'drag-over-uncategorized' : ''}`}
-              >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                  <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 600, color: '#fff' }}>
-                    Uncategorized Albums
-                  </h3>
-                  <span style={{ fontSize: '0.9rem', color: '#888' }}>
-                    {(() => {
-                      const count = localAlbums.filter(album => !album.folder_id).length;
-                      return `${count} ${count === 1 ? 'album' : 'albums'}`;
-                    })()}
-                  </span>
-                </div>
-                <SortableContext 
-                  items={localAlbums.filter(album => !album.folder_id).map(a => a.name)} 
-                  strategy={rectSortingStrategy}
-                >
-                  <div className="album-grid">
-                    {localAlbums.filter(album => !album.folder_id).map((album, index) => (
-                      <React.Fragment key={album.name}>
-                        {/* Show placeholder before this album if needed */}
-                        {placeholderInfo?.folderId === null && placeholderInfo.insertAtIndex === index && (
-                          <div
-                            className="album-card album-placeholder"
-                            style={{
-                              border: '2px dashed #3b82f6',
-                              background: 'rgba(59, 130, 246, 0.1)',
-                              pointerEvents: 'none',
-                            }}
-                          />
-                        )}
-                        <SortableAlbumCard
-                          album={album}
-                          isSelected={selectedAlbum === album.name}
-                          isAnimating={animatingAlbum === album.name}
-                          isDragOver={dragOverAlbum === album.name}
-                          onClick={() => setSelectedAlbum(selectedAlbum === album.name ? null : album.name)}
-                          onDragOver={(e) => handleAlbumTileDragOver(e, album.name)}
-                          onDragLeave={handleAlbumTileDragLeave}
-                          onDrop={(e) => handleAlbumTileDrop(e, album.name)}
-                          onRename={handleOpenRenameModal}
-                        />
-                      </React.Fragment>
-                    ))}
-                    {/* Show placeholder at end if needed */}
-                    {placeholderInfo?.folderId === null && placeholderInfo.insertAtIndex === localAlbums.filter(album => !album.folder_id).length && (
-                      <div
-                        className="album-card album-placeholder"
-                        style={{
-                          border: '2px dashed #3b82f6',
-                          background: 'rgba(59, 130, 246, 0.1)',
-                          pointerEvents: 'none',
-                        }}
-                      />
-                    )}
-                    
-                    {/* Ghost tile for creating new albums */}
-                    <div 
-                      className={`album-card ghost-album-tile ${isGhostAlbumDragOver ? 'drag-over-ghost' : ''} ${uploadingImages.length > 0 ? 'ghost-tile-disabled' : ''}`}
-                      onClick={uploadingImages.length > 0 ? undefined : handleGhostTileClick}
-                      onDragOver={uploadingImages.length > 0 ? undefined : handleGhostTileDragOver}
-                      onDragLeave={uploadingImages.length > 0 ? undefined : handleGhostTileDragLeave}
-                      onDrop={uploadingImages.length > 0 ? undefined : handleGhostTileDrop}
-                    >
-                      <div className="ghost-tile-content">
-                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <circle cx="12" cy="12" r="10"/>
-                          <path d="M12 8v8M8 12h8"/>
-                        </svg>
-                        {uploadingImages.length > 0 ? (
-                          <span className="ghost-tile-hint">Uploading...</span>
-                        ) : isGhostAlbumDragOver ? (
-                          <span className="ghost-tile-hint">Drop to create</span>
-                        ) : null}
-                      </div>
-                      <input
-                        ref={ghostTileFileInputRef}
-                        type="file"
-                        multiple
-                        accept="image/*"
-                        onChange={handleGhostTileFileSelect}
-                        disabled={uploadingImages.length > 0}
-                        style={{ display: 'none' }}
-                      />
-                    </div>
-                  </div>
-                </SortableContext>
-              </div>
-            </div>
-          </div>
+          <FoldersSection
+            localFolders={localFolders}
+            localAlbums={localAlbums}
+            selectedAlbum={selectedAlbum}
+            animatingAlbum={animatingAlbum}
+            dragOverAlbum={dragOverAlbum}
+            dragOverFolderId={dragOverFolderId}
+            placeholderInfo={placeholderInfo}
+            onDeleteFolder={handleDeleteFolder}
+            onToggleFolderPublished={handleToggleFolderPublished}
+            onAlbumClick={(albumName) => setSelectedAlbum(selectedAlbum === albumName ? null : albumName)}
+            onAlbumDragOver={handleAlbumTileDragOver}
+            onAlbumDragLeave={(e) => handleAlbumTileDragLeave(e)}
+            onAlbumDrop={handleAlbumTileDrop}
+            onAlbumRename={(albumName) => handleOpenRenameModal(albumName)}
+            onCreateAlbumInFolder={handleCreateAlbumInFolder}
+          />
+          
+          <UncategorizedSection
+            localAlbums={localAlbums}
+            selectedAlbum={selectedAlbum}
+            animatingAlbum={animatingAlbum}
+            dragOverAlbum={dragOverAlbum}
+            dragOverUncategorized={dragOverUncategorized}
+            placeholderInfo={placeholderInfo}
+            uploadingImages={uploadingImages}
+            isGhostAlbumDragOver={isGhostAlbumDragOver}
+            uncategorizedSectionRef={uncategorizedSectionRef}
+            ghostTileFileInputRef={ghostTileFileInputRef}
+            onAlbumClick={(albumName) => setSelectedAlbum(selectedAlbum === albumName ? null : albumName)}
+            onAlbumDragOver={handleAlbumTileDragOver}
+            onAlbumDragLeave={handleAlbumTileDragLeave}
+            onAlbumDrop={handleAlbumTileDrop}
+            onAlbumRename={handleOpenRenameModal}
+            onGhostTileClick={handleGhostTileClick}
+            onGhostTileDragOver={handleGhostTileDragOver}
+            onGhostTileDragLeave={handleGhostTileDragLeave}
+            onGhostTileDrop={handleGhostTileDrop}
+            onGhostTileFileSelect={handleGhostTileFileSelect}
+          />
+          
           
           {/* Unified Drag Overlay for both albums and folders */}
           <DragOverlay>
