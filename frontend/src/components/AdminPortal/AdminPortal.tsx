@@ -23,7 +23,37 @@ export default function AdminPortal() {
   const location = useLocation();
   const [authStatus, setAuthStatus] = useState<AuthStatus | null>(null);
   const [loading, setLoading] = useState(true);
+  const [cssReady, setCssReady] = useState(false);
   const sseToaster = useSSEToaster();
+  
+  // Force CSS to load in dev mode by dynamically importing it
+  useEffect(() => {
+    const loadCSS = async () => {
+      if (import.meta.env.DEV) {
+        // In dev mode, force re-import of CSS modules
+        try {
+          await Promise.all([
+            import('./AdminPortal.css'),
+            import('./AlbumsManager.css'),
+            import('./PhotoOrderControls.css'),
+            import('./ConfigManager.css'),
+            import('./BrandingManager.css'),
+            import('./LinksManager.css'),
+            import('./ShareModal.css'),
+            import('./PasswordInput.css'),
+            import('./Metrics/Metrics.css'),
+            import('./Metrics/VisitorMap.css'),
+            import('leaflet/dist/leaflet.css'),
+          ]);
+          console.log('✅ Admin CSS dynamically loaded');
+        } catch (err) {
+          console.error('❌ Failed to load admin CSS:', err);
+        }
+      }
+      setCssReady(true);
+    };
+    loadCSS();
+  }, []);
   
   // Determine active tab from URL
   const getActiveTab = (): Tab => {
@@ -221,7 +251,7 @@ export default function AdminPortal() {
     }
   };
 
-  if (loading) {
+  if (loading || !cssReady) {
     return (
       <div className="admin-portal">
         <div className="admin-container">
@@ -237,7 +267,7 @@ export default function AdminPortal() {
             }}
           >
             <div className="loading-spinner"></div>
-            <p>Loading site settings...</p>
+            <p>{!cssReady ? 'Loading styles...' : 'Loading site settings...'}</p>
           </div>
         </div>
       </div>
