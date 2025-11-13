@@ -7,22 +7,10 @@
  * - SortablePhotoItem: Drag-and-drop photo thumbnails
  */
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { createPortal } from 'react-dom';
+import React, { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Album, AlbumFolder, Photo, UploadingImage, AlbumsManagerProps, UploadState } from './types';
-import { 
-  trackAlbumCreated,
-  trackAlbumDeleted,
-  trackPhotoUploaded,
-  trackPhotoDeleted
-} from '../../../utils/analytics';
-import { cacheBustValue } from '../../../config';
-import { fetchWithRateLimitCheck } from '../../../utils/fetchWrapper';
-import ShareModal from '../ShareModal';
-import SortableAlbumCard from './components/SortableAlbumCard';
-import SortablePhotoItem from './components/SortablePhotoItem';
-import SortableFolderCard from './components/SortableFolderCard';
+import { UploadingImage, AlbumsManagerProps } from './types';
+import { trackAlbumCreated } from '../../../utils/analytics';
 import PhotosPanel from './components/PhotosPanel';
 import AlbumToolbar from './components/AlbumToolbar';
 import FoldersSection from './components/FoldersSection';
@@ -31,9 +19,9 @@ import ModalsCollection from './components/ModalsCollection';
 import { useAlbumManagement } from './hooks/useAlbumManagement';
 import { usePhotoManagement } from './hooks/usePhotoManagement';
 import { useFolderManagement } from './hooks/useFolderManagement';
-import { sanitizeAndTitleCase, isValidAlbumName, formatFileSize, validateImageFiles } from './utils/albumHelpers';
-import { disableTouchScroll, enableTouchScroll, isDraggingFolder, isDraggingAlbum, extractFolderId } from './utils/dragDropHelpers';
+import { isValidAlbumName } from './utils/albumHelpers';
 import { customCollisionDetection } from './utils/collisionDetection';
+import { showConfirmation as createConfirmation, handleModalCancel as cancelModal, ConfirmModalConfig } from './utils/modalHelpers';
 import { createDragDropHandlers } from './handlers/dragDropHandlers';
 import { createFolderHandlers } from './handlers/folderHandlers';
 import { createUploadHandlers } from './handlers/uploadHandlers';
@@ -44,94 +32,19 @@ import '../AlbumsManager.css';
 import '../PhotoOrderControls.css';
 import {
   DndContext,
-  closestCenter,
-  closestCorners,
   KeyboardSensor,
   PointerSensor,
   useSensor,
   useSensors,
-  DragEndEvent,
   DragOverlay,
-  DragOverEvent,
-  rectIntersection,
-  CollisionDetection,
-  useDroppable,
-  pointerWithin,
 } from '@dnd-kit/core';
 import {
-  arrayMove,
   SortableContext,
   sortableKeyboardCoordinates,
   rectSortingStrategy,
 } from '@dnd-kit/sortable';
 
 const API_URL = import.meta.env.VITE_API_URL || '';
-
-/**
- * Custom collision detection that prioritizes album-to-album collisions within grids
- * Uses closestCorners for better gap detection in grid layouts
- */
-const customCollisionDetection: CollisionDetection = (args) => {
-  const activeId = String(args.active?.id || '');
-  
-  // When dragging an album (not a folder)
-  if (activeId && !activeId.startsWith('folder-')) {
-    // First, check for grid collisions to see if we're over a specific folder/uncategorized area
-    const gridContainers = Array.from(args.droppableContainers.values())
-      .filter(container => {
-        const id = String(container.id);
-        return id.startsWith('folder-grid-') || id === 'uncategorized-grid';
-      });
-    
-    const gridCollisions = rectIntersection({
-      ...args,
-      droppableContainers: gridContainers,
-    });
-    
-    // If we're over a grid, check for album collisions WITHIN that grid only
-    if (gridCollisions.length > 0) {
-      const gridId = String(gridCollisions[0].id);
-      
-      // Only get album collisions from droppable containers (albums only)
-      const albumContainers = Array.from(args.droppableContainers.values())
-        .filter(container => {
-          const id = String(container.id);
-          return !id.startsWith('folder-') && !id.endsWith('-grid');
-        });
-      
-      // If there are no albums at all in droppable containers, use the grid
-      if (albumContainers.length === 0) {
-        return gridCollisions;
-      }
-      
-      // First, check if the pointer is actually INSIDE any album container using pointerWithin
-      const albumsWithPointerInside = pointerWithin({
-        ...args,
-        droppableContainers: albumContainers,
-      });
-      
-      // If pointer is inside an album, use closestCorners for precise positioning
-      if (albumsWithPointerInside.length > 0) {
-        const albumCollisions = closestCorners({
-          ...args,
-          droppableContainers: albumContainers,
-        });
-        return albumCollisions;
-      }
-      
-      // Pointer is NOT inside any album - use the grid collision (empty folder or empty space)
-      return gridCollisions;
-    }
-    
-    // Not over any grid - fall back to all collisions
-    return closestCorners(args);
-  }
-  
-  // For folder reordering, use closestCorners for consistency
-  return closestCorners(args);
-};
-
-// Helper function moved to utils/albumHelpers.ts
 
 const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   albums,
@@ -284,31 +197,15 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   
   // Confirmation modal state
   const [showConfirmModal, setShowConfirmModal] = useState(false);
-  const [confirmConfig, setConfirmConfig] = useState<{
-    message: string;
-    onConfirm: () => void;
-  } | null>(null);
+  const [confirmConfig, setConfirmConfig] = useState<ConfirmModalConfig | null>(null);
   
   // Folder deletion modal state
   const [showDeleteFolderModal, setShowDeleteFolderModal] = useState(false);
   const [deletingFolderName, setDeletingFolderName] = useState<string | null>(null);
 
-  // Helper function to show confirmation modal
+  // Helper function to show confirmation modal (using imported utility)
   const showConfirmation = (message: string): Promise<boolean> => {
-    return new Promise((resolve) => {
-      setConfirmConfig({
-        message,
-        onConfirm: () => {
-          setShowConfirmModal(false);
-          setConfirmConfig(null);
-          resolve(true);
-        },
-      });
-      setShowConfirmModal(true);
-      // Store reject function for cancel
-      const originalResolve = resolve;
-      (window as any).__modalResolve = originalResolve;
-    });
+    return createConfirmation(message, setShowConfirmModal, setConfirmConfig);
   };
 
 // Initialize all handlers using factory functions
@@ -437,39 +334,59 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   } = photoHandlers;
 
   // Additional handlers that need to stay inline due to local state dependencies
-  const handleModalCancel = () => {
-    setShowConfirmModal(false);
-    setConfirmConfig(null);
-    if ((window as any).__modalResolve) {
-      (window as any).__modalResolve(false);
-      delete (window as any).__modalResolve;
+  const handleModalCancel = () => cancelModal(setShowConfirmModal, setConfirmConfig);
+
+  const handleCreateAlbumFromModal = async () => {
+    // Validate album name
+    if (!isValidAlbumName(newAlbumModalName)) {
+      setNewAlbumModalError('Album name must be at least 2 characters and contain only letters, numbers, spaces, hyphens, and underscores');
+      return;
     }
-  };
-
-
-
-  const handleDeletePhoto = async (album: string, filename: string, photoTitle: string = '') => {
-    const confirmed = await showConfirmation(`Delete this photo${photoTitle ? ` (${photoTitle})` : ''}?\n\nThis action cannot be undone.`);
-    if (!confirmed) return;
-
+    
+    // Check for duplicate names
+    if (localAlbums.some(a => a.name.toLowerCase() === newAlbumModalName.trim().toLowerCase())) {
+      setNewAlbumModalError('An album with this name already exists');
+      return;
+    }
+    
     try {
-      const res = await fetch(`${API_URL}/api/albums/${encodeURIComponent(album)}/photos/${encodeURIComponent(filename)}`, {
-        method: 'DELETE',
-        credentials: 'include',
+      const formData = new FormData();
+      formData.append('published', newAlbumPublished.toString());
+      if (targetFolderId !== null) {
+        formData.append('folder_id', targetFolderId.toString());
+      }
+      
+      newAlbumFiles.forEach(file => {
+        formData.append('images', file);
       });
-
+      
+      const res = await fetch(`${API_URL}/api/albums/${encodeURIComponent(newAlbumModalName)}`, {
+        method: 'POST',
+        credentials: 'include',
+        body: formData,
+      });
+      
       if (res.ok) {
-        setMessage({ type: 'success', text: 'Photo deleted' });
-        trackPhotoDeleted(album, filename, photoTitle || filename);
-        await loadPhotos(album);
+        setMessage({ type: 'success', text: `Album "${newAlbumModalName}" created` });
+        trackAlbumCreated(newAlbumModalName, newAlbumFiles.length);
+        await loadAlbums();
+        setShowNewAlbumModal(false);
+        setNewAlbumModalName('');
+        setNewAlbumFiles([]);
+        setNewAlbumModalError('');
+        setTargetFolderId(null);
+        selectAlbum(newAlbumModalName);
       } else {
         const error = await res.json();
-        setMessage({ type: 'error', text: error.error || 'Failed to delete photo' });
+        setNewAlbumModalError(error.error || 'Failed to create album');
       }
     } catch (err) {
-      setMessage({ type: 'error', text: 'Network error occurred' });
+      setNewAlbumModalError('Network error occurred');
     }
   };
+
+  // Ref for shuffle button (for long-press shuffle)
+  const shuffleButtonRef = useRef<HTMLButtonElement>(null);
 
 
   return (
