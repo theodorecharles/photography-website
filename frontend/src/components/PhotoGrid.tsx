@@ -21,20 +21,8 @@ interface PhotoGridProps {
   onLoadComplete?: () => void;
 }
 
-interface Photo {
-  id: string;
-  thumbnail: string;
-  modal: string;
-  download: string;
-  title: string;
-  album: string;
-  metadata?: {
-    created: string;
-    modified: string;
-    size: number;
-  };
-  exif?: any; // EXIF data from exifr library
-}
+// Import Photo from canonical location
+import type { Photo } from '../types/photo';
 
 const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPhotos, onLoadComplete }) => {
   const location = useLocation();

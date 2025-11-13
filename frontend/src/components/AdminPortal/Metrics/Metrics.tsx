@@ -18,41 +18,8 @@ import { fetchWithRateLimitCheck } from '../../../utils/fetchWrapper';
 import VisitorMap from './VisitorMap';
 import './Metrics.css';
 
-interface Stats {
-  uniqueVisitors: number;
-  pageViews: number;
-  topPages: Array<{ page_path: string; views: number }>;
-  topReferrers: Array<{ referrer: string; count: number }>;
-  eventTypes: Array<{ event_type: string; count: number }>;
-  stream: string;
-  timeRange: {
-    start: number;
-    end: number;
-    days: number;
-  };
-  totalViewDuration?: number;
-  topPicturesByDuration?: Array<{ photo_id: string; total_duration: number; avg_duration: number; views: number }>;
-}
-
-interface TimeSeriesData {
-  date: string;
-  count: number;
-}
-
-interface HourlyPageviewData {
-  hour: string;
-  pageviews: number;
-}
-
-interface VisitorLocation {
-  latitude: number;
-  longitude: number;
-  city: string | null;
-  region: string | null;
-  country: string | null;
-  visit_count: number;
-  unique_visitors: number;
-}
+// Import interfaces from types.ts (canonical location)
+import type { Stats, TimeSeriesData, HourlyPageviewData, VisitorLocation } from './types';
 
 export default function Metrics() {
   // Get the secondary color from CSS custom property
