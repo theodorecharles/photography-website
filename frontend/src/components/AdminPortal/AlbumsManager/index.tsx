@@ -33,6 +33,7 @@ import { usePhotoManagement } from './hooks/usePhotoManagement';
 import { useFolderManagement } from './hooks/useFolderManagement';
 import { sanitizeAndTitleCase, isValidAlbumName, formatFileSize, validateImageFiles } from './utils/albumHelpers';
 import { disableTouchScroll, enableTouchScroll, isDraggingFolder, isDraggingAlbum, extractFolderId } from './utils/dragDropHelpers';
+import { customCollisionDetection } from './utils/collisionDetection';
 import '../AlbumsManager.css';
 import '../PhotoOrderControls.css';
 import {
