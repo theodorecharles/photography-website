@@ -6,6 +6,7 @@
  * - Sorting albums within the folder
  */
 
+import React from 'react';
 import { useSortable, SortableContext } from '@dnd-kit/sortable';
 import { useDroppable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
@@ -20,6 +21,7 @@ interface SortableFolderCardProps {
   animatingAlbum: string | null;
   dragOverAlbum: string | null;
   isDragOver: boolean;
+  showPlaceholderAtIndex?: number;
   onDelete: (folderName: string) => void;
   onTogglePublished: (folderName: string, currentPublished: boolean) => void;
   onAlbumClick: (albumName: string) => void;
@@ -37,6 +39,7 @@ const SortableFolderCard: React.FC<SortableFolderCardProps> = ({
   animatingAlbum,
   dragOverAlbum,
   isDragOver,
+  showPlaceholderAtIndex,
   onDelete,
   onTogglePublished,
   onAlbumClick,
@@ -57,17 +60,11 @@ const SortableFolderCard: React.FC<SortableFolderCardProps> = ({
     id: `folder-${folder.id}`,
   });
 
-  // Always make the folder droppable for albums
-  const { setNodeRef: setDroppableRef } = useDroppable({
-    id: `folder-drop-${folder.id}`,
-    disabled: false,
+  // Make the folder's album grid droppable
+  const { setNodeRef: setDroppableRef, isOver } = useDroppable({
+    id: `folder-grid-${folder.id}`,
+    data: { type: 'folder-grid', folderId: folder.id },
   });
-
-  // Combine both refs
-  const setRefs = (element: HTMLDivElement | null) => {
-    setSortableRef(element);
-    setDroppableRef(element);
-  };
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -79,9 +76,9 @@ const SortableFolderCard: React.FC<SortableFolderCardProps> = ({
 
   return (
     <div
-      ref={setRefs}
+      ref={setSortableRef}
       style={style}
-      className={`folder-card ${isDragOver ? 'drag-over' : ''} ${isDragging ? 'dragging' : ''} ${!folder.published ? 'unpublished' : ''}`}
+      className={`folder-card ${isDragOver || isOver ? 'drag-over' : ''} ${isDragging ? 'dragging' : ''} ${!folder.published ? 'unpublished' : ''}`}
     >
       <div 
         className="folder-card-header"
@@ -131,23 +128,49 @@ const SortableFolderCard: React.FC<SortableFolderCardProps> = ({
         </div>
       </div>
       
-      {/* Albums inside the folder */}
+      {/* Albums inside the folder - the grid itself is the drop zone */}
       <SortableContext items={albums.map(a => a.name)} strategy={rectSortingStrategy}>
-        <div className="folder-albums-grid">
-          {albums.map((album) => (
-            <SortableAlbumCard
-              key={album.name}
-              album={album}
-              isSelected={selectedAlbum === album.name}
-              isAnimating={animatingAlbum === album.name}
-              isDragOver={dragOverAlbum === album.name}
-              onClick={() => onAlbumClick(album.name)}
-              onDragOver={(e) => { onAlbumDragOver(e, album.name); }}
-              onDragLeave={onAlbumDragLeave}
-              onDrop={(e) => { onAlbumDrop(e, album.name); }}
-              onRename={() => onAlbumRename(album.name)}
-            />
+        <div 
+          ref={setDroppableRef}
+          className="folder-albums-grid"
+        >
+          {albums.map((album, index) => (
+            <React.Fragment key={album.name}>
+              {/* Show placeholder before this album if needed */}
+              {showPlaceholderAtIndex === index && (
+                <div
+                  className="album-card album-placeholder"
+                  style={{
+                    border: '2px dashed #3b82f6',
+                    background: 'rgba(59, 130, 246, 0.1)',
+                    pointerEvents: 'none',
+                  }}
+                />
+              )}
+              <SortableAlbumCard
+                album={album}
+                isSelected={selectedAlbum === album.name}
+                isAnimating={animatingAlbum === album.name}
+                isDragOver={dragOverAlbum === album.name}
+                onClick={() => onAlbumClick(album.name)}
+                onDragOver={(e) => { onAlbumDragOver(e, album.name); }}
+                onDragLeave={onAlbumDragLeave}
+                onDrop={(e) => { onAlbumDrop(e, album.name); }}
+                onRename={() => onAlbumRename(album.name)}
+              />
+            </React.Fragment>
           ))}
+          {/* Show placeholder at end if needed */}
+          {showPlaceholderAtIndex === albums.length && (
+            <div
+              className="album-card album-placeholder"
+              style={{
+                border: '2px dashed #3b82f6',
+                background: 'rgba(59, 130, 246, 0.1)',
+                pointerEvents: 'none',
+              }}
+            />
+          )}
           {/* Ghost tile for creating new album in this folder */}
           <div 
             className="album-card ghost-album-tile"

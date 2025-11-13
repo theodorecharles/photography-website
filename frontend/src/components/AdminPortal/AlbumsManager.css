@@ -278,11 +278,6 @@
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 1rem;
   margin-top: 1.25rem;
-  pointer-events: none;
-}
-
-.album-grid > * {
-  pointer-events: auto;
 }
 
 @media (max-width: 1200px) {
@@ -304,12 +299,15 @@
   border-radius: 10px;
   padding: 1rem 1.125rem;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  /* Transition for hover/non-transform properties only - dnd-kit handles transform transitions */
+  transition: border-color 0.3s, background 0.3s, box-shadow 0.3s, opacity 0.3s;
   position: relative;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   transform-style: preserve-3d;
+  height: 60px;
+  box-sizing: border-box;
 }
 
 .album-card.animating {
@@ -1941,7 +1939,7 @@
 /* Ghost album tile styles */
 /* Folder card styles */
 .folder-card {
-  padding: 1rem;
+  padding: 0.5rem 1rem 1rem 1rem;
   border: 2px solid rgba(255, 255, 255, 0.2);
   border-radius: 12px;
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
@@ -1961,11 +1959,19 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
+/* Remove folder-level drag-over styling - we only highlight the grid now */
 .folder-card.drag-over {
+  /* No styling on folder card itself */
+}
+
+/* Highlight only the album grid when dragging over */
+.folder-card.drag-over .folder-albums-grid {
   border-color: #3b82f6 !important;
-  background: rgba(59, 130, 246, 0.15) !important;
+  background: rgba(59, 130, 246, 0.1) !important;
   box-shadow: 0 0 20px rgba(59, 130, 246, 0.3) !important;
 }
+
+/* Insertion point styles removed - relying on dnd-kit's built-in sortable animation */
 
 .folder-card-header {
   display: flex;
@@ -2055,11 +2061,7 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
   background: rgba(0, 0, 0, 0.2);
   border-radius: 8px;
-  pointer-events: none;
-}
-
-.folder-albums-grid > * {
-  pointer-events: auto;
+  min-height: 80px; /* Ensure it's a viable drop target even with only ghost tile */
 }
 
 @media (max-width: 768px) {
@@ -2088,12 +2090,12 @@
 }
 
 .uncategorized-section {
-  padding: 1.5rem;
+  padding: 1rem 2rem 2rem 2rem;
   border: 2px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
   background: rgba(255, 255, 255, 0.02);
   transition: all 0.2s ease;
-  min-height: 200px;
+  min-height: 190px;
 }
 
 .uncategorized-section.drag-over-uncategorized {
@@ -2106,11 +2108,19 @@
   border: 2px dashed rgba(74, 222, 128, 0.4) !important;
   background: linear-gradient(135deg, rgba(74, 222, 128, 0.05) 0%, rgba(74, 222, 128, 0.02) 100%) !important;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   transition: all 0.3s ease;
-  height: 80px;
+  /* Match album card structure */
+  padding: 0rem 1rem;
+  display: flex;
+  flex-direction: column;
+  height: 60px;
+  box-sizing: border-box;
+}
+
+/* Allow drag events to pass through ghost tiles to the grid underneath */
+body.dragging .ghost-album-tile,
+body.dragging .ghost-folder-tile {
+  pointer-events: none !important;
 }
 
 .ghost-album-tile:hover, .ghost-folder-tile:hover {
@@ -2129,9 +2139,10 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
+  flex: 1;
   gap: 0.1rem;
   color: rgba(74, 222, 128, 0.9);
-  padding: 1rem;
 }
 
 .ghost-tile-content svg {

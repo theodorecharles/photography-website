@@ -92,11 +92,18 @@ router.post("/", requireAuth, async (req: Request, res: Response): Promise<void>
     saveAlbumFolder(sanitizedName, published === true);
     console.log(`✓ Created folder: ${sanitizedName} (${published ? 'published' : 'unpublished'})`);
 
+    // Get the newly created folder to return full object
+    const newFolder = getFolderState(sanitizedName);
+    if (!newFolder) {
+      res.status(500).json({ error: 'Failed to retrieve created folder' });
+      return;
+    }
+
     // Regenerate static JSON files
     const appRoot = req.app.get('appRoot');
     generateStaticJSONFiles(appRoot);
 
-    res.json({ success: true, folder: sanitizedName });
+    res.json(newFolder);
   } catch (error) {
     console.error('Error creating folder:', error);
     res.status(500).json({ error: 'Failed to create folder' });

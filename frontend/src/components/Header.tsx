@@ -183,7 +183,7 @@ function Navigation({
   const hasAlbumsToShow = useMemo(() => {
     if (folders && folders.length > 0) {
       // Check if any folder has albums (after filtering for published if not authenticated)
-      return folders.some(folder => {
+      const hasFolderAlbums = folders.some(folder => {
         const folderAlbums = albums.filter(album => {
           const albumObj = typeof album === 'string' ? { name: album, folder_id: null } : album;
           if (albumObj.folder_id !== folder.id) return false;
@@ -195,6 +195,19 @@ function Navigation({
         });
         return folderAlbums.length > 0;
       });
+      
+      // Also check if there are uncategorized albums
+      const hasUncategorizedAlbums = albums.some(album => {
+        const albumObj = typeof album === 'string' ? { name: album, folder_id: null } : album;
+        if (albumObj.folder_id) return false; // Skip albums in folders
+        if (!isAuthenticated) {
+          const isPublished = typeof album === 'string' ? true : (album.published === true || album.published === 1);
+          return isPublished;
+        }
+        return true;
+      });
+      
+      return hasFolderAlbums || hasUncategorizedAlbums;
     }
     // No folders, check if there are any albums
     return albums.length > 0;
@@ -265,43 +278,6 @@ function Navigation({
             <div className={`dropdown-menu ${isDropdownOpen ? "open" : ""}`}>
               {folders && folders.length > 0 ? (
                 <>
-                  {/* Albums without folders */}
-                  {albums.filter(album => {
-                    const albumObj = typeof album === 'string' ? { name: album, folder_id: null } : album;
-                    return !albumObj.folder_id;
-                  }).map(album => {
-                    const albumName = typeof album === 'string' ? album : album.name;
-                    const isPublished = typeof album === 'string' ? true : (album.published === true || album.published === 1);
-                    return (
-                      <Link
-                        key={albumName}
-                        to={`/album/${albumName}`}
-                        className="nav-link"
-                        onClick={() => {
-                          trackDropdownClose('albums', 'navigation');
-                          setIsDropdownOpen(false);
-                          trackAlbumNavigation(albumName, 'header');
-                        }}
-                      >
-                        {!isPublished && (
-                          <svg
-                            viewBox="0 0 24 24"
-                            width="14"
-                            height="14"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            style={{ marginRight: '6px', opacity: 0.6, flexShrink: 0 }}
-                          >
-                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                          </svg>
-                        )}
-                        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0, flex: 1 }}>{albumName}</span>
-                      </Link>
-                    );
-                  })}
-                  
                   {/* Folders with nested albums */}
                   {folders.map(folder => {
                     const folderAlbums = albums.filter(album => {
@@ -407,7 +383,7 @@ function Navigation({
                                         <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
                                       </svg>
                                     )}
-                                    <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0, flex: 1 }}>{albumName}</span>
+                                    <span>{albumName}</span>
                                   </Link>
                                 );
                               })
@@ -419,6 +395,43 @@ function Navigation({
                           </div>
                         )}
                       </div>
+                    );
+                  })}
+                  
+                  {/* Uncategorized albums (after folders) */}
+                  {albums.filter(album => {
+                    const albumObj = typeof album === 'string' ? { name: album, folder_id: null } : album;
+                    return !albumObj.folder_id;
+                  }).map(album => {
+                    const albumName = typeof album === 'string' ? album : album.name;
+                    const isPublished = typeof album === 'string' ? true : (album.published === true || album.published === 1);
+                    return (
+                      <Link
+                        key={albumName}
+                        to={`/album/${albumName}`}
+                        className="nav-link"
+                        onClick={() => {
+                          trackDropdownClose('albums', 'navigation');
+                          setIsDropdownOpen(false);
+                          trackAlbumNavigation(albumName, 'header');
+                        }}
+                      >
+                        {!isPublished && (
+                          <svg
+                            viewBox="0 0 24 24"
+                            width="14"
+                            height="14"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            style={{ marginRight: '6px', opacity: 0.6, flexShrink: 0 }}
+                          >
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                          </svg>
+                        )}
+                        <span>{albumName}</span>
+                      </Link>
                     );
                   })}
                 </>
@@ -452,7 +465,7 @@ function Navigation({
                           <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
                         </svg>
                       )}
-                      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0, flex: 1 }}>{albumName}</span>
+                      <span>{albumName}</span>
                     </Link>
                   );
                 })

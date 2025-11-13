@@ -91,6 +91,7 @@ const SortableAlbumCard: React.FC<SortableAlbumCardProps> = ({
       ref={setNodeRef}
       style={style}
       className={`album-card ${isSelected ? 'selected' : ''} ${album.published === false ? 'unpublished' : ''} ${isAnimating ? 'animating' : ''} ${isDragging ? 'dragging' : ''} ${isDragOver ? 'drag-over-album' : ''}`}
+      data-album-name={album.name}
       onClick={handleClick}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
