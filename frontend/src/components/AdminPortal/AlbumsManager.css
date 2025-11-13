@@ -669,12 +669,22 @@
 }
 
 @media (max-width: 768px) {
+  .album-actions-grid {
+    gap: 0.5rem;
+  }
+  
   .btn-action-item {
     padding: 0.6rem;
     min-width: 44px;
-    width: 44px;
+    flex: 1;
     height: 44px;
     gap: 0;
+  }
+  
+  /* Icon-only buttons */
+  .btn-action-item:not(.toggle-switch) {
+    width: 44px;
+    flex: 0 0 44px;
   }
   
   .btn-action-item svg {
@@ -686,8 +696,15 @@
     display: none;
   }
   
-  .btn-action-item .toggle-label {
-    display: none;
+  /* Keep toggle switch full width with label */
+  .toggle-switch.btn-action-item {
+    width: 100%;
+    flex: 1 1 100%;
+    padding: 0.75rem 1rem;
+  }
+  
+  .toggle-switch.btn-action-item .toggle-label {
+    display: inline;
   }
 }
 
