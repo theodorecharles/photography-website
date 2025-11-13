@@ -207,15 +207,14 @@ export default function AdminPortal() {
     try {
       // Track logout before actually logging out
       trackLogout(authStatus?.user?.email);
+      // Immediately update auth state (synchronous) to prevent header flash
+      window.dispatchEvent(new Event('user-logged-out'));
+      // Make logout API call
       await fetch(`${API_URL}/api/auth/logout`, {
         method: 'POST',
         credentials: 'include',
       });
-      // Force auth state update BEFORE navigation to prevent flashing
-      window.dispatchEvent(new Event('auth-changed'));
-      // Small delay to let auth state propagate
-      await new Promise(resolve => setTimeout(resolve, 50));
-      // Now navigate
+      // Navigate home
       navigate('/');
     } catch (err) {
       console.error('Logout failed:', err);

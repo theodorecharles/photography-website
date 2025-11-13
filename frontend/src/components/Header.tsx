@@ -574,14 +574,16 @@ export default function Header({
   // Handle logout
   const handleLogout = async () => {
     try {
+      // Immediately update auth state (synchronous)
+      setIsAuthenticated(false);
+      window.dispatchEvent(new Event('user-logged-out'));
+      // Make logout API call
       await fetch(`${API_URL}/api/auth/logout`, {
         method: 'POST',
         credentials: 'include',
       });
-      setIsAuthenticated(false);
+      // Navigate home
       navigate('/');
-      // Trigger auth state refresh in App.tsx
-      window.dispatchEvent(new Event('auth-changed'));
     } catch (err) {
       console.error('Logout failed:', err);
     }
