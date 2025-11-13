@@ -9,15 +9,8 @@ import 'leaflet/dist/leaflet.css';
 import './VisitorMap.css';
 import { getMarkerRadius, getMarkerOpacity, formatLocationName } from '../../../utils/mapHelpers';
 
-interface VisitorLocation {
-  latitude: number;
-  longitude: number;
-  city: string | null;
-  region: string | null;
-  country: string | null;
-  visit_count: number;
-  unique_visitors: number;
-}
+// Import VisitorLocation from types.ts (canonical location)
+import type { VisitorLocation } from './types';
 
 interface VisitorMapProps {
   locations: VisitorLocation[];
