@@ -6,7 +6,7 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
-import config from '../config.js';
+import config, { DATA_DIR } from '../config.js';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
