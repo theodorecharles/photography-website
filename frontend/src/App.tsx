@@ -24,6 +24,19 @@ import { fetchWithRateLimitCheck } from "./utils/fetchWrapper";
 import { SSEToasterProvider } from "./contexts/SSEToasterContext";
 import SSEToaster from "./components/SSEToaster";
 
+// CRITICAL: Import all admin CSS BEFORE the AdminPortal component
+import "./components/AdminPortal/AdminPortal.css";
+import "./components/AdminPortal/AlbumsManager.css";
+import "./components/AdminPortal/PhotoOrderControls.css";
+import "./components/AdminPortal/ConfigManager.css";
+import "./components/AdminPortal/BrandingManager.css";
+import "./components/AdminPortal/LinksManager.css";
+import "./components/AdminPortal/ShareModal.css";
+import "./components/AdminPortal/PasswordInput.css";
+import "./components/AdminPortal/Metrics/Metrics.css";
+import "./components/AdminPortal/Metrics/VisitorMap.css";
+import "leaflet/dist/leaflet.css";
+
 // Import AdminPortal normally to ensure CSS is always loaded
 import AdminPortal from "./components/AdminPortal";
 
@@ -257,21 +270,21 @@ function App() {
         setFolders(filteredFolders);
       } else {
         // Old format (array of strings or objects)
-        const albumNames = Array.isArray(albumsData) 
-          ? albumsData
-              .filter((album: string | { name: string; published: boolean }) => {
+      const albumNames = Array.isArray(albumsData) 
+        ? albumsData
+            .filter((album: string | { name: string; published: boolean }) => {
                 if (typeof album === 'string') return album !== 'homepage';
                 if (album.name === 'homepage') return false;
-                // If it's an object, include all albums if authenticated, only published if not
-                if (isAuthenticated) return true;
-                return album.published === true;
-              })
-              .map((album: string | { name: string; published: boolean }) => 
-                typeof album === 'string' ? album : album.name
-              )
-          : [];
-        
-        setAlbums(albumNames);
+              // If it's an object, include all albums if authenticated, only published if not
+              if (isAuthenticated) return true;
+              return album.published === true;
+            })
+            .map((album: string | { name: string; published: boolean }) => 
+              typeof album === 'string' ? album : album.name
+            )
+        : [];
+      
+      setAlbums(albumNames);
         setFolders([]);
       }
       setExternalLinks(externalLinksData.externalLinks);
@@ -304,7 +317,7 @@ function App() {
   useEffect(() => {
     // Only fetch data if setup is complete
     if (setupComplete === true) {
-      fetchData();
+    fetchData();
     }
 
     // Silent update for navigation without triggering loading state
@@ -338,21 +351,21 @@ function App() {
             setFolders(filteredFolders);
           } else {
             // Old format (array of strings or objects)
-            const albumNames = Array.isArray(albumsData) 
-              ? albumsData
-                  .filter((album: string | { name: string; published: boolean }) => {
+          const albumNames = Array.isArray(albumsData) 
+            ? albumsData
+                .filter((album: string | { name: string; published: boolean }) => {
                     if (typeof album === 'string') return album !== 'homepage';
                     if (album.name === 'homepage') return false;
-                    // Include all albums if authenticated, only published if not
-                    if (isAuthenticated) return true;
-                    return album.published === true;
-                  })
-                  .map((album: string | { name: string; published: boolean }) => 
-                    typeof album === 'string' ? album : album.name
-                  )
-              : [];
+                  // Include all albums if authenticated, only published if not
+                  if (isAuthenticated) return true;
+                  return album.published === true;
+                })
+                .map((album: string | { name: string; published: boolean }) => 
+                  typeof album === 'string' ? album : album.name
+                )
+            : [];
             
-            setAlbums(albumNames);
+          setAlbums(albumNames);
             setFolders([]);
           }
         }

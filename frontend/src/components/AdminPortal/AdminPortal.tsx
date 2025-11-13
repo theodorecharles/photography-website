@@ -6,7 +6,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { API_URL } from '../../config';
-// CSS is now imported at App level to ensure it loads before any navigation
+// CSS is imported in index.ts to ensure it loads before this component
 import { AuthStatus, ExternalLink, BrandingConfig, Album, AlbumFolder, Tab } from './types';
 import AlbumsManager from './AlbumsManager';
 import Metrics from './Metrics/Metrics';
@@ -24,9 +24,6 @@ export default function AdminPortal() {
   const [authStatus, setAuthStatus] = useState<AuthStatus | null>(null);
   const [loading, setLoading] = useState(true);
   const sseToaster = useSSEToaster();
-  
-  // State to track if CSS is loaded (dev mode workaround)
-  const [cssLoaded, setCssLoaded] = useState(false);
   
   // Determine active tab from URL
   const getActiveTab = (): Tab => {
@@ -66,15 +63,6 @@ export default function AdminPortal() {
   const removeMessage = (id: number) => {
     setMessages(prev => prev.filter(m => m.id !== id));
   };
-
-  // Wait for CSS to be loaded in dev mode (Vite HMR workaround)
-  useEffect(() => {
-    // In dev mode, wait a tick for Vite to inject CSS
-    const timer = setTimeout(() => {
-      setCssLoaded(true);
-    }, 100);
-    return () => clearTimeout(timer);
-  }, []);
 
   // Check for running jobs on mount to ensure SSE toaster appears if jobs are running
   useEffect(() => {
@@ -303,22 +291,6 @@ export default function AdminPortal() {
             </div>
           </div>
         </div>
-      </div>
-    );
-  }
-
-  // Show minimal loading state while CSS loads in dev mode
-  if (!cssLoaded) {
-    return (
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        minHeight: '100vh',
-        fontSize: '14px',
-        color: '#666'
-      }}>
-        Loading styles...
       </div>
     );
   }
