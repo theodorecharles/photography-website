@@ -231,6 +231,11 @@ function App() {
               folder.published === true || folder.published === 1
             );
         
+        console.log('🔍 App.tsx fetchData - isAuthenticated:', isAuthenticated);
+        console.log('🔍 App.tsx fetchData - Raw folders from backend:', albumsData.folders);
+        console.log('🔍 App.tsx fetchData - Filtered folders:', filteredFolders);
+        console.log('🔍 App.tsx fetchData - Filtered albums:', filteredAlbums);
+        
         setAlbums(filteredAlbums);
         setFolders(filteredFolders);
       } else {
