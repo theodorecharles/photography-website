@@ -17,6 +17,15 @@ import {
   trackAdminTabChange,
 } from '../../utils/analytics';
 import { useSSEToaster } from '../../contexts/SSEToasterContext';
+import {
+  CpuIcon,
+  GoogleLogoIcon,
+  HomeIcon,
+  LogoutIcon,
+  ImageIcon,
+  BarChartIcon,
+  SettingsIcon
+} from '../icons';
 
 export default function AdminPortal() {
   const navigate = useNavigate();
@@ -46,15 +55,7 @@ export default function AdminPortal() {
         ]);
         
         // Wait for browser to process and apply styles
-        await new Promise(resolve => {
-          requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-              requestAnimationFrame(() => {
-                requestAnimationFrame(resolve);
-              });
-            });
-          });
-        });
+        await new Promise(resolve => requestAnimationFrame(resolve));
         
         console.log('✅ Admin CSS loaded');
       } catch (err) {
@@ -314,18 +315,7 @@ export default function AdminPortal() {
           <div className="auth-section">
             <div className="auth-card">
               <div className="auth-icon">
-                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-                  <path d="M9 9h6v6H9z"/>
-                  <path d="M9 1v6"/>
-                  <path d="M15 1v6"/>
-                  <path d="M9 17v6"/>
-                  <path d="M15 17v6"/>
-                  <path d="M1 9h6"/>
-                  <path d="M17 9h6"/>
-                  <path d="M1 15h6"/>
-                  <path d="M17 15h6"/>
-                </svg>
+                <CpuIcon width="48" height="48" />
               </div>
               
               <h2>Authentication Required</h2>
@@ -335,19 +325,11 @@ export default function AdminPortal() {
               
               <div className="auth-actions">
                 <a href={`${API_URL}/api/auth/google`} className="btn-login">
-                  <svg width="20" height="20" viewBox="0 0 18 18" style={{ marginRight: '12px' }}>
-                    <path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z"/>
-                    <path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z"/>
-                    <path fill="#FBBC05" d="M3.964 10.707c-.18-.54-.282-1.117-.282-1.707 0-.593.102-1.17.282-1.709V4.958H.957C.347 6.173 0 7.55 0 9s.348 2.827.957 4.042l3.007-2.335z"/>
-                    <path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/>
-                  </svg>
+                  <GoogleLogoIcon width="20" height="20" style={{ marginRight: '12px' }} />
                   Sign in with Google
                 </a>
                 <a href="/" className="btn-home">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ marginRight: '8px' }}>
-                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-                    <polyline points="9,22 9,12 15,12 15,22"/>
-                  </svg>
+                  <HomeIcon width="18" height="18" style={{ marginRight: '8px' }} />
                   Return to Gallery
                 </a>
               </div>
@@ -363,11 +345,7 @@ export default function AdminPortal() {
       <div className="admin-container">
         <div className="admin-header">
           <button onClick={handleLogout} className="btn-logout">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '8px' }}>
-              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-              <polyline points="16 17 21 12 16 7"/>
-              <line x1="21" y1="12" x2="9" y2="12"/>
-            </svg>
+            <LogoutIcon width="18" height="18" style={{ marginRight: '8px' }} />
             Logout
           </button>
           <div className="admin-tabs">
@@ -375,32 +353,21 @@ export default function AdminPortal() {
               className={`tab-button ${activeTab === 'albums' ? 'active' : ''}`}
               onClick={() => navigate('/admin/albums')}
             >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '8px' }}>
-                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-                <circle cx="8.5" cy="8.5" r="1.5"/>
-                <polyline points="21 15 16 10 5 21"/>
-              </svg>
+              <ImageIcon width="20" height="20" style={{ marginRight: '8px' }} />
               Albums
             </button>
             <button
               className={`tab-button ${activeTab === 'metrics' ? 'active' : ''}`}
               onClick={() => navigate('/admin/metrics')}
             >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '8px' }}>
-                <line x1="18" y1="20" x2="18" y2="10"/>
-                <line x1="12" y1="20" x2="12" y2="4"/>
-                <line x1="6" y1="20" x2="6" y2="14"/>
-              </svg>
+              <BarChartIcon width="20" height="20" style={{ marginRight: '8px' }} />
               Metrics
             </button>
             <button
               className={`tab-button ${activeTab === 'config' ? 'active' : ''}`}
               onClick={() => navigate('/admin/settings')}
             >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '8px' }}>
-                <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
-                <circle cx="12" cy="12" r="3"/>
-              </svg>
+              <SettingsIcon width="20" height="20" style={{ marginRight: '8px' }} />
               Settings
             </button>
           </div>
