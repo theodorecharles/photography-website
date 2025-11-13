@@ -13,6 +13,18 @@ import {
   useNavigate,
 } from "react-router-dom";
 import "./App.css";
+// Import all admin CSS at app level to ensure they load before any navigation
+import "./components/AdminPortal/AdminPortal.css";
+import "./components/AdminPortal/AlbumsManager.css";
+import "./components/AdminPortal/PhotoOrderControls.css";
+import "./components/AdminPortal/ConfigManager.css";
+import "./components/AdminPortal/BrandingManager.css";
+import "./components/AdminPortal/LinksManager.css";
+import "./components/AdminPortal/ShareModal.css";
+import "./components/AdminPortal/PasswordInput.css";
+import "./components/AdminPortal/Metrics/Metrics.css";
+import "./components/AdminPortal/Metrics/VisitorMap.css";
+import "leaflet/dist/leaflet.css";
 import PhotoGrid from "./components/PhotoGrid";
 import Header, { ExternalLink } from "./components/Header";
 import Footer from "./components/Footer";
