@@ -145,7 +145,15 @@ function App() {
         setIsAuthenticated(false);
       }
     };
+    
     checkAuth();
+    
+    // Listen for authentication changes (e.g., from logout)
+    window.addEventListener('auth-changed', checkAuth);
+    
+    return () => {
+      window.removeEventListener('auth-changed', checkAuth);
+    };
   }, [location.pathname]); // Re-check when route changes
 
   // Apply theme colors to CSS custom properties
