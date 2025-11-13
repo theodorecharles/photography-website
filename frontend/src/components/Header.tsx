@@ -338,7 +338,7 @@ function Navigation({
                     return (
                       <div key={folder.id} className="folder-item">
                         <button
-                          className="nav-link folder-link"
+                          className={`nav-link folder-link ${openFolderId === folder.id ? 'open' : ''}`}
                           onClick={() => setOpenFolderId(openFolderId === folder.id ? null : folder.id)}
                         >
                           {!isFolderPublished && isAuthenticated ? (
