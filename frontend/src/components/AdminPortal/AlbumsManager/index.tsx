@@ -1566,9 +1566,9 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   };
 
   const handleDeleteAlbum = async (albumName: string) => {
-    // Save any unsaved changes first
+    // Save any unsaved changes first (pass current localAlbums state)
     if (hasUnsavedChanges) {
-      const saved = await albumManagement.saveAlbumOrder();
+      const saved = await albumManagement.saveAlbumOrder(localAlbums);
       if (!saved) {
         // If save failed, don't proceed with deletion
         return;
@@ -2109,9 +2109,9 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   };
 
   const handleDeleteFolder = async (folderName: string) => {
-    // Save any unsaved changes first
+    // Save any unsaved changes first (pass current localAlbums state)
     if (hasUnsavedChanges) {
-      const saved = await albumManagement.saveAlbumOrder();
+      const saved = await albumManagement.saveAlbumOrder(localAlbums);
       if (!saved) {
         // If save failed, don't proceed with deletion
         return;
