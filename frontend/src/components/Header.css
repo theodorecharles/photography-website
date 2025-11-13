@@ -336,11 +336,13 @@
   justify-self: start;
   align-self: center;
   margin-right: 0 !important;
+  display: block;
 }
 
 .folder-link span {
   justify-self: center;
   align-self: center;
+  line-height: 1;
 }
 
 .folder-link:hover,
