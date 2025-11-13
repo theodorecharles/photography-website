@@ -670,24 +670,24 @@
 
 @media (max-width: 768px) {
   .btn-action-item {
-    padding: 0;
+    padding: 0.6rem;
     min-width: 44px;
     width: 44px;
     height: 44px;
     gap: 0;
-    text-indent: -9999px;
-    overflow: hidden;
-    position: relative;
   }
   
   .btn-action-item svg {
     width: 20px !important;
     height: 20px !important;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    text-indent: 0;
+  }
+  
+  .btn-action-item .btn-text {
+    display: none;
+  }
+  
+  .btn-action-item .toggle-label {
+    display: none;
   }
 }
 

@@ -2317,7 +2317,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
                     </svg>
-                    {uploadingImages.length > 0 ? 'Uploading...' : 'Upload Photos'}
+                    <span className="btn-text">{uploadingImages.length > 0 ? 'Uploading...' : 'Upload Photos'}</span>
                     <input
                       type="file"
                       multiple
@@ -2336,7 +2336,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
                     </svg>
-                    Delete Album
+                    <span className="btn-text">Delete Album</span>
                   </button>
                   
                   {/* Only show share button for unpublished albums */}
@@ -2356,7 +2356,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                         <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
                         <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
                       </svg>
-                      Share Album
+                      <span className="btn-text">Share Album</span>
                     </button>
                   )}
                   
@@ -2370,7 +2370,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                         <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
                         <circle cx="12" cy="12" r="3"/>
                       </svg>
-                      Preview Album
+                      <span className="btn-text">Preview Album</span>
                     </button>
                   )}
                   
