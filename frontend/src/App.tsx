@@ -24,9 +24,11 @@ import { fetchWithRateLimitCheck } from "./utils/fetchWrapper";
 import { SSEToasterProvider } from "./contexts/SSEToasterContext";
 import SSEToaster from "./components/SSEToaster";
 
-// Lazy load components that aren't needed on initial page load
+// Import AdminPortal normally to ensure CSS is always loaded
+import AdminPortal from "./components/AdminPortal";
+
+// Lazy load other components that aren't needed on initial page load
 const License = lazy(() => import("./components/Misc/License"));
-const AdminPortal = lazy(() => import("./components/AdminPortal"));
 const AuthError = lazy(() => import("./components/Misc/AuthError"));
 const NotFound = lazy(() => import("./components/Misc/NotFound"));
 const SharedAlbum = lazy(() => import("./components/SharedAlbum"));
