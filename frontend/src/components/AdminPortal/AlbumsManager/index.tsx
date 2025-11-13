@@ -35,9 +35,9 @@ import {
   DragEndEvent,
   DragOverlay,
   DragOverEvent,
-  pointerWithin,
   rectIntersection,
   CollisionDetection,
+  useDroppable,
 } from '@dnd-kit/core';
 import {
   arrayMove,
@@ -55,24 +55,17 @@ const API_URL = import.meta.env.VITE_API_URL || '';
 const customCollisionDetection: CollisionDetection = (args) => {
   const activeId = String(args.active?.id || '');
   
-  // When dragging an album (not a folder), prioritize folder drop zones
+  // When dragging an album (not a folder)
   if (activeId && !activeId.startsWith('folder-')) {
-    // Get all droppable containers that are folder drop zones
+    // Get all droppable containers (folders and uncategorized zone)
     const droppableContainers = Array.from(args.droppableContainers.values())
-      .filter(container => String(container.id).startsWith('folder-drop-'));
-    
-    if (droppableContainers.length > 0) {
-      // Use pointerWithin to find if pointer is within any folder drop zone
-      const pointerCollisions = pointerWithin({
-        ...args,
-        droppableContainers,
+      .filter(container => {
+        const id = String(container.id);
+        return id.startsWith('folder-drop-') || id === 'uncategorized-drop-zone';
       });
-      
-      if (pointerCollisions.length > 0) {
-        return pointerCollisions;
-      }
-      
-      // Fall back to rectIntersection for folders
+    
+    // Check folder drop zones and uncategorized zone FIRST with rectIntersection
+    if (droppableContainers.length > 0) {
       const rectCollisions = rectIntersection({
         ...args,
         droppableContainers,
@@ -82,9 +75,13 @@ const customCollisionDetection: CollisionDetection = (args) => {
         return rectCollisions;
       }
     }
+    
+    // Fall back to album collisions (for reordering within same context)
+    const albumCollisions = closestCenter(args);
+    return albumCollisions;
   }
   
-  // For everything else (folder reordering, album reordering), use closestCenter
+  // For everything else (folder reordering), use closestCenter
   return closestCenter(args);
 };
 
@@ -164,6 +161,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   // Folder management state
   const [showFolderModal, setShowFolderModal] = useState(false);
   const [newFolderName, setNewFolderName] = useState('');
+  const [targetFolderId, setTargetFolderId] = useState<number | null>(null);
   
   // Rename album state
   const [showRenameModal, setShowRenameModal] = useState(false);
@@ -172,9 +170,15 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   
   // Folder drag-over state (when an album is dragged over a folder)
   const [dragOverFolderId, setDragOverFolderId] = useState<number | null>(null);
+  const [dragOverUncategorized, setDragOverUncategorized] = useState(false);
   
   // Ref for ghost tile file input
   const ghostTileFileInputRef = useRef<HTMLInputElement>(null);
+
+  // Droppable zone for uncategorized section
+  const { setNodeRef: setUncategorizedDropRef } = useDroppable({
+    id: 'uncategorized-drop-zone',
+  });
 
   // Detect if device supports touch
   const isTouchDevice = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
@@ -376,16 +380,22 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   const handleAlbumDragOver = (event: DragOverEvent) => {
     const { active, over } = event;
     
-    // Only highlight folders when dragging an album
+    // Only highlight folders/uncategorized when dragging an album
     if (over && !String(active.id).startsWith('folder-')) {
       if (String(over.id).startsWith('folder-drop-')) {
         const folderId = parseInt(String(over.id).replace('folder-drop-', ''));
         setDragOverFolderId(folderId);
+        setDragOverUncategorized(false);
+      } else if (String(over.id) === 'uncategorized-drop-zone') {
+        setDragOverUncategorized(true);
+        setDragOverFolderId(null);
       } else {
         setDragOverFolderId(null);
+        setDragOverUncategorized(false);
       }
     } else {
       setDragOverFolderId(null);
+      setDragOverUncategorized(false);
     }
   };
 
@@ -397,6 +407,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     setActiveAlbumId(null);
     setActiveFolderId(null);
     setDragOverFolderId(null);
+    setDragOverUncategorized(false);
     
     // Re-enable scrolling after drag
     document.body.style.overflow = '';
@@ -406,15 +417,35 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
 
     const overId = String(over.id);
 
-    // Case 1: Dragging an album onto a folder
+    // Case 1: Dragging an album onto the uncategorized zone (remove from folder)
+    if (!activeId.startsWith('folder-') && overId === 'uncategorized-drop-zone') {
+      const album = localAlbums.find(a => a.name === activeId);
+      if (album && album.folder_id) {
+        // Remove album from folder
+        await handleMoveAlbumToFolder(activeId, null);
+      }
+      return;
+    }
+
+    // Case 2: Dragging an album onto a folder
     if (!activeId.startsWith('folder-') && overId.startsWith('folder-drop-')) {
       const folderId = parseInt(overId.replace('folder-drop-', ''));
       await handleMoveAlbumToFolder(activeId, folderId);
       return;
     }
 
-    // Case 2: Reordering albums
+    // Case 3: Reordering albums
     if (!activeId.startsWith('folder-') && !overId.startsWith('folder-') && active.id !== over.id) {
+      const activeAlbum = localAlbums.find((album) => album.name === active.id);
+      const overAlbum = localAlbums.find((album) => album.name === over.id);
+
+      if (!activeAlbum || !overAlbum) return;
+
+      // Only allow reordering if both albums are in the same context (same folder or both uncategorized)
+      if (activeAlbum.folder_id !== overAlbum.folder_id) {
+        return;
+      }
+
       const oldIndex = localAlbums.findIndex((album) => album.name === active.id);
       const newIndex = localAlbums.findIndex((album) => album.name === over.id);
 
@@ -655,6 +686,12 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     ghostTileFileInputRef.current?.click();
   };
 
+  // Handle clicking ghost tile in a folder
+  const handleCreateAlbumInFolder = (folderId: number) => {
+    setTargetFolderId(folderId);
+    ghostTileFileInputRef.current?.click();
+  };
+
   // Handle file selection from ghost tile input
   const handleGhostTileFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -750,6 +787,11 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
         await loadAlbums();
         trackAlbumCreated(sanitized);
         
+        // If creating in a folder, move the album to that folder
+        if (targetFolderId !== null) {
+          await handleMoveAlbumToFolder(sanitized, targetFolderId);
+        }
+        
         // Close modal and upload files
         setShowNewAlbumModal(false);
         setMessage({ type: 'success', text: `Album "${sanitized}" created!` });
@@ -760,6 +802,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
         // Clear state
         setNewAlbumFiles([]);
         setNewAlbumModalName('');
+        setTargetFolderId(null);
       } else {
         const errorData = await res.json();
         setMessage({ type: 'error', text: errorData.error || 'Failed to create album' });
@@ -1649,29 +1692,59 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     
     const newPublished = !currentPublished;
     
+    // Optimistically update folder and all albums in it
+    setLocalFolders(prevFolders =>
+      prevFolders.map(f =>
+        f.id === folder.id ? { ...f, published: newPublished } : f
+      )
+    );
+    setLocalAlbums(prevAlbums =>
+      prevAlbums.map(album =>
+        album.folder_id === folder.id ? { ...album, published: newPublished } : album
+      )
+    );
+    
     try {
-      const res = await fetch(`${API_URL}/api/folders/${encodeURIComponent(folderName)}/publish`, {
+      // Update folder published status
+      const folderRes = await fetch(`${API_URL}/api/folders/${encodeURIComponent(folderName)}/publish`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify({ published: newPublished }),
       });
 
-      if (res.ok) {
-        setMessage({ 
-          type: 'success', 
-          text: `Folder "${folderName}" ${newPublished ? 'published' : 'unpublished'}` 
-        });
-        await loadAlbums();
-        
-        // Dispatch global event to update navigation dropdown
-        window.dispatchEvent(new Event('albums-updated'));
-      } else {
-        const error = await res.json();
+      if (!folderRes.ok) {
+        const error = await folderRes.json();
         setMessage({ type: 'error', text: error.error || 'Failed to update folder' });
+        await loadAlbums(); // Revert on error
+        return;
       }
+
+      // Update all albums in the folder
+      const albumUpdatePromises = albumsInFolder.map(album =>
+        fetch(`${API_URL}/api/albums/${encodeURIComponent(album.name)}/publish`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ published: newPublished }),
+        })
+      );
+
+      await Promise.all(albumUpdatePromises);
+
+      setMessage({ 
+        type: 'success', 
+        text: `Folder "${folderName}" and ${albumsInFolder.length} ${albumsInFolder.length === 1 ? 'album' : 'albums'} ${newPublished ? 'published' : 'unpublished'}` 
+      });
+      
+      // Sync with database
+      await loadAlbums();
+      
+      // Dispatch global event to update navigation dropdown
+      window.dispatchEvent(new Event('albums-updated'));
     } catch (err) {
       setMessage({ type: 'error', text: 'Network error occurred' });
+      await loadAlbums(); // Revert on error
     }
   };
 
@@ -1682,25 +1755,61 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
       return;
     }
 
+    // Get the target folder's published status (or true if moving to root/uncategorized)
+    const targetFolder = folderId ? localFolders.find(f => f.id === folderId) : null;
+    const targetPublishedStatus = targetFolder ? targetFolder.published : true;
+
+    // Optimistically update the local state immediately for smooth UX
+    setLocalAlbums(prevAlbums => 
+      prevAlbums.map(album => 
+        album.name === albumName 
+          ? { ...album, folder_id: folderId, published: targetPublishedStatus }
+          : album
+      )
+    );
+
     try {
-      const res = await fetch(`${API_URL}/api/folders/${encodeURIComponent(folderName)}/albums/${encodeURIComponent(albumName)}`, {
+      // Move the album to the folder
+      const moveRes = await fetch(`${API_URL}/api/folders/${encodeURIComponent(folderName)}/albums/${encodeURIComponent(albumName)}`, {
         method: 'PATCH',
         credentials: 'include',
       });
 
-      if (res.ok) {
-        const folderDisplayName = folderId ? folderName : 'root level';
-        setMessage({ type: 'success', text: `Moved "${albumName}" to ${folderDisplayName}` });
-        await loadAlbums();
-        
-        // Dispatch global event to update navigation dropdown
-        window.dispatchEvent(new Event('albums-updated'));
-      } else {
-        const error = await res.json();
+      if (!moveRes.ok) {
+        const error = await moveRes.json();
         setMessage({ type: 'error', text: error.error || 'Failed to move album' });
+        await loadAlbums(); // Revert on error
+        return;
       }
+
+      // Update the album's published status to match the folder
+      const publishRes = await fetch(`${API_URL}/api/albums/${encodeURIComponent(albumName)}/publish`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ published: targetPublishedStatus }),
+      });
+
+      if (!publishRes.ok) {
+        console.error('Failed to sync album published status with folder');
+      }
+
+      const folderDisplayName = folderId ? folderName : 'root level';
+      const publishedText = targetPublishedStatus ? 'published' : 'unpublished';
+      setMessage({ 
+        type: 'success', 
+        text: `Moved "${albumName}" to ${folderDisplayName} and ${publishedText}` 
+      });
+      
+      // Sync with database
+      await loadAlbums();
+      
+      // Dispatch global event to update navigation dropdown
+      window.dispatchEvent(new Event('albums-updated'));
     } catch (err) {
       setMessage({ type: 'error', text: 'Network error occurred' });
+      // Revert on error
+      await loadAlbums();
     }
   };
 
@@ -1810,40 +1919,51 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
           onDragOver={handleAlbumDragOver}
           onDragEnd={handleAlbumDragEnd}
         >
+          {/* Single SortableContext for ALL albums (enables dragging between folders and uncategorized) */}
+          <SortableContext
+            items={localAlbums.map((album) => album.name)}
+            strategy={rectSortingStrategy}
+          >
           {/* Folders Section */}
           {localFolders.length > 0 && (
             <div className="folders-section" style={{ marginBottom: '2rem' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
               </div>
-              <SortableContext
-                items={localFolders.map((folder) => `folder-${folder.id}`)}
-                strategy={rectSortingStrategy}
-              >
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '1rem' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                   {localFolders.map((folder) => (
                     <SortableFolderCard
                       key={folder.id}
                       folder={folder}
-                      albumCount={localAlbums.filter(a => a.folder_id === folder.id).length}
+                      albums={localAlbums.filter(a => a.folder_id === folder.id)}
+                      selectedAlbum={selectedAlbum}
+                      animatingAlbum={animatingAlbum}
+                      dragOverAlbum={dragOverAlbum}
                       isDragOver={dragOverFolderId === folder.id}
                       onDelete={handleDeleteFolder}
                       onTogglePublished={handleToggleFolderPublished}
+                      onAlbumClick={(albumName) => setSelectedAlbum(selectedAlbum === albumName ? null : albumName)}
+                      onAlbumDragOver={handleAlbumTileDragOver}
+                      onAlbumDragLeave={(e) => handleAlbumTileDragLeave(e)}
+                      onAlbumDrop={handleAlbumTileDrop}
+                      onAlbumRename={(albumName) => handleOpenRenameModal(albumName)}
+                      onCreateAlbumInFolder={handleCreateAlbumInFolder}
                     />
                   ))}
                   {/* Add New Folder Button */}
                   <div
                     className="ghost-folder-tile"
                     onClick={() => setShowFolderModal(true)}
+                    style={{ width: '100%', minHeight: '80px' }}
                   >
                     <div className="ghost-tile-content">
                       <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
                         <path d="M12 11v6M9 14h6"/>
                       </svg>
+                      <span className="ghost-tile-hint">Create New Folder</span>
                     </div>
                   </div>
                 </div>
-              </SortableContext>
             </div>
           )}
           
@@ -1866,15 +1986,26 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
             </div>
           )}
           
-          {/* Albums Section */}
+          {/* Albums Section - Uncategorized */}
           <div className="albums-management">
             <div className="albums-list">
-                <SortableContext
-                  items={localAlbums.map((album) => album.name)}
-                  strategy={rectSortingStrategy}
-                >
+              <div 
+                ref={setUncategorizedDropRef}
+                className={`uncategorized-section ${dragOverUncategorized ? 'drag-over-uncategorized' : ''}`}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                  <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 600, color: '#fff' }}>
+                    📂 Uncategorized Albums
+                  </h3>
+                  <span style={{ fontSize: '0.9rem', color: '#888' }}>
+                    {(() => {
+                      const count = localAlbums.filter(album => !album.folder_id).length;
+                      return `${count} ${count === 1 ? 'album' : 'albums'}`;
+                    })()}
+                  </span>
+                </div>
                   <div className="album-grid">
-                    {localAlbums.map((album) => (
+                    {localAlbums.filter(album => !album.folder_id).map((album) => (
                       <SortableAlbumCard
                         key={album.name}
                         album={album}
@@ -1919,7 +2050,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                       />
                     </div>
                   </div>
-                </SortableContext>
+              </div>
             </div>
           </div>
           
@@ -1944,21 +2075,33 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                   <h4 className="folder-card-title">📁 {localFolders.find(f => f.id === activeFolderId)?.name}</h4>
                 </div>
                 <div className="folder-count">
-                  {localAlbums.filter(a => a.folder_id === activeFolderId).length} album(s)
+                  {(() => {
+                    const count = localAlbums.filter(a => a.folder_id === activeFolderId).length;
+                    return `${count} ${count === 1 ? 'album' : 'albums'}`;
+                  })()}
                 </div>
               </div>
             ) : null}
           </DragOverlay>
+          </SortableContext>
         </DndContext>
 
           {selectedAlbum && (
-            <div 
-              className={`album-photos ${isDragging ? 'drag-over' : ''}`}
-              onDragOver={uploadingImages.length > 0 ? undefined : handleDragOver}
-              onDragLeave={uploadingImages.length > 0 ? undefined : handleDragLeave}
-              onDrop={uploadingImages.length > 0 ? undefined : handleDrop}
-            >
-              <div className="photos-header">
+            <>
+              <div 
+                className="album-photos-backdrop"
+                onClick={() => setSelectedAlbum(null)}
+              />
+              <div 
+                className={`album-photos ${isDragging ? 'drag-over' : ''}`}
+                onDragOver={uploadingImages.length > 0 ? undefined : handleDragOver}
+                onDragLeave={uploadingImages.length > 0 ? undefined : handleDragLeave}
+                onDrop={uploadingImages.length > 0 ? undefined : handleDrop}
+              >
+                <div className="photos-header">
+                  <div className="photos-header-top">
+                    <h3 className="photos-panel-title">📸 {selectedAlbum}</h3>
+                  </div>
                 <div className="album-actions-grid">
                   <label className="btn-action btn-upload btn-action-item">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -2310,6 +2453,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                 </DndContext>
               )}
             </div>
+            </>
           )}
       </section>
 
@@ -2746,4 +2890,5 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
 };
 
 export default AlbumsManager;
+
 
