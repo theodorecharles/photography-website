@@ -6,18 +6,7 @@
 import { useState, useEffect } from 'react';
 import { API_URL } from '../../config';
 import './SetupWizard.css';
-
-interface SetupStatus {
-  setupComplete: boolean;
-  checks: {
-    configExists: boolean;
-    databaseExists: boolean;
-    photosDirExists: boolean;
-    optimizedDirExists: boolean;
-    hasPhotos: boolean;
-    isConfigured: boolean;
-  };
-}
+import type { SetupStatus } from './types';
 
 export default function SetupWizard() {
   const [loading, setLoading] = useState(true);
