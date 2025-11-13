@@ -422,7 +422,7 @@ router.post("/:album/upload", requireAuth, upload.single('photo'), async (req: R
 
     // Trigger optimization with SSE progress streaming
     const projectRoot = path.resolve(__dirname, '../../../');
-    const scriptPath = path.join(projectRoot, 'optimize_new_image.js');
+    const scriptPath = path.join(projectRoot, 'scripts', 'optimize_new_image.js');
 
     if (fs.existsSync(scriptPath)) {
       const child = spawn('node', [scriptPath, sanitizedAlbum, file.originalname], { 
@@ -731,7 +731,7 @@ router.post("/:album/optimize", requireAuth, async (req: Request, res: Response)
 
     // Get project root (two levels up from backend/src)
     const projectRoot = path.resolve(__dirname, '../../../');
-    const scriptPath = path.join(projectRoot, 'optimize_all_images.js');
+    const scriptPath = path.join(projectRoot, 'scripts', 'optimize_all_images.js');
 
     if (!fs.existsSync(scriptPath)) {
       res.status(500).json({ error: 'Optimization script not found' });
