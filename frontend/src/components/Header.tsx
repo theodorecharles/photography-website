@@ -373,7 +373,7 @@ function Navigation({
                               />
                             </svg>
                           )}
-                          {folder.name}
+                          <span>{folder.name}</span>
                         </button>
                         {openFolderId === folder.id && (
                           <div className="folder-submenu">
