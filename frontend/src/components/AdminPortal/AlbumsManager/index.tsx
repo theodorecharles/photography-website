@@ -281,57 +281,8 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     setMessage,
   });
 
-  // Destructure all handlers
-  const {
-    handlePhotoDragStart,
-    handlePhotoDragEnd,
-    handleAlbumDragStart,
-    handleAlbumDragOver,
-    handleAlbumDragEnd,
-    handleAlbumTileDragOver,
-    handleAlbumTileDragLeave,
-    handleAlbumTileDrop,
-  } = dragDropHandlers;
-
-  const {
-    handleDeleteFolder,
-    handleDeleteEmptyFolder,
-    handleToggleFolderPublished,
-  } = folderHandlers;
-
-  const {
-    handleUploadToAlbum,
-    handleUploadPhotos,
-    handleDragOver,
-    handleDragLeave,
-    handleDrop,
-  } = uploadHandlers;
-
-  const {
-    handleDeleteAlbum,
-    handleTogglePublished,
-    handleOpenRenameModal,
-    handleRenameAlbum,
-    handleMoveAlbumToFolder,
-  } = albumHandlers;
-
-  const {
-    handleGhostTileClick,
-    handleGhostTileDragOver,
-    handleGhostTileDragLeave,
-    handleGhostTileDrop,
-    handleGhostTileFileSelect,
-    handleCreateAlbumInFolder,
-    handleSaveChanges,
-    handleCancelChanges,
-  } = uiHandlers;
-
-  const {
-    handleDeletePhoto,
-    handleShuffleClick,
-    handleShuffleStart,
-    handleShuffleEnd,
-  } = photoHandlers;
+  // Handlers are accessed via namespace pattern (e.g., dragDropHandlers.handlePhotoDragStart)
+  // This makes it clearer where each handler comes from
 
   // Additional handlers that need to stay inline due to local state dependencies
   const handleModalCancel = () => cancelModal(setShowConfirmModal, setConfirmConfig);
@@ -401,9 +352,9 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
         <DndContext
           sensors={albumSensors}
           collisionDetection={customCollisionDetection}
-          onDragStart={handleAlbumDragStart}
-          onDragOver={handleAlbumDragOver}
-          onDragEnd={handleAlbumDragEnd}
+          onDragStart={dragDropHandlers.handleAlbumDragStart}
+          onDragOver={dragDropHandlers.handleAlbumDragOver}
+          onDragEnd={dragDropHandlers.handleAlbumDragEnd}
         >
           {/* Single SortableContext for ALL albums (enables dragging between folders and uncategorized) */}
           <SortableContext
@@ -416,8 +367,8 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
             hasUnsavedChanges={hasUnsavedChanges}
             localFoldersCount={localFolders.length}
             onCreateFolder={() => setShowFolderModal(true)}
-            onSaveChanges={handleSaveChanges}
-            onCancelChanges={handleCancelChanges}
+            onSaveChanges={uiHandlers.handleSaveChanges}
+            onCancelChanges={uiHandlers.handleCancelChanges}
           />
           
           <FoldersSection
@@ -428,14 +379,14 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
             dragOverAlbum={dragOverAlbum}
             dragOverFolderId={dragOverFolderId}
             placeholderInfo={placeholderInfo}
-            onDeleteFolder={handleDeleteFolder}
-            onToggleFolderPublished={handleToggleFolderPublished}
+            onDeleteFolder={folderHandlers.handleDeleteFolder}
+            onToggleFolderPublished={folderHandlers.handleToggleFolderPublished}
             onAlbumClick={(albumName) => selectedAlbum === albumName ? deselectAlbum() : selectAlbum(albumName)}
-            onAlbumDragOver={handleAlbumTileDragOver}
-            onAlbumDragLeave={(e) => handleAlbumTileDragLeave(e)}
-            onAlbumDrop={handleAlbumTileDrop}
-            onAlbumRename={(albumName) => handleOpenRenameModal(albumName)}
-            onCreateAlbumInFolder={handleCreateAlbumInFolder}
+            onAlbumDragOver={dragDropHandlers.handleAlbumTileDragOver}
+            onAlbumDragLeave={(e) => dragDropHandlers.handleAlbumTileDragLeave(e)}
+            onAlbumDrop={dragDropHandlers.handleAlbumTileDrop}
+            onAlbumRename={(albumName) => albumHandlers.handleOpenRenameModal(albumName)}
+            onCreateAlbumInFolder={uiHandlers.handleCreateAlbumInFolder}
           />
           
           <UncategorizedSection
@@ -450,15 +401,15 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
             uncategorizedSectionRef={uncategorizedSectionRef}
             ghostTileFileInputRef={ghostTileFileInputRef}
             onAlbumClick={(albumName) => selectedAlbum === albumName ? deselectAlbum() : selectAlbum(albumName)}
-            onAlbumDragOver={handleAlbumTileDragOver}
-            onAlbumDragLeave={handleAlbumTileDragLeave}
-            onAlbumDrop={handleAlbumTileDrop}
-            onAlbumRename={handleOpenRenameModal}
-            onGhostTileClick={handleGhostTileClick}
-            onGhostTileDragOver={handleGhostTileDragOver}
-            onGhostTileDragLeave={handleGhostTileDragLeave}
-            onGhostTileDrop={handleGhostTileDrop}
-            onGhostTileFileSelect={handleGhostTileFileSelect}
+            onAlbumDragOver={dragDropHandlers.handleAlbumTileDragOver}
+            onAlbumDragLeave={dragDropHandlers.handleAlbumTileDragLeave}
+            onAlbumDrop={dragDropHandlers.handleAlbumTileDrop}
+            onAlbumRename={albumHandlers.handleOpenRenameModal}
+            onGhostTileClick={uiHandlers.handleGhostTileClick}
+            onGhostTileDragOver={uiHandlers.handleGhostTileDragOver}
+            onGhostTileDragLeave={uiHandlers.handleGhostTileDragLeave}
+            onGhostTileDrop={uiHandlers.handleGhostTileDrop}
+            onGhostTileFileSelect={uiHandlers.handleGhostTileFileSelect}
           />
           
           
@@ -519,24 +470,24 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
               isShuffling={isShuffling}
               localAlbums={localAlbums}
               onClose={deselectAlbum}
-              onUploadPhotos={handleUploadPhotos}
-              onDeleteAlbum={handleDeleteAlbum}
+              onUploadPhotos={uploadHandlers.handleUploadPhotos}
+              onDeleteAlbum={albumHandlers.handleDeleteAlbum}
               onShareAlbum={(albumName) => {
                 setShareAlbumName(albumName);
                 setShowShareModal(true);
               }}
               onSavePhotoOrder={() => photoManagement.savePhotoOrder()}
               onCancelPhotoOrder={photoManagement.cancelPhotoReorder}
-              onShufflePhotos={handleShuffleClick}
-              onShuffleStart={handleShuffleStart}
-              onShuffleEnd={handleShuffleEnd}
-              onPhotoDragStart={handlePhotoDragStart}
-              onPhotoDragEnd={handlePhotoDragEnd}
+              onShufflePhotos={photoHandlers.handleShuffleClick}
+              onShuffleStart={photoHandlers.handleShuffleStart}
+              onShuffleEnd={photoHandlers.handleShuffleEnd}
+              onPhotoDragStart={dragDropHandlers.handlePhotoDragStart}
+              onPhotoDragEnd={dragDropHandlers.handlePhotoDragEnd}
               onOpenEditModal={openEditModal}
-              onDeletePhoto={(filename) => handleDeletePhoto(selectedAlbum!, filename)}
-              onDragOver={handleDragOver}
-              onDragLeave={handleDragLeave}
-              onDrop={handleDrop}
+              onDeletePhoto={(filename) => photoHandlers.handleDeletePhoto(selectedAlbum!, filename)}
+              onDragOver={uploadHandlers.handleDragOver}
+              onDragLeave={uploadHandlers.handleDragLeave}
+              onDrop={uploadHandlers.handleDrop}
               setActiveId={setActiveId}
               shuffleButtonRef={shuffleButtonRef}
             />
@@ -555,7 +506,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
         newAlbumName={newAlbumName}
         setNewAlbumName={setNewAlbumName}
         setShowRenameModal={setShowRenameModal}
-        handleRenameAlbum={handleRenameAlbum}
+        handleRenameAlbum={albumHandlers.handleRenameAlbum}
         showFolderModal={showFolderModal}
         setShowFolderModal={setShowFolderModal}
         folderModalError={folderModalError}
@@ -577,7 +528,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
         showDeleteFolderModal={showDeleteFolderModal}
         deletingFolderName={deletingFolderName}
         setShowDeleteFolderModal={setShowDeleteFolderModal}
-        handleDeleteFolder={handleDeleteFolder}
+        handleDeleteFolder={folderHandlers.handleDeleteFolder}
         localFolders={localFolders}
         localAlbums={localAlbums}
         showNewAlbumModal={showNewAlbumModal}
