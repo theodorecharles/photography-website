@@ -112,36 +112,8 @@ if ! node migrate-to-data-directory.js; then
     handle_error "Data directory migration failed"
 fi
 
-# Run database migrations
-log "Running database migrations..."
-if ! node migrate-database.js; then
-    handle_error "Database migration failed"
-fi
-
-log "Running sort_order migration..."
-if ! node migrate-add-sort-order.js; then
-    handle_error "Sort order migration failed"
-fi
-
-log "Running share links migration..."
-if ! node migrate-add-share-links.js; then
-    handle_error "Share links migration failed"
-fi
-
-log "Running album folders migration..."
-if ! node migrate-add-album-folders.js; then
-    handle_error "Album folders migration failed"
-fi
-
-log "Running share_links foreign key fix migration..."
-if ! node migrate-fix-share-links-fk.js; then
-    handle_error "Share links foreign key fix migration failed"
-fi
-
-log "Running folder sort_order migration..."
-if ! node migrate-add-folder-sort-order.js; then
-    handle_error "Folder sort_order migration failed"
-fi
+# Note: Other database migrations exist on oobe branch and will be available after merge
+# This branch only includes the data directory migration for Docker support
 
 # Restart both services using PM2 ecosystem file
 log "Restarting services with PM2 using ecosystem config..."
