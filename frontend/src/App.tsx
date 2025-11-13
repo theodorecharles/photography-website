@@ -426,7 +426,17 @@ function App() {
         </div>
       );
     }
-    return <div className="error">Error: {error}</div>;
+    return (
+      <div className="error backend-error">
+        <div className="error-icon-large">❌</div>
+        <h2>Backend Error</h2>
+        <p className="error-description">Unable to connect to the server</p>
+        <p className="error-details">{error}</p>
+        <button onClick={() => window.location.reload()} className="retry-button">
+          Reload Page
+        </button>
+      </div>
+    );
   }
 
   // Main application layout
