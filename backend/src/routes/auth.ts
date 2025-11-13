@@ -253,9 +253,8 @@ router.get(
             user_name: user.name || 'unknown',
           });
           
-          // Redirect to root with success parameter, let frontend handle navigation to /admin
-          // This ensures React Router and all CSS loads properly
-          return res.redirect(`${frontendUrl}/?loginSuccess=true`);
+          // Redirect directly to admin - simple and straightforward
+          return res.redirect(`${frontendUrl}/admin`);
         });
       });
     })(req, res, next);
