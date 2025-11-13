@@ -8,6 +8,7 @@
 
 import React from 'react';
 import { useSortable, SortableContext } from '@dnd-kit/sortable';
+import { PlusCircleIcon } from '../../../icons';
 import { useDroppable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 import { rectSortingStrategy } from '@dnd-kit/sortable';
@@ -180,10 +181,7 @@ const SortableFolderCard: React.FC<SortableFolderCardProps> = ({
             }}
           >
             <div className="ghost-tile-content">
-              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="12" cy="12" r="10"/>
-                <path d="M12 8v8M8 12h8"/>
-              </svg>
+              <PlusCircleIcon width="48" height="48" />
             </div>
           </div>
         </div>

@@ -10,6 +10,7 @@ import { SortableContext, sortableKeyboardCoordinates, rectSortingStrategy } fro
 import SortablePhotoItem from './SortablePhotoItem';
 import { Photo, UploadingImage } from '../types';
 import { cacheBustValue } from '../../../../config';
+import { UploadIcon, TrashIcon, LinkIcon, ShuffleIcon } from '../../../icons';
 
 const API_URL = import.meta.env.VITE_API_URL || '';
 
@@ -104,9 +105,7 @@ const PhotosPanel: React.FC<PhotosPanelProps> = ({
           </div>
           <div className="album-actions-grid">
             <label className="btn-action btn-upload btn-action-item">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
-              </svg>
+              <UploadIcon width="16" height="16" />
               <span className="btn-text">{uploadingImages.length > 0 ? 'Uploading...' : 'Upload Photos'}</span>
               <input
                 type="file"
@@ -123,9 +122,7 @@ const PhotosPanel: React.FC<PhotosPanelProps> = ({
               className="btn-action btn-delete btn-action-item"
               title="Delete album"
             >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
-              </svg>
+              <TrashIcon width="16" height="16" />
               <span className="btn-text">Delete Album</span>
             </button>
             
@@ -135,10 +132,7 @@ const PhotosPanel: React.FC<PhotosPanelProps> = ({
                 className="btn-action btn-generate-link btn-action-item"
                 title="Generate link for album"
               >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/>
-                  <path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/>
-                </svg>
+                <LinkIcon width="16" height="16" />
                 <span className="btn-text">Share Link</span>
               </button>
             )}
@@ -159,9 +153,7 @@ const PhotosPanel: React.FC<PhotosPanelProps> = ({
                   disabled={savingOrder}
                   title="Click to shuffle once, hold to shuffle continuously"
                 >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/>
-                  </svg>
+                  <ShuffleIcon width="16" height="16" />
                   Shuffle
                 </button>
                 <span className="order-hint">Drag photos to reorder</span>
