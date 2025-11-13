@@ -23,6 +23,7 @@ import ShareModal from '../ShareModal';
 import SortableAlbumCard from './components/SortableAlbumCard';
 import SortablePhotoItem from './components/SortablePhotoItem';
 import SortableFolderCard from './components/SortableFolderCard';
+import PhotosPanel from './components/PhotosPanel';
 import { useAlbumManagement } from './hooks/useAlbumManagement';
 import { usePhotoManagement } from './hooks/usePhotoManagement';
 import { useFolderManagement } from './hooks/useFolderManagement';
@@ -2670,374 +2671,40 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
         </DndContext>
 
           {selectedAlbum && (
-            <>
-              <div 
-                className="album-photos-backdrop"
-                onClick={() => setSelectedAlbum(null)}
-              />
-              <div 
-                className={`album-photos ${isDragging ? 'drag-over' : ''}`}
-                onDragOver={uploadingImages.length > 0 ? undefined : handleDragOver}
-                onDragLeave={uploadingImages.length > 0 ? undefined : handleDragLeave}
-                onDrop={uploadingImages.length > 0 ? undefined : handleDrop}
-              >
-                <div className="photos-header">
-                  <div className="photos-header-top">
-                    <h3 className="photos-panel-title">{selectedAlbum}</h3>
-                    <button onClick={() => setSelectedAlbum(null)} className="photos-panel-close-btn" title="Close">×</button>
-                  </div>
-                <div className="album-actions-grid">
-                  <label className="btn-action btn-upload btn-action-item">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
-                    </svg>
-                    <span className="btn-text">{uploadingImages.length > 0 ? 'Uploading...' : 'Upload Photos'}</span>
-                    <input
-                      type="file"
-                      multiple
-                      accept="image/*"
-                      onChange={handleUploadPhotos}
-                      disabled={uploadingImages.length > 0}
-                      style={{ display: 'none' }}
-                    />
-                  </label>
-                  
-                  <button
-                    onClick={() => handleDeleteAlbum(selectedAlbum)}
-                    className="btn-action btn-delete btn-action-item"
-                    title="Delete album"
-                  >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
-                    </svg>
-                    <span className="btn-text">Delete Album</span>
-                  </button>
-                  
-                  {/* Only show share button for unpublished albums */}
-                  {!localAlbums.find(a => a.name === selectedAlbum)?.published && (
-                    <button
-                      onClick={() => {
-                        setShareAlbumName(selectedAlbum);
-                        setShowShareModal(true);
-                      }}
-                      className="btn-action btn-generate-link btn-action-item"
-                      title="Generate link for album"
-                    >
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <circle cx="18" cy="5" r="3"/>
-                        <circle cx="6" cy="12" r="3"/>
-                        <circle cx="18" cy="19" r="3"/>
-                        <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
-                        <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
-                      </svg>
-                      <span className="btn-text">Share Album</span>
-                    </button>
-                  )}
-                  
-                  {!localAlbums.find(a => a.name === selectedAlbum)?.published && (
-                    <button
-                      onClick={() => window.open(`/album/${selectedAlbum}`, '_blank')}
-                      className="btn-action btn-preview btn-action-item"
-                      title="Preview unpublished album"
-                    >
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                        <circle cx="12" cy="12" r="3"/>
-                      </svg>
-                      <span className="btn-text">Preview Album</span>
-                    </button>
-                  )}
-                  
-                  <label 
-                    className="toggle-switch btn-action-item"
-                    title={localAlbums.find(a => a.name === selectedAlbum)?.published === false ? "Publish album (make visible to public)" : "Unpublish album (hide from public)"}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={localAlbums.find(a => a.name === selectedAlbum)?.published !== false}
-                      onChange={(e) => {
-                        handleTogglePublished(selectedAlbum, localAlbums.find(a => a.name === selectedAlbum)?.published !== false, e as any);
-                      }}
-                    />
-                    <span className="toggle-slider"></span>
-                    <span className="toggle-label">
-                      {localAlbums.find(a => a.name === selectedAlbum)?.published === false ? 'Unpublished' : 'Published'}
-                    </span>
-                  </label>
-                </div>
-                
-                {hasOrderChanged() && (
-                  <div className="photo-order-controls">
-                    <div className="photo-order-row photo-order-row-secondary">
-                      <button
-                        onClick={handleCancelPhotoOrder}
-                        disabled={savingOrder}
-                        className="btn-action btn-cancel-order"
-                        title="Cancel changes"
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        onMouseDown={handleShuffleMouseDown}
-                        onMouseUp={handleShuffleMouseUp}
-                        onMouseLeave={handleShuffleMouseLeave}
-                        onTouchStart={(e) => {
-                          e.preventDefault();
-                          shuffleButtonRef.current = e.currentTarget;
-                          isLongPressRef.current = false;
-                          shuffleClickTimeoutRef.current = setTimeout(() => {
-                            isLongPressRef.current = true;
-                            handleShuffleStart();
-                          }, 200);
-                        }}
-                        onTouchEnd={(e) => {
-                          e.preventDefault();
-                          if (shuffleClickTimeoutRef.current) {
-                            clearTimeout(shuffleClickTimeoutRef.current);
-                            shuffleClickTimeoutRef.current = null;
-                          }
-                          if (isLongPressRef.current) {
-                            handleShuffleEnd();
-                          } else {
-                            handleShuffleClick();
-                          }
-                          isLongPressRef.current = false;
-                        }}
-                        disabled={savingOrder}
-                        className="btn-action btn-shuffle-order"
-                        title="Click to shuffle, hold to animate"
-                      >
-                        <svg 
-                          width="16" 
-                          height="16" 
-                          viewBox="0 0 24 24" 
-                          fill="none" 
-                          stroke="currentColor" 
-                          strokeWidth="2" 
-                          strokeLinecap="round" 
-                          strokeLinejoin="round"
-                          style={{ marginRight: '0.5rem' }}
-                        >
-                          <polyline points="16 3 21 3 21 8"></polyline>
-                          <line x1="4" y1="20" x2="21" y2="3"></line>
-                          <polyline points="21 16 21 21 16 21"></polyline>
-                          <line x1="15" y1="15" x2="21" y2="21"></line>
-                          <line x1="4" y1="4" x2="9" y2="9"></line>
-                        </svg>
-                        Shuffle
-                      </button>
-                    </div>
-                    <div className="photo-order-row photo-order-row-primary">
-                      <span className="unsaved-indicator">
-                        Unsaved changes
-                      </span>
-                      <button
-                        onClick={handleSavePhotoOrder}
-                        disabled={savingOrder}
-                        className="btn-action btn-save-order"
-                        title="Save photo order"
-                      >
-                        {savingOrder ? 'Saving...' : 'Save Order'}
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {isDragging && uploadingImages.length === 0 && (
-                <div className="drop-overlay">
-                  <div className="drop-overlay-content">
-                    <div className="drop-icon">📁</div>
-                    <p>Drop images here to upload</p>
-                  </div>
-                </div>
-              )}
-
-              {uploadingImages.length > 0 && (
-                <div className="upload-progress-container">
-                  <div className="upload-progress-info">
-                    <span className="upload-progress-percent">
-                      {uploadingImages.filter(img => img.state === 'complete' || img.state === 'error').length} / {uploadingImages.length} complete
-                    </span>
-                  </div>
-                  <div className="upload-progress-bar">
-                    <div 
-                      className="upload-progress-fill"
-                      style={{ 
-                        width: `${(uploadingImages.filter(img => img.state === 'complete' || img.state === 'error').length / uploadingImages.length) * 100}%` 
-                      }}
-                    ></div>
-                  </div>
-                </div>
-              )}
-
-              {/* Show error summary at the top */}
-              {uploadingImages.some(img => img.state === 'error') && (
-                <div className="upload-errors-summary">
-                  <div className="errors-summary-header">
-                    <span className="error-icon">⚠️</span>
-                    <strong>Failed Uploads ({uploadingImages.filter(img => img.state === 'error').length})</strong>
-                  </div>
-                  <div className="error-files-list">
-                    {uploadingImages
-                      .filter(img => img.state === 'error')
-                      .map((img, idx) => (
-                        <div key={`error-${idx}`} className="error-file-item">
-                          <div className="error-file-info">
-                            <span className="error-filename">{img.filename}</span>
-                            <span className="error-reason">{img.error || 'Upload failed'}</span>
-                          </div>
-                          <button
-                            className="error-dismiss-btn"
-                            onClick={() => {
-                              setUploadingImages(prev => prev.filter(i => i.filename !== img.filename));
-                            }}
-                            title="Dismiss"
-                          >
-                            ×
-                          </button>
-                        </div>
-                      ))}
-                  </div>
-                </div>
-              )}
-
-              {loadingPhotos ? (
-                <div className="loading-container" style={{ marginTop: '2rem' }}>
-                  <div className="loading-spinner"></div>
-                  <p>Loading photos...</p>
-                </div>
-              ) : albumPhotos.length === 0 && uploadingImages.length === 0 ? (
-                <p style={{ color: '#888', marginTop: '1rem' }}>
-                  No photos in this album yet. Upload some to get started!
-                </p>
-              ) : (
-                <DndContext
-                  sensors={photoSensors}
-                  collisionDetection={closestCenter}
-                  onDragStart={handlePhotoDragStart}
-                  onDragEnd={handlePhotoDragEnd}
-                >
-                  <div className={`photos-grid ${isShuffling ? 'shuffling-grid' : ''}`}>
-                    {/* Show uploading images first */}
-                    {uploadingImages.map((img, idx) => (
-                    <div key={`uploading-${idx}`} className="admin-photo-item uploading-photo-item">
-                      {img.state === 'queued' && (
-                        <div className="photo-state-overlay">
-                          <div className="state-icon">⏳</div>
-                          <span className="state-text">Queued</span>
-                        </div>
-                      )}
-                      {img.state === 'uploading' && (
-                        <div className="photo-state-overlay">
-                          <div className="progress-circle">
-                            <svg className="progress-ring" width="60" height="60">
-                              <circle
-                                className="progress-ring-circle-bg"
-                                stroke="rgba(255, 255, 255, 0.1)"
-                                strokeWidth="4"
-                                fill="transparent"
-                                r="26"
-                                cx="30"
-                                cy="30"
-                              />
-                              <circle
-                                className="progress-ring-circle"
-                                stroke="var(--primary-color)"
-                                strokeWidth="4"
-                                fill="transparent"
-                                r="26"
-                                cx="30"
-                                cy="30"
-                                strokeDasharray={`${2 * Math.PI * 26}`}
-                                strokeDashoffset={`${2 * Math.PI * 26 * (1 - (img.progress || 0) / 100)}`}
-                                style={{ transition: 'stroke-dashoffset 0.3s ease' }}
-                              />
-                            </svg>
-                            <span className="progress-percentage">{img.progress}%</span>
-                          </div>
-                          <span className="state-text">Uploading...</span>
-                        </div>
-                      )}
-                      {img.state === 'optimizing' && (
-                        <div className="photo-state-overlay">
-                          <div className="progress-circle">
-                            <svg className="progress-ring" width="60" height="60">
-                              <circle
-                                className="progress-ring-circle-bg"
-                                stroke="rgba(255, 255, 255, 0.1)"
-                                strokeWidth="4"
-                                fill="transparent"
-                                r="26"
-                                cx="30"
-                                cy="30"
-                              />
-                              <circle
-                                className="progress-ring-circle"
-                                stroke="var(--primary-color)"
-                                strokeWidth="4"
-                                fill="transparent"
-                                r="26"
-                                cx="30"
-                                cy="30"
-                                strokeDasharray={`${2 * Math.PI * 26}`}
-                                strokeDashoffset={`${2 * Math.PI * 26 * (1 - (img.optimizeProgress || 0) / 100)}`}
-                                style={{ transition: 'stroke-dashoffset 0.3s ease' }}
-                              />
-                            </svg>
-                            <span className="progress-percentage">{img.optimizeProgress || 0}%</span>
-                          </div>
-                          <span className="state-text">{img.error || 'Optimizing...'}</span>
-                        </div>
-                      )}
-                      {img.state === 'complete' && img.thumbnailUrl && (
-                        <>
-                          <img 
-                            src={img.thumbnailUrl}
-                            alt={img.filename}
-                            className="admin-photo-thumbnail"
-                          />
-                          <div className="photo-complete-badge">✓</div>
-                        </>
-                      )}
-                      {img.state === 'error' && (
-                        <div className="photo-state-overlay error">
-                          <div className="state-icon">⚠️</div>
-                          <span className="state-text">Error</span>
-                          <span className="error-message">{img.error}</span>
-                        </div>
-                      )}
-                      <div className="photo-filename">{img.filename}</div>
-                    </div>
-                    ))}
-                    
-                    {/* Show existing album photos with drag and drop */}
-                    <SortableContext items={albumPhotos.map(p => p.id)} strategy={rectSortingStrategy}>
-                      {albumPhotos.map((photo) => (
-                        <SortablePhotoItem
-                          key={photo.id}
-                          photo={photo}
-                          onEdit={handleOpenEditModal}
-                          onDelete={handleDeletePhoto}
-                        />
-                      ))}
-                    </SortableContext>
-                  </div>
-                  <DragOverlay>
-                    {activeId ? (
-                      <div className="admin-photo-item dragging" style={{ cursor: 'grabbing' }}>
-                        <img
-                          src={`${API_URL}${albumPhotos.find(p => p.id === activeId)?.thumbnail}?i=${cacheBustValue}`}
-                          alt="Dragging"
-                          className="admin-photo-thumbnail"
-                        />
-                      </div>
-                    ) : null}
-                  </DragOverlay>
-                </DndContext>
-              )}
-            </div>
-            </>
+            <PhotosPanel
+              selectedAlbum={selectedAlbum}
+              albumPhotos={albumPhotos}
+              uploadingImages={uploadingImages}
+              loadingPhotos={loadingPhotos}
+              hasEverDragged={hasEverDragged}
+              savingOrder={savingOrder}
+              isDragging={isDragging}
+              activeId={activeId}
+              isShuffling={isShuffling}
+              localAlbums={localAlbums}
+              onClose={deselectAlbum}
+              onUploadPhotos={handleUploadPhotos}
+              onDeleteAlbum={handleDeleteAlbum}
+              onShareAlbum={(albumName) => {
+                setShareAlbumName(albumName);
+                setShowShareModal(true);
+              }}
+              onSavePhotoOrder={handleSavePhotoOrder}
+              onCancelPhotoOrder={handleCancelPhotoOrder}
+              onShufflePhotos={handleShuffleClick}
+              onShuffleStart={handleShuffleStart}
+              onShuffleEnd={handleShuffleEnd}
+              onPhotoDragStart={handlePhotoDragStart}
+              onPhotoDragEnd={handlePhotoDragEnd}
+              onOpenEditModal={handleOpenEditModal}
+              onDeletePhoto={handleDeletePhoto}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+              setActiveId={setActiveId}
+              shuffleButtonRef={shuffleButtonRef}
+            />
+          )}
           )}
       </section>
 
