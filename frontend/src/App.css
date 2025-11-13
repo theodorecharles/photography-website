@@ -47,7 +47,8 @@ body {
   position: relative;
   width: 100%;
   overflow-x: hidden;
-  flex: 1;
+  flex: 1 0 auto;
+  min-height: calc(100vh - 200px);
 }
 
 .main-content-title {
