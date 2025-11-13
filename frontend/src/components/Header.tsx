@@ -26,13 +26,13 @@ export interface ExternalLink {
 export interface AlbumFolder {
   id: number;
   name: string;
-  published: boolean;
+  published: boolean | number; // SQLite returns 0/1 for booleans
 }
 
 export interface AlbumWithFolder {
   name: string;
   folder_id?: number | null;
-  published?: boolean;
+  published?: boolean | number; // SQLite returns 0/1 for booleans
 }
 
 interface HeaderProps {
@@ -246,7 +246,7 @@ function Navigation({
                     return !albumObj.folder_id;
                   }).map(album => {
                     const albumName = typeof album === 'string' ? album : album.name;
-                    const isPublished = typeof album === 'string' ? true : album.published !== false;
+                    const isPublished = typeof album === 'string' ? true : (album.published === true || album.published === 1);
                     return (
                       <Link
                         key={albumName}
@@ -285,7 +285,7 @@ function Navigation({
                       if (albumObj.folder_id !== folder.id) return false;
                       // For unauthenticated users, only show published albums
                       if (!isAuthenticated) {
-                        const isPublished = typeof album === 'string' ? true : album.published !== false;
+                        const isPublished = typeof album === 'string' ? true : (album.published === true || album.published === 1);
                         return isPublished;
                       }
                       return true;
@@ -294,7 +294,7 @@ function Navigation({
                     // Don't show empty folders in the dropdown
                     if (folderAlbums.length === 0) return null;
                     
-                    const isFolderPublished = folder.published !== false;
+                    const isFolderPublished = folder.published === true || folder.published === 1;
                     
                     // Show only non-empty folders
                     return (
@@ -359,7 +359,7 @@ function Navigation({
                             {folderAlbums.length > 0 ? (
                               folderAlbums.map(album => {
                                 const albumName = typeof album === 'string' ? album : album.name;
-                                const isPublished = typeof album === 'string' ? true : album.published !== false;
+                                const isPublished = typeof album === 'string' ? true : (album.published === true || album.published === 1);
                                 return (
                                   <Link
                                     key={albumName}
@@ -405,7 +405,7 @@ function Navigation({
                 // No folders - show flat list
                 albums.map(album => {
                   const albumName = typeof album === 'string' ? album : album.name;
-                  const isPublished = typeof album === 'string' ? true : album.published !== false;
+                  const isPublished = typeof album === 'string' ? true : (album.published === true || album.published === 1);
                   return (
                     <Link
                       key={albumName}

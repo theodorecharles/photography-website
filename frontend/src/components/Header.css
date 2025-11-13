@@ -256,7 +256,7 @@
   -webkit-backdrop-filter: blur(8px);
   border: 1px solid #FFF;
   border-top: none;
-  padding: 1rem 1rem 0.5rem 1rem;
+  padding: 1rem 1rem 1rem 1rem;
   box-shadow: 0 4px 4px rgba(0, 0, 0, 0.5);
   z-index: 999;
   display: flex;
