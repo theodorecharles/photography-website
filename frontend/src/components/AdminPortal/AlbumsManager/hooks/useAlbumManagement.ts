@@ -145,10 +145,13 @@ export const useAlbumManagement = ({
     }
   }, [setMessage]);
 
-  const saveAlbumOrder = useCallback(async (): Promise<boolean> => {
+  const saveAlbumOrder = useCallback(async (albumsToSave?: Album[]): Promise<boolean> => {
     try {
+      // Use provided albums or fall back to internal state
+      const albumsForSaving = albumsToSave || localAlbums;
+      
       // Format albums for the API (needs albumOrders array with name and sort_order)
-      const albumOrders = localAlbums.map((album, index) => ({
+      const albumOrders = albumsForSaving.map((album, index) => ({
         name: album.name,
         sort_order: index,
       }));
