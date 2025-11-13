@@ -266,6 +266,13 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     uploadingImagesRef.current = uploadingImages;
   }, [uploadingImages]);
 
+  // Helper function to prevent touch scrolling during drag
+  const preventTouchScroll = useCallback((e: TouchEvent) => {
+    if (isDraggingRef.current) {
+      e.preventDefault();
+    }
+  }, []);
+
   // Cleanup: Remove touch scroll prevention listener on unmount
   useEffect(() => {
     return () => {
@@ -347,15 +354,6 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     if (albumPhotos.length !== originalPhotoOrder.length) return false;
     return albumPhotos.some((photo, index) => photo.id !== originalPhotoOrder[index].id);
   };
-
-  // Helper function to prevent touch scrolling during drag
-  // Memoized with useCallback so cleanup effect can properly reference it
-  const preventTouchScroll = useCallback((e: TouchEvent) => {
-    // Only prevent if we're actually dragging
-    if (isDraggingRef.current) {
-      e.preventDefault();
-    }
-  }, []);
 
   // Helper function to disable touch scrolling on all scrollable elements
   const disableTouchScroll = () => {
@@ -533,17 +531,61 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
       return;
     }
 
-    // Case 3: Reordering albums
+    // Case 3: Dragging album onto another album (reordering or moving with positioning)
     if (!activeId.startsWith('folder-') && !overId.startsWith('folder-') && active.id !== over.id) {
       const activeAlbum = localAlbums.find((album) => album.name === active.id);
       const overAlbum = localAlbums.find((album) => album.name === over.id);
 
       if (!activeAlbum || !overAlbum) return;
 
-      // Only allow reordering if both albums are in the same context (same folder or both uncategorized)
+      // Case 3a: Moving album to a different folder/context with positioning
       if (activeAlbum.folder_id !== overAlbum.folder_id) {
+        const targetFolderId = overAlbum.folder_id ?? null;
+        
+        // Move the album to the target folder
+        await handleMoveAlbumToFolder(activeId, targetFolderId);
+        
+        // After moving, position it next to the overAlbum
+        // Get fresh data
+        await loadAlbums();
+        
+        // Now reorder within the new context
+        const targetContextAlbums = localAlbums.filter(
+          (album) => album.folder_id === overAlbum.folder_id
+        );
+        
+        const movedAlbumIndex = targetContextAlbums.findIndex((a) => a.name === activeId);
+        const targetIndex = targetContextAlbums.findIndex((a) => a.name === overId);
+        
+        if (movedAlbumIndex !== -1 && targetIndex !== -1) {
+          const reorderedContextAlbums = arrayMove(targetContextAlbums, movedAlbumIndex, targetIndex);
+          
+          try {
+            const albumOrders = reorderedContextAlbums.map((album, index) => ({
+              name: album.name,
+              sort_order: index,
+            }));
+
+            await fetchWithRateLimitCheck(
+              `${API_URL}/api/albums/sort-order`,
+              {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({ albumOrders }),
+              }
+            );
+
+            await loadAlbums();
+            window.dispatchEvent(new Event('albums-updated'));
+          } catch (error) {
+            console.error('Error positioning album:', error);
+          }
+        }
         return;
       }
+
+      // Case 3b: Reordering within the same context
 
       // Filter albums to only those in the same context (same folder_id or both null)
       const contextFolderId = activeAlbum.folder_id;
@@ -2047,7 +2089,13 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
           {localFolders.length > 0 && (
             <div className="folders-section" style={{ marginBottom: '2rem' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 600, color: '#fff' }}>Folders</h3>
+                <button className="btn-action btn-upload" onClick={() => setShowFolderModal(true)} style={{ fontSize: '0.85rem', padding: '0.5rem 1rem' }}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/><path d="M12 11v6M9 14h6"/></svg>
+                  New Folder
+                </button>
               </div>
+              <SortableContext items={localFolders.map(f => `folder-${f.id}`)} strategy={rectSortingStrategy}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                   {localFolders.map((folder) => (
                     <SortableFolderCard
@@ -2068,40 +2116,18 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                       onCreateAlbumInFolder={handleCreateAlbumInFolder}
                     />
                   ))}
-                  {/* Add New Folder Button */}
-                  <div
-                    className="ghost-folder-tile"
-                    onClick={() => setShowFolderModal(true)}
-                    style={{ width: '100%', minHeight: '80px' }}
-                  >
-                    <div className="ghost-tile-content">
-                      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
-                        <path d="M12 11v6M9 14h6"/>
-                      </svg>
-                      <span className="ghost-tile-hint">Create New Folder</span>
-                    </div>
-                  </div>
                 </div>
+              </SortableContext>
             </div>
           )}
           
-          {/* Show "Create First Folder" ghost tile if no folders exist but albums do */}
+          {/* Show "Create First Folder" button if no folders exist */}
           {localFolders.length === 0 && localAlbums.length > 0 && (
-            <div style={{ marginBottom: '2rem', marginTop: '1rem', maxWidth: '200px', margin: '1rem auto 2rem' }}>
-              <div
-                className="ghost-folder-tile"
-                onClick={() => setShowFolderModal(true)}
-                style={{ height: '120px' }}
-              >
-                <div className="ghost-tile-content">
-                  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
-                    <path d="M12 11v6M9 14h6"/>
-                  </svg>
-                  <span className="ghost-tile-hint">Create first folder</span>
-                </div>
-              </div>
+            <div style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'center' }}>
+              <button className="btn-action btn-upload" onClick={() => setShowFolderModal(true)} style={{ fontSize: '0.9rem' }}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/><path d="M12 11v6M9 14h6"/></svg>
+                Create First Folder
+              </button>
             </div>
           )}
           
@@ -2114,7 +2140,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
                   <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 600, color: '#fff' }}>
-                    📂 Uncategorized Albums
+                    Uncategorized Albums
                   </h3>
                   <span style={{ fontSize: '0.9rem', color: '#888' }}>
                     {(() => {
@@ -2123,6 +2149,10 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                     })()}
                   </span>
                 </div>
+                <SortableContext 
+                  items={localAlbums.filter(album => !album.folder_id).map(a => a.name)} 
+                  strategy={rectSortingStrategy}
+                >
                   <div className="album-grid">
                     {localAlbums.filter(album => !album.folder_id).map((album) => (
                       <SortableAlbumCard
@@ -2169,6 +2199,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                       />
                     </div>
                   </div>
+                </SortableContext>
               </div>
             </div>
           </div>
@@ -2189,17 +2220,29 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                 </div>
               </div>
             ) : activeFolderId ? (
-              <div className="folder-card dragging" style={{ cursor: 'grabbing' }}>
-                <div className="folder-card-header">
-                  <h4 className="folder-card-title">📁 {localFolders.find(f => f.id === activeFolderId)?.name}</h4>
-                </div>
-                <div className="folder-count">
-                  {(() => {
-                    const count = localAlbums.filter(a => a.folder_id === activeFolderId).length;
-                    return `${count} ${count === 1 ? 'album' : 'albums'}`;
-                  })()}
-                </div>
-              </div>
+              (() => {
+                const folder = localFolders.find(f => f.id === activeFolderId);
+                const folderAlbums = localAlbums.filter(a => a.folder_id === activeFolderId);
+                if (!folder) return null;
+                return (
+                  <div className="folder-card dragging" style={{ cursor: 'grabbing', opacity: 0.95 }}>
+                    <div className="folder-card-header">
+                      <div className="folder-drag-handle">
+                        <h4 className="folder-card-title">{folder.name}</h4>
+                        <div className="folder-count">{folderAlbums.length} {folderAlbums.length === 1 ? 'album' : 'albums'}</div>
+                      </div>
+                    </div>
+                    <div className="folder-albums-grid">
+                      {folderAlbums.map((album) => (
+                        <div key={album.name} className="album-card">
+                          <h4>{album.name}</h4>
+                          <span className="photo-count">{album.photoCount} {album.photoCount === 1 ? 'photo' : 'photos'}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })()
             ) : null}
           </DragOverlay>
           </SortableContext>

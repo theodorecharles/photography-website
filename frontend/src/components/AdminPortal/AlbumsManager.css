@@ -2025,6 +2025,31 @@
   pointer-events: auto;
 }
 
+@media (max-width: 768px) {
+  .folder-card-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+
+  .folder-drag-handle {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+
+  .folder-controls {
+    width: 100%;
+    justify-content: space-between;
+    padding-top: 0.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .folder-albums-grid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  }
+}
+
 .uncategorized-section {
   padding: 1.5rem;
   border: 2px solid rgba(255, 255, 255, 0.1);

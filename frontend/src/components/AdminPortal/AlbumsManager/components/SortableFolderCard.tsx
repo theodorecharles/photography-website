@@ -6,9 +6,10 @@
  * - Sorting albums within the folder
  */
 
-import { useSortable } from '@dnd-kit/sortable';
+import { useSortable, SortableContext } from '@dnd-kit/sortable';
 import { useDroppable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
+import { rectSortingStrategy } from '@dnd-kit/sortable';
 import { AlbumFolder, Album } from '../types';
 import SortableAlbumCard from './SortableAlbumCard';
 
@@ -131,37 +132,39 @@ const SortableFolderCard: React.FC<SortableFolderCardProps> = ({
       </div>
       
       {/* Albums inside the folder */}
-      <div className="folder-albums-grid">
-        {albums.map((album) => (
-          <SortableAlbumCard
-            key={album.name}
-            album={album}
-            isSelected={selectedAlbum === album.name}
-            isAnimating={animatingAlbum === album.name}
-            isDragOver={dragOverAlbum === album.name}
-            onClick={() => onAlbumClick(album.name)}
-            onDragOver={(e) => { onAlbumDragOver(e, album.name); }}
-            onDragLeave={onAlbumDragLeave}
-            onDrop={(e) => { onAlbumDrop(e, album.name); }}
-            onRename={() => onAlbumRename(album.name)}
-          />
-        ))}
-        {/* Ghost tile for creating new album in this folder */}
-        <div 
-          className="album-card ghost-album-tile"
-          onClick={(e) => {
-            e.stopPropagation();
-            onCreateAlbumInFolder(folder.id);
-          }}
-        >
-          <div className="ghost-tile-content">
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <circle cx="12" cy="12" r="10"/>
-              <path d="M12 8v8M8 12h8"/>
-            </svg>
+      <SortableContext items={albums.map(a => a.name)} strategy={rectSortingStrategy}>
+        <div className="folder-albums-grid">
+          {albums.map((album) => (
+            <SortableAlbumCard
+              key={album.name}
+              album={album}
+              isSelected={selectedAlbum === album.name}
+              isAnimating={animatingAlbum === album.name}
+              isDragOver={dragOverAlbum === album.name}
+              onClick={() => onAlbumClick(album.name)}
+              onDragOver={(e) => { onAlbumDragOver(e, album.name); }}
+              onDragLeave={onAlbumDragLeave}
+              onDrop={(e) => { onAlbumDrop(e, album.name); }}
+              onRename={() => onAlbumRename(album.name)}
+            />
+          ))}
+          {/* Ghost tile for creating new album in this folder */}
+          <div 
+            className="album-card ghost-album-tile"
+            onClick={(e) => {
+              e.stopPropagation();
+              onCreateAlbumInFolder(folder.id);
+            }}
+          >
+            <div className="ghost-tile-content">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M12 8v8M8 12h8"/>
+              </svg>
+            </div>
           </div>
         </div>
-      </div>
+      </SortableContext>
     </div>
   );
 };
