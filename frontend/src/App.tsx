@@ -10,6 +10,7 @@ import {
   Route,
   useParams,
   useLocation,
+  useNavigate,
 } from "react-router-dom";
 import "./App.css";
 import PhotoGrid from "./components/PhotoGrid";
@@ -93,6 +94,7 @@ function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [setupComplete, setSetupComplete] = useState<boolean | null>(null);
   const location = useLocation();
+  const navigate = useNavigate();
 
   // Check if initial setup is complete
   useEffect(() => {
@@ -138,6 +140,13 @@ function App() {
         if (res.ok) {
           const data = await res.json();
           setIsAuthenticated(data.authenticated === true);
+          
+          // If we just logged in successfully (loginSuccess param), redirect to admin
+          const urlParams = new URLSearchParams(window.location.search);
+          if (urlParams.get('loginSuccess') === 'true' && data.authenticated === true) {
+            // Navigate to admin using React Router (no page reload)
+            navigate('/admin', { replace: true });
+          }
         } else {
           setIsAuthenticated(false);
         }
@@ -154,7 +163,7 @@ function App() {
     return () => {
       window.removeEventListener('auth-changed', checkAuth);
     };
-  }, [location.pathname]); // Re-check when route changes
+  }, [location.pathname, navigate]); // Re-check when route changes
 
   // Apply theme colors to CSS custom properties
   useEffect(() => {

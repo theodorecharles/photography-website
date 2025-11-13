@@ -580,7 +580,8 @@ export default function Header({
       });
       setIsAuthenticated(false);
       navigate('/');
-      window.location.reload(); // Reload to clear any cached state
+      // Trigger auth state refresh in App.tsx
+      window.dispatchEvent(new Event('auth-changed'));
     } catch (err) {
       console.error('Logout failed:', err);
     }

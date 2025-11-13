@@ -4,8 +4,8 @@
   "type": "module",
   "main": "src/server.ts",
   "scripts": {
-    "start": "node --loader ts-node/esm src/server.ts",
-    "dev": "nodemon --exec 'node --loader ts-node/esm' src/server.ts",
+    "start": "node --no-warnings --loader ts-node/esm src/server.ts",
+    "dev": "nodemon --exec 'node --no-warnings --loader ts-node/esm' src/server.ts",
     "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
