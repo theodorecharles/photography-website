@@ -7,7 +7,7 @@
  * - Current album title display
  */
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import "./Header.css";
 import { API_URL } from "../config";
@@ -179,6 +179,30 @@ function Navigation({
     }
   };
 
+  // Calculate if there are any albums/folders to show
+  const hasAlbumsToShow = useMemo(() => {
+    if (folders && folders.length > 0) {
+      // Check if any folder has albums (after filtering for published if not authenticated)
+      return folders.some(folder => {
+        const folderAlbums = albums.filter(album => {
+          const albumObj = typeof album === 'string' ? { name: album, folder_id: null } : album;
+          if (albumObj.folder_id !== folder.id) return false;
+          if (!isAuthenticated) {
+            const isPublished = typeof album === 'string' ? true : (album.published === true || album.published === 1);
+            return isPublished;
+          }
+          return true;
+        });
+        return folderAlbums.length > 0;
+      });
+    }
+    // No folders, check if there are any albums
+    return albums.length > 0;
+  }, [albums, folders, isAuthenticated]);
+
+  // Calculate if there are any links to show
+  const hasLinksToShow = externalLinks && externalLinks.length > 0;
+
   return (
     <>
       {/* Album title display in the center of the navigation */}
@@ -214,6 +238,7 @@ function Navigation({
       )}
       <nav className="album-nav">
         {/* Left side navigation - Albums dropdown */}
+        {hasAlbumsToShow && (
         <div className="nav-left">
           <div
             className="dropdown-container"
@@ -452,8 +477,10 @@ function Navigation({
             </div>
           </div>
         </div>
+        )}
 
         {/* Right side navigation - External links dropdown */}
+        {hasLinksToShow && (
         <div className="nav-right">
           <div
             className="dropdown-container"
@@ -516,6 +543,7 @@ function Navigation({
             </Link>
           )}
         </div>
+        )}
       </nav>
     </>
   );
