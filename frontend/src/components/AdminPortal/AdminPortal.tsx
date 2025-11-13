@@ -6,7 +6,18 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { API_URL } from '../../config';
-// CSS is imported in index.ts to ensure it loads before this component
+// Import CSS statically to ensure it's always available
+import './AdminPortal.css';
+import './AlbumsManager.css';
+import './PhotoOrderControls.css';
+import './ConfigManager.css';
+import './BrandingManager.css';
+import './LinksManager.css';
+import './ShareModal.css';
+import './PasswordInput.css';
+import './Metrics/Metrics.css';
+import './Metrics/VisitorMap.css';
+import 'leaflet/dist/leaflet.css';
 import { AuthStatus, ExternalLink, BrandingConfig, Album, AlbumFolder, Tab } from './types';
 import AlbumsManager from './AlbumsManager';
 import Metrics from './Metrics/Metrics';
@@ -26,47 +37,45 @@ export default function AdminPortal() {
   const [cssReady, setCssReady] = useState(false);
   const sseToaster = useSSEToaster();
   
-  // Force CSS to load in dev mode - always import CSS when component mounts
+  // Force hard reload in dev mode when navigating to admin to ensure CSS loads
   useEffect(() => {
-    if (!import.meta.env.DEV) {
-      // In production, CSS is already bundled, no need to wait
-      setCssReady(true);
-      return;
-    }
-    
-    const loadCSS = async () => {
-      // Always import CSS files to ensure they're loaded via Vite HMR
-      try {
-        await Promise.all([
-          import('./AdminPortal.css'),
-          import('./AlbumsManager.css'),
-          import('./PhotoOrderControls.css'),
-          import('./ConfigManager.css'),
-          import('./BrandingManager.css'),
-          import('./LinksManager.css'),
-          import('./ShareModal.css'),
-          import('./PasswordInput.css'),
-          import('./Metrics/Metrics.css'),
-          import('./Metrics/VisitorMap.css'),
-          import('leaflet/dist/leaflet.css'),
-        ]);
+    if (import.meta.env.DEV) {
+      const checkAndReload = async () => {
+        // Wait a moment for Vite to potentially inject CSS
+        await new Promise(resolve => setTimeout(resolve, 200));
         
-        // Wait for Vite to inject the styles into the DOM
-        // Use multiple animation frames to ensure styles are applied
-        await new Promise(resolve => {
-          requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-              requestAnimationFrame(resolve);
-            });
+        // Check if CSS is missing by looking for admin styles
+        const hasAdminCSS = Array.from(document.querySelectorAll('style[data-vite-dev-id]'))
+          .some(style => {
+            const id = style.getAttribute('data-vite-dev-id') || '';
+            return id.includes('AdminPortal') || id.includes('AlbumsManager');
           });
-        });
-      } catch (err) {
-        console.error('❌ Failed to load admin CSS:', err);
-      }
+        
+        // Check if we've already tried reloading (prevent infinite loop)
+        const reloadKey = 'admin-css-reload-attempted';
+        const hasReloaded = sessionStorage.getItem(reloadKey);
+        
+        // If CSS is missing and we haven't reloaded yet, force a hard reload
+        if (!hasAdminCSS && !hasReloaded) {
+          console.log('🔄 CSS missing, forcing hard reload...');
+          sessionStorage.setItem(reloadKey, 'true');
+          // Preserve the current URL when reloading
+          window.location.href = window.location.href;
+          return;
+        }
+        
+        // Clear the flag if CSS is present
+        if (hasAdminCSS && hasReloaded) {
+          sessionStorage.removeItem(reloadKey);
+        }
+        
+        setCssReady(true);
+      };
+      
+      checkAndReload();
+    } else {
       setCssReady(true);
-    };
-    
-    loadCSS();
+    }
   }, []);
   
   // Determine active tab from URL
