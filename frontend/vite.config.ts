@@ -96,6 +96,7 @@ export default defineConfig({
     'import.meta.env.VITE_AVATAR_PATH': JSON.stringify(config.branding.avatarPath),
   },
   build: {
+    cssCodeSplit: false, // CRITICAL: Keep all CSS in one file to prevent loading issues
     rollupOptions: {
       output: {
         manualChunks: {
