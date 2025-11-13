@@ -146,13 +146,20 @@ function App() {
       }
     };
     
+    // Immediate logout handler - no async delay
+    const handleLogoutEvent = () => {
+      setIsAuthenticated(false);
+    };
+    
     checkAuth();
     
     // Listen for authentication changes (e.g., from logout)
     window.addEventListener('auth-changed', checkAuth);
+    window.addEventListener('user-logged-out', handleLogoutEvent);
     
     return () => {
       window.removeEventListener('auth-changed', checkAuth);
+      window.removeEventListener('user-logged-out', handleLogoutEvent);
     };
   }, [location.pathname]); // Re-check when route changes
 
