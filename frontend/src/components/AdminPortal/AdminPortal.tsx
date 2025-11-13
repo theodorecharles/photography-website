@@ -6,18 +6,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { API_URL } from '../../config';
-// Import CSS statically to ensure it's always available
-import './AdminPortal.css';
-import './AlbumsManager.css';
-import './PhotoOrderControls.css';
-import './ConfigManager.css';
-import './BrandingManager.css';
-import './LinksManager.css';
-import './ShareModal.css';
-import './PasswordInput.css';
-import './Metrics/Metrics.css';
-import './Metrics/VisitorMap.css';
-import 'leaflet/dist/leaflet.css';
+// CSS will be loaded dynamically to ensure proper loading in dev mode
 import { AuthStatus, ExternalLink, BrandingConfig, Album, AlbumFolder, Tab } from './types';
 import AlbumsManager from './AlbumsManager';
 import Metrics from './Metrics/Metrics';
@@ -34,7 +23,49 @@ export default function AdminPortal() {
   const location = useLocation();
   const [authStatus, setAuthStatus] = useState<AuthStatus | null>(null);
   const [loading, setLoading] = useState(true);
+  const [cssLoaded, setCssLoaded] = useState(false);
   const sseToaster = useSSEToaster();
+  
+  // Aggressively load CSS in dev mode
+  useEffect(() => {
+    const loadCSS = async () => {
+      try {
+        // Dynamic import to force Vite to inject CSS
+        await Promise.all([
+          import('./AdminPortal.css'),
+          import('./AlbumsManager.css'),
+          import('./PhotoOrderControls.css'),
+          import('./ConfigManager.css'),
+          import('./BrandingManager.css'),
+          import('./LinksManager.css'),
+          import('./ShareModal.css'),
+          import('./PasswordInput.css'),
+          import('./Metrics/Metrics.css'),
+          import('./Metrics/VisitorMap.css'),
+          import('leaflet/dist/leaflet.css'),
+        ]);
+        
+        // Wait for browser to process and apply styles
+        await new Promise(resolve => {
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              requestAnimationFrame(() => {
+                requestAnimationFrame(resolve);
+              });
+            });
+          });
+        });
+        
+        console.log('✅ Admin CSS loaded');
+      } catch (err) {
+        console.error('Failed to load CSS:', err);
+      } finally {
+        setCssLoaded(true);
+      }
+    };
+    
+    loadCSS();
+  }, []);
   
   // Determine active tab from URL
   const getActiveTab = (): Tab => {
@@ -232,7 +263,7 @@ export default function AdminPortal() {
     }
   };
 
-  if (loading) {
+  if (loading || !cssLoaded) {
     return (
       <div className="admin-portal">
         <div className="admin-container">
@@ -248,7 +279,7 @@ export default function AdminPortal() {
             }}
           >
             <div className="loading-spinner"></div>
-            <p>Loading site settings...</p>
+            <p>{!cssLoaded ? 'Loading styles...' : 'Loading site settings...'}</p>
           </div>
         </div>
       </div>
