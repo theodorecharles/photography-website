@@ -375,22 +375,6 @@ function Navigation({
                             </svg>
                           )}
                           {folder.name}
-                          <svg
-                            className={`dropdown-arrow ${openFolderId === folder.id ? "open" : ""}`}
-                            viewBox="0 0 24 24"
-                            width="12"
-                            height="12"
-                            style={{ marginLeft: 'auto' }}
-                          >
-                            <path
-                              d="M6 9L12 15L18 9"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            />
-                          </svg>
                         </button>
                         {openFolderId === folder.id && (
                           <div className="folder-submenu">
