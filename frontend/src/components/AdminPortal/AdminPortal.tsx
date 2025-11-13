@@ -26,32 +26,46 @@ export default function AdminPortal() {
   const [cssReady, setCssReady] = useState(false);
   const sseToaster = useSSEToaster();
   
-  // Force CSS to load in dev mode by dynamically importing it
+  // Force CSS to load in dev mode - always import CSS when component mounts
   useEffect(() => {
+    if (!import.meta.env.DEV) {
+      // In production, CSS is already bundled, no need to wait
+      setCssReady(true);
+      return;
+    }
+    
     const loadCSS = async () => {
-      if (import.meta.env.DEV) {
-        // In dev mode, force re-import of CSS modules
-        try {
-          await Promise.all([
-            import('./AdminPortal.css'),
-            import('./AlbumsManager.css'),
-            import('./PhotoOrderControls.css'),
-            import('./ConfigManager.css'),
-            import('./BrandingManager.css'),
-            import('./LinksManager.css'),
-            import('./ShareModal.css'),
-            import('./PasswordInput.css'),
-            import('./Metrics/Metrics.css'),
-            import('./Metrics/VisitorMap.css'),
-            import('leaflet/dist/leaflet.css'),
-          ]);
-          console.log('✅ Admin CSS dynamically loaded');
-        } catch (err) {
-          console.error('❌ Failed to load admin CSS:', err);
-        }
+      // Always import CSS files to ensure they're loaded via Vite HMR
+      try {
+        await Promise.all([
+          import('./AdminPortal.css'),
+          import('./AlbumsManager.css'),
+          import('./PhotoOrderControls.css'),
+          import('./ConfigManager.css'),
+          import('./BrandingManager.css'),
+          import('./LinksManager.css'),
+          import('./ShareModal.css'),
+          import('./PasswordInput.css'),
+          import('./Metrics/Metrics.css'),
+          import('./Metrics/VisitorMap.css'),
+          import('leaflet/dist/leaflet.css'),
+        ]);
+        
+        // Wait for Vite to inject the styles into the DOM
+        // Use multiple animation frames to ensure styles are applied
+        await new Promise(resolve => {
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              requestAnimationFrame(resolve);
+            });
+          });
+        });
+      } catch (err) {
+        console.error('❌ Failed to load admin CSS:', err);
       }
       setCssReady(true);
     };
+    
     loadCSS();
   }, []);
   
