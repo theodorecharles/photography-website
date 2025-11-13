@@ -7,6 +7,7 @@ import { useRef } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Album } from '../types';
+import { EditIcon, FolderMinusIcon, UploadIcon } from '../../../icons';
 
 interface SortableAlbumCardProps {
   album: Album;
@@ -111,9 +112,7 @@ const SortableAlbumCard: React.FC<SortableAlbumCardProps> = ({
           }}
           title="Rename album"
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
-          </svg>
+          <EditIcon width="16" height="16" />
         </button>
       )}
       {onRemoveFromFolder && album.folder_id && (
@@ -125,10 +124,7 @@ const SortableAlbumCard: React.FC<SortableAlbumCardProps> = ({
           }}
           title="Remove from folder"
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
-            <line x1="9" y1="14" x2="15" y2="14"/>
-          </svg>
+          <FolderMinusIcon width="16" height="16" />
         </button>
       )}
       <div className="album-card-header">
@@ -143,9 +139,7 @@ const SortableAlbumCard: React.FC<SortableAlbumCardProps> = ({
       )}
       {isDragOver && (
         <div className="album-drop-overlay">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
-          </svg>
+          <UploadIcon width="32" height="32" />
           <span>Drop to upload</span>
         </div>
       )}
