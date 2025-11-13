@@ -238,10 +238,11 @@
 /* Folder chevron icon that rotates when folder is expanded */
 .folder-chevron {
   transition: transform 0.2s ease-in-out;
+  transform: translateY(-50%) rotate(0deg);
 }
 
 .folder-chevron.open {
-  transform: rotate(90deg);
+  transform: translateY(-50%) rotate(90deg);
 }
 
 /* Dropdown menu */
@@ -317,9 +318,10 @@
 
 .folder-link {
   width: 100%;
-  display: grid;
-  grid-template-columns: 20px 1fr;
+  display: flex;
   align-items: center;
+  justify-content: center;
+  gap: 0;
   padding: 0.75rem 1rem;
   border-radius: 4px;
   background: white;
@@ -330,19 +332,25 @@
   cursor: pointer;
   font-size: inherit;
   font-family: inherit;
+  position: relative;
 }
 
 .folder-link svg {
-  justify-self: start;
-  align-self: center;
-  margin-right: 0 !important;
+  position: absolute;
+  left: 1rem;
+  top: 50%;
   display: block;
+  flex-shrink: 0;
+}
+
+.folder-link svg:not(.folder-chevron) {
+  transform: translateY(-50%);
 }
 
 .folder-link span {
-  justify-self: center;
-  align-self: center;
+  display: block;
   line-height: 1;
+  text-align: center;
 }
 
 .folder-link:hover,
@@ -359,7 +367,22 @@
 .folder-submenu {
   display: flex;
   flex-direction: column;
-  margin-top: 0rem;
+  margin-top: 0.5rem;
+  overflow: hidden;
+  animation: slideDown 0.25s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+    margin-top: 0;
+  }
+  to {
+    opacity: 1;
+    max-height: 1000px;
+    margin-top: 0.5rem;
+  }
 }
 
 .folder-submenu .nav-link:last-child {
