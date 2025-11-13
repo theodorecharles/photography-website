@@ -311,6 +311,10 @@
   margin-bottom: 0.5rem;
 }
 
+.folder-item:last-child {
+  margin-bottom: 0;
+}
+
 .folder-link {
   width: 100%;
   display: flex;
@@ -339,6 +343,10 @@
   flex-direction: column;
   padding-left: 0.75rem;
   margin-top: 0rem;
+}
+
+.folder-submenu .nav-link:last-child {
+  margin-bottom: 0;
 }
 
 /* .submenu-link {
