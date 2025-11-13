@@ -541,46 +541,93 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
       // Case 3a: Moving album to a different folder/context with positioning
       if (activeAlbum.folder_id !== overAlbum.folder_id) {
         const targetFolderId = overAlbum.folder_id ?? null;
+        const targetFolder = targetFolderId ? localFolders.find(f => f.id === targetFolderId) : null;
+        const targetPublishedStatus = targetFolder ? targetFolder.published : true;
         
-        // Move the album to the target folder
-        await handleMoveAlbumToFolder(activeId, targetFolderId);
-        
-        // After moving, position it next to the overAlbum
-        // Get fresh data
-        await loadAlbums();
-        
-        // Now reorder within the new context
+        // Get albums in the target context BEFORE moving
         const targetContextAlbums = localAlbums.filter(
-          (album) => album.folder_id === overAlbum.folder_id
+          (album) => album.folder_id === targetFolderId
         );
         
-        const movedAlbumIndex = targetContextAlbums.findIndex((a) => a.name === activeId);
-        const targetIndex = targetContextAlbums.findIndex((a) => a.name === overId);
+        // Create moved album with new folder_id
+        const movedAlbum = { ...activeAlbum, folder_id: targetFolderId, published: targetPublishedStatus };
         
-        if (movedAlbumIndex !== -1 && targetIndex !== -1) {
-          const reorderedContextAlbums = arrayMove(targetContextAlbums, movedAlbumIndex, targetIndex);
-          
-          try {
-            const albumOrders = reorderedContextAlbums.map((album, index) => ({
-              name: album.name,
-              sort_order: index,
-            }));
-
-            await fetchWithRateLimitCheck(
-              `${API_URL}/api/albums/sort-order`,
-              {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                credentials: 'include',
-                body: JSON.stringify({ albumOrders }),
+        // Add moved album to target context at the position of overAlbum
+        const targetIndex = targetContextAlbums.findIndex((a) => a.name === overId);
+        const newTargetContext = [...targetContextAlbums];
+        newTargetContext.splice(targetIndex, 0, movedAlbum);
+        
+        // Update all albums: remove from old context, add to new context with positioning
+        const updatedAlbums = localAlbums
+          .filter(album => album.name !== activeId) // Remove from old position
+          .map(album => {
+            // If in target context, update with new positioned order
+            if (album.folder_id === targetFolderId) {
+              const newContextIndex = newTargetContext.findIndex((a) => a.name === album.name);
+              if (newContextIndex !== -1) {
+                return newTargetContext[newContextIndex];
               }
-            );
-
-            await loadAlbums();
-            window.dispatchEvent(new Event('albums-updated'));
-          } catch (error) {
-            console.error('Error positioning album:', error);
+            }
+            return album;
+          });
+        
+        // Add moved album if not already in the list
+        if (!updatedAlbums.some(a => a.name === activeId)) {
+          const insertIndex = updatedAlbums.findIndex(a => a.folder_id === targetFolderId);
+          if (insertIndex !== -1) {
+            updatedAlbums.splice(insertIndex + targetIndex, 0, movedAlbum);
+          } else {
+            updatedAlbums.push(movedAlbum);
           }
+        }
+        
+        // Optimistically update local state immediately
+        setLocalAlbums(updatedAlbums);
+        
+        // Persist to backend
+        try {
+          // Move to folder
+          const moveResponse = await fetchWithRateLimitCheck(
+            `${API_URL}/api/albums/${encodeURIComponent(activeId)}/move`,
+            {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              credentials: 'include',
+              body: JSON.stringify({ 
+                folderName: targetFolder?.name || null,
+                published: targetPublishedStatus
+              }),
+            }
+          );
+
+          if (!moveResponse.ok) throw new Error('Failed to move album');
+
+          // Position within target context
+          const albumOrders = newTargetContext.map((album, index) => ({
+            name: album.name,
+            sort_order: index,
+          }));
+
+          const sortResponse = await fetchWithRateLimitCheck(
+            `${API_URL}/api/albums/sort-order`,
+            {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              credentials: 'include',
+              body: JSON.stringify({ albumOrders }),
+            }
+          );
+
+          if (!sortResponse.ok) throw new Error('Failed to update sort order');
+
+          // Sync with backend
+          await loadAlbums();
+          window.dispatchEvent(new Event('albums-updated'));
+        } catch (error) {
+          console.error('Error moving and positioning album:', error);
+          setMessage({ type: 'error', text: 'Failed to move album' });
+          // Revert on error
+          await loadAlbums();
         }
         return;
       }
@@ -2263,6 +2310,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                 <div className="photos-header">
                   <div className="photos-header-top">
                     <h3 className="photos-panel-title">{selectedAlbum}</h3>
+                    <button onClick={() => setSelectedAlbum(null)} className="photos-panel-close-btn" title="Close">×</button>
                   </div>
                 <div className="album-actions-grid">
                   <label className="btn-action btn-upload btn-action-item">
