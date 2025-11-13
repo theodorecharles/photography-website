@@ -7,7 +7,6 @@ import { useState, useCallback } from 'react';
 import { Photo } from '../types';
 import { fetchWithRateLimitCheck } from '../../../../utils/fetchWrapper';
 import { trackPhotoDeleted } from '../../../../utils/analytics';
-import { cacheBustValue } from '../../../../config';
 
 const API_URL = import.meta.env.VITE_API_URL || '';
 
@@ -90,11 +89,11 @@ export const usePhotoManagement = ({ setMessage }: UsePhotoManagementProps) => {
         }
 
         // Remove photo from local state
-        setAlbumPhotos((prev) => prev.filter((p) => p.filename !== filename));
-        setOriginalPhotoOrder((prev) => prev.filter((p) => p.filename !== filename));
+        setAlbumPhotos((prev) => prev.filter((p) => p.id.split('/').pop() !== filename));
+        setOriginalPhotoOrder((prev) => prev.filter((p) => p.id.split('/').pop() !== filename));
         
         setMessage({ type: 'success', text: `Photo "${filename}" deleted!` });
-        trackPhotoDeleted(selectedAlbum, filename);
+        trackPhotoDeleted(selectedAlbum, filename, '');
         return true;
       } catch (err) {
         setMessage({ type: 'error', text: 'Failed to delete photo' });
@@ -211,7 +210,8 @@ export const usePhotoManagement = ({ setMessage }: UsePhotoManagementProps) => {
   const handleEditSave = useCallback(async () => {
     if (!editingPhoto) return;
     
-    const success = await updatePhotoTitle(editingPhoto.filename, editTitleValue);
+    const filename = editingPhoto.id.split('/').pop() || '';
+    const success = await updatePhotoTitle(editingPhoto, filename, editTitleValue);
     if (success) {
       closeEditModal();
     }

@@ -6,6 +6,13 @@ import { Album, AlbumFolder, Photo } from '../types';
 
 export type UploadState = 'queued' | 'uploading' | 'optimizing' | 'complete' | 'error';
 
+export interface Folder {
+  id: number;
+  name: string;
+  published: boolean;
+  sort_order?: number;
+}
+
 export interface UploadingImage {
   file: File;
   filename: string;
