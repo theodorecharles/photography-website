@@ -1566,6 +1566,15 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   };
 
   const handleDeleteAlbum = async (albumName: string) => {
+    // Save any unsaved changes first
+    if (hasUnsavedChanges) {
+      const saved = await albumManagement.saveAlbumOrder();
+      if (!saved) {
+        // If save failed, don't proceed with deletion
+        return;
+      }
+    }
+    
     const confirmed = await showConfirmation(`Delete album "${albumName}" and all its photos?\n\nThis action cannot be undone.`);
     if (!confirmed) return;
 
@@ -2099,7 +2108,16 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     }
   };
 
-  const handleDeleteFolder = (folderName: string) => {
+  const handleDeleteFolder = async (folderName: string) => {
+    // Save any unsaved changes first
+    if (hasUnsavedChanges) {
+      const saved = await albumManagement.saveAlbumOrder();
+      if (!saved) {
+        // If save failed, don't proceed with deletion
+        return;
+      }
+    }
+    
     // Check if folder has albums
     const folder = localFolders.find(f => f.name === folderName);
     const albumsInFolder = localAlbums.filter(a => a.folder_id === folder?.id);
