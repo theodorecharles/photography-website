@@ -236,7 +236,7 @@ router.post('/optimize', requireAuth, (req, res) => {
   runningOptimizationJob.output.push(connectMsg);
   
   // Build command
-  const scriptPath = path.resolve(__dirname, '../../../optimize_all_images.js');
+  const scriptPath = path.resolve(__dirname, '../../../scripts/optimize_all_images.js');
   const args = force ? ['--force'] : [];
   
   // Check if script exists

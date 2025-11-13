@@ -189,7 +189,7 @@ router.post('/generate', requireAuth, (req, res) => {
 
   // Get the project root directory (3 levels up from this file)
   const projectRoot = path.resolve(__dirname, '../../..');
-  const scriptPath = path.join(projectRoot, 'generate-ai-titles.js');
+  const scriptPath = path.join(projectRoot, 'scripts', 'generate-ai-titles.js');
 
   console.log('[AI Titles] Starting generation...');
   console.log('[AI Titles] Force regenerate:', forceRegenerate);

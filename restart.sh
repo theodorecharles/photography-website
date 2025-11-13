@@ -75,7 +75,7 @@ fi
 
 # Run image optimization script
 log "Starting image optimization..."
-if ! ./optimize_all_images.js; then
+if ! ./scripts/optimize_all_images.js; then
     handle_error "Image optimization failed"
 fi
 
