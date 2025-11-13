@@ -23,6 +23,11 @@ import ShareModal from '../ShareModal';
 import SortableAlbumCard from './components/SortableAlbumCard';
 import SortablePhotoItem from './components/SortablePhotoItem';
 import SortableFolderCard from './components/SortableFolderCard';
+import { useAlbumManagement } from './hooks/useAlbumManagement';
+import { usePhotoManagement } from './hooks/usePhotoManagement';
+import { useFolderManagement } from './hooks/useFolderManagement';
+import { sanitizeAndTitleCase, isValidAlbumName, formatFileSize, validateImageFiles } from './utils/albumHelpers';
+import { disableTouchScroll, enableTouchScroll, isDraggingFolder, isDraggingAlbum, extractFolderId } from './utils/dragDropHelpers';
 import '../AlbumsManager.css';
 import '../PhotoOrderControls.css';
 import {
@@ -114,22 +119,7 @@ const customCollisionDetection: CollisionDetection = (args) => {
   return closestCorners(args);
 };
 
-// Helper function to convert string to title case and sanitize for album names
-const sanitizeAndTitleCase = (str: string): string => {
-  if (!str) return '';
-  
-  // Remove special characters, keep only letters, numbers, spaces, hyphens, and underscores
-  let sanitized = str.replace(/[^a-zA-Z0-9\s\-_]/g, ' ');
-  
-  // Replace multiple spaces with single space
-  sanitized = sanitized.replace(/\s+/g, ' ').trim();
-  
-  // Convert to title case
-  return sanitized
-    .split(' ')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-    .join(' ');
-};
+// Helper function moved to utils/albumHelpers.ts
 
 const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   albums,
@@ -139,59 +129,60 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
 }) => {
   const [searchParams, setSearchParams] = useSearchParams();
   
-  // Local albums state that syncs with props - allows for optimistic updates during drag
-  const [localAlbums, setLocalAlbums] = useState<Album[]>(albums);
-  const [localFolders, setLocalFolders] = useState<AlbumFolder[]>(folders);
+  // Use custom hooks for album, photo, and folder management
+  const albumManagement = useAlbumManagement({ albums, folders, setMessage, loadAlbums });
+  const photoManagement = usePhotoManagement({ setMessage });
+  const folderManagement = useFolderManagement({ setMessage, loadAlbums });
   
-  // Track unsaved changes
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  // Extract commonly used values from hooks
+  const {
+    localAlbums,
+    setLocalAlbums,
+    localFolders,
+    setLocalFolders,
+    hasUnsavedChanges,
+    setHasUnsavedChanges,
+    animatingAlbum,
+  } = albumManagement;
   
-  // Sync local albums with props when props change (from parent load)
-  // But only if we don't have unsaved changes
-  useEffect(() => {
-    console.log('🔄 Albums prop changed, hasUnsavedChanges:', hasUnsavedChanges);
-    if (!hasUnsavedChanges) {
-      console.log('🔄 Syncing local albums with props');
-      setLocalAlbums(albums);
-    } else {
-      console.log('🔄 Skipping sync - has unsaved changes');
-    }
-  }, [albums, hasUnsavedChanges]);
-  
-  // Sync local folders with props when props change
-  // But only if we don't have unsaved changes
-  useEffect(() => {
-    if (!hasUnsavedChanges) {
-      setLocalFolders(folders);
-    }
-  }, [folders, hasUnsavedChanges]);
-  
-  const [uploadingImages, setUploadingImages] = useState<UploadingImage[]>([]);
-  const uploadingImagesRef = useRef<UploadingImage[]>([]);
-  const [selectedAlbum, setSelectedAlbum] = useState<string | null>(null);
+  const {
+    selectedAlbum,
+    albumPhotos,
+    setAlbumPhotos,
+    loadingPhotos,
+    hasEverDragged,
+    setHasEverDragged,
+    savingOrder,
+    selectAlbum,
+    deselectAlbum,
+  } = photoManagement;
   
   // Handle album preselection from URL parameter
   useEffect(() => {
     const albumParam = searchParams.get('album');
     if (albumParam && albums.some(a => a.name === albumParam)) {
-      setSelectedAlbum(albumParam);
+      selectAlbum(albumParam);
       // Clear the parameter after setting the selection
       searchParams.delete('album');
       setSearchParams(searchParams, { replace: true });
     }
-  }, [albums, searchParams, setSearchParams]);
-  const [albumPhotos, setAlbumPhotos] = useState<Photo[]>([]);
-  const [loadingPhotos, setLoadingPhotos] = useState(false);
-  const [originalPhotoOrder, setOriginalPhotoOrder] = useState<Photo[]>([]);
-  const [editingPhoto, setEditingPhoto] = useState<Photo | null>(null);
-  const [editTitleValue, setEditTitleValue] = useState('');
-  const [showEditModal, setShowEditModal] = useState(false);
+  }, [albums, searchParams, setSearchParams, selectAlbum]);
+  
+  // Upload state (keeping this in component for now due to complexity)
+  const [uploadingImages, setUploadingImages] = useState<UploadingImage[]>([]);
+  const uploadingImagesRef = useRef<UploadingImage[]>([]);
+  
+  // Drag-and-drop state (keeping this in component for now)
   const [isDragging, setIsDragging] = useState(false);
-  const [animatingAlbum, setAnimatingAlbum] = useState<string | null>(null);
-  const [savingOrder, setSavingOrder] = useState(false);
-  const [hasEverDragged, setHasEverDragged] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [isShuffling, setIsShuffling] = useState(false);
+  
+  // Extract folder management values
+  const {
+    newFolderName,
+    setNewFolderName,
+    isCreatingFolder,
+  } = folderManagement;
   
   // State for drag-and-drop on album tiles
   const [dragOverAlbum, setDragOverAlbum] = useState<string | null>(null);
@@ -200,9 +191,8 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   const [newAlbumFiles, setNewAlbumFiles] = useState<File[]>([]);
   const [newAlbumModalName, setNewAlbumModalName] = useState('');
   
-  // Folder management state
+  // Folder modal state
   const [showFolderModal, setShowFolderModal] = useState(false);
-  const [newFolderName, setNewFolderName] = useState('');
   const [folderModalError, setFolderModalError] = useState('');
   const [targetFolderId, setTargetFolderId] = useState<number | null>(null);
   
