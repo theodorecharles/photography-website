@@ -309,10 +309,12 @@ function App() {
 
     // Silent update for navigation without triggering loading state
     const updateNavigationSilently = async () => {
+      console.log('🔄 albums-updated event received, updating navigation...');
       try {
         const albumsResponse = await fetchWithRateLimitCheck(`${API_URL}/api/albums`);
         if (albumsResponse.ok) {
           const albumsData = await albumsResponse.json();
+          console.log('✅ Navigation updated with folders:', albumsData.folders);
           
           // Handle new API format: { albums: [...], folders: [...] } or old format: [...]
           if (albumsData && typeof albumsData === 'object' && 'albums' in albumsData) {

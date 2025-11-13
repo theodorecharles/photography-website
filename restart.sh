@@ -123,6 +123,11 @@ if ! node migrate-fix-share-links-fk.js; then
     handle_error "Share links foreign key fix migration failed"
 fi
 
+log "Running folder sort_order migration..."
+if ! node migrate-add-folder-sort-order.js; then
+    handle_error "Folder sort_order migration failed"
+fi
+
 # Restart both services using PM2 ecosystem file
 log "Restarting services with PM2 using ecosystem config..."
 if ! pm2 restart ecosystem.config.cjs --update-env; then
