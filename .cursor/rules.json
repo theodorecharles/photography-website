@@ -296,5 +296,80 @@
   },
   "deprecatedRules": {
     "note": "The old component-specific rules are removed. Focus on backend architecture patterns which are more critical and harder to debug."
+  },
+  "databaseMigrations": {
+    "rule": "ANY time changes are made to the database structure (tables, columns, indexes, etc.), you MUST create a migration script",
+    "requirements": [
+      "Create migration script in project root (e.g., migrate-add-feature-name.js)",
+      "Script must be idempotent (safe to run multiple times)",
+      "Script must check if changes already exist before applying",
+      "Script must provide clear console output",
+      "Script must handle errors gracefully"
+    ],
+    "deployment": [
+      "Add migration to restart.sh",
+      "Migrations must run BEFORE starting the application",
+      "Ensure migrations run in correct order if dependencies exist"
+    ],
+    "template": {
+      "imports": "Use fileURLToPath, createRequire for ES modules",
+      "dbPath": "Import DB_PATH from backend/src/config.js or use DATA_DIR",
+      "pattern": "Check if applied → Apply if needed → Log result",
+      "pragmas": "WAL mode, NORMAL sync, foreign keys ON"
+    },
+    "never": [
+      "Don't modify database structure directly without migration",
+      "Don't skip adding migrations to restart.sh",
+      "Don't create migrations that aren't idempotent",
+      "Don't forget to test migrations with existing data",
+      "Don't commit database changes without migration script"
+    ],
+    "documentation": "Document migration in commit message with clear description and rollback instructions"
+  },
+  "codeOrganization": {
+    "interfaces": {
+      "rule": "All interfaces and type definitions MUST be written into a types file and imported",
+      "pattern": "Create types.ts in component/feature directory, import from there",
+      "rationale": "Centralizes type definitions, prevents duplicates, improves maintainability",
+      "exceptions": "Component-specific props interfaces can stay inline if only used in that one component"
+    },
+    "functions": {
+      "rule": "Functions MUST be extracted into util files when possible",
+      "extractable": [
+        "Pure functions with no component state dependencies",
+        "Helper functions used across multiple components",
+        "Data transformation and formatting functions",
+        "DOM manipulation utilities"
+      ],
+      "keepInComponent": [
+        "Event handlers (onClick, onChange, etc.)",
+        "Functions using React hooks (useState, useEffect)",
+        "Functions directly manipulating component state",
+        "Callback functions passed as props"
+      ],
+      "pattern": "Create utils/ directory in appropriate location, import from there"
+    },
+    "svgs": {
+      "rule": "All SVGs MUST be written into separate .tsx files in icons/ folder and imported",
+      "location": "frontend/src/components/icons/",
+      "pattern": "Create IconName.tsx with props interface (width, height, className, style)",
+      "export": "Use barrel export in icons/index.ts for easy imports",
+      "never": "NEVER insert SVGs inline in component JSX",
+      "rationale": "Reusability, maintainability, reduces file size, easy to update"
+    },
+    "styles": {
+      "rule": "Minimize inline styles in TSX files",
+      "prefer": "CSS classes in separate .css files",
+      "allowed": "Dynamic styles that depend on runtime state or props",
+      "pattern": "Use className with CSS variables for theming",
+      "rationale": "Better performance, easier maintenance, cleaner JSX"
+    }
+  },
+  "projectRules": {
+    "cursorRulesFile": {
+      "rule": "NEVER create a .cursorrules file. All rules go into .cursor/rules.json",
+      "rationale": "Centralized JSON format is easier to maintain, search, and version control",
+      "format": "Use structured JSON with clear sections and examples"
+    }
   }
 }
