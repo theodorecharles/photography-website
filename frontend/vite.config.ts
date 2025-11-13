@@ -118,12 +118,19 @@ export default defineConfig({
     // Increase chunk size warning limit slightly since we're optimizing
     chunkSizeWarningLimit: 600,
   },
+  css: {
+    devSourcemap: true,
+  },
   server: {
     host: isRemoteDev ? '0.0.0.0' : '127.0.0.1',
     port: envConfig.frontend.port || 3000,
     strictPort: false,
     hmr: {
       host: hmrHost,
+    },
+    // Force pre-transform of all imports
+    warmup: {
+      clientFiles: ['./src/components/AdminPortal/**/*.{ts,tsx,css}'],
     },
   },
 });
