@@ -155,6 +155,13 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     savingOrder,
     selectAlbum,
     deselectAlbum,
+    editingPhoto,
+    editTitleValue,
+    setEditTitleValue,
+    showEditModal,
+    openEditModal,
+    closeEditModal,
+    handleEditSave,
   } = photoManagement;
   
   // Handle album preselection from URL parameter
