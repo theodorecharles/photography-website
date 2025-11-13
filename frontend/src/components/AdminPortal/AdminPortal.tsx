@@ -6,18 +6,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { API_URL } from '../../config';
-// Import all admin CSS files to ensure they're bundled and loaded immediately
-import './AdminPortal.css';
-import './AlbumsManager.css';
-import './PhotoOrderControls.css';
-import './ConfigManager.css';
-import './BrandingManager.css';
-import './LinksManager.css';
-import './ShareModal.css';
-import './PasswordInput.css';
-import './Metrics/Metrics.css';
-import './Metrics/VisitorMap.css';
-import 'leaflet/dist/leaflet.css';
+// CSS is now imported at App level to ensure it loads before any navigation
 import { AuthStatus, ExternalLink, BrandingConfig, Album, AlbumFolder, Tab } from './types';
 import AlbumsManager from './AlbumsManager';
 import Metrics from './Metrics/Metrics';
@@ -35,20 +24,6 @@ export default function AdminPortal() {
   const [authStatus, setAuthStatus] = useState<AuthStatus | null>(null);
   const [loading, setLoading] = useState(true);
   const sseToaster = useSSEToaster();
-  
-  // Debug: Log when AdminPortal mounts
-  useEffect(() => {
-    console.log('🔧 AdminPortal mounted');
-    console.log('🔧 Checking CSS links in document:');
-    const links = Array.from(document.querySelectorAll('link[rel="stylesheet"]'));
-    links.forEach(link => console.log('  - CSS:', (link as HTMLLinkElement).href));
-    
-    // Force style recalculation
-    document.body.style.display = 'none';
-    setTimeout(() => {
-      document.body.style.display = '';
-    }, 0);
-  }, []);
   
   // Determine active tab from URL
   const getActiveTab = (): Tab => {
