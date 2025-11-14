@@ -368,6 +368,9 @@ export default function AdminPortal() {
         const authData = await authRes.json();
         setAuthStatus(authData);
         
+        // Load albums after successful login
+        loadAlbums();
+        
         // Check if user needs security setup
         const dismissed = localStorage.getItem('security-setup-dismissed') === 'true';
         const user = authData.user;
@@ -456,6 +459,10 @@ export default function AdminPortal() {
       if (authRes.ok) {
         const authData = await authRes.json();
         setAuthStatus(authData);
+        
+        // Load albums after successful login
+        loadAlbums();
+        
         setLoginLoading(false);
       } else {
         window.location.reload();
