@@ -8,6 +8,8 @@ import { PasswordInput } from "../../PasswordInput";
 import { LockIcon, TrashIcon } from "../../../icons";
 import SectionHeader from "../components/SectionHeader";
 import SMTPSetupWizard from "../../SMTPSetupWizard";
+import { MFASetupModal } from "./UserManagement/MFASetupModal";
+import { ConfirmationModal } from "./UserManagement/ConfirmationModal";
 
 const API_URL = import.meta.env.VITE_API_URL || "";
 
@@ -1499,118 +1501,17 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
 
           {/* MFA Setup Modal */}
           {mfaSetup && (
-            <div className="modal-overlay">
-              <div className="share-modal" style={{ maxWidth: "550px" }}>
-                <div className="share-modal-header">
-                  <h2>Enable Two-Factor Authentication</h2>
-                  <button
-                    className="close-button"
-                    onClick={() => {
-                      setMfaSetup(null);
-                      setMfaToken("");
-                    }}
-                    aria-label="Close"
-                  >
-                    ×
-                  </button>
-                </div>
-                <div className="share-modal-content">
-                  <div style={{ marginBottom: "1.5rem" }}>
-                    <p className="share-description">
-                      Scan this QR code with your authenticator app (Google
-                      Authenticator, Authy, 1Password, etc.)
-                    </p>
-                    <div style={{ textAlign: "center", marginBottom: "1rem" }}>
-                      <img
-                        src={mfaSetup.qrCode}
-                        alt="MFA QR Code"
-                        style={{
-                          maxWidth: "250px",
-                          border: "2px solid #3a3a3a",
-                          borderRadius: "8px",
-                          background: "white",
-                          padding: "0.5rem",
-                        }}
-                      />
-                    </div>
-                    <div
-                      style={{
-                        background: "#1e1e1e",
-                        border: "1px solid #3a3a3a",
-                        padding: "0.75rem",
-                        borderRadius: "6px",
-                        fontSize: "0.85rem",
-                        textAlign: "center",
-                        fontFamily: "monospace",
-                        color: "#e5e7eb",
-                        letterSpacing: "0.05em",
-                      }}
-                    >
-                      {mfaSetup.secret}
-                    </div>
-                  </div>
-
-                  <div style={{ marginBottom: "1.5rem" }}>
-                    <label className="branding-label">
-                      Enter verification code from your app
-                    </label>
-                    <input
-                      type="text"
-                      value={mfaToken}
-                      onChange={(e) =>
-                        setMfaToken(
-                          e.target.value.replace(/\D/g, "").slice(0, 6)
-                        )
-                      }
-                      onInput={(e) =>
-                        setMfaToken(
-                          (e.target as HTMLInputElement).value
-                            .replace(/\D/g, "")
-                            .slice(0, 6)
-                        )
-                      }
-                      placeholder="000000"
-                      className="branding-input"
-                      maxLength={6}
-                      style={{
-                        textAlign: "center",
-                        fontSize: "1.5rem",
-                        letterSpacing: "0.5em",
-                      }}
-                      autoComplete="one-time-code"
-                    />
-                  </div>
-
-                  <div
-                    style={{
-                      display: "flex",
-                      gap: "0.75rem",
-                      justifyContent: "flex-end",
-                      paddingTop: "1rem",
-                      borderTop: "1px solid #3a3a3a",
-                    }}
-                  >
-                    <button
-                      onClick={() => {
-                        setMfaSetup(null);
-                        setMfaToken("");
-                      }}
-                      className="btn-secondary"
-                      disabled={loading}
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      onClick={handleCompleteMFASetup}
-                      className="btn-primary"
-                      disabled={loading || mfaToken.length !== 6}
-                    >
-                      {loading ? "Verifying..." : "Enable MFA"}
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <MFASetupModal
+              mfaSetup={mfaSetup}
+              mfaToken={mfaToken}
+              loading={loading}
+              onClose={() => {
+                setMfaSetup(null);
+                setMfaToken("");
+              }}
+              onTokenChange={setMfaToken}
+              onComplete={handleCompleteMFASetup}
+            />
           )}
 
           {/* SMTP Setup Wizard Modal */}
@@ -1633,92 +1534,18 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
           )}
 
           {/* Confirmation Modal */}
-          {confirmModal.show && (
-            <div
-              className="modal-overlay"
-              onClick={() => setConfirmModal({ ...confirmModal, show: false })}
-            >
-              <div
-                className="share-modal"
-                onClick={(e) => e.stopPropagation()}
-                style={{ maxWidth: "500px" }}
-              >
-                <div className="share-modal-header">
-                  <h2>{confirmModal.title}</h2>
-                  <button
-                    className="close-button"
-                    onClick={() => {
-                      setConfirmModal({ ...confirmModal, show: false });
-                      setConfirmPassword("");
-                    }}
-                    aria-label="Close"
-                  >
-                    ×
-                  </button>
-                </div>
-                <div className="share-modal-content">
-                  <p className="share-description">{confirmModal.message}</p>
-
-                  {confirmModal.requirePassword && (
-                    <div style={{ marginBottom: "1.5rem" }}>
-                      <label className="branding-label">Password</label>
-                      <PasswordInput
-                        value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                        placeholder="Enter your password to confirm"
-                        required
-                      />
-                    </div>
-                  )}
-
-                  <div
-                    style={{
-                      display: "flex",
-                      gap: "0.75rem",
-                      justifyContent: "flex-end",
-                      paddingTop: "1rem",
-                      borderTop: "1px solid #3a3a3a",
-                    }}
-                  >
-                    <button
-                      onClick={() => {
-                        setConfirmModal({ ...confirmModal, show: false });
-                        setConfirmPassword("");
-                      }}
-                      className="btn-secondary"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      onClick={() => {
-                        confirmModal.onConfirm(confirmPassword || undefined);
-                        setConfirmPassword("");
-                      }}
-                      className={
-                        confirmModal.isDangerous
-                          ? "btn-secondary"
-                          : "btn-primary"
-                      }
-                      style={
-                        confirmModal.isDangerous
-                          ? {
-                              background: "rgba(239, 68, 68, 0.2)",
-                              borderColor: "rgba(239, 68, 68, 0.3)",
-                              color: "#ef4444",
-                            }
-                          : {}
-                      }
-                      disabled={
-                        confirmModal.requirePassword && !confirmPassword
-                      }
-                    >
-                      {confirmModal.confirmText}
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
+          <ConfirmationModal
+            show={confirmModal.show}
+            title={confirmModal.title}
+            message={confirmModal.message}
+            confirmText={confirmModal.confirmText}
+            isDangerous={confirmModal.isDangerous}
+            requirePassword={confirmModal.requirePassword}
+            password={confirmPassword}
+            onPasswordChange={setConfirmPassword}
+            onConfirm={confirmModal.onConfirm}
+            onClose={() => setConfirmModal({ ...confirmModal, show: false })}
+          />
         </div>
       </div>
     </div>
