@@ -196,6 +196,14 @@ export default function AdminPortal() {
     const freshLogin = location.state?.freshLogin;
     const dismissed = localStorage.getItem('security-setup-dismissed') === 'true';
     
+    console.log('[Security Prompt] Check:', {
+      freshLogin,
+      dismissed,
+      authenticated: authStatus?.authenticated,
+      hasUser: !!authStatus?.user,
+      user: authStatus?.user,
+    });
+    
     if (freshLogin && authStatus?.authenticated && authStatus?.user && !dismissed) {
       // Check if user has MFA or passkey set up
       const user = authStatus.user;
@@ -206,7 +214,16 @@ export default function AdminPortal() {
       const authMethods = user.auth_methods || [];
       const isCredentialUser = authMethods.includes('credentials');
       
+      console.log('[Security Prompt] User security status:', {
+        hasMFA,
+        hasPasskey,
+        authMethods,
+        isCredentialUser,
+        shouldShow: isCredentialUser && !hasMFA && !hasPasskey,
+      });
+      
       if (isCredentialUser && !hasMFA && !hasPasskey) {
+        console.log('[Security Prompt] Showing prompt!');
         setShowSecurityPrompt(true);
       }
       

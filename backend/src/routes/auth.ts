@@ -299,6 +299,26 @@ router.get(
 router.get('/status', (req: Request, res: Response) => {
   // Check Passport authentication (Google OAuth)
   if (req.isAuthenticated && req.isAuthenticated()) {
+    const passportUser = req.user as any;
+    
+    // Look up full user details from database
+    const dbUser = getUserByEmail(passportUser.email);
+    if (dbUser) {
+      return res.json({
+        authenticated: true,
+        user: {
+          id: dbUser.id,
+          email: dbUser.email,
+          name: dbUser.name,
+          picture: dbUser.picture || passportUser.picture,
+          role: dbUser.role,
+          mfa_enabled: dbUser.mfa_enabled,
+          passkey_enabled: dbUser.passkey_count > 0,
+          auth_methods: JSON.parse(dbUser.auth_methods || '[]'),
+        },
+      });
+    }
+    
     return res.json({
       authenticated: true,
       user: req.user,
@@ -308,9 +328,45 @@ router.get('/status', (req: Request, res: Response) => {
   // Check credential-based session
   if ((req.session as any)?.userId) {
     const sessionUser = (req.session as any).user;
+    
+    // If we have user in session, return it with all fields
+    if (sessionUser) {
+      return res.json({
+        authenticated: true,
+        user: {
+          id: sessionUser.id,
+          email: sessionUser.email,
+          name: sessionUser.name,
+          picture: sessionUser.picture,
+          role: sessionUser.role,
+          mfa_enabled: sessionUser.mfa_enabled,
+          passkey_enabled: sessionUser.passkey_enabled,
+          auth_methods: sessionUser.auth_methods,
+        },
+      });
+    }
+    
+    // Fallback: look up user by ID
+    const dbUser = getUserById((req.session as any).userId);
+    if (dbUser) {
+      return res.json({
+        authenticated: true,
+        user: {
+          id: dbUser.id,
+          email: dbUser.email,
+          name: dbUser.name,
+          picture: dbUser.picture,
+          role: dbUser.role,
+          mfa_enabled: dbUser.mfa_enabled,
+          passkey_enabled: dbUser.passkey_count > 0,
+          auth_methods: JSON.parse(dbUser.auth_methods || '[]'),
+        },
+      });
+    }
+    
     return res.json({
       authenticated: true,
-      user: sessionUser || { id: (req.session as any).userId },
+      user: { id: (req.session as any).userId },
     });
   }
   

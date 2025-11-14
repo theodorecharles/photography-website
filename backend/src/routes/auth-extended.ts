@@ -145,12 +145,16 @@ router.post('/login', async (req: Request, res: Response) => {
       name: user.name,
       picture: user.picture,
       role: user.role,
+      mfa_enabled: user.mfa_enabled,
+      passkey_enabled: user.passkey_count > 0,
+      auth_methods: JSON.parse(user.auth_methods || '[]'),
     };
 
     console.log('[Login] Creating session for user:', {
       userId: user.id,
       email: user.email,
       role: user.role,
+      mfa_enabled: user.mfa_enabled,
       sessionID: req.sessionID,
     });
 

@@ -117,12 +117,15 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
       });
       if (res.ok) {
         const data = await res.json();
+        console.log('[UserManagement] Auth status response:', data);
         if (data.authenticated && data.user) {
-          setCurrentUser({ 
+          const userWithRole = { 
             id: data.user.id, 
             email: data.user.email,
             role: data.user.role || 'viewer'
-          });
+          };
+          console.log('[UserManagement] Setting current user:', userWithRole);
+          setCurrentUser(userWithRole);
         }
       }
     } catch (err) {
@@ -684,7 +687,12 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
                 </div>
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              {users.map((user) => (
+              {users.map((user) => {
+                // Debug: Check currentUser when rendering each user card
+                if (user.id === users[0].id) { // Only log once for first user
+                  console.log('[UserManagement] Rendering users. CurrentUser:', currentUser);
+                }
+                return (
                 <div
                   key={user.id}
                   style={{
@@ -1027,7 +1035,8 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
                     </div>
                   )}
                 </div>
-              ))}
+              );
+              })}
                 </div>
               )}
             </div>
