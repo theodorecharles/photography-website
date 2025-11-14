@@ -294,44 +294,17 @@ const SecuritySetupPrompt: React.FC<SecuritySetupPromptProps> = ({
               </div>
 
               <div style={{ marginBottom: '1.5rem' }}>
-                <h4 style={{ margin: '0 0 0.75rem 0', fontSize: '0.95rem', color: '#e5e7eb', fontWeight: 600 }}>
-                  Backup Codes
-                </h4>
-                <p style={{ fontSize: '0.85rem', color: '#9ca3af', margin: '0 0 0.75rem 0', lineHeight: 1.5 }}>
-                  Save these codes in a safe place. Each can be used once if you lose access to your authenticator.
-                </p>
-                <div
-                  style={{
-                    background: '#1e1e1e',
-                    border: '1px solid #3a3a3a',
-                    padding: '1rem',
-                    borderRadius: '6px',
-                    display: 'grid',
-                    gridTemplateColumns: '1fr 1fr',
-                    gap: '0.5rem',
-                    fontSize: '0.85rem',
-                    fontFamily: 'monospace',
-                    color: '#d1d5db',
-                  }}
-                >
-                  {mfaSetup.backupCodes.map((code, i) => (
-                    <div key={i} style={{ padding: '0.25rem' }}>
-                      {code}
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div style={{ marginBottom: '1.5rem' }}>
                 <label className="branding-label">Enter verification code from your app</label>
                 <input
                   type="text"
                   value={mfaToken}
                   onChange={(e) => setMfaToken(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                  onInput={(e) => setMfaToken((e.target as HTMLInputElement).value.replace(/\D/g, '').slice(0, 6))}
                   placeholder="000000"
                   className="branding-input"
                   maxLength={6}
                   style={{ textAlign: 'center', fontSize: '1.5rem', letterSpacing: '0.5em' }}
+                  autoComplete="one-time-code"
                   autoFocus
                 />
               </div>

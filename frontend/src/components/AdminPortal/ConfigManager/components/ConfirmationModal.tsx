@@ -1,83 +1,90 @@
 /**
  * Confirmation Modal Component
- * Reusable modal for confirming dangerous actions
+ * Reusable modal for confirmations with optional password input
  */
 
 import React from 'react';
+import { PasswordInput } from '../../PasswordInput';
+import { ConfirmModalState } from '../sections/userManagementTypes';
 
 interface ConfirmationModalProps {
-  message: string;
-  onConfirm: () => void;
-  onCancel: () => void;
+  modal: ConfirmModalState;
+  password: string;
+  onPasswordChange: (value: string) => void;
+  onClose: () => void;
 }
 
 const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
-  message,
-  onConfirm,
-  onCancel,
+  modal,
+  password,
+  onPasswordChange,
+  onClose,
 }) => {
+  if (!modal.show) return null;
+
+  const handleConfirm = () => {
+    modal.onConfirm(password || undefined);
+    onPasswordChange('');
+  };
+
+  const handleClose = () => {
+    onClose();
+    onPasswordChange('');
+  };
+
   return (
-    <div
-      style={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: "rgba(0, 0, 0, 0.75)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        zIndex: 10000,
-        padding: "1rem",
-      }}
-      onClick={onCancel}
-    >
-      <div
-        style={{
-          backgroundColor: "#1a1a1a",
-          border: "2px solid rgba(255, 255, 255, 0.2)",
-          borderRadius: "12px",
-          padding: "2rem",
-          maxWidth: "500px",
-          width: "100%",
-          boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5)",
-        }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div
-          style={{
-            color: "#e5e7eb",
-            fontSize: "1.1rem",
-            lineHeight: "1.6",
-            marginBottom: "2rem",
-            whiteSpace: "pre-wrap",
-          }}
-        >
-          {message}
+    <div className="modal-overlay" onClick={handleClose}>
+      <div className="share-modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '500px' }}>
+        <div className="share-modal-header">
+          <h2>{modal.title}</h2>
+          <button className="close-button" onClick={handleClose} aria-label="Close">
+            ×
+          </button>
         </div>
-        <div
-          style={{
-            display: "flex",
-            gap: "1rem",
-            justifyContent: "flex-end",
-          }}
-        >
-          <button
-            onClick={onCancel}
-            className="btn-secondary"
-            style={{ minWidth: "100px" }}
+        <div className="share-modal-content">
+          <p className="share-description">{modal.message}</p>
+
+          {modal.requirePassword && (
+            <div style={{ marginBottom: '1.5rem' }}>
+              <label className="branding-label">Password</label>
+              <PasswordInput
+                value={password}
+                onChange={(e) => onPasswordChange(e.target.value)}
+                placeholder="Enter your password to confirm"
+                required
+              />
+            </div>
+          )}
+
+          <div
+            style={{
+              display: 'flex',
+              gap: '0.75rem',
+              justifyContent: 'flex-end',
+              paddingTop: '1rem',
+              borderTop: '1px solid #3a3a3a',
+            }}
           >
-            Cancel
-          </button>
-          <button
-            onClick={onConfirm}
-            className="btn-primary"
-            style={{ minWidth: "100px" }}
-            autoFocus
-          >
-            Confirm
-          </button>
+            <button onClick={handleClose} className="btn-secondary">
+              Cancel
+            </button>
+            <button
+              onClick={handleConfirm}
+              className={modal.isDangerous ? 'btn-secondary' : 'btn-primary'}
+              style={
+                modal.isDangerous
+                  ? {
+                      background: 'rgba(239, 68, 68, 0.2)',
+                      borderColor: 'rgba(239, 68, 68, 0.3)',
+                      color: '#ef4444',
+                    }
+                  : {}
+              }
+              disabled={modal.requirePassword && !password}
+            >
+              {modal.confirmText}
+            </button>
+          </div>
         </div>
       </div>
     </div>
