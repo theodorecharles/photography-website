@@ -7,18 +7,9 @@ import { Router, Request, Response } from "express";
 import fs from "fs";
 import path from "path";
 import { getAllAlbums, getImagesInAlbum, getImagesFromPublishedAlbums } from "../database.js";
+import { requireAuth , requireAdmin} from '../auth/middleware.js';
 
 const router = Router();
-
-/**
- * Authentication middleware
- */
-const requireAuth = (req: Request, res: Response, next: Function) => {
-  if (req.isAuthenticated && req.isAuthenticated()) {
-    return next();
-  }
-  res.status(401).json({ error: 'Unauthorized' });
-};
 
 /**
  * Get the output directory for static JSON files
@@ -134,7 +125,7 @@ export function generateStaticJSONFiles(appRoot: string): { success: boolean; er
  * POST /api/static-json/generate
  * Trigger static JSON generation (admin only)
  */
-router.post("/generate", requireAuth, async (req: Request, res: Response): Promise<void> => {
+router.post("/generate", requireAdmin, async (req: Request, res: Response): Promise<void> => {
   console.log('[Static JSON] Manual generation triggered');
   
   const appRoot = req.app.get('appRoot');

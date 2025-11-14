@@ -12,6 +12,7 @@ import { promisify } from "util";
 import multer from "multer";
 import os from "os";
 import { csrfProtection } from "../security.js";
+import { requireAuth, requireAdmin, requireManager } from '../auth/middleware.js';
 import { 
   deleteAlbumMetadata, 
   deleteImageMetadata, 
@@ -162,16 +163,6 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 /**
- * Authentication middleware
- */
-const requireAuth = (req: Request, res: Response, next: Function) => {
-  if (req.isAuthenticated && req.isAuthenticated()) {
-    return next();
-  }
-  res.status(401).json({ error: 'Unauthorized' });
-};
-
-/**
  * Sanitize album/photo name - allows letters, numbers, spaces, hyphens, and underscores
  */
 const sanitizeName = (name: string): string | null => {
@@ -201,7 +192,7 @@ const sanitizePhotoName = (name: string): string | null => {
 /**
  * Create a new album
  */
-router.post("/", requireAuth, async (req: Request, res: Response): Promise<void> => {
+router.post("/", requireManager, async (req: Request, res: Response): Promise<void> => {
   try {
     const { name, folder_id } = req.body;
     
@@ -251,7 +242,7 @@ router.post("/", requireAuth, async (req: Request, res: Response): Promise<void>
 /**
  * Delete an album and all its photos
  */
-router.delete("/:album", requireAuth, async (req: Request, res: Response): Promise<void> => {
+router.delete("/:album", requireManager, async (req: Request, res: Response): Promise<void> => {
   try {
     const { album } = req.params;
     
@@ -311,7 +302,7 @@ router.delete("/:album", requireAuth, async (req: Request, res: Response): Promi
 /**
  * Delete a photo from an album
  */
-router.delete("/:album/photos/:photo", requireAuth, async (req: Request, res: Response): Promise<void> => {
+router.delete("/:album/photos/:photo", requireManager, async (req: Request, res: Response): Promise<void> => {
   try {
     const { album, photo } = req.params;
     
@@ -367,7 +358,7 @@ router.delete("/:album/photos/:photo", requireAuth, async (req: Request, res: Re
 /**
  * Upload a single photo to an album with SSE progress updates
  */
-router.post("/:album/upload", requireAuth, upload.single('photo'), async (req: Request, res: Response): Promise<void> => {
+router.post("/:album/upload", requireManager, upload.single('photo'), async (req: Request, res: Response): Promise<void> => {
   try {
     const { album } = req.params;
     
@@ -546,7 +537,7 @@ router.post("/:album/upload", requireAuth, upload.single('photo'), async (req: R
 /**
  * Rename an album (updates database and moves directories)
  */
-router.patch("/:album/rename", requireAuth, async (req: Request, res: Response): Promise<void> => {
+router.patch("/:album/rename", requireManager, async (req: Request, res: Response): Promise<void> => {
   try {
     const { album } = req.params;
     const { newName } = req.body;
@@ -678,7 +669,7 @@ router.patch("/:album/rename", requireAuth, async (req: Request, res: Response):
 /**
  * Toggle album published state
  */
-router.patch("/:album/publish", requireAuth, async (req: Request, res: Response): Promise<void> => {
+router.patch("/:album/publish", requireManager, async (req: Request, res: Response): Promise<void> => {
   try {
     const { album } = req.params;
     const { published } = req.body;
@@ -725,7 +716,7 @@ router.patch("/:album/publish", requireAuth, async (req: Request, res: Response)
 /**
  * Trigger optimization for all albums
  */
-router.post("/:album/optimize", requireAuth, async (req: Request, res: Response): Promise<void> => {
+router.post("/:album/optimize", requireAdmin, async (req: Request, res: Response): Promise<void> => {
   try {
     const { album } = req.params;
     
@@ -770,7 +761,7 @@ router.post("/:album/optimize", requireAuth, async (req: Request, res: Response)
 /**
  * Update photo order in an album
  */
-router.post("/:album/photo-order", requireAuth, async (req: Request, res: Response): Promise<void> => {
+router.post("/:album/photo-order", requireManager, async (req: Request, res: Response): Promise<void> => {
   try {
     const { album } = req.params;
     const { photoOrder } = req.body;
@@ -826,7 +817,7 @@ router.post("/:album/photo-order", requireAuth, async (req: Request, res: Respon
 /**
  * Update album sort order
  */
-router.put('/sort-order', requireAuth, async (req: Request, res: Response): Promise<void> => {
+router.put('/sort-order', requireManager, async (req: Request, res: Response): Promise<void> => {
   try {
     const { albumOrders } = req.body;
     
@@ -865,7 +856,7 @@ router.put('/sort-order', requireAuth, async (req: Request, res: Response): Prom
 /**
  * Move album to folder (or remove from folder)
  */
-router.put('/:albumName/move', requireAuth, async (req: Request, res: Response): Promise<void> => {
+router.put('/:albumName/move', requireManager, async (req: Request, res: Response): Promise<void> => {
   try {
     const { albumName } = req.params;
     const { folderName, published } = req.body;

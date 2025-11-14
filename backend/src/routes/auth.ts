@@ -263,33 +263,93 @@ router.get(
 
 // Route: Check authentication status
 router.get('/status', (req: Request, res: Response) => {
-  if (req.isAuthenticated()) {
-    res.json({
+  // Check Passport authentication (Google OAuth)
+  if (req.isAuthenticated && req.isAuthenticated()) {
+    return res.json({
       authenticated: true,
       user: req.user,
     });
+  }
+  
+  // Check credential-based session
+  if ((req.session as any)?.userId) {
+    const sessionUser = (req.session as any).user;
+    return res.json({
+      authenticated: true,
+      user: sessionUser || { id: (req.session as any).userId },
+    });
+  }
+  
+  res.json({
+    authenticated: false,
+  });
+});
+
+// Route: Logout via GET redirect (for simple links)
+router.get('/logout-redirect', (req: Request, res: Response) => {
+  console.log('[Logout Redirect] Starting logout for session:', req.sessionID);
+  
+  // Handle both auth methods
+  if (req.isAuthenticated && req.isAuthenticated()) {
+    req.logout((err) => {
+      if (err) console.error('[Logout Redirect] Passport logout error:', err);
+      req.session.destroy((err) => {
+        if (err) console.error('[Logout Redirect] Session destroy error:', err);
+        console.log('[Logout Redirect] ✅ Logged out, redirecting to homepage');
+        res.redirect('/');
+      });
+    });
   } else {
-    res.json({
-      authenticated: false,
+    req.session.destroy((err) => {
+      if (err) console.error('[Logout Redirect] Session destroy error:', err);
+      console.log('[Logout Redirect] ✅ Logged out, redirecting to homepage');
+      res.redirect('/');
     });
   }
 });
 
 // Route: Logout
-// Using POST with authentication middleware provides CSRF protection
-// because authenticated requests require valid session cookie
-router.post('/logout', isAuthenticated, (req: Request, res: Response) => {
-  req.logout((err) => {
-    if (err) {
-      return res.status(500).json({ error: 'Logout failed' });
-    }
+// Allow both Passport and credential sessions to logout
+router.post('/logout', (req: Request, res: Response) => {
+  console.log('[Logout] Starting logout for session:', req.sessionID);
+  console.log('[Logout] Session data:', {
+    hasIsAuthenticated: !!req.isAuthenticated,
+    isAuthenticatedResult: req.isAuthenticated ? req.isAuthenticated() : false,
+    hasUserId: !!(req.session as any)?.userId,
+    userId: (req.session as any)?.userId,
+  });
+  
+  // Always destroy the session regardless of auth method
+  // For Passport sessions, call logout first
+  if (req.isAuthenticated && req.isAuthenticated()) {
+    console.log('[Logout] Passport session detected - calling req.logout()');
+    req.logout((err) => {
+      if (err) {
+        console.error('[Logout] Passport logout error:', err);
+      }
+      
+      // Always destroy session even if Passport logout fails
+      req.session.destroy((err) => {
+        if (err) {
+          console.error('[Logout] Session destroy error:', err);
+          return res.status(500).json({ error: 'Session destruction failed' });
+        }
+        console.log('[Logout] ✅ Passport session destroyed successfully');
+        res.json({ success: true });
+      });
+    });
+  } else {
+    // Credential-based session or already logged out
+    console.log('[Logout] Credential session detected - destroying session');
     req.session.destroy((err) => {
       if (err) {
+        console.error('[Logout] Session destroy error:', err);
         return res.status(500).json({ error: 'Session destruction failed' });
       }
+      console.log('[Logout] ✅ Credential session destroyed successfully');
       res.json({ success: true });
     });
-  });
+  }
 });
 
 export default router;

@@ -14,6 +14,10 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@auth/core": "^0.41.1",
+    "@auth/express": "^0.12.1",
+    "@simplewebauthn/server": "^9.0.3",
+    "@simplewebauthn/types": "^12.0.0",
     "@types/better-sqlite3": "^7.6.13",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.1",
@@ -22,6 +26,7 @@
     "@types/node": "^22.15.2",
     "@types/passport": "^1.0.17",
     "@types/passport-google-oauth20": "^2.0.17",
+    "bcrypt": "^6.0.0",
     "better-sqlite3": "^12.4.1",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
@@ -34,10 +39,15 @@
     "openai": "^4.78.0",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
+    "qrcode": "^1.5.4",
     "sharp": "^0.34.5",
+    "speakeasy": "^2.0.0",
     "typescript": "^5.8.3"
   },
   "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
+    "@types/qrcode": "^1.5.6",
+    "@types/speakeasy": "^2.0.10",
     "nodemon": "^3.1.10",
     "ts-node": "^10.9.2"
   }

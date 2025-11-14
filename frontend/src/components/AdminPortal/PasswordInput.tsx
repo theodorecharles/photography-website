@@ -39,7 +39,7 @@ export const PasswordInput: React.FC<PasswordInputProps> = ({
         type={isVisible ? "text" : "password"}
         value={value}
         onChange={onChange}
-        className={className}
+        className={`branding-input ${className}`}
         placeholder={placeholder}
       />
       <div className="password-input-buttons">

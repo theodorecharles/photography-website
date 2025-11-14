@@ -6,7 +6,7 @@
 
 import { Router, Request, Response } from 'express';
 import config from '../config.ts';
-import { isAuthenticated } from './auth.ts';
+import { requireAuth, requireAdmin } from '../auth/middleware.js';
 
 const router = Router();
 
@@ -18,7 +18,7 @@ const router = Router();
  * DEPRECATED: This endpoint is disabled for security reasons.
  * Use GET /api/metrics/stats instead which provides pre-defined queries.
  */
-router.post('/query', isAuthenticated, async (req: Request, res: Response): Promise<void> => {
+router.post('/query', requireAdmin, async (req: Request, res: Response): Promise<void> => {
   res.status(403).json({ 
     error: 'This endpoint is deprecated for security reasons. Use GET /api/metrics/stats instead.' 
   });
@@ -29,7 +29,7 @@ router.post('/query', isAuthenticated, async (req: Request, res: Response): Prom
  * Get unique visitors per day for the time series chart
  * Requires authentication
  */
-router.get('/visitors-over-time', isAuthenticated, async (req: Request, res: Response): Promise<void> => {
+router.get('/visitors-over-time', requireAuth, async (req: Request, res: Response): Promise<void> => {
   try {
     const analyticsConfig = config.analytics?.openobserve;
     
@@ -146,7 +146,7 @@ router.get('/visitors-over-time', isAuthenticated, async (req: Request, res: Res
  * Get visitor locations based on geolocation data
  * Requires authentication
  */
-router.get('/visitor-locations', isAuthenticated, async (req: Request, res: Response): Promise<void> => {
+router.get('/visitor-locations', requireAuth, async (req: Request, res: Response): Promise<void> => {
   try {
     const analyticsConfig = config.analytics?.openobserve;
     
@@ -254,7 +254,7 @@ router.get('/visitor-locations', isAuthenticated, async (req: Request, res: Resp
  * Get pageviews aggregated by hour for the last N days
  * Requires authentication
  */
-router.get('/pageviews-by-hour', isAuthenticated, async (req: Request, res: Response): Promise<void> => {
+router.get('/pageviews-by-hour', requireAuth, async (req: Request, res: Response): Promise<void> => {
   try {
     const analyticsConfig = config.analytics?.openobserve;
     
@@ -362,7 +362,7 @@ router.get('/pageviews-by-hour', isAuthenticated, async (req: Request, res: Resp
  * Get pre-computed statistics for the dashboard
  * Requires authentication
  */
-router.get('/stats', isAuthenticated, async (req: Request, res: Response): Promise<void> => {
+router.get('/stats', requireAuth, async (req: Request, res: Response): Promise<void> => {
   try {
     const analyticsConfig = config.analytics?.openobserve;
     

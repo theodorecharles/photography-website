@@ -9,6 +9,7 @@ import { useSSEToaster } from '../../../contexts/SSEToasterContext';
 import ConfirmationModal from './components/ConfirmationModal';
 import BrandingSection from './sections/BrandingSection';
 import LinksSection from './sections/LinksSection';
+import UserManagementSection from './sections/UserManagementSection';
 import OpenAISection from './sections/OpenAISection';
 import ImageOptimizationSection from './sections/ImageOptimizationSection';
 import AdvancedSettingsSection from './sections/AdvancedSettingsSection';
@@ -695,6 +696,10 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
         <LinksSection
           externalLinks={externalLinks}
           setExternalLinks={setExternalLinks}
+          setMessage={setMessage}
+        />
+
+        <UserManagementSection
           setMessage={setMessage}
         />
 
