@@ -379,6 +379,7 @@ export const UserCard: React.FC<UserCardProps> = ({
                 padding: "0.25rem 0.6rem",
                 borderRadius: "12px",
                 border: "1px solid rgba(139, 92, 246, 0.3)",
+                fontWeight: 600,
               }}
             >
               {method === "credentials"
@@ -397,6 +398,7 @@ export const UserCard: React.FC<UserCardProps> = ({
               padding: "0.25rem 0.6rem",
               borderRadius: "12px",
               border: "1px solid rgba(34, 197, 94, 0.3)",
+              fontWeight: 600,
             }}
           >
             🛡️ MFA
@@ -411,6 +413,7 @@ export const UserCard: React.FC<UserCardProps> = ({
               padding: "0.25rem 0.6rem",
               borderRadius: "12px",
               border: "1px solid rgba(236, 72, 153, 0.3)",
+              fontWeight: 600,
             }}
           >
             🔑 {user.passkey_count} Passkey{user.passkey_count !== 1 ? "s" : ""}
@@ -471,8 +474,19 @@ export const UserCard: React.FC<UserCardProps> = ({
                           style={{
                             padding: "0.4rem 0.8rem",
                             fontSize: "0.85rem",
+                            background: "rgba(239, 68, 68, 0.2)",
+                            borderColor: "rgba(239, 68, 68, 0.3)",
+                            color: "#ef4444",
                           }}
                           disabled={loading}
+                          onMouseEnter={(e) => {
+                            if (!loading) {
+                              e.currentTarget.style.background = "rgba(239, 68, 68, 0.3)";
+                            }
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.background = "rgba(239, 68, 68, 0.2)";
+                          }}
                         >
                           Disable MFA
                         </button>
@@ -492,8 +506,21 @@ export const UserCard: React.FC<UserCardProps> = ({
                       style={{
                         padding: "0.4rem 0.8rem",
                         fontSize: "0.85rem",
+                        background: "rgba(59, 130, 246, 0.2)",
+                        borderColor: "rgba(59, 130, 246, 0.3)",
+                        color: "#60a5fa",
                       }}
                       disabled={loading}
+                      onMouseEnter={(e) => {
+                        if (!loading) {
+                          e.currentTarget.style.background =
+                            "rgba(59, 130, 246, 0.3)";
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background =
+                          "rgba(59, 130, 246, 0.2)";
+                      }}
                     >
                       Passkeys ({user.passkey_count})
                     </button>
@@ -512,18 +539,21 @@ export const UserCard: React.FC<UserCardProps> = ({
                     style={{
                       padding: "0.4rem 0.8rem",
                       fontSize: "0.85rem",
-                      background: "#fbbf24",
-                      borderColor: "#f59e0b",
+                      background: "rgba(239, 68, 68, 0.2)",
+                      borderColor: "rgba(239, 68, 68, 0.3)",
+                      color: "#ef4444",
                     }}
                     disabled={loading}
                     title="Disable MFA for this user"
                     onMouseEnter={(e) => {
                       if (!loading) {
-                        e.currentTarget.style.background = "#f59e0b";
+                        e.currentTarget.style.background =
+                          "rgba(239, 68, 68, 0.3)";
                       }
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.background = "#fbbf24";
+                      e.currentTarget.style.background =
+                        "rgba(239, 68, 68, 0.2)";
                     }}
                   >
                     Reset MFA
