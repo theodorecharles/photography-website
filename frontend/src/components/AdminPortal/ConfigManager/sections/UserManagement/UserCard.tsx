@@ -250,7 +250,7 @@ export const UserCard: React.FC<UserCardProps> = ({
           marginBottom: '0.75rem',
         }}
       >
-        <div style={{ position: 'relative' }} ref={roleDropdownRef}>
+        <div style={{ position: 'relative', zIndex: showRoleDropdown ? 1001 : 'auto' }} ref={roleDropdownRef}>
           <span
             onClick={() => canEditRole && setShowRoleDropdown(!showRoleDropdown)}
             style={{
@@ -303,7 +303,7 @@ export const UserCard: React.FC<UserCardProps> = ({
                 border: '1px solid #3a3a3a',
                 borderRadius: '8px',
                 boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
-                zIndex: 1000,
+                zIndex: 1002,
                 minWidth: '120px',
                 overflow: 'hidden',
               }}
