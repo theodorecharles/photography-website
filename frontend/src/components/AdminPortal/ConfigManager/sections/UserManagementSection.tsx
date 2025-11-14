@@ -11,6 +11,7 @@ import { ConfirmationModal } from "./UserManagement/ConfirmationModal";
 import { NewUserForm } from "./UserManagement/NewUserForm";
 import { UserCard } from "./UserManagement/UserCard";
 import { SMTPWarningBanner } from "./UserManagement/SMTPWarningBanner";
+import { PasskeysModal } from "./UserManagement/PasskeysModal";
 import { userManagementAPI } from "./UserManagement/utils";
 import { withLoadingAndErrorHandling } from "./UserManagement/handlers";
 import type {
@@ -688,9 +689,6 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
                       loading={loading}
                       showPasswordChange={showPasswordChange}
                       passwordChange={passwordChange}
-                      showPasskeys={showPasskeys}
-                      passkeys={passkeys}
-                      passkeyName={passkeyName}
                       isFirstUser={index === 0}
                       onResendInvite={handleResendInvite}
                       onDeleteUser={handleDeleteUser}
@@ -699,11 +697,7 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
                       onChangePassword={handleChangePassword}
                       onStartMFASetup={handleStartMFASetup}
                       onDisableMFA={handleDisableMFA}
-                      onShowPasskeys={setShowPasskeys}
-                      onLoadPasskeys={handleLoadPasskeys}
-                      onPasskeyNameChange={setPasskeyName}
-                      onRegisterPasskey={handleRegisterPasskey}
-                      onRemovePasskey={handleRemovePasskey}
+                      onOpenPasskeys={handleLoadPasskeys}
                       onResetMFA={handleResetMFA}
                       onSendPasswordReset={handleSendPasswordReset}
                       onUpdateRole={handleUpdateRole}
@@ -726,6 +720,19 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
               }}
               onTokenChange={setMfaToken}
               onComplete={handleCompleteMFASetup}
+            />
+          )}
+
+          {/* Passkeys Modal */}
+          {showPasskeys !== undefined && (
+            <PasskeysModal
+              passkeys={passkeys}
+              passkeyName={passkeyName}
+              loading={loading}
+              onClose={() => setShowPasskeys(undefined)}
+              onNameChange={setPasskeyName}
+              onRegister={() => handleRegisterPasskey(showPasskeys)}
+              onRemove={handleRemovePasskey}
             />
           )}
 
