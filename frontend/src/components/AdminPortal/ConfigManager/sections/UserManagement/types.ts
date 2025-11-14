@@ -8,6 +8,7 @@ export interface User {
   passkey_count: number;
   auth_methods: string[];
   status?: string;
+  picture?: string;
 }
 
 export interface Passkey {

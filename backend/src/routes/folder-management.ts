@@ -189,7 +189,7 @@ router.delete("/:folder", requireManager, async (req: Request, res: Response): P
 /**
  * Toggle folder published state
  */
-router.patch("/:folder/publish", requireAdmin, async (req: Request, res: Response): Promise<void> => {
+router.patch("/:folder/publish", requireManager, async (req: Request, res: Response): Promise<void> => {
   try {
     const { folder } = req.params;
     const { published } = req.body;
@@ -249,7 +249,7 @@ router.patch("/:folder/publish", requireAdmin, async (req: Request, res: Respons
 /**
  * Move album to folder (or remove from folder if folderId is null)
  */
-router.patch("/:folder/albums/:album", requireAdmin, async (req: Request, res: Response): Promise<void> => {
+router.patch("/:folder/albums/:album", requireManager, async (req: Request, res: Response): Promise<void> => {
   try {
     const { folder, album } = req.params;
     

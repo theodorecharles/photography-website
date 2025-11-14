@@ -9,7 +9,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { csrfProtection } from '../security.js';
 import { getDatabase } from '../database.js';
-import { requireAuth , requireAdmin} from '../auth/middleware.js';
+import { requireAuth, requireAdmin, requireManager } from '../auth/middleware.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -92,7 +92,7 @@ router.get('/check-missing', requireAuth, (req, res) => {
  * POST /api/ai-titles/stop
  * Stop running AI titles generation job
  */
-router.post('/stop', requireAdmin, (req: any, res: any) => {
+router.post('/stop', requireManager, (req: any, res: any) => {
   if (!runningJobs.aiTitles || runningJobs.aiTitles.isComplete) {
     return res.json({ success: false, message: 'No running job to stop' });
   }
@@ -132,7 +132,7 @@ router.post('/stop', requireAdmin, (req: any, res: any) => {
  * Generate AI titles for all images
  * Streams output using Server-Sent Events
  */
-router.post('/generate', requireAdmin, (req, res) => {
+router.post('/generate', requireManager, (req, res) => {
   const forceRegenerate = req.query.forceRegenerate === 'true';
   
   // If already running, reconnect to existing job

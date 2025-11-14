@@ -19,6 +19,7 @@ interface SortableAlbumCardProps {
   onDragLeave: (e: React.DragEvent) => void;
   onDrop: (e: React.DragEvent) => void;
   onRemoveFromFolder?: (albumName: string) => void;
+  canEdit: boolean;
 }
 
 const SortableAlbumCard: React.FC<SortableAlbumCardProps> = ({
@@ -31,6 +32,7 @@ const SortableAlbumCard: React.FC<SortableAlbumCardProps> = ({
   onDragLeave,
   onDrop,
   onRemoveFromFolder,
+  canEdit,
 }) => {
   const {
     attributes,
@@ -39,7 +41,7 @@ const SortableAlbumCard: React.FC<SortableAlbumCardProps> = ({
     transform,
     transition,
     isDragging,
-  } = useSortable({ id: album.name });
+  } = useSortable({ id: album.name, disabled: !canEdit });
 
   const touchStartPos = useRef<{ x: number; y: number } | null>(null);
   const hasMoved = useRef(false);
@@ -95,13 +97,13 @@ const SortableAlbumCard: React.FC<SortableAlbumCardProps> = ({
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
-      onDragOver={onDragOver}
-      onDragLeave={onDragLeave}
-      onDrop={onDrop}
+      onDragOver={canEdit ? onDragOver : undefined}
+      onDragLeave={canEdit ? onDragLeave : undefined}
+      onDrop={canEdit ? onDrop : undefined}
       {...attributes}
-      {...listeners}
+      {...(canEdit ? listeners : {})}
     >
-      {onRemoveFromFolder && album.folder_id && (
+      {canEdit && onRemoveFromFolder && album.folder_id && (
         <button
           className="album-remove-folder-btn"
           onClick={(e) => {
