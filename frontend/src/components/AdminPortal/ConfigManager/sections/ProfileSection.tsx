@@ -96,6 +96,7 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({
     setLoading(true);
     try {
       const res = await fetch(`${API_URL}/api/auth-extended/mfa/setup`, {
+        method: 'POST',
         credentials: "include",
       });
 
