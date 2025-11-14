@@ -12,7 +12,7 @@ import { promisify } from 'util';
 import crypto from 'crypto';
 import multer from 'multer';
 import os from 'os';
-import { isAuthenticated } from './auth.js';
+import { requireManager } from '../auth/middleware.js';
 import { csrfProtection } from '../security.js';
 
 const execAsync = promisify(exec);
@@ -90,7 +90,7 @@ router.get('/', (req: Request, res: Response) => {
 });
 
 // Update branding configuration
-router.put('/', isAuthenticated, (req: Request, res: Response) => {
+router.put('/', requireManager, (req: Request, res: Response) => {
   try {
     const updates: Partial<BrandingConfig> = req.body;
     
@@ -157,7 +157,7 @@ router.put('/', isAuthenticated, (req: Request, res: Response) => {
 });
 
 // Upload avatar
-router.post('/upload-avatar', isAuthenticated, upload.single('avatar'), async (req: Request, res: Response): Promise<void> => {
+router.post('/upload-avatar', requireManager, upload.single('avatar'), async (req: Request, res: Response): Promise<void> => {
   try {
     const file = req.file;
     if (!file) {

@@ -20,21 +20,12 @@ import {
 import { generateStaticJSONFiles } from "./static-json.js";
 import fs from "fs";
 import path from "path";
+import { requireAuth, requireAdmin, requireManager } from '../auth/middleware.js';
 
 const router = Router();
 
 // Apply CSRF protection to all routes in this router
 router.use(csrfProtection);
-
-/**
- * Authentication middleware
- */
-const requireAuth = (req: Request, res: Response, next: Function) => {
-  if (req.isAuthenticated && req.isAuthenticated()) {
-    return next();
-  }
-  res.status(401).json({ error: 'Unauthorized' });
-};
 
 /**
  * Sanitize folder name - allows letters, numbers, spaces, hyphens, and underscores
@@ -66,7 +57,7 @@ router.get("/", requireAuth, async (req: Request, res: Response): Promise<void> 
 /**
  * Create a new folder
  */
-router.post("/", requireAuth, async (req: Request, res: Response): Promise<void> => {
+router.post("/", requireManager, async (req: Request, res: Response): Promise<void> => {
   try {
     const { name, published } = req.body;
     
@@ -115,7 +106,7 @@ router.post("/", requireAuth, async (req: Request, res: Response): Promise<void>
  * Query parameter: deleteAlbums=true to also delete all albums in the folder
  * Default behavior: Albums are moved to root level (folder_id set to NULL)
  */
-router.delete("/:folder", requireAuth, async (req: Request, res: Response): Promise<void> => {
+router.delete("/:folder", requireManager, async (req: Request, res: Response): Promise<void> => {
   try {
     const { folder } = req.params;
     const deleteAlbums = req.query.deleteAlbums === 'true';
@@ -198,7 +189,7 @@ router.delete("/:folder", requireAuth, async (req: Request, res: Response): Prom
 /**
  * Toggle folder published state
  */
-router.patch("/:folder/publish", requireAuth, async (req: Request, res: Response): Promise<void> => {
+router.patch("/:folder/publish", requireAdmin, async (req: Request, res: Response): Promise<void> => {
   try {
     const { folder } = req.params;
     const { published } = req.body;
@@ -258,7 +249,7 @@ router.patch("/:folder/publish", requireAuth, async (req: Request, res: Response
 /**
  * Move album to folder (or remove from folder if folderId is null)
  */
-router.patch("/:folder/albums/:album", requireAuth, async (req: Request, res: Response): Promise<void> => {
+router.patch("/:folder/albums/:album", requireAdmin, async (req: Request, res: Response): Promise<void> => {
   try {
     const { folder, album } = req.params;
     
@@ -312,7 +303,7 @@ router.patch("/:folder/albums/:album", requireAuth, async (req: Request, res: Re
 /**
  * Update folder sort order
  */
-router.put('/sort-order', requireAuth, async (req: Request, res: Response): Promise<void> => {
+router.put('/sort-order', requireManager, async (req: Request, res: Response): Promise<void> => {
   try {
     const { folderOrders } = req.body;
     

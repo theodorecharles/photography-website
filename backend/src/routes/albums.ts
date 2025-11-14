@@ -220,8 +220,8 @@ router.get("/api/albums", (req: Request, res) => {
   // Re-fetch album states after sync
   const updatedAlbumStates = getAllAlbums();
   
-  // Check if user is authenticated
-  const isAuthenticated = req.isAuthenticated && req.isAuthenticated();
+  // Check if user is authenticated (Passport or credentials)
+  const isAuthenticated = (req.isAuthenticated && req.isAuthenticated()) || !!(req.session as any)?.userId;
   
   // Get folders
   const allFolders = isAuthenticated ? getAllFolders() : getPublishedFolders();
@@ -285,8 +285,8 @@ router.get("/api/albums/:album/photos", (req: Request, res): void => {
     return;
   }
 
-  // Check if user is authenticated
-  const isAuthenticated = req.isAuthenticated && req.isAuthenticated();
+  // Check if user is authenticated (Passport or credentials)
+  const isAuthenticated = (req.isAuthenticated && req.isAuthenticated()) || !!(req.session as any)?.userId;
   
   // Check album published state
   const albumState = getAlbumState(sanitizedAlbum);

@@ -8,6 +8,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { csrfProtection } from '../security.js';
+import { requireAuth, requireAdmin } from '../auth/middleware.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -20,16 +21,6 @@ router.use(csrfProtection);
 import { DATA_DIR } from '../config.js';
 
 const CONFIG_PATH = path.join(DATA_DIR, 'config.json');
-
-/**
- * Middleware to check if user is authenticated
- */
-function requireAuth(req: any, res: any, next: any) {
-  if (!req.isAuthenticated || !req.isAuthenticated()) {
-    return res.status(401).json({ error: 'Unauthorized' });
-  }
-  next();
-}
 
 /**
  * GET /api/config
@@ -53,7 +44,7 @@ router.get('/', requireAuth, (req, res) => {
  * POST /api/config/validate-openai-key
  * Validate OpenAI API key
  */
-router.post('/validate-openai-key', requireAuth, express.json(), async (req, res) => {
+router.post('/validate-openai-key', requireAdmin, express.json(), async (req, res) => {
   try {
     const { apiKey } = req.body;
     
@@ -92,7 +83,7 @@ router.post('/validate-openai-key', requireAuth, express.json(), async (req, res
  * PUT /api/config
  * Update configuration
  */
-router.put('/', requireAuth, express.json(), (req, res) => {
+router.put('/', requireAdmin, express.json(), (req, res) => {
   try {
     const newConfig = req.body;
     

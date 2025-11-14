@@ -136,8 +136,12 @@ export function csrfProtection(req: any, res: any, next: any) {
     return next();
   }
   
-  // For POST/PUT/DELETE, require authentication
-  if (!req.isAuthenticated || !req.isAuthenticated()) {
+  // For POST/PUT/DELETE, require authentication (check both Passport and credential sessions)
+  const isPassportAuth = req.isAuthenticated && req.isAuthenticated();
+  const isCredentialAuth = !!(req.session as any)?.userId;
+  
+  if (!isPassportAuth && !isCredentialAuth) {
+    console.log('[CSRF] Authentication required - not authenticated via any method');
     return res.status(401).json({ error: 'Authentication required for this operation' });
   }
   
@@ -148,9 +152,11 @@ export function csrfProtection(req: any, res: any, next: any) {
   if (origin) {
     const isAllowedOrigin = allowedOrigins.some((allowed: string) => origin.startsWith(allowed));
     if (!isAllowedOrigin) {
+      console.log('[CSRF] Origin not allowed:', origin);
       return res.status(403).json({ error: 'Request origin not allowed' });
     }
   }
   
+  console.log('[CSRF] ✅ Protection passed for', req.method, req.path);
   next();
 }
