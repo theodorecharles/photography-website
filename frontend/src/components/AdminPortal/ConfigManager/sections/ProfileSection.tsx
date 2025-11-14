@@ -4,7 +4,6 @@
  */
 
 import React, { useState, useEffect } from "react";
-import SectionHeader from "../components/SectionHeader";
 import { MFASetupModal } from "./UserManagement/MFASetupModal";
 import { ConfirmationModal } from "./UserManagement/ConfirmationModal";
 import { UserCard } from "./UserManagement/UserCard";
@@ -28,7 +27,6 @@ interface ProfileSectionProps {
 export const ProfileSection: React.FC<ProfileSectionProps> = ({
   setMessage,
 }) => {
-  const [showSection, setShowSection] = useState(true);
   const [loading, setLoading] = useState(false);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [showPasswordChange, setShowPasswordChange] = useState<
@@ -327,56 +325,29 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({
 
   if (!currentUser) {
     return (
-      <div className="config-group full-width">
-        <SectionHeader
-          title="Profile"
-          description="Manage your account settings and security"
-          isExpanded={showSection}
-          onToggle={() => setShowSection(!showSection)}
-        />
-        <div style={{ padding: "2rem", textAlign: "center", color: "#888" }}>
-          Loading...
-        </div>
+      <div style={{ padding: "2rem", textAlign: "center", color: "#888" }}>
+        Loading...
       </div>
     );
   }
 
   return (
-    <div className="config-group full-width" data-section="profile">
-      <SectionHeader
-        title="Profile"
-        description="Manage your account settings and security"
-        isExpanded={showSection}
-        onToggle={() => setShowSection(!showSection)}
+    <div style={{ padding: "1rem 0" }}>
+      <UserCard
+        user={currentUser}
+        currentUser={{ id: currentUser.id, email: currentUser.email, role: currentUser.role }}
+        loading={loading}
+        isFirstUser={true}
+        onResendInvite={() => {}}
+        onDeleteUser={() => {}}
+        onOpenPasswordChange={setShowPasswordChange}
+        onStartMFASetup={handleStartMFASetup}
+        onDisableMFA={handleDisableMFA}
+        onOpenPasskeys={handleLoadPasskeys}
+        onResetMFA={() => {}}
+        onSendPasswordReset={() => {}}
+        onUpdateRole={() => {}}
       />
-
-      <div
-        className={`collapsible-content ${
-          showSection ? "expanded" : "collapsed"
-        }`}
-        style={{
-          maxHeight: showSection ? "10000px" : "0",
-          overflow: showSection ? "visible" : "hidden",
-        }}
-      >
-        <div style={{ padding: "1rem 0" }}>
-          <UserCard
-            user={currentUser}
-            currentUser={{ id: currentUser.id, email: currentUser.email, role: currentUser.role }}
-            loading={loading}
-            isFirstUser={true}
-            onResendInvite={() => {}}
-            onDeleteUser={() => {}}
-            onOpenPasswordChange={setShowPasswordChange}
-            onStartMFASetup={handleStartMFASetup}
-            onDisableMFA={handleDisableMFA}
-            onOpenPasskeys={handleLoadPasskeys}
-            onResetMFA={() => {}}
-            onSendPasswordReset={() => {}}
-            onUpdateRole={() => {}}
-          />
-        </div>
-      </div>
 
       {/* MFA Setup Modal */}
       {mfaSetup && (
