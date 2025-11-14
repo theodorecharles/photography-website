@@ -267,6 +267,7 @@ export const UserCard: React.FC<UserCardProps> = ({
               canEditRole && setShowRoleDropdown(!showRoleDropdown)
             }
             style={{
+              display: "inline-block",
               fontSize: "0.75rem",
               background:
                 user.role === "admin"
@@ -327,7 +328,7 @@ export const UserCard: React.FC<UserCardProps> = ({
                 borderRadius: "8px",
                 boxShadow: "0 4px 12px rgba(0, 0, 0, 0.3)",
                 zIndex: 100001,
-                minWidth: "140px",
+                minWidth: "127px",
                 overflow: "hidden",
               }}
             >
