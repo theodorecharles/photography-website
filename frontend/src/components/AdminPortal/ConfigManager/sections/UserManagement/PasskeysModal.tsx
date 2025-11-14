@@ -152,16 +152,6 @@ export const PasskeysModal: React.FC<PasskeysModalProps> = ({
                 {loading ? "Registering..." : "+ Register"}
               </button>
             </div>
-            <p
-              style={{
-                fontSize: "0.75rem",
-                color: "#9ca3af",
-                margin: "0.5rem 0 0 0",
-              }}
-            >
-              Note: Passkeys require HTTPS (or localhost) and a compatible
-              device
-            </p>
           </div>
         </div>
       </div>

@@ -251,6 +251,7 @@ const SecuritySetupPrompt: React.FC<SecuritySetupPromptProps> = ({
                 }}
               >
                 <button
+                  type="button"
                   onClick={handleDismiss}
                   className="btn-secondary"
                   disabled={loading}
@@ -258,6 +259,7 @@ const SecuritySetupPrompt: React.FC<SecuritySetupPromptProps> = ({
                   Maybe Later
                 </button>
                 <button
+                  type="button"
                   onClick={handleStartMFASetup}
                   className="btn-primary"
                   disabled={loading}
@@ -351,6 +353,7 @@ const SecuritySetupPrompt: React.FC<SecuritySetupPromptProps> = ({
                 }}
               >
                 <button
+                  type="button"
                   onClick={() => setMfaSetup(null)}
                   className="btn-secondary"
                   disabled={loading}
@@ -358,6 +361,7 @@ const SecuritySetupPrompt: React.FC<SecuritySetupPromptProps> = ({
                   Back
                 </button>
                 <button
+                  type="button"
                   onClick={handleCompleteMFASetup}
                   className="btn-primary"
                   disabled={loading || mfaToken.length !== 6}

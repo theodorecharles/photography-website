@@ -83,6 +83,14 @@ export const MFASetupModal: React.FC<MFASetupModalProps> = ({
                       .slice(0, 6)
                   )
                 }
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    if (mfaToken.length === 6) {
+                      onComplete();
+                    }
+                  }
+                }}
                 placeholder="000000"
                 className="branding-input"
                 maxLength={6}
@@ -107,6 +115,7 @@ export const MFASetupModal: React.FC<MFASetupModalProps> = ({
             }}
           >
             <button
+              type="button"
               onClick={onClose}
               className="btn-secondary"
               disabled={loading}
@@ -114,6 +123,7 @@ export const MFASetupModal: React.FC<MFASetupModalProps> = ({
               Cancel
             </button>
             <button
+              type="button"
               onClick={onComplete}
               className="btn-primary"
               disabled={loading || mfaToken.length !== 6}
