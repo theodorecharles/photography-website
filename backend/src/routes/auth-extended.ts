@@ -1183,6 +1183,52 @@ router.delete('/users/:userId', requireAdmin, (req: Request, res: Response) => {
 });
 
 /**
+ * Update user role (Admin only)
+ */
+router.patch('/users/:userId/role', requireAdmin, (req: Request, res: Response) => {
+  try {
+    const userId = parseInt(req.params.userId);
+    const { role } = req.body;
+    const currentUserId = getUserIdFromRequest(req);
+    
+    if (!currentUserId) {
+      return res.status(401).json({ error: 'User not authenticated' });
+    }
+    
+    // Validate role
+    const validRoles = ['admin', 'manager', 'viewer'];
+    if (!role || !validRoles.includes(role)) {
+      return res.status(400).json({ error: 'Invalid role. Must be admin, manager, or viewer' });
+    }
+    
+    // Get target user
+    const targetUser = getUserById(userId);
+    if (!targetUser) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    
+    // Prevent changing your own role
+    if (userId === currentUserId) {
+      return res.status(400).json({ error: 'Cannot change your own role' });
+    }
+    
+    // Update user role
+    updateUser(userId, { role });
+    
+    console.log(`[User Management] User ${targetUser.email} (ID: ${userId}) role changed to ${role} by user ID: ${currentUserId}`);
+    
+    res.json({
+      success: true,
+      message: 'User role updated successfully',
+      role,
+    });
+  } catch (error) {
+    console.error('Update user role error:', error);
+    res.status(500).json({ error: 'Failed to update user role' });
+  }
+});
+
+/**
  * Get user's enabled auth methods
  */
 router.get('/user/methods', requireAuth, (req: Request, res: Response) => {

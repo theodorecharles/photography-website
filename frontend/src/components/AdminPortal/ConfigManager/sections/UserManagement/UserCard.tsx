@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { PasswordInput } from '../../../PasswordInput';
 import { LockIcon } from '../../../../icons';
 import { PasskeysList } from './PasskeysList';
@@ -28,6 +28,7 @@ interface UserCardProps {
   onRemovePasskey: (passkeyId: string) => void;
   onResetMFA: (userId: number) => void;
   onSendPasswordReset: (userId: number) => void;
+  onUpdateRole: (userId: number, role: string) => void;
 }
 
 export const UserCard: React.FC<UserCardProps> = ({
@@ -54,11 +55,36 @@ export const UserCard: React.FC<UserCardProps> = ({
   onRemovePasskey,
   onResetMFA,
   onSendPasswordReset,
+  onUpdateRole,
 }) => {
+  const [showRoleDropdown, setShowRoleDropdown] = useState(false);
+  const roleDropdownRef = useRef<HTMLDivElement>(null);
+
   // Debug: Log current user on first render
   if (isFirstUser) {
     console.log('[UserManagement] Rendering users. CurrentUser:', currentUser);
   }
+
+  // Close role dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (roleDropdownRef.current && !roleDropdownRef.current.contains(event.target as Node)) {
+        setShowRoleDropdown(false);
+      }
+    };
+
+    if (showRoleDropdown) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [showRoleDropdown]);
+
+  const handleRoleChange = (newRole: string) => {
+    onUpdateRole(user.id, newRole);
+    setShowRoleDropdown(false);
+  };
+
+  const canEditRole = currentUser && currentUser.role === 'admin' && user.id !== currentUser.id;
 
   return (
     <div
@@ -224,29 +250,96 @@ export const UserCard: React.FC<UserCardProps> = ({
           marginBottom: '0.75rem',
         }}
       >
-        <span
-          style={{
-            fontSize: '0.75rem',
-            background:
-              user.role === 'admin'
-                ? 'rgba(251, 191, 36, 0.2)'
-                : user.role === 'manager'
-                ? 'rgba(59, 130, 246, 0.2)'
-                : 'rgba(156, 163, 175, 0.2)',
-            color: user.role === 'admin' ? '#fbbf24' : user.role === 'manager' ? '#60a5fa' : '#9ca3af',
-            padding: '0.25rem 0.6rem',
-            borderRadius: '12px',
-            fontWeight: 600,
-            border:
-              user.role === 'admin'
-                ? '1px solid rgba(251, 191, 36, 0.3)'
-                : user.role === 'manager'
-                ? '1px solid rgba(59, 130, 246, 0.3)'
-                : '1px solid rgba(156, 163, 175, 0.3)',
-          }}
-        >
-          {user.role === 'admin' ? '👑 Admin' : user.role === 'manager' ? '📝 Manager' : '👁️ Viewer'}
-        </span>
+        <div style={{ position: 'relative' }} ref={roleDropdownRef}>
+          <span
+            onClick={() => canEditRole && setShowRoleDropdown(!showRoleDropdown)}
+            style={{
+              fontSize: '0.75rem',
+              background:
+                user.role === 'admin'
+                  ? 'rgba(251, 191, 36, 0.2)'
+                  : user.role === 'manager'
+                  ? 'rgba(59, 130, 246, 0.2)'
+                  : 'rgba(156, 163, 175, 0.2)',
+              color: user.role === 'admin' ? '#fbbf24' : user.role === 'manager' ? '#60a5fa' : '#9ca3af',
+              padding: '0.25rem 0.6rem',
+              borderRadius: '12px',
+              fontWeight: 600,
+              border:
+                user.role === 'admin'
+                  ? '1px solid rgba(251, 191, 36, 0.3)'
+                  : user.role === 'manager'
+                  ? '1px solid rgba(59, 130, 246, 0.3)'
+                  : '1px solid rgba(156, 163, 175, 0.3)',
+              cursor: canEditRole ? 'pointer' : 'default',
+              transition: 'all 0.2s',
+            }}
+            onMouseEnter={(e) => {
+              if (canEditRole) {
+                e.currentTarget.style.transform = 'translateY(-1px)';
+                e.currentTarget.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.2)';
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (canEditRole) {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = 'none';
+              }
+            }}
+            title={canEditRole ? 'Click to change role' : undefined}
+          >
+            {user.role === 'admin' ? '👑 Admin' : user.role === 'manager' ? '📝 Manager' : '👁️ Viewer'}
+            {canEditRole && ' ▾'}
+          </span>
+
+          {/* Role Dropdown */}
+          {showRoleDropdown && canEditRole && (
+            <div
+              style={{
+                position: 'absolute',
+                top: 'calc(100% + 4px)',
+                left: 0,
+                background: '#2a2a2a',
+                border: '1px solid #3a3a3a',
+                borderRadius: '8px',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
+                zIndex: 1000,
+                minWidth: '120px',
+                overflow: 'hidden',
+              }}
+            >
+              {['admin', 'manager', 'viewer'].map((role) => (
+                <div
+                  key={role}
+                  onClick={() => handleRoleChange(role)}
+                  style={{
+                    padding: '0.5rem 0.75rem',
+                    cursor: 'pointer',
+                    color: user.role === role ? '#4ade80' : '#e5e7eb',
+                    background: user.role === role ? 'rgba(74, 222, 128, 0.1)' : 'transparent',
+                    transition: 'background 0.2s',
+                  }}
+                  onMouseEnter={(e) => {
+                    if (user.role !== role) {
+                      e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (user.role !== role) {
+                      e.currentTarget.style.background = 'transparent';
+                    }
+                  }}
+                >
+                  {role === 'admin' && '👑 '}
+                  {role === 'manager' && '📝 '}
+                  {role === 'viewer' && '👁️ '}
+                  {role.charAt(0).toUpperCase() + role.slice(1)}
+                  {user.role === role && ' ✓'}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
         {user.auth_methods.map((method) => (
           <span
             key={method}
@@ -355,7 +448,10 @@ export const UserCard: React.FC<UserCardProps> = ({
               {/* Passkeys - Only show for non-Google users */}
               {user.auth_methods.includes('credentials') && !user.auth_methods.includes('google') && (
                 <button
-                  onClick={() => (showPasskeys === user.id ? onShowPasskeys(undefined) : onLoadPasskeys(user.id))}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    showPasskeys === user.id ? onShowPasskeys(undefined) : onLoadPasskeys(user.id);
+                  }}
                   className="btn-secondary"
                   style={{
                     padding: '0.4rem 0.8rem',

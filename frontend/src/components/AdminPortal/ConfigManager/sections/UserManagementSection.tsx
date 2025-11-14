@@ -596,6 +596,19 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
     }
   };
 
+  const handleUpdateRole = async (userId: number, role: string) => {
+    setLoading(true);
+    try {
+      await userManagementAPI.updateUserRole(userId, role);
+      setMessage({ type: "success", text: `User role updated to ${role}` });
+      loadUsers();
+    } catch (err: any) {
+      setMessage({ type: "error", text: err.message });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="config-group full-width" data-section="user-management">
       <SectionHeader
@@ -693,6 +706,7 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
                       onRemovePasskey={handleRemovePasskey}
                       onResetMFA={handleResetMFA}
                       onSendPasswordReset={handleSendPasswordReset}
+                      onUpdateRole={handleUpdateRole}
                     />
                   ))}
                 </div>
