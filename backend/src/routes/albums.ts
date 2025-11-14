@@ -223,6 +223,16 @@ router.get("/api/albums", (req: Request, res) => {
   // Check if user is authenticated (Passport or credentials)
   const isAuthenticated = (req.isAuthenticated && req.isAuthenticated()) || !!(req.session as any)?.userId;
   
+  console.log('[Albums API] Auth check:', {
+    isAuthenticated,
+    hasIsAuthenticatedFunc: !!req.isAuthenticated,
+    isAuthenticatedResult: req.isAuthenticated ? req.isAuthenticated() : false,
+    hasUserId: !!(req.session as any)?.userId,
+    userId: (req.session as any)?.userId,
+    sessionID: req.sessionID,
+    albumCount: allAlbums.length,
+  });
+  
   // Get folders
   const allFolders = isAuthenticated ? getAllFolders() : getPublishedFolders();
   
