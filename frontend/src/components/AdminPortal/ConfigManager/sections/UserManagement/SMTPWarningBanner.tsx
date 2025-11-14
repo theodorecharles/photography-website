@@ -1,7 +1,7 @@
 import React from 'react';
 
 interface SMTPWarningBannerProps {
-  smtpConfigured: boolean;
+  smtpConfigured: boolean | null;
   showNewUserForm: boolean;
   onSetupSmtp: () => void;
   onToggleNewUserForm: () => void;
@@ -13,6 +13,11 @@ export const SMTPWarningBanner: React.FC<SMTPWarningBannerProps> = ({
   onSetupSmtp,
   onToggleNewUserForm,
 }) => {
+  // Don't render anything while checking SMTP config
+  if (smtpConfigured === null) {
+    return null;
+  }
+
   return (
     <div
       style={{

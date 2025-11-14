@@ -43,7 +43,7 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
   } | null>(null);
 
   // SMTP configuration check
-  const [smtpConfigured, setSmtpConfigured] = useState<boolean>(false);
+  const [smtpConfigured, setSmtpConfigured] = useState<boolean | null>(null);
   const [showSmtpWizard, setShowSmtpWizard] = useState<boolean>(false);
 
   // New user form (invitation)
