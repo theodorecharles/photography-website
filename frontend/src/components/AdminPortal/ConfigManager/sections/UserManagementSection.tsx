@@ -4,17 +4,24 @@
  */
 
 import React, { useState, useEffect } from "react";
-import { PasswordInput } from "../../PasswordInput";
-import { LockIcon, TrashIcon } from "../../../icons";
 import SectionHeader from "../components/SectionHeader";
 import SMTPSetupWizard from "../../SMTPSetupWizard";
 import { MFASetupModal } from "./UserManagement/MFASetupModal";
 import { ConfirmationModal } from "./UserManagement/ConfirmationModal";
-
-const API_URL = import.meta.env.VITE_API_URL || "";
+import { NewUserForm } from "./UserManagement/NewUserForm";
+import { UserCard } from "./UserManagement/UserCard";
+import { userManagementAPI } from "./UserManagement/utils";
+import type {
+  User,
+  Passkey,
+  MFASetupData,
+  NewUserState,
+  PasswordChangeState,
+  MessageType,
+} from "./UserManagement/types";
 
 interface UserManagementSectionProps {
-  setMessage: (message: { type: "success" | "error"; text: string }) => void;
+  setMessage: (message: MessageType) => void;
 }
 
 const UserManagementSection: React.FC<UserManagementSectionProps> = ({
@@ -35,19 +42,13 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
 
   // New user form (invitation)
   const [showNewUserForm, setShowNewUserForm] = useState<boolean>(false);
-  const [newUser, setNewUser] = useState({
+  const [newUser, setNewUser] = useState<NewUserState>({
     email: "",
     role: "viewer",
   });
 
   // MFA state
-  const [mfaSetup, setMfaSetup] = useState<{
-    userId: number;
-    qrCode: string;
-    secret: string;
-    backupCodes: string[];
-    setupToken: string;
-  } | null>(null);
+  const [mfaSetup, setMfaSetup] = useState<MFASetupData | null>(null);
   const [mfaToken, setMfaToken] = useState("");
 
   // Passkey state
@@ -61,7 +62,7 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
   const [showPasswordChange, setShowPasswordChange] = useState<
     number | undefined
   >(undefined);
-  const [passwordChange, setPasswordChange] = useState({
+  const [passwordChange, setPasswordChange] = useState<PasswordChangeState>({
     currentPassword: "",
     newPassword: "",
     confirmPassword: "",
@@ -102,25 +103,9 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
 
   const fetchCurrentUser = async () => {
     try {
-      const res = await fetch(`${API_URL}/api/auth/status`, {
-        credentials: "include",
-      });
-      if (res.ok) {
-        const data = await res.json();
-        console.log("[UserManagement] Auth status response:", data);
-        console.log(
-          "[UserManagement] Full user object:",
-          JSON.stringify(data.user, null, 2)
-        );
-        if (data.authenticated && data.user) {
-          const userWithRole = {
-            id: data.user.id,
-            email: data.user.email,
-            role: data.user.role || "viewer",
-          };
-          console.log("[UserManagement] Setting current user:", userWithRole);
-          setCurrentUser(userWithRole);
-        }
+      const user = await userManagementAPI.fetchCurrentUser();
+      if (user) {
+        setCurrentUser(user);
       }
     } catch (err) {
       console.error("Failed to fetch current user:", err);
@@ -130,13 +115,8 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
   const loadUsers = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${API_URL}/api/auth-extended/users`, {
-        credentials: "include",
-      });
-      if (!res.ok) throw new Error("Failed to load users");
-
-      const data = await res.json();
-      setUsers(data.users || []);
+      const users = await userManagementAPI.loadUsers();
+      setUsers(users);
     } catch (err) {
       setMessage({ type: "error", text: "Failed to load users" });
     } finally {
@@ -146,19 +126,8 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
 
   const checkSmtpConfig = async () => {
     try {
-      const res = await fetch(`${API_URL}/api/config`, {
-        credentials: "include",
-      });
-      if (res.ok) {
-        const config = await res.json();
-        const emailConfig = config.email || {};
-        const isConfigured =
-          emailConfig.enabled &&
-          emailConfig.smtp?.host &&
-          emailConfig.smtp?.auth?.user &&
-          emailConfig.smtp?.auth?.pass;
-        setSmtpConfigured(Boolean(isConfigured));
-      }
+      const isConfigured = await userManagementAPI.checkSmtpConfig();
+      setSmtpConfigured(isConfigured);
     } catch (err) {
       console.error("Failed to check SMTP config:", err);
     }
@@ -172,19 +141,7 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
 
     setLoading(true);
     try {
-      const res = await fetch(`${API_URL}/api/auth-extended/invite`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify(newUser),
-      });
-
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error || "Failed to send invitation");
-      }
-
-      const data = await res.json();
+      const data = await userManagementAPI.inviteUser(newUser);
       const message = data.emailSent
         ? "Invitation sent successfully"
         : "User created but email failed to send";
@@ -224,20 +181,7 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
   const performResendInvite = async (userId: number) => {
     setLoading(true);
     try {
-      const res = await fetch(
-        `${API_URL}/api/auth-extended/invite/resend/${userId}`,
-        {
-          method: "POST",
-          credentials: "include",
-        }
-      );
-
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error || "Failed to resend invitation");
-      }
-
-      const data = await res.json();
+      const data = await userManagementAPI.resendInvite(userId);
       const message = data.emailSent
         ? "Invitation resent successfully"
         : "Invitation updated but email failed to send";
@@ -728,60 +672,13 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
 
           {/* New User Form (Invitation) */}
           {showNewUserForm && (
-            <>
-              <div className="branding-group">
-                <label className="branding-label">Email *</label>
-                <input
-                  type="email"
-                  value={newUser.email}
-                  onChange={(e) =>
-                    setNewUser({ ...newUser, email: e.target.value })
-                  }
-                  className="branding-input"
-                  placeholder="user@example.com"
-                />
-                <p
-                  style={{
-                    fontSize: "0.85rem",
-                    color: "#9ca3af",
-                    margin: "0.5rem 0 0 0",
-                  }}
-                >
-                  An invitation email will be sent to this address. The user
-                  will set up their name, password, and MFA.
-                </p>
-              </div>
-              <div className="branding-group">
-                <label className="branding-label">Role *</label>
-                <select
-                  value={newUser.role}
-                  onChange={(e) =>
-                    setNewUser({ ...newUser, role: e.target.value })
-                  }
-                  className="branding-input"
-                >
-                  <option value="viewer">Viewer</option>
-                  <option value="manager">Manager</option>
-                  <option value="admin">Admin</option>
-                </select>
-              </div>
-              <div className="section-button-group">
-                <button
-                  onClick={() => setShowNewUserForm(false)}
-                  className="btn-secondary"
-                  disabled={loading}
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleInviteUser}
-                  className="btn-primary"
-                  disabled={loading}
-                >
-                  {loading ? "Sending..." : "Send Invitation"}
-                </button>
-              </div>
-            </>
+            <NewUserForm
+              newUser={newUser}
+              loading={loading}
+              onChange={setNewUser}
+              onCancel={() => setShowNewUserForm(false)}
+              onSubmit={handleInviteUser}
+            />
           )}
 
           {/* Users List */}
@@ -815,685 +712,34 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
                     gap: "1rem",
                   }}
                 >
-                  {users.map((user) => {
-                    // Debug: Check currentUser when rendering each user card
-                    if (user.id === users[0].id) {
-                      // Only log once for first user
-                      console.log(
-                        "[UserManagement] Rendering users. CurrentUser:",
-                        currentUser
-                      );
-                    }
-                    return (
-                      <div
-                        key={user.id}
-                        style={{
-                          background:
-                            "linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%)",
-                          border: "1px solid rgba(255, 255, 255, 0.1)",
-                          borderRadius: "8px",
-                          padding: "1.25rem",
-                          opacity: user.is_active ? 1 : 0.6,
-                          transition: "border-color 0.2s, transform 0.2s",
-                        }}
-                        onMouseEnter={(e) => {
-                          if (user.is_active) {
-                            e.currentTarget.style.borderColor =
-                              "rgba(74, 222, 128, 0.3)";
-                            e.currentTarget.style.transform =
-                              "translateY(-1px)";
-                          }
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.borderColor =
-                            "rgba(255, 255, 255, 0.1)";
-                          e.currentTarget.style.transform = "translateY(0)";
-                        }}
-                      >
-                        <div
-                          style={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                            alignItems: "flex-start",
-                            marginBottom: "0.75rem",
-                          }}
-                        >
-                          <div style={{ flex: 1 }}>
-                            <h4
-                              style={{
-                                margin: 0,
-                                display: "flex",
-                                alignItems: "center",
-                                gap: "0.5rem",
-                                flexWrap: "wrap",
-                                color: "#ffffff",
-                              }}
-                            >
-                              {user.name || user.email}
-                              {currentUser && user.id === currentUser.id && (
-                                <span
-                                  style={{
-                                    fontSize: "0.75rem",
-                                    background: "var(--primary-color)",
-                                    color: "#1a1a1a",
-                                    padding: "0.25rem 0.6rem",
-                                    borderRadius: "12px",
-                                    fontWeight: 600,
-                                  }}
-                                >
-                                  You
-                                </span>
-                              )}
-                              {user.status === "invited" && (
-                                <span
-                                  style={{
-                                    fontSize: "0.75rem",
-                                    background: "rgba(59, 130, 246, 0.2)",
-                                    color: "#60a5fa",
-                                    padding: "0.25rem 0.6rem",
-                                    borderRadius: "12px",
-                                    fontWeight: 600,
-                                    border: "1px solid rgba(59, 130, 246, 0.3)",
-                                  }}
-                                >
-                                  ✉️ Invited
-                                </span>
-                              )}
-                              {user.status === "invite_expired" && (
-                                <span
-                                  style={{
-                                    fontSize: "0.75rem",
-                                    background: "rgba(239, 68, 68, 0.2)",
-                                    color: "#f87171",
-                                    padding: "0.25rem 0.6rem",
-                                    borderRadius: "12px",
-                                    fontWeight: 600,
-                                    border: "1px solid rgba(239, 68, 68, 0.3)",
-                                  }}
-                                >
-                                  ⏱️ Invite Expired
-                                </span>
-                              )}
-                            </h4>
-                            <div
-                              style={{
-                                fontSize: "0.85rem",
-                                color: "#9ca3af",
-                                marginTop: "0.25rem",
-                              }}
-                            >
-                              {user.email}
-                            </div>
-                          </div>
-                          <div
-                            style={{
-                              display: "flex",
-                              gap: "0.5rem",
-                              flexShrink: 0,
-                            }}
-                          >
-                            {/* Admin-only actions: Resend Invite and Delete */}
-                            {currentUser && currentUser.role === "admin" && (
-                              <>
-                                {user.status === "invite_expired" && (
-                                  <button
-                                    onClick={() => handleResendInvite(user.id)}
-                                    className="btn-primary"
-                                    style={{
-                                      padding: "0.4rem 0.8rem",
-                                      fontSize: "0.85rem",
-                                    }}
-                                    disabled={loading}
-                                    title="Resend invitation email"
-                                  >
-                                    Resend Invite
-                                  </button>
-                                )}
-                                <button
-                                  onClick={() => handleDeleteUser(user.id)}
-                                  className="btn-secondary"
-                                  style={{
-                                    padding: "0.4rem 0.8rem",
-                                    fontSize: "0.85rem",
-                                    background: "rgba(239, 68, 68, 0.2)",
-                                    borderColor: "rgba(239, 68, 68, 0.3)",
-                                    color: "#ef4444",
-                                    opacity:
-                                      loading ||
-                                      Boolean(
-                                        currentUser &&
-                                          user.id === currentUser.id
-                                      )
-                                        ? 0.4
-                                        : 1,
-                                    cursor:
-                                      loading ||
-                                      Boolean(
-                                        currentUser &&
-                                          user.id === currentUser.id
-                                      )
-                                        ? "not-allowed"
-                                        : "pointer",
-                                  }}
-                                  disabled={
-                                    loading ||
-                                    Boolean(
-                                      currentUser && user.id === currentUser.id
-                                    )
-                                  }
-                                  title={
-                                    currentUser && user.id === currentUser.id
-                                      ? "Cannot delete your own account"
-                                      : "Delete user"
-                                  }
-                                  onMouseEnter={(e) => {
-                                    if (
-                                      !(
-                                        currentUser &&
-                                        user.id === currentUser.id
-                                      ) &&
-                                      !loading
-                                    ) {
-                                      e.currentTarget.style.background =
-                                        "rgba(239, 68, 68, 0.3)";
-                                      e.currentTarget.style.borderColor =
-                                        "rgba(239, 68, 68, 0.4)";
-                                    }
-                                  }}
-                                  onMouseLeave={(e) => {
-                                    if (
-                                      !(
-                                        currentUser &&
-                                        user.id === currentUser.id
-                                      ) &&
-                                      !loading
-                                    ) {
-                                      e.currentTarget.style.background =
-                                        "rgba(239, 68, 68, 0.2)";
-                                      e.currentTarget.style.borderColor =
-                                        "rgba(239, 68, 68, 0.3)";
-                                    }
-                                  }}
-                                >
-                                  Delete
-                                </button>
-                              </>
-                            )}
-                          </div>
-                        </div>
-
-                        {/* Role & Auth Methods */}
-                        <div
-                          style={{
-                            display: "flex",
-                            flexWrap: "wrap",
-                            gap: "0.5rem",
-                            marginBottom: "0.75rem",
-                          }}
-                        >
-                          <span
-                            style={{
-                              fontSize: "0.75rem",
-                              background:
-                                user.role === "admin"
-                                  ? "rgba(251, 191, 36, 0.2)"
-                                  : user.role === "manager"
-                                  ? "rgba(59, 130, 246, 0.2)"
-                                  : "rgba(156, 163, 175, 0.2)",
-                              color:
-                                user.role === "admin"
-                                  ? "#fbbf24"
-                                  : user.role === "manager"
-                                  ? "#60a5fa"
-                                  : "#9ca3af",
-                              padding: "0.25rem 0.6rem",
-                              borderRadius: "12px",
-                              fontWeight: 600,
-                              border:
-                                user.role === "admin"
-                                  ? "1px solid rgba(251, 191, 36, 0.3)"
-                                  : user.role === "manager"
-                                  ? "1px solid rgba(59, 130, 246, 0.3)"
-                                  : "1px solid rgba(156, 163, 175, 0.3)",
-                            }}
-                          >
-                            {user.role === "admin"
-                              ? "👑 Admin"
-                              : user.role === "manager"
-                              ? "📝 Manager"
-                              : "👁️ Viewer"}
-                          </span>
-                          {user.auth_methods.map((method) => (
-                            <span
-                              key={method}
-                              style={{
-                                fontSize: "0.75rem",
-                                background: "rgba(139, 92, 246, 0.2)",
-                                color: "#a78bfa",
-                                padding: "0.25rem 0.6rem",
-                                borderRadius: "12px",
-                                border: "1px solid rgba(139, 92, 246, 0.3)",
-                              }}
-                            >
-                              {method === "google"
-                                ? "🔵 Google"
-                                : method === "credentials"
-                                ? "🔒 Password"
-                                : method === "passkey"
-                                ? "🔑 Passkey"
-                                : method}
-                            </span>
-                          ))}
-                          {user.mfa_enabled && (
-                            <span
-                              style={{
-                                fontSize: "0.75rem",
-                                background: "rgba(74, 222, 128, 0.2)",
-                                color: "var(--primary-color)",
-                                padding: "0.25rem 0.6rem",
-                                borderRadius: "12px",
-                                border: "1px solid rgba(74, 222, 128, 0.3)",
-                              }}
-                            >
-                              ✓ MFA Enabled
-                            </span>
-                          )}
-                        </div>
-
-                        {/* User Actions */}
-                        {currentUser &&
-                          user.status !== "invited" &&
-                          user.status !== "invite_expired" && (
-                            <div
-                              style={{
-                                display: "flex",
-                                flexWrap: "wrap",
-                                gap: "0.5rem",
-                                paddingTop: "0.75rem",
-                                borderTop: "1px solid rgba(255, 255, 255, 0.1)",
-                              }}
-                            >
-                              {/* Own Account Actions */}
-                              {user.id === currentUser.id && (
-                                <>
-                                  {/* Change Password */}
-                                  {user.auth_methods.includes("credentials") &&
-                                    showPasswordChange !== user.id && (
-                                      <button
-                                        onClick={() =>
-                                          setShowPasswordChange(user.id)
-                                        }
-                                        className="btn-secondary"
-                                        style={{
-                                          padding: "0.4rem 0.8rem",
-                                          fontSize: "0.85rem",
-                                        }}
-                                      >
-                                        <LockIcon width={14} height={14} />
-                                        Change Password
-                                      </button>
-                                    )}
-
-                                  {/* MFA Toggle - Only show for non-Google users */}
-                                  {user.auth_methods.includes("credentials") &&
-                                    !user.auth_methods.includes("google") && (
-                                      <>
-                                        {!user.mfa_enabled ? (
-                                          <button
-                                            onClick={() =>
-                                              handleStartMFASetup(user.id)
-                                            }
-                                            className="btn-primary"
-                                            style={{
-                                              padding: "0.4rem 0.8rem",
-                                              fontSize: "0.85rem",
-                                            }}
-                                            disabled={loading}
-                                          >
-                                            Enable MFA
-                                          </button>
-                                        ) : (
-                                          <button
-                                            onClick={() =>
-                                              handleDisableMFA(user.id)
-                                            }
-                                            className="btn-secondary"
-                                            style={{
-                                              padding: "0.4rem 0.8rem",
-                                              fontSize: "0.85rem",
-                                            }}
-                                            disabled={loading}
-                                          >
-                                            Disable MFA
-                                          </button>
-                                        )}
-                                      </>
-                                    )}
-
-                                  {/* Passkeys - Only show for non-Google users */}
-                                  {user.auth_methods.includes("credentials") &&
-                                    !user.auth_methods.includes("google") && (
-                                      <button
-                                        onClick={() =>
-                                          showPasskeys === user.id
-                                            ? setShowPasskeys(undefined)
-                                            : handleLoadPasskeys(user.id)
-                                        }
-                                        className="btn-secondary"
-                                        style={{
-                                          padding: "0.4rem 0.8rem",
-                                          fontSize: "0.85rem",
-                                        }}
-                                        disabled={loading}
-                                      >
-                                        🔑 Passkeys ({user.passkey_count})
-                                      </button>
-                                    )}
-                                </>
-                              )}
-
-                              {/* Admin Actions for Other Users */}
-                              {user.id !== currentUser.id && (
-                                <>
-                                  {/* Reset MFA button - only for users with MFA enabled */}
-                                  {user.mfa_enabled && (
-                                    <button
-                                      onClick={() => handleResetMFA(user.id)}
-                                      className="btn-secondary"
-                                      style={{
-                                        padding: "0.4rem 0.8rem",
-                                        fontSize: "0.85rem",
-                                        background: "#fbbf24",
-                                        borderColor: "#f59e0b",
-                                      }}
-                                      disabled={loading}
-                                      title="Disable MFA for this user"
-                                      onMouseEnter={(e) => {
-                                        if (!loading) {
-                                          e.currentTarget.style.background =
-                                            "#f59e0b";
-                                        }
-                                      }}
-                                      onMouseLeave={(e) => {
-                                        e.currentTarget.style.background =
-                                          "#fbbf24";
-                                      }}
-                                    >
-                                      Reset MFA
-                                    </button>
-                                  )}
-
-                                  {/* Send Password Reset button - only for users with credentials auth */}
-                                  {user.auth_methods.includes(
-                                    "credentials"
-                                  ) && (
-                                    <button
-                                      onClick={() =>
-                                        handleSendPasswordReset(user.id)
-                                      }
-                                      className="btn-secondary"
-                                      style={{
-                                        padding: "0.4rem 0.8rem",
-                                        fontSize: "0.85rem",
-                                      }}
-                                      disabled={loading}
-                                      title="Send password reset email to this user"
-                                    >
-                                      Send Password Reset
-                                    </button>
-                                  )}
-                                </>
-                              )}
-                            </div>
-                          )}
-
-                        {/* Password Change Form */}
-                        {showPasswordChange === user.id && (
-                          <div
-                            style={{
-                              marginTop: "1rem",
-                              padding: "1rem",
-                              background: "rgba(255, 255, 255, 0.03)",
-                              border: "1px solid rgba(255, 255, 255, 0.1)",
-                              borderRadius: "6px",
-                            }}
-                          >
-                            <h5 style={{ margin: "0 0 0.75rem 0" }}>
-                              Change Password
-                            </h5>
-                            <div style={{ display: "grid", gap: "0.75rem" }}>
-                              <div className="branding-group">
-                                <label className="branding-label">
-                                  Current Password
-                                </label>
-                                <PasswordInput
-                                  value={passwordChange.currentPassword}
-                                  onChange={(e) =>
-                                    setPasswordChange({
-                                      ...passwordChange,
-                                      currentPassword: e.target.value,
-                                    })
-                                  }
-                                />
-                              </div>
-                              <div className="branding-group">
-                                <label className="branding-label">
-                                  New Password
-                                </label>
-                                <PasswordInput
-                                  value={passwordChange.newPassword}
-                                  onChange={(e) =>
-                                    setPasswordChange({
-                                      ...passwordChange,
-                                      newPassword: e.target.value,
-                                    })
-                                  }
-                                />
-                              </div>
-                              <div className="branding-group">
-                                <label className="branding-label">
-                                  Confirm New Password
-                                </label>
-                                <PasswordInput
-                                  value={passwordChange.confirmPassword}
-                                  onChange={(e) =>
-                                    setPasswordChange({
-                                      ...passwordChange,
-                                      confirmPassword: e.target.value,
-                                    })
-                                  }
-                                />
-                              </div>
-                              <div
-                                style={{
-                                  display: "flex",
-                                  gap: "0.5rem",
-                                  justifyContent: "flex-end",
-                                }}
-                              >
-                                <button
-                                  onClick={() => {
-                                    setShowPasswordChange(undefined);
-                                    setPasswordChange({
-                                      currentPassword: "",
-                                      newPassword: "",
-                                      confirmPassword: "",
-                                    });
-                                  }}
-                                  className="btn-secondary"
-                                  style={{
-                                    padding: "0.4rem 0.8rem",
-                                    fontSize: "0.85rem",
-                                  }}
-                                >
-                                  Cancel
-                                </button>
-                                <button
-                                  onClick={() => handleChangePassword(user.id)}
-                                  className="btn-primary"
-                                  style={{
-                                    padding: "0.4rem 0.8rem",
-                                    fontSize: "0.85rem",
-                                  }}
-                                  disabled={loading}
-                                >
-                                  {loading ? "Changing..." : "Change Password"}
-                                </button>
-                              </div>
-                            </div>
-                          </div>
-                        )}
-
-                        {/* Passkeys List */}
-                        {showPasskeys === user.id && (
-                          <div
-                            style={{
-                              marginTop: "1rem",
-                              padding: "1rem",
-                              background: "rgba(255, 255, 255, 0.03)",
-                              border: "1px solid rgba(255, 255, 255, 0.1)",
-                              borderRadius: "6px",
-                            }}
-                          >
-                            <div
-                              style={{
-                                display: "flex",
-                                justifyContent: "space-between",
-                                alignItems: "center",
-                                marginBottom: "0.75rem",
-                              }}
-                            >
-                              <h5 style={{ margin: 0 }}>Registered Passkeys</h5>
-                              <button
-                                onClick={() => setShowPasskeys(undefined)}
-                                style={{
-                                  background: "none",
-                                  border: "none",
-                                  fontSize: "1.5rem",
-                                  cursor: "pointer",
-                                  color: "#9ca3af",
-                                }}
-                              >
-                                ×
-                              </button>
-                            </div>
-
-                            {passkeys.length === 0 ? (
-                              <p
-                                style={{
-                                  color: "#9ca3af",
-                                  fontSize: "0.85rem",
-                                  margin: "0.5rem 0",
-                                }}
-                              >
-                                No passkeys registered yet
-                              </p>
-                            ) : (
-                              <div
-                                style={{
-                                  display: "flex",
-                                  flexDirection: "column",
-                                  gap: "0.5rem",
-                                  marginBottom: "1rem",
-                                }}
-                              >
-                                {passkeys.map((passkey) => (
-                                  <div
-                                    key={passkey.id}
-                                    style={{
-                                      display: "flex",
-                                      justifyContent: "space-between",
-                                      alignItems: "center",
-                                      padding: "0.75rem",
-                                      background: "#1e1e1e",
-                                      borderRadius: "6px",
-                                      border: "1px solid #3a3a3a",
-                                    }}
-                                  >
-                                    <div>
-                                      <div
-                                        style={{
-                                          fontWeight: 500,
-                                          fontSize: "0.9rem",
-                                          color: "#e5e7eb",
-                                        }}
-                                      >
-                                        {passkey.name}
-                                      </div>
-                                      <div
-                                        style={{
-                                          fontSize: "0.75rem",
-                                          color: "#9ca3af",
-                                        }}
-                                      >
-                                        Added{" "}
-                                        {new Date(
-                                          passkey.created_at
-                                        ).toLocaleDateString()}
-                                      </div>
-                                    </div>
-                                    <button
-                                      onClick={() =>
-                                        handleRemovePasskey(passkey.id)
-                                      }
-                                      className="btn-secondary"
-                                      style={{
-                                        padding: "0.3rem 0.6rem",
-                                        fontSize: "0.8rem",
-                                      }}
-                                      disabled={loading}
-                                    >
-                                      <TrashIcon width={12} height={12} />
-                                    </button>
-                                  </div>
-                                ))}
-                              </div>
-                            )}
-
-                            {/* Register New Passkey */}
-                            <div
-                              style={{
-                                borderTop: "1px solid rgba(255, 255, 255, 0.1)",
-                                paddingTop: "0.75rem",
-                                marginTop: "0.75rem",
-                              }}
-                            >
-                              <div style={{ display: "flex", gap: "0.5rem" }}>
-                                <input
-                                  type="text"
-                                  value={passkeyName}
-                                  onChange={(e) =>
-                                    setPasskeyName(e.target.value)
-                                  }
-                                  placeholder="Passkey name (e.g., MacBook Touch ID)"
-                                  className="branding-input"
-                                  style={{ flex: 1 }}
-                                />
-                                <button
-                                  onClick={() => handleRegisterPasskey(user.id)}
-                                  className="btn-primary"
-                                  style={{ padding: "0.5rem 1rem" }}
-                                  disabled={loading || !passkeyName.trim()}
-                                >
-                                  {loading ? "Registering..." : "+ Register"}
-                                </button>
-                              </div>
-                              <p
-                                style={{
-                                  fontSize: "0.75rem",
-                                  color: "#9ca3af",
-                                  margin: "0.5rem 0 0 0",
-                                }}
-                              >
-                                Note: Passkeys require HTTPS (or localhost) and
-                                a compatible device
-                              </p>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
+                  {users.map((user, index) => (
+                    <UserCard
+                      key={user.id}
+                      user={user}
+                      currentUser={currentUser}
+                      loading={loading}
+                      showPasswordChange={showPasswordChange}
+                      passwordChange={passwordChange}
+                      showPasskeys={showPasskeys}
+                      passkeys={passkeys}
+                      passkeyName={passkeyName}
+                      isFirstUser={index === 0}
+                      onResendInvite={handleResendInvite}
+                      onDeleteUser={handleDeleteUser}
+                      onShowPasswordChange={setShowPasswordChange}
+                      onPasswordChangeUpdate={setPasswordChange}
+                      onChangePassword={handleChangePassword}
+                      onStartMFASetup={handleStartMFASetup}
+                      onDisableMFA={handleDisableMFA}
+                      onShowPasskeys={setShowPasskeys}
+                      onLoadPasskeys={handleLoadPasskeys}
+                      onPasskeyNameChange={setPasskeyName}
+                      onRegisterPasskey={handleRegisterPasskey}
+                      onRemovePasskey={handleRemovePasskey}
+                      onResetMFA={handleResetMFA}
+                      onSendPasswordReset={handleSendPasswordReset}
+                    />
+                  ))}
                 </div>
               )}
             </div>
