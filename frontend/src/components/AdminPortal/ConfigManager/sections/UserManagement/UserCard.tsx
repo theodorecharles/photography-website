@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import type { User } from "./types";
+import { getGravatarUrl } from "./utils";
 
 interface UserCardProps {
   user: User;
@@ -110,6 +111,16 @@ export const UserCard: React.FC<UserCardProps> = ({
               color: "#ffffff",
             }}
           >
+            <img
+              src={getGravatarUrl(user.email, 40)}
+              alt={`${user.name || user.email}'s avatar`}
+              style={{
+                width: "40px",
+                height: "40px",
+                borderRadius: "50%",
+                border: "2px solid rgba(255, 255, 255, 0.2)",
+              }}
+            />
             {user.name || user.email}
             {currentUser && user.id === currentUser.id && (
               <span
