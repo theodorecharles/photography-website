@@ -70,11 +70,12 @@ function Navigation({
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isExternalOpen, setIsExternalOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userRole, setUserRole] = useState<string | null>(null);
   const [openFolderId, setOpenFolderId] = useState<number | null>(null);
   const location = useLocation();
   const navigate = useNavigate();
   
-  // Check if user is authenticated
+  // Check if user is authenticated and get their role
   useEffect(() => {
     const checkAuth = async () => {
       try {
@@ -84,11 +85,14 @@ function Navigation({
         if (res.ok) {
           const data = await res.json();
           setIsAuthenticated(data.authenticated === true);
+          setUserRole(data.user?.role || null);
         } else {
           setIsAuthenticated(false);
+          setUserRole(null);
         }
       } catch {
         setIsAuthenticated(false);
+        setUserRole(null);
       }
     };
     checkAuth();
@@ -231,8 +235,8 @@ function Navigation({
           <h1 className="album-title">
             {currentAlbum}
           </h1>
-          {/* Edit Album button - only shown when authenticated and on an album page */}
-          {isAuthenticated && currentAlbum !== 'homepage' && (
+          {/* Edit Album button - only shown for admins and managers */}
+          {isAuthenticated && (userRole === 'admin' || userRole === 'manager') && currentAlbum !== 'homepage' && (
             <button
               onClick={() => {
                 navigate(`/admin/albums?album=${encodeURIComponent(currentAlbum)}`);
@@ -444,8 +448,8 @@ function Navigation({
             </div>
           </div>
           
-          {/* Edit Links button - only shown when authenticated */}
-          {isAuthenticated && (
+          {/* Edit Links button - only shown for admins (links are in settings) */}
+          {isAuthenticated && userRole === 'admin' && (
             <Link
               to="/admin/settings?section=links"
               className="edit-album-btn"
