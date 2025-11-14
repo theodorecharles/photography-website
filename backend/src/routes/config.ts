@@ -18,7 +18,7 @@ const router = express.Router();
 // Apply CSRF protection to all routes
 router.use(csrfProtection);
 
-import { DATA_DIR } from '../config.js';
+import { DATA_DIR, reloadConfig } from '../config.js';
 
 const CONFIG_PATH = path.join(DATA_DIR, 'config.json');
 
@@ -109,6 +109,9 @@ router.put('/', requireAdmin, express.json(), (req, res) => {
       JSON.stringify(updatedConfig, null, 2),
       'utf8'
     );
+    
+    // Reload configuration cache so changes take effect immediately
+    reloadConfig();
     
     console.log('✓ Configuration updated by:', req.user);
     

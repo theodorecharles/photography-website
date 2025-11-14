@@ -77,6 +77,26 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
     confirmPassword: '',
   });
 
+  // Confirmation modal state
+  const [confirmModal, setConfirmModal] = useState<{
+    show: boolean;
+    title: string;
+    message: string;
+    confirmText: string;
+    onConfirm: (password?: string) => void;
+    isDangerous?: boolean;
+    requirePassword?: boolean;
+  }>({
+    show: false,
+    title: '',
+    message: '',
+    confirmText: 'Confirm',
+    onConfirm: () => {},
+    isDangerous: false,
+    requirePassword: false,
+  });
+  const [confirmPassword, setConfirmPassword] = useState('');
+
   // Get current user info
   useEffect(() => {
     fetchCurrentUser();
@@ -184,10 +204,20 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
   };
 
   const handleResendInvite = async (userId: number) => {
-    if (!confirm('Resend invitation email to this user?')) {
-      return;
-    }
+    setConfirmModal({
+      show: true,
+      title: 'Resend Invitation',
+      message: 'Resend invitation email to this user?',
+      confirmText: 'Resend',
+      isDangerous: false,
+      onConfirm: () => {
+        setConfirmModal({ ...confirmModal, show: false });
+        performResendInvite(userId);
+      },
+    });
+  };
 
+  const performResendInvite = async (userId: number) => {
     setLoading(true);
     try {
       const res = await fetch(`${API_URL}/api/auth-extended/invite/resend/${userId}`, {
@@ -219,10 +249,20 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
   };
 
   const handleResetMFA = async (userId: number) => {
-    if (!confirm('This will disable MFA for this user and send them a password reset email. Continue?')) {
-      return;
-    }
+    setConfirmModal({
+      show: true,
+      title: 'Reset MFA',
+      message: 'This will disable MFA for this user and send them a password reset email. Continue?',
+      confirmText: 'Reset MFA',
+      isDangerous: true,
+      onConfirm: () => {
+        setConfirmModal({ ...confirmModal, show: false });
+        performResetMFA(userId);
+      },
+    });
+  };
 
+  const performResetMFA = async (userId: number) => {
     setLoading(true);
     try {
       const res = await fetch(`${API_URL}/api/auth-extended/users/${userId}/reset-mfa`, {
@@ -256,10 +296,20 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
       return;
     }
 
-    if (!confirm('Are you sure you want to permanently delete this user? This action cannot be undone.')) {
-      return;
-    }
+    setConfirmModal({
+      show: true,
+      title: 'Delete User',
+      message: 'Are you sure you want to permanently delete this user? This action cannot be undone.',
+      confirmText: 'Delete User',
+      isDangerous: true,
+      onConfirm: () => {
+        setConfirmModal({ ...confirmModal, show: false });
+        performDeleteUser(userId);
+      },
+    });
+  };
 
+  const performDeleteUser = async (userId: number) => {
     setLoading(true);
     try {
       const res = await fetch(`${API_URL}/api/auth-extended/users/${userId}`, {
@@ -340,13 +390,23 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
   };
 
   const handleDisableMFA = async (_userId: number): Promise<void> => {
-    if (!confirm('Are you sure you want to disable MFA? This will make the account less secure.')) {
-      return;
-    }
+    setConfirmModal({
+      show: true,
+      title: 'Disable MFA',
+      message: 'Are you sure you want to disable MFA? This will make the account less secure.',
+      confirmText: 'Disable MFA',
+      isDangerous: true,
+      requirePassword: true,
+      onConfirm: (password) => {
+        if (!password) return;
+        setConfirmModal({ ...confirmModal, show: false });
+        setConfirmPassword('');
+        performDisableMFA(password);
+      },
+    });
+  };
 
-    const password = prompt('Enter your password to confirm:');
-    if (!password) return;
-
+  const performDisableMFA = async (password: string): Promise<void> => {
     setLoading(true);
     try {
       const res = await fetch(`${API_URL}/api/auth-extended/mfa/disable`, {
@@ -434,10 +494,20 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
   };
 
   const handleRemovePasskey = async (passkeyId: string) => {
-    if (!confirm('Are you sure you want to remove this passkey?')) {
-      return;
-    }
+    setConfirmModal({
+      show: true,
+      title: 'Remove Passkey',
+      message: 'Are you sure you want to remove this passkey?',
+      confirmText: 'Remove',
+      isDangerous: true,
+      onConfirm: () => {
+        setConfirmModal({ ...confirmModal, show: false });
+        performRemovePasskey(passkeyId);
+      },
+    });
+  };
 
+  const performRemovePasskey = async (passkeyId: string) => {
     setLoading(true);
     try {
       const res = await fetch(`${API_URL}/api/auth-extended/passkey/${passkeyId}`, {
@@ -1034,11 +1104,79 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
               onClose={() => setShowSmtpWizard(false)}
               onComplete={() => {
                 setShowSmtpWizard(false);
-                checkSmtpConfig(); // Refresh SMTP status
+                // Wait a moment for config to be written, then refresh
+                setTimeout(() => {
+                  checkSmtpConfig();
+                }, 500);
                 setMessage({ type: 'success', text: 'SMTP configured! You can now invite users.' });
               }}
               setMessage={setMessage}
             />
+          )}
+
+          {/* Confirmation Modal */}
+          {confirmModal.show && (
+            <div className="modal-overlay" onClick={() => setConfirmModal({ ...confirmModal, show: false })}>
+              <div className="share-modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '500px' }}>
+                <div className="share-modal-header">
+                  <h2>{confirmModal.title}</h2>
+                  <button 
+                    className="close-button" 
+                    onClick={() => {
+                      setConfirmModal({ ...confirmModal, show: false });
+                      setConfirmPassword('');
+                    }}
+                    aria-label="Close"
+                  >
+                    ×
+                  </button>
+                </div>
+                <div className="share-modal-content">
+                  <p className="share-description">
+                    {confirmModal.message}
+                  </p>
+
+                  {confirmModal.requirePassword && (
+                    <div style={{ marginBottom: '1.5rem' }}>
+                      <label className="branding-label">Password</label>
+                      <PasswordInput
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        placeholder="Enter your password to confirm"
+                        required
+                      />
+                    </div>
+                  )}
+
+                  <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', paddingTop: '1rem', borderTop: '1px solid #3a3a3a' }}>
+                    <button
+                      onClick={() => {
+                        setConfirmModal({ ...confirmModal, show: false });
+                        setConfirmPassword('');
+                      }}
+                      className="btn-secondary"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={() => {
+                        confirmModal.onConfirm(confirmPassword || undefined);
+                        setConfirmPassword('');
+                      }}
+                      className={confirmModal.isDangerous ? 'btn-secondary' : 'btn-primary'}
+                      style={confirmModal.isDangerous ? {
+                        background: 'rgba(239, 68, 68, 0.2)',
+                        borderColor: 'rgba(239, 68, 68, 0.3)',
+                        color: '#ef4444'
+                      } : {}}
+                      disabled={confirmModal.requirePassword && !confirmPassword}
+                    >
+                      {confirmModal.confirmText}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
           )}
         </div>
       </div>
