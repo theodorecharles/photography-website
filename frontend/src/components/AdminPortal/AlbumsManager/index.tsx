@@ -410,6 +410,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
             onAlbumDragLeave={(e) => dragDropHandlers.handleAlbumTileDragLeave(e)}
             onAlbumDrop={dragDropHandlers.handleAlbumTileDrop}
             onCreateAlbumInFolder={uiHandlers.handleCreateAlbumInFolder}
+            canEdit={canEdit}
           />
           
           <UncategorizedSection
@@ -432,6 +433,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
             onGhostTileDragLeave={uiHandlers.handleGhostTileDragLeave}
             onGhostTileDrop={uiHandlers.handleGhostTileDrop}
             onGhostTileFileSelect={uiHandlers.handleGhostTileFileSelect}
+            canEdit={canEdit}
           />
           
           
@@ -516,6 +518,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
               onDrop={uploadHandlers.handleDrop}
               setActiveId={setActiveId}
               shuffleButtonRef={shuffleButtonRef}
+              canEdit={canEdit}
             />
           )}
       </section>

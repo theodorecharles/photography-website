@@ -29,6 +29,7 @@ interface UncategorizedSectionProps {
   onGhostTileDragLeave: (e: React.DragEvent) => void;
   onGhostTileDrop: (e: React.DragEvent) => void;
   onGhostTileFileSelect: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  canEdit: boolean;
 }
 
 const UncategorizedSection: React.FC<UncategorizedSectionProps> = ({
@@ -51,6 +52,7 @@ const UncategorizedSection: React.FC<UncategorizedSectionProps> = ({
   onGhostTileDragLeave,
   onGhostTileDrop,
   onGhostTileFileSelect,
+  canEdit,
 }) => {
   const uncategorizedAlbums = localAlbums.filter(album => !album.folder_id);
 
@@ -96,6 +98,7 @@ const UncategorizedSection: React.FC<UncategorizedSectionProps> = ({
                     onDragOver={(e) => onAlbumDragOver(e, album.name)}
                     onDragLeave={onAlbumDragLeave}
                     onDrop={(e) => onAlbumDrop(e, album.name)}
+                    canEdit={canEdit}
                   />
                 </React.Fragment>
               ))}
@@ -111,32 +114,34 @@ const UncategorizedSection: React.FC<UncategorizedSectionProps> = ({
                 />
               )}
               
-              {/* Ghost tile for creating new albums */}
-              <div 
-                className={`album-card ghost-album-tile ${isGhostAlbumDragOver ? 'drag-over-ghost' : ''} ${uploadingImages.length > 0 ? 'ghost-tile-disabled' : ''}`}
-                onClick={uploadingImages.length > 0 ? undefined : onGhostTileClick}
-                onDragOver={uploadingImages.length > 0 ? undefined : onGhostTileDragOver}
-                onDragLeave={uploadingImages.length > 0 ? undefined : onGhostTileDragLeave}
-                onDrop={uploadingImages.length > 0 ? undefined : onGhostTileDrop}
-              >
-                <div className="ghost-tile-content">
-                  <PlusCircleIcon width="48" height="48" />
-                  {uploadingImages.length > 0 ? (
-                    <span className="ghost-tile-hint">Uploading...</span>
-                  ) : isGhostAlbumDragOver ? (
-                    <span className="ghost-tile-hint">Drop to create</span>
-                  ) : null}
+              {/* Ghost tile for creating new albums - only show for editors */}
+              {canEdit && (
+                <div 
+                  className={`album-card ghost-album-tile ${isGhostAlbumDragOver ? 'drag-over-ghost' : ''} ${uploadingImages.length > 0 ? 'ghost-tile-disabled' : ''}`}
+                  onClick={uploadingImages.length > 0 ? undefined : onGhostTileClick}
+                  onDragOver={uploadingImages.length > 0 ? undefined : onGhostTileDragOver}
+                  onDragLeave={uploadingImages.length > 0 ? undefined : onGhostTileDragLeave}
+                  onDrop={uploadingImages.length > 0 ? undefined : onGhostTileDrop}
+                >
+                  <div className="ghost-tile-content">
+                    <PlusCircleIcon width="48" height="48" />
+                    {uploadingImages.length > 0 ? (
+                      <span className="ghost-tile-hint">Uploading...</span>
+                    ) : isGhostAlbumDragOver ? (
+                      <span className="ghost-tile-hint">Drop to create</span>
+                    ) : null}
+                  </div>
+                  <input
+                    ref={ghostTileFileInputRef}
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    onChange={onGhostTileFileSelect}
+                    disabled={uploadingImages.length > 0}
+                    style={{ display: 'none' }}
+                  />
                 </div>
-                <input
-                  ref={ghostTileFileInputRef}
-                  type="file"
-                  multiple
-                  accept="image/*"
-                  onChange={onGhostTileFileSelect}
-                  disabled={uploadingImages.length > 0}
-                  style={{ display: 'none' }}
-                />
-              </div>
+              )}
             </div>
           </SortableContext>
         </div>

@@ -35,6 +35,7 @@ interface PhotosPanelHeaderProps {
   onShuffleStart: () => void;
   onShuffleEnd: () => void;
   onViewModeChange: (mode: ViewMode) => void;
+  canEdit: boolean;
 }
 
 const PhotosPanelHeader: React.FC<PhotosPanelHeaderProps> = ({
@@ -58,6 +59,7 @@ const PhotosPanelHeader: React.FC<PhotosPanelHeaderProps> = ({
   onShuffleStart,
   onShuffleEnd,
   onViewModeChange,
+  canEdit,
 }) => {
   const currentAlbum = localAlbums.find(a => a.name === selectedAlbum);
   const isPublished = currentAlbum?.published !== false;
