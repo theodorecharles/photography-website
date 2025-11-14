@@ -9,6 +9,7 @@ interface PasswordInputProps {
   placeholder?: string;
   inputRef?: React.RefObject<HTMLInputElement | null>;
   required?: boolean;
+  disabled?: boolean;
 }
 
 export const PasswordInput: React.FC<PasswordInputProps> = ({
@@ -18,6 +19,7 @@ export const PasswordInput: React.FC<PasswordInputProps> = ({
   placeholder = "",
   inputRef,
   required = false,
+  disabled = false,
 }) => {
   const [isVisible, setIsVisible] = useState(false);
 
@@ -44,6 +46,7 @@ export const PasswordInput: React.FC<PasswordInputProps> = ({
         className={`branding-input ${className}`}
         placeholder={placeholder}
         required={required}
+        disabled={disabled}
       />
       <div className="password-input-buttons">
         <button
@@ -52,6 +55,7 @@ export const PasswordInput: React.FC<PasswordInputProps> = ({
           onClick={toggleVisibility}
           title={isVisible ? "Hide password" : "Show password"}
           aria-label={isVisible ? "Hide password" : "Show password"}
+          disabled={disabled}
         >
           <EyeIcon width="18" height="18" isSlashed={isVisible} />
         </button>
@@ -62,6 +66,7 @@ export const PasswordInput: React.FC<PasswordInputProps> = ({
             onClick={copyToClipboard}
             title="Copy to clipboard"
             aria-label="Copy to clipboard"
+            disabled={disabled}
           >
             <CopyIcon width="16" height="16" />
           </button>
