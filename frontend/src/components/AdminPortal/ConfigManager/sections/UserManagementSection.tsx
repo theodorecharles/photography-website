@@ -662,7 +662,8 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
                 <div
                   style={{
                     display: "grid",
-                    gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 450px), 1fr))",
+                    gridTemplateColumns:
+                      "repeat(auto-fit, minmax(min(100%, 450px), 1fr))",
                     gap: "1rem",
                   }}
                 >

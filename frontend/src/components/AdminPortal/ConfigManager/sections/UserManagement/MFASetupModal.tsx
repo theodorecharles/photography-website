@@ -89,6 +89,8 @@ export const MFASetupModal: React.FC<MFASetupModalProps> = ({
                 textAlign: "center",
                 fontSize: "1.5rem",
                 letterSpacing: "0.5em",
+                maxWidth: "200px",
+                margin: "0 auto",
               }}
               autoComplete="one-time-code"
             />
