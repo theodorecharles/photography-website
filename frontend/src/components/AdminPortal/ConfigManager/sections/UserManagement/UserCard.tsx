@@ -1,20 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { PasswordInput } from '../../../PasswordInput';
-import { LockIcon } from '../../../../icons';
-import type { User, PasswordChangeState } from './types';
+import type { User } from './types';
 
 interface UserCardProps {
   user: User;
   currentUser: { id: number; email: string; role: string } | null;
   loading: boolean;
-  showPasswordChange: number | undefined;
-  passwordChange: PasswordChangeState;
   isFirstUser: boolean;
   onResendInvite: (userId: number) => void;
   onDeleteUser: (userId: number) => void;
-  onShowPasswordChange: (userId: number | undefined) => void;
-  onPasswordChangeUpdate: (change: PasswordChangeState) => void;
-  onChangePassword: (userId: number) => void;
+  onOpenPasswordChange: (userId: number) => void;
   onStartMFASetup: (userId: number) => void;
   onDisableMFA: (userId: number) => void;
   onOpenPasskeys: (userId: number) => void;
@@ -27,14 +21,10 @@ export const UserCard: React.FC<UserCardProps> = ({
   user,
   currentUser,
   loading,
-  showPasswordChange,
-  passwordChange,
   isFirstUser,
   onResendInvite,
   onDeleteUser,
-  onShowPasswordChange,
-  onPasswordChangeUpdate,
-  onChangePassword,
+  onOpenPasswordChange,
   onStartMFASetup,
   onDisableMFA,
   onOpenPasskeys,
@@ -385,16 +375,15 @@ export const UserCard: React.FC<UserCardProps> = ({
           {user.id === currentUser.id && (
             <>
               {/* Change Password */}
-              {user.auth_methods.includes('credentials') && showPasswordChange !== user.id && (
+              {user.auth_methods.includes('credentials') && (
                 <button
-                  onClick={() => onShowPasswordChange(user.id)}
+                  onClick={() => onOpenPasswordChange(user.id)}
                   className="btn-secondary"
                   style={{
                     padding: '0.4rem 0.8rem',
                     fontSize: '0.85rem',
                   }}
                 >
-                  <LockIcon width={14} height={14} />
                   Change Password
                 </button>
               )}
@@ -444,7 +433,7 @@ export const UserCard: React.FC<UserCardProps> = ({
                   }}
                   disabled={loading}
                 >
-                  🔑 Passkeys ({user.passkey_count})
+                  Passkeys ({user.passkey_count})
                 </button>
               )}
             </>
@@ -496,93 +485,6 @@ export const UserCard: React.FC<UserCardProps> = ({
               )}
             </>
           )}
-        </div>
-      )}
-
-      {/* Password Change Form */}
-      {showPasswordChange === user.id && (
-        <div
-          style={{
-            marginTop: '1rem',
-            padding: '1rem',
-            background: 'rgba(255, 255, 255, 0.03)',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
-            borderRadius: '6px',
-          }}
-        >
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              marginBottom: '0.75rem',
-            }}
-          >
-            <h5 style={{ margin: 0 }}>Change Password</h5>
-            <button
-              onClick={() => onShowPasswordChange(undefined)}
-              style={{
-                background: 'none',
-                border: 'none',
-                fontSize: '1.5rem',
-                cursor: 'pointer',
-                color: '#9ca3af',
-              }}
-            >
-              ×
-            </button>
-          </div>
-          <div className="branding-group">
-            <label className="branding-label">Current Password</label>
-            <PasswordInput
-              value={passwordChange.currentPassword}
-              onChange={(e) =>
-                onPasswordChangeUpdate({
-                  ...passwordChange,
-                  currentPassword: e.target.value,
-                })
-              }
-              placeholder="Enter current password"
-            />
-          </div>
-          <div className="branding-group">
-            <label className="branding-label">New Password</label>
-            <PasswordInput
-              value={passwordChange.newPassword}
-              onChange={(e) =>
-                onPasswordChangeUpdate({
-                  ...passwordChange,
-                  newPassword: e.target.value,
-                })
-              }
-              placeholder="Enter new password (min 8 chars)"
-            />
-          </div>
-          <div className="branding-group">
-            <label className="branding-label">Confirm New Password</label>
-            <PasswordInput
-              value={passwordChange.confirmPassword}
-              onChange={(e) =>
-                onPasswordChangeUpdate({
-                  ...passwordChange,
-                  confirmPassword: e.target.value,
-                })
-              }
-              placeholder="Confirm new password"
-            />
-          </div>
-          <div className="section-button-group">
-            <button
-              onClick={() => onShowPasswordChange(undefined)}
-              className="btn-secondary"
-              disabled={loading}
-            >
-              Cancel
-            </button>
-            <button onClick={() => onChangePassword(user.id)} className="btn-primary" disabled={loading}>
-              {loading ? 'Changing...' : 'Change Password'}
-            </button>
-          </div>
         </div>
       )}
     </div>

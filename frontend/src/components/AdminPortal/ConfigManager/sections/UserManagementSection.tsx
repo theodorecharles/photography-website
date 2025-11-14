@@ -12,6 +12,7 @@ import { NewUserForm } from "./UserManagement/NewUserForm";
 import { UserCard } from "./UserManagement/UserCard";
 import { SMTPWarningBanner } from "./UserManagement/SMTPWarningBanner";
 import { PasskeysModal } from "./UserManagement/PasskeysModal";
+import { PasswordChangeModal } from "./UserManagement/PasswordChangeModal";
 import { userManagementAPI } from "./UserManagement/utils";
 import { withLoadingAndErrorHandling } from "./UserManagement/handlers";
 import type {
@@ -687,14 +688,10 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
                       user={user}
                       currentUser={currentUser}
                       loading={loading}
-                      showPasswordChange={showPasswordChange}
-                      passwordChange={passwordChange}
                       isFirstUser={index === 0}
                       onResendInvite={handleResendInvite}
                       onDeleteUser={handleDeleteUser}
-                      onShowPasswordChange={setShowPasswordChange}
-                      onPasswordChangeUpdate={setPasswordChange}
-                      onChangePassword={handleChangePassword}
+                      onOpenPasswordChange={setShowPasswordChange}
                       onStartMFASetup={handleStartMFASetup}
                       onDisableMFA={handleDisableMFA}
                       onOpenPasskeys={handleLoadPasskeys}
@@ -733,6 +730,17 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
               onNameChange={setPasskeyName}
               onRegister={() => handleRegisterPasskey(showPasskeys)}
               onRemove={handleRemovePasskey}
+            />
+          )}
+
+          {/* Password Change Modal */}
+          {showPasswordChange !== undefined && (
+            <PasswordChangeModal
+              passwordChange={passwordChange}
+              loading={loading}
+              onClose={() => setShowPasswordChange(undefined)}
+              onPasswordChangeUpdate={setPasswordChange}
+              onChangePassword={() => handleChangePassword(showPasswordChange)}
             />
           )}
 
