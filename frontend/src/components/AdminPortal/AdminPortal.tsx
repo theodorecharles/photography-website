@@ -214,16 +214,18 @@ export default function AdminPortal() {
       // Only show prompt if user signed in with credentials (not Google OAuth) and has no MFA/passkey
       const authMethods = user.auth_methods || [];
       const isCredentialUser = authMethods.includes('credentials');
+      const isGoogleUser = authMethods.includes('google');
       
       console.log('[Security Prompt] User security status:', {
         hasMFA,
         hasPasskey,
         authMethods,
         isCredentialUser,
-        shouldShow: isCredentialUser && !hasMFA && !hasPasskey,
+        isGoogleUser,
+        shouldShow: isCredentialUser && !isGoogleUser && !hasMFA && !hasPasskey,
       });
       
-      if (isCredentialUser && !hasMFA && !hasPasskey) {
+      if (isCredentialUser && !isGoogleUser && !hasMFA && !hasPasskey) {
         console.log('[Security Prompt] Showing prompt!');
         setShowSecurityPrompt(true);
       }
