@@ -304,6 +304,11 @@ router.get('/status', (req: Request, res: Response) => {
     // Look up full user details from database
     const dbUser = getUserByEmail(passportUser.email);
     if (dbUser) {
+      console.log('[Auth Status] Google user passkeys:', {
+        email: dbUser.email,
+        passkeys: dbUser.passkeys,
+        passkeyCount: dbUser.passkeys ? dbUser.passkeys.length : 0,
+      });
       return res.json({
         authenticated: true,
         user: {
@@ -350,6 +355,11 @@ router.get('/status', (req: Request, res: Response) => {
     // Fallback: look up user by ID
     const dbUser = getUserById((req.session as any).userId);
     if (dbUser) {
+      console.log('[Auth Status] Credential user passkeys:', {
+        email: dbUser.email,
+        passkeys: dbUser.passkeys,
+        passkeyCount: dbUser.passkeys ? dbUser.passkeys.length : 0,
+      });
       return res.json({
         authenticated: true,
         user: {
