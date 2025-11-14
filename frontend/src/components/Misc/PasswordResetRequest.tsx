@@ -58,7 +58,6 @@ const PasswordResetRequest: React.FC = () => {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          background: "#1a1a1a",
           padding: "2rem",
         }}
       >
@@ -125,7 +124,6 @@ const PasswordResetRequest: React.FC = () => {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        background: "#1a1a1a",
         padding: "2rem",
       }}
     >
