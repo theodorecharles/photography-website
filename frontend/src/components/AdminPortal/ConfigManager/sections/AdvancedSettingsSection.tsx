@@ -11,6 +11,7 @@ import BackendSettings from '../components/BackendSettings';
 import FrontendSettings from '../components/FrontendSettings';
 import SecuritySettings from '../components/SecuritySettings';
 import AuthSettings from '../components/AuthSettings';
+import SMTPSettings from '../components/SMTPSettings';
 import AnalyticsSettings from '../components/AnalyticsSettings';
 import {
   updateConfig as updateConfigHelper,
@@ -270,6 +271,16 @@ const AdvancedSettingsSection: React.FC<AdvancedSettingsSectionProps> = ({
           removeArrayItem={removeArrayItem}
           hasUnsavedChanges={hasUnsavedChanges("Authentication")}
           onSave={() => handleSaveSection("Authentication")}
+          onCancel={() => setConfig(originalConfig!)}
+          savingSection={savingSection}
+        />
+
+        {/* SMTP Settings */}
+        <SMTPSettings
+          config={config}
+          updateConfig={updateConfig}
+          hasUnsavedChanges={hasUnsavedChanges("Email")}
+          onSave={() => handleSaveSection("Email")}
           onCancel={() => setConfig(originalConfig!)}
           savingSection={savingSection}
         />
