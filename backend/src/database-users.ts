@@ -124,9 +124,9 @@ export function createUser(data: {
   const stmt = db.prepare(`
     INSERT INTO users (
       email, password_hash, auth_methods, 
-      google_id, name, picture, email_verified, role
+      google_id, name, picture, email_verified, role, status
     )
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'active')
   `);
   
   const result = stmt.run(

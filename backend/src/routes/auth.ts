@@ -10,6 +10,7 @@ import config, { DATA_DIR } from '../config.js';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { getUserByEmail, createUser, getUserByGoogleId, linkGoogleAccount } from '../database-users.js';
 
 const router = Router();
 
@@ -100,28 +101,61 @@ export function initializeGoogleStrategy() {
           clientSecret: googleConfig.clientSecret,
           callbackURL: callbackURL,
         },
-        (accessToken, refreshToken, profile, done) => {
-          // Extract user information
-          const email = profile.emails?.[0]?.value;
-          
-          if (!email) {
-            return done(new Error('no_email'));
+        async (accessToken, refreshToken, profile, done) => {
+          try {
+            // Extract user information
+            const email = profile.emails?.[0]?.value;
+            
+            if (!email) {
+              return done(new Error('no_email'));
+            }
+
+            // Check if user is authorized
+            if (!authorizedEmails.includes(email)) {
+              return done(new Error('unauthorized'));
+            }
+
+            // Check if user exists in database
+            let dbUser = getUserByEmail(email);
+            
+            if (!dbUser) {
+              // Check by Google ID
+              dbUser = getUserByGoogleId(profile.id);
+            }
+
+            if (!dbUser) {
+              // Create new user in database
+              // First user becomes admin, others become viewers
+              const isFirstUser = authorizedEmails.length === 1;
+              dbUser = createUser({
+                email: email,
+                google_id: profile.id,
+                name: profile.displayName,
+                picture: profile.photos?.[0]?.value,
+                auth_methods: ['google'],
+                email_verified: true,
+                role: isFirstUser ? 'admin' : 'viewer',
+              });
+              console.log(`[Google OAuth] Created new user: ${email} with role: ${dbUser.role}`);
+            } else if (!dbUser.google_id) {
+              // Link Google account to existing user
+              linkGoogleAccount(dbUser.id, profile.id, profile.displayName, profile.photos?.[0]?.value);
+              console.log(`[Google OAuth] Linked Google account to existing user: ${email}`);
+            }
+
+            // Create user object for session
+            const user: AuthenticatedUser = {
+              id: profile.id,
+              email: email,
+              name: profile.displayName,
+              picture: profile.photos?.[0]?.value,
+            };
+
+            return done(null, user);
+          } catch (error) {
+            console.error('[Google OAuth] Error during authentication:', error);
+            return done(error as Error);
           }
-
-          // Check if user is authorized
-          if (!authorizedEmails.includes(email)) {
-            return done(new Error('unauthorized'));
-          }
-
-          // Create user object
-          const user: AuthenticatedUser = {
-            id: profile.id,
-            email: email,
-            name: profile.displayName,
-            picture: profile.photos?.[0]?.value,
-          };
-
-          return done(null, user);
         }
       )
     );
