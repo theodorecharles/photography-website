@@ -12,10 +12,7 @@ import { NewUserForm } from "./UserManagement/NewUserForm";
 import { UserCard } from "./UserManagement/UserCard";
 import { SMTPWarningBanner } from "./UserManagement/SMTPWarningBanner";
 import { userManagementAPI } from "./UserManagement/utils";
-import {
-  withLoadingAndErrorHandling,
-  createConfirmModal,
-} from "./UserManagement/handlers";
+import { withLoadingAndErrorHandling } from "./UserManagement/handlers";
 import type {
   User,
   Passkey,
@@ -24,6 +21,8 @@ import type {
   PasswordChangeState,
   MessageType,
 } from "./UserManagement/types";
+
+const API_URL = import.meta.env.VITE_API_URL || "";
 
 interface UserManagementSectionProps {
   setMessage: (message: MessageType) => void;

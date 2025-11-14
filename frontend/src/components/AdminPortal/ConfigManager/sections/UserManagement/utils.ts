@@ -1,4 +1,4 @@
-import type { NewUserState, PasswordChangeState, MessageType, MFASetupData, Passkey } from './types';
+import type { NewUserState } from './types';
 
 const API_URL = import.meta.env.VITE_API_URL || '';
 
