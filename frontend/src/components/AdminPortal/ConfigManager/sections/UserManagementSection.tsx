@@ -10,7 +10,12 @@ import { MFASetupModal } from "./UserManagement/MFASetupModal";
 import { ConfirmationModal } from "./UserManagement/ConfirmationModal";
 import { NewUserForm } from "./UserManagement/NewUserForm";
 import { UserCard } from "./UserManagement/UserCard";
+import { SMTPWarningBanner } from "./UserManagement/SMTPWarningBanner";
 import { userManagementAPI } from "./UserManagement/utils";
+import {
+  withLoadingAndErrorHandling,
+  createConfirmModal,
+} from "./UserManagement/handlers";
 import type {
   User,
   Passkey,
@@ -179,27 +184,24 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
   };
 
   const performResendInvite = async (userId: number) => {
-    setLoading(true);
-    try {
-      const data = await userManagementAPI.resendInvite(userId);
-      const message = data.emailSent
-        ? "Invitation resent successfully"
-        : "Invitation updated but email failed to send";
-
-      setMessage({
-        type: data.emailSent ? "success" : "error",
-        text: message,
-      });
-
-      loadUsers();
-    } catch (err: any) {
-      setMessage({
-        type: "error",
-        text: err.message || "Failed to resend invitation",
-      });
-    } finally {
-      setLoading(false);
-    }
+    await withLoadingAndErrorHandling(
+      setLoading,
+      setMessage,
+      () => userManagementAPI.resendInvite(userId),
+      {
+        onSuccess: (data) => {
+          const message = data.emailSent
+            ? "Invitation resent successfully"
+            : "Invitation updated but email failed to send";
+          setMessage({
+            type: data.emailSent ? "success" : "error",
+            text: message,
+          });
+          loadUsers();
+        },
+        errorMessage: "Failed to resend invitation",
+      }
+    );
   };
 
   const handleResetMFA = async (userId: number) => {
@@ -615,59 +617,12 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
         <div className="branding-grid">
           {/* SMTP Setup Warning or Invite User Button - Admin Only */}
           {currentUser && currentUser.role === "admin" && (
-            <div
-              style={{
-                gridColumn: "1 / -1",
-                marginBottom: "1rem",
-                display: "flex",
-                justifyContent: "flex-end",
-                alignItems: "center",
-                gap: "1rem",
-              }}
-            >
-              {!smtpConfigured && (
-                <div
-                  style={{
-                    flex: 1,
-                    padding: "1rem",
-                    background: "rgba(251, 191, 36, 0.1)",
-                    borderLeft: "3px solid #f59e0b",
-                    borderRadius: "4px",
-                  }}
-                >
-                  <strong
-                    style={{
-                      color: "#f59e0b",
-                      display: "block",
-                      marginBottom: "0.25rem",
-                    }}
-                  >
-                    ⚠️ Email Not Configured
-                  </strong>
-                  <p style={{ fontSize: "0.85rem", color: "#ccc", margin: 0 }}>
-                    Set up SMTP to send user invitation and password reset
-                    emails.
-                  </p>
-                </div>
-              )}
-              <button
-                onClick={() => {
-                  if (smtpConfigured) {
-                    setShowNewUserForm(!showNewUserForm);
-                  } else {
-                    setShowSmtpWizard(true);
-                  }
-                }}
-                className="btn-primary"
-                style={{ padding: "0.5rem 1rem", whiteSpace: "nowrap" }}
-              >
-                {!smtpConfigured
-                  ? "📧 Set up SMTP"
-                  : showNewUserForm
-                  ? "Cancel"
-                  : "+ Invite User"}
-              </button>
-            </div>
+            <SMTPWarningBanner
+              smtpConfigured={smtpConfigured}
+              showNewUserForm={showNewUserForm}
+              onSetupSmtp={() => setShowSmtpWizard(true)}
+              onToggleNewUserForm={() => setShowNewUserForm(!showNewUserForm)}
+            />
           )}
 
           {/* New User Form (Invitation) */}
