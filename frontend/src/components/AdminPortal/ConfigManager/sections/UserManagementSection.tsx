@@ -7,6 +7,7 @@ import React, { useState, useEffect } from 'react';
 import { PasswordInput } from '../../PasswordInput';
 import { LockIcon, TrashIcon } from '../../../icons';
 import SectionHeader from '../components/SectionHeader';
+import SMTPSetupWizard from '../../SMTPSetupWizard';
 
 const API_URL = import.meta.env.VITE_API_URL || '';
 
@@ -41,6 +42,10 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [currentUser, setCurrentUser] = useState<{ id: number; email: string } | null>(null);
+  
+  // SMTP configuration check
+  const [smtpConfigured, setSmtpConfigured] = useState<boolean>(false);
+  const [showSmtpWizard, setShowSmtpWizard] = useState<boolean>(false);
   
   // New user form (invitation)
   const [showNewUserForm, setShowNewUserForm] = useState<boolean>(false);
@@ -77,10 +82,11 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
     fetchCurrentUser();
   }, []);
 
-  // Load users when section is opened
+  // Load users and check SMTP when section is opened
   useEffect(() => {
     if (showSection) {
       loadUsers();
+      checkSmtpConfig();
     }
   }, [showSection]);
 
@@ -114,6 +120,26 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
       setMessage({ type: 'error', text: 'Failed to load users' });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const checkSmtpConfig = async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/config`, {
+        credentials: 'include',
+      });
+      if (res.ok) {
+        const config = await res.json();
+        const emailConfig = config.email || {};
+        const isConfigured = 
+          emailConfig.enabled && 
+          emailConfig.smtp?.host && 
+          emailConfig.smtp?.auth?.user && 
+          emailConfig.smtp?.auth?.pass;
+        setSmtpConfigured(Boolean(isConfigured));
+      }
+    } catch (err) {
+      console.error('Failed to check SMTP config:', err);
     }
   };
 
@@ -487,14 +513,38 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
         }}
       >
         <div className="branding-grid">
-          {/* New User Button */}
-          <div style={{ gridColumn: '1 / -1', marginBottom: '1rem', display: 'flex', justifyContent: 'flex-end' }}>
+          {/* SMTP Setup Warning or Invite User Button */}
+          <div style={{ gridColumn: '1 / -1', marginBottom: '1rem', display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '1rem' }}>
+            {!smtpConfigured && (
+              <div
+                style={{
+                  flex: 1,
+                  padding: '1rem',
+                  background: 'rgba(251, 191, 36, 0.1)',
+                  borderLeft: '3px solid #f59e0b',
+                  borderRadius: '4px',
+                }}
+              >
+                <strong style={{ color: '#f59e0b', display: 'block', marginBottom: '0.25rem' }}>
+                  ⚠️ Email Not Configured
+                </strong>
+                <p style={{ fontSize: '0.85rem', color: '#ccc', margin: 0 }}>
+                  Set up SMTP to send user invitation and password reset emails.
+                </p>
+              </div>
+            )}
             <button
-              onClick={() => setShowNewUserForm(!showNewUserForm)}
+              onClick={() => {
+                if (smtpConfigured) {
+                  setShowNewUserForm(!showNewUserForm);
+                } else {
+                  setShowSmtpWizard(true);
+                }
+              }}
               className="btn-primary"
-              style={{ padding: '0.5rem 1rem' }}
+              style={{ padding: '0.5rem 1rem', whiteSpace: 'nowrap' }}
             >
-              {showNewUserForm ? 'Cancel' : '+ Invite User'}
+              {!smtpConfigured ? '📧 Set up SMTP' : showNewUserForm ? 'Cancel' : '+ Invite User'}
             </button>
           </div>
 
@@ -959,6 +1009,19 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
                 </div>
               </div>
             </div>
+          )}
+
+          {/* SMTP Setup Wizard Modal */}
+          {showSmtpWizard && (
+            <SMTPSetupWizard
+              onClose={() => setShowSmtpWizard(false)}
+              onComplete={() => {
+                setShowSmtpWizard(false);
+                checkSmtpConfig(); // Refresh SMTP status
+                setMessage({ type: 'success', text: 'SMTP configured! You can now invite users.' });
+              }}
+              setMessage={setMessage}
+            />
           )}
         </div>
       </div>

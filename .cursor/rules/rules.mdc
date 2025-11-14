@@ -198,6 +198,20 @@ Photography portfolio website with React 19, TypeScript, Express 5, and SQLite.
 
 **Location**: `backend/src/email.ts`
 
+**Setup UI**: 
+- **Setup Wizard**: `frontend/src/components/AdminPortal/SMTPSetupWizard.tsx`
+  - Two-step wizard for configuring SMTP in Admin Portal
+  - Provider presets: Gmail, SendGrid, AWS SES, Mailgun, Custom
+  - Automatically shows in User Management section if SMTP not configured
+  - Includes provider-specific setup instructions with links
+  - Validates all required fields before saving
+  
+- **Settings Section**: `frontend/src/components/AdminPortal/ConfigManager/components/SMTPSettings.tsx`
+  - Full SMTP configuration in Advanced Settings → Email (SMTP)
+  - Toggle to enable/disable email service
+  - Gmail-specific setup instructions displayed when Gmail is selected
+  - Shows "✓ Configured" badge when SMTP is properly set up
+
 **Configuration**: Add to `config.json`:
 ```json
 {
@@ -220,6 +234,11 @@ Photography portfolio website with React 19, TypeScript, Express 5, and SQLite.
 }
 ```
 
+**User Experience**:
+- If SMTP not configured: User Management shows warning banner with "📧 Set up SMTP" button
+- After SMTP configured: "📧 Set up SMTP" button changes to "+ Invite User"
+- Wizard completion triggers config refresh and enables user invitation functionality
+
 **Email Types**:
 - **Invitation Email**: Sent when admin invites new user (7-day expiry)
 - **Password Reset Email**: Sent when user requests password reset (1-hour expiry)
@@ -228,6 +247,12 @@ Photography portfolio website with React 19, TypeScript, Express 5, and SQLite.
 - `sendInvitationEmail(email, token, inviterName)` - Send invitation
 - `sendPasswordResetEmail(email, token, userName)` - Send password reset
 - `testEmailConfig()` - Test SMTP connection
+
+**Popular Providers**:
+- **Gmail**: smtp.gmail.com:587, requires app password from Google Account settings
+- **SendGrid**: smtp.sendgrid.net:587, username is literally "apikey"
+- **AWS SES**: email-smtp.{region}.amazonaws.com:587, requires SMTP credentials
+- **Mailgun**: smtp.mailgun.org:587, requires domain verification
 
 ### User Invitation Flow
 
