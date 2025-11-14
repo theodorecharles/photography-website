@@ -3,11 +3,11 @@
  * Users land here from password reset email to set a new password
  */
 
-import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { PasswordInput } from "../AdminPortal/PasswordInput";
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { PasswordInput } from '../AdminPortal/PasswordInput';
 
-const API_URL = import.meta.env.VITE_API_URL || "";
+const API_URL = import.meta.env.VITE_API_URL || '';
 
 const PasswordResetComplete: React.FC = () => {
   const { token } = useParams<{ token: string }>();
@@ -15,17 +15,17 @@ const PasswordResetComplete: React.FC = () => {
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [email, setEmail] = useState("");
-
-  // Form fields
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [email, setEmail] = useState('');
   const [success, setSuccess] = useState(false);
-
+  
+  // Form fields
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  
   // Validation
   useEffect(() => {
     if (!token) {
-      setError("Invalid password reset link");
+      setError('Invalid reset link');
       setLoading(false);
       return;
     }
@@ -35,23 +35,20 @@ const PasswordResetComplete: React.FC = () => {
 
   const validateToken = async () => {
     try {
-      const res = await fetch(
-        `${API_URL}/api/auth-extended/password-reset/${token}`,
-        {
-          credentials: "include",
-        }
-      );
+      const res = await fetch(`${API_URL}/api/auth-extended/password-reset/${token}`, {
+        credentials: 'include',
+      });
 
       if (!res.ok) {
         const data = await res.json();
-        throw new Error(data.error || "Invalid password reset link");
+        throw new Error(data.error || 'Invalid or expired reset link');
       }
 
       const data = await res.json();
       setEmail(data.email);
       setLoading(false);
     } catch (err: any) {
-      setError(err.message || "Failed to validate password reset link");
+      setError(err.message || 'Failed to validate reset link');
       setLoading(false);
     }
   };
@@ -62,40 +59,37 @@ const PasswordResetComplete: React.FC = () => {
 
     // Validation
     if (password.length < 8) {
-      setError("Password must be at least 8 characters");
+      setError('Password must be at least 8 characters');
       return;
     }
 
     if (password !== confirmPassword) {
-      setError("Passwords do not match");
+      setError('Passwords do not match');
       return;
     }
 
     setLoading(true);
     try {
-      const res = await fetch(
-        `${API_URL}/api/auth-extended/password-reset/${token}/complete`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify({ password }),
-        }
-      );
+      const res = await fetch(`${API_URL}/api/auth-extended/password-reset/${token}/complete`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ password }),
+      });
 
       if (!res.ok) {
         const data = await res.json();
-        throw new Error(data.error || "Failed to reset password");
+        throw new Error(data.error || 'Failed to reset password');
       }
 
       setSuccess(true);
-
+      
       // Redirect to login after 2 seconds
       setTimeout(() => {
-        navigate("/login?message=password-reset");
+        navigate('/login?message=password-reset-complete');
       }, 2000);
     } catch (err: any) {
-      setError(err.message || "Failed to reset password");
+      setError(err.message || 'Failed to reset password');
       setLoading(false);
     }
   };
@@ -108,20 +102,22 @@ const PasswordResetComplete: React.FC = () => {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+          background: "#1a1a1a",
         }}
       >
         <div
           style={{
-            background: "white",
+            background: "#2a2a2a",
+            border: "1px solid #3a3a3a",
             borderRadius: "12px",
             padding: "3rem",
             maxWidth: "500px",
             width: "90%",
             textAlign: "center",
+            boxShadow: "0 20px 60px rgba(0, 0, 0, 0.5)",
           }}
         >
-          <p style={{ color: "#6b7280" }}>Validating reset link...</p>
+          <p style={{ color: "#9ca3af" }}>Validating reset link...</p>
         </div>
       </div>
     );
@@ -135,17 +131,19 @@ const PasswordResetComplete: React.FC = () => {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+          background: "#1a1a1a",
         }}
       >
         <div
           style={{
-            background: "white",
+            background: "#2a2a2a",
+            border: "1px solid #3a3a3a",
             borderRadius: "12px",
             padding: "3rem",
             maxWidth: "500px",
             width: "90%",
             textAlign: "center",
+            boxShadow: "0 20px 60px rgba(0, 0, 0, 0.5)",
           }}
         >
           <div style={{ fontSize: "4rem", marginBottom: "1rem" }}>❌</div>
@@ -153,14 +151,14 @@ const PasswordResetComplete: React.FC = () => {
             style={{
               fontSize: "1.5rem",
               marginBottom: "1rem",
-              color: "#1f2937",
+              color: "#ffffff",
             }}
           >
-            Invalid or Expired Link
+            Invalid Reset Link
           </h1>
           <p
             style={{
-              color: "#6b7280",
+              color: "#9ca3af",
               marginBottom: "2rem",
             }}
           >
@@ -168,34 +166,13 @@ const PasswordResetComplete: React.FC = () => {
           </p>
           <button
             onClick={() => navigate("/reset-password")}
+            className="btn-primary"
             style={{
-              background: "var(--primary-color)",
-              color: "white",
-              border: "none",
               padding: "0.75rem 2rem",
-              borderRadius: "6px",
-              cursor: "pointer",
               fontSize: "1rem",
-              fontWeight: 600,
-              marginRight: "1rem",
             }}
           >
             Request New Link
-          </button>
-          <button
-            onClick={() => navigate("/")}
-            style={{
-              background: "#6b7280",
-              color: "white",
-              border: "none",
-              padding: "0.75rem 2rem",
-              borderRadius: "6px",
-              cursor: "pointer",
-              fontSize: "1rem",
-              fontWeight: 600,
-            }}
-          >
-            Go to Homepage
           </button>
         </div>
       </div>
@@ -210,17 +187,19 @@ const PasswordResetComplete: React.FC = () => {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+          background: "#1a1a1a",
         }}
       >
         <div
           style={{
-            background: "white",
+            background: "#2a2a2a",
+            border: "1px solid #3a3a3a",
             borderRadius: "12px",
             padding: "3rem",
             maxWidth: "500px",
             width: "90%",
             textAlign: "center",
+            boxShadow: "0 20px 60px rgba(0, 0, 0, 0.5)",
           }}
         >
           <div style={{ fontSize: "4rem", marginBottom: "1rem" }}>✅</div>
@@ -228,18 +207,27 @@ const PasswordResetComplete: React.FC = () => {
             style={{
               fontSize: "1.75rem",
               marginBottom: "1rem",
-              color: "#1f2937",
+              color: "#ffffff",
             }}
           >
-            Password Reset Successful
+            Password Reset Successfully
           </h1>
           <p
             style={{
-              color: "#6b7280",
+              color: "#9ca3af",
               marginBottom: "2rem",
+              lineHeight: 1.6,
             }}
           >
-            Your password has been successfully reset. Redirecting to login...
+            Your password has been updated. You can now sign in with your new password.
+          </p>
+          <p
+            style={{
+              color: "#9ca3af",
+              fontSize: "0.875rem",
+            }}
+          >
+            Redirecting to login...
           </p>
         </div>
       </div>
@@ -253,31 +241,33 @@ const PasswordResetComplete: React.FC = () => {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+        background: "#1a1a1a",
         padding: "2rem",
       }}
     >
       <div
         style={{
-          background: "white",
+          background: "#2a2a2a",
+          border: "1px solid #3a3a3a",
           borderRadius: "12px",
           padding: "3rem",
           maxWidth: "500px",
           width: "100%",
+          boxShadow: "0 20px 60px rgba(0, 0, 0, 0.5)",
         }}
       >
         <div style={{ textAlign: "center", marginBottom: "2rem" }}>
-          <div style={{ fontSize: "3rem", marginBottom: "1rem" }}>🔒</div>
+          <div style={{ fontSize: "3rem", marginBottom: "1rem" }}>🔑</div>
           <h1
             style={{
               fontSize: "1.75rem",
               marginBottom: "0.5rem",
-              color: "#1f2937",
+              color: "#ffffff",
             }}
           >
             Set New Password
           </h1>
-          <p style={{ color: "#6b7280", fontSize: "0.95rem" }}>
+          <p style={{ color: "#9ca3af", fontSize: "0.95rem" }}>
             Create a new password for your account.
           </p>
         </div>
@@ -285,37 +275,26 @@ const PasswordResetComplete: React.FC = () => {
         {/* Email Display */}
         <div
           style={{
-            background: "#f3f4f6",
+            background: "#1e1e1e",
+            border: "1px solid #3a3a3a",
             padding: "1rem",
             borderRadius: "8px",
             marginBottom: "1.5rem",
             textAlign: "center",
           }}
         >
-          <div
-            style={{
-              fontSize: "0.85rem",
-              color: "#6b7280",
-              marginBottom: "0.25rem",
-            }}
-          >
+          <div style={{ fontSize: "0.85rem", color: "#9ca3af", marginBottom: "0.25rem" }}>
             Resetting password for
           </div>
-          <div style={{ fontWeight: 600, color: "#1f2937" }}>{email}</div>
+          <div style={{ fontWeight: 600, color: "#e5e7eb" }}>
+            {email}
+          </div>
         </div>
 
         {/* Password Reset Form */}
         <form onSubmit={handleSubmit}>
           <div style={{ marginBottom: "1.5rem" }}>
-            <label
-              style={{
-                display: "block",
-                fontSize: "0.875rem",
-                fontWeight: 500,
-                color: "#374151",
-                marginBottom: "0.5rem",
-              }}
-            >
+            <label className="branding-label">
               New Password *
             </label>
             <PasswordInput
@@ -327,7 +306,7 @@ const PasswordResetComplete: React.FC = () => {
             <p
               style={{
                 fontSize: "0.75rem",
-                color: "#6b7280",
+                color: "#9ca3af",
                 marginTop: "0.5rem",
               }}
             >
@@ -336,15 +315,7 @@ const PasswordResetComplete: React.FC = () => {
           </div>
 
           <div style={{ marginBottom: "1.5rem" }}>
-            <label
-              style={{
-                display: "block",
-                fontSize: "0.875rem",
-                fontWeight: 500,
-                color: "#374151",
-                marginBottom: "0.5rem",
-              }}
-            >
+            <label className="branding-label">
               Confirm New Password *
             </label>
             <PasswordInput
@@ -359,9 +330,9 @@ const PasswordResetComplete: React.FC = () => {
           {error && (
             <div
               style={{
-                background: "#fee2e2",
-                border: "1px solid #fecaca",
-                color: "#991b1b",
+                background: "rgba(239, 68, 68, 0.1)",
+                border: "1px solid rgba(239, 68, 68, 0.3)",
+                color: "#ef4444",
                 padding: "0.75rem",
                 borderRadius: "6px",
                 marginBottom: "1.5rem",
@@ -376,28 +347,16 @@ const PasswordResetComplete: React.FC = () => {
           <button
             type="submit"
             disabled={loading}
+            className="btn-primary"
             style={{
               width: "100%",
-              background: loading ? "#9ca3af" : "var(--primary-color)",
-              color: "white",
-              border: "none",
               padding: "1rem",
-              borderRadius: "6px",
-              cursor: loading ? "not-allowed" : "pointer",
               fontSize: "1rem",
-              fontWeight: 600,
-              transition: "background 0.2s",
-            }}
-            onMouseEnter={(e) => {
-              if (!loading) {
-                e.currentTarget.style.opacity = "0.9";
-              }
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.opacity = "1";
+              opacity: loading ? 0.5 : 1,
+              cursor: loading ? "not-allowed" : "pointer",
             }}
           >
-            {loading ? "Resetting Password..." : "Reset Password"}
+            {loading ? 'Resetting Password...' : 'Reset Password'}
           </button>
         </form>
 
@@ -406,7 +365,7 @@ const PasswordResetComplete: React.FC = () => {
             textAlign: "center",
             marginTop: "1.5rem",
             fontSize: "0.875rem",
-            color: "#6b7280",
+            color: "#9ca3af",
           }}
         >
           Remember your password?{" "}

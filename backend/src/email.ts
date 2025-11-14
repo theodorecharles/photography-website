@@ -79,6 +79,10 @@ export async function sendInvitationEmail(
   
   const inviteUrl = `${frontendUrl}/invite/${inviteToken}`;
   
+  // Get avatar URL
+  const avatarPath = config.branding?.avatarPath || '/photos/avatar.png';
+  const avatarUrl = `${frontendUrl}${avatarPath}`;
+  
   const mailOptions = {
     from: `"${emailConfig.from.name}" <${emailConfig.from.address}>`,
     to: toEmail,
@@ -104,6 +108,13 @@ export async function sendInvitationEmail(
             border-radius: 8px;
             padding: 30px;
             margin: 20px 0;
+          }
+          .avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 20px;
           }
           .button {
             display: inline-block;
@@ -134,9 +145,10 @@ export async function sendInvitationEmail(
       </head>
       <body>
         <div class="container">
-          <h1>Welcome to ${siteName}!</h1>
+          <img src="${avatarUrl}" alt="${siteName}" class="avatar" />
+          <h1>Join ${siteName}'s Galleria</h1>
           <p>Hi there,</p>
-          <p>${inviterName} has invited you to join <strong>${siteName}</strong>.</p>
+          <p>${inviterName} has invited you to join <strong>${siteName}'s Galleria</strong>.</p>
           <p>To accept this invitation and set up your account, click the button below:</p>
           <a href="${inviteUrl}" class="button">Accept Invitation</a>
           <p>Or copy and paste this link into your browser:</p>
@@ -151,9 +163,9 @@ export async function sendInvitationEmail(
       </html>
     `,
     text: `
-Welcome to ${siteName}!
+Join ${siteName}'s Galleria
 
-${inviterName} has invited you to join ${siteName}.
+${inviterName} has invited you to join ${siteName}'s Galleria.
 
 To accept this invitation and set up your account, visit:
 ${inviteUrl}
@@ -201,6 +213,10 @@ export async function sendPasswordResetEmail(
   
   const resetUrl = `${frontendUrl}/reset-password/${resetToken}`;
   
+  // Get avatar URL
+  const avatarPath = config.branding?.avatarPath || '/photos/avatar.png';
+  const avatarUrl = `${frontendUrl}${avatarPath}`;
+  
   const greeting = userName ? `Hi ${userName}` : 'Hi there';
   
   const mailOptions = {
@@ -228,6 +244,13 @@ export async function sendPasswordResetEmail(
             border-radius: 8px;
             padding: 30px;
             margin: 20px 0;
+          }
+          .avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 20px;
           }
           .button {
             display: inline-block;
@@ -264,9 +287,10 @@ export async function sendPasswordResetEmail(
       </head>
       <body>
         <div class="container">
+          <img src="${avatarUrl}" alt="${siteName}" class="avatar" />
           <h1>Password Reset Request</h1>
           <p>${greeting},</p>
-          <p>We received a request to reset your password for <strong>${siteName}</strong>.</p>
+          <p>We received a request to reset your password for <strong>${siteName}'s Galleria</strong>.</p>
           <p>To reset your password, click the button below:</p>
           <a href="${resetUrl}" class="button">Reset Password</a>
           <p>Or copy and paste this link into your browser:</p>
