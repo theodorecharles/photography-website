@@ -3,7 +3,7 @@
  * Handles album deletion, renaming, publishing, and moving between folders
  */
 
-import { Album, AlbumFolder } from '../types';
+import { Album, AlbumFolder, ConfirmModalConfig } from '../types';
 import { fetchWithRateLimitCheck } from '../../../../utils/fetchWrapper';
 import { trackAlbumDeleted } from '../../../../utils/analytics';
 import { sanitizeAndTitleCase, isValidAlbumName } from '../utils/albumHelpers';
@@ -25,6 +25,7 @@ interface AlbumHandlersProps {
   setNewAlbumName: (name: string) => void;
   renamingAlbum: string | null;
   newAlbumName: string;
+  showConfirmation: (config: ConfirmModalConfig) => void;
 }
 
 export const createAlbumHandlers = (props: AlbumHandlersProps) => {
@@ -43,6 +44,7 @@ export const createAlbumHandlers = (props: AlbumHandlersProps) => {
     setNewAlbumName,
     renamingAlbum,
     newAlbumName,
+    showConfirmation,
   } = props;
 
   const handleDeleteAlbum = async (albumName: string): Promise<void> => {
@@ -53,36 +55,35 @@ export const createAlbumHandlers = (props: AlbumHandlersProps) => {
       return;
     }
 
-    const confirmed = confirm(
-      `Are you sure you want to delete the album "${albumName}"?\n\n` +
-      `This will permanently delete all photos in this album.\n\n` +
-      `This action cannot be undone.`
-    );
-    
-    if (!confirmed) return;
+    showConfirmation({
+      message: `Are you sure you want to delete the album "${albumName}"?\n\nThis will permanently delete all photos in this album.\n\nThis action cannot be undone.`,
+      confirmText: 'Delete Album',
+      isDanger: true,
+      onConfirm: async () => {
+        try {
+          const res = await fetchWithRateLimitCheck(
+            `${API_URL}/api/albums/${encodeURIComponent(albumName)}`,
+            {
+              method: 'DELETE',
+              credentials: 'include',
+            }
+          );
 
-    try {
-      const res = await fetchWithRateLimitCheck(
-        `${API_URL}/api/albums/${encodeURIComponent(albumName)}`,
-        {
-          method: 'DELETE',
-          credentials: 'include',
+          if (res.ok) {
+            setMessage({ type: 'success', text: `Album "${albumName}" deleted` });
+            trackAlbumDeleted(albumName);
+            if (selectedAlbum === albumName) deselectAlbum();
+            await loadAlbums();
+            window.dispatchEvent(new Event('albums-updated'));
+          } else {
+            const error = await res.json();
+            setMessage({ type: 'error', text: error.error || 'Failed to delete album' });
+          }
+        } catch (err) {
+          setMessage({ type: 'error', text: 'Network error occurred' });
         }
-      );
-
-      if (res.ok) {
-        setMessage({ type: 'success', text: `Album "${albumName}" deleted` });
-        trackAlbumDeleted(albumName);
-        if (selectedAlbum === albumName) deselectAlbum();
-        await loadAlbums();
-        window.dispatchEvent(new Event('albums-updated'));
-      } else {
-        const error = await res.json();
-        setMessage({ type: 'error', text: error.error || 'Failed to delete album' });
-      }
-    } catch (err) {
-      setMessage({ type: 'error', text: 'Network error occurred' });
-    }
+      },
+    });
   };
 
   const handleTogglePublished = async (
@@ -94,21 +95,23 @@ export const createAlbumHandlers = (props: AlbumHandlersProps) => {
       event.stopPropagation();
     }
 
+    const newPublishedState = !currentPublished;
+
     try {
       const res = await fetchWithRateLimitCheck(
-        `${API_URL}/api/albums/${encodeURIComponent(albumName)}/toggle-published`,
+        `${API_URL}/api/albums/${encodeURIComponent(albumName)}/publish`,
         {
-          method: 'PUT',
+          method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
-          body: JSON.stringify({ published: !currentPublished }),
+          body: JSON.stringify({ published: newPublishedState }),
         }
       );
 
       if (res.ok) {
         setMessage({
           type: 'success',
-          text: `Album "${albumName}" ${!currentPublished ? 'published' : 'unpublished'}`,
+          text: `Album "${albumName}" ${newPublishedState ? 'published' : 'unpublished'}`,
         });
         await loadAlbums();
         window.dispatchEvent(new Event('albums-updated'));

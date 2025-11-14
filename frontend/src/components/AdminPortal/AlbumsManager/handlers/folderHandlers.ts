@@ -74,9 +74,9 @@ export const createFolderHandlers = (props: FolderHandlersProps) => {
   ): Promise<void> => {
     try {
       const res = await fetchWithRateLimitCheck(
-        `${API_URL}/api/folders/${encodeURIComponent(folderName)}/toggle-published`,
+        `${API_URL}/api/folders/${encodeURIComponent(folderName)}/publish`,
         {
-          method: 'PUT',
+          method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
           body: JSON.stringify({ published: !currentPublished }),

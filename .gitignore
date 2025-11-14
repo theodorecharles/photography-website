@@ -1,8 +1,5 @@
 # Dependencies
 node_modules/
-photos/
-photos
-optimized/
 /.pnp
 .pnp.js
 
@@ -32,6 +29,7 @@ config/config.local.json
 gallery.db
 gallery.db-shm
 gallery.db-wal
+
 # Legacy database files (can be removed after migration)
 image-metadata.db
 image-metadata.db-shm

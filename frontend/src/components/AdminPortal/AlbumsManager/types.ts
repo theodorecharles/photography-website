@@ -26,5 +26,12 @@ export interface AlbumsManagerProps {
   setMessage: (message: { type: 'success' | 'error'; text: string }) => void;
 }
 
+export interface ConfirmModalConfig {
+  message: string;
+  onConfirm: () => void;
+  confirmText?: string;
+  isDanger?: boolean;
+}
+
 // Re-export types from parent
 export type { Album, AlbumFolder, Photo };
