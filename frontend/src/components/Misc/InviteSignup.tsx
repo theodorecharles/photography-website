@@ -102,7 +102,6 @@ const InviteSignup: React.FC = () => {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: '#1a1a1a',
       }}>
         <div style={{
           background: '#2a2a2a',
@@ -127,7 +126,6 @@ const InviteSignup: React.FC = () => {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: '#1a1a1a',
       }}>
         <div style={{
           background: '#2a2a2a',
@@ -179,7 +177,6 @@ const InviteSignup: React.FC = () => {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      background: '#1a1a1a',
       padding: '2rem',
     }}>
       <div style={{

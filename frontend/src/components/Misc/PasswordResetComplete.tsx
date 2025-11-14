@@ -102,7 +102,6 @@ const PasswordResetComplete: React.FC = () => {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          background: "#1a1a1a",
         }}
       >
         <div
@@ -131,7 +130,6 @@ const PasswordResetComplete: React.FC = () => {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          background: "#1a1a1a",
         }}
       >
         <div
@@ -187,7 +185,6 @@ const PasswordResetComplete: React.FC = () => {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          background: "#1a1a1a",
         }}
       >
         <div
@@ -241,7 +238,6 @@ const PasswordResetComplete: React.FC = () => {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        background: "#1a1a1a",
         padding: "2rem",
       }}
     >
