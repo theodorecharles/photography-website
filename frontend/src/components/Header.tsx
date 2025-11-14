@@ -278,19 +278,8 @@ function Navigation({
                       return true;
                     });
                     
-                    console.log(`🔍 Header.tsx - Folder "${folder.name}" (published: ${folder.published}):`, {
-                      isAuthenticated,
-                      totalAlbumsInFolder: albums.filter(a => {
-                        const albumObj = typeof a === 'string' ? { folder_id: null } : a;
-                        return albumObj.folder_id === folder.id;
-                      }).length,
-                      filteredAlbumsCount: folderAlbums.length,
-                      folderAlbums: folderAlbums.map(a => typeof a === 'string' ? a : `${a.name} (pub: ${a.published})`)
-                    });
-                    
                     // Don't show empty folders in the dropdown
                     if (folderAlbums.length === 0) {
-                      console.log(`🔍 Header.tsx - Hiding folder "${folder.name}" (empty after filtering)`);
                       return null;
                     }
                     
