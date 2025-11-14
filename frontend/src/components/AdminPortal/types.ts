@@ -7,6 +7,10 @@ export interface User {
   email: string;
   name: string;
   picture?: string;
+  role?: string;
+  mfa_enabled?: boolean;
+  passkey_enabled?: boolean;
+  auth_methods?: string[];
 }
 
 export interface AuthStatus {
