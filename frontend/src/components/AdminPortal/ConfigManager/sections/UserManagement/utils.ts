@@ -1,6 +1,19 @@
 import type { NewUserState } from './types';
+import md5 from 'md5';
 
 const API_URL = import.meta.env.VITE_API_URL || '';
+
+/**
+ * Generate Gravatar URL from email address
+ * @param email - User's email address
+ * @param size - Avatar size in pixels (default: 80)
+ * @returns Gravatar URL
+ */
+export function getGravatarUrl(email: string, size: number = 80): string {
+  const trimmedEmail = email.trim().toLowerCase();
+  const hash = md5(trimmedEmail);
+  return `https://www.gravatar.com/avatar/${hash}?d=identicon&s=${size}`;
+}
 
 export const userManagementAPI = {
   async fetchCurrentUser() {
