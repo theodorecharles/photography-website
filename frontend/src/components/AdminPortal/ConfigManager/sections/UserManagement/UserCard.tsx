@@ -1,8 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { PasswordInput } from '../../../PasswordInput';
 import { LockIcon } from '../../../../icons';
-import { PasskeysList } from './PasskeysList';
-import type { User, Passkey, PasswordChangeState } from './types';
+import type { User, PasswordChangeState } from './types';
 
 interface UserCardProps {
   user: User;
@@ -10,9 +9,6 @@ interface UserCardProps {
   loading: boolean;
   showPasswordChange: number | undefined;
   passwordChange: PasswordChangeState;
-  showPasskeys: number | undefined;
-  passkeys: Passkey[];
-  passkeyName: string;
   isFirstUser: boolean;
   onResendInvite: (userId: number) => void;
   onDeleteUser: (userId: number) => void;
@@ -21,11 +17,7 @@ interface UserCardProps {
   onChangePassword: (userId: number) => void;
   onStartMFASetup: (userId: number) => void;
   onDisableMFA: (userId: number) => void;
-  onShowPasskeys: (userId: number | undefined) => void;
-  onLoadPasskeys: (userId: number) => void;
-  onPasskeyNameChange: (name: string) => void;
-  onRegisterPasskey: (userId: number) => void;
-  onRemovePasskey: (passkeyId: string) => void;
+  onOpenPasskeys: (userId: number) => void;
   onResetMFA: (userId: number) => void;
   onSendPasswordReset: (userId: number) => void;
   onUpdateRole: (userId: number, role: string) => void;
@@ -37,9 +29,6 @@ export const UserCard: React.FC<UserCardProps> = ({
   loading,
   showPasswordChange,
   passwordChange,
-  showPasskeys,
-  passkeys,
-  passkeyName,
   isFirstUser,
   onResendInvite,
   onDeleteUser,
@@ -48,11 +37,7 @@ export const UserCard: React.FC<UserCardProps> = ({
   onChangePassword,
   onStartMFASetup,
   onDisableMFA,
-  onShowPasskeys,
-  onLoadPasskeys,
-  onPasskeyNameChange,
-  onRegisterPasskey,
-  onRemovePasskey,
+  onOpenPasskeys,
   onResetMFA,
   onSendPasswordReset,
   onUpdateRole,
@@ -450,7 +435,7 @@ export const UserCard: React.FC<UserCardProps> = ({
                 <button
                   onClick={(e) => {
                     e.preventDefault();
-                    showPasskeys === user.id ? onShowPasskeys(undefined) : onLoadPasskeys(user.id);
+                    onOpenPasskeys(user.id);
                   }}
                   className="btn-secondary"
                   style={{
@@ -599,19 +584,6 @@ export const UserCard: React.FC<UserCardProps> = ({
             </button>
           </div>
         </div>
-      )}
-
-      {/* Passkeys List */}
-      {showPasskeys === user.id && (
-        <PasskeysList
-          passkeys={passkeys}
-          passkeyName={passkeyName}
-          loading={loading}
-          onClose={() => onShowPasskeys(undefined)}
-          onNameChange={onPasskeyNameChange}
-          onRegister={() => onRegisterPasskey(user.id)}
-          onRemove={onRemovePasskey}
-        />
       )}
     </div>
   );
