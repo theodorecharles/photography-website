@@ -260,8 +260,8 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
     setConfirmModal({
       show: true,
       title: 'Reset MFA',
-      message: 'This will disable MFA for this user and send them a password reset email. Continue?',
-      confirmText: 'Reset MFA',
+      message: 'This will disable MFA for this user. They will be able to log in with just their password. Continue?',
+      confirmText: 'Disable MFA',
       isDangerous: true,
       onConfirm: () => {
         setConfirmModal({ ...confirmModal, show: false });
@@ -286,12 +286,51 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
       const data = await res.json();
       setMessage({ 
         type: 'success', 
-        text: data.message || 'MFA reset successfully' 
+        text: data.message || 'MFA disabled successfully' 
       });
       
       loadUsers();
     } catch (err: any) {
       setMessage({ type: 'error', text: err.message || 'Failed to reset MFA' });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSendPasswordReset = async (userId: number) => {
+    setConfirmModal({
+      show: true,
+      title: 'Send Password Reset',
+      message: 'This will send a password reset email to this user. They will have 1 hour to use the link. Continue?',
+      confirmText: 'Send Reset Email',
+      isDangerous: false,
+      onConfirm: () => {
+        setConfirmModal({ ...confirmModal, show: false });
+        performSendPasswordReset(userId);
+      },
+    });
+  };
+
+  const performSendPasswordReset = async (userId: number) => {
+    setLoading(true);
+    try {
+      const res = await fetch(`${API_URL}/api/auth-extended/users/${userId}/send-password-reset`, {
+        method: 'POST',
+        credentials: 'include',
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || 'Failed to send password reset email');
+      }
+
+      const data = await res.json();
+      setMessage({ 
+        type: 'success', 
+        text: data.message || 'Password reset email sent successfully' 
+      });
+    } catch (err: any) {
+      setMessage({ type: 'error', text: err.message || 'Failed to send password reset email' });
     } finally {
       setLoading(false);
     }
@@ -892,24 +931,42 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
                       )}
                       
                       {/* Admin Actions for Other Users */}
-                      {user.id !== currentUser.id && user.mfa_enabled && (
-                        <button
-                          onClick={() => handleResetMFA(user.id)}
-                          className="btn-secondary"
-                          style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem', background: '#fbbf24', borderColor: '#f59e0b' }}
-                          disabled={loading}
-                          title="Reset MFA and send password reset email"
-                          onMouseEnter={(e) => {
-                            if (!loading) {
-                              e.currentTarget.style.background = '#f59e0b';
-                            }
-                          }}
-                          onMouseLeave={(e) => {
-                            e.currentTarget.style.background = '#fbbf24';
-                          }}
-                        >
-                          Reset MFA
-                        </button>
+                      {user.id !== currentUser.id && (
+                        <>
+                          {/* Reset MFA button - only for users with MFA enabled */}
+                          {user.mfa_enabled && (
+                            <button
+                              onClick={() => handleResetMFA(user.id)}
+                              className="btn-secondary"
+                              style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem', background: '#fbbf24', borderColor: '#f59e0b' }}
+                              disabled={loading}
+                              title="Disable MFA for this user"
+                              onMouseEnter={(e) => {
+                                if (!loading) {
+                                  e.currentTarget.style.background = '#f59e0b';
+                                }
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.background = '#fbbf24';
+                              }}
+                            >
+                              Reset MFA
+                            </button>
+                          )}
+
+                          {/* Send Password Reset button - only for users with credentials auth */}
+                          {user.auth_methods.includes('credentials') && (
+                            <button
+                              onClick={() => handleSendPasswordReset(user.id)}
+                              className="btn-secondary"
+                              style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}
+                              disabled={loading}
+                              title="Send password reset email to this user"
+                            >
+                              Send Password Reset
+                            </button>
+                          )}
+                        </>
                       )}
                     </div>
                   )}

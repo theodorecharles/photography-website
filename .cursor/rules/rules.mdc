@@ -384,7 +384,8 @@ Photography portfolio website with React 19, TypeScript, Express 5, and SQLite.
 - `DELETE /api/album-management/share/:shareId` - Delete share link
 - `POST /api/auth-extended/invite` - Invite new user (admin only, sends invitation email)
 - `POST /api/auth-extended/invite/resend/:userId` - Resend invitation email (admin only)
-- `POST /api/auth-extended/users/:userId/reset-mfa` - Reset user's MFA (admin only, sends password reset email)
+- `POST /api/auth-extended/users/:userId/reset-mfa` - Reset user's MFA (admin only, disables MFA)
+- `POST /api/auth-extended/users/:userId/send-password-reset` - Send password reset email (admin only)
 - `GET /api/auth-extended/users` - List all users with status indicators
 - `DELETE /api/auth-extended/users/:userId` - Delete user (admin only)
 - All `/api/analytics/*` - Analytics queries

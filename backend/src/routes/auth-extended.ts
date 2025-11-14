@@ -546,7 +546,7 @@ router.post('/password-reset/:token/complete', async (req: Request, res: Respons
 });
 
 /**
- * Admin: Reset user's MFA and send password reset email
+ * Admin: Reset user's MFA (disable MFA only)
  */
 router.post('/users/:userId/reset-mfa', requireAdmin, async (req: Request, res: Response) => {
   try {
@@ -564,6 +564,34 @@ router.post('/users/:userId/reset-mfa', requireAdmin, async (req: Request, res: 
     // Disable MFA
     disableMFA(userId);
 
+    console.log(`[Admin] MFA disabled for user ${user.email} (ID: ${userId})`);
+
+    res.json({
+      success: true,
+      message: 'MFA has been disabled',
+    });
+  } catch (error) {
+    console.error('Reset MFA error:', error);
+    res.status(500).json({ error: 'Failed to reset MFA' });
+  }
+});
+
+// Send password reset email (admin-initiated)
+router.post('/users/:userId/send-password-reset', requireAdmin, async (req: Request, res: Response) => {
+  try {
+    const userId = parseInt(req.params.userId);
+    const user = getUserById(userId);
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Check if user uses password authentication
+    const authMethods = user.auth_methods || [];
+    if (!authMethods.includes('credentials')) {
+      return res.status(400).json({ error: 'User does not use password authentication' });
+    }
+
     // Generate password reset token
     const resetToken = crypto.randomBytes(32).toString('hex');
     
@@ -577,16 +605,16 @@ router.post('/users/:userId/reset-mfa', requireAdmin, async (req: Request, res: 
     // Send password reset email
     const emailSent = await sendPasswordResetEmail(user.email, resetToken, user.name);
 
-    console.log(`[Admin] MFA reset for user ${user.email} (ID: ${userId})`);
+    console.log(`[Admin] Password reset email sent to ${user.email} (ID: ${userId})`);
 
     res.json({
       success: true,
       emailSent,
-      message: 'MFA has been disabled and a password reset email has been sent',
+      message: 'Password reset email has been sent',
     });
   } catch (error) {
-    console.error('Reset MFA error:', error);
-    res.status(500).json({ error: 'Failed to reset MFA' });
+    console.error('Send password reset error:', error);
+    res.status(500).json({ error: 'Failed to send password reset email' });
   }
 });
 
