@@ -12,6 +12,7 @@ interface AlbumToolbarProps {
   onCreateFolder: () => void;
   onSaveChanges: () => void;
   onCancelChanges: () => void;
+  canEdit: boolean;
 }
 
 const AlbumToolbar: React.FC<AlbumToolbarProps> = ({
@@ -20,7 +21,13 @@ const AlbumToolbar: React.FC<AlbumToolbarProps> = ({
   onCreateFolder,
   onSaveChanges,
   onCancelChanges,
+  canEdit,
 }) => {
+  // If user cannot edit, don't show the toolbar at all
+  if (!canEdit) {
+    return null;
+  }
+
   return (
     <div style={{ 
       display: 'flex', 

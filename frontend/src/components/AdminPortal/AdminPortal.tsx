@@ -11,6 +11,7 @@ import { AuthStatus, ExternalLink, BrandingConfig, Album, AlbumFolder } from './
 import AlbumsManager from './AlbumsManager';
 import Metrics from './Metrics/Metrics';
 import ConfigManager from './ConfigManager';
+import { ProfileSection } from './ConfigManager/sections/ProfileSection';
 import SecuritySetupPrompt from './SecuritySetupPrompt';
 import {
   trackLoginSucceeded,
@@ -26,7 +27,8 @@ import {
   ImageIcon,
   BarChartIcon,
   SettingsIcon,
-  LockIcon
+  LockIcon,
+  UserIcon
 } from '../icons/';
 
 type AuthMethod = 'google' | 'credentials' | 'passkey' | null;
@@ -190,6 +192,13 @@ export default function AdminPortal() {
       trackAdminTabChange(activeTab);
     }
   }, [activeTab, authStatus]);
+
+  // Redirect admins from profile to settings
+  useEffect(() => {
+    if (activeTab === 'profile' && authStatus?.user?.role === 'admin') {
+      navigate('/admin/settings');
+    }
+  }, [activeTab, authStatus, navigate]);
 
   // Check if user needs security setup after fresh login
   useEffect(() => {
@@ -853,13 +862,24 @@ export default function AdminPortal() {
               <BarChartIcon width="20" height="20" style={{ marginRight: '8px' }} />
               Metrics
             </button>
-            <button
-              className={`tab-button ${activeTab === 'config' ? 'active' : ''}`}
-              onClick={() => navigate('/admin/settings')}
-            >
-              <SettingsIcon width="20" height="20" style={{ marginRight: '8px' }} />
-              Settings
-            </button>
+            {/* Show Settings tab only for admins, Profile tab for viewers/managers */}
+            {authStatus?.user?.role === 'admin' ? (
+              <button
+                className={`tab-button ${activeTab === 'config' ? 'active' : ''}`}
+                onClick={() => navigate('/admin/settings')}
+              >
+                <SettingsIcon width="20" height="20" style={{ marginRight: '8px' }} />
+                Settings
+              </button>
+            ) : (
+              <button
+                className={`tab-button ${activeTab === 'profile' ? 'active' : ''}`}
+                onClick={() => navigate('/admin/profile')}
+              >
+                <UserIcon width="20" height="20" style={{ marginRight: '8px' }} />
+                Profile
+              </button>
+            )}
           </div>
         </div>
 
@@ -896,10 +916,11 @@ export default function AdminPortal() {
             folders={folders}
             loadAlbums={loadAlbums}
             setMessage={addMessage}
+            userRole={(authStatus?.user?.role as 'admin' | 'manager' | 'viewer') || 'viewer'}
           />
         )}
 
-        {activeTab === 'config' && (
+        {activeTab === 'config' && authStatus?.user?.role === 'admin' && (
           <ConfigManager
             setMessage={addMessage}
             branding={branding}
@@ -908,6 +929,12 @@ export default function AdminPortal() {
             externalLinks={externalLinks}
             setExternalLinks={setExternalLinks}
           />
+        )}
+
+        {activeTab === 'profile' && authStatus?.user?.role !== 'admin' && (
+          <div className="admin-content">
+            <ProfileSection setMessage={addMessage} />
+          </div>
         )}
 
         {/* Security Setup Prompt Modal */}

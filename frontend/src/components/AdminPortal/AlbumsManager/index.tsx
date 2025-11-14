@@ -50,7 +50,10 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   folders,
   loadAlbums,
   setMessage,
+  userRole,
 }) => {
+  // Check if user can edit (admin or manager)
+  const canEdit = userRole === 'admin' || userRole === 'manager';
   const [searchParams, setSearchParams] = useSearchParams();
   
   // Confirmation modal state (needed early for hooks)
@@ -389,6 +392,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
             onCreateFolder={() => setShowFolderModal(true)}
             onSaveChanges={uiHandlers.handleSaveChanges}
             onCancelChanges={uiHandlers.handleCancelChanges}
+            canEdit={canEdit}
           />
           
           <FoldersSection

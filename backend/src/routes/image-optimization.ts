@@ -42,7 +42,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 import { DATA_DIR } from '../config.js';
-import { requireAuth , requireAdmin} from '../auth/middleware.js';
+import { requireAuth, requireAdmin, requireManager } from '../auth/middleware.js';
 
 // Path to config.json
 const configPath = path.join(DATA_DIR, 'config.json');
@@ -138,7 +138,7 @@ router.get('/status', requireAuth, (req, res) => {
 });
 
 // POST /api/image-optimization/stop - Stop running optimization job
-router.post('/stop', requireAdmin, (req: any, res: any) => {
+router.post('/stop', requireManager, (req: any, res: any) => {
   if (!runningOptimizationJob || runningOptimizationJob.isComplete) {
     return res.json({ success: false, message: 'No running job to stop' });
   }
@@ -174,7 +174,7 @@ router.post('/stop', requireAdmin, (req: any, res: any) => {
 });
 
 // POST /api/image-optimization/optimize - Run optimization script with SSE
-router.post('/optimize', requireAdmin, (req, res) => {
+router.post('/optimize', requireManager, (req, res) => {
   const { force } = req.body;
   
   // If already running, reconnect to existing job

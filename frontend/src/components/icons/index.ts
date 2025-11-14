@@ -35,4 +35,5 @@ export { default as ShuffleIcon } from './ShuffleIcon';
 export { default as StopIcon } from './StopIcon';
 export { default as TrashIcon } from './TrashIcon';
 export { default as UploadIcon } from './UploadIcon';
+export { UserIcon } from './UserIcon';
 

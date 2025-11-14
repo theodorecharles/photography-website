@@ -24,6 +24,7 @@ export interface AlbumsManagerProps {
   folders: AlbumFolder[];
   loadAlbums: () => Promise<void>;
   setMessage: (message: { type: 'success' | 'error'; text: string }) => void;
+  userRole: 'admin' | 'manager' | 'viewer';
 }
 
 export interface ConfirmModalConfig {
