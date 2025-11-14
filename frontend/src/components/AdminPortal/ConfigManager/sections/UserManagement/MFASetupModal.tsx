@@ -29,7 +29,14 @@ export const MFASetupModal: React.FC<MFASetupModalProps> = ({
             ×
           </button>
         </div>
-        <div className="share-modal-content">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+          }}
+          className="share-modal-content"
+        >
           <div style={{ marginBottom: "1.5rem" }}>
             <p className="share-description">
               Scan this QR code with your authenticator app (Google
@@ -131,7 +138,7 @@ export const MFASetupModal: React.FC<MFASetupModalProps> = ({
               {loading ? "Verifying..." : "Enable MFA"}
             </button>
           </div>
-        </div>
+        </form>
       </div>
     </div>
   );
