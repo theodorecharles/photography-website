@@ -24,15 +24,11 @@ interface UncategorizedSectionProps {
   onAlbumDragOver: (e: React.DragEvent, albumName: string) => void;
   onAlbumDragLeave: (e: React.DragEvent) => void;
   onAlbumDrop: (e: React.DragEvent, albumName: string) => void;
-  onAlbumRename: (albumName: string) => void;
   onGhostTileClick: () => void;
   onGhostTileDragOver: (e: React.DragEvent) => void;
   onGhostTileDragLeave: (e: React.DragEvent) => void;
   onGhostTileDrop: (e: React.DragEvent) => void;
   onGhostTileFileSelect: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onAlbumTogglePublished?: (albumName: string, currentPublished: boolean, event?: React.MouseEvent) => void;
-  onShare?: (albumName: string) => void;
-  onPreview?: (albumName: string) => void;
 }
 
 const UncategorizedSection: React.FC<UncategorizedSectionProps> = ({
@@ -50,15 +46,11 @@ const UncategorizedSection: React.FC<UncategorizedSectionProps> = ({
   onAlbumDragOver,
   onAlbumDragLeave,
   onAlbumDrop,
-  onAlbumRename,
   onGhostTileClick,
   onGhostTileDragOver,
   onGhostTileDragLeave,
   onGhostTileDrop,
   onGhostTileFileSelect,
-  onAlbumTogglePublished,
-  onShare,
-  onPreview,
 }) => {
   const uncategorizedAlbums = localAlbums.filter(album => !album.folder_id);
 
@@ -104,10 +96,6 @@ const UncategorizedSection: React.FC<UncategorizedSectionProps> = ({
                     onDragOver={(e) => onAlbumDragOver(e, album.name)}
                     onDragLeave={onAlbumDragLeave}
                     onDrop={(e) => onAlbumDrop(e, album.name)}
-                    onRename={onAlbumRename}
-                    onTogglePublished={onAlbumTogglePublished}
-                    onShare={onShare}
-                    onPreview={onPreview}
                   />
                 </React.Fragment>
               ))}

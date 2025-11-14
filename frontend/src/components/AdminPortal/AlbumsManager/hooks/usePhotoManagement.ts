@@ -4,7 +4,9 @@
  */
 
 import { useState, useCallback } from 'react';
-import { Photo } from '../types';
+import { DragEndEvent } from '@dnd-kit/core';
+import { arrayMove } from '@dnd-kit/sortable';
+import { Photo, ConfirmModalConfig } from '../types';
 import { fetchWithRateLimitCheck } from '../../../../utils/fetchWrapper';
 import { trackPhotoDeleted } from '../../../../utils/analytics';
 
@@ -12,9 +14,10 @@ const API_URL = import.meta.env.VITE_API_URL || '';
 
 interface UsePhotoManagementProps {
   setMessage: (message: { type: 'success' | 'error'; text: string }) => void;
+  showConfirmation: (config: ConfirmModalConfig) => void;
 }
 
-export const usePhotoManagement = ({ setMessage }: UsePhotoManagementProps) => {
+export const usePhotoManagement = ({ setMessage, showConfirmation }: UsePhotoManagementProps) => {
   const [selectedAlbum, setSelectedAlbum] = useState<string | null>(null);
   const [albumPhotos, setAlbumPhotos] = useState<Photo[]>([]);
   const [loadingPhotos, setLoadingPhotos] = useState(false);
@@ -71,36 +74,38 @@ export const usePhotoManagement = ({ setMessage }: UsePhotoManagementProps) => {
     async (filename: string): Promise<boolean> => {
       if (!selectedAlbum) return false;
       
-      if (!confirm(`Are you sure you want to delete "${filename}"?`)) {
-        return false;
-      }
+      showConfirmation({
+        message: `Are you sure you want to delete "${filename}"?\n\nThis action cannot be undone.`,
+        confirmText: 'Delete Photo',
+        isDanger: true,
+        onConfirm: async () => {
+          try {
+            const res = await fetchWithRateLimitCheck(
+              `${API_URL}/api/albums/${encodeURIComponent(selectedAlbum)}/photos/${encodeURIComponent(filename)}`,
+              {
+                method: 'DELETE',
+                credentials: 'include',
+              }
+            );
 
-      try {
-        const res = await fetchWithRateLimitCheck(
-          `${API_URL}/api/albums/${encodeURIComponent(selectedAlbum)}/photos/${encodeURIComponent(filename)}`,
-          {
-            method: 'DELETE',
-            credentials: 'include',
+            if (!res.ok) {
+              throw new Error('Failed to delete photo');
+            }
+
+            // Remove photo from local state
+            setAlbumPhotos((prev) => prev.filter((p) => p.id.split('/').pop() !== filename));
+            setOriginalPhotoOrder((prev) => prev.filter((p) => p.id.split('/').pop() !== filename));
+            
+            setMessage({ type: 'success', text: `Photo "${filename}" deleted!` });
+            trackPhotoDeleted(selectedAlbum, filename, '');
+          } catch (err) {
+            setMessage({ type: 'error', text: 'Failed to delete photo' });
           }
-        );
-
-        if (!res.ok) {
-          throw new Error('Failed to delete photo');
-        }
-
-        // Remove photo from local state
-        setAlbumPhotos((prev) => prev.filter((p) => p.id.split('/').pop() !== filename));
-        setOriginalPhotoOrder((prev) => prev.filter((p) => p.id.split('/').pop() !== filename));
-        
-        setMessage({ type: 'success', text: `Photo "${filename}" deleted!` });
-        trackPhotoDeleted(selectedAlbum, filename, '');
-        return true;
-      } catch (err) {
-        setMessage({ type: 'error', text: 'Failed to delete photo' });
-        return false;
-      }
+        },
+      });
+      return true; // Return immediately, actual deletion happens in onConfirm
     },
-    [selectedAlbum, setMessage]
+    [selectedAlbum, setMessage, showConfirmation]
   );
 
   const savePhotoOrder = useCallback(async (): Promise<boolean> => {
@@ -109,7 +114,7 @@ export const usePhotoManagement = ({ setMessage }: UsePhotoManagementProps) => {
     setSavingOrder(true);
     try {
       const res = await fetchWithRateLimitCheck(
-        `${API_URL}/api/albums/${encodeURIComponent(selectedAlbum)}/photos/reorder`,
+        `${API_URL}/api/albums/${encodeURIComponent(selectedAlbum)}/photo-order`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -160,9 +165,9 @@ export const usePhotoManagement = ({ setMessage }: UsePhotoManagementProps) => {
       
       try {
         const res = await fetchWithRateLimitCheck(
-          `${API_URL}/api/albums/${encodeURIComponent(selectedAlbum)}/photos/${encodeURIComponent(filename)}/title`,
+          `${API_URL}/api/image-metadata/${encodeURIComponent(selectedAlbum)}/${encodeURIComponent(filename)}`,
           {
-            method: 'PATCH',
+            method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ title: newTitle }),
             credentials: 'include',
@@ -217,6 +222,30 @@ export const usePhotoManagement = ({ setMessage }: UsePhotoManagementProps) => {
     }
   }, [editingPhoto, editTitleValue, updatePhotoTitle, closeEditModal]);
 
+  // Photo drag handlers
+  const handlePhotoDragStart = useCallback((_event: DragEndEvent) => {
+    setHasEverDragged(true);
+    // Prevent scrolling during drag on mobile
+    document.body.style.overflow = 'hidden';
+    document.body.style.touchAction = 'none';
+  }, []);
+
+  const handlePhotoDragEnd = useCallback((event: DragEndEvent) => {
+    const { active, over } = event;
+
+    // Restore scrolling
+    document.body.style.overflow = '';
+    document.body.style.touchAction = '';
+
+    if (over && active.id !== over.id) {
+      setAlbumPhotos((photos) => {
+        const oldIndex = photos.findIndex((p) => p.id === active.id);
+        const newIndex = photos.findIndex((p) => p.id === over.id);
+        return arrayMove(photos, oldIndex, newIndex);
+      });
+    }
+  }, []);
+
   return {
     selectedAlbum,
     albumPhotos,
@@ -233,6 +262,8 @@ export const usePhotoManagement = ({ setMessage }: UsePhotoManagementProps) => {
     cancelPhotoReorder,
     shufflePhotos,
     updatePhotoTitle,
+    handlePhotoDragStart,
+    handlePhotoDragEnd,
     // Edit modal
     editingPhoto,
     editTitleValue,

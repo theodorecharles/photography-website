@@ -7,9 +7,9 @@
  * - SortablePhotoItem: Drag-and-drop photo thumbnails
  */
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { UploadingImage, AlbumsManagerProps } from './types';
+import { UploadingImage, AlbumsManagerProps, ConfirmModalConfig } from './types';
 import { trackAlbumCreated } from '../../../utils/analytics';
 import PhotosPanel from './components/PhotosPanel';
 import AlbumToolbar from './components/AlbumToolbar';
@@ -21,7 +21,6 @@ import { usePhotoManagement } from './hooks/usePhotoManagement';
 import { useFolderManagement } from './hooks/useFolderManagement';
 import { isValidAlbumName } from './utils/albumHelpers';
 import { customCollisionDetection } from './utils/collisionDetection';
-import { ConfirmModalConfig } from './utils/modalHelpers';
 import { createDragDropHandlers } from './handlers/dragDropHandlers';
 import { createFolderHandlers } from './handlers/folderHandlers';
 import { createUploadHandlers } from './handlers/uploadHandlers';
@@ -54,10 +53,20 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
 }) => {
   const [searchParams, setSearchParams] = useSearchParams();
   
+  // Confirmation modal state (needed early for hooks)
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [confirmConfig, setConfirmConfig] = useState<ConfirmModalConfig | null>(null);
+  
+  // Helper function to show confirmation dialog
+  const showConfirmation = useCallback((config: ConfirmModalConfig) => {
+    setConfirmConfig(config);
+    setShowConfirmModal(true);
+  }, []);
+  
   // Use custom hooks for album, photo, and folder management
   const albumManagement = useAlbumManagement({ albums, folders, setMessage, loadAlbums });
-  const photoManagement = usePhotoManagement({ setMessage });
-  const folderManagement = useFolderManagement({ setMessage, loadAlbums });
+  const photoManagement = usePhotoManagement({ setMessage, showConfirmation });
+  const folderManagement = useFolderManagement({ setMessage, loadAlbums, showConfirmation });
   
   // Extract commonly used values from hooks
   const {
@@ -190,10 +199,6 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   const [showShareModal, setShowShareModal] = useState(false);
   const [shareAlbumName, setShareAlbumName] = useState<string | null>(null);
   
-  // Confirmation modal state
-  const [showConfirmModal, setShowConfirmModal] = useState(false);
-  const [confirmConfig] = useState<ConfirmModalConfig | null>(null);
-  
   // Folder deletion modal state
   const [showDeleteFolderModal, setShowDeleteFolderModal] = useState(false);
   const [deletingFolderName] = useState<string | null>(null);
@@ -251,6 +256,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     setNewAlbumName,
     renamingAlbum,
     newAlbumName,
+    showConfirmation,
   });
 
   const uiHandlers = createUIInteractionHandlers({
@@ -274,6 +280,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     loadPhotos: photoManagement.loadPhotos,
     shufflePhotos: photoManagement.shufflePhotos,
     setMessage,
+    showConfirmation,
   });
 
   // Handlers are accessed via namespace pattern (e.g., dragDropHandlers.handlePhotoDragStart)
@@ -398,16 +405,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
             onAlbumDragOver={dragDropHandlers.handleAlbumTileDragOver}
             onAlbumDragLeave={(e) => dragDropHandlers.handleAlbumTileDragLeave(e)}
             onAlbumDrop={dragDropHandlers.handleAlbumTileDrop}
-            onAlbumRename={(albumName) => albumHandlers.handleOpenRenameModal(albumName)}
             onCreateAlbumInFolder={uiHandlers.handleCreateAlbumInFolder}
-            onAlbumTogglePublished={albumHandlers.handleTogglePublished}
-            onShare={(albumName) => {
-              setShareAlbumName(albumName);
-              setShowShareModal(true);
-            }}
-            onPreview={(albumName) => {
-              window.open(`/albums/${encodeURIComponent(albumName)}`, '_blank');
-            }}
           />
           
           <UncategorizedSection
@@ -425,20 +423,11 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
             onAlbumDragOver={dragDropHandlers.handleAlbumTileDragOver}
             onAlbumDragLeave={dragDropHandlers.handleAlbumTileDragLeave}
             onAlbumDrop={dragDropHandlers.handleAlbumTileDrop}
-            onAlbumRename={albumHandlers.handleOpenRenameModal}
             onGhostTileClick={uiHandlers.handleGhostTileClick}
             onGhostTileDragOver={uiHandlers.handleGhostTileDragOver}
             onGhostTileDragLeave={uiHandlers.handleGhostTileDragLeave}
             onGhostTileDrop={uiHandlers.handleGhostTileDrop}
             onGhostTileFileSelect={uiHandlers.handleGhostTileFileSelect}
-            onAlbumTogglePublished={albumHandlers.handleTogglePublished}
-            onShare={(albumName) => {
-              setShareAlbumName(albumName);
-              setShowShareModal(true);
-            }}
-            onPreview={(albumName) => {
-              window.open(`/albums/${encodeURIComponent(albumName)}`, '_blank');
-            }}
           />
           
           
@@ -505,13 +494,17 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                 setShareAlbumName(albumName);
                 setShowShareModal(true);
               }}
+              onTogglePublished={albumHandlers.handleTogglePublished}
+              onPreviewAlbum={(albumName) => {
+                window.open(`/album/${encodeURIComponent(albumName)}`, '_blank');
+              }}
               onSavePhotoOrder={() => photoManagement.savePhotoOrder()}
               onCancelPhotoOrder={photoManagement.cancelPhotoReorder}
               onShufflePhotos={photoHandlers.handleShuffleClick}
               onShuffleStart={photoHandlers.handleShuffleStart}
               onShuffleEnd={photoHandlers.handleShuffleEnd}
-              onPhotoDragStart={dragDropHandlers.handlePhotoDragStart}
-              onPhotoDragEnd={dragDropHandlers.handlePhotoDragEnd}
+              onPhotoDragStart={photoManagement.handlePhotoDragStart}
+              onPhotoDragEnd={photoManagement.handlePhotoDragEnd}
               onOpenEditModal={openEditModal}
               onDeletePhoto={(filename) => photoHandlers.handleDeletePhoto(selectedAlbum!, filename)}
               onDragOver={uploadHandlers.handleDragOver}

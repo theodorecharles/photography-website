@@ -4,7 +4,7 @@
  */
 
 import { useState, useCallback } from 'react';
-// import { AlbumFolder } from '../types'; // not used directly in this file
+import { ConfirmModalConfig } from '../types';
 import { fetchWithRateLimitCheck } from '../../../../utils/fetchWrapper';
 
 const API_URL = import.meta.env.VITE_API_URL || '';
@@ -12,11 +12,13 @@ const API_URL = import.meta.env.VITE_API_URL || '';
 interface UseFolderManagementProps {
   setMessage: (message: { type: 'success' | 'error'; text: string }) => void;
   loadAlbums: () => Promise<void>;
+  showConfirmation: (config: ConfirmModalConfig) => void;
 }
 
 export const useFolderManagement = ({
   setMessage,
   loadAlbums,
+  showConfirmation,
 }: UseFolderManagementProps) => {
   const [newFolderName, setNewFolderName] = useState('');
   const [isCreatingFolder, setIsCreatingFolder] = useState(false);
@@ -57,32 +59,33 @@ export const useFolderManagement = ({
   }, [loadAlbums, setMessage]);
 
   const deleteFolder = useCallback(async (folderId: number, folderName: string): Promise<boolean> => {
-    if (!confirm(`Are you sure you want to delete the folder "${folderName}"? Albums in this folder will be moved to Uncategorized.`)) {
-      return false;
-    }
+    showConfirmation({
+      message: `Are you sure you want to delete the folder "${folderName}"? Albums in this folder will be moved to Uncategorized.`,
+      confirmText: 'Delete Folder',
+      isDanger: true,
+      onConfirm: async () => {
+        try {
+          const res = await fetchWithRateLimitCheck(`${API_URL}/api/folders/${folderId}`, {
+            method: 'DELETE',
+            credentials: 'include',
+          });
 
-    try {
-      const res = await fetchWithRateLimitCheck(`${API_URL}/api/folders/${folderId}`, {
-        method: 'DELETE',
-        credentials: 'include',
-      });
+          if (!res.ok) {
+            throw new Error('Failed to delete folder');
+          }
 
-      if (!res.ok) {
-        throw new Error('Failed to delete folder');
-      }
-
-      await loadAlbums();
-      setMessage({ type: 'success', text: `Folder "${folderName}" deleted!` });
-      
-      // Notify other components
-      window.dispatchEvent(new Event('albums-updated'));
-      
-      return true;
-    } catch (err) {
-      setMessage({ type: 'error', text: 'Failed to delete folder' });
-      return false;
-    }
-  }, [loadAlbums, setMessage]);
+          await loadAlbums();
+          setMessage({ type: 'success', text: `Folder "${folderName}" deleted!` });
+          
+          // Notify other components
+          window.dispatchEvent(new Event('albums-updated'));
+        } catch (err) {
+          setMessage({ type: 'error', text: 'Failed to delete folder' });
+        }
+      },
+    });
+    return true; // Return immediately, actual deletion happens in onConfirm
+  }, [loadAlbums, setMessage, showConfirmation]);
 
   const toggleFolderPublished = useCallback(async (
     folderId: number,
@@ -126,9 +129,9 @@ export const useFolderManagement = ({
   ): Promise<boolean> => {
     try {
       const res = await fetchWithRateLimitCheck(
-        `${API_URL}/api/albums/${encodeURIComponent(albumName)}/folder`,
+        `${API_URL}/api/albums/${encodeURIComponent(albumName)}/move`,
         {
-          method: 'PATCH',
+          method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
           body: JSON.stringify({ folder_id: targetFolderId }),

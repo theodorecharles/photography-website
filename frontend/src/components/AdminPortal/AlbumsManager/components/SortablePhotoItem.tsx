@@ -103,6 +103,7 @@ const SortablePhotoItem: React.FC<SortablePhotoItemProps> = ({
   };
 
   const imageUrl = `${API_URL}${photo.thumbnail}?i=${cacheBustValue}`;
+  const filename = photo.id.split('/').pop() || photo.id;
 
   return (
     <div
@@ -121,6 +122,12 @@ const SortablePhotoItem: React.FC<SortablePhotoItemProps> = ({
         alt={photo.title}
         className="admin-photo-thumbnail"
       />
+
+      {/* Photo info section (shown in list view) */}
+      <div className="photo-info">
+        <div className="photo-filename">{filename}</div>
+        {photo.title && <div className="photo-title">{photo.title}</div>}
+      </div>
 
       <div className="photo-overlay" onClick={handleOverlayClick}>
         <div className="photo-actions">
