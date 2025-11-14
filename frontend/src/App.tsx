@@ -34,6 +34,9 @@ const AuthError = lazy(() => import("./components/Misc/AuthError"));
 import NotFound from "./components/Misc/NotFound";
 const SharedAlbum = lazy(() => import("./components/SharedAlbum"));
 const SetupWizard = lazy(() => import("./components/SetupWizard"));
+const InviteSignup = lazy(() => import("./components/Misc/InviteSignup"));
+const PasswordResetRequest = lazy(() => import("./components/Misc/PasswordResetRequest"));
+const PasswordResetComplete = lazy(() => import("./components/Misc/PasswordResetComplete"));
 
 // AlbumRoute component handles the routing for individual album pages
 function AlbumRoute({ onAlbumNotFound, onLoadComplete }: { onAlbumNotFound: () => void; onLoadComplete: () => void }) {
@@ -467,6 +470,36 @@ function App() {
               </>
             } />
             <Route path="/shared/:secretKey" element={<SharedAlbum />} />
+            <Route path="/invite/:token" element={
+              <>
+                <SEO 
+                  title="Complete Registration - Ted Charles Photography"
+                  description="Complete your account registration"
+                  url={`${SITE_URL}/invite`}
+                />
+                <InviteSignup />
+              </>
+            } />
+            <Route path="/reset-password" element={
+              <>
+                <SEO 
+                  title="Reset Password - Ted Charles Photography"
+                  description="Reset your account password"
+                  url={`${SITE_URL}/reset-password`}
+                />
+                <PasswordResetRequest />
+              </>
+            } />
+            <Route path="/reset-password/:token" element={
+              <>
+                <SEO 
+                  title="Set New Password - Ted Charles Photography"
+                  description="Set a new password for your account"
+                  url={`${SITE_URL}/reset-password`}
+                />
+                <PasswordResetComplete />
+              </>
+            } />
             <Route path="/primes" element={<PrimesRedirect />} />
             <Route path="/primes/*" element={<PrimesRedirect />} />
             <Route path="*" element={

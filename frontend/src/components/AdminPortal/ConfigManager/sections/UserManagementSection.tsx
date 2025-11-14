@@ -19,6 +19,7 @@ interface User {
   mfa_enabled: boolean;
   passkey_count: number;
   is_active: boolean;
+  status: 'invited' | 'invite_expired' | null;
   created_at: string;
   last_login_at: string | null;
 }
@@ -41,12 +42,10 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
   const [loading, setLoading] = useState<boolean>(false);
   const [currentUser, setCurrentUser] = useState<{ id: number; email: string } | null>(null);
   
-  // New user form
+  // New user form (invitation)
   const [showNewUserForm, setShowNewUserForm] = useState<boolean>(false);
   const [newUser, setNewUser] = useState({
     email: '',
-    password: '',
-    name: '',
     role: 'viewer',
   });
   
@@ -118,20 +117,15 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
     }
   };
 
-  const handleCreateUser = async () => {
-    if (!newUser.email || !newUser.password) {
-      setMessage({ type: 'error', text: 'Please fill in all required fields' });
-      return;
-    }
-
-    if (newUser.password.length < 8) {
-      setMessage({ type: 'error', text: 'Password must be at least 8 characters' });
+  const handleInviteUser = async () => {
+    if (!newUser.email) {
+      setMessage({ type: 'error', text: 'Email is required' });
       return;
     }
 
     setLoading(true);
     try {
-      const res = await fetch(`${API_URL}/api/auth-extended/register`, {
+      const res = await fetch(`${API_URL}/api/auth-extended/invite`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -140,15 +134,90 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
 
       if (!res.ok) {
         const data = await res.json();
-        throw new Error(data.error || 'Failed to create user');
+        throw new Error(data.error || 'Failed to send invitation');
       }
 
-      setMessage({ type: 'success', text: 'User created successfully' });
+      const data = await res.json();
+      const message = data.emailSent 
+        ? 'Invitation sent successfully' 
+        : 'User created but email failed to send';
+      
+      setMessage({ 
+        type: data.emailSent ? 'success' : 'error', 
+        text: message 
+      });
+      
       setShowNewUserForm(false);
-      setNewUser({ email: '', password: '', name: '', role: 'viewer' });
+      setNewUser({ email: '', role: 'viewer' });
       loadUsers();
     } catch (err: any) {
-      setMessage({ type: 'error', text: err.message || 'Failed to create user' });
+      setMessage({ type: 'error', text: err.message || 'Failed to send invitation' });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResendInvite = async (userId: number) => {
+    if (!confirm('Resend invitation email to this user?')) {
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const res = await fetch(`${API_URL}/api/auth-extended/invite/resend/${userId}`, {
+        method: 'POST',
+        credentials: 'include',
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || 'Failed to resend invitation');
+      }
+
+      const data = await res.json();
+      const message = data.emailSent 
+        ? 'Invitation resent successfully' 
+        : 'Invitation updated but email failed to send';
+      
+      setMessage({ 
+        type: data.emailSent ? 'success' : 'error', 
+        text: message 
+      });
+      
+      loadUsers();
+    } catch (err: any) {
+      setMessage({ type: 'error', text: err.message || 'Failed to resend invitation' });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResetMFA = async (userId: number) => {
+    if (!confirm('This will disable MFA for this user and send them a password reset email. Continue?')) {
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const res = await fetch(`${API_URL}/api/auth-extended/users/${userId}/reset-mfa`, {
+        method: 'POST',
+        credentials: 'include',
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || 'Failed to reset MFA');
+      }
+
+      const data = await res.json();
+      setMessage({ 
+        type: 'success', 
+        text: data.message || 'MFA reset successfully' 
+      });
+      
+      loadUsers();
+    } catch (err: any) {
+      setMessage({ type: 'error', text: err.message || 'Failed to reset MFA' });
     } finally {
       setLoading(false);
     }
@@ -425,11 +494,11 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
               className="btn-primary"
               style={{ padding: '0.5rem 1rem' }}
             >
-              {showNewUserForm ? 'Cancel' : '+ New User'}
+              {showNewUserForm ? 'Cancel' : '+ Invite User'}
             </button>
           </div>
 
-          {/* New User Form */}
+          {/* New User Form (Invitation) */}
           {showNewUserForm && (
             <>
               <div className="branding-group">
@@ -441,37 +510,22 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
                   className="branding-input"
                   placeholder="user@example.com"
                 />
+                <p style={{ fontSize: '0.85rem', color: '#6b7280', margin: '0.5rem 0 0 0' }}>
+                  An invitation email will be sent to this address. The user will set up their name, password, and MFA.
+                </p>
               </div>
               <div className="branding-group">
-                <label className="branding-label">Name</label>
-                <input
-                  type="text"
-                  value={newUser.name}
-                  onChange={(e) => setNewUser({ ...newUser, name: e.target.value })}
+                <label className="branding-label">Role *</label>
+                <select
+                  value={newUser.role}
+                  onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
                   className="branding-input"
-                  placeholder="Full Name"
-                />
+                >
+                  <option value="viewer">Viewer</option>
+                  <option value="manager">Manager</option>
+                  <option value="admin">Admin</option>
+                </select>
               </div>
-              <div className="branding-group">
-                <label className="branding-label">Password *</label>
-                <PasswordInput
-                  value={newUser.password}
-                  onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
-                  placeholder="Min 8 characters"
-                />
-              </div>
-                <div className="branding-group">
-                  <label className="branding-label">Role *</label>
-                  <select
-                    value={newUser.role}
-                    onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
-                    className="branding-input"
-                  >
-                    <option value="viewer">Viewer</option>
-                    <option value="manager">Manager</option>
-                    <option value="admin">Admin</option>
-                  </select>
-                </div>
               <div className="section-button-group">
                 <button
                   onClick={() => setShowNewUserForm(false)}
@@ -481,11 +535,11 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
                   Cancel
                 </button>
                 <button
-                  onClick={handleCreateUser}
+                  onClick={handleInviteUser}
                   className="btn-primary"
                   disabled={loading}
                 >
-                  {loading ? 'Creating...' : 'Create User'}
+                  {loading ? 'Sending...' : 'Send Invitation'}
                 </button>
               </div>
             </>
@@ -517,11 +571,21 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
                 >
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem' }}>
                     <div>
-                      <h4 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <h4 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
                         {user.name || user.email}
                         {currentUser && user.id === currentUser.id && (
                           <span style={{ fontSize: '0.75rem', background: 'var(--primary-color)', color: 'white', padding: '0.2rem 0.5rem', borderRadius: '4px' }}>
                             You
+                          </span>
+                        )}
+                        {user.status === 'invited' && (
+                          <span style={{ fontSize: '0.75rem', background: '#dbeafe', color: '#1e40af', padding: '0.2rem 0.5rem', borderRadius: '4px' }}>
+                            ✉️ Invited
+                          </span>
+                        )}
+                        {user.status === 'invite_expired' && (
+                          <span style={{ fontSize: '0.75rem', background: '#fee2e2', color: '#991b1b', padding: '0.2rem 0.5rem', borderRadius: '4px' }}>
+                            ⏱️ Invite Expired
                           </span>
                         )}
                       </h4>
@@ -529,23 +593,36 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
                         {user.email}
                       </div>
                     </div>
-                    <button
-                      onClick={() => handleDeleteUser(user.id)}
-                      className="btn-secondary"
-                      style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem', background: '#ef4444', borderColor: '#dc2626' }}
-                      disabled={loading || Boolean(currentUser && user.id === currentUser.id)}
-                      title={currentUser && user.id === currentUser.id ? 'Cannot delete your own account' : 'Delete user'}
-                      onMouseEnter={(e) => {
-                        if (!(currentUser && user.id === currentUser.id) && !loading) {
-                          e.currentTarget.style.background = '#dc2626';
-                        }
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.background = '#ef4444';
-                      }}
-                    >
-                      Delete
-                    </button>
+                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                      {user.status === 'invite_expired' && (
+                        <button
+                          onClick={() => handleResendInvite(user.id)}
+                          className="btn-primary"
+                          style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}
+                          disabled={loading}
+                          title="Resend invitation email"
+                        >
+                          Resend Invite
+                        </button>
+                      )}
+                      <button
+                        onClick={() => handleDeleteUser(user.id)}
+                        className="btn-secondary"
+                        style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem', background: '#ef4444', borderColor: '#dc2626' }}
+                        disabled={loading || Boolean(currentUser && user.id === currentUser.id)}
+                        title={currentUser && user.id === currentUser.id ? 'Cannot delete your own account' : 'Delete user'}
+                        onMouseEnter={(e) => {
+                          if (!(currentUser && user.id === currentUser.id) && !loading) {
+                            e.currentTarget.style.background = '#dc2626';
+                          }
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = '#ef4444';
+                        }}
+                      >
+                        Delete
+                      </button>
+                    </div>
                   </div>
 
                   {/* Role & Auth Methods */}
@@ -591,51 +668,77 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
                     )}
                   </div>
 
-                  {/* User Actions - Only for current user */}
-                  {currentUser && user.id === currentUser.id && (
+                  {/* User Actions */}
+                  {currentUser && user.status !== 'invited' && user.status !== 'invite_expired' && (
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', paddingTop: '0.75rem', borderTop: '1px solid #e5e7eb' }}>
-                      {/* Change Password */}
-                      {user.auth_methods.includes('credentials') && showPasswordChange !== user.id && (
+                      {/* Own Account Actions */}
+                      {user.id === currentUser.id && (
+                        <>
+                          {/* Change Password */}
+                          {user.auth_methods.includes('credentials') && showPasswordChange !== user.id && (
+                            <button
+                              onClick={() => setShowPasswordChange(user.id)}
+                              className="btn-secondary"
+                              style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}
+                            >
+                              <LockIcon width={14} height={14} />
+                              Change Password
+                            </button>
+                          )}
+
+                          {/* MFA Toggle */}
+                          {!user.mfa_enabled ? (
+                            <button
+                              onClick={() => handleStartMFASetup(user.id)}
+                              className="btn-primary"
+                              style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}
+                              disabled={loading}
+                            >
+                              Enable MFA
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() => handleDisableMFA(user.id)}
+                              className="btn-secondary"
+                              style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}
+                              disabled={loading}
+                            >
+                              Disable MFA
+                            </button>
+                          )}
+
+                          {/* Passkeys */}
+                          <button
+                            onClick={() => showPasskeys === user.id ? setShowPasskeys(undefined) : handleLoadPasskeys(user.id)}
+                            className="btn-secondary"
+                            style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}
+                            disabled={loading}
+                          >
+                            🔑 Passkeys ({user.passkey_count})
+                          </button>
+                        </>
+                      )}
+                      
+                      {/* Admin Actions for Other Users */}
+                      {user.id !== currentUser.id && user.mfa_enabled && (
                         <button
-                          onClick={() => setShowPasswordChange(user.id)}
+                          onClick={() => handleResetMFA(user.id)}
                           className="btn-secondary"
-                          style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}
+                          style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem', background: '#fbbf24', borderColor: '#f59e0b' }}
+                          disabled={loading}
+                          title="Reset MFA and send password reset email"
+                          onMouseEnter={(e) => {
+                            if (!loading) {
+                              e.currentTarget.style.background = '#f59e0b';
+                            }
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.background = '#fbbf24';
+                          }}
                         >
-                          <LockIcon width={14} height={14} />
-                          Change Password
+                          Reset MFA
                         </button>
                       )}
-
-                      {/* MFA Toggle */}
-                      {!user.mfa_enabled ? (
-                        <button
-                          onClick={() => handleStartMFASetup(user.id)}
-                          className="btn-primary"
-                          style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}
-                          disabled={loading}
-                        >
-                          Enable MFA
-                        </button>
-                      ) : (
-                        <button
-                          onClick={() => handleDisableMFA(user.id)}
-                          className="btn-secondary"
-                          style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}
-                          disabled={loading}
-                        >
-                          Disable MFA
-                        </button>
-                      )}
-
-                      {/* Passkeys */}
-                      <button
-                        onClick={() => showPasskeys === user.id ? setShowPasskeys(undefined) : handleLoadPasskeys(user.id)}
-                        className="btn-secondary"
-                        style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}
-                        disabled={loading}
-                      >
-                        🔑 Passkeys ({user.passkey_count})
-                      </button>
                     </div>
                   )}
 

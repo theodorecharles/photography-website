@@ -190,6 +190,124 @@ Photography portfolio website with React 19, TypeScript, Express 5, and SQLite.
 
 **File**: `backend/src/routes/albums.ts`
 
+### Email Service
+
+**Purpose**: Sends invitation and password reset emails.
+
+**Implementation**: Nodemailer with SMTP configuration.
+
+**Location**: `backend/src/email.ts`
+
+**Configuration**: Add to `config.json`:
+```json
+{
+  "email": {
+    "enabled": true,
+    "smtp": {
+      "host": "smtp.example.com",
+      "port": 587,
+      "secure": false,
+      "auth": {
+        "user": "your-email@example.com",
+        "pass": "your-password"
+      }
+    },
+    "from": {
+      "name": "Your Site Name",
+      "address": "noreply@example.com"
+    }
+  }
+}
+```
+
+**Email Types**:
+- **Invitation Email**: Sent when admin invites new user (7-day expiry)
+- **Password Reset Email**: Sent when user requests password reset (1-hour expiry)
+
+**Functions**:
+- `sendInvitationEmail(email, token, inviterName)` - Send invitation
+- `sendPasswordResetEmail(email, token, userName)` - Send password reset
+- `testEmailConfig()` - Test SMTP connection
+
+### User Invitation Flow
+
+**Purpose**: Secure user onboarding with email-based invitation system.
+
+**Process**:
+1. **Admin invites user** (via `/api/auth-extended/invite`)
+   - Admin provides email and role
+   - System generates secure invite token (32-byte hex)
+   - User created with status='invited', 7-day expiry
+   - Invitation email sent with signup link
+
+2. **User receives email** with link to `/invite/:token`
+   - Token validates before showing signup form
+   - Form collects: name, password (min 8 chars)
+   - Optional: MFA setup during signup
+   
+3. **User completes signup** (via `/api/auth-extended/invite/:token/complete`)
+   - System validates token and expiry
+   - Sets name and password hash
+   - Updates status to 'active'
+   - User can now log in
+
+**User Statuses**:
+- `invited` - User invited, pending signup (shown as "✉️ Invited")
+- `invite_expired` - Invitation expired after 7 days (shown as "⏱️ Invite Expired" with Resend button)
+- `active` - User completed signup (no status badge shown)
+
+**Admin Actions**:
+- **Resend Invite**: Generates new token with fresh 7-day expiry
+- **Delete User**: Remove user before they complete signup
+
+**Database Fields** (users table):
+- `status` - User status (invited/active/invite_expired)
+- `invite_token` - Secure random token for invitation link
+- `invite_expires_at` - ISO timestamp when invitation expires
+
+**Files**:
+- Backend: `backend/src/routes/auth-extended.ts`
+- Frontend: `frontend/src/components/Misc/InviteSignup.tsx`
+- Frontend: `frontend/src/components/AdminPortal/ConfigManager/sections/UserManagementSection.tsx`
+
+### Password Reset Flow
+
+**Purpose**: Secure password recovery for users without MFA.
+
+**Restrictions**: Only available for users without MFA enabled (prevents MFA bypass).
+
+**Process**:
+1. **User requests reset** (`/reset-password`)
+   - Provides email address
+   - System generates secure reset token (32-byte hex)
+   - Token valid for 1 hour
+   - Password reset email sent
+
+2. **User receives email** with link to `/reset-password/:token`
+   - Token validates before showing password form
+   - User sets new password (min 8 chars)
+   
+3. **Password reset completes**
+   - System updates password hash
+   - Clears reset token
+   - User redirected to login
+
+**Admin MFA Reset**:
+- If user has MFA enabled and needs password reset
+- Admin uses "Reset MFA" button in user management
+- Disables user's MFA
+- Generates password reset token
+- Sends password reset email
+
+**Database Fields** (users table):
+- `password_reset_token` - Secure random token for reset link
+- `password_reset_expires_at` - ISO timestamp when reset expires (1 hour)
+
+**Files**:
+- Backend: `backend/src/routes/auth-extended.ts`
+- Frontend: `frontend/src/components/Misc/PasswordResetRequest.tsx`
+- Frontend: `frontend/src/components/Misc/PasswordResetComplete.tsx`
+
 ## API Endpoints
 
 ### Public Endpoints
@@ -202,6 +320,11 @@ Photography portfolio website with React 19, TypeScript, Express 5, and SQLite.
 - `GET /api/preview-grid/shared/:secretKey` - 2x2 preview for shared album
 - `GET /sitemap.xml` - SEO sitemap
 - `GET /api/health` - Health check
+- `GET /api/auth-extended/invite/:token` - Validate invitation token
+- `POST /api/auth-extended/invite/:token/complete` - Complete user signup from invitation
+- `POST /api/auth-extended/password-reset/request` - Request password reset link
+- `GET /api/auth-extended/password-reset/:token` - Validate password reset token
+- `POST /api/auth-extended/password-reset/:token/complete` - Complete password reset
 
 ### Authenticated Endpoints
 
@@ -213,6 +336,11 @@ Photography portfolio website with React 19, TypeScript, Express 5, and SQLite.
 - `PUT /api/album-management/albums/:album/publish` - Toggle published state
 - `POST /api/album-management/:album/share` - Create share link
 - `DELETE /api/album-management/share/:shareId` - Delete share link
+- `POST /api/auth-extended/invite` - Invite new user (admin only, sends invitation email)
+- `POST /api/auth-extended/invite/resend/:userId` - Resend invitation email (admin only)
+- `POST /api/auth-extended/users/:userId/reset-mfa` - Reset user's MFA (admin only, sends password reset email)
+- `GET /api/auth-extended/users` - List all users with status indicators
+- `DELETE /api/auth-extended/users/:userId` - Delete user (admin only)
 - All `/api/analytics/*` - Analytics queries
 - All `/api/branding/*` - Branding config
 - All `/api/config/*` - Site config

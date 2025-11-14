@@ -24,6 +24,11 @@ export interface User {
   role: string;
   is_active: boolean;
   email_verified: boolean;
+  status: string; // 'invited', 'active', 'invite_expired'
+  invite_token: string | null;
+  invite_expires_at: string | null;
+  password_reset_token: string | null;
+  password_reset_expires_at: string | null;
   created_at: string;
   updated_at: string;
   last_login_at: string | null;
@@ -496,5 +501,158 @@ export function deleteUser(userId: number): boolean {
   
   const stmt = db.prepare('DELETE FROM users WHERE id = ?');
   const result = stmt.run(userId);
+  return result.changes > 0;
+}
+
+/**
+ * Create invited user (without password, pending setup)
+ */
+export function createInvitedUser(data: {
+  email: string;
+  role?: string;
+  invite_token: string;
+  invite_expires_at: string;
+}): User {
+  const db = getDatabase();
+  
+  const role = data.role || 'viewer';
+  
+  const stmt = db.prepare(`
+    INSERT INTO users (
+      email, role, status, invite_token, invite_expires_at,
+      auth_methods, email_verified
+    )
+    VALUES (?, ?, 'invited', ?, ?, '[]', 0)
+  `);
+  
+  const result = stmt.run(
+    data.email,
+    role,
+    data.invite_token,
+    data.invite_expires_at
+  );
+  
+  return getUserById(result.lastInsertRowid as number)!;
+}
+
+/**
+ * Get user by invite token
+ */
+export function getUserByInviteToken(token: string): User | null {
+  const db = getDatabase();
+  const stmt = db.prepare('SELECT * FROM users WHERE invite_token = ?');
+  const row = stmt.get(token);
+  return parseUser(row);
+}
+
+/**
+ * Complete user invitation (set name, password, mark as active)
+ */
+export function completeInvitation(
+  userId: number,
+  data: {
+    name: string;
+    password: string;
+  }
+): boolean {
+  const db = getDatabase();
+  
+  const passwordHash = bcrypt.hashSync(data.password, BCRYPT_ROUNDS);
+  
+  const stmt = db.prepare(`
+    UPDATE users 
+    SET name = ?, password_hash = ?, status = 'active',
+        invite_token = NULL, invite_expires_at = NULL,
+        auth_methods = '["credentials"]', email_verified = 1,
+        updated_at = CURRENT_TIMESTAMP
+    WHERE id = ?
+  `);
+  
+  const result = stmt.run(data.name, passwordHash, userId);
+  return result.changes > 0;
+}
+
+/**
+ * Update user status
+ */
+export function updateUserStatus(userId: number, status: string): boolean {
+  const db = getDatabase();
+  
+  const stmt = db.prepare(`
+    UPDATE users 
+    SET status = ?, updated_at = CURRENT_TIMESTAMP
+    WHERE id = ?
+  `);
+  
+  const result = stmt.run(status, userId);
+  return result.changes > 0;
+}
+
+/**
+ * Set password reset token
+ */
+export function setPasswordResetToken(
+  userId: number,
+  token: string,
+  expiresAt: string
+): boolean {
+  const db = getDatabase();
+  
+  const stmt = db.prepare(`
+    UPDATE users 
+    SET password_reset_token = ?, password_reset_expires_at = ?,
+        updated_at = CURRENT_TIMESTAMP
+    WHERE id = ?
+  `);
+  
+  const result = stmt.run(token, expiresAt, userId);
+  return result.changes > 0;
+}
+
+/**
+ * Get user by password reset token
+ */
+export function getUserByPasswordResetToken(token: string): User | null {
+  const db = getDatabase();
+  const stmt = db.prepare('SELECT * FROM users WHERE password_reset_token = ?');
+  const row = stmt.get(token);
+  return parseUser(row);
+}
+
+/**
+ * Clear password reset token
+ */
+export function clearPasswordResetToken(userId: number): boolean {
+  const db = getDatabase();
+  
+  const stmt = db.prepare(`
+    UPDATE users 
+    SET password_reset_token = NULL, password_reset_expires_at = NULL,
+        updated_at = CURRENT_TIMESTAMP
+    WHERE id = ?
+  `);
+  
+  const result = stmt.run(userId);
+  return result.changes > 0;
+}
+
+/**
+ * Resend invitation (generate new token and expiry)
+ */
+export function resendInvitation(
+  userId: number,
+  newToken: string,
+  newExpiresAt: string
+): boolean {
+  const db = getDatabase();
+  
+  const stmt = db.prepare(`
+    UPDATE users 
+    SET invite_token = ?, invite_expires_at = ?, status = 'invited',
+        updated_at = CURRENT_TIMESTAMP
+    WHERE id = ?
+  `);
+  
+  const result = stmt.run(newToken, newExpiresAt, userId);
   return result.changes > 0;
 }

@@ -21,6 +21,13 @@ import {
   getUserByEmail,
   getAllUsers,
   deleteUser,
+  createInvitedUser,
+  getUserByInviteToken,
+  completeInvitation,
+  setPasswordResetToken,
+  getUserByPasswordResetToken,
+  clearPasswordResetToken,
+  resendInvitation,
   type User,
 } from '../database-users.js';
 import {
@@ -36,6 +43,7 @@ import {
   verifyPasskeyAuthentication,
 } from '../auth/passkeys.js';
 import crypto from 'crypto';
+import { sendInvitationEmail, sendPasswordResetEmail } from '../email.js';
 
 const router = Router();
 
@@ -175,20 +183,15 @@ router.post('/login', async (req: Request, res: Response) => {
 });
 
 /**
- * Register new user with email/password
- * Must be admin to create users
+ * Invite new user (admin only)
+ * Sends invitation email, user must complete signup
  */
-router.post('/register', requireAdmin, async (req: Request, res: Response) => {
+router.post('/invite', requireAdmin, async (req: Request, res: Response) => {
   try {
-    const { email, password, name, role } = req.body;
+    const { email, role } = req.body;
 
-    if (!email || !password) {
-      return res.status(400).json({ error: 'Missing required fields' });
-    }
-
-    // Validate password strength
-    if (password.length < 8) {
-      return res.status(400).json({ error: 'Password must be at least 8 characters' });
+    if (!email) {
+      return res.status(400).json({ error: 'Email is required' });
     }
 
     // Check if user already exists
@@ -218,28 +221,368 @@ router.post('/register', requireAdmin, async (req: Request, res: Response) => {
       }
     }
 
-    // Create user
-    const user = createUser({
+    // Generate invite token (secure random string)
+    const inviteToken = crypto.randomBytes(32).toString('hex');
+    
+    // Set expiry to 7 days from now
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + 7);
+
+    // Create invited user
+    const user = createInvitedUser({
       email,
-      password,
-      name,
       role: userRole,
-      auth_methods: ['credentials'],
-      email_verified: false,
+      invite_token: inviteToken,
+      invite_expires_at: expiresAt.toISOString(),
     });
+
+    // Get inviter name for email
+    const inviter = creatorUserId ? getUserById(creatorUserId) : null;
+    const inviterName = inviter?.name || 'Administrator';
+
+    // Send invitation email
+    const emailSent = await sendInvitationEmail(email, inviteToken, inviterName);
+
+    if (!emailSent) {
+      console.warn('[Invite] Failed to send invitation email, but user created');
+    }
 
     res.json({
       success: true,
       user: {
         id: user.id,
         email: user.email,
-        name: user.name,
         role: user.role,
+        status: user.status,
+      },
+      emailSent,
+    });
+  } catch (error) {
+    console.error('Invitation error:', error);
+    res.status(500).json({ error: 'Failed to send invitation' });
+  }
+});
+
+/**
+ * Resend invitation (admin only)
+ */
+router.post('/invite/resend/:userId', requireAdmin, async (req: Request, res: Response) => {
+  try {
+    const userId = parseInt(req.params.userId);
+    const user = getUserById(userId);
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    if (user.status !== 'invite_expired' && user.status !== 'invited') {
+      return res.status(400).json({ error: 'User has already completed signup' });
+    }
+
+    // Generate new invite token
+    const inviteToken = crypto.randomBytes(32).toString('hex');
+    
+    // Set expiry to 7 days from now
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + 7);
+
+    // Update user with new token
+    resendInvitation(userId, inviteToken, expiresAt.toISOString());
+
+    // Get inviter name for email
+    const creatorUserId = getUserIdFromRequest(req);
+    const inviter = creatorUserId ? getUserById(creatorUserId) : null;
+    const inviterName = inviter?.name || 'Administrator';
+
+    // Send invitation email
+    const emailSent = await sendInvitationEmail(user.email, inviteToken, inviterName);
+
+    res.json({
+      success: true,
+      emailSent,
+    });
+  } catch (error) {
+    console.error('Resend invitation error:', error);
+    res.status(500).json({ error: 'Failed to resend invitation' });
+  }
+});
+
+/**
+ * Validate invite token
+ */
+router.get('/invite/:token', async (req: Request, res: Response) => {
+  try {
+    const { token } = req.params;
+    const user = getUserByInviteToken(token);
+
+    if (!user) {
+      return res.status(404).json({ error: 'Invalid invitation link' });
+    }
+
+    // Check if invitation has expired
+    if (user.invite_expires_at) {
+      const expiresAt = new Date(user.invite_expires_at);
+      if (expiresAt < new Date()) {
+        return res.status(400).json({ error: 'Invitation has expired' });
+      }
+    }
+
+    // Check if user has already completed signup
+    if (user.status === 'active') {
+      return res.status(400).json({ error: 'Invitation already used' });
+    }
+
+    res.json({
+      valid: true,
+      email: user.email,
+      role: user.role,
+    });
+  } catch (error) {
+    console.error('Validate invite error:', error);
+    res.status(500).json({ error: 'Failed to validate invitation' });
+  }
+});
+
+/**
+ * Complete user signup from invitation
+ */
+router.post('/invite/:token/complete', async (req: Request, res: Response) => {
+  try {
+    const { token } = req.params;
+    const { name, password, totpToken, setupToken } = req.body;
+
+    if (!name || !password) {
+      return res.status(400).json({ error: 'Name and password are required' });
+    }
+
+    // Validate password strength
+    if (password.length < 8) {
+      return res.status(400).json({ error: 'Password must be at least 8 characters' });
+    }
+
+    const user = getUserByInviteToken(token);
+
+    if (!user) {
+      return res.status(404).json({ error: 'Invalid invitation link' });
+    }
+
+    // Check if invitation has expired
+    if (user.invite_expires_at) {
+      const expiresAt = new Date(user.invite_expires_at);
+      if (expiresAt < new Date()) {
+        return res.status(400).json({ error: 'Invitation has expired' });
+      }
+    }
+
+    // Check if user has already completed signup
+    if (user.status === 'active') {
+      return res.status(400).json({ error: 'Invitation already used' });
+    }
+
+    // Complete the invitation (set name, password, mark as active)
+    completeInvitation(user.id, { name, password });
+
+    // If MFA setup was requested, enable it
+    if (totpToken && setupToken) {
+      const setup = challenges.get(`mfa-setup-${setupToken}`);
+      if (setup && setup.userId === user.id && setup.expires > Date.now()) {
+        // Verify TOTP token (from MFA setup during signup)
+        // Note: This allows optional MFA setup during signup
+        const { backupCodes } = req.body;
+        if (backupCodes) {
+          enableMFA(user.id, setup.challenge, backupCodes);
+          challenges.delete(`mfa-setup-${setupToken}`);
+        }
+      }
+    }
+
+    // Get updated user
+    const updatedUser = getUserById(user.id);
+
+    res.json({
+      success: true,
+      user: {
+        id: updatedUser!.id,
+        email: updatedUser!.email,
+        name: updatedUser!.name,
+        role: updatedUser!.role,
       },
     });
   } catch (error) {
-    console.error('Registration error:', error);
-    res.status(500).json({ error: 'Registration failed' });
+    console.error('Complete signup error:', error);
+    res.status(500).json({ error: 'Failed to complete signup' });
+  }
+});
+
+/**
+ * Request password reset (public endpoint)
+ */
+router.post('/password-reset/request', async (req: Request, res: Response) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ error: 'Email is required' });
+    }
+
+    const user = getUserByEmail(email);
+
+    // Don't reveal if user exists or not (security best practice)
+    if (!user) {
+      return res.json({ success: true, message: 'If the email exists, a password reset link has been sent' });
+    }
+
+    // Only allow password reset if user doesn't have MFA enabled
+    if (user.mfa_enabled) {
+      return res.status(400).json({ 
+        error: 'Password reset not available for accounts with MFA enabled. Contact an administrator for assistance.' 
+      });
+    }
+
+    // Generate reset token
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    
+    // Set expiry to 1 hour from now
+    const expiresAt = new Date();
+    expiresAt.setHours(expiresAt.getHours() + 1);
+
+    // Save reset token
+    setPasswordResetToken(user.id, resetToken, expiresAt.toISOString());
+
+    // Send password reset email
+    const emailSent = await sendPasswordResetEmail(user.email, resetToken, user.name);
+
+    if (!emailSent) {
+      console.error('[Password Reset] Failed to send email');
+      return res.status(500).json({ error: 'Failed to send password reset email' });
+    }
+
+    res.json({ 
+      success: true, 
+      message: 'If the email exists, a password reset link has been sent' 
+    });
+  } catch (error) {
+    console.error('Password reset request error:', error);
+    res.status(500).json({ error: 'Failed to process password reset request' });
+  }
+});
+
+/**
+ * Validate password reset token
+ */
+router.get('/password-reset/:token', async (req: Request, res: Response) => {
+  try {
+    const { token } = req.params;
+    const user = getUserByPasswordResetToken(token);
+
+    if (!user) {
+      return res.status(404).json({ error: 'Invalid password reset link' });
+    }
+
+    // Check if reset token has expired
+    if (user.password_reset_expires_at) {
+      const expiresAt = new Date(user.password_reset_expires_at);
+      if (expiresAt < new Date()) {
+        return res.status(400).json({ error: 'Password reset link has expired' });
+      }
+    }
+
+    res.json({
+      valid: true,
+      email: user.email,
+    });
+  } catch (error) {
+    console.error('Validate password reset error:', error);
+    res.status(500).json({ error: 'Failed to validate password reset link' });
+  }
+});
+
+/**
+ * Complete password reset
+ */
+router.post('/password-reset/:token/complete', async (req: Request, res: Response) => {
+  try {
+    const { token } = req.params;
+    const { password } = req.body;
+
+    if (!password) {
+      return res.status(400).json({ error: 'Password is required' });
+    }
+
+    // Validate password strength
+    if (password.length < 8) {
+      return res.status(400).json({ error: 'Password must be at least 8 characters' });
+    }
+
+    const user = getUserByPasswordResetToken(token);
+
+    if (!user) {
+      return res.status(404).json({ error: 'Invalid password reset link' });
+    }
+
+    // Check if reset token has expired
+    if (user.password_reset_expires_at) {
+      const expiresAt = new Date(user.password_reset_expires_at);
+      if (expiresAt < new Date()) {
+        return res.status(400).json({ error: 'Password reset link has expired' });
+      }
+    }
+
+    // Update password
+    updatePassword(user.id, password);
+    
+    // Clear reset token
+    clearPasswordResetToken(user.id);
+
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Complete password reset error:', error);
+    res.status(500).json({ error: 'Failed to reset password' });
+  }
+});
+
+/**
+ * Admin: Reset user's MFA and send password reset email
+ */
+router.post('/users/:userId/reset-mfa', requireAdmin, async (req: Request, res: Response) => {
+  try {
+    const userId = parseInt(req.params.userId);
+    const user = getUserById(userId);
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    if (!user.mfa_enabled) {
+      return res.status(400).json({ error: 'User does not have MFA enabled' });
+    }
+
+    // Disable MFA
+    disableMFA(userId);
+
+    // Generate password reset token
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    
+    // Set expiry to 1 hour from now
+    const expiresAt = new Date();
+    expiresAt.setHours(expiresAt.getHours() + 1);
+
+    // Save reset token
+    setPasswordResetToken(userId, resetToken, expiresAt.toISOString());
+
+    // Send password reset email
+    const emailSent = await sendPasswordResetEmail(user.email, resetToken, user.name);
+
+    console.log(`[Admin] MFA reset for user ${user.email} (ID: ${userId})`);
+
+    res.json({
+      success: true,
+      emailSent,
+      message: 'MFA has been disabled and a password reset email has been sent',
+    });
+  } catch (error) {
+    console.error('Reset MFA error:', error);
+    res.status(500).json({ error: 'Failed to reset MFA' });
   }
 });
 
@@ -726,18 +1069,37 @@ router.get('/users', requireAuth, (req: Request, res: Response) => {
     const users = getAllUsers();
     
     // Remove sensitive data and add computed fields
-    const sanitizedUsers = users.map((user: User) => ({
-      id: user.id,
-      email: user.email,
-      name: user.name,
-      role: user.role,
-      auth_methods: user.auth_methods,
-      mfa_enabled: user.mfa_enabled,
-      passkey_count: user.passkeys?.length || 0,
-      is_active: user.is_active,
-      created_at: user.created_at,
-      last_login_at: user.last_login_at,
-    }));
+    const sanitizedUsers = users.map((user: User) => {
+      // Determine display status based on user state
+      let displayStatus = null;
+      if (user.status === 'invited') {
+        // Check if invite has expired
+        if (user.invite_expires_at) {
+          const expiresAt = new Date(user.invite_expires_at);
+          if (expiresAt < new Date()) {
+            displayStatus = 'invite_expired';
+          } else {
+            displayStatus = 'invited';
+          }
+        } else {
+          displayStatus = 'invited';
+        }
+      }
+      
+      return {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+        auth_methods: user.auth_methods,
+        mfa_enabled: user.mfa_enabled,
+        passkey_count: user.passkeys?.length || 0,
+        is_active: user.is_active,
+        status: displayStatus, // Only show status if invited or expired
+        created_at: user.created_at,
+        last_login_at: user.last_login_at,
+      };
+    });
 
     res.json({ users: sanitizedUsers });
   } catch (error) {
