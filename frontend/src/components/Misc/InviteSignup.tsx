@@ -102,17 +102,19 @@ const InviteSignup: React.FC = () => {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        background: '#1a1a1a',
       }}>
         <div style={{
-          background: 'white',
+          background: '#2a2a2a',
+          border: '1px solid #3a3a3a',
           borderRadius: '12px',
           padding: '3rem',
           maxWidth: '500px',
           width: '90%',
           textAlign: 'center',
+          boxShadow: '0 20px 60px rgba(0, 0, 0, 0.5)',
         }}>
-          <p style={{ color: '#6b7280' }}>Validating invitation...</p>
+          <p style={{ color: '#9ca3af' }}>Validating invitation...</p>
         </div>
       </div>
     );
@@ -125,15 +127,17 @@ const InviteSignup: React.FC = () => {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        background: '#1a1a1a',
       }}>
         <div style={{
-          background: 'white',
+          background: '#2a2a2a',
+          border: '1px solid #3a3a3a',
           borderRadius: '12px',
           padding: '3rem',
           maxWidth: '500px',
           width: '90%',
           textAlign: 'center',
+          boxShadow: '0 20px 60px rgba(0, 0, 0, 0.5)',
         }}>
           <div style={{
             fontSize: '4rem',
@@ -144,27 +148,22 @@ const InviteSignup: React.FC = () => {
           <h1 style={{
             fontSize: '1.5rem',
             marginBottom: '1rem',
-            color: '#1f2937',
+            color: '#ffffff',
           }}>
             Invalid Invitation
           </h1>
           <p style={{
-            color: '#6b7280',
+            color: '#9ca3af',
             marginBottom: '2rem',
           }}>
             {error}
           </p>
           <button
             onClick={() => navigate('/')}
+            className="btn-primary"
             style={{
-              background: 'var(--primary-color)',
-              color: 'white',
-              border: 'none',
               padding: '0.75rem 2rem',
-              borderRadius: '6px',
-              cursor: 'pointer',
               fontSize: '1rem',
-              fontWeight: 600,
             }}
           >
             Go to Homepage
@@ -180,42 +179,45 @@ const InviteSignup: React.FC = () => {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      background: '#1a1a1a',
       padding: '2rem',
     }}>
       <div style={{
-        background: 'white',
+        background: '#2a2a2a',
+        border: '1px solid #3a3a3a',
         borderRadius: '12px',
         padding: '3rem',
         maxWidth: '500px',
         width: '100%',
+        boxShadow: '0 20px 60px rgba(0, 0, 0, 0.5)',
       }}>
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
           <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>✉️</div>
           <h1 style={{
             fontSize: '1.75rem',
             marginBottom: '0.5rem',
-            color: '#1f2937',
+            color: '#ffffff',
           }}>
             Complete Your Registration
           </h1>
-          <p style={{ color: '#6b7280', fontSize: '0.95rem' }}>
+          <p style={{ color: '#9ca3af', fontSize: '0.95rem' }}>
             You've been invited to join. Please set up your account.
           </p>
         </div>
 
         {/* Email Display */}
         <div style={{
-          background: '#f3f4f6',
+          background: '#1e1e1e',
+          border: '1px solid #3a3a3a',
           padding: '1rem',
           borderRadius: '8px',
           marginBottom: '1.5rem',
           textAlign: 'center',
         }}>
-          <div style={{ fontSize: '0.85rem', color: '#6b7280', marginBottom: '0.25rem' }}>
+          <div style={{ fontSize: '0.85rem', color: '#9ca3af', marginBottom: '0.25rem' }}>
             Signing up as
           </div>
-          <div style={{ fontWeight: 600, color: '#1f2937' }}>
+          <div style={{ fontWeight: 600, color: '#e5e7eb' }}>
             {email}
           </div>
         </div>
@@ -223,13 +225,7 @@ const InviteSignup: React.FC = () => {
         {/* Signup Form */}
         <form onSubmit={handleSubmit}>
           <div style={{ marginBottom: '1.5rem' }}>
-            <label style={{
-              display: 'block',
-              fontSize: '0.875rem',
-              fontWeight: 500,
-              color: '#374151',
-              marginBottom: '0.5rem',
-            }}>
+            <label className="branding-label">
               Full Name *
             </label>
             <input
@@ -238,24 +234,15 @@ const InviteSignup: React.FC = () => {
               onChange={(e) => setName(e.target.value)}
               placeholder="Your name"
               required
+              className="branding-input"
               style={{
                 width: '100%',
-                padding: '0.75rem',
-                borderRadius: '6px',
-                border: '1px solid #d1d5db',
-                fontSize: '1rem',
               }}
             />
           </div>
 
           <div style={{ marginBottom: '1.5rem' }}>
-            <label style={{
-              display: 'block',
-              fontSize: '0.875rem',
-              fontWeight: 500,
-              color: '#374151',
-              marginBottom: '0.5rem',
-            }}>
+            <label className="branding-label">
               Password *
             </label>
             <PasswordInput
@@ -266,7 +253,7 @@ const InviteSignup: React.FC = () => {
             />
             <p style={{
               fontSize: '0.75rem',
-              color: '#6b7280',
+              color: '#9ca3af',
               marginTop: '0.5rem',
             }}>
               Must be at least 8 characters long
@@ -274,13 +261,7 @@ const InviteSignup: React.FC = () => {
           </div>
 
           <div style={{ marginBottom: '1.5rem' }}>
-            <label style={{
-              display: 'block',
-              fontSize: '0.875rem',
-              fontWeight: 500,
-              color: '#374151',
-              marginBottom: '0.5rem',
-            }}>
+            <label className="branding-label">
               Confirm Password *
             </label>
             <PasswordInput
@@ -294,9 +275,9 @@ const InviteSignup: React.FC = () => {
           {/* Error Message */}
           {error && (
             <div style={{
-              background: '#fee2e2',
-              border: '1px solid #fecaca',
-              color: '#991b1b',
+              background: 'rgba(239, 68, 68, 0.1)',
+              border: '1px solid rgba(239, 68, 68, 0.3)',
+              color: '#ef4444',
               padding: '0.75rem',
               borderRadius: '6px',
               marginBottom: '1.5rem',
@@ -310,25 +291,13 @@ const InviteSignup: React.FC = () => {
           <button
             type="submit"
             disabled={loading}
+            className="btn-primary"
             style={{
               width: '100%',
-              background: loading ? '#9ca3af' : 'var(--primary-color)',
-              color: 'white',
-              border: 'none',
               padding: '1rem',
-              borderRadius: '6px',
-              cursor: loading ? 'not-allowed' : 'pointer',
               fontSize: '1rem',
-              fontWeight: 600,
-              transition: 'background 0.2s',
-            }}
-            onMouseEnter={(e) => {
-              if (!loading) {
-                e.currentTarget.style.opacity = '0.9';
-              }
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.opacity = '1';
+              opacity: loading ? 0.5 : 1,
+              cursor: loading ? 'not-allowed' : 'pointer',
             }}
           >
             {loading ? 'Creating Account...' : 'Complete Registration'}
@@ -339,7 +308,7 @@ const InviteSignup: React.FC = () => {
           textAlign: 'center',
           marginTop: '1.5rem',
           fontSize: '0.875rem',
-          color: '#6b7280',
+          color: '#9ca3af',
         }}>
           Already have an account?{' '}
           <a

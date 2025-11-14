@@ -58,18 +58,20 @@ const PasswordResetRequest: React.FC = () => {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+          background: "#1a1a1a",
           padding: "2rem",
         }}
       >
         <div
           style={{
-            background: "white",
+            background: "#2a2a2a",
+            border: "1px solid #3a3a3a",
             borderRadius: "12px",
             padding: "3rem",
             maxWidth: "500px",
             width: "100%",
             textAlign: "center",
+            boxShadow: "0 20px 60px rgba(0, 0, 0, 0.5)",
           }}
         >
           <div style={{ fontSize: "4rem", marginBottom: "1rem" }}>✅</div>
@@ -77,24 +79,24 @@ const PasswordResetRequest: React.FC = () => {
             style={{
               fontSize: "1.75rem",
               marginBottom: "1rem",
-              color: "#1f2937",
+              color: "#ffffff",
             }}
           >
             Check Your Email
           </h1>
           <p
             style={{
-              color: "#6b7280",
+              color: "#9ca3af",
               marginBottom: "2rem",
               lineHeight: 1.6,
             }}
           >
-            If an account exists with <strong>{email}</strong>, you will receive
+            If an account exists with <strong style={{ color: "#e5e7eb" }}>{email}</strong>, you will receive
             a password reset link shortly.
           </p>
           <p
             style={{
-              color: "#6b7280",
+              color: "#9ca3af",
               fontSize: "0.875rem",
               marginBottom: "2rem",
             }}
@@ -103,15 +105,10 @@ const PasswordResetRequest: React.FC = () => {
           </p>
           <button
             onClick={() => navigate("/login")}
+            className="btn-primary"
             style={{
-              background: "var(--primary-color)",
-              color: "white",
-              border: "none",
               padding: "0.75rem 2rem",
-              borderRadius: "6px",
-              cursor: "pointer",
               fontSize: "1rem",
-              fontWeight: 600,
             }}
           >
             Back to Login
@@ -128,17 +125,19 @@ const PasswordResetRequest: React.FC = () => {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+        background: "#1a1a1a",
         padding: "2rem",
       }}
     >
       <div
         style={{
-          background: "white",
+          background: "#2a2a2a",
+          border: "1px solid #3a3a3a",
           borderRadius: "12px",
           padding: "3rem",
           maxWidth: "500px",
           width: "100%",
+          boxShadow: "0 20px 60px rgba(0, 0, 0, 0.5)",
         }}
       >
         <div style={{ textAlign: "center", marginBottom: "2rem" }}>
@@ -147,12 +146,12 @@ const PasswordResetRequest: React.FC = () => {
             style={{
               fontSize: "1.75rem",
               marginBottom: "0.5rem",
-              color: "#1f2937",
+              color: "#ffffff",
             }}
           >
             Reset Your Password
           </h1>
-          <p style={{ color: "#6b7280", fontSize: "0.95rem" }}>
+          <p style={{ color: "#9ca3af", fontSize: "0.95rem" }}>
             Enter your email address and we'll send you a link to reset your
             password.
           </p>
@@ -160,15 +159,7 @@ const PasswordResetRequest: React.FC = () => {
 
         <form onSubmit={handleSubmit}>
           <div style={{ marginBottom: "1.5rem" }}>
-            <label
-              style={{
-                display: "block",
-                fontSize: "0.875rem",
-                fontWeight: 500,
-                color: "#374151",
-                marginBottom: "0.5rem",
-              }}
-            >
+            <label className="branding-label">
               Email Address
             </label>
             <input
@@ -177,12 +168,9 @@ const PasswordResetRequest: React.FC = () => {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="your@email.com"
               required
+              className="branding-input"
               style={{
                 width: "100%",
-                padding: "0.75rem",
-                borderRadius: "6px",
-                border: "1px solid #d1d5db",
-                fontSize: "1rem",
               }}
             />
           </div>
@@ -191,9 +179,9 @@ const PasswordResetRequest: React.FC = () => {
           {error && (
             <div
               style={{
-                background: "#fee2e2",
-                border: "1px solid #fecaca",
-                color: "#991b1b",
+                background: "rgba(239, 68, 68, 0.1)",
+                border: "1px solid rgba(239, 68, 68, 0.3)",
+                color: "#ef4444",
                 padding: "0.75rem",
                 borderRadius: "6px",
                 marginBottom: "1.5rem",
@@ -208,25 +196,13 @@ const PasswordResetRequest: React.FC = () => {
           <button
             type="submit"
             disabled={loading}
+            className="btn-primary"
             style={{
               width: "100%",
-              background: loading ? "#9ca3af" : "var(--primary-color)",
-              color: "white",
-              border: "none",
               padding: "1rem",
-              borderRadius: "6px",
-              cursor: loading ? "not-allowed" : "pointer",
               fontSize: "1rem",
-              fontWeight: 600,
-              transition: "background 0.2s",
-            }}
-            onMouseEnter={(e) => {
-              if (!loading) {
-                e.currentTarget.style.opacity = "0.9";
-              }
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.opacity = "1";
+              opacity: loading ? 0.5 : 1,
+              cursor: loading ? "not-allowed" : "pointer",
             }}
           >
             {loading ? "Sending..." : "Send Reset Link"}
@@ -238,7 +214,7 @@ const PasswordResetRequest: React.FC = () => {
             textAlign: "center",
             marginTop: "1.5rem",
             fontSize: "0.875rem",
-            color: "#6b7280",
+            color: "#9ca3af",
           }}
         >
           Remember your password?{" "}
@@ -258,10 +234,11 @@ const PasswordResetRequest: React.FC = () => {
           style={{
             marginTop: "2rem",
             padding: "1rem",
-            background: "#fef3c7",
+            background: "rgba(251, 191, 36, 0.1)",
+            border: "1px solid rgba(251, 191, 36, 0.3)",
             borderRadius: "6px",
             fontSize: "0.875rem",
-            color: "#92400e",
+            color: "#fbbf24",
           }}
         >
           <strong>Note:</strong> Password reset is only available for accounts
