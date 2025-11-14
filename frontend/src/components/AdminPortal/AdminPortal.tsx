@@ -350,8 +350,45 @@ export default function AdminPortal() {
         return;
       }
 
-      // Success - reload auth status
-      window.location.reload();
+      // Success - fetch auth status and check if security prompt needed
+      const authRes = await fetch(`${API_URL}/api/auth/status`, {
+        credentials: 'include',
+      });
+      
+      if (authRes.ok) {
+        const authData = await authRes.json();
+        setAuthStatus(authData);
+        
+        // Check if user needs security setup
+        const dismissed = localStorage.getItem('security-setup-dismissed') === 'true';
+        const user = authData.user;
+        
+        if (user && !dismissed) {
+          const hasMFA = user.mfa_enabled === true;
+          const hasPasskey = user.passkey_enabled === true;
+          const authMethods = user.auth_methods || [];
+          const isCredentialUser = authMethods.includes('credentials');
+          const isGoogleUser = authMethods.includes('google');
+          
+          console.log('[Login] Checking security setup after credential login:', {
+            hasMFA,
+            hasPasskey,
+            authMethods,
+            isCredentialUser,
+            isGoogleUser,
+            shouldShow: isCredentialUser && !isGoogleUser && !hasMFA && !hasPasskey,
+          });
+          
+          if (isCredentialUser && !isGoogleUser && !hasMFA && !hasPasskey) {
+            console.log('[Login] Showing security prompt after credential login');
+            setShowSecurityPrompt(true);
+          }
+        }
+        
+        setLoginLoading(false);
+      } else {
+        window.location.reload();
+      }
     } catch (err) {
       setLoginError('Network error. Please try again.');
       setLoginLoading(false);
@@ -402,8 +439,18 @@ export default function AdminPortal() {
         localStorage.setItem('passkeyEmail', username);
       }
 
-      // Success - reload auth status
-      window.location.reload();
+      // Success - fetch auth status
+      const authRes = await fetch(`${API_URL}/api/auth/status`, {
+        credentials: 'include',
+      });
+      
+      if (authRes.ok) {
+        const authData = await authRes.json();
+        setAuthStatus(authData);
+        setLoginLoading(false);
+      } else {
+        window.location.reload();
+      }
     } catch (err: any) {
       if (err.name === 'NotAllowedError') {
         setLoginError('Authentication cancelled');
