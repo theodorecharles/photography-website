@@ -659,10 +659,24 @@ export default function AdminPortal() {
                         <p style={{ fontWeight: 600, color: '#15803d', margin: '0 0 0.5rem 0' }}>
                           Two-Factor Authentication Required
                         </p>
-                        <p style={{ fontSize: '0.875rem', color: '#16a34a', margin: 0 }}>
-                          Enter the 6-digit code from your authenticator app.
+                        <p style={{ fontSize: '0.875rem', color: '#16a34a', margin: '0 0 0.5rem 0' }}>
+                          Enter the 6-digit code from your authenticator app for:
+                        </p>
+                        <p style={{ fontSize: '0.875rem', color: '#15803d', fontWeight: 600, margin: 0, fontFamily: 'monospace' }}>
+                          {username}
                         </p>
                       </div>
+                      {/* Hidden username field for password managers */}
+                      <input
+                        type="text"
+                        name="username"
+                        value={username}
+                        autoComplete="username"
+                        readOnly
+                        style={{ display: 'none' }}
+                        tabIndex={-1}
+                        aria-hidden="true"
+                      />
                       <div className="auth-input-group">
                         <label className="auth-input-label">
                           Authentication Code
@@ -670,6 +684,7 @@ export default function AdminPortal() {
                         <input
                           type="text"
                           className="auth-input"
+                          name="totp"
                           value={mfaToken}
                           onChange={(e) => setMfaToken(e.target.value.replace(/\D/g, '').slice(0, 6))}
                           placeholder="000000"
