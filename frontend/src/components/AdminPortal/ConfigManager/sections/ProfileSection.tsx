@@ -77,7 +77,7 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({
               picture: data.user.picture,
               role: data.user.role,
               mfa_enabled: data.user.mfa_enabled,
-              passkey_count: data.user.passkeys?.length || 0,
+              passkey_count: data.user.passkey_count || 0,
               auth_methods: data.user.auth_methods || [],
               is_active: true,
               status: "active",

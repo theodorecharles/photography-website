@@ -314,6 +314,7 @@ router.get('/status', (req: Request, res: Response) => {
           role: dbUser.role,
           mfa_enabled: dbUser.mfa_enabled,
           passkey_enabled: dbUser.passkeys && dbUser.passkeys.length > 0,
+          passkey_count: dbUser.passkeys ? dbUser.passkeys.length : 0,
           auth_methods: dbUser.auth_methods,
         },
       });
@@ -359,6 +360,7 @@ router.get('/status', (req: Request, res: Response) => {
           role: dbUser.role,
           mfa_enabled: dbUser.mfa_enabled,
           passkey_enabled: dbUser.passkeys && dbUser.passkeys.length > 0,
+          passkey_count: dbUser.passkeys ? dbUser.passkeys.length : 0,
           auth_methods: dbUser.auth_methods,
         },
       });
