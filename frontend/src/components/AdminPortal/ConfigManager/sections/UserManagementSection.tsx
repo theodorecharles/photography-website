@@ -744,7 +744,9 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
                           fontSize: '0.85rem', 
                           background: 'rgba(239, 68, 68, 0.2)', 
                           borderColor: 'rgba(239, 68, 68, 0.3)',
-                          color: '#ef4444'
+                          color: '#ef4444',
+                          opacity: (loading || Boolean(currentUser && user.id === currentUser.id)) ? 0.4 : 1,
+                          cursor: (loading || Boolean(currentUser && user.id === currentUser.id)) ? 'not-allowed' : 'pointer'
                         }}
                         disabled={loading || Boolean(currentUser && user.id === currentUser.id)}
                         title={currentUser && user.id === currentUser.id ? 'Cannot delete your own account' : 'Delete user'}
@@ -755,8 +757,10 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
                           }
                         }}
                         onMouseLeave={(e) => {
-                          e.currentTarget.style.background = 'rgba(239, 68, 68, 0.2)';
-                          e.currentTarget.style.borderColor = 'rgba(239, 68, 68, 0.3)';
+                          if (!(currentUser && user.id === currentUser.id) && !loading) {
+                            e.currentTarget.style.background = 'rgba(239, 68, 68, 0.2)';
+                            e.currentTarget.style.borderColor = 'rgba(239, 68, 68, 0.3)';
+                          }
                         }}
                       >
                         Delete
