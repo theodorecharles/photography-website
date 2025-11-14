@@ -17,17 +17,22 @@ import fs from 'fs';
 
 // Determine DATA_DIR (same logic as config.ts)
 const DATA_DIR = process.env.DATA_DIR || join(__dirname, 'data');
-const DB_PATH = join(DATA_DIR, 'gallery.db');
-const CONFIG_PATH = join(DATA_DIR, 'config.json');
+let DB_PATH = join(DATA_DIR, 'gallery.db');
+let CONFIG_PATH = join(DATA_DIR, 'config.json');
+
+// Check if database exists at DATA_DIR path
+if (!fs.existsSync(DB_PATH)) {
+  // Try fallback to project root (development mode)
+  DB_PATH = join(__dirname, 'gallery.db');
+  CONFIG_PATH = join(__dirname, 'config/config.json');
+  if (!fs.existsSync(DB_PATH)) {
+    console.error('❌ Database not found. Please run the application first to initialize the database.');
+    process.exit(1);
+  }
+}
 
 console.log('🔄 Starting users table migration...');
 console.log(`📂 Database: ${DB_PATH}`);
-
-// Check if database exists
-if (!fs.existsSync(DB_PATH)) {
-  console.error('❌ Database not found. Please run the application first to initialize the database.');
-  process.exit(1);
-}
 
 const db = new Database(DB_PATH);
 

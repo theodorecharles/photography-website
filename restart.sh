@@ -116,7 +116,15 @@ fi
 # Return to project root
 cd ..
 
-# Note: Database migrations exist on oobe branch and will be available after merge
+# Run database migrations
+log "Running database migrations..."
+if ! node migrate-add-users-auth.js; then
+    handle_error "Database migration (users-auth) failed"
+fi
+
+if ! node migrate-add-user-invites.js; then
+    handle_error "Database migration (user-invites) failed"
+fi
 
 # Restart both services using PM2 ecosystem file
 log "Restarting services with PM2 using ecosystem config..."
