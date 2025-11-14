@@ -5,6 +5,7 @@
  */
 
 import { Request, Response, NextFunction } from 'express';
+import { getUserByEmail, getUserById } from '../database-users.js';
 
 /**
  * Middleware to check if user is authenticated
@@ -46,17 +47,38 @@ export function requireAuth(req: Request, res: Response, next: NextFunction) {
 export const isAuthenticated = requireAuth;
 
 /**
- * Helper function to get user from request
+ * Helper function to get user from request with role lookup from database
  */
 async function getUserFromRequest(req: Request): Promise<any> {
-  // Check Passport session (Google OAuth)
-  if (req.user) {
-    return req.user;
-  }
-  
-  // Check credential session
+  // Check credential session first (has full user data including role)
   if ((req.session as any)?.user) {
     return (req.session as any).user;
+  }
+  
+  // Check Passport session (Google OAuth) - need to look up role from DB
+  if (req.user) {
+    const sessionUser = req.user as any;
+    
+    // If user already has role, return it
+    if (sessionUser.role) {
+      return sessionUser;
+    }
+    
+    // Look up user in database to get role
+    if (sessionUser.email) {
+      const dbUser = getUserByEmail(sessionUser.email);
+      if (dbUser) {
+        // Return combined user object with role from database
+        return {
+          ...sessionUser,
+          role: dbUser.role,
+          id: dbUser.id,
+        };
+      }
+    }
+    
+    // Fallback - return session user (likely won't have role)
+    return sessionUser;
   }
   
   return null;
@@ -77,6 +99,13 @@ export async function requireAdmin(req: Request, res: Response, next: NextFuncti
   
   // Get user and check role
   const user = await getUserFromRequest(req);
+  
+  console.log('[Admin Middleware] User lookup result:', {
+    hasUser: !!user,
+    email: user?.email,
+    role: user?.role,
+    id: user?.id,
+  });
   
   if (!user || !user.role) {
     console.log('[Admin Middleware] ❌ No user or role found');
