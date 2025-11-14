@@ -155,6 +155,7 @@ const PhotosPanelGrid: React.FC<PhotosPanelGridProps> = ({
               photo={photo}
               onEdit={onOpenEditModal}
               onDelete={onDeletePhoto}
+              canEdit={canEdit}
             />
           ))}
         </SortableContext>
