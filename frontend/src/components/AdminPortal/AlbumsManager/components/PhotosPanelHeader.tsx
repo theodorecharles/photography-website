@@ -83,19 +83,33 @@ const PhotosPanelHeader: React.FC<PhotosPanelHeaderProps> = ({
       {/* Controls Bar */}
       <div className="photos-controls-bar">
         <div className="photos-controls-left">
-          <label className="toggle-switch compact" onClick={(e) => e.stopPropagation()}>
-            <input
-              type="checkbox"
-              checked={isPublished}
-              onChange={() => onTogglePublished(selectedAlbum, isPublished)}
-            />
-            <span className="toggle-slider"></span>
-            <span className="toggle-label">
+          {canEdit ? (
+            <label className="toggle-switch compact" onClick={(e) => e.stopPropagation()}>
+              <input
+                type="checkbox"
+                checked={isPublished}
+                onChange={() => onTogglePublished(selectedAlbum, isPublished)}
+              />
+              <span className="toggle-slider"></span>
+              <span className="toggle-label">
+                {isPublished ? 'Published' : 'Unpublished'}
+              </span>
+            </label>
+          ) : (
+            <span className="photos-status-badge" style={{
+              padding: '0.5rem 0.75rem',
+              borderRadius: '6px',
+              fontSize: '0.875rem',
+              fontWeight: 500,
+              background: isPublished ? 'rgba(34, 197, 94, 0.2)' : 'rgba(251, 191, 36, 0.2)',
+              color: isPublished ? '#4ade80' : '#fbbf24',
+              border: isPublished ? '1px solid rgba(34, 197, 94, 0.3)' : '1px solid rgba(251, 191, 36, 0.3)',
+            }}>
               {isPublished ? 'Published' : 'Unpublished'}
             </span>
-          </label>
+          )}
 
-          {!isPublished && (
+          {!isPublished && canEdit && (
             <div className="photos-action-buttons">
               <button
                 onClick={() => onPreviewAlbum(selectedAlbum)}
@@ -150,32 +164,36 @@ const PhotosPanelHeader: React.FC<PhotosPanelHeaderProps> = ({
             </button>
           </div>
 
-          <label className="photos-btn photos-btn-primary">
-            <UploadIcon width="16" height="16" />
-            <span>{uploadingImages.length > 0 ? 'Uploading...' : 'Upload'}</span>
-            <input
-              type="file"
-              multiple
-              accept="image/*"
-              onChange={onUploadPhotos}
-              disabled={uploadingImages.length > 0}
-              style={{ display: 'none' }}
-            />
-          </label>
+          {canEdit && (
+            <>
+              <label className="photos-btn photos-btn-primary">
+                <UploadIcon width="16" height="16" />
+                <span>{uploadingImages.length > 0 ? 'Uploading...' : 'Upload'}</span>
+                <input
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  onChange={onUploadPhotos}
+                  disabled={uploadingImages.length > 0}
+                  style={{ display: 'none' }}
+                />
+              </label>
 
-          <button
-            onClick={() => onDeleteAlbum(selectedAlbum)}
-            className="photos-btn photos-btn-danger"
-            title="Delete album"
-          >
-            <TrashIcon width="16" height="16" />
-            <span>Delete</span>
-          </button>
+              <button
+                onClick={() => onDeleteAlbum(selectedAlbum)}
+                className="photos-btn photos-btn-danger"
+                title="Delete album"
+              >
+                <TrashIcon width="16" height="16" />
+                <span>Delete</span>
+              </button>
+            </>
+          )}
         </div>
       </div>
 
       {/* Reorder Controls (shown when dragging) */}
-      {hasEverDragged && (
+      {hasEverDragged && canEdit && (
         <div className="photos-reorder-bar">
           <div className="photos-reorder-left">
             <button

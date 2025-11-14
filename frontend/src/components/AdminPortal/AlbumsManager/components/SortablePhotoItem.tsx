@@ -16,12 +16,14 @@ interface SortablePhotoItemProps {
   photo: Photo;
   onEdit: (photo: Photo) => void;
   onDelete: (album: string, filename: string, title: string) => void;
+  canEdit: boolean;
 }
 
 const SortablePhotoItem: React.FC<SortablePhotoItemProps> = ({
   photo,
   onEdit,
   onDelete,
+  canEdit,
 }) => {
   const {
     attributes,
@@ -30,7 +32,7 @@ const SortablePhotoItem: React.FC<SortablePhotoItemProps> = ({
     transform,
     transition,
     isDragging,
-  } = useSortable({ id: photo.id });
+  } = useSortable({ id: photo.id, disabled: !canEdit });
 
   const [showOverlay, setShowOverlay] = useState(false);
   const touchStartPos = useRef<{ x: number; y: number } | null>(null);
@@ -114,8 +116,8 @@ const SortablePhotoItem: React.FC<SortablePhotoItemProps> = ({
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
       onTouchCancel={handleTouchCancel}
-      {...attributes}
-      {...listeners}
+      {...(canEdit ? attributes : {})}
+      {...(canEdit ? listeners : {})}
     >
       <img
         src={imageUrl}
@@ -129,38 +131,40 @@ const SortablePhotoItem: React.FC<SortablePhotoItemProps> = ({
         {photo.title && <div className="photo-title">{photo.title}</div>}
       </div>
 
-      <div className="photo-overlay" onClick={handleOverlayClick}>
-        <div className="photo-actions">
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              e.preventDefault();
-              onEdit(photo);
-            }}
-            onTouchEnd={(e) => {
-              e.stopPropagation();
-              e.preventDefault();
-              onEdit(photo);
-            }}
-            className="btn-edit-photo"
-            title="Edit title"
-            type="button"
-          >
-            <EditDocumentIcon width="16" height="16" />
-          </button>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              const filename = photo.id.split('/').pop() || photo.id;
-              onDelete(photo.album, filename, photo.title);
-            }}
-            className="btn-delete-photo"
-            title="Delete photo"
-          >
-            <TrashIcon width="16" height="16" />
-          </button>
+      {canEdit && (
+        <div className="photo-overlay" onClick={handleOverlayClick}>
+          <div className="photo-actions">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                onEdit(photo);
+              }}
+              onTouchEnd={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                onEdit(photo);
+              }}
+              className="btn-edit-photo"
+              title="Edit title"
+              type="button"
+            >
+              <EditDocumentIcon width="16" height="16" />
+            </button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                const filename = photo.id.split('/').pop() || photo.id;
+                onDelete(photo.album, filename, photo.title);
+              }}
+              className="btn-delete-photo"
+              title="Delete photo"
+            >
+              <TrashIcon width="16" height="16" />
+            </button>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
