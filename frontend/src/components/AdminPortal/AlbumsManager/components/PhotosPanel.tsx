@@ -43,6 +43,7 @@ interface PhotosPanelProps {
   onDrop: (e: React.DragEvent<HTMLDivElement>) => void;
   setActiveId: (id: string | null) => void;
   shuffleButtonRef: React.RefObject<HTMLButtonElement | null>;
+  canEdit: boolean;
 }
 
 const PhotosPanel: React.FC<PhotosPanelProps> = ({
@@ -75,6 +76,7 @@ const PhotosPanel: React.FC<PhotosPanelProps> = ({
   onDragLeave,
   onDrop,
   shuffleButtonRef,
+  canEdit,
 }) => {
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
 
@@ -111,6 +113,7 @@ const PhotosPanel: React.FC<PhotosPanelProps> = ({
           onShuffleStart={onShuffleStart}
           onShuffleEnd={onShuffleEnd}
           onViewModeChange={setViewMode}
+          canEdit={canEdit}
         />
 
         <PhotosPanelGrid
@@ -123,6 +126,7 @@ const PhotosPanel: React.FC<PhotosPanelProps> = ({
           onPhotoDragEnd={onPhotoDragEnd}
           onOpenEditModal={onOpenEditModal}
           onDeletePhoto={onDeletePhoto}
+          canEdit={canEdit}
         />
       </div>
     </>

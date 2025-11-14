@@ -30,6 +30,7 @@ interface SortableFolderCardProps {
   onAlbumDragLeave: (e: React.DragEvent) => void;
   onAlbumDrop: (e: React.DragEvent, albumName: string) => void;
   onCreateAlbumInFolder: (folderId: number) => void;
+  canEdit: boolean;
 }
 
 const SortableFolderCard: React.FC<SortableFolderCardProps> = ({
@@ -47,6 +48,7 @@ const SortableFolderCard: React.FC<SortableFolderCardProps> = ({
   onAlbumDragLeave,
   onAlbumDrop,
   onCreateAlbumInFolder,
+  canEdit,
 }) => {
   const {
     attributes,
@@ -57,6 +59,7 @@ const SortableFolderCard: React.FC<SortableFolderCardProps> = ({
     isDragging,
   } = useSortable({
     id: `folder-${folder.id}`,
+    disabled: !canEdit,
   });
 
   // Make the folder's album grid droppable
@@ -84,9 +87,9 @@ const SortableFolderCard: React.FC<SortableFolderCardProps> = ({
       >
         <div 
           className="folder-drag-handle"
-          {...attributes}
-          {...listeners}
-          style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
+          {...(canEdit ? attributes : {})}
+          {...(canEdit ? listeners : {})}
+          style={{ cursor: canEdit ? (isDragging ? 'grabbing' : 'grab') : 'default' }}
         >
           <h4 className="folder-card-title">
             {folder.published ? '📁' : '🔒'} {folder.name}
@@ -95,36 +98,38 @@ const SortableFolderCard: React.FC<SortableFolderCardProps> = ({
             {albumCount} {albumCount === 1 ? 'album' : 'albums'}
           </div>
         </div>
-        <div className="folder-controls">
-          <label 
-            className="toggle-switch" 
-            style={{ 
-              opacity: albumCount === 0 ? 0.5 : 1,
-              cursor: albumCount === 0 ? 'not-allowed' : 'pointer'
-            }} 
-            onClick={(e) => e.stopPropagation()}
-            title={albumCount === 0 ? 'Cannot publish empty folder' : ''}
-          >
-            <input
-              type="checkbox"
-              checked={albumCount > 0 && folder.published}
-              onChange={() => onTogglePublished(folder.name, folder.published)}
-              disabled={albumCount === 0}
-            />
-            <span className="toggle-slider"></span>
-            <span className="toggle-label">Published</span>
-          </label>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onDelete(folder.name);
-            }}
-            className="folder-delete-btn-text"
-            title="Delete folder"
-          >
-            Delete
-          </button>
-        </div>
+        {canEdit && (
+          <div className="folder-controls">
+            <label 
+              className="toggle-switch" 
+              style={{ 
+                opacity: albumCount === 0 ? 0.5 : 1,
+                cursor: albumCount === 0 ? 'not-allowed' : 'pointer'
+              }} 
+              onClick={(e) => e.stopPropagation()}
+              title={albumCount === 0 ? 'Cannot publish empty folder' : ''}
+            >
+              <input
+                type="checkbox"
+                checked={albumCount > 0 && folder.published}
+                onChange={() => onTogglePublished(folder.name, folder.published)}
+                disabled={albumCount === 0}
+              />
+              <span className="toggle-slider"></span>
+              <span className="toggle-label">Published</span>
+            </label>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete(folder.name);
+              }}
+              className="folder-delete-btn-text"
+              title="Delete folder"
+            >
+              Delete
+            </button>
+          </div>
+        )}
       </div>
       
       {/* Albums inside the folder - the grid itself is the drop zone */}
@@ -155,6 +160,7 @@ const SortableFolderCard: React.FC<SortableFolderCardProps> = ({
                 onDragOver={(e) => { onAlbumDragOver(e, album.name); }}
                 onDragLeave={onAlbumDragLeave}
                 onDrop={(e) => { onAlbumDrop(e, album.name); }}
+                canEdit={canEdit}
               />
             </React.Fragment>
           ))}
@@ -169,18 +175,20 @@ const SortableFolderCard: React.FC<SortableFolderCardProps> = ({
               }}
             />
           )}
-          {/* Ghost tile for creating new album in this folder */}
-          <div 
-            className="album-card ghost-album-tile"
-            onClick={(e) => {
-              e.stopPropagation();
-              onCreateAlbumInFolder(folder.id);
-            }}
-          >
-            <div className="ghost-tile-content">
-              <PlusCircleIcon width="48" height="48" />
+          {/* Ghost tile for creating new album in this folder - only show for editors */}
+          {canEdit && (
+            <div 
+              className="album-card ghost-album-tile"
+              onClick={(e) => {
+                e.stopPropagation();
+                onCreateAlbumInFolder(folder.id);
+              }}
+            >
+              <div className="ghost-tile-content">
+                <PlusCircleIcon width="48" height="48" />
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </SortableContext>
     </div>

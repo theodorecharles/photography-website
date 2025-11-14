@@ -23,6 +23,7 @@ interface FoldersSectionProps {
   onAlbumDragLeave: (e: React.DragEvent) => void;
   onAlbumDrop: (e: React.DragEvent, albumName: string) => void;
   onCreateAlbumInFolder: (folderId: number) => void;
+  canEdit: boolean;
 }
 
 const FoldersSection: React.FC<FoldersSectionProps> = ({
@@ -40,6 +41,7 @@ const FoldersSection: React.FC<FoldersSectionProps> = ({
   onAlbumDragLeave,
   onAlbumDrop,
   onCreateAlbumInFolder,
+  canEdit,
 }) => {
   if (localFolders.length === 0) return null;
 
@@ -64,6 +66,7 @@ const FoldersSection: React.FC<FoldersSectionProps> = ({
               onAlbumDragLeave={onAlbumDragLeave}
               onAlbumDrop={onAlbumDrop}
               onCreateAlbumInFolder={onCreateAlbumInFolder}
+              canEdit={canEdit}
             />
           ))}
         </div>

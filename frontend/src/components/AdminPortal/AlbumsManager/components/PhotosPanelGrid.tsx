@@ -28,12 +28,14 @@ interface PhotosPanelGridProps {
   onPhotoDragEnd: (event: any) => void;
   onOpenEditModal: (photo: Photo) => void;
   onDeletePhoto: (filename: string) => void;
+  canEdit: boolean;
 }
 
 const PhotosPanelGrid: React.FC<PhotosPanelGridProps> = ({
   albumPhotos,
   uploadingImages,
   loadingPhotos,
+  canEdit,
   activeId,
   viewMode,
   onPhotoDragStart,
