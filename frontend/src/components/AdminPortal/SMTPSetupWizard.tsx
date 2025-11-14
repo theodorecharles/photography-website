@@ -43,15 +43,15 @@ const SMTPSetupWizard: React.FC<SMTPSetupWizardProps> = ({
       secure: false,
       instructions: (
         <div>
-          <h4 style={{ marginTop: 0, marginBottom: '0.5rem', color: '#fff' }}>
+          <h4 style={{ marginTop: 0, marginBottom: '0.75rem', color: '#e5e7eb', fontSize: '0.95rem', fontWeight: 600 }}>
             Gmail Setup Instructions:
           </h4>
-          <ol style={{ fontSize: '0.9rem', color: '#ccc', marginBottom: 0 }}>
-            <li>Go to <a href="https://myaccount.google.com/security" target="_blank" rel="noopener noreferrer" style={{ color: '#4299e1' }}>Google Account Security</a></li>
-            <li>Enable 2-Step Verification if not already enabled</li>
-            <li>Go to <a href="https://myaccount.google.com/apppasswords" target="_blank" rel="noopener noreferrer" style={{ color: '#4299e1' }}>App Passwords</a></li>
-            <li>Create a new app password for "Mail"</li>
-            <li>Copy the 16-character password (no spaces)</li>
+          <ol style={{ fontSize: '0.875rem', color: '#d1d5db', marginBottom: 0, lineHeight: 1.6, paddingLeft: '1.5rem' }}>
+            <li style={{ marginBottom: '0.5rem' }}>Go to <a href="https://myaccount.google.com/security" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--primary-color)', textDecoration: 'none', borderBottom: '1px solid var(--primary-color)' }}>Google Account Security</a></li>
+            <li style={{ marginBottom: '0.5rem' }}>Enable 2-Step Verification if not already enabled</li>
+            <li style={{ marginBottom: '0.5rem' }}>Go to <a href="https://myaccount.google.com/apppasswords" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--primary-color)', textDecoration: 'none', borderBottom: '1px solid var(--primary-color)' }}>App Passwords</a></li>
+            <li style={{ marginBottom: '0.5rem' }}>Create a new app password for "Mail"</li>
+            <li style={{ marginBottom: '0.5rem' }}>Copy the 16-character password (no spaces)</li>
             <li>Use your Gmail address as the username</li>
           </ol>
         </div>
@@ -63,13 +63,13 @@ const SMTPSetupWizard: React.FC<SMTPSetupWizardProps> = ({
       secure: false,
       instructions: (
         <div>
-          <h4 style={{ marginTop: 0, marginBottom: '0.5rem', color: '#fff' }}>
+          <h4 style={{ marginTop: 0, marginBottom: '0.75rem', color: '#e5e7eb', fontSize: '0.95rem', fontWeight: 600 }}>
             SendGrid Setup Instructions:
           </h4>
-          <ol style={{ fontSize: '0.9rem', color: '#ccc', marginBottom: 0 }}>
-            <li>Sign up for a <a href="https://sendgrid.com" target="_blank" rel="noopener noreferrer" style={{ color: '#4299e1' }}>SendGrid account</a></li>
-            <li>Create an API key in Settings → API Keys</li>
-            <li>Use <strong>"apikey"</strong> as the username (literally the word "apikey")</li>
+          <ol style={{ fontSize: '0.875rem', color: '#d1d5db', marginBottom: 0, lineHeight: 1.6, paddingLeft: '1.5rem' }}>
+            <li style={{ marginBottom: '0.5rem' }}>Sign up for a <a href="https://sendgrid.com" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--primary-color)', textDecoration: 'none', borderBottom: '1px solid var(--primary-color)' }}>SendGrid account</a></li>
+            <li style={{ marginBottom: '0.5rem' }}>Create an API key in Settings → API Keys</li>
+            <li style={{ marginBottom: '0.5rem' }}>Use <strong style={{ color: '#e5e7eb' }}>"apikey"</strong> as the username (literally the word "apikey")</li>
             <li>Use your API key as the password</li>
           </ol>
         </div>
@@ -81,14 +81,14 @@ const SMTPSetupWizard: React.FC<SMTPSetupWizardProps> = ({
       secure: false,
       instructions: (
         <div>
-          <h4 style={{ marginTop: 0, marginBottom: '0.5rem', color: '#fff' }}>
+          <h4 style={{ marginTop: 0, marginBottom: '0.75rem', color: '#e5e7eb', fontSize: '0.95rem', fontWeight: 600 }}>
             AWS SES Setup Instructions:
           </h4>
-          <ol style={{ fontSize: '0.9rem', color: '#ccc', marginBottom: 0 }}>
-            <li>Set up <a href="https://console.aws.amazon.com/ses" target="_blank" rel="noopener noreferrer" style={{ color: '#4299e1' }}>AWS SES</a> in your region</li>
-            <li>Verify your sending domain or email</li>
-            <li>Create SMTP credentials in SES Console</li>
-            <li>Use the provided SMTP username and password</li>
+          <ol style={{ fontSize: '0.875rem', color: '#d1d5db', marginBottom: 0, lineHeight: 1.6, paddingLeft: '1.5rem' }}>
+            <li style={{ marginBottom: '0.5rem' }}>Set up <a href="https://console.aws.amazon.com/ses" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--primary-color)', textDecoration: 'none', borderBottom: '1px solid var(--primary-color)' }}>AWS SES</a> in your region</li>
+            <li style={{ marginBottom: '0.5rem' }}>Verify your sending domain or email</li>
+            <li style={{ marginBottom: '0.5rem' }}>Create SMTP credentials in SES Console</li>
+            <li style={{ marginBottom: '0.5rem' }}>Use the provided SMTP username and password</li>
             <li>Update the host to match your region (e.g., email-smtp.eu-west-1.amazonaws.com)</li>
           </ol>
         </div>
@@ -100,14 +100,14 @@ const SMTPSetupWizard: React.FC<SMTPSetupWizardProps> = ({
       secure: false,
       instructions: (
         <div>
-          <h4 style={{ marginTop: 0, marginBottom: '0.5rem', color: '#fff' }}>
+          <h4 style={{ marginTop: 0, marginBottom: '0.75rem', color: '#e5e7eb', fontSize: '0.95rem', fontWeight: 600 }}>
             Mailgun Setup Instructions:
           </h4>
-          <ol style={{ fontSize: '0.9rem', color: '#ccc', marginBottom: 0 }}>
-            <li>Sign up for a <a href="https://mailgun.com" target="_blank" rel="noopener noreferrer" style={{ color: '#4299e1' }}>Mailgun account</a></li>
-            <li>Add and verify your domain</li>
-            <li>Go to Sending → Domain Settings → SMTP credentials</li>
-            <li>Create SMTP credentials or use the default</li>
+          <ol style={{ fontSize: '0.875rem', color: '#d1d5db', marginBottom: 0, lineHeight: 1.6, paddingLeft: '1.5rem' }}>
+            <li style={{ marginBottom: '0.5rem' }}>Sign up for a <a href="https://mailgun.com" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--primary-color)', textDecoration: 'none', borderBottom: '1px solid var(--primary-color)' }}>Mailgun account</a></li>
+            <li style={{ marginBottom: '0.5rem' }}>Add and verify your domain</li>
+            <li style={{ marginBottom: '0.5rem' }}>Go to Sending → Domain Settings → SMTP credentials</li>
+            <li style={{ marginBottom: '0.5rem' }}>Create SMTP credentials or use the default</li>
             <li>Use postmaster@yourdomain.mailgun.org as username</li>
           </ol>
         </div>
@@ -119,10 +119,10 @@ const SMTPSetupWizard: React.FC<SMTPSetupWizardProps> = ({
       secure: false,
       instructions: (
         <div>
-          <h4 style={{ marginTop: 0, marginBottom: '0.5rem', color: '#fff' }}>
+          <h4 style={{ marginTop: 0, marginBottom: '0.75rem', color: '#e5e7eb', fontSize: '0.95rem', fontWeight: 600 }}>
             Custom SMTP Configuration:
           </h4>
-          <p style={{ fontSize: '0.9rem', color: '#ccc', marginBottom: 0 }}>
+          <p style={{ fontSize: '0.875rem', color: '#d1d5db', marginBottom: 0, lineHeight: 1.6 }}>
             Enter your SMTP server details. Most providers use port 587 with STARTTLS.
             Only enable SSL/TLS if your provider requires port 465.
           </p>
@@ -207,17 +207,21 @@ const SMTPSetupWizard: React.FC<SMTPSetupWizardProps> = ({
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div
-        className="modal-content"
+        className="share-modal"
         onClick={(e) => e.stopPropagation()}
-        style={{ maxWidth: '600px', maxHeight: '90vh', overflow: 'auto' }}
+        style={{ maxWidth: '700px' }}
       >
-        <h2 style={{ marginTop: 0, marginBottom: '1rem' }}>
-          📧 Set Up Email (SMTP)
-        </h2>
+        <div className="share-modal-header">
+          <h2>📧 Set Up Email (SMTP)</h2>
+          <button className="close-button" onClick={onClose} aria-label="Close">
+            ×
+          </button>
+        </div>
+        <div className="share-modal-content">
 
         {step === 1 && (
           <>
-            <p style={{ color: '#ccc', marginBottom: '1.5rem' }}>
+            <p className="share-description">
               Choose an email provider to send invitation and password reset emails.
               Gmail is the easiest option for getting started.
             </p>
@@ -227,14 +231,15 @@ const SMTPSetupWizard: React.FC<SMTPSetupWizardProps> = ({
               <label
                 style={{
                   display: 'block',
-                  marginBottom: '0.5rem',
-                  color: '#fff',
+                  marginBottom: '0.75rem',
+                  color: '#e5e7eb',
                   fontWeight: 500,
+                  fontSize: '0.95rem',
                 }}
               >
                 Select Provider:
               </label>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                 {[
                   { value: 'gmail', label: '📧 Gmail (Recommended)', desc: 'Free, 500 emails/day' },
                   { value: 'sendgrid', label: '📮 SendGrid', desc: 'Free tier: 100 emails/day' },
@@ -250,24 +255,24 @@ const SMTPSetupWizard: React.FC<SMTPSetupWizardProps> = ({
                       padding: '1rem',
                       background:
                         provider === p.value
-                          ? 'rgba(66, 153, 225, 0.2)'
-                          : 'rgba(255, 255, 255, 0.05)',
+                          ? 'rgba(74, 222, 128, 0.15)'
+                          : '#1e1e1e',
                       border:
                         provider === p.value
-                          ? '2px solid #4299e1'
-                          : '2px solid transparent',
+                          ? '2px solid var(--primary-color)'
+                          : '1px solid #3a3a3a',
                       borderRadius: '8px',
                       cursor: 'pointer',
                       transition: 'all 0.2s',
                     }}
                     onMouseEnter={(e) => {
                       if (provider !== p.value) {
-                        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)';
+                        e.currentTarget.style.borderColor = '#4a4a4a';
                       }
                     }}
                     onMouseLeave={(e) => {
                       if (provider !== p.value) {
-                        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)';
+                        e.currentTarget.style.borderColor = '#3a3a3a';
                       }
                     }}
                   >
@@ -277,11 +282,11 @@ const SMTPSetupWizard: React.FC<SMTPSetupWizardProps> = ({
                       value={p.value}
                       checked={provider === p.value}
                       onChange={() => handleProviderChange(p.value as Provider)}
-                      style={{ marginRight: '1rem' }}
+                      style={{ marginRight: '1rem', accentColor: 'var(--primary-color)' }}
                     />
                     <div style={{ flex: 1 }}>
-                      <div style={{ color: '#fff', fontWeight: 500 }}>{p.label}</div>
-                      <div style={{ fontSize: '0.85rem', color: '#888', marginTop: '0.25rem' }}>
+                      <div style={{ color: '#ffffff', fontWeight: 500 }}>{p.label}</div>
+                      <div style={{ fontSize: '0.85rem', color: '#9ca3af', marginTop: '0.25rem' }}>
                         {p.desc}
                       </div>
                     </div>
@@ -294,9 +299,9 @@ const SMTPSetupWizard: React.FC<SMTPSetupWizardProps> = ({
             <div
               style={{
                 padding: '1rem',
-                background: 'rgba(66, 153, 225, 0.1)',
-                borderLeft: '3px solid #4299e1',
-                borderRadius: '4px',
+                background: 'rgba(74, 222, 128, 0.1)',
+                border: '1px solid rgba(74, 222, 128, 0.3)',
+                borderRadius: '8px',
                 marginBottom: '1.5rem',
               }}
             >
@@ -304,7 +309,7 @@ const SMTPSetupWizard: React.FC<SMTPSetupWizardProps> = ({
             </div>
 
             {/* Navigation */}
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
               <button onClick={onClose} className="btn-secondary">
                 Cancel
               </button>
@@ -317,7 +322,7 @@ const SMTPSetupWizard: React.FC<SMTPSetupWizardProps> = ({
 
         {step === 2 && (
           <>
-            <p style={{ color: '#ccc', marginBottom: '1.5rem' }}>
+            <p className="share-description">
               Enter your SMTP credentials and sender information.
             </p>
 
@@ -329,8 +334,9 @@ const SMTPSetupWizard: React.FC<SMTPSetupWizardProps> = ({
                   style={{
                     display: 'block',
                     marginBottom: '0.5rem',
-                    color: '#fff',
+                    color: '#e5e7eb',
                     fontSize: '0.9rem',
+                    fontWeight: 500,
                   }}
                 >
                   SMTP Host:
@@ -352,8 +358,9 @@ const SMTPSetupWizard: React.FC<SMTPSetupWizardProps> = ({
                     style={{
                       display: 'block',
                       marginBottom: '0.5rem',
-                      color: '#fff',
+                      color: '#e5e7eb',
                       fontSize: '0.9rem',
+                      fontWeight: 500,
                     }}
                   >
                     Port:
@@ -372,8 +379,9 @@ const SMTPSetupWizard: React.FC<SMTPSetupWizardProps> = ({
                     style={{
                       display: 'block',
                       marginBottom: '0.5rem',
-                      color: '#fff',
+                      color: '#e5e7eb',
                       fontSize: '0.9rem',
+                      fontWeight: 500,
                     }}
                   >
                     SSL/TLS:
@@ -383,14 +391,15 @@ const SMTPSetupWizard: React.FC<SMTPSetupWizardProps> = ({
                       display: 'flex',
                       alignItems: 'center',
                       height: '2.5rem',
-                      color: '#ccc',
+                      color: '#d1d5db',
+                      fontSize: '0.85rem',
                     }}
                   >
                     <input
                       type="checkbox"
                       checked={config.secure}
                       onChange={(e) => setConfig({ ...config, secure: e.target.checked })}
-                      style={{ marginRight: '0.5rem' }}
+                      style={{ marginRight: '0.5rem', accentColor: 'var(--primary-color)' }}
                     />
                     Port 465 only
                   </label>
@@ -403,8 +412,9 @@ const SMTPSetupWizard: React.FC<SMTPSetupWizardProps> = ({
                   style={{
                     display: 'block',
                     marginBottom: '0.5rem',
-                    color: '#fff',
+                    color: '#e5e7eb',
                     fontSize: '0.9rem',
+                    fontWeight: 500,
                   }}
                 >
                   Username:
@@ -424,8 +434,9 @@ const SMTPSetupWizard: React.FC<SMTPSetupWizardProps> = ({
                   style={{
                     display: 'block',
                     marginBottom: '0.5rem',
-                    color: '#fff',
+                    color: '#e5e7eb',
                     fontSize: '0.9rem',
+                    fontWeight: 500,
                   }}
                 >
                   Password:
@@ -437,7 +448,7 @@ const SMTPSetupWizard: React.FC<SMTPSetupWizardProps> = ({
                 />
               </div>
 
-              <hr style={{ border: 'none', borderTop: '1px solid rgba(255, 255, 255, 0.1)' }} />
+              <hr style={{ border: 'none', borderTop: '1px solid #3a3a3a', margin: '0.5rem 0' }} />
 
               {/* From Name */}
               <div>
@@ -445,8 +456,9 @@ const SMTPSetupWizard: React.FC<SMTPSetupWizardProps> = ({
                   style={{
                     display: 'block',
                     marginBottom: '0.5rem',
-                    color: '#fff',
+                    color: '#e5e7eb',
                     fontSize: '0.9rem',
+                    fontWeight: 500,
                   }}
                 >
                   From Name:
@@ -466,8 +478,9 @@ const SMTPSetupWizard: React.FC<SMTPSetupWizardProps> = ({
                   style={{
                     display: 'block',
                     marginBottom: '0.5rem',
-                    color: '#fff',
+                    color: '#e5e7eb',
                     fontSize: '0.9rem',
+                    fontWeight: 500,
                   }}
                 >
                   From Email:
@@ -488,12 +501,14 @@ const SMTPSetupWizard: React.FC<SMTPSetupWizardProps> = ({
                 display: 'flex',
                 justifyContent: 'space-between',
                 marginTop: '1.5rem',
+                paddingTop: '1rem',
+                borderTop: '1px solid #3a3a3a',
               }}
             >
               <button onClick={() => setStep(1)} className="btn-secondary" disabled={saving}>
                 ← Back
               </button>
-              <div style={{ display: 'flex', gap: '0.5rem' }}>
+              <div style={{ display: 'flex', gap: '0.75rem' }}>
                 <button onClick={onClose} className="btn-secondary" disabled={saving}>
                   Cancel
                 </button>
@@ -504,6 +519,7 @@ const SMTPSetupWizard: React.FC<SMTPSetupWizardProps> = ({
             </div>
           </>
         )}
+        </div>
       </div>
     </div>
   );

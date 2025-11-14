@@ -17,6 +17,7 @@ Photography portfolio website with React 19, TypeScript, Express 5, and SQLite.
 ### Server Management
 
 **Development**: DO NOT use PM2 for development. Run backend and frontend separately:
+
 - Backend: `cd backend && npm run dev`
 - Frontend: `cd frontend && npm run dev`
 
@@ -43,6 +44,7 @@ Photography portfolio website with React 19, TypeScript, Express 5, and SQLite.
 **Rationale**: Filesystem scans are slow and don't scale. Use `image_metadata` table for images, `albums` table for albums.
 
 **Examples**:
+
 - Use `getImagesInAlbum(album)` instead of `fs.readdirSync()`
 - Use `getAllAlbums()` instead of scanning photos directory
 - Use `getImagesFromPublishedAlbums()` for published content
@@ -68,6 +70,7 @@ Photography portfolio website with React 19, TypeScript, Express 5, and SQLite.
 **Rationale**: Multiple clients can connect/reconnect. All must receive updates and see previous output.
 
 **Pattern**:
+
 - Store output in `job.output` array
 - Use `broadcastToClients(job, message)` for all output (stdout, stderr, errors)
 - Never write directly to a single `res` object in data handlers
@@ -81,6 +84,7 @@ Photography portfolio website with React 19, TypeScript, Express 5, and SQLite.
 **Rationale**: Prevents network timeout errors on long-running operations (uploads, optimization, AI generation).
 
 **Pattern**:
+
 - `res.setHeader('X-Accel-Buffering', 'no')` to disable proxy buffering
 - `res.setTimeout(0)` to disable response timeout
 - Apply to ALL SSE endpoints immediately after setting other headers
@@ -124,11 +128,13 @@ Photography portfolio website with React 19, TypeScript, Express 5, and SQLite.
 **Location**: `backend/src/database.ts`
 
 **Tables**:
+
 - `albums`: Album names and published state
 - `image_metadata`: Image filenames, titles, descriptions, sort_order per album
 - `share_links`: Shareable album links with secret keys and expiration
 
 **Performance**:
+
 - WAL mode enabled for better concurrency
 - Indexes on (album, filename)
 - Prepared statements for all queries
@@ -176,6 +182,7 @@ Photography portfolio website with React 19, TypeScript, Express 5, and SQLite.
 **Tracking**: `runningJobs` object tracks active processes, output history, connected clients.
 
 **Features**:
+
 - Multiple clients can connect/reconnect to same job
 - Stop button sends SIGTERM to process
 - Jobs auto-cleanup 5 minutes after completion
@@ -198,14 +205,14 @@ Photography portfolio website with React 19, TypeScript, Express 5, and SQLite.
 
 **Location**: `backend/src/email.ts`
 
-**Setup UI**: 
+**Setup UI**:
+
 - **Setup Wizard**: `frontend/src/components/AdminPortal/SMTPSetupWizard.tsx`
   - Two-step wizard for configuring SMTP in Admin Portal
   - Provider presets: Gmail, SendGrid, AWS SES, Mailgun, Custom
   - Automatically shows in User Management section if SMTP not configured
   - Includes provider-specific setup instructions with links
   - Validates all required fields before saving
-  
 - **Settings Section**: `frontend/src/components/AdminPortal/ConfigManager/components/SMTPSettings.tsx`
   - Full SMTP configuration in Advanced Settings → Email (SMTP)
   - Toggle to enable/disable email service
@@ -213,6 +220,7 @@ Photography portfolio website with React 19, TypeScript, Express 5, and SQLite.
   - Shows "✓ Configured" badge when SMTP is properly set up
 
 **Configuration**: Add to `config.json`:
+
 ```json
 {
   "email": {
@@ -235,20 +243,24 @@ Photography portfolio website with React 19, TypeScript, Express 5, and SQLite.
 ```
 
 **User Experience**:
+
 - If SMTP not configured: User Management shows warning banner with "📧 Set up SMTP" button
 - After SMTP configured: "📧 Set up SMTP" button changes to "+ Invite User"
 - Wizard completion triggers config refresh and enables user invitation functionality
 
 **Email Types**:
+
 - **Invitation Email**: Sent when admin invites new user (7-day expiry)
 - **Password Reset Email**: Sent when user requests password reset (1-hour expiry)
 
 **Functions**:
+
 - `sendInvitationEmail(email, token, inviterName)` - Send invitation
 - `sendPasswordResetEmail(email, token, userName)` - Send password reset
 - `testEmailConfig()` - Test SMTP connection
 
 **Popular Providers**:
+
 - **Gmail**: smtp.gmail.com:587, requires app password from Google Account settings
 - **SendGrid**: smtp.sendgrid.net:587, username is literally "apikey"
 - **AWS SES**: email-smtp.{region}.amazonaws.com:587, requires SMTP credentials
@@ -259,7 +271,9 @@ Photography portfolio website with React 19, TypeScript, Express 5, and SQLite.
 **Purpose**: Secure user onboarding with email-based invitation system.
 
 **Process**:
+
 1. **Admin invites user** (via `/api/auth-extended/invite`)
+
    - Admin provides email and role
    - System generates secure invite token (32-byte hex)
    - User created with status='invited', 7-day expiry
@@ -269,7 +283,6 @@ Photography portfolio website with React 19, TypeScript, Express 5, and SQLite.
    - Token validates before showing signup form
    - Form collects: name, password (min 8 chars)
    - Optional: MFA setup during signup
-   
 3. **User completes signup** (via `/api/auth-extended/invite/:token/complete`)
    - System validates token and expiry
    - Sets name and password hash
@@ -277,20 +290,24 @@ Photography portfolio website with React 19, TypeScript, Express 5, and SQLite.
    - User can now log in
 
 **User Statuses**:
+
 - `invited` - User invited, pending signup (shown as "✉️ Invited")
 - `invite_expired` - Invitation expired after 7 days (shown as "⏱️ Invite Expired" with Resend button)
 - `active` - User completed signup (no status badge shown)
 
 **Admin Actions**:
+
 - **Resend Invite**: Generates new token with fresh 7-day expiry
 - **Delete User**: Remove user before they complete signup
 
 **Database Fields** (users table):
+
 - `status` - User status (invited/active/invite_expired)
 - `invite_token` - Secure random token for invitation link
 - `invite_expires_at` - ISO timestamp when invitation expires
 
 **Files**:
+
 - Backend: `backend/src/routes/auth-extended.ts`
 - Frontend: `frontend/src/components/Misc/InviteSignup.tsx`
 - Frontend: `frontend/src/components/AdminPortal/ConfigManager/sections/UserManagementSection.tsx`
@@ -302,7 +319,9 @@ Photography portfolio website with React 19, TypeScript, Express 5, and SQLite.
 **Restrictions**: Only available for users without MFA enabled (prevents MFA bypass).
 
 **Process**:
+
 1. **User requests reset** (`/reset-password`)
+
    - Provides email address
    - System generates secure reset token (32-byte hex)
    - Token valid for 1 hour
@@ -311,13 +330,13 @@ Photography portfolio website with React 19, TypeScript, Express 5, and SQLite.
 2. **User receives email** with link to `/reset-password/:token`
    - Token validates before showing password form
    - User sets new password (min 8 chars)
-   
 3. **Password reset completes**
    - System updates password hash
    - Clears reset token
    - User redirected to login
 
 **Admin MFA Reset**:
+
 - If user has MFA enabled and needs password reset
 - Admin uses "Reset MFA" button in user management
 - Disables user's MFA
@@ -325,10 +344,12 @@ Photography portfolio website with React 19, TypeScript, Express 5, and SQLite.
 - Sends password reset email
 
 **Database Fields** (users table):
+
 - `password_reset_token` - Secure random token for reset link
 - `password_reset_expires_at` - ISO timestamp when reset expires (1 hour)
 
 **Files**:
+
 - Backend: `backend/src/routes/auth-extended.ts`
 - Frontend: `frontend/src/components/Misc/PasswordResetRequest.tsx`
 - Frontend: `frontend/src/components/Misc/PasswordResetComplete.tsx`
@@ -373,6 +394,7 @@ Photography portfolio website with React 19, TypeScript, Express 5, and SQLite.
 ## Security
 
 **Rules**:
+
 - Never trust user input - sanitize all paths and filenames
 - Use parameterized SQL queries to prevent injection
 - Validate file types before processing uploads
@@ -383,6 +405,7 @@ Photography portfolio website with React 19, TypeScript, Express 5, and SQLite.
 ## Testing
 
 **Before Commit**:
+
 - Test SSE endpoints with multiple simultaneous connections
 - Verify database queries work with empty database
 - Check CSRF tokens are sent/validated on protected routes
@@ -401,6 +424,23 @@ Photography portfolio website with React 19, TypeScript, Express 5, and SQLite.
 - **Map Tiles**: Use correct CartoDB tile URL format without `{r}` placeholder
 
 ## UI Patterns
+
+### Consistent Styling
+
+**Rule**: All new UI components MUST match the styling of existing admin pages.
+
+**Pattern**: Review existing components before creating new UI to maintain consistency.
+
+**Key Style Elements**:
+- Use existing CSS classes from `AdminPortal.css`, `ConfigManager.css`, `BrandingManager.css`
+- Match color scheme: dark backgrounds, white/gray text, accent colors
+- Follow spacing patterns: consistent padding, margins, gaps
+- Use same button styles: `btn-primary`, `btn-secondary`
+- Match form inputs: `branding-input`, `branding-label`
+- Consistent section headers and descriptions
+- Same modal/overlay styles
+
+**Rationale**: Maintains professional appearance and UX consistency across admin interface.
 
 ### Password Input
 
@@ -429,11 +469,13 @@ Photography portfolio website with React 19, TypeScript, Express 5, and SQLite.
 **Description**: Vite with manual chunk splitting for optimal performance.
 
 **Configuration**:
+
 - `react-vendor`: react, react-dom, react-router-dom (45 KB gzipped)
 - `recharts-vendor`: recharts charting library (92 KB gzipped)
-- `admin-vendor`: @dnd-kit/*, leaflet, react-leaflet (61 KB gzipped)
+- `admin-vendor`: @dnd-kit/\*, leaflet, react-leaflet (61 KB gzipped)
 
 **Results**:
+
 - Initial Load: 44 KB gzipped (69% reduction from 198 KB)
 - Admin Load: Admin dependencies lazy loaded only when accessing admin panel
 
@@ -450,6 +492,7 @@ Photography portfolio website with React 19, TypeScript, Express 5, and SQLite.
 **Orchestrator**: `index.tsx` manages global state, SSE connections, confirmation modal.
 
 **Sections**:
+
 - `BrandingSection.tsx` - Site name, logo, colors (460 lines)
 - `LinksSection.tsx` - External links management (258 lines)
 - `OpenAISection.tsx` - AI configuration (421 lines)
@@ -465,6 +508,7 @@ Photography portfolio website with React 19, TypeScript, Express 5, and SQLite.
 **Orchestrator**: `index.tsx` keeps tightly coupled state (DND, SSE, uploads).
 
 **Components**:
+
 - `SortableAlbumCard.tsx` - Album card with drag-drop (126 lines)
 - `SortablePhotoItem.tsx` - Photo thumbnail with drag-drop (172 lines)
 
@@ -483,6 +527,7 @@ Photography portfolio website with React 19, TypeScript, Express 5, and SQLite.
 **Breakpoint**: 768px for mobile-specific styles.
 
 **Hidden on Mobile** (< 768px):
+
 - Edit buttons in header
 - Logout button
 - Config section descriptions
@@ -508,11 +553,13 @@ Photography portfolio website with React 19, TypeScript, Express 5, and SQLite.
 ### Rules
 
 **DO**:
+
 - Update `.cursor/rules/rules.mdc` with architectural decisions
 - Add inline comments for complex logic
 - Document API endpoints in this file
 
 **DON'T**:
+
 - Create separate markdown documentation files
 - Write summaries of work done (update rules instead)
 - Leave TODO comments without issue tracking
@@ -524,12 +571,14 @@ Photography portfolio website with React 19, TypeScript, Express 5, and SQLite.
 **Rule**: EVERY time a new API endpoint is added, modified, or removed, update the "API Endpoints" section in this rules file.
 
 **Required Information**:
+
 - HTTP method and route path
 - Brief description of functionality
 - Whether it's public or requires authentication
 - Any special middleware (CSRF, SSE, etc.)
 
 **Examples**:
+
 - `GET /api/albums` - List albums (filtered by published state)
 - `POST /api/ai-titles/generate` - Generate AI titles (SSE, authenticated)
 
@@ -551,12 +600,14 @@ Photography portfolio website with React 19, TypeScript, Express 5, and SQLite.
 **Threshold**: Albums with > 50 photos.
 
 **Strategy**:
+
 1. Load all photo metadata from JSON instantly
 2. Render first 50 photos to DOM immediately (fast initial paint)
 3. Batch-add remaining photos in 50-photo chunks every 100ms
 4. Show progress indicator during background loading
 
 **Benefits**:
+
 - First paint in ~0.5s instead of 5s for 930-photo albums
 - Page is interactive immediately
 - No janky scroll-based loading
@@ -611,6 +662,7 @@ Photography portfolio website with React 19, TypeScript, Express 5, and SQLite.
 **Rule**: No TSX file should exceed 800 lines. If a change causes a TSX file to exceed 1000 lines, you've done something wrong.
 
 **Refactoring Strategies**:
+
 - Extract functions into utility files (`utils/`)
 - Componentize UI sections into smaller components
 - Move type definitions to `types.ts` files
@@ -636,12 +688,14 @@ Photography portfolio website with React 19, TypeScript, Express 5, and SQLite.
 **Rule**: Functions MUST be extracted into util files when possible.
 
 **Extractable**:
+
 - Pure functions with no component state dependencies
 - Helper functions used across multiple components
 - Data transformation and formatting functions
 - DOM manipulation utilities
 
 **Keep In Component**:
+
 - Event handlers (`onClick`, `onChange`, etc.)
 - Functions using React hooks (`useState`, `useEffect`)
 - Functions directly manipulating component state
