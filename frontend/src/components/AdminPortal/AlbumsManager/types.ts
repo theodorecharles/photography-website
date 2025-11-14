@@ -4,7 +4,10 @@
 
 import { Album, AlbumFolder, Photo } from '../types';
 
-export type UploadState = 'queued' | 'uploading' | 'optimizing' | 'complete' | 'error';
+export type UploadState = 'queued' | 'uploading' | 'optimizing' | 'generating-title' | 'complete' | 'error';
+
+// Use AlbumFolder from parent types instead of defining a separate Folder interface
+export type Folder = AlbumFolder;
 
 export interface UploadingImage {
   file: File;
@@ -21,6 +24,14 @@ export interface AlbumsManagerProps {
   folders: AlbumFolder[];
   loadAlbums: () => Promise<void>;
   setMessage: (message: { type: 'success' | 'error'; text: string }) => void;
+  userRole: 'admin' | 'manager' | 'viewer';
+}
+
+export interface ConfirmModalConfig {
+  message: string;
+  onConfirm: () => void;
+  confirmText?: string;
+  isDanger?: boolean;
 }
 
 // Re-export types from parent

@@ -14,7 +14,11 @@ log() {
 # Function to send Telegram notification
 send_telegram_notification() {
     local MESSAGE="$1"
-    local CONFIG_FILE="config/config.json"
+    # Try data/config.json first, fall back to old location
+    local CONFIG_FILE="data/config.json"
+    if [ ! -f "$CONFIG_FILE" ]; then
+        CONFIG_FILE="config/config.json"
+    fi
     
     if [ -f "$CONFIG_FILE" ] && command -v jq &> /dev/null; then
         TELEGRAM_ENABLED=$(jq -r '.notifications.telegram.enabled // false' "$CONFIG_FILE")
@@ -40,7 +44,12 @@ handle_error() {
     # Get current branch and commit info
     CURRENT_BRANCH=$(git branch --show-current 2>/dev/null || echo "unknown")
     COMMIT_HASH=$(git rev-parse --short HEAD 2>/dev/null || echo "unknown")
-    SITE_URL=$(jq -r '.environment.backend.allowedOrigins[0] // ""' "config/config.json" 2>/dev/null || echo "")
+    # Try data/config.json first, fall back to old location
+    if [ -f "data/config.json" ]; then
+        SITE_URL=$(jq -r '.environment.backend.allowedOrigins[0] // ""' "data/config.json" 2>/dev/null || echo "")
+    else
+        SITE_URL=$(jq -r '.environment.backend.allowedOrigins[0] // ""' "config/config.json" 2>/dev/null || echo "")
+    fi
     
     # Send error notification to Telegram
     ERROR_NOTIFICATION="❌ Photography Website deployment FAILED!
@@ -64,10 +73,20 @@ if ! npm install; then
     handle_error "Root npm install failed"
 fi
 
-# Run image optimization script
-log "Starting image optimization..."
-if ! ./optimize_all_images.js; then
-    handle_error "Image optimization failed"
+# Run image optimization script (only if configured and albums exist)
+if [ -f "data/config.json" ]; then
+    # Check if there are any albums (directories) to optimize
+    ALBUM_COUNT=$(find data/photos -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l)
+    if [ "$ALBUM_COUNT" -gt 0 ]; then
+        log "Starting image optimization..."
+        if ! ./scripts/optimize_all_images.js; then
+            handle_error "Image optimization failed"
+        fi
+    else
+        log "Skipping image optimization (no albums found)"
+    fi
+else
+    log "Skipping image optimization (system not configured yet)"
 fi
 
 # Backend deployment process
@@ -99,33 +118,12 @@ cd ..
 
 # Run database migrations
 log "Running database migrations..."
-if ! node migrate-database.js; then
-    handle_error "Database migration failed"
+if ! node migrate-add-users-auth.js; then
+    handle_error "Database migration (users-auth) failed"
 fi
 
-log "Running sort_order migration..."
-if ! node migrate-add-sort-order.js; then
-    handle_error "Sort order migration failed"
-fi
-
-log "Running share links migration..."
-if ! node migrate-add-share-links.js; then
-    handle_error "Share links migration failed"
-fi
-
-log "Running album folders migration..."
-if ! node migrate-add-album-folders.js; then
-    handle_error "Album folders migration failed"
-fi
-
-log "Running share_links foreign key fix migration..."
-if ! node migrate-fix-share-links-fk.js; then
-    handle_error "Share links foreign key fix migration failed"
-fi
-
-log "Running folder sort_order migration..."
-if ! node migrate-add-folder-sort-order.js; then
-    handle_error "Folder sort_order migration failed"
+if ! node migrate-add-user-invites.js; then
+    handle_error "Database migration (user-invites) failed"
 fi
 
 # Restart both services using PM2 ecosystem file
@@ -140,16 +138,25 @@ fi
 # Get commit information for notification
 COMMIT_HASH=$(git rev-parse --short HEAD)
 COMMIT_MSG=$(git log -1 --pretty=%B | head -n 1)
-SITE_URL=$(jq -r '.environment.backend.allowedOrigins[0] // ""' "config/config.json" 2>/dev/null || echo "")
+# Try data/config.json first, fall back to old location
+if [ -f "data/config.json" ]; then
+    SITE_URL=$(jq -r '.environment.backend.allowedOrigins[0] // ""' "data/config.json" 2>/dev/null || echo "")
+else
+    SITE_URL=$(jq -r '.environment.backend.allowedOrigins[0] // ""' "config/config.json" 2>/dev/null || echo "")
+fi
 
 log "Deployment completed successfully!"
 
-# Generate static JSON files for performance optimization
-log "Generating static JSON files..."
-if node scripts/generate-static-json.js; then
-    log "Static JSON generated successfully"
+# Generate static JSON files for performance optimization (only if configured)
+if [ -f "data/config.json" ]; then
+    log "Generating static JSON files..."
+    if node scripts/generate-static-json.js; then
+        log "Static JSON generated successfully"
+    else
+        log "WARNING: Static JSON generation failed (site will use API fallback)"
+    fi
 else
-    log "WARNING: Static JSON generation failed (site will use API fallback)"
+    log "Skipping static JSON generation (system not configured yet)"
 fi
 
 # Send success notification to Telegram
@@ -162,6 +169,3 @@ SUCCESS_NOTIFICATION="✅ Photography Website deployed successfully!
 
 log "Sending deployment notification to Telegram..."
 send_telegram_notification "$SUCCESS_NOTIFICATION"
-
-# Display PM2 status
-pm2 list

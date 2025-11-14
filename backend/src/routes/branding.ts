@@ -12,7 +12,7 @@ import { promisify } from 'util';
 import crypto from 'crypto';
 import multer from 'multer';
 import os from 'os';
-import { isAuthenticated } from './auth.js';
+import { requireManager } from '../auth/middleware.js';
 import { csrfProtection } from '../security.js';
 
 const execAsync = promisify(exec);
@@ -48,7 +48,9 @@ const upload = multer({
 router.use(csrfProtection);
 
 // Path to config file - go up from backend/src/routes to project root, then into config
-const configPath = path.resolve(__dirname, '../../../config/config.json');
+import { DATA_DIR } from '../config.js';
+
+const configPath = path.join(DATA_DIR, 'config.json');
 console.log('[Branding Routes] Config path resolved to:', configPath);
 console.log('[Branding Routes] __dirname is:', __dirname);
 
@@ -88,7 +90,7 @@ router.get('/', (req: Request, res: Response) => {
 });
 
 // Update branding configuration
-router.put('/', isAuthenticated, (req: Request, res: Response) => {
+router.put('/', requireManager, (req: Request, res: Response) => {
   try {
     const updates: Partial<BrandingConfig> = req.body;
     
@@ -155,7 +157,7 @@ router.put('/', isAuthenticated, (req: Request, res: Response) => {
 });
 
 // Upload avatar
-router.post('/upload-avatar', isAuthenticated, upload.single('avatar'), async (req: Request, res: Response): Promise<void> => {
+router.post('/upload-avatar', requireManager, upload.single('avatar'), async (req: Request, res: Response): Promise<void> => {
   try {
     const file = req.file;
     if (!file) {

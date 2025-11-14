@@ -501,24 +501,29 @@
 
 .album-photos {
   position: fixed;
-  left: 0;
-  bottom: 0;
-  width: 100vw;
-  height: 100vh;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.9);
+  width: 90vw;
+  max-width: 1400px;
+  height: 85vh;
+  max-height: 900px;
   background: #1e1e1e;
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
   z-index: 1001;
   overflow-y: auto;
-  transform: translateY(100%);
-  transition: transform 0.3s ease-in-out;
-  animation: slideUpFromBottom 0.3s ease-in-out forwards;
+  animation: modalFadeIn 0.2s ease-out forwards;
 }
 
-@keyframes slideUpFromBottom {
+@keyframes modalFadeIn {
   from {
-    transform: translateY(100%);
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.95);
   }
   to {
-    transform: translateY(0);
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
   }
 }
 
@@ -532,13 +537,46 @@
 }
 
 .album-photos-backdrop {
-  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  animation: fadeIn 0.2s ease-out forwards;
 }
 
 .album-photos.drag-over {
   border-color: var(--primary-color);
-  border-width: 2px 0 2px 2px;
+  border-width: 2px;
   background: rgba(74, 222, 128, 0.05);
+}
+
+/* Mobile responsive modal */
+@media (max-width: 768px) {
+  .album-photos {
+    width: 95vw;
+    height: 90vh;
+    max-height: none;
+    border-radius: 16px;
+  }
+
+  .album-controls-row {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .album-controls-row .btn-action .btn-text {
+    display: none;
+  }
+
+  .album-controls-row .btn-action {
+    padding: 0.5rem;
+    min-width: 40px;
+    justify-content: center;
+  }
 }
 
 .drop-overlay {
@@ -608,6 +646,92 @@
   font-size: 1.3rem;
   margin: 0;
   font-weight: 600;
+}
+
+.album-controls-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  margin-bottom: 1rem;
+}
+
+.album-controls-row .toggle-switch {
+  margin: 0;
+}
+
+.album-controls-row .btn-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.album-controls-row .btn-action:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.25);
+  transform: translateY(-1px);
+}
+
+.album-controls-row .btn-preview {
+  background: rgba(59, 130, 246, 0.15);
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+.album-controls-row .btn-preview:hover {
+  background: rgba(59, 130, 246, 0.25);
+  border-color: rgba(59, 130, 246, 0.5);
+}
+
+.album-controls-row .btn-generate-link {
+  background: rgba(249, 115, 22, 0.15);
+  border-color: rgba(249, 115, 22, 0.3);
+}
+
+.album-controls-row .btn-generate-link:hover {
+  background: rgba(249, 115, 22, 0.25);
+  border-color: rgba(249, 115, 22, 0.5);
+}
+
+.view-toggle {
+  display: flex;
+  gap: 0.25rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+  padding: 0.25rem;
+  margin-left: auto;
+}
+
+.view-toggle-btn {
+  padding: 0.4rem 0.6rem;
+  background: transparent;
+  border: none;
+  color: #888;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.view-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.view-toggle-btn.active {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
 }
 
 .photos-panel-close-btn {
@@ -799,18 +923,25 @@
 
 .photos-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 1.25rem;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 1rem;
   user-select: none;
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
 }
 
+/* Responsive grid breakpoints */
+@media (min-width: 1400px) {
+  .photos-grid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  }
+}
+
 @media (max-width: 768px) {
   .photos-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
   }
   
   /* Scale down to 8 columns when shuffling on mobile */
@@ -819,6 +950,86 @@
     gap: 0.25rem;
     transition: all 0.3s ease;
   }
+}
+
+/* List view styles */
+.photos-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  user-select: none;
+  padding: 0 1.5rem 1.5rem 1.5rem;
+  overflow-y: auto;
+}
+
+.photos-list .admin-photo-item {
+  padding-bottom: 0 !important;
+  height: 80px;
+  display: flex;
+  flex-direction: row;
+  border-radius: 8px;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem !important;
+}
+
+.photos-list .admin-photo-thumbnail {
+  position: relative !important;
+  inset: auto !important;
+  width: 60px !important;
+  height: 60px !important;
+  object-fit: cover;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.photos-list .photo-info {
+  flex: 1;
+  display: flex !important;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.photos-list .photo-filename {
+  position: relative !important;
+  inset: auto !important;
+  transform: none !important;
+  background: transparent !important;
+  padding: 0 !important;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.photos-list .photo-title {
+  font-size: 0.85rem;
+  color: #888;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.photos-list .photo-overlay {
+  position: relative !important;
+  inset: auto !important;
+  opacity: 1 !important;
+  background: transparent !important;
+  flex-shrink: 0;
+}
+
+.photos-list .photo-actions {
+  display: flex !important;
+  flex-direction: row !important;
+  gap: 0.5rem;
+}
+
+/* Hide photo-info in grid view (only show in list view) */
+.photos-grid .photo-info {
+  display: none;
 }
 
 .admin-photo-item {

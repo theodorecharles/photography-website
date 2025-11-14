@@ -17,6 +17,13 @@ import {
   trackDropdownOpen,
   trackDropdownClose
 } from "../utils/analytics";
+import {
+  EditIcon,
+  DropdownArrowIcon,
+  LockIcon,
+  ChevronRightIcon,
+  LogoutIcon
+} from "./icons/";
 
 export interface ExternalLink {
   title: string;
@@ -63,11 +70,12 @@ function Navigation({
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isExternalOpen, setIsExternalOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userRole, setUserRole] = useState<string | null>(null);
   const [openFolderId, setOpenFolderId] = useState<number | null>(null);
   const location = useLocation();
   const navigate = useNavigate();
   
-  // Check if user is authenticated
+  // Check if user is authenticated and get their role
   useEffect(() => {
     const checkAuth = async () => {
       try {
@@ -77,11 +85,14 @@ function Navigation({
         if (res.ok) {
           const data = await res.json();
           setIsAuthenticated(data.authenticated === true);
+          setUserRole(data.user?.role || null);
         } else {
           setIsAuthenticated(false);
+          setUserRole(null);
         }
       } catch {
         setIsAuthenticated(false);
+        setUserRole(null);
       }
     };
     checkAuth();
@@ -224,8 +235,8 @@ function Navigation({
           <h1 className="album-title">
             {currentAlbum}
           </h1>
-          {/* Edit Album button - only shown when authenticated and on an album page */}
-          {isAuthenticated && currentAlbum !== 'homepage' && (
+          {/* Edit Album button - only shown for admins and managers */}
+          {isAuthenticated && (userRole === 'admin' || userRole === 'manager') && currentAlbum !== 'homepage' && (
             <button
               onClick={() => {
                 navigate(`/admin/albums?album=${encodeURIComponent(currentAlbum)}`);
@@ -233,18 +244,7 @@ function Navigation({
               className="edit-album-btn"
               title="Edit this album"
             >
-              <svg
-                viewBox="0 0 24 24"
-                width="16"
-                height="16"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
-              </svg>
+              <EditIcon width="16" height="16" />
             </button>
           )}
         </div>
@@ -259,21 +259,11 @@ function Navigation({
           >
             <button className="nav-link" onClick={handleAlbumsClick}>
               Albums
-              <svg
+              <DropdownArrowIcon 
                 className={`dropdown-arrow ${isDropdownOpen ? "open" : ""}`}
-                viewBox="0 0 24 24"
                 width="16"
                 height="16"
-              >
-                <path
-                  d="M6 9L12 15L18 9"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
+              />
             </button>
             <div className={`dropdown-menu ${isDropdownOpen ? "open" : ""}`}>
               {folders && folders.length > 0 ? (
@@ -292,19 +282,8 @@ function Navigation({
                       return true;
                     });
                     
-                    console.log(`🔍 Header.tsx - Folder "${folder.name}" (published: ${folder.published}):`, {
-                      isAuthenticated,
-                      totalAlbumsInFolder: albums.filter(a => {
-                        const albumObj = typeof a === 'string' ? { folder_id: null } : a;
-                        return albumObj.folder_id === folder.id;
-                      }).length,
-                      filteredAlbumsCount: folderAlbums.length,
-                      folderAlbums: folderAlbums.map(a => typeof a === 'string' ? a : `${a.name} (pub: ${a.published})`)
-                    });
-                    
                     // Don't show empty folders in the dropdown
                     if (folderAlbums.length === 0) {
-                      console.log(`🔍 Header.tsx - Hiding folder "${folder.name}" (empty after filtering)`);
                       return null;
                     }
                     
@@ -319,35 +298,18 @@ function Navigation({
                         >
                           {!isFolderPublished && isAuthenticated ? (
                             // Lock icon for unpublished folders
-                            <svg
-                              viewBox="0 0 24 24"
+                            <LockIcon 
                               width="14"
                               height="14"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2"
                               style={{ opacity: 0.6 }}
-                            >
-                              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                            </svg>
+                            />
                           ) : (
                             // Chevron for published folders
-                            <svg
+                            <ChevronRightIcon 
                               className={`folder-chevron ${openFolderId === folder.id ? "open" : ""}`}
-                              viewBox="0 0 24 24"
                               width="14"
                               height="14"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                            >
-                              <path
-                                d="M9 18l6-6-6-6"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              />
-                            </svg>
+                            />
                           )}
                           <span>{folder.name}</span>
                         </button>
@@ -370,18 +332,11 @@ function Navigation({
                                     }}
                                   >
                                     {!isPublished && (
-                                      <svg
-                                        viewBox="0 0 24 24"
+                                      <LockIcon 
                                         width="14"
                                         height="14"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        strokeWidth="2"
                                         style={{ marginRight: '6px', opacity: 0.6, flexShrink: 0 }}
-                                      >
-                                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                                        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                                      </svg>
+                                      />
                                     )}
                                     <span>{albumName}</span>
                                   </Link>
@@ -417,18 +372,11 @@ function Navigation({
                         }}
                       >
                         {!isPublished && (
-                          <svg
-                            viewBox="0 0 24 24"
+                          <LockIcon 
                             width="14"
                             height="14"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
                             style={{ marginRight: '6px', opacity: 0.6, flexShrink: 0 }}
-                          >
-                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                          </svg>
+                          />
                         )}
                         <span>{albumName}</span>
                       </Link>
@@ -452,18 +400,11 @@ function Navigation({
                       }}
                     >
                       {!isPublished && (
-                        <svg
-                          viewBox="0 0 24 24"
+                        <LockIcon 
                           width="14"
                           height="14"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
                           style={{ marginRight: '6px', opacity: 0.6, flexShrink: 0 }}
-                        >
-                          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                          <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                        </svg>
+                        />
                       )}
                       <span>{albumName}</span>
                     </Link>
@@ -484,21 +425,11 @@ function Navigation({
           >
             <button className="nav-link" onClick={handleLinksClick}>
               Links
-              <svg
+              <DropdownArrowIcon 
                 className={`dropdown-arrow ${isExternalOpen ? "open" : ""}`}
-                viewBox="0 0 24 24"
                 width="16"
                 height="16"
-              >
-                <path
-                  d="M6 9L12 15L18 9"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
+              />
             </button>
             <div className={`dropdown-menu ${isExternalOpen ? "open" : ""}`}>
               {externalLinks.map((link) => (
@@ -517,25 +448,14 @@ function Navigation({
             </div>
           </div>
           
-          {/* Edit Links button - only shown when authenticated */}
-          {isAuthenticated && (
+          {/* Edit Links button - only shown for admins (links are in settings) */}
+          {isAuthenticated && userRole === 'admin' && (
             <Link
               to="/admin/settings?section=links"
               className="edit-album-btn"
               title="Edit links"
             >
-              <svg
-                viewBox="0 0 24 24"
-                width="16"
-                height="16"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
-              </svg>
+              <EditIcon width="16" height="16" />
             </Link>
           )}
         </div>
@@ -612,20 +532,7 @@ export default function Header({
             className="logout-btn"
             title="Logout"
           >
-            <svg
-              viewBox="0 0 24 24"
-              width="20"
-              height="20"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-              <polyline points="16 17 21 12 16 7" />
-              <line x1="21" y1="12" x2="9" y2="12" />
-            </svg>
+            <LogoutIcon width="20" height="20" />
           </button>
         )}
         <Link to="/">

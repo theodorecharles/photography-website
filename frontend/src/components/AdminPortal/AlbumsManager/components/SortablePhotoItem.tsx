@@ -8,6 +8,7 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Photo } from '../types';
 import { cacheBustValue } from '../../../../config';
+import { EditDocumentIcon, TrashIcon } from '../../../icons';
 
 const API_URL = import.meta.env.VITE_API_URL || '';
 
@@ -15,12 +16,14 @@ interface SortablePhotoItemProps {
   photo: Photo;
   onEdit: (photo: Photo) => void;
   onDelete: (album: string, filename: string, title: string) => void;
+  canEdit: boolean;
 }
 
 const SortablePhotoItem: React.FC<SortablePhotoItemProps> = ({
   photo,
   onEdit,
   onDelete,
+  canEdit,
 }) => {
   const {
     attributes,
@@ -29,7 +32,7 @@ const SortablePhotoItem: React.FC<SortablePhotoItemProps> = ({
     transform,
     transition,
     isDragging,
-  } = useSortable({ id: photo.id });
+  } = useSortable({ id: photo.id, disabled: !canEdit });
 
   const [showOverlay, setShowOverlay] = useState(false);
   const touchStartPos = useRef<{ x: number; y: number } | null>(null);
@@ -102,6 +105,7 @@ const SortablePhotoItem: React.FC<SortablePhotoItemProps> = ({
   };
 
   const imageUrl = `${API_URL}${photo.thumbnail}?i=${cacheBustValue}`;
+  const filename = photo.id.split('/').pop() || photo.id;
 
   return (
     <div
@@ -112,8 +116,8 @@ const SortablePhotoItem: React.FC<SortablePhotoItemProps> = ({
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
       onTouchCancel={handleTouchCancel}
-      {...attributes}
-      {...listeners}
+      {...(canEdit ? attributes : {})}
+      {...(canEdit ? listeners : {})}
     >
       <img
         src={imageUrl}
@@ -121,44 +125,46 @@ const SortablePhotoItem: React.FC<SortablePhotoItemProps> = ({
         className="admin-photo-thumbnail"
       />
 
-      <div className="photo-overlay" onClick={handleOverlayClick}>
-        <div className="photo-actions">
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              e.preventDefault();
-              onEdit(photo);
-            }}
-            onTouchEnd={(e) => {
-              e.stopPropagation();
-              e.preventDefault();
-              onEdit(photo);
-            }}
-            className="btn-edit-photo"
-            title="Edit title"
-            type="button"
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-            </svg>
-          </button>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              const filename = photo.id.split('/').pop() || photo.id;
-              onDelete(photo.album, filename, photo.title);
-            }}
-            className="btn-delete-photo"
-            title="Delete photo"
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <polyline points="3 6 5 6 21 6" />
-              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-            </svg>
-          </button>
-        </div>
+      {/* Photo info section (shown in list view) */}
+      <div className="photo-info">
+        <div className="photo-filename">{filename}</div>
+        {photo.title && <div className="photo-title">{photo.title}</div>}
       </div>
+
+      {canEdit && (
+        <div className="photo-overlay" onClick={handleOverlayClick}>
+          <div className="photo-actions">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                onEdit(photo);
+              }}
+              onTouchEnd={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                onEdit(photo);
+              }}
+              className="btn-edit-photo"
+              title="Edit title"
+              type="button"
+            >
+              <EditDocumentIcon width="16" height="16" />
+            </button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                const filename = photo.id.split('/').pop() || photo.id;
+                onDelete(photo.album, filename, photo.title);
+              }}
+              className="btn-delete-photo"
+              title="Delete photo"
+            >
+              <TrashIcon width="16" height="16" />
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

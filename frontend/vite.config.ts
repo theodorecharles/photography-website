@@ -23,7 +23,7 @@ const defaultConfig = {
 };
 
 // Load config.json - the single source of truth
-const configPath = path.resolve(__dirname, '../config/config.json');
+const configPath = path.resolve(__dirname, '../data/config.json');
 let config;
 let configExists = false;
 

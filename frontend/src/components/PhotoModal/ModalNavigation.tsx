@@ -4,6 +4,7 @@
  */
 
 import React from 'react';
+import { ChevronLeftIcon, ChevronRightIcon } from '../icons/';
 
 interface ModalNavigationProps {
   showHint: boolean;
@@ -28,29 +29,11 @@ const ModalNavigation: React.FC<ModalNavigationProps> = ({
       
       <div className="modal-navigation" style={style}>
         <button onClick={onPrevious}>
-          <svg
-            width="32"
-            height="32"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-          >
-            <path d="M18 6L6 12L18 18" />
-          </svg>
+          <ChevronLeftIcon width="32" height="32" />
         </button>
         
         <button onClick={onNext}>
-          <svg
-            width="32"
-            height="32"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-          >
-            <path d="M6 6L18 12L6 18" />
-          </svg>
+          <ChevronRightIcon width="32" height="32" />
         </button>
       </div>
     </>
