@@ -24,7 +24,7 @@ const concurrencyOverride = concurrencyArg !== -1 ? parseInt(args[concurrencyArg
 
 // Read configuration
 const config = JSON.parse(readFileSync('data/config.json', 'utf8'));
-const photosDir = config.environment.backend.photosDir || 'photos';
+const photosDir = 'data/photos'; // Hardcoded data directory structure
 const concurrency = concurrencyOverride || config.environment.optimization?.concurrency || 4;
 const imageSettings = config.environment.optimization?.images || {};
 

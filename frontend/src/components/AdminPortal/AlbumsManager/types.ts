@@ -4,7 +4,7 @@
 
 import { Album, AlbumFolder, Photo } from '../types';
 
-export type UploadState = 'queued' | 'uploading' | 'optimizing' | 'complete' | 'error';
+export type UploadState = 'queued' | 'uploading' | 'optimizing' | 'generating-title' | 'complete' | 'error';
 
 // Use AlbumFolder from parent types instead of defining a separate Folder interface
 export type Folder = AlbumFolder;

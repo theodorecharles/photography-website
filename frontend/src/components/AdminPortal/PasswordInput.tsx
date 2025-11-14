@@ -1,6 +1,6 @@
 import { useState } from "react";
 import "./PasswordInput.css";
-import { EyeIcon, CopyIcon } from "../icons";
+import { EyeIcon, CopyIcon } from "../icons/";
 
 interface PasswordInputProps {
   value: string;

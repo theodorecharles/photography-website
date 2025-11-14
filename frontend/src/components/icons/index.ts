@@ -23,6 +23,7 @@ export { default as FolderPlusIcon } from './FolderPlusIcon';
 export { default as FullscreenIcon } from './FullscreenIcon';
 export { default as GoogleLogoIcon } from './GoogleLogoIcon';
 export { default as HomeIcon } from './HomeIcon';
+export { default as HourglassIcon } from './HourglassIcon';
 export { default as ImageIcon } from './ImageIcon';
 export { default as InfoIcon } from './InfoIcon';
 export { default as LinkIcon } from './LinkIcon';

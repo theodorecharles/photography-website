@@ -26,7 +26,7 @@ import {
   ImageIcon,
   BarChartIcon,
   SettingsIcon
-} from '../icons';
+} from '../icons/';
 
 export default function AdminPortal() {
   const navigate = useNavigate();

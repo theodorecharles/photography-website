@@ -6,7 +6,7 @@
 import { useSearchParams, Link } from 'react-router-dom';
 import './AuthError.css';
 import { getErrorMessage } from '../../utils/errorMessages';
-import { ErrorCircleIcon } from '../icons';
+import { ErrorCircleIcon } from '../icons/';
 
 export default function AuthError() {
   const [searchParams] = useSearchParams();

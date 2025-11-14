@@ -203,7 +203,7 @@ const sanitizePhotoName = (name: string): string | null => {
  */
 router.post("/", requireAuth, async (req: Request, res: Response): Promise<void> => {
   try {
-    const { name } = req.body;
+    const { name, folder_id } = req.body;
     
     if (!name) {
       res.status(400).json({ error: 'Album name is required' });
@@ -230,6 +230,12 @@ router.post("/", requireAuth, async (req: Request, res: Response): Promise<void>
     // Create album in database as unpublished by default
     saveAlbum(sanitizedName, false);
     console.log(`✓ Created unpublished album: ${sanitizedName}`);
+    
+    // Set folder if provided
+    if (folder_id !== undefined && folder_id !== null) {
+      setAlbumFolder(sanitizedName, folder_id);
+      console.log(`✓ Assigned album "${sanitizedName}" to folder ID: ${folder_id}`);
+    }
 
     // Regenerate static JSON files
     const appRoot = req.app.get('appRoot');

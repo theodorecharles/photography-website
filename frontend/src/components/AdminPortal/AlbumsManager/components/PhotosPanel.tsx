@@ -10,7 +10,7 @@ import { SortableContext, sortableKeyboardCoordinates, rectSortingStrategy } fro
 import SortablePhotoItem from './SortablePhotoItem';
 import { Photo, UploadingImage } from '../types';
 import { cacheBustValue } from '../../../../config';
-import { UploadIcon, TrashIcon, LinkIcon, ShuffleIcon } from '../../../icons';
+import { UploadIcon, TrashIcon, LinkIcon, ShuffleIcon, HourglassIcon } from '../../../icons';
 
 const API_URL = import.meta.env.VITE_API_URL || '';
 
@@ -186,6 +186,12 @@ const PhotosPanel: React.FC<PhotosPanelProps> = ({
               {uploadingImages.map((img, index) => (
                 <div key={`uploading-${index}`} className="admin-photo-item uploading">
                   <img src={img.thumbnailUrl} alt={img.filename} className="admin-photo-thumbnail" />
+                  {img.state === 'queued' && (
+                    <div className="photo-state-overlay queued">
+                      <HourglassIcon width="32" height="32" style={{ opacity: 0.8 }} />
+                      <span className="state-text">Queued</span>
+                    </div>
+                  )}
                   {img.state === 'uploading' && (
                     <div className="photo-state-overlay uploading">
                       <div className="progress-circle">
@@ -212,10 +218,16 @@ const PhotosPanel: React.FC<PhotosPanelProps> = ({
                   {img.state === 'optimizing' && (
                     <div className="photo-state-overlay optimizing">
                       <div className="spinner"></div>
-                      <span className="state-text">{img.error || 'Optimizing...'}</span>
+                      <span className="state-text">Optimizing...</span>
                       {typeof img.optimizeProgress === 'number' && (
                         <span className="state-subtext">{img.optimizeProgress}%</span>
                       )}
+                    </div>
+                  )}
+                  {img.state === 'generating-title' && (
+                    <div className="photo-state-overlay generating-title">
+                      <div className="spinner"></div>
+                      <span className="state-text">Generating Title...</span>
                     </div>
                   )}
                   {img.state === 'complete' && (

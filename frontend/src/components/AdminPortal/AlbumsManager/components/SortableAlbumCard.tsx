@@ -20,6 +20,9 @@ interface SortableAlbumCardProps {
   onDrop: (e: React.DragEvent) => void;
   onRename?: (albumName: string) => void;
   onRemoveFromFolder?: (albumName: string) => void;
+  onTogglePublished?: (albumName: string, currentPublished: boolean, event?: React.MouseEvent) => void;
+  onShare?: (albumName: string) => void;
+  onPreview?: (albumName: string) => void;
 }
 
 const SortableAlbumCard: React.FC<SortableAlbumCardProps> = ({
@@ -33,6 +36,9 @@ const SortableAlbumCard: React.FC<SortableAlbumCardProps> = ({
   onDrop,
   onRename,
   onRemoveFromFolder,
+  onTogglePublished,
+  onShare,
+  onPreview,
 }) => {
   const {
     attributes,
@@ -143,6 +149,51 @@ const SortableAlbumCard: React.FC<SortableAlbumCardProps> = ({
           <span>Drop to upload</span>
         </div>
       )}
+      
+      {/* Album overlay with controls - shown on hover (desktop) or always (mobile) */}
+      <div className="album-overlay">
+        <div className="album-overlay-controls">
+          {onTogglePublished && (
+            <label className="toggle-switch" onClick={(e) => e.stopPropagation()}>
+              <input
+                type="checkbox"
+                checked={album.published !== false}
+                onChange={() => onTogglePublished(album.name, album.published !== false)}
+              />
+              <span className="toggle-slider"></span>
+              <span className="toggle-label">Published</span>
+            </label>
+          )}
+          
+          <div className="album-overlay-buttons">
+            {onShare && album.published === false && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onShare(album.name);
+                }}
+                className="btn-album-overlay"
+                title="Share album"
+              >
+                Share
+              </button>
+            )}
+            
+            {onPreview && album.published !== false && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onPreview(album.name);
+                }}
+                className="btn-album-overlay"
+                title="Preview album"
+              >
+                Preview
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

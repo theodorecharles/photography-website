@@ -24,6 +24,9 @@ interface FoldersSectionProps {
   onAlbumDrop: (e: React.DragEvent, albumName: string) => void;
   onAlbumRename: (albumName: string) => void;
   onCreateAlbumInFolder: (folderId: number) => void;
+  onAlbumTogglePublished?: (albumName: string, currentPublished: boolean, event?: React.MouseEvent) => void;
+  onShare?: (albumName: string) => void;
+  onPreview?: (albumName: string) => void;
 }
 
 const FoldersSection: React.FC<FoldersSectionProps> = ({
@@ -42,6 +45,9 @@ const FoldersSection: React.FC<FoldersSectionProps> = ({
   onAlbumDrop,
   onAlbumRename,
   onCreateAlbumInFolder,
+  onAlbumTogglePublished,
+  onShare,
+  onPreview,
 }) => {
   if (localFolders.length === 0) return null;
 
@@ -67,6 +73,9 @@ const FoldersSection: React.FC<FoldersSectionProps> = ({
               onAlbumDrop={onAlbumDrop}
               onAlbumRename={onAlbumRename}
               onCreateAlbumInFolder={onCreateAlbumInFolder}
+              onAlbumTogglePublished={onAlbumTogglePublished}
+              onShare={onShare}
+              onPreview={onPreview}
             />
           ))}
         </div>

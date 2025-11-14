@@ -73,10 +73,20 @@ if ! npm install; then
     handle_error "Root npm install failed"
 fi
 
-# Run image optimization script
-log "Starting image optimization..."
-if ! ./scripts/optimize_all_images.js; then
-    handle_error "Image optimization failed"
+# Run image optimization script (only if configured and albums exist)
+if [ -f "data/config.json" ]; then
+    # Check if there are any albums (directories) to optimize
+    ALBUM_COUNT=$(find data/photos -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l)
+    if [ "$ALBUM_COUNT" -gt 0 ]; then
+        log "Starting image optimization..."
+        if ! ./scripts/optimize_all_images.js; then
+            handle_error "Image optimization failed"
+        fi
+    else
+        log "Skipping image optimization (no albums found)"
+    fi
+else
+    log "Skipping image optimization (system not configured yet)"
 fi
 
 # Backend deployment process
@@ -129,12 +139,16 @@ fi
 
 log "Deployment completed successfully!"
 
-# Generate static JSON files for performance optimization
-log "Generating static JSON files..."
-if node scripts/generate-static-json.js; then
-    log "Static JSON generated successfully"
+# Generate static JSON files for performance optimization (only if configured)
+if [ -f "data/config.json" ]; then
+    log "Generating static JSON files..."
+    if node scripts/generate-static-json.js; then
+        log "Static JSON generated successfully"
+    else
+        log "WARNING: Static JSON generation failed (site will use API fallback)"
+    fi
 else
-    log "WARNING: Static JSON generation failed (site will use API fallback)"
+    log "Skipping static JSON generation (system not configured yet)"
 fi
 
 # Send success notification to Telegram
@@ -147,6 +161,3 @@ SUCCESS_NOTIFICATION="✅ Photography Website deployed successfully!
 
 log "Sending deployment notification to Telegram..."
 send_telegram_notification "$SUCCESS_NOTIFICATION"
-
-# Display PM2 status
-pm2 list

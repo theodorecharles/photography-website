@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { ChevronLeftIcon, ChevronRightIcon } from '../icons';
+import { ChevronLeftIcon, ChevronRightIcon } from '../icons/';
 
 interface ModalNavigationProps {
   showHint: boolean;

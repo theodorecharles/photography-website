@@ -229,18 +229,12 @@ router.post('/initialize', async (req: Request, res: Response): Promise<void> =>
     fs.writeFileSync(configPath, JSON.stringify(config, null, 2), 'utf8');
 
     // Create necessary directories
-    // Use the photosDir from config (default is "photos" relative to project root)
-    const photosDirPath = config.environment.backend.photosDir;
-    const photosDir = path.isAbsolute(photosDirPath) 
-      ? photosDirPath 
-      : path.join(projectRoot, photosDirPath);
-    const optimizedDir = path.join(projectRoot, 'optimized');
-    const homepageDir = path.join(photosDir, 'homepage');
+    const photosDir = path.join(dataDir, 'photos');
+    const optimizedDir = path.join(dataDir, 'optimized');
 
     console.log('Creating directories:');
     console.log('  Photos:', photosDir);
     console.log('  Optimized:', optimizedDir);
-    console.log('  Homepage:', homepageDir);
 
     if (!fs.existsSync(photosDir)) {
       fs.mkdirSync(photosDir, { recursive: true });
@@ -249,10 +243,6 @@ router.post('/initialize', async (req: Request, res: Response): Promise<void> =>
     if (!fs.existsSync(optimizedDir)) {
       fs.mkdirSync(optimizedDir, { recursive: true });
       console.log('  ✓ Created optimized directory');
-    }
-    if (!fs.existsSync(homepageDir)) {
-      fs.mkdirSync(homepageDir, { recursive: true });
-      console.log('  ✓ Created homepage directory');
     }
 
     // Initialize the database to create gallery.db

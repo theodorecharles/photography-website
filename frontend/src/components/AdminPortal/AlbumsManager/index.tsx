@@ -304,31 +304,45 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     }
     
     try {
-      const formData = new FormData();
-      formData.append('published', newAlbumPublished.toString());
+      // Step 1: Create empty album first
+      const createBody: any = { name: newAlbumModalName };
       if (targetFolderId !== null) {
-        formData.append('folder_id', targetFolderId.toString());
+        createBody.folder_id = targetFolderId;
       }
       
-      newAlbumFiles.forEach(file => {
-        formData.append('images', file);
-      });
-      
-      const res = await fetch(`${API_URL}/api/albums/${encodeURIComponent(newAlbumModalName)}`, {
+      const res = await fetch(`${API_URL}/api/albums`, {
         method: 'POST',
         credentials: 'include',
-        body: formData,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(createBody),
       });
       
-      if (res.ok) {
-        setMessage({ type: 'success', text: `Album "${newAlbumModalName}" created` });
-        trackAlbumCreated(newAlbumModalName);
-        await loadAlbums();
-        handleCloseNewAlbumModal();
-        selectAlbum(newAlbumModalName);
-      } else {
+      if (!res.ok) {
         const error = await res.json();
         setNewAlbumModalError(error.error || 'Failed to create album');
+        return;
+      }
+      
+      // Step 2: Set published state if needed
+      if (newAlbumPublished) {
+        await fetch(`${API_URL}/api/albums/${encodeURIComponent(newAlbumModalName)}/publish`, {
+          method: 'PATCH',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ published: true }),
+        });
+      }
+      
+      // Step 3: Upload photos one by one using SSE workflow
+      setMessage({ type: 'success', text: `Album "${newAlbumModalName}" created` });
+      trackAlbumCreated(newAlbumModalName);
+      await loadAlbums();
+      handleCloseNewAlbumModal();
+      selectAlbum(newAlbumModalName);
+      
+      // Upload files using the SSE workflow
+      if (newAlbumFiles.length > 0) {
+        await uploadHandlers.handleUploadToAlbum(newAlbumModalName, newAlbumFiles);
       }
     } catch (err) {
       setNewAlbumModalError('Network error occurred');
@@ -386,6 +400,14 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
             onAlbumDrop={dragDropHandlers.handleAlbumTileDrop}
             onAlbumRename={(albumName) => albumHandlers.handleOpenRenameModal(albumName)}
             onCreateAlbumInFolder={uiHandlers.handleCreateAlbumInFolder}
+            onAlbumTogglePublished={albumHandlers.handleTogglePublished}
+            onShare={(albumName) => {
+              setShareAlbumName(albumName);
+              setShowShareModal(true);
+            }}
+            onPreview={(albumName) => {
+              window.open(`/albums/${encodeURIComponent(albumName)}`, '_blank');
+            }}
           />
           
           <UncategorizedSection
@@ -409,6 +431,14 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
             onGhostTileDragLeave={uiHandlers.handleGhostTileDragLeave}
             onGhostTileDrop={uiHandlers.handleGhostTileDrop}
             onGhostTileFileSelect={uiHandlers.handleGhostTileFileSelect}
+            onAlbumTogglePublished={albumHandlers.handleTogglePublished}
+            onShare={(albumName) => {
+              setShareAlbumName(albumName);
+              setShowShareModal(true);
+            }}
+            onPreview={(albumName) => {
+              window.open(`/albums/${encodeURIComponent(albumName)}`, '_blank');
+            }}
           />
           
           

@@ -26,7 +26,6 @@ const defaultConfig = {
     },
     backend: {
       port: 3001,
-      photosDir: path.join(DATA_DIR, "photos"),
       allowedOrigins: ["http://localhost:3000"]
     },
     security: {
@@ -95,18 +94,24 @@ function loadConfig() {
 // Load config on startup
 loadConfig();
 
-const config = fullConfig.environment;
-
-// Export values from config.json (environment variables can override)
-export const PORT = process.env.PORT ? parseInt(process.env.PORT) : config.backend.port;
-export const PHOTOS_DIR = process.env.PHOTOS_DIR || config.backend.photosDir;
+// Export hardcoded data directory paths (no longer configurable)
+export const PHOTOS_DIR = path.join(DATA_DIR, 'photos');
 export const OPTIMIZED_DIR = path.join(DATA_DIR, 'optimized');
 export const DB_PATH = path.join(DATA_DIR, 'gallery.db');
-export const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS 
-  ? process.env.ALLOWED_ORIGINS.split(',').map((o: string) => o.trim())
-  : config.backend.allowedOrigins;
-export const RATE_LIMIT_WINDOW_MS = config.security.rateLimitWindowMs;
-export const RATE_LIMIT_MAX_REQUESTS = config.security.rateLimitMaxRequests;
+
+// Export dynamic getters for config values that can change
+export function getAllowedOrigins(): string[] {
+  if (process.env.ALLOWED_ORIGINS) {
+    return process.env.ALLOWED_ORIGINS.split(',').map((o: string) => o.trim());
+  }
+  return fullConfig.environment.backend.allowedOrigins;
+}
+
+// Export constants
+export const PORT = process.env.PORT ? parseInt(process.env.PORT) : fullConfig.environment.backend.port;
+export const RATE_LIMIT_WINDOW_MS = fullConfig.environment.security.rateLimitWindowMs;
+export const RATE_LIMIT_MAX_REQUESTS = fullConfig.environment.security.rateLimitMaxRequests;
+export const ALLOWED_ORIGINS = getAllowedOrigins();
 
 // Export flag indicating if config exists
 export const CONFIG_EXISTS = configExists;
@@ -135,10 +140,10 @@ export function getCurrentConfig() {
 
 // Export the full config for routes that need it (analytics, sitemap, etc)
 export default {
-  ...config,
+  ...fullConfig.environment,
   analytics: fullConfig.analytics,
   branding: fullConfig.branding,
   externalLinks: fullConfig.externalLinks,
-  frontend: config.frontend
+  frontend: fullConfig.environment.frontend
 };
 
