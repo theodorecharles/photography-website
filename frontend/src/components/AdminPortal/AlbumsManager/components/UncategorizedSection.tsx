@@ -30,6 +30,9 @@ interface UncategorizedSectionProps {
   onGhostTileDragLeave: (e: React.DragEvent) => void;
   onGhostTileDrop: (e: React.DragEvent) => void;
   onGhostTileFileSelect: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onAlbumTogglePublished?: (albumName: string, currentPublished: boolean, event?: React.MouseEvent) => void;
+  onShare?: (albumName: string) => void;
+  onPreview?: (albumName: string) => void;
 }
 
 const UncategorizedSection: React.FC<UncategorizedSectionProps> = ({
@@ -53,6 +56,9 @@ const UncategorizedSection: React.FC<UncategorizedSectionProps> = ({
   onGhostTileDragLeave,
   onGhostTileDrop,
   onGhostTileFileSelect,
+  onAlbumTogglePublished,
+  onShare,
+  onPreview,
 }) => {
   const uncategorizedAlbums = localAlbums.filter(album => !album.folder_id);
 
@@ -99,6 +105,9 @@ const UncategorizedSection: React.FC<UncategorizedSectionProps> = ({
                     onDragLeave={onAlbumDragLeave}
                     onDrop={(e) => onAlbumDrop(e, album.name)}
                     onRename={onAlbumRename}
+                    onTogglePublished={onAlbumTogglePublished}
+                    onShare={onShare}
+                    onPreview={onPreview}
                   />
                 </React.Fragment>
               ))}

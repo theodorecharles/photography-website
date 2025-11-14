@@ -22,7 +22,7 @@ const imageFilename = args[1];
 
 // Read configuration
 const config = JSON.parse(readFileSync('data/config.json', 'utf8'));
-const photosDir = config.environment.backend.photosDir || 'photos';
+const photosDir = 'data/photos'; // Hardcoded data directory structure
 const imageSettings = config.environment.optimization?.images || {};
 
 const thumbnailQuality = imageSettings.thumbnail?.quality || 60;

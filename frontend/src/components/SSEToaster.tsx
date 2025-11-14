@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useSSEToaster } from '../contexts/SSEToasterContext';
 import './AdminPortal/ConfigManager.css'; // Reuse the CSS
-import { StopIcon, FullscreenIcon } from './icons';
+import { StopIcon, FullscreenIcon } from './icons/';
 
 /**
  * Global SSE Toaster component that displays job progress across all pages.

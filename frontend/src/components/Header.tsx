@@ -23,7 +23,7 @@ import {
   LockIcon,
   ChevronRightIcon,
   LogoutIcon
-} from "./icons";
+} from "./icons/";
 
 export interface ExternalLink {
   title: string;

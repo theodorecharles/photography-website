@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { Photo } from './types';
-import { InfoIcon, CheckmarkIcon, LinkIcon, DownloadIcon, FullscreenIcon, CloseIcon } from '../icons';
+import { InfoIcon, CheckmarkIcon, LinkIcon, DownloadIcon, FullscreenIcon, CloseIcon } from '../icons/';
 
 interface ModalControlsProps {
   show: boolean;

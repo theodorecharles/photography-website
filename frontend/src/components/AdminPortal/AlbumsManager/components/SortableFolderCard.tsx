@@ -31,6 +31,9 @@ interface SortableFolderCardProps {
   onAlbumDrop: (e: React.DragEvent, albumName: string) => void;
   onAlbumRename: (albumName: string) => void;
   onCreateAlbumInFolder: (folderId: number) => void;
+  onAlbumTogglePublished?: (albumName: string, currentPublished: boolean, event?: React.MouseEvent) => void;
+  onShare?: (albumName: string) => void;
+  onPreview?: (albumName: string) => void;
 }
 
 const SortableFolderCard: React.FC<SortableFolderCardProps> = ({
@@ -49,6 +52,9 @@ const SortableFolderCard: React.FC<SortableFolderCardProps> = ({
   onAlbumDrop,
   onAlbumRename,
   onCreateAlbumInFolder,
+  onAlbumTogglePublished,
+  onShare,
+  onPreview,
 }) => {
   const {
     attributes,
@@ -158,6 +164,9 @@ const SortableFolderCard: React.FC<SortableFolderCardProps> = ({
                 onDragLeave={onAlbumDragLeave}
                 onDrop={(e) => { onAlbumDrop(e, album.name); }}
                 onRename={() => onAlbumRename(album.name)}
+                onTogglePublished={onAlbumTogglePublished}
+                onShare={onShare}
+                onPreview={onPreview}
               />
             </React.Fragment>
           ))}

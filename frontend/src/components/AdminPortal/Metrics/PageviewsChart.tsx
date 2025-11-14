@@ -1,5 +1,5 @@
 /**
- * Visitors Over Time Chart Component
+ * Pageviews by Hour Chart Component
  */
 
 import React from 'react';
@@ -12,54 +12,56 @@ import {
   Tooltip,
   ResponsiveContainer
 } from 'recharts';
-import { TimeSeriesData } from './types';
+import { HourlyPageviewData } from './types';
 
-interface VisitorsChartProps {
-  data: TimeSeriesData[];
+interface PageviewsChartProps {
+  data: HourlyPageviewData[];
   loading: boolean;
   secondaryColor: string;
 }
 
-const VisitorsChart: React.FC<VisitorsChartProps> = ({ data, loading, secondaryColor }) => {
+const PageviewsChart: React.FC<PageviewsChartProps> = ({ data, loading, secondaryColor }) => {
   if (loading) {
     return <div className="chart-loading">Loading chart data...</div>;
   }
 
   if (data.length === 0) {
-    return <div className="no-data">No visitor data available for this time range</div>;
+    return <div className="no-data">No hourly pageview data available for this time range</div>;
   }
 
   return (
     <div className="chart-container">
       <ResponsiveContainer width="100%" height={300}>
         <AreaChart 
-          data={data.map(point => {
-            // Parse date string as local time to avoid timezone shifting
-            const [year, month, day] = point.date.toString().split(/[-T]/);
-            const localDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
-            return {
-              ...point,
-              formattedDate: localDate.toLocaleDateString('en-US', { 
-                month: 'short', 
-                day: 'numeric' 
-              })
-            };
-          })}
+          data={data}
           margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
         >
           <defs>
-            <linearGradient id="colorVisitors" x1="0" y1="0" x2="0" y2="1">
+            <linearGradient id="colorPageviews" x1="0" y1="0" x2="0" y2="1">
               <stop offset="5%" stopColor={secondaryColor} stopOpacity={0.6}/>
               <stop offset="95%" stopColor={secondaryColor} stopOpacity={0.05}/>
             </linearGradient>
           </defs>
           <CartesianGrid strokeDasharray="3 3" stroke="#535353" opacity={0.5} />
           <XAxis 
-            dataKey="formattedDate" 
+            dataKey="hour" 
             stroke="#9ca3af"
             style={{ fontSize: '0.875rem', fill: '#9ca3af' }}
-            interval="preserveStartEnd"
             tick={{ fill: '#9ca3af' }}
+            ticks={data
+              .filter((d) => {
+                const date = new Date(d.hour);
+                const localHour = date.getHours();
+                return localHour === 0; // Show only midnight hours
+              })
+              .map((d) => d.hour)}
+            tickFormatter={(value: string) => {
+              const date = new Date(value);
+              return date.toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric'
+              });
+            }}
           />
           <YAxis 
             stroke="#9ca3af"
@@ -77,15 +79,15 @@ const VisitorsChart: React.FC<VisitorsChartProps> = ({ data, loading, secondaryC
             }}
             labelStyle={{ color: '#f9fafb', fontWeight: 600 }}
             itemStyle={{ color: secondaryColor }}
-            formatter={(value: number) => [value, 'Visitors']}
+            formatter={(value: number) => [value, 'Pageviews']}
           />
           <Area 
             type="linear" 
-            dataKey="count" 
+            dataKey="pageviews" 
             stroke={secondaryColor} 
             strokeWidth={3}
             fillOpacity={1}
-            fill="url(#colorVisitors)"
+            fill="url(#colorPageviews)"
             animationDuration={1000}
           />
         </AreaChart>
@@ -94,4 +96,5 @@ const VisitorsChart: React.FC<VisitorsChartProps> = ({ data, loading, secondaryC
   );
 };
 
-export default VisitorsChart;
+export default PageviewsChart;
+
