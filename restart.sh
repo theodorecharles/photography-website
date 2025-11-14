@@ -45,9 +45,10 @@ handle_error() {
     CURRENT_BRANCH=$(git branch --show-current 2>/dev/null || echo "unknown")
     COMMIT_HASH=$(git rev-parse --short HEAD 2>/dev/null || echo "unknown")
     # Try data/config.json first, fall back to old location
+    SITE_URL=""
     if [ -f "data/config.json" ]; then
         SITE_URL=$(jq -r '.environment.backend.allowedOrigins[0] // ""' "data/config.json" 2>/dev/null || echo "")
-    else
+    elif [ -f "config/config.json" ]; then
         SITE_URL=$(jq -r '.environment.backend.allowedOrigins[0] // ""' "config/config.json" 2>/dev/null || echo "")
     fi
     
@@ -139,9 +140,10 @@ fi
 COMMIT_HASH=$(git rev-parse --short HEAD)
 COMMIT_MSG=$(git log -1 --pretty=%B | head -n 1)
 # Try data/config.json first, fall back to old location
+SITE_URL=""
 if [ -f "data/config.json" ]; then
     SITE_URL=$(jq -r '.environment.backend.allowedOrigins[0] // ""' "data/config.json" 2>/dev/null || echo "")
-else
+elif [ -f "config/config.json" ]; then
     SITE_URL=$(jq -r '.environment.backend.allowedOrigins[0] // ""' "config/config.json" 2>/dev/null || echo "")
 fi
 
