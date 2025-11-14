@@ -8,6 +8,7 @@ interface PasswordInputProps {
   className?: string;
   placeholder?: string;
   inputRef?: React.RefObject<HTMLInputElement | null>;
+  required?: boolean;
 }
 
 export const PasswordInput: React.FC<PasswordInputProps> = ({
@@ -16,6 +17,7 @@ export const PasswordInput: React.FC<PasswordInputProps> = ({
   className = "",
   placeholder = "",
   inputRef,
+  required = false,
 }) => {
   const [isVisible, setIsVisible] = useState(false);
 
@@ -41,6 +43,7 @@ export const PasswordInput: React.FC<PasswordInputProps> = ({
         onChange={onChange}
         className={`branding-input ${className}`}
         placeholder={placeholder}
+        required={required}
       />
       <div className="password-input-buttons">
         <button
