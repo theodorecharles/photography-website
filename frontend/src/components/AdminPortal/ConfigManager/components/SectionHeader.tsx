@@ -4,6 +4,7 @@
  */
 
 import React from 'react';
+import { ChevronRightIcon } from '../../../icons';
 
 interface SectionHeaderProps {
   title: string;
@@ -42,20 +43,14 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({
           gap: "0.5rem",
         }}
       >
-        <svg
+        <ChevronRightIcon 
           width="20"
           height="20"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
           style={{
             transition: "transform 0.2s",
             transform: isExpanded ? "rotate(90deg)" : "rotate(0deg)",
           }}
-        >
-          <polyline points="9 18 15 12 9 6" />
-        </svg>
+        />
         {title}
       </h3>
       <span className="config-section-description" style={{ color: "#888", fontSize: "0.9rem" }}>

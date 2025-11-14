@@ -2,22 +2,8 @@
  * Shared types for PhotoModal components
  */
 
-export interface Photo {
-  id: string;
-  thumbnail: string;
-  modal: string;
-  download: string;
-  title: string;
-  album: string;
-  metadata?: {
-    created: string;
-    modified: string;
-    size: number;
-  };
-  exif?: any;
-  // Note: 'src' field removed - original photos are not served via API
-  // Only optimized versions (thumbnail, modal, download) are accessible
-}
+// Photo interface moved to canonical location: types/photo.ts
+export type { Photo } from '../../types/photo';
 
 export interface ExifData {
   Make?: string;

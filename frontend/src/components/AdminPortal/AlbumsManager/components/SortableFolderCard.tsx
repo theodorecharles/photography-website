@@ -3,27 +3,52 @@
  * Displays a folder card with drag-and-drop support for:
  * - Reordering folders
  * - Receiving albums dropped onto it
+ * - Sorting albums within the folder
  */
 
-import { useSortable } from '@dnd-kit/sortable';
+import React from 'react';
+import { useSortable, SortableContext } from '@dnd-kit/sortable';
+import { PlusCircleIcon } from '../../../icons';
 import { useDroppable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
-import { AlbumFolder } from '../types';
+import { rectSortingStrategy } from '@dnd-kit/sortable';
+import { AlbumFolder, Album } from '../types';
+import SortableAlbumCard from './SortableAlbumCard';
 
 interface SortableFolderCardProps {
   folder: AlbumFolder;
-  albumCount: number;
+  albums: Album[];
+  selectedAlbum: string | null;
+  animatingAlbum: string | null;
+  dragOverAlbum: string | null;
   isDragOver: boolean;
+  showPlaceholderAtIndex?: number;
   onDelete: (folderName: string) => void;
   onTogglePublished: (folderName: string, currentPublished: boolean) => void;
+  onAlbumClick: (albumName: string) => void;
+  onAlbumDragOver: (e: React.DragEvent, albumName: string) => void;
+  onAlbumDragLeave: (e: React.DragEvent) => void;
+  onAlbumDrop: (e: React.DragEvent, albumName: string) => void;
+  onCreateAlbumInFolder: (folderId: number) => void;
+  canEdit: boolean;
 }
 
 const SortableFolderCard: React.FC<SortableFolderCardProps> = ({
   folder,
-  albumCount,
+  albums,
+  selectedAlbum,
+  animatingAlbum,
+  dragOverAlbum,
   isDragOver,
+  showPlaceholderAtIndex,
   onDelete,
   onTogglePublished,
+  onAlbumClick,
+  onAlbumDragOver,
+  onAlbumDragLeave,
+  onAlbumDrop,
+  onCreateAlbumInFolder,
+  canEdit,
 }) => {
   const {
     attributes,
@@ -34,61 +59,138 @@ const SortableFolderCard: React.FC<SortableFolderCardProps> = ({
     isDragging,
   } = useSortable({
     id: `folder-${folder.id}`,
+    disabled: !canEdit,
   });
 
-  // Also make it droppable for albums
-  const { setNodeRef: setDroppableRef } = useDroppable({
-    id: `folder-drop-${folder.id}`,
+  // Make the folder's album grid droppable
+  const { setNodeRef: setDroppableRef, isOver } = useDroppable({
+    id: `folder-grid-${folder.id}`,
+    data: { type: 'folder-grid', folderId: folder.id },
   });
-
-  // Combine both refs
-  const setRefs = (element: HTMLDivElement | null) => {
-    setSortableRef(element);
-    setDroppableRef(element);
-  };
 
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    opacity: isDragging ? 0.5 : 1,
+    opacity: isDragging ? 0 : 1,
   };
+
+  const albumCount = albums.length;
 
   return (
     <div
-      ref={setRefs}
+      ref={setSortableRef}
       style={style}
-      className={`folder-card ${isDragOver ? 'drag-over' : ''} ${isDragging ? 'dragging' : ''}`}
+      className={`folder-card ${isDragOver || isOver ? 'drag-over' : ''} ${isDragging ? 'dragging' : ''} ${!folder.published ? 'unpublished' : ''}`}
     >
       <div 
         className="folder-card-header"
-        {...attributes}
-        {...listeners}
-        style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
       >
-        <h4 className="folder-card-title">📁 {folder.name}</h4>
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onDelete(folder.name);
-          }}
-          className="folder-delete-btn"
-          title="Delete folder"
+        <div 
+          className="folder-drag-handle"
+          {...(canEdit ? attributes : {})}
+          {...(canEdit ? listeners : {})}
+          style={{ cursor: canEdit ? (isDragging ? 'grabbing' : 'grab') : 'default' }}
         >
-          ×
-        </button>
+          <h4 className="folder-card-title">
+            {folder.published ? '📁' : '🔒'} {folder.name}
+          </h4>
+          <div className="folder-count">
+            {albumCount} {albumCount === 1 ? 'album' : 'albums'}
+          </div>
+        </div>
+        {canEdit && (
+          <div className="folder-controls">
+            <label 
+              className="toggle-switch" 
+              style={{ 
+                opacity: albumCount === 0 ? 0.5 : 1,
+                cursor: albumCount === 0 ? 'not-allowed' : 'pointer'
+              }} 
+              onClick={(e) => e.stopPropagation()}
+              title={albumCount === 0 ? 'Cannot publish empty folder' : ''}
+            >
+              <input
+                type="checkbox"
+                checked={albumCount > 0 && folder.published}
+                onChange={() => onTogglePublished(folder.name, folder.published)}
+                disabled={albumCount === 0}
+              />
+              <span className="toggle-slider"></span>
+              <span className="toggle-label">Published</span>
+            </label>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete(folder.name);
+              }}
+              className="folder-delete-btn-text"
+              title="Delete folder"
+            >
+              Delete
+            </button>
+          </div>
+        )}
       </div>
-      <div className="folder-count">
-        {albumCount} album(s)
-      </div>
-      <label className="toggle-switch" style={{ marginTop: '0.5rem' }} onClick={(e) => e.stopPropagation()}>
-        <input
-          type="checkbox"
-          checked={folder.published}
-          onChange={() => onTogglePublished(folder.name, folder.published)}
-        />
-        <span className="toggle-slider"></span>
-        <span className="toggle-label">Published</span>
-      </label>
+      
+      {/* Albums inside the folder - the grid itself is the drop zone */}
+      <SortableContext items={albums.map(a => a.name)} strategy={rectSortingStrategy}>
+        <div 
+          ref={setDroppableRef}
+          className="folder-albums-grid"
+        >
+          {albums.map((album, index) => (
+            <React.Fragment key={album.name}>
+              {/* Show placeholder before this album if needed */}
+              {showPlaceholderAtIndex === index && (
+                <div
+                  className="album-card album-placeholder"
+                  style={{
+                    border: '2px dashed #3b82f6',
+                    background: 'rgba(59, 130, 246, 0.1)',
+                    pointerEvents: 'none',
+                  }}
+                />
+              )}
+              <SortableAlbumCard
+                album={album}
+                isSelected={selectedAlbum === album.name}
+                isAnimating={animatingAlbum === album.name}
+                isDragOver={dragOverAlbum === album.name}
+                onClick={() => onAlbumClick(album.name)}
+                onDragOver={(e) => { onAlbumDragOver(e, album.name); }}
+                onDragLeave={onAlbumDragLeave}
+                onDrop={(e) => { onAlbumDrop(e, album.name); }}
+                canEdit={canEdit}
+              />
+            </React.Fragment>
+          ))}
+          {/* Show placeholder at end if needed */}
+          {showPlaceholderAtIndex === albums.length && (
+            <div
+              className="album-card album-placeholder"
+              style={{
+                border: '2px dashed #3b82f6',
+                background: 'rgba(59, 130, 246, 0.1)',
+                pointerEvents: 'none',
+              }}
+            />
+          )}
+          {/* Ghost tile for creating new album in this folder - only show for editors */}
+          {canEdit && (
+            <div 
+              className="album-card ghost-album-tile"
+              onClick={(e) => {
+                e.stopPropagation();
+                onCreateAlbumInFolder(folder.id);
+              }}
+            >
+              <div className="ghost-tile-content">
+                <PlusCircleIcon width="48" height="48" />
+              </div>
+            </div>
+          )}
+        </div>
+      </SortableContext>
     </div>
   );
 };

@@ -6,6 +6,7 @@
 import express from 'express';
 import { createRequire } from 'module';
 import { csrfProtection } from '../security.js';
+import { requireManager } from '../auth/middleware.js';
 
 const require = createRequire(import.meta.url);
 
@@ -22,16 +23,6 @@ const router = express.Router();
 
 // Apply CSRF protection to all routes
 router.use(csrfProtection);
-
-/**
- * Middleware to check if user is authenticated (for write operations)
- */
-function requireAuth(req: any, res: any, next: any) {
-  if (!req.isAuthenticated || !req.isAuthenticated()) {
-    return res.status(401).json({ error: 'Unauthorized' });
-  }
-  next();
-}
 
 /**
  * GET /api/image-metadata/:album/:filename
@@ -90,7 +81,7 @@ router.get('/all', async (req, res) => {
  * POST /api/image-metadata
  * Save or update image metadata
  */
-router.post('/', requireAuth, express.json(), async (req, res) => {
+router.post('/', requireManager, express.json(), async (req, res) => {
   try {
     const { album, filename, title, description } = req.body;
     
@@ -116,7 +107,7 @@ router.post('/', requireAuth, express.json(), async (req, res) => {
  * PUT /api/image-metadata/:album/:filename
  * Update image metadata
  */
-router.put('/:album/:filename', requireAuth, express.json(), async (req, res) => {
+router.put('/:album/:filename', requireManager, express.json(), async (req, res) => {
   try {
     const { album, filename } = req.params;
     const { title, description } = req.body;
@@ -148,7 +139,7 @@ router.put('/:album/:filename', requireAuth, express.json(), async (req, res) =>
  * DELETE /api/image-metadata/:album/:filename
  * Delete image metadata
  */
-router.delete('/:album/:filename', requireAuth, async (req, res) => {
+router.delete('/:album/:filename', requireManager, async (req, res) => {
   try {
     const { album, filename } = req.params;
     

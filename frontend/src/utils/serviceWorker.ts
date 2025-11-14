@@ -16,6 +16,9 @@ export function registerServiceWorker() {
         .then((registration) => {
           console.log("✓ Service Worker registered:", registration.scope);
 
+          // Force an immediate update check
+          registration.update();
+
           // Check for updates periodically
           setInterval(() => {
             registration.update();
@@ -31,7 +34,7 @@ export function registerServiceWorker() {
                   navigator.serviceWorker.controller
                 ) {
                   // New service worker available
-                  console.log("📦 New version available! Refresh to update.");
+                  console.log("📦 New version available! Reloading...");
 
                   // Show toast notification only in dev/local (not in production)
                   const isProduction =
@@ -41,10 +44,15 @@ export function registerServiceWorker() {
 
                   if (!isProduction) {
                     showToast(
-                      "📦 New version available! Refresh to update.",
+                      "📦 New version available! Reloading...",
                       "info"
                     );
                   }
+                  
+                  // Auto-reload after a brief delay
+                  setTimeout(() => {
+                    window.location.reload();
+                  }, 1000);
                 }
               });
             }

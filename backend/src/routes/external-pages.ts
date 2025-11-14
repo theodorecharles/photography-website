@@ -21,8 +21,9 @@ const __dirname = path.dirname(__filename);
  */
 const getExternalPages = () => {
   try {
-    // Try to load config.json, fall back to config.example.json
-    const configPath = path.join(__dirname, '../../../config/config.json');
+    // Use DATA_DIR from environment or default to project_root/data
+    const dataDir = process.env.DATA_DIR || path.join(__dirname, '../../../data');
+    const configPath = path.join(dataDir, 'config.json');
     const examplePath = path.join(__dirname, '../../../config/config.example.json');
     
     const configFile = fs.existsSync(configPath) ? configPath : examplePath;

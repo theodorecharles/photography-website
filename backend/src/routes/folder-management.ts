@@ -13,24 +13,19 @@ import {
   getFolderState,
   setAlbumFolder,
   getAlbumsInFolder,
-  updateFolderSortOrder
+  updateFolderSortOrder,
+  deleteAlbumMetadata,
+  deleteAlbumState
 } from "../database.js";
 import { generateStaticJSONFiles } from "./static-json.js";
+import fs from "fs";
+import path from "path";
+import { requireAuth, requireAdmin, requireManager } from '../auth/middleware.js';
 
 const router = Router();
 
 // Apply CSRF protection to all routes in this router
 router.use(csrfProtection);
-
-/**
- * Authentication middleware
- */
-const requireAuth = (req: Request, res: Response, next: Function) => {
-  if (req.isAuthenticated && req.isAuthenticated()) {
-    return next();
-  }
-  res.status(401).json({ error: 'Unauthorized' });
-};
 
 /**
  * Sanitize folder name - allows letters, numbers, spaces, hyphens, and underscores
@@ -62,7 +57,7 @@ router.get("/", requireAuth, async (req: Request, res: Response): Promise<void> 
 /**
  * Create a new folder
  */
-router.post("/", requireAuth, async (req: Request, res: Response): Promise<void> => {
+router.post("/", requireManager, async (req: Request, res: Response): Promise<void> => {
   try {
     const { name, published } = req.body;
     
@@ -88,11 +83,18 @@ router.post("/", requireAuth, async (req: Request, res: Response): Promise<void>
     saveAlbumFolder(sanitizedName, published === true);
     console.log(`✓ Created folder: ${sanitizedName} (${published ? 'published' : 'unpublished'})`);
 
+    // Get the newly created folder to return full object
+    const newFolder = getFolderState(sanitizedName);
+    if (!newFolder) {
+      res.status(500).json({ error: 'Failed to retrieve created folder' });
+      return;
+    }
+
     // Regenerate static JSON files
     const appRoot = req.app.get('appRoot');
     generateStaticJSONFiles(appRoot);
 
-    res.json({ success: true, folder: sanitizedName });
+    res.json(newFolder);
   } catch (error) {
     console.error('Error creating folder:', error);
     res.status(500).json({ error: 'Failed to create folder' });
@@ -101,16 +103,64 @@ router.post("/", requireAuth, async (req: Request, res: Response): Promise<void>
 
 /**
  * Delete a folder
- * Note: This will remove the folder from all albums (sets folder_id to NULL)
+ * Query parameter: deleteAlbums=true to also delete all albums in the folder
+ * Default behavior: Albums are moved to root level (folder_id set to NULL)
  */
-router.delete("/:folder", requireAuth, async (req: Request, res: Response): Promise<void> => {
+router.delete("/:folder", requireManager, async (req: Request, res: Response): Promise<void> => {
   try {
     const { folder } = req.params;
+    const deleteAlbums = req.query.deleteAlbums === 'true';
     
     const sanitizedFolder = sanitizeName(folder);
     if (!sanitizedFolder) {
       res.status(400).json({ error: 'Invalid folder name' });
       return;
+    }
+
+    // Get folder state to get folder ID
+    const folderState = getFolderState(sanitizedFolder);
+    if (!folderState) {
+      res.status(404).json({ error: 'Folder not found' });
+      return;
+    }
+
+    // If deleteAlbums is true, delete all albums in the folder
+    if (deleteAlbums) {
+      const albumsInFolder = getAlbumsInFolder(folderState.id);
+      console.log(`⚠ Deleting ${albumsInFolder.length} albums in folder "${sanitizedFolder}"`);
+      
+      const photosDir = req.app.get('photosDir');
+      const optimizedDir = req.app.get('optimizedDir');
+      
+      for (const album of albumsInFolder) {
+        try {
+          const albumPath = path.join(photosDir, album.name);
+          
+          // Delete from photos directory (if it exists)
+          if (fs.existsSync(albumPath)) {
+            fs.rmSync(albumPath, { recursive: true, force: true });
+          }
+          
+          // Delete from optimized directory (if exists)
+          ['thumbnail', 'modal', 'download'].forEach(dir => {
+            const optimizedPath = path.join(optimizedDir, dir, album.name);
+            if (fs.existsSync(optimizedPath)) {
+              fs.rmSync(optimizedPath, { recursive: true, force: true });
+            }
+          });
+          
+          // Delete all metadata for this album from database
+          deleteAlbumMetadata(album.name);
+          
+          // Delete album state from database
+          deleteAlbumState(album.name);
+          
+          console.log(`  ✓ Deleted album: ${album.name}`);
+        } catch (err) {
+          console.error(`  ✗ Failed to delete album ${album.name}:`, err);
+          // Continue deleting other albums even if one fails
+        }
+      }
     }
 
     // Delete folder state from database
@@ -123,7 +173,7 @@ router.delete("/:folder", requireAuth, async (req: Request, res: Response): Prom
       return;
     }
 
-    // Note: Due to ON DELETE SET NULL, albums in this folder will automatically have folder_id set to NULL
+    // Note: If deleteAlbums is false, albums will automatically have folder_id set to NULL (ON DELETE SET NULL)
 
     // Regenerate static JSON files
     const appRoot = req.app.get('appRoot');
@@ -139,7 +189,7 @@ router.delete("/:folder", requireAuth, async (req: Request, res: Response): Prom
 /**
  * Toggle folder published state
  */
-router.patch("/:folder/publish", requireAuth, async (req: Request, res: Response): Promise<void> => {
+router.patch("/:folder/publish", requireManager, async (req: Request, res: Response): Promise<void> => {
   try {
     const { folder } = req.params;
     const { published } = req.body;
@@ -160,6 +210,15 @@ router.patch("/:folder/publish", requireAuth, async (req: Request, res: Response
     if (!folderState) {
       res.status(404).json({ error: 'Folder not found' });
       return;
+    }
+
+    // Prevent publishing empty folders
+    if (published === true) {
+      const albumsInFolder = getAlbumsInFolder(folderState.id);
+      if (albumsInFolder.length === 0) {
+        res.status(400).json({ error: 'Cannot publish empty folder. Add albums to this folder first.' });
+        return;
+      }
     }
 
     // Update folder state
@@ -190,7 +249,7 @@ router.patch("/:folder/publish", requireAuth, async (req: Request, res: Response
 /**
  * Move album to folder (or remove from folder if folderId is null)
  */
-router.patch("/:folder/albums/:album", requireAuth, async (req: Request, res: Response): Promise<void> => {
+router.patch("/:folder/albums/:album", requireManager, async (req: Request, res: Response): Promise<void> => {
   try {
     const { folder, album } = req.params;
     
@@ -244,7 +303,7 @@ router.patch("/:folder/albums/:album", requireAuth, async (req: Request, res: Re
 /**
  * Update folder sort order
  */
-router.put('/sort-order', requireAuth, async (req: Request, res: Response): Promise<void> => {
+router.put('/sort-order', requireManager, async (req: Request, res: Response): Promise<void> => {
   try {
     const { folderOrders } = req.body;
     

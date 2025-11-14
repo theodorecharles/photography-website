@@ -3,7 +3,7 @@
  * Provides aggressive caching for images and static resources
  */
 
-const CACHE_VERSION = 'v1';
+const CACHE_VERSION = 'v2';
 const CACHE_NAME = `photo-site-${CACHE_VERSION}`;
 
 // Resources to cache immediately on install
@@ -73,6 +73,12 @@ function getCacheStrategy(url) {
   // API calls - always fetch fresh
   if (urlObj.pathname.startsWith('/api/')) {
     return CACHE_STRATEGIES.api;
+  }
+  
+  // Avatar and favicon - always fetch fresh (can be updated via admin)
+  if (urlObj.pathname === '/photos/avatar.png' || 
+      urlObj.pathname.startsWith('/photos/favicon')) {
+    return CACHE_STRATEGIES.api; // network-only
   }
   
   // Static JSON data

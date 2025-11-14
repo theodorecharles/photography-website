@@ -230,6 +230,14 @@
     padding: 1.25rem;
   }
 
+  .section-button-group {
+    flex-direction: column;
+  }
+
+  .section-button-group button {
+    width: 100%;
+  }
+
   .current-avatar-preview {
     width: 100px;
     height: 100px;

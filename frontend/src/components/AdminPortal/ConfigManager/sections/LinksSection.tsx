@@ -8,6 +8,7 @@ import { useSearchParams } from 'react-router-dom';
 import { ExternalLink } from '../../types';
 import { trackExternalLinksUpdate } from '../../../../utils/analytics';
 import SectionHeader from '../components/SectionHeader';
+import { ChevronUpIcon, ChevronDownIcon } from '../../../icons';
 import '../../LinksManager.css';
 
 const API_URL = import.meta.env.VITE_API_URL || '';
@@ -185,16 +186,7 @@ const LinksSection: React.FC<LinksSectionProps> = ({
                       title="Move up"
                       disabled={index === 0}
                     >
-                      <svg
-                        width="20"
-                        height="20"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                      >
-                        <polyline points="18 15 12 9 6 15" />
-                      </svg>
+                      <ChevronUpIcon width="20" height="20" />
                     </button>
                     <button
                       onClick={() => handleMoveDown(index)}
@@ -202,16 +194,7 @@ const LinksSection: React.FC<LinksSectionProps> = ({
                       title="Move down"
                       disabled={index === externalLinks.length - 1}
                     >
-                      <svg
-                        width="20"
-                        height="20"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                      >
-                        <polyline points="6 9 12 15 18 9" />
-                      </svg>
+                      <ChevronDownIcon width="20" height="20" />
                     </button>
                   </div>
                   <button
