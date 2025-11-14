@@ -560,7 +560,7 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
                   className="branding-input"
                   placeholder="user@example.com"
                 />
-                <p style={{ fontSize: '0.85rem', color: '#6b7280', margin: '0.5rem 0 0 0' }}>
+                <p style={{ fontSize: '0.85rem', color: '#9ca3af', margin: '0.5rem 0 0 0' }}>
                   An invitation email will be sent to this address. The user will set up their name, password, and MFA.
                 </p>
               </div>
@@ -612,38 +612,49 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
                 <div
                   key={user.id}
                   style={{
-                    border: '1px solid #e5e7eb',
+                    background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%)',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
                     borderRadius: '8px',
                     padding: '1.25rem',
-                    background: user.is_active ? 'white' : '#f9fafb',
                     opacity: user.is_active ? 1 : 0.6,
+                    transition: 'border-color 0.2s, transform 0.2s',
+                  }}
+                  onMouseEnter={(e) => {
+                    if (user.is_active) {
+                      e.currentTarget.style.borderColor = 'rgba(74, 222, 128, 0.3)';
+                      e.currentTarget.style.transform = 'translateY(-1px)';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+                    e.currentTarget.style.transform = 'translateY(0)';
                   }}
                 >
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem' }}>
-                    <div>
-                      <h4 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                    <div style={{ flex: 1 }}>
+                      <h4 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap', color: '#ffffff' }}>
                         {user.name || user.email}
                         {currentUser && user.id === currentUser.id && (
-                          <span style={{ fontSize: '0.75rem', background: 'var(--primary-color)', color: 'white', padding: '0.2rem 0.5rem', borderRadius: '4px' }}>
+                          <span style={{ fontSize: '0.75rem', background: 'var(--primary-color)', color: '#1a1a1a', padding: '0.25rem 0.6rem', borderRadius: '12px', fontWeight: 600 }}>
                             You
                           </span>
                         )}
                         {user.status === 'invited' && (
-                          <span style={{ fontSize: '0.75rem', background: '#dbeafe', color: '#1e40af', padding: '0.2rem 0.5rem', borderRadius: '4px' }}>
+                          <span style={{ fontSize: '0.75rem', background: 'rgba(59, 130, 246, 0.2)', color: '#60a5fa', padding: '0.25rem 0.6rem', borderRadius: '12px', fontWeight: 600, border: '1px solid rgba(59, 130, 246, 0.3)' }}>
                             ✉️ Invited
                           </span>
                         )}
                         {user.status === 'invite_expired' && (
-                          <span style={{ fontSize: '0.75rem', background: '#fee2e2', color: '#991b1b', padding: '0.2rem 0.5rem', borderRadius: '4px' }}>
+                          <span style={{ fontSize: '0.75rem', background: 'rgba(239, 68, 68, 0.2)', color: '#f87171', padding: '0.25rem 0.6rem', borderRadius: '12px', fontWeight: 600, border: '1px solid rgba(239, 68, 68, 0.3)' }}>
                             ⏱️ Invite Expired
                           </span>
                         )}
                       </h4>
-                      <div style={{ fontSize: '0.85rem', color: '#6b7280', marginTop: '0.25rem' }}>
+                      <div style={{ fontSize: '0.85rem', color: '#9ca3af', marginTop: '0.25rem' }}>
                         {user.email}
                       </div>
                     </div>
-                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                    <div style={{ display: 'flex', gap: '0.5rem', flexShrink: 0 }}>
                       {user.status === 'invite_expired' && (
                         <button
                           onClick={() => handleResendInvite(user.id)}
@@ -658,16 +669,24 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
                       <button
                         onClick={() => handleDeleteUser(user.id)}
                         className="btn-secondary"
-                        style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem', background: '#ef4444', borderColor: '#dc2626' }}
+                        style={{ 
+                          padding: '0.4rem 0.8rem', 
+                          fontSize: '0.85rem', 
+                          background: 'rgba(239, 68, 68, 0.2)', 
+                          borderColor: 'rgba(239, 68, 68, 0.3)',
+                          color: '#ef4444'
+                        }}
                         disabled={loading || Boolean(currentUser && user.id === currentUser.id)}
                         title={currentUser && user.id === currentUser.id ? 'Cannot delete your own account' : 'Delete user'}
                         onMouseEnter={(e) => {
                           if (!(currentUser && user.id === currentUser.id) && !loading) {
-                            e.currentTarget.style.background = '#dc2626';
+                            e.currentTarget.style.background = 'rgba(239, 68, 68, 0.3)';
+                            e.currentTarget.style.borderColor = 'rgba(239, 68, 68, 0.4)';
                           }
                         }}
                         onMouseLeave={(e) => {
-                          e.currentTarget.style.background = '#ef4444';
+                          e.currentTarget.style.background = 'rgba(239, 68, 68, 0.2)';
+                          e.currentTarget.style.borderColor = 'rgba(239, 68, 68, 0.3)';
                         }}
                       >
                         Delete
@@ -680,11 +699,12 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
                         <span
                           style={{
                             fontSize: '0.75rem',
-                            background: user.role === 'admin' ? '#fef3c7' : user.role === 'manager' ? '#dbeafe' : '#f3f4f6',
-                            color: user.role === 'admin' ? '#92400e' : user.role === 'manager' ? '#1e40af' : '#374151',
+                            background: user.role === 'admin' ? 'rgba(251, 191, 36, 0.2)' : user.role === 'manager' ? 'rgba(59, 130, 246, 0.2)' : 'rgba(156, 163, 175, 0.2)',
+                            color: user.role === 'admin' ? '#fbbf24' : user.role === 'manager' ? '#60a5fa' : '#9ca3af',
                             padding: '0.25rem 0.6rem',
                             borderRadius: '12px',
                             fontWeight: 600,
+                            border: user.role === 'admin' ? '1px solid rgba(251, 191, 36, 0.3)' : user.role === 'manager' ? '1px solid rgba(59, 130, 246, 0.3)' : '1px solid rgba(156, 163, 175, 0.3)',
                           }}
                         >
                           {user.role === 'admin' ? '👑 Admin' : user.role === 'manager' ? '📝 Manager' : '👁️ Viewer'}
@@ -694,10 +714,11 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
                         key={method}
                         style={{
                           fontSize: '0.75rem',
-                          background: '#e0f2fe',
-                          color: '#0369a1',
+                          background: 'rgba(139, 92, 246, 0.2)',
+                          color: '#a78bfa',
                           padding: '0.25rem 0.6rem',
                           borderRadius: '12px',
+                          border: '1px solid rgba(139, 92, 246, 0.3)',
                         }}
                       >
                         {method === 'google' ? '🔵 Google' : method === 'credentials' ? '🔒 Password' : method === 'passkey' ? '🔑 Passkey' : method}
@@ -707,10 +728,11 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
                       <span
                         style={{
                           fontSize: '0.75rem',
-                          background: '#dcfce7',
-                          color: '#15803d',
+                          background: 'rgba(74, 222, 128, 0.2)',
+                          color: 'var(--primary-color)',
                           padding: '0.25rem 0.6rem',
                           borderRadius: '12px',
+                          border: '1px solid rgba(74, 222, 128, 0.3)',
                         }}
                       >
                         ✓ MFA Enabled
@@ -720,7 +742,7 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
 
                   {/* User Actions */}
                   {currentUser && user.status !== 'invited' && user.status !== 'invite_expired' && (
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', paddingTop: '0.75rem', borderTop: '1px solid #e5e7eb' }}>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', paddingTop: '0.75rem', borderTop: '1px solid rgba(255, 255, 255, 0.1)' }}>
                       {/* Own Account Actions */}
                       {user.id === currentUser.id && (
                         <>
@@ -794,7 +816,7 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
 
                   {/* Password Change Form */}
                   {showPasswordChange === user.id && (
-                    <div style={{ marginTop: '1rem', padding: '1rem', background: '#f9fafb', borderRadius: '6px' }}>
+                    <div style={{ marginTop: '1rem', padding: '1rem', background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.1)', borderRadius: '6px' }}>
                       <h5 style={{ margin: '0 0 0.75rem 0' }}>Change Password</h5>
                       <div style={{ display: 'grid', gap: '0.75rem' }}>
                         <div className="branding-group">
@@ -844,19 +866,19 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
 
                   {/* Passkeys List */}
                   {showPasskeys === user.id && (
-                    <div style={{ marginTop: '1rem', padding: '1rem', background: '#f9fafb', borderRadius: '6px' }}>
+                    <div style={{ marginTop: '1rem', padding: '1rem', background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.1)', borderRadius: '6px' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
                         <h5 style={{ margin: 0 }}>Registered Passkeys</h5>
                 <button
                   onClick={() => setShowPasskeys(undefined)}
-                  style={{ background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer', color: '#6b7280' }}
+                  style={{ background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer', color: '#9ca3af' }}
                 >
                   ×
                 </button>
                       </div>
                       
                       {passkeys.length === 0 ? (
-                        <p style={{ color: '#6b7280', fontSize: '0.85rem', margin: '0.5rem 0' }}>
+                        <p style={{ color: '#9ca3af', fontSize: '0.85rem', margin: '0.5rem 0' }}>
                           No passkeys registered yet
                         </p>
                       ) : (
@@ -868,15 +890,15 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
                                 display: 'flex',
                                 justifyContent: 'space-between',
                                 alignItems: 'center',
-                                padding: '0.5rem',
-                                background: 'white',
-                                borderRadius: '4px',
-                                border: '1px solid #e5e7eb',
+                                padding: '0.75rem',
+                                background: '#1e1e1e',
+                                borderRadius: '6px',
+                                border: '1px solid #3a3a3a',
                               }}
                             >
                               <div>
-                                <div style={{ fontWeight: 500, fontSize: '0.9rem' }}>{passkey.name}</div>
-                                <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>
+                                <div style={{ fontWeight: 500, fontSize: '0.9rem', color: '#e5e7eb' }}>{passkey.name}</div>
+                                <div style={{ fontSize: '0.75rem', color: '#9ca3af' }}>
                                   Added {new Date(passkey.created_at).toLocaleDateString()}
                                 </div>
                               </div>
@@ -894,7 +916,7 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
                       )}
 
                       {/* Register New Passkey */}
-                      <div style={{ borderTop: '1px solid #e5e7eb', paddingTop: '0.75rem' }}>
+                      <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.1)', paddingTop: '0.75rem', marginTop: '0.75rem' }}>
                         <div style={{ display: 'flex', gap: '0.5rem' }}>
                           <input
                             type="text"
@@ -913,7 +935,7 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
                             {loading ? 'Registering...' : '+ Register'}
                           </button>
                         </div>
-                        <p style={{ fontSize: '0.75rem', color: '#6b7280', margin: '0.5rem 0 0 0' }}>
+                        <p style={{ fontSize: '0.75rem', color: '#9ca3af', margin: '0.5rem 0 0 0' }}>
                           Note: Passkeys require HTTPS (or localhost) and a compatible device
                         </p>
                       </div>
@@ -928,54 +950,48 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
 
           {/* MFA Setup Modal */}
           {mfaSetup && (
-            <div style={{
-              position: 'fixed',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              background: 'rgba(0, 0, 0, 0.5)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              zIndex: 10000,
-            }}>
-              <div style={{
-                background: 'white',
-                borderRadius: '12px',
-                padding: '2rem',
-                maxWidth: '500px',
-                width: '90%',
-                maxHeight: '90vh',
-                overflow: 'auto',
-              }}>
-                <h3 style={{ margin: '0 0 1rem 0' }}>Enable Two-Factor Authentication</h3>
+            <div className="modal-overlay">
+              <div className="share-modal" style={{ maxWidth: '550px' }}>
+                <div className="share-modal-header">
+                  <h2>Enable Two-Factor Authentication</h2>
+                  <button 
+                    className="close-button" 
+                    onClick={() => {
+                      setMfaSetup(null);
+                      setMfaToken('');
+                    }}
+                    aria-label="Close"
+                  >
+                    ×
+                  </button>
+                </div>
+                <div className="share-modal-content">
                 
                 <div style={{ marginBottom: '1.5rem' }}>
-                  <p style={{ fontSize: '0.9rem', color: '#6b7280', margin: '0 0 1rem 0' }}>
+                  <p className="share-description">
                     Scan this QR code with your authenticator app (Google Authenticator, Authy, 1Password, etc.)
                   </p>
                   <div style={{ textAlign: 'center', marginBottom: '1rem' }}>
-                    <img src={mfaSetup.qrCode} alt="MFA QR Code" style={{ maxWidth: '250px', border: '2px solid #e5e7eb', borderRadius: '8px' }} />
+                    <img src={mfaSetup.qrCode} alt="MFA QR Code" style={{ maxWidth: '250px', border: '2px solid #3a3a3a', borderRadius: '8px', background: 'white', padding: '0.5rem' }} />
                   </div>
-                  <div style={{ background: '#f9fafb', padding: '0.75rem', borderRadius: '6px', fontSize: '0.85rem', textAlign: 'center', fontFamily: 'monospace' }}>
+                  <div style={{ background: '#1e1e1e', border: '1px solid #3a3a3a', padding: '0.75rem', borderRadius: '6px', fontSize: '0.85rem', textAlign: 'center', fontFamily: 'monospace', color: '#e5e7eb', letterSpacing: '0.05em' }}>
                     {mfaSetup.secret}
                   </div>
                 </div>
 
                 <div style={{ marginBottom: '1.5rem' }}>
-                  <h4 style={{ margin: '0 0 0.5rem 0', fontSize: '0.95rem' }}>Backup Codes</h4>
-                  <p style={{ fontSize: '0.85rem', color: '#6b7280', margin: '0 0 0.75rem 0' }}>
+                  <h4 style={{ margin: '0 0 0.75rem 0', fontSize: '0.95rem', color: '#e5e7eb', fontWeight: 600 }}>Backup Codes</h4>
+                  <p style={{ fontSize: '0.85rem', color: '#9ca3af', margin: '0 0 0.75rem 0', lineHeight: 1.5 }}>
                     Save these codes in a safe place. Each can be used once if you lose access to your authenticator.
                   </p>
-                  <div style={{ background: '#f9fafb', padding: '0.75rem', borderRadius: '6px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', fontSize: '0.85rem', fontFamily: 'monospace' }}>
+                  <div style={{ background: '#1e1e1e', border: '1px solid #3a3a3a', padding: '1rem', borderRadius: '6px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', fontSize: '0.85rem', fontFamily: 'monospace', color: '#d1d5db' }}>
                     {mfaSetup.backupCodes.map((code, i) => (
-                      <div key={i}>{code}</div>
+                      <div key={i} style={{ padding: '0.25rem' }}>{code}</div>
                     ))}
                   </div>
                 </div>
 
-                <div style={{ marginBottom: '1rem' }}>
+                <div style={{ marginBottom: '1.5rem' }}>
                   <label className="branding-label">Enter verification code from your app</label>
                   <input
                     type="text"
@@ -988,7 +1004,7 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
                   />
                 </div>
 
-                <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
+                <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', paddingTop: '1rem', borderTop: '1px solid #3a3a3a' }}>
                   <button
                     onClick={() => {
                       setMfaSetup(null);
@@ -1006,6 +1022,7 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
                   >
                     {loading ? 'Verifying...' : 'Enable MFA'}
                   </button>
+                </div>
                 </div>
               </div>
             </div>
