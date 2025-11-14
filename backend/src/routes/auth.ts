@@ -10,7 +10,7 @@ import config, { DATA_DIR } from '../config.js';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { getUserByEmail, createUser, getUserByGoogleId, linkGoogleAccount } from '../database-users.js';
+import { getUserByEmail, createUser, getUserByGoogleId, linkGoogleAccount, getUserById } from '../database-users.js';
 
 const router = Router();
 
@@ -313,8 +313,8 @@ router.get('/status', (req: Request, res: Response) => {
           picture: dbUser.picture || passportUser.picture,
           role: dbUser.role,
           mfa_enabled: dbUser.mfa_enabled,
-          passkey_enabled: dbUser.passkey_count > 0,
-          auth_methods: JSON.parse(dbUser.auth_methods || '[]'),
+          passkey_enabled: dbUser.passkeys && dbUser.passkeys.length > 0,
+          auth_methods: dbUser.auth_methods,
         },
       });
     }
@@ -358,8 +358,8 @@ router.get('/status', (req: Request, res: Response) => {
           picture: dbUser.picture,
           role: dbUser.role,
           mfa_enabled: dbUser.mfa_enabled,
-          passkey_enabled: dbUser.passkey_count > 0,
-          auth_methods: JSON.parse(dbUser.auth_methods || '[]'),
+          passkey_enabled: dbUser.passkeys && dbUser.passkeys.length > 0,
+          auth_methods: dbUser.auth_methods,
         },
       });
     }
