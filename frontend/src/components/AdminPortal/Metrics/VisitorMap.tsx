@@ -7,16 +7,10 @@ import { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, CircleMarker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import './VisitorMap.css';
+import { getMarkerRadius, getMarkerOpacity, formatLocationName } from '../../../utils/mapHelpers';
 
-interface VisitorLocation {
-  latitude: number;
-  longitude: number;
-  city: string | null;
-  region: string | null;
-  country: string | null;
-  visit_count: number;
-  unique_visitors: number;
-}
+// Import VisitorLocation from types.ts (canonical location)
+import type { VisitorLocation } from './types';
 
 interface VisitorMapProps {
   locations: VisitorLocation[];
@@ -33,32 +27,7 @@ export default function VisitorMap({ locations, loading }: VisitorMapProps) {
     }
   }, [locations]);
 
-  // Calculate marker size based on visit count
-  const getMarkerRadius = (visitCount: number): number => {
-    if (maxVisits === 0) return 8;
-    // Scale between 6 and 30 pixels based on visit count for more dramatic difference
-    const minRadius = 6;
-    const maxRadius = 30;
-    const normalized = visitCount / maxVisits;
-    return minRadius + (normalized * (maxRadius - minRadius));
-  };
-
-  // Calculate marker opacity based on visit count
-  const getMarkerOpacity = (visitCount: number): number => {
-    if (maxVisits === 0) return 0.6;
-    // Scale between 0.4 and 0.9
-    const normalized = visitCount / maxVisits;
-    return 0.4 + (normalized * 0.5);
-  };
-
-  // Format location name for popup
-  const formatLocationName = (loc: VisitorLocation): string => {
-    const parts = [];
-    if (loc.city) parts.push(loc.city);
-    if (loc.region && loc.region !== loc.city) parts.push(loc.region);
-    if (loc.country) parts.push(loc.country);
-    return parts.join(', ') || 'Unknown Location';
-  };
+  // Functions moved to utils/mapHelpers.ts
 
   if (loading) {
     return (
@@ -100,12 +69,12 @@ export default function VisitorMap({ locations, loading }: VisitorMapProps) {
           <CircleMarker
             key={index}
             center={[location.latitude, location.longitude]}
-            radius={getMarkerRadius(location.visit_count)}
+            radius={getMarkerRadius(location.visit_count, maxVisits)}
             fillColor={getComputedStyle(document.documentElement).getPropertyValue('--secondary-color').trim() || '#3b82f6'}
             color="#ffffff"
             weight={2}
-            opacity={getMarkerOpacity(location.visit_count)}
-            fillOpacity={getMarkerOpacity(location.visit_count)}
+            opacity={getMarkerOpacity(location.visit_count, maxVisits)}
+            fillOpacity={getMarkerOpacity(location.visit_count, maxVisits)}
           >
             <Popup>
               <div className="visitor-popup">

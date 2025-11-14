@@ -16,7 +16,7 @@ const Database = require('better-sqlite3');
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const DB_PATH = path.join(__dirname, '../gallery.db');
+const DB_PATH = path.join(__dirname, '../data/gallery.db');
 const OUTPUT_DIR = path.join(__dirname, '../frontend/public/albums-data');
 
 console.log('🚀 Starting static JSON generation...');

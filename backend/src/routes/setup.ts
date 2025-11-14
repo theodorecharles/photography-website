@@ -37,10 +37,11 @@ const __dirname = path.dirname(__filename);
 router.get('/status', async (req: Request, res: Response): Promise<void> => {
   try {
     const projectRoot = path.join(__dirname, '../../../');
-    const configPath = path.join(projectRoot, 'config/config.json');
-    const dbPath = path.join(projectRoot, 'gallery.db');
-    const photosDir = path.join(projectRoot, 'photos');
-    const optimizedDir = path.join(projectRoot, 'optimized');
+    const dataDir = process.env.DATA_DIR || path.join(projectRoot, 'data');
+    const configPath = path.join(dataDir, 'config.json');
+    const dbPath = path.join(dataDir, 'gallery.db');
+    const photosDir = path.join(dataDir, 'photos');
+    const optimizedDir = path.join(dataDir, 'optimized');
 
     const checks = {
       configExists: fs.existsSync(configPath),
@@ -116,7 +117,8 @@ router.post('/initialize', async (req: Request, res: Response): Promise<void> =>
     }
 
     const projectRoot = path.join(__dirname, '../../../');
-    const configPath = path.join(projectRoot, 'config/config.json');
+    const dataDir = process.env.DATA_DIR || path.join(projectRoot, 'data');
+    const configPath = path.join(dataDir, 'config.json');
     const configExamplePath = path.join(projectRoot, 'config/config.example.json');
 
     // Create config directory if it doesn't exist
@@ -227,18 +229,12 @@ router.post('/initialize', async (req: Request, res: Response): Promise<void> =>
     fs.writeFileSync(configPath, JSON.stringify(config, null, 2), 'utf8');
 
     // Create necessary directories
-    // Use the photosDir from config (default is "photos" relative to project root)
-    const photosDirPath = config.environment.backend.photosDir;
-    const photosDir = path.isAbsolute(photosDirPath) 
-      ? photosDirPath 
-      : path.join(projectRoot, photosDirPath);
-    const optimizedDir = path.join(projectRoot, 'optimized');
-    const homepageDir = path.join(photosDir, 'homepage');
+    const photosDir = path.join(dataDir, 'photos');
+    const optimizedDir = path.join(dataDir, 'optimized');
 
     console.log('Creating directories:');
     console.log('  Photos:', photosDir);
     console.log('  Optimized:', optimizedDir);
-    console.log('  Homepage:', homepageDir);
 
     if (!fs.existsSync(photosDir)) {
       fs.mkdirSync(photosDir, { recursive: true });
@@ -247,10 +243,6 @@ router.post('/initialize', async (req: Request, res: Response): Promise<void> =>
     if (!fs.existsSync(optimizedDir)) {
       fs.mkdirSync(optimizedDir, { recursive: true });
       console.log('  ✓ Created optimized directory');
-    }
-    if (!fs.existsSync(homepageDir)) {
-      fs.mkdirSync(homepageDir, { recursive: true });
-      console.log('  ✓ Created homepage directory');
     }
 
     // Initialize the database to create gallery.db
@@ -261,6 +253,18 @@ router.post('/initialize', async (req: Request, res: Response): Promise<void> =>
     } catch (err) {
       console.error('Failed to initialize database:', err);
       // Continue anyway - database will be created on first access
+    }
+
+    // Reload backend configuration
+    console.log('\n🔄 Reloading backend configuration...');
+    try {
+      const { reloadConfig } = await import('../config.js');
+      const reloadResult = reloadConfig();
+      if (reloadResult.success) {
+        console.log('  ✓ Configuration reloaded successfully');
+      }
+    } catch (err) {
+      console.error('  ❌ Failed to reload configuration:', err);
     }
 
     // Initialize Google OAuth strategy with new config
@@ -304,7 +308,8 @@ router.post('/upload-avatar', upload.single('avatar'), async (req: Request, res:
     }
     
     const projectRoot = path.join(__dirname, '../../../');
-    const photosDir = path.join(projectRoot, 'photos');
+    const dataDir = process.env.DATA_DIR || path.join(projectRoot, 'data');
+    const photosDir = path.join(dataDir, 'photos');
     
     // Create photos directory if it doesn't exist
     if (!fs.existsSync(photosDir)) {
@@ -319,7 +324,7 @@ router.post('/upload-avatar', upload.single('avatar'), async (req: Request, res:
     fs.writeFileSync(avatarPath, file.buffer);
     
     // Update config.json with avatar path
-    const configPath = path.join(projectRoot, 'config/config.json');
+    const configPath = path.join(dataDir, 'config.json');
     if (fs.existsSync(configPath)) {
       try {
         const configContent = fs.readFileSync(configPath, 'utf8');

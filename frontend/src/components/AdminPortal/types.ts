@@ -7,6 +7,10 @@ export interface User {
   email: string;
   name: string;
   picture?: string;
+  role?: string;
+  mfa_enabled?: boolean;
+  passkey_enabled?: boolean;
+  auth_methods?: string[];
 }
 
 export interface AuthStatus {
@@ -64,15 +68,9 @@ export interface AlbumFolder {
   updated_at: string;
 }
 
-export interface Photo {
-  id: string;
-  title: string;
-  album: string;
-  src: string;
-  thumbnail: string;
-  modal: string;
-  download: string;
-}
+// Photo interface moved to canonical location: types/photo.ts
+// The old version had a 'src' field which is no longer used (originals not served)
+export type { Photo } from '../../types/photo';
 
 export type Tab = 'branding' | 'links' | 'albums' | 'metrics' | 'config';
 

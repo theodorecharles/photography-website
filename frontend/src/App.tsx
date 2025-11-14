@@ -23,6 +23,7 @@ import { trackPageView, trackError } from "./utils/analytics";
 import { fetchWithRateLimitCheck } from "./utils/fetchWrapper";
 import { SSEToasterProvider } from "./contexts/SSEToasterContext";
 import SSEToaster from "./components/SSEToaster";
+import { filterAlbums, filterFolders } from "./utils/albumFilters";
 
 // Import AdminPortal - CSS is handled within the component for dev mode compatibility
 import AdminPortal from "./components/AdminPortal";
@@ -30,9 +31,13 @@ import AdminPortal from "./components/AdminPortal";
 // Lazy load other components that aren't needed on initial page load
 const License = lazy(() => import("./components/Misc/License"));
 const AuthError = lazy(() => import("./components/Misc/AuthError"));
-const NotFound = lazy(() => import("./components/Misc/NotFound"));
+import NotFound from "./components/Misc/NotFound";
 const SharedAlbum = lazy(() => import("./components/SharedAlbum"));
 const SetupWizard = lazy(() => import("./components/SetupWizard"));
+const Login = lazy(() => import("./components/Misc/Login"));
+const InviteSignup = lazy(() => import("./components/Misc/InviteSignup"));
+const PasswordResetRequest = lazy(() => import("./components/Misc/PasswordResetRequest"));
+const PasswordResetComplete = lazy(() => import("./components/Misc/PasswordResetComplete"));
 
 // AlbumRoute component handles the routing for individual album pages
 function AlbumRoute({ onAlbumNotFound, onLoadComplete }: { onAlbumNotFound: () => void; onLoadComplete: () => void }) {
@@ -231,22 +236,8 @@ function App() {
       // Handle new API format: { albums: [...], folders: [...] } or old format: [...]
       if (albumsData && typeof albumsData === 'object' && 'albums' in albumsData) {
         // New format with folders
-        const filteredAlbums = albumsData.albums
-          .filter((album: { name: string; published: boolean; folder_id?: number | null }) => {
-            if (album.name === 'homepage') return false;
-            // Include all albums if authenticated, only published if not
-            if (isAuthenticated) return true;
-            return album.published === true;
-          });
-        
-        // Filter folders to only show published folders to unauthenticated users
-        // Note: Backend already returns only published folders for unauthenticated users via getPublishedFolders()
-        // but we double-check here. SQLite returns published as 1/0, so check for truthy value or explicit true
-        const filteredFolders = isAuthenticated
-          ? (albumsData.folders || [])
-          : (albumsData.folders || []).filter((folder: { published: boolean | number }) => 
-              folder.published === true || folder.published === 1
-            );
+        const filteredAlbums = filterAlbums(albumsData.albums || [], isAuthenticated);
+        const filteredFolders = filterFolders(albumsData.folders || [], isAuthenticated);
         
         console.log('🔍 App.tsx fetchData - isAuthenticated:', isAuthenticated);
         console.log('🔍 App.tsx fetchData - Raw folders from backend:', albumsData.folders);
@@ -254,7 +245,8 @@ function App() {
         console.log('🔍 App.tsx fetchData - Filtered albums:', filteredAlbums);
         
         setAlbums(filteredAlbums);
-        setFolders(filteredFolders);
+        // Normalize published field to boolean (SQLite returns 0/1)
+        setFolders(filteredFolders.map(f => ({ ...f, published: !!f.published })));
       } else {
         // Old format (array of strings or objects)
       const albumNames = Array.isArray(albumsData) 
@@ -319,25 +311,12 @@ function App() {
           // Handle new API format: { albums: [...], folders: [...] } or old format: [...]
           if (albumsData && typeof albumsData === 'object' && 'albums' in albumsData) {
             // New format with folders
-            const filteredAlbums = albumsData.albums
-              .filter((album: { name: string; published: boolean; folder_id?: number | null }) => {
-                if (album.name === 'homepage') return false;
-                // Include all albums if authenticated, only published if not
-                if (isAuthenticated) return true;
-                return album.published === true;
-              });
-            
-            // Filter folders to only show published folders to unauthenticated users
-            // Note: Backend already returns only published folders for unauthenticated users via getPublishedFolders()
-            // but we double-check here. SQLite returns published as 1/0, so check for truthy value or explicit true
-            const filteredFolders = isAuthenticated
-              ? (albumsData.folders || [])
-              : (albumsData.folders || []).filter((folder: { published: boolean | number }) => 
-                  folder.published === true || folder.published === 1
-                );
+            const filteredAlbums = filterAlbums(albumsData.albums || [], isAuthenticated);
+            const filteredFolders = filterFolders(albumsData.folders || [], isAuthenticated);
             
             setAlbums(filteredAlbums);
-            setFolders(filteredFolders);
+            // Normalize published field to boolean (SQLite returns 0/1)
+            setFolders(filteredFolders.map(f => ({ ...f, published: !!f.published })));
           } else {
             // Old format (array of strings or objects)
           const albumNames = Array.isArray(albumsData) 
@@ -481,6 +460,7 @@ function App() {
             <Route path="/admin/albums" element={<AdminPortal />} />
             <Route path="/admin/metrics" element={<AdminPortal />} />
             <Route path="/admin/settings" element={<AdminPortal />} />
+            <Route path="/admin/profile" element={<AdminPortal />} />
             <Route path="/auth/error" element={
               <>
                 <SEO 
@@ -491,7 +471,47 @@ function App() {
                 <AuthError />
               </>
             } />
+            <Route path="/login" element={
+              <>
+                <SEO 
+                  title="Sign In - Ted Charles Photography"
+                  description="Sign in to access the admin portal"
+                  url={`${SITE_URL}/login`}
+                />
+                <Login />
+              </>
+            } />
             <Route path="/shared/:secretKey" element={<SharedAlbum />} />
+            <Route path="/invite/:token" element={
+              <>
+                <SEO 
+                  title="Complete Registration - Ted Charles Photography"
+                  description="Complete your account registration"
+                  url={`${SITE_URL}/invite`}
+                />
+                <InviteSignup />
+              </>
+            } />
+            <Route path="/reset-password" element={
+              <>
+                <SEO 
+                  title="Reset Password - Ted Charles Photography"
+                  description="Reset your account password"
+                  url={`${SITE_URL}/reset-password`}
+                />
+                <PasswordResetRequest />
+              </>
+            } />
+            <Route path="/reset-password/:token" element={
+              <>
+                <SEO 
+                  title="Set New Password - Ted Charles Photography"
+                  description="Set a new password for your account"
+                  url={`${SITE_URL}/reset-password`}
+                />
+                <PasswordResetComplete />
+              </>
+            } />
             <Route path="/primes" element={<PrimesRedirect />} />
             <Route path="/primes/*" element={<PrimesRedirect />} />
             <Route path="*" element={

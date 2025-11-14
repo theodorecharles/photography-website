@@ -6,7 +6,6 @@
     },
     "backend": {
       "port": 3001,
-      "photosDir": "photos",
       "allowedOrigins": ["http://localhost:3000"]
     },
     "optimization": {

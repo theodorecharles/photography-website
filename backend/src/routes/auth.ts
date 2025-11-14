@@ -6,10 +6,11 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
-import config from '../config.js';
+import config, { DATA_DIR } from '../config.js';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { getUserByEmail, createUser, getUserByGoogleId, linkGoogleAccount, getUserById } from '../database-users.js';
 
 const router = Router();
 
@@ -61,7 +62,7 @@ export function initializeGoogleStrategy() {
   // Go up one level from backend to project root
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = path.dirname(__filename);
-  const configPath = path.join(__dirname, '../../../config/config.json');
+  const configPath = path.join(DATA_DIR, 'config.json');
   
   let latestConfig;
   try {
@@ -100,28 +101,61 @@ export function initializeGoogleStrategy() {
           clientSecret: googleConfig.clientSecret,
           callbackURL: callbackURL,
         },
-        (accessToken, refreshToken, profile, done) => {
-          // Extract user information
-          const email = profile.emails?.[0]?.value;
-          
-          if (!email) {
-            return done(new Error('no_email'));
+        async (accessToken, refreshToken, profile, done) => {
+          try {
+            // Extract user information
+            const email = profile.emails?.[0]?.value;
+            
+            if (!email) {
+              return done(new Error('no_email'));
+            }
+
+            // Check if user is authorized
+            if (!authorizedEmails.includes(email)) {
+              return done(new Error('unauthorized'));
+            }
+
+            // Check if user exists in database
+            let dbUser = getUserByEmail(email);
+            
+            if (!dbUser) {
+              // Check by Google ID
+              dbUser = getUserByGoogleId(profile.id);
+            }
+
+            if (!dbUser) {
+              // Create new user in database
+              // First user becomes admin, others become viewers
+              const isFirstUser = authorizedEmails.length === 1;
+              dbUser = createUser({
+                email: email,
+                google_id: profile.id,
+                name: profile.displayName,
+                picture: profile.photos?.[0]?.value,
+                auth_methods: ['google'],
+                email_verified: true,
+                role: isFirstUser ? 'admin' : 'viewer',
+              });
+              console.log(`[Google OAuth] Created new user: ${email} with role: ${dbUser.role}`);
+            } else if (!dbUser.google_id) {
+              // Link Google account to existing user
+              linkGoogleAccount(dbUser.id, profile.id, profile.displayName, profile.photos?.[0]?.value);
+              console.log(`[Google OAuth] Linked Google account to existing user: ${email}`);
+            }
+
+            // Create user object for session
+            const user: AuthenticatedUser = {
+              id: profile.id,
+              email: email,
+              name: profile.displayName,
+              picture: profile.photos?.[0]?.value,
+            };
+
+            return done(null, user);
+          } catch (error) {
+            console.error('[Google OAuth] Error during authentication:', error);
+            return done(error as Error);
           }
-
-          // Check if user is authorized
-          if (!authorizedEmails.includes(email)) {
-            return done(new Error('unauthorized'));
-          }
-
-          // Create user object
-          const user: AuthenticatedUser = {
-            id: profile.id,
-            email: email,
-            name: profile.displayName,
-            picture: profile.photos?.[0]?.value,
-          };
-
-          return done(null, user);
         }
       )
     );
@@ -173,7 +207,7 @@ router.get(
       try {
         const __filename = fileURLToPath(import.meta.url);
         const __dirname = path.dirname(__filename);
-        const configPath = path.join(__dirname, '../../../config/config.json');
+        const configPath = path.join(DATA_DIR, 'config.json');
         const configContent = fs.readFileSync(configPath, 'utf8');
         currentConfig = JSON.parse(configContent);
       } catch (err) {
@@ -263,33 +297,171 @@ router.get(
 
 // Route: Check authentication status
 router.get('/status', (req: Request, res: Response) => {
-  if (req.isAuthenticated()) {
-    res.json({
+  // Check Passport authentication (Google OAuth)
+  if (req.isAuthenticated && req.isAuthenticated()) {
+    const passportUser = req.user as any;
+    
+    // Look up full user details from database
+    const dbUser = getUserByEmail(passportUser.email);
+    if (dbUser) {
+      console.log('[Auth Status] Google user passkeys:', {
+        email: dbUser.email,
+        passkeys: dbUser.passkeys,
+        passkeyCount: dbUser.passkeys ? dbUser.passkeys.length : 0,
+      });
+      return res.json({
+        authenticated: true,
+        user: {
+          id: dbUser.id,
+          email: dbUser.email,
+          name: dbUser.name,
+          picture: dbUser.picture || passportUser.picture,
+          role: dbUser.role,
+          mfa_enabled: dbUser.mfa_enabled,
+          passkey_enabled: dbUser.passkeys && dbUser.passkeys.length > 0,
+          passkey_count: dbUser.passkeys ? dbUser.passkeys.length : 0,
+          auth_methods: dbUser.auth_methods,
+        },
+      });
+    }
+    
+    return res.json({
       authenticated: true,
       user: req.user,
     });
+  }
+  
+  // Check credential-based session
+  if ((req.session as any)?.userId) {
+    const sessionUser = (req.session as any).user;
+    
+    // If we have user in session, return it with all fields
+    if (sessionUser) {
+      // Look up user to get current passkey count (in case it changed since login)
+      const dbUser = getUserById(sessionUser.id);
+      const passkeyCount = dbUser?.passkeys ? dbUser.passkeys.length : 0;
+      
+      console.log('[Auth Status] Session user passkey count:', {
+        email: sessionUser.email,
+        passkeyCount,
+      });
+      
+      return res.json({
+        authenticated: true,
+        user: {
+          id: sessionUser.id,
+          email: sessionUser.email,
+          name: sessionUser.name,
+          picture: sessionUser.picture,
+          role: sessionUser.role,
+          mfa_enabled: sessionUser.mfa_enabled,
+          passkey_enabled: sessionUser.passkey_enabled,
+          passkey_count: passkeyCount,
+          auth_methods: sessionUser.auth_methods,
+        },
+      });
+    }
+    
+    // Fallback: look up user by ID
+    const dbUser = getUserById((req.session as any).userId);
+    if (dbUser) {
+      console.log('[Auth Status] Credential user passkeys:', {
+        email: dbUser.email,
+        passkeys: dbUser.passkeys,
+        passkeyCount: dbUser.passkeys ? dbUser.passkeys.length : 0,
+      });
+      return res.json({
+        authenticated: true,
+        user: {
+          id: dbUser.id,
+          email: dbUser.email,
+          name: dbUser.name,
+          picture: dbUser.picture,
+          role: dbUser.role,
+          mfa_enabled: dbUser.mfa_enabled,
+          passkey_enabled: dbUser.passkeys && dbUser.passkeys.length > 0,
+          passkey_count: dbUser.passkeys ? dbUser.passkeys.length : 0,
+          auth_methods: dbUser.auth_methods,
+        },
+      });
+    }
+    
+    return res.json({
+      authenticated: true,
+      user: { id: (req.session as any).userId },
+    });
+  }
+  
+  res.json({
+    authenticated: false,
+  });
+});
+
+// Route: Logout via GET redirect (for simple links)
+router.get('/logout-redirect', (req: Request, res: Response) => {
+  console.log('[Logout Redirect] Starting logout for session:', req.sessionID);
+  
+  // Handle both auth methods
+  if (req.isAuthenticated && req.isAuthenticated()) {
+    req.logout((err) => {
+      if (err) console.error('[Logout Redirect] Passport logout error:', err);
+      req.session.destroy((err) => {
+        if (err) console.error('[Logout Redirect] Session destroy error:', err);
+        console.log('[Logout Redirect] ✅ Logged out, redirecting to homepage');
+        res.redirect('/');
+      });
+    });
   } else {
-    res.json({
-      authenticated: false,
+    req.session.destroy((err) => {
+      if (err) console.error('[Logout Redirect] Session destroy error:', err);
+      console.log('[Logout Redirect] ✅ Logged out, redirecting to homepage');
+      res.redirect('/');
     });
   }
 });
 
 // Route: Logout
-// Using POST with authentication middleware provides CSRF protection
-// because authenticated requests require valid session cookie
-router.post('/logout', isAuthenticated, (req: Request, res: Response) => {
-  req.logout((err) => {
-    if (err) {
-      return res.status(500).json({ error: 'Logout failed' });
-    }
+// Allow both Passport and credential sessions to logout
+router.post('/logout', (req: Request, res: Response) => {
+  console.log('[Logout] Starting logout for session:', req.sessionID);
+  console.log('[Logout] Session data:', {
+    hasIsAuthenticated: !!req.isAuthenticated,
+    isAuthenticatedResult: req.isAuthenticated ? req.isAuthenticated() : false,
+    hasUserId: !!(req.session as any)?.userId,
+    userId: (req.session as any)?.userId,
+  });
+  
+  // Always destroy the session regardless of auth method
+  // For Passport sessions, call logout first
+  if (req.isAuthenticated && req.isAuthenticated()) {
+    console.log('[Logout] Passport session detected - calling req.logout()');
+    req.logout((err) => {
+      if (err) {
+        console.error('[Logout] Passport logout error:', err);
+      }
+      
+      // Always destroy session even if Passport logout fails
+      req.session.destroy((err) => {
+        if (err) {
+          console.error('[Logout] Session destroy error:', err);
+          return res.status(500).json({ error: 'Session destruction failed' });
+        }
+        console.log('[Logout] ✅ Passport session destroyed successfully');
+        res.json({ success: true });
+      });
+    });
+  } else {
+    // Credential-based session or already logged out
+    console.log('[Logout] Credential session detected - destroying session');
     req.session.destroy((err) => {
       if (err) {
+        console.error('[Logout] Session destroy error:', err);
         return res.status(500).json({ error: 'Session destruction failed' });
       }
+      console.log('[Logout] ✅ Credential session destroyed successfully');
       res.json({ success: true });
     });
-  });
+  }
 });
 
 export default router;

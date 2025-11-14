@@ -11,7 +11,7 @@ const jsonCache = new Map();
 const JSON_CACHE_MAX_AGE = 5 * 60 * 1000; // 5 minutes
 
 // Load configuration
-const configPath = path.join(__dirname, "../config/config.json");
+const configPath = path.join(__dirname, "../data/config.json");
 const configFile = JSON.parse(fs.readFileSync(configPath, "utf8"));
 const config = configFile.environment;
 
@@ -49,7 +49,7 @@ app.use((req, res, next) => {
     `script-src 'self' 'unsafe-inline'${analyticsScriptHost ? ' ' + analyticsScriptHost : ''}; ` + // unsafe-inline needed for React inline scripts
     "style-src 'self' 'unsafe-inline'; " +
     "worker-src 'self'; " + // Allow web workers from same origin
-    `img-src 'self' ${apiDomainHttps} ${apiDomain} data: https://*.basemaps.cartocdn.com; ` + // Allow CartoDB map tiles
+    `img-src 'self' ${apiDomainHttps} ${apiDomain} data: blob: https://*.basemaps.cartocdn.com; ` + // Allow data URIs, blob URLs (upload previews), and CartoDB map tiles
     `connect-src 'self' ${apiDomainHttps} ${apiDomain}; ` + // No need to allow OpenObserve - backend handles it
     "font-src 'self'; " +
     "object-src 'none'; " +

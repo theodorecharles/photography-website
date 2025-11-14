@@ -45,6 +45,7 @@ import metricsRouter from "./routes/metrics.ts";
 import sitemapRouter from "./routes/sitemap.ts";
 import yearRouter from "./routes/year.ts";
 import authRouter from "./routes/auth.ts";
+import authExtendedRouter from "./routes/auth-extended.ts";
 import externalLinksRouter from "./routes/external-links.ts";
 import brandingRouter from "./routes/branding.ts";
 import imageOptimizationRouter from "./routes/image-optimization.ts";
@@ -255,7 +256,7 @@ app.use(
   })
 );
 
-// Initialize Passport and session support
+// Initialize Passport for Google OAuth
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -265,7 +266,6 @@ if (!isProduction) {
     console.log(`[Metrics Request] ${req.method} ${req.path}`);
     console.log("  Cookies:", req.headers.cookie || "NONE");
     console.log("  Session ID:", req.sessionID);
-    console.log("  Authenticated:", req.isAuthenticated());
     next();
   });
 }
@@ -384,7 +384,11 @@ app.set("appRoot", path.resolve(__dirname, "../../"));
 // Register route handlers
 // Note: CSRF protection is applied inside individual routers that need it
 app.use('/api/setup', setupRouter);
+// Mount authentication routes
+// Legacy Passport-based routes (Google OAuth, status, logout)
 app.use("/api/auth", authRouter);
+// Extended auth routes (MFA, passkeys, user management, credentials)
+app.use("/api/auth-extended", authExtendedRouter);
 app.use("/api/external-links", externalLinksRouter);
 app.use("/api/branding", brandingRouter);
 app.use("/api/metrics", metricsRouter);

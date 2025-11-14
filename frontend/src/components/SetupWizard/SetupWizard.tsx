@@ -6,18 +6,7 @@
 import { useState, useEffect } from 'react';
 import { API_URL } from '../../config';
 import './SetupWizard.css';
-
-interface SetupStatus {
-  setupComplete: boolean;
-  checks: {
-    configExists: boolean;
-    databaseExists: boolean;
-    photosDirExists: boolean;
-    optimizedDirExists: boolean;
-    hasPhotos: boolean;
-    isConfigured: boolean;
-  };
-}
+import type { SetupStatus } from './types';
 
 export default function SetupWizard() {
   const [loading, setLoading] = useState(true);
@@ -214,7 +203,7 @@ export default function SetupWizard() {
     <div className="setup-wizard">
       <div className="setup-container">
         <div className="setup-header">
-          <h1>📸 Welcome to Your Photography Website</h1>
+          <h1>📸 Setup Galleria</h1>
           <p>Let's get your portfolio set up in just a few steps</p>
         </div>
 
