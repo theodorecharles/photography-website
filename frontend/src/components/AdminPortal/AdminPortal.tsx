@@ -620,6 +620,7 @@ export default function AdminPortal() {
                           autoComplete="email"
                           disabled={loginLoading}
                           placeholder="Enter your email"
+                          autoFocus
                         />
                       </div>
                       <div className="auth-input-group" style={{ marginBottom: '1.5rem' }}>
@@ -698,6 +699,7 @@ export default function AdminPortal() {
                             letterSpacing: '0.5em',
                             fontWeight: 600
                           }}
+                          autoFocus
                         />
                       </div>
                       <button
