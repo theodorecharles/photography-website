@@ -47,7 +47,16 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
             ×
           </button>
         </div>
-        <div className="share-modal-content">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (requirePassword && !password) return false;
+            handleConfirm();
+            return false;
+          }}
+          className="share-modal-content"
+        >
           <p className="share-description">{message}</p>
 
           {requirePassword && (
@@ -71,10 +80,11 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
               borderTop: '1px solid #3a3a3a',
             }}
           >
-            <button onClick={handleClose} className="btn-secondary">
+            <button type="button" onClick={handleClose} className="btn-secondary">
               Cancel
             </button>
             <button
+              type="button"
               onClick={handleConfirm}
               className={isDangerous ? 'btn-secondary' : 'btn-primary'}
               style={
@@ -91,7 +101,7 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
               {confirmText}
             </button>
           </div>
-        </div>
+        </form>
       </div>
     </div>
   );
