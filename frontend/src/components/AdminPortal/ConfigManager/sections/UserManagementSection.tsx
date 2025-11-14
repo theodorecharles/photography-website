@@ -118,6 +118,7 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
       if (res.ok) {
         const data = await res.json();
         console.log('[UserManagement] Auth status response:', data);
+        console.log('[UserManagement] Full user object:', JSON.stringify(data.user, null, 2));
         if (data.authenticated && data.user) {
           const userWithRole = { 
             id: data.user.id, 

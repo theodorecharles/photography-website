@@ -202,6 +202,7 @@ export default function AdminPortal() {
       authenticated: authStatus?.authenticated,
       hasUser: !!authStatus?.user,
       user: authStatus?.user,
+      locationState: location.state,
     });
     
     if (freshLogin && authStatus?.authenticated && authStatus?.user && !dismissed) {
