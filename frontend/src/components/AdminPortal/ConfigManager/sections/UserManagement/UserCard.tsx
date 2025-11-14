@@ -71,6 +71,8 @@ export const UserCard: React.FC<UserCardProps> = ({
         padding: '1.25rem',
         opacity: user.is_active ? 1 : 0.6,
         transition: 'border-color 0.2s, transform 0.2s',
+        position: 'relative',
+        zIndex: showRoleDropdown ? 99999 : 'auto',
       }}
       onMouseEnter={(e) => {
         if (user.is_active) {
@@ -225,7 +227,7 @@ export const UserCard: React.FC<UserCardProps> = ({
           marginBottom: '0.75rem',
         }}
       >
-        <div style={{ position: 'relative', zIndex: showRoleDropdown ? 1001 : 'auto' }} ref={roleDropdownRef}>
+        <div style={{ position: 'relative', zIndex: showRoleDropdown ? 100000 : 'auto' }} ref={roleDropdownRef}>
           <span
             onClick={() => canEditRole && setShowRoleDropdown(!showRoleDropdown)}
             style={{
@@ -278,7 +280,7 @@ export const UserCard: React.FC<UserCardProps> = ({
                 border: '1px solid #3a3a3a',
                 borderRadius: '8px',
                 boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
-                zIndex: 1002,
+                zIndex: 100001,
                 minWidth: '120px',
                 overflow: 'hidden',
               }}
