@@ -11,6 +11,7 @@ import { AuthStatus, ExternalLink, BrandingConfig, Album, AlbumFolder } from './
 import AlbumsManager from './AlbumsManager';
 import Metrics from './Metrics/Metrics';
 import ConfigManager from './ConfigManager';
+import SecuritySetupPrompt from './SecuritySetupPrompt';
 import {
   trackLoginSucceeded,
   trackLogout,
@@ -95,6 +96,7 @@ export default function AdminPortal() {
   const [albums, setAlbums] = useState<Album[]>([]);
   const [folders, setFolders] = useState<AlbumFolder[]>([]);
   const [messages, setMessages] = useState<Array<{ id: number; type: 'success' | 'error'; text: string }>>([]);
+  const [showSecurityPrompt, setShowSecurityPrompt] = useState(false);
 
   // Helper to add a new message
   const addMessage = (message: { type: 'success' | 'error'; text: string }) => {
@@ -188,6 +190,30 @@ export default function AdminPortal() {
       trackAdminTabChange(activeTab);
     }
   }, [activeTab, authStatus]);
+
+  // Check if user needs security setup after fresh login
+  useEffect(() => {
+    const freshLogin = location.state?.freshLogin;
+    const dismissed = localStorage.getItem('security-setup-dismissed') === 'true';
+    
+    if (freshLogin && authStatus?.authenticated && authStatus?.user && !dismissed) {
+      // Check if user has MFA or passkey set up
+      const user = authStatus.user;
+      const hasMFA = user.mfa_enabled === true;
+      const hasPasskey = user.passkey_enabled === true;
+      
+      // Only show prompt if user signed in with credentials (not Google OAuth) and has no MFA/passkey
+      const authMethods = user.auth_methods || [];
+      const isCredentialUser = authMethods.includes('credentials');
+      
+      if (isCredentialUser && !hasMFA && !hasPasskey) {
+        setShowSecurityPrompt(true);
+      }
+      
+      // Clear the freshLogin state so prompt doesn't show again on navigation
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [authStatus, location.state, navigate, location.pathname]);
 
   // Listen for albums-updated events from AlbumsManager
   useEffect(() => {
@@ -797,6 +823,24 @@ export default function AdminPortal() {
             loadBranding={loadBranding}
             externalLinks={externalLinks}
             setExternalLinks={setExternalLinks}
+          />
+        )}
+
+        {/* Security Setup Prompt Modal */}
+        {showSecurityPrompt && (
+          <SecuritySetupPrompt
+            onSetupMFA={() => {
+              setShowSecurityPrompt(false);
+              navigate('/admin/settings');
+              // Scroll to user management section after a brief delay
+              setTimeout(() => {
+                const userSection = document.querySelector('[data-section="user-management"]');
+                if (userSection) {
+                  userSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+              }, 300);
+            }}
+            onDismiss={() => setShowSecurityPrompt(false)}
           />
         )}
       </div>

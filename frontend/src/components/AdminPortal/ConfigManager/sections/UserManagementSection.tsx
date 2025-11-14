@@ -41,7 +41,7 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
   const [showSection, setShowSection] = useState(false);
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-  const [currentUser, setCurrentUser] = useState<{ id: number; email: string } | null>(null);
+  const [currentUser, setCurrentUser] = useState<{ id: number; email: string; role: string } | null>(null);
   
   // SMTP configuration check
   const [smtpConfigured, setSmtpConfigured] = useState<boolean>(false);
@@ -118,7 +118,11 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
       if (res.ok) {
         const data = await res.json();
         if (data.authenticated && data.user) {
-          setCurrentUser({ id: data.user.id, email: data.user.email });
+          setCurrentUser({ 
+            id: data.user.id, 
+            email: data.user.email,
+            role: data.user.role || 'viewer'
+          });
         }
       }
     } catch (err) {
@@ -568,7 +572,7 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
   };
 
   return (
-    <div className="config-group full-width">
+    <div className="config-group full-width" data-section="user-management">
       <SectionHeader
         title="Users"
         description="Manage user accounts, authentication methods, and security settings"
@@ -583,40 +587,42 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
         }}
       >
         <div className="branding-grid">
-          {/* SMTP Setup Warning or Invite User Button */}
-          <div style={{ gridColumn: '1 / -1', marginBottom: '1rem', display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '1rem' }}>
-            {!smtpConfigured && (
-              <div
-                style={{
-                  flex: 1,
-                  padding: '1rem',
-                  background: 'rgba(251, 191, 36, 0.1)',
-                  borderLeft: '3px solid #f59e0b',
-                  borderRadius: '4px',
+          {/* SMTP Setup Warning or Invite User Button - Admin Only */}
+          {currentUser && currentUser.role === 'admin' && (
+            <div style={{ gridColumn: '1 / -1', marginBottom: '1rem', display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '1rem' }}>
+              {!smtpConfigured && (
+                <div
+                  style={{
+                    flex: 1,
+                    padding: '1rem',
+                    background: 'rgba(251, 191, 36, 0.1)',
+                    borderLeft: '3px solid #f59e0b',
+                    borderRadius: '4px',
+                  }}
+                >
+                  <strong style={{ color: '#f59e0b', display: 'block', marginBottom: '0.25rem' }}>
+                    ⚠️ Email Not Configured
+                  </strong>
+                  <p style={{ fontSize: '0.85rem', color: '#ccc', margin: 0 }}>
+                    Set up SMTP to send user invitation and password reset emails.
+                  </p>
+                </div>
+              )}
+              <button
+                onClick={() => {
+                  if (smtpConfigured) {
+                    setShowNewUserForm(!showNewUserForm);
+                  } else {
+                    setShowSmtpWizard(true);
+                  }
                 }}
+                className="btn-primary"
+                style={{ padding: '0.5rem 1rem', whiteSpace: 'nowrap' }}
               >
-                <strong style={{ color: '#f59e0b', display: 'block', marginBottom: '0.25rem' }}>
-                  ⚠️ Email Not Configured
-                </strong>
-                <p style={{ fontSize: '0.85rem', color: '#ccc', margin: 0 }}>
-                  Set up SMTP to send user invitation and password reset emails.
-                </p>
-              </div>
-            )}
-            <button
-              onClick={() => {
-                if (smtpConfigured) {
-                  setShowNewUserForm(!showNewUserForm);
-                } else {
-                  setShowSmtpWizard(true);
-                }
-              }}
-              className="btn-primary"
-              style={{ padding: '0.5rem 1rem', whiteSpace: 'nowrap' }}
-            >
-              {!smtpConfigured ? '📧 Set up SMTP' : showNewUserForm ? 'Cancel' : '+ Invite User'}
-            </button>
-          </div>
+                {!smtpConfigured ? '📧 Set up SMTP' : showNewUserForm ? 'Cancel' : '+ Invite User'}
+              </button>
+            </div>
+          )}
 
           {/* New User Form (Invitation) */}
           {showNewUserForm && (
@@ -725,46 +731,51 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
                       </div>
                     </div>
                     <div style={{ display: 'flex', gap: '0.5rem', flexShrink: 0 }}>
-                      {user.status === 'invite_expired' && (
-                        <button
-                          onClick={() => handleResendInvite(user.id)}
-                          className="btn-primary"
-                          style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}
-                          disabled={loading}
-                          title="Resend invitation email"
-                        >
-                          Resend Invite
-                        </button>
+                      {/* Admin-only actions: Resend Invite and Delete */}
+                      {currentUser && currentUser.role === 'admin' && (
+                        <>
+                          {user.status === 'invite_expired' && (
+                            <button
+                              onClick={() => handleResendInvite(user.id)}
+                              className="btn-primary"
+                              style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}
+                              disabled={loading}
+                              title="Resend invitation email"
+                            >
+                              Resend Invite
+                            </button>
+                          )}
+                          <button
+                            onClick={() => handleDeleteUser(user.id)}
+                            className="btn-secondary"
+                            style={{ 
+                              padding: '0.4rem 0.8rem', 
+                              fontSize: '0.85rem', 
+                              background: 'rgba(239, 68, 68, 0.2)', 
+                              borderColor: 'rgba(239, 68, 68, 0.3)',
+                              color: '#ef4444',
+                              opacity: (loading || Boolean(currentUser && user.id === currentUser.id)) ? 0.4 : 1,
+                              cursor: (loading || Boolean(currentUser && user.id === currentUser.id)) ? 'not-allowed' : 'pointer'
+                            }}
+                            disabled={loading || Boolean(currentUser && user.id === currentUser.id)}
+                            title={currentUser && user.id === currentUser.id ? 'Cannot delete your own account' : 'Delete user'}
+                            onMouseEnter={(e) => {
+                              if (!(currentUser && user.id === currentUser.id) && !loading) {
+                                e.currentTarget.style.background = 'rgba(239, 68, 68, 0.3)';
+                                e.currentTarget.style.borderColor = 'rgba(239, 68, 68, 0.4)';
+                              }
+                            }}
+                            onMouseLeave={(e) => {
+                              if (!(currentUser && user.id === currentUser.id) && !loading) {
+                                e.currentTarget.style.background = 'rgba(239, 68, 68, 0.2)';
+                                e.currentTarget.style.borderColor = 'rgba(239, 68, 68, 0.3)';
+                              }
+                            }}
+                          >
+                            Delete
+                          </button>
+                        </>
                       )}
-                      <button
-                        onClick={() => handleDeleteUser(user.id)}
-                        className="btn-secondary"
-                        style={{ 
-                          padding: '0.4rem 0.8rem', 
-                          fontSize: '0.85rem', 
-                          background: 'rgba(239, 68, 68, 0.2)', 
-                          borderColor: 'rgba(239, 68, 68, 0.3)',
-                          color: '#ef4444',
-                          opacity: (loading || Boolean(currentUser && user.id === currentUser.id)) ? 0.4 : 1,
-                          cursor: (loading || Boolean(currentUser && user.id === currentUser.id)) ? 'not-allowed' : 'pointer'
-                        }}
-                        disabled={loading || Boolean(currentUser && user.id === currentUser.id)}
-                        title={currentUser && user.id === currentUser.id ? 'Cannot delete your own account' : 'Delete user'}
-                        onMouseEnter={(e) => {
-                          if (!(currentUser && user.id === currentUser.id) && !loading) {
-                            e.currentTarget.style.background = 'rgba(239, 68, 68, 0.3)';
-                            e.currentTarget.style.borderColor = 'rgba(239, 68, 68, 0.4)';
-                          }
-                        }}
-                        onMouseLeave={(e) => {
-                          if (!(currentUser && user.id === currentUser.id) && !loading) {
-                            e.currentTarget.style.background = 'rgba(239, 68, 68, 0.2)';
-                            e.currentTarget.style.borderColor = 'rgba(239, 68, 68, 0.3)';
-                          }
-                        }}
-                      >
-                        Delete
-                      </button>
                     </div>
                   </div>
 
