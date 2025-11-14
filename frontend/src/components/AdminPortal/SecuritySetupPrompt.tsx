@@ -295,18 +295,20 @@ const SecuritySetupPrompt: React.FC<SecuritySetupPromptProps> = ({
 
               <div style={{ marginBottom: '1.5rem' }}>
                 <label className="branding-label">Enter verification code from your app</label>
-                <input
-                  type="text"
-                  value={mfaToken}
-                  onChange={(e) => setMfaToken(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                  onInput={(e) => setMfaToken((e.target as HTMLInputElement).value.replace(/\D/g, '').slice(0, 6))}
-                  placeholder="000000"
-                  className="branding-input"
-                  maxLength={6}
-                  style={{ textAlign: 'center', fontSize: '1.5rem', letterSpacing: '0.5em' }}
-                  autoComplete="one-time-code"
-                  autoFocus
-                />
+                <div style={{ display: 'flex', justifyContent: 'center' }}>
+                  <input
+                    type="text"
+                    value={mfaToken}
+                    onChange={(e) => setMfaToken(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                    onInput={(e) => setMfaToken((e.target as HTMLInputElement).value.replace(/\D/g, '').slice(0, 6))}
+                    placeholder="000000"
+                    className="branding-input"
+                    maxLength={6}
+                    style={{ textAlign: 'center', fontSize: '1.5rem', letterSpacing: '0.5em', width: '200px' }}
+                    autoComplete="one-time-code"
+                    autoFocus
+                  />
+                </div>
               </div>
 
               <div

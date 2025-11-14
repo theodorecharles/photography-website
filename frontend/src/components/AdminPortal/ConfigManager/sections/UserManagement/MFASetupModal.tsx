@@ -69,31 +69,32 @@ export const MFASetupModal: React.FC<MFASetupModalProps> = ({
             <label className="branding-label">
               Enter verification code from your app
             </label>
-            <input
-              type="text"
-              value={mfaToken}
-              onChange={(e) =>
-                onTokenChange(e.target.value.replace(/\D/g, "").slice(0, 6))
-              }
-              onInput={(e) =>
-                onTokenChange(
-                  (e.target as HTMLInputElement).value
-                    .replace(/\D/g, "")
-                    .slice(0, 6)
-                )
-              }
-              placeholder="000000"
-              className="branding-input"
-              maxLength={6}
-              style={{
-                textAlign: "center",
-                fontSize: "1.5rem",
-                letterSpacing: "0.5em",
-                maxWidth: "200px",
-                margin: "0 auto",
-              }}
-              autoComplete="one-time-code"
-            />
+            <div style={{ display: "flex", justifyContent: "center" }}>
+              <input
+                type="text"
+                value={mfaToken}
+                onChange={(e) =>
+                  onTokenChange(e.target.value.replace(/\D/g, "").slice(0, 6))
+                }
+                onInput={(e) =>
+                  onTokenChange(
+                    (e.target as HTMLInputElement).value
+                      .replace(/\D/g, "")
+                      .slice(0, 6)
+                  )
+                }
+                placeholder="000000"
+                className="branding-input"
+                maxLength={6}
+                style={{
+                  textAlign: "center",
+                  fontSize: "1.5rem",
+                  letterSpacing: "0.5em",
+                  width: "200px",
+                }}
+                autoComplete="one-time-code"
+              />
+            </div>
           </div>
 
           <div
