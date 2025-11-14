@@ -8,16 +8,6 @@ import { PasswordInput } from "../../PasswordInput";
 import { LockIcon, TrashIcon } from "../../../icons";
 import SectionHeader from "../components/SectionHeader";
 import SMTPSetupWizard from "../../SMTPSetupWizard";
-import MFASetupModal from "../components/MFASetupModal";
-import ConfirmationModal from "../components/ConfirmationModal";
-import {
-  User,
-  Passkey,
-  MFASetupData,
-  ConfirmModalState,
-  PasswordChangeState,
-  NewUserState,
-} from "./userManagementTypes";
 
 const API_URL = import.meta.env.VITE_API_URL || "";
 
@@ -1574,7 +1564,9 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
                       }
                       onInput={(e) =>
                         setMfaToken(
-                          (e.target as HTMLInputElement).value.replace(/\D/g, "").slice(0, 6)
+                          (e.target as HTMLInputElement).value
+                            .replace(/\D/g, "")
+                            .slice(0, 6)
                         )
                       }
                       placeholder="000000"
