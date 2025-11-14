@@ -57,9 +57,9 @@ const Login: React.FC = () => {
         throw new Error('MFA verification required');
       }
 
-      // Successful login - redirect to admin
+      // Successful login - redirect to admin with fresh login flag
       window.dispatchEvent(new Event('auth-changed'));
-      navigate('/admin');
+      navigate('/admin', { state: { freshLogin: true } });
     } catch (err: any) {
       setError(err.message || 'Failed to sign in');
     } finally {
