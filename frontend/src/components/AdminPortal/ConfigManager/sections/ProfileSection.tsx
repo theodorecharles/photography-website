@@ -69,7 +69,9 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({
         });
         if (res.ok) {
           const data = await res.json();
+          console.log('[ProfileSection] Auth status data:', data);
           if (data.authenticated && data.user) {
+            console.log('[ProfileSection] Setting user with passkey_count:', data.user.passkey_count);
             setCurrentUser({
               id: data.user.id,
               email: data.user.email,
