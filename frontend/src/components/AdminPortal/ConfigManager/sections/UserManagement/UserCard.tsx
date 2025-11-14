@@ -340,7 +340,7 @@ export const UserCard: React.FC<UserCardProps> = ({
             </div>
           )}
         </div>
-        {user.auth_methods.map((method) => (
+        {user.auth_methods.filter((method) => method !== 'passkey').map((method) => (
           <span
             key={method}
             style={{
