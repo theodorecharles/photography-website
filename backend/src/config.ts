@@ -133,6 +133,7 @@ export function getCurrentConfig() {
     analytics: fullConfig.analytics,
     branding: fullConfig.branding,
     externalLinks: fullConfig.externalLinks,
+    email: fullConfig.email,
     frontend: fullConfig.environment.frontend,
     configExists
   };
@@ -144,6 +145,7 @@ export default {
   analytics: fullConfig.analytics,
   branding: fullConfig.branding,
   externalLinks: fullConfig.externalLinks,
+  email: fullConfig.email,
   frontend: fullConfig.environment.frontend
 };
 

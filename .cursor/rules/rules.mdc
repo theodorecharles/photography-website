@@ -443,6 +443,23 @@ Photography portfolio website with React 19, TypeScript, Express 5, and SQLite.
 
 **Rationale**: Maintains professional appearance and UX consistency across admin interface.
 
+### Confirmation Modals
+
+**Rule**: NEVER use JavaScript `alert()`, `confirm()`, or `prompt()`. Always use custom modals.
+
+**Pattern**: Create styled confirmation modals that match the admin theme.
+
+**Why**:
+
+- Browser alerts are ugly and inconsistent across browsers
+- Cannot be styled to match the application theme
+- Poor UX compared to custom modals
+- Break the visual flow of the application
+
+**Implementation**: Use modal-overlay and share-modal classes or create dedicated confirmation modal component.
+
+**Example**: User deletion should show a dark-themed modal with clear action buttons, not `confirm()`.
+
 ### Password Input
 
 **Rule**: Use `PasswordInput` component for all password/secret fields.
