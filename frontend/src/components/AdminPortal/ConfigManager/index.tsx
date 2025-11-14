@@ -6,7 +6,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { ConfigManagerProps, ConfigData } from './types';
 import { useSSEToaster } from '../../../contexts/SSEToasterContext';
-import ConfirmationModal from './components/ConfirmationModal';
 import BrandingSection from './sections/BrandingSection';
 import LinksSection from './sections/LinksSection';
 import UserManagementSection from './sections/UserManagementSection';
@@ -746,11 +745,35 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
 
       {/* Confirmation Modal */}
       {showConfirmModal && confirmConfig && (
-        <ConfirmationModal
-          message={confirmConfig.message}
-          onConfirm={confirmConfig.onConfirm}
-          onCancel={handleModalCancel}
-        />
+        <div className="modal-overlay" onClick={handleModalCancel}>
+          <div className="share-modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '500px' }}>
+            <div className="share-modal-header">
+              <h2>Confirm Action</h2>
+              <button className="close-button" onClick={handleModalCancel} aria-label="Close">
+                ×
+              </button>
+            </div>
+            <div className="share-modal-content">
+              <p className="share-description">{confirmConfig.message}</p>
+              <div
+                style={{
+                  display: 'flex',
+                  gap: '0.75rem',
+                  justifyContent: 'flex-end',
+                  paddingTop: '1rem',
+                  borderTop: '1px solid #3a3a3a',
+                }}
+              >
+                <button onClick={handleModalCancel} className="btn-secondary">
+                  Cancel
+                </button>
+                <button onClick={confirmConfig.onConfirm} className="btn-primary">
+                  Confirm
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </section>
   );
