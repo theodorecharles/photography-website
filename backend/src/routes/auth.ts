@@ -337,6 +337,15 @@ router.get('/status', (req: Request, res: Response) => {
     
     // If we have user in session, return it with all fields
     if (sessionUser) {
+      // Look up user to get current passkey count (in case it changed since login)
+      const dbUser = getUserById(sessionUser.id);
+      const passkeyCount = dbUser?.passkeys ? dbUser.passkeys.length : 0;
+      
+      console.log('[Auth Status] Session user passkey count:', {
+        email: sessionUser.email,
+        passkeyCount,
+      });
+      
       return res.json({
         authenticated: true,
         user: {
@@ -347,6 +356,7 @@ router.get('/status', (req: Request, res: Response) => {
           role: sessionUser.role,
           mfa_enabled: sessionUser.mfa_enabled,
           passkey_enabled: sessionUser.passkey_enabled,
+          passkey_count: passkeyCount,
           auth_methods: sessionUser.auth_methods,
         },
       });
