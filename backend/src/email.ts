@@ -70,7 +70,13 @@ export async function sendInvitationEmail(
   
   const config = getCurrentConfig();
   const siteName = config.branding?.siteName || 'Photography Portfolio';
-  const frontendUrl = config.frontend?.apiUrl?.replace(':3001', ':3000') || 'http://localhost:3000';
+  
+  // Get frontend URL - use allowedOrigins[0] as it's the actual frontend URL
+  let frontendUrl = 'http://localhost:3000';
+  if (config.backend?.allowedOrigins && config.backend.allowedOrigins.length > 0) {
+    frontendUrl = config.backend.allowedOrigins[0];
+  }
+  
   const inviteUrl = `${frontendUrl}/invite/${inviteToken}`;
   
   const mailOptions = {
@@ -186,7 +192,13 @@ export async function sendPasswordResetEmail(
   
   const config = getCurrentConfig();
   const siteName = config.branding?.siteName || 'Photography Portfolio';
-  const frontendUrl = config.frontend?.apiUrl?.replace(':3001', ':3000') || 'http://localhost:3000';
+  
+  // Get frontend URL - use allowedOrigins[0] as it's the actual frontend URL
+  let frontendUrl = 'http://localhost:3000';
+  if (config.backend?.allowedOrigins && config.backend.allowedOrigins.length > 0) {
+    frontendUrl = config.backend.allowedOrigins[0];
+  }
+  
   const resetUrl = `${frontendUrl}/reset-password/${resetToken}`;
   
   const greeting = userName ? `Hi ${userName}` : 'Hi there';
