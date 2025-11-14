@@ -626,6 +626,7 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
         }`}
         style={{
           maxHeight: showSection ? "10000px" : "0",
+          overflow: showSection ? "visible" : "hidden",
         }}
       >
         <div className="branding-grid">
@@ -680,6 +681,7 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
                     gridTemplateColumns:
                       "repeat(auto-fit, minmax(min(100%, 450px), 1fr))",
                     gap: "1rem",
+                    overflow: "visible",
                   }}
                 >
                   {users.map((user, index) => (
