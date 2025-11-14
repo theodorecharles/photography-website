@@ -896,16 +896,18 @@ export default function AdminPortal() {
         {/* Security Setup Prompt Modal */}
         {showSecurityPrompt && (
           <SecuritySetupPrompt
-            onSetupMFA={() => {
+            onComplete={async () => {
+              // Refresh auth status to get updated MFA status
+              const authRes = await fetch(`${API_URL}/api/auth/status`, {
+                credentials: 'include',
+              });
+              
+              if (authRes.ok) {
+                const authData = await authRes.json();
+                setAuthStatus(authData);
+              }
+              
               setShowSecurityPrompt(false);
-              navigate('/admin/settings');
-              // Scroll to user management section after a brief delay
-              setTimeout(() => {
-                const userSection = document.querySelector('[data-section="user-management"]');
-                if (userSection) {
-                  userSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
-              }, 300);
             }}
             onDismiss={() => setShowSecurityPrompt(false)}
           />
