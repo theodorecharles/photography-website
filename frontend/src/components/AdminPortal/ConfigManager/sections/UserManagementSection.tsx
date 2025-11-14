@@ -852,36 +852,42 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
                             </button>
                           )}
 
-                          {/* MFA Toggle */}
-                          {!user.mfa_enabled ? (
+                          {/* MFA Toggle - Only show for non-Google users */}
+                          {user.auth_methods.includes('credentials') && !user.auth_methods.includes('google') && (
+                            <>
+                              {!user.mfa_enabled ? (
+                                <button
+                                  onClick={() => handleStartMFASetup(user.id)}
+                                  className="btn-primary"
+                                  style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}
+                                  disabled={loading}
+                                >
+                                  Enable MFA
+                                </button>
+                              ) : (
+                                <button
+                                  onClick={() => handleDisableMFA(user.id)}
+                                  className="btn-secondary"
+                                  style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}
+                                  disabled={loading}
+                                >
+                                  Disable MFA
+                                </button>
+                              )}
+                            </>
+                          )}
+
+                          {/* Passkeys - Only show for non-Google users */}
+                          {user.auth_methods.includes('credentials') && !user.auth_methods.includes('google') && (
                             <button
-                              onClick={() => handleStartMFASetup(user.id)}
-                              className="btn-primary"
-                              style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}
-                              disabled={loading}
-                            >
-                              Enable MFA
-                            </button>
-                          ) : (
-                            <button
-                              onClick={() => handleDisableMFA(user.id)}
+                              onClick={() => showPasskeys === user.id ? setShowPasskeys(undefined) : handleLoadPasskeys(user.id)}
                               className="btn-secondary"
                               style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}
                               disabled={loading}
                             >
-                              Disable MFA
+                              🔑 Passkeys ({user.passkey_count})
                             </button>
                           )}
-
-                          {/* Passkeys */}
-                          <button
-                            onClick={() => showPasskeys === user.id ? setShowPasskeys(undefined) : handleLoadPasskeys(user.id)}
-                            className="btn-secondary"
-                            style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}
-                            disabled={loading}
-                          >
-                            🔑 Passkeys ({user.passkey_count})
-                          </button>
                         </>
                       )}
                       
