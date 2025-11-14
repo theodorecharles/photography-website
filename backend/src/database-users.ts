@@ -151,6 +151,7 @@ export function updateUser(userId: number, data: {
   name?: string;
   picture?: string;
   is_active?: boolean;
+  role?: string;
 }): boolean {
   const db = getDatabase();
   
@@ -172,6 +173,10 @@ export function updateUser(userId: number, data: {
   if (data.is_active !== undefined) {
     updates.push('is_active = ?');
     values.push(data.is_active ? 1 : 0);
+  }
+  if (data.role !== undefined) {
+    updates.push('role = ?');
+    values.push(data.role);
   }
   
   if (updates.length === 0) return false;

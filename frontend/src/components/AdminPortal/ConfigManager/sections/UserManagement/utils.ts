@@ -218,5 +218,21 @@ export const userManagementAPI = {
       throw new Error(data.error || 'Failed to change password');
     }
   },
+
+  async updateUserRole(userId: number, role: string) {
+    const res = await fetch(`${API_URL}/api/auth-extended/users/${userId}/role`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ role }),
+    });
+
+    if (!res.ok) {
+      const data = await res.json();
+      throw new Error(data.error || 'Failed to update user role');
+    }
+
+    return await res.json();
+  },
 };
 

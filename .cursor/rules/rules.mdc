@@ -388,6 +388,7 @@ Photography portfolio website with React 19, TypeScript, Express 5, and SQLite.
 - `POST /api/auth-extended/users/:userId/send-password-reset` - Send password reset email (admin only)
 - `GET /api/auth-extended/users` - List all users with status indicators
 - `DELETE /api/auth-extended/users/:userId` - Delete user (admin only)
+- `PATCH /api/auth-extended/users/:userId/role` - Update user role (admin only)
 - All `/api/analytics/*` - Analytics queries
 - All `/api/branding/*` - Branding config
 - All `/api/config/*` - Site config
