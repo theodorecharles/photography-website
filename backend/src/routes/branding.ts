@@ -12,7 +12,7 @@ import { promisify } from 'util';
 import crypto from 'crypto';
 import multer from 'multer';
 import os from 'os';
-import { isAuthenticated } from './auth.js';
+import { requireManager } from '../auth/middleware.js';
 import { csrfProtection } from '../security.js';
 
 const execAsync = promisify(exec);
@@ -48,7 +48,9 @@ const upload = multer({
 router.use(csrfProtection);
 
 // Path to config file - go up from backend/src/routes to project root, then into config
-const configPath = path.resolve(__dirname, '../../../config/config.json');
+import { DATA_DIR } from '../config.js';
+
+const configPath = path.join(DATA_DIR, 'config.json');
 console.log('[Branding Routes] Config path resolved to:', configPath);
 console.log('[Branding Routes] __dirname is:', __dirname);
 
@@ -65,22 +67,9 @@ interface BrandingConfig {
 // Get current branding configuration
 router.get('/', (req: Request, res: Response) => {
   try {
-    console.log('[Get Branding] PID:', process.pid, '- Reading config from:', configPath);
-    
-    // Read file with no encoding first to check it exists and get stats
-    const stats = fs.statSync(configPath);
-    console.log('[Get Branding] PID:', process.pid, '- Config file last modified:', stats.mtime.toISOString());
-    
     const configContent = fs.readFileSync(configPath, 'utf8');
-    const contentHash = crypto.createHash('md5').update(configContent).digest('hex').substring(0, 8);
-    console.log('[Get Branding] PID:', process.pid, '- File content hash:', contentHash);
-    
     const config = JSON.parse(configContent);
     const branding = config.branding || {};
-    
-    // Debug: log raw branding object
-    console.log('[Get Branding] PID:', process.pid, '- Raw branding.avatarPath from file:', branding.avatarPath);
-    console.log('[Get Branding] PID:', process.pid, '- Raw config.branding keys:', Object.keys(branding));
     
     // Set defaults if not present
     const brandingConfig: BrandingConfig = {
@@ -93,7 +82,6 @@ router.get('/', (req: Request, res: Response) => {
       faviconPath: branding.faviconPath || '/favicon.ico',
     };
     
-    console.log('[Get Branding] PID:', process.pid, '- After defaults, returning avatarPath:', brandingConfig.avatarPath);
     res.json(brandingConfig);
   } catch (error) {
     console.error('Error reading branding config:', error);
@@ -102,7 +90,7 @@ router.get('/', (req: Request, res: Response) => {
 });
 
 // Update branding configuration
-router.put('/', isAuthenticated, (req: Request, res: Response) => {
+router.put('/', requireManager, (req: Request, res: Response) => {
   try {
     const updates: Partial<BrandingConfig> = req.body;
     
@@ -169,7 +157,7 @@ router.put('/', isAuthenticated, (req: Request, res: Response) => {
 });
 
 // Upload avatar
-router.post('/upload-avatar', isAuthenticated, upload.single('avatar'), async (req: Request, res: Response): Promise<void> => {
+router.post('/upload-avatar', requireManager, upload.single('avatar'), async (req: Request, res: Response): Promise<void> => {
   try {
     const file = req.file;
     if (!file) {
@@ -206,52 +194,37 @@ router.post('/upload-avatar', isAuthenticated, upload.single('avatar'), async (r
       await execAsync(`convert "${faviconPngPath}" -resize 32x32 "${faviconIcoPath}"`);
       console.log('[Avatar Upload] Generated favicon.ico from avatar using convert');
       
-      // Also copy to dist directory so it's immediately served by nginx
-      if (fs.existsSync(frontendDistDir)) {
-        fs.copyFileSync(faviconIcoPath, faviconIcoPathDist);
-        console.log('[Avatar Upload] Copied favicon.ico to dist directory for immediate serving');
-      } else {
-        console.warn('[Avatar Upload] Frontend dist directory not found, skipping dist copy');
-      }
-    } catch (err: any) {
-      console.error('[Avatar Upload] Failed to generate favicon.ico:', err);
-      // Continue anyway - favicon.png will still work
+    // Also copy to dist directory so it's immediately served by nginx
+    if (fs.existsSync(frontendDistDir)) {
+      fs.copyFileSync(faviconIcoPath, faviconIcoPathDist);
     }
-    
-    // Clean up temp file
-    fs.unlinkSync(file.path);
-    
-    // Update config
-    console.log('[Avatar Upload] Reading config from:', configPath);
-    const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-    console.log('[Avatar Upload] Current avatarPath in config:', config.branding?.avatarPath);
-    if (!config.branding) {
-      config.branding = {};
-    }
-    config.branding.avatarPath = `/photos/${avatarFilename}`;
-    config.branding.faviconPath = '/favicon.ico';
-    console.log('[Avatar Upload] Writing new avatarPath to config:', config.branding.avatarPath);
-    
-    // Write synchronously and force flush to disk
-    const fd = fs.openSync(configPath, 'w');
-    fs.writeSync(fd, JSON.stringify(config, null, 2));
-    fs.fsyncSync(fd);  // Force flush to disk
-    fs.closeSync(fd);
-    console.log('[Avatar Upload] Config file write completed and flushed to disk');
-    
-    // Verify the write by reading back
-    const verifyContent = fs.readFileSync(configPath, 'utf8');
-    const verifyHash = crypto.createHash('md5').update(verifyContent).digest('hex').substring(0, 8);
-    console.log('[Avatar Upload] Verification file content hash:', verifyHash);
-    
-    const verifyConfig = JSON.parse(verifyContent);
-    console.log('[Avatar Upload] Verification read - avatarPath now:', verifyConfig.branding?.avatarPath);
-    
-    if (verifyConfig.branding?.avatarPath !== `/photos/${avatarFilename}`) {
-      console.error('[Avatar Upload] ERROR: Verification failed! Expected:', `/photos/${avatarFilename}`, 'Got:', verifyConfig.branding?.avatarPath);
-    } else {
-      console.log('[Avatar Upload] Verification successful - config was updated correctly');
-    }
+  } catch (err: any) {
+    console.error('[Avatar Upload] Failed to generate favicon.ico:', err);
+    // Continue anyway - favicon.png will still work
+  }
+  
+  // Clean up temp file
+  fs.unlinkSync(file.path);
+  
+  // Update config
+  const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+  if (!config.branding) {
+    config.branding = {};
+  }
+  config.branding.avatarPath = `/photos/${avatarFilename}`;
+  config.branding.faviconPath = '/favicon.ico';
+  
+  // Write synchronously and force flush to disk
+  const fd = fs.openSync(configPath, 'w');
+  fs.writeSync(fd, JSON.stringify(config, null, 2));
+  fs.fsyncSync(fd);  // Force flush to disk
+  fs.closeSync(fd);
+  
+  // Verify the write succeeded
+  const verifyConfig = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+  if (verifyConfig.branding?.avatarPath !== `/photos/${avatarFilename}`) {
+    throw new Error('Avatar path verification failed after config update');
+  }
     
     res.json({ 
       success: true,

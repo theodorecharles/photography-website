@@ -9,6 +9,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { csrfProtection } from '../security.js';
 import { getDatabase } from '../database.js';
+import { requireAuth, requireAdmin, requireManager } from '../auth/middleware.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -45,15 +46,6 @@ function broadcastToClients(job: RunningJob | null, message: string) {
   });
 }
 
-/**
- * Middleware to check if user is authenticated
- */
-function requireAuth(req: any, res: any, next: any) {
-  if (!req.isAuthenticated || !req.isAuthenticated()) {
-    return res.status(401).json({ error: 'Unauthorized' });
-  }
-  next();
-}
 
 /**
  * GET /api/ai-titles/status
@@ -100,7 +92,7 @@ router.get('/check-missing', requireAuth, (req, res) => {
  * POST /api/ai-titles/stop
  * Stop running AI titles generation job
  */
-router.post('/stop', requireAuth, (req: any, res: any) => {
+router.post('/stop', requireManager, (req: any, res: any) => {
   if (!runningJobs.aiTitles || runningJobs.aiTitles.isComplete) {
     return res.json({ success: false, message: 'No running job to stop' });
   }
@@ -140,7 +132,7 @@ router.post('/stop', requireAuth, (req: any, res: any) => {
  * Generate AI titles for all images
  * Streams output using Server-Sent Events
  */
-router.post('/generate', requireAuth, (req, res) => {
+router.post('/generate', requireManager, (req, res) => {
   const forceRegenerate = req.query.forceRegenerate === 'true';
   
   // If already running, reconnect to existing job
@@ -189,7 +181,7 @@ router.post('/generate', requireAuth, (req, res) => {
 
   // Get the project root directory (3 levels up from this file)
   const projectRoot = path.resolve(__dirname, '../../..');
-  const scriptPath = path.join(projectRoot, 'generate-ai-titles.js');
+  const scriptPath = path.join(projectRoot, 'scripts', 'generate-ai-titles.js');
 
   console.log('[AI Titles] Starting generation...');
   console.log('[AI Titles] Force regenerate:', forceRegenerate);

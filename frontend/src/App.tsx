@@ -23,13 +23,21 @@ import { trackPageView, trackError } from "./utils/analytics";
 import { fetchWithRateLimitCheck } from "./utils/fetchWrapper";
 import { SSEToasterProvider } from "./contexts/SSEToasterContext";
 import SSEToaster from "./components/SSEToaster";
+import { filterAlbums, filterFolders } from "./utils/albumFilters";
 
-// Lazy load components that aren't needed on initial page load
+// Import AdminPortal - CSS is handled within the component for dev mode compatibility
+import AdminPortal from "./components/AdminPortal";
+
+// Lazy load other components that aren't needed on initial page load
 const License = lazy(() => import("./components/Misc/License"));
-const AdminPortal = lazy(() => import("./components/AdminPortal"));
 const AuthError = lazy(() => import("./components/Misc/AuthError"));
-const NotFound = lazy(() => import("./components/Misc/NotFound"));
+import NotFound from "./components/Misc/NotFound";
 const SharedAlbum = lazy(() => import("./components/SharedAlbum"));
+const SetupWizard = lazy(() => import("./components/SetupWizard"));
+const Login = lazy(() => import("./components/Misc/Login"));
+const InviteSignup = lazy(() => import("./components/Misc/InviteSignup"));
+const PasswordResetRequest = lazy(() => import("./components/Misc/PasswordResetRequest"));
+const PasswordResetComplete = lazy(() => import("./components/Misc/PasswordResetComplete"));
 
 // AlbumRoute component handles the routing for individual album pages
 function AlbumRoute({ onAlbumNotFound, onLoadComplete }: { onAlbumNotFound: () => void; onLoadComplete: () => void }) {
@@ -88,7 +96,30 @@ function App() {
   const [showFooter, setShowFooter] = useState(false);
   const [hideAlbumTitle, setHideAlbumTitle] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [setupComplete, setSetupComplete] = useState<boolean | null>(null);
   const location = useLocation();
+
+  // Check if initial setup is complete
+  useEffect(() => {
+    const checkSetup = async () => {
+      try {
+        const response = await fetch(`${API_URL}/api/setup/status`);
+        const data = await response.json();
+        setSetupComplete(data.setupComplete);
+        
+        // Only proceed with normal loading if setup is complete
+        if (!data.setupComplete) {
+          setLoading(false);
+        }
+      } catch (err) {
+        console.error('Setup check failed:', err);
+        // Assume setup is complete if check fails (backward compatibility)
+        setSetupComplete(true);
+      }
+    };
+    
+    checkSetup();
+  }, []);
 
   // Global rate limit handler - any component can trigger this
   useEffect(() => {
@@ -119,7 +150,22 @@ function App() {
         setIsAuthenticated(false);
       }
     };
+    
+    // Immediate logout handler - no async delay
+    const handleLogoutEvent = () => {
+      setIsAuthenticated(false);
+    };
+    
     checkAuth();
+    
+    // Listen for authentication changes (e.g., from logout)
+    window.addEventListener('auth-changed', checkAuth);
+    window.addEventListener('user-logged-out', handleLogoutEvent);
+    
+    return () => {
+      window.removeEventListener('auth-changed', checkAuth);
+      window.removeEventListener('user-logged-out', handleLogoutEvent);
+    };
   }, [location.pathname]); // Re-check when route changes
 
   // Apply theme colors to CSS custom properties
@@ -190,38 +236,34 @@ function App() {
       // Handle new API format: { albums: [...], folders: [...] } or old format: [...]
       if (albumsData && typeof albumsData === 'object' && 'albums' in albumsData) {
         // New format with folders
-        const filteredAlbums = albumsData.albums
-          .filter((album: { name: string; published: boolean; folder_id?: number | null }) => {
-            if (album.name === 'homepage') return false;
-            // Include all albums if authenticated, only published if not
-            if (isAuthenticated) return true;
-            return album.published === true;
-          });
+        const filteredAlbums = filterAlbums(albumsData.albums || [], isAuthenticated);
+        const filteredFolders = filterFolders(albumsData.folders || [], isAuthenticated);
         
-        // Filter folders to only show published folders to unauthenticated users
-        const filteredFolders = isAuthenticated
-          ? (albumsData.folders || [])
-          : (albumsData.folders || []).filter((folder: { published: boolean }) => folder.published);
+        console.log('🔍 App.tsx fetchData - isAuthenticated:', isAuthenticated);
+        console.log('🔍 App.tsx fetchData - Raw folders from backend:', albumsData.folders);
+        console.log('🔍 App.tsx fetchData - Filtered folders:', filteredFolders);
+        console.log('🔍 App.tsx fetchData - Filtered albums:', filteredAlbums);
         
         setAlbums(filteredAlbums);
-        setFolders(filteredFolders);
+        // Normalize published field to boolean (SQLite returns 0/1)
+        setFolders(filteredFolders.map(f => ({ ...f, published: !!f.published })));
       } else {
         // Old format (array of strings or objects)
-        const albumNames = Array.isArray(albumsData) 
-          ? albumsData
-              .filter((album: string | { name: string; published: boolean }) => {
+      const albumNames = Array.isArray(albumsData) 
+        ? albumsData
+            .filter((album: string | { name: string; published: boolean }) => {
                 if (typeof album === 'string') return album !== 'homepage';
                 if (album.name === 'homepage') return false;
-                // If it's an object, include all albums if authenticated, only published if not
-                if (isAuthenticated) return true;
-                return album.published === true;
-              })
-              .map((album: string | { name: string; published: boolean }) => 
-                typeof album === 'string' ? album : album.name
-              )
-          : [];
-        
-        setAlbums(albumNames);
+              // If it's an object, include all albums if authenticated, only published if not
+              if (isAuthenticated) return true;
+              return album.published === true;
+            })
+            .map((album: string | { name: string; published: boolean }) => 
+              typeof album === 'string' ? album : album.name
+            )
+        : [];
+      
+      setAlbums(albumNames);
         setFolders([]);
       }
       setExternalLinks(externalLinksData.externalLinks);
@@ -252,50 +294,46 @@ function App() {
   };
 
   useEffect(() => {
+    // Only fetch data if setup is complete
+    if (setupComplete === true) {
     fetchData();
+    }
 
     // Silent update for navigation without triggering loading state
     const updateNavigationSilently = async () => {
+      console.log('🔄 albums-updated event received, updating navigation...');
       try {
         const albumsResponse = await fetchWithRateLimitCheck(`${API_URL}/api/albums`);
         if (albumsResponse.ok) {
           const albumsData = await albumsResponse.json();
+          console.log('✅ Navigation updated with folders:', albumsData.folders);
           
           // Handle new API format: { albums: [...], folders: [...] } or old format: [...]
           if (albumsData && typeof albumsData === 'object' && 'albums' in albumsData) {
             // New format with folders
-            const filteredAlbums = albumsData.albums
-              .filter((album: { name: string; published: boolean; folder_id?: number | null }) => {
-                if (album.name === 'homepage') return false;
-                // Include all albums if authenticated, only published if not
-                if (isAuthenticated) return true;
-                return album.published === true;
-              });
-            
-            // Filter folders to only show published folders to unauthenticated users
-            const filteredFolders = isAuthenticated
-              ? (albumsData.folders || [])
-              : (albumsData.folders || []).filter((folder: { published: boolean }) => folder.published);
+            const filteredAlbums = filterAlbums(albumsData.albums || [], isAuthenticated);
+            const filteredFolders = filterFolders(albumsData.folders || [], isAuthenticated);
             
             setAlbums(filteredAlbums);
-            setFolders(filteredFolders);
+            // Normalize published field to boolean (SQLite returns 0/1)
+            setFolders(filteredFolders.map(f => ({ ...f, published: !!f.published })));
           } else {
             // Old format (array of strings or objects)
-            const albumNames = Array.isArray(albumsData) 
-              ? albumsData
-                  .filter((album: string | { name: string; published: boolean }) => {
+          const albumNames = Array.isArray(albumsData) 
+            ? albumsData
+                .filter((album: string | { name: string; published: boolean }) => {
                     if (typeof album === 'string') return album !== 'homepage';
                     if (album.name === 'homepage') return false;
-                    // Include all albums if authenticated, only published if not
-                    if (isAuthenticated) return true;
-                    return album.published === true;
-                  })
-                  .map((album: string | { name: string; published: boolean }) => 
-                    typeof album === 'string' ? album : album.name
-                  )
-              : [];
+                  // Include all albums if authenticated, only published if not
+                  if (isAuthenticated) return true;
+                  return album.published === true;
+                })
+                .map((album: string | { name: string; published: boolean }) => 
+                  typeof album === 'string' ? album : album.name
+                )
+            : [];
             
-            setAlbums(albumNames);
+          setAlbums(albumNames);
             setFolders([]);
           }
         }
@@ -315,7 +353,21 @@ function App() {
       window.removeEventListener('external-links-updated', fetchData);
       window.removeEventListener('branding-updated', fetchData);
     };
-  }, [isAuthenticated]); // Re-fetch when authentication changes
+  }, [isAuthenticated, setupComplete]); // Re-fetch when authentication or setup changes
+
+  // Show setup wizard if setup is not complete
+  if (setupComplete === false) {
+    return (
+      <Suspense fallback={
+        <div className="photo-grid-loading">
+          <div className="loading-spinner"></div>
+          <p>Loading setup...</p>
+        </div>
+      }>
+        <SetupWizard />
+      </Suspense>
+    );
+  }
 
   // Loading and error states
   // Skip loading state for admin routes - they handle their own loading
@@ -342,7 +394,16 @@ function App() {
         </div>
       );
     }
-    return <div className="error">Error: {error}</div>;
+    return (
+      <div className="error backend-error">
+        <div className="error-icon-large">❌</div>
+        <h2>Backend Error</h2>
+        <p className="error-description">Unable to connect to the server</p>
+        <button onClick={() => window.location.reload()} className="retry-button">
+          Reload Page
+        </button>
+      </div>
+    );
   }
 
   // Main application layout
@@ -399,6 +460,7 @@ function App() {
             <Route path="/admin/albums" element={<AdminPortal />} />
             <Route path="/admin/metrics" element={<AdminPortal />} />
             <Route path="/admin/settings" element={<AdminPortal />} />
+            <Route path="/admin/profile" element={<AdminPortal />} />
             <Route path="/auth/error" element={
               <>
                 <SEO 
@@ -409,7 +471,47 @@ function App() {
                 <AuthError />
               </>
             } />
+            <Route path="/login" element={
+              <>
+                <SEO 
+                  title="Sign In - Ted Charles Photography"
+                  description="Sign in to access the admin portal"
+                  url={`${SITE_URL}/login`}
+                />
+                <Login />
+              </>
+            } />
             <Route path="/shared/:secretKey" element={<SharedAlbum />} />
+            <Route path="/invite/:token" element={
+              <>
+                <SEO 
+                  title="Complete Registration - Ted Charles Photography"
+                  description="Complete your account registration"
+                  url={`${SITE_URL}/invite`}
+                />
+                <InviteSignup />
+              </>
+            } />
+            <Route path="/reset-password" element={
+              <>
+                <SEO 
+                  title="Reset Password - Ted Charles Photography"
+                  description="Reset your account password"
+                  url={`${SITE_URL}/reset-password`}
+                />
+                <PasswordResetRequest />
+              </>
+            } />
+            <Route path="/reset-password/:token" element={
+              <>
+                <SEO 
+                  title="Set New Password - Ted Charles Photography"
+                  description="Set a new password for your account"
+                  url={`${SITE_URL}/reset-password`}
+                />
+                <PasswordResetComplete />
+              </>
+            } />
             <Route path="/primes" element={<PrimesRedirect />} />
             <Route path="/primes/*" element={<PrimesRedirect />} />
             <Route path="*" element={

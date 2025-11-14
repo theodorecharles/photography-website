@@ -1,0 +1,828 @@
+---
+alwaysApply: true
+---
+
+# Galleria - Project Rules
+
+## Project Overview
+
+Photography portfolio website with React 19, TypeScript, Express 5, and SQLite.
+
+**Architecture**: Monorepo with separate frontend and backend. SQLite for data, filesystem for photos.
+
+**Deployment**: PM2 for production, separate dev servers for development.
+
+## Development
+
+### Server Management
+
+**Development**: DO NOT use PM2 for development. Run backend and frontend separately:
+
+- Backend: `cd backend && npm run dev`
+- Frontend: `cd frontend && npm run dev`
+
+**Production**: PM2 is used for production only. Use `./restart.sh` or `pm2 start ecosystem.config.js`
+
+### Build Process
+
+**Backend**: Backend changes require `npm run build` to compile TypeScript before deployment.
+
+**Frontend**: Frontend uses Vite for fast HMR in development.
+
+### Testing
+
+**Browser Tools**: NEVER use browser tools (browser_navigate, browser_snapshot, browser_click, etc.). NEVER open Chrome or any browser window for testing.
+
+**Rationale**: The user prefers to test manually in their own browser. Opening browser windows is disruptive to their workflow.
+
+## Critical Patterns
+
+### Database First
+
+**Rule**: ALWAYS query SQLite database instead of scanning filesystem.
+
+**Rationale**: Filesystem scans are slow and don't scale. Use `image_metadata` table for images, `albums` table for albums.
+
+**Examples**:
+
+- Use `getImagesInAlbum(album)` instead of `fs.readdirSync()`
+- Use `getAllAlbums()` instead of scanning photos directory
+- Use `getImagesFromPublishedAlbums()` for published content
+
+**Exceptions**: Only scan filesystem when syncing new uploads to database.
+
+### SSE Race Conditions
+
+**Rule**: For SSE (Server-Sent Events) endpoints, create job tracking IMMEDIATELY after checking if job exists.
+
+**Rationale**: Prevents race condition where two simultaneous requests both think no job exists and spawn duplicate processes.
+
+**Pattern**: Check if job exists → Create job object → Set headers → Spawn process
+
+**Anti-pattern**: Never set headers or start any work before creating the job tracking object.
+
+**Files**: `backend/src/routes/ai-titles.ts`, `backend/src/routes/image-optimization.ts`
+
+### SSE Broadcasting
+
+**Rule**: SSE handlers must broadcast to ALL connected clients and store output history.
+
+**Rationale**: Multiple clients can connect/reconnect. All must receive updates and see previous output.
+
+**Pattern**:
+
+- Store output in `job.output` array
+- Use `broadcastToClients(job, message)` for all output (stdout, stderr, errors)
+- Never write directly to a single `res` object in data handlers
+
+**Files**: `backend/src/routes/ai-titles.ts`, `backend/src/routes/image-optimization.ts`
+
+### SSE Timeouts
+
+**Rule**: SSE connections must disable response timeouts and proxy buffering.
+
+**Rationale**: Prevents network timeout errors on long-running operations (uploads, optimization, AI generation).
+
+**Pattern**:
+
+- `res.setHeader('X-Accel-Buffering', 'no')` to disable proxy buffering
+- `res.setTimeout(0)` to disable response timeout
+- Apply to ALL SSE endpoints immediately after setting other headers
+
+**Files**: `backend/src/routes/ai-titles.ts`, `backend/src/routes/image-optimization.ts`, `backend/src/routes/album-management.ts`
+
+### Authentication
+
+**Rule**: Use `requireAuth` middleware for all admin endpoints.
+
+**Implementation**: `req.isAuthenticated()` checks if user is logged in via Google OAuth.
+
+**Files**: All routes in `backend/src/routes/` except public endpoints (albums, photos, sitemap, health).
+
+### Role-Based Access Control (RBAC)
+
+**Rule**: Enforce role-based permissions across the application.
+
+**Roles**:
+
+- `viewer` - Read-only access to content
+- `manager` - Full content editing, no system settings
+- `admin` - Full access to everything
+
+**Backend Middleware**:
+
+- `requireAuth` - User must be authenticated (any role)
+- `requireManager` - User must be manager or admin
+- `requireAdmin` - User must be admin
+
+**Viewer Permissions**:
+
+- ✅ View all albums and photos (including unpublished)
+- ✅ View metrics page
+- ✅ Access profile page (manage own account: password, MFA, passkeys)
+- ❌ Cannot edit albums, photos, or content
+- ❌ Cannot access settings page
+- ❌ Cannot see other users
+
+**Manager Permissions**:
+
+- ✅ Full edit access to albums and photos
+- ✅ Can create, rename, delete albums and folders
+- ✅ Can upload, edit, delete photos
+- ✅ Can manage branding and external links
+- ✅ Can run AI title generation and image optimization
+- ✅ View all albums and photos (including unpublished)
+- ✅ View metrics page
+- ✅ Access profile page (manage own account only)
+- ❌ Cannot access system settings (config, SMTP, OpenAI, user management)
+- ❌ Cannot see other users
+
+**Admin Permissions**:
+
+- ✅ Full access to everything
+- ✅ Access settings page (config, SMTP, OpenAI, user management)
+- ✅ Can manage all users (invite, delete, reset MFA, change roles)
+- ✅ Can modify system configuration
+- ❌ Does not see profile tab (has full settings page instead)
+
+**Frontend Implementation**:
+
+- Tabs conditionally rendered based on role (Profile vs Settings)
+- Edit buttons and controls hidden for viewers
+- Drag-and-drop disabled for viewers
+- Ghost tiles (create album) hidden for viewers
+- AlbumsManager receives `canEdit` prop and passes to all child components
+
+**Backend Implementation**:
+
+- Content routes (album-management, folder-management, branding, external-links): `requireManager`
+- AI/optimization routes (ai-titles, image-optimization): `requireManager`
+- System routes (config, user management): `requireAdmin`
+
+**Files**:
+
+- Backend middleware: `backend/src/auth/middleware.ts`
+- Frontend orchestrator: `frontend/src/components/AdminPortal/AdminPortal.tsx`
+- Profile component: `frontend/src/components/AdminPortal/ConfigManager/sections/ProfileSection.tsx`
+
+### CSRF Protection
+
+**Rule**: Apply `csrfProtection` middleware to all routes that modify data.
+
+**Implementation**: `router.use(csrfProtection)` at top of route file.
+
+**Exception**: Read-only GET endpoints don't need CSRF protection.
+
+**Files**: All routes with POST, PUT, DELETE methods.
+
+### Path Sanitization
+
+**Rule**: ALWAYS sanitize user-provided paths to prevent directory traversal.
+
+**Pattern**: Use `sanitizePath()` helper that blocks `..` and path separators.
+
+**Critical**: Album names, filenames, and any path components from user input.
+
+**Files**: `backend/src/routes/albums.ts`, `backend/src/routes/album-management.ts`
+
+## Architecture Patterns
+
+### Database
+
+**Description**: SQLite with better-sqlite3 for synchronous operations.
+
+**Location**: `backend/src/database.ts`
+
+**Tables**:
+
+- `albums`: Album names and published state
+- `image_metadata`: Image filenames, titles, descriptions, sort_order per album
+- `share_links`: Shareable album links with secret keys and expiration
+
+**Performance**:
+
+- WAL mode enabled for better concurrency
+- Indexes on (album, filename)
+- Prepared statements for all queries
+
+**Migrations**: Run migrate-database.js when schema changes.
+
+### Image Optimization
+
+**Sizes**: thumbnail (512px), modal (2048px), download (4096px)
+
+**Location**: `optimized/` directory with subdirs for each size and album.
+
+**Process**: `optimize_all_images.js` runs via SSE endpoint, tracks progress.
+
+**On Upload**: New images auto-optimized during upload via album-management route.
+
+### Static JSON
+
+**Description**: Pre-generated JSON files for faster page loads (optional performance optimization).
+
+**Location**: `frontend/public/albums-data/`
+
+**Format**: Optimized array format: `[[filename, title], ...]` for albums, `[[filename, title, album], ...]` for homepage.
+
+**Optimization**: 83% smaller than verbose object format (Wedding Photos: 582KB → 100KB).
+
+**Generation**: `scripts/generate-static-json.js` creates JSON for all albums + homepage.
+
+**Reconstruction**: `PhotoGrid.tsx` reconstructs full photo objects with `reconstructPhoto()` function.
+
+**Git Ignored**: Yes - these are generated files, not version controlled.
+
+**Fallback**: Frontend falls back to API if static JSON doesn't exist.
+
+**Deployment**: Automatically generated by restart.sh after deployment.
+
+**Network Transfer**: Gzipped: 26.6 KB → 11.8 KB (56% reduction).
+
+**Caching**: In-memory cache on frontend server (5-minute TTL, X-Cache header).
+
+### Async Jobs
+
+**Pattern**: Long-running jobs (AI titles, optimization) use `child_process.spawn` with SSE streaming.
+
+**Tracking**: `runningJobs` object tracks active processes, output history, connected clients.
+
+**Features**:
+
+- Multiple clients can connect/reconnect to same job
+- Stop button sends SIGTERM to process
+- Jobs auto-cleanup 5 minutes after completion
+
+**Files**: `backend/src/routes/ai-titles.ts`, `backend/src/routes/image-optimization.ts`
+
+### Caching
+
+**Album Photos**: 5-minute in-memory cache for album photo lists.
+
+**Invalidation**: Cache cleared on image upload/delete via `invalidateAlbumCache()`.
+
+**File**: `backend/src/routes/albums.ts`
+
+### Email Service
+
+**Purpose**: Sends invitation and password reset emails.
+
+**Implementation**: Nodemailer with SMTP configuration.
+
+**Location**: `backend/src/email.ts`
+
+**Setup UI**:
+
+- **Setup Wizard**: `frontend/src/components/AdminPortal/SMTPSetupWizard.tsx`
+  - Two-step wizard for configuring SMTP in Admin Portal
+  - Provider presets: Gmail, SendGrid, AWS SES, Mailgun, Custom
+  - Automatically shows in User Management section if SMTP not configured
+  - Includes provider-specific setup instructions with links
+  - Validates all required fields before saving
+- **Settings Section**: `frontend/src/components/AdminPortal/ConfigManager/components/SMTPSettings.tsx`
+  - Full SMTP configuration in Advanced Settings → Email (SMTP)
+  - Toggle to enable/disable email service
+  - Gmail-specific setup instructions displayed when Gmail is selected
+  - Shows "✓ Configured" badge when SMTP is properly set up
+
+**Configuration**: Add to `config.json`:
+
+```json
+{
+  "email": {
+    "enabled": true,
+    "smtp": {
+      "host": "smtp.example.com",
+      "port": 587,
+      "secure": false,
+      "auth": {
+        "user": "your-email@example.com",
+        "pass": "your-password"
+      }
+    },
+    "from": {
+      "name": "Your Site Name",
+      "address": "noreply@example.com"
+    }
+  }
+}
+```
+
+**User Experience**:
+
+- If SMTP not configured: User Management shows warning banner with "📧 Set up SMTP" button
+- After SMTP configured: "📧 Set up SMTP" button changes to "+ Invite User"
+- Wizard completion triggers config refresh and enables user invitation functionality
+
+**Email Types**:
+
+- **Invitation Email**: Sent when admin invites new user (7-day expiry)
+- **Password Reset Email**: Sent when user requests password reset (1-hour expiry)
+
+**Functions**:
+
+- `sendInvitationEmail(email, token, inviterName)` - Send invitation
+- `sendPasswordResetEmail(email, token, userName)` - Send password reset
+- `testEmailConfig()` - Test SMTP connection
+
+**Popular Providers**:
+
+- **Gmail**: smtp.gmail.com:587, requires app password from Google Account settings
+- **SendGrid**: smtp.sendgrid.net:587, username is literally "apikey"
+- **AWS SES**: email-smtp.{region}.amazonaws.com:587, requires SMTP credentials
+- **Mailgun**: smtp.mailgun.org:587, requires domain verification
+
+### User Invitation Flow
+
+**Purpose**: Secure user onboarding with email-based invitation system.
+
+**Process**:
+
+1. **Admin invites user** (via `/api/auth-extended/invite`)
+
+   - Admin provides email and role
+   - System generates secure invite token (32-byte hex)
+   - User created with status='invited', 7-day expiry
+   - Invitation email sent with signup link
+
+2. **User receives email** with link to `/invite/:token`
+   - Token validates before showing signup form
+   - Form collects: name, password (min 8 chars)
+   - Optional: MFA setup during signup
+3. **User completes signup** (via `/api/auth-extended/invite/:token/complete`)
+   - System validates token and expiry
+   - Sets name and password hash
+   - Updates status to 'active'
+   - User can now log in
+
+**User Statuses**:
+
+- `invited` - User invited, pending signup (shown as "✉️ Invited")
+- `invite_expired` - Invitation expired after 7 days (shown as "⏱️ Invite Expired" with Resend button)
+- `active` - User completed signup (no status badge shown)
+
+**Admin Actions**:
+
+- **Resend Invite**: Generates new token with fresh 7-day expiry
+- **Delete User**: Remove user before they complete signup
+
+**Database Fields** (users table):
+
+- `status` - User status (invited/active/invite_expired)
+- `invite_token` - Secure random token for invitation link
+- `invite_expires_at` - ISO timestamp when invitation expires
+
+**Files**:
+
+- Backend: `backend/src/routes/auth-extended.ts`
+- Frontend: `frontend/src/components/Misc/InviteSignup.tsx`
+- Frontend: `frontend/src/components/AdminPortal/ConfigManager/sections/UserManagementSection.tsx`
+
+### Password Reset Flow
+
+**Purpose**: Secure password recovery for users without MFA.
+
+**Restrictions**: Only available for users without MFA enabled (prevents MFA bypass).
+
+**Process**:
+
+1. **User requests reset** (`/reset-password`)
+
+   - Provides email address
+   - System generates secure reset token (32-byte hex)
+   - Token valid for 1 hour
+   - Password reset email sent
+
+2. **User receives email** with link to `/reset-password/:token`
+   - Token validates before showing password form
+   - User sets new password (min 8 chars)
+3. **Password reset completes**
+   - System updates password hash
+   - Clears reset token
+   - User redirected to login
+
+**Admin MFA Reset**:
+
+- If user has MFA enabled and needs password reset
+- Admin uses "Reset MFA" button in user management
+- Disables user's MFA
+- Generates password reset token
+- Sends password reset email
+
+**Database Fields** (users table):
+
+- `password_reset_token` - Secure random token for reset link
+- `password_reset_expires_at` - ISO timestamp when reset expires (1 hour)
+
+**Files**:
+
+- Backend: `backend/src/routes/auth-extended.ts`
+- Frontend: `frontend/src/components/Misc/PasswordResetRequest.tsx`
+- Frontend: `frontend/src/components/Misc/PasswordResetComplete.tsx`
+
+## API Endpoints
+
+### Public Endpoints
+
+- `GET /api/albums` - List albums (filtered by published state)
+- `GET /api/albums/:album/photos` - Get photos in album
+- `GET /api/random-photos` - Shuffled photos from published albums
+- `GET /api/photos/:album/:filename/exif` - EXIF data
+- `GET /api/shared/:secretKey` - View shared album (public access)
+- `GET /api/preview-grid/shared/:secretKey` - 2x2 preview for shared album
+- `GET /sitemap.xml` - SEO sitemap
+- `GET /api/health` - Health check
+- `GET /api/auth-extended/invite/:token` - Validate invitation token
+- `POST /api/auth-extended/invite/:token/complete` - Complete user signup from invitation
+- `POST /api/auth-extended/password-reset/request` - Request password reset link
+- `GET /api/auth-extended/password-reset/:token` - Validate password reset token
+- `POST /api/auth-extended/password-reset/:token/complete` - Complete password reset
+
+### Authenticated Endpoints
+
+- `POST /api/ai-titles/generate` - Generate AI titles (SSE)
+- `POST /api/ai-titles/stop` - Stop AI generation
+- `POST /api/image-optimization/optimize` - Run optimization (SSE)
+- `POST /api/albums/upload` - Upload photos
+- `POST /api/album-management/albums` - Create/rename/delete albums
+- `PUT /api/album-management/albums/:album/publish` - Toggle published state
+- `POST /api/album-management/:album/share` - Create share link
+- `DELETE /api/album-management/share/:shareId` - Delete share link
+- `POST /api/auth-extended/invite` - Invite new user (admin only, sends invitation email)
+- `POST /api/auth-extended/invite/resend/:userId` - Resend invitation email (admin only)
+- `POST /api/auth-extended/users/:userId/reset-mfa` - Reset user's MFA (admin only, disables MFA)
+- `POST /api/auth-extended/users/:userId/send-password-reset` - Send password reset email (admin only)
+- `GET /api/auth-extended/users` - List all users with status indicators
+- `DELETE /api/auth-extended/users/:userId` - Delete user (admin only)
+- `PATCH /api/auth-extended/users/:userId/role` - Update user role (admin only)
+- All `/api/analytics/*` - Analytics queries
+- All `/api/branding/*` - Branding config
+- All `/api/config/*` - Site config
+
+## Security
+
+**Rules**:
+
+- Never trust user input - sanitize all paths and filenames
+- Use parameterized SQL queries to prevent injection
+- Validate file types before processing uploads
+- CSRF tokens required for all state-changing operations
+- Email whitelist for Google OAuth (`authorizedEmails` in config)
+- Rate limiting on upload endpoints
+
+## Testing
+
+**Before Commit**:
+
+- Test SSE endpoints with multiple simultaneous connections
+- Verify database queries work with empty database
+- Check CSRF tokens are sent/validated on protected routes
+- Test path sanitization with malicious inputs
+- Verify published/unpublished album filtering
+
+## Common Pitfalls
+
+- **Filesystem Scans**: Never use `fs.readdirSync()` in route handlers - use database queries
+- **Race Conditions**: SSE job creation must happen before any async work
+- **Single Client**: Don't write to `res` directly in child process handlers - use broadcast
+- **Cache Staleness**: Remember to invalidate album cache when images change
+- **Missing Auth**: Don't forget `requireAuth` middleware on admin endpoints
+- **Direct Filesystem Access**: Photos stored in filesystem, metadata in database - keep in sync
+- **SSE Timeouts**: Always disable timeouts on SSE responses with `res.setTimeout(0)`
+- **Map Tiles**: Use correct CartoDB tile URL format without `{r}` placeholder
+
+## UI Patterns
+
+### Consistent Styling
+
+**Rule**: All new UI components MUST match the styling of existing admin pages.
+
+**Pattern**: Review existing components before creating new UI to maintain consistency.
+
+**Key Style Elements**:
+
+- Use existing CSS classes from `AdminPortal.css`, `ConfigManager.css`, `BrandingManager.css`
+- Match color scheme: dark backgrounds, white/gray text, accent colors
+- Follow spacing patterns: consistent padding, margins, gaps
+- Use same button styles: `btn-primary`, `btn-secondary`
+- Match form inputs: `branding-input`, `branding-label`
+- Consistent section headers and descriptions
+- Same modal/overlay styles
+
+**Rationale**: Maintains professional appearance and UX consistency across admin interface.
+
+### Confirmation Modals
+
+**Rule**: NEVER use JavaScript `alert()`, `confirm()`, or `prompt()`. Always use custom modals.
+
+**Pattern**: Create styled confirmation modals that match the admin theme.
+
+**Why**:
+
+- Browser alerts are ugly and inconsistent across browsers
+- Cannot be styled to match the application theme
+- Poor UX compared to custom modals
+- Break the visual flow of the application
+
+**Implementation**: Use modal-overlay and share-modal classes or create dedicated confirmation modal component.
+
+**Example**: User deletion should show a dark-themed modal with clear action buttons, not `confirm()`.
+
+### Password Input
+
+**Rule**: Use `PasswordInput` component for all password/secret fields.
+
+**Features**: Eye toggle for visibility, copy to clipboard button, ref forwarding support.
+
+**Location**: `frontend/src/components/AdminPortal/PasswordInput.tsx`
+
+**Usage**: Replace `type='password'` inputs with `<PasswordInput />` in settings pages.
+
+### Visitor Map
+
+**Provider**: CartoDB dark_all tiles via Leaflet.
+
+**URL**: `https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png`
+
+**Note**: Do not use `{r}` placeholder in tile URL - it causes black screen.
+
+**Subdomains**: `["a", "b", "c", "d"]`
+
+**Location**: `frontend/src/components/AdminPortal/Metrics/VisitorMap.tsx`
+
+## Bundle Splitting
+
+**Description**: Vite with manual chunk splitting for optimal performance.
+
+**Configuration**:
+
+- `react-vendor`: react, react-dom, react-router-dom (45 KB gzipped)
+- `recharts-vendor`: recharts charting library (92 KB gzipped)
+- `admin-vendor`: @dnd-kit/\*, leaflet, react-leaflet (61 KB gzipped)
+
+**Results**:
+
+- Initial Load: 44 KB gzipped (69% reduction from 198 KB)
+- Admin Load: Admin dependencies lazy loaded only when accessing admin panel
+
+**Lazy Components**: AdminPortal, License, AuthError, NotFound, SharedAlbum
+
+**File**: `frontend/vite.config.ts`
+
+## Component Refactoring
+
+### ConfigManager
+
+**Structure**: Modular sections pattern (was 3,781 lines monolithic).
+
+**Orchestrator**: `index.tsx` manages global state, SSE connections, confirmation modal.
+
+**Sections**:
+
+- `BrandingSection.tsx` - Site name, logo, colors (460 lines)
+- `LinksSection.tsx` - External links management (258 lines)
+- `OpenAISection.tsx` - AI configuration (421 lines)
+- `ImageOptimizationSection.tsx` - Image processing settings (493 lines)
+- `AdvancedSettingsSection.tsx` - System controls, operations (1,305 lines)
+
+**Pattern**: Each section manages own state, orchestrator handles cross-cutting concerns.
+
+### AlbumsManager
+
+**Structure**: Orchestrator + reusable components (was 2,249 lines).
+
+**Orchestrator**: `index.tsx` keeps tightly coupled state (DND, SSE, uploads).
+
+**Components**:
+
+- `SortableAlbumCard.tsx` - Album card with drag-drop (126 lines)
+- `SortablePhotoItem.tsx` - Photo thumbnail with drag-drop (172 lines)
+
+**Rationale**: Further splitting would cause prop drilling hell due to tight state coupling.
+
+### Refactoring Principles
+
+- Extract shared types to `types.ts`
+- Extract reusable UI components
+- Keep tightly coupled state in orchestrator
+- Sections manage their own state when independent
+- Balance modularity vs coupling - don't over-split
+
+## Mobile UX
+
+**Breakpoint**: 768px for mobile-specific styles.
+
+**Hidden on Mobile** (< 768px):
+
+- Edit buttons in header
+- Logout button
+- Config section descriptions
+
+### SSE Toaster
+
+**Desktop**: Draggable, snaps to corners, slide-in animations.
+
+**Mobile**: Centered bottom, no dragging, no animations (prevents jumping).
+
+**Implementation**: `animation: none !important`, `transform: translateX(-50%) !important`
+
+### Principles
+
+- Remove duplicate UI elements
+- Simplify navigation
+- Center-align critical UI
+- Disable animations causing jumpy behavior
+- Test on < 600px viewport
+
+## Documentation
+
+### Rules
+
+**DO**:
+
+- Update `.cursor/rules/rules.mdc` with architectural decisions
+- Add inline comments for complex logic
+- Document API endpoints in this file
+
+**DON'T**:
+
+- Create separate markdown documentation files
+- Write summaries of work done (update rules instead)
+- Leave TODO comments without issue tracking
+
+**Rationale**: Centralized rules are easier to maintain and search than scattered markdown files.
+
+### API Endpoint Documentation
+
+**Rule**: EVERY time a new API endpoint is added, modified, or removed, update the "API Endpoints" section in this rules file.
+
+**Required Information**:
+
+- HTTP method and route path
+- Brief description of functionality
+- Whether it's public or requires authentication
+- Any special middleware (CSRF, SSE, etc.)
+
+**Examples**:
+
+- `GET /api/albums` - List albums (filtered by published state)
+- `POST /api/ai-titles/generate` - Generate AI titles (SSE, authenticated)
+
+**Rationale**: Centralized API documentation makes it easy to understand the entire API surface at a glance and prevents endpoint proliferation without documentation.
+
+## Performance Targets
+
+- **Lighthouse**: > 90 score
+- **Initial Load**: < 50 KB gzipped (currently 44 KB)
+- **Time to Interactive**: < 2s on 4G
+- **Main Chunk**: < 150 KB uncompressed (currently 124 KB)
+- **First Paint**: < 1s for large albums (batched rendering)
+- **Modal Navigation**: Instant (O(1) lookups via `photoIndexMap`)
+
+## Batched Rendering
+
+**Description**: Optimize first paint for large albums by rendering photos in batches.
+
+**Threshold**: Albums with > 50 photos.
+
+**Strategy**:
+
+1. Load all photo metadata from JSON instantly
+2. Render first 50 photos to DOM immediately (fast initial paint)
+3. Batch-add remaining photos in 50-photo chunks every 100ms
+4. Show progress indicator during background loading
+
+**Benefits**:
+
+- First paint in ~0.5s instead of 5s for 930-photo albums
+- Page is interactive immediately
+- No janky scroll-based loading
+- Works with both static JSON and API fallback
+
+**File**: `frontend/src/components/PhotoGrid.tsx`
+
+## Database Migrations
+
+**Rule**: ANY time changes are made to the database structure (tables, columns, indexes, etc.), you MUST create a migration script.
+
+### Requirements
+
+- Create migration script in project root (e.g., `migrate-add-feature-name.js`)
+- Script must be idempotent (safe to run multiple times)
+- Script must check if changes already exist before applying
+- Script must provide clear console output
+- Script must handle errors gracefully
+
+### Deployment
+
+- Add migration to `restart.sh`
+- Migrations must run BEFORE starting the application
+- Ensure migrations run in correct order if dependencies exist
+
+### Template
+
+- **Imports**: Use `fileURLToPath`, `createRequire` for ES modules
+- **DB Path**: Import `DB_PATH` from `backend/src/config.js` or use `DATA_DIR`
+- **Pattern**: Check if applied → Apply if needed → Log result
+- **Pragmas**: WAL mode, NORMAL sync, foreign keys ON
+
+### Never
+
+- Don't modify database structure directly without migration
+- Don't skip adding migrations to `restart.sh`
+- Don't create migrations that aren't idempotent
+- Don't forget to test migrations with existing data
+- Don't commit database changes without migration script
+
+**Documentation**: Document migration in commit message with clear description and rollback instructions.
+
+## Code Organization
+
+### File Size Limits
+
+#### TSX Files
+
+**Soft Limit**: 800 lines  
+**Hard Limit**: 1000 lines
+
+**Rule**: No TSX file should exceed 800 lines. If a change causes a TSX file to exceed 1000 lines, you've done something wrong.
+
+**Refactoring Strategies**:
+
+- Extract functions into utility files (`utils/`)
+- Componentize UI sections into smaller components
+- Move type definitions to `types.ts` files
+- Extract reusable logic into custom hooks
+- Minimize inline CSS within TSX files
+- Split large sections into separate component files
+- Use CSS modules for component-specific styles
+
+**Rationale**: Improves maintainability, testability, and code readability.
+
+### Interfaces
+
+**Rule**: All interfaces and type definitions MUST be written into a types file and imported.
+
+**Pattern**: Create `types.ts` in component/feature directory, import from there.
+
+**Rationale**: Centralizes type definitions, prevents duplicates, improves maintainability.
+
+**Exceptions**: Component-specific props interfaces can stay inline if only used in that one component.
+
+### Functions
+
+**Rule**: Functions MUST be extracted into util files when possible.
+
+**Extractable**:
+
+- Pure functions with no component state dependencies
+- Helper functions used across multiple components
+- Data transformation and formatting functions
+- DOM manipulation utilities
+
+**Keep In Component**:
+
+- Event handlers (`onClick`, `onChange`, etc.)
+- Functions using React hooks (`useState`, `useEffect`)
+- Functions directly manipulating component state
+- Callback functions passed as props
+
+**Pattern**: Create `utils/` directory in appropriate location, import from there.
+
+### SVGs
+
+**Rule**: All SVGs MUST be written into separate `.tsx` files in `icons/` folder and imported.
+
+**Location**: `frontend/src/components/icons/`
+
+**Pattern**: Create `IconName.tsx` with props interface (width, height, className, style).
+
+**Export**: Use barrel export in `icons/index.ts` for easy imports.
+
+**Never**: NEVER insert SVGs inline in component JSX.
+
+**Rationale**: Reusability, maintainability, reduces file size, easy to update.
+
+### Styles
+
+**Rule**: Minimize inline styles in TSX files.
+
+**Prefer**: CSS classes in separate `.css` files.
+
+**Allowed**: Dynamic styles that depend on runtime state or props.
+
+**Pattern**: Use `className` with CSS variables for theming.
+
+**Rationale**: Better performance, easier maintenance, cleaner JSX.
+
+## Project Rules
+
+### Cursor Rules File
+
+**Rule**: NEVER create a `.cursorrules` file. All rules go into `.cursor/rules/rules.mdc`.
+
+**Rationale**: Centralized Markdown format with YAML frontmatter is easier to maintain, search, and version control.
+
+**Format**: Use Markdown with `alwaysApply: true` frontmatter for project-wide rules.
+
+**Location**: `.cursor/rules/rules.mdc` is tracked in git for team consistency.

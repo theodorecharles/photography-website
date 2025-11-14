@@ -77,7 +77,9 @@ const sanitizePath = (input: string): string | null => {
 const getAlbums = (photosDir: string) => {
   try {
     // Get albums from database
-    const dbAlbums = getAllAlbums().map(a => a.name);
+    const dbAlbums = getAllAlbums()
+      .map(a => a.name)
+      .filter(name => name !== 'homepage'); // Exclude homepage directory
     
     // If database has albums, use those
     if (dbAlbums.length > 0) {
@@ -88,7 +90,10 @@ const getAlbums = (photosDir: string) => {
     console.warn('Database has no albums, falling back to filesystem scan');
     return fs
       .readdirSync(photosDir)
-      .filter((file) => fs.statSync(path.join(photosDir, file)).isDirectory());
+      .filter((file) => {
+        // Exclude homepage directory and only include actual directories
+        return file !== 'homepage' && fs.statSync(path.join(photosDir, file)).isDirectory();
+      });
   } catch (error) {
     console.error("Error reading albums:", error);
     return [];
@@ -215,8 +220,18 @@ router.get("/api/albums", (req: Request, res) => {
   // Re-fetch album states after sync
   const updatedAlbumStates = getAllAlbums();
   
-  // Check if user is authenticated
-  const isAuthenticated = req.isAuthenticated && req.isAuthenticated();
+  // Check if user is authenticated (Passport or credentials)
+  const isAuthenticated = (req.isAuthenticated && req.isAuthenticated()) || !!(req.session as any)?.userId;
+  
+  console.log('[Albums API] Auth check:', {
+    isAuthenticated,
+    hasIsAuthenticatedFunc: !!req.isAuthenticated,
+    isAuthenticatedResult: req.isAuthenticated ? req.isAuthenticated() : false,
+    hasUserId: !!(req.session as any)?.userId,
+    userId: (req.session as any)?.userId,
+    sessionID: req.sessionID,
+    albumCount: allAlbums.length,
+  });
   
   // Get folders
   const allFolders = isAuthenticated ? getAllFolders() : getPublishedFolders();
@@ -247,7 +262,8 @@ router.get("/api/albums", (req: Request, res) => {
       const state = updatedAlbumStates.find(a => a.name === albumName);
       return {
         name: albumName,
-        folder_id: state?.folder_id ?? null
+        folder_id: state?.folder_id ?? null,
+        published: true // Already filtered to published albums
       };
     });
     
@@ -279,8 +295,8 @@ router.get("/api/albums/:album/photos", (req: Request, res): void => {
     return;
   }
 
-  // Check if user is authenticated
-  const isAuthenticated = req.isAuthenticated && req.isAuthenticated();
+  // Check if user is authenticated (Passport or credentials)
+  const isAuthenticated = (req.isAuthenticated && req.isAuthenticated()) || !!(req.session as any)?.userId;
   
   // Check album published state
   const albumState = getAlbumState(sanitizedAlbum);

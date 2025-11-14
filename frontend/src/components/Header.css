@@ -235,6 +235,16 @@
   transform: rotate(180deg);
 }
 
+/* Folder chevron icon that rotates when folder is expanded */
+.folder-chevron {
+  transition: transform 0.2s ease-in-out;
+  transform: translateY(-50%) rotate(0deg);
+}
+
+.folder-chevron.open {
+  transform: translateY(-50%) rotate(90deg);
+}
+
 /* Dropdown menu */
 .dropdown-menu {
   position: absolute;
@@ -247,7 +257,7 @@
   -webkit-backdrop-filter: blur(8px);
   border: 1px solid #FFF;
   border-top: none;
-  padding: 1rem;
+  padding: 1rem 1rem 1rem 1rem;
   box-shadow: 0 4px 4px rgba(0, 0, 0, 0.5);
   z-index: 999;
   display: flex;
@@ -267,7 +277,7 @@
 
 .dropdown-menu .nav-link {
   width: 100%;
-  text-align: left;
+  text-align: center;
   padding: 0.75rem 1rem;
   margin-bottom: 0.5rem;
   border-radius: 4px;
@@ -276,6 +286,10 @@
   color: #000;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
   transition: all 0.3s ease-in-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
 }
 
 .dropdown-menu .nav-link:last-child {
@@ -302,11 +316,16 @@
   margin-bottom: 0.5rem;
 }
 
+.folder-item:last-child {
+  margin-bottom: 0;
+}
+
 .folder-link {
   width: 100%;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
+  gap: 0;
   padding: 0.75rem 1rem;
   border-radius: 4px;
   background: white;
@@ -317,27 +336,75 @@
   cursor: pointer;
   font-size: inherit;
   font-family: inherit;
-  text-align: left;
+  position: relative;
 }
 
-.folder-link:hover {
+.folder-link svg {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  display: block;
+  flex-shrink: 0;
+}
+
+.folder-link svg:not(.folder-chevron) {
+  transform: translateY(-50%);
+}
+
+.folder-link span {
+  display: block;
+  line-height: 1;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+.folder-link:hover,
+.folder-link.open {
   background: #000;
   color: white;
+}
+
+.folder-link:hover svg,
+.folder-link.open svg {
+  stroke: white;
 }
 
 .folder-submenu {
   display: flex;
   flex-direction: column;
-  margin-top: 0.5rem;
-  margin-left: 1rem;
-  padding-left: 0.5rem;
-  border-left: 2px solid rgba(51, 51, 51, 0.2);
+  overflow: hidden;
+  animation: slideDown 0.25s ease-out;
 }
 
-.submenu-link {
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+  }
+  to {
+    opacity: 1;
+    max-height: 1000px;
+  }
+}
+
+.folder-submenu .nav-link {
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.folder-submenu .nav-link:last-child {
+  margin-bottom: 0;
+}
+
+/* .submenu-link {
   margin-bottom: 0.5rem !important;
   padding: 0.5rem 1rem !important;
-}
+} */
 
 /* Hide edit buttons and logout on mobile */
 @media (max-width: 768px) {

@@ -4,17 +4,10 @@
  */
 
 import { createRequire } from 'module';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import { DB_PATH } from './config.js';
 
 const require = createRequire(import.meta.url);
 const Database = require('better-sqlite3');
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// Database file path (in project root)
-const DB_PATH = path.join(__dirname, '..', '..', 'gallery.db');
 
 let db: any = null;
 
@@ -50,6 +43,17 @@ export function initializeDatabase(): any {
     )
   `);
   
+  // Create album_folders table
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS album_folders (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL UNIQUE,
+      published BOOLEAN NOT NULL DEFAULT 0,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+  
   // Create image_metadata table
   db.exec(`
     CREATE TABLE IF NOT EXISTS image_metadata (
@@ -70,8 +74,80 @@ export function initializeDatabase(): any {
     ON image_metadata(album, filename)
   `);
   
+  // Add sort_order column if it doesn't exist (migration)
+  try {
+    const tableInfo = db.pragma('table_info(image_metadata)');
+    const hasSortOrder = tableInfo.some((col: any) => col.name === 'sort_order');
+    if (!hasSortOrder) {
+      console.log('📝 Adding sort_order column to image_metadata...');
+      db.exec('ALTER TABLE image_metadata ADD COLUMN sort_order INTEGER');
+    }
+  } catch (err) {
+    console.log('⚠️  Could not check/add sort_order column:', err);
+  }
+  
+  // Add sort_order column to albums if it doesn't exist (migration)
+  try {
+    const tableInfo = db.pragma('table_info(albums)');
+    const hasSortOrder = tableInfo.some((col: any) => col.name === 'sort_order');
+    if (!hasSortOrder) {
+      console.log('📝 Adding sort_order column to albums...');
+      db.exec('ALTER TABLE albums ADD COLUMN sort_order INTEGER');
+    }
+  } catch (err) {
+    console.log('⚠️  Could not check/add sort_order column to albums:', err);
+  }
+  
+  // Add sort_order column to album_folders if it doesn't exist (migration)
+  try {
+    const tableInfo = db.pragma('table_info(album_folders)');
+    const hasSortOrder = tableInfo.some((col: any) => col.name === 'sort_order');
+    if (!hasSortOrder) {
+      console.log('📝 Adding sort_order column to album_folders...');
+      db.exec('ALTER TABLE album_folders ADD COLUMN sort_order INTEGER');
+    }
+  } catch (err) {
+    console.log('⚠️  Could not check/add sort_order column to album_folders:', err);
+  }
+  
+  // Add folder_id column to albums if it doesn't exist (migration)
+  try {
+    const tableInfo = db.pragma('table_info(albums)');
+    const hasFolderId = tableInfo.some((col: any) => col.name === 'folder_id');
+    if (!hasFolderId) {
+      console.log('📝 Adding folder_id column to albums...');
+      db.exec('ALTER TABLE albums ADD COLUMN folder_id INTEGER REFERENCES album_folders(id) ON DELETE SET NULL');
+    }
+  } catch (err) {
+    console.log('⚠️  Could not check/add folder_id column to albums:', err);
+  }
+  
+  // Create share_links table if it doesn't exist
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS share_links (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      album TEXT NOT NULL,
+      secret_key TEXT NOT NULL UNIQUE,
+      expires_at DATETIME,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (album) REFERENCES albums(name) ON DELETE CASCADE
+    )
+  `);
+  
+  // Create index for share links
+  db.exec(`
+    CREATE INDEX IF NOT EXISTS idx_share_links_secret 
+    ON share_links(secret_key)
+  `);
+  
+  db.exec(`
+    CREATE INDEX IF NOT EXISTS idx_share_links_album 
+    ON share_links(album)
+  `);
+  
   console.log('✓ SQLite database initialized at:', DB_PATH);
   console.log('✓ WAL mode enabled for better performance');
+  console.log('✓ All tables and migrations applied');
   
   return db;
 }

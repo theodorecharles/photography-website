@@ -7,7 +7,7 @@
  * - Current album title display
  */
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import "./Header.css";
 import { API_URL } from "../config";
@@ -17,6 +17,13 @@ import {
   trackDropdownOpen,
   trackDropdownClose
 } from "../utils/analytics";
+import {
+  EditIcon,
+  DropdownArrowIcon,
+  LockIcon,
+  ChevronRightIcon,
+  LogoutIcon
+} from "./icons/";
 
 export interface ExternalLink {
   title: string;
@@ -26,12 +33,13 @@ export interface ExternalLink {
 export interface AlbumFolder {
   id: number;
   name: string;
-  published: boolean;
+  published: boolean | number; // SQLite returns 0/1 for booleans
 }
 
 export interface AlbumWithFolder {
   name: string;
   folder_id?: number | null;
+  published?: boolean | number; // SQLite returns 0/1 for booleans
 }
 
 interface HeaderProps {
@@ -62,11 +70,12 @@ function Navigation({
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isExternalOpen, setIsExternalOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userRole, setUserRole] = useState<string | null>(null);
   const [openFolderId, setOpenFolderId] = useState<number | null>(null);
   const location = useLocation();
   const navigate = useNavigate();
   
-  // Check if user is authenticated
+  // Check if user is authenticated and get their role
   useEffect(() => {
     const checkAuth = async () => {
       try {
@@ -76,11 +85,14 @@ function Navigation({
         if (res.ok) {
           const data = await res.json();
           setIsAuthenticated(data.authenticated === true);
+          setUserRole(data.user?.role || null);
         } else {
           setIsAuthenticated(false);
+          setUserRole(null);
         }
       } catch {
         setIsAuthenticated(false);
+        setUserRole(null);
       }
     };
     checkAuth();
@@ -178,6 +190,43 @@ function Navigation({
     }
   };
 
+  // Calculate if there are any albums/folders to show
+  const hasAlbumsToShow = useMemo(() => {
+    if (folders && folders.length > 0) {
+      // Check if any folder has albums (after filtering for published if not authenticated)
+      const hasFolderAlbums = folders.some(folder => {
+        const folderAlbums = albums.filter(album => {
+          const albumObj = typeof album === 'string' ? { name: album, folder_id: null } : album;
+          if (albumObj.folder_id !== folder.id) return false;
+          if (!isAuthenticated) {
+            const isPublished = typeof album === 'string' ? true : (album.published === true || album.published === 1);
+            return isPublished;
+          }
+          return true;
+        });
+        return folderAlbums.length > 0;
+      });
+      
+      // Also check if there are uncategorized albums
+      const hasUncategorizedAlbums = albums.some(album => {
+        const albumObj = typeof album === 'string' ? { name: album, folder_id: null } : album;
+        if (albumObj.folder_id) return false; // Skip albums in folders
+        if (!isAuthenticated) {
+          const isPublished = typeof album === 'string' ? true : (album.published === true || album.published === 1);
+          return isPublished;
+        }
+        return true;
+      });
+      
+      return hasFolderAlbums || hasUncategorizedAlbums;
+    }
+    // No folders, check if there are any albums
+    return albums.length > 0;
+  }, [albums, folders, isAuthenticated]);
+
+  // Calculate if there are any links to show
+  const hasLinksToShow = externalLinks && externalLinks.length > 0;
+
   return (
     <>
       {/* Album title display in the center of the navigation */}
@@ -186,8 +235,8 @@ function Navigation({
           <h1 className="album-title">
             {currentAlbum}
           </h1>
-          {/* Edit Album button - only shown when authenticated and on an album page */}
-          {isAuthenticated && currentAlbum !== 'homepage' && (
+          {/* Edit Album button - only shown for admins and managers */}
+          {isAuthenticated && (userRole === 'admin' || userRole === 'manager') && currentAlbum !== 'homepage' && (
             <button
               onClick={() => {
                 navigate(`/admin/albums?album=${encodeURIComponent(currentAlbum)}`);
@@ -195,24 +244,14 @@ function Navigation({
               className="edit-album-btn"
               title="Edit this album"
             >
-              <svg
-                viewBox="0 0 24 24"
-                width="16"
-                height="16"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
-              </svg>
+              <EditIcon width="16" height="16" />
             </button>
           )}
         </div>
       )}
       <nav className="album-nav">
         {/* Left side navigation - Albums dropdown */}
+        {hasAlbumsToShow && (
         <div className="nav-left">
           <div
             className="dropdown-container"
@@ -220,84 +259,66 @@ function Navigation({
           >
             <button className="nav-link" onClick={handleAlbumsClick}>
               Albums
-              <svg
+              <DropdownArrowIcon 
                 className={`dropdown-arrow ${isDropdownOpen ? "open" : ""}`}
-                viewBox="0 0 24 24"
                 width="16"
                 height="16"
-              >
-                <path
-                  d="M6 9L12 15L18 9"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
+              />
             </button>
             <div className={`dropdown-menu ${isDropdownOpen ? "open" : ""}`}>
               {folders && folders.length > 0 ? (
                 <>
-                  {/* Albums without folders */}
-                  {albums.filter(album => {
-                    const albumObj = typeof album === 'string' ? { name: album, folder_id: null } : album;
-                    return !albumObj.folder_id;
-                  }).map(album => {
-                    const albumName = typeof album === 'string' ? album : album.name;
-                    return (
-                      <Link
-                        key={albumName}
-                        to={`/album/${albumName}`}
-                        className="nav-link"
-                        onClick={() => {
-                          trackDropdownClose('albums', 'navigation');
-                          setIsDropdownOpen(false);
-                          trackAlbumNavigation(albumName, 'header');
-                        }}
-                      >
-                        {albumName}
-                      </Link>
-                    );
-                  })}
-                  
                   {/* Folders with nested albums */}
                   {folders.map(folder => {
                     const folderAlbums = albums.filter(album => {
                       const albumObj = typeof album === 'string' ? { name: album, folder_id: null } : album;
-                      return albumObj.folder_id === folder.id;
+                      // Filter by folder ID
+                      if (albumObj.folder_id !== folder.id) return false;
+                      // For unauthenticated users, only show published albums
+                      if (!isAuthenticated) {
+                        const isPublished = typeof album === 'string' ? true : (album.published === true || album.published === 1);
+                        return isPublished;
+                      }
+                      return true;
                     });
                     
-                    // Show all folders, even if empty
+                    // Don't show empty folders in the dropdown
+                    if (folderAlbums.length === 0) {
+                      return null;
+                    }
+                    
+                    const isFolderPublished = folder.published === true || folder.published === 1;
+                    
+                    // Show only non-empty folders
                     return (
                       <div key={folder.id} className="folder-item">
                         <button
-                          className="nav-link folder-link"
+                          className={`nav-link folder-link ${openFolderId === folder.id ? 'open' : ''}`}
                           onClick={() => setOpenFolderId(openFolderId === folder.id ? null : folder.id)}
                         >
-                          📁 {folder.name}
-                          <svg
-                            className={`dropdown-arrow ${openFolderId === folder.id ? "open" : ""}`}
-                            viewBox="0 0 24 24"
-                            width="12"
-                            height="12"
-                            style={{ marginLeft: 'auto' }}
-                          >
-                            <path
-                              d="M6 9L12 15L18 9"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
+                          {!isFolderPublished && isAuthenticated ? (
+                            // Lock icon for unpublished folders
+                            <LockIcon 
+                              width="14"
+                              height="14"
+                              style={{ opacity: 0.6 }}
                             />
-                          </svg>
+                          ) : (
+                            // Chevron for published folders
+                            <ChevronRightIcon 
+                              className={`folder-chevron ${openFolderId === folder.id ? "open" : ""}`}
+                              width="14"
+                              height="14"
+                            />
+                          )}
+                          <span>{folder.name}</span>
                         </button>
                         {openFolderId === folder.id && (
                           <div className="folder-submenu">
                             {folderAlbums.length > 0 ? (
                               folderAlbums.map(album => {
                                 const albumName = typeof album === 'string' ? album : album.name;
+                                const isPublished = typeof album === 'string' ? true : (album.published === true || album.published === 1);
                                 return (
                                   <Link
                                     key={albumName}
@@ -310,7 +331,14 @@ function Navigation({
                                       trackAlbumNavigation(albumName, 'header');
                                     }}
                                   >
-                                    {albumName}
+                                    {!isPublished && (
+                                      <LockIcon 
+                                        width="14"
+                                        height="14"
+                                        style={{ marginRight: '6px', opacity: 0.6, flexShrink: 0 }}
+                                      />
+                                    )}
+                                    <span>{albumName}</span>
                                   </Link>
                                 );
                               })
@@ -324,11 +352,42 @@ function Navigation({
                       </div>
                     );
                   })}
+                  
+                  {/* Uncategorized albums (after folders) */}
+                  {albums.filter(album => {
+                    const albumObj = typeof album === 'string' ? { name: album, folder_id: null } : album;
+                    return !albumObj.folder_id;
+                  }).map(album => {
+                    const albumName = typeof album === 'string' ? album : album.name;
+                    const isPublished = typeof album === 'string' ? true : (album.published === true || album.published === 1);
+                    return (
+                      <Link
+                        key={albumName}
+                        to={`/album/${albumName}`}
+                        className="nav-link"
+                        onClick={() => {
+                          trackDropdownClose('albums', 'navigation');
+                          setIsDropdownOpen(false);
+                          trackAlbumNavigation(albumName, 'header');
+                        }}
+                      >
+                        {!isPublished && (
+                          <LockIcon 
+                            width="14"
+                            height="14"
+                            style={{ marginRight: '6px', opacity: 0.6, flexShrink: 0 }}
+                          />
+                        )}
+                        <span>{albumName}</span>
+                      </Link>
+                    );
+                  })}
                 </>
               ) : (
                 // No folders - show flat list
                 albums.map(album => {
                   const albumName = typeof album === 'string' ? album : album.name;
+                  const isPublished = typeof album === 'string' ? true : (album.published === true || album.published === 1);
                   return (
                     <Link
                       key={albumName}
@@ -340,7 +399,14 @@ function Navigation({
                         trackAlbumNavigation(albumName, 'header');
                       }}
                     >
-                      {albumName}
+                      {!isPublished && (
+                        <LockIcon 
+                          width="14"
+                          height="14"
+                          style={{ marginRight: '6px', opacity: 0.6, flexShrink: 0 }}
+                        />
+                      )}
+                      <span>{albumName}</span>
                     </Link>
                   );
                 })
@@ -348,8 +414,10 @@ function Navigation({
             </div>
           </div>
         </div>
+        )}
 
         {/* Right side navigation - External links dropdown */}
+        {hasLinksToShow && (
         <div className="nav-right">
           <div
             className="dropdown-container"
@@ -357,21 +425,11 @@ function Navigation({
           >
             <button className="nav-link" onClick={handleLinksClick}>
               Links
-              <svg
+              <DropdownArrowIcon 
                 className={`dropdown-arrow ${isExternalOpen ? "open" : ""}`}
-                viewBox="0 0 24 24"
                 width="16"
                 height="16"
-              >
-                <path
-                  d="M6 9L12 15L18 9"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
+              />
             </button>
             <div className={`dropdown-menu ${isExternalOpen ? "open" : ""}`}>
               {externalLinks.map((link) => (
@@ -390,28 +448,18 @@ function Navigation({
             </div>
           </div>
           
-          {/* Edit Links button - only shown when authenticated */}
-          {isAuthenticated && (
+          {/* Edit Links button - only shown for admins (links are in settings) */}
+          {isAuthenticated && userRole === 'admin' && (
             <Link
               to="/admin/settings?section=links"
               className="edit-album-btn"
               title="Edit links"
             >
-              <svg
-                viewBox="0 0 24 24"
-                width="16"
-                height="16"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
-              </svg>
+              <EditIcon width="16" height="16" />
             </Link>
           )}
         </div>
+        )}
       </nav>
     </>
   );
@@ -459,13 +507,16 @@ export default function Header({
   // Handle logout
   const handleLogout = async () => {
     try {
+      // Immediately update auth state (synchronous)
+      setIsAuthenticated(false);
+      window.dispatchEvent(new Event('user-logged-out'));
+      // Make logout API call
       await fetch(`${API_URL}/api/auth/logout`, {
         method: 'POST',
         credentials: 'include',
       });
-      setIsAuthenticated(false);
+      // Navigate home
       navigate('/');
-      window.location.reload(); // Reload to clear any cached state
     } catch (err) {
       console.error('Logout failed:', err);
     }
@@ -481,20 +532,7 @@ export default function Header({
             className="logout-btn"
             title="Logout"
           >
-            <svg
-              viewBox="0 0 24 24"
-              width="20"
-              height="20"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-              <polyline points="16 17 21 12 16 7" />
-              <line x1="21" y1="12" x2="9" y2="12" />
-            </svg>
+            <LogoutIcon width="20" height="20" />
           </button>
         )}
         <Link to="/">
