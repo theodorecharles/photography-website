@@ -327,7 +327,7 @@ export const UserCard: React.FC<UserCardProps> = ({
                 borderRadius: "8px",
                 boxShadow: "0 4px 12px rgba(0, 0, 0, 0.3)",
                 zIndex: 100001,
-                minWidth: "120px",
+                minWidth: "140px",
                 overflow: "hidden",
               }}
             >
