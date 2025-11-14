@@ -119,7 +119,14 @@ const SecuritySetupPrompt: React.FC<SecuritySetupPromptProps> = ({
             ×
           </button>
         </div>
-        <div className="share-modal-content">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+          }}
+          className="share-modal-content"
+        >
           {/* Error Display */}
           {error && (
             <div
@@ -371,7 +378,7 @@ const SecuritySetupPrompt: React.FC<SecuritySetupPromptProps> = ({
               </div>
             </>
           )}
-        </div>
+        </form>
       </div>
     </div>
   );
