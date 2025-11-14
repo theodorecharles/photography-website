@@ -432,6 +432,7 @@ Photography portfolio website with React 19, TypeScript, Express 5, and SQLite.
 **Pattern**: Review existing components before creating new UI to maintain consistency.
 
 **Key Style Elements**:
+
 - Use existing CSS classes from `AdminPortal.css`, `ConfigManager.css`, `BrandingManager.css`
 - Match color scheme: dark backgrounds, white/gray text, accent colors
 - Follow spacing patterns: consistent padding, margins, gaps
