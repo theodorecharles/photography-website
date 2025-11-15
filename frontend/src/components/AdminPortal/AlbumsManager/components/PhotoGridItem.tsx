@@ -95,11 +95,11 @@ const PhotoGridItem: React.FC<PhotoGridItemProps> = ({
       setIsFlipping(true);
       setShowThumbnail(false); // Hide thumbnail during first half of flip
       
-      // Show thumbnail at 50% of animation (300ms) - the "reveal"
-      const revealTimer = setTimeout(() => setShowThumbnail(true), 300);
+      // Show thumbnail at 50% of animation (150ms) - the "reveal"
+      const revealTimer = setTimeout(() => setShowThumbnail(true), 150);
       
       // End flip animation
-      const endTimer = setTimeout(() => setIsFlipping(false), 600);
+      const endTimer = setTimeout(() => setIsFlipping(false), 300);
       
       return () => {
         clearTimeout(revealTimer);

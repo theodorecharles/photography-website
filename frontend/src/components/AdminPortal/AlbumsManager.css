@@ -2070,7 +2070,7 @@
 
 /* Flip animation when photo completes upload */
 .admin-photo-item.flip-complete {
-  animation: flipComplete 0.6s ease-in-out;
+  animation: flipComplete 0.3s ease-in-out;
 }
 
 @keyframes flipComplete {
