@@ -48,13 +48,9 @@ function Footer({ albums: _albums = [], externalLinks: _externalLinks = [], curr
       <div className="footer-content">
         <div className="footer-bottom">
           <span>
-            &copy; {currentYear} Ted Charles.
-            <span className="footer-separator">•</span>
-            <Link to="/license" className="footer-link">View License</Link>
+            &copy; {currentYear} Ted Charles. <span className="footer-separator">•</span> <Link to="/license" className="footer-link">View License</Link>
           </span>
           <div className="footer-links">
-            <Link to="/admin" className="footer-link">Login</Link>
-            <span className="footer-separator">•</span>
             <span className="footer-powered-by">
               Powered by{' '}
               <a 
