@@ -50,6 +50,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const res = await fetch(`${API_URL}/api/auth/status`, {
         credentials: 'include',
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache',
+        },
       });
       
       if (res.ok) {

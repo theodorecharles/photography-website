@@ -297,12 +297,27 @@ router.get(
 
 // Route: Check authentication status
 router.get('/status', (req: Request, res: Response) => {
+  // Prevent caching of auth status - must always check fresh
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  
   // Check Passport authentication (Google OAuth)
   if (req.isAuthenticated && req.isAuthenticated()) {
     const passportUser = req.user as any;
     
     // Look up full user details from database
     const dbUser = getUserByEmail(passportUser.email);
+    if (!dbUser) {
+      // User was deleted - destroy session and return not authenticated
+      console.log('[Auth Status] User no longer exists (Google OAuth):', passportUser.email);
+      req.logout((err) => {
+        if (err) console.error('Logout error:', err);
+      });
+      req.session.destroy(() => {});
+      return res.json({ authenticated: false });
+    }
+    
     if (dbUser) {
       console.log('[Auth Status] Google user passkeys:', {
         email: dbUser.email,
@@ -333,12 +348,20 @@ router.get('/status', (req: Request, res: Response) => {
   
   // Check credential-based session
   if ((req.session as any)?.userId) {
+    const userId = (req.session as any).userId;
     const sessionUser = (req.session as any).user;
+    
+    // Verify user still exists in database
+    const dbUser = getUserById(userId);
+    if (!dbUser) {
+      // User was deleted - destroy session and return not authenticated
+      console.log('[Auth Status] User no longer exists (credentials):', userId);
+      req.session.destroy(() => {});
+      return res.json({ authenticated: false });
+    }
     
     // If we have user in session, return it with all fields
     if (sessionUser) {
-      // Look up user to get current passkey count (in case it changed since login)
-      const dbUser = getUserById(sessionUser.id);
       const passkeyCount = dbUser?.passkeys ? dbUser.passkeys.length : 0;
       
       console.log('[Auth Status] Session user passkey count:', {
@@ -362,8 +385,7 @@ router.get('/status', (req: Request, res: Response) => {
       });
     }
     
-    // Fallback: look up user by ID
-    const dbUser = getUserById((req.session as any).userId);
+    // Fallback: use dbUser we already fetched
     if (dbUser) {
       console.log('[Auth Status] Credential user passkeys:', {
         email: dbUser.email,
