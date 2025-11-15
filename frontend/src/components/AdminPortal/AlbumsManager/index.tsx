@@ -157,6 +157,9 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
         // Add to beginning of albumPhotos (they were rendered first in the grid)
         photoManagement.setAlbumPhotos((prev: Photo[]) => [...newPhotos, ...prev]);
         
+        // ALSO update originalPhotoOrder so Cancel doesn't make photos disappear
+        photoManagement.setOriginalPhotoOrder((prev: Photo[]) => [...newPhotos, ...prev]);
+        
         // Clear uploadingImages
         setUploadingImages([]);
       }
