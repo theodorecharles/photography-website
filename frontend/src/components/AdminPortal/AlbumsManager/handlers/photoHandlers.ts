@@ -204,12 +204,13 @@ export const createPhotoHandlers = (props: PhotoHandlersProps) => {
       scale = Math.max(0.4, 1 - ((albumSize - 30) / 140));
     }
     
-    // Apply scale to grid
+    // Apply scale to grid and each photo element
     if (photoGrid) {
       photoGrid.style.setProperty('--shuffle-scale', scale.toString());
     }
     
     photoElements.forEach((el) => {
+      (el as HTMLElement).style.setProperty('--shuffle-scale', scale.toString());
       el.classList.add('shuffling-active');
     });
     
@@ -293,10 +294,11 @@ export const createPhotoHandlers = (props: PhotoHandlersProps) => {
       photoGrid.style.removeProperty('--shuffle-scale');
     }
     
-    // Remove zoom class from photos
+    // Remove zoom class from photos and reset their scale
     setTimeout(() => {
       const photoElements = document.querySelectorAll('.admin-photo-item');
       photoElements.forEach((el) => {
+        (el as HTMLElement).style.removeProperty('--shuffle-scale');
         el.classList.remove('shuffling-active');
       });
     }, 200);
