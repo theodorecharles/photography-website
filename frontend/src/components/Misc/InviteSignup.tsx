@@ -22,6 +22,31 @@ const InviteSignup: React.FC = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   
+  // Check if user is already logged in - if so, redirect to admin
+  useEffect(() => {
+    const checkAuthStatus = async () => {
+      try {
+        const res = await fetch(`${API_URL}/api/auth/status`, {
+          credentials: 'include',
+        });
+        
+        if (res.ok) {
+          const data = await res.json();
+          if (data.authenticated) {
+            // User is already logged in, redirect to admin panel
+            navigate('/admin');
+            return;
+          }
+        }
+      } catch (err) {
+        // If auth check fails, continue with invite flow
+        console.error('Auth check failed:', err);
+      }
+    };
+
+    checkAuthStatus();
+  }, [navigate]);
+  
   // Validation
   useEffect(() => {
     if (!token) {
