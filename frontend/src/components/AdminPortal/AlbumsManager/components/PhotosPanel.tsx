@@ -171,6 +171,7 @@ const PhotosPanel: React.FC<PhotosPanelProps> = ({
         />
 
         <PhotosPanelGrid
+          key={viewMode}
           albumPhotos={albumPhotos}
           uploadingImages={uploadingImages}
           loadingPhotos={loadingPhotos}

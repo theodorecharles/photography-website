@@ -126,16 +126,10 @@ export const createOptimizationStreamHandlers = (props: OptimizationStreamHandle
     };
 
     eventSource.onerror = (err) => {
-      console.error('[Optimization Stream] Error:', err);
+      console.error('[Optimization Stream] Connection error');
       eventSource?.close();
       eventSource = null;
-
-      // Attempt reconnect after 5 seconds
-      setTimeout(() => {
-        if (selectedAlbum) {
-          connectOptimizationStream();
-        }
-      }, 5000);
+      // Don't auto-reconnect - the parent component will reconnect if needed
     };
   };
 

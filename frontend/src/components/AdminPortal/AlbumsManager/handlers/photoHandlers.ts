@@ -185,11 +185,12 @@ export const createPhotoHandlers = (props: PhotoHandlersProps) => {
       // Get the shuffle button to update its animation speed
       const shuffleButton = document.querySelector('.btn-shuffle-order') as HTMLElement;
       
-      // Get the photo grid container
-      const photoGrid = document.querySelector('.photos-grid') as HTMLElement;
+      // Get the photo container (either grid or list)
+      const photoContainer = document.querySelector('.photos-grid, .photos-list') as HTMLElement;
+      const isGridView = photoContainer?.classList.contains('photos-grid');
       
       // Add zoom class to all photos during shuffle
-      const photoElements = document.querySelectorAll('.admin-photo-item');
+      const photoElements = document.querySelectorAll('.admin-photo-item, .list-item');
       
       photoElements.forEach((el) => {
         el.classList.add('shuffling-active');
@@ -217,12 +218,12 @@ export const createPhotoHandlers = (props: PhotoHandlersProps) => {
         clearInterval(shuffleIntervalRef.current);
       }
       
-      // On first call, apply grid scaling (continuous shuffle is starting)
-      if (!shuffleIntervalRef.current && photoGrid) {
+      // On first call, apply grid scaling (only for grid view, not list view)
+      if (!shuffleIntervalRef.current && photoContainer && isGridView) {
         // Get current number of columns in the grid
-        const gridComputedStyle = window.getComputedStyle(photoGrid);
-        const gridWidth = photoGrid.clientWidth;
-        const firstPhoto = photoGrid.querySelector('.admin-photo-item') as HTMLElement;
+        const gridComputedStyle = window.getComputedStyle(photoContainer);
+        const gridWidth = photoContainer.clientWidth;
+        const firstPhoto = photoContainer.querySelector('.admin-photo-item') as HTMLElement;
         
         let currentColumns = 5; // Fallback
         if (firstPhoto) {
@@ -246,8 +247,8 @@ export const createPhotoHandlers = (props: PhotoHandlersProps) => {
         
         // Only apply shuffling-grid if we're actually adding columns
         if (columnCount > currentColumns) {
-          photoGrid.classList.add('shuffling-grid');
-          photoGrid.style.setProperty('--shuffle-columns', columnCount.toString());
+          photoContainer.classList.add('shuffling-grid');
+          photoContainer.style.setProperty('--shuffle-columns', columnCount.toString());
         }
       }
       
@@ -310,16 +311,16 @@ export const createPhotoHandlers = (props: PhotoHandlersProps) => {
       shuffleButton.style.removeProperty('--animation-speed');
     }
     
-    // Reset grid layout
-    const photoGrid = document.querySelector('.photos-grid') as HTMLElement;
-    if (photoGrid) {
-      photoGrid.classList.remove('shuffling-grid');
-      photoGrid.style.removeProperty('--shuffle-columns');
+    // Reset grid/list layout
+    const photoContainer = document.querySelector('.photos-grid, .photos-list') as HTMLElement;
+    if (photoContainer) {
+      photoContainer.classList.remove('shuffling-grid');
+      photoContainer.style.removeProperty('--shuffle-columns');
     }
     
-    // Remove shuffling class from photos
+    // Remove shuffling class from photos (both grid and list items)
     setTimeout(() => {
-      const photoElements = document.querySelectorAll('.admin-photo-item');
+      const photoElements = document.querySelectorAll('.admin-photo-item, .list-item');
       photoElements.forEach((el) => {
         el.classList.remove('shuffling-active');
       });

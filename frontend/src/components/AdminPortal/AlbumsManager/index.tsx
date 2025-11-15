@@ -172,15 +172,22 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     selectedAlbum
   });
 
+  // Only connect to optimization stream when there are active uploads
   useEffect(() => {
-    if (selectedAlbum) {
+    const hasActiveUploads = uploadingImages.some(img => 
+      img.state === 'optimizing' || img.state === 'generating-title'
+    );
+
+    if (selectedAlbum && hasActiveUploads) {
       optimizationStreamHandlers.connectOptimizationStream();
+    } else {
+      optimizationStreamHandlers.disconnectOptimizationStream();
     }
 
     return () => {
       optimizationStreamHandlers.disconnectOptimizationStream();
     };
-  }, [selectedAlbum]);
+  }, [selectedAlbum, uploadingImages]);
   
   // Drag-and-drop state (keeping this in component for now)
   const [isDragging] = useState(false);
