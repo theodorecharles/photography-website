@@ -201,7 +201,12 @@ const PhotosPanelGrid: React.FC<PhotosPanelGridProps> = ({
         </div>
         <DragOverlay>
           {activeId ? (
-            <div className="admin-photo-item dragging" style={{ cursor: 'grabbing' }}>
+            <div className="admin-photo-item dragging" style={{ 
+              cursor: 'grabbing',
+              width: '200px',
+              height: '200px',
+              paddingBottom: 0,
+            }}>
               <img
                 src={`${API_URL}${
                   [...uploadingImages.map(img => img.photo), ...albumPhotos]
