@@ -163,6 +163,7 @@
   align-items: center;
   padding: 1rem 1.5rem;
   gap: 1rem;
+  background-color: #141414;
 }
 
 .photos-controls-left,
