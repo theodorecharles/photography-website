@@ -22,7 +22,7 @@ frontend/public/albums-data/
 .env.production.local
 
 # Config (track only config.example.json, users should copy and customize)
-config/config.json
+data/
 config/config.local.json
 
 # Database (persist gallery data across updates)
