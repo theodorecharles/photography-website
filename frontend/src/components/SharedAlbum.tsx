@@ -102,7 +102,10 @@ export default function SharedAlbum() {
         // Handle external links
         if (externalLinksResponse.ok) {
           const linksData = await externalLinksResponse.json();
+          console.log('SharedAlbum: External links loaded:', linksData);
           setExternalLinks(linksData);
+        } else {
+          console.warn('SharedAlbum: External links response not ok:', externalLinksResponse.status);
         }
         
         // Handle share link validation
@@ -233,6 +236,12 @@ export default function SharedAlbum() {
   if (error || !albumName) {
     return <NotFound />;
   }
+
+  console.log('SharedAlbum rendering Header with:', { 
+    albumsCount: albums.length, 
+    externalLinksCount: externalLinks.length,
+    externalLinks 
+  });
 
   return (
     <>
