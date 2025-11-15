@@ -392,28 +392,42 @@ router.get('/status', (req: Request, res: Response) => {
     });
   }
   
-  // Check if Google OAuth is configured OR if there are any Google users
-  let googleOAuthEnabled = false;
+  // Check which auth methods have users in the database
+  let availableAuthMethods = {
+    google: false,
+    passkey: false,
+    password: false,
+  };
+  
   try {
-    // Check config
-    const clientId = config?.environment?.auth?.google?.clientId;
-    const configHasGoogleOAuth = !!clientId && clientId.trim() !== '' && clientId !== 'your-google-client-id';
-    
-    // Check if there are any users with Google auth method
     const allUsers = getAllUsers();
+    
+    // Check if there are any users with each auth method
     const hasGoogleUsers = allUsers.some(user => 
       user.auth_methods && user.auth_methods.includes('google')
     );
     
-    // Enable Google OAuth if either condition is met
-    googleOAuthEnabled = configHasGoogleOAuth || hasGoogleUsers;
+    const hasPasskeyUsers = allUsers.some(user => 
+      user.passkeys && user.passkeys.length > 0
+    );
+    
+    const hasPasswordUsers = allUsers.some(user => 
+      user.auth_methods && user.auth_methods.includes('credentials')
+    );
+    
+    availableAuthMethods = {
+      google: hasGoogleUsers,
+      passkey: hasPasskeyUsers,
+      password: hasPasswordUsers,
+    };
   } catch (err) {
-    console.error('Failed to check Google OAuth config:', err);
+    console.error('Failed to check available auth methods:', err);
   }
   
   res.json({
     authenticated: false,
-    googleOAuthEnabled,
+    googleOAuthEnabled: availableAuthMethods.google, // Keep for backwards compatibility
+    availableAuthMethods,
   });
 });
 
