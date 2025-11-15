@@ -148,7 +148,6 @@ const PhotoGridItem: React.FC<PhotoGridItemProps> = ({
     <div
       ref={setNodeRef}
       style={style}
-      data-photo-id={itemId}
       className={`admin-photo-item ${isDragging ? 'dragging' : ''} ${showOverlay ? 'show-overlay' : ''} ${isUploading ? 'uploading' : ''} ${isDeleting ? 'crt-delete' : ''}`}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
