@@ -105,7 +105,13 @@ const PhotosPanelHeader: React.FC<PhotosPanelHeaderProps> = ({
 
           {canEdit && (
             <>
-              <label className={`photos-btn photos-btn-primary ${hasActiveUploads ? 'disabled' : ''}`}>
+              <label 
+                className={`photos-btn photos-btn-primary ${hasActiveUploads ? 'disabled' : ''}`}
+                style={{ 
+                  cursor: hasActiveUploads ? 'not-allowed' : 'pointer',
+                  opacity: hasActiveUploads ? 0.6 : 1
+                }}
+              >
                 <UploadIcon width="16" height="16" />
                 <span>{hasActiveUploads ? 'Uploading...' : 'Upload'}</span>
                 <input
