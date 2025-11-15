@@ -6,7 +6,7 @@
  * - Loading state
  */
 
-import React, { useRef, useLayoutEffect } from 'react';
+import React from 'react';
 import { DndContext, DragOverlay, closestCenter, PointerSensor, KeyboardSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { SortableContext, sortableKeyboardCoordinates, rectSortingStrategy } from '@dnd-kit/sortable';
 import PhotoGridItem from './PhotoGridItem';
@@ -53,51 +53,6 @@ const PhotosPanelGrid: React.FC<PhotosPanelGridProps> = ({
   // Detect if device supports touch
   const isTouchDevice = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
   
-  // FLIP animation for smooth reflow on delete
-  const gridRef = useRef<HTMLDivElement>(null);
-  const photosRef = useRef<Map<string, DOMRect>>(new Map());
-  
-  // Always capture positions BEFORE render (so we have them ready for animation)
-  useLayoutEffect(() => {
-    if (!gridRef.current) return;
-    
-    // Capture current positions
-    const gridItems = gridRef.current.querySelectorAll('.admin-photo-item:not(.crt-delete)');
-    const newPositions = new Map<string, DOMRect>();
-    
-    gridItems.forEach((element) => {
-      const photoId = element.getAttribute('data-photo-id');
-      if (photoId) {
-        const rect = element.getBoundingClientRect();
-        newPositions.set(photoId, rect);
-        
-        // If we have an old position for this photo, check if it moved
-        const oldRect = photosRef.current.get(photoId);
-        if (oldRect && (oldRect.left !== rect.left || oldRect.top !== rect.top)) {
-          // Photo moved! Apply FLIP animation
-          const deltaX = oldRect.left - rect.left;
-          const deltaY = oldRect.top - rect.top;
-          
-          // Invert: instantly move back to old position
-          (element as HTMLElement).style.transform = `translate(${deltaX}px, ${deltaY}px)`;
-          (element as HTMLElement).style.transition = 'none';
-          
-          // Force reflow
-          element.getBoundingClientRect();
-          
-          // Play: animate to new position
-          requestAnimationFrame(() => {
-            (element as HTMLElement).style.transform = '';
-            (element as HTMLElement).style.transition = 'transform 200ms ease';
-          });
-        }
-      }
-    });
-    
-    // Update stored positions for next time
-    photosRef.current = newPositions;
-  });
-  
   // Configure dnd-kit sensors for photos
   // Desktop: minimal delay for instant drag, mobile: longer delay to differentiate tap vs drag
   const photoSensors = useSensors(
@@ -140,7 +95,7 @@ const PhotosPanelGrid: React.FC<PhotosPanelGridProps> = ({
         onDragStart={(event) => onPhotoDragStart(event, setActiveId)}
         onDragEnd={(event) => onPhotoDragEnd(event, setActiveId)}
       >
-        <div ref={gridRef} className={viewMode === 'grid' ? 'photos-grid' : 'photos-list'}>
+        <div className={viewMode === 'grid' ? 'photos-grid' : 'photos-list'}>
           <SortableContext items={allItemIds} strategy={rectSortingStrategy}>
             {/* Uploading images (includes those transitioning to complete) */}
             {uploadingImages.map((img, index) => (
