@@ -9,7 +9,8 @@ import PhotoGrid from './PhotoGrid';
 import { API_URL } from '../config';
 import ExpiredLink from './Misc/ExpiredLink';
 import NotFound from './Misc/NotFound';
-import Header from './Header';
+import Header, { ExternalLink } from './Header';
+import Footer from './Footer';
 import '../App.css'; // Import for main-content-title styles
 
 interface Photo {
@@ -48,6 +49,8 @@ export default function SharedAlbum() {
   const [siteName, setSiteName] = useState<string>('');
   const [avatarPath, setAvatarPath] = useState<string>('');
   const [avatarCacheBust, setAvatarCacheBust] = useState<number>(Date.now());
+  const [albums, setAlbums] = useState<string[]>([]);
+  const [externalLinks, setExternalLinks] = useState<ExternalLink[]>([]);
 
   useEffect(() => {
     const validateShareLink = async () => {
@@ -58,8 +61,15 @@ export default function SharedAlbum() {
       }
 
       try {
-        // Load branding
-        const brandingResponse = await fetch(`${API_URL}/api/branding`);
+        // Load data in parallel
+        const [brandingResponse, albumsResponse, externalLinksResponse, shareResponse] = await Promise.all([
+          fetch(`${API_URL}/api/branding`),
+          fetch(`${API_URL}/api/albums`),
+          fetch(`${API_URL}/api/external-pages`),
+          fetch(`${API_URL}/api/shared/${secretKey}`),
+        ]);
+
+        // Handle branding
         if (brandingResponse.ok) {
           const branding = await brandingResponse.json();
           setSiteName(branding.siteName);
@@ -67,23 +77,49 @@ export default function SharedAlbum() {
           setAvatarCacheBust(branding.avatarCacheBust);
         }
 
-        // Load share link
-        const response = await fetch(`${API_URL}/api/shared/${secretKey}`);
+        // Handle albums
+        if (albumsResponse.ok) {
+          const albumsData = await albumsResponse.json();
+          // Handle new API format with folders or old format (array)
+          if (albumsData && typeof albumsData === 'object' && 'albums' in albumsData) {
+            // New format - extract album names from published albums only
+            const publishedAlbums = (albumsData.albums || [])
+              .filter((album: any) => album.name !== 'homepage' && album.published)
+              .map((album: any) => album.name);
+            setAlbums(publishedAlbums);
+          } else if (Array.isArray(albumsData)) {
+            // Old format
+            const albumNames = albumsData
+              .filter((album: any) => {
+                if (typeof album === 'string') return album !== 'homepage';
+                return album.name !== 'homepage' && album.published;
+              })
+              .map((album: any) => typeof album === 'string' ? album : album.name);
+            setAlbums(albumNames);
+          }
+        }
+
+        // Handle external links
+        if (externalLinksResponse.ok) {
+          const linksData = await externalLinksResponse.json();
+          setExternalLinks(linksData);
+        }
         
-        if (response.status === 410) {
+        // Handle share link validation
+        if (shareResponse.status === 410) {
           // Link expired
           setExpired(true);
           setLoading(false);
           return;
         }
         
-        if (!response.ok) {
+        if (!shareResponse.ok) {
           setError('Share link not found');
           setLoading(false);
           return;
         }
 
-        const data = await response.json();
+        const data = await shareResponse.json();
         setAlbumName(data.album);
         setPhotos(data.photos || []);
         setExpiresAt(data.expiresAt);
@@ -201,8 +237,8 @@ export default function SharedAlbum() {
   return (
     <>
       <Header 
-        albums={[]} 
-        externalLinks={[]} 
+        albums={albums} 
+        externalLinks={externalLinks} 
         currentAlbum={albumName}
         siteName={siteName}
         avatarPath={avatarPath}
@@ -445,6 +481,8 @@ export default function SharedAlbum() {
           }
         }
       `}</style>
+      
+      <Footer />
     </>
   );
 }
