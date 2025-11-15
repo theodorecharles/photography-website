@@ -17,7 +17,11 @@ const Login: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [googleOAuthEnabled, setGoogleOAuthEnabled] = useState(false);
+  const [availableAuthMethods, setAvailableAuthMethods] = useState({
+    google: false,
+    passkey: false,
+    password: false,
+  });
 
   // Check for success messages in URL params
   useEffect(() => {
@@ -31,22 +35,24 @@ const Login: React.FC = () => {
     }
   }, [location.search]);
 
-  // Check if Google OAuth is configured
+  // Check which auth methods are available
   useEffect(() => {
-    const checkGoogleOAuth = async () => {
+    const checkAuthMethods = async () => {
       try {
         const res = await fetch(`${API_URL}/api/auth/status`, {
           credentials: 'include',
         });
         if (res.ok) {
           const data = await res.json();
-          setGoogleOAuthEnabled(data.googleOAuthEnabled || false);
+          if (data.availableAuthMethods) {
+            setAvailableAuthMethods(data.availableAuthMethods);
+          }
         }
       } catch (err) {
-        console.error('Failed to check Google OAuth status:', err);
+        console.error('Failed to check available auth methods:', err);
       }
     };
-    checkGoogleOAuth();
+    checkAuthMethods();
   }, []);
 
   const handleCredentialLogin = async (e: React.FormEvent) => {
@@ -141,80 +147,82 @@ const Login: React.FC = () => {
           </div>
         )}
 
-        {/* Credential Login Form */}
-        <form onSubmit={handleCredentialLogin}>
-          <div style={{ marginBottom: '1.5rem' }}>
-            <label className="branding-label">Email Address</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="your@email.com"
-              required
-              className="branding-input"
-              style={{ width: '100%' }}
-            />
-          </div>
-
-          <div style={{ marginBottom: '1rem' }}>
-            <label className="branding-label">Password</label>
-            <PasswordInput
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter your password"
-              required
-            />
-          </div>
-
-          <div style={{ textAlign: 'right', marginBottom: '1.5rem' }}>
-            <a
-              href="/reset-password"
-              style={{
-                fontSize: '0.875rem',
-                color: 'var(--primary-color)',
-                textDecoration: 'none',
-              }}
-            >
-              Forgot password?
-            </a>
-          </div>
-
-          {/* Error Message */}
-          {error && (
-            <div
-              style={{
-                background: 'rgba(239, 68, 68, 0.1)',
-                border: '1px solid rgba(239, 68, 68, 0.3)',
-                color: '#ef4444',
-                padding: '0.75rem',
-                borderRadius: '6px',
-                marginBottom: '1.5rem',
-                fontSize: '0.875rem',
-              }}
-            >
-              {error}
-            </div>
-          )}
-
-          {/* Submit Button */}
-          <button
-            type="submit"
-            disabled={loading}
-            className="btn-primary"
+        {/* Error Message - Show for all auth methods */}
+        {error && (
+          <div
             style={{
-              width: '100%',
-              padding: '1rem',
-              fontSize: '1rem',
-              opacity: loading ? 0.5 : 1,
-              cursor: loading ? 'not-allowed' : 'pointer',
+              background: 'rgba(239, 68, 68, 0.1)',
+              border: '1px solid rgba(239, 68, 68, 0.3)',
+              color: '#ef4444',
+              padding: '0.75rem',
+              borderRadius: '6px',
+              marginBottom: '1.5rem',
+              fontSize: '0.875rem',
             }}
           >
-            {loading ? 'Signing in...' : 'Sign In'}
-          </button>
-        </form>
+            {error}
+          </div>
+        )}
 
-        {/* Divider - Only show if Google OAuth is enabled */}
-        {googleOAuthEnabled && (
+        {/* Password Login Form - Only show if password users exist */}
+        {availableAuthMethods.password && (
+          <form onSubmit={handleCredentialLogin}>
+            <div style={{ marginBottom: '1.5rem' }}>
+              <label className="branding-label">Email Address</label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="your@email.com"
+                required
+                className="branding-input"
+                style={{ width: '100%' }}
+              />
+            </div>
+
+            <div style={{ marginBottom: '1rem' }}>
+              <label className="branding-label">Password</label>
+              <PasswordInput
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter your password"
+                required
+              />
+            </div>
+
+            <div style={{ textAlign: 'right', marginBottom: '1.5rem' }}>
+              <a
+                href="/reset-password"
+                style={{
+                  fontSize: '0.875rem',
+                  color: 'var(--primary-color)',
+                  textDecoration: 'none',
+                }}
+              >
+                Forgot password?
+              </a>
+            </div>
+
+            {/* Submit Button */}
+            <button
+              type="submit"
+              disabled={loading}
+              className="btn-primary"
+              style={{
+                width: '100%',
+                padding: '1rem',
+                fontSize: '1rem',
+                opacity: loading ? 0.5 : 1,
+                cursor: loading ? 'not-allowed' : 'pointer',
+              }}
+            >
+              {loading ? 'Signing in...' : 'Sign In with Password'}
+            </button>
+          </form>
+        )}
+
+        {/* Divider - Show if multiple auth methods are available */}
+        {(availableAuthMethods.password && (availableAuthMethods.google || availableAuthMethods.passkey)) && (
           <div
             style={{
               display: 'flex',
@@ -229,8 +237,30 @@ const Login: React.FC = () => {
           </div>
         )}
 
+        {/* Passkey Sign In Button */}
+        {availableAuthMethods.passkey && (
+          <button
+            onClick={() => {
+              setError('Passkey login is not yet implemented. Please use password or Google login.');
+            }}
+            className="btn-secondary"
+            style={{
+              width: '100%',
+              padding: '1rem',
+              fontSize: '1rem',
+              marginBottom: availableAuthMethods.google ? '0.75rem' : '0',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <span style={{ marginRight: '0.75rem', fontSize: '1.25rem' }}>🔑</span>
+            Sign in with Passkey
+          </button>
+        )}
+
         {/* Google Sign In Button */}
-        {googleOAuthEnabled && (
+        {availableAuthMethods.google && (
           <a
             href={`${API_URL}/api/auth/google`}
             style={{
