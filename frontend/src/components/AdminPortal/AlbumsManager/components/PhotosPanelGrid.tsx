@@ -84,7 +84,7 @@ const PhotosPanelGrid: React.FC<PhotosPanelGridProps> = ({
         <div className={viewMode === 'grid' ? 'photos-grid' : 'photos-list'}>
         {uploadingImages.map((img, index) => (
           <div key={`uploading-${index}`} className="admin-photo-item uploading">
-            <img src={img.thumbnailUrl} alt={img.filename} className="admin-photo-thumbnail" />
+            <div className="admin-photo-thumbnail uploading-placeholder"></div>
             {img.state === 'queued' && (
               <div className="photo-state-overlay queued">
                 <HourglassIcon width="32" height="32" style={{ opacity: 0.8 }} />
@@ -133,7 +133,7 @@ const PhotosPanelGrid: React.FC<PhotosPanelGridProps> = ({
               <>
                 <img
                   src={img.thumbnailUrl}
-                  alt={img.filename}
+                  alt=""
                   className="admin-photo-thumbnail"
                 />
                 <div className="photo-complete-badge">✓</div>
@@ -167,7 +167,7 @@ const PhotosPanelGrid: React.FC<PhotosPanelGridProps> = ({
           <div className="admin-photo-item dragging" style={{ cursor: 'grabbing' }}>
             <img
               src={`${API_URL}${albumPhotos.find(p => p.id === activeId)?.thumbnail}?i=${cacheBustValue}`}
-              alt="Dragging"
+              alt=""
               className="admin-photo-thumbnail"
             />
           </div>

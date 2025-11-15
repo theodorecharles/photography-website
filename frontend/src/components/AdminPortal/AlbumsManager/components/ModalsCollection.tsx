@@ -152,7 +152,7 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
               <div className="edit-modal-photo">
                 <img 
                   src={`${API_URL}${editingPhoto.thumbnail}?i=${cacheBustValue}`}
-                  alt={editingPhoto.title}
+                  alt=""
                 />
               </div>
               

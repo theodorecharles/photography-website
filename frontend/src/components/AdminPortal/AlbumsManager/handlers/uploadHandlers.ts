@@ -16,6 +16,7 @@ interface UploadHandlersProps {
   selectAlbum: (albumName: string) => void;
   setMessage: (message: { type: 'success' | 'error'; text: string }) => void;
   loadAlbums: () => Promise<void>;
+  loadPhotos: (albumName: string) => Promise<void>;
 }
 
 export const createUploadHandlers = (props: UploadHandlersProps) => {
@@ -26,6 +27,7 @@ export const createUploadHandlers = (props: UploadHandlersProps) => {
     selectAlbum,
     setMessage,
     loadAlbums,
+    loadPhotos,
   } = props;
 
   // Upload single image with SSE progress tracking
@@ -178,7 +180,12 @@ export const createUploadHandlers = (props: UploadHandlersProps) => {
 
     // All files uploaded - optimization continues asynchronously
     console.log(`✅ All ${files.length} files uploaded. Optimization continues in background...`);
-    await loadAlbums();
+    
+    // Reload albums and photos to show newly uploaded images immediately
+    await Promise.all([
+      loadAlbums(),
+      loadPhotos(albumName)
+    ]);
     
     // Poll to check if all optimizations are complete before clearing
     const checkComplete = () => {

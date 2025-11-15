@@ -121,7 +121,7 @@ const SortablePhotoItem: React.FC<SortablePhotoItemProps> = ({
     >
       <img
         src={imageUrl}
-        alt={photo.title}
+        alt=""
         className="admin-photo-thumbnail"
       />
 
