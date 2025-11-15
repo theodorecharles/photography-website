@@ -117,6 +117,18 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
     }
   }, [showSection]);
 
+  // Listen for SMTP config updates from other sections
+  useEffect(() => {
+    const handleSmtpUpdate = () => {
+      checkSmtpConfig();
+    };
+
+    window.addEventListener('smtp-config-updated', handleSmtpUpdate);
+    return () => {
+      window.removeEventListener('smtp-config-updated', handleSmtpUpdate);
+    };
+  }, []);
+
   const fetchCurrentUser = async () => {
     try {
       const user = await userManagementAPI.fetchCurrentUser();

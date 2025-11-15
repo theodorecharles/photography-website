@@ -1206,11 +1206,38 @@ router.delete('/users/:userId', requireAdmin, (req: Request, res: Response) => {
       return res.status(404).json({ error: 'User not found' });
     }
     
-    // Delete user
+    // Delete user from database
     const success = deleteUser(userId);
     
     if (!success) {
       return res.status(500).json({ error: 'Failed to delete user' });
+    }
+    
+    // Invalidate all sessions for this user
+    const sessionStore = req.sessionStore;
+    if (sessionStore && sessionStore.all) {
+      sessionStore.all((err: Error | null, sessions: any) => {
+        if (err) {
+          console.error('Error getting sessions:', err);
+          return;
+        }
+        
+        // Destroy sessions belonging to the deleted user
+        if (sessions) {
+          Object.keys(sessions).forEach((sid) => {
+            const session = sessions[sid];
+            if (session?.passport?.user === userId) {
+              sessionStore.destroy(sid, (destroyErr) => {
+                if (destroyErr) {
+                  console.error(`Failed to destroy session ${sid}:`, destroyErr);
+                } else {
+                  console.log(`[Session] Destroyed session ${sid} for deleted user ${userId}`);
+                }
+              });
+            }
+          });
+        }
+      });
     }
     
     console.log(`[User Management] User ${targetUser.email} (ID: ${userId}) deleted by user ID: ${currentUserId}`);

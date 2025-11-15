@@ -17,11 +17,29 @@ const PasswordResetComplete: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [email, setEmail] = useState('');
   const [success, setSuccess] = useState(false);
+  const [primaryColor, setPrimaryColor] = useState('#4ade80');
   
   // Form fields
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   
+  // Load branding config on mount
+  useEffect(() => {
+    const loadBranding = async () => {
+      try {
+        const res = await fetch(`${API_URL}/api/branding`);
+        if (res.ok) {
+          const data = await res.json();
+          setPrimaryColor(data.primaryColor || '#4ade80');
+        }
+      } catch (err) {
+        console.error('Failed to load branding:', err);
+      }
+    };
+
+    loadBranding();
+  }, []);
+
   // Validation
   useEffect(() => {
     if (!token) {
@@ -343,13 +361,26 @@ const PasswordResetComplete: React.FC = () => {
           <button
             type="submit"
             disabled={loading}
-            className="btn-primary"
             style={{
               width: "100%",
               padding: "1rem",
               fontSize: "1rem",
+              fontWeight: 600,
+              background: primaryColor,
+              color: '#000',
+              border: 'none',
+              borderRadius: '8px',
               opacity: loading ? 0.5 : 1,
               cursor: loading ? "not-allowed" : "pointer",
+              transition: 'all 0.2s ease',
+            }}
+            onMouseEnter={(e) => {
+              if (!loading) {
+                e.currentTarget.style.filter = 'brightness(1.1)';
+              }
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.filter = 'brightness(1)';
             }}
           >
             {loading ? 'Resetting Password...' : 'Reset Password'}
@@ -368,7 +399,7 @@ const PasswordResetComplete: React.FC = () => {
           <a
             href="/admin"
             style={{
-              color: "var(--primary-color)",
+              color: primaryColor,
               textDecoration: "none",
               fontWeight: 500,
             }}
