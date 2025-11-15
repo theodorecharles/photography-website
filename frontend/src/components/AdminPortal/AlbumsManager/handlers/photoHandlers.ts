@@ -133,7 +133,7 @@ export const createPhotoHandlers = (props: PhotoHandlersProps) => {
         setDeletingPhotoId(photoId);
         
         // Wait for CRT animation to complete
-        await new Promise(resolve => setTimeout(resolve, 800));
+        await new Promise(resolve => setTimeout(resolve, 200));
         
         try {
           const res = await fetchWithRateLimitCheck(
