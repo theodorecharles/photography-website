@@ -329,6 +329,16 @@ const PhotoGridItem: React.FC<PhotoGridItemProps> = ({
             <button
               onClick={(e) => {
                 e.stopPropagation();
+                e.preventDefault();
+                // Extract filename from ID (format: "album/filename.jpg")
+                const parts = photoData.id.split('/');
+                const filename = parts.length > 1 ? parts[parts.length - 1] : parts[0];
+                console.log('Delete photo:', { album: photoData.album, filename, id: photoData.id });
+                if (onDelete) onDelete(photoData.album, decodeURIComponent(filename), photoData.title);
+              }}
+              onTouchEnd={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
                 // Extract filename from ID (format: "album/filename.jpg")
                 const parts = photoData.id.split('/');
                 const filename = parts.length > 1 ? parts[parts.length - 1] : parts[0];
@@ -337,6 +347,7 @@ const PhotoGridItem: React.FC<PhotoGridItemProps> = ({
               }}
               className="btn-delete-photo"
               title="Delete photo"
+              type="button"
             >
               <TrashIcon width="16" height="16" />
             </button>
