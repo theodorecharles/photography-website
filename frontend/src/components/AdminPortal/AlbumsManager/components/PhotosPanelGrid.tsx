@@ -6,7 +6,7 @@
  * - Loading state
  */
 
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useLayoutEffect } from 'react';
 import { DndContext, DragOverlay, closestCenter, PointerSensor, KeyboardSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { SortableContext, sortableKeyboardCoordinates, rectSortingStrategy } from '@dnd-kit/sortable';
 import PhotoGridItem from './PhotoGridItem';
@@ -59,7 +59,8 @@ const PhotosPanelGrid: React.FC<PhotosPanelGridProps> = ({
   const prevDeletingPhotoIdRef = useRef<string | null>(null);
   
   // Capture "First" positions when deletion starts (before photo is removed from array)
-  useEffect(() => {
+  // useLayoutEffect runs synchronously BEFORE browser paint - prevents flash!
+  useLayoutEffect(() => {
     if (!gridRef.current) return;
     
     // When deletingPhotoId changes from null to a value, capture current positions
