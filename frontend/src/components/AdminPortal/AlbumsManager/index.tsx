@@ -91,8 +91,8 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     hasEverDragged,
     // setHasEverDragged,
     savingOrder,
-    selectAlbum,
-    deselectAlbum,
+    selectAlbum: selectAlbumInternal,
+    deselectAlbum: deselectAlbumInternal,
     editingPhoto,
     editTitleValue,
     setEditTitleValue,
@@ -102,16 +102,32 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     handleEditSave,
   } = photoManagement;
   
-  // Handle album preselection from URL parameter
+  // Sync URL with selected album state
   useEffect(() => {
     const albumParam = searchParams.get('album');
+    
+    // If URL has an album and it's valid
     if (albumParam && albums.some(a => a.name === albumParam)) {
-      selectAlbum(albumParam);
-      // Clear the parameter after setting the selection
-      searchParams.delete('album');
-      setSearchParams(searchParams, { replace: true });
+      // Only select if not already selected (to prevent infinite loop)
+      if (selectedAlbum !== albumParam) {
+        selectAlbumInternal(albumParam);
+      }
+    } else if (!albumParam && selectedAlbum) {
+      // If URL has no album but state has one, deselect
+      deselectAlbumInternal();
     }
-  }, [albums, searchParams, setSearchParams, selectAlbum]);
+  }, [albums, searchParams, selectedAlbum, selectAlbumInternal, deselectAlbumInternal]);
+  
+  // Wrapper to update URL when selecting an album
+  const selectAlbum = useCallback((albumName: string) => {
+    setSearchParams({ album: albumName }, { replace: false });
+  }, [setSearchParams]);
+  
+  // Wrapper to clear URL when deselecting an album
+  const deselectAlbum = useCallback(() => {
+    searchParams.delete('album');
+    setSearchParams(searchParams, { replace: false });
+  }, [searchParams, setSearchParams]);
   
   // Upload state (keeping this in component for now due to complexity)
   const [uploadingImages, setUploadingImages] = useState<UploadingImage[]>([]);
@@ -119,7 +135,6 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   
   // Drag-and-drop state (keeping this in component for now)
   const [isDragging] = useState(false);
-  const [activeId, setActiveId] = useState<string | null>(null);
   const [isShuffling] = useState(false);
   
   // Folder management is handled via folderManagement object
@@ -490,7 +505,6 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
               hasEverDragged={hasEverDragged}
               savingOrder={savingOrder}
               isDragging={isDragging}
-              activeId={activeId}
               isShuffling={isShuffling}
               localAlbums={localAlbums}
               onClose={deselectAlbum}
@@ -509,14 +523,13 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
               onShufflePhotos={photoHandlers.handleShuffleClick}
               onShuffleStart={photoHandlers.handleShuffleStart}
               onShuffleEnd={photoHandlers.handleShuffleEnd}
-              onPhotoDragStart={photoManagement.handlePhotoDragStart}
-              onPhotoDragEnd={photoManagement.handlePhotoDragEnd}
+              onPhotoDragStart={(event, setActiveId) => photoManagement.handlePhotoDragStart(event, setActiveId)}
+              onPhotoDragEnd={(event, setActiveId) => photoManagement.handlePhotoDragEnd(event, setActiveId)}
               onOpenEditModal={openEditModal}
               onDeletePhoto={(filename) => photoHandlers.handleDeletePhoto(selectedAlbum!, filename)}
               onDragOver={uploadHandlers.handleDragOver}
               onDragLeave={uploadHandlers.handleDragLeave}
               onDrop={uploadHandlers.handleDrop}
-              setActiveId={setActiveId}
               shuffleButtonRef={shuffleButtonRef}
               canEdit={canEdit}
             />

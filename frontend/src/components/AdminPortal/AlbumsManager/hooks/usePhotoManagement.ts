@@ -119,7 +119,9 @@ export const usePhotoManagement = ({ setMessage, showConfirmation }: UsePhotoMan
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            photos: albumPhotos.map((p) => p.id.split('/').pop() || p.id),
+            photoOrder: albumPhotos.map((p) => ({
+              filename: p.id.split('/').pop() || p.id
+            })),
           }),
           credentials: 'include',
         }
@@ -223,15 +225,24 @@ export const usePhotoManagement = ({ setMessage, showConfirmation }: UsePhotoMan
   }, [editingPhoto, editTitleValue, updatePhotoTitle, closeEditModal]);
 
   // Photo drag handlers
-  const handlePhotoDragStart = useCallback((_event: DragEndEvent) => {
+  const handlePhotoDragStart = useCallback((event: DragEndEvent, setActiveId?: (id: string | null) => void) => {
     setHasEverDragged(true);
+    // Set the active ID for the drag overlay
+    if (setActiveId) {
+      setActiveId(event.active.id as string);
+    }
     // Prevent scrolling during drag on mobile
     document.body.style.overflow = 'hidden';
     document.body.style.touchAction = 'none';
   }, []);
 
-  const handlePhotoDragEnd = useCallback((event: DragEndEvent) => {
+  const handlePhotoDragEnd = useCallback((event: DragEndEvent, setActiveId?: (id: string | null) => void) => {
     const { active, over } = event;
+
+    // Clear the active ID
+    if (setActiveId) {
+      setActiveId(null);
+    }
 
     // Restore scrolling
     document.body.style.overflow = '';

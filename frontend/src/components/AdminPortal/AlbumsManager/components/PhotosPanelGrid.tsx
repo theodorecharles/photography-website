@@ -24,10 +24,11 @@ interface PhotosPanelGridProps {
   loadingPhotos: boolean;
   activeId: string | null;
   viewMode: ViewMode;
-  onPhotoDragStart: (event: any) => void;
-  onPhotoDragEnd: (event: any) => void;
+  onPhotoDragStart: (event: any, setActiveId?: (id: string | null) => void) => void;
+  onPhotoDragEnd: (event: any, setActiveId?: (id: string | null) => void) => void;
   onOpenEditModal: (photo: Photo) => void;
   onDeletePhoto: (filename: string) => void;
+  setActiveId: (id: string | null) => void;
   canEdit: boolean;
 }
 
@@ -42,6 +43,7 @@ const PhotosPanelGrid: React.FC<PhotosPanelGridProps> = ({
   onPhotoDragEnd,
   onOpenEditModal,
   onDeletePhoto,
+  setActiveId,
 }) => {
   // Detect if device supports touch
   const isTouchDevice = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
@@ -76,8 +78,8 @@ const PhotosPanelGrid: React.FC<PhotosPanelGridProps> = ({
       <DndContext
         sensors={photoSensors}
         collisionDetection={closestCenter}
-        onDragStart={onPhotoDragStart}
-        onDragEnd={onPhotoDragEnd}
+        onDragStart={(event) => onPhotoDragStart(event, setActiveId)}
+        onDragEnd={(event) => onPhotoDragEnd(event, setActiveId)}
       >
         <div className={viewMode === 'grid' ? 'photos-grid' : 'photos-list'}>
         {uploadingImages.map((img, index) => (
