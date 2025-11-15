@@ -176,12 +176,18 @@ export default function SetupWizard() {
         }
       }
 
-      setSuccess('Setup complete! Redirecting to login...');
+      setSuccess('Setup complete! Redirecting...');
       setCurrentStep(4);
 
-      // Redirect to login after a short delay
+      // Redirect based on auth method
       setTimeout(() => {
-        window.location.href = '/login';
+        if (authMethod === 'google') {
+          // For Google auth, redirect to Google OAuth flow
+          window.location.href = `${API_URL}/api/auth/google`;
+        } else {
+          // For password auth, redirect to admin portal (will show login)
+          window.location.href = '/admin';
+        }
       }, 2000);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Setup failed. Please try again.');
