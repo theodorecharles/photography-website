@@ -123,35 +123,19 @@ app.use(
   })
 );
 
-// In-memory JSON cache middleware (before express.static)
+// Serve albums-data JSON files with no caching (must always be fresh)
 app.get('/albums-data/*.json', (req, res, next) => {
   const jsonPath = path.join(__dirname, "dist", req.path);
-  const now = Date.now();
   
-  // Check cache first
-  const cached = jsonCache.get(jsonPath);
-  if (cached && (now - cached.timestamp) < JSON_CACHE_MAX_AGE) {
-    res.setHeader('Content-Type', 'application/json');
-    res.setHeader('Cache-Control', 'public, max-age=300'); // 5 minutes
-    res.setHeader('X-Cache', 'HIT');
-    return res.send(cached.data);
-  }
-  
-  // Read from disk
+  // Always read fresh from disk (no caching)
   fs.readFile(jsonPath, 'utf8', (err, data) => {
     if (err) {
       return next(); // Fall through to express.static
     }
     
-    // Store in cache
-    jsonCache.set(jsonPath, {
-      data: data,
-      timestamp: now
-    });
-    
     res.setHeader('Content-Type', 'application/json');
-    res.setHeader('Cache-Control', 'public, max-age=300'); // 5 minutes
-    res.setHeader('X-Cache', 'MISS');
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate'); // Never cache
+    res.setHeader('X-Cache', 'NONE');
     res.send(data);
   });
 });
