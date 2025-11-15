@@ -233,6 +233,14 @@
   transition: all 0.2s ease;
   border: 1px solid transparent;
   white-space: nowrap;
+  box-sizing: border-box; /* Ensure consistent sizing */
+  line-height: 1; /* Prevent extra height from line-height */
+}
+
+/* Ensure label buttons (like upload) match button height */
+label.photos-btn {
+  margin: 0;
+  line-height: 1;
 }
 
 .photos-btn:disabled {
