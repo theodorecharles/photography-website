@@ -1274,6 +1274,11 @@
   color: #888;
 }
 
+/* Uploading placeholder */
+.uploading-placeholder {
+  background: #000 !important;
+}
+
 /* Spinner animation */
 .spinner {
   width: 40px;
@@ -1282,6 +1287,8 @@
   border-top-color: var(--primary-color);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
+  flex-shrink: 0;
+  aspect-ratio: 1 / 1;
 }
 
 @keyframes spin {

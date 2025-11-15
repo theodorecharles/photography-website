@@ -257,6 +257,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     selectAlbum,
     setMessage,
     loadAlbums,
+    loadPhotos: photoManagement.loadPhotos,
   });
 
   const albumHandlers = createAlbumHandlers({
