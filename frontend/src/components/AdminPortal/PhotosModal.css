@@ -444,6 +444,13 @@
     width: 100%;
     justify-content: space-between;
   }
+  
+  /* Make reorder bar buttons expand to fill space */
+  .photos-reorder-left .photos-btn,
+  .photos-reorder-right .photos-btn {
+    flex: 1;
+    min-width: 0;
+  }
 
   .reorder-hint {
     display: none;
