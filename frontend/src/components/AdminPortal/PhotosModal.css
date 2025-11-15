@@ -102,6 +102,13 @@
   display: flex;
   align-items: baseline;
   gap: 1rem;
+  flex: 1; /* Allow title section to grow, pushing other items to the right */
+}
+
+/* Publish toggle in title bar - keep compact, don't expand */
+.publish-toggle-titlebar {
+  flex: 0 0 auto !important; /* Don't grow or shrink */
+  margin-right: 0.75rem; /* Space between toggle and close button */
 }
 
 .photos-modal-title {
@@ -126,9 +133,10 @@
   padding: 0.5rem;
   border-radius: 6px;
   transition: all 0.2s ease;
-  display: flex;
+  display: flex !important; /* Always visible */
   align-items: center;
   justify-content: center;
+  flex: 0 0 auto; /* Don't grow or shrink */
 }
 
 .photos-close-btn:hover {
@@ -151,6 +159,10 @@
   align-items: center;
   gap: 0.75rem;
   flex: 1; /* Allow controls sections to grow */
+}
+
+.photos-controls-right {
+  justify-content: flex-end; /* Stick content to the right */
 }
 
 /* Buttons should expand to fill available space */
@@ -326,25 +338,17 @@
 }
 
 /* Publish Toggle Position - Desktop: controls bar, Mobile: title bar */
+/* Default: Show in controls bar (desktop), hide in title bar */
 .publish-toggle-titlebar {
-  display: none; /* Hidden on desktop */
+  display: none !important; /* Hidden on desktop */
 }
 
 .publish-toggle-controlbar {
   display: flex; /* Shown on desktop */
 }
 
-/* Mobile Responsive */
+/* Mobile Responsive - 768px for modal sizing, 500px for controls layout */
 @media (max-width: 768px) {
-  /* Switch publish toggle position on mobile */
-  .publish-toggle-titlebar {
-    display: flex !important; /* Show in title bar on mobile */
-  }
-  
-  .publish-toggle-controlbar {
-    display: none !important; /* Hide from controls bar on mobile */
-  }
-
   .photos-modal {
     top: 54px;
     width: 100%;
@@ -354,6 +358,18 @@
 
   .photos-modal-title {
     font-size: 1.25rem;
+  }
+}
+
+/* Controls Bar Mobile Layout - 740px breakpoint */
+@media (max-width: 740px) {
+  /* Switch publish toggle position on mobile */
+  .publish-toggle-titlebar {
+    display: flex !important; /* Show in title bar on mobile */
+  }
+  
+  .publish-toggle-controlbar {
+    display: none !important; /* Hide from controls bar on mobile */
   }
 
   .photos-controls-bar {
