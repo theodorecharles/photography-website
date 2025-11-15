@@ -16,11 +16,12 @@ interface PhotoHandlersProps {
   setMessage: (message: { type: 'success' | 'error'; text: string }) => void;
   showConfirmation: (config: ConfirmModalConfig) => void;
   setAlbumPhotos: React.Dispatch<React.SetStateAction<Photo[]>>;
+  setOriginalPhotoOrder: React.Dispatch<React.SetStateAction<Photo[]>>;
   setDeletingPhotoId: React.Dispatch<React.SetStateAction<string | null>>;
 }
 
 export const createPhotoHandlers = (props: PhotoHandlersProps) => {
-  const { /* selectedAlbum, */ loadPhotos, shufflePhotos, setMessage, showConfirmation, setAlbumPhotos, setDeletingPhotoId } = props;
+  const { /* selectedAlbum, */ loadPhotos, shufflePhotos, setMessage, showConfirmation, setAlbumPhotos, setOriginalPhotoOrder, setDeletingPhotoId } = props;
 
   let shuffleInterval: NodeJS.Timeout | null = null;
   
@@ -146,20 +147,14 @@ export const createPhotoHandlers = (props: PhotoHandlersProps) => {
             setMessage({ type: 'success', text: 'Photo deleted' });
             trackPhotoDeleted(album, filename, photoTitle || filename);
             
-            console.log('🗑️ Photo deleted successfully:', { photoId, album, filename });
+            // Remove photo from both local state AND original order
+            // This prevents deleted photos from reappearing when user hits "Cancel"
+            setAlbumPhotos((prev: Photo[]) => prev.filter((p: Photo) => p.id !== photoId));
+            setOriginalPhotoOrder((prev: Photo[]) => prev.filter((p: Photo) => p.id !== photoId));
             
-            // Remove photo from local state - this triggers grid reflow
-            setAlbumPhotos((prev: Photo[]) => {
-              console.log('🔄 Before filter:', prev.length, 'photos');
-              const filtered = prev.filter((p: Photo) => p.id !== photoId);
-              console.log('🔄 After filter:', filtered.length, 'photos (removed', prev.length - filtered.length, ')');
-              return filtered;
-            });
-            
-            // Clear deleting state after a brief delay to allow reflow animation
+            // Clear deleting state after a brief delay to allow CRT animation to complete
             await new Promise(resolve => setTimeout(resolve, 100));
             setDeletingPhotoId(null);
-            console.log('✅ Deleting state cleared');
           } else {
             const error = await res.json();
             setMessage({ type: 'error', text: error.error || 'Failed to delete photo' });
