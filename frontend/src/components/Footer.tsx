@@ -54,6 +54,17 @@ function Footer({ albums: _albums = [], externalLinks: _externalLinks = [], curr
             <Link to="/admin" className="footer-link">Login</Link>
           </div>
         </div>
+        <div className="footer-powered-by">
+          <span>Powered by </span>
+          <a 
+            href="https://github.com/theodorecharles/photography-website" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="footer-galleria-link"
+          >
+            Galleria
+          </a>
+        </div>
       </div>
     </footer>
   );

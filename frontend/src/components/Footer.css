@@ -56,3 +56,26 @@
 .footer-link:visited {
   color: #fff;
 }
+
+.footer-powered-by {
+  margin-top: 1rem;
+  font-size: 0.875rem;
+  color: #888;
+}
+
+.footer-galleria-link {
+  color: #4ade80;
+  text-decoration: none;
+  font-weight: 600;
+  border-bottom: 1px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.footer-galleria-link:hover {
+  color: #22c55e;
+  border-bottom-color: #22c55e;
+}
+
+.footer-galleria-link:visited {
+  color: #4ade80;
+}
