@@ -232,6 +232,11 @@ export const usePhotoManagement = ({ setMessage, showConfirmation }: UsePhotoMan
       setActiveId(event.active.id as string);
     }
     // Prevent scrolling during drag on mobile
+    const modalContent = document.querySelector('.photos-modal-content') as HTMLElement;
+    if (modalContent) {
+      modalContent.style.overflow = 'hidden';
+      modalContent.style.touchAction = 'none';
+    }
     document.body.style.overflow = 'hidden';
     document.body.style.touchAction = 'none';
   }, []);
@@ -245,6 +250,11 @@ export const usePhotoManagement = ({ setMessage, showConfirmation }: UsePhotoMan
     }
 
     // Restore scrolling
+    const modalContent = document.querySelector('.photos-modal-content') as HTMLElement;
+    if (modalContent) {
+      modalContent.style.overflow = '';
+      modalContent.style.touchAction = '';
+    }
     document.body.style.overflow = '';
     document.body.style.touchAction = '';
 
