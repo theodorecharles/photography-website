@@ -6,7 +6,13 @@
 import { showToast } from "./toast";
 
 export function registerServiceWorker() {
-  // Only register in production (when served over HTTPS or localhost)
+  // Disable service worker on localhost (development)
+  if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+    console.log('[SW] Service worker disabled on localhost');
+    return;
+  }
+  
+  // Only register in production (when served over HTTPS)
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", () => {
       const swUrl = "/sw.js";
