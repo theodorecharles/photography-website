@@ -373,7 +373,39 @@ function App() {
     );
   }
 
-  // Main application layout
+  // Check if current route is a standalone page (no main layout)
+  const isStandalonePage = location.pathname.startsWith('/admin') || 
+                          location.pathname.startsWith('/shared/') ||
+                          location.pathname.startsWith('/setup');
+
+  // Standalone pages render without the main layout
+  if (isStandalonePage) {
+    return (
+      <div className="app">
+        <Suspense fallback={
+          <div className="photo-grid-loading">
+            <div className="loading-spinner"></div>
+            <p>Loading...</p>
+          </div>
+        }>
+          <Routes>
+            <Route path="/admin" element={<AdminPortal />} />
+            <Route path="/admin/login" element={<AdminPortal />} />
+            <Route path="/admin/login/password" element={<AdminPortal />} />
+            <Route path="/admin/login/passkey" element={<AdminPortal />} />
+            <Route path="/admin/albums" element={<AdminPortal />} />
+            <Route path="/admin/metrics" element={<AdminPortal />} />
+            <Route path="/admin/settings" element={<AdminPortal />} />
+            <Route path="/admin/profile" element={<AdminPortal />} />
+            <Route path="/shared/:secretKey" element={<SharedAlbum />} />
+            <Route path="/setup" element={<SetupWizard onSetupComplete={() => setSetupComplete(true)} />} />
+          </Routes>
+        </Suspense>
+      </div>
+    );
+  }
+
+  // Main application layout for regular pages
   return (
     <div className="app">
       <Header
@@ -423,14 +455,6 @@ function App() {
                 <License />
               </>
             } />
-            <Route path="/admin" element={<AdminPortal />} />
-            <Route path="/admin/login" element={<AdminPortal />} />
-            <Route path="/admin/login/password" element={<AdminPortal />} />
-            <Route path="/admin/login/passkey" element={<AdminPortal />} />
-            <Route path="/admin/albums" element={<AdminPortal />} />
-            <Route path="/admin/metrics" element={<AdminPortal />} />
-            <Route path="/admin/settings" element={<AdminPortal />} />
-            <Route path="/admin/profile" element={<AdminPortal />} />
             <Route path="/auth/error" element={
               <>
                 <SEO 
@@ -441,7 +465,6 @@ function App() {
                 <AuthError />
               </>
             } />
-            <Route path="/shared/:secretKey" element={<SharedAlbum />} />
             <Route path="/invite/:token" element={
               <>
                 <SEO 
