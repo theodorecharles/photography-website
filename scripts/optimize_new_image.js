@@ -43,6 +43,7 @@ async function processVersion(sourcePath, version, quality, maxDim) {
   // Use sharp for fast image processing
   console.log(`Generating ${version} for: ${albumName}/${imageFilename}`);
   await sharp(sourcePath)
+    .rotate() // Auto-rotate based on EXIF orientation (fixes iPhone photos)
     .resize(maxDim, maxDim, {
       fit: 'inside',
       withoutEnlargement: true

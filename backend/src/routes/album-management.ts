@@ -11,6 +11,7 @@ import { execFile, spawn } from "child_process";
 import { promisify } from "util";
 import multer from "multer";
 import os from "os";
+import sharp from "sharp";
 import { csrfProtection } from "../security.js";
 import { requireAuth, requireAdmin, requireManager } from '../auth/middleware.js';
 import { 
@@ -461,13 +462,17 @@ router.post("/:album/upload", requireManager, upload.single('photo'), async (req
     const destPath = path.join(albumPath, file.originalname);
     
     try {
-      // Use read + write to handle symlinks and cross-filesystem moves
-      const data = fs.readFileSync(file.path);
-      fs.writeFileSync(destPath, data);
+      // Use sharp to auto-rotate based on EXIF orientation (fixes iPhone photos)
+      // This physically rotates the pixels and removes the EXIF orientation tag
+      await sharp(file.path)
+        .rotate() // Auto-rotate based on EXIF
+        .toFile(destPath);
+      
+      // Clean up temp file
       fs.unlinkSync(file.path);
     } catch (err) {
-      console.error(`Failed to move file ${file.originalname}:`, err);
-      // Clean up temp file if copy failed
+      console.error(`Failed to process and save file ${file.originalname}:`, err);
+      // Clean up temp file if processing failed
       try {
         fs.unlinkSync(file.path);
       } catch (cleanupErr) {
