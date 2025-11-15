@@ -928,6 +928,7 @@
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
+  --shuffle-scale: 1; /* Default no scale, overridden dynamically during shuffle */
 }
 
 /* Responsive grid breakpoints */
@@ -2064,7 +2065,7 @@
 }
 
 .admin-photo-item.shuffling-active[style*="translate"] {
-  transform: scale(0.85) var(--transform) !important;
+  transform: scale(var(--shuffle-scale, 0.85)) var(--transform) !important;
 }
 
 /* Flip animation when photo completes upload */
