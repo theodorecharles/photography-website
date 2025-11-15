@@ -2062,6 +2062,7 @@
 
 .admin-photo-item.shuffling-active {
   transition: transform 200ms ease !important;
+  transform: scale(var(--shuffle-scale, 0.85)) !important;
 }
 
 .admin-photo-item.shuffling-active[style*="translate"] {
