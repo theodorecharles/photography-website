@@ -163,6 +163,7 @@ app.use(
       "Authorization",
       "X-Analytics-Signature",
       "X-CSRF-Token",
+      "Cache-Control",
     ],
   })
 );
