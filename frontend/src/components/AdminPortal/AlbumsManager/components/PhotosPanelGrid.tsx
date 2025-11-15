@@ -6,7 +6,7 @@
  * - Loading state
  */
 
-import React from 'react';
+import React, { useRef, useLayoutEffect } from 'react';
 import { DndContext, DragOverlay, closestCenter, PointerSensor, KeyboardSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { SortableContext, sortableKeyboardCoordinates, rectSortingStrategy } from '@dnd-kit/sortable';
 import PhotoGridItem from './PhotoGridItem';
@@ -53,6 +53,72 @@ const PhotosPanelGrid: React.FC<PhotosPanelGridProps> = ({
   // Detect if device supports touch
   const isTouchDevice = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
   
+  // FLIP animation for smooth reflow on delete
+  const gridRef = useRef<HTMLDivElement>(null);
+  const photosRef = useRef<Map<string, DOMRect>>(new Map());
+  const prevPhotoIdsRef = useRef<Set<string>>(new Set());
+  
+  // Capture positions before render
+  useLayoutEffect(() => {
+    if (!gridRef.current) return;
+    
+    const currentIds = new Set([
+      ...uploadingImages.map(img => img.photo?.id || '').filter(Boolean),
+      ...albumPhotos.map(p => p.id)
+    ]);
+    
+    // Check if a photo was removed
+    const removedIds = Array.from(prevPhotoIdsRef.current).filter(id => !currentIds.has(id));
+    
+    if (removedIds.length > 0) {
+      // FLIP animation: photos are now in their new positions
+      const gridItems = gridRef.current.querySelectorAll('.admin-photo-item:not(.crt-delete)');
+      
+      gridItems.forEach((element) => {
+        const photoId = element.getAttribute('data-photo-id');
+        if (!photoId) return;
+        
+        const oldRect = photosRef.current.get(photoId);
+        const newRect = element.getBoundingClientRect();
+        
+        if (oldRect) {
+          // Calculate the delta
+          const deltaX = oldRect.left - newRect.left;
+          const deltaY = oldRect.top - newRect.top;
+          
+          if (deltaX !== 0 || deltaY !== 0) {
+            // Invert: move element back to old position instantly
+            (element as HTMLElement).style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+            (element as HTMLElement).style.transition = 'none';
+            
+            // Force reflow
+            element.getBoundingClientRect();
+            
+            // Play: animate to new position
+            requestAnimationFrame(() => {
+              (element as HTMLElement).style.transform = '';
+              (element as HTMLElement).style.transition = 'transform 200ms ease';
+            });
+          }
+        }
+      });
+    }
+    
+    // Update refs for next render
+    prevPhotoIdsRef.current = currentIds;
+    
+    // Capture current positions for next time
+    const gridItems = gridRef.current.querySelectorAll('.admin-photo-item:not(.crt-delete)');
+    photosRef.current.clear();
+    
+    gridItems.forEach((element) => {
+      const photoId = element.getAttribute('data-photo-id');
+      if (photoId) {
+        photosRef.current.set(photoId, element.getBoundingClientRect());
+      }
+    });
+  }, [albumPhotos, uploadingImages]);
+  
   // Configure dnd-kit sensors for photos
   // Desktop: minimal delay for instant drag, mobile: longer delay to differentiate tap vs drag
   const photoSensors = useSensors(
@@ -95,7 +161,7 @@ const PhotosPanelGrid: React.FC<PhotosPanelGridProps> = ({
         onDragStart={(event) => onPhotoDragStart(event, setActiveId)}
         onDragEnd={(event) => onPhotoDragEnd(event, setActiveId)}
       >
-        <div className={viewMode === 'grid' ? 'photos-grid' : 'photos-list'}>
+        <div ref={gridRef} className={viewMode === 'grid' ? 'photos-grid' : 'photos-list'}>
           <SortableContext items={allItemIds} strategy={rectSortingStrategy}>
             {/* Uploading images (includes those transitioning to complete) */}
             {uploadingImages.map((img, index) => (
