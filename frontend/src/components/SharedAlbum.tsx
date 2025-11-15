@@ -103,7 +103,9 @@ export default function SharedAlbum() {
         if (externalLinksResponse.ok) {
           const linksData = await externalLinksResponse.json();
           console.log('SharedAlbum: External links loaded:', linksData);
-          setExternalLinks(linksData);
+          // API returns { externalLinks: [...] }, extract the array
+          const linksArray = linksData.externalLinks || linksData || [];
+          setExternalLinks(linksArray);
         } else {
           console.warn('SharedAlbum: External links response not ok:', externalLinksResponse.status);
         }
