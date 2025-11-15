@@ -19,11 +19,12 @@ interface PhotoHandlersProps {
   setOriginalPhotoOrder: React.Dispatch<React.SetStateAction<Photo[]>>;
   setDeletingPhotoId: React.Dispatch<React.SetStateAction<string | null>>;
   shuffleIntervalRef: React.MutableRefObject<NodeJS.Timeout | null>;
+  speedupTimeoutsRef: React.MutableRefObject<NodeJS.Timeout[]>;
   setIsShuffling: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export const createPhotoHandlers = (props: PhotoHandlersProps) => {
-  const { /* selectedAlbum, */ loadPhotos, shufflePhotos, setMessage, showConfirmation, setAlbumPhotos, setOriginalPhotoOrder, setDeletingPhotoId, shuffleIntervalRef, setIsShuffling } = props;
+  const { /* selectedAlbum, */ loadPhotos, shufflePhotos, setMessage, showConfirmation, setAlbumPhotos, setOriginalPhotoOrder, setDeletingPhotoId, shuffleIntervalRef, speedupTimeoutsRef, setIsShuffling } = props;
   
   // Retry optimization for a photo
   const handleRetryOptimization = async (album: string, filename: string): Promise<void> => {
@@ -169,7 +170,7 @@ export const createPhotoHandlers = (props: PhotoHandlersProps) => {
 
   // Shuffle handlers
   const handleShuffleClick = (): void => {
-    shufflePhotos();
+    shufflePhotos(); // Full shuffle on single click
   };
 
   const handleShuffleStart = (): void => {
@@ -177,17 +178,77 @@ export const createPhotoHandlers = (props: PhotoHandlersProps) => {
     if (shuffleIntervalRef.current) return;
     
     setIsShuffling(true);
-    shuffleIntervalRef.current = setInterval(() => {
-      shufflePhotos();
-    }, 100);
+    
+    // Add zoom class to all photos during shuffle
+    const photoElements = document.querySelectorAll('.admin-photo-item');
+    photoElements.forEach((el) => {
+      el.classList.add('shuffling-active');
+    });
+    
+    // Calculate speed multiplier based on album size
+    // Speed increases linearly with album size: speed = base_speed * (num_photos / 20)
+    // Since interval is inverse of speed: interval = base_interval / (num_photos / 20)
+    const albumSize = document.querySelectorAll('.admin-photo-item').length;
+    const speedMultiplier = 20 / Math.max(albumSize, 1); // Prevent division by zero
+    
+    // Start continuous shuffling with progressive speed increase
+    let currentInterval = 100 * speedMultiplier; // Adjust base speed by album size
+    
+    const startShuffling = (interval: number) => {
+      if (shuffleIntervalRef.current) {
+        clearInterval(shuffleIntervalRef.current);
+      }
+      
+      shuffleIntervalRef.current = setInterval(() => {
+        // Shuffle one photo at a time (swap two random photos)
+        setAlbumPhotos((currentPhotos) => {
+          const newOrder = [...currentPhotos];
+          // Pick two random indices
+          const i = Math.floor(Math.random() * newOrder.length);
+          const j = Math.floor(Math.random() * newOrder.length);
+          
+          // Swap them
+          if (i !== j) {
+            [newOrder[i], newOrder[j]] = [newOrder[j], newOrder[i]];
+          }
+          
+          return newOrder;
+        });
+      }, interval);
+    };
+    
+    startShuffling(currentInterval);
+    
+    // Speed up by 20% every 500ms for 3 seconds (6 iterations)
+    for (let i = 1; i <= 6; i++) {
+      const timeout = setTimeout(() => {
+        currentInterval = currentInterval * 0.8; // Reduce interval by 20% = 20% faster
+        startShuffling(currentInterval);
+      }, i * 500);
+      speedupTimeoutsRef.current.push(timeout);
+    }
   };
 
   const handleShuffleEnd = (): void => {
+    // Clear all speedup timeouts
+    speedupTimeoutsRef.current.forEach(timeout => clearTimeout(timeout));
+    speedupTimeoutsRef.current = [];
+    
+    // Stop shuffling
     if (shuffleIntervalRef.current) {
       clearInterval(shuffleIntervalRef.current);
       shuffleIntervalRef.current = null;
-      setIsShuffling(false);
     }
+    
+    setIsShuffling(false);
+    
+    // Remove zoom class from photos
+    setTimeout(() => {
+      const photoElements = document.querySelectorAll('.admin-photo-item');
+      photoElements.forEach((el) => {
+        el.classList.remove('shuffling-active');
+      });
+    }, 200);
   };
 
   const handleShuffleMouseDown = (e: React.MouseEvent<HTMLButtonElement>): void => {

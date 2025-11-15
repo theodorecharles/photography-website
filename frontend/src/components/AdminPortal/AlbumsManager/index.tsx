@@ -186,6 +186,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   const [isDragging] = useState(false);
   const [isShuffling, setIsShuffling] = useState(false);
   const shuffleIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const speedupTimeoutsRef = useRef<NodeJS.Timeout[]>([]);
   
   // Folder management is handled via folderManagement object
   
@@ -354,6 +355,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     setOriginalPhotoOrder: photoManagement.setOriginalPhotoOrder,
     setDeletingPhotoId,
     shuffleIntervalRef,
+    speedupTimeoutsRef,
     setIsShuffling,
   });
 
@@ -433,13 +435,15 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   // Ref for shuffle button (for long-press shuffle)
   const shuffleButtonRef = useRef<HTMLButtonElement>(null);
   
-  // Cleanup shuffle interval on unmount
+  // Cleanup shuffle interval and timeouts on unmount
   useEffect(() => {
     return () => {
       if (shuffleIntervalRef.current) {
         clearInterval(shuffleIntervalRef.current);
         shuffleIntervalRef.current = null;
       }
+      speedupTimeoutsRef.current.forEach(timeout => clearTimeout(timeout));
+      speedupTimeoutsRef.current = [];
     };
   }, []);
 
