@@ -260,8 +260,9 @@ const PhotoGridItem: React.FC<PhotoGridItemProps> = ({
 
       {/* Photo info section (shown in list view) */}
       <div className="photo-info">
-        <div className="photo-filename">{filename}</div>
-        {isComplete && photoData?.title && <div className="photo-title">{photoData.title}</div>}
+        <div className="photo-title">
+          {isComplete && photoData?.title ? photoData.title : filename}
+        </div>
       </div>
 
       {/* Error badges for completed photos */}

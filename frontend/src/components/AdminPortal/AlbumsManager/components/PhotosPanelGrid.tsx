@@ -170,42 +170,92 @@ const PhotosPanelGrid: React.FC<PhotosPanelGridProps> = ({
         onDragStart={(event) => onPhotoDragStart(event, setActiveId)}
         onDragEnd={(event) => onPhotoDragEnd(event, setActiveId)}
       >
-        <div ref={gridRef} className={viewMode === 'grid' ? 'photos-grid' : 'photos-list'}>
-          <SortableContext items={allItemIds} strategy={rectSortingStrategy}>
-            {/* Uploading images (includes those transitioning to complete) */}
-            {uploadingImages.map((img, index) => (
-              <PhotoGridItem
-                key={img.photo?.id || `uploading-${index}`}
-                uploadingImage={img}
-                uploadingIndex={index}
-                onEdit={onOpenEditModal}
-                onDelete={onDeletePhoto}
-                onRetryOptimization={onRetryOptimization}
-                onRetryAI={onRetryAI}
-                deletingPhotoId={deletingPhotoId}
-                canEdit={canEdit && !hasActiveUploads}
-                activeOverlayId={activeOverlayId}
-                setActiveOverlayId={setActiveOverlayId}
-              />
-            ))}
-            
-            {/* Existing album photos (already in album before upload) */}
-            {albumPhotos.filter(photo => photo && photo.id).map((photo) => (
-              <PhotoGridItem
-                key={photo.id}
-                photo={photo}
-                onEdit={onOpenEditModal}
-                onDelete={onDeletePhoto}
-                onRetryOptimization={onRetryOptimization}
-                onRetryAI={onRetryAI}
-                deletingPhotoId={deletingPhotoId}
-                canEdit={canEdit && !hasActiveUploads}
-                activeOverlayId={activeOverlayId}
-                setActiveOverlayId={setActiveOverlayId}
-              />
-            ))}
-          </SortableContext>
-        </div>
+        {viewMode === 'grid' ? (
+          <div ref={gridRef} className="photos-grid">
+            <SortableContext items={allItemIds} strategy={rectSortingStrategy}>
+              {/* Uploading images (includes those transitioning to complete) */}
+              {uploadingImages.map((img, index) => (
+                <PhotoGridItem
+                  key={img.photo?.id || `uploading-${index}`}
+                  uploadingImage={img}
+                  uploadingIndex={index}
+                  onEdit={onOpenEditModal}
+                  onDelete={onDeletePhoto}
+                  onRetryOptimization={onRetryOptimization}
+                  onRetryAI={onRetryAI}
+                  deletingPhotoId={deletingPhotoId}
+                  canEdit={canEdit && !hasActiveUploads}
+                  activeOverlayId={activeOverlayId}
+                  setActiveOverlayId={setActiveOverlayId}
+                />
+              ))}
+              
+              {/* Existing album photos (already in album before upload) */}
+              {albumPhotos.filter(photo => photo && photo.id).map((photo) => (
+                <PhotoGridItem
+                  key={photo.id}
+                  photo={photo}
+                  onEdit={onOpenEditModal}
+                  onDelete={onDeletePhoto}
+                  onRetryOptimization={onRetryOptimization}
+                  onRetryAI={onRetryAI}
+                  deletingPhotoId={deletingPhotoId}
+                  canEdit={canEdit && !hasActiveUploads}
+                  activeOverlayId={activeOverlayId}
+                  setActiveOverlayId={setActiveOverlayId}
+                />
+              ))}
+            </SortableContext>
+          </div>
+        ) : (
+          <div ref={gridRef} className="photos-list">
+            <table className="photos-list-table">
+              <thead>
+                <tr>
+                  <th>Thumbnail</th>
+                  <th>Title</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <SortableContext items={allItemIds} strategy={rectSortingStrategy}>
+                  {/* Uploading images (includes those transitioning to complete) */}
+                  {uploadingImages.map((img, index) => (
+                    <PhotoGridItem
+                      key={img.photo?.id || `uploading-${index}`}
+                      uploadingImage={img}
+                      uploadingIndex={index}
+                      onEdit={onOpenEditModal}
+                      onDelete={onDeletePhoto}
+                      onRetryOptimization={onRetryOptimization}
+                      onRetryAI={onRetryAI}
+                      deletingPhotoId={deletingPhotoId}
+                      canEdit={canEdit && !hasActiveUploads}
+                      activeOverlayId={activeOverlayId}
+                      setActiveOverlayId={setActiveOverlayId}
+                    />
+                  ))}
+                  
+                  {/* Existing album photos (already in album before upload) */}
+                  {albumPhotos.filter(photo => photo && photo.id).map((photo) => (
+                    <PhotoGridItem
+                      key={photo.id}
+                      photo={photo}
+                      onEdit={onOpenEditModal}
+                      onDelete={onDeletePhoto}
+                      onRetryOptimization={onRetryOptimization}
+                      onRetryAI={onRetryAI}
+                      deletingPhotoId={deletingPhotoId}
+                      canEdit={canEdit && !hasActiveUploads}
+                      activeOverlayId={activeOverlayId}
+                      setActiveOverlayId={setActiveOverlayId}
+                    />
+                  ))}
+                </SortableContext>
+              </tbody>
+            </table>
+          </div>
+        )}
         <DragOverlay dropAnimation={null}>
           {activeId ? (
             <div style={{ 
