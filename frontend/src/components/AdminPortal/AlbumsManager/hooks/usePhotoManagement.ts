@@ -273,6 +273,7 @@ export const usePhotoManagement = ({ setMessage, showConfirmation }: UsePhotoMan
     selectedAlbum,
     albumPhotos,
     setAlbumPhotos,
+    setOriginalPhotoOrder,
     loadingPhotos,
     hasEverDragged,
     setHasEverDragged,

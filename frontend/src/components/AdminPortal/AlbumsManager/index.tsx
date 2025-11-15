@@ -347,6 +347,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     setMessage,
     showConfirmation,
     setAlbumPhotos: photoManagement.setAlbumPhotos,
+    setOriginalPhotoOrder: photoManagement.setOriginalPhotoOrder,
     setDeletingPhotoId,
   });
 
