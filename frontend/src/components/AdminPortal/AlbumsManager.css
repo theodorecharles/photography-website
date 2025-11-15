@@ -2044,8 +2044,8 @@
 .admin-photo-item {
   cursor: grab;
   position: relative;
-  /* Smooth transition for all animations */
-  transition: transform 200ms ease;
+  /* Smooth transition for all animations including grid reflow */
+  transition: all 200ms ease;
 }
 
 .admin-photo-item:active {
