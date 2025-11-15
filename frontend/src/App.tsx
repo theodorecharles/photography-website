@@ -72,6 +72,46 @@ function PrimesRedirect() {
   return <div className="loading">Loading benchmark...</div>;
 }
 
+// NotFoundRedirect component updates URL to /404 for catch-all routes
+function NotFoundRedirect() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  
+  useEffect(() => {
+    // Only redirect if we're not already at /404
+    if (location.pathname !== '/404') {
+      navigate('/404', { replace: true });
+    }
+  }, [navigate, location.pathname]);
+  
+  return <NotFound />;
+}
+
+// RateLimitError component for 429 error page
+function RateLimitError() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  
+  useEffect(() => {
+    // Only redirect if we're not already at /429
+    if (location.pathname !== '/429') {
+      navigate('/429', { replace: true });
+    }
+  }, [navigate, location.pathname]);
+  
+  return (
+    <div className="error rate-limit-error">
+      <div className="rate-limit-icon">🤠</div>
+      <h2>Whoa there, partner!</h2>
+      <p>Slow down there, feller. You're clicking faster than a tumbleweed in a tornado!</p>
+      <p>Give it a moment and try again.</p>
+      <button onClick={() => window.location.reload()} className="retry-button">
+        Try Again
+      </button>
+    </div>
+  );
+}
+
 /**
  * Main App component that:
  * - Manages application state
@@ -350,14 +390,26 @@ function App() {
   if (error) {
     if (error === "RATE_LIMIT") {
       return (
-        <div className="error rate-limit-error">
-          <div className="rate-limit-icon">🤠</div>
-          <h2>Whoa there, partner!</h2>
-          <p>Slow down there, feller. You're clicking faster than a tumbleweed in a tornado!</p>
-          <p>Give it a moment and try again.</p>
-          <button onClick={() => window.location.reload()} className="retry-button">
-            Try Again
-          </button>
+        <div className="app">
+          <Header
+            albums={albums}
+            folders={folders}
+            externalLinks={externalLinks}
+            currentAlbum={undefined}
+            siteName={siteName}
+            avatarPath={avatarPath}
+            avatarCacheBust={avatarCacheBust}
+          />
+          <main className="main-content">
+            <RateLimitError />
+          </main>
+          <div className="footer-wrapper visible">
+            <Footer
+              albums={Array.isArray(albums) && albums.length > 0 && typeof albums[0] === 'object' ? albums.map(a => typeof a === 'string' ? a : a.name) : albums as string[]}
+              externalLinks={externalLinks}
+              currentAlbum={undefined}
+            />
+          </div>
         </div>
       );
     }
@@ -506,21 +558,31 @@ function App() {
                 <NotFound />
               </>
             } />
+            <Route path="/429" element={
+              <>
+                <SEO 
+                  title="429 - Too Many Requests - Ted Charles Photography"
+                  description="Please slow down and try again."
+                  url={`${SITE_URL}/429`}
+                />
+                <RateLimitError />
+              </>
+            } />
             <Route path="*" element={
               <>
                 <SEO 
                   title="404 - Page Not Found - Ted Charles Photography"
                   description="The page you're looking for doesn't exist."
-                  url={`${SITE_URL}${location.pathname}`}
+                  url={`${SITE_URL}/404`}
                 />
-                <NotFound />
+                <NotFoundRedirect />
               </>
             } />
           </Routes>
         </Suspense>
       </main>
       {!location.pathname.startsWith('/admin') && (
-        <div className={`footer-wrapper ${showFooter ? 'visible' : ''}`}>
+        <div className={`footer-wrapper ${showFooter || location.pathname === '/404' || location.pathname === '/429' ? 'visible' : ''}`}>
           <Footer
             albums={Array.isArray(albums) && albums.length > 0 && typeof albums[0] === 'object' ? albums.map(a => typeof a === 'string' ? a : a.name) : albums as string[]}
             externalLinks={externalLinks}
