@@ -27,12 +27,12 @@ jobs:
           cd /home/ted/photography-website/
           
           # Read Telegram config
-          TELEGRAM_ENABLED=$(jq -r '.notifications.telegram.enabled // false' config/config.json)
+          TELEGRAM_ENABLED=$(jq -r '.notifications.telegram.enabled // false' data/config.json)
           
           if [ "$TELEGRAM_ENABLED" = "true" ]; then
-            TELEGRAM_BOT_TOKEN=$(jq -r '.notifications.telegram.botToken // ""' config/config.json)
-            TELEGRAM_CHAT_ID=$(jq -r '.notifications.telegram.chatId // ""' config/config.json)
-            SITE_URL=$(jq -r '.environment.backend.allowedOrigins[0] // ""' config/config.json)
+            TELEGRAM_BOT_TOKEN=$(jq -r '.notifications.telegram.botToken // ""' data/config.json)
+            TELEGRAM_CHAT_ID=$(jq -r '.notifications.telegram.chatId // ""' data/config.json)
+            SITE_URL=$(jq -r '.environment.backend.allowedOrigins[0] // ""' data/config.json)
             COMMIT_HASH=$(git rev-parse --short HEAD)
             COMMIT_MSG=$(git log -1 --pretty=%B | head -n 1)
             
