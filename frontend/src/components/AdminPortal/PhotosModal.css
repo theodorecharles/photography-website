@@ -125,6 +125,7 @@
   font-weight: 600;
   color: #fff;
   margin: 0;
+  margin-bottom: 0 !important;
   letter-spacing: -0.02em;
 }
 
