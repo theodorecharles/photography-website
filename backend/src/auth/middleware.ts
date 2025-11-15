@@ -10,6 +10,7 @@ import { getUserByEmail, getUserById } from '../database-users.js';
 /**
  * Middleware to check if user is authenticated
  * Works with both Passport sessions and credential-based sessions
+ * Also verifies user still exists in database
  */
 export function requireAuth(req: Request, res: Response, next: NextFunction) {
   // Debug logging
@@ -26,12 +27,39 @@ export function requireAuth(req: Request, res: Response, next: NextFunction) {
   
   // Check if authenticated via Passport (Google OAuth)
   if (req.isAuthenticated && req.isAuthenticated()) {
+    const sessionUser = req.user as any;
+    
+    // Verify user still exists in database
+    if (sessionUser?.email) {
+      const dbUser = getUserByEmail(sessionUser.email);
+      if (!dbUser) {
+        console.log('[Auth Middleware] ❌ User no longer exists (Google OAuth):', sessionUser.email);
+        // Destroy session and return 401
+        req.logout((err) => {
+          if (err) console.error('Logout error:', err);
+        });
+        req.session.destroy(() => {});
+        return res.status(401).json({ error: 'User account no longer exists' });
+      }
+    }
+    
     console.log('[Auth Middleware] ✅ Authenticated via Passport');
     return next();
   }
   
   // Check if authenticated via credential login (session.userId)
   if ((req.session as any)?.userId) {
+    const userId = (req.session as any).userId;
+    
+    // Verify user still exists in database
+    const dbUser = getUserById(userId);
+    if (!dbUser) {
+      console.log('[Auth Middleware] ❌ User no longer exists (credentials):', userId);
+      // Destroy session and return 401
+      req.session.destroy(() => {});
+      return res.status(401).json({ error: 'User account no longer exists' });
+    }
+    
     console.log('[Auth Middleware] ✅ Authenticated via credentials');
     return next();
   }
