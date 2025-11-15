@@ -259,7 +259,7 @@ export default function Metrics() {
     <section className="admin-section">
       <div className="metrics-header-wrapper">
         <div className="metrics-header-content">
-          <h2>📊 Metrics</h2>
+          <h2>Metrics</h2>
           <p className="section-description">View analytics and visitor data for your photography website</p>
         </div>
         <div className="metrics-time-range">
