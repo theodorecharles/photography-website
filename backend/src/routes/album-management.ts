@@ -28,6 +28,7 @@ import {
 } from "../database.js";
 import { invalidateAlbumCache } from "./albums.js";
 import { generateStaticJSONFiles } from "./static-json.js";
+import { broadcastOptimizationUpdate, queueOptimizationJob } from "./optimization-stream.js";
 import OpenAI from "openai";
 
 const router = Router();
@@ -37,7 +38,82 @@ const execFileAsync = promisify(execFile);
 router.use(csrfProtection);
 
 /**
- * Generate AI title for a single image
+ * Generate AI title for a single image (async, broadcasts to optimization stream)
+ */
+async function generateAITitleForImageAsync(
+  apiKey: string,
+  album: string,
+  filename: string,
+  projectRoot: string,
+  jobId: string
+): Promise<void> {
+  try {
+    const openai = new OpenAI({ apiKey });
+    const dataDir = process.env.DATA_DIR || path.join(projectRoot, 'data');
+    const photosDir = path.join(dataDir, 'photos');
+    const imagePath = path.join(photosDir, album, filename);
+
+    if (!fs.existsSync(imagePath)) {
+      throw new Error('Image not found');
+    }
+
+    const imageBuffer = fs.readFileSync(imagePath);
+    const base64Image = imageBuffer.toString('base64');
+    const extension = path.extname(filename).toLowerCase().substring(1);
+    const mimeType = extension === 'jpg' || extension === 'jpeg' ? 'image/jpeg' : `image/${extension}`;
+
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      messages: [
+        {
+          role: "user",
+          content: [
+            {
+              type: "text",
+              text: "Generate a concise, descriptive title for this image. The title should be 3-8 words and capture the essence of the image. Output ONLY the title, nothing else."
+            },
+            {
+              type: "image_url",
+              image_url: {
+                url: `data:${mimeType};base64,${base64Image}`,
+                detail: "low"
+              }
+            }
+          ]
+        }
+      ],
+      max_tokens: 50
+    });
+
+    const title = response.choices[0]?.message?.content?.trim() || '';
+
+    // Update database
+    saveImageMetadata(album, filename, title, null);
+
+    // Broadcast success
+    broadcastOptimizationUpdate(jobId, {
+      album,
+      filename,
+      progress: 100,
+      state: 'complete',
+      title
+    });
+
+    console.log(`✓ AI title generated for ${album}/${filename}: "${title}"`);
+  } catch (error: any) {
+    console.error(`AI title generation failed for ${album}/${filename}:`, error);
+    broadcastOptimizationUpdate(jobId, {
+      album,
+      filename,
+      progress: 100,
+      state: 'complete',
+      error: `AI error: ${error.message}`
+    });
+  }
+}
+
+/**
+ * Generate AI title for a single image (legacy SSE version)
  */
 async function generateAITitleForImage(
   apiKey: string,
@@ -401,75 +477,45 @@ router.post("/:album/upload", requireManager, upload.single('photo'), async (req
       return;
     }
 
-    // Set up SSE headers
-    res.setHeader('Content-Type', 'text/event-stream');
-    res.setHeader('Cache-Control', 'no-cache');
-    res.setHeader('Connection', 'keep-alive');
-    res.setHeader('X-Accel-Buffering', 'no'); // Disable proxy buffering
-    res.setTimeout(0); // Disable timeout for this response
-    res.flushHeaders();
+    // Send success response immediately (don't keep connection open)
+    res.json({ success: true, filename: file.originalname });
 
-    // Touch session to keep it alive during long upload/optimization
-    if (req.session) {
-      req.session.touch();
-    }
-
-    // Send initial success message
-    res.write(`data: ${JSON.stringify({ type: 'uploaded', filename: file.originalname })}\n\n`);
-
-    // Trigger optimization with SSE progress streaming
+    // Queue optimization job (will process sequentially)
     const projectRoot = path.resolve(__dirname, '../../../');
     const scriptPath = path.join(projectRoot, 'scripts', 'optimize_new_image.js');
+    const jobId = `${sanitizedAlbum}/${file.originalname}`;
 
     if (fs.existsSync(scriptPath)) {
-      const child = spawn('node', [scriptPath, sanitizedAlbum, file.originalname], { 
-        cwd: projectRoot
-      });
-
-      // Stream stdout for progress updates
-      child.stdout.on('data', (data) => {
-        const lines = data.toString().split('\n');
-        lines.forEach((line: string) => {
-          if (line.trim()) {
-            // Check for PROGRESS: messages
-            if (line.startsWith('PROGRESS:')) {
-              const parts = line.substring(9).split(':');
-              const progress = parseInt(parts[0]);
-              const message = parts.slice(1).join(':');
-              res.write(`data: ${JSON.stringify({ 
-                type: 'progress', 
-                progress, 
-                message,
-                filename: file.originalname 
-              })}\n\n`);
-            }
-          }
-        });
-      });
-      
-      // Log stderr for debugging
-      child.stderr.on('data', (data) => {
-        const errorOutput = data.toString().trim();
-        if (errorOutput) {
-          console.error(`[${sanitizedAlbum}/${file.originalname}] Optimization stderr:`, errorOutput);
-        }
-      });
-
-      // Handle completion
-      child.on('close', async (code) => {
-        if (code === 0) {
+      queueOptimizationJob(
+        jobId,
+        sanitizedAlbum,
+        file.originalname,
+        scriptPath,
+        projectRoot,
+        // onProgress callback
+        (progress: number) => {
+          broadcastOptimizationUpdate(jobId, {
+            album: sanitizedAlbum,
+            filename: file.originalname,
+            progress,
+            state: 'optimizing'
+          });
+        },
+        // onComplete callback
+        async () => {
           // Add image to database (with null title initially)
-          // This ensures the image shows up even if AI generation is disabled
           saveImageMetadata(sanitizedAlbum, file.originalname, null, null);
           console.log(`✓ Added ${sanitizedAlbum}/${file.originalname} to database`);
           
-          // Invalidate cache for this album since we added a photo
+          // Invalidate cache for this album
           invalidateAlbumCache(sanitizedAlbum);
           
-          res.write(`data: ${JSON.stringify({ 
-            type: 'complete', 
-            filename: file.originalname 
-          })}\n\n`);
+          broadcastOptimizationUpdate(jobId, {
+            album: sanitizedAlbum,
+            filename: file.originalname,
+            progress: 100,
+            state: 'complete'
+          });
           
           // Check if auto-generate AI titles is enabled
           try {
@@ -479,54 +525,49 @@ router.post("/:album/upload", requireManager, upload.single('photo'), async (req
             const config = JSON.parse(configData);
             
             if (config.ai?.autoGenerateTitlesOnUpload && config.openai?.apiKey) {
-              res.write(`data: ${JSON.stringify({ 
-                type: 'ai-generating', 
-                filename: file.originalname 
-              })}\n\n`);
+              broadcastOptimizationUpdate(jobId, {
+                album: sanitizedAlbum,
+                filename: file.originalname,
+                progress: 100,
+                state: 'generating-title'
+              });
               
-              // This will update the existing database entry with the AI-generated title
-              await generateAITitleForImage(
+              // Generate AI title (without SSE streaming to this response)
+              await generateAITitleForImageAsync(
                 config.openai.apiKey,
                 sanitizedAlbum,
                 file.originalname,
                 projectRoot,
-                res
+                jobId
               );
             }
           } catch (err) {
-            console.error('Error checking AI config:', err);
-            // Don't fail the upload if AI generation fails
+            console.error('Error with AI title generation:', err);
           }
           
-          // Regenerate static JSON files after successful upload
+          // Regenerate static JSON files
           const appRoot = req.app.get('appRoot');
           generateStaticJSONFiles(appRoot);
-        } else {
-          res.write(`data: ${JSON.stringify({ 
-            type: 'error', 
-            error: 'Optimization failed',
-            filename: file.originalname 
-          })}\n\n`);
+        },
+        // onError callback
+        (error: string) => {
+          broadcastOptimizationUpdate(jobId, {
+            album: sanitizedAlbum,
+            filename: file.originalname,
+            progress: 0,
+            state: 'error',
+            error
+          });
         }
-        res.end();
-      });
-
-      // Handle errors
-      child.on('error', (error) => {
-        res.write(`data: ${JSON.stringify({ 
-          type: 'error', 
-          error: error.message,
-          filename: file.originalname 
-        })}\n\n`);
-        res.end();
-      });
+      );
     } else {
-      res.write(`data: ${JSON.stringify({ 
-        type: 'error', 
-        error: 'Optimization script not found',
-        filename: file.originalname 
-      })}\n\n`);
-      res.end();
+      broadcastOptimizationUpdate(jobId, {
+        album: sanitizedAlbum,
+        filename: file.originalname,
+        progress: 0,
+        state: 'error',
+        error: 'Optimization script not found'
+      });
     }
   } catch (error) {
     console.error('Error uploading photo:', error);

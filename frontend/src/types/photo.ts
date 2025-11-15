@@ -19,6 +19,9 @@ export interface Photo {
     size: number;
   };
   exif?: any;
+  // Error states for post-upload processing
+  optimizationError?: string;
+  aiError?: string;
   // Note: Legacy 'src' field removed - original photos are not served via API
   // Only optimized versions (thumbnail, modal, download) are accessible
 }

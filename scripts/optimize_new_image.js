@@ -66,15 +66,17 @@ async function main() {
   console.log('PROGRESS:0:Starting optimization');
   
   try {
-    // Create all three versions
+    // Process thumbnail first (fastest - gives immediate visual feedback)
     await processVersion(sourcePath, 'thumbnail', thumbnailQuality, thumbnailMaxDim);
     console.log('PROGRESS:33:Thumbnail complete');
     
-    await processVersion(sourcePath, 'modal', modalQuality, modalMaxDim);
-    console.log('PROGRESS:66:Modal complete');
-    
+    // Process download version (slowest - spinner will spin)
     await processVersion(sourcePath, 'download', downloadQuality, downloadMaxDim);
-    console.log('PROGRESS:100:Download complete');
+    console.log('PROGRESS:66:Download complete');
+    
+    // Finally process modal version
+    await processVersion(sourcePath, 'modal', modalQuality, modalMaxDim);
+    console.log('PROGRESS:100:Modal complete');
     
     console.log(`Successfully optimized: ${albumName}/${imageFilename}`);
   } catch (error) {

@@ -250,9 +250,21 @@ export const usePhotoManagement = ({ setMessage, showConfirmation }: UsePhotoMan
 
     if (over && active.id !== over.id) {
       setAlbumPhotos((photos) => {
-        const oldIndex = photos.findIndex((p) => p.id === active.id);
-        const newIndex = photos.findIndex((p) => p.id === over.id);
-        return arrayMove(photos, oldIndex, newIndex);
+        const oldIndex = photos.findIndex((p) => p && p.id === active.id);
+        const newIndex = photos.findIndex((p) => p && p.id === over.id);
+        
+        // Only perform move if both indices are valid
+        if (oldIndex !== -1 && newIndex !== -1) {
+          return arrayMove(photos, oldIndex, newIndex);
+        }
+        
+        console.warn('Invalid drag: item not found in albumPhotos', { 
+          activeId: active.id, 
+          overId: over.id,
+          oldIndex,
+          newIndex
+        });
+        return photos;
       });
     }
   }, []);

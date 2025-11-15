@@ -3,8 +3,7 @@
  * Handles photo uploads, drag-and-drop file uploads
  */
 
-import { UploadingImage, Photo } from '../types';
-import { trackPhotoUploaded } from '../../../../utils/analytics';
+import { UploadingImage } from '../types';
 import { validateImageFiles } from '../utils/albumHelpers';
 
 const API_URL = import.meta.env.VITE_API_URL || '';
@@ -12,12 +11,10 @@ const API_URL = import.meta.env.VITE_API_URL || '';
 interface UploadHandlersProps {
   uploadingImages: UploadingImage[];
   setUploadingImages: React.Dispatch<React.SetStateAction<UploadingImage[]>>;
-  uploadingImagesRef: React.MutableRefObject<UploadingImage[]>;
+  uploadingImagesRef: React.RefObject<UploadingImage[]>;
   selectAlbum: (albumName: string) => void;
   setMessage: (message: { type: 'success' | 'error'; text: string }) => void;
   loadAlbums: () => Promise<void>;
-  loadPhotos: (albumName: string) => Promise<void>;
-  setAlbumPhotos: React.Dispatch<React.SetStateAction<Photo[]>>;
 }
 
 export const createUploadHandlers = (props: UploadHandlersProps) => {
@@ -25,13 +22,12 @@ export const createUploadHandlers = (props: UploadHandlersProps) => {
     // uploadingImages, // not used directly, managed via setUploadingImages
     setUploadingImages,
     // uploadingImagesRef, // not used directly
-    selectAlbum,
     setMessage,
     loadAlbums,
-    loadPhotos,
+    // setAlbumPhotos, // no longer used - photos stay in uploadingImages until complete
   } = props;
 
-  // Upload single image with SSE progress tracking
+  // Upload single image (returns immediately, optimization tracked via SSE stream)
   const uploadSingleImage = async (
     file: File,
     filename: string,
@@ -46,158 +42,135 @@ export const createUploadHandlers = (props: UploadHandlersProps) => {
       )
     );
     
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
       const formData = new FormData();
       formData.append('photo', file, filename);
+
+      // Use XMLHttpRequest to track upload progress
+      const xhr = new XMLHttpRequest();
       
-      let uploadResolved = false;
-
-      fetch(`${API_URL}/api/albums/${encodeURIComponent(albumName)}/upload`, {
-        method: 'POST',
-        credentials: 'include',
-        body: formData,
-      }).then(async (response) => {
-        if (!response.ok) {
-          throw new Error(`Upload failed with status ${response.status}`);
-        }
-
-        // Response is SSE stream
-        const reader = response.body?.getReader();
-        const decoder = new TextDecoder();
-        
-        if (!reader) {
-          throw new Error('No response body');
-        }
-
-        let buffer = '';
-
-        // Continue reading SSE stream in background
-        const processStream = async () => {
-          while (true) {
-            const { done, value } = await reader.read();
-            
-            if (done) break;
-            
-            buffer += decoder.decode(value, { stream: true });
-            
-            // Process SSE messages
-            const lines = buffer.split('\n\n');
-            buffer = lines.pop() || ''; // Keep incomplete message in buffer
-            
-            for (const line of lines) {
-              if (line.startsWith('data: ')) {
-                const data = JSON.parse(line.substring(6));
-                
-                setUploadingImages((prev: UploadingImage[]): UploadingImage[] =>
-                  prev.map((img: UploadingImage): UploadingImage =>
-                    img.filename === filename
-                      ? {
-                          ...img,
-                          state: data.type === 'complete' ? 'complete' : 
-                                 data.type === 'error' ? 'error' :
-                                 data.type === 'ai-generating' ? 'generating-title' :
-                                 data.type === 'progress' ? 'optimizing' :
-                                 data.type === 'uploaded' ? 'optimizing' : 'uploading',
-                          progress: 100,
-                          optimizeProgress: data.type === 'progress' ? data.progress : 
-                                           data.type === 'complete' ? 100 : 0,
-                          error: data.error,
-                          // Switch from blob to real thumbnail when complete
-                          thumbnailUrl: data.type === 'complete' 
-                            ? `${API_URL}/optimized/thumbnail/${encodeURIComponent(albumName)}/${encodeURIComponent(filename)}?i=0`
-                            : img.thumbnailUrl,
-                        }
-                      : img
-                  )
-                );
-
-                // Resolve promise as soon as file is uploaded (don't wait for optimization)
-                if (data.type === 'uploaded' && !uploadResolved) {
-                  uploadResolved = true;
-                  console.log(`✅ File uploaded: ${filename}, optimization will continue in background`);
-                  resolve();
-                  // Continue processing SSE events in background
-                }
-                
-                // Track analytics when complete
-                if (data.type === 'complete') {
-                  trackPhotoUploaded(albumName, 1, [filename]);
-                  return; // Exit stream processing
-                } else if (data.type === 'error') {
-                  if (!uploadResolved) {
-                    reject(new Error(data.error || 'Upload failed'));
-                  } else {
-                    // Upload succeeded but optimization failed - just log it
-                    console.error(`❌ Optimization failed for ${filename}:`, data.error);
-                  }
-                  return; // Exit stream processing
-                }
-              }
-            }
-          }
-        };
-
-        // Process stream in background
-        processStream().catch(err => {
-          console.error(`SSE stream error for ${filename}:`, err);
-        });
-        
-      }).catch(err => {
-        if (!uploadResolved) {
-          reject(err);
+      // Track upload progress
+      xhr.upload.addEventListener('progress', (e) => {
+        if (e.lengthComputable) {
+          const percentComplete = Math.round((e.loaded / e.total) * 100);
+          setUploadingImages((prev: UploadingImage[]): UploadingImage[] =>
+            prev.map((img: UploadingImage): UploadingImage =>
+              img.filename === filename
+                ? { ...img, state: 'uploading', progress: percentComplete }
+                : img
+            )
+          );
         }
       });
+      
+      xhr.withCredentials = true; // Include cookies
+      
+      xhr.onload = () => {
+        if (xhr.status === 200) {
+          try {
+            const response = JSON.parse(xhr.responseText);
+            if (response.success) {
+              console.log(`✅ File uploaded: ${filename}, optimization continues in background`);
+              
+              // Update state to 'optimizing' (optimization tracked via separate SSE stream)
+              setUploadingImages((prev: UploadingImage[]): UploadingImage[] =>
+                prev.map((img: UploadingImage): UploadingImage =>
+                  img.filename === filename
+                    ? { ...img, state: 'optimizing', progress: 100, optimizeProgress: 0 }
+                    : img
+                )
+              );
+              
+              resolve(); // Allow next upload to start immediately
+            } else {
+              reject(new Error('Upload failed'));
+            }
+          } catch (e) {
+            reject(new Error('Invalid server response'));
+          }
+        } else {
+          setUploadingImages((prev: UploadingImage[]): UploadingImage[] =>
+            prev.map((img: UploadingImage): UploadingImage =>
+              img.filename === filename
+                ? { ...img, state: 'error', error: `Upload failed: ${xhr.status}` }
+                : img
+            )
+          );
+          reject(new Error(`Upload failed with status ${xhr.status}`));
+        }
+      };
+      
+      xhr.onerror = () => {
+        setUploadingImages((prev: UploadingImage[]): UploadingImage[] =>
+          prev.map((img: UploadingImage): UploadingImage =>
+            img.filename === filename
+              ? { ...img, state: 'error', error: 'Network error' }
+              : img
+          )
+        );
+        reject(new Error('Network error'));
+      };
+      
+      xhr.open('POST', `${API_URL}/api/albums/${encodeURIComponent(albumName)}/upload`);
+      xhr.send(formData);
+    }).catch((err) => {
+      console.error(`Upload failed for ${filename}:`, err);
+      throw err;
     });
   };
 
-  const handleUploadToAlbum = async (albumName: string, files: File[]): Promise<void> => {
-    if (files.length === 0) return;
+  const handleUploadToAlbum = async (
+    albumName: string,
+    files: File[]
+  ): Promise<void> => {
+    // Validate files
+    const validation = validateImageFiles(files);
+    if (!validation.valid.length) {
+      setMessage({ type: 'error', text: 'No valid images to upload' });
+      return;
+    }
 
-    console.log(`📤 Starting upload of ${files.length} files to album: ${albumName}`);
-
-    // Prepare uploading images
-    const newUploadingImages: UploadingImage[] = files.map(file => ({
-      file,
+    // Initialize uploading images with upload index for ordering
+    const newUploadingImages: UploadingImage[] = validation.valid.map((file, index) => ({
       filename: file.name,
       state: 'queued' as const,
-      thumbnailUrl: URL.createObjectURL(file)
+      file,
+      uploadIndex: index, // Track original position
     }));
 
     setUploadingImages(newUploadingImages);
-    selectAlbum(albumName);
 
-    // Upload each file sequentially (but don't wait for optimization)
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i];
-      console.log(`📤 Uploading file ${i + 1}/${files.length}: ${file.name}`);
+    // Upload images one-by-one (fast as possible)
+    // uploadSingleImage resolves as soon as upload finishes, 
+    // optimization/AI continues in background
+    for (const img of newUploadingImages) {
       try {
-        await uploadSingleImage(file, file.name, albumName);
-        console.log(`✅ File uploaded: ${file.name} (optimization continues in background)`);
-      } catch (error) {
-        console.error(`❌ Failed to upload ${file.name}:`, error);
-        // Continue with next file even if one fails
+        await uploadSingleImage(img.file, img.filename, albumName);
+        // Next upload starts immediately after previous file is uploaded
+        // (doesn't wait for optimization or AI)
+      } catch (err) {
+        console.error('Upload error:', err);
+        // Continue with next upload even if one fails
       }
     }
 
-    // All files uploaded - optimization continues asynchronously
-    console.log(`✅ All ${files.length} files uploaded. Optimization continues in background...`);
-    
-    // Reload albums and photos to show newly uploaded images immediately
-    await Promise.all([
-      loadAlbums(),
-      loadPhotos(albumName)
-    ]);
-    
-    // Clear uploading images immediately to avoid double grid
-    // Optimization continues in background via SSE
-    setUploadingImages([]);
+    // Reload albums to update photo counts
+    await loadAlbums();
   };
+
 
   const handleUploadPhotos = async (e: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
     const files = e.target.files;
-    if (!files) return;
+    if (!files || files.length === 0) return;
     
-    // Handle upload logic here
+    // Get selected album name from URL or prompt
+    const albumName = new URLSearchParams(window.location.search).get('album');
+    if (!albumName) {
+      setMessage({ type: 'error', text: 'No album selected' });
+      return;
+    }
+    
+    await handleUploadToAlbum(albumName, Array.from(files));
     e.target.value = ''; // Reset input
   };
 

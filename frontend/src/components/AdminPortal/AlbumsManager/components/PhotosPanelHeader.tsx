@@ -66,6 +66,9 @@ const PhotosPanelHeader: React.FC<PhotosPanelHeaderProps> = ({
   const currentAlbum = localAlbums.find(a => a.name === selectedAlbum);
   const isPublished = currentAlbum?.published !== false;
   const photoCount = albumPhotos.length;
+  
+  // Check if any uploads are actively in progress (not complete)
+  const hasActiveUploads = uploadingImages.some((img: any) => img.state !== 'complete');
 
   return (
     <div className="photos-modal-header">
@@ -102,15 +105,15 @@ const PhotosPanelHeader: React.FC<PhotosPanelHeaderProps> = ({
 
           {canEdit && (
             <>
-              <label className="photos-btn photos-btn-primary">
+              <label className={`photos-btn photos-btn-primary ${hasActiveUploads ? 'disabled' : ''}`}>
                 <UploadIcon width="16" height="16" />
-                <span>{uploadingImages.length > 0 ? 'Uploading...' : 'Upload'}</span>
+                <span>{hasActiveUploads ? 'Uploading...' : 'Upload'}</span>
                 <input
                   type="file"
                   multiple
                   accept="image/*"
                   onChange={onUploadPhotos}
-                  disabled={uploadingImages.length > 0}
+                  disabled={hasActiveUploads}
                   style={{ display: 'none' }}
                 />
               </label>
@@ -119,6 +122,7 @@ const PhotosPanelHeader: React.FC<PhotosPanelHeaderProps> = ({
                 onClick={() => onDeleteAlbum(selectedAlbum)}
                 className="photos-btn photos-btn-danger"
                 title="Delete album"
+                disabled={hasActiveUploads}
               >
                 <TrashIcon width="16" height="16" />
                 <span>Delete</span>

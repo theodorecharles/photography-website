@@ -36,6 +36,10 @@
   animation: flipUp 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
+.photos-modal.closing {
+  animation: flipDown 0.3s cubic-bezier(0.4, 0, 0.6, 1) forwards;
+}
+
 @keyframes flipUp {
   from {
     opacity: 0;
@@ -44,6 +48,17 @@
   to {
     opacity: 1;
     transform: translateX(-50%) translateY(0) rotateX(0deg);
+  }
+}
+
+@keyframes flipDown {
+  from {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) rotateX(0deg);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-50%) translateY(100%) rotateX(15deg);
   }
 }
 
@@ -235,6 +250,8 @@
   border-radius: 8px;
   padding: 0.25rem;
   border: 1px solid rgba(255, 255, 255, 0.08);
+  flex-shrink: 0;
+  width: fit-content;
 }
 
 .view-toggle-btn {
