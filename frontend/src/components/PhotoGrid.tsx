@@ -5,7 +5,7 @@
  */
 
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import "./PhotoGrid.css";
 import { API_URL, cacheBustValue } from "../config";
 import { trackPhotoClick, trackError } from "../utils/analytics";
@@ -26,6 +26,7 @@ import type { Photo } from '../types/photo';
 
 const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPhotos, onLoadComplete }) => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [allPhotos, setAllPhotos] = useState<Photo[]>([]);
   const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
@@ -424,7 +425,10 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
 
   if (error) {
     if (error === "ALBUM_NOT_FOUND") {
-      // Notify parent component to hide album title
+      // Update URL to /404 and notify parent component to hide album title
+      if (location.pathname !== '/404') {
+        navigate('/404', { replace: true });
+      }
       if (onAlbumNotFound) {
         onAlbumNotFound();
       }
