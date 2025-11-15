@@ -63,6 +63,7 @@ const PhotosPanelGrid: React.FC<PhotosPanelGridProps> = ({
     if (!gridRef.current) return;
     
     // When deletingPhotoId changes from null to a value, capture current positions
+    // This captures positions WITH the photo still in the grid
     if (deletingPhotoId && deletingPhotoId !== prevDeletingPhotoIdRef.current) {
       const positions = new Map<string, DOMRect>();
       const items = gridRef.current.querySelectorAll('.admin-photo-item:not(.crt-delete)');
@@ -79,50 +80,53 @@ const PhotosPanelGrid: React.FC<PhotosPanelGridProps> = ({
     
     // When deletingPhotoId changes from a value to null, apply FLIP animation
     if (!deletingPhotoId && prevDeletingPhotoIdRef.current) {
-      // Photo has been removed, grid has reflowed - capture "Last" positions
+      // Photo has been removed from array, grid is reflowing NOW
+      // Use double rAF to ensure we capture positions after the reflow
       requestAnimationFrame(() => {
-        if (!gridRef.current) return;
-        
-        const items = gridRef.current.querySelectorAll('.admin-photo-item:not(.crt-delete)');
-        
-        items.forEach((item) => {
-          const id = (item as HTMLElement).dataset.photoId;
-          if (!id) return;
+        requestAnimationFrame(() => {
+          if (!gridRef.current) return;
           
-          const first = firstPositionsRef.current.get(id);
-          const last = item.getBoundingClientRect();
+          const items = gridRef.current.querySelectorAll('.admin-photo-item:not(.crt-delete)');
           
-          if (first) {
-            // Calculate how much the element moved
-            const deltaX = first.left - last.left;
-            const deltaY = first.top - last.top;
+          items.forEach((item) => {
+            const id = (item as HTMLElement).dataset.photoId;
+            if (!id) return;
             
-            if (deltaX !== 0 || deltaY !== 0) {
-              const element = item as HTMLElement;
+            const first = firstPositionsRef.current.get(id);
+            const last = item.getBoundingClientRect();
+            
+            if (first) {
+              // Calculate how much the element moved
+              const deltaX = first.left - last.left;
+              const deltaY = first.top - last.top;
               
-              // Invert: move element back to its old position instantly
-              element.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
-              element.style.transition = 'none';
-              
-              // Force a reflow
-              element.offsetHeight;
-              
-              // Play: animate to the new position
-              requestAnimationFrame(() => {
-                element.style.transform = '';
-                element.style.transition = 'transform 200ms ease';
-              });
+              if (deltaX !== 0 || deltaY !== 0) {
+                const element = item as HTMLElement;
+                
+                // Invert: move element back to its old position instantly
+                element.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+                element.style.transition = 'none';
+                
+                // Force a reflow
+                element.offsetHeight;
+                
+                // Play: animate to the new position
+                requestAnimationFrame(() => {
+                  element.style.transform = '';
+                  element.style.transition = 'transform 200ms ease';
+                });
+              }
             }
-          }
+          });
+          
+          // Clear stored positions
+          firstPositionsRef.current.clear();
         });
-        
-        // Clear stored positions
-        firstPositionsRef.current.clear();
       });
     }
     
     prevDeletingPhotoIdRef.current = deletingPhotoId;
-  }, [deletingPhotoId]);
+  }, [deletingPhotoId, albumPhotos]);
   
   // Configure dnd-kit sensors for photos
   // Desktop: minimal delay for instant drag, mobile: longer delay to differentiate tap vs drag

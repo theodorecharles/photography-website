@@ -152,8 +152,7 @@ export const createPhotoHandlers = (props: PhotoHandlersProps) => {
             setAlbumPhotos((prev: Photo[]) => prev.filter((p: Photo) => p.id !== photoId));
             setOriginalPhotoOrder((prev: Photo[]) => prev.filter((p: Photo) => p.id !== photoId));
             
-            // Clear deleting state after a brief delay to allow CRT animation to complete
-            await new Promise(resolve => setTimeout(resolve, 100));
+            // Clear deleting state immediately - this triggers FLIP animation
             setDeletingPhotoId(null);
           } else {
             const error = await res.json();
