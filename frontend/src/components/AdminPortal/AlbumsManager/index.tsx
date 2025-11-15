@@ -184,7 +184,8 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   
   // Drag-and-drop state (keeping this in component for now)
   const [isDragging] = useState(false);
-  const [isShuffling] = useState(false);
+  const [isShuffling, setIsShuffling] = useState(false);
+  const shuffleIntervalRef = useRef<NodeJS.Timeout | null>(null);
   
   // Folder management is handled via folderManagement object
   
@@ -352,6 +353,8 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     setAlbumPhotos: photoManagement.setAlbumPhotos,
     setOriginalPhotoOrder: photoManagement.setOriginalPhotoOrder,
     setDeletingPhotoId,
+    shuffleIntervalRef,
+    setIsShuffling,
   });
 
   // Handlers are accessed via namespace pattern (e.g., dragDropHandlers.handlePhotoDragStart)
@@ -429,6 +432,16 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
 
   // Ref for shuffle button (for long-press shuffle)
   const shuffleButtonRef = useRef<HTMLButtonElement>(null);
+  
+  // Cleanup shuffle interval on unmount
+  useEffect(() => {
+    return () => {
+      if (shuffleIntervalRef.current) {
+        clearInterval(shuffleIntervalRef.current);
+        shuffleIntervalRef.current = null;
+      }
+    };
+  }, []);
 
 
   return (

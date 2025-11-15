@@ -18,12 +18,12 @@ interface PhotoHandlersProps {
   setAlbumPhotos: React.Dispatch<React.SetStateAction<Photo[]>>;
   setOriginalPhotoOrder: React.Dispatch<React.SetStateAction<Photo[]>>;
   setDeletingPhotoId: React.Dispatch<React.SetStateAction<string | null>>;
+  shuffleIntervalRef: React.MutableRefObject<NodeJS.Timeout | null>;
+  setIsShuffling: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export const createPhotoHandlers = (props: PhotoHandlersProps) => {
-  const { /* selectedAlbum, */ loadPhotos, shufflePhotos, setMessage, showConfirmation, setAlbumPhotos, setOriginalPhotoOrder, setDeletingPhotoId } = props;
-
-  let shuffleInterval: NodeJS.Timeout | null = null;
+  const { /* selectedAlbum, */ loadPhotos, shufflePhotos, setMessage, showConfirmation, setAlbumPhotos, setOriginalPhotoOrder, setDeletingPhotoId, shuffleIntervalRef, setIsShuffling } = props;
   
   // Retry optimization for a photo
   const handleRetryOptimization = async (album: string, filename: string): Promise<void> => {
@@ -173,17 +173,20 @@ export const createPhotoHandlers = (props: PhotoHandlersProps) => {
   };
 
   const handleShuffleStart = (): void => {
-    if (shuffleInterval) return;
+    // Don't start if already shuffling
+    if (shuffleIntervalRef.current) return;
     
-    shuffleInterval = setInterval(() => {
+    setIsShuffling(true);
+    shuffleIntervalRef.current = setInterval(() => {
       shufflePhotos();
     }, 100);
   };
 
   const handleShuffleEnd = (): void => {
-    if (shuffleInterval) {
-      clearInterval(shuffleInterval);
-      shuffleInterval = null;
+    if (shuffleIntervalRef.current) {
+      clearInterval(shuffleIntervalRef.current);
+      shuffleIntervalRef.current = null;
+      setIsShuffling(false);
     }
   };
 
