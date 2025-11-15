@@ -125,7 +125,7 @@ export const createOptimizationStreamHandlers = (props: OptimizationStreamHandle
       }
     };
 
-    eventSource.onerror = (err) => {
+    eventSource.onerror = () => {
       console.error('[Optimization Stream] Connection error');
       eventSource?.close();
       eventSource = null;
