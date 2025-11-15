@@ -6,6 +6,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { API_URL } from '../../config';
+import { useAuth } from '../../contexts/AuthContext';
 // CSS will be loaded dynamically to ensure proper loading in dev mode
 import { AuthStatus, ExternalLink, BrandingConfig, Album, AlbumFolder } from './types';
 import AlbumsManager from './AlbumsManager';
@@ -40,6 +41,7 @@ export default function AdminPortal() {
   const [loading, setLoading] = useState(true);
   const [cssLoaded, setCssLoaded] = useState(false);
   const sseToaster = useSSEToaster();
+  const { logoutMessage, clearLogoutMessage } = useAuth();
   
   // Login state
   const [activeAuthTab, setActiveAuthTab] = useState<AuthMethod>(null);
@@ -49,6 +51,14 @@ export default function AdminPortal() {
   const [requiresMFA, setRequiresMFA] = useState(false);
   const [loginLoading, setLoginLoading] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
+  
+  // Display logout message if present
+  useEffect(() => {
+    if (logoutMessage) {
+      setLoginError(logoutMessage);
+      clearLogoutMessage();
+    }
+  }, [logoutMessage, clearLogoutMessage]);
   
   // Load saved passkey email when switching to passkey tab
   useEffect(() => {

@@ -4,12 +4,14 @@
  */
 
 import { useState, useEffect, lazy, Suspense } from "react";
+import { useAuth } from "./contexts/AuthContext";
 import {
   BrowserRouter as Router,
   Routes,
   Route,
   useParams,
   useLocation,
+  useNavigate,
 } from "react-router-dom";
 import "./App.css";
 import PhotoGrid from "./components/PhotoGrid";
@@ -22,6 +24,7 @@ import { API_URL, SITE_URL } from "./config";
 import { trackPageView, trackError } from "./utils/analytics";
 import { fetchWithRateLimitCheck } from "./utils/fetchWrapper";
 import { SSEToasterProvider } from "./contexts/SSEToasterContext";
+import { AuthProvider } from "./contexts/AuthContext";
 import SSEToaster from "./components/SSEToaster";
 import { filterAlbums, filterFolders } from "./utils/albumFilters";
 
@@ -94,9 +97,22 @@ function App() {
   );
   const [showFooter, setShowFooter] = useState(false);
   const [hideAlbumTitle, setHideAlbumTitle] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [setupComplete, setSetupComplete] = useState<boolean | null>(null);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
+
+  // Listen for auth errors and redirect to login
+  useEffect(() => {
+    const handleAuthError = (event: Event) => {
+      const customEvent = event as CustomEvent;
+      console.log('Auth error detected:', customEvent.detail?.message);
+      navigate('/admin');
+    };
+
+    window.addEventListener('auth-error', handleAuthError);
+    return () => window.removeEventListener('auth-error', handleAuthError);
+  }, [navigate]);
 
   // Check if initial setup is complete
   useEffect(() => {
@@ -132,40 +148,6 @@ function App() {
     };
   }, []);
 
-  // Check authentication status
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const res = await fetch(`${API_URL}/api/auth/status`, {
-          credentials: 'include',
-        });
-        if (res.ok) {
-          const data = await res.json();
-          setIsAuthenticated(data.authenticated === true);
-        } else {
-          setIsAuthenticated(false);
-        }
-      } catch {
-        setIsAuthenticated(false);
-      }
-    };
-    
-    // Immediate logout handler - no async delay
-    const handleLogoutEvent = () => {
-      setIsAuthenticated(false);
-    };
-    
-    checkAuth();
-    
-    // Listen for authentication changes (e.g., from logout)
-    window.addEventListener('auth-changed', checkAuth);
-    window.addEventListener('user-logged-out', handleLogoutEvent);
-    
-    return () => {
-      window.removeEventListener('auth-changed', checkAuth);
-      window.removeEventListener('user-logged-out', handleLogoutEvent);
-    };
-  }, [location.pathname]); // Re-check when route changes
 
   // Apply theme colors to CSS custom properties
   useEffect(() => {
@@ -545,10 +527,12 @@ function App() {
 function AppWrapper() {
   return (
     <Router>
-      <SSEToasterProvider>
-        <ScrollToTop />
-        <App />
-      </SSEToasterProvider>
+      <AuthProvider>
+        <SSEToasterProvider>
+          <ScrollToTop />
+          <App />
+        </SSEToasterProvider>
+      </AuthProvider>
     </Router>
   );
 }
