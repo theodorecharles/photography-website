@@ -34,7 +34,6 @@ const AuthError = lazy(() => import("./components/Misc/AuthError"));
 import NotFound from "./components/Misc/NotFound";
 const SharedAlbum = lazy(() => import("./components/SharedAlbum"));
 const SetupWizard = lazy(() => import("./components/SetupWizard"));
-const Login = lazy(() => import("./components/Misc/Login"));
 const InviteSignup = lazy(() => import("./components/Misc/InviteSignup"));
 const PasswordResetRequest = lazy(() => import("./components/Misc/PasswordResetRequest"));
 const PasswordResetComplete = lazy(() => import("./components/Misc/PasswordResetComplete"));
@@ -469,16 +468,6 @@ function App() {
                   url={`${SITE_URL}/auth/error`}
                 />
                 <AuthError />
-              </>
-            } />
-            <Route path="/login" element={
-              <>
-                <SEO 
-                  title="Sign In - Ted Charles Photography"
-                  description="Sign in to access the admin portal"
-                  url={`${SITE_URL}/login`}
-                />
-                <Login />
               </>
             } />
             <Route path="/shared/:secretKey" element={<SharedAlbum />} />

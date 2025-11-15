@@ -100,7 +100,11 @@ export default function AdminPortal() {
   const [messages, setMessages] = useState<Array<{ id: number; type: 'success' | 'error'; text: string }>>([]);
   const [showSecurityPrompt, setShowSecurityPrompt] = useState(false);
   const [metricsEnabled, setMetricsEnabled] = useState(false);
-  const [googleOAuthEnabled, setGoogleOAuthEnabled] = useState(false);
+  const [availableAuthMethods, setAvailableAuthMethods] = useState({
+    google: false,
+    passkey: false,
+    password: false,
+  });
 
   // Helper to add a new message
   const addMessage = (message: { type: 'success' | 'error'; text: string }) => {
@@ -181,8 +185,12 @@ export default function AdminPortal() {
           loadAlbums();
           checkMetricsEnabled();
         } else {
-          // Set Google OAuth availability from auth status
-          setGoogleOAuthEnabled(data.googleOAuthEnabled || false);
+          // Set available auth methods from auth status
+          setAvailableAuthMethods(data.availableAuthMethods || {
+            google: false,
+            passkey: false,
+            password: false,
+          });
         }
         setLoading(false);
       })
@@ -577,7 +585,7 @@ export default function AdminPortal() {
               {/* Auth Method Selection - Main Screen */}
               {!activeAuthTab && (
                 <div className="auth-actions">
-                  {googleOAuthEnabled && (
+                  {availableAuthMethods.google && (
                     <a 
                       href={`${API_URL}/api/auth/google`} 
                       className="btn-login"
@@ -605,58 +613,62 @@ export default function AdminPortal() {
                     </a>
                   )}
                   
-                  <button
-                    onClick={() => setActiveAuthTab('passkey')}
-                    className="btn-login"
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      width: '100%',
-                      height: '56px',
-                      background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
-                      border: '1px solid rgba(59, 130, 246, 0.3)',
-                      boxShadow: '0 4px 12px rgba(59, 130, 246, 0.3)'
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.boxShadow = '0 6px 20px rgba(59, 130, 246, 0.4)';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.boxShadow = '0 4px 12px rgba(59, 130, 246, 0.3)';
-                    }}
-                  >
-                    <span style={{ fontSize: '1.2rem', marginRight: '12px' }}>🔑</span>
-                    Sign in with Passkey
-                  </button>
+                  {availableAuthMethods.passkey && (
+                    <button
+                      onClick={() => setActiveAuthTab('passkey')}
+                      className="btn-login"
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        width: '100%',
+                        height: '56px',
+                        background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+                        border: '1px solid rgba(59, 130, 246, 0.3)',
+                        boxShadow: '0 4px 12px rgba(59, 130, 246, 0.3)'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.boxShadow = '0 6px 20px rgba(59, 130, 246, 0.4)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.boxShadow = '0 4px 12px rgba(59, 130, 246, 0.3)';
+                      }}
+                    >
+                      <span style={{ fontSize: '1.2rem', marginRight: '12px' }}>🔑</span>
+                      Sign in with Passkey
+                    </button>
+                  )}
                   
-                  <button
-                    onClick={() => setActiveAuthTab('credentials')}
-                    className="btn-login"
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      width: '100%',
-                      height: '56px',
-                      background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                      border: '1px solid rgba(16, 185, 129, 0.3)',
-                      boxShadow: '0 4px 12px rgba(16, 185, 129, 0.3)'
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.boxShadow = '0 6px 20px rgba(16, 185, 129, 0.4)';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.boxShadow = '0 4px 12px rgba(16, 185, 129, 0.3)';
-                    }}
-                  >
-                    <LockIcon width="20" height="20" style={{ marginRight: '12px' }} />
-                    Sign in with Password
-                  </button>
+                  {availableAuthMethods.password && (
+                    <button
+                      onClick={() => setActiveAuthTab('credentials')}
+                      className="btn-login"
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        width: '100%',
+                        height: '56px',
+                        background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                        border: '1px solid rgba(16, 185, 129, 0.3)',
+                        boxShadow: '0 4px 12px rgba(16, 185, 129, 0.3)'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.boxShadow = '0 6px 20px rgba(16, 185, 129, 0.4)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.boxShadow = '0 4px 12px rgba(16, 185, 129, 0.3)';
+                      }}
+                    >
+                      <LockIcon width="20" height="20" style={{ marginRight: '12px' }} />
+                      Sign in with Password
+                    </button>
+                  )}
                 </div>
               )}
 
               {/* Google OAuth - Hidden (only via button) */}
-              {activeAuthTab === 'google' && googleOAuthEnabled && (
+              {activeAuthTab === 'google' && availableAuthMethods.google && (
                 <div className="auth-actions">
                   <a href={`${API_URL}/api/auth/google`} className="btn-login">
                     <GoogleLogoIcon width="20" height="20" style={{ marginRight: '12px' }} />
