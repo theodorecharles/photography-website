@@ -301,13 +301,23 @@ router.get("/api/albums/:album/photos", (req: Request, res): void => {
   // Check album published state
   const albumState = getAlbumState(sanitizedAlbum);
   
+  // Debug logging
+  console.log(`[Album Access] Album: ${sanitizedAlbum}`);
+  console.log(`[Album Access] isAuthenticated: ${isAuthenticated}`);
+  console.log(`[Album Access] albumState:`, albumState);
+  console.log(`[Album Access] published: ${albumState?.published}`);
+  console.log(`[Album Access] Will deny access: ${!albumState || (!albumState.published && !isAuthenticated)}`);
+  
   // Deny access if:
   // 1. Album not in database (albumState is undefined)
   // 2. Album is unpublished and user is not authenticated
   if (!albumState || (!albumState.published && !isAuthenticated)) {
+    console.log(`[Album Access] ACCESS DENIED - Album not found or unpublished`);
     res.status(404).json({ error: "Album not found" });
     return;
   }
+  
+  console.log(`[Album Access] ACCESS GRANTED`);
 
   // Check cache first
   const cached = albumCache.get(sanitizedAlbum);
