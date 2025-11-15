@@ -187,7 +187,8 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
         const staticJsonUrl = `/albums-data/${album === "homepage" ? "homepage" : album}.json`;
         
         try {
-          const staticResponse = await fetch(staticJsonUrl);
+          // Disable caching to ensure we always get the latest JSON after publish/unpublish
+          const staticResponse = await fetch(staticJsonUrl, { cache: 'no-store' });
           if (staticResponse.ok) {
             const staticData = await staticResponse.json();
             console.log(`✨ Loaded ${staticData.length} photos from optimized static JSON (${album})`);
