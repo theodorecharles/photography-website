@@ -133,6 +133,18 @@ const PhotoGridItem: React.FC<PhotoGridItemProps> = ({
     transition,
     opacity: isDragging ? 0 : 1,
   };
+  
+  // Logging for debugging
+  if (photoData) {
+    console.log('🖼️ PhotoGridItem render:', {
+      id: photoData.id,
+      isDragging,
+      isDeleting,
+      transform: CSS.Transform.toString(transform),
+      transition,
+      hasTransform: !!transform
+    });
+  }
 
   // Get filename for display
   const filename = photoData

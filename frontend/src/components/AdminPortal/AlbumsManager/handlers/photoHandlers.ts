@@ -146,12 +146,20 @@ export const createPhotoHandlers = (props: PhotoHandlersProps) => {
             setMessage({ type: 'success', text: 'Photo deleted' });
             trackPhotoDeleted(album, filename, photoTitle || filename);
             
+            console.log('🗑️ Photo deleted successfully:', { photoId, album, filename });
+            
             // Remove photo from local state - this triggers grid reflow
-            setAlbumPhotos((prev: Photo[]) => prev.filter((p: Photo) => p.id !== photoId));
+            setAlbumPhotos((prev: Photo[]) => {
+              console.log('🔄 Before filter:', prev.length, 'photos');
+              const filtered = prev.filter((p: Photo) => p.id !== photoId);
+              console.log('🔄 After filter:', filtered.length, 'photos (removed', prev.length - filtered.length, ')');
+              return filtered;
+            });
             
             // Clear deleting state after a brief delay to allow reflow animation
             await new Promise(resolve => setTimeout(resolve, 100));
             setDeletingPhotoId(null);
+            console.log('✅ Deleting state cleared');
           } else {
             const error = await res.json();
             setMessage({ type: 'error', text: error.error || 'Failed to delete photo' });

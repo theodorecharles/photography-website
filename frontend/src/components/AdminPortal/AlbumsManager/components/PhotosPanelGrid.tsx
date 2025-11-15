@@ -53,6 +53,14 @@ const PhotosPanelGrid: React.FC<PhotosPanelGridProps> = ({
   // Detect if device supports touch
   const isTouchDevice = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
   
+  // Logging for debugging reflow
+  console.log('📸 PhotosPanelGrid render:', {
+    albumPhotosCount: albumPhotos.length,
+    uploadingImagesCount: uploadingImages.length,
+    deletingPhotoId,
+    photoIds: albumPhotos.map(p => p.id)
+  });
+  
   // Configure dnd-kit sensors for photos
   // Desktop: minimal delay for instant drag, mobile: longer delay to differentiate tap vs drag
   const photoSensors = useSensors(
