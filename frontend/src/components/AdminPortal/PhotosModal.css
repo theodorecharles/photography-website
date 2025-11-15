@@ -338,13 +338,16 @@
 }
 
 /* Publish Toggle Position - Desktop: controls bar, Mobile: title bar */
-/* Default: Show in controls bar (desktop), hide in title bar */
+/* 
+  Desktop (> 740px): Title bar shows [Album Title] [Photo Count] [Close]
+  Mobile (<= 740px): Title bar shows [Album Title] [Photo Count] [Publish Toggle] [Close]
+*/
 .publish-toggle-titlebar {
-  display: none !important; /* Hidden on desktop */
+  display: none !important; /* Hidden on desktop (> 740px) */
 }
 
 .publish-toggle-controlbar {
-  display: flex; /* Shown on desktop */
+  display: flex; /* Shown on desktop in controls bar (> 740px) */
 }
 
 /* Mobile Responsive - 768px for modal sizing, 500px for controls layout */
@@ -363,13 +366,18 @@
 
 /* Controls Bar Mobile Layout - 740px breakpoint */
 @media (max-width: 740px) {
-  /* Switch publish toggle position on mobile */
+  /* 
+    Mobile Layout Changes:
+    - Publish toggle moves FROM controls bar TO title bar
+    - Controls bar stacks vertically
+    - Button text hidden (icons only)
+  */
   .publish-toggle-titlebar {
-    display: flex !important; /* Show in title bar on mobile */
+    display: flex !important; /* Show in title bar on mobile (<= 740px) */
   }
   
   .publish-toggle-controlbar {
-    display: none !important; /* Hide from controls bar on mobile */
+    display: none !important; /* Hide from controls bar on mobile (<= 740px) */
   }
 
   .photos-controls-bar {
