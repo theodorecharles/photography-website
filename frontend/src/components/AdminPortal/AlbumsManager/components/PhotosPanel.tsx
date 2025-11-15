@@ -84,9 +84,18 @@ const PhotosPanel: React.FC<PhotosPanelProps> = ({
   shuffleButtonRef,
   canEdit,
 }) => {
-  const [viewMode, setViewMode] = useState<ViewMode>('grid');
+  // Initialize viewMode from localStorage, default to 'grid'
+  const [viewMode, setViewMode] = useState<ViewMode>(() => {
+    const saved = localStorage.getItem('photosViewMode');
+    return (saved === 'list' || saved === 'grid') ? saved : 'grid';
+  });
   const [photoActiveId, setPhotoActiveId] = useState<string | null>(null);
   const [isClosing, setIsClosing] = useState(false);
+
+  // Save viewMode preference to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('photosViewMode', viewMode);
+  }, [viewMode]);
 
   // Handle close with animation
   const handleClose = () => {
