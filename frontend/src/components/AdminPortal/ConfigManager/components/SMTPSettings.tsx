@@ -121,6 +121,8 @@ const SMTPSettings: React.FC<SMTPSettingsProps> = ({
           type: 'success',
           text: 'Setting saved successfully',
         });
+        // Notify other components that SMTP config has been updated
+        window.dispatchEvent(new Event('smtp-config-updated'));
       } else {
         const error = await res.json();
         setMessage({
@@ -191,6 +193,8 @@ const SMTPSettings: React.FC<SMTPSettingsProps> = ({
           type: 'success',
           text: `Email service ${newValue ? 'enabled' : 'disabled'}`,
         });
+        // Notify other components that SMTP config has been updated
+        window.dispatchEvent(new Event('smtp-config-updated'));
       } else {
         const error = await res.json();
         setMessage({
@@ -241,6 +245,8 @@ const SMTPSettings: React.FC<SMTPSettingsProps> = ({
           type: 'success',
           text: `SSL/TLS ${newValue ? 'enabled' : 'disabled'}`,
         });
+        // Notify other components that SMTP config has been updated
+        window.dispatchEvent(new Event('smtp-config-updated'));
       } else {
         const error = await res.json();
         setMessage({
