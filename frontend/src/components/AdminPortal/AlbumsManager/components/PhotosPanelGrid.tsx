@@ -6,7 +6,7 @@
  * - Loading state
  */
 
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { DndContext, DragOverlay, closestCenter, PointerSensor, KeyboardSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { SortableContext, sortableKeyboardCoordinates, rectSortingStrategy } from '@dnd-kit/sortable';
 import PhotoGridItem from './PhotoGridItem';
@@ -53,6 +53,77 @@ const PhotosPanelGrid: React.FC<PhotosPanelGridProps> = ({
   // Detect if device supports touch
   const isTouchDevice = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
   
+  // FLIP animation for smooth reflow on delete
+  const gridRef = useRef<HTMLDivElement>(null);
+  const firstPositionsRef = useRef<Map<string, DOMRect>>(new Map());
+  const prevDeletingPhotoIdRef = useRef<string | null>(null);
+  
+  // Capture "First" positions when deletion starts (before photo is removed from array)
+  useEffect(() => {
+    if (!gridRef.current) return;
+    
+    // When deletingPhotoId changes from null to a value, capture current positions
+    if (deletingPhotoId && deletingPhotoId !== prevDeletingPhotoIdRef.current) {
+      const positions = new Map<string, DOMRect>();
+      const items = gridRef.current.querySelectorAll('.admin-photo-item:not(.crt-delete)');
+      
+      items.forEach((item) => {
+        const id = (item as HTMLElement).dataset.photoId;
+        if (id) {
+          positions.set(id, item.getBoundingClientRect());
+        }
+      });
+      
+      firstPositionsRef.current = positions;
+    }
+    
+    // When deletingPhotoId changes from a value to null, apply FLIP animation
+    if (!deletingPhotoId && prevDeletingPhotoIdRef.current) {
+      // Photo has been removed, grid has reflowed - capture "Last" positions
+      requestAnimationFrame(() => {
+        if (!gridRef.current) return;
+        
+        const items = gridRef.current.querySelectorAll('.admin-photo-item:not(.crt-delete)');
+        
+        items.forEach((item) => {
+          const id = (item as HTMLElement).dataset.photoId;
+          if (!id) return;
+          
+          const first = firstPositionsRef.current.get(id);
+          const last = item.getBoundingClientRect();
+          
+          if (first) {
+            // Calculate how much the element moved
+            const deltaX = first.left - last.left;
+            const deltaY = first.top - last.top;
+            
+            if (deltaX !== 0 || deltaY !== 0) {
+              const element = item as HTMLElement;
+              
+              // Invert: move element back to its old position instantly
+              element.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+              element.style.transition = 'none';
+              
+              // Force a reflow
+              element.offsetHeight;
+              
+              // Play: animate to the new position
+              requestAnimationFrame(() => {
+                element.style.transform = '';
+                element.style.transition = 'transform 200ms ease';
+              });
+            }
+          }
+        });
+        
+        // Clear stored positions
+        firstPositionsRef.current.clear();
+      });
+    }
+    
+    prevDeletingPhotoIdRef.current = deletingPhotoId;
+  }, [deletingPhotoId]);
+  
   // Configure dnd-kit sensors for photos
   // Desktop: minimal delay for instant drag, mobile: longer delay to differentiate tap vs drag
   const photoSensors = useSensors(
@@ -95,7 +166,7 @@ const PhotosPanelGrid: React.FC<PhotosPanelGridProps> = ({
         onDragStart={(event) => onPhotoDragStart(event, setActiveId)}
         onDragEnd={(event) => onPhotoDragEnd(event, setActiveId)}
       >
-        <div className={viewMode === 'grid' ? 'photos-grid' : 'photos-list'}>
+        <div ref={gridRef} className={viewMode === 'grid' ? 'photos-grid' : 'photos-list'}>
           <SortableContext items={allItemIds} strategy={rectSortingStrategy}>
             {/* Uploading images (includes those transitioning to complete) */}
             {uploadingImages.map((img, index) => (
