@@ -113,6 +113,7 @@ async function processVersion(image, version, quality, maxDim) {
   // Read file into buffer first to reduce I/O blocking
   const buffer = await fs.readFile(sourcePath);
   await sharp(buffer)
+    .rotate() // Auto-rotate based on EXIF orientation (fixes iPhone photos)
     .resize(maxDim, maxDim, {
       fit: 'inside',
       withoutEnlargement: true,
