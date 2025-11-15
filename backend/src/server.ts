@@ -56,7 +56,7 @@ import systemRouter from "./routes/system.ts";
 import shareLinksRouter from "./routes/share-links.ts";
 import optimizationStreamRouter from "./routes/optimization-stream.ts";
 import previewGridRouter from "./routes/preview-grid.ts";
-import staticJsonRouter from "./routes/static-json.ts";
+import staticJsonRouter, { generateStaticJSONFiles } from "./routes/static-json.ts";
 import setupRouter from "./routes/setup.ts";
 
 // Get the current directory path for ES modules
@@ -442,6 +442,18 @@ const server = app.listen(PORT, bindHost, () => {
   console.log(`Server is running on ${bindHost}:${PORT}`);
   console.log(`API URL: ${config.frontend.apiUrl}`);
   console.log(`Photos directory: ${photosDir}`);
+  
+  // Regenerate static JSON files on startup (non-blocking)
+  if (CONFIG_EXISTS) {
+    console.log('[Startup] Regenerating static JSON files...');
+    const appRoot = path.resolve(__dirname, "../../");
+    const result = generateStaticJSONFiles(appRoot);
+    if (result.success) {
+      console.log(`[Startup] ✓ Static JSON files updated (${result.albumCount} albums)`);
+    } else {
+      console.error('[Startup] ✗ Failed to generate static JSON:', result.error);
+    }
+  }
 });
 
 // Set server timeout to 10 minutes for long-running SSE connections
