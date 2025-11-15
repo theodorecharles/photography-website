@@ -99,18 +99,40 @@ const PhotosPanel: React.FC<PhotosPanelProps> = ({
 
   // Lock body scrolling when PhotosPanel is open and register close handler
   useEffect(() => {
-    // Save current overflow state
-    const originalOverflow = document.body.style.overflow;
+    // Save current overflow states
+    const originalBodyOverflow = document.body.style.overflow;
+    const originalBodyPosition = document.body.style.position;
+    const originalBodyTop = document.body.style.top;
+    const originalBodyWidth = document.body.style.width;
+    const scrollY = window.scrollY;
     
-    // Lock scrolling
+    // Lock scrolling on body
     document.body.style.overflow = 'hidden';
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.width = '100%';
+    
+    // Also lock scrolling on admin-container if it exists
+    const adminContainer = document.querySelector('.admin-container') as HTMLElement;
+    const originalContainerOverflow = adminContainer?.style.overflow;
+    if (adminContainer) {
+      adminContainer.style.overflow = 'hidden';
+    }
     
     // Register close handler so album deletion can trigger animation
     setCloseHandler(() => handleClose);
     
     // Restore on unmount
     return () => {
-      document.body.style.overflow = originalOverflow;
+      document.body.style.overflow = originalBodyOverflow;
+      document.body.style.position = originalBodyPosition;
+      document.body.style.top = originalBodyTop;
+      document.body.style.width = originalBodyWidth;
+      window.scrollTo(0, scrollY);
+      
+      if (adminContainer && originalContainerOverflow !== undefined) {
+        adminContainer.style.overflow = originalContainerOverflow;
+      }
     };
   }, [setCloseHandler]);
 
