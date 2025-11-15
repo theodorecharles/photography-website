@@ -3,7 +3,7 @@
  * Provides aggressive caching for images and static resources
  */
 
-const CACHE_VERSION = 'v2';
+const CACHE_VERSION = 'v3';
 const CACHE_NAME = `photo-site-${CACHE_VERSION}`;
 
 // Resources to cache immediately on install
