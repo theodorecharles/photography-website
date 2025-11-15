@@ -120,10 +120,9 @@
   }
   
   .toast {
-    right: 10px;
-    left: 10px;
     min-width: unset;
-    max-width: unset;
+    max-width: 400px;
+    margin: 0 auto;
   }
   
   @keyframes slideInRight {
