@@ -182,8 +182,33 @@ export const createPhotoHandlers = (props: PhotoHandlersProps) => {
     // Get the shuffle button to update its animation speed
     const shuffleButton = document.querySelector('.btn-shuffle-order') as HTMLElement;
     
+    // Get the photo grid container
+    const photoGrid = document.querySelector('.photos-grid') as HTMLElement;
+    
     // Add zoom class to all photos during shuffle
     const photoElements = document.querySelectorAll('.admin-photo-item');
+    
+    // Calculate scale to fit up to 100 images in view
+    const albumSize = photoElements.length;
+    let scale = 1.0;
+    
+    if (albumSize > 30) {
+      // Scale down for larger albums so more fit in view
+      // Target: 100 images should scale to ~0.5 (half size)
+      // Formula: scale = 1 - ((albumSize - 30) / 140)
+      // 30 photos: 1.0 (no scaling)
+      // 50 photos: ~0.86
+      // 70 photos: ~0.71
+      // 100 photos: 0.5
+      // 170 photos: 0 (capped at min)
+      scale = Math.max(0.4, 1 - ((albumSize - 30) / 140));
+    }
+    
+    // Apply scale to grid
+    if (photoGrid) {
+      photoGrid.style.setProperty('--shuffle-scale', scale.toString());
+    }
+    
     photoElements.forEach((el) => {
       el.classList.add('shuffling-active');
     });
@@ -191,7 +216,6 @@ export const createPhotoHandlers = (props: PhotoHandlersProps) => {
     // Calculate speed multiplier based on album size
     // Speed increases linearly with album size: speed = base_speed * (num_photos / 20)
     // Since interval is inverse of speed: interval = base_interval / (num_photos / 20)
-    const albumSize = document.querySelectorAll('.admin-photo-item').length;
     const speedMultiplier = 20 / Math.max(albumSize, 1); // Prevent division by zero
     
     // Start continuous shuffling with progressive speed increase
@@ -261,6 +285,12 @@ export const createPhotoHandlers = (props: PhotoHandlersProps) => {
     const shuffleButton = document.querySelector('.btn-shuffle-order') as HTMLElement;
     if (shuffleButton) {
       shuffleButton.style.removeProperty('--animation-speed');
+    }
+    
+    // Reset grid scale
+    const photoGrid = document.querySelector('.photos-grid') as HTMLElement;
+    if (photoGrid) {
+      photoGrid.style.removeProperty('--shuffle-scale');
     }
     
     // Remove zoom class from photos
