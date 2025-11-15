@@ -210,13 +210,6 @@ const PhotosPanelGrid: React.FC<PhotosPanelGridProps> = ({
         ) : (
           <div ref={gridRef} className="photos-list">
             <table className="photos-list-table">
-              <thead>
-                <tr>
-                  <th>Thumbnail</th>
-                  <th>Title</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
               <tbody>
                 <SortableContext items={allItemIds} strategy={rectSortingStrategy}>
                   {/* Uploading images (includes those transitioning to complete) */}
