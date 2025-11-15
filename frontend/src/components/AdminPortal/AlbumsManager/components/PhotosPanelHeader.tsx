@@ -79,9 +79,9 @@ const PhotosPanelHeader: React.FC<PhotosPanelHeaderProps> = ({
           <span className="photos-count">{photoCount} {photoCount === 1 ? 'photo' : 'photos'}</span>
         </div>
         
-        {/* Publish/Unpublish Toggle */}
+        {/* Publish/Unpublish Toggle (Mobile Only - shown on narrow screens) */}
         {canEdit ? (
-          <label className="toggle-switch compact" onClick={(e) => e.stopPropagation()}>
+          <label className="toggle-switch compact publish-toggle-titlebar" onClick={(e) => e.stopPropagation()}>
             <span className="toggle-label">
               {isPublished ? 'Published' : 'Unpublished'}
             </span>
@@ -93,7 +93,7 @@ const PhotosPanelHeader: React.FC<PhotosPanelHeaderProps> = ({
             <span className="toggle-slider"></span>
           </label>
         ) : (
-          <span className="photos-status-badge" style={{
+          <span className="photos-status-badge publish-toggle-titlebar" style={{
             padding: '0.5rem 0.75rem',
             borderRadius: '6px',
             fontSize: '0.875rem',
@@ -187,7 +187,32 @@ const PhotosPanelHeader: React.FC<PhotosPanelHeaderProps> = ({
         </div>
 
         <div className="photos-controls-right">
-          {/* Right side intentionally empty now - publish toggle moved to title bar */}
+          {/* Publish/Unpublish Toggle (Desktop Only - shown on wide screens) */}
+          {canEdit ? (
+            <label className="toggle-switch compact publish-toggle-controlbar" onClick={(e) => e.stopPropagation()}>
+              <span className="toggle-label">
+                {isPublished ? 'Published' : 'Unpublished'}
+              </span>
+              <input
+                type="checkbox"
+                checked={isPublished}
+                onChange={() => onTogglePublished(selectedAlbum, isPublished)}
+              />
+              <span className="toggle-slider"></span>
+            </label>
+          ) : (
+            <span className="photos-status-badge publish-toggle-controlbar" style={{
+              padding: '0.5rem 0.75rem',
+              borderRadius: '6px',
+              fontSize: '0.875rem',
+              fontWeight: 500,
+              background: isPublished ? 'rgba(34, 197, 94, 0.2)' : 'rgba(251, 191, 36, 0.2)',
+              color: isPublished ? '#4ade80' : '#fbbf24',
+              border: isPublished ? '1px solid rgba(34, 197, 94, 0.3)' : '1px solid rgba(251, 191, 36, 0.3)',
+            }}>
+              {isPublished ? 'Published' : 'Unpublished'}
+            </span>
+          )}
         </div>
       </div>
 

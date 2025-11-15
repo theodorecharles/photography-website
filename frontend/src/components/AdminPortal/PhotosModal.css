@@ -325,8 +325,26 @@
   color: #aaa;
 }
 
+/* Publish Toggle Position - Desktop: controls bar, Mobile: title bar */
+.publish-toggle-titlebar {
+  display: none; /* Hidden on desktop */
+}
+
+.publish-toggle-controlbar {
+  display: flex; /* Shown on desktop */
+}
+
 /* Mobile Responsive */
 @media (max-width: 768px) {
+  /* Switch publish toggle position on mobile */
+  .publish-toggle-titlebar {
+    display: flex !important; /* Show in title bar on mobile */
+  }
+  
+  .publish-toggle-controlbar {
+    display: none !important; /* Hide from controls bar on mobile */
+  }
+
   .photos-modal {
     top: 54px;
     width: 100%;
@@ -352,6 +370,11 @@
 
   .photos-controls-right {
     justify-content: stretch;
+  }
+  
+  /* Hide empty controls-right on mobile (publish toggle moved to title bar) */
+  .photos-controls-right:empty {
+    display: none;
   }
 
   .photos-btn {
@@ -385,7 +408,10 @@
     width: fit-content !important;
     flex-shrink: 0;
   }
+}
 
+/* Reorder Bar Mobile Layout - Only on very narrow screens */
+@media (max-width: 500px) {
   .photos-reorder-bar {
     flex-direction: column;
     gap: 0.75rem;
