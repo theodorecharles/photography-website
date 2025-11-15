@@ -349,6 +349,15 @@
   color: #aaa;
 }
 
+/* Desktop: show hint next to shuffle button, hide mobile version */
+.reorder-hint-desktop {
+  display: inline;
+}
+
+.reorder-hint-mobile {
+  display: none;
+}
+
 /* Publish Toggle Position - Desktop: controls bar, Mobile: title bar */
 /* 
   Desktop (> 740px): Title bar shows [Album Title] [Photo Count] [Close]
@@ -451,7 +460,7 @@
 /* Reorder Bar Mobile Layout - Only on very narrow screens */
 @media (max-width: 500px) {
   .photos-reorder-bar {
-    flex-direction: column;
+    flex-wrap: wrap;
     gap: 0.75rem;
     align-items: stretch;
   }
@@ -474,8 +483,26 @@
     min-width: 0;
   }
 
-  .reorder-hint {
+  /* Hide desktop hint, show mobile hint at bottom */
+  .reorder-hint-desktop {
     display: none;
+  }
+  
+  .reorder-hint-mobile {
+    display: block;
+    width: 100%;
+    text-align: center;
+    order: 3; /* Put it last */
+    padding-top: 0.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+  }
+  
+  .photos-reorder-left {
+    order: 1;
+  }
+  
+  .photos-reorder-right {
+    order: 2;
   }
 }
 
