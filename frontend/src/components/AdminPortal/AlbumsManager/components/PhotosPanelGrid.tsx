@@ -115,6 +115,12 @@ const PhotosPanelGrid: React.FC<PhotosPanelGridProps> = ({
                 requestAnimationFrame(() => {
                   element.style.transform = '';
                   element.style.transition = 'transform 200ms ease';
+                  
+                  // Clean up inline styles after animation completes
+                  setTimeout(() => {
+                    element.style.transform = '';
+                    element.style.transition = '';
+                  }, 200);
                 });
               }
             }
