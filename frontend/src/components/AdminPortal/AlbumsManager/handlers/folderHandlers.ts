@@ -13,7 +13,7 @@ interface FolderHandlersProps {
   localFolders: AlbumFolder[];
   setMessage: (message: { type: 'success' | 'error'; text: string }) => void;
   loadAlbums: () => Promise<void>;
-  saveAlbumOrder: (albumsToSave?: Album[]) => Promise<boolean>;
+  saveAlbumOrder: (albumsToSave?: Album[], silent?: boolean) => Promise<boolean>;
 }
 
 export const createFolderHandlers = (props: FolderHandlersProps) => {
@@ -50,8 +50,8 @@ export const createFolderHandlers = (props: FolderHandlersProps) => {
 
     const albumsInFolder = localAlbums.filter(a => a.folder_id === folder.id);
 
-    // Save any unsaved changes before deleting
-    const saveSuccess = await saveAlbumOrder(localAlbums);
+    // Save any unsaved changes before deleting (silently, no success message)
+    const saveSuccess = await saveAlbumOrder(localAlbums, true);
     if (!saveSuccess) {
       setMessage({ type: 'error', text: 'Failed to save changes before deleting folder' });
       return;
