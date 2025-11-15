@@ -195,46 +195,6 @@ export const createPhotoHandlers = (props: PhotoHandlersProps) => {
     // Get album size for calculations
     const albumSize = photoElements.length;
     
-    // Delay grid scaling - only apply if button is held for 200ms
-    // This prevents the scaled view on quick clicks
-    const scaleTimeout = setTimeout(() => {
-      if (!photoGrid) return;
-      
-      // Get current number of columns in the grid
-      const gridComputedStyle = window.getComputedStyle(photoGrid);
-      const gridWidth = photoGrid.clientWidth;
-      const firstPhoto = photoGrid.querySelector('.admin-photo-item') as HTMLElement;
-      
-      let currentColumns = 5; // Fallback
-      if (firstPhoto) {
-        const photoWidth = firstPhoto.offsetWidth;
-        const gap = parseFloat(gridComputedStyle.gap) || 16;
-        currentColumns = Math.round(gridWidth / (photoWidth + gap));
-      }
-      
-      // Calculate optimal column count to fit up to 100 images in view
-      let targetColumns = 5; // Base minimum
-      
-      if (albumSize > 30) {
-        // More photos = more columns
-        // Target: 100 photos should show ~12 columns
-        // Formula: targetColumns = 5 + Math.floor((albumSize - 30) / 10)
-        targetColumns = Math.min(20, 5 + Math.floor((albumSize - 30) / 10));
-      }
-      
-      // ONLY scale down (increase columns), never up (decrease columns)
-      const columnCount = Math.max(currentColumns, targetColumns);
-      
-      // Only apply shuffling-grid if we're actually adding columns
-      if (columnCount > currentColumns) {
-        photoGrid.classList.add('shuffling-grid');
-        photoGrid.style.setProperty('--shuffle-columns', columnCount.toString());
-      }
-    }, 200);
-    
-    // Store the timeout so we can clear it if released early
-    speedupTimeoutsRef.current.push(scaleTimeout);
-    
     // Calculate speed multiplier based on album size
     // Speed increases linearly with album size: speed = base_speed * (num_photos / 20)
     // Since interval is inverse of speed: interval = base_interval / (num_photos / 20)
@@ -252,6 +212,40 @@ export const createPhotoHandlers = (props: PhotoHandlersProps) => {
     const startShuffling = (interval: number) => {
       if (shuffleIntervalRef.current) {
         clearInterval(shuffleIntervalRef.current);
+      }
+      
+      // On first call, apply grid scaling (continuous shuffle is starting)
+      if (!shuffleIntervalRef.current && photoGrid) {
+        // Get current number of columns in the grid
+        const gridComputedStyle = window.getComputedStyle(photoGrid);
+        const gridWidth = photoGrid.clientWidth;
+        const firstPhoto = photoGrid.querySelector('.admin-photo-item') as HTMLElement;
+        
+        let currentColumns = 5; // Fallback
+        if (firstPhoto) {
+          const photoWidth = firstPhoto.offsetWidth;
+          const gap = parseFloat(gridComputedStyle.gap) || 16;
+          currentColumns = Math.round(gridWidth / (photoWidth + gap));
+        }
+        
+        // Calculate optimal column count to fit up to 100 images in view
+        let targetColumns = 5; // Base minimum
+        
+        if (albumSize > 30) {
+          // More photos = more columns
+          // Target: 100 photos should show ~12 columns
+          // Formula: targetColumns = 5 + Math.floor((albumSize - 30) / 10)
+          targetColumns = Math.min(20, 5 + Math.floor((albumSize - 30) / 10));
+        }
+        
+        // ONLY scale down (increase columns), never up (decrease columns)
+        const columnCount = Math.max(currentColumns, targetColumns);
+        
+        // Only apply shuffling-grid if we're actually adding columns
+        if (columnCount > currentColumns) {
+          photoGrid.classList.add('shuffling-grid');
+          photoGrid.style.setProperty('--shuffle-columns', columnCount.toString());
+        }
       }
       
       shuffleIntervalRef.current = setInterval(() => {
