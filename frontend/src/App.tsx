@@ -424,6 +424,9 @@ function App() {
               </>
             } />
             <Route path="/admin" element={<AdminPortal />} />
+            <Route path="/admin/login" element={<AdminPortal />} />
+            <Route path="/admin/login/password" element={<AdminPortal />} />
+            <Route path="/admin/login/passkey" element={<AdminPortal />} />
             <Route path="/admin/albums" element={<AdminPortal />} />
             <Route path="/admin/metrics" element={<AdminPortal />} />
             <Route path="/admin/settings" element={<AdminPortal />} />
