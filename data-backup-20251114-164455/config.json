@@ -1,0 +1,106 @@
+{
+  "environment": {
+    "frontend": {
+      "port": 3000,
+      "apiUrl": "http://localhost:3001"
+    },
+    "backend": {
+      "port": 3001,
+      "allowedOrigins": [
+        "http://localhost:3000"
+      ]
+    },
+    "optimization": {
+      "concurrency": 4,
+      "images": {
+        "thumbnail": {
+          "quality": 60,
+          "maxDimension": 640
+        },
+        "modal": {
+          "quality": 90,
+          "maxDimension": 2048
+        },
+        "download": {
+          "quality": 100,
+          "maxDimension": 4096
+        }
+      }
+    },
+    "security": {
+      "allowedHosts": [
+        "localhost:3000"
+      ],
+      "rateLimitWindowMs": 1000,
+      "rateLimitMaxRequests": 30,
+      "redirectFrom": [],
+      "redirectTo": ""
+    },
+    "auth": {
+      "google": {
+        "clientId": "your-google-client-id",
+        "clientSecret": "your-google-client-secret"
+      },
+      "sessionSecret": "fa2e1d86c4fa14cdf68bd41f57ce6e91e59e6538a7eb577e8704691b0cc72b37",
+      "authorizedEmails": [
+        "me@tedcharles.net"
+      ]
+    }
+  },
+  "branding": {
+    "siteName": "Ted Charles",
+    "avatarPath": "/photos/avatar.png",
+    "primaryColor": "#4ade80",
+    "secondaryColor": "#22c55e",
+    "metaDescription": "Photography portfolio by Ted Charles",
+    "metaKeywords": "photography, portfolio, ted charles",
+    "faviconPath": "/favicon.ico"
+  },
+  "analytics": {
+    "scriptPath": "",
+    "openobserve": {
+      "enabled": false,
+      "endpoint": "https://log.yourdomain.com/api/",
+      "organization": "your-organization-id",
+      "stream": "website",
+      "username": "your-username",
+      "password": "your-password"
+    },
+    "hmacSecret": ""
+  },
+  "notifications": {
+    "telegram": {
+      "enabled": false,
+      "botToken": "your-telegram-bot-token",
+      "chatId": "your-telegram-chat-id"
+    }
+  },
+  "externalLinks": [
+    {
+      "title": "My Blog",
+      "url": "https://blog.example.com"
+    },
+    {
+      "title": "Primes Benchmark",
+      "url": "/primes/"
+    },
+    {
+      "title": "YouTube",
+      "url": "https://youtube.com/@yourname"
+    },
+    {
+      "title": "GitHub",
+      "url": "https://github.com/yourusername/"
+    },
+    {
+      "title": "Login",
+      "url": "/admin"
+    }
+  ],
+  "openai": {
+    "apiKey": ""
+  },
+  "ai": {
+    "autoGenerateTitlesOnUpload": false
+  }
+}
