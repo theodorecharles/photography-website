@@ -41,7 +41,7 @@ export default function AdminPortal() {
   const [loading, setLoading] = useState(true);
   const [cssLoaded, setCssLoaded] = useState(false);
   const sseToaster = useSSEToaster();
-  const { logoutMessage, clearLogoutMessage } = useAuth();
+  const { logoutMessage, clearLogoutMessage, isAuthenticated: globalIsAuthenticated } = useAuth();
   
   // Login state
   const [activeAuthTab, setActiveAuthTab] = useState<AuthMethod>(null);
@@ -59,6 +59,16 @@ export default function AdminPortal() {
       clearLogoutMessage();
     }
   }, [logoutMessage, clearLogoutMessage]);
+  
+  // Listen for global auth changes from AuthContext
+  useEffect(() => {
+    if (!globalIsAuthenticated && authStatus?.authenticated) {
+      // User was logged out - reset auth status
+      console.log('[AdminPortal] Global auth changed to false - logging out user');
+      setAuthStatus({ ...authStatus, authenticated: false });
+      setLoginError('You were logged out');
+    }
+  }, [globalIsAuthenticated, authStatus]);
   
   // Load saved passkey email when switching to passkey tab
   useEffect(() => {
