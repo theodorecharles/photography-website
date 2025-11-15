@@ -78,6 +78,34 @@ const PhotosPanelHeader: React.FC<PhotosPanelHeaderProps> = ({
           <h2 className="photos-modal-title">{selectedAlbum}</h2>
           <span className="photos-count">{photoCount} {photoCount === 1 ? 'photo' : 'photos'}</span>
         </div>
+        
+        {/* Publish/Unpublish Toggle */}
+        {canEdit ? (
+          <label className="toggle-switch compact" onClick={(e) => e.stopPropagation()}>
+            <span className="toggle-label">
+              {isPublished ? 'Published' : 'Unpublished'}
+            </span>
+            <input
+              type="checkbox"
+              checked={isPublished}
+              onChange={() => onTogglePublished(selectedAlbum, isPublished)}
+            />
+            <span className="toggle-slider"></span>
+          </label>
+        ) : (
+          <span className="photos-status-badge" style={{
+            padding: '0.5rem 0.75rem',
+            borderRadius: '6px',
+            fontSize: '0.875rem',
+            fontWeight: 500,
+            background: isPublished ? 'rgba(34, 197, 94, 0.2)' : 'rgba(251, 191, 36, 0.2)',
+            color: isPublished ? '#4ade80' : '#fbbf24',
+            border: isPublished ? '1px solid rgba(34, 197, 94, 0.3)' : '1px solid rgba(251, 191, 36, 0.3)',
+          }}>
+            {isPublished ? 'Published' : 'Unpublished'}
+          </span>
+        )}
+        
         <button onClick={onClose} className="photos-close-btn" title="Close">
           <CloseIcon width="20" height="20" />
         </button>
@@ -133,57 +161,33 @@ const PhotosPanelHeader: React.FC<PhotosPanelHeaderProps> = ({
                 <TrashIcon width="16" height="16" />
                 <span>Delete</span>
               </button>
+              
+              {!isPublished && (
+                <>
+                  <button
+                    onClick={() => onPreviewAlbum(selectedAlbum)}
+                    className="photos-btn photos-btn-secondary"
+                    title="Preview album"
+                  >
+                    <EyeIcon width="16" height="16" />
+                    <span>Preview</span>
+                  </button>
+                  <button
+                    onClick={() => onShareAlbum(selectedAlbum)}
+                    className="photos-btn photos-btn-secondary"
+                    title="Generate shareable link"
+                  >
+                    <LinkIcon width="16" height="16" />
+                    <span>Share</span>
+                  </button>
+                </>
+              )}
             </>
           )}
         </div>
 
         <div className="photos-controls-right">
-          {!isPublished && canEdit && (
-            <div className="photos-action-buttons">
-              <button
-                onClick={() => onPreviewAlbum(selectedAlbum)}
-                className="photos-btn photos-btn-secondary"
-                title="Preview album"
-              >
-                <EyeIcon width="16" height="16" />
-                <span>Preview</span>
-              </button>
-              <button
-                onClick={() => onShareAlbum(selectedAlbum)}
-                className="photos-btn photos-btn-secondary"
-                title="Generate shareable link"
-              >
-                <LinkIcon width="16" height="16" />
-                <span>Share</span>
-              </button>
-            </div>
-          )}
-
-          {canEdit ? (
-            <label className="toggle-switch compact" onClick={(e) => e.stopPropagation()}>
-              <span className="toggle-label">
-                {isPublished ? 'Published' : 'Unpublished'}
-              </span>
-              <input
-                type="checkbox"
-                checked={isPublished}
-                onChange={() => onTogglePublished(selectedAlbum, isPublished)}
-              />
-              <span className="toggle-slider"></span>
-            </label>
-          ) : (
-            <span className="photos-status-badge" style={{
-              padding: '0.5rem 0.75rem',
-              borderRadius: '6px',
-              fontSize: '0.875rem',
-              fontWeight: 500,
-              background: isPublished ? 'rgba(34, 197, 94, 0.2)' : 'rgba(251, 191, 36, 0.2)',
-              color: isPublished ? '#4ade80' : '#fbbf24',
-              border: isPublished ? '1px solid rgba(34, 197, 94, 0.3)' : '1px solid rgba(251, 191, 36, 0.3)',
-            }}>
-              {isPublished ? 'Published' : 'Unpublished'}
-            </span>
-          )}
+          {/* Right side intentionally empty now - publish toggle moved to title bar */}
         </div>
       </div>
 
