@@ -2,7 +2,7 @@
  * Google Sign On Settings Component
  */
 
-import React, { useState } from 'react';
+import React from 'react';
 import { ConfigData } from '../types';
 import { PasswordInput } from '../../PasswordInput';
 
@@ -29,46 +29,7 @@ const AuthSettings: React.FC<AuthSettingsProps> = ({
   onCancel,
   savingSection,
 }) => {
-  const [isSetupMode, setIsSetupMode] = useState(false);
-
-  // Check if Google OAuth is configured
-  const clientId = config.environment.auth.google.clientId;
-  const isConfigured = clientId && clientId.trim() !== '' && clientId !== 'your-google-client-id';
-
-  // If not configured and not in setup mode, show setup button
-  if (!isConfigured && !isSetupMode) {
-    return (
-      <div className="openai-section" style={{ marginBottom: "2rem" }}>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginBottom: "0.75rem",
-          }}
-        >
-          <label className="openai-section-label">GOOGLE SIGN ON</label>
-        </div>
-        <p
-          style={{
-            fontSize: "0.85rem",
-            color: "#888",
-            marginTop: "0",
-            marginBottom: "1rem",
-          }}
-        >
-          Google OAuth credentials for admin sign-in
-        </p>
-        <button
-          onClick={() => setIsSetupMode(true)}
-          className="btn-primary"
-          style={{ padding: "0.75rem 1.5rem" }}
-        >
-          Setup Google Sign On
-        </button>
-      </div>
-    );
-  }
+  const isEnabled = config.environment.auth.google.enabled;
 
   return (
     <div className="openai-section" style={{ marginBottom: "2rem" }}>
@@ -87,9 +48,6 @@ const AuthSettings: React.FC<AuthSettingsProps> = ({
               type="button"
               onClick={(e) => {
                 e.stopPropagation();
-                if (isSetupMode) {
-                  setIsSetupMode(false);
-                }
                 onCancel();
               }}
               disabled={savingSection !== null}
@@ -106,9 +64,6 @@ const AuthSettings: React.FC<AuthSettingsProps> = ({
               onClick={(e) => {
                 e.stopPropagation();
                 onSave();
-                if (isSetupMode) {
-                  setIsSetupMode(false);
-                }
               }}
               disabled={savingSection !== null}
               className="btn-primary"
@@ -131,6 +86,41 @@ const AuthSettings: React.FC<AuthSettingsProps> = ({
       >
         Google OAuth credentials for admin sign-in
       </p>
+
+      {/* Enable/Disable Toggle */}
+      <div className="branding-group" style={{ margin: 0, marginBottom: "1.5rem" }}>
+        <label className="branding-label" style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+          <input
+            type="checkbox"
+            checked={isEnabled}
+            onChange={(e) =>
+              updateConfig(
+                ["environment", "auth", "google", "enabled"],
+                e.target.checked
+              )
+            }
+            style={{
+              width: "1.25rem",
+              height: "1.25rem",
+              cursor: "pointer",
+            }}
+          />
+          <span>Enable Google Sign-In</span>
+        </label>
+        <p
+          style={{
+            fontSize: "0.8rem",
+            color: "#666",
+            marginTop: "0.5rem",
+            marginLeft: "2rem",
+          }}
+        >
+          {isEnabled
+            ? "Users will see the 'Sign in with Google' button on the login page"
+            : "Google sign-in will be hidden from the login page"}
+        </p>
+      </div>
+
       <div className="config-grid-inner">
         <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
           <div className="branding-group" style={{ margin: 0 }}>
