@@ -374,8 +374,7 @@ function App() {
   }
 
   // Check if current route is a standalone page (no main layout)
-  const isStandalonePage = location.pathname.startsWith('/admin') || 
-                          location.pathname.startsWith('/shared/') ||
+  const isStandalonePage = location.pathname.startsWith('/shared/') ||
                           location.pathname.startsWith('/setup');
 
   // Standalone pages render without the main layout
@@ -389,14 +388,6 @@ function App() {
           </div>
         }>
           <Routes>
-            <Route path="/admin" element={<AdminPortal />} />
-            <Route path="/admin/login" element={<AdminPortal />} />
-            <Route path="/admin/login/password" element={<AdminPortal />} />
-            <Route path="/admin/login/passkey" element={<AdminPortal />} />
-            <Route path="/admin/albums" element={<AdminPortal />} />
-            <Route path="/admin/metrics" element={<AdminPortal />} />
-            <Route path="/admin/settings" element={<AdminPortal />} />
-            <Route path="/admin/profile" element={<AdminPortal />} />
             <Route path="/shared/:secretKey" element={<SharedAlbum />} />
             <Route path="/setup" element={<SetupWizard />} />
           </Routes>
@@ -455,6 +446,14 @@ function App() {
                 <License />
               </>
             } />
+            <Route path="/admin" element={<AdminPortal />} />
+            <Route path="/admin/login" element={<AdminPortal />} />
+            <Route path="/admin/login/password" element={<AdminPortal />} />
+            <Route path="/admin/login/passkey" element={<AdminPortal />} />
+            <Route path="/admin/albums" element={<AdminPortal />} />
+            <Route path="/admin/metrics" element={<AdminPortal />} />
+            <Route path="/admin/settings" element={<AdminPortal />} />
+            <Route path="/admin/profile" element={<AdminPortal />} />
             <Route path="/auth/error" element={
               <>
                 <SEO 
