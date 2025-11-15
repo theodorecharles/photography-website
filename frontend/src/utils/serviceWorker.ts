@@ -8,7 +8,28 @@ import { showToast } from "./toast";
 export function registerServiceWorker() {
   // Disable service worker on localhost (development)
   if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-    console.log('[SW] Service worker disabled on localhost');
+    console.log('[SW] Service worker disabled on localhost - unregistering existing worker');
+    
+    // Actively unregister any existing service worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then((registrations) => {
+        for (const registration of registrations) {
+          registration.unregister();
+          console.log('[SW] Unregistered service worker:', registration.scope);
+        }
+      });
+      
+      // Clear all caches
+      if ('caches' in window) {
+        caches.keys().then((cacheNames) => {
+          cacheNames.forEach((cacheName) => {
+            caches.delete(cacheName);
+            console.log('[SW] Deleted cache:', cacheName);
+          });
+        });
+      }
+    }
+    
     return;
   }
   
