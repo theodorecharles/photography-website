@@ -29,12 +29,25 @@ function ensureOutputDir(outputDir: string): void {
 }
 
 /**
- * Write JSON file
+ * Write JSON file to both public and dist directories
  */
 function writeJSON(outputDir: string, filename: string, data: any): void {
-  const filepath = path.join(outputDir, filename);
-  fs.writeFileSync(filepath, JSON.stringify(data, null, 2));
-  console.log(`[Static JSON] Generated: ${filename} (${Array.isArray(data) ? data.length : 'N/A'} items)`);
+  const jsonString = JSON.stringify(data, null, 2);
+  
+  // Write to public directory
+  const publicPath = path.join(outputDir, filename);
+  fs.writeFileSync(publicPath, jsonString);
+  
+  // Also write to dist directory if it exists (for production)
+  const distPath = publicPath.replace('/public/albums-data/', '/dist/albums-data/');
+  const distDir = path.dirname(distPath);
+  
+  if (fs.existsSync(distDir)) {
+    fs.writeFileSync(distPath, jsonString);
+    console.log(`[Static JSON] Generated: ${filename} (${Array.isArray(data) ? data.length : 'N/A'} items) [public + dist]`);
+  } else {
+    console.log(`[Static JSON] Generated: ${filename} (${Array.isArray(data) ? data.length : 'N/A'} items) [public only]`);
+  }
 }
 
 /**

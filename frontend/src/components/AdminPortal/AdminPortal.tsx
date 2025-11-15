@@ -99,6 +99,8 @@ export default function AdminPortal() {
   const [folders, setFolders] = useState<AlbumFolder[]>([]);
   const [messages, setMessages] = useState<Array<{ id: number; type: 'success' | 'error'; text: string }>>([]);
   const [showSecurityPrompt, setShowSecurityPrompt] = useState(false);
+  const [metricsEnabled, setMetricsEnabled] = useState(false);
+  const [googleOAuthEnabled, setGoogleOAuthEnabled] = useState(false);
 
   // Helper to add a new message
   const addMessage = (message: { type: 'success' | 'error'; text: string }) => {
@@ -177,6 +179,10 @@ export default function AdminPortal() {
           loadExternalLinks();
           loadBranding();
           loadAlbums();
+          checkMetricsEnabled();
+        } else {
+          // Set Google OAuth availability from auth status
+          setGoogleOAuthEnabled(data.googleOAuthEnabled || false);
         }
         setLoading(false);
       })
@@ -185,6 +191,22 @@ export default function AdminPortal() {
         setLoading(false);
       });
   }, []);
+
+  // Check if OpenObserve analytics is enabled
+  const checkMetricsEnabled = async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/config`, {
+        credentials: 'include',
+      });
+      if (res.ok) {
+        const config = await res.json();
+        const isEnabled = config?.analytics?.openobserve?.enabled === true;
+        setMetricsEnabled(isEnabled);
+      }
+    } catch (err) {
+      console.error('Failed to check metrics config:', err);
+    }
+  };
 
   // Track tab changes
   useEffect(() => {
@@ -199,6 +221,23 @@ export default function AdminPortal() {
       navigate('/admin/settings');
     }
   }, [activeTab, authStatus, navigate]);
+
+  // Load branding and links when switching to Settings tab
+  useEffect(() => {
+    if (activeTab === 'config' && authStatus?.authenticated) {
+      console.log('[AdminPortal] Settings tab active, loading branding and links');
+      loadBranding();
+      loadExternalLinks();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTab, authStatus]);
+
+  // Redirect from metrics if it's disabled
+  useEffect(() => {
+    if (activeTab === 'metrics' && !metricsEnabled && authStatus?.authenticated) {
+      navigate('/admin');
+    }
+  }, [activeTab, metricsEnabled, authStatus, navigate]);
 
   // Check if user needs security setup after fresh login
   useEffect(() => {
@@ -271,7 +310,10 @@ export default function AdminPortal() {
         credentials: 'include',
       });
       const data = await res.json();
-      setExternalLinks(data.links || []);
+      console.log('[AdminPortal] Loaded external links from API:', data);
+      const linksData = data.links || [];
+      console.log('[AdminPortal] Setting externalLinks state to:', linksData);
+      setExternalLinks(linksData);
     } catch (err) {
       console.error('Failed to load external links:', err);
     }
@@ -283,8 +325,9 @@ export default function AdminPortal() {
         credentials: 'include',
       });
       const data = await res.json();
+      console.log('[AdminPortal] Loaded branding data from API:', data);
       // Ensure all values are strings (not undefined)
-      setBranding({
+      const brandingData = {
         siteName: data.siteName || '',
         avatarPath: data.avatarPath || '',
         primaryColor: data.primaryColor || '#4ade80',
@@ -292,7 +335,9 @@ export default function AdminPortal() {
         metaDescription: data.metaDescription || '',
         metaKeywords: data.metaKeywords || '',
         faviconPath: data.faviconPath || ''
-      });
+      };
+      console.log('[AdminPortal] Setting branding state to:', brandingData);
+      setBranding(brandingData);
     } catch (err) {
       console.error('Failed to load branding config:', err);
     }
@@ -532,31 +577,33 @@ export default function AdminPortal() {
               {/* Auth Method Selection - Main Screen */}
               {!activeAuthTab && (
                 <div className="auth-actions">
-                  <a 
-                    href={`${API_URL}/api/auth/google`} 
-                    className="btn-login"
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      textDecoration: 'none',
-                      width: '100%',
-                      height: '56px',
-                      background: 'white',
-                      border: '1px solid #d1d5db',
-                      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)',
-                      color: '#374151'
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.boxShadow = '0 6px 20px rgba(0, 0, 0, 0.12)';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.08)';
-                    }}
-                  >
-                    <GoogleLogoIcon width="20" height="20" style={{ marginRight: '12px' }} />
-                    Sign in with Google
-                  </a>
+                  {googleOAuthEnabled && (
+                    <a 
+                      href={`${API_URL}/api/auth/google`} 
+                      className="btn-login"
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        textDecoration: 'none',
+                        width: '100%',
+                        height: '56px',
+                        background: 'white',
+                        border: '1px solid #d1d5db',
+                        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)',
+                        color: '#374151'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.boxShadow = '0 6px 20px rgba(0, 0, 0, 0.12)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.08)';
+                      }}
+                    >
+                      <GoogleLogoIcon width="20" height="20" style={{ marginRight: '12px' }} />
+                      Sign in with Google
+                    </a>
+                  )}
                   
                   <button
                     onClick={() => setActiveAuthTab('passkey')}
@@ -609,7 +656,7 @@ export default function AdminPortal() {
               )}
 
               {/* Google OAuth - Hidden (only via button) */}
-              {activeAuthTab === 'google' && (
+              {activeAuthTab === 'google' && googleOAuthEnabled && (
                 <div className="auth-actions">
                   <a href={`${API_URL}/api/auth/google`} className="btn-login">
                     <GoogleLogoIcon width="20" height="20" style={{ marginRight: '12px' }} />
@@ -862,13 +909,15 @@ export default function AdminPortal() {
               <ImageIcon width="20" height="20" style={{ marginRight: '8px' }} />
               Albums
             </button>
-            <button
-              className={`tab-button ${activeTab === 'metrics' ? 'active' : ''}`}
-              onClick={() => navigate('/admin/metrics')}
-            >
-              <BarChartIcon width="20" height="20" style={{ marginRight: '8px' }} />
-              Metrics
-            </button>
+            {metricsEnabled && (
+              <button
+                className={`tab-button ${activeTab === 'metrics' ? 'active' : ''}`}
+                onClick={() => navigate('/admin/metrics')}
+              >
+                <BarChartIcon width="20" height="20" style={{ marginRight: '8px' }} />
+                Metrics
+              </button>
+            )}
             {/* Show Settings tab only for admins, Profile tab for viewers/managers */}
             {authStatus?.user?.role === 'admin' ? (
               <button
@@ -913,7 +962,7 @@ export default function AdminPortal() {
           ))}
         </div>
 
-        {activeTab === 'metrics' && (
+        {activeTab === 'metrics' && metricsEnabled && (
           <Metrics />
         )}
 

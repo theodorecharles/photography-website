@@ -10,10 +10,32 @@ const __dirname = path.dirname(__filename);
 const jsonCache = new Map();
 const JSON_CACHE_MAX_AGE = 5 * 60 * 1000; // 5 minutes
 
-// Load configuration
+// Load configuration (or use defaults for setup mode)
 const configPath = path.join(__dirname, "../data/config.json");
-const configFile = JSON.parse(fs.readFileSync(configPath, "utf8"));
-const config = configFile.environment;
+let configFile;
+let config;
+
+if (fs.existsSync(configPath)) {
+  configFile = JSON.parse(fs.readFileSync(configPath, "utf8"));
+  config = configFile.environment;
+} else {
+  // Setup mode - use defaults
+  console.log("⚠️  config.json not found - using defaults for setup mode");
+  configFile = {
+    analytics: {},
+  };
+  config = {
+    frontend: {
+      port: 3000,
+      apiUrl: "http://localhost:3001",
+    },
+    security: {
+      allowedHosts: ["localhost:3000", "127.0.0.1:3000"],
+      redirectFrom: [],
+      redirectTo: null,
+    },
+  };
+}
 
 const app = express();
 const port = process.env.PORT || config.frontend.port;

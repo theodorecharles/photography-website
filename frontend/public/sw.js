@@ -181,10 +181,11 @@ self.addEventListener('fetch', (event) => {
     return;
   }
   
-  // Skip external map tile requests (let them handle their own caching/errors)
+  // Skip external requests (let them handle their own caching/errors)
   const urlObj = new URL(event.request.url);
   if (urlObj.hostname.includes('basemaps.cartocdn.com') || 
-      urlObj.hostname.includes('openstreetmap.org')) {
+      urlObj.hostname.includes('openstreetmap.org') ||
+      urlObj.hostname.includes('gravatar.com')) {
     return;
   }
   

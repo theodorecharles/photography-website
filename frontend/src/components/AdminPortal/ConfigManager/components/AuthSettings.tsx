@@ -1,8 +1,8 @@
 /**
- * Authentication Settings Component
+ * Google Sign On Settings Component
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { ConfigData } from '../types';
 import { PasswordInput } from '../../PasswordInput';
 
@@ -29,6 +29,47 @@ const AuthSettings: React.FC<AuthSettingsProps> = ({
   onCancel,
   savingSection,
 }) => {
+  const [isSetupMode, setIsSetupMode] = useState(false);
+
+  // Check if Google OAuth is configured
+  const clientId = config.environment.auth.google.clientId;
+  const isConfigured = clientId && clientId.trim() !== '' && clientId !== 'your-google-client-id';
+
+  // If not configured and not in setup mode, show setup button
+  if (!isConfigured && !isSetupMode) {
+    return (
+      <div className="openai-section" style={{ marginBottom: "2rem" }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: "0.75rem",
+          }}
+        >
+          <label className="openai-section-label">GOOGLE SIGN ON</label>
+        </div>
+        <p
+          style={{
+            fontSize: "0.85rem",
+            color: "#888",
+            marginTop: "0",
+            marginBottom: "1rem",
+          }}
+        >
+          Google OAuth credentials for admin sign-in
+        </p>
+        <button
+          onClick={() => setIsSetupMode(true)}
+          className="btn-primary"
+          style={{ padding: "0.75rem 1.5rem" }}
+        >
+          Setup Google Sign On
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className="openai-section" style={{ marginBottom: "2rem" }}>
       <div
@@ -39,13 +80,16 @@ const AuthSettings: React.FC<AuthSettingsProps> = ({
           marginBottom: "0.75rem",
         }}
       >
-        <label className="openai-section-label">AUTHENTICATION</label>
+        <label className="openai-section-label">GOOGLE SIGN ON</label>
         {hasUnsavedChanges && (
           <div style={{ display: "flex", gap: "0.5rem" }}>
             <button
               type="button"
               onClick={(e) => {
                 e.stopPropagation();
+                if (isSetupMode) {
+                  setIsSetupMode(false);
+                }
                 onCancel();
               }}
               disabled={savingSection !== null}
@@ -62,6 +106,9 @@ const AuthSettings: React.FC<AuthSettingsProps> = ({
               onClick={(e) => {
                 e.stopPropagation();
                 onSave();
+                if (isSetupMode) {
+                  setIsSetupMode(false);
+                }
               }}
               disabled={savingSection !== null}
               className="btn-primary"
@@ -82,8 +129,7 @@ const AuthSettings: React.FC<AuthSettingsProps> = ({
           marginBottom: "1rem",
         }}
       >
-        Google OAuth credentials and authorized email addresses for
-        admin access
+        Google OAuth credentials for admin sign-in
       </p>
       <div className="config-grid-inner">
         <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>

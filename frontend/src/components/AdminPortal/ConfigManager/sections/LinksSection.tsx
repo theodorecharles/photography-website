@@ -32,8 +32,10 @@ const LinksSection: React.FC<LinksSectionProps> = ({
 
   // Track original external links when they change from parent
   useEffect(() => {
+    console.log('[LinksSection] Received externalLinks prop:', externalLinks);
+    console.log('[LinksSection] Setting originalExternalLinks to:', structuredClone(externalLinks));
     setOriginalExternalLinks(structuredClone(externalLinks));
-  }, [externalLinks.length]);
+  }, [externalLinks]);
 
   // Handle section parameter from URL (e.g., ?section=links)
   useEffect(() => {

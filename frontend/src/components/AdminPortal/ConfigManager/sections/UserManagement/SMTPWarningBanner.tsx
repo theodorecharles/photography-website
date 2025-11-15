@@ -22,14 +22,14 @@ export const SMTPWarningBanner: React.FC<SMTPWarningBannerProps> = ({
     <div
       style={{
         gridColumn: '1 / -1',
-        marginBottom: '1rem',
         display: 'flex',
         justifyContent: 'flex-end',
         alignItems: 'center',
         gap: '1rem',
       }}
     >
-      {!smtpConfigured && (
+      {!smtpConfigured ? (
+        // Show warning banner with "Set up SMTP" button when SMTP is not configured
         <div
           style={{
             flex: 1,
@@ -37,35 +37,44 @@ export const SMTPWarningBanner: React.FC<SMTPWarningBannerProps> = ({
             background: 'rgba(251, 191, 36, 0.1)',
             borderLeft: '3px solid #f59e0b',
             borderRadius: '4px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: '1rem',
           }}
         >
-          <strong
-            style={{
-              color: '#f59e0b',
-              display: 'block',
-              marginBottom: '0.25rem',
-            }}
+          <div style={{ flex: 1 }}>
+            <strong
+              style={{
+                color: '#f59e0b',
+                display: 'block',
+                marginBottom: '0.25rem',
+              }}
+            >
+              ⚠️ Email Not Configured
+            </strong>
+            <p style={{ fontSize: '0.85rem', color: '#ccc', margin: 0 }}>
+              Set up SMTP to send user invitation and password reset emails.
+            </p>
+          </div>
+          <button
+            onClick={onSetupSmtp}
+            className="btn-primary"
+            style={{ padding: '0.5rem 1rem', whiteSpace: 'nowrap', flexShrink: 0 }}
           >
-            ⚠️ Email Not Configured
-          </strong>
-          <p style={{ fontSize: '0.85rem', color: '#ccc', margin: 0 }}>
-            Set up SMTP to send user invitation and password reset emails.
-          </p>
+            Set up SMTP
+          </button>
         </div>
+      ) : (
+        // Show Invite User / Cancel button when SMTP is configured
+        <button
+          onClick={onToggleNewUserForm}
+          className="btn-primary"
+          style={{ padding: '0.5rem 1rem', whiteSpace: 'nowrap' }}
+        >
+          {showNewUserForm ? 'Cancel' : '+ Invite User'}
+        </button>
       )}
-      <button
-        onClick={() => {
-          if (smtpConfigured) {
-            onToggleNewUserForm();
-          } else {
-            onSetupSmtp();
-          }
-        }}
-        className="btn-primary"
-        style={{ padding: '0.5rem 1rem', whiteSpace: 'nowrap' }}
-      >
-        {!smtpConfigured ? '📧 Set up SMTP' : showNewUserForm ? 'Cancel' : '+ Invite User'}
-      </button>
     </div>
   );
 };
