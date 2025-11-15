@@ -10,13 +10,14 @@
  */
 
 import React from 'react';
-import { UploadIcon, TrashIcon, LinkIcon, ShuffleIcon } from '../../../icons';
+import { UploadIcon, TrashIcon, LinkIcon, ShuffleIcon, CloseIcon, EyeIcon, GridViewIcon, ListViewIcon } from '../../../icons';
 
 type ViewMode = 'grid' | 'list';
 
 interface PhotosPanelHeaderProps {
   selectedAlbum: string;
   localAlbums: any[];
+  albumPhotos: any[];
   uploadingImages: any[];
   hasEverDragged: boolean;
   savingOrder: boolean;
@@ -41,6 +42,7 @@ interface PhotosPanelHeaderProps {
 const PhotosPanelHeader: React.FC<PhotosPanelHeaderProps> = ({
   selectedAlbum,
   localAlbums,
+  albumPhotos,
   uploadingImages,
   hasEverDragged,
   savingOrder,
@@ -63,7 +65,7 @@ const PhotosPanelHeader: React.FC<PhotosPanelHeaderProps> = ({
 }) => {
   const currentAlbum = localAlbums.find(a => a.name === selectedAlbum);
   const isPublished = currentAlbum?.published !== false;
-  const photoCount = currentAlbum?.photoCount || 0;
+  const photoCount = albumPhotos.length;
 
   return (
     <div className="photos-modal-header">
@@ -74,93 +76,27 @@ const PhotosPanelHeader: React.FC<PhotosPanelHeaderProps> = ({
           <span className="photos-count">{photoCount} {photoCount === 1 ? 'photo' : 'photos'}</span>
         </div>
         <button onClick={onClose} className="photos-close-btn" title="Close">
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M5 5L15 15M15 5L5 15" />
-          </svg>
+          <CloseIcon width="20" height="20" />
         </button>
       </div>
 
       {/* Controls Bar */}
       <div className="photos-controls-bar">
         <div className="photos-controls-left">
-          {canEdit ? (
-            <label className="toggle-switch compact" onClick={(e) => e.stopPropagation()}>
-              <input
-                type="checkbox"
-                checked={isPublished}
-                onChange={() => onTogglePublished(selectedAlbum, isPublished)}
-              />
-              <span className="toggle-slider"></span>
-              <span className="toggle-label">
-                {isPublished ? 'Published' : 'Unpublished'}
-              </span>
-            </label>
-          ) : (
-            <span className="photos-status-badge" style={{
-              padding: '0.5rem 0.75rem',
-              borderRadius: '6px',
-              fontSize: '0.875rem',
-              fontWeight: 500,
-              background: isPublished ? 'rgba(34, 197, 94, 0.2)' : 'rgba(251, 191, 36, 0.2)',
-              color: isPublished ? '#4ade80' : '#fbbf24',
-              border: isPublished ? '1px solid rgba(34, 197, 94, 0.3)' : '1px solid rgba(251, 191, 36, 0.3)',
-            }}>
-              {isPublished ? 'Published' : 'Unpublished'}
-            </span>
-          )}
-
-          {!isPublished && canEdit && (
-            <div className="photos-action-buttons">
-              <button
-                onClick={() => onPreviewAlbum(selectedAlbum)}
-                className="photos-btn photos-btn-secondary"
-                title="Preview album"
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                  <circle cx="12" cy="12" r="3" />
-                </svg>
-                <span>Preview</span>
-              </button>
-              <button
-                onClick={() => onShareAlbum(selectedAlbum)}
-                className="photos-btn photos-btn-secondary"
-                title="Generate shareable link"
-              >
-                <LinkIcon width="16" height="16" />
-                <span>Share</span>
-              </button>
-            </div>
-          )}
-        </div>
-
-        <div className="photos-controls-right">
           <div className="view-toggle">
             <button
               className={`view-toggle-btn ${viewMode === 'grid' ? 'active' : ''}`}
               onClick={() => onViewModeChange('grid')}
               title="Grid view"
             >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <rect x="3" y="3" width="7" height="7" />
-                <rect x="14" y="3" width="7" height="7" />
-                <rect x="14" y="14" width="7" height="7" />
-                <rect x="3" y="14" width="7" height="7" />
-              </svg>
+              <GridViewIcon width="16" height="16" />
             </button>
             <button
               className={`view-toggle-btn ${viewMode === 'list' ? 'active' : ''}`}
               onClick={() => onViewModeChange('list')}
               title="List view"
             >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <line x1="8" y1="6" x2="21" y2="6" />
-                <line x1="8" y1="12" x2="21" y2="12" />
-                <line x1="8" y1="18" x2="21" y2="18" />
-                <line x1="3" y1="6" x2="3.01" y2="6" />
-                <line x1="3" y1="12" x2="3.01" y2="12" />
-                <line x1="3" y1="18" x2="3.01" y2="18" />
-              </svg>
+              <ListViewIcon width="16" height="16" />
             </button>
           </div>
 
@@ -188,6 +124,55 @@ const PhotosPanelHeader: React.FC<PhotosPanelHeaderProps> = ({
                 <span>Delete</span>
               </button>
             </>
+          )}
+        </div>
+
+        <div className="photos-controls-right">
+          {!isPublished && canEdit && (
+            <div className="photos-action-buttons">
+              <button
+                onClick={() => onPreviewAlbum(selectedAlbum)}
+                className="photos-btn photos-btn-secondary"
+                title="Preview album"
+              >
+                <EyeIcon width="16" height="16" />
+                <span>Preview</span>
+              </button>
+              <button
+                onClick={() => onShareAlbum(selectedAlbum)}
+                className="photos-btn photos-btn-secondary"
+                title="Generate shareable link"
+              >
+                <LinkIcon width="16" height="16" />
+                <span>Share</span>
+              </button>
+            </div>
+          )}
+
+          {canEdit ? (
+            <label className="toggle-switch compact" onClick={(e) => e.stopPropagation()}>
+              <span className="toggle-label">
+                {isPublished ? 'Published' : 'Unpublished'}
+              </span>
+              <input
+                type="checkbox"
+                checked={isPublished}
+                onChange={() => onTogglePublished(selectedAlbum, isPublished)}
+              />
+              <span className="toggle-slider"></span>
+            </label>
+          ) : (
+            <span className="photos-status-badge" style={{
+              padding: '0.5rem 0.75rem',
+              borderRadius: '6px',
+              fontSize: '0.875rem',
+              fontWeight: 500,
+              background: isPublished ? 'rgba(34, 197, 94, 0.2)' : 'rgba(251, 191, 36, 0.2)',
+              color: isPublished ? '#4ade80' : '#fbbf24',
+              border: isPublished ? '1px solid rgba(34, 197, 94, 0.3)' : '1px solid rgba(251, 191, 36, 0.3)',
+            }}>
+              {isPublished ? 'Published' : 'Unpublished'}
+            </span>
           )}
         </div>
       </div>

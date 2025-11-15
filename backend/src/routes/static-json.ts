@@ -51,22 +51,21 @@ function writeJSON(outputDir: string, filename: string, data: any): void {
 }
 
 /**
- * Transform database image to photo object
+ * Transform database image to optimized array format
+ * Format: [filename, title] for albums
+ * Format: [filename, title, album] for homepage
  */
-function transformImageToPhoto(img: any, album: string) {
+function transformImageToArray(img: any, album: string, includeAlbum: boolean = false) {
   const defaultTitle = img.filename
     .replace(/\.[^/.]+$/, '') // Remove extension
     .replace(/[-_]/g, ' '); // Replace hyphens and underscores with spaces
 
-  return {
-    id: `${album}/${img.filename}`,
-    title: img.title || defaultTitle,
-    album: album,
-    src: `/optimized/modal/${album}/${img.filename}`,
-    thumbnail: `/optimized/thumbnail/${album}/${img.filename}`,
-    download: `/optimized/download/${album}/${img.filename}`,
-    sort_order: img.sort_order ?? null,
-  };
+  const title = img.title || defaultTitle;
+  
+  if (includeAlbum) {
+    return [img.filename, title, album];
+  }
+  return [img.filename, title];
 }
 
 /**
@@ -82,18 +81,18 @@ export function generateStaticJSONFiles(appRoot: string): { success: boolean; er
     const albums = albumsData.map(a => a.name).filter(name => name !== 'homepage');
     console.log(`[Static JSON] Found ${albums.length} albums`);
 
-    // Generate JSON for each album
+    // Generate JSON for each album (optimized array format)
     for (const album of albums) {
       try {
         const images = getImagesInAlbum(album);
-        const photos = images.map((img) => transformImageToPhoto(img, album));
+        const photos = images.map((img) => transformImageToArray(img, album, false));
         writeJSON(outputDir, `${album}.json`, photos);
       } catch (error) {
         console.error(`[Static JSON] Error generating JSON for album "${album}":`, error);
       }
     }
 
-    // Generate homepage JSON (random photos from all published albums)
+    // Generate homepage JSON (random photos from all published albums, optimized format)
     try {
       const publishedImages = getImagesFromPublishedAlbums();
       
@@ -104,9 +103,9 @@ export function generateStaticJSONFiles(appRoot: string): { success: boolean; er
         [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
       }
       
-      // Take first 50 photos
+      // Take first 50 photos (include album name for homepage)
       const randomPhotos = shuffled.slice(0, 50).map((img) => 
-        transformImageToPhoto(img, img.album)
+        transformImageToArray(img, img.album, true)
       );
       
       writeJSON(outputDir, 'homepage.json', randomPhotos);

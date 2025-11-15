@@ -7,51 +7,32 @@
    MODAL CONTAINER & BACKDROP
    ============================================ */
 
-.photos-modal-backdrop {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.75);
-  backdrop-filter: blur(6px);
-  z-index: 1000;
-  animation: fadeIn 0.2s ease-out forwards;
-}
-
 .photos-modal {
   position: fixed;
-  top: 50%;
+  top: 54px;
   left: 50%;
-  transform: translate(-50%, -50%) scale(0.95);
-  width: 92vw;
-  max-width: 1600px;
-  height: 88vh;
-  max-height: 1000px;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 1024px;
+  height: calc(100vh - 54px);
   background: #1a1a1a;
-  border-radius: 16px;
-  box-shadow: 0 24px 72px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
   z-index: 1001;
   display: flex;
   flex-direction: column;
-  animation: modalSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
   overflow: hidden;
+  animation: flipUp 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
-@keyframes modalSlideIn {
+@keyframes flipUp {
   from {
     opacity: 0;
-    transform: translate(-50%, -48%) scale(0.95);
+    transform: translateX(-50%) translateY(100%) rotateX(-15deg);
   }
   to {
     opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
+    transform: translateX(-50%) translateY(0) rotateX(0deg);
   }
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
 }
 
 .photos-modal.drag-over {
@@ -64,6 +45,7 @@
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
+  padding-bottom: 80px; /* Space for fixed reorder bar */
 }
 
 .photos-grid {
@@ -268,19 +250,25 @@
 
 /* Reorder Bar */
 .photos-reorder-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 0.75rem 1.5rem;
-  background: rgba(59, 130, 246, 0.08);
-  border-top: 1px solid rgba(59, 130, 246, 0.2);
-  animation: slideDown 0.2s ease-out;
+  background: #1f1f1f;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.5);
+  z-index: 1002;
+  animation: slideUp 0.2s ease-out;
 }
 
-@keyframes slideDown {
+@keyframes slideUp {
   from {
     opacity: 0;
-    transform: translateY(-10px);
+    transform: translateY(100%);
   }
   to {
     opacity: 1;
@@ -303,9 +291,10 @@
 /* Mobile Responsive */
 @media (max-width: 768px) {
   .photos-modal {
-    width: 96vw;
-    height: 94vh;
-    border-radius: 12px;
+    top: 54px;
+    width: 100%;
+    max-width: 100%;
+    height: calc(100vh - 54px);
   }
 
   .photos-modal-title {
@@ -315,28 +304,48 @@
   .photos-controls-bar {
     flex-direction: column;
     align-items: stretch;
+    gap: 0.75rem;
   }
 
   .photos-controls-left,
   .photos-controls-right {
     width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .photos-controls-left > *,
+  .photos-controls-right > * {
+    flex: 1;
+    min-width: 0;
   }
 
   .photos-controls-right {
-    justify-content: space-between;
-  }
-
-  .photos-btn span {
-    display: none;
+    justify-content: stretch;
   }
 
   .photos-btn {
-    padding: 0.6rem;
-    justify-content: center;
+    padding: 0.6rem 0.8rem;
+    font-size: 0.85rem;
+    flex: 1;
   }
 
   .photos-action-buttons {
+    display: flex;
+    gap: 0.5rem;
+    width: 100%;
+  }
+
+  .photos-action-buttons button {
     flex: 1;
+  }
+
+  .toggle-switch.compact {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .view-toggle {
+    width: 100%;
   }
 
   .photos-reorder-bar {

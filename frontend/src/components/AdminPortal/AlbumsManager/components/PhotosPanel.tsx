@@ -4,7 +4,7 @@
  * Orchestrates header controls and photo grid/list view
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PhotosPanelHeader from './PhotosPanelHeader';
 import PhotosPanelGrid from './PhotosPanelGrid';
 import { Photo, UploadingImage } from '../types';
@@ -20,7 +20,6 @@ interface PhotosPanelProps {
   hasEverDragged: boolean;
   savingOrder: boolean;
   isDragging: boolean;
-  activeId: string | null;
   isShuffling: boolean;
   localAlbums: any[];
   onClose: () => void;
@@ -34,14 +33,13 @@ interface PhotosPanelProps {
   onShufflePhotos: () => void;
   onShuffleStart: () => void;
   onShuffleEnd: () => void;
-  onPhotoDragStart: (event: any) => void;
-  onPhotoDragEnd: (event: any) => void;
+  onPhotoDragStart: (event: any, setActiveId?: (id: string | null) => void) => void;
+  onPhotoDragEnd: (event: any, setActiveId?: (id: string | null) => void) => void;
   onOpenEditModal: (photo: Photo) => void;
   onDeletePhoto: (filename: string) => void;
   onDragOver: (e: React.DragEvent<HTMLDivElement>) => void;
   onDragLeave: (e: React.DragEvent<HTMLDivElement>) => void;
   onDrop: (e: React.DragEvent<HTMLDivElement>) => void;
-  setActiveId: (id: string | null) => void;
   shuffleButtonRef: React.RefObject<HTMLButtonElement | null>;
   canEdit: boolean;
 }
@@ -54,7 +52,6 @@ const PhotosPanel: React.FC<PhotosPanelProps> = ({
   hasEverDragged,
   savingOrder,
   isDragging,
-  activeId,
   isShuffling,
   localAlbums,
   onClose,
@@ -79,22 +76,33 @@ const PhotosPanel: React.FC<PhotosPanelProps> = ({
   canEdit,
 }) => {
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
+  const [photoActiveId, setPhotoActiveId] = useState<string | null>(null);
+
+  // Lock body scrolling when PhotosPanel is open
+  useEffect(() => {
+    // Save current overflow state
+    const originalOverflow = document.body.style.overflow;
+    
+    // Lock scrolling
+    document.body.style.overflow = 'hidden';
+    
+    // Restore on unmount
+    return () => {
+      document.body.style.overflow = originalOverflow;
+    };
+  }, []);
 
   return (
-    <>
-      <div 
-        className="photos-modal-backdrop"
-        onClick={onClose}
-      />
-      <div 
-        className={`photos-modal ${isDragging ? 'drag-over' : ''}`}
-        onDragOver={uploadingImages.length > 0 ? undefined : onDragOver}
-        onDragLeave={uploadingImages.length > 0 ? undefined : onDragLeave}
-        onDrop={uploadingImages.length > 0 ? undefined : onDrop}
-      >
+    <div 
+      className={`photos-modal ${isDragging ? 'drag-over' : ''}`}
+      onDragOver={uploadingImages.length > 0 ? undefined : onDragOver}
+      onDragLeave={uploadingImages.length > 0 ? undefined : onDragLeave}
+      onDrop={uploadingImages.length > 0 ? undefined : onDrop}
+    >
         <PhotosPanelHeader
           selectedAlbum={selectedAlbum}
           localAlbums={localAlbums}
+          albumPhotos={albumPhotos}
           uploadingImages={uploadingImages}
           hasEverDragged={hasEverDragged}
           savingOrder={savingOrder}
@@ -120,16 +128,16 @@ const PhotosPanel: React.FC<PhotosPanelProps> = ({
           albumPhotos={albumPhotos}
           uploadingImages={uploadingImages}
           loadingPhotos={loadingPhotos}
-          activeId={activeId}
+          activeId={photoActiveId}
           viewMode={viewMode}
           onPhotoDragStart={onPhotoDragStart}
           onPhotoDragEnd={onPhotoDragEnd}
           onOpenEditModal={onOpenEditModal}
           onDeletePhoto={onDeletePhoto}
+          setActiveId={setPhotoActiveId}
           canEdit={canEdit}
         />
-      </div>
-    </>
+    </div>
   );
 };
 
