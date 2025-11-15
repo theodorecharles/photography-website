@@ -56,84 +56,95 @@ const PhotosPanelGrid: React.FC<PhotosPanelGridProps> = ({
   // FLIP animation for smooth reflow on delete
   const gridRef = useRef<HTMLDivElement>(null);
   const firstPositionsRef = useRef<Map<string, DOMRect>>(new Map());
-  const prevDeletingPhotoIdRef = useRef<string | null>(null);
+  const animatingRef = useRef(false);
   
-  // Capture "First" positions when deletion starts (before photo is removed from array)
-  // useLayoutEffect runs synchronously BEFORE browser paint - prevents flash!
+  // Capture "First" positions when deletion starts
   useLayoutEffect(() => {
-    if (!gridRef.current) return;
+    if (!gridRef.current || !deletingPhotoId || animatingRef.current) return;
     
-    // When deletingPhotoId changes from null to a value, capture current positions
-    // This captures positions WITH the photo still in the grid
-    if (deletingPhotoId && deletingPhotoId !== prevDeletingPhotoIdRef.current) {
-      const positions = new Map<string, DOMRect>();
-      const items = gridRef.current.querySelectorAll('.admin-photo-item:not(.crt-delete)');
-      
-      items.forEach((item) => {
-        const id = (item as HTMLElement).dataset.photoId;
-        if (id) {
-          positions.set(id, item.getBoundingClientRect());
-        }
-      });
-      
-      firstPositionsRef.current = positions;
-    }
+    // Clear any previous stored positions
+    firstPositionsRef.current.clear();
     
-    // When deletingPhotoId changes from a value to null, apply FLIP animation
-    if (!deletingPhotoId && prevDeletingPhotoIdRef.current) {
-      // Photo has been removed from array, grid is reflowing NOW
-      // Use double rAF to ensure we capture positions after the reflow
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          if (!gridRef.current) return;
-          
-          const items = gridRef.current.querySelectorAll('.admin-photo-item:not(.crt-delete)');
-          
-          items.forEach((item) => {
-            const id = (item as HTMLElement).dataset.photoId;
-            if (!id) return;
-            
-            const first = firstPositionsRef.current.get(id);
-            const last = item.getBoundingClientRect();
-            
-            if (first) {
-              // Calculate how much the element moved
-              const deltaX = first.left - last.left;
-              const deltaY = first.top - last.top;
-              
-              if (deltaX !== 0 || deltaY !== 0) {
-                const element = item as HTMLElement;
-                
-                // Invert: move element back to its old position instantly
-                element.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
-                element.style.transition = 'none';
-                
-                // Force a reflow
-                element.offsetHeight;
-                
-                // Play: animate to the new position
-                requestAnimationFrame(() => {
-                  element.style.transform = '';
-                  element.style.transition = 'transform 200ms ease';
-                  
-                  // Clean up inline styles after animation completes
-                  setTimeout(() => {
-                    element.style.transform = '';
-                    element.style.transition = '';
-                  }, 200);
-                });
-              }
-            }
-          });
-          
-          // Clear stored positions
-          firstPositionsRef.current.clear();
-        });
-      });
-    }
-    
-    prevDeletingPhotoIdRef.current = deletingPhotoId;
+    // Capture current positions of ALL photos (except the one being deleted)
+    const items = gridRef.current.querySelectorAll('.admin-photo-item:not(.crt-delete)');
+    items.forEach((item) => {
+      const id = (item as HTMLElement).dataset.photoId;
+      if (id && id !== deletingPhotoId) {
+        firstPositionsRef.current.set(id, item.getBoundingClientRect());
+      }
+    });
   }, [deletingPhotoId]);
+  
+  // Apply FLIP animation after photo is removed
+  useLayoutEffect(() => {
+    // Only trigger when we have stored positions and no deletingPhotoId
+    // (meaning photo was just removed)
+    if (!gridRef.current || deletingPhotoId || firstPositionsRef.current.size === 0 || animatingRef.current) {
+      return;
+    }
+    
+    animatingRef.current = true;
+    
+    // Double rAF ensures we capture positions after React updates DOM and grid reflows
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        if (!gridRef.current) return;
+        
+        const items = gridRef.current.querySelectorAll('.admin-photo-item:not(.crt-delete)');
+        
+        items.forEach((item) => {
+          const id = (item as HTMLElement).dataset.photoId;
+          if (!id) return;
+          
+          const first = firstPositionsRef.current.get(id);
+          if (!first) return;
+          
+          const last = item.getBoundingClientRect();
+          
+          // Calculate how much the element moved
+          const deltaX = first.left - last.left;
+          const deltaY = first.top - last.top;
+          
+          // Only animate if position actually changed
+          if (Math.abs(deltaX) > 0.5 || Math.abs(deltaY) > 0.5) {
+            const element = item as HTMLElement;
+            
+            // Clear any existing inline styles first
+            element.style.transform = '';
+            element.style.transition = '';
+            
+            // Force a reflow to clear previous styles
+            element.offsetHeight;
+            
+            // Invert: move element back to its old position instantly
+            element.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+            element.style.transition = 'none';
+            
+            // Force another reflow
+            element.offsetHeight;
+            
+            // Play: animate to the new position
+            requestAnimationFrame(() => {
+              element.style.transform = '';
+              element.style.transition = 'transform 200ms ease';
+              
+              // Clean up inline styles after animation completes
+              setTimeout(() => {
+                element.style.transform = '';
+                element.style.transition = '';
+              }, 200);
+            });
+          }
+        });
+        
+        // Clear stored positions and reset animation flag
+        firstPositionsRef.current.clear();
+        setTimeout(() => {
+          animatingRef.current = false;
+        }, 250);
+      });
+    });
+  }, [deletingPhotoId, albumPhotos]);
   
   // Configure dnd-kit sensors for photos
   // Desktop: minimal delay for instant drag, mobile: longer delay to differentiate tap vs drag
