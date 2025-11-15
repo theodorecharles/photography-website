@@ -3,7 +3,7 @@
  * Coordinates all configuration sections and manages global state
  */
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { ConfigManagerProps, ConfigData } from './types';
 import { useSSEToaster } from '../../../contexts/SSEToasterContext';
 import BrandingSection from './sections/BrandingSection';
@@ -26,6 +26,15 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
 }) => {
   // Get global SSE toaster context
   const sseToaster = useSSEToaster();
+
+  // Debug logging for props
+  useEffect(() => {
+    console.log('[ConfigManager] Received branding prop:', branding);
+  }, [branding]);
+
+  useEffect(() => {
+    console.log('[ConfigManager] Received externalLinks prop:', externalLinks);
+  }, [externalLinks]);
   
   const [config, setConfig] = useState<ConfigData | null>(null);
   const [originalConfig, setOriginalConfig] = useState<ConfigData | null>(null);
@@ -35,6 +44,14 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
   // Local state (not related to SSE jobs)
   const [hasMissingTitles, setHasMissingTitles] = useState(false);
   const [optimizationComplete, setOptimizationComplete] = useState(false);
+  
+  // Navigation state for SMTP settings
+  const [scrollToSmtp, setScrollToSmtp] = useState(false);
+  const advancedSectionRef = useRef<HTMLDivElement>(null);
+  
+  // Navigation state for OpenAI settings
+  const [scrollToOpenAI, setScrollToOpenAI] = useState(false);
+  const openAISectionRef = useRef<HTMLDivElement>(null);
 
   // Confirmation modal state
   const [showConfirmModal, setShowConfirmModal] = useState(false);
@@ -61,6 +78,16 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
       const originalResolve = resolve;
       (window as any).__modalResolve = originalResolve;
     });
+  };
+
+  // Handler to navigate to SMTP settings
+  const handleNavigateToSmtp = () => {
+    setScrollToSmtp(true);
+  };
+  
+  // Handler to navigate to OpenAI settings  
+  const handleSetupOpenAI = () => {
+    setScrollToOpenAI(true);
   };
 
   const handleModalCancel = () => {
@@ -643,13 +670,6 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
     }
   };
 
-  // Function to scroll to and highlight OpenAI API key input
-  const handleSetupOpenAI = () => {
-    // This would be handled by OpenAISection's internal logic
-    // We can trigger it by setting a URL param
-    window.location.hash = '#openai';
-  };
-
   if (loading) {
     return (
       <div
@@ -700,6 +720,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
 
         <UserManagementSection
           setMessage={setMessage}
+          onNavigateToSmtp={handleNavigateToSmtp}
         />
 
         <OpenAISection
@@ -710,6 +731,9 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
           savingSection={savingSection}
           setSavingSection={setSavingSection}
           setMessage={setMessage}
+          scrollToOpenAI={scrollToOpenAI}
+          setScrollToOpenAI={setScrollToOpenAI}
+          sectionRef={openAISectionRef}
         />
 
         <ImageOptimizationSection
@@ -740,6 +764,9 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
           onStopOptimization={handleStopOptimization}
           onSetupOpenAI={handleSetupOpenAI}
           showConfirmation={showConfirmation}
+          scrollToSmtp={scrollToSmtp}
+          setScrollToSmtp={setScrollToSmtp}
+          sectionRef={advancedSectionRef}
         />
       </div>
 

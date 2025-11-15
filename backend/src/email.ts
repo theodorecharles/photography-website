@@ -32,6 +32,29 @@ function getEmailConfig(): EmailConfig | null {
 }
 
 /**
+ * Check if email service is enabled
+ */
+export function isEmailServiceEnabled(): boolean {
+  const emailConfig = getEmailConfig();
+  return emailConfig?.enabled === true;
+}
+
+/**
+ * Generate invitation URL for manual sharing (when email is disabled)
+ */
+export function generateInvitationUrl(inviteToken: string): string {
+  const config = getCurrentConfig();
+  
+  // Get frontend URL - use allowedOrigins[0] as it's the actual frontend URL
+  let frontendUrl = 'http://localhost:3000';
+  if (config.backend?.allowedOrigins && config.backend.allowedOrigins.length > 0) {
+    frontendUrl = config.backend.allowedOrigins[0];
+  }
+  
+  return `${frontendUrl}/invite/${inviteToken}`;
+}
+
+/**
  * Create nodemailer transporter
  */
 function createTransporter() {
@@ -355,6 +378,97 @@ export async function testEmailConfig(): Promise<{ success: boolean; error?: str
     return { success: true };
   } catch (error: any) {
     return { success: false, error: error.message };
+  }
+}
+
+/**
+ * Send a test email to verify SMTP configuration
+ */
+export async function sendTestEmail(toEmail: string): Promise<boolean> {
+  const transporter = createTransporter();
+  const emailConfig = getEmailConfig();
+  
+  if (!transporter || !emailConfig) {
+    console.error('[Email] Email service not configured - cannot send test email');
+    return false;
+  }
+  
+  const config = getCurrentConfig();
+  const siteName = config.branding?.siteName || 'Photography Portfolio';
+  
+  const mailOptions = {
+    from: `"${emailConfig.from.name}" <${emailConfig.from.address}>`,
+    to: toEmail,
+    subject: `Test Email from ${siteName}`,
+    html: `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Test Email</title>
+        <style>
+          body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+          }
+          .container {
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 30px;
+            margin: 20px 0;
+          }
+          .success {
+            color: #22c55e;
+            font-size: 3rem;
+            margin-bottom: 20px;
+          }
+          .footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+            font-size: 0.9em;
+            color: #666;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="success">✓</div>
+          <h1>Email Configuration Test</h1>
+          <p>Congratulations! Your SMTP configuration is working correctly.</p>
+          <p>This test email was sent from <strong>${siteName}</strong> to verify that your email service is properly configured and can deliver messages.</p>
+          <div class="footer">
+            <p>This is a test message sent at ${new Date().toLocaleString()}.</p>
+            <p>You can safely ignore or delete this email.</p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `,
+    text: `
+Email Configuration Test
+
+✓ Congratulations! Your SMTP configuration is working correctly.
+
+This test email was sent from ${siteName} to verify that your email service is properly configured and can deliver messages.
+
+This is a test message sent at ${new Date().toLocaleString()}.
+You can safely ignore or delete this email.
+    `.trim(),
+  };
+  
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log(`[Email] Test email sent to ${toEmail}`);
+    return true;
+  } catch (error) {
+    console.error('[Email] Failed to send test email:', error);
+    return false;
   }
 }
 

@@ -3,7 +3,7 @@
  * Manages site branding including logo, colors, and metadata
  */
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { BrandingConfig } from '../../types';
 import { trackBrandingUpdate, trackAvatarUpload } from '../../../../utils/analytics';
 import SectionHeader from '../components/SectionHeader';
@@ -31,6 +31,13 @@ const BrandingSection: React.FC<BrandingSectionProps> = ({
   const [avatarPreviewUrl, setAvatarPreviewUrl] = useState<string | null>(null);
   const [isDraggingOver, setIsDraggingOver] = useState(false);
   const avatarFileInputRef = useRef<HTMLInputElement>(null);
+
+  // Update originalBranding when branding prop changes (e.g., after data loads)
+  useEffect(() => {
+    console.log('[BrandingSection] Received branding prop:', branding);
+    console.log('[BrandingSection] Setting originalBranding to:', branding);
+    setOriginalBranding(branding);
+  }, [branding]);
 
   const handleAvatarFileSelect = (file: File) => {
     const reader = new FileReader();

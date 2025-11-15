@@ -392,8 +392,18 @@ router.get('/status', (req: Request, res: Response) => {
     });
   }
   
+  // Check if Google OAuth is configured
+  let googleOAuthEnabled = false;
+  try {
+    const clientId = config?.environment?.auth?.google?.clientId;
+    googleOAuthEnabled = !!clientId && clientId.trim() !== '' && clientId !== 'your-google-client-id';
+  } catch (err) {
+    console.error('Failed to check Google OAuth config:', err);
+  }
+  
   res.json({
     authenticated: false,
+    googleOAuthEnabled,
   });
 });
 

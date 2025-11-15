@@ -19,6 +19,7 @@ const router = express.Router();
 router.use(csrfProtection);
 
 import { DATA_DIR, reloadConfig } from "../config.js";
+import { sendTestEmail } from "../email.js";
 
 const CONFIG_PATH = path.join(DATA_DIR, "config.json");
 
@@ -129,5 +130,43 @@ router.put("/", requireAdmin, express.json(), (req, res) => {
     res.status(500).json({ error: "Failed to update configuration" });
   }
 });
+
+/**
+ * POST /api/config/test-email
+ * Send a test email to verify SMTP configuration
+ */
+router.post(
+  "/test-email",
+  requireAdmin,
+  express.json(),
+  async (req, res) => {
+    try {
+      const { email } = req.body;
+
+      if (!email || typeof email !== "string" || !email.includes("@")) {
+        res.status(400).json({ error: "Valid email address is required" });
+        return;
+      }
+
+      console.log(`[Test Email] Sending test email to ${email}...`);
+
+      const success = await sendTestEmail(email);
+
+      if (success) {
+        res.json({
+          success: true,
+          message: `Test email sent successfully to ${email}`,
+        });
+      } else {
+        res.status(500).json({
+          error: "Failed to send test email. Please check your SMTP configuration.",
+        });
+      }
+    } catch (error) {
+      console.error("[Test Email] Error:", error);
+      res.status(500).json({ error: "Failed to send test email" });
+    }
+  }
+);
 
 export default router;

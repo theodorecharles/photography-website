@@ -367,7 +367,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     <>
       <section className="admin-section">
         <div>
-          <h2>📸 Albums & Photos</h2>
+          <h2>Albums</h2>
           <p className="section-description">Manage your photo albums and upload new images. Drag and drop.</p>
         </div>
         

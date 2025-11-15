@@ -3,13 +3,10 @@
  * Contains backend, frontend, security, auth, analytics settings, and regeneration operations
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { ConfigData } from '../types';
 import SectionHeader from '../components/SectionHeader';
 import RegenerationControls from '../components/RegenerationControls';
-import BackendSettings from '../components/BackendSettings';
-import FrontendSettings from '../components/FrontendSettings';
-import SecuritySettings from '../components/SecuritySettings';
 import AuthSettings from '../components/AuthSettings';
 import SMTPSettings from '../components/SMTPSettings';
 import AnalyticsSettings from '../components/AnalyticsSettings';
@@ -42,6 +39,10 @@ interface AdvancedSettingsSectionProps {
   onStopOptimization: () => void;
   onSetupOpenAI: () => void;
   showConfirmation: (message: string) => Promise<boolean>;
+  // SMTP navigation
+  scrollToSmtp?: boolean;
+  setScrollToSmtp?: (value: boolean) => void;
+  sectionRef?: React.RefObject<HTMLDivElement | null>;
 }
 
 const AdvancedSettingsSection: React.FC<AdvancedSettingsSectionProps> = ({
@@ -62,8 +63,31 @@ const AdvancedSettingsSection: React.FC<AdvancedSettingsSectionProps> = ({
   onStopOptimization,
   onSetupOpenAI,
   showConfirmation,
+  scrollToSmtp,
+  setScrollToSmtp,
+  sectionRef,
 }) => {
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const smtpSectionRef = useRef<HTMLDivElement>(null);
+
+  // Handle scrollToSmtp trigger from parent
+  useEffect(() => {
+    if (scrollToSmtp) {
+      setShowAdvanced(true);
+      setTimeout(() => {
+        if (smtpSectionRef.current) {
+          const yOffset = -100; // Offset to account for header
+          const element = smtpSectionRef.current;
+          const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+          window.scrollTo({ top: y, behavior: 'smooth' });
+        }
+        // Reset the trigger
+        if (setScrollToSmtp) {
+          setScrollToSmtp(false);
+        }
+      }, 400); // Wait for expansion animation
+    }
+  }, [scrollToSmtp, setScrollToSmtp]);
 
   const updateConfig = (path: string[], value: any) => {
     if (!config) return;
@@ -147,6 +171,11 @@ const AdvancedSettingsSection: React.FC<AdvancedSettingsSectionProps> = ({
           JSON.stringify(config.environment.auth) !==
           JSON.stringify(originalConfig.environment.auth)
         );
+      case "Email":
+        return (
+          JSON.stringify((config as any).email) !==
+          JSON.stringify((originalConfig as any).email)
+        );
       case "Analytics":
         return (
           JSON.stringify(config.analytics) !==
@@ -160,7 +189,7 @@ const AdvancedSettingsSection: React.FC<AdvancedSettingsSectionProps> = ({
   if (!config) return null;
 
   return (
-    <div className="config-group full-width">
+    <div className="config-group full-width" ref={sectionRef}>
       <SectionHeader
         title="Advanced Settings"
         description="System controls and developer options"
@@ -222,46 +251,6 @@ const AdvancedSettingsSection: React.FC<AdvancedSettingsSectionProps> = ({
           showConfirmation={showConfirmation}
         />
 
-        {/* Backend Settings */}
-        <BackendSettings
-          config={config}
-          updateConfig={updateConfig}
-          updateArrayItem={updateArrayItem}
-          addArrayItem={addArrayItem}
-          removeArrayItem={removeArrayItem}
-          hasUnsavedChanges={hasUnsavedChanges("Backend")}
-          onSave={() => handleSaveSection("Backend")}
-          onCancel={() => setConfig(originalConfig!)}
-          savingSection={savingSection}
-          showConfirmation={showConfirmation}
-          setMessage={setMessage}
-        />
-
-        {/* Frontend Settings */}
-        <FrontendSettings
-          config={config}
-          updateConfig={updateConfig}
-          hasUnsavedChanges={hasUnsavedChanges("Frontend")}
-          onSave={() => handleSaveSection("Frontend")}
-          onCancel={() => setConfig(originalConfig!)}
-          savingSection={savingSection}
-          showConfirmation={showConfirmation}
-          setMessage={setMessage}
-        />
-
-        {/* Security Settings */}
-        <SecuritySettings
-          config={config}
-          updateConfig={updateConfig}
-          updateArrayItem={updateArrayItem}
-          addArrayItem={addArrayItem}
-          removeArrayItem={removeArrayItem}
-          hasUnsavedChanges={hasUnsavedChanges("Security")}
-          onSave={() => handleSaveSection("Security")}
-          onCancel={() => setConfig(originalConfig!)}
-          savingSection={savingSection}
-        />
-
         {/* Auth Settings */}
         <AuthSettings
           config={config}
@@ -278,11 +267,16 @@ const AdvancedSettingsSection: React.FC<AdvancedSettingsSectionProps> = ({
         {/* SMTP Settings */}
         <SMTPSettings
           config={config}
+          originalConfig={originalConfig!}
+          setConfig={setConfig}
+          setOriginalConfig={setOriginalConfig}
           updateConfig={updateConfig}
           hasUnsavedChanges={hasUnsavedChanges("Email")}
           onSave={() => handleSaveSection("Email")}
           onCancel={() => setConfig(originalConfig!)}
           savingSection={savingSection}
+          setMessage={setMessage}
+          sectionRef={smtpSectionRef}
         />
 
         {/* Analytics Settings */}

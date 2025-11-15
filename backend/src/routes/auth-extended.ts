@@ -43,7 +43,7 @@ import {
   verifyPasskeyAuthentication,
 } from '../auth/passkeys.js';
 import crypto from 'crypto';
-import { sendInvitationEmail, sendPasswordResetEmail } from '../email.js';
+import { sendInvitationEmail, sendPasswordResetEmail, isEmailServiceEnabled, generateInvitationUrl } from '../email.js';
 
 const router = Router();
 
@@ -232,7 +232,27 @@ router.post('/invite', requireAdmin, async (req: Request, res: Response) => {
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + 7);
 
-    // Create invited user
+    // Get inviter name for email
+    const inviter = creatorUserId ? getUserById(creatorUserId) : null;
+    const inviterName = inviter?.name || 'Administrator';
+
+    // Check if email service is enabled
+    const emailEnabled = isEmailServiceEnabled();
+    let emailSent = false;
+    
+    if (emailEnabled) {
+      // Try to send invitation email FIRST
+      emailSent = await sendInvitationEmail(email, inviteToken, inviterName);
+
+      if (!emailSent) {
+        // If email fails, don't create the user
+        return res.status(500).json({ 
+          error: 'Failed to send invitation email. Please check your SMTP configuration and try again.' 
+        });
+      }
+    }
+
+    // Create user (either after successful email or if email is disabled)
     const user = createInvitedUser({
       email,
       role: userRole,
@@ -240,16 +260,8 @@ router.post('/invite', requireAdmin, async (req: Request, res: Response) => {
       invite_expires_at: expiresAt.toISOString(),
     });
 
-    // Get inviter name for email
-    const inviter = creatorUserId ? getUserById(creatorUserId) : null;
-    const inviterName = inviter?.name || 'Administrator';
-
-    // Send invitation email
-    const emailSent = await sendInvitationEmail(email, inviteToken, inviterName);
-
-    if (!emailSent) {
-      console.warn('[Invite] Failed to send invitation email, but user created');
-    }
+    // Generate invite URL for manual sharing when email is disabled
+    const inviteUrl = !emailEnabled ? generateInvitationUrl(inviteToken) : undefined;
 
     res.json({
       success: true,
@@ -260,6 +272,8 @@ router.post('/invite', requireAdmin, async (req: Request, res: Response) => {
         status: user.status,
       },
       emailSent,
+      emailEnabled,
+      inviteUrl, // Only present when email is disabled
     });
   } catch (error) {
     console.error('Invitation error:', error);
@@ -290,20 +304,38 @@ router.post('/invite/resend/:userId', requireAdmin, async (req: Request, res: Re
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + 7);
 
-    // Update user with new token
-    resendInvitation(userId, inviteToken, expiresAt.toISOString());
-
     // Get inviter name for email
     const creatorUserId = getUserIdFromRequest(req);
     const inviter = creatorUserId ? getUserById(creatorUserId) : null;
     const inviterName = inviter?.name || 'Administrator';
 
-    // Send invitation email
-    const emailSent = await sendInvitationEmail(user.email, inviteToken, inviterName);
+    // Check if email service is enabled
+    const emailEnabled = isEmailServiceEnabled();
+    let emailSent = false;
+    
+    if (emailEnabled) {
+      // Try to send invitation email FIRST
+      emailSent = await sendInvitationEmail(user.email, inviteToken, inviterName);
+
+      if (!emailSent) {
+        // If email fails, don't update the token
+        return res.status(500).json({ 
+          error: 'Failed to send invitation email. Please check your SMTP configuration and try again.' 
+        });
+      }
+    }
+
+    // Update user token (either after successful email or if email is disabled)
+    resendInvitation(userId, inviteToken, expiresAt.toISOString());
+
+    // Generate invite URL for manual sharing when email is disabled
+    const inviteUrl = !emailEnabled ? generateInvitationUrl(inviteToken) : undefined;
 
     res.json({
       success: true,
       emailSent,
+      emailEnabled,
+      inviteUrl, // Only present when email is disabled
     });
   } catch (error) {
     console.error('Resend invitation error:', error);
@@ -450,16 +482,16 @@ router.post('/password-reset/request', async (req: Request, res: Response) => {
     const expiresAt = new Date();
     expiresAt.setHours(expiresAt.getHours() + 1);
 
-    // Save reset token
-    setPasswordResetToken(user.id, resetToken, expiresAt.toISOString());
-
-    // Send password reset email
+    // Try to send password reset email FIRST
     const emailSent = await sendPasswordResetEmail(user.email, resetToken, user.name);
 
     if (!emailSent) {
       console.error('[Password Reset] Failed to send email');
-      return res.status(500).json({ error: 'Failed to send password reset email' });
+      return res.status(500).json({ error: 'Failed to send password reset email. Please check your SMTP configuration.' });
     }
+
+    // Only save reset token if email was sent successfully
+    setPasswordResetToken(user.id, resetToken, expiresAt.toISOString());
 
     res.json({ 
       success: true, 
@@ -599,11 +631,18 @@ router.post('/users/:userId/send-password-reset', requireAdmin, async (req: Requ
     const expiresAt = new Date();
     expiresAt.setHours(expiresAt.getHours() + 1);
 
-    // Save reset token
-    setPasswordResetToken(userId, resetToken, expiresAt.toISOString());
-
-    // Send password reset email
+    // Try to send password reset email FIRST
     const emailSent = await sendPasswordResetEmail(user.email, resetToken, user.name);
+
+    if (!emailSent) {
+      console.error('[Admin] Failed to send password reset email');
+      return res.status(500).json({ 
+        error: 'Failed to send password reset email. Please check your SMTP configuration.' 
+      });
+    }
+
+    // Only save reset token if email was sent successfully
+    setPasswordResetToken(userId, resetToken, expiresAt.toISOString());
 
     console.log(`[Admin] Password reset email sent to ${user.email} (ID: ${userId})`);
 

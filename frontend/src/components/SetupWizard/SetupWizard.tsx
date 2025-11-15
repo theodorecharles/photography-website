@@ -23,10 +23,15 @@ export default function SetupWizard() {
   const [primaryColor, setPrimaryColor] = useState('#4ade80');
   const [secondaryColor, setSecondaryColor] = useState('#22c55e');
   const [metaDescription, setMetaDescription] = useState('');
-  const [showGoogleAuth, setShowGoogleAuth] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  
+  // Account registration data
+  const [authMethod, setAuthMethod] = useState<'google' | 'password'>('password');
+  const [adminName, setAdminName] = useState('');
+  const [adminPassword, setAdminPassword] = useState('');
+  const [adminPasswordConfirm, setAdminPasswordConfirm] = useState('');
 
   // Check setup status on mount
   useEffect(() => {
@@ -90,7 +95,7 @@ export default function SetupWizard() {
     }
     
     if (!authorizedEmail.trim()) {
-      setError('Authorized email is required');
+      setError('Email is required');
       return;
     }
     
@@ -101,10 +106,23 @@ export default function SetupWizard() {
       return;
     }
 
-    // If Google Auth is shown, both fields must be filled or both empty
-    if (showGoogleAuth) {
-      if ((googleClientId && !googleClientSecret) || (!googleClientId && googleClientSecret)) {
-        setError('Both Google Client ID and Secret are required, or leave both empty');
+    // Validate based on auth method
+    if (authMethod === 'password') {
+      if (!adminName.trim()) {
+        setError('Name is required');
+        return;
+      }
+      if (adminPassword.length < 8) {
+        setError('Password must be at least 8 characters');
+        return;
+      }
+      if (adminPassword !== adminPasswordConfirm) {
+        setError('Passwords do not match');
+        return;
+      }
+    } else {
+      if (!googleClientId.trim() || !googleClientSecret.trim()) {
+        setError('Both Google Client ID and Secret are required');
         return;
       }
     }
@@ -112,7 +130,7 @@ export default function SetupWizard() {
     try {
       setSubmitting(true);
       
-      // First, initialize the configuration
+      // Initialize the configuration with user account data
       const response = await fetch(`${API_URL}/api/setup/initialize`, {
         method: 'POST',
         headers: {
@@ -121,8 +139,11 @@ export default function SetupWizard() {
         body: JSON.stringify({
           siteName,
           authorizedEmail,
-          googleClientId: showGoogleAuth ? googleClientId : undefined,
-          googleClientSecret: showGoogleAuth ? googleClientSecret : undefined,
+          authMethod,
+          adminName: authMethod === 'password' ? adminName : undefined,
+          adminPassword: authMethod === 'password' ? adminPassword : undefined,
+          googleClientId: authMethod === 'google' ? googleClientId : undefined,
+          googleClientSecret: authMethod === 'google' ? googleClientSecret : undefined,
           primaryColor,
           secondaryColor,
           metaDescription: metaDescription || `Photography portfolio by ${siteName}`,
@@ -155,12 +176,12 @@ export default function SetupWizard() {
         }
       }
 
-      setSuccess('Configuration saved successfully! Redirecting to admin...');
-      setCurrentStep(3);
+      setSuccess('Setup complete! Redirecting to login...');
+      setCurrentStep(4);
 
-      // Redirect to admin after a short delay
+      // Redirect to login after a short delay
       setTimeout(() => {
-        window.location.href = '/admin';
+        window.location.href = '/login';
       }, 2000);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Setup failed. Please try again.');
@@ -215,11 +236,16 @@ export default function SetupWizard() {
           <div className="progress-line"></div>
           <div className={`progress-step ${currentStep >= 2 ? 'active' : ''} ${currentStep > 2 ? 'complete' : ''}`}>
             <div className="step-number">2</div>
-            <div className="step-label">Customization</div>
+            <div className="step-label">Account</div>
           </div>
           <div className="progress-line"></div>
-          <div className={`progress-step ${currentStep >= 3 ? 'active' : ''}`}>
+          <div className={`progress-step ${currentStep >= 3 ? 'active' : ''} ${currentStep > 3 ? 'complete' : ''}`}>
             <div className="step-number">3</div>
+            <div className="step-label">Customize</div>
+          </div>
+          <div className="progress-line"></div>
+          <div className={`progress-step ${currentStep >= 4 ? 'active' : ''}`}>
+            <div className="step-number">4</div>
             <div className="step-label">Complete</div>
           </div>
         </div>
@@ -256,24 +282,9 @@ export default function SetupWizard() {
                   id="siteName"
                   value={siteName}
                   onChange={(e) => setSiteName(e.target.value)}
-                  placeholder="John Doe"
+                  placeholder="John Doe Photography"
                   required
                   autoFocus
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="authorizedEmail">
-                  Your Email Address *
-                  <span className="field-hint">This email will have admin access</span>
-                </label>
-                <input
-                  type="email"
-                  id="authorizedEmail"
-                  value={authorizedEmail}
-                  onChange={(e) => setAuthorizedEmail(e.target.value)}
-                  placeholder="john@example.com"
-                  required
                 />
               </div>
 
@@ -296,9 +307,9 @@ export default function SetupWizard() {
                   type="button" 
                   onClick={() => setCurrentStep(2)}
                   className="button button-primary"
-                  disabled={!siteName.trim() || !authorizedEmail.trim()}
+                  disabled={!siteName.trim()}
                 >
-                  Next: Customization →
+                  Next: Create Account →
                 </button>
               </div>
             </div>
@@ -306,9 +317,216 @@ export default function SetupWizard() {
 
           {currentStep === 2 && (
             <div className="setup-step">
+              <h2>Create Your Admin Account</h2>
+              <p className="step-description">
+                Set up your account to access the admin panel
+              </p>
+
+              <div className="form-group">
+                <label htmlFor="authorizedEmail">
+                  Your Email Address *
+                  <span className="field-hint">This will be your login email</span>
+                </label>
+                <input
+                  type="email"
+                  id="authorizedEmail"
+                  value={authorizedEmail}
+                  onChange={(e) => setAuthorizedEmail(e.target.value)}
+                  placeholder="john@example.com"
+                  required
+                  autoFocus
+                />
+              </div>
+
+              <div className="form-group">
+                <label>
+                  Choose Authentication Method *
+                  <span className="field-hint">How would you like to sign in?</span>
+                </label>
+                <div className="auth-method-choice">
+                  <label className="auth-method-option">
+                    <input
+                      type="radio"
+                      name="authMethod"
+                      value="password"
+                      checked={authMethod === 'password'}
+                      onChange={(e) => setAuthMethod(e.target.value as 'password' | 'google')}
+                    />
+                    <div className="auth-method-label">
+                      <strong>🔑 Password</strong>
+                      <span>Sign in with email and password</span>
+                    </div>
+                  </label>
+                  <label className="auth-method-option">
+                    <input
+                      type="radio"
+                      name="authMethod"
+                      value="google"
+                      checked={authMethod === 'google'}
+                      onChange={(e) => setAuthMethod(e.target.value as 'password' | 'google')}
+                    />
+                    <div className="auth-method-label">
+                      <strong>🔐 Google OAuth</strong>
+                      <span>Sign in with your Google account</span>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              {authMethod === 'password' && (
+                <>
+                  <div className="form-group">
+                    <label htmlFor="adminName">
+                      Your Full Name *
+                      <span className="field-hint">This will be displayed in your profile</span>
+                    </label>
+                    <input
+                      type="text"
+                      id="adminName"
+                      value={adminName}
+                      onChange={(e) => setAdminName(e.target.value)}
+                      placeholder="John Doe"
+                      required
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="adminPassword">
+                      Password *
+                      <span className="field-hint">Minimum 8 characters</span>
+                    </label>
+                    <input
+                      type="password"
+                      id="adminPassword"
+                      value={adminPassword}
+                      onChange={(e) => setAdminPassword(e.target.value)}
+                      placeholder="••••••••"
+                      minLength={8}
+                      required
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="adminPasswordConfirm">
+                      Confirm Password *
+                    </label>
+                    <input
+                      type="password"
+                      id="adminPasswordConfirm"
+                      value={adminPasswordConfirm}
+                      onChange={(e) => setAdminPasswordConfirm(e.target.value)}
+                      placeholder="••••••••"
+                      minLength={8}
+                      required
+                    />
+                  </div>
+                </>
+              )}
+
+              {authMethod === 'google' && (
+                <>
+                  <div className="info-box">
+                    <p>
+                      <strong>How to get Google OAuth credentials:</strong>
+                    </p>
+                    <ol>
+                      <li>Go to <a href="https://console.cloud.google.com" target="_blank" rel="noopener noreferrer">Google Cloud Console</a></li>
+                      <li>Create a new project or select an existing one</li>
+                      <li>Enable the Google+ API</li>
+                      <li>Create OAuth 2.0 credentials</li>
+                      <li>Add redirect URI: <code>{window.location.origin.replace(':3000', ':3001')}/api/auth/google/callback</code></li>
+                      <li>Copy the Client ID and Client Secret below</li>
+                    </ol>
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="googleClientId">
+                      Google Client ID *
+                    </label>
+                    <input
+                      type="text"
+                      id="googleClientId"
+                      value={googleClientId}
+                      onChange={(e) => setGoogleClientId(e.target.value)}
+                      placeholder="xxxxx.apps.googleusercontent.com"
+                      required
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="googleClientSecret">
+                      Google Client Secret *
+                    </label>
+                    <input
+                      type="password"
+                      id="googleClientSecret"
+                      value={googleClientSecret}
+                      onChange={(e) => setGoogleClientSecret(e.target.value)}
+                      placeholder="GOCSPX-xxxxx"
+                      required
+                    />
+                  </div>
+                </>
+              )}
+
+              <div className="form-actions">
+                <button 
+                  type="button" 
+                  onClick={() => setCurrentStep(1)}
+                  className="button button-secondary"
+                >
+                  ← Back
+                </button>
+                <button 
+                  type="button" 
+                  onClick={() => {
+                    // Validation
+                    if (!authorizedEmail.trim()) {
+                      setError('Email is required');
+                      return;
+                    }
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    if (!emailRegex.test(authorizedEmail)) {
+                      setError('Please enter a valid email address');
+                      return;
+                    }
+                    
+                    if (authMethod === 'password') {
+                      if (!adminName.trim()) {
+                        setError('Name is required');
+                        return;
+                      }
+                      if (adminPassword.length < 8) {
+                        setError('Password must be at least 8 characters');
+                        return;
+                      }
+                      if (adminPassword !== adminPasswordConfirm) {
+                        setError('Passwords do not match');
+                        return;
+                      }
+                    } else {
+                      if (!googleClientId.trim() || !googleClientSecret.trim()) {
+                        setError('Both Google Client ID and Secret are required');
+                        return;
+                      }
+                    }
+                    
+                    setError(null);
+                    setCurrentStep(3);
+                  }}
+                  className="button button-primary"
+                >
+                  Next: Customize →
+                </button>
+              </div>
+            </div>
+          )}
+
+          {currentStep === 3 && (
+            <div className="setup-step">
               <h2>Customize Your Site</h2>
               <p className="step-description">
-                Choose colors and optionally set up Google OAuth for admin access
+                Choose colors and upload your profile picture
               </p>
 
               <div className="form-group">
@@ -376,77 +594,10 @@ export default function SetupWizard() {
                 </div>
               </div>
 
-              <div className="form-section-divider">
-                <span>Optional: Google OAuth</span>
-              </div>
-
-              <div className="info-box">
-                <p>
-                  <strong>📌 Note:</strong> You can skip Google OAuth for now and add it later. 
-                  Without it, you won't have admin access initially, but you can configure it later 
-                  by editing <code>config/config.json</code>.
-                </p>
-              </div>
-
-              <div className="form-group">
-                <label className="checkbox-label">
-                  <input
-                    type="checkbox"
-                    checked={showGoogleAuth}
-                    onChange={(e) => setShowGoogleAuth(e.target.checked)}
-                  />
-                  Configure Google OAuth now
-                </label>
-              </div>
-
-              {showGoogleAuth && (
-                <>
-                  <div className="info-box">
-                    <p>
-                      <strong>How to get Google OAuth credentials:</strong>
-                    </p>
-                    <ol>
-                      <li>Go to <a href="https://console.cloud.google.com" target="_blank" rel="noopener noreferrer">Google Cloud Console</a></li>
-                      <li>Create a new project or select an existing one</li>
-                      <li>Enable the Google+ API</li>
-                      <li>Create OAuth 2.0 credentials</li>
-                      <li>Add redirect URI: <code>http://localhost:3001/api/auth/google/callback</code></li>
-                      <li>Copy the Client ID and Client Secret below</li>
-                    </ol>
-                  </div>
-
-                  <div className="form-group">
-                    <label htmlFor="googleClientId">
-                      Google Client ID
-                    </label>
-                    <input
-                      type="text"
-                      id="googleClientId"
-                      value={googleClientId}
-                      onChange={(e) => setGoogleClientId(e.target.value)}
-                      placeholder="xxxxx.apps.googleusercontent.com"
-                    />
-                  </div>
-
-                  <div className="form-group">
-                    <label htmlFor="googleClientSecret">
-                      Google Client Secret
-                    </label>
-                    <input
-                      type="password"
-                      id="googleClientSecret"
-                      value={googleClientSecret}
-                      onChange={(e) => setGoogleClientSecret(e.target.value)}
-                      placeholder="GOCSPX-xxxxx"
-                    />
-                  </div>
-                </>
-              )}
-
               <div className="form-actions">
                 <button 
                   type="button" 
-                  onClick={() => setCurrentStep(1)}
+                  onClick={() => setCurrentStep(2)}
                   className="button button-secondary"
                 >
                   ← Back
@@ -462,20 +613,21 @@ export default function SetupWizard() {
             </div>
           )}
 
-          {currentStep === 3 && (
+          {currentStep === 4 && (
             <div className="setup-step setup-complete">
               <div className="complete-icon">✓</div>
               <h2>Setup Complete!</h2>
               <p>Your configuration has been saved successfully.</p>
-              <p className="complete-subtext">Redirecting to admin panel...</p>
+              <p className="complete-subtext">Redirecting to login page...</p>
               
               <div className="next-steps">
                 <h3>What We Set Up:</h3>
                 <ul>
-                  <li>✅ Configuration saved</li>
+                  <li>✅ Site configuration saved</li>
+                  <li>✅ Admin account created</li>
                   <li>✅ Database initialized</li>
                   <li>✅ Directories created</li>
-                  <li>✅ Google OAuth configured</li>
+                  <li>✅ Authentication configured</li>
                   <li>🔐 You'll be redirected to sign in</li>
                   <li>📸 Then you can upload your first album!</li>
                 </ul>

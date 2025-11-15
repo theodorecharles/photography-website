@@ -5,7 +5,6 @@
 
 import React, { useState, useEffect } from "react";
 import SectionHeader from "../components/SectionHeader";
-import SMTPSetupWizard from "../../SMTPSetupWizard";
 import { MFASetupModal } from "./UserManagement/MFASetupModal";
 import { ConfirmationModal } from "./UserManagement/ConfirmationModal";
 import { NewUserForm } from "./UserManagement/NewUserForm";
@@ -13,6 +12,7 @@ import { UserCard } from "./UserManagement/UserCard";
 import { SMTPWarningBanner } from "./UserManagement/SMTPWarningBanner";
 import { PasskeysModal } from "./UserManagement/PasskeysModal";
 import { PasswordChangeModal } from "./UserManagement/PasswordChangeModal";
+import { InviteLinkModal } from "./UserManagement/InviteLinkModal";
 import { userManagementAPI } from "./UserManagement/utils";
 import { withLoadingAndErrorHandling } from "./UserManagement/handlers";
 import type {
@@ -28,10 +28,12 @@ const API_URL = import.meta.env.VITE_API_URL || "";
 
 interface UserManagementSectionProps {
   setMessage: (message: MessageType) => void;
+  onNavigateToSmtp?: () => void;
 }
 
 const UserManagementSection: React.FC<UserManagementSectionProps> = ({
   setMessage,
+  onNavigateToSmtp,
 }) => {
   const [showSection, setShowSection] = useState(false);
   const [users, setUsers] = useState<User[]>([]);
@@ -44,13 +46,21 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
 
   // SMTP configuration check
   const [smtpConfigured, setSmtpConfigured] = useState<boolean | null>(null);
-  const [showSmtpWizard, setShowSmtpWizard] = useState<boolean>(false);
 
   // New user form (invitation)
   const [showNewUserForm, setShowNewUserForm] = useState<boolean>(false);
   const [newUser, setNewUser] = useState<NewUserState>({
     email: "",
     role: "viewer",
+  });
+  const [inviteLinkModal, setInviteLinkModal] = useState<{
+    show: boolean;
+    inviteUrl: string;
+    userEmail: string;
+  }>({
+    show: false,
+    inviteUrl: "",
+    userEmail: "",
   });
 
   // MFA state
@@ -148,14 +158,28 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
     setLoading(true);
     try {
       const data = await userManagementAPI.inviteUser(newUser);
-      const message = data.emailSent
-        ? "Invitation sent successfully"
-        : "User created but email failed to send";
+      
+      // If email is disabled, show the invite link modal
+      if (!data.emailEnabled && data.inviteUrl) {
+        setInviteLinkModal({
+          show: true,
+          inviteUrl: data.inviteUrl,
+          userEmail: newUser.email,
+        });
+        setMessage({
+          type: "success",
+          text: "User created successfully. Copy the invitation link to send to the user.",
+        });
+      } else {
+        const message = data.emailSent
+          ? "Invitation sent successfully"
+          : "User created but email failed to send";
 
-      setMessage({
-        type: data.emailSent ? "success" : "error",
-        text: message,
-      });
+        setMessage({
+          type: data.emailSent ? "success" : "error",
+          text: message,
+        });
+      }
 
       setShowNewUserForm(false);
       setNewUser({ email: "", role: "viewer" });
@@ -191,13 +215,27 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
       () => userManagementAPI.resendInvite(userId),
       {
         onSuccess: (data) => {
-          const message = data.emailSent
-            ? "Invitation resent successfully"
-            : "Invitation updated but email failed to send";
-          setMessage({
-            type: data.emailSent ? "success" : "error",
-            text: message,
-          });
+          // If email is disabled, show the invite link modal
+          if (!data.emailEnabled && data.inviteUrl) {
+            const user = users.find(u => u.id === userId);
+            setInviteLinkModal({
+              show: true,
+              inviteUrl: data.inviteUrl,
+              userEmail: user?.email || "",
+            });
+            setMessage({
+              type: "success",
+              text: "Invitation link generated. Copy the link to send to the user.",
+            });
+          } else {
+            const message = data.emailSent
+              ? "Invitation resent successfully"
+              : "Invitation updated but email failed to send";
+            setMessage({
+              type: data.emailSent ? "success" : "error",
+              text: message,
+            });
+          }
           loadUsers();
         },
         errorMessage: "Failed to resend invitation",
@@ -615,7 +653,7 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
     <div className="config-group full-width" data-section="user-management">
       <SectionHeader
         title="Users"
-        description="Manage user accounts, authentication methods, and security settings"
+        description="Manage user accounts and security settings"
         isExpanded={showSection}
         onToggle={() => setShowSection(!showSection)}
       />
@@ -635,7 +673,7 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
             <SMTPWarningBanner
               smtpConfigured={smtpConfigured}
               showNewUserForm={showNewUserForm}
-              onSetupSmtp={() => setShowSmtpWizard(true)}
+              onSetupSmtp={onNavigateToSmtp || (() => {})}
               onToggleNewUserForm={() => setShowNewUserForm(!showNewUserForm)}
             />
           )}
@@ -746,25 +784,6 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
             />
           )}
 
-          {/* SMTP Setup Wizard Modal */}
-          {showSmtpWizard && (
-            <SMTPSetupWizard
-              onClose={() => setShowSmtpWizard(false)}
-              onComplete={() => {
-                setShowSmtpWizard(false);
-                // Wait a moment for config to be written, then refresh
-                setTimeout(() => {
-                  checkSmtpConfig();
-                }, 500);
-                setMessage({
-                  type: "success",
-                  text: "SMTP configured! You can now invite users.",
-                });
-              }}
-              setMessage={setMessage}
-            />
-          )}
-
           {/* Confirmation Modal */}
           <ConfirmationModal
             show={confirmModal.show}
@@ -778,6 +797,17 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
             onConfirm={confirmModal.onConfirm}
             onClose={() => setConfirmModal({ ...confirmModal, show: false })}
           />
+
+          {/* Invite Link Modal (when email is disabled) */}
+          {inviteLinkModal.show && (
+            <InviteLinkModal
+              inviteUrl={inviteLinkModal.inviteUrl}
+              userEmail={inviteLinkModal.userEmail}
+              onClose={() =>
+                setInviteLinkModal({ show: false, inviteUrl: "", userEmail: "" })
+              }
+            />
+          )}
         </div>
       </div>
     </div>
