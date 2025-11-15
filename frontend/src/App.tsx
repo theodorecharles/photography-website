@@ -496,6 +496,16 @@ function App() {
             } />
             <Route path="/primes" element={<PrimesRedirect />} />
             <Route path="/primes/*" element={<PrimesRedirect />} />
+            <Route path="/404" element={
+              <>
+                <SEO 
+                  title="404 - Page Not Found - Ted Charles Photography"
+                  description="The page you're looking for doesn't exist."
+                  url={`${SITE_URL}/404`}
+                />
+                <NotFound />
+              </>
+            } />
             <Route path="*" element={
               <>
                 <SEO 
