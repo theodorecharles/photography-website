@@ -68,6 +68,8 @@ const PhotoGridItem: React.FC<PhotoGridItemProps> = ({
 
   const [showOverlay, setShowOverlay] = useState(false);
   const [isFlipping, setIsFlipping] = useState(false);
+  // Show thumbnail by default if already complete (on mount), hide during flip animation
+  const [showThumbnail, setShowThumbnail] = useState(isComplete);
   const touchStartPos = useRef<{ x: number; y: number } | null>(null);
   const hasMoved = useRef(false);
   const prevStateRef = useRef<string | undefined>(undefined);
@@ -91,8 +93,18 @@ const PhotoGridItem: React.FC<PhotoGridItemProps> = ({
     // Check if state just changed to 'complete' (and we're not on initial mount)
     if (currentState === 'complete' && prevState !== 'complete' && prevState !== undefined) {
       setIsFlipping(true);
-      const timer = setTimeout(() => setIsFlipping(false), 600); // Match animation duration
-      return () => clearTimeout(timer);
+      setShowThumbnail(false); // Hide thumbnail during first half of flip
+      
+      // Show thumbnail at 50% of animation (300ms) - the "reveal"
+      const revealTimer = setTimeout(() => setShowThumbnail(true), 300);
+      
+      // End flip animation
+      const endTimer = setTimeout(() => setIsFlipping(false), 600);
+      
+      return () => {
+        clearTimeout(revealTimer);
+        clearTimeout(endTimer);
+      };
     }
   }, [uploadingImage?.state]);
   
@@ -183,7 +195,7 @@ const PhotoGridItem: React.FC<PhotoGridItemProps> = ({
       {...(canEdit && !isUploading ? listeners : {})}
     >
       {/* Thumbnail or placeholder */}
-      {isUploading ? (
+      {isUploading || (isFlipping && !showThumbnail) ? (
         <div className="admin-photo-thumbnail uploading-placeholder"></div>
       ) : (
         <img
