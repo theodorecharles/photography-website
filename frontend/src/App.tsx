@@ -12,6 +12,7 @@ import {
   useParams,
   useLocation,
   useNavigate,
+  Link,
 } from "react-router-dom";
 import "./App.css";
 import PhotoGrid from "./components/PhotoGrid";
@@ -106,9 +107,11 @@ function RateLimitError() {
       <h2>Whoa there, partner!</h2>
       <p>Slow down there, feller. You're clicking faster than a tumbleweed in a tornado!</p>
       <p>Give it a moment and try again.</p>
-      <button onClick={() => window.location.reload()} className="retry-button">
-        Try Again
-      </button>
+      <div className="not-found-actions">
+        <Link to="/" className="home-button">
+          Head Back Home
+        </Link>
+      </div>
     </div>
   );
 }
