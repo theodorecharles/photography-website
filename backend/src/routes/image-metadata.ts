@@ -7,6 +7,7 @@ import express from 'express';
 import { createRequire } from 'module';
 import { csrfProtection } from '../security.js';
 import { requireManager } from '../auth/middleware.js';
+import { generateStaticJSONFiles } from './static-json.js';
 
 const require = createRequire(import.meta.url);
 
@@ -93,6 +94,10 @@ router.post('/', requireManager, express.json(), async (req, res) => {
     const db = await getDbFunctions();
     db.saveImageMetadata(album, filename, title || null, description || null);
     
+    // Regenerate static JSON files (titles are included in JSON)
+    const appRoot = req.app.get('appRoot');
+    generateStaticJSONFiles(appRoot);
+    
     res.json({ 
       success: true, 
       message: 'Metadata saved successfully' 
@@ -125,6 +130,10 @@ router.put('/:album/:filename', requireManager, express.json(), async (req, res)
       return;
     }
     
+    // Regenerate static JSON files (titles are included in JSON)
+    const appRoot = req.app.get('appRoot');
+    generateStaticJSONFiles(appRoot);
+    
     res.json({ 
       success: true, 
       message: 'Metadata updated successfully' 
@@ -150,6 +159,10 @@ router.delete('/:album/:filename', requireManager, async (req, res) => {
       res.status(404).json({ error: 'Metadata not found' });
       return;
     }
+    
+    // Regenerate static JSON files (titles are included in JSON)
+    const appRoot = req.app.get('appRoot');
+    generateStaticJSONFiles(appRoot);
     
     res.json({ 
       success: true, 
