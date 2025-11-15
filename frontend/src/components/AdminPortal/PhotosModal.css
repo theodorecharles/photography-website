@@ -101,7 +101,7 @@
 /* Title Bar Left Group: Album title + photo count */
 .photos-title-left {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 1rem;
   flex: 1; /* Allow left side to grow, pushing right side to the edge */
   min-width: 0; /* Allow text truncation if needed */
@@ -133,6 +133,8 @@
   font-size: 0.9rem;
   color: #888;
   font-weight: 400;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .photos-close-btn {
@@ -371,6 +373,13 @@
 
   .photos-modal-title {
     font-size: 1.25rem;
+  }
+}
+
+/* Hide photo count on very narrow screens */
+@media (max-width: 500px) {
+  .photos-count {
+    display: none;
   }
 }
 
