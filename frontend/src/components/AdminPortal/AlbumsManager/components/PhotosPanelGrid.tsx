@@ -10,6 +10,7 @@ import React, { useRef, useLayoutEffect } from 'react';
 import { DndContext, DragOverlay, closestCenter, PointerSensor, KeyboardSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { SortableContext, sortableKeyboardCoordinates, rectSortingStrategy } from '@dnd-kit/sortable';
 import PhotoGridItem from './PhotoGridItem';
+import { PhotoListItem } from './PhotoListItem';
 import { Photo, UploadingImage } from '../types';
 import { cacheBustValue } from '../../../../config';
 
@@ -212,34 +213,26 @@ const PhotosPanelGrid: React.FC<PhotosPanelGridProps> = ({
             <SortableContext items={allItemIds} strategy={rectSortingStrategy}>
               {/* Uploading images (includes those transitioning to complete) */}
               {uploadingImages.map((img, index) => (
-                <PhotoGridItem
+                <PhotoListItem
                   key={img.photo?.id || `uploading-${index}`}
                   uploadingImage={img}
                   uploadingIndex={index}
                   onEdit={onOpenEditModal}
                   onDelete={onDeletePhoto}
-                  onRetryOptimization={onRetryOptimization}
-                  onRetryAI={onRetryAI}
                   deletingPhotoId={deletingPhotoId}
                   canEdit={canEdit && !hasActiveUploads}
-                  activeOverlayId={activeOverlayId}
-                  setActiveOverlayId={setActiveOverlayId}
                 />
               ))}
               
               {/* Existing album photos (already in album before upload) */}
               {albumPhotos.filter(photo => photo && photo.id).map((photo) => (
-                <PhotoGridItem
+                <PhotoListItem
                   key={photo.id}
                   photo={photo}
                   onEdit={onOpenEditModal}
                   onDelete={onDeletePhoto}
-                  onRetryOptimization={onRetryOptimization}
-                  onRetryAI={onRetryAI}
                   deletingPhotoId={deletingPhotoId}
                   canEdit={canEdit && !hasActiveUploads}
-                  activeOverlayId={activeOverlayId}
-                  setActiveOverlayId={setActiveOverlayId}
                 />
               ))}
             </SortableContext>
