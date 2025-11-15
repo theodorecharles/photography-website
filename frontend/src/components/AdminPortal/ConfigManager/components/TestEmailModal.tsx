@@ -63,6 +63,12 @@ export const TestEmailModal: React.FC<TestEmailModalProps> = ({ onClose }) => {
         onClick={(e) => e.stopPropagation()}
         style={{ maxWidth: '500px' }}
       >
+        <div className="share-modal-header">
+          <h2>Send Test Email</h2>
+          <button className="close-button" onClick={onClose} aria-label="Close">
+            ×
+          </button>
+        </div>
         <div className="share-modal-content">
           <p style={{ marginBottom: '1.5rem', color: '#d1d5db', fontSize: '0.95rem' }}>
             Enter an email address to send a test message and verify your SMTP configuration is working correctly.
@@ -117,12 +123,6 @@ export const TestEmailModal: React.FC<TestEmailModalProps> = ({ onClose }) => {
               {loading ? 'Sending...' : 'Send Test Email'}
             </button>
           </div>
-        </div>
-        <div className="share-modal-header">
-          <h2>Send Test Email</h2>
-          <button className="close-button" onClick={onClose} aria-label="Close">
-            ×
-          </button>
         </div>
       </div>
     </div>

@@ -43,7 +43,7 @@ interface UIInteractionHandlersProps {
   setTargetFolderId: (id: number | null) => void;
   ghostTileFileInputRef: React.RefObject<HTMLInputElement | null>;
   setMessage: (message: { type: 'success' | 'error'; text: string }) => void;
-  saveAlbumOrder: (albumsToSave?: Album[]) => Promise<boolean>;
+  saveAlbumOrder: (albumsToSave?: Album[], silent?: boolean) => Promise<boolean>;
   uploadingImages: any[];
 }
 

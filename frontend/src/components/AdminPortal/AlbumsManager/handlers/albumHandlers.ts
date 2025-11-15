@@ -19,7 +19,7 @@ interface AlbumHandlersProps {
   selectAlbum: (albumName: string) => void;
   setMessage: (message: { type: 'success' | 'error'; text: string }) => void;
   loadAlbums: () => Promise<void>;
-  saveAlbumOrder: (albumsToSave?: Album[]) => Promise<boolean>;
+  saveAlbumOrder: (albumsToSave?: Album[], silent?: boolean) => Promise<boolean>;
   setShowRenameModal: (show: boolean) => void;
   setRenamingAlbum: (album: string | null) => void;
   setNewAlbumName: (name: string) => void;
@@ -48,8 +48,8 @@ export const createAlbumHandlers = (props: AlbumHandlersProps) => {
   } = props;
 
   const handleDeleteAlbum = async (albumName: string): Promise<void> => {
-    // Save any unsaved changes before deleting
-    const saveSuccess = await saveAlbumOrder(localAlbums);
+    // Save any unsaved changes before deleting (silently, no success message)
+    const saveSuccess = await saveAlbumOrder(localAlbums, true);
     if (!saveSuccess) {
       setMessage({ type: 'error', text: 'Failed to save changes before deleting album' });
       return;

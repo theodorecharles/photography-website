@@ -145,7 +145,7 @@ export const useAlbumManagement = ({
     }
   }, [setMessage]);
 
-  const saveAlbumOrder = useCallback(async (albumsToSave?: Album[]): Promise<boolean> => {
+  const saveAlbumOrder = useCallback(async (albumsToSave?: Album[], silent?: boolean): Promise<boolean> => {
     try {
       // Use provided albums or fall back to internal state
       const albumsForSaving = albumsToSave || localAlbums;
@@ -168,7 +168,11 @@ export const useAlbumManagement = ({
       }
 
       setHasUnsavedChanges(false);
-      setMessage({ type: 'success', text: 'Album order saved successfully!' });
+      
+      // Only show success message if not silent
+      if (!silent) {
+        setMessage({ type: 'success', text: 'Album order saved successfully!' });
+      }
       
       // Notify other components
       window.dispatchEvent(new CustomEvent('albums-updated', { detail: { skipReload: true } }));
