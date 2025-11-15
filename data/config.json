@@ -11,7 +11,7 @@
       ]
     },
     "optimization": {
-      "concurrency": 4,
+      "concurrency": 64,
       "images": {
         "thumbnail": {
           "quality": 60,
