@@ -188,6 +188,7 @@ router.post('/initialize', async (req: Request, res: Response): Promise<void> =>
           },
           auth: {
             google: {
+              enabled: false,
               clientId: "",
               clientSecret: ""
             },
@@ -248,8 +249,12 @@ router.post('/initialize', async (req: Request, res: Response): Promise<void> =>
     
     // Configure Google OAuth if using Google auth method
     if (authMethod === 'google' && googleClientId && googleClientSecret) {
+      config.environment.auth.google.enabled = true;
       config.environment.auth.google.clientId = googleClientId;
       config.environment.auth.google.clientSecret = googleClientSecret;
+    } else {
+      // Disable Google auth for password-based setup
+      config.environment.auth.google.enabled = false;
     }
 
     // Save config
