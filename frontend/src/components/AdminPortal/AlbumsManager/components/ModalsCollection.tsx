@@ -493,11 +493,16 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
                       type="checkbox"
                       checked={newAlbumPublished}
                       onChange={(e) => setNewAlbumPublished(e.target.checked)}
-                      style={{ marginRight: '0.5rem' }}
+                      style={{ 
+                        marginRight: '0.75rem',
+                        width: '18px',
+                        height: '18px',
+                        cursor: 'pointer'
+                      }}
                     />
-                    <span>Publish album immediately</span>
+                    <span style={{ color: '#fff', fontSize: '1rem' }}>Publish album immediately</span>
                   </label>
-                  <p style={{ color: '#888', fontSize: '0.85rem', marginTop: '0.25rem', marginLeft: '1.5rem' }}>
+                  <p style={{ color: '#aaa', fontSize: '0.875rem', marginTop: '0.375rem', marginLeft: '1.875rem' }}>
                     Published albums are visible on the public gallery
                   </p>
                 </div>

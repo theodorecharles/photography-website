@@ -691,7 +691,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
   if (!config) {
     return (
       <section className="admin-section">
-        <h2>⚙️ Settings</h2>
+        <h2>Settings</h2>
         <p>Failed to load configuration</p>
       </section>
     );
@@ -699,7 +699,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
 
   return (
     <section className="admin-section">
-      <h2>⚙️ Settings</h2>
+      <h2>Settings</h2>
       <p className="section-description">
         Manage branding, links, and system configuration
       </p>
