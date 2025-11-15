@@ -154,6 +154,7 @@
   color: rgba(255, 255, 255, 0.8);
   font-weight: 500;
   min-width: 80px;
+  text-align: right;
 }
 
 .toggle-switch input:checked ~ .toggle-label {
