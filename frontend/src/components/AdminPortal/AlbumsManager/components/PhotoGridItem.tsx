@@ -4,7 +4,7 @@
  * Supports both uploading images and completed photos with drag-and-drop
  */
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Photo, UploadingImage } from '../types';
@@ -67,46 +67,8 @@ const PhotoGridItem: React.FC<PhotoGridItemProps> = ({
   });
 
   const [showOverlay, setShowOverlay] = useState(false);
-  const [isFlipping, setIsFlipping] = useState(false);
-  // Show thumbnail by default if already complete (on mount), hide during flip animation
-  const [showThumbnail, setShowThumbnail] = useState(isComplete);
   const touchStartPos = useRef<{ x: number; y: number } | null>(null);
   const hasMoved = useRef(false);
-  const prevStateRef = useRef<string | undefined>(undefined);
-  const isInitialMount = useRef(true);
-  
-  // Trigger flip animation when state transitions to 'complete'
-  useEffect(() => {
-    const currentState = uploadingImage?.state;
-    const prevState = prevStateRef.current;
-    
-    // Skip animation on initial mount
-    if (isInitialMount.current) {
-      isInitialMount.current = false;
-      prevStateRef.current = currentState;
-      return;
-    }
-    
-    // Update ref for next render
-    prevStateRef.current = currentState;
-    
-    // Check if state just changed to 'complete' (and we're not on initial mount)
-    if (currentState === 'complete' && prevState !== 'complete' && prevState !== undefined) {
-      setIsFlipping(true);
-      setShowThumbnail(false); // Hide thumbnail during first half of flip
-      
-      // Show thumbnail at 50% of animation (150ms) - the "reveal"
-      const revealTimer = setTimeout(() => setShowThumbnail(true), 150);
-      
-      // End flip animation
-      const endTimer = setTimeout(() => setIsFlipping(false), 300);
-      
-      return () => {
-        clearTimeout(revealTimer);
-        clearTimeout(endTimer);
-      };
-    }
-  }, [uploadingImage?.state]);
   
   // Check if this photo is being deleted (for CRT animation)
   const isDeleting = photoData && deletingPhotoId === photoData.id;
@@ -186,7 +148,7 @@ const PhotoGridItem: React.FC<PhotoGridItemProps> = ({
     <div
       ref={setNodeRef}
       style={style}
-      className={`admin-photo-item ${isDragging ? 'dragging' : ''} ${showOverlay ? 'show-overlay' : ''} ${isUploading ? 'uploading' : ''} ${isFlipping ? 'flip-complete' : ''} ${isDeleting ? 'crt-delete' : ''}`}
+      className={`admin-photo-item ${isDragging ? 'dragging' : ''} ${showOverlay ? 'show-overlay' : ''} ${isUploading ? 'uploading' : ''} ${isDeleting ? 'crt-delete' : ''}`}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
@@ -195,7 +157,7 @@ const PhotoGridItem: React.FC<PhotoGridItemProps> = ({
       {...(canEdit && !isUploading ? listeners : {})}
     >
       {/* Thumbnail or placeholder */}
-      {isUploading || (isFlipping && !showThumbnail) ? (
+      {isUploading ? (
         <div className="admin-photo-thumbnail uploading-placeholder"></div>
       ) : (
         <img
