@@ -10,7 +10,7 @@ import config, { DATA_DIR } from '../config.js';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { getUserByEmail, createUser, getUserByGoogleId, linkGoogleAccount, getUserById } from '../database-users.js';
+import { getUserByEmail, createUser, getUserByGoogleId, linkGoogleAccount, getUserById, getAllUsers } from '../database-users.js';
 
 const router = Router();
 
@@ -392,11 +392,21 @@ router.get('/status', (req: Request, res: Response) => {
     });
   }
   
-  // Check if Google OAuth is configured
+  // Check if Google OAuth is configured OR if there are any Google users
   let googleOAuthEnabled = false;
   try {
+    // Check config
     const clientId = config?.environment?.auth?.google?.clientId;
-    googleOAuthEnabled = !!clientId && clientId.trim() !== '' && clientId !== 'your-google-client-id';
+    const configHasGoogleOAuth = !!clientId && clientId.trim() !== '' && clientId !== 'your-google-client-id';
+    
+    // Check if there are any users with Google auth method
+    const allUsers = getAllUsers();
+    const hasGoogleUsers = allUsers.some(user => 
+      user.auth_methods && user.auth_methods.includes('google')
+    );
+    
+    // Enable Google OAuth if either condition is met
+    googleOAuthEnabled = configHasGoogleOAuth || hasGoogleUsers;
   } catch (err) {
     console.error('Failed to check Google OAuth config:', err);
   }
