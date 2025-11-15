@@ -179,6 +179,9 @@ export const createPhotoHandlers = (props: PhotoHandlersProps) => {
     
     setIsShuffling(true);
     
+    // Get the shuffle button to update its animation speed
+    const shuffleButton = document.querySelector('.btn-shuffle-order') as HTMLElement;
+    
     // Add zoom class to all photos during shuffle
     const photoElements = document.querySelectorAll('.admin-photo-item');
     photoElements.forEach((el) => {
@@ -193,6 +196,12 @@ export const createPhotoHandlers = (props: PhotoHandlersProps) => {
     
     // Start continuous shuffling with progressive speed increase
     let currentInterval = 100 * speedMultiplier; // Adjust base speed by album size
+    let currentAnimationSpeed = 0.4; // Start with 0.4s for rainbow rotation
+    
+    // Update rainbow rotation speed
+    if (shuffleButton) {
+      shuffleButton.style.setProperty('--animation-speed', `${currentAnimationSpeed}s`);
+    }
     
     const startShuffling = (interval: number) => {
       if (shuffleIntervalRef.current) {
@@ -223,6 +232,12 @@ export const createPhotoHandlers = (props: PhotoHandlersProps) => {
     for (let i = 1; i <= 6; i++) {
       const timeout = setTimeout(() => {
         currentInterval = currentInterval * 0.8; // Reduce interval by 20% = 20% faster
+        currentAnimationSpeed = currentAnimationSpeed * 0.8; // Speed up rainbow rotation too
+        
+        if (shuffleButton) {
+          shuffleButton.style.setProperty('--animation-speed', `${currentAnimationSpeed}s`);
+        }
+        
         startShuffling(currentInterval);
       }, i * 500);
       speedupTimeoutsRef.current.push(timeout);
@@ -241,6 +256,12 @@ export const createPhotoHandlers = (props: PhotoHandlersProps) => {
     }
     
     setIsShuffling(false);
+    
+    // Reset rainbow rotation speed back to normal
+    const shuffleButton = document.querySelector('.btn-shuffle-order') as HTMLElement;
+    if (shuffleButton) {
+      shuffleButton.style.removeProperty('--animation-speed');
+    }
     
     // Remove zoom class from photos
     setTimeout(() => {
