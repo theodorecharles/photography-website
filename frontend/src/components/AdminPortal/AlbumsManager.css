@@ -930,8 +930,12 @@
   -moz-user-select: none;
   -ms-user-select: none;
   --shuffle-columns: 5; /* Default columns, overridden dynamically during shuffle */
-  padding-bottom: 120px; /* Prevent last row from being covered by controls */
   transition: grid-template-columns 0.3s ease, gap 0.3s ease;
+}
+
+/* Add padding only when reorder bar is visible */
+.has-reorder-bar .photos-grid {
+  padding-bottom: 80px;
 }
 
 /* Shuffling grid state - use more columns and tighter gap */
