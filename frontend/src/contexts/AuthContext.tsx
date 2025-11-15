@@ -36,6 +36,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [logoutMessage, setLogoutMessage] = useState<string | null>(null);
 
+  const handleAuthError = useCallback((message?: string) => {
+    const msg = message || 'You were logged out';
+    setLogoutMessage(msg);
+    setIsAuthenticated(false);
+    setUser(null);
+    
+    // Fire event to trigger redirect to /admin
+    window.dispatchEvent(new CustomEvent('auth-error', { detail: { message: msg } }));
+  }, []);
+
   const checkAuth = useCallback(async () => {
     try {
       const res = await fetch(`${API_URL}/api/auth/status`, {
@@ -44,8 +54,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       
       if (res.ok) {
         const data = await res.json();
-        setIsAuthenticated(data.authenticated);
+        const wasAuthenticated = isAuthenticated;
+        const nowAuthenticated = data.authenticated;
+        
+        setIsAuthenticated(nowAuthenticated);
         setUser(data.user || null);
+        
+        // If user was authenticated but is no longer, they were logged out
+        if (wasAuthenticated && !nowAuthenticated) {
+          handleAuthError('You were logged out');
+        }
+      } else if (res.status === 401) {
+        // Session expired or user deleted
+        const wasAuthenticated = isAuthenticated;
+        setIsAuthenticated(false);
+        setUser(null);
+        
+        if (wasAuthenticated) {
+          handleAuthError('Your session has expired');
+        }
       } else {
         setIsAuthenticated(false);
         setUser(null);
@@ -57,17 +84,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } finally {
       setIsLoading(false);
     }
-  }, []);
-
-  const handleAuthError = useCallback((message?: string) => {
-    const msg = message || 'You were logged out';
-    setLogoutMessage(msg);
-    setIsAuthenticated(false);
-    setUser(null);
-    
-    // Fire event to trigger redirect to /admin
-    window.dispatchEvent(new CustomEvent('auth-error', { detail: { message: msg } }));
-  }, []);
+  }, [isAuthenticated, handleAuthError]);
 
   const clearLogoutMessage = useCallback(() => {
     setLogoutMessage(null);
@@ -90,6 +107,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Check auth on mount
   useEffect(() => {
     checkAuth();
+  }, [checkAuth]);
+
+  // Poll auth status every 10 seconds to detect session invalidation
+  useEffect(() => {
+    const interval = setInterval(() => {
+      checkAuth();
+    }, 5000); // 5 seconds
+
+    return () => clearInterval(interval);
   }, [checkAuth]);
 
   return (
