@@ -133,7 +133,7 @@ const PhotosPanelGrid: React.FC<PhotosPanelGridProps> = ({
     }
     
     prevDeletingPhotoIdRef.current = deletingPhotoId;
-  }, [deletingPhotoId, albumPhotos]);
+  }, [deletingPhotoId]);
   
   // Configure dnd-kit sensors for photos
   // Desktop: minimal delay for instant drag, mobile: longer delay to differentiate tap vs drag
