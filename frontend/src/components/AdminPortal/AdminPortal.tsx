@@ -199,6 +199,24 @@ export default function AdminPortal() {
         setLoading(false);
       });
   }, []);
+  
+  // Check for success messages in URL params and show toast
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const message = params.get('message');
+    
+    if (message === 'signup-complete') {
+      addMessage({ type: 'success', text: '✓ Account created successfully! You can now sign in.' });
+      // Clean up URL
+      const newUrl = window.location.pathname;
+      window.history.replaceState({}, '', newUrl);
+    } else if (message === 'password-reset-complete') {
+      addMessage({ type: 'success', text: '✓ Password reset successfully! You can now sign in with your new password.' });
+      // Clean up URL
+      const newUrl = window.location.pathname;
+      window.history.replaceState({}, '', newUrl);
+    }
+  }, [location.search]);
 
   // Check if OpenObserve analytics is enabled
   const checkMetricsEnabled = async () => {

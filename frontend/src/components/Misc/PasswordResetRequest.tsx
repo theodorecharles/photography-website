@@ -103,7 +103,7 @@ const PasswordResetRequest: React.FC = () => {
             The link will expire in 1 hour.
           </p>
           <button
-            onClick={() => navigate("/login")}
+            onClick={() => navigate("/admin")}
             className="btn-primary"
             style={{
               padding: "0.75rem 2rem",
@@ -217,7 +217,7 @@ const PasswordResetRequest: React.FC = () => {
         >
           Remember your password?{" "}
           <a
-            href="/login"
+            href="/admin"
             style={{
               color: "var(--primary-color)",
               textDecoration: "none",
