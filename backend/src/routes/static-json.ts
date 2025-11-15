@@ -76,12 +76,14 @@ export function generateStaticJSONFiles(appRoot: string): { success: boolean; er
     const outputDir = getOutputDir(appRoot);
     ensureOutputDir(outputDir);
 
-    // Get all albums (excluding homepage directory)
+    // Get ONLY PUBLISHED albums (excluding homepage directory)
     const albumsData = getAllAlbums();
-    const albums = albumsData.map(a => a.name).filter(name => name !== 'homepage');
-    console.log(`[Static JSON] Found ${albums.length} albums`);
+    const albums = albumsData
+      .filter(a => a.published && a.name !== 'homepage')
+      .map(a => a.name);
+    console.log(`[Static JSON] Found ${albums.length} published albums`);
 
-    // Clean up stale JSON files for deleted albums
+    // Clean up stale JSON files for deleted or unpublished albums
     if (fs.existsSync(outputDir)) {
       const existingFiles = fs.readdirSync(outputDir);
       const albumJsonFiles = existingFiles.filter(f => f.endsWith('.json') && f !== 'homepage.json' && f !== 'albums-list.json' && f !== '_metadata.json');
@@ -89,10 +91,10 @@ export function generateStaticJSONFiles(appRoot: string): { success: boolean; er
       for (const file of albumJsonFiles) {
         const albumName = file.replace('.json', '');
         if (!albums.includes(albumName)) {
-          // This JSON file corresponds to a deleted album
+          // This JSON file corresponds to a deleted or unpublished album
           const filePath = path.join(outputDir, file);
           fs.unlinkSync(filePath);
-          console.log(`[Static JSON] Deleted stale file: ${file}`);
+          console.log(`[Static JSON] Deleted stale file (deleted or unpublished): ${file}`);
           
           // Also delete from dist directory if it exists
           const distPath = filePath.replace('/public/albums-data/', '/dist/albums-data/');
