@@ -31,7 +31,7 @@ const defaultConfig = {
     security: {
       allowedHosts: ["localhost:3000"],
       rateLimitWindowMs: 1000,
-      rateLimitMaxRequests: 30
+      rateLimitMaxRequests: 100
     },
     auth: {
       google: {
