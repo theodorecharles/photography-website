@@ -240,7 +240,7 @@ const PhotosPanelHeader: React.FC<PhotosPanelHeaderProps> = ({
               <ShuffleIcon width="16" height="16" />
               <span>Shuffle</span>
             </button>
-            <span className="reorder-hint">Drag to reorder • Changes not saved</span>
+            <span className="reorder-hint reorder-hint-desktop">Drag to reorder • Changes not saved</span>
           </div>
           <div className="photos-reorder-right">
             <button 
@@ -258,6 +258,7 @@ const PhotosPanelHeader: React.FC<PhotosPanelHeaderProps> = ({
               {savingOrder ? 'Saving...' : 'Save Order'}
             </button>
           </div>
+          <span className="reorder-hint reorder-hint-mobile">Drag to reorder • Changes not saved</span>
         </div>
       )}
     </div>
