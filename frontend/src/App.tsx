@@ -398,7 +398,7 @@ function App() {
             <Route path="/admin/settings" element={<AdminPortal />} />
             <Route path="/admin/profile" element={<AdminPortal />} />
             <Route path="/shared/:secretKey" element={<SharedAlbum />} />
-            <Route path="/setup" element={<SetupWizard onSetupComplete={() => setSetupComplete(true)} />} />
+            <Route path="/setup" element={<SetupWizard />} />
           </Routes>
         </Suspense>
       </div>
