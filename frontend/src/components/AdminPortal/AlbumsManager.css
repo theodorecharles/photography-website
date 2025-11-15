@@ -955,88 +955,62 @@
 
 /* List view styles */
 .photos-list {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
   user-select: none;
   padding: 0 1.5rem 1.5rem 1.5rem;
   overflow-y: auto;
 }
 
-.photos-list-table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  border: 1px solid #535353;
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-.photos-list-table tbody tr {
+/* List view item - flexbox layout */
+.photos-list .admin-photo-item {
+  display: flex !important;
+  flex-direction: row;
+  align-items: center;
+  gap: 0;
+  padding: 0 !important;
+  padding-bottom: 0 !important;
+  height: 70px;
+  border-radius: 0;
+  border: none !important;
+  border-bottom: 1px solid #535353;
+  background: #2d2d2d !important;
   transition: background 0.15s ease;
+  cursor: grab;
 }
 
-.photos-list-table tbody tr:hover {
-  background: #323232;
+.photos-list .admin-photo-item:active {
+  cursor: grabbing;
 }
 
-.photos-list-table tbody tr:hover td {
-  background: #323232;
+.photos-list .admin-photo-item:hover {
+  background: #323232 !important;
 }
 
-.photos-list-table tbody tr:last-child td {
+.photos-list .admin-photo-item:last-child {
   border-bottom: none;
 }
 
-.photos-list .admin-photo-item {
-  display: table-row;
-  padding: 0 !important;
-  padding-bottom: 0 !important;
-  height: auto;
-  border-radius: 0;
-  border: none !important;
-  background: transparent !important;
-  transition: all 0.15s ease;
-}
-
-/* Table cells - thumbnail, title, actions */
+/* Thumbnail container - full height, square */
 .photos-list .admin-photo-item > .admin-photo-thumbnail {
-  display: table-cell !important;
-  vertical-align: middle;
-  padding: 0.75rem 0.75rem;
-  border-bottom: 1px solid #535353;
-  background: #2d2d2d;
-  padding-left: 1.5rem;
-  width: 100px;
+  width: 70px;
+  height: 70px;
+  flex-shrink: 0;
+  padding: 0;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
 }
 
-.photos-list .admin-photo-item > .photo-info {
-  display: table-cell !important;
-  vertical-align: middle;
-  padding: 0.75rem 1rem;
-  border-bottom: 1px solid #535353;
-  background: #2d2d2d;
-  width: auto; /* Allow cell to expand */
-  max-width: none; /* No max-width restriction */
-}
-
-.photos-list .admin-photo-item > .photo-overlay {
-  display: table-cell !important;
-  vertical-align: middle;
-  padding: 0.75rem 0.75rem;
-  border-bottom: 1px solid #535353;
-  background: #2d2d2d;
-  padding-right: 1.5rem;
-  text-align: right;
-  width: 140px;
-  white-space: nowrap; /* Prevent actions from wrapping */
-}
-
-/* The actual img element inside the thumbnail cell */
+/* The actual img element */
 .photos-list .admin-photo-thumbnail {
   width: 60px !important;
   height: 60px !important;
   object-fit: cover;
   border-radius: 6px;
-  border: 2px solid #535353;
+  border: 1px solid rgba(95, 95, 95, 0.42);
   display: block !important;
   transition: border-color 0.2s ease;
 }
@@ -1045,23 +1019,42 @@
   border-color: var(--primary-color);
 }
 
-/* Title text inside photo-info cell */
+/* Title container - takes remaining space */
+.photos-list .admin-photo-item > .photo-info {
+  flex: 1;
+  min-width: 0; /* Allow flexbox to shrink below content size */
+  padding: 0 1rem;
+  display: flex !important;
+  align-items: center;
+}
+
+/* Title text */
 .photos-list .photo-title {
   font-size: 0.875rem;
   color: #e5e7eb;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  width: 100%; /* Fill the cell */
-  display: block; /* Ensure it behaves as block element */
+  width: 100%;
 }
 
-/* Actions buttons inside overlay cell */
+/* Actions container - only as wide as needed */
+.photos-list .admin-photo-item > .photo-overlay {
+  flex-shrink: 0;
+  padding: 0 1rem 0 0.5rem;
+  display: flex !important;
+  align-items: center;
+  justify-content: flex-end;
+  opacity: 1 !important;
+  background: transparent !important;
+}
+
+/* Actions buttons */
 .photos-list .photo-actions {
   display: flex !important;
   flex-direction: row !important;
   gap: 0.5rem;
-  justify-content: flex-end;
+  align-items: center;
 }
 
 /* Hide photo-state-overlay in list view */

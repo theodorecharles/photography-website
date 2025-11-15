@@ -209,44 +209,40 @@ const PhotosPanelGrid: React.FC<PhotosPanelGridProps> = ({
           </div>
         ) : (
           <div ref={gridRef} className="photos-list">
-            <table className="photos-list-table">
-              <tbody>
-                <SortableContext items={allItemIds} strategy={rectSortingStrategy}>
-                  {/* Uploading images (includes those transitioning to complete) */}
-                  {uploadingImages.map((img, index) => (
-                    <PhotoGridItem
-                      key={img.photo?.id || `uploading-${index}`}
-                      uploadingImage={img}
-                      uploadingIndex={index}
-                      onEdit={onOpenEditModal}
-                      onDelete={onDeletePhoto}
-                      onRetryOptimization={onRetryOptimization}
-                      onRetryAI={onRetryAI}
-                      deletingPhotoId={deletingPhotoId}
-                      canEdit={canEdit && !hasActiveUploads}
-                      activeOverlayId={activeOverlayId}
-                      setActiveOverlayId={setActiveOverlayId}
-                    />
-                  ))}
-                  
-                  {/* Existing album photos (already in album before upload) */}
-                  {albumPhotos.filter(photo => photo && photo.id).map((photo) => (
-                    <PhotoGridItem
-                      key={photo.id}
-                      photo={photo}
-                      onEdit={onOpenEditModal}
-                      onDelete={onDeletePhoto}
-                      onRetryOptimization={onRetryOptimization}
-                      onRetryAI={onRetryAI}
-                      deletingPhotoId={deletingPhotoId}
-                      canEdit={canEdit && !hasActiveUploads}
-                      activeOverlayId={activeOverlayId}
-                      setActiveOverlayId={setActiveOverlayId}
-                    />
-                  ))}
-                </SortableContext>
-              </tbody>
-            </table>
+            <SortableContext items={allItemIds} strategy={rectSortingStrategy}>
+              {/* Uploading images (includes those transitioning to complete) */}
+              {uploadingImages.map((img, index) => (
+                <PhotoGridItem
+                  key={img.photo?.id || `uploading-${index}`}
+                  uploadingImage={img}
+                  uploadingIndex={index}
+                  onEdit={onOpenEditModal}
+                  onDelete={onDeletePhoto}
+                  onRetryOptimization={onRetryOptimization}
+                  onRetryAI={onRetryAI}
+                  deletingPhotoId={deletingPhotoId}
+                  canEdit={canEdit && !hasActiveUploads}
+                  activeOverlayId={activeOverlayId}
+                  setActiveOverlayId={setActiveOverlayId}
+                />
+              ))}
+              
+              {/* Existing album photos (already in album before upload) */}
+              {albumPhotos.filter(photo => photo && photo.id).map((photo) => (
+                <PhotoGridItem
+                  key={photo.id}
+                  photo={photo}
+                  onEdit={onOpenEditModal}
+                  onDelete={onDeletePhoto}
+                  onRetryOptimization={onRetryOptimization}
+                  onRetryAI={onRetryAI}
+                  deletingPhotoId={deletingPhotoId}
+                  canEdit={canEdit && !hasActiveUploads}
+                  activeOverlayId={activeOverlayId}
+                  setActiveOverlayId={setActiveOverlayId}
+                />
+              ))}
+            </SortableContext>
           </div>
         )}
         <DragOverlay dropAnimation={null}>
