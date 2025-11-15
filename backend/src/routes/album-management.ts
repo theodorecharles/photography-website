@@ -736,12 +736,26 @@ router.patch("/:album/publish", requireManager, async (req: Request, res: Respon
 
     // Update or create album state
     saveAlbum(sanitizedAlbum, published);
-    
     console.log(`✓ Set album "${sanitizedAlbum}" published state to: ${published}`);
+    
+    // Verify the state was saved correctly
+    const albumState = getAlbumState(sanitizedAlbum);
+    if (!albumState) {
+      console.error(`✗ Failed to save album state for "${sanitizedAlbum}"`);
+      res.status(500).json({ error: 'Failed to save album state' });
+      return;
+    }
+    console.log(`✓ Verified album state in DB: published=${albumState.published}`);
 
     // Regenerate static JSON files
+    console.log(`[Publish] Regenerating static JSON files...`);
     const appRoot = req.app.get('appRoot');
-    generateStaticJSONFiles(appRoot);
+    const result = generateStaticJSONFiles(appRoot);
+    if (result.success) {
+      console.log(`[Publish] ✓ Static JSON regenerated (${result.albumCount} albums)`);
+    } else {
+      console.error(`[Publish] ✗ Failed to regenerate static JSON:`, result.error);
+    }
 
     res.json({ 
       success: true, 

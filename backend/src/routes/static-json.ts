@@ -118,6 +118,7 @@ export function generateStaticJSONFiles(appRoot: string): { success: boolean; er
     // Generate homepage JSON (random photos from all published albums, optimized format)
     try {
       const publishedImages = getImagesFromPublishedAlbums();
+      console.log(`[Static JSON] Found ${publishedImages.length} images from published albums for homepage`);
       
       // Shuffle using Fisher-Yates algorithm
       const shuffled = [...publishedImages];
@@ -132,6 +133,7 @@ export function generateStaticJSONFiles(appRoot: string): { success: boolean; er
       );
       
       writeJSON(outputDir, 'homepage.json', randomPhotos);
+      console.log(`[Static JSON] Homepage includes photos from albums: ${[...new Set(randomPhotos.map(p => p[2]))].join(', ')}`);
     } catch (error) {
       console.error('[Static JSON] Error generating homepage.json:', error);
     }
