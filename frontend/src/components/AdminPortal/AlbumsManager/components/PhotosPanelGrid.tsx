@@ -9,10 +9,9 @@
 import React from 'react';
 import { DndContext, DragOverlay, closestCenter, PointerSensor, KeyboardSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { SortableContext, sortableKeyboardCoordinates, rectSortingStrategy } from '@dnd-kit/sortable';
-import SortablePhotoItem from './SortablePhotoItem';
+import PhotoGridItem from './PhotoGridItem';
 import { Photo, UploadingImage } from '../types';
 import { cacheBustValue } from '../../../../config';
-import { HourglassIcon } from '../../../icons';
 
 const API_URL = import.meta.env.VITE_API_URL || '';
 
@@ -24,10 +23,13 @@ interface PhotosPanelGridProps {
   loadingPhotos: boolean;
   activeId: string | null;
   viewMode: ViewMode;
+  deletingPhotoId: string | null;
   onPhotoDragStart: (event: any, setActiveId?: (id: string | null) => void) => void;
   onPhotoDragEnd: (event: any, setActiveId?: (id: string | null) => void) => void;
   onOpenEditModal: (photo: Photo) => void;
-  onDeletePhoto: (filename: string) => void;
+  onDeletePhoto: (album: string, filename: string, photoTitle?: string) => void;
+  onRetryOptimization?: (album: string, filename: string) => void;
+  onRetryAI?: (album: string, filename: string) => void;
   setActiveId: (id: string | null) => void;
   canEdit: boolean;
 }
@@ -37,12 +39,15 @@ const PhotosPanelGrid: React.FC<PhotosPanelGridProps> = ({
   uploadingImages,
   loadingPhotos,
   canEdit,
+  deletingPhotoId,
   activeId,
   viewMode,
   onPhotoDragStart,
   onPhotoDragEnd,
   onOpenEditModal,
   onDeletePhoto,
+  onRetryOptimization,
+  onRetryAI,
   setActiveId,
 }) => {
   // Detect if device supports touch
@@ -73,6 +78,15 @@ const PhotosPanelGrid: React.FC<PhotosPanelGridProps> = ({
     );
   }
 
+  // Check if any uploads are in progress (not complete)
+  const hasActiveUploads = uploadingImages.some(img => img.state !== 'complete');
+  
+  // Combine item IDs for sortable context
+  const allItemIds = [
+    ...uploadingImages.map((img) => img.photo?.id || `uploading-${uploadingImages.indexOf(img)}`),
+    ...albumPhotos.filter(p => p && p.id).map(p => p.id)
+  ];
+
   return (
     <div className="photos-modal-content">
       <DndContext
@@ -82,96 +96,53 @@ const PhotosPanelGrid: React.FC<PhotosPanelGridProps> = ({
         onDragEnd={(event) => onPhotoDragEnd(event, setActiveId)}
       >
         <div className={viewMode === 'grid' ? 'photos-grid' : 'photos-list'}>
-        {uploadingImages.map((img, index) => (
-          <div key={`uploading-${index}`} className="admin-photo-item uploading">
-            <div className="admin-photo-thumbnail uploading-placeholder"></div>
-            {img.state === 'queued' && (
-              <div className="photo-state-overlay queued">
-                <HourglassIcon width="32" height="32" style={{ opacity: 0.8 }} />
-                <span className="state-text">Queued</span>
-              </div>
-            )}
-            {img.state === 'uploading' && (
-              <div className="photo-state-overlay uploading">
-                <div className="progress-circle">
-                  <svg className="progress-ring" width="60" height="60">
-                    <circle
-                      className="progress-ring-circle"
-                      stroke="var(--primary-color)"
-                      strokeWidth="4"
-                      fill="transparent"
-                      r="26"
-                      cx="30"
-                      cy="30"
-                      style={{
-                        strokeDasharray: `${2 * Math.PI * 26}`,
-                        strokeDashoffset: `${2 * Math.PI * 26 * (1 - (img.progress || 0) / 100)}`,
-                      }}
-                    />
-                  </svg>
-                  <div className="progress-percentage">{img.progress || 0}%</div>
-                </div>
-                <span className="state-text">Uploading</span>
-              </div>
-            )}
-            {img.state === 'optimizing' && (
-              <div className="photo-state-overlay optimizing">
-                <div className="spinner"></div>
-                <span className="state-text">Optimizing...</span>
-                {typeof img.optimizeProgress === 'number' && (
-                  <span className="state-subtext">{img.optimizeProgress}%</span>
-                )}
-              </div>
-            )}
-            {img.state === 'generating-title' && (
-              <div className="photo-state-overlay generating-title">
-                <div className="spinner"></div>
-                <span className="state-text">Generating Title...</span>
-              </div>
-            )}
-            {img.state === 'complete' && (
-              <>
-                <img
-                  src={img.thumbnailUrl}
-                  alt=""
-                  className="admin-photo-thumbnail"
-                />
-                <div className="photo-complete-badge">✓</div>
-              </>
-            )}
-            {img.state === 'error' && (
-              <div className="photo-state-overlay error">
-                <div className="state-icon">⚠️</div>
-                <span className="state-text">Error</span>
-                <span className="error-message">{img.error}</span>
-              </div>
-            )}
-          </div>
-        ))}
-        
-        <SortableContext items={albumPhotos.map(p => p.id)} strategy={rectSortingStrategy}>
-          {albumPhotos.map((photo) => (
-            <SortablePhotoItem
-              key={photo.id}
-              photo={photo}
-              onEdit={onOpenEditModal}
-              onDelete={onDeletePhoto}
-              canEdit={canEdit}
-            />
-          ))}
-        </SortableContext>
-      </div>
-      <DragOverlay>
-        {activeId ? (
-          <div className="admin-photo-item dragging" style={{ cursor: 'grabbing' }}>
-            <img
-              src={`${API_URL}${albumPhotos.find(p => p.id === activeId)?.thumbnail}?i=${cacheBustValue}`}
-              alt=""
-              className="admin-photo-thumbnail"
-            />
-          </div>
-        ) : null}
-      </DragOverlay>
+          <SortableContext items={allItemIds} strategy={rectSortingStrategy}>
+            {/* Uploading images (includes those transitioning to complete) */}
+            {uploadingImages.map((img, index) => (
+              <PhotoGridItem
+                key={img.photo?.id || `uploading-${index}`}
+                uploadingImage={img}
+                uploadingIndex={index}
+                onEdit={onOpenEditModal}
+                onDelete={onDeletePhoto}
+                onRetryOptimization={onRetryOptimization}
+                onRetryAI={onRetryAI}
+                deletingPhotoId={deletingPhotoId}
+                canEdit={canEdit && !hasActiveUploads}
+              />
+            ))}
+            
+            {/* Existing album photos (already in album before upload) */}
+            {albumPhotos.filter(photo => photo && photo.id).map((photo) => (
+              <PhotoGridItem
+                key={photo.id}
+                photo={photo}
+                onEdit={onOpenEditModal}
+                onDelete={onDeletePhoto}
+                onRetryOptimization={onRetryOptimization}
+                onRetryAI={onRetryAI}
+                deletingPhotoId={deletingPhotoId}
+                canEdit={canEdit && !hasActiveUploads}
+              />
+            ))}
+          </SortableContext>
+        </div>
+        <DragOverlay>
+          {activeId ? (
+            <div className="admin-photo-item dragging" style={{ cursor: 'grabbing' }}>
+              <img
+                src={`${API_URL}${
+                  [...uploadingImages.map(img => img.photo), ...albumPhotos]
+                    .filter(p => p)
+                    .find(p => p!.id === activeId)
+                    ?.thumbnail
+                }?i=${cacheBustValue}`}
+                alt=""
+                className="admin-photo-thumbnail"
+              />
+            </div>
+          ) : null}
+        </DragOverlay>
       </DndContext>
     </div>
   );

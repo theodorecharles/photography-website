@@ -22,7 +22,9 @@ interface PhotosPanelProps {
   isDragging: boolean;
   isShuffling: boolean;
   localAlbums: any[];
+  deletingPhotoId: string | null;
   onClose: () => void;
+  setCloseHandler: (handler: () => void) => void;
   onUploadPhotos: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onDeleteAlbum: (albumName: string) => void;
   onShareAlbum: (albumName: string) => void;
@@ -36,7 +38,9 @@ interface PhotosPanelProps {
   onPhotoDragStart: (event: any, setActiveId?: (id: string | null) => void) => void;
   onPhotoDragEnd: (event: any, setActiveId?: (id: string | null) => void) => void;
   onOpenEditModal: (photo: Photo) => void;
-  onDeletePhoto: (filename: string) => void;
+  onDeletePhoto: (album: string, filename: string, photoTitle?: string) => void;
+  onRetryOptimization?: (album: string, filename: string) => void;
+  onRetryAI?: (album: string, filename: string) => void;
   onDragOver: (e: React.DragEvent<HTMLDivElement>) => void;
   onDragLeave: (e: React.DragEvent<HTMLDivElement>) => void;
   onDrop: (e: React.DragEvent<HTMLDivElement>) => void;
@@ -49,12 +53,14 @@ const PhotosPanel: React.FC<PhotosPanelProps> = ({
   albumPhotos,
   uploadingImages,
   loadingPhotos,
+  deletingPhotoId,
   hasEverDragged,
   savingOrder,
   isDragging,
   isShuffling,
   localAlbums,
   onClose,
+  setCloseHandler,
   onUploadPhotos,
   onDeleteAlbum,
   onShareAlbum,
@@ -69,6 +75,8 @@ const PhotosPanel: React.FC<PhotosPanelProps> = ({
   onPhotoDragEnd,
   onOpenEditModal,
   onDeletePhoto,
+  onRetryOptimization,
+  onRetryAI,
   onDragOver,
   onDragLeave,
   onDrop,
@@ -77,8 +85,18 @@ const PhotosPanel: React.FC<PhotosPanelProps> = ({
 }) => {
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const [photoActiveId, setPhotoActiveId] = useState<string | null>(null);
+  const [isClosing, setIsClosing] = useState(false);
 
-  // Lock body scrolling when PhotosPanel is open
+  // Handle close with animation
+  const handleClose = () => {
+    setIsClosing(true);
+    // Wait for animation to complete before actually closing
+    setTimeout(() => {
+      onClose();
+    }, 300); // Match the flipDown animation duration
+  };
+
+  // Lock body scrolling when PhotosPanel is open and register close handler
   useEffect(() => {
     // Save current overflow state
     const originalOverflow = document.body.style.overflow;
@@ -86,17 +104,20 @@ const PhotosPanel: React.FC<PhotosPanelProps> = ({
     // Lock scrolling
     document.body.style.overflow = 'hidden';
     
+    // Register close handler so album deletion can trigger animation
+    setCloseHandler(() => handleClose);
+    
     // Restore on unmount
     return () => {
       document.body.style.overflow = originalOverflow;
     };
-  }, []);
+  }, [setCloseHandler]);
 
   return (
     <>
-      <div className="photos-modal-backdrop" onClick={onClose} />
+      <div className="photos-modal-backdrop" onClick={handleClose} />
       <div 
-        className={`photos-modal ${isDragging ? 'drag-over' : ''}`}
+        className={`photos-modal ${isDragging ? 'drag-over' : ''} ${isClosing ? 'closing' : ''}`}
         onDragOver={uploadingImages.length > 0 ? undefined : onDragOver}
         onDragLeave={uploadingImages.length > 0 ? undefined : onDragLeave}
         onDrop={uploadingImages.length > 0 ? undefined : onDrop}
@@ -111,7 +132,7 @@ const PhotosPanel: React.FC<PhotosPanelProps> = ({
           isShuffling={isShuffling}
           viewMode={viewMode}
           shuffleButtonRef={shuffleButtonRef}
-          onClose={onClose}
+          onClose={handleClose}
           onUploadPhotos={onUploadPhotos}
           onDeleteAlbum={onDeleteAlbum}
           onShareAlbum={onShareAlbum}
@@ -132,10 +153,13 @@ const PhotosPanel: React.FC<PhotosPanelProps> = ({
           loadingPhotos={loadingPhotos}
           activeId={photoActiveId}
           viewMode={viewMode}
+          deletingPhotoId={deletingPhotoId}
           onPhotoDragStart={onPhotoDragStart}
           onPhotoDragEnd={onPhotoDragEnd}
           onOpenEditModal={onOpenEditModal}
           onDeletePhoto={onDeletePhoto}
+          onRetryOptimization={onRetryOptimization}
+          onRetryAI={onRetryAI}
           setActiveId={setPhotoActiveId}
           canEdit={canEdit}
         />

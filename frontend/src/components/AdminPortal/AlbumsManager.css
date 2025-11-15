@@ -1548,6 +1548,68 @@
   cursor: not-allowed;
 }
 
+/* Retry Button */
+.btn-retry-photo {
+  background: rgba(255, 193, 7, 0.2);
+  border: 1px solid rgba(255, 193, 7, 0.4);
+  color: #ffc107;
+  padding: 0.5rem;
+  border-radius: 50%;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.15s ease;
+}
+
+.btn-retry-photo:hover:not(:disabled) {
+  background: rgba(255, 193, 7, 0.3);
+  border-color: #ffc107;
+  transform: scale(1.1);
+}
+
+.btn-retry-photo:active {
+  transform: scale(0.95);
+}
+
+.btn-retry-photo:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Error Badges */
+.photo-error-badge {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  right: 8px;
+  padding: 0.4rem 0.6rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  z-index: 2;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.photo-error-badge.optimization-error {
+  background: rgba(220, 53, 69, 0.9);
+  border: 1px solid rgba(220, 53, 69, 1);
+  color: #fff;
+}
+
+.photo-error-badge.ai-error {
+  background: rgba(255, 193, 7, 0.9);
+  border: 1px solid rgba(255, 193, 7, 1);
+  color: #000;
+}
+
 /* Edit Title Modal */
 .edit-title-modal {
   position: fixed;
@@ -2006,6 +2068,51 @@
   transform: scale(0.85) var(--transform) !important;
 }
 
+/* Flip animation when photo completes upload */
+.admin-photo-item.flip-complete {
+  animation: flipComplete 0.6s ease-in-out;
+}
+
+@keyframes flipComplete {
+  0% {
+    transform: perspective(800px) rotateY(0deg) scale(1);
+  }
+  50% {
+    transform: perspective(800px) rotateY(90deg) scale(0.95);
+  }
+  100% {
+    transform: perspective(800px) rotateY(0deg) scale(1);
+  }
+}
+
+/* CRT Delete Animation - Like an old TV turning off */
+.admin-photo-item.crt-delete {
+  animation: crtDelete 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  pointer-events: none;
+}
+
+@keyframes crtDelete {
+  0% {
+    transform: scaleY(1) scaleX(1);
+    opacity: 1;
+    filter: brightness(1) saturate(1);
+  }
+  30% {
+    transform: scaleY(0.01) scaleX(1);
+    opacity: 0.9;
+    filter: brightness(10) saturate(0);
+  }
+  70% {
+    transform: scaleY(0.01) scaleX(0.01);
+    opacity: 0.6;
+    filter: brightness(10) saturate(0);
+  }
+  100% {
+    transform: scaleY(0) scaleX(0);
+    opacity: 0;
+    filter: brightness(0) saturate(0);
+  }
+}
 
 /* Cancel order button */
 .btn-cancel-order {

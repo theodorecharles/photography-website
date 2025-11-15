@@ -9,7 +9,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { UploadingImage, AlbumsManagerProps, ConfirmModalConfig } from './types';
+import { UploadingImage, AlbumsManagerProps, ConfirmModalConfig, Photo } from './types';
 import { trackAlbumCreated } from '../../../utils/analytics';
 import PhotosPanel from './components/PhotosPanel';
 import AlbumToolbar from './components/AlbumToolbar';
@@ -27,6 +27,7 @@ import { createUploadHandlers } from './handlers/uploadHandlers';
 import { createAlbumHandlers } from './handlers/albumHandlers';
 import { createUIInteractionHandlers } from './handlers/uiInteractionHandlers';
 import { createPhotoHandlers } from './handlers/photoHandlers';
+import { createOptimizationStreamHandlers } from './handlers/optimizationStreamHandlers';
 import '../AlbumsManager.css';
 import '../PhotoOrderControls.css';
 import {
@@ -59,6 +60,12 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   // Confirmation modal state (needed early for hooks)
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [confirmConfig, setConfirmConfig] = useState<ConfirmModalConfig | null>(null);
+  
+  // Track which photo is being deleted for animation
+  const [deletingPhotoId, setDeletingPhotoId] = useState<string | null>(null);
+  
+  // Store reference to PhotosPanel close handler for album deletion
+  const [photosPanelCloseHandler, setPhotosPanelCloseHandler] = useState<(() => void) | null>(null);
   
   // Helper function to show confirmation dialog
   const showConfirmation = useCallback((config: ConfirmModalConfig) => {
@@ -132,6 +139,45 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   // Upload state (keeping this in component for now due to complexity)
   const [uploadingImages, setUploadingImages] = useState<UploadingImage[]>([]);
   const uploadingImagesRef = useRef<UploadingImage[]>([]);
+  
+  // Move completed uploads from uploadingImages to albumPhotos when all uploads finish
+  useEffect(() => {
+    const completedUploads = uploadingImages.filter(img => img.state === 'complete' && img.photo);
+    
+    // If there are completed uploads and no active uploads, move them to albumPhotos
+    if (completedUploads.length > 0) {
+      const hasActiveUploads = uploadingImages.some(img => img.state !== 'complete');
+      
+      if (!hasActiveUploads) {
+        console.log('All uploads complete, moving to albumPhotos:', completedUploads.length);
+        
+        // Extract photos from completed uploads
+        const newPhotos = completedUploads.map(img => img.photo!).filter(p => p);
+        
+        // Add to beginning of albumPhotos (they were rendered first in the grid)
+        photoManagement.setAlbumPhotos((prev: Photo[]) => [...newPhotos, ...prev]);
+        
+        // Clear uploadingImages
+        setUploadingImages([]);
+      }
+    }
+  }, [uploadingImages, photoManagement]);
+
+  // Connect to optimization stream when PhotosPanel is open
+  const optimizationStreamHandlers = createOptimizationStreamHandlers({
+    setUploadingImages,
+    selectedAlbum
+  });
+
+  useEffect(() => {
+    if (selectedAlbum) {
+      optimizationStreamHandlers.connectOptimizationStream();
+    }
+
+    return () => {
+      optimizationStreamHandlers.disconnectOptimizationStream();
+    };
+  }, [selectedAlbum]);
   
   // Drag-and-drop state (keeping this in component for now)
   const [isDragging] = useState(false);
@@ -257,7 +303,6 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     selectAlbum,
     setMessage,
     loadAlbums,
-    loadPhotos: photoManagement.loadPhotos,
   });
 
   const albumHandlers = createAlbumHandlers({
@@ -276,6 +321,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     renamingAlbum,
     newAlbumName,
     showConfirmation,
+    closePhotosPanel: photosPanelCloseHandler || undefined,
   });
 
   const uiHandlers = createUIInteractionHandlers({
@@ -300,6 +346,8 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     shufflePhotos: photoManagement.shufflePhotos,
     setMessage,
     showConfirmation,
+    setAlbumPhotos: photoManagement.setAlbumPhotos,
+    setDeletingPhotoId,
   });
 
   // Handlers are accessed via namespace pattern (e.g., dragDropHandlers.handlePhotoDragStart)
@@ -508,7 +556,9 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
               isDragging={isDragging}
               isShuffling={isShuffling}
               localAlbums={localAlbums}
+              deletingPhotoId={deletingPhotoId}
               onClose={deselectAlbum}
+              setCloseHandler={setPhotosPanelCloseHandler}
               onUploadPhotos={uploadHandlers.handleUploadPhotos}
               onDeleteAlbum={albumHandlers.handleDeleteAlbum}
               onShareAlbum={(albumName) => {
@@ -527,7 +577,9 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
               onPhotoDragStart={(event, setActiveId) => photoManagement.handlePhotoDragStart(event, setActiveId)}
               onPhotoDragEnd={(event, setActiveId) => photoManagement.handlePhotoDragEnd(event, setActiveId)}
               onOpenEditModal={openEditModal}
-              onDeletePhoto={(filename) => photoHandlers.handleDeletePhoto(selectedAlbum!, filename)}
+              onDeletePhoto={photoHandlers.handleDeletePhoto}
+              onRetryOptimization={photoHandlers.handleRetryOptimization}
+              onRetryAI={photoHandlers.handleRetryAI}
               onDragOver={uploadHandlers.handleDragOver}
               onDragLeave={uploadHandlers.handleDragLeave}
               onDrop={uploadHandlers.handleDrop}

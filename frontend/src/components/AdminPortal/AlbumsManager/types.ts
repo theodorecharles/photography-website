@@ -17,6 +17,8 @@ export interface UploadingImage {
   error?: string;
   progress?: number;
   optimizeProgress?: number; // 0-100 for optimization progress
+  uploadIndex?: number; // Track original position in upload batch for maintaining order
+  photo?: Photo; // When state='complete', this contains the complete photo data
 }
 
 export interface AlbumsManagerProps {

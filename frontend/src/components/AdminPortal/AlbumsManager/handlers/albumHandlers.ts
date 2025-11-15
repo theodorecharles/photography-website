@@ -26,6 +26,7 @@ interface AlbumHandlersProps {
   renamingAlbum: string | null;
   newAlbumName: string;
   showConfirmation: (config: ConfirmModalConfig) => void;
+  closePhotosPanel?: () => void; // Optional handler to trigger closing animation
 }
 
 export const createAlbumHandlers = (props: AlbumHandlersProps) => {
@@ -45,6 +46,7 @@ export const createAlbumHandlers = (props: AlbumHandlersProps) => {
     renamingAlbum,
     newAlbumName,
     showConfirmation,
+    closePhotosPanel,
   } = props;
 
   const handleDeleteAlbum = async (albumName: string): Promise<void> => {
@@ -72,7 +74,14 @@ export const createAlbumHandlers = (props: AlbumHandlersProps) => {
           if (res.ok) {
             setMessage({ type: 'success', text: `Album "${albumName}" deleted` });
             trackAlbumDeleted(albumName);
-            if (selectedAlbum === albumName) deselectAlbum();
+            // If deleting the currently open album, trigger closing animation
+            if (selectedAlbum === albumName) {
+              if (closePhotosPanel) {
+                closePhotosPanel(); // Triggers animation, then calls deselectAlbum
+              } else {
+                deselectAlbum(); // Fallback if animation handler not available
+              }
+            }
             await loadAlbums();
             window.dispatchEvent(new Event('albums-updated'));
           } else {
