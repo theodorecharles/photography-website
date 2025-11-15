@@ -93,13 +93,15 @@ const PhotosPanel: React.FC<PhotosPanelProps> = ({
   }, []);
 
   return (
-    <div 
-      className={`photos-modal ${isDragging ? 'drag-over' : ''}`}
-      onDragOver={uploadingImages.length > 0 ? undefined : onDragOver}
-      onDragLeave={uploadingImages.length > 0 ? undefined : onDragLeave}
-      onDrop={uploadingImages.length > 0 ? undefined : onDrop}
-    >
-        <PhotosPanelHeader
+    <>
+      <div className="photos-modal-backdrop" onClick={onClose} />
+      <div 
+        className={`photos-modal ${isDragging ? 'drag-over' : ''}`}
+        onDragOver={uploadingImages.length > 0 ? undefined : onDragOver}
+        onDragLeave={uploadingImages.length > 0 ? undefined : onDragLeave}
+        onDrop={uploadingImages.length > 0 ? undefined : onDrop}
+      >
+          <PhotosPanelHeader
           selectedAlbum={selectedAlbum}
           localAlbums={localAlbums}
           albumPhotos={albumPhotos}
@@ -137,7 +139,8 @@ const PhotosPanel: React.FC<PhotosPanelProps> = ({
           setActiveId={setPhotoActiveId}
           canEdit={canEdit}
         />
-    </div>
+      </div>
+    </>
   );
 };
 
