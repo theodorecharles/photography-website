@@ -60,6 +60,41 @@ export default function AdminPortal() {
     }
   }, [activeAuthTab]);
   
+  // Sync URL with auth tab state (when user clicks buttons)
+  const updateAuthRoute = (method: AuthMethod) => {
+    if (method === 'passkey') {
+      navigate('/admin/login/passkey');
+    } else if (method === 'credentials') {
+      navigate('/admin/login/password');
+    } else {
+      navigate('/admin/login');
+    }
+    setActiveAuthTab(method);
+  };
+  
+  // Read URL and set auth tab on mount/navigation (when user uses back button or direct URL)
+  useEffect(() => {
+    // Skip if authenticated
+    if (authStatus?.authenticated) return;
+    
+    const path = location.pathname;
+    
+    // Set active auth tab based on URL, but only if it doesn't match current state
+    if (path === '/admin/login/passkey' && activeAuthTab !== 'passkey') {
+      setActiveAuthTab('passkey');
+    } else if (path === '/admin/login/password' && activeAuthTab !== 'credentials') {
+      setActiveAuthTab('credentials');
+    } else if (path === '/admin/login' && activeAuthTab !== null) {
+      setActiveAuthTab(null);
+    } else if (!path.startsWith('/admin/login') && !path.startsWith('/admin/') && !authStatus) {
+      // User is not authenticated and not on any admin route - redirect to login
+      navigate('/admin/login', { replace: true });
+    } else if (path.startsWith('/admin/') && path !== '/admin/login' && !path.startsWith('/admin/login/') && authStatus === null) {
+      // User is trying to access admin route but not authenticated - redirect to login
+      navigate('/admin/login', { replace: true });
+    }
+  }, [location.pathname, authStatus, activeAuthTab, navigate]);
+  
   // Aggressively load CSS in dev mode
   useEffect(() => {
     const loadCSS = async () => {
@@ -633,7 +668,7 @@ export default function AdminPortal() {
                   
                   {availableAuthMethods.passkey && (
                     <button
-                      onClick={() => setActiveAuthTab('passkey')}
+                      onClick={() => updateAuthRoute('passkey')}
                       className="btn-login"
                       style={{
                         display: 'flex',
@@ -659,7 +694,7 @@ export default function AdminPortal() {
                   
                   {availableAuthMethods.password && (
                     <button
-                      onClick={() => setActiveAuthTab('credentials')}
+                      onClick={() => updateAuthRoute('credentials')}
                       className="btn-login"
                       style={{
                         display: 'flex',
@@ -809,7 +844,7 @@ export default function AdminPortal() {
                           setRequiresMFA(false);
                           setMfaToken('');
                           setLoginError(null);
-                          setActiveAuthTab(null);
+                          updateAuthRoute(null);
                         }}
                         disabled={loginLoading}
                         style={{
@@ -862,7 +897,7 @@ export default function AdminPortal() {
                     <button
                       type="button"
                       onClick={() => {
-                        setActiveAuthTab(null);
+                        updateAuthRoute(null);
                         setUsername('');
                         setLoginError(null);
                       }}
