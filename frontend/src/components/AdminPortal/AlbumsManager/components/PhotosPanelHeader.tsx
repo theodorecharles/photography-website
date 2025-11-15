@@ -200,7 +200,7 @@ const PhotosPanelHeader: React.FC<PhotosPanelHeaderProps> = ({
               onTouchStart={onShuffleStart}
               onTouchEnd={onShuffleEnd}
               onTouchCancel={onShuffleEnd}
-              className={`photos-btn photos-btn-secondary ${isShuffling ? 'shuffling' : ''}`}
+              className={`photos-btn btn-shuffle-order ${isShuffling ? 'shuffling-active' : ''}`}
               disabled={savingOrder}
               title="Click to shuffle once, hold to shuffle continuously"
             >
