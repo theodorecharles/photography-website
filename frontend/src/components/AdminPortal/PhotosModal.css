@@ -150,6 +150,14 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  flex: 1; /* Allow controls sections to grow */
+}
+
+/* Buttons should expand to fill available space */
+.photos-controls-left .photos-btn,
+.photos-controls-right .photos-btn {
+  flex: 1;
+  min-width: 0;
 }
 
 .photos-action-buttons {
@@ -242,7 +250,7 @@
   border-color: rgba(255, 255, 255, 0.2);
 }
 
-/* View Toggle */
+/* View Toggle - Always fixed width, never expands */
 .view-toggle {
   display: flex;
   gap: 0;
@@ -250,8 +258,8 @@
   border-radius: 8px;
   padding: 0.25rem;
   border: 1px solid rgba(255, 255, 255, 0.08);
-  flex-shrink: 0;
-  width: fit-content;
+  flex: 0 0 auto !important; /* Never grow or shrink */
+  width: fit-content !important; /* Use natural width */
 }
 
 .view-toggle-btn {
@@ -342,12 +350,6 @@
     flex-wrap: wrap;
   }
 
-  .photos-controls-left > *,
-  .photos-controls-right > * {
-    flex: 1;
-    min-width: 0;
-  }
-
   .photos-controls-right {
     justify-content: stretch;
   }
@@ -355,7 +357,7 @@
   .photos-btn {
     padding: 0.6rem 0.8rem;
     font-size: 0.85rem;
-    flex: 1;
+    /* flex: 1 is already set in desktop styles */
   }
   
   /* Hide button text on mobile, show icons only */
