@@ -187,23 +187,9 @@ export const createUploadHandlers = (props: UploadHandlersProps) => {
       loadPhotos(albumName)
     ]);
     
-    // Poll to check if all optimizations are complete before clearing
-    const checkComplete = () => {
-      setUploadingImages(prev => {
-        const allComplete = prev.every(img => img.state === 'complete' || img.state === 'error');
-        if (allComplete) {
-          // Clear after showing completion state briefly
-          setTimeout(() => setUploadingImages([]), 1500);
-          return prev;
-        }
-        // Check again in 500ms
-        setTimeout(checkComplete, 500);
-        return prev;
-      });
-    };
-    
-    // Start checking after a short delay to let first optimization messages arrive
-    setTimeout(checkComplete, 1000);
+    // Clear uploading images immediately to avoid double grid
+    // Optimization continues in background via SSE
+    setUploadingImages([]);
   };
 
   const handleUploadPhotos = async (e: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
