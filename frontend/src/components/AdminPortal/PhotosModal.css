@@ -357,6 +357,11 @@
     font-size: 0.85rem;
     flex: 1;
   }
+  
+  /* Hide button text on mobile, show icons only */
+  .photos-btn span {
+    display: none;
+  }
 
   .photos-action-buttons {
     display: flex;
@@ -373,14 +378,21 @@
     justify-content: center;
   }
 
+  /* View toggle stays fixed width on mobile */
   .view-toggle {
-    width: 100%;
+    width: fit-content !important;
+    flex-shrink: 0;
   }
 
   .photos-reorder-bar {
     flex-direction: column;
     gap: 0.75rem;
     align-items: stretch;
+  }
+  
+  /* Show text for reorder bar buttons (shuffle, save, cancel) */
+  .photos-reorder-bar .photos-btn span {
+    display: inline;
   }
 
   .photos-reorder-left,
