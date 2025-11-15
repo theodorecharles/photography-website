@@ -431,11 +431,6 @@
     flex: 1;
   }
 
-  .toggle-switch.compact {
-    width: 100%;
-    justify-content: center;
-  }
-
   /* View toggle stays fixed width on mobile */
   .view-toggle {
     width: fit-content !important;
