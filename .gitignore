@@ -23,6 +23,7 @@ frontend/public/albums-data/
 
 # Config (track only config.example.json, users should copy and customize)
 data/
+data-backup-*/
 config/config.local.json
 
 # Database (persist gallery data across updates)
