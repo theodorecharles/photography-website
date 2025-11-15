@@ -199,13 +199,16 @@ const PhotosPanelGrid: React.FC<PhotosPanelGridProps> = ({
             ))}
           </SortableContext>
         </div>
-        <DragOverlay>
+        <DragOverlay dropAnimation={null}>
           {activeId ? (
-            <div className="admin-photo-item dragging" style={{ 
+            <div style={{ 
+              width: '160px',
+              height: '160px',
+              borderRadius: '12px',
+              overflow: 'hidden',
+              boxShadow: '0 8px 24px rgba(0, 0, 0, 0.4)',
               cursor: 'grabbing',
-              width: '200px',
-              height: '200px',
-              paddingBottom: 0,
+              opacity: 0.9,
             }}>
               <img
                 src={`${API_URL}${
@@ -215,7 +218,11 @@ const PhotosPanelGrid: React.FC<PhotosPanelGridProps> = ({
                     ?.thumbnail
                 }?i=${cacheBustValue}`}
                 alt=""
-                className="admin-photo-thumbnail"
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                }}
               />
             </div>
           ) : null}

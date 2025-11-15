@@ -117,7 +117,7 @@ const PhotosPanel: React.FC<PhotosPanelProps> = ({
     <>
       <div className="photos-modal-backdrop" onClick={handleClose} />
       <div 
-        className={`photos-modal ${isDragging ? 'drag-over' : ''} ${isClosing ? 'closing' : ''}`}
+        className={`photos-modal ${isDragging ? 'drag-over' : ''} ${isClosing ? 'closing' : ''} ${hasEverDragged ? 'has-reorder-bar' : ''}`}
         onDragOver={uploadingImages.length > 0 ? undefined : onDragOver}
         onDragLeave={uploadingImages.length > 0 ? undefined : onDragLeave}
         onDrop={uploadingImages.length > 0 ? undefined : onDrop}
