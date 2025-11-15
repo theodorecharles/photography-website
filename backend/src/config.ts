@@ -35,6 +35,7 @@ const defaultConfig = {
     },
     auth: {
       google: {
+        enabled: false,
         clientId: "",
         clientSecret: ""
       },

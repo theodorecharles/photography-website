@@ -396,29 +396,24 @@ router.get('/status', (req: Request, res: Response) => {
   let availableAuthMethods = {
     google: false,
     passkey: false,
-    password: false,
+    password: true, // Password is always available
   };
   
   try {
     const allUsers = getAllUsers();
     
-    // Check if there are any users with each auth method
-    const hasGoogleUsers = allUsers.some(user => 
-      user.auth_methods && user.auth_methods.includes('google')
-    );
+    // Google is enabled if config says so (regardless of whether any users have used it)
+    const googleEnabled = config.auth?.google?.enabled || false;
     
+    // Passkey is available if any users have passkeys
     const hasPasskeyUsers = allUsers.some(user => 
       user.passkeys && user.passkeys.length > 0
     );
     
-    const hasPasswordUsers = allUsers.some(user => 
-      user.auth_methods && user.auth_methods.includes('credentials')
-    );
-    
     availableAuthMethods = {
-      google: hasGoogleUsers,
+      google: googleEnabled,
       passkey: hasPasskeyUsers,
-      password: hasPasswordUsers,
+      password: true, // Always show password option
     };
   } catch (err) {
     console.error('Failed to check available auth methods:', err);
