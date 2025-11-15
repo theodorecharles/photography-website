@@ -146,7 +146,6 @@ const PhotosPanelGrid: React.FC<PhotosPanelGridProps> = ({
                 <span className="error-message">{img.error}</span>
               </div>
             )}
-            <div className="photo-filename">{img.filename}</div>
           </div>
         ))}
         

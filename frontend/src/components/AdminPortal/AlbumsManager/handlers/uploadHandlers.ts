@@ -3,7 +3,7 @@
  * Handles photo uploads, drag-and-drop file uploads
  */
 
-import { UploadingImage } from '../types';
+import { UploadingImage, Photo } from '../types';
 import { trackPhotoUploaded } from '../../../../utils/analytics';
 import { validateImageFiles } from '../utils/albumHelpers';
 
@@ -17,6 +17,7 @@ interface UploadHandlersProps {
   setMessage: (message: { type: 'success' | 'error'; text: string }) => void;
   loadAlbums: () => Promise<void>;
   loadPhotos: (albumName: string) => Promise<void>;
+  setAlbumPhotos: React.Dispatch<React.SetStateAction<Photo[]>>;
 }
 
 export const createUploadHandlers = (props: UploadHandlersProps) => {
