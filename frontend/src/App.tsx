@@ -11,6 +11,7 @@ import {
   Route,
   useParams,
   useLocation,
+  useNavigate,
 } from "react-router-dom";
 import "./App.css";
 import PhotoGrid from "./components/PhotoGrid";
