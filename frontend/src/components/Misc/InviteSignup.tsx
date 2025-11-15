@@ -88,7 +88,7 @@ const InviteSignup: React.FC = () => {
       }
 
       // Signup successful - redirect to login
-      navigate('/login?message=signup-complete');
+      navigate('/admin?message=signup-complete');
     } catch (err: any) {
       setError(err.message || 'Failed to complete signup');
       setLoading(false);
@@ -309,7 +309,7 @@ const InviteSignup: React.FC = () => {
         }}>
           Already have an account?{' '}
           <a
-            href="/login"
+            href="/admin"
             style={{
               color: 'var(--primary-color)',
               textDecoration: 'none',

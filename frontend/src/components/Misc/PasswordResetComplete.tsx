@@ -86,7 +86,7 @@ const PasswordResetComplete: React.FC = () => {
       
       // Redirect to login after 2 seconds
       setTimeout(() => {
-        navigate('/login?message=password-reset-complete');
+        navigate('/admin?message=password-reset-complete');
       }, 2000);
     } catch (err: any) {
       setError(err.message || 'Failed to reset password');
@@ -366,7 +366,7 @@ const PasswordResetComplete: React.FC = () => {
         >
           Remember your password?{" "}
           <a
-            href="/login"
+            href="/admin"
             style={{
               color: "var(--primary-color)",
               textDecoration: "none",
