@@ -74,41 +74,45 @@ const PhotosPanelHeader: React.FC<PhotosPanelHeaderProps> = ({
     <div className="photos-modal-header">
       {/* Title Bar */}
       <div className="photos-title-bar">
-        <div className="photos-title-section">
+        {/* Left: Album title + photo count */}
+        <div className="photos-title-left">
           <h2 className="photos-modal-title">{selectedAlbum}</h2>
           <span className="photos-count">{photoCount} {photoCount === 1 ? 'photo' : 'photos'}</span>
         </div>
         
-        {/* Publish/Unpublish Toggle (Mobile Only - shown on narrow screens) */}
-        {canEdit ? (
-          <label className="toggle-switch compact publish-toggle-titlebar" onClick={(e) => e.stopPropagation()}>
-            <span className="toggle-label">
+        {/* Right: Publish toggle + close button */}
+        <div className="photos-title-right">
+          {/* Publish/Unpublish Toggle (Mobile Only - shown on narrow screens) */}
+          {canEdit ? (
+            <label className="toggle-switch compact publish-toggle-titlebar" onClick={(e) => e.stopPropagation()}>
+              <span className="toggle-label">
+                {isPublished ? 'Published' : 'Unpublished'}
+              </span>
+              <input
+                type="checkbox"
+                checked={isPublished}
+                onChange={() => onTogglePublished(selectedAlbum, isPublished)}
+              />
+              <span className="toggle-slider"></span>
+            </label>
+          ) : (
+            <span className="photos-status-badge publish-toggle-titlebar" style={{
+              padding: '0.5rem 0.75rem',
+              borderRadius: '6px',
+              fontSize: '0.875rem',
+              fontWeight: 500,
+              background: isPublished ? 'rgba(34, 197, 94, 0.2)' : 'rgba(251, 191, 36, 0.2)',
+              color: isPublished ? '#4ade80' : '#fbbf24',
+              border: isPublished ? '1px solid rgba(34, 197, 94, 0.3)' : '1px solid rgba(251, 191, 36, 0.3)',
+            }}>
               {isPublished ? 'Published' : 'Unpublished'}
             </span>
-            <input
-              type="checkbox"
-              checked={isPublished}
-              onChange={() => onTogglePublished(selectedAlbum, isPublished)}
-            />
-            <span className="toggle-slider"></span>
-          </label>
-        ) : (
-          <span className="photos-status-badge publish-toggle-titlebar" style={{
-            padding: '0.5rem 0.75rem',
-            borderRadius: '6px',
-            fontSize: '0.875rem',
-            fontWeight: 500,
-            background: isPublished ? 'rgba(34, 197, 94, 0.2)' : 'rgba(251, 191, 36, 0.2)',
-            color: isPublished ? '#4ade80' : '#fbbf24',
-            border: isPublished ? '1px solid rgba(34, 197, 94, 0.3)' : '1px solid rgba(251, 191, 36, 0.3)',
-          }}>
-            {isPublished ? 'Published' : 'Unpublished'}
-          </span>
-        )}
-        
-        <button onClick={onClose} className="photos-close-btn" title="Close">
-          <CloseIcon width="20" height="20" />
-        </button>
+          )}
+          
+          <button onClick={onClose} className="photos-close-btn" title="Close">
+            <CloseIcon width="20" height="20" />
+          </button>
+        </div>
       </div>
 
       {/* Controls Bar */}
