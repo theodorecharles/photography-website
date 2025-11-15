@@ -11,7 +11,6 @@ import {
   Route,
   useParams,
   useLocation,
-  useNavigate,
 } from "react-router-dom";
 import "./App.css";
 import PhotoGrid from "./components/PhotoGrid";
@@ -99,7 +98,6 @@ function App() {
   const [hideAlbumTitle, setHideAlbumTitle] = useState(false);
   const [setupComplete, setSetupComplete] = useState<boolean | null>(null);
   const location = useLocation();
-  const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
 
   // Check if initial setup is complete
