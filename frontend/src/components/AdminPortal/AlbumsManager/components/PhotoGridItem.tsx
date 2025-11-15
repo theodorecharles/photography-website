@@ -4,7 +4,7 @@
  * Supports both uploading images and completed photos with drag-and-drop
  */
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Photo, UploadingImage } from '../types';
@@ -29,6 +29,8 @@ interface PhotoGridItemProps {
   
   // State
   deletingPhotoId?: string | null;
+  activeOverlayId?: string | null;
+  setActiveOverlayId?: (id: string | null) => void;
   
   // Permissions
   canEdit: boolean;
@@ -43,6 +45,8 @@ const PhotoGridItem: React.FC<PhotoGridItemProps> = ({
   onRetryOptimization,
   onRetryAI,
   deletingPhotoId,
+  activeOverlayId,
+  setActiveOverlayId,
   canEdit,
 }) => {
   const isUploading = !!uploadingImage && uploadingImage.state !== 'complete';
@@ -72,6 +76,13 @@ const PhotoGridItem: React.FC<PhotoGridItemProps> = ({
   
   // Check if this photo is being deleted (for CRT animation)
   const isDeleting = photoData && deletingPhotoId === photoData.id;
+  
+  // Close overlay if another photo's overlay becomes active
+  useEffect(() => {
+    if (activeOverlayId && activeOverlayId !== itemId && showOverlay) {
+      setShowOverlay(false);
+    }
+  }, [activeOverlayId, itemId, showOverlay]);
 
   const handleTouchStart = (e: React.TouchEvent) => {
     if (isUploading) return;
@@ -106,8 +117,10 @@ const PhotoGridItem: React.FC<PhotoGridItemProps> = ({
         // Tapped a button - let the button handler deal with it
       } else if (showOverlay) {
         setShowOverlay(false);
+        if (setActiveOverlayId) setActiveOverlayId(null);
       } else {
         setShowOverlay(true);
+        if (setActiveOverlayId && itemId) setActiveOverlayId(itemId);
       }
     }
     touchStartPos.current = null;

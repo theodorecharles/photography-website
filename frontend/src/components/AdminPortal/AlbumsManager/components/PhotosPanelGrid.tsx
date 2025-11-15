@@ -53,6 +53,9 @@ const PhotosPanelGrid: React.FC<PhotosPanelGridProps> = ({
   // Detect if device supports touch
   const isTouchDevice = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
   
+  // Track which photo has its overlay visible (only one at a time)
+  const [activeOverlayId, setActiveOverlayId] = React.useState<string | null>(null);
+  
   // FLIP animation for smooth reflow on delete
   const gridRef = useRef<HTMLDivElement>(null);
   const firstPositionsRef = useRef<Map<string, DOMRect>>(new Map());
@@ -181,6 +184,8 @@ const PhotosPanelGrid: React.FC<PhotosPanelGridProps> = ({
                 onRetryAI={onRetryAI}
                 deletingPhotoId={deletingPhotoId}
                 canEdit={canEdit && !hasActiveUploads}
+                activeOverlayId={activeOverlayId}
+                setActiveOverlayId={setActiveOverlayId}
               />
             ))}
             
@@ -195,6 +200,8 @@ const PhotosPanelGrid: React.FC<PhotosPanelGridProps> = ({
                 onRetryAI={onRetryAI}
                 deletingPhotoId={deletingPhotoId}
                 canEdit={canEdit && !hasActiveUploads}
+                activeOverlayId={activeOverlayId}
+                setActiveOverlayId={setActiveOverlayId}
               />
             ))}
           </SortableContext>
@@ -202,13 +209,14 @@ const PhotosPanelGrid: React.FC<PhotosPanelGridProps> = ({
         <DragOverlay dropAnimation={null}>
           {activeId ? (
             <div style={{ 
-              width: '160px',
-              height: '160px',
+              width: '120px',
+              height: '120px',
               borderRadius: '12px',
               overflow: 'hidden',
               boxShadow: '0 8px 24px rgba(0, 0, 0, 0.4)',
               cursor: 'grabbing',
               opacity: 0.9,
+              transform: 'translate(0%, -50%)',
             }}>
               <img
                 src={`${API_URL}${

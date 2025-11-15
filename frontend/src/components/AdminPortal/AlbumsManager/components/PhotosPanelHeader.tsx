@@ -10,7 +10,7 @@
  */
 
 import React from 'react';
-import { UploadIcon, TrashIcon, LinkIcon, ShuffleIcon, CloseIcon, EyeIcon, GridViewIcon, ListViewIcon } from '../../../icons';
+import { UploadIcon, TrashIcon, LinkIcon, CloseIcon, EyeIcon, GridViewIcon, ListViewIcon } from '../../../icons';
 
 type ViewMode = 'grid' | 'list';
 
@@ -19,22 +19,13 @@ interface PhotosPanelHeaderProps {
   localAlbums: any[];
   albumPhotos: any[];
   uploadingImages: any[];
-  hasEverDragged: boolean;
-  savingOrder: boolean;
-  isShuffling: boolean;
   viewMode: ViewMode;
-  shuffleButtonRef: React.RefObject<HTMLButtonElement | null>;
   onClose: () => void;
   onUploadPhotos: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onDeleteAlbum: (albumName: string) => void;
   onShareAlbum: (albumName: string) => void;
   onTogglePublished: (albumName: string, currentPublished: boolean) => void;
   onPreviewAlbum: (albumName: string) => void;
-  onSavePhotoOrder: () => void;
-  onCancelPhotoOrder: () => void;
-  onShufflePhotos: () => void;
-  onShuffleStart: () => void;
-  onShuffleEnd: () => void;
   onViewModeChange: (mode: ViewMode) => void;
   canEdit: boolean;
 }
@@ -44,22 +35,13 @@ const PhotosPanelHeader: React.FC<PhotosPanelHeaderProps> = ({
   localAlbums,
   albumPhotos,
   uploadingImages,
-  hasEverDragged,
-  savingOrder,
-  isShuffling,
   viewMode,
-  shuffleButtonRef,
   onClose,
   onUploadPhotos,
   onDeleteAlbum,
   onShareAlbum,
   onTogglePublished,
   onPreviewAlbum,
-  onSavePhotoOrder,
-  onCancelPhotoOrder,
-  onShufflePhotos,
-  onShuffleStart,
-  onShuffleEnd,
   onViewModeChange,
   canEdit,
 }) => {
@@ -220,47 +202,6 @@ const PhotosPanelHeader: React.FC<PhotosPanelHeaderProps> = ({
         </div>
       </div>
 
-      {/* Reorder Controls (shown when dragging) */}
-      {hasEverDragged && canEdit && (
-        <div className="photos-reorder-bar">
-          <div className="photos-reorder-left">
-            <button
-              ref={shuffleButtonRef}
-              onClick={onShufflePhotos}
-              onMouseDown={onShuffleStart}
-              onMouseUp={onShuffleEnd}
-              onMouseLeave={onShuffleEnd}
-              onTouchStart={onShuffleStart}
-              onTouchEnd={onShuffleEnd}
-              onTouchCancel={onShuffleEnd}
-              className={`photos-btn btn-shuffle-order ${isShuffling ? 'shuffling-active' : ''}`}
-              disabled={savingOrder}
-              title="Click to shuffle once, hold to shuffle continuously"
-            >
-              <ShuffleIcon width="16" height="16" />
-              <span>Shuffle</span>
-            </button>
-            <span className="reorder-hint reorder-hint-desktop">Drag to reorder • Changes not saved</span>
-          </div>
-          <div className="photos-reorder-right">
-            <button 
-              onClick={onCancelPhotoOrder} 
-              className="photos-btn photos-btn-ghost" 
-              disabled={savingOrder}
-            >
-              Cancel
-            </button>
-            <button 
-              onClick={onSavePhotoOrder} 
-              className="photos-btn photos-btn-success" 
-              disabled={savingOrder}
-            >
-              {savingOrder ? 'Saving...' : 'Save Order'}
-            </button>
-          </div>
-          <span className="reorder-hint reorder-hint-mobile">Drag to reorder • Changes not saved</span>
-        </div>
-      )}
     </div>
   );
 };
