@@ -102,18 +102,6 @@ function App() {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
 
-  // Listen for auth errors and redirect to login
-  useEffect(() => {
-    const handleAuthError = (event: Event) => {
-      const customEvent = event as CustomEvent;
-      console.log('Auth error detected:', customEvent.detail?.message);
-      navigate('/admin');
-    };
-
-    window.addEventListener('auth-error', handleAuthError);
-    return () => window.removeEventListener('auth-error', handleAuthError);
-  }, [navigate]);
-
   // Check if initial setup is complete
   useEffect(() => {
     const checkSetup = async () => {
