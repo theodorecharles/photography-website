@@ -8,6 +8,7 @@ import React, { useState, useEffect } from 'react';
 import PhotosPanelHeader from './PhotosPanelHeader';
 import PhotosPanelGrid from './PhotosPanelGrid';
 import { Photo, UploadingImage } from '../types';
+import { ShuffleIcon } from '../../../icons';
 import '../../PhotosModal.css';
 
 type ViewMode = 'grid' | 'list';
@@ -115,7 +116,7 @@ const PhotosPanel: React.FC<PhotosPanelProps> = ({
 
   return (
     <>
-      <div className="photos-modal-backdrop" onClick={handleClose} />
+      <div className={`photos-modal-backdrop ${isClosing ? 'closing' : ''}`} onClick={handleClose} />
       <div 
         className={`photos-modal ${isDragging ? 'drag-over' : ''} ${isClosing ? 'closing' : ''} ${hasEverDragged ? 'has-reorder-bar' : ''}`}
         onDragOver={uploadingImages.length > 0 ? undefined : onDragOver}
@@ -127,22 +128,13 @@ const PhotosPanel: React.FC<PhotosPanelProps> = ({
           localAlbums={localAlbums}
           albumPhotos={albumPhotos}
           uploadingImages={uploadingImages}
-          hasEverDragged={hasEverDragged}
-          savingOrder={savingOrder}
-          isShuffling={isShuffling}
           viewMode={viewMode}
-          shuffleButtonRef={shuffleButtonRef}
           onClose={handleClose}
           onUploadPhotos={onUploadPhotos}
           onDeleteAlbum={onDeleteAlbum}
           onShareAlbum={onShareAlbum}
           onTogglePublished={onTogglePublished}
           onPreviewAlbum={onPreviewAlbum}
-          onSavePhotoOrder={onSavePhotoOrder}
-          onCancelPhotoOrder={onCancelPhotoOrder}
-          onShufflePhotos={onShufflePhotos}
-          onShuffleStart={onShuffleStart}
-          onShuffleEnd={onShuffleEnd}
           onViewModeChange={setViewMode}
           canEdit={canEdit}
         />
@@ -163,6 +155,48 @@ const PhotosPanel: React.FC<PhotosPanelProps> = ({
           setActiveId={setPhotoActiveId}
           canEdit={canEdit}
         />
+
+        {/* Reorder Controls (shown when dragging) - Now part of modal layout */}
+        {hasEverDragged && canEdit && (
+          <div className="photos-reorder-bar">
+            <div className="photos-reorder-left">
+              <button
+                ref={shuffleButtonRef}
+                onClick={onShufflePhotos}
+                onMouseDown={onShuffleStart}
+                onMouseUp={onShuffleEnd}
+                onMouseLeave={onShuffleEnd}
+                onTouchStart={onShuffleStart}
+                onTouchEnd={onShuffleEnd}
+                onTouchCancel={onShuffleEnd}
+                className={`photos-btn btn-shuffle-order ${isShuffling ? 'shuffling-active' : ''}`}
+                disabled={savingOrder}
+                title="Click to shuffle once, hold to shuffle continuously"
+              >
+                <ShuffleIcon width="16" height="16" />
+                <span>Shuffle</span>
+              </button>
+              <span className="reorder-hint reorder-hint-desktop">Drag to reorder • Changes not saved</span>
+            </div>
+            <div className="photos-reorder-right">
+              <button 
+                onClick={onCancelPhotoOrder} 
+                className="photos-btn photos-btn-ghost" 
+                disabled={savingOrder}
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={onSavePhotoOrder} 
+                className="photos-btn photos-btn-success" 
+                disabled={savingOrder}
+              >
+                {savingOrder ? 'Saving...' : 'Save Order'}
+              </button>
+            </div>
+            <span className="reorder-hint reorder-hint-mobile">Drag to reorder • Changes not saved</span>
+          </div>
+        )}
       </div>
     </>
   );

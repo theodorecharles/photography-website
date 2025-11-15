@@ -13,10 +13,32 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: #0000003b;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background-color: rgba(0, 0, 0, 0.85);
+  opacity: 0;
+  animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
   z-index: 1000;
+}
+
+.photos-modal-backdrop.closing {
+  animation: fadeOut 0.3s cubic-bezier(0.4, 0, 0.6, 1) forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
 }
 
 .photos-modal {
@@ -72,7 +94,7 @@
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  padding-bottom: 80px; /* Space for fixed reorder bar */
+  background-color: #111;
 }
 
 .photos-grid {
@@ -163,7 +185,7 @@
   align-items: center;
   padding: 1rem 1.5rem;
   gap: 1rem;
-  background-color: #141414;
+  background-color: #1b1b1b;
 }
 
 .photos-controls-left,
@@ -310,12 +332,8 @@
   color: var(--primary-color);
 }
 
-/* Reorder Bar */
+/* Reorder Bar - Part of modal layout, not fixed */
 .photos-reorder-bar {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -323,14 +341,14 @@
   background: #1f1f1f;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.5);
-  z-index: 1002;
+  flex-shrink: 0; /* Don't shrink when content is large */
   animation: slideUp 0.2s ease-out;
 }
 
 @keyframes slideUp {
   from {
     opacity: 0;
-    transform: translateY(100%);
+    transform: translateY(20px);
   }
   to {
     opacity: 1;

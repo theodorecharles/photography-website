@@ -933,11 +933,6 @@
   transition: grid-template-columns 0.3s ease, gap 0.3s ease;
 }
 
-/* Add padding only when reorder bar is visible */
-.has-reorder-bar .photos-grid {
-  padding-bottom: 80px;
-}
-
 /* Shuffling grid state - use more columns and tighter gap */
 .photos-grid.shuffling-grid {
   grid-template-columns: repeat(var(--shuffle-columns, 5), 1fr);
@@ -1045,7 +1040,7 @@
   border-radius: 12px;
   overflow: hidden;
   background: rgba(255, 255, 255, 0.03);
-  border: 2px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(95, 95, 95, 0.42);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   touch-action: none; /* Prevent browser touch handling for better drag */
@@ -1078,18 +1073,26 @@
 @media (hover: none) and (pointer: coarse) {
   .photo-overlay {
     opacity: 0 !important;
-    pointer-events: none;
+    pointer-events: none !important;
     transition: opacity 0.2s ease;
+  }
+  
+  .photo-overlay button {
+    pointer-events: none !important;
   }
   
   /* Show overlay when active class is added via JS */
   .admin-photo-item.show-overlay .photo-overlay {
     opacity: 1 !important;
-    pointer-events: none;
+    pointer-events: none !important;
   }
   
   .admin-photo-item.show-overlay .photo-overlay .photo-actions {
-    pointer-events: auto;
+    pointer-events: auto !important;
+  }
+  
+  .admin-photo-item.show-overlay .photo-overlay button {
+    pointer-events: auto !important;
   }
   
   /* Prevent image from capturing touches when overlay is visible */
@@ -1129,7 +1132,15 @@
   pointer-events: none;
 }
 
+.photo-overlay button {
+  pointer-events: none;
+}
+
 .admin-photo-item:hover .photo-overlay {
+  pointer-events: auto;
+}
+
+.admin-photo-item:hover .photo-overlay button {
   pointer-events: auto;
 }
 
@@ -1716,7 +1727,7 @@
 }
 
 .edit-modal-body {
-  padding: 0.5rem 1.5rem 1.5rem 1.5rem;
+  padding: 0 1.5rem 1.5rem 1.5rem;
   overflow-y: auto;
   max-height: calc(90vh - 180px);
 }

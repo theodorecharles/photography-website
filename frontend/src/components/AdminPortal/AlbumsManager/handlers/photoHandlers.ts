@@ -177,23 +177,26 @@ export const createPhotoHandlers = (props: PhotoHandlersProps) => {
     // Don't start if already shuffling
     if (shuffleIntervalRef.current) return;
     
-    setIsShuffling(true);
-    
-    // Get the shuffle button to update its animation speed
-    const shuffleButton = document.querySelector('.btn-shuffle-order') as HTMLElement;
-    
-    // Get the photo grid container
-    const photoGrid = document.querySelector('.photos-grid') as HTMLElement;
-    
-    // Add zoom class to all photos during shuffle
-    const photoElements = document.querySelectorAll('.admin-photo-item');
-    
-    photoElements.forEach((el) => {
-      el.classList.add('shuffling-active');
-    });
-    
-    // Get album size for calculations
-    const albumSize = photoElements.length;
+    // Add 500ms delay before starting continuous shuffle
+    // This makes it easier to distinguish between a click and a hold
+    const delayTimeout = setTimeout(() => {
+      setIsShuffling(true);
+      
+      // Get the shuffle button to update its animation speed
+      const shuffleButton = document.querySelector('.btn-shuffle-order') as HTMLElement;
+      
+      // Get the photo grid container
+      const photoGrid = document.querySelector('.photos-grid') as HTMLElement;
+      
+      // Add zoom class to all photos during shuffle
+      const photoElements = document.querySelectorAll('.admin-photo-item');
+      
+      photoElements.forEach((el) => {
+        el.classList.add('shuffling-active');
+      });
+      
+      // Get album size for calculations
+      const albumSize = photoElements.length;
     
     // Calculate speed multiplier based on album size
     // Speed increases linearly with album size: speed = base_speed * (num_photos / 20)
@@ -282,6 +285,10 @@ export const createPhotoHandlers = (props: PhotoHandlersProps) => {
       }, i * 500);
       speedupTimeoutsRef.current.push(timeout);
     }
+    }, 150); // 100ms delay before starting continuous shuffle
+    
+    // Store the delay timeout so it can be cancelled if button is released early
+    speedupTimeoutsRef.current.push(delayTimeout);
   };
 
   const handleShuffleEnd = (): void => {
