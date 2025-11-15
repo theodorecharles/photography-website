@@ -1014,6 +1014,8 @@
   padding: 0.75rem 1rem;
   border-bottom: 1px solid #535353;
   background: #2d2d2d;
+  width: auto; /* Allow cell to expand */
+  max-width: none; /* No max-width restriction */
 }
 
 .photos-list .admin-photo-item > .photo-overlay {
@@ -1025,6 +1027,7 @@
   padding-right: 1.5rem;
   text-align: right;
   width: 140px;
+  white-space: nowrap; /* Prevent actions from wrapping */
 }
 
 /* The actual img element inside the thumbnail cell */
@@ -1049,6 +1052,8 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  width: 100%; /* Fill the cell */
+  display: block; /* Ensure it behaves as block element */
 }
 
 /* Actions buttons inside overlay cell */
