@@ -146,7 +146,10 @@ app.get('/albums-data/*.json', (req, res, next) => {
 });
 
 // Serve static files from the dist directory
-app.use(express.static(path.join(__dirname, "dist")));
+// But exclude index.html so we can inject runtime config
+app.use(express.static(path.join(__dirname, "dist"), {
+  index: false, // Don't serve index.html automatically - let catch-all handle it
+}));
 
 // Handle client-side routing (catch-all for React routes)
 // This must come AFTER all other routes
