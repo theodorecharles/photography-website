@@ -303,18 +303,7 @@ router.post('/initialize', async (req: Request, res: Response): Promise<void> =>
 
     // Save config
     fs.writeFileSync(configPath, JSON.stringify(config, null, 2), 'utf8');
-    
-    // Reload backend config so it picks up the new configuration immediately
-    const { reloadConfig } = await import('../config.js');
-    reloadConfig();
-    console.log('✓ Backend configuration reloaded');
-    
-    // Reinitialize Google OAuth strategy if enabled
-    if (authMethod === 'google') {
-      const { initializeGoogleStrategy } = await import('./auth.js');
-      initializeGoogleStrategy();
-      console.log('✓ Google OAuth strategy reinitialized');
-    }
+    console.log('✓ Configuration saved to:', configPath);
 
     // Create necessary directories
     const photosDir = path.join(dataDir, 'photos');
@@ -464,6 +453,14 @@ router.post('/initialize', async (req: Request, res: Response): Promise<void> =>
       message: 'Configuration initialized successfully',
       requiresRestart: false // No restart needed - config and OAuth reloaded dynamically
     });
+    
+    // Gracefully restart the backend after sending response
+    // This ensures session cookies and other startup-time config is properly initialized
+    console.log('\n🔄 Triggering backend restart to apply session configuration...');
+    setTimeout(() => {
+      console.log('✓ Setup complete - exiting for restart');
+      process.exit(0); // Exit cleanly - PM2 will restart the process
+    }, 1000); // Wait 1 second to ensure response is sent
   } catch (error) {
     console.error('Setup initialization failed:', error);
     res.status(500).json({ 
