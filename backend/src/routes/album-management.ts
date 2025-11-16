@@ -562,9 +562,10 @@ router.post("/:album/upload", requireManager, upload.single('photo'), async (req
             console.error('Error with AI title generation:', err);
           }
           
-          // Regenerate static JSON files
-          const appRoot = req.app.get('appRoot');
-          generateStaticJSONFiles(appRoot);
+          // Don't regenerate static JSON after every single image - too expensive!
+          // It will be regenerated once when the upload batch finishes
+          // const appRoot = req.app.get('appRoot');
+          // generateStaticJSONFiles(appRoot);
         },
         // onError callback
         (error: string) => {

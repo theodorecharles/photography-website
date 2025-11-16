@@ -41,7 +41,7 @@ interface QueuedJob {
 
 const optimizationQueue: QueuedJob[] = [];
 const activeJobs: Set<ChildProcess> = new Set();
-const MAX_CONCURRENT_JOBS = 8;
+const MAX_CONCURRENT_JOBS = 4; // Reduced from 8 to prevent memory exhaustion
 
 /**
  * Broadcast update to all connected clients
