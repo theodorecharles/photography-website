@@ -5,9 +5,55 @@
 
 import React from 'react';
 import { SortableContext, rectSortingStrategy } from '@dnd-kit/sortable';
+import { useDroppable } from '@dnd-kit/core';
 import SortableAlbumCard from './SortableAlbumCard';
 import { Album, UploadingImage } from '../types';
-import { PlusCircleIcon } from '../../../icons';
+import { PlusCircleIcon, UploadIcon, HourglassIcon } from '../../../icons';
+
+// Ghost tile wrapper that makes it droppable
+const GhostTileDroppable: React.FC<{
+  id: string;
+  isGhostAlbumDragOver: boolean;
+  uploadingImages: UploadingImage[];
+  onGhostTileClick: () => void;
+  onGhostTileDragOver: (e: React.DragEvent) => void;
+  onGhostTileDragLeave: (e: React.DragEvent) => void;
+  onGhostTileDrop: (e: React.DragEvent) => void;
+  onGhostTileFileSelect: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  ghostTileFileInputRef: React.RefObject<HTMLInputElement | null>;
+}> = ({ id, isGhostAlbumDragOver, uploadingImages, onGhostTileClick, onGhostTileDragOver, onGhostTileDragLeave, onGhostTileDrop, onGhostTileFileSelect, ghostTileFileInputRef }) => {
+  const { setNodeRef, isOver } = useDroppable({ id });
+  
+  return (
+    <div 
+      ref={setNodeRef}
+      className={`album-card ghost-album-tile ${isGhostAlbumDragOver ? 'drag-over-ghost' : ''} ${isOver ? 'drag-over-album' : ''} ${uploadingImages.length > 0 ? 'ghost-tile-disabled' : ''}`}
+      onClick={uploadingImages.length > 0 ? undefined : onGhostTileClick}
+      onDragOver={uploadingImages.length > 0 ? undefined : onGhostTileDragOver}
+      onDragLeave={uploadingImages.length > 0 ? undefined : onGhostTileDragLeave}
+      onDrop={uploadingImages.length > 0 ? undefined : onGhostTileDrop}
+    >
+      <div className="ghost-tile-content">
+        {uploadingImages.length > 0 ? (
+          <HourglassIcon width="48" height="48" />
+        ) : isGhostAlbumDragOver ? (
+          <UploadIcon width="48" height="48" />
+        ) : (
+          <PlusCircleIcon width="48" height="48" />
+        )}
+      </div>
+      <input
+        ref={ghostTileFileInputRef}
+        type="file"
+        multiple
+        accept="image/*"
+        onChange={onGhostTileFileSelect}
+        disabled={uploadingImages.length > 0}
+        style={{ display: 'none' }}
+      />
+    </div>
+  );
+};
 
 interface UncategorizedSectionProps {
   localAlbums: Album[];
@@ -15,7 +61,6 @@ interface UncategorizedSectionProps {
   animatingAlbum: string | null;
   dragOverAlbum: string | null;
   dragOverUncategorized: boolean;
-  placeholderInfo: { folderId: number | null; insertAtIndex: number } | null;
   uploadingImages: UploadingImage[];
   isGhostAlbumDragOver: boolean;
   uncategorizedSectionRef: React.RefObject<HTMLDivElement | null>;
@@ -38,7 +83,6 @@ const UncategorizedSection: React.FC<UncategorizedSectionProps> = ({
   animatingAlbum,
   dragOverAlbum,
   dragOverUncategorized,
-  placeholderInfo,
   uploadingImages,
   isGhostAlbumDragOver,
   uncategorizedSectionRef,
@@ -55,13 +99,19 @@ const UncategorizedSection: React.FC<UncategorizedSectionProps> = ({
   canEdit,
 }) => {
   const uncategorizedAlbums = localAlbums.filter(album => !album.folder_id);
+  
+  // Make the uncategorized grid droppable
+  const { setNodeRef: setDroppableRef, isOver } = useDroppable({
+    id: 'uncategorized-grid',
+    data: { type: 'uncategorized-grid' },
+  });
 
   return (
     <div className="albums-management">
       <div className="albums-list">
         <div 
           ref={uncategorizedSectionRef}
-          className={`uncategorized-section ${dragOverUncategorized ? 'drag-over-uncategorized' : ''}`}
+          className={`uncategorized-section ${dragOverUncategorized || isOver ? 'drag-over-uncategorized' : ''}`}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
             <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 600, color: '#fff' }}>
@@ -75,72 +125,35 @@ const UncategorizedSection: React.FC<UncategorizedSectionProps> = ({
             items={uncategorizedAlbums.map(a => a.name)} 
             strategy={rectSortingStrategy}
           >
-            <div className="album-grid">
-              {uncategorizedAlbums.map((album, index) => (
-                <React.Fragment key={album.name}>
-                  {/* Show placeholder before this album if needed */}
-                  {placeholderInfo?.folderId === null && placeholderInfo.insertAtIndex === index && (
-                    <div
-                      className="album-card album-placeholder"
-                      style={{
-                        border: '2px dashed #3b82f6',
-                        background: 'rgba(59, 130, 246, 0.1)',
-                        pointerEvents: 'none',
-                      }}
-                    />
-                  )}
-                  <SortableAlbumCard
-                    album={album}
-                    isSelected={selectedAlbum === album.name}
-                    isAnimating={animatingAlbum === album.name}
-                    isDragOver={dragOverAlbum === album.name}
-                    onClick={() => onAlbumClick(album.name)}
-                    onDragOver={(e) => onAlbumDragOver(e, album.name)}
-                    onDragLeave={onAlbumDragLeave}
-                    onDrop={(e) => onAlbumDrop(e, album.name)}
-                    canEdit={canEdit}
-                  />
-                </React.Fragment>
-              ))}
-              {/* Show placeholder at end if needed */}
-              {placeholderInfo?.folderId === null && placeholderInfo.insertAtIndex === uncategorizedAlbums.length && (
-                <div
-                  className="album-card album-placeholder"
-                  style={{
-                    border: '2px dashed #3b82f6',
-                    background: 'rgba(59, 130, 246, 0.1)',
-                    pointerEvents: 'none',
-                  }}
+            <div ref={setDroppableRef} className="album-grid">
+              {uncategorizedAlbums.map((album) => (
+                <SortableAlbumCard
+                  key={album.name}
+                  album={album}
+                  isSelected={selectedAlbum === album.name}
+                  isAnimating={animatingAlbum === album.name}
+                  isDragOver={dragOverAlbum === album.name}
+                  onClick={() => onAlbumClick(album.name)}
+                  onDragOver={(e) => onAlbumDragOver(e, album.name)}
+                  onDragLeave={onAlbumDragLeave}
+                  onDrop={(e) => onAlbumDrop(e, album.name)}
+                  canEdit={canEdit}
                 />
-              )}
+              ))}
               
               {/* Ghost tile for creating new albums - only show for editors */}
               {canEdit && (
-                <div 
-                  className={`album-card ghost-album-tile ${isGhostAlbumDragOver ? 'drag-over-ghost' : ''} ${uploadingImages.length > 0 ? 'ghost-tile-disabled' : ''}`}
-                  onClick={uploadingImages.length > 0 ? undefined : onGhostTileClick}
-                  onDragOver={uploadingImages.length > 0 ? undefined : onGhostTileDragOver}
-                  onDragLeave={uploadingImages.length > 0 ? undefined : onGhostTileDragLeave}
-                  onDrop={uploadingImages.length > 0 ? undefined : onGhostTileDrop}
-                >
-                  <div className="ghost-tile-content">
-                    <PlusCircleIcon width="48" height="48" />
-                    {uploadingImages.length > 0 ? (
-                      <span className="ghost-tile-hint">Uploading...</span>
-                    ) : isGhostAlbumDragOver ? (
-                      <span className="ghost-tile-hint">Drop to create</span>
-                    ) : null}
-                  </div>
-                  <input
-                    ref={ghostTileFileInputRef}
-                    type="file"
-                    multiple
-                    accept="image/*"
-                    onChange={onGhostTileFileSelect}
-                    disabled={uploadingImages.length > 0}
-                    style={{ display: 'none' }}
-                  />
-                </div>
+                <GhostTileDroppable 
+                  id="ghost-uncategorized"
+                  isGhostAlbumDragOver={isGhostAlbumDragOver}
+                  uploadingImages={uploadingImages}
+                  onGhostTileClick={onGhostTileClick}
+                  onGhostTileDragOver={onGhostTileDragOver}
+                  onGhostTileDragLeave={onGhostTileDragLeave}
+                  onGhostTileDrop={onGhostTileDrop}
+                  onGhostTileFileSelect={onGhostTileFileSelect}
+                  ghostTileFileInputRef={ghostTileFileInputRef}
+                />
               )}
             </div>
           </SortableContext>

@@ -17,6 +17,7 @@ type ViewMode = 'grid' | 'list';
 interface PhotosPanelHeaderProps {
   selectedAlbum: string;
   localAlbums: any[];
+  localFolders: any[];
   albumPhotos: any[];
   uploadingImages: any[];
   viewMode: ViewMode;
@@ -33,6 +34,7 @@ interface PhotosPanelHeaderProps {
 const PhotosPanelHeader: React.FC<PhotosPanelHeaderProps> = ({
   selectedAlbum,
   localAlbums,
+  localFolders: _localFolders,
   albumPhotos,
   uploadingImages,
   viewMode,
@@ -48,6 +50,9 @@ const PhotosPanelHeader: React.FC<PhotosPanelHeaderProps> = ({
   const currentAlbum = localAlbums.find(a => a.name === selectedAlbum);
   const isPublished = currentAlbum?.published !== false;
   const photoCount = albumPhotos.length;
+  
+  // Check if album is in a folder (if so, disable publish toggle since folder controls it)
+  const isInFolder = currentAlbum?.folder_id != null;
   
   // Check if any uploads are actively in progress (not complete)
   const hasActiveUploads = uploadingImages.some((img: any) => img.state !== 'complete');
@@ -65,7 +70,7 @@ const PhotosPanelHeader: React.FC<PhotosPanelHeaderProps> = ({
         {/* Right: Publish toggle + close button */}
         <div className="photos-title-right">
           {/* Publish/Unpublish Toggle (Mobile Only - shown on narrow screens) */}
-          {canEdit ? (
+          {canEdit && !isInFolder ? (
             <label className="toggle-switch compact publish-toggle-titlebar" onClick={(e) => e.stopPropagation()}>
               <span className="toggle-label">
                 {isPublished ? 'Published' : 'Unpublished'}
@@ -174,7 +179,7 @@ const PhotosPanelHeader: React.FC<PhotosPanelHeaderProps> = ({
 
         <div className="photos-controls-right">
           {/* Publish/Unpublish Toggle (Desktop Only - shown on wide screens) */}
-          {canEdit ? (
+          {canEdit && !isInFolder ? (
             <label className="toggle-switch compact publish-toggle-controlbar" onClick={(e) => e.stopPropagation()}>
               <span className="toggle-label">
                 {isPublished ? 'Published' : 'Unpublished'}

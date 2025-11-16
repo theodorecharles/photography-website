@@ -82,7 +82,7 @@
   font-weight: 600;
   font-size: 1.1rem;
   transition: all 0.3s ease;
-  border: 2px solid #404040;
+  border: 1px solid #404040;
 }
 
 .progress-step.active .step-number {
@@ -295,7 +295,7 @@
   height: 80px;
   border-radius: 50%;
   overflow: hidden;
-  border: 2px solid var(--primary-color);
+  border: 1px solid var(--primary-color);
   box-shadow: 0 0 12px rgba(74, 222, 128, 0.3);
 }
 
@@ -683,7 +683,7 @@
   gap: 1rem;
   padding: 1rem;
   background: #333;
-  border: 2px solid #404040;
+  border: 1px solid #404040;
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s ease;

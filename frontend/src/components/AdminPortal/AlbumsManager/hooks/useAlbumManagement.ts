@@ -36,11 +36,10 @@ export const useAlbumManagement = ({
     }
   }, [albums, hasUnsavedChanges]);
 
+  // Always sync folders - folder changes are independent of album changes
   useEffect(() => {
-    if (!hasUnsavedChanges) {
-      setLocalFolders(folders);
-    }
-  }, [folders, hasUnsavedChanges]);
+    setLocalFolders(folders);
+  }, [folders]);
 
   const createAlbum = useCallback(async (albumName: string): Promise<boolean> => {
     try {
@@ -150,28 +149,94 @@ export const useAlbumManagement = ({
       // Use provided albums or fall back to internal state
       const albumsForSaving = albumsToSave || localAlbums;
       
-      // Format albums for the API (needs albumOrders array with name and sort_order)
+      // Step 1: Check for albums that changed folders and move them first
+      const albumsThatMovedFolders = albumsForSaving.filter(localAlbum => {
+        const originalAlbum = albums.find(a => a.name === localAlbum.name);
+        if (!originalAlbum) return false;
+        
+        // Check if folder_id changed (handle null/undefined equivalence)
+        const originalFolderId = originalAlbum.folder_id ?? null;
+        const newFolderId = localAlbum.folder_id ?? null;
+        return originalFolderId !== newFolderId;
+      });
+      
+      console.log('Albums that changed folders:', albumsThatMovedFolders.map(a => ({
+        name: a.name,
+        from: albums.find(orig => orig.name === a.name)?.folder_id,
+        to: a.folder_id,
+      })));
+      
+      // Move albums between folders
+      for (const album of albumsThatMovedFolders) {
+        const folder = localFolders.find(f => f.id === album.folder_id);
+        const folderName = folder?.name || null;
+        
+        console.log(`Moving album "${album.name}" to folder:`, folderName);
+        
+        const moveRes = await fetchWithRateLimitCheck(`${API_URL}/api/albums/${encodeURIComponent(album.name)}/move`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            folderName,
+            published: album.published,
+          }),
+          credentials: 'include',
+        });
+        
+        if (!moveRes.ok) {
+          const errorText = await moveRes.text();
+          throw new Error(`Failed to move album "${album.name}": ${errorText}`);
+        }
+      }
+      
+      // Step 2: Format albums for the API (needs albumOrders array with name and sort_order)
       const albumOrders = albumsForSaving.map((album, index) => ({
         name: album.name,
         sort_order: index,
       }));
 
-      const res = await fetchWithRateLimitCheck(`${API_URL}/api/albums/sort-order`, {
+      // Save albums order
+      const albumRes = await fetchWithRateLimitCheck(`${API_URL}/api/albums/sort-order`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ albumOrders }),
         credentials: 'include',
       });
 
-      if (!res.ok) {
+      if (!albumRes.ok) {
         throw new Error('Failed to save album order');
       }
 
+      // Step 3: Save folders order (if any folders exist)
+      if (localFolders.length > 0) {
+        const folderOrders = localFolders.map((folder, index) => ({
+          name: folder.name,
+          sort_order: index,
+        }));
+
+        const folderRes = await fetchWithRateLimitCheck(`${API_URL}/api/folders/sort-order`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ folderOrders }),
+          credentials: 'include',
+        });
+
+        if (!folderRes.ok) {
+          throw new Error('Failed to save folder order');
+        }
+      }
+
+      // Reload albums from server to get the saved order
+      await loadAlbums();
+      
       setHasUnsavedChanges(false);
       
       // Only show success message if not silent
       if (!silent) {
-        setMessage({ type: 'success', text: 'Album order saved successfully!' });
+        const message = localFolders.length > 0 
+          ? 'Changes saved successfully!' 
+          : 'Album order saved successfully!';
+        setMessage({ type: 'success', text: message });
       }
       
       // Notify other components
@@ -179,10 +244,11 @@ export const useAlbumManagement = ({
       
       return true;
     } catch (err) {
-      setMessage({ type: 'error', text: 'Failed to save album order' });
+      const errorMsg = err instanceof Error ? err.message : 'Failed to save changes';
+      setMessage({ type: 'error', text: errorMsg });
       return false;
     }
-  }, [localAlbums, setMessage]);
+  }, [localAlbums, localFolders, albums, setMessage, loadAlbums]);
 
   const cancelReorder = useCallback(() => {
     setLocalAlbums(albums);

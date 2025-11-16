@@ -82,7 +82,7 @@
   font-size: 1.1rem;
   margin-bottom: 0.75rem;
   color: #f9fafb;
-  border-bottom: 2px solid var(--secondary-color);
+  border-bottom: 1px solid var(--secondary-color);
   padding-bottom: 0.5rem;
 }
 
@@ -151,7 +151,7 @@
   width: 16px;
   height: 16px;
   border-radius: 50%;
-  border: 2px solid #ffffff;
+  border: 1px solid #ffffff;
 }
 
 .legend-marker-low {

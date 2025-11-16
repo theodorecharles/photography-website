@@ -12,7 +12,7 @@ interface PhotoListItemProps {
   
   // Handlers
   onEdit: (photo: Photo) => void;
-  onDelete: (album: string, filename: string, photoTitle: string) => void;
+  onDelete: (album: string, filename: string, photoTitle: string, thumbnail: string) => void;
   
   // State
   deletingPhotoId: string | null;
@@ -131,7 +131,7 @@ export const PhotoListItem: React.FC<PhotoListItemProps> = ({
           <button
             onClick={(e) => {
               e.stopPropagation();
-              onDelete(album, filename, title);
+              onDelete(album, filename, title, thumbnailUrl);
             }}
             className="list-action-btn delete"
             title="Delete photo"

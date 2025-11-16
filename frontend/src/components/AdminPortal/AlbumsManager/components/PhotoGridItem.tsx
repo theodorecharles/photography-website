@@ -23,7 +23,7 @@ interface PhotoGridItemProps {
   
   // Actions
   onEdit?: (photo: Photo) => void;
-  onDelete?: (album: string, filename: string, title: string) => void;
+  onDelete?: (album: string, filename: string, title: string, thumbnail: string) => void;
   onRetryOptimization?: (album: string, filename: string) => void;
   onRetryAI?: (album: string, filename: string) => void;
   
@@ -348,7 +348,7 @@ const PhotoGridItem: React.FC<PhotoGridItemProps> = ({
                 const parts = photoData.id.split('/');
                 const filename = parts.length > 1 ? parts[parts.length - 1] : parts[0];
                 console.log('Delete photo:', { album: photoData.album, filename, id: photoData.id });
-                if (onDelete) onDelete(photoData.album, decodeURIComponent(filename), photoData.title);
+                if (onDelete) onDelete(photoData.album, decodeURIComponent(filename), photoData.title, photoData.thumbnail);
               }}
               onTouchEnd={(e) => {
                 e.stopPropagation();
@@ -357,7 +357,7 @@ const PhotoGridItem: React.FC<PhotoGridItemProps> = ({
                 const parts = photoData.id.split('/');
                 const filename = parts.length > 1 ? parts[parts.length - 1] : parts[0];
                 console.log('Delete photo:', { album: photoData.album, filename, id: photoData.id });
-                if (onDelete) onDelete(photoData.album, decodeURIComponent(filename), photoData.title);
+                if (onDelete) onDelete(photoData.album, decodeURIComponent(filename), photoData.title, photoData.thumbnail);
               }}
               className="btn-delete-photo"
               title="Delete photo"

@@ -19,7 +19,6 @@ interface DragDropHandlersProps {
   setActiveFolderId: (value: number | null) => void;
   setDragOverFolderId: (value: number | null) => void;
   setDragOverUncategorized: (value: boolean) => void;
-  setPlaceholderInfo: (value: { folderId: number | null; insertAtIndex: number } | null) => void;
   uncategorizedSectionRef: React.RefObject<HTMLDivElement | null>;
 }
 
@@ -35,7 +34,6 @@ export const createDragDropHandlers = (props: DragDropHandlersProps) => {
     setActiveFolderId,
     setDragOverFolderId,
     setDragOverUncategorized,
-    setPlaceholderInfo,
     // uncategorizedSectionRef, // unused for now
   } = props;
 
@@ -64,10 +62,10 @@ export const createDragDropHandlers = (props: DragDropHandlersProps) => {
 
   const handleAlbumDragOver = (event: DragOverEvent) => {
     const { active, over } = event;
+    
     if (!over) {
       setDragOverFolderId(null);
       setDragOverUncategorized(false);
-      setPlaceholderInfo(null);
       return;
     }
 
@@ -94,44 +92,47 @@ export const createDragDropHandlers = (props: DragDropHandlersProps) => {
 
     // Handle album drag over
     if (isDraggingAlbum(activeId)) {
-      // Dragging over a folder
-      if (isDraggingFolder(overId)) {
-        const folderId = extractFolderId(overId);
-        setDragOverFolderId(folderId);
-        setDragOverUncategorized(false);
-        setPlaceholderInfo(null);
-      }
-      // Dragging over uncategorized section
-      else if (overId === 'uncategorized-droppable') {
-        setDragOverUncategorized(true);
-        setDragOverFolderId(null);
-        setPlaceholderInfo(null);
-      }
-      // Dragging over another album
-      else {
-        const activeAlbum = localAlbums.find(a => a.name === activeId);
-        const overAlbum = localAlbums.find(a => a.name === overId);
-        
-        if (activeAlbum && overAlbum) {
-          const isSameFolder = activeAlbum.folder_id === overAlbum.folder_id;
-          
-          if (isSameFolder) {
-            const albumsInSameContext = localAlbums.filter(
-              a => a.folder_id === activeAlbum.folder_id
-            );
-            const activeIndex = albumsInSameContext.findIndex(a => a.name === activeId);
-            const overIndex = albumsInSameContext.findIndex(a => a.name === overId);
-            
-            if (activeIndex !== -1 && overIndex !== -1 && activeIndex !== overIndex) {
-              const reordered = arrayMove(albumsInSameContext, activeIndex, overIndex);
-              const otherAlbums = localAlbums.filter(
-                a => a.folder_id !== activeAlbum.folder_id
-              );
-              setLocalAlbums([...otherAlbums, ...reordered]);
-              setHasUnsavedChanges(true);
-            }
-          }
+      const activeAlbum = localAlbums.find(a => a.name === activeId);
+      if (!activeAlbum) return;
+      
+      console.log('🔍 Album drag over:', {
+        activeId,
+        activeFolderId: activeAlbum.folder_id,
+        overId,
+        isGhostTile: overId.startsWith('ghost-'),
+      });
+      
+      // ONLY highlight ghost tiles when dragging from a DIFFERENT section
+      if (overId === 'ghost-uncategorized') {
+        // Only highlight if dragging FROM a folder (not from uncategorized itself)
+        if (activeAlbum.folder_id !== null) {
+          console.log('  ✅ Highlighting uncategorized ghost (dragging from folder', activeAlbum.folder_id, ')');
+          setDragOverUncategorized(true);
+          setDragOverFolderId(null);
+        } else {
+          console.log('  ❌ Same section (uncategorized), not highlighting');
+          setDragOverUncategorized(false);
+          setDragOverFolderId(null);
         }
+      } else if (overId.startsWith('ghost-folder-')) {
+        const folderId = parseInt(overId.replace('ghost-folder-', ''));
+        console.log('  📍 Over ghost-folder-', folderId, ', active is in folder', activeAlbum.folder_id);
+        
+        // Only highlight if dragging FROM a different folder or from uncategorized
+        if (activeAlbum.folder_id !== folderId) {
+          console.log('  ✅ Highlighting folder', folderId, 'ghost (different section)');
+          setDragOverFolderId(folderId);
+          setDragOverUncategorized(false);
+        } else {
+          console.log('  ❌ Same folder, not highlighting');
+          setDragOverFolderId(null);
+          setDragOverUncategorized(false);
+        }
+      } else {
+        // Not over a ghost tile - clear highlights
+        console.log('  ⚪ Not over ghost tile, clearing highlights');
+        setDragOverFolderId(null);
+        setDragOverUncategorized(false);
       }
     }
   };
@@ -143,17 +144,34 @@ export const createDragDropHandlers = (props: DragDropHandlersProps) => {
     setActiveFolderId(null);
     setDragOverFolderId(null);
     setDragOverUncategorized(false);
-    setPlaceholderInfo(null);
     
     if (!over) return;
     
     const activeId = String(active.id);
     const overId = String(over.id);
     
-    // Handle moving album to folder or uncategorized
-    if (isDraggingAlbum(activeId) && isDraggingFolder(overId)) {
-      const folderId = extractFolderId(overId);
+    console.log('🎯 Album drag end:', { activeId, overId });
+    
+    const activeAlbum = localAlbums.find(a => a.name === activeId);
+    if (!activeAlbum) return;
+    
+    // Handle dropping on ghost tiles (for empty folders/uncategorized)
+    if (overId === 'ghost-uncategorized') {
+      console.log('📍 Dropped on uncategorized ghost tile');
+      const updatedAlbums = localAlbums.map(a =>
+        a.name === activeId ? { ...a, folder_id: null } : a
+      );
+      setLocalAlbums(updatedAlbums);
+      setHasUnsavedChanges(true);
+      setAnimatingAlbum(activeId);
+      setTimeout(() => setAnimatingAlbum(null), 300);
+      return;
+    }
+    
+    if (overId.startsWith('ghost-folder-')) {
+      const folderId = parseInt(overId.replace('ghost-folder-', ''));
       const targetFolder = localFolders.find(f => f.id === folderId);
+      console.log('📍 Dropped on folder ghost tile:', folderId);
       
       if (targetFolder) {
         const updatedAlbums = localAlbums.map(a =>
@@ -163,24 +181,44 @@ export const createDragDropHandlers = (props: DragDropHandlersProps) => {
         );
         setLocalAlbums(updatedAlbums);
         setHasUnsavedChanges(true);
-        
-        // Animate the album
         setAnimatingAlbum(activeId);
         setTimeout(() => setAnimatingAlbum(null), 300);
       }
-    } else if (isDraggingAlbum(activeId) && overId === 'uncategorized-droppable') {
-      // const currentAlbum = localAlbums.find(a => a.name === activeId); // unused
-      const updatedAlbums = localAlbums.map(a =>
-        a.name === activeId
-          ? { ...a, folder_id: null } // Keep existing published state
-          : a
-      );
-      setLocalAlbums(updatedAlbums);
-      setHasUnsavedChanges(true);
+      return;
+    }
+    
+    // Handle dropping on an album (for reordering within same section ONLY)
+    if (isDraggingAlbum(activeId)) {
+      const overAlbum = localAlbums.find(a => a.name === overId);
       
-      // Animate the album
-      setAnimatingAlbum(activeId);
-      setTimeout(() => setAnimatingAlbum(null), 300);
+      if (overAlbum) {
+        const isSameContext = activeAlbum.folder_id === overAlbum.folder_id;
+        
+        if (isSameContext) {
+          // Same section: reorder albums
+          console.log('📍 Reordering within same section');
+          const contextFolderId = overAlbum.folder_id;
+          
+          // Get albums in the same context
+          const albumsInContext = localAlbums.filter(
+            a => a.folder_id === contextFolderId
+          );
+          const activeIndex = albumsInContext.findIndex(a => a.name === activeId);
+          const overIndex = albumsInContext.findIndex(a => a.name === overId);
+          
+          if (activeIndex !== -1 && overIndex !== -1 && activeIndex !== overIndex) {
+            const reordered = arrayMove(albumsInContext, activeIndex, overIndex);
+            const otherAlbums = localAlbums.filter(
+              a => a.folder_id !== contextFolderId
+            );
+            setLocalAlbums([...otherAlbums, ...reordered]);
+            setHasUnsavedChanges(true);
+          }
+        } else {
+          // Different section: do nothing (only ghost tiles can move between sections)
+          console.log('📍 Cross-section drop ignored (use ghost tiles to move)');
+        }
+      }
     }
   };
 

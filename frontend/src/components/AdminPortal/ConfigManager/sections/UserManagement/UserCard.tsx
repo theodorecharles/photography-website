@@ -118,7 +118,7 @@ export const UserCard: React.FC<UserCardProps> = ({
                 width: "40px",
                 height: "40px",
                 borderRadius: "50%",
-                border: "2px solid rgba(255, 255, 255, 0.2)",
+                border: "1px solid rgba(255, 255, 255, 0.2)",
               }}
             />
             {user.name || user.email}

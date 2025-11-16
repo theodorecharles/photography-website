@@ -5,6 +5,4 @@
  */
 
 export { default } from './AdminPortal';
-export { default as Metrics } from './Metrics/Metrics';
-export { default as VisitorMap } from './Metrics/VisitorMap';
 

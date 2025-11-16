@@ -6,14 +6,62 @@
  * - Sorting albums within the folder
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useSortable, SortableContext } from '@dnd-kit/sortable';
-import { PlusCircleIcon } from '../../../icons';
+import { PlusCircleIcon, UploadIcon, HourglassIcon, DragHandleIcon } from '../../../icons';
 import { useDroppable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 import { rectSortingStrategy } from '@dnd-kit/sortable';
-import { AlbumFolder, Album } from '../types';
+import { AlbumFolder, Album, UploadingImage } from '../types';
 import SortableAlbumCard from './SortableAlbumCard';
+
+// Ghost tile wrapper for folders
+const FolderGhostTileDroppable: React.FC<{
+  folderId: number;
+  isGhostTileDragOver: boolean;
+  uploadingImages: UploadingImage[];
+  onGhostTileClick: (folderId: number) => void;
+  onGhostTileDragOver: (e: React.DragEvent, folderId: number) => void;
+  onGhostTileDragLeave: (e: React.DragEvent) => void;
+  onGhostTileDrop: (e: React.DragEvent, folderId: number) => void;
+  onGhostTileFileSelect: (e: React.ChangeEvent<HTMLInputElement>, folderId: number) => void;
+  folderGhostTileRef: React.RefObject<HTMLInputElement>;
+}> = ({ folderId, isGhostTileDragOver, uploadingImages, onGhostTileClick, onGhostTileDragOver, onGhostTileDragLeave, onGhostTileDrop, onGhostTileFileSelect, folderGhostTileRef }) => {
+  const { setNodeRef, isOver } = useDroppable({ id: `ghost-folder-${folderId}` });
+  
+  return (
+    <div 
+      ref={setNodeRef}
+      className={`album-card ghost-album-tile ${isGhostTileDragOver ? 'drag-over-ghost' : ''} ${isOver ? 'drag-over-album' : ''} ${uploadingImages.length > 0 ? 'ghost-tile-disabled' : ''}`}
+      onClick={uploadingImages.length > 0 ? undefined : (e) => {
+        e.stopPropagation();
+        onGhostTileClick(folderId);
+      }}
+      onDragOver={uploadingImages.length > 0 ? undefined : (e) => onGhostTileDragOver(e, folderId)}
+      onDragLeave={uploadingImages.length > 0 ? undefined : onGhostTileDragLeave}
+      onDrop={uploadingImages.length > 0 ? undefined : (e) => onGhostTileDrop(e, folderId)}
+    >
+      <div className="ghost-tile-content">
+        {uploadingImages.length > 0 ? (
+          <HourglassIcon width="48" height="48" />
+        ) : isGhostTileDragOver ? (
+          <UploadIcon width="48" height="48" />
+        ) : (
+          <PlusCircleIcon width="48" height="48" />
+        )}
+      </div>
+      <input
+        ref={folderGhostTileRef}
+        type="file"
+        multiple
+        accept="image/*"
+        onChange={(e) => onGhostTileFileSelect(e, folderId)}
+        disabled={uploadingImages.length > 0}
+        style={{ display: 'none' }}
+      />
+    </div>
+  );
+};
 
 interface SortableFolderCardProps {
   folder: AlbumFolder;
@@ -22,7 +70,9 @@ interface SortableFolderCardProps {
   animatingAlbum: string | null;
   dragOverAlbum: string | null;
   isDragOver: boolean;
-  showPlaceholderAtIndex?: number;
+  isGhostTileDragOver: boolean;
+  uploadingImages: UploadingImage[];
+  folderGhostTileRefs: React.MutableRefObject<Map<number, React.RefObject<HTMLInputElement>>>;
   onDelete: (folderName: string) => void;
   onTogglePublished: (folderName: string, currentPublished: boolean) => void;
   onAlbumClick: (albumName: string) => void;
@@ -30,6 +80,11 @@ interface SortableFolderCardProps {
   onAlbumDragLeave: (e: React.DragEvent) => void;
   onAlbumDrop: (e: React.DragEvent, albumName: string) => void;
   onCreateAlbumInFolder: (folderId: number) => void;
+  onGhostTileClick: (folderId: number) => void;
+  onGhostTileDragOver: (e: React.DragEvent, folderId: number) => void;
+  onGhostTileDragLeave: (e: React.DragEvent) => void;
+  onGhostTileDrop: (e: React.DragEvent, folderId: number) => void;
+  onGhostTileFileSelect: (e: React.ChangeEvent<HTMLInputElement>, folderId: number) => void;
   canEdit: boolean;
 }
 
@@ -40,16 +95,29 @@ const SortableFolderCard: React.FC<SortableFolderCardProps> = ({
   animatingAlbum,
   dragOverAlbum,
   isDragOver,
-  showPlaceholderAtIndex,
+  isGhostTileDragOver,
+  uploadingImages,
+  folderGhostTileRefs,
   onDelete,
   onTogglePublished,
   onAlbumClick,
   onAlbumDragOver,
   onAlbumDragLeave,
   onAlbumDrop,
-  onCreateAlbumInFolder,
+  // onCreateAlbumInFolder, // Not currently used - ghost tile handles creation
+  onGhostTileClick,
+  onGhostTileDragOver,
+  onGhostTileDragLeave,
+  onGhostTileDrop,
+  onGhostTileFileSelect,
   canEdit,
 }) => {
+  // Create/get ref for this folder's ghost tile file input
+  useEffect(() => {
+    if (!folderGhostTileRefs.current.has(folder.id)) {
+      folderGhostTileRefs.current.set(folder.id, React.createRef<HTMLInputElement>() as React.RefObject<HTMLInputElement>);
+    }
+  }, [folder.id, folderGhostTileRefs]);
   const {
     attributes,
     listeners,
@@ -85,11 +153,31 @@ const SortableFolderCard: React.FC<SortableFolderCardProps> = ({
       <div 
         className="folder-card-header"
       >
+        {canEdit && (
+          <div
+            className="folder-drag-handle-icon"
+            {...attributes}
+            {...listeners}
+            style={{ 
+              cursor: isDragging ? 'grabbing' : 'grab',
+              position: 'absolute',
+              top: '8px',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              zIndex: 10,
+              color: '#888',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '2px'
+            }}
+          >
+            <DragHandleIcon width="20" height="20" />
+          </div>
+        )}
         <div 
           className="folder-drag-handle"
-          {...(canEdit ? attributes : {})}
-          {...(canEdit ? listeners : {})}
-          style={{ cursor: canEdit ? (isDragging ? 'grabbing' : 'grab') : 'default' }}
+          style={{ cursor: 'default' }}
         >
           <h4 className="folder-card-title">
             {folder.published ? '📁' : '🔒'} {folder.name}
@@ -104,11 +192,13 @@ const SortableFolderCard: React.FC<SortableFolderCardProps> = ({
               className="toggle-switch" 
               style={{ 
                 opacity: albumCount === 0 ? 0.5 : 1,
-                cursor: albumCount === 0 ? 'not-allowed' : 'pointer'
+                cursor: albumCount === 0 ? 'not-allowed' : 'pointer',
+                flexDirection: 'row-reverse'
               }} 
               onClick={(e) => e.stopPropagation()}
               title={albumCount === 0 ? 'Cannot publish empty folder' : ''}
             >
+              <span className="toggle-label">{folder.published ? 'Published' : 'Unpublished'}</span>
               <input
                 type="checkbox"
                 checked={albumCount > 0 && folder.published}
@@ -116,7 +206,6 @@ const SortableFolderCard: React.FC<SortableFolderCardProps> = ({
                 disabled={albumCount === 0}
               />
               <span className="toggle-slider"></span>
-              <span className="toggle-label">Published</span>
             </label>
             <button
               onClick={(e) => {
@@ -138,56 +227,33 @@ const SortableFolderCard: React.FC<SortableFolderCardProps> = ({
           ref={setDroppableRef}
           className="folder-albums-grid"
         >
-          {albums.map((album, index) => (
-            <React.Fragment key={album.name}>
-              {/* Show placeholder before this album if needed */}
-              {showPlaceholderAtIndex === index && (
-                <div
-                  className="album-card album-placeholder"
-                  style={{
-                    border: '2px dashed #3b82f6',
-                    background: 'rgba(59, 130, 246, 0.1)',
-                    pointerEvents: 'none',
-                  }}
-                />
-              )}
-              <SortableAlbumCard
-                album={album}
-                isSelected={selectedAlbum === album.name}
-                isAnimating={animatingAlbum === album.name}
-                isDragOver={dragOverAlbum === album.name}
-                onClick={() => onAlbumClick(album.name)}
-                onDragOver={(e) => { onAlbumDragOver(e, album.name); }}
-                onDragLeave={onAlbumDragLeave}
-                onDrop={(e) => { onAlbumDrop(e, album.name); }}
-                canEdit={canEdit}
-              />
-            </React.Fragment>
-          ))}
-          {/* Show placeholder at end if needed */}
-          {showPlaceholderAtIndex === albums.length && (
-            <div
-              className="album-card album-placeholder"
-              style={{
-                border: '2px dashed #3b82f6',
-                background: 'rgba(59, 130, 246, 0.1)',
-                pointerEvents: 'none',
-              }}
+          {albums.map((album) => (
+            <SortableAlbumCard
+              key={album.name}
+              album={album}
+              isSelected={selectedAlbum === album.name}
+              isAnimating={animatingAlbum === album.name}
+              isDragOver={dragOverAlbum === album.name}
+              onClick={() => onAlbumClick(album.name)}
+              onDragOver={(e) => { onAlbumDragOver(e, album.name); }}
+              onDragLeave={onAlbumDragLeave}
+              onDrop={(e) => { onAlbumDrop(e, album.name); }}
+              canEdit={canEdit}
             />
-          )}
+          ))}
           {/* Ghost tile for creating new album in this folder - only show for editors */}
           {canEdit && (
-            <div 
-              className="album-card ghost-album-tile"
-              onClick={(e) => {
-                e.stopPropagation();
-                onCreateAlbumInFolder(folder.id);
-              }}
-            >
-              <div className="ghost-tile-content">
-                <PlusCircleIcon width="48" height="48" />
-              </div>
-            </div>
+            <FolderGhostTileDroppable
+              folderId={folder.id}
+              isGhostTileDragOver={isGhostTileDragOver}
+              uploadingImages={uploadingImages}
+              onGhostTileClick={onGhostTileClick}
+              onGhostTileDragOver={onGhostTileDragOver}
+              onGhostTileDragLeave={onGhostTileDragLeave}
+              onGhostTileDrop={onGhostTileDrop}
+              onGhostTileFileSelect={onGhostTileFileSelect}
+              folderGhostTileRef={folderGhostTileRefs.current.get(folder.id) as React.RefObject<HTMLInputElement>}
+            />
           )}
         </div>
       </SortableContext>

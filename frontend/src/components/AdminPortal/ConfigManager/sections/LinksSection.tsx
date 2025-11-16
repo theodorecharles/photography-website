@@ -28,14 +28,17 @@ const LinksSection: React.FC<LinksSectionProps> = ({
   const [showLinks, setShowLinks] = useState(false);
   const [originalExternalLinks, setOriginalExternalLinks] = useState<ExternalLink[]>([]);
   const [savingLinks, setSavingLinks] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
   const linksSectionRef = useRef<HTMLDivElement>(null);
 
-  // Track original external links when they change from parent
+  // Initialize originalExternalLinks only once when data is first loaded
   useEffect(() => {
-    console.log('[LinksSection] Received externalLinks prop:', externalLinks);
-    console.log('[LinksSection] Setting originalExternalLinks to:', structuredClone(externalLinks));
-    setOriginalExternalLinks(structuredClone(externalLinks));
-  }, [externalLinks]);
+    if (!isInitialized && externalLinks.length >= 0) {
+      console.log('[LinksSection] Initializing originalExternalLinks:', externalLinks);
+      setOriginalExternalLinks(structuredClone(externalLinks));
+      setIsInitialized(true);
+    }
+  }, [externalLinks, isInitialized]);
 
   // Handle section parameter from URL (e.g., ?section=links)
   useEffect(() => {

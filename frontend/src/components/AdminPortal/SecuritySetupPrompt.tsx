@@ -294,7 +294,7 @@ const SecuritySetupPrompt: React.FC<SecuritySetupPromptProps> = ({
                     alt="MFA QR Code"
                     style={{
                       maxWidth: "250px",
-                      border: "2px solid #3a3a3a",
+                      border: "1px solid #3a3a3a",
                       borderRadius: "8px",
                       background: "white",
                       padding: "0.5rem",

@@ -166,28 +166,64 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     }
   }, [uploadingImages, photoManagement]);
 
-  // Connect to optimization stream when PhotosPanel is open
-  const optimizationStreamHandlers = createOptimizationStreamHandlers({
-    setUploadingImages,
-    selectedAlbum
-  });
-
-  // Only connect to optimization stream when there are active uploads
+  // Ref to track current selected album (avoids closure issues in SSE handler)
+  const selectedAlbumRef = useRef<string | null>(selectedAlbum);
   useEffect(() => {
-    const hasActiveUploads = uploadingImages.some(img => 
+    selectedAlbumRef.current = selectedAlbum;
+  }, [selectedAlbum]);
+
+  // Connect to optimization stream when PhotosPanel is open (memoize to prevent recreating on every render)
+  const optimizationStreamHandlers = React.useMemo(
+    () => createOptimizationStreamHandlers({
+      setUploadingImages,
+      selectedAlbumRef
+    }),
+    [setUploadingImages, selectedAlbumRef]
+  );
+
+  // Track whether we have active uploads (to detect transitions)
+  const hasActiveUploadsRef = useRef(false);
+  const prevSelectedAlbumRef = useRef<string | null>(null);
+  
+  // Check for active uploads and manage connection (runs on every uploadingImages change)
+  useEffect(() => {
+    const hasActive = uploadingImages.some(img => 
       img.state === 'optimizing' || img.state === 'generating-title'
     );
-
-    if (selectedAlbum && hasActiveUploads) {
+    
+    const albumChanged = prevSelectedAlbumRef.current !== selectedAlbum;
+    prevSelectedAlbumRef.current = selectedAlbum;
+    
+    // Transition: no uploads → has uploads
+    if (hasActive && !hasActiveUploadsRef.current && selectedAlbum) {
+      console.log('[Album Manager] 🚀 Active uploads started, connecting stream');
+      hasActiveUploadsRef.current = true;
       optimizationStreamHandlers.connectOptimizationStream();
-    } else {
+    }
+    // Transition: has uploads → no uploads  
+    else if (!hasActive && hasActiveUploadsRef.current) {
+      console.log('[Album Manager] ✅ All uploads complete, disconnecting stream');
+      hasActiveUploadsRef.current = false;
       optimizationStreamHandlers.disconnectOptimizationStream();
     }
-
-    return () => {
+    // Album changed while uploads are active
+    else if (albumChanged && hasActiveUploadsRef.current) {
+      console.log('[Album Manager] 📝 Album changed during uploads, reconnecting stream');
       optimizationStreamHandlers.disconnectOptimizationStream();
+      if (selectedAlbum) {
+        optimizationStreamHandlers.connectOptimizationStream();
+      }
+    }
+  }, [uploadingImages, selectedAlbum]); // Removed optimizationStreamHandlers from deps
+
+  // Cleanup only on unmount
+  useEffect(() => {
+    return () => {
+      console.log('[Album Manager] Component unmounting, cleaning up stream');
+      optimizationStreamHandlers.disconnectOptimizationStream();
+      hasActiveUploadsRef.current = false;
     };
-  }, [selectedAlbum, uploadingImages]);
+  }, []); // Empty deps = only on mount/unmount
   
   // Drag-and-drop state (keeping this in component for now)
   const [isDragging] = useState(false);
@@ -200,6 +236,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   // State for drag-and-drop on album tiles
   const [dragOverAlbum] = useState<string | null>(null);
   const [isGhostAlbumDragOver, setIsGhostAlbumDragOver] = useState(false);
+  const [dragOverFolderGhostTile, setDragOverFolderGhostTile] = useState<number | null>(null);
   const [showNewAlbumModal, setShowNewAlbumModal] = useState(false);
   const [newAlbumFiles, setNewAlbumFiles] = useState<File[]>([]);
   const [newAlbumModalName, setNewAlbumModalName] = useState('');
@@ -211,6 +248,10 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   const [folderModalError, setFolderModalError] = useState('');
   const [targetFolderId, setTargetFolderId] = useState<number | null>(null);
   
+  // Folder delete modal state
+  const [showFolderDeleteModal, setShowFolderDeleteModal] = useState(false);
+  const [folderToDelete, setFolderToDelete] = useState<{ name: string; albumCount: number } | null>(null);
+  
   // Rename album state
   const [showRenameModal, setShowRenameModal] = useState(false);
   const [renamingAlbum, setRenamingAlbum] = useState<string | null>(null);
@@ -220,17 +261,14 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   const [dragOverFolderId, setDragOverFolderId] = useState<number | null>(null);
   const [dragOverUncategorized, setDragOverUncategorized] = useState(false);
   
-  // Track where to show the placeholder when dragging between folders
-  const [placeholderInfo, setPlaceholderInfo] = useState<{
-    folderId: number | null;
-    insertAtIndex: number;
-  } | null>(null);
-  
   // Ref to track if we're currently dragging (for touch scroll prevention)
   // const isDraggingRef = useRef(false); // unused for now
   
   // Ref for ghost tile file input
   const ghostTileFileInputRef = useRef<HTMLInputElement>(null);
+  
+  // Refs for folder ghost tile file inputs (Map of folderId -> ref)
+  const folderGhostTileRefs = useRef<Map<number, React.RefObject<HTMLInputElement>>>(new Map());
 
   // Ref for uncategorized section (for manual bounding box checks)
   const uncategorizedSectionRef = useRef<HTMLDivElement>(null);
@@ -296,7 +334,6 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     setActiveFolderId,
     setDragOverFolderId,
     setDragOverUncategorized,
-    setPlaceholderInfo,
     uncategorizedSectionRef,
   });
 
@@ -306,6 +343,8 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     setMessage,
     loadAlbums,
     saveAlbumOrder: albumManagement.saveAlbumOrder,
+    setShowFolderDeleteModal,
+    setFolderToDelete,
   });
 
   const uploadHandlers = createUploadHandlers({
@@ -345,8 +384,10 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     setNewAlbumFiles,
     setNewAlbumModalName,
     setIsGhostAlbumDragOver,
+    setDragOverFolderGhostTile,
     setTargetFolderId,
     ghostTileFileInputRef,
+    folderGhostTileRefs,
     setMessage,
     saveAlbumOrder: albumManagement.saveAlbumOrder,
     uploadingImages,
@@ -413,8 +454,18 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
         return;
       }
       
-      // Step 2: Set published state if needed
-      if (newAlbumPublished) {
+      // Step 2: Set published state based on folder or checkbox
+      let shouldPublish = newAlbumPublished; // Default to checkbox value for uncategorized
+      
+      // If creating in a folder, inherit the folder's published state
+      if (targetFolderId !== null) {
+        const targetFolder = localFolders.find(f => f.id === targetFolderId);
+        if (targetFolder) {
+          shouldPublish = targetFolder.published;
+        }
+      }
+      
+      if (shouldPublish) {
         await fetch(`${API_URL}/api/albums/${encodeURIComponent(newAlbumModalName)}/publish`, {
           method: 'PATCH',
           credentials: 'include',
@@ -494,7 +545,9 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
             animatingAlbum={animatingAlbum}
             dragOverAlbum={dragOverAlbum}
             dragOverFolderId={dragOverFolderId}
-            placeholderInfo={placeholderInfo}
+            dragOverFolderGhostTile={dragOverFolderGhostTile}
+            uploadingImages={uploadingImages}
+            folderGhostTileRefs={folderGhostTileRefs}
             onDeleteFolder={folderHandlers.handleDeleteFolder}
             onToggleFolderPublished={folderHandlers.handleToggleFolderPublished}
             onAlbumClick={(albumName) => selectedAlbum === albumName ? deselectAlbum() : selectAlbum(albumName)}
@@ -502,6 +555,11 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
             onAlbumDragLeave={(e) => dragDropHandlers.handleAlbumTileDragLeave(e)}
             onAlbumDrop={dragDropHandlers.handleAlbumTileDrop}
             onCreateAlbumInFolder={uiHandlers.handleCreateAlbumInFolder}
+            onFolderGhostTileClick={uiHandlers.handleFolderGhostTileClick}
+            onFolderGhostTileDragOver={uiHandlers.handleFolderGhostTileDragOver}
+            onFolderGhostTileDragLeave={uiHandlers.handleFolderGhostTileDragLeave}
+            onFolderGhostTileDrop={uiHandlers.handleFolderGhostTileDrop}
+            onFolderGhostTileFileSelect={uiHandlers.handleFolderGhostTileFileSelect}
             canEdit={canEdit}
           />
           
@@ -511,7 +569,6 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
             animatingAlbum={animatingAlbum}
             dragOverAlbum={dragOverAlbum}
             dragOverUncategorized={dragOverUncategorized}
-            placeholderInfo={placeholderInfo}
             uploadingImages={uploadingImages}
             isGhostAlbumDragOver={isGhostAlbumDragOver}
             uncategorizedSectionRef={uncategorizedSectionRef}
@@ -532,7 +589,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
           {/* Unified Drag Overlay for both albums and folders */}
           <DragOverlay>
             {activeAlbumId ? (
-              <div className="album-card dragging" style={{ cursor: 'grabbing' }}>
+              <div className="album-card dragging" style={{ cursor: 'grabbing', opacity: 0.8 }}>
                 <div className="album-card-header">
                   <h4>
                     <span className="album-name">{activeAlbumId}</span>
@@ -550,7 +607,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                 const folderAlbums = localAlbums.filter(a => a.folder_id === activeFolderId);
                 if (!folder) return null;
                 return (
-                  <div className="folder-card dragging" style={{ cursor: 'grabbing', opacity: 0.95 }}>
+                  <div className={`folder-card dragging ${!folder.published ? 'unpublished' : ''}`} style={{ cursor: 'grabbing', opacity: 0.8 }}>
                     <div className="folder-card-header">
                       <div className="folder-drag-handle">
                         <h4 className="folder-card-title">{folder.published ? '📁' : '🔒'} {folder.name}</h4>
@@ -584,6 +641,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
               isDragging={isDragging}
               isShuffling={isShuffling}
               localAlbums={localAlbums}
+              localFolders={localFolders}
               deletingPhotoId={deletingPhotoId}
               onClose={deselectAlbum}
               setCloseHandler={setPhotosPanelCloseHandler}
@@ -652,6 +710,10 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
         deletingFolderName={deletingFolderName}
         setShowDeleteFolderModal={setShowDeleteFolderModal}
         handleDeleteFolder={folderHandlers.handleDeleteFolder}
+        showFolderDeleteModal={showFolderDeleteModal}
+        setShowFolderDeleteModal={setShowFolderDeleteModal}
+        folderToDelete={folderToDelete}
+        handleDeleteFolderWithAlbums={folderHandlers.handleDeleteFolderWithAlbums}
         localFolders={localFolders}
         localAlbums={localAlbums}
         showNewAlbumModal={showNewAlbumModal}
@@ -662,6 +724,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
         setNewAlbumPublished={setNewAlbumPublished}
         newAlbumModalError={newAlbumModalError}
         handleCreateAlbumSubmit={handleCreateAlbumFromModal}
+        targetFolderId={targetFolderId}
         showShareModal={showShareModal}
         shareAlbumName={shareAlbumName}
         setShowShareModal={setShowShareModal}
@@ -674,3 +737,4 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
 };
 
 export default AlbumsManager;
+
