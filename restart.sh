@@ -68,6 +68,14 @@ handle_error() {
 CURRENT_BRANCH=$(git branch --show-current)
 log "Current branch: $CURRENT_BRANCH"
 
+# Create data directory structure if it doesn't exist
+log "Ensuring data directory structure exists..."
+mkdir -p data/photos
+mkdir -p data/optimized/thumbnail
+mkdir -p data/optimized/modal
+mkdir -p data/optimized/download
+log "Data directory structure verified"
+
 # Install root dependencies (for optimization and AI scripts)
 log "Installing root dependencies..."
 if ! npm install; then
