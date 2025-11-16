@@ -270,6 +270,7 @@ router.post('/invite', requireAdmin, async (req: Request, res: Response) => {
         email: user.email,
         role: user.role,
         status: user.status,
+        invite_token: inviteToken, // Include for copy functionality
       },
       emailSent,
       emailEnabled,
@@ -1147,6 +1148,8 @@ router.get('/users', requireAuth, (req: Request, res: Response) => {
     const sanitizedUsers = users.map((user: User) => {
       // Determine display status based on user state
       let displayStatus = null;
+      let inviteToken = null;
+      
       if (user.status === 'invited') {
         // Check if invite has expired
         if (user.invite_expires_at) {
@@ -1159,6 +1162,9 @@ router.get('/users', requireAuth, (req: Request, res: Response) => {
         } else {
           displayStatus = 'invited';
         }
+        
+        // Include invite token for invited/expired users (needed for copy link functionality)
+        inviteToken = user.invite_token;
       }
       
       return {
@@ -1171,6 +1177,7 @@ router.get('/users', requireAuth, (req: Request, res: Response) => {
         passkey_count: user.passkeys?.length || 0,
         is_active: user.is_active,
         status: displayStatus, // Only show status if invited or expired
+        invite_token: inviteToken, // Include for invited users
         created_at: user.created_at,
         last_login_at: user.last_login_at,
       };

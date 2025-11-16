@@ -15,6 +15,27 @@ export function getGravatarUrl(email: string, size: number = 80): string {
   return `https://www.gravatar.com/avatar/${hash}?d=identicon&s=${size}`;
 }
 
+/**
+ * Generate invitation URL from token
+ * @param inviteToken - Invitation token
+ * @returns Full invitation URL
+ */
+export function generateInvitationUrl(inviteToken: string): string {
+  // Get the current origin (works in both dev and production)
+  const origin = window.location.origin;
+  return `${origin}/invite/${inviteToken}`;
+}
+
+/**
+ * Copy invitation URL to clipboard
+ * @param inviteToken - Invitation token
+ * @returns Promise that resolves when copied
+ */
+export async function copyInvitationUrl(inviteToken: string): Promise<void> {
+  const inviteUrl = generateInvitationUrl(inviteToken);
+  await navigator.clipboard.writeText(inviteUrl);
+}
+
 export const userManagementAPI = {
   async fetchCurrentUser() {
     const res = await fetch(`${API_URL}/api/auth/status`, {

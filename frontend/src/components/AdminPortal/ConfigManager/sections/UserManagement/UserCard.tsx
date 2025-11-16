@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import type { User } from "./types";
-import { getGravatarUrl } from "./utils";
+import { getGravatarUrl, copyInvitationUrl } from "./utils";
 
 interface UserCardProps {
   user: User;
@@ -34,12 +34,25 @@ export const UserCard: React.FC<UserCardProps> = ({
   onUpdateRole,
 }) => {
   const [showRoleDropdown, setShowRoleDropdown] = useState(false);
+  const [copied, setCopied] = useState(false);
   const roleDropdownRef = useRef<HTMLDivElement>(null);
 
   // Debug: Log current user on first render
   if (isFirstUser) {
     console.log("[UserManagement] Rendering users. CurrentUser:", currentUser);
   }
+
+  const handleCopyInvite = async () => {
+    if (!user.invite_token) return;
+    
+    try {
+      await copyInvitationUrl(user.invite_token);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy invitation link:', err);
+    }
+  };
 
   // Close role dropdown when clicking outside
   useEffect(() => {
@@ -184,9 +197,36 @@ export const UserCard: React.FC<UserCardProps> = ({
             flexShrink: 0,
           }}
         >
-          {/* Admin-only actions: Resend Invite and Delete */}
+          {/* Admin-only actions: Resend Invite, Copy Invite, and Delete */}
           {currentUser && currentUser.role === "admin" && (
             <>
+              {(user.status === "invited" || user.status === "invite_expired") && user.invite_token && (
+                <button
+                  onClick={handleCopyInvite}
+                  className="btn-secondary"
+                  style={{
+                    padding: "0.4rem 0.8rem",
+                    fontSize: "0.85rem",
+                    background: copied ? "rgba(74, 222, 128, 0.2)" : "rgba(59, 130, 246, 0.2)",
+                    borderColor: copied ? "rgba(74, 222, 128, 0.3)" : "rgba(59, 130, 246, 0.3)",
+                    color: copied ? "#4ade80" : "#60a5fa",
+                  }}
+                  disabled={loading}
+                  title="Copy invitation link to clipboard"
+                  onMouseEnter={(e) => {
+                    if (!loading && !copied) {
+                      e.currentTarget.style.background = "rgba(59, 130, 246, 0.3)";
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!copied) {
+                      e.currentTarget.style.background = "rgba(59, 130, 246, 0.2)";
+                    }
+                  }}
+                >
+                  {copied ? "✓ Copied" : "📋 Copy Invite"}
+                </button>
+              )}
               {user.status === "invite_expired" && (
                 <button
                   onClick={() => onResendInvite(user.id)}
