@@ -31,6 +31,7 @@ interface PhotosPanelProps {
   onDeleteAlbum: (albumName: string) => void;
   onShareAlbum: (albumName: string) => void;
   onTogglePublished: (albumName: string, currentPublished: boolean) => void;
+  onToggleHomepage: (albumName: string, currentShowOnHomepage: boolean) => void;
   onPreviewAlbum: (albumName: string) => void;
   onSavePhotoOrder: () => void;
   onCancelPhotoOrder: () => void;
@@ -69,6 +70,7 @@ const PhotosPanel: React.FC<PhotosPanelProps> = ({
   onDeleteAlbum,
   onShareAlbum,
   onTogglePublished,
+  onToggleHomepage,
   onPreviewAlbum,
   onSavePhotoOrder,
   onCancelPhotoOrder,
@@ -170,6 +172,7 @@ const PhotosPanel: React.FC<PhotosPanelProps> = ({
           onDeleteAlbum={onDeleteAlbum}
           onShareAlbum={onShareAlbum}
           onTogglePublished={onTogglePublished}
+          onToggleHomepage={onToggleHomepage}
           onPreviewAlbum={onPreviewAlbum}
           onViewModeChange={setViewMode}
           canEdit={canEdit}

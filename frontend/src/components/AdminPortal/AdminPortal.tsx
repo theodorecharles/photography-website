@@ -135,7 +135,8 @@ export default function AdminPortal() {
     secondaryColor: '#22c55e',
     metaDescription: '',
     metaKeywords: '',
-    faviconPath: ''
+    faviconPath: '',
+    shuffleHomepage: true
   });
   const [albums, setAlbums] = useState<Album[]>([]);
   const [folders, setFolders] = useState<AlbumFolder[]>([]);
@@ -424,7 +425,7 @@ export default function AdminPortal() {
       });
       const data = await res.json();
       console.log('[AdminPortal] Loaded branding data from API:', data);
-      // Ensure all values are strings (not undefined)
+      // Ensure all values are set (not undefined)
       const brandingData = {
         siteName: data.siteName || '',
         avatarPath: data.avatarPath || '',
@@ -432,7 +433,8 @@ export default function AdminPortal() {
         secondaryColor: data.secondaryColor || '#22c55e',
         metaDescription: data.metaDescription || '',
         metaKeywords: data.metaKeywords || '',
-        faviconPath: data.faviconPath || ''
+        faviconPath: data.faviconPath || '',
+        shuffleHomepage: data.shuffleHomepage ?? true
       };
       console.log('[AdminPortal] Setting branding state to:', brandingData);
       setBranding(brandingData);

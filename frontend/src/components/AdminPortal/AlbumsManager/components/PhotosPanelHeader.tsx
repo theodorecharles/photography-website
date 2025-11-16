@@ -26,6 +26,7 @@ interface PhotosPanelHeaderProps {
   onDeleteAlbum: (albumName: string) => void;
   onShareAlbum: (albumName: string) => void;
   onTogglePublished: (albumName: string, currentPublished: boolean) => void;
+  onToggleHomepage: (albumName: string, currentShowOnHomepage: boolean) => void;
   onPreviewAlbum: (albumName: string) => void;
   onViewModeChange: (mode: ViewMode) => void;
   canEdit: boolean;
@@ -43,12 +44,14 @@ const PhotosPanelHeader: React.FC<PhotosPanelHeaderProps> = ({
   onDeleteAlbum,
   onShareAlbum,
   onTogglePublished,
+  onToggleHomepage,
   onPreviewAlbum,
   onViewModeChange,
   canEdit,
 }) => {
   const currentAlbum = localAlbums.find(a => a.name === selectedAlbum);
   const isPublished = currentAlbum?.published !== false;
+  const showOnHomepage = currentAlbum?.show_on_homepage !== false;
   
   // Count completed uploads (optimization + AI done)
   const completedUploads = uploadingImages.filter((img: any) => img.state === 'complete').length;
@@ -81,34 +84,52 @@ const PhotosPanelHeader: React.FC<PhotosPanelHeaderProps> = ({
           </span>
         </div>
         
-        {/* Right: Publish toggle + close button */}
+        {/* Right: Toggles + close button */}
         <div className="photos-title-right">
-          {/* Publish/Unpublish Toggle (Mobile Only - shown on narrow screens) */}
-          {canEdit && !isInFolder ? (
-            <label className="toggle-switch compact publish-toggle-titlebar" onClick={(e) => e.stopPropagation()}>
-              <span className="toggle-label">
+          {/* Mobile Toggle Stack: Homepage toggle above Publish toggle */}
+          <div className="mobile-toggles-stack">
+            {/* Homepage Toggle (Mobile Only - vertical layout) */}
+            {canEdit && isPublished && (
+              <label className="toggle-switch-mobile-vertical homepage-toggle-mobile" onClick={(e) => e.stopPropagation()}>
+                <input
+                  type="checkbox"
+                  checked={showOnHomepage}
+                  onChange={() => onToggleHomepage(selectedAlbum, showOnHomepage)}
+                />
+                <span className="toggle-slider"></span>
+                <span className="toggle-label-below">
+                  Homepage
+                </span>
+              </label>
+            )}
+            
+            {/* Publish/Unpublish Toggle (Mobile Only - vertical layout) */}
+            {canEdit && !isInFolder ? (
+              <label className="toggle-switch-mobile-vertical publish-toggle-titlebar" onClick={(e) => e.stopPropagation()}>
+                <input
+                  type="checkbox"
+                  checked={isPublished}
+                  onChange={() => onTogglePublished(selectedAlbum, isPublished)}
+                />
+                <span className="toggle-slider"></span>
+                <span className="toggle-label-below">
+                  {isPublished ? 'Published' : 'Unpublished'}
+                </span>
+              </label>
+            ) : (
+              <span className="photos-status-badge publish-toggle-titlebar" style={{
+                padding: '0.5rem 0.75rem',
+                borderRadius: '6px',
+                fontSize: '0.875rem',
+                fontWeight: 500,
+                background: isPublished ? 'rgba(34, 197, 94, 0.2)' : 'rgba(251, 191, 36, 0.2)',
+                color: isPublished ? '#4ade80' : '#fbbf24',
+                border: isPublished ? '1px solid rgba(34, 197, 94, 0.3)' : '1px solid rgba(251, 191, 36, 0.3)',
+              }}>
                 {isPublished ? 'Published' : 'Unpublished'}
               </span>
-              <input
-                type="checkbox"
-                checked={isPublished}
-                onChange={() => onTogglePublished(selectedAlbum, isPublished)}
-              />
-              <span className="toggle-slider"></span>
-            </label>
-          ) : (
-            <span className="photos-status-badge publish-toggle-titlebar" style={{
-              padding: '0.5rem 0.75rem',
-              borderRadius: '6px',
-              fontSize: '0.875rem',
-              fontWeight: 500,
-              background: isPublished ? 'rgba(34, 197, 94, 0.2)' : 'rgba(251, 191, 36, 0.2)',
-              color: isPublished ? '#4ade80' : '#fbbf24',
-              border: isPublished ? '1px solid rgba(34, 197, 94, 0.3)' : '1px solid rgba(251, 191, 36, 0.3)',
-            }}>
-              {isPublished ? 'Published' : 'Unpublished'}
-            </span>
-          )}
+            )}
+          </div>
           
           <button onClick={onClose} className="photos-close-btn" title="Close">
             <CloseIcon width="20" height="20" />
@@ -192,6 +213,21 @@ const PhotosPanelHeader: React.FC<PhotosPanelHeaderProps> = ({
         </div>
 
         <div className="photos-controls-right">
+          {/* Homepage Toggle (Desktop Only - full toggle with text) */}
+          {canEdit && isPublished && (
+            <label className="toggle-switch compact homepage-toggle-desktop" onClick={(e) => e.stopPropagation()} style={{ marginRight: '0.75rem' }}>
+              <span className="toggle-label">
+                {showOnHomepage ? 'On Homepage' : 'Not on Homepage'}
+              </span>
+              <input
+                type="checkbox"
+                checked={showOnHomepage}
+                onChange={() => onToggleHomepage(selectedAlbum, showOnHomepage)}
+              />
+              <span className="toggle-slider"></span>
+            </label>
+          )}
+          
           {/* Publish/Unpublish Toggle (Desktop Only - shown on wide screens) */}
           {canEdit && !isInFolder ? (
             <label className="toggle-switch compact publish-toggle-controlbar" onClick={(e) => e.stopPropagation()}>

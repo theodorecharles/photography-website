@@ -17,7 +17,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const DB_PATH = path.join(__dirname, '../data/gallery.db');
-const OUTPUT_DIR = path.join(__dirname, '../frontend/public/albums-data');
+const CONFIG_PATH = path.join(__dirname, '../data/config.json');
+const OUTPUT_DIR = path.join(__dirname, '../frontend/dist/albums-data');
 
 console.log('🚀 Starting static JSON generation...');
 console.log(`   Database: ${DB_PATH}`);
@@ -26,6 +27,10 @@ console.log(`   Output directory: ${OUTPUT_DIR}`);
 try {
   // Open database
   const db = new Database(DB_PATH, { readonly: true });
+  
+  // Load config for branding settings
+  const config = JSON.parse(fs.readFileSync(CONFIG_PATH, 'utf8'));
+  const shuffleHomepage = config.branding?.shuffleHomepage ?? true;
 
   // Ensure output directory exists
   if (!fs.existsSync(OUTPUT_DIR)) {
@@ -74,20 +79,21 @@ try {
     }
   }
 
-  // Generate homepage JSON (shuffled photos from published albums only)
+  // Generate homepage JSON (shuffled photos from albums with show_on_homepage = 1)
   console.log('\n🏠 Generating homepage JSON...');
   try {
-    const publishedAlbums = db.prepare('SELECT name FROM albums WHERE published = 1').all();
-    const publishedAlbumNames = publishedAlbums.map(a => a.name);
+    const homepageAlbums = db.prepare('SELECT name FROM albums WHERE published = 1 AND show_on_homepage = 1').all();
+    const homepageAlbumNames = homepageAlbums.map(a => a.name);
     
-    if (publishedAlbumNames.length > 0) {
-      const placeholders = publishedAlbumNames.map(() => '?').join(',');
+    if (homepageAlbumNames.length > 0) {
+      const placeholders = homepageAlbumNames.map(() => '?').join(',');
       const images = db.prepare(`
-        SELECT filename, title, description, album 
-        FROM image_metadata 
-        WHERE album IN (${placeholders})
-        ORDER BY RANDOM()
-      `).all(...publishedAlbumNames);
+        SELECT im.filename, im.title, im.description, im.album, im.sort_order, a.sort_order as album_sort_order
+        FROM image_metadata im
+        INNER JOIN albums a ON im.album = a.name
+        WHERE im.album IN (${placeholders})
+        ORDER BY a.sort_order, a.name, im.sort_order, im.filename
+      `).all(...homepageAlbumNames);
       
       // Homepage format: [filename, title, album] (need album for multi-album homepage)
       const photos = images.map(img => [
@@ -95,9 +101,22 @@ try {
         img.title || img.filename,
         img.album
       ]);
-      writeJSON('homepage.json', photos);
+      
+      // Include shuffle setting in homepage JSON
+      const homepageData = {
+        shuffle: shuffleHomepage,
+        photos: photos
+      };
+      
+      writeJSON('homepage.json', homepageData);
+      console.log(`   Using ${homepageAlbumNames.length} albums for homepage (shuffle: ${shuffleHomepage})`);
     } else {
-      writeJSON('homepage.json', []);
+      const homepageData = {
+        shuffle: shuffleHomepage,
+        photos: []
+      };
+      writeJSON('homepage.json', homepageData);
+      console.log(`   No albums configured for homepage`);
     }
   } catch (error) {
     console.error(`   ⚠️  Could not generate homepage.json:`, error.message);

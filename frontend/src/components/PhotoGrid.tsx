@@ -198,10 +198,30 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
           });
           if (staticResponse.ok) {
             const staticData = await staticResponse.json();
-            console.log(`✨ Loaded ${staticData.length} photos from optimized static JSON (${album})`);
             
-            // Reconstruct full photo objects from optimized array format
-            const staticPhotos = staticData.map((data: string[]) => reconstructPhoto(data, album));
+            // Handle homepage format: { shuffle: boolean, photos: [...] }
+            let staticPhotos;
+            let shouldShuffle = false;
+            
+            if (album === "homepage" && staticData && typeof staticData === 'object' && 'photos' in staticData) {
+              // New homepage format with metadata
+              shouldShuffle = staticData.shuffle ?? true;
+              staticPhotos = staticData.photos.map((data: string[]) => reconstructPhoto(data, album));
+              console.log(`✨ Loaded ${staticPhotos.length} photos from homepage JSON (shuffle: ${shouldShuffle})`);
+              
+              // Shuffle homepage photos for random display order each time (if enabled)
+              if (shouldShuffle) {
+                staticPhotos = [...staticPhotos].sort(() => Math.random() - 0.5);
+                console.log(`🔀 Shuffled ${staticPhotos.length} homepage photos`);
+              } else {
+                console.log(`📌 Homepage shuffle disabled - displaying in order`);
+              }
+            } else {
+              // Regular album format or legacy homepage format (array of photos)
+              const photoArray = Array.isArray(staticData) ? staticData : (staticData.photos || []);
+              staticPhotos = photoArray.map((data: string[]) => reconstructPhoto(data, album));
+              console.log(`✨ Loaded ${staticPhotos.length} photos from optimized static JSON (${album})`);
+            }
             
             // Show first 100 immediately
             setAllPhotos(staticPhotos);

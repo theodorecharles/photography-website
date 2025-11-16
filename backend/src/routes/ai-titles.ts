@@ -11,6 +11,7 @@ import fs from 'fs';
 import { csrfProtection } from '../security.js';
 import { getDatabase } from '../database.js';
 import { requireAuth, requireAdmin, requireManager } from '../auth/middleware.js';
+import { DATA_DIR } from '../config.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -142,7 +143,7 @@ router.post('/generate-single', requireManager, async (req: any, res: any) => {
     }
     
     // Load config to get OpenAI API key
-    const configPath = path.join(__dirname, '../../data/config.json');
+    const configPath = path.join(DATA_DIR, 'config.json');
     let config: any = {};
     try {
       const configData = await fs.promises.readFile(configPath, 'utf-8');
@@ -156,16 +157,22 @@ router.post('/generate-single', requireManager, async (req: any, res: any) => {
       return res.status(400).json({ error: 'OpenAI API key not configured' });
     }
     
-    // Find the original image file
+    // Use thumbnail for faster uploads to OpenAI
     const projectRoot = path.resolve(__dirname, '../../..');
     const dataDir = process.env.DATA_DIR || path.join(projectRoot, 'data');
-    const photosDir = path.join(dataDir, 'photos');
-    const imagePath = path.join(photosDir, album, filename);
+    const optimizedDir = path.join(dataDir, 'optimized');
     
-    // Check if file exists
+    // Try thumbnail first, fall back to original if not found
+    let imagePath = path.join(optimizedDir, 'thumbnail', album, filename);
     if (!fs.existsSync(imagePath)) {
-      console.error('[AI Titles] Image not found:', imagePath);
-      return res.status(404).json({ error: 'Image not found' });
+      console.log('[AI Titles] Thumbnail not found, falling back to original');
+      const photosDir = path.join(dataDir, 'photos');
+      imagePath = path.join(photosDir, album, filename);
+      
+      if (!fs.existsSync(imagePath)) {
+        console.error('[AI Titles] Image not found:', imagePath);
+        return res.status(404).json({ error: 'Image not found' });
+      }
     }
     
     // Initialize OpenAI
@@ -177,6 +184,8 @@ router.post('/generate-single', requireManager, async (req: any, res: any) => {
     const base64Image = imageBuffer.toString('base64');
     const extension = path.extname(filename).toLowerCase().substring(1);
     const mimeType = extension === 'jpg' || extension === 'jpeg' ? 'image/jpeg' : `image/${extension}`;
+    
+    console.log(`[AI Titles] Using image: ${imagePath} (${(imageBuffer.length / 1024).toFixed(1)} KB)`);
     
     // Call OpenAI Vision API (same prompt as upload flow)
     const response = await openai.chat.completions.create({

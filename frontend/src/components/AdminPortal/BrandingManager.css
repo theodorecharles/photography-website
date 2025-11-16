@@ -46,6 +46,13 @@
   margin-bottom: 0.5rem;
 }
 
+.branding-description {
+  color: #a1a1aa;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  margin-bottom: 0.5rem;
+}
+
 .branding-input,
 .branding-textarea {
   padding: 0.875rem 1rem;

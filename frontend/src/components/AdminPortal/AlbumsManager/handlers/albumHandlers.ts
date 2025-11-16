@@ -133,6 +133,43 @@ export const createAlbumHandlers = (props: AlbumHandlersProps) => {
     }
   };
 
+  const handleToggleHomepage = async (
+    albumName: string,
+    currentShowOnHomepage: boolean,
+    event?: React.MouseEvent
+  ): Promise<void> => {
+    if (event) {
+      event.stopPropagation();
+    }
+
+    const newShowOnHomepageState = !currentShowOnHomepage;
+
+    try {
+      const res = await fetchWithRateLimitCheck(
+        `${API_URL}/api/albums/${encodeURIComponent(albumName)}/show-on-homepage`,
+        {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ showOnHomepage: newShowOnHomepageState }),
+        }
+      );
+
+      if (res.ok) {
+        setMessage({
+          type: 'success',
+          text: `Album "${albumName}" ${newShowOnHomepageState ? 'added to' : 'removed from'} homepage`,
+        });
+        await loadAlbums();
+      } else {
+        const error = await res.json();
+        setMessage({ type: 'error', text: error.error || 'Failed to update album' });
+      }
+    } catch (err) {
+      setMessage({ type: 'error', text: 'Network error occurred' });
+    }
+  };
+
   const handleOpenRenameModal = (albumName: string): void => {
     setRenamingAlbum(albumName);
     setNewAlbumName(albumName);
@@ -246,6 +283,7 @@ export const createAlbumHandlers = (props: AlbumHandlersProps) => {
   return {
     handleDeleteAlbum,
     handleTogglePublished,
+    handleToggleHomepage,
     handleOpenRenameModal,
     handleRenameAlbum,
     handleMoveAlbumToFolder,

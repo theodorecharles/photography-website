@@ -62,6 +62,7 @@ interface BrandingConfig {
   metaDescription: string;
   metaKeywords: string;
   faviconPath: string;
+  shuffleHomepage?: boolean;
 }
 
 // Get current branding configuration
@@ -80,6 +81,7 @@ router.get('/', (req: Request, res: Response) => {
       metaDescription: branding.metaDescription || 'Photography portfolio by Ted Charles',
       metaKeywords: branding.metaKeywords || 'photography, portfolio, ted charles',
       faviconPath: branding.faviconPath || '/favicon.ico',
+      shuffleHomepage: branding.shuffleHomepage ?? true,
     };
     
     res.json(brandingConfig);
@@ -101,22 +103,30 @@ router.put('/', requireManager, (req: Request, res: Response) => {
     }
     
     // Validate each field if provided
-    const validFields = ['siteName', 'avatarPath', 'primaryColor', 'secondaryColor', 'metaDescription', 'metaKeywords', 'faviconPath'];
+    const validFields = ['siteName', 'avatarPath', 'primaryColor', 'secondaryColor', 'metaDescription', 'metaKeywords', 'faviconPath', 'shuffleHomepage'];
     for (const [key, value] of Object.entries(updates)) {
       if (!validFields.includes(key)) {
         res.status(400).json({ error: `Invalid field: ${key}` });
         return;
       }
       
-      if (typeof value !== 'string') {
-        res.status(400).json({ error: `Field ${key} must be a string` });
-        return;
-      }
-      
-      // Length limits
-      if (value.length > 500) {
-        res.status(400).json({ error: `Field ${key} is too long (max 500 characters)` });
-        return;
+      // shuffleHomepage is a boolean, all others are strings
+      if (key === 'shuffleHomepage') {
+        if (typeof value !== 'boolean') {
+          res.status(400).json({ error: `Field ${key} must be a boolean` });
+          return;
+        }
+      } else {
+        if (typeof value !== 'string') {
+          res.status(400).json({ error: `Field ${key} must be a string` });
+          return;
+        }
+        
+        // Length limits (only for strings)
+        if (value.length > 500) {
+          res.status(400).json({ error: `Field ${key} is too long (max 500 characters)` });
+          return;
+        }
       }
     }
     

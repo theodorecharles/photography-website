@@ -182,6 +182,11 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
           type: "success",
           text: "User created successfully. Copy the invitation link to send to the user.",
         });
+        // Store invite token in form so user can copy it
+        setNewUser({ 
+          ...newUser, 
+          inviteToken: data.user.invite_token || data.inviteUrl.split('/invite/')[1]
+        });
       } else {
         const message = data.emailSent
           ? "Invitation sent successfully"
@@ -191,18 +196,30 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
           type: data.emailSent ? "success" : "error",
           text: message,
         });
+        
+        // Store invite token in form for copy functionality
+        if (data.user.invite_token) {
+          setNewUser({ 
+            ...newUser, 
+            inviteToken: data.user.invite_token
+          });
+        }
       }
 
-      setShowNewUserForm(false);
-      setNewUser({ email: "", role: "viewer" });
       loadUsers();
     } catch (err: any) {
       setMessage({
         type: "error",
         text: err.message || "Failed to send invitation",
       });
-    } finally {
       setLoading(false);
+    } finally {
+      // Don't close form immediately if we have a token to copy
+      if (!newUser.inviteToken) {
+        setLoading(false);
+      } else {
+        setLoading(false);
+      }
     }
   };
 
@@ -696,7 +713,10 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
               newUser={newUser}
               loading={loading}
               onChange={setNewUser}
-              onCancel={() => setShowNewUserForm(false)}
+              onCancel={() => {
+                setShowNewUserForm(false);
+                setNewUser({ email: "", role: "viewer" });
+              }}
               onSubmit={handleInviteUser}
             />
           )}

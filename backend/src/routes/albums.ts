@@ -17,6 +17,7 @@ import {
   getAlbumsFromMetadata,
   getImagesInAlbum,
   getImagesFromPublishedAlbums,
+  getImagesForHomepage,
   getShareLinkBySecret,
   isShareLinkExpired,
   getAllFolders,
@@ -243,6 +244,7 @@ router.get("/api/albums", (req: Request, res) => {
       return {
         name: albumName,
         published: state?.published ?? false,
+        show_on_homepage: state?.show_on_homepage ?? true,
         folder_id: state?.folder_id ?? null
       };
     });
@@ -263,7 +265,8 @@ router.get("/api/albums", (req: Request, res) => {
       return {
         name: albumName,
         folder_id: state?.folder_id ?? null,
-        published: true // Already filtered to published albums
+        published: true, // Already filtered to published albums
+        show_on_homepage: state?.show_on_homepage ?? true
       };
     });
     
@@ -381,10 +384,10 @@ router.get("/api/albums/:album/photos", (req: Request, res): void => {
   res.json(photos);
 });
 
-// Get all photos from all albums in random order
+// Get all photos from albums configured for homepage in random order
 router.get("/api/random-photos", (req: Request, res) => {
-  // Always only return photos from published albums (even for authenticated users)
-  const images = getImagesFromPublishedAlbums().filter(img => img.album !== 'homepage');
+  // Only return photos from albums that have show_on_homepage = true
+  const images = getImagesForHomepage().filter(img => img.album !== 'homepage');
   
   const allPhotos = images.map((img) => {
     // Generate title from filename by removing extension and replacing separators
@@ -403,7 +406,7 @@ router.get("/api/random-photos", (req: Request, res) => {
   });
 
   const albumCount = new Set(images.map(i => i.album)).size;
-  console.log(`API /api/random-photos: Returning ${allPhotos.length} photos from ${albumCount} albums`);
+  console.log(`API /api/random-photos: Returning ${allPhotos.length} photos from ${albumCount} homepage albums`);
   
   // Shuffle all photos for random order
   const shuffledPhotos = shuffleArray(allPhotos);

@@ -20,6 +20,7 @@ import {
   saveAlbum, 
   deleteAlbumState,
   setAlbumPublished,
+  setAlbumShowOnHomepage,
   updateImageSortOrder,
   saveImageMetadata,
   updateAlbumSortOrder,
@@ -776,6 +777,76 @@ router.patch("/:album/publish", requireManager, async (req: Request, res: Respon
   } catch (error) {
     console.error('Error updating album published state:', error);
     res.status(500).json({ error: 'Failed to update album published state' });
+  }
+});
+
+/**
+ * Toggle album show_on_homepage state
+ */
+router.patch("/:album/show-on-homepage", requireManager, async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { album } = req.params;
+    const { showOnHomepage } = req.body;
+    
+    const sanitizedAlbum = sanitizeName(album);
+    if (!sanitizedAlbum) {
+      res.status(400).json({ error: 'Invalid album name' });
+      return;
+    }
+
+    if (typeof showOnHomepage !== 'boolean') {
+      res.status(400).json({ error: 'Show on homepage state must be a boolean' });
+      return;
+    }
+
+    const photosDir = req.app.get("photosDir");
+    const albumPath = path.join(photosDir, sanitizedAlbum);
+    
+    if (!fs.existsSync(albumPath)) {
+      res.status(404).json({ error: 'Album not found' });
+      return;
+    }
+
+    // Check if album is published
+    const albumState = getAlbumState(sanitizedAlbum);
+    if (!albumState) {
+      res.status(404).json({ error: 'Album not found in database' });
+      return;
+    }
+
+    if (!albumState.published) {
+      res.status(400).json({ error: 'Cannot set homepage visibility for unpublished album' });
+      return;
+    }
+
+    // Update show_on_homepage state
+    const success = setAlbumShowOnHomepage(sanitizedAlbum, showOnHomepage);
+    if (!success) {
+      console.error(`✗ Failed to update show_on_homepage for "${sanitizedAlbum}"`);
+      res.status(500).json({ error: 'Failed to update show on homepage state' });
+      return;
+    }
+    
+    console.log(`✓ Set album "${sanitizedAlbum}" show_on_homepage state to: ${showOnHomepage}`);
+
+    // Regenerate static JSON files (specifically homepage.json)
+    console.log(`[Homepage] Regenerating static JSON files...`);
+    const appRoot = req.app.get('appRoot');
+    const result = generateStaticJSONFiles(appRoot);
+    if (result.success) {
+      console.log(`[Homepage] ✓ Static JSON regenerated (${result.albumCount} albums)`);
+    } else {
+      console.error(`[Homepage] ✗ Failed to regenerate static JSON:`, result.error);
+    }
+
+    res.json({ 
+      success: true, 
+      album: sanitizedAlbum,
+      showOnHomepage 
+    });
+  } catch (error) {
+    console.error('Error updating album show_on_homepage state:', error);
+    res.status(500).json({ error: 'Failed to update album show on homepage state' });
   }
 });
 

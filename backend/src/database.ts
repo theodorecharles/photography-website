@@ -38,6 +38,7 @@ export function initializeDatabase(): any {
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL UNIQUE,
       published BOOLEAN NOT NULL DEFAULT 0,
+      show_on_homepage BOOLEAN NOT NULL DEFAULT 1,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )
@@ -333,6 +334,7 @@ export function getAlbumState(name: string): {
   id: number;
   name: string;
   published: boolean;
+  show_on_homepage: boolean;
   created_at: string;
   updated_at: string;
 } | undefined {
@@ -346,6 +348,7 @@ export function getAlbumState(name: string): {
   const result = stmt.get(name) as any;
   if (result) {
     result.published = Boolean(result.published);
+    result.show_on_homepage = Boolean(result.show_on_homepage);
   }
   return result;
 }
@@ -357,6 +360,7 @@ export function getAllAlbums(): Array<{
   id: number;
   name: string;
   published: boolean;
+  show_on_homepage: boolean;
   folder_id: number | null;
   sort_order: number | null;
   created_at: string;
@@ -376,6 +380,7 @@ export function getAllAlbums(): Array<{
   return results.map(result => ({
     ...result,
     published: Boolean(result.published),
+    show_on_homepage: Boolean(result.show_on_homepage),
     folder_id: result.folder_id ?? null
   }));
 }
@@ -434,6 +439,22 @@ export function setAlbumPublished(name: string, published: boolean): boolean {
   `);
   
   const result = stmt.run(published ? 1 : 0, name);
+  return result.changes > 0;
+}
+
+/**
+ * Set album show_on_homepage state
+ */
+export function setAlbumShowOnHomepage(name: string, showOnHomepage: boolean): boolean {
+  const db = getDatabase();
+  
+  const stmt = db.prepare(`
+    UPDATE albums 
+    SET show_on_homepage = ?, updated_at = CURRENT_TIMESTAMP
+    WHERE name = ?
+  `);
+  
+  const result = stmt.run(showOnHomepage ? 1 : 0, name);
   return result.changes > 0;
 }
 
@@ -545,6 +566,31 @@ export function getImagesFromPublishedAlbums(): Array<{
     INNER JOIN albums a ON im.album = a.name
     WHERE a.published = 1
     ORDER BY im.album, im.filename
+  `);
+  
+  return stmt.all() as any[];
+}
+
+/**
+ * Get all images from albums that should be shown on homepage
+ */
+export function getImagesForHomepage(): Array<{
+  id: number;
+  album: string;
+  filename: string;
+  title: string | null;
+  description: string | null;
+  sort_order: number | null;
+  created_at: string;
+  updated_at: string;
+}> {
+  const db = getDatabase();
+  
+  const stmt = db.prepare(`
+    SELECT im.* FROM image_metadata im
+    INNER JOIN albums a ON im.album = a.name
+    WHERE a.published = 1 AND a.show_on_homepage = 1
+    ORDER BY a.sort_order, a.name, im.sort_order, im.filename
   `);
   
   return stmt.all() as any[];
