@@ -19,65 +19,60 @@ interface AnalyticsSettingsProps {
   onCancel: () => void;
   savingSection: string | null;
   setMessage: (message: { type: "success" | "error"; text: string }) => void;
+  onOpenObserveSave?: () => void;
 }
 
 const AnalyticsSettings: React.FC<AnalyticsSettingsProps> = ({
   config,
-  originalConfig: _originalConfig,
-  setConfig,
+  originalConfig,
   setOriginalConfig,
   updateConfig,
   hasUnsavedChanges,
-  onSave,
   onCancel,
   savingSection,
   setMessage,
+  onOpenObserveSave,
 }) => {
-  // Auto-save handler for OpenObserve toggle
-  const handleToggleOpenObserve = async () => {
-    const newValue = !config.analytics.openobserve.enabled;
-
-    // Optimistically update UI
-    const newConfig = {
-      ...config,
-      analytics: {
-        ...config.analytics,
-        openobserve: {
-          ...config.analytics.openobserve,
-          enabled: newValue,
-        },
-      },
-    };
-    setConfig(newConfig);
-
+  // Handle save with restart modal
+  const handleSaveAnalytics = async () => {
     try {
       const res = await fetch(`${API_URL}/api/config`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify(newConfig),
+        body: JSON.stringify(config),
       });
 
       if (res.ok) {
+        // Check if OpenObserve settings changed BEFORE updating originalConfig
+        const openObserveChanged = 
+          config.analytics.openobserve.enabled !== originalConfig.analytics.openobserve.enabled ||
+          config.analytics.openobserve.endpoint !== originalConfig.analytics.openobserve.endpoint ||
+          config.analytics.openobserve.organization !== originalConfig.analytics.openobserve.organization ||
+          config.analytics.openobserve.username !== originalConfig.analytics.openobserve.username ||
+          config.analytics.openobserve.password !== originalConfig.analytics.openobserve.password ||
+          config.analytics.openobserve.stream !== originalConfig.analytics.openobserve.stream;
+        
         // Update original config to match
-        setOriginalConfig(structuredClone(newConfig));
+        setOriginalConfig(structuredClone(config));
         setMessage({
           type: "success",
-          text: `OpenObserve integration ${newValue ? "enabled" : "disabled"}`,
+          text: "Analytics settings saved!",
         });
+        
+        // If OpenObserve settings changed, show restart modal
+        if (openObserveChanged && onOpenObserveSave) {
+          onOpenObserveSave();
+        }
       } else {
         const error = await res.json();
         setMessage({
           type: "error",
           text: error.error || "Failed to update setting",
         });
-        // Revert on error
-        setConfig({ ...config });
       }
     } catch (err) {
       setMessage({ type: "error", text: "Network error occurred" });
-      // Revert on error
-      setConfig({ ...config });
     }
   };
 
@@ -113,7 +108,7 @@ const AnalyticsSettings: React.FC<AnalyticsSettingsProps> = ({
               type="button"
               onClick={(e) => {
                 e.stopPropagation();
-                onSave();
+                handleSaveAnalytics();
               }}
               disabled={savingSection !== null}
               className="btn-primary"
@@ -144,7 +139,10 @@ const AnalyticsSettings: React.FC<AnalyticsSettingsProps> = ({
             <div className="ai-toggle-controls">
               <button
                 type="button"
-                onClick={handleToggleOpenObserve}
+                onClick={() => updateConfig(
+                  ["analytics", "openobserve", "enabled"],
+                  !config.analytics.openobserve.enabled
+                )}
                 className={`toggle-button ${
                   config.analytics.openobserve.enabled ? "active" : ""
                 }`}

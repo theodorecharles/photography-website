@@ -655,6 +655,10 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
       setMessage({ type: 'success', text: `Album "${newAlbumModalName}" created` });
       trackAlbumCreated(newAlbumModalName);
       await loadAlbums();
+      
+      // Notify other components (like the header navigation)
+      window.dispatchEvent(new Event('albums-updated'));
+      
       handleCloseNewAlbumModal();
       selectAlbum(newAlbumModalName);
       

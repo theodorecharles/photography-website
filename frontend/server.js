@@ -122,6 +122,11 @@ app.get('/albums-data/*.json', (req, res, next) => {
   });
 });
 
+// Health check endpoint (must come before static files to avoid conflicts)
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok', message: 'Frontend server is running' });
+});
+
 // Serve static files from the dist directory
 // But exclude index.html so we can inject runtime config
 app.use(express.static(path.join(__dirname, "dist"), {

@@ -264,7 +264,7 @@ export default function AdminPortal() {
   }, [location.search]);
 
   // Check if OpenObserve analytics is enabled
-  const checkMetricsEnabled = async () => {
+  const checkMetricsEnabled = useCallback(async () => {
     try {
       const res = await fetch(`${API_URL}/api/config`, {
         credentials: 'include',
@@ -272,12 +272,24 @@ export default function AdminPortal() {
       if (res.ok) {
         const config = await res.json();
         const isEnabled = config?.analytics?.openobserve?.enabled === true;
+        console.log('[AdminPortal] Metrics enabled check:', isEnabled);
         setMetricsEnabled(isEnabled);
       }
     } catch (err) {
       console.error('Failed to check metrics config:', err);
     }
-  };
+  }, []);
+
+  // Listen for config updates (triggered after restart)
+  useEffect(() => {
+    const handleConfigUpdate = () => {
+      console.log('[AdminPortal] Config update detected, reloading metrics status...');
+      checkMetricsEnabled();
+    };
+
+    window.addEventListener('config-updated', handleConfigUpdate);
+    return () => window.removeEventListener('config-updated', handleConfigUpdate);
+  }, [checkMetricsEnabled]);
 
   // Track tab changes
   useEffect(() => {
