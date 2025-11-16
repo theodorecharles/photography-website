@@ -462,23 +462,35 @@ router.post("/:album/upload", requireManager, upload.single('photo'), async (req
     const destPath = path.join(albumPath, file.originalname);
     
     try {
+      console.log(`[Upload] Processing ${file.originalname} (${Math.round(file.size / 1024)}KB)`);
+      
       // Use sharp to auto-rotate based on EXIF orientation (fixes iPhone photos)
       // This physically rotates the pixels and removes the EXIF orientation tag
-      await sharp(file.path)
-        .rotate() // Auto-rotate based on EXIF
-        .toFile(destPath);
+      // Set a timeout to prevent hanging on corrupt images
+      const sharpTimeout = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Sharp processing timeout')), 120000) // 2 minute timeout
+      );
+      
+      await Promise.race([
+        sharp(file.path)
+          .rotate() // Auto-rotate based on EXIF
+          .toFile(destPath),
+        sharpTimeout
+      ]);
+      
+      console.log(`[Upload] ✓ Processed ${file.originalname}`);
       
       // Clean up temp file
       fs.unlinkSync(file.path);
-    } catch (err) {
-      console.error(`Failed to process and save file ${file.originalname}:`, err);
+    } catch (err: any) {
+      console.error(`[Upload] ✗ Failed to process ${file.originalname}:`, err.message);
       // Clean up temp file if processing failed
       try {
         fs.unlinkSync(file.path);
       } catch (cleanupErr) {
         // Ignore cleanup errors
       }
-      res.status(500).json({ error: 'Failed to save file' });
+      res.status(500).json({ error: `Failed to save file: ${err.message}` });
       return;
     }
 
