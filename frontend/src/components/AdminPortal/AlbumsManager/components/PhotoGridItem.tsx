@@ -252,25 +252,39 @@ const PhotoGridItem: React.FC<PhotoGridItemProps> = ({
               <span className="state-text">Generating Title...</span>
             </div>
           )}
-          {uploadingImage.state === 'error' && (
-            <div className="photo-state-overlay error">
-              <div className="state-icon">⚠️</div>
-              <span className="state-text">Error</span>
-              <span className="error-message">{uploadingImage.error}</span>
-              {canEdit && onRetryUpload && selectedAlbum && (
-                <button
-                  className="retry-upload-btn"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onRetryUpload(filename, selectedAlbum);
-                  }}
-                  title={`Retry upload (${uploadingImage.retryCount || 0}/5 attempts)`}
-                >
-                  🔄 Retry Upload
-                </button>
-              )}
-            </div>
-          )}
+          {uploadingImage.state === 'error' && (() => {
+            console.log(`[PhotoGridItem] Error state for ${filename}:`, {
+              canEdit,
+              hasRetryHandler: !!onRetryUpload,
+              selectedAlbum,
+              retryCount: uploadingImage.retryCount,
+              showButton: canEdit && !!onRetryUpload && !!selectedAlbum
+            });
+            return (
+              <div className="photo-state-overlay error">
+                <div className="state-icon">⚠️</div>
+                <span className="state-text">Error</span>
+                <span className="error-message">{uploadingImage.error}</span>
+                {canEdit && onRetryUpload && selectedAlbum ? (
+                  <button
+                    className="retry-upload-btn"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      console.log(`[PhotoGridItem] Retry button clicked for ${filename}`);
+                      onRetryUpload(filename, selectedAlbum);
+                    }}
+                    title={`Retry upload (${uploadingImage.retryCount || 0}/5 attempts)`}
+                  >
+                    🔄 Retry Upload
+                  </button>
+                ) : (
+                  <div style={{ fontSize: '0.7rem', marginTop: '0.5rem', color: '#999' }}>
+                    Debug: canEdit={String(canEdit)}, handler={String(!!onRetryUpload)}, album={String(!!selectedAlbum)}
+                  </div>
+                )}
+              </div>
+            );
+          })()}
         </>
       )}
 
