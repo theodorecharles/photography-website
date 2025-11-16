@@ -35,7 +35,6 @@ interface FoldersSectionProps {
   onAlbumMoveUp?: (albumName: string) => void;
   onAlbumMoveDown?: (albumName: string) => void;
   onAlbumMoveToFolder?: (albumName: string) => void;
-  hasFolders?: boolean;
   canEdit: boolean;
 }
 
@@ -66,7 +65,6 @@ const FoldersSection: React.FC<FoldersSectionProps> = ({
   onAlbumMoveUp,
   onAlbumMoveDown,
   onAlbumMoveToFolder,
-  hasFolders = true,
   canEdit,
 }) => {
   if (localFolders.length === 0) return null;

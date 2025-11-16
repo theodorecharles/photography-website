@@ -421,8 +421,6 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
 
   const uiHandlers = createUIInteractionHandlers({
     localAlbums,
-    setLocalAlbums,
-    albums,
     loadAlbums,
     setShowNewAlbumModal,
     setNewAlbumFiles,
@@ -647,7 +645,6 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
             onAlbumMoveUp={mobileReorderHandlers.handleAlbumMoveUp}
             onAlbumMoveDown={mobileReorderHandlers.handleAlbumMoveDown}
             onAlbumMoveToFolder={handleOpenMoveToFolderModal}
-            hasFolders={localFolders.length > 0}
             canEdit={canEdit}
           />
           
@@ -673,7 +670,6 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
             onAlbumMoveUp={mobileReorderHandlers.handleAlbumMoveUp}
             onAlbumMoveDown={mobileReorderHandlers.handleAlbumMoveDown}
             onAlbumMoveToFolder={handleOpenMoveToFolderModal}
-            hasFolders={localFolders.length > 0}
             canEdit={canEdit}
           />
           
