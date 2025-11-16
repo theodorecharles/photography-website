@@ -156,53 +156,57 @@ export const createUploadHandlers = (props: UploadHandlersProps) => {
     setUploadingImages(newUploadingImages);
 
     let successCount = 0;
-    let errorCount = 0;
+    const failedUploads: Array<{ img: UploadingImage; retryCount: number }> = [];
 
     // Upload images one-by-one (fast as possible)
     // uploadSingleImage resolves as soon as upload finishes, 
     // optimization/AI continues in background
     for (const img of newUploadingImages) {
       try {
-        await uploadSingleImage(img.file, img.filename, albumName);
+        await uploadSingleImage(img.file, img.filename, albumName, 0);
         successCount++;
         // Next upload starts immediately after previous file is uploaded
         // (doesn't wait for optimization or AI)
       } catch (err) {
-        errorCount++;
-        console.error(`[Upload] Error (${errorCount} total errors):`, err);
+        console.error(`[Upload] Error:`, err);
+        failedUploads.push({ img, retryCount: 0 });
         // Continue with next upload even if one fails
       }
     }
 
-    console.log(`[Upload] Batch complete: ${successCount} succeeded, ${errorCount} failed`);
+    console.log(`[Upload] Batch complete: ${successCount} succeeded, ${failedUploads.length} failed`);
 
     // Auto-retry failed uploads (up to 5 attempts)
-    if (errorCount > 0) {
-      const MAX_RETRIES = 5;
+    const MAX_RETRIES = 5;
+    let remainingFailures = failedUploads.length;
+    
+    if (failedUploads.length > 0) {
+      console.log(`[Upload] Auto-retrying ${failedUploads.length} failed uploads...`);
       
-      // Get list of failed images
-      const failedImages = newUploadingImages.filter((img) => {
-        const current = props.uploadingImagesRef.current?.find((i) => i.filename === img.filename);
-        return current?.state === 'error' && (current?.retryCount || 0) < MAX_RETRIES;
-      });
-      
-      for (const img of failedImages) {
-        const current = props.uploadingImagesRef.current?.find((i) => i.filename === img.filename);
-        const currentRetryCount = current?.retryCount || 0;
+      for (const failed of failedUploads) {
+        let uploaded = false;
+        let currentRetry = 1;
         
-        if (currentRetryCount < MAX_RETRIES) {
+        while (!uploaded && currentRetry <= MAX_RETRIES) {
           try {
-            await uploadSingleImage(img.file, img.filename, albumName, currentRetryCount + 1);
+            await uploadSingleImage(failed.img.file, failed.img.filename, albumName, currentRetry);
             successCount++;
-            errorCount--;
+            remainingFailures--;
+            uploaded = true;
+            console.log(`[Upload] ✓ Retry ${currentRetry}/${MAX_RETRIES} succeeded for ${failed.img.filename}`);
           } catch (err) {
-            console.error(`[Upload] Retry failed for ${img.filename}:`, err);
+            if (currentRetry === MAX_RETRIES) {
+              console.error(`[Upload] ✗ All ${MAX_RETRIES} retries failed for ${failed.img.filename}`);
+            }
+            currentRetry++;
           }
         }
       }
       
-      if (errorCount > 0) {
-        console.log(`[Upload] After auto-retry: ${errorCount} images still failed (max retries reached)`);
+      if (remainingFailures > 0) {
+        console.log(`[Upload] ${remainingFailures} images failed after ${MAX_RETRIES} retry attempts`);
+      } else {
+        console.log(`[Upload] All failed uploads recovered via auto-retry!`);
       }
     }
 

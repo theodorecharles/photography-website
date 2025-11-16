@@ -1982,6 +1982,30 @@
 .photo-state-overlay.error {
   background: rgba(139, 0, 0, 0.3);
   border: 1px solid #dc3545;
+  border-radius: 12px;
+}
+
+.retry-upload-btn {
+  margin-top: 0.75rem;
+  padding: 0.5rem 1rem;
+  background: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.retry-upload-btn:hover {
+  background: #c82333;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.retry-upload-btn:active {
+  transform: translateY(0);
 }
 
 .state-icon {
