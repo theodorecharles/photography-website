@@ -119,6 +119,28 @@ router.post('/initialize', async (req: Request, res: Response): Promise<void> =>
       return;
     }
 
+    // Auto-detect frontend URL from request
+    const protocol = req.headers['x-forwarded-proto'] || (req.secure ? 'https' : 'http');
+    const hostHeader = req.headers['x-forwarded-host'] || req.headers['host'] || 'localhost:3000';
+    const host = Array.isArray(hostHeader) ? hostHeader[0] : hostHeader;
+    const frontendUrl = `${protocol}://${host}`;
+    
+    // Determine backend URL based on convention (api.domain.com)
+    let backendUrl;
+    if (host.includes('localhost')) {
+      backendUrl = 'http://localhost:3001';
+    } else if (host.startsWith('www.')) {
+      // www.tedcharles.net -> api.tedcharles.net
+      backendUrl = `${protocol}://api.${host.substring(4)}`;
+    } else {
+      // tedcharles.net -> api.tedcharles.net
+      backendUrl = `${protocol}://api.${host}`;
+    }
+    
+    console.log(`[Setup] Auto-detected URLs:`);
+    console.log(`  Frontend: ${frontendUrl}`);
+    console.log(`  Backend: ${backendUrl}`);
+
     // Validate auth method specific fields
     if (authMethod === 'password') {
       if (!adminName || !adminPassword) {
@@ -158,18 +180,22 @@ router.post('/initialize', async (req: Request, res: Response): Promise<void> =>
     if (fs.existsSync(configExamplePath)) {
       const exampleContent = fs.readFileSync(configExamplePath, 'utf8');
       config = JSON.parse(exampleContent);
+      // Override URLs with auto-detected values
+      config.environment.frontend.apiUrl = backendUrl;
+      config.environment.backend.allowedOrigins = [frontendUrl];
+      config.environment.security.allowedHosts = [host];
     } else {
       // Fallback: create minimal config structure
       config = {
         environment: {
           frontend: {
             port: 3000,
-            apiUrl: "http://localhost:3001"
+            apiUrl: backendUrl
           },
           backend: {
             port: 3001,
             photosDir: "photos",
-            allowedOrigins: ["http://localhost:3000"]
+            allowedOrigins: [frontendUrl]
           },
           optimization: {
             concurrency: 4,
@@ -180,7 +206,7 @@ router.post('/initialize', async (req: Request, res: Response): Promise<void> =>
             }
           },
           security: {
-            allowedHosts: ["localhost:3000"],
+            allowedHosts: [host],
             rateLimitWindowMs: 1000,
             rateLimitMaxRequests: 30,
             redirectFrom: [],
