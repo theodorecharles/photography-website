@@ -26,15 +26,12 @@ export const useAlbumManagement = ({
   // Local state for optimistic updates
   const [localAlbums, setLocalAlbums] = useState<Album[]>(albums);
   const [localFolders, setLocalFolders] = useState<AlbumFolder[]>(folders);
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [animatingAlbum, setAnimatingAlbum] = useState<string | null>(null);
 
-  // Sync local state with props when props change (if no unsaved changes)
+  // Sync local state with props when props change
   useEffect(() => {
-    if (!hasUnsavedChanges) {
-      setLocalAlbums(albums);
-    }
-  }, [albums, hasUnsavedChanges]);
+    setLocalAlbums(albums);
+  }, [albums]);
 
   // Always sync folders - folder changes are independent of album changes
   useEffect(() => {
@@ -229,8 +226,6 @@ export const useAlbumManagement = ({
       // Reload albums from server to get the saved order
       await loadAlbums();
       
-      setHasUnsavedChanges(false);
-      
       // Only show success message if not silent
       if (!silent) {
         const message = localFolders.length > 0 
@@ -250,27 +245,17 @@ export const useAlbumManagement = ({
     }
   }, [localAlbums, localFolders, albums, setMessage, loadAlbums]);
 
-  const cancelReorder = useCallback(() => {
-    setLocalAlbums(albums);
-    setLocalFolders(folders);
-    setHasUnsavedChanges(false);
-    setMessage({ type: 'success', text: 'Changes discarded' });
-  }, [albums, folders, setMessage]);
-
   return {
     localAlbums,
     setLocalAlbums,
     localFolders,
     setLocalFolders,
-    hasUnsavedChanges,
-    setHasUnsavedChanges,
     animatingAlbum,
     setAnimatingAlbum,
     createAlbum,
     deleteAlbum,
     toggleAlbumPublished,
     saveAlbumOrder,
-    cancelReorder,
   };
 };
 

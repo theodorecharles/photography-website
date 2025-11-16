@@ -397,12 +397,6 @@ export const createUIInteractionHandlers = (props: UIInteractionHandlersProps) =
     await loadAlbums();
   };
 
-  const handleCancelChanges = (): void => {
-    setLocalAlbums(albums);
-    setHasUnsavedChanges(false);
-    setMessage({ type: 'success', text: 'Changes discarded' });
-  };
-
   return {
     handleGhostTileClick,
     handleGhostTileDragOver,
@@ -416,7 +410,6 @@ export const createUIInteractionHandlers = (props: UIInteractionHandlersProps) =
     handleFolderGhostTileDrop,
     handleFolderGhostTileFileSelect,
     handleSaveChanges,
-    handleCancelChanges,
   };
 };
 

@@ -7,20 +7,14 @@ import React from 'react';
 import { FolderPlusIcon } from '../../../icons';
 
 interface AlbumToolbarProps {
-  hasUnsavedChanges: boolean;
   localFoldersCount: number;
   onCreateFolder: () => void;
-  onSaveChanges: () => void;
-  onCancelChanges: () => void;
   canEdit: boolean;
 }
 
 const AlbumToolbar: React.FC<AlbumToolbarProps> = ({
-  hasUnsavedChanges,
   localFoldersCount,
   onCreateFolder,
-  onSaveChanges,
-  onCancelChanges,
   canEdit,
 }) => {
   // If user cannot edit, don't show the toolbar at all
@@ -43,29 +37,6 @@ const AlbumToolbar: React.FC<AlbumToolbarProps> = ({
       </div>
       
       {/* Bottom - Save/Cancel buttons and unsaved indicator */}
-      {hasUnsavedChanges && (
-        <div className="album-toolbar-unsaved">
-          <span className="unsaved-text">
-            ● Unsaved changes
-          </span>
-          <div className="unsaved-actions">
-            <button
-              onClick={onCancelChanges}
-              className="btn-secondary"
-              style={{ padding: '0.5rem 1rem' }}
-            >
-              Cancel
-            </button>
-            <button
-              onClick={onSaveChanges}
-              className="btn-action btn-upload"
-              style={{ padding: '0.5rem 1.5rem' }}
-            >
-              Save Changes
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

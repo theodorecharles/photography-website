@@ -85,8 +85,6 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     setLocalAlbums,
     localFolders,
     setLocalFolders,
-    hasUnsavedChanges,
-    setHasUnsavedChanges,
     animatingAlbum,
     setAnimatingAlbum,
   } = albumManagement;
@@ -617,11 +615,8 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
           
           
           <AlbumToolbar
-            hasUnsavedChanges={hasUnsavedChanges}
             localFoldersCount={localFolders.length}
             onCreateFolder={() => setShowFolderModal(true)}
-            onSaveChanges={uiHandlers.handleSaveChanges}
-            onCancelChanges={uiHandlers.handleCancelChanges}
             canEdit={canEdit}
           />
           
