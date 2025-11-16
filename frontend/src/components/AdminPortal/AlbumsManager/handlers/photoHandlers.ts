@@ -7,8 +7,7 @@ import { fetchWithRateLimitCheck } from '../../../../utils/fetchWrapper';
 import { trackPhotoDeleted } from '../../../../utils/analytics';
 import { ConfirmModalConfig, Photo } from '../types';
 
-const API_URL = import.meta.env.VITE_API_URL || '';
-
+import { API_URL } from '../../../../config';
 interface PhotoHandlersProps {
   selectedAlbum: string | null;
   loadPhotos: (albumName: string) => Promise<void>;

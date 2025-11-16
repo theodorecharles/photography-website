@@ -6,8 +6,7 @@
 import { Album, AlbumFolder } from '../types';
 import { fetchWithRateLimitCheck } from '../../../../utils/fetchWrapper';
 
-const API_URL = import.meta.env.VITE_API_URL || '';
-
+import { API_URL } from '../../../../config';
 interface FolderHandlersProps {
   localAlbums: Album[];
   localFolders: AlbumFolder[];

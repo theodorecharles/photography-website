@@ -6,8 +6,7 @@
 import { UploadingImage } from '../types';
 import { validateImageFiles } from '../utils/albumHelpers';
 
-const API_URL = import.meta.env.VITE_API_URL || '';
-
+import { API_URL } from '../../../../config';
 interface UploadHandlersProps {
   uploadingImages: UploadingImage[];
   setUploadingImages: React.Dispatch<React.SetStateAction<UploadingImage[]>>;

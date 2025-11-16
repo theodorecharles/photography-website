@@ -454,13 +454,24 @@ router.post('/initialize', async (req: Request, res: Response): Promise<void> =>
       requiresRestart: false // No restart needed - config and OAuth reloaded dynamically
     });
     
-    // Gracefully restart the backend after sending response
-    // This ensures session cookies and other startup-time config is properly initialized
-    console.log('\n🔄 Triggering backend restart to apply session configuration...');
+    // Trigger full restart via restart.sh after sending response
+    // This rebuilds frontend/backend and restarts all services with new configuration
+    console.log('\n🔄 Triggering full system restart via restart.sh...');
     setTimeout(() => {
-      console.log('✓ Setup complete - exiting for restart');
-      process.exit(0); // Exit cleanly - PM2 will restart the process
-    }, 500); // Wait 500ms to ensure response is sent, then restart immediately
+      console.log('✓ Setup complete - executing restart.sh');
+      const { spawn } = require('child_process');
+      const scriptPath = path.join(__dirname, '..', '..', '..', 'restart.sh');
+      
+      // Spawn restart.sh in detached mode so it continues after this process exits
+      const restart = spawn('bash', [scriptPath], {
+        detached: true,
+        stdio: 'ignore',
+        cwd: path.join(__dirname, '..', '..', '..')
+      });
+      
+      restart.unref(); // Allow parent process to exit independently
+      process.exit(0); // Exit this process, restart.sh will handle the rest
+    }, 500); // Wait 500ms to ensure response is sent
   } catch (error) {
     console.error('Setup initialization failed:', error);
     res.status(500).json({ 

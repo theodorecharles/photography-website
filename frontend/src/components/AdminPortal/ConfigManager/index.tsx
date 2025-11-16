@@ -12,9 +12,8 @@ import UserManagementSection from './sections/UserManagementSection';
 import OpenAISection from './sections/OpenAISection';
 import ImageOptimizationSection from './sections/ImageOptimizationSection';
 import AdvancedSettingsSection from './sections/AdvancedSettingsSection';
+import { API_URL } from '../../../config';
 import '../ConfigManager.css';
-
-const API_URL = import.meta.env.VITE_API_URL || "";
 
 const ConfigManager: React.FC<ConfigManagerProps> = ({
   setMessage,

@@ -9,9 +9,8 @@ import { ExternalLink } from '../../types';
 import { trackExternalLinksUpdate } from '../../../../utils/analytics';
 import SectionHeader from '../components/SectionHeader';
 import { ChevronUpIcon, ChevronDownIcon } from '../../../icons';
+import { API_URL } from '../../../../config';
 import '../../LinksManager.css';
-
-const API_URL = import.meta.env.VITE_API_URL || '';
 
 interface LinksSectionProps {
   externalLinks: ExternalLink[];

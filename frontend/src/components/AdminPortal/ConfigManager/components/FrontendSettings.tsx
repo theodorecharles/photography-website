@@ -5,8 +5,7 @@
 import React, { useState } from 'react';
 import { ConfigData } from '../types';
 
-const API_URL = import.meta.env.VITE_API_URL || '';
-
+import { API_URL } from '../../../../config';
 interface FrontendSettingsProps {
   config: ConfigData;
   updateConfig: (path: string[], value: any) => void;

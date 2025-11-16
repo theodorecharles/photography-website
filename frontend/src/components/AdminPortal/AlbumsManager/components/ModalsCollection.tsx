@@ -11,8 +11,7 @@ import { Photo, Folder } from '../types';
 import { cacheBustValue } from '../../../../config';
 import { MagicWandIcon } from '../../../icons';
 
-const API_URL = import.meta.env.VITE_API_URL || '';
-
+import { API_URL } from '../../../../config';
 interface ConfirmModalConfig {
   message: string;
   onConfirm: () => void;

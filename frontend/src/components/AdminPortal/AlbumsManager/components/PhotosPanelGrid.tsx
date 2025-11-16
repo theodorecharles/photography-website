@@ -14,8 +14,7 @@ import { PhotoListItem } from './PhotoListItem';
 import { Photo, UploadingImage } from '../types';
 import { cacheBustValue } from '../../../../config';
 
-const API_URL = import.meta.env.VITE_API_URL || '';
-
+import { API_URL } from '../../../../config';
 type ViewMode = 'grid' | 'list';
 
 interface PhotosPanelGridProps {
