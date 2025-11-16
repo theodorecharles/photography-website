@@ -158,8 +158,14 @@ const PhotosPanelGrid: React.FC<PhotosPanelGridProps> = ({
     );
   }
 
-  // Check if any uploads are in progress (not complete)
-  const hasActiveUploads = uploadingImages.some(img => img.state !== 'complete');
+  // Check if any uploads are in progress (not complete or error)
+  // Error state should not prevent retry button from showing
+  const hasActiveUploads = uploadingImages.some(img => 
+    img.state === 'queued' || 
+    img.state === 'uploading' || 
+    img.state === 'optimizing' || 
+    img.state === 'generating-title'
+  );
   
   // Combine item IDs for sortable context
   const allItemIds = [
