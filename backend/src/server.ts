@@ -9,10 +9,15 @@ import cors from "cors";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import session from "express-session";
+import { createRequire } from "module";
 import passport from "passport";
 import path from "path";
 import { fileURLToPath } from "url";
 import fs from "fs";
+
+// Import CommonJS module for session store
+const require = createRequire(import.meta.url);
+const SqliteStoreFactory = require("better-sqlite3-session-store");
 
 // Import configuration
 import config, {
@@ -25,6 +30,7 @@ import config, {
   CONFIG_EXISTS,
 } from "./config.ts";
 import { validateProductionSecurity } from "./security.ts";
+import { initializeDatabase } from "./database.ts";
 
 // In-memory cache for optimized images (thumbnails + modals)
 const imageCache = new Map<
@@ -240,8 +246,19 @@ console.log("Session cookie config:", {
   domain: cookieDomain,
 });
 
+// Initialize SQLite session store
+const db = initializeDatabase();
+const SqliteStore = SqliteStoreFactory(session);
+
 app.use(
   session({
+    store: new SqliteStore({
+      client: db,
+      expired: {
+        clear: true,
+        intervalMs: 900000, // Clean up expired sessions every 15 minutes
+      },
+    }),
     secret: sessionSecret,
     resave: false,
     saveUninitialized: false,
