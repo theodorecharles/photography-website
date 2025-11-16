@@ -180,6 +180,25 @@ export const createUploadHandlers = (props: UploadHandlersProps) => {
 
     // Reload albums to update photo counts
     await loadAlbums();
+    
+    // Regenerate static JSON once after the entire batch (instead of after each image)
+    if (successCount > 0) {
+      try {
+        console.log(`[Upload] Regenerating static JSON after batch upload...`);
+        const response = await fetch(`${API_URL}/api/static-json/regenerate`, {
+          method: 'POST',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+        if (response.ok) {
+          console.log(`[Upload] ✓ Static JSON regenerated`);
+        }
+      } catch (err) {
+        console.error(`[Upload] Failed to regenerate static JSON:`, err);
+      }
+    }
   };
 
 
