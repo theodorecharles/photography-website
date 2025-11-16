@@ -14,6 +14,7 @@ const JSON_CACHE_MAX_AGE = 5 * 60 * 1000; // 5 minutes
 const configPath = path.join(__dirname, "../data/config.json");
 let configFile;
 let config;
+let isSetupMode = false;
 
 if (fs.existsSync(configPath)) {
   configFile = JSON.parse(fs.readFileSync(configPath, "utf8"));
@@ -21,6 +22,7 @@ if (fs.existsSync(configPath)) {
 } else {
   // Setup mode - use defaults
   console.log("⚠️  config.json not found - using defaults for setup mode");
+  isSetupMode = true;
   configFile = {
     analytics: {},
   };
@@ -89,9 +91,12 @@ const allowedHosts = config.security.allowedHosts;
 app.use((req, res, next) => {
   const host = req.get("host");
 
-  // Validate host to prevent open redirect attacks
-  if (!allowedHosts.includes(host)) {
-    return res.status(400).send("Invalid host header");
+  // Skip host validation during setup mode (OOBE)
+  if (!isSetupMode) {
+    // Validate host to prevent open redirect attacks
+    if (!allowedHosts.includes(host)) {
+      return res.status(400).send("Invalid host header");
+    }
   }
 
   // Redirect to HTTPS if apiUrl uses https (production/remote dev)
