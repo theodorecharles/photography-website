@@ -43,9 +43,9 @@ RUN mkdir -p ./data && cd frontend && npm run build
 EXPOSE 3000 3001
 
 # Copy frontend server to frontend directory (where node_modules are)
-# Copy startup script and PM2 config
+# Copy startup script and Docker PM2 config
 COPY start.sh ./start.sh
-COPY ecosystem.config.cjs ./ecosystem.config.cjs
+COPY ecosystem.docker.cjs ./ecosystem.docker.cjs
 RUN chmod +x ./start.sh
 
 # Create logs directory
