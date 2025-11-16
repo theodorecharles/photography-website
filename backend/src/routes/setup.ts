@@ -303,6 +303,18 @@ router.post('/initialize', async (req: Request, res: Response): Promise<void> =>
 
     // Save config
     fs.writeFileSync(configPath, JSON.stringify(config, null, 2), 'utf8');
+    
+    // Reload backend config so it picks up the new configuration immediately
+    const { reloadConfig } = await import('../config.js');
+    reloadConfig();
+    console.log('✓ Backend configuration reloaded');
+    
+    // Reinitialize Google OAuth strategy if enabled
+    if (authMethod === 'google') {
+      const { initializeGoogleStrategy } = await import('./auth.js');
+      initializeGoogleStrategy();
+      console.log('✓ Google OAuth strategy reinitialized');
+    }
 
     // Create necessary directories
     const photosDir = path.join(dataDir, 'photos');
