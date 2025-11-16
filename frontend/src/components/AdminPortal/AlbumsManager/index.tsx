@@ -691,6 +691,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
                 setShowShareModal(true);
               }}
               onTogglePublished={albumHandlers.handleTogglePublished}
+              onToggleHomepage={albumHandlers.handleToggleHomepage}
               onPreviewAlbum={(albumName) => {
                 window.open(`/album/${encodeURIComponent(albumName)}`, '_blank');
               }}

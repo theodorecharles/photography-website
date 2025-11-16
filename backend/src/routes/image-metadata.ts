@@ -8,6 +8,7 @@ import { createRequire } from 'module';
 import { csrfProtection } from '../security.js';
 import { requireManager } from '../auth/middleware.js';
 import { generateStaticJSONFiles } from './static-json.js';
+import { invalidateAlbumCache } from './albums.js';
 
 const require = createRequire(import.meta.url);
 
@@ -129,6 +130,9 @@ router.put('/:album/:filename', requireManager, express.json(), async (req, res)
       res.status(404).json({ error: 'Metadata not found' });
       return;
     }
+    
+    // Invalidate album cache so next request gets fresh data
+    invalidateAlbumCache(album);
     
     // Regenerate static JSON files (titles are included in JSON)
     const appRoot = req.app.get('appRoot');

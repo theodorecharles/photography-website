@@ -6,9 +6,10 @@
 import { Router, Request, Response } from "express";
 import fs from "fs";
 import path from "path";
-import { getAllAlbums, getImagesInAlbum, getImagesFromPublishedAlbums } from "../database.js";
+import { getAllAlbums, getImagesInAlbum, getImagesForHomepage } from "../database.js";
 import { requireAuth, requireAdmin, requireManager } from '../auth/middleware.js';
 import { invalidateAlbumCache } from './albums.js';
+import { DATA_DIR } from '../config.js';
 
 const router = Router();
 
@@ -16,7 +17,7 @@ const router = Router();
  * Get the output directory for static JSON files
  */
 function getOutputDir(appRoot: string): string {
-  return path.join(appRoot, 'frontend', 'public', 'albums-data');
+  return path.join(appRoot, 'frontend', 'dist', 'albums-data');
 }
 
 /**
@@ -29,22 +30,12 @@ function ensureOutputDir(outputDir: string): void {
 }
 
 /**
- * Write JSON file to both public and dist directories
+ * Write JSON file to dist directory
  */
 function writeJSON(outputDir: string, filename: string, data: any): void {
   const jsonString = JSON.stringify(data, null, 2);
-  
-  // Write to public directory
-  const publicPath = path.join(outputDir, filename);
-  fs.writeFileSync(publicPath, jsonString);
-  
-  // Also write to dist directory if it exists (for production)
-  const distPath = publicPath.replace('/public/albums-data/', '/dist/albums-data/');
-  const distDir = path.dirname(distPath);
-  
-  if (fs.existsSync(distDir)) {
-    fs.writeFileSync(distPath, jsonString);
-  }
+  const filePath = path.join(outputDir, filename);
+  fs.writeFileSync(filePath, jsonString);
 }
 
 /**
@@ -91,12 +82,6 @@ export function generateStaticJSONFiles(appRoot: string): { success: boolean; er
           // This JSON file corresponds to a DELETED album (not just unpublished)
           const filePath = path.join(outputDir, file);
           fs.unlinkSync(filePath);
-          
-          // Also delete from dist directory if it exists
-          const distPath = filePath.replace('/public/albums-data/', '/dist/albums-data/');
-          if (fs.existsSync(distPath)) {
-            fs.unlinkSync(distPath);
-          }
         }
       }
     }
@@ -112,23 +97,28 @@ export function generateStaticJSONFiles(appRoot: string): { success: boolean; er
       }
     }
 
-    // Generate homepage JSON (random photos from all published albums, optimized format)
+    // Generate homepage JSON (photos from albums with show_on_homepage enabled, in order)
     try {
-      const publishedImages = getImagesFromPublishedAlbums();
+      // Load shuffle setting from config
+      const configPath = path.join(DATA_DIR, 'config.json');
+      const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+      const shuffleHomepage = config.branding?.shuffleHomepage ?? true;
       
-      // Shuffle using Fisher-Yates algorithm
-      const shuffled = [...publishedImages];
-      for (let i = shuffled.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-      }
+      const homepageImages = getImagesForHomepage();
       
-      // Take first 50 photos (include album name for homepage)
-      const randomPhotos = shuffled.slice(0, 50).map((img) => 
+      // Keep photos in order (by album sort order, then by photo sort order)
+      // Frontend will shuffle if shuffle setting is enabled
+      const photos = homepageImages.map((img) => 
         transformImageToArray(img, img.album, true)
       );
       
-      writeJSON(outputDir, 'homepage.json', randomPhotos);
+      // Include shuffle setting in homepage JSON
+      const homepageData = {
+        shuffle: shuffleHomepage,
+        photos: photos
+      };
+      
+      writeJSON(outputDir, 'homepage.json', homepageData);
     } catch (error) {
       console.error('[Static JSON] Error generating homepage.json:', error);
     }

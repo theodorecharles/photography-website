@@ -144,6 +144,81 @@
   flex: 0 0 auto !important; /* Don't grow or shrink */
 }
 
+/* Mobile toggles stack container - wraps homepage and publish toggle */
+.mobile-toggles-stack {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 0 0 auto;
+}
+
+/* Homepage toggle - mobile icon version */
+.homepage-toggle-mobile {
+  flex: 0 0 auto !important; /* Don't grow or shrink */
+}
+
+/* Vertical toggle switch for mobile - toggle above label */
+.toggle-switch-mobile-vertical {
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  cursor: pointer;
+  position: relative;
+  margin-top: 0.5rem;
+}
+
+.toggle-switch-mobile-vertical input[type="checkbox"] {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  position: absolute;
+}
+
+.toggle-switch-mobile-vertical .toggle-slider {
+  position: relative;
+  display: block;
+  width: 36px;
+  height: 20px;
+  background-color: #374151;
+  border-radius: 20px;
+  transition: background-color 0.3s ease;
+}
+
+.toggle-switch-mobile-vertical .toggle-slider::before {
+  content: "";
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  left: 1px;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: #9ca3af;
+  border-radius: 50%;
+  transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.toggle-switch-mobile-vertical input[type="checkbox"]:checked + .toggle-slider {
+  background-color: rgba(34, 197, 94, 0.3);
+}
+
+.toggle-switch-mobile-vertical input[type="checkbox"]:checked + .toggle-slider::before {
+  transform: translateX(17px) translateY(-50%);
+  background-color: #4ade80;
+}
+
+.toggle-switch-mobile-vertical .toggle-label-below {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #9ca3af;
+  white-space: nowrap;
+  text-align: center;
+}
+
+.toggle-switch-mobile-vertical input[type="checkbox"]:checked ~ .toggle-label-below {
+  color: #4ade80;
+}
+
 .photos-modal-title {
   font-size: 1.5rem;
   font-weight: 600;
@@ -390,13 +465,22 @@ label.photos-btn {
 /* Publish Toggle Position - Desktop: controls bar, Mobile: title bar */
 /* 
   Desktop (> 740px): Title bar shows [Album Title] [Photo Count] [Close]
-  Mobile (<= 740px): Title bar shows [Album Title] [Photo Count] [Publish Toggle] [Close]
+                     Controls bar shows [Homepage Toggle] [Publish Toggle]
+  Mobile (<= 740px): Title bar shows [Album Title] [Photo Count] [Homepage Icon] [Publish Toggle] [Close]
 */
 .publish-toggle-titlebar {
   display: none !important; /* Hidden on desktop (> 740px) */
 }
 
 .publish-toggle-controlbar {
+  display: flex; /* Shown on desktop in controls bar (> 740px) */
+}
+
+.homepage-toggle-mobile {
+  display: none !important; /* Hidden on desktop (> 740px) */
+}
+
+.homepage-toggle-desktop {
   display: flex; /* Shown on desktop in controls bar (> 740px) */
 }
 
@@ -426,6 +510,7 @@ label.photos-btn {
   /* 
     Mobile Layout Changes:
     - Publish toggle moves FROM controls bar TO title bar
+    - Homepage toggle shows as icon in title bar
     - Controls bar stacks vertically
     - Button text hidden (icons only)
   */
@@ -435,6 +520,18 @@ label.photos-btn {
   
   .publish-toggle-controlbar {
     display: none !important; /* Hide from controls bar on mobile (<= 740px) */
+  }
+  
+  .homepage-toggle-mobile {
+    display: flex !important; /* Show icon in title bar on mobile (<= 740px) */
+  }
+  
+  .homepage-toggle-desktop {
+    display: none !important; /* Hide text toggle from controls bar on mobile (<= 740px) */
+  }
+  
+  .toggle-switch-mobile-vertical {
+    display: flex !important; /* Ensure vertical toggle shows on mobile */
   }
 
   .photos-controls-bar {

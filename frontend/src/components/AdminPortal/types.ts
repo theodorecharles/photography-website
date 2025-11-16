@@ -31,6 +31,7 @@ export interface BrandingConfig {
   metaDescription: string;
   metaKeywords: string;
   faviconPath: string;
+  shuffleHomepage?: boolean;
 }
 
 export interface ImageOptimizationSettings {
@@ -55,6 +56,7 @@ export interface Album {
   name: string;
   photoCount?: number;
   published?: boolean;
+  show_on_homepage?: boolean;
   sort_order?: number | null;
   folder_id?: number | null;
 }
