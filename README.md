@@ -13,7 +13,7 @@ A modern, secure photography portfolio website built with React 19, TypeScript, 
 - 📸 **Album-based Organization** - Folders automatically become albums
 - 🚀 **Optimized Images** - Three sizes generated (thumbnail, modal, download)
 - 📱 **Fully Responsive** - Beautiful on all devices
-- 🔐 **Google OAuth Admin** - Secure admin panel with email whitelist
+- 🔐 **Multiple Auth Methods** - Google OAuth, password-based, or passkey authentication
 - 🎨 **Visual Branding Manager** - Customize colors, meta tags, and avatar via UI
 - 📊 **Analytics Dashboard** - Built-in OpenObserve integration with recharts and visitor map
 - 🔗 **Links Manager** - Configure external navigation links
@@ -24,6 +24,7 @@ A modern, secure photography portfolio website built with React 19, TypeScript, 
 - 📲 **Telegram Notifications** - Deployment status alerts via Telegram bot
 - 🔗 **Share Links** - Generate shareable album links with optional expiration
 - 👁️ **Password Visibility Toggle** - Eye icon to view/copy sensitive settings
+- 🐳 **Docker Support** - Single container deployment with PM2
 
 ---
 
@@ -66,15 +67,136 @@ A modern, secure photography portfolio website built with React 19, TypeScript, 
 
 ### Prerequisites
 
-- **Node.js** 18+
+- **Node.js** 18+ (for development)
+- **Docker & Docker Compose** (for Docker deployment)
 - **Google OAuth credentials** (optional, for admin features)
 
-### 🎉 New! Interactive Setup Wizard
+---
+
+## Deployment Options
+
+### 🐳 Docker Deployment (Recommended)
+
+**Single container deployment with PM2 process management.**
+
+#### Quick Start
+
+1. **Clone the repository:**
+```bash
+git clone https://github.com/theodoreroddy/photography-website.git
+cd photography-website
+```
+
+2. **Create a data directory:**
+```bash
+mkdir -p ~/galleria-data
+```
+
+3. **Configure environment variables** in `docker-compose.yml`:
+```yaml
+environment:
+  - DATA_DIR=/data
+  - FRONTEND_DOMAIN=http://localhost:3000  # or https://www.yourdomain.com
+  - BACKEND_DOMAIN=http://localhost:3001   # or https://api.yourdomain.com
+```
+
+4. **Mount your data directory** in `docker-compose.yml`:
+```yaml
+volumes:
+  - ~/galleria-data:/data
+```
+
+5. **Build and start:**
+```bash
+docker-compose up -d --build
+```
+
+6. **Access the application:**
+- Frontend: http://localhost:3000
+- Backend API: http://localhost:3001
+- Admin Panel: http://localhost:3000/admin
+
+#### Docker Environment Variables
+
+**Required:**
+- `DATA_DIR` - Path to data directory inside container (default: `/data`)
+- `FRONTEND_DOMAIN` - Frontend domain (e.g., `http://localhost:3000` or `https://www.yourdomain.com`)
+- `BACKEND_DOMAIN` - Backend API domain (e.g., `http://localhost:3001` or `https://api.yourdomain.com`)
+
+**Optional:**
+- `ALLOWED_ORIGINS` - Additional allowed CORS origins (comma-separated)
+- `PORT` - Override default ports (3000 for frontend, 3001 for backend)
+
+#### Docker CORS Configuration
+
+The backend automatically allows:
+- **Localhost** - Any port (for development)
+- **Internal IPs** - Ports 3000 and 3001 (for Docker networking)
+- **Provided Domains** - From `FRONTEND_DOMAIN` and `BACKEND_DOMAIN` environment variables
+- **Config.json** - Origins from `config.json` (if not overridden by env vars)
+
+#### Docker Usage Scenarios
+
+**Localhost Development:**
+```yaml
+environment:
+  - FRONTEND_DOMAIN=http://localhost:3000
+  - BACKEND_DOMAIN=http://localhost:3001
+```
+
+**Production with Nginx:**
+```yaml
+environment:
+  - FRONTEND_DOMAIN=https://www.yourdomain.com
+  - BACKEND_DOMAIN=https://api.yourdomain.com
+```
+
+Nginx should proxy:
+- `www.yourdomain.com` → `container:3000` (frontend)
+- `api.yourdomain.com` → `container:3001` (backend)
+
+#### Docker Commands
+
+```bash
+# Start containers
+docker-compose up -d
+
+# View logs
+docker-compose logs -f app
+
+# Stop containers
+docker-compose down
+
+# Rebuild after code changes
+docker-compose build app
+docker-compose up -d
+
+# View PM2 process status
+docker exec galleria pm2 list
+
+# View backend logs
+docker exec galleria tail -f /data/logs/backend-out.log
+```
+
+#### Docker Architecture
+
+- **Single Container** - Both frontend and backend run in one container
+- **PM2 Process Manager** - Manages both processes with automatic restarts
+- **Volume Mounting** - Data directory mounted from host for persistence
+- **Health Checks** - Automatic health monitoring and restart on failure
+- **ARM64 Support** - Native ARM64 builds for Apple Silicon and ARM servers
+
+**For detailed Docker documentation, see [README.docker.md](README.docker.md)**
+
+---
+
+### 💻 Development Setup
+
+#### 🎉 Interactive Setup Wizard
 
 **For first-time setup, we now have an interactive setup wizard!**
 
-1. **Clone and install dependencies**
-
+1. **Clone and install dependencies:**
 ```bash
 git clone https://github.com/theodoreroddy/photography-website.git
 cd photography-website
@@ -84,34 +206,32 @@ cd ../frontend && npm install
 cd ..
 ```
 
-2. **Start the development server**
-
+2. **Start the development server:**
 ```bash
 npm run dev
 ```
 
-3. **Open your browser**
-
+3. **Open your browser:**
 Navigate to `http://localhost:3000` and follow the **Setup Wizard**! 🚀
 
 The wizard will guide you through:
 - Site name and branding
-- Admin email configuration
+- Admin account creation (password or Google OAuth)
 - Color customization
 - Optional Google OAuth setup
 - Automatic database and directory creation
 
 **📖 For detailed setup instructions, see [SETUP_GUIDE.md](SETUP_GUIDE.md)**
 
-### Manual Configuration (Alternative)
+#### Manual Configuration (Alternative)
 
 If you prefer manual configuration:
 
 ```bash
-cp config/config.example.json config/config.json
+cp config/config.example.json data/config.json
 ```
 
-Edit `config/config.json` with your settings:
+Edit `data/config.json` with your settings:
 - Update `branding` section (site name, colors)
 - Add Google OAuth credentials (see [Google OAuth Setup](#google-oauth-setup))
 - Add your email to `authorizedEmails`
@@ -124,25 +244,22 @@ node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 
 **Note:** See [Configuration](#configuration) for complete config structure with environment-specific settings.
 
-3. **Add your photos**
-
+3. **Add your photos:**
 ```bash
-mkdir -p photos/homepage photos/nature photos/portfolio
+mkdir -p data/photos/homepage data/photos/nature data/photos/portfolio
 # Copy your photos into these folders
 ```
 
-4. **Optimize images**
-
+4. **Optimize images:**
 ```bash
-node optimize_all_images.js
+node scripts/optimize_all_images.js
 ```
 
 This creates three versions: thumbnail (512px), modal (2048px), download (4096px).
 
-> **Note:** For single image optimization (used automatically during uploads), there's also `optimize_new_image.js` that optimizes one image at a time.
+> **Note:** For single image optimization (used automatically during uploads), there's also `scripts/optimize_new_image.js` that optimizes one image at a time.
 
-5. **Start development**
-
+5. **Start development:**
 ```bash
 # Single command to run both frontend and backend
 npm run dev
@@ -163,7 +280,7 @@ cd frontend && npm run dev
 
 ## Admin Panel
 
-Access at `/admin` → Sign in with Google → Manage everything:
+Access at `/admin` → Sign in with Google, password, or passkey → Manage everything:
 
 - **Albums Tab** - Create/delete albums, upload photos, generate share links
 - **Links Tab** - Manage external navigation links
@@ -177,7 +294,13 @@ Access at `/admin` → Sign in with Google → Manage everything:
 
 ## Production Deployment
 
-### Build
+### Docker Deployment (Recommended)
+
+See [Docker Deployment](#-docker-deployment-recommended) section above.
+
+### Traditional PM2 Deployment
+
+#### Build
 
 **Using the unified build script (recommended):**
 ```bash
@@ -195,7 +318,7 @@ cd backend && npm run build
 cd ../frontend && npm run build
 ```
 
-### Using PM2
+#### Using PM2
 
 ```bash
 npm install -g pm2
@@ -204,7 +327,7 @@ pm2 save
 pm2 startup
 ```
 
-### Automated Deployment
+#### Automated Deployment
 
 **Via GitHub Actions (recommended):**
 
@@ -236,7 +359,7 @@ Update `config.json` production section with your domain and HTTPS settings.
 
 ## Configuration
 
-Main config file: `config/config.json` (copy from `config/config.example.json`)
+Main config file: `data/config.json` (copy from `config/config.example.json`)
 
 **Structure:**
 ```json
@@ -323,7 +446,9 @@ Main config file: `config/config.json` (copy from `config/config.example.json`)
 **Frontend:** React 19, TypeScript, React Router 7, Vite 6, Recharts  
 **Backend:** Express 5, TypeScript, Passport.js, Multer  
 **Image Processing:** Sharp (Node.js)  
-**Analytics:** OpenObserve
+**Analytics:** OpenObserve  
+**Process Management:** PM2  
+**Containerization:** Docker, Docker Compose
 
 ---
 
@@ -343,19 +468,25 @@ photography-website/
 │   │   └── components/
 │   ├── dist/            # Production build
 │   └── package.json
-├── photos/              # Original photos (not in Git)
-├── optimized/           # Generated images (not in Git)
+├── data/                # Data directory (not in Git)
+│   ├── config.json      # Main configuration
+│   ├── photos/          # Original photos
+│   ├── optimized/       # Generated images
+│   ├── gallery.db       # SQLite database
+│   └── logs/            # Application logs
 ├── config/
-│   ├── config.json          # Main configuration
 │   └── config.example.json  # Config template
-├── build.js                # Unified build script
-├── generate-ai-titles.js   # AI title generation
-├── image-metadata.db       # SQLite database
-├── optimize_all_images.js  # Bulk image optimization
-├── optimize_new_image.js   # Single image optimization
-├── restart.sh             # Automated deployment
-├── ecosystem.config.cjs   # PM2 configuration
-└── package.json           # Root dependencies
+├── scripts/
+│   ├── optimize_all_images.js   # Bulk image optimization
+│   ├── optimize_new_image.js    # Single image optimization
+│   └── generate-ai-titles.js   # AI title generation
+├── Dockerfile           # Single container Dockerfile
+├── docker-compose.yml   # Docker Compose configuration
+├── start.sh             # PM2 startup script
+├── ecosystem.config.cjs # PM2 configuration
+├── build.js             # Unified build script
+├── restart.sh           # Automated deployment
+└── package.json         # Root dependencies
 ```
 
 ---
@@ -369,25 +500,38 @@ photography-website/
 
 **Add photos via filesystem:**
 ```bash
-mkdir photos/new-album
-cp *.jpg photos/new-album/
-node optimize_all_images.js
+mkdir data/photos/new-album
+cp *.jpg data/photos/new-album/
+node scripts/optimize_all_images.js
 ```
 
 **Generate AI titles (optional):**
 ```bash
 # Add OpenAI API key to config.json first
-node generate-ai-titles.js
+node scripts/generate-ai-titles.js
 ```
 
-**View logs:**
+**View logs (PM2):**
 ```bash
 pm2 logs
 ```
 
-**Restart services:**
+**View logs (Docker):**
+```bash
+docker exec galleria pm2 logs
+# or
+docker exec galleria tail -f /data/logs/backend-out.log
+```
+
+**Restart services (PM2):**
 ```bash
 pm2 restart all
+```
+
+**Restart services (Docker):**
+```bash
+docker-compose restart
+# or via admin panel restart button
 ```
 
 ---
@@ -405,16 +549,18 @@ GET  /api/sitemap.xml               # SEO sitemap
 GET  /api/health                    # Health check
 
 # Admin endpoints (require authentication)
-POST /api/admin/albums              # Create album
-POST /api/admin/upload              # Upload photos
-DEL  /api/admin/albums/:album       # Delete album
-PUT  /api/admin/branding            # Update branding
-GET  /api/admin/metrics             # Get analytics
+POST /api/album-management/albums   # Create album
+POST /api/album-management/:album/upload  # Upload photos
+DELETE /api/album-management/albums/:album  # Delete album
+PUT  /api/branding                  # Update branding
+GET  /api/metrics                   # Get analytics
 
 # Authentication
 GET  /api/auth/google               # Initiate OAuth
 GET  /api/auth/google/callback      # OAuth callback
-GET  /api/auth/user                 # Get current user
+POST /api/auth-extended/login       # Password login
+POST /api/auth-extended/passkey/auth  # Passkey authentication
+GET  /api/auth/status               # Get current user
 POST /api/auth/logout               # Logout
 ```
 
@@ -430,14 +576,16 @@ See backend source code in `backend/src/routes/` for complete API implementation
 - ✅ Path traversal protection
 - ✅ Security headers (Helmet)
 - ✅ HTTPS enforcement in production
-- ✅ OAuth with email whitelist
+- ✅ Multiple auth methods (OAuth, password, passkey)
 - ✅ HTTP-only secure cookies
+- ✅ Role-based access control (viewer, manager, admin)
 
 **Best practices:**
 - Never commit `config.json` to Git
 - Use strong random secrets (32+ bytes)
 - Keep dependencies updated
 - Enable HTTPS in production
+- Use Docker for isolated deployment
 
 ---
 
@@ -445,23 +593,36 @@ See backend source code in `backend/src/routes/` for complete API implementation
 
 **Images not showing:**
 ```bash
-node optimize_all_images.js
-chmod -R 755 optimized/
+node scripts/optimize_all_images.js
+chmod -R 755 data/optimized/
 ```
 
 **CORS errors:**
-Update `allowedOrigins` in `config.json` and restart backend.
+- Update `allowedOrigins` in `config.json` and restart backend
+- For Docker: Check `FRONTEND_DOMAIN` and `BACKEND_DOMAIN` environment variables
 
 **Authentication issues:**
 - Verify Google OAuth redirect URIs
 - Check email is in `authorizedEmails`
 - Ensure cookies are enabled
+- For password auth: Check user exists and password is set
 
 **Port conflicts:**
 ```bash
 lsof -i :3001  # Check what's using port
 kill -9 <PID>  # Kill the process
 ```
+
+**Docker issues:**
+- Check container logs: `docker-compose logs -f app`
+- Verify data directory permissions: `chmod -R 755 ~/galleria-data`
+- Check PM2 status: `docker exec galleria pm2 list`
+- View backend logs: `docker exec galleria tail -f /data/logs/backend-out.log`
+
+**Optimization failures:**
+- Ensure `sharp` dependencies are installed (handled automatically in Docker)
+- Check image file permissions
+- Verify `DATA_DIR` environment variable is set correctly
 
 ---
 
