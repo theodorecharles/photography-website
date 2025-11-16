@@ -192,8 +192,16 @@ export default function SetupWizard() {
       setSuccess('Setup complete!');
       setCurrentStep(4);
 
-      // Show restart modal and redirect after successful restart
-      setShowRestartModal(true);
+      // Only show restart modal for Google OAuth (needs server restart)
+      // Password auth works immediately without restart
+      if (data.requiresRestart) {
+        setShowRestartModal(true);
+      } else {
+        // For password auth, redirect directly to admin portal
+        setTimeout(() => {
+          window.location.href = '/admin';
+        }, 2000); // Give user time to see success message
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Setup failed. Please try again.');
       console.error('Setup initialization failed:', err);

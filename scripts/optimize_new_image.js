@@ -20,9 +20,13 @@ if (args.length < 2) {
 const albumName = args[0];
 const imageFilename = args[1];
 
+// Determine data directory (use DATA_DIR env var or default to 'data')
+const dataDir = process.env.DATA_DIR || 'data';
+const configPath = path.join(dataDir, 'config.json');
+const photosDir = path.join(dataDir, 'photos');
+
 // Read configuration
-const config = JSON.parse(readFileSync('data/config.json', 'utf8'));
-const photosDir = 'data/photos'; // Hardcoded data directory structure
+const config = JSON.parse(readFileSync(configPath, 'utf8'));
 const imageSettings = config.environment.optimization?.images || {};
 
 const thumbnailQuality = imageSettings.thumbnail?.quality || 60;
@@ -34,7 +38,8 @@ const downloadMaxDim = imageSettings.download?.maxDimension || 4096;
 
 // Process a single version
 async function processVersion(sourcePath, version, quality, maxDim) {
-  const outputDir = `data/optimized/${version}/${albumName}`;
+  const optimizedDir = path.join(dataDir, 'optimized');
+  const outputDir = path.join(optimizedDir, version, albumName);
   const outputPath = path.join(outputDir, imageFilename);
   
   // Create output directory
