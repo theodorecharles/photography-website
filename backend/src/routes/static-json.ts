@@ -24,7 +24,6 @@ function getOutputDir(appRoot: string): string {
 function ensureOutputDir(outputDir: string): void {
   if (!fs.existsSync(outputDir)) {
     fs.mkdirSync(outputDir, { recursive: true });
-    console.log(`[Static JSON] Created output directory: ${outputDir}`);
   }
 }
 
@@ -44,9 +43,6 @@ function writeJSON(outputDir: string, filename: string, data: any): void {
   
   if (fs.existsSync(distDir)) {
     fs.writeFileSync(distPath, jsonString);
-    console.log(`[Static JSON] Generated: ${filename} (${Array.isArray(data) ? data.length : 'N/A'} items) [public + dist]`);
-  } else {
-    console.log(`[Static JSON] Generated: ${filename} (${Array.isArray(data) ? data.length : 'N/A'} items) [public only]`);
   }
 }
 
@@ -82,7 +78,6 @@ export function generateStaticJSONFiles(appRoot: string): { success: boolean; er
       .filter(a => a.name !== 'homepage')
       .map(a => a.name);
     const publishedAlbums = albumsData.filter(a => a.published && a.name !== 'homepage').map(a => a.name);
-    console.log(`[Static JSON] Found ${albums.length} albums (${publishedAlbums.length} published, ${albums.length - publishedAlbums.length} unpublished)`);
 
     // Clean up stale JSON files for DELETED albums only (keep unpublished albums)
     if (fs.existsSync(outputDir)) {
@@ -95,13 +90,11 @@ export function generateStaticJSONFiles(appRoot: string): { success: boolean; er
           // This JSON file corresponds to a DELETED album (not just unpublished)
           const filePath = path.join(outputDir, file);
           fs.unlinkSync(filePath);
-          console.log(`[Static JSON] Deleted stale file (album deleted): ${file}`);
           
           // Also delete from dist directory if it exists
           const distPath = filePath.replace('/public/albums-data/', '/dist/albums-data/');
           if (fs.existsSync(distPath)) {
             fs.unlinkSync(distPath);
-            console.log(`[Static JSON] Deleted stale file from dist: ${file}`);
           }
         }
       }
@@ -121,7 +114,6 @@ export function generateStaticJSONFiles(appRoot: string): { success: boolean; er
     // Generate homepage JSON (random photos from all published albums, optimized format)
     try {
       const publishedImages = getImagesFromPublishedAlbums();
-      console.log(`[Static JSON] Found ${publishedImages.length} images from published albums for homepage`);
       
       // Shuffle using Fisher-Yates algorithm
       const shuffled = [...publishedImages];
@@ -136,7 +128,6 @@ export function generateStaticJSONFiles(appRoot: string): { success: boolean; er
       );
       
       writeJSON(outputDir, 'homepage.json', randomPhotos);
-      console.log(`[Static JSON] Homepage includes photos from albums: ${[...new Set(randomPhotos.map(p => p[2]))].join(', ')}`);
     } catch (error) {
       console.error('[Static JSON] Error generating homepage.json:', error);
     }
@@ -166,8 +157,6 @@ export function generateStaticJSONFiles(appRoot: string): { success: boolean; er
  * Trigger static JSON generation (admin only)
  */
 router.post("/generate", requireAdmin, async (req: Request, res: Response): Promise<void> => {
-  console.log('[Static JSON] Manual generation triggered');
-  
   const appRoot = req.app.get('appRoot');
   const result = generateStaticJSONFiles(appRoot);
   
@@ -190,8 +179,6 @@ router.post("/generate", requireAdmin, async (req: Request, res: Response): Prom
  * Trigger static JSON regeneration after batch uploads (manager access)
  */
 router.post("/regenerate", requireManager, async (req: Request, res: Response): Promise<void> => {
-  console.log('[Static JSON] Regeneration triggered after batch upload');
-  
   const appRoot = req.app.get('appRoot');
   const result = generateStaticJSONFiles(appRoot);
   

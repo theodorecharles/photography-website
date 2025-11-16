@@ -86,7 +86,7 @@ async function processQueue() {
   while (activeJobs.size < MAX_CONCURRENT_JOBS && optimizationQueue.length > 0) {
     const job = optimizationQueue.shift()!;
 
-    console.log(`[Optimization Queue] Starting ${job.jobId} (${activeJobs.size + 1}/${MAX_CONCURRENT_JOBS} active, ${optimizationQueue.length} queued)`);
+    // console.log(`[Optimization Queue] Starting ${job.jobId} (${activeJobs.size + 1}/${MAX_CONCURRENT_JOBS} active, ${optimizationQueue.length} queued)`);
 
     // Update job state to optimizing
     broadcastOptimizationUpdate(job.jobId, {
@@ -139,7 +139,7 @@ async function processQueue() {
 
       if (code === 0) {
         job.onComplete();
-        console.log(`[Optimization Queue] ✓ Completed ${job.jobId} (${activeJobs.size}/${MAX_CONCURRENT_JOBS} active, ${optimizationQueue.length} queued)`);
+        // console.log(`[Optimization Queue] ✓ Completed ${job.jobId} (${activeJobs.size}/${MAX_CONCURRENT_JOBS} active, ${optimizationQueue.length} queued)`);
       } else {
         job.onError(`Optimization failed with code ${code}`);
         console.error(`[Optimization Queue] ✗ Failed ${job.jobId} with code ${code} (${activeJobs.size}/${MAX_CONCURRENT_JOBS} active, ${optimizationQueue.length} queued)`);
@@ -193,7 +193,7 @@ export function queueOptimizationJob(
     state: 'queued'
   });
 
-  console.log(`[Optimization Queue] Added ${jobId} to queue (position: ${optimizationQueue.length})`);
+  // console.log(`[Optimization Queue] Added ${jobId} to queue (position: ${optimizationQueue.length})`);
 
   // Start processing if not already running
   processQueue();
@@ -230,7 +230,7 @@ router.get('/', requireAuth, (req, res) => {
 
   // Add client to set
   clients.add(res);
-  console.log(`[Optimization Stream] Client connected (${clients.size} total)`);
+  // console.log(`[Optimization Stream] Client connected (${clients.size} total)`);
 
   // Send current state of all active jobs
   const activeJobs = Array.from(optimizationJobs.entries()).map(([jobId, job]) => ({
@@ -262,7 +262,7 @@ router.get('/', requireAuth, (req, res) => {
   req.on('close', () => {
     clearInterval(heartbeat);
     clients.delete(res);
-    console.log(`[Optimization Stream] Client disconnected (${clients.size} remaining)`);
+    // console.log(`[Optimization Stream] Client disconnected (${clients.size} remaining)`);
   });
 });
 
