@@ -19,6 +19,7 @@ interface DragDropHandlersProps {
   setActiveFolderId: (value: number | null) => void;
   setDragOverFolderId: (value: number | null) => void;
   setDragOverUncategorized: (value: boolean) => void;
+  setIsDragging: (value: boolean) => void;
   uncategorizedSectionRef: React.RefObject<HTMLDivElement | null>;
 }
 
@@ -34,6 +35,7 @@ export const createDragDropHandlers = (props: DragDropHandlersProps) => {
     setActiveFolderId,
     setDragOverFolderId,
     setDragOverUncategorized,
+    setIsDragging,
     // uncategorizedSectionRef, // unused for now
   } = props;
 
@@ -49,6 +51,9 @@ export const createDragDropHandlers = (props: DragDropHandlersProps) => {
   // Album drag handlers
   const handleAlbumDragStart = (event: DragEndEvent) => {
     const draggedId = String(event.active.id);
+    
+    // Enable scroll prevention on mobile
+    setIsDragging(true);
     
     if (isDraggingFolder(draggedId)) {
       const folderId = extractFolderId(draggedId);
@@ -139,6 +144,9 @@ export const createDragDropHandlers = (props: DragDropHandlersProps) => {
 
   const handleAlbumDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
+    
+    // Disable scroll prevention
+    setIsDragging(false);
     
     setActiveAlbumId(null);
     setActiveFolderId(null);
