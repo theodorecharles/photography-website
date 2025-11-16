@@ -63,6 +63,9 @@ export const createUploadHandlers = (props: UploadHandlersProps) => {
         }
       });
       
+      // Set a longer timeout for upload requests (10 minutes)
+      xhr.timeout = 600000; // 10 minutes per file
+      
       xhr.withCredentials = true; // Include cookies
       
       xhr.onload = () => {
@@ -111,6 +114,17 @@ export const createUploadHandlers = (props: UploadHandlersProps) => {
         reject(new Error('Network error'));
       };
       
+      xhr.ontimeout = () => {
+        setUploadingImages((prev: UploadingImage[]): UploadingImage[] =>
+          prev.map((img: UploadingImage): UploadingImage =>
+            img.filename === filename
+              ? { ...img, state: 'error', error: 'Upload timed out' }
+              : img
+          )
+        );
+        reject(new Error('Upload timed out'));
+      };
+      
       xhr.open('POST', `${API_URL}/api/albums/${encodeURIComponent(albumName)}/upload`);
       xhr.send(formData);
     }).catch((err) => {
@@ -130,6 +144,8 @@ export const createUploadHandlers = (props: UploadHandlersProps) => {
       return;
     }
 
+    console.log(`[Upload] Starting upload of ${validation.valid.length} files to album "${albumName}"`);
+
     // Initialize uploading images with upload index for ordering
     const newUploadingImages: UploadingImage[] = validation.valid.map((file, index) => ({
       filename: file.name,
@@ -140,19 +156,27 @@ export const createUploadHandlers = (props: UploadHandlersProps) => {
 
     setUploadingImages(newUploadingImages);
 
+    let successCount = 0;
+    let errorCount = 0;
+
     // Upload images one-by-one (fast as possible)
     // uploadSingleImage resolves as soon as upload finishes, 
     // optimization/AI continues in background
     for (const img of newUploadingImages) {
       try {
         await uploadSingleImage(img.file, img.filename, albumName);
+        successCount++;
+        console.log(`[Upload] Progress: ${successCount}/${validation.valid.length} uploaded successfully`);
         // Next upload starts immediately after previous file is uploaded
         // (doesn't wait for optimization or AI)
       } catch (err) {
-        console.error('Upload error:', err);
+        errorCount++;
+        console.error(`[Upload] Error (${errorCount} total errors):`, err);
         // Continue with next upload even if one fails
       }
     }
+
+    console.log(`[Upload] Batch complete: ${successCount} succeeded, ${errorCount} failed`);
 
     // Reload albums to update photo counts
     await loadAlbums();

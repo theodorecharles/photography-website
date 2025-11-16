@@ -187,8 +187,12 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   
   // Check for active uploads and manage connection (runs on every uploadingImages change)
   useEffect(() => {
+    // Check if there are any images that are actively being processed (not complete or error)
     const hasActive = uploadingImages.some(img => 
-      img.state === 'optimizing' || img.state === 'generating-title'
+      img.state === 'queued' || 
+      img.state === 'uploading' || 
+      img.state === 'optimizing' || 
+      img.state === 'generating-title'
     );
     
     const albumChanged = prevSelectedAlbumRef.current !== selectedAlbum;
