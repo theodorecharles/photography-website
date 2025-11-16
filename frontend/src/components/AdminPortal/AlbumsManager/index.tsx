@@ -230,7 +230,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   }, []); // Empty deps = only on mount/unmount
   
   // Drag-and-drop state (keeping this in component for now)
-  const [isDragging] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
   const [isShuffling, setIsShuffling] = useState(false);
   const shuffleIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const speedupTimeoutsRef = useRef<NodeJS.Timeout[]>([]);
@@ -279,6 +279,29 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
 
   // Detect if device supports touch
   const isTouchDevice = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+  
+  // Prevent touch scrolling while dragging on mobile
+  useEffect(() => {
+    if (isDragging) {
+      // Disable scrolling on body and document
+      const originalOverflow = document.body.style.overflow;
+      const originalTouchAction = document.body.style.touchAction;
+      const originalPosition = document.body.style.position;
+      
+      document.body.style.overflow = 'hidden';
+      document.body.style.touchAction = 'none';
+      // Prevent iOS bounce/rubber-banding
+      document.body.style.position = 'fixed';
+      document.body.style.width = '100%';
+      
+      return () => {
+        document.body.style.overflow = originalOverflow;
+        document.body.style.touchAction = originalTouchAction;
+        document.body.style.position = originalPosition;
+        document.body.style.width = '';
+      };
+    }
+  }, [isDragging]);
   
   // Configure dnd-kit sensors for photos (unused for now)
   // Desktop: minimal delay for instant drag, mobile: longer delay to differentiate tap vs drag
@@ -338,6 +361,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     setActiveFolderId,
     setDragOverFolderId,
     setDragOverUncategorized,
+    setIsDragging,
     uncategorizedSectionRef,
   });
 
