@@ -26,11 +26,13 @@ interface PhotoGridItemProps {
   onDelete?: (album: string, filename: string, title: string, thumbnail: string) => void;
   onRetryOptimization?: (album: string, filename: string) => void;
   onRetryAI?: (album: string, filename: string) => void;
+  onRetryUpload?: (filename: string, albumName: string) => void;
   
   // State
   deletingPhotoId?: string | null;
   activeOverlayId?: string | null;
   setActiveOverlayId?: (id: string | null) => void;
+  selectedAlbum?: string;
   
   // Permissions
   canEdit: boolean;
@@ -44,9 +46,11 @@ const PhotoGridItem: React.FC<PhotoGridItemProps> = ({
   onDelete,
   onRetryOptimization,
   onRetryAI,
+  onRetryUpload,
   deletingPhotoId,
   activeOverlayId,
   setActiveOverlayId,
+  selectedAlbum,
   canEdit,
 }) => {
   const isUploading = !!uploadingImage && uploadingImage.state !== 'complete';
@@ -253,6 +257,18 @@ const PhotoGridItem: React.FC<PhotoGridItemProps> = ({
               <div className="state-icon">⚠️</div>
               <span className="state-text">Error</span>
               <span className="error-message">{uploadingImage.error}</span>
+              {canEdit && onRetryUpload && selectedAlbum && (
+                <button
+                  className="retry-upload-btn"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onRetryUpload(filename, selectedAlbum);
+                  }}
+                  title={`Retry upload (${uploadingImage.retryCount || 0}/5 attempts)`}
+                >
+                  🔄 Retry Upload
+                </button>
+              )}
             </div>
           )}
         </>

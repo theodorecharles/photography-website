@@ -19,6 +19,7 @@ export interface UploadingImage {
   optimizeProgress?: number; // 0-100 for optimization progress
   uploadIndex?: number; // Track original position in upload batch for maintaining order
   photo?: Photo; // When state='complete', this contains the complete photo data
+  retryCount?: number; // Number of retry attempts (max 5)
 }
 
 export interface AlbumsManagerProps {

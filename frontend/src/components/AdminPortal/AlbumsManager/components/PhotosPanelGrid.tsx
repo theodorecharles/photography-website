@@ -25,12 +25,14 @@ interface PhotosPanelGridProps {
   activeId: string | null;
   viewMode: ViewMode;
   deletingPhotoId: string | null;
+  selectedAlbum: string;
   onPhotoDragStart: (event: any, setActiveId?: (id: string | null) => void) => void;
   onPhotoDragEnd: (event: any, setActiveId?: (id: string | null) => void) => void;
   onOpenEditModal: (photo: Photo) => void;
   onDeletePhoto: (album: string, filename: string, photoTitle?: string, thumbnail?: string) => void;
   onRetryOptimization?: (album: string, filename: string) => void;
   onRetryAI?: (album: string, filename: string) => void;
+  onRetryUpload?: (filename: string, albumName: string) => void;
   setActiveId: (id: string | null) => void;
   canEdit: boolean;
 }
@@ -41,6 +43,7 @@ const PhotosPanelGrid: React.FC<PhotosPanelGridProps> = ({
   loadingPhotos,
   canEdit,
   deletingPhotoId,
+  selectedAlbum,
   activeId,
   viewMode,
   onPhotoDragStart,
@@ -49,6 +52,7 @@ const PhotosPanelGrid: React.FC<PhotosPanelGridProps> = ({
   onDeletePhoto,
   onRetryOptimization,
   onRetryAI,
+  onRetryUpload,
   setActiveId,
 }) => {
   // Detect if device supports touch
@@ -184,6 +188,8 @@ const PhotosPanelGrid: React.FC<PhotosPanelGridProps> = ({
                   onDelete={onDeletePhoto}
                   onRetryOptimization={onRetryOptimization}
                   onRetryAI={onRetryAI}
+                  onRetryUpload={onRetryUpload}
+                  selectedAlbum={selectedAlbum}
                   deletingPhotoId={deletingPhotoId}
                   canEdit={canEdit && !hasActiveUploads}
                   activeOverlayId={activeOverlayId}
