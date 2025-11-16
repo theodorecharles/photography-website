@@ -103,6 +103,15 @@ async function processQueue() {
 
     activeJobs.add(childProcess);
 
+    // Add timeout to prevent hung processes (5 minutes)
+    const timeout = setTimeout(() => {
+      console.error(`[Optimization Queue] Job ${job.jobId} timed out after 5 minutes, killing process`);
+      childProcess.kill('SIGTERM');
+      activeJobs.delete(childProcess);
+      job.onError('Optimization timed out');
+      processQueue();
+    }, 5 * 60 * 1000);
+
     // Handle stdout for progress updates
     childProcess.stdout?.on('data', (data) => {
       const lines = data.toString().split('\n');
@@ -125,15 +134,16 @@ async function processQueue() {
 
     // Handle completion
     childProcess.on('close', (code) => {
+      clearTimeout(timeout);
       activeJobs.delete(childProcess);
 
       if (code === 0) {
         job.onComplete();
+        console.log(`[Optimization Queue] ✓ Completed ${job.jobId} (${activeJobs.size}/${MAX_CONCURRENT_JOBS} active, ${optimizationQueue.length} queued)`);
       } else {
-        job.onError('Optimization failed');
+        job.onError(`Optimization failed with code ${code}`);
+        console.error(`[Optimization Queue] ✗ Failed ${job.jobId} with code ${code} (${activeJobs.size}/${MAX_CONCURRENT_JOBS} active, ${optimizationQueue.length} queued)`);
       }
-
-      console.log(`[Optimization Queue] Completed ${job.jobId} (${activeJobs.size}/${MAX_CONCURRENT_JOBS} active, ${optimizationQueue.length} queued)`);
 
       // Process next job in queue
       processQueue();
@@ -141,7 +151,9 @@ async function processQueue() {
 
     // Handle errors
     childProcess.on('error', (error) => {
+      clearTimeout(timeout);
       activeJobs.delete(childProcess);
+      console.error(`[Optimization Queue] ✗ Error in ${job.jobId}:`, error.message);
       job.onError(error.message);
       processQueue();
     });
