@@ -49,13 +49,20 @@ const PhotosPanelHeader: React.FC<PhotosPanelHeaderProps> = ({
 }) => {
   const currentAlbum = localAlbums.find(a => a.name === selectedAlbum);
   const isPublished = currentAlbum?.published !== false;
-  const photoCount = albumPhotos.length;
+  
+  // Count completed uploads (optimization + AI done)
+  const completedUploads = uploadingImages.filter((img: any) => img.state === 'complete').length;
+  const totalUploading = uploadingImages.length;
+  const photoCount = albumPhotos.length + completedUploads;
   
   // Check if album is in a folder (if so, disable publish toggle since folder controls it)
   const isInFolder = currentAlbum?.folder_id != null;
   
   // Check if any uploads are actively in progress (not complete)
   const hasActiveUploads = uploadingImages.some((img: any) => img.state !== 'complete');
+  
+  // Calculate upload progress percentage
+  const uploadProgress = totalUploading > 0 ? Math.round((completedUploads / totalUploading) * 100) : 0;
 
   return (
     <div className="photos-modal-header">
@@ -64,7 +71,14 @@ const PhotosPanelHeader: React.FC<PhotosPanelHeaderProps> = ({
         {/* Left: Album title + photo count */}
         <div className="photos-title-left">
           <h2 className="photos-modal-title">{selectedAlbum}</h2>
-          <span className="photos-count">{photoCount} {photoCount === 1 ? 'photo' : 'photos'}</span>
+          <span className="photos-count">
+            {photoCount} {photoCount === 1 ? 'photo' : 'photos'}
+            {hasActiveUploads && totalUploading > 0 && (
+              <span style={{ marginLeft: '0.5rem', color: '#4ade80' }}>
+                ({uploadProgress}% complete)
+              </span>
+            )}
+          </span>
         </div>
         
         {/* Right: Publish toggle + close button */}

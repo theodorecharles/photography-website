@@ -7,7 +7,7 @@ import { Router, Request, Response } from "express";
 import fs from "fs";
 import path from "path";
 import { getAllAlbums, getImagesInAlbum, getImagesFromPublishedAlbums } from "../database.js";
-import { requireAuth , requireAdmin} from '../auth/middleware.js';
+import { requireAuth, requireAdmin, requireManager } from '../auth/middleware.js';
 
 const router = Router();
 
@@ -76,14 +76,15 @@ export function generateStaticJSONFiles(appRoot: string): { success: boolean; er
     const outputDir = getOutputDir(appRoot);
     ensureOutputDir(outputDir);
 
-    // Get ONLY PUBLISHED albums (excluding homepage directory)
+    // Get ALL albums (published + unpublished) - admins need fast access to unpublished albums too
     const albumsData = getAllAlbums();
     const albums = albumsData
-      .filter(a => a.published && a.name !== 'homepage')
+      .filter(a => a.name !== 'homepage')
       .map(a => a.name);
-    console.log(`[Static JSON] Found ${albums.length} published albums`);
+    const publishedAlbums = albumsData.filter(a => a.published && a.name !== 'homepage').map(a => a.name);
+    console.log(`[Static JSON] Found ${albums.length} albums (${publishedAlbums.length} published, ${albums.length - publishedAlbums.length} unpublished)`);
 
-    // Clean up stale JSON files for deleted or unpublished albums
+    // Clean up stale JSON files for DELETED albums only (keep unpublished albums)
     if (fs.existsSync(outputDir)) {
       const existingFiles = fs.readdirSync(outputDir);
       const albumJsonFiles = existingFiles.filter(f => f.endsWith('.json') && f !== 'homepage.json' && f !== 'albums-list.json' && f !== '_metadata.json');
@@ -91,10 +92,10 @@ export function generateStaticJSONFiles(appRoot: string): { success: boolean; er
       for (const file of albumJsonFiles) {
         const albumName = file.replace('.json', '');
         if (!albums.includes(albumName)) {
-          // This JSON file corresponds to a deleted or unpublished album
+          // This JSON file corresponds to a DELETED album (not just unpublished)
           const filePath = path.join(outputDir, file);
           fs.unlinkSync(filePath);
-          console.log(`[Static JSON] Deleted stale file (deleted or unpublished): ${file}`);
+          console.log(`[Static JSON] Deleted stale file (album deleted): ${file}`);
           
           // Also delete from dist directory if it exists
           const distPath = filePath.replace('/public/albums-data/', '/dist/albums-data/');
@@ -175,6 +176,29 @@ router.post("/generate", requireAdmin, async (req: Request, res: Response): Prom
       success: true, 
       message: `Generated static JSON for ${result.albumCount} albums`,
       albumCount: result.albumCount
+    });
+  } else {
+    res.status(500).json({ 
+      success: false, 
+      error: result.error 
+    });
+  }
+});
+
+/**
+ * POST /api/static-json/regenerate
+ * Trigger static JSON regeneration after batch uploads (manager access)
+ */
+router.post("/regenerate", requireManager, async (req: Request, res: Response): Promise<void> => {
+  console.log('[Static JSON] Regeneration triggered after batch upload');
+  
+  const appRoot = req.app.get('appRoot');
+  const result = generateStaticJSONFiles(appRoot);
+  
+  if (result.success) {
+    res.json({ 
+      success: true, 
+      message: `Regenerated static JSON for ${result.albumCount} albums` 
     });
   } else {
     res.status(500).json({ 
