@@ -91,22 +91,25 @@ export const createUploadHandlers = (props: UploadHandlersProps) => {
             reject(new Error('Invalid server response'));
           }
         } else {
+          const errorMsg = `Upload failed: ${xhr.status}`;
+          console.log(`[Upload] ${filename}: ${errorMsg}`);
           setUploadingImages((prev: UploadingImage[]): UploadingImage[] =>
             prev.map((img: UploadingImage): UploadingImage =>
               img.filename === filename
-                ? { ...img, state: 'error', error: `Upload failed: ${xhr.status}` }
+                ? { ...img, state: 'error', error: errorMsg, retryCount }
                 : img
             )
           );
-          reject(new Error(`Upload failed with status ${xhr.status}`));
+          reject(new Error(errorMsg));
         }
       };
       
       xhr.onerror = () => {
+        console.log(`[Upload] ${filename}: Network error (retryCount: ${retryCount})`);
         setUploadingImages((prev: UploadingImage[]): UploadingImage[] =>
           prev.map((img: UploadingImage): UploadingImage =>
             img.filename === filename
-              ? { ...img, state: 'error', error: 'Network error' }
+              ? { ...img, state: 'error', error: 'Network error', retryCount }
               : img
           )
         );
@@ -114,10 +117,11 @@ export const createUploadHandlers = (props: UploadHandlersProps) => {
       };
       
       xhr.ontimeout = () => {
+        console.log(`[Upload] ${filename}: Upload timed out (retryCount: ${retryCount})`);
         setUploadingImages((prev: UploadingImage[]): UploadingImage[] =>
           prev.map((img: UploadingImage): UploadingImage =>
             img.filename === filename
-              ? { ...img, state: 'error', error: 'Upload timed out' }
+              ? { ...img, state: 'error', error: 'Upload timed out', retryCount }
               : img
           )
         );
@@ -181,22 +185,26 @@ export const createUploadHandlers = (props: UploadHandlersProps) => {
     let remainingFailures = failedUploads.length;
     
     if (failedUploads.length > 0) {
-      console.log(`[Upload] Auto-retrying ${failedUploads.length} failed uploads...`);
+      console.log(`[Upload] 🔄 Auto-retrying ${failedUploads.length} failed uploads...`);
       
       for (const failed of failedUploads) {
         let uploaded = false;
         let currentRetry = 1;
         
+        console.log(`[Upload] Starting retry loop for ${failed.img.filename}`);
+        
         while (!uploaded && currentRetry <= MAX_RETRIES) {
           try {
+            console.log(`[Upload] Attempt ${currentRetry}/${MAX_RETRIES} for ${failed.img.filename}...`);
             await uploadSingleImage(failed.img.file, failed.img.filename, albumName, currentRetry);
             successCount++;
             remainingFailures--;
             uploaded = true;
             console.log(`[Upload] ✓ Retry ${currentRetry}/${MAX_RETRIES} succeeded for ${failed.img.filename}`);
           } catch (err) {
+            console.log(`[Upload] ✗ Retry ${currentRetry}/${MAX_RETRIES} failed for ${failed.img.filename}`);
             if (currentRetry === MAX_RETRIES) {
-              console.error(`[Upload] ✗ All ${MAX_RETRIES} retries failed for ${failed.img.filename}`);
+              console.error(`[Upload] ✗ All ${MAX_RETRIES} retries exhausted for ${failed.img.filename}`);
             }
             currentRetry++;
           }
@@ -204,9 +212,9 @@ export const createUploadHandlers = (props: UploadHandlersProps) => {
       }
       
       if (remainingFailures > 0) {
-        console.log(`[Upload] ${remainingFailures} images failed after ${MAX_RETRIES} retry attempts`);
+        console.log(`[Upload] ⚠️  ${remainingFailures} images failed after ${MAX_RETRIES} retry attempts`);
       } else {
-        console.log(`[Upload] All failed uploads recovered via auto-retry!`);
+        console.log(`[Upload] ✅ All failed uploads recovered via auto-retry!`);
       }
     }
 
