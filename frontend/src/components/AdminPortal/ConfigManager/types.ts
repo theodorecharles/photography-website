@@ -29,6 +29,7 @@ export interface EnvironmentConfig {
   };
   auth: {
     google: {
+      enabled: boolean;
       clientId: string;
       clientSecret: string;
     };

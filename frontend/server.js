@@ -10,15 +10,39 @@ const __dirname = path.dirname(__filename);
 const jsonCache = new Map();
 const JSON_CACHE_MAX_AGE = 5 * 60 * 1000; // 5 minutes
 
-// Load configuration
-const configPath = path.join(__dirname, "../config/config.json");
-const configFile = JSON.parse(fs.readFileSync(configPath, "utf8"));
-const config = configFile.environment;
+// Load configuration (or use defaults for setup mode)
+const configPath = path.join(__dirname, "../data/config.json");
+let configFile;
+let config;
+let isSetupMode = false;
+
+if (fs.existsSync(configPath)) {
+  configFile = JSON.parse(fs.readFileSync(configPath, "utf8"));
+  config = configFile.environment;
+} else {
+  // Setup mode - use defaults
+  console.log("⚠️  config.json not found - using defaults for setup mode");
+  isSetupMode = true;
+  configFile = {
+    analytics: {},
+  };
+  config = {
+    frontend: {
+      port: 3000,
+      apiUrl: "http://localhost:3001",
+    },
+    security: {
+      allowedHosts: ["localhost:3000", "127.0.0.1:3000"],
+      redirectFrom: [],
+      redirectTo: null,
+    },
+  };
+}
 
 const app = express();
 const port = process.env.PORT || config.frontend.port;
 
-// Security headers middleware
+// Security headers middleware (except CSP which needs runtime API URL)
 app.use((req, res, next) => {
   // Prevent clickjacking
   res.setHeader("X-Frame-Options", "DENY");
@@ -33,30 +57,7 @@ app.use((req, res, next) => {
     "Permissions-Policy",
     "geolocation=(), microphone=(), camera=()"
   );
-  // Content Security Policy
-  const apiDomain = config.frontend.apiUrl;
-  const apiDomainHttps = apiDomain.replace("http://", "https://");
-  
-  // Get external analytics script host if configured
-  const analyticsScriptPath = configFile.analytics?.scriptPath || '';
-  const analyticsScriptHost = analyticsScriptPath && analyticsScriptPath.startsWith('http') 
-    ? new URL(analyticsScriptPath).origin 
-    : '';
-  
-  res.setHeader(
-    "Content-Security-Policy",
-    "default-src 'self'; " +
-    `script-src 'self' 'unsafe-inline'${analyticsScriptHost ? ' ' + analyticsScriptHost : ''}; ` + // unsafe-inline needed for React inline scripts
-    "style-src 'self' 'unsafe-inline'; " +
-    "worker-src 'self'; " + // Allow web workers from same origin
-    `img-src 'self' ${apiDomainHttps} ${apiDomain} data: https://*.basemaps.cartocdn.com; ` + // Allow CartoDB map tiles
-    `connect-src 'self' ${apiDomainHttps} ${apiDomain}; ` + // No need to allow OpenObserve - backend handles it
-    "font-src 'self'; " +
-    "object-src 'none'; " +
-    "base-uri 'self'; " +
-    "form-action 'self'; " +
-    "frame-ancestors 'none';"
-  );
+  // CSP is set in catch-all route to use runtime API URL
   next();
 });
 
@@ -67,9 +68,12 @@ const allowedHosts = config.security.allowedHosts;
 app.use((req, res, next) => {
   const host = req.get("host");
 
-  // Validate host to prevent open redirect attacks
-  if (!allowedHosts.includes(host)) {
-    return res.status(400).send("Invalid host header");
+  // Skip host validation during setup mode (OOBE)
+  if (!isSetupMode) {
+    // Validate host to prevent open redirect attacks
+    if (!allowedHosts.includes(host)) {
+      return res.status(400).send("Invalid host header");
+    }
   }
 
   // Redirect to HTTPS if apiUrl uses https (production/remote dev)
@@ -101,41 +105,28 @@ app.use(
   })
 );
 
-// In-memory JSON cache middleware (before express.static)
+// Serve albums-data JSON files with no caching (must always be fresh)
 app.get('/albums-data/*.json', (req, res, next) => {
   const jsonPath = path.join(__dirname, "dist", req.path);
-  const now = Date.now();
   
-  // Check cache first
-  const cached = jsonCache.get(jsonPath);
-  if (cached && (now - cached.timestamp) < JSON_CACHE_MAX_AGE) {
-    res.setHeader('Content-Type', 'application/json');
-    res.setHeader('Cache-Control', 'public, max-age=300'); // 5 minutes
-    res.setHeader('X-Cache', 'HIT');
-    return res.send(cached.data);
-  }
-  
-  // Read from disk
+  // Always read fresh from disk (no caching)
   fs.readFile(jsonPath, 'utf8', (err, data) => {
     if (err) {
       return next(); // Fall through to express.static
     }
     
-    // Store in cache
-    jsonCache.set(jsonPath, {
-      data: data,
-      timestamp: now
-    });
-    
     res.setHeader('Content-Type', 'application/json');
-    res.setHeader('Cache-Control', 'public, max-age=300'); // 5 minutes
-    res.setHeader('X-Cache', 'MISS');
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate'); // Never cache
+    res.setHeader('X-Cache', 'NONE');
     res.send(data);
   });
 });
 
 // Serve static files from the dist directory
-app.use(express.static(path.join(__dirname, "dist")));
+// But exclude index.html so we can inject runtime config
+app.use(express.static(path.join(__dirname, "dist"), {
+  index: false, // Don't serve index.html automatically - let catch-all handle it
+}));
 
 // Handle client-side routing (catch-all for React routes)
 // This must come AFTER all other routes
@@ -498,12 +489,65 @@ app.get("*", async (req, res) => {
   }
   
   // Default: serve the standard index.html
-  res.sendFile(indexPath);
+  // Inject runtime API URL for OOBE support
+  fs.readFile(indexPath, 'utf8', (err, html) => {
+    if (err) {
+      console.error('Error reading index.html:', err);
+      return res.sendFile(indexPath);
+    }
+    
+    // Auto-detect API URL if in setup mode
+    let runtimeApiUrl = config.frontend.apiUrl;
+    if (isSetupMode) {
+      const protocol = req.headers['x-forwarded-proto'] || (req.secure ? 'https' : 'http');
+      const hostHeader = req.headers['x-forwarded-host'] || req.headers['host'] || 'localhost:3000';
+      const host = Array.isArray(hostHeader) ? hostHeader[0] : hostHeader;
+      
+      if (host.includes('localhost')) {
+        runtimeApiUrl = 'http://localhost:3001';
+      } else if (host.startsWith('www.')) {
+        runtimeApiUrl = `${protocol}://api.${host.substring(4)}`;
+      } else {
+        runtimeApiUrl = `${protocol}://api.${host}`;
+      }
+    }
+    
+    // Set Content Security Policy with runtime API URL
+    const apiDomainHttps = runtimeApiUrl.replace("http://", "https://");
+    const analyticsScriptPath = configFile.analytics?.scriptPath || '';
+    const analyticsScriptHost = analyticsScriptPath && analyticsScriptPath.startsWith('http') 
+      ? new URL(analyticsScriptPath).origin 
+      : '';
+    
+    res.setHeader(
+      "Content-Security-Policy",
+      "default-src 'self'; " +
+      `script-src 'self' 'unsafe-inline'${analyticsScriptHost ? ' ' + analyticsScriptHost : ''}; ` +
+      "style-src 'self' 'unsafe-inline'; " +
+      "worker-src 'self'; " +
+      `img-src 'self' ${apiDomainHttps} ${runtimeApiUrl} data: blob: https://*.basemaps.cartocdn.com https://www.gravatar.com; ` +
+      `connect-src 'self' ${apiDomainHttps} ${runtimeApiUrl}; ` +
+      "font-src 'self'; " +
+      "object-src 'none'; " +
+      "base-uri 'self'; " +
+      "form-action 'self'; " +
+      "frame-ancestors 'none';"
+    );
+    
+    // Inject runtime config before other scripts
+    const modifiedHtml = html.replace(
+      '<script type="module"',
+      `<script>window.__RUNTIME_API_URL__ = "${runtimeApiUrl}";</script>\n    <script type="module"`
+    );
+    
+    res.send(modifiedHtml);
+  });
 });
 
 // Listen on 0.0.0.0 for remote dev/production, 127.0.0.1 for localhost
+// Allow HOST environment variable to override
 const isLocalhost = config.frontend.apiUrl.includes('localhost');
-const bindHost = isLocalhost ? '127.0.0.1' : '0.0.0.0';
+const bindHost = process.env.HOST || (isLocalhost ? '127.0.0.1' : '0.0.0.0');
 
 app.listen(port, bindHost, () => {
   console.log(`Frontend server running on ${bindHost}:${port}`);

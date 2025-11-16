@@ -1,8 +1,5 @@
 # Dependencies
 node_modules/
-photos/
-photos
-optimized/
 /.pnp
 .pnp.js
 
@@ -25,13 +22,15 @@ frontend/public/albums-data/
 .env.production.local
 
 # Config (track only config.example.json, users should copy and customize)
-config/config.json
+data/
+data-backup-*/
 config/config.local.json
 
 # Database (persist gallery data across updates)
 gallery.db
 gallery.db-shm
 gallery.db-wal
+
 # Legacy database files (can be removed after migration)
 image-metadata.db
 image-metadata.db-shm

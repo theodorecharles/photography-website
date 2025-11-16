@@ -1,6 +1,6 @@
 /**
- * Fetch wrapper that detects rate limiting (429) responses
- * and shows a friendly error message.
+ * Fetch wrapper that detects rate limiting (429) and auth errors (401)
+ * and handles them appropriately.
  * 
  * Automatically includes credentials (cookies) for authentication.
  */

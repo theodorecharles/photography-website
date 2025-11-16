@@ -11,19 +11,28 @@ import { execFile, spawn } from "child_process";
 import { promisify } from "util";
 import multer from "multer";
 import os from "os";
+import sharp from "sharp";
 import { csrfProtection } from "../security.js";
+import { requireAuth, requireAdmin, requireManager } from '../auth/middleware.js';
 import { 
   deleteAlbumMetadata, 
   deleteImageMetadata, 
   saveAlbum, 
   deleteAlbumState,
   setAlbumPublished,
+  setAlbumShowOnHomepage,
   updateImageSortOrder,
   saveImageMetadata,
-  updateAlbumSortOrder
+  updateAlbumSortOrder,
+  getAlbumState,
+  getDatabase,
+  setAlbumFolder,
+  getAlbumsInFolder,
+  setFolderPublished
 } from "../database.js";
 import { invalidateAlbumCache } from "./albums.js";
 import { generateStaticJSONFiles } from "./static-json.js";
+import { broadcastOptimizationUpdate, queueOptimizationJob } from "./optimization-stream.js";
 import OpenAI from "openai";
 
 const router = Router();
@@ -33,7 +42,82 @@ const execFileAsync = promisify(execFile);
 router.use(csrfProtection);
 
 /**
- * Generate AI title for a single image
+ * Generate AI title for a single image (async, broadcasts to optimization stream)
+ */
+async function generateAITitleForImageAsync(
+  apiKey: string,
+  album: string,
+  filename: string,
+  projectRoot: string,
+  jobId: string
+): Promise<void> {
+  try {
+    const openai = new OpenAI({ apiKey });
+    const dataDir = process.env.DATA_DIR || path.join(projectRoot, 'data');
+    const photosDir = path.join(dataDir, 'photos');
+    const imagePath = path.join(photosDir, album, filename);
+
+    if (!fs.existsSync(imagePath)) {
+      throw new Error('Image not found');
+    }
+
+    const imageBuffer = fs.readFileSync(imagePath);
+    const base64Image = imageBuffer.toString('base64');
+    const extension = path.extname(filename).toLowerCase().substring(1);
+    const mimeType = extension === 'jpg' || extension === 'jpeg' ? 'image/jpeg' : `image/${extension}`;
+
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      messages: [
+        {
+          role: "user",
+          content: [
+            {
+              type: "text",
+              text: "Generate a concise, descriptive title for this image. The title should be 3-8 words and capture the essence of the image. Output ONLY the title, nothing else."
+            },
+            {
+              type: "image_url",
+              image_url: {
+                url: `data:${mimeType};base64,${base64Image}`,
+                detail: "low"
+              }
+            }
+          ]
+        }
+      ],
+      max_tokens: 50
+    });
+
+    const title = response.choices[0]?.message?.content?.trim() || '';
+
+    // Update database
+    saveImageMetadata(album, filename, title, null);
+
+    // Broadcast success
+    broadcastOptimizationUpdate(jobId, {
+      album,
+      filename,
+      progress: 100,
+      state: 'complete',
+      title
+    });
+
+    // console.log(`✓ AI title generated for ${album}/${filename}: "${title}"`);
+  } catch (error: any) {
+    console.error(`AI title generation failed for ${album}/${filename}:`, error);
+    broadcastOptimizationUpdate(jobId, {
+      album,
+      filename,
+      progress: 100,
+      state: 'complete',
+      error: `AI error: ${error.message}`
+    });
+  }
+}
+
+/**
+ * Generate AI title for a single image (legacy SSE version)
  */
 async function generateAITitleForImage(
   apiKey: string,
@@ -115,8 +199,6 @@ async function generateAITitleForImage(
       title 
     })}\n\n`);
     
-    console.log(`✓ Generated AI title for ${album}/${filename}: "${title}"`);
-    
   } catch (error: any) {
     console.error(`Error generating AI title for ${album}/${filename}:`, error);
     res.write(`data: ${JSON.stringify({ 
@@ -159,16 +241,6 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 /**
- * Authentication middleware
- */
-const requireAuth = (req: Request, res: Response, next: Function) => {
-  if (req.isAuthenticated && req.isAuthenticated()) {
-    return next();
-  }
-  res.status(401).json({ error: 'Unauthorized' });
-};
-
-/**
  * Sanitize album/photo name - allows letters, numbers, spaces, hyphens, and underscores
  */
 const sanitizeName = (name: string): string | null => {
@@ -198,9 +270,9 @@ const sanitizePhotoName = (name: string): string | null => {
 /**
  * Create a new album
  */
-router.post("/", requireAuth, async (req: Request, res: Response): Promise<void> => {
+router.post("/", requireManager, async (req: Request, res: Response): Promise<void> => {
   try {
-    const { name } = req.body;
+    const { name, folder_id } = req.body;
     
     if (!name) {
       res.status(400).json({ error: 'Album name is required' });
@@ -210,6 +282,15 @@ router.post("/", requireAuth, async (req: Request, res: Response): Promise<void>
     const sanitizedName = sanitizeName(name);
     if (!sanitizedName) {
       res.status(400).json({ error: 'Invalid album name. Use only letters, numbers, spaces, hyphens, and underscores.' });
+      return;
+    }
+
+    // Prevent "homepage" as an album name (reserved for homepage feature)
+    if (sanitizedName.toLowerCase() === 'homepage') {
+      res.status(400).json({ 
+        error: 'RESERVED_NAME',
+        message: 'The name "homepage" is reserved for the homepage feature. Use the homepage toggle on individual albums instead.' 
+      });
       return;
     }
 
@@ -227,6 +308,12 @@ router.post("/", requireAuth, async (req: Request, res: Response): Promise<void>
     // Create album in database as unpublished by default
     saveAlbum(sanitizedName, false);
     console.log(`✓ Created unpublished album: ${sanitizedName}`);
+    
+    // Set folder if provided
+    if (folder_id !== undefined && folder_id !== null) {
+      setAlbumFolder(sanitizedName, folder_id);
+      console.log(`✓ Assigned album "${sanitizedName}" to folder ID: ${folder_id}`);
+    }
 
     // Regenerate static JSON files
     const appRoot = req.app.get('appRoot');
@@ -242,7 +329,7 @@ router.post("/", requireAuth, async (req: Request, res: Response): Promise<void>
 /**
  * Delete an album and all its photos
  */
-router.delete("/:album", requireAuth, async (req: Request, res: Response): Promise<void> => {
+router.delete("/:album", requireManager, async (req: Request, res: Response): Promise<void> => {
   try {
     const { album } = req.params;
     
@@ -302,7 +389,7 @@ router.delete("/:album", requireAuth, async (req: Request, res: Response): Promi
 /**
  * Delete a photo from an album
  */
-router.delete("/:album/photos/:photo", requireAuth, async (req: Request, res: Response): Promise<void> => {
+router.delete("/:album/photos/:photo", requireManager, async (req: Request, res: Response): Promise<void> => {
   try {
     const { album, photo } = req.params;
     
@@ -358,7 +445,7 @@ router.delete("/:album/photos/:photo", requireAuth, async (req: Request, res: Re
 /**
  * Upload a single photo to an album with SSE progress updates
  */
-router.post("/:album/upload", requireAuth, upload.single('photo'), async (req: Request, res: Response): Promise<void> => {
+router.post("/:album/upload", requireManager, upload.single('photo'), async (req: Request, res: Response): Promise<void> => {
   try {
     const { album } = req.params;
     
@@ -384,143 +471,126 @@ router.post("/:album/upload", requireAuth, upload.single('photo'), async (req: R
 
     const destPath = path.join(albumPath, file.originalname);
     
-    try {
-      // Use read + write to handle symlinks and cross-filesystem moves
-      const data = fs.readFileSync(file.path);
-      fs.writeFileSync(destPath, data);
+        try {
+          // Use sharp to auto-rotate based on EXIF orientation (fixes iPhone photos)
+          // This physically rotates the pixels and removes the EXIF orientation tag
+          // Set a timeout to prevent hanging on corrupt images
+          const sharpTimeout = new Promise((_, reject) => 
+            setTimeout(() => reject(new Error('Sharp processing timeout')), 120000) // 2 minute timeout
+          );
+          
+          await Promise.race([
+            sharp(file.path)
+              .rotate() // Auto-rotate based on EXIF
+              .toFile(destPath),
+            sharpTimeout
+          ]);
+      
+      // Clean up temp file
       fs.unlinkSync(file.path);
-    } catch (err) {
-      console.error(`Failed to move file ${file.originalname}:`, err);
-      // Clean up temp file if copy failed
+    } catch (err: any) {
+      console.error(`[Upload] ✗ Failed to process ${file.originalname}:`, err.message);
+      // Clean up temp file if processing failed
       try {
         fs.unlinkSync(file.path);
       } catch (cleanupErr) {
         // Ignore cleanup errors
       }
-      res.status(500).json({ error: 'Failed to save file' });
+      res.status(500).json({ error: `Failed to save file: ${err.message}` });
       return;
     }
 
-    // Set up SSE headers
-    res.setHeader('Content-Type', 'text/event-stream');
-    res.setHeader('Cache-Control', 'no-cache');
-    res.setHeader('Connection', 'keep-alive');
-    res.setHeader('X-Accel-Buffering', 'no'); // Disable proxy buffering
-    res.setTimeout(0); // Disable timeout for this response
-    res.flushHeaders();
+    // Send success response immediately (don't keep connection open)
+    res.json({ success: true, filename: file.originalname });
 
-    // Send initial success message
-    res.write(`data: ${JSON.stringify({ type: 'uploaded', filename: file.originalname })}\n\n`);
-
-    // Trigger optimization with SSE progress streaming
+    // Queue optimization job (will process sequentially)
     const projectRoot = path.resolve(__dirname, '../../../');
-    const scriptPath = path.join(projectRoot, 'optimize_new_image.js');
+    const scriptPath = path.join(projectRoot, 'scripts', 'optimize_new_image.js');
+    const jobId = `${sanitizedAlbum}/${file.originalname}`;
 
     if (fs.existsSync(scriptPath)) {
-      const child = spawn('node', [scriptPath, sanitizedAlbum, file.originalname], { 
-        cwd: projectRoot
-      });
-
-      // Stream stdout for progress updates
-      child.stdout.on('data', (data) => {
-        const lines = data.toString().split('\n');
-        lines.forEach((line: string) => {
-          if (line.trim()) {
-            // Check for PROGRESS: messages
-            if (line.startsWith('PROGRESS:')) {
-              const parts = line.substring(9).split(':');
-              const progress = parseInt(parts[0]);
-              const message = parts.slice(1).join(':');
-              res.write(`data: ${JSON.stringify({ 
-                type: 'progress', 
-                progress, 
-                message,
-                filename: file.originalname 
-              })}\n\n`);
-            }
-          }
-        });
-      });
-      
-      // Log stderr for debugging
-      child.stderr.on('data', (data) => {
-        const errorOutput = data.toString().trim();
-        if (errorOutput) {
-          console.error(`[${sanitizedAlbum}/${file.originalname}] Optimization stderr:`, errorOutput);
-        }
-      });
-
-      // Handle completion
-      child.on('close', async (code) => {
-        if (code === 0) {
+      queueOptimizationJob(
+        jobId,
+        sanitizedAlbum,
+        file.originalname,
+        scriptPath,
+        projectRoot,
+        // onProgress callback
+        (progress: number) => {
+          broadcastOptimizationUpdate(jobId, {
+            album: sanitizedAlbum,
+            filename: file.originalname,
+            progress,
+            state: 'optimizing'
+          });
+        },
+        // onComplete callback
+        async () => {
           // Add image to database (with null title initially)
-          // This ensures the image shows up even if AI generation is disabled
           saveImageMetadata(sanitizedAlbum, file.originalname, null, null);
-          console.log(`✓ Added ${sanitizedAlbum}/${file.originalname} to database`);
           
-          // Invalidate cache for this album since we added a photo
-          invalidateAlbumCache(sanitizedAlbum);
+          // Note: We don't invalidate cache here to avoid spam during batch uploads
+          // Cache will be invalidated once at the end via static JSON regeneration
           
-          res.write(`data: ${JSON.stringify({ 
-            type: 'complete', 
-            filename: file.originalname 
-          })}\n\n`);
+          broadcastOptimizationUpdate(jobId, {
+            album: sanitizedAlbum,
+            filename: file.originalname,
+            progress: 100,
+            state: 'complete'
+          });
           
           // Check if auto-generate AI titles is enabled
           try {
-            const configPath = path.join(projectRoot, 'config/config.json');
+            const dataDir = process.env.DATA_DIR || path.join(projectRoot, 'data');
+            const configPath = path.join(dataDir, 'config.json');
             const configData = fs.readFileSync(configPath, 'utf8');
             const config = JSON.parse(configData);
             
             if (config.ai?.autoGenerateTitlesOnUpload && config.openai?.apiKey) {
-              res.write(`data: ${JSON.stringify({ 
-                type: 'ai-generating', 
-                filename: file.originalname 
-              })}\n\n`);
+              broadcastOptimizationUpdate(jobId, {
+                album: sanitizedAlbum,
+                filename: file.originalname,
+                progress: 100,
+                state: 'generating-title'
+              });
               
-              // This will update the existing database entry with the AI-generated title
-              await generateAITitleForImage(
+              // Generate AI title (without SSE streaming to this response)
+              await generateAITitleForImageAsync(
                 config.openai.apiKey,
                 sanitizedAlbum,
                 file.originalname,
                 projectRoot,
-                res
+                jobId
               );
             }
           } catch (err) {
-            console.error('Error checking AI config:', err);
-            // Don't fail the upload if AI generation fails
+            console.error('Error with AI title generation:', err);
           }
           
-          // Regenerate static JSON files after successful upload
-          const appRoot = req.app.get('appRoot');
-          generateStaticJSONFiles(appRoot);
-        } else {
-          res.write(`data: ${JSON.stringify({ 
-            type: 'error', 
-            error: 'Optimization failed',
-            filename: file.originalname 
-          })}\n\n`);
+          // Don't regenerate static JSON after every single image - too expensive!
+          // It will be regenerated once when the upload batch finishes
+          // const appRoot = req.app.get('appRoot');
+          // generateStaticJSONFiles(appRoot);
+        },
+        // onError callback
+        (error: string) => {
+          broadcastOptimizationUpdate(jobId, {
+            album: sanitizedAlbum,
+            filename: file.originalname,
+            progress: 0,
+            state: 'error',
+            error
+          });
         }
-        res.end();
-      });
-
-      // Handle errors
-      child.on('error', (error) => {
-        res.write(`data: ${JSON.stringify({ 
-          type: 'error', 
-          error: error.message,
-          filename: file.originalname 
-        })}\n\n`);
-        res.end();
-      });
+      );
     } else {
-      res.write(`data: ${JSON.stringify({ 
-        type: 'error', 
-        error: 'Optimization script not found',
-        filename: file.originalname 
-      })}\n\n`);
-      res.end();
+      broadcastOptimizationUpdate(jobId, {
+        album: sanitizedAlbum,
+        filename: file.originalname,
+        progress: 0,
+        state: 'error',
+        error: 'Optimization script not found'
+      });
     }
   } catch (error) {
     console.error('Error uploading photo:', error);
@@ -529,9 +599,141 @@ router.post("/:album/upload", requireAuth, upload.single('photo'), async (req: R
 });
 
 /**
+ * Rename an album (updates database and moves directories)
+ */
+router.patch("/:album/rename", requireManager, async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { album } = req.params;
+    const { newName } = req.body;
+    
+    const sanitizedOldName = sanitizeName(album);
+    if (!sanitizedOldName) {
+      res.status(400).json({ error: 'Invalid album name' });
+      return;
+    }
+
+    if (!newName || typeof newName !== 'string') {
+      res.status(400).json({ error: 'New album name is required' });
+      return;
+    }
+
+    const sanitizedNewName = sanitizeName(newName);
+    if (!sanitizedNewName) {
+      res.status(400).json({ error: 'Invalid new album name. Use only letters, numbers, spaces, hyphens, and underscores.' });
+      return;
+    }
+
+    // Check if old album name equals new album name
+    if (sanitizedOldName === sanitizedNewName) {
+      res.status(400).json({ error: 'New name must be different from current name' });
+      return;
+    }
+
+    const photosDir = req.app.get("photosDir");
+    const optimizedDir = req.app.get("optimizedDir");
+    
+    const oldAlbumPath = path.join(photosDir, sanitizedOldName);
+    const newAlbumPath = path.join(photosDir, sanitizedNewName);
+    
+    // Check if old album exists
+    if (!fs.existsSync(oldAlbumPath)) {
+      res.status(404).json({ error: 'Album not found' });
+      return;
+    }
+
+    // Check if new album name already exists
+    if (fs.existsSync(newAlbumPath)) {
+      res.status(400).json({ error: 'An album with that name already exists' });
+      return;
+    }
+
+    // Get album state before renaming
+    const albumState = getAlbumState(sanitizedOldName);
+    if (!albumState) {
+      res.status(404).json({ error: 'Album not found in database' });
+      return;
+    }
+
+    // Update database FIRST before touching filesystem
+    // This way if DB update fails, filesystem is unchanged
+    const db = getDatabase();
+    
+    // Start transaction with foreign keys temporarily disabled
+    // This is needed because share_links has FK to albums(name) without ON UPDATE CASCADE
+    const transaction = db.transaction(() => {
+      // Temporarily disable foreign keys for this transaction
+      db.pragma('foreign_keys = OFF');
+      
+      // Update albums table
+      const result = db.prepare(`
+        UPDATE albums 
+        SET name = ?, updated_at = CURRENT_TIMESTAMP
+        WHERE name = ?
+      `).run(sanitizedNewName, sanitizedOldName);
+      
+      if (result.changes === 0) {
+        throw new Error('Album not found in database');
+      }
+      
+      // Update image_metadata table
+      db.prepare(`
+        UPDATE image_metadata 
+        SET album = ?, updated_at = CURRENT_TIMESTAMP
+        WHERE album = ?
+      `).run(sanitizedNewName, sanitizedOldName);
+      
+      // Update share_links table
+      db.prepare(`
+        UPDATE share_links 
+        SET album = ?
+        WHERE album = ?
+      `).run(sanitizedNewName, sanitizedOldName);
+      
+      // Re-enable foreign keys
+      db.pragma('foreign_keys = ON');
+    });
+    
+    transaction();
+    console.log(`✓ Updated database: ${sanitizedOldName} -> ${sanitizedNewName}`);
+
+    // Now rename filesystem directories
+    // Rename photos directory
+    fs.renameSync(oldAlbumPath, newAlbumPath);
+    console.log(`✓ Renamed photos directory: ${sanitizedOldName} -> ${sanitizedNewName}`);
+
+    // Rename optimized directories
+    ['thumbnail', 'modal', 'download'].forEach(dir => {
+      const oldOptimizedPath = path.join(optimizedDir, dir, sanitizedOldName);
+      const newOptimizedPath = path.join(optimizedDir, dir, sanitizedNewName);
+      if (fs.existsSync(oldOptimizedPath)) {
+        fs.renameSync(oldOptimizedPath, newOptimizedPath);
+        console.log(`✓ Renamed optimized/${dir}: ${sanitizedOldName} -> ${sanitizedNewName}`);
+      }
+    });
+
+    // Invalidate cache for both old and new album names
+    invalidateAlbumCache(sanitizedOldName);
+    invalidateAlbumCache(sanitizedNewName);
+
+    // Regenerate static JSON files
+    const appRoot = req.app.get('appRoot');
+    generateStaticJSONFiles(appRoot);
+
+    res.json({ 
+      success: true, 
+      oldName: sanitizedOldName,
+      newName: sanitizedNewName
+    });
+  } catch (error) {
+    console.error('Error renaming album:', error);
+    res.status(500).json({ error: 'Failed to rename album' });
+  }
+});
+
+/**
  * Toggle album published state
  */
-router.patch("/:album/publish", requireAuth, async (req: Request, res: Response): Promise<void> => {
+router.patch("/:album/publish", requireManager, async (req: Request, res: Response): Promise<void> => {
   try {
     const { album } = req.params;
     const { published } = req.body;
@@ -557,12 +759,26 @@ router.patch("/:album/publish", requireAuth, async (req: Request, res: Response)
 
     // Update or create album state
     saveAlbum(sanitizedAlbum, published);
-    
     console.log(`✓ Set album "${sanitizedAlbum}" published state to: ${published}`);
+    
+    // Verify the state was saved correctly
+    const albumState = getAlbumState(sanitizedAlbum);
+    if (!albumState) {
+      console.error(`✗ Failed to save album state for "${sanitizedAlbum}"`);
+      res.status(500).json({ error: 'Failed to save album state' });
+      return;
+    }
+    console.log(`✓ Verified album state in DB: published=${albumState.published}`);
 
     // Regenerate static JSON files
+    console.log(`[Publish] Regenerating static JSON files...`);
     const appRoot = req.app.get('appRoot');
-    generateStaticJSONFiles(appRoot);
+    const result = generateStaticJSONFiles(appRoot);
+    if (result.success) {
+      console.log(`[Publish] ✓ Static JSON regenerated (${result.albumCount} albums)`);
+    } else {
+      console.error(`[Publish] ✗ Failed to regenerate static JSON:`, result.error);
+    }
 
     res.json({ 
       success: true, 
@@ -576,9 +792,79 @@ router.patch("/:album/publish", requireAuth, async (req: Request, res: Response)
 });
 
 /**
+ * Toggle album show_on_homepage state
+ */
+router.patch("/:album/show-on-homepage", requireManager, async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { album } = req.params;
+    const { showOnHomepage } = req.body;
+    
+    const sanitizedAlbum = sanitizeName(album);
+    if (!sanitizedAlbum) {
+      res.status(400).json({ error: 'Invalid album name' });
+      return;
+    }
+
+    if (typeof showOnHomepage !== 'boolean') {
+      res.status(400).json({ error: 'Show on homepage state must be a boolean' });
+      return;
+    }
+
+    const photosDir = req.app.get("photosDir");
+    const albumPath = path.join(photosDir, sanitizedAlbum);
+    
+    if (!fs.existsSync(albumPath)) {
+      res.status(404).json({ error: 'Album not found' });
+      return;
+    }
+
+    // Check if album is published
+    const albumState = getAlbumState(sanitizedAlbum);
+    if (!albumState) {
+      res.status(404).json({ error: 'Album not found in database' });
+      return;
+    }
+
+    if (!albumState.published) {
+      res.status(400).json({ error: 'Cannot set homepage visibility for unpublished album' });
+      return;
+    }
+
+    // Update show_on_homepage state
+    const success = setAlbumShowOnHomepage(sanitizedAlbum, showOnHomepage);
+    if (!success) {
+      console.error(`✗ Failed to update show_on_homepage for "${sanitizedAlbum}"`);
+      res.status(500).json({ error: 'Failed to update show on homepage state' });
+      return;
+    }
+    
+    console.log(`✓ Set album "${sanitizedAlbum}" show_on_homepage state to: ${showOnHomepage}`);
+
+    // Regenerate static JSON files (specifically homepage.json)
+    console.log(`[Homepage] Regenerating static JSON files...`);
+    const appRoot = req.app.get('appRoot');
+    const result = generateStaticJSONFiles(appRoot);
+    if (result.success) {
+      console.log(`[Homepage] ✓ Static JSON regenerated (${result.albumCount} albums)`);
+    } else {
+      console.error(`[Homepage] ✗ Failed to regenerate static JSON:`, result.error);
+    }
+
+    res.json({ 
+      success: true, 
+      album: sanitizedAlbum,
+      showOnHomepage 
+    });
+  } catch (error) {
+    console.error('Error updating album show_on_homepage state:', error);
+    res.status(500).json({ error: 'Failed to update album show on homepage state' });
+  }
+});
+
+/**
  * Trigger optimization for all albums
  */
-router.post("/:album/optimize", requireAuth, async (req: Request, res: Response): Promise<void> => {
+router.post("/:album/optimize", requireAdmin, async (req: Request, res: Response): Promise<void> => {
   try {
     const { album } = req.params;
     
@@ -590,7 +876,7 @@ router.post("/:album/optimize", requireAuth, async (req: Request, res: Response)
 
     // Get project root (two levels up from backend/src)
     const projectRoot = path.resolve(__dirname, '../../../');
-    const scriptPath = path.join(projectRoot, 'optimize_all_images.js');
+    const scriptPath = path.join(projectRoot, 'scripts', 'optimize_all_images.js');
 
     if (!fs.existsSync(scriptPath)) {
       res.status(500).json({ error: 'Optimization script not found' });
@@ -623,7 +909,7 @@ router.post("/:album/optimize", requireAuth, async (req: Request, res: Response)
 /**
  * Update photo order in an album
  */
-router.post("/:album/photo-order", requireAuth, async (req: Request, res: Response): Promise<void> => {
+router.post("/:album/photo-order", requireManager, async (req: Request, res: Response): Promise<void> => {
   try {
     const { album } = req.params;
     const { photoOrder } = req.body;
@@ -679,7 +965,7 @@ router.post("/:album/photo-order", requireAuth, async (req: Request, res: Respon
 /**
  * Update album sort order
  */
-router.put('/sort-order', requireAuth, async (req: Request, res: Response): Promise<void> => {
+router.put('/sort-order', requireManager, async (req: Request, res: Response): Promise<void> => {
   try {
     const { albumOrders } = req.body;
     
@@ -712,6 +998,90 @@ router.put('/sort-order', requireAuth, async (req: Request, res: Response): Prom
   } catch (error) {
     console.error('Error updating album order:', error);
     res.status(500).json({ error: 'Failed to update album order' });
+  }
+});
+
+/**
+ * Move album to folder (or remove from folder)
+ */
+router.put('/:albumName/move', requireManager, async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { albumName } = req.params;
+    const { folderName, published } = req.body;
+    
+    if (!albumName) {
+      res.status(400).json({ error: 'Album name is required' });
+      return;
+    }
+    
+    // Get the album's current state to track which folder it's being moved FROM
+    const albumState = getAlbumState(albumName);
+    if (!albumState) {
+      res.status(404).json({ error: 'Album not found' });
+      return;
+    }
+    
+    const oldFolderId = (albumState as any).folder_id;
+    
+    // Get folder ID and published state if folderName is provided
+    let folderId: number | null = null;
+    let folderPublishedState: boolean | null = null;
+    
+    if (folderName) {
+      const db = getDatabase();
+      const folder = db.prepare('SELECT id, published FROM album_folders WHERE name = ?').get(folderName) as { id: number; published: number } | undefined;
+      if (!folder) {
+        res.status(404).json({ error: 'Folder not found' });
+        return;
+      }
+      folderId = folder.id;
+      folderPublishedState = folder.published === 1;
+    }
+    
+    // Move album to folder (or remove from folder if folderId is null)
+    const success = setAlbumFolder(albumName, folderId);
+    
+    if (!success) {
+      res.status(500).json({ error: 'Failed to move album' });
+      return;
+    }
+    
+    // Sync published state with folder
+    if (folderId !== null && folderPublishedState !== null) {
+      // Moving into a folder - sync album's published state with folder's published state
+      setAlbumPublished(albumName, folderPublishedState);
+      console.log(`✓ Set album "${albumName}" published state to ${folderPublishedState} (synced with folder)`);
+    } else if (typeof published === 'boolean') {
+      // Moving to uncategorized - use provided published state
+      setAlbumPublished(albumName, published);
+    }
+    // If moving to uncategorized and no published state provided, keep current state
+    
+    console.log(`✓ Moved album "${albumName}" to folder ${folderName || 'none'}`);
+    
+    // If the album was moved OUT of a folder, check if that old folder is now empty
+    // If so, automatically unpublish it
+    if (oldFolderId !== null && oldFolderId !== folderId) {
+      const albumsInOldFolder = getAlbumsInFolder(oldFolderId);
+      if (albumsInOldFolder.length === 0) {
+        // Get the old folder's name to unpublish it
+        const db = getDatabase();
+        const oldFolder = db.prepare('SELECT name FROM album_folders WHERE id = ?').get(oldFolderId) as { name: string } | undefined;
+        if (oldFolder) {
+          setFolderPublished(oldFolder.name, false);
+          console.log(`✓ Auto-unpublished empty folder: ${oldFolder.name}`);
+        }
+      }
+    }
+    
+    // Regenerate static JSON files
+    const appRoot = req.app.get('appRoot');
+    generateStaticJSONFiles(appRoot);
+    
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Error moving album:', error);
+    res.status(500).json({ error: 'Failed to move album' });
   }
 });
 

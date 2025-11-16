@@ -4,73 +4,27 @@
  */
 
 import { useEffect, useState, useCallback } from 'react';
-import {
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer
-} from 'recharts';
 import { API_URL } from '../../../config';
 import { fetchWithRateLimitCheck } from '../../../utils/fetchWrapper';
+import { formatNumber } from '../../../utils/formatters';
+import { formatDateFromMicroseconds, formatDurationDetailed } from '../../../utils/metricsHelpers';
 import VisitorMap from './VisitorMap';
+import VisitorsChart from './VisitorsChart';
+import PageviewsChart from './PageviewsChart';
+import PicturesTable from './PicturesTable';
+import PagesTable from './PagesTable';
+import ReferrersTable from './ReferrersTable';
+import EventTypesTable from './EventTypesTable';
 import './Metrics.css';
 
-interface Stats {
-  uniqueVisitors: number;
-  pageViews: number;
-  topPages: Array<{ page_path: string; views: number }>;
-  topReferrers: Array<{ referrer: string; count: number }>;
-  eventTypes: Array<{ event_type: string; count: number }>;
-  stream: string;
-  timeRange: {
-    start: number;
-    end: number;
-    days: number;
-  };
-  totalViewDuration?: number;
-  topPicturesByDuration?: Array<{ photo_id: string; total_duration: number; avg_duration: number; views: number }>;
-}
-
-interface TimeSeriesData {
-  date: string;
-  count: number;
-}
-
-interface HourlyPageviewData {
-  hour: string;
-  pageviews: number;
-}
-
-interface VisitorLocation {
-  latitude: number;
-  longitude: number;
-  city: string | null;
-  region: string | null;
-  country: string | null;
-  visit_count: number;
-  unique_visitors: number;
-}
+// Import interfaces from types.ts (canonical location)
+import type { Stats, TimeSeriesData, HourlyPageviewData, VisitorLocation } from './types';
 
 export default function Metrics() {
   // Get the secondary color from CSS custom property
   const secondaryColor = getComputedStyle(document.documentElement)
     .getPropertyValue('--secondary-color')
     .trim() || '#3b82f6';
-
-  // Helper function to normalize album names from old lowercase to new capitalized format
-  const normalizeAlbumName = (albumName: string): string => {
-    const albumMap: Record<string, string> = {
-      'animals': 'Animals',
-      'people': 'People',
-      'nature': 'Nature',
-      'japan': 'Japan',
-      'random': 'Random'
-    };
-    return albumMap[albumName.toLowerCase()] || albumName;
-  };
 
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
@@ -228,30 +182,6 @@ export default function Metrics() {
     loadVisitorLocations();
   }, [loadStats, loadVisitorsOverTime, loadPageviewsByHour, loadVisitorLocations]);
 
-  const formatNumber = (num: number) => {
-    return num.toLocaleString();
-  };
-
-  const formatDuration = (ms: number) => {
-    const totalSeconds = Math.floor(ms / 1000);
-    const hours = Math.floor(totalSeconds / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
-    const seconds = totalSeconds % 60;
-    
-    // Pad with zeros for consistent formatting
-    const hh = hours.toString().padStart(2, '0');
-    const mm = minutes.toString().padStart(2, '0');
-    const ss = seconds.toString().padStart(2, '0');
-    
-    return `${hh}:${mm}:${ss}`;
-  };
-
-  const formatDate = (timestamp: number) => {
-    // Convert microseconds to milliseconds for proper date formatting
-    return new Date(timestamp / 1000).toLocaleDateString();
-  };
-
-
   const toggleRowExpansion = (tableName: string, rowIndex: number) => {
     setExpandedRows(prev => {
       const newExpanded = { ...prev };
@@ -294,19 +224,11 @@ export default function Metrics() {
     });
   };
 
-  const isRowExpanded = (tableName: string, rowIndex: number): boolean => {
-    return expandedRows[tableName]?.has(rowIndex) || false;
-  };
-
   const toggleTableExpansion = (tableName: string) => {
     setExpandedTables(prev => ({
       ...prev,
       [tableName]: !prev[tableName]
     }));
-  };
-
-  const isTableExpanded = (tableName: string): boolean => {
-    return expandedTables[tableName] || false;
   };
 
   if (loading && !stats) {
@@ -337,7 +259,7 @@ export default function Metrics() {
     <section className="admin-section">
       <div className="metrics-header-wrapper">
         <div className="metrics-header-content">
-          <h2>📊 Metrics</h2>
+          <h2>Metrics</h2>
           <p className="section-description">View analytics and visitor data for your photography website</p>
         </div>
         <div className="metrics-time-range">
@@ -378,7 +300,7 @@ export default function Metrics() {
             <div className="metric-card">
               <div className="metric-icon">⏱️</div>
               <div className="metric-content">
-                <div className="metric-value">{formatDuration(stats.totalViewDuration || 0)}</div>
+                <div className="metric-value">{formatDurationDetailed(stats.totalViewDuration || 0)}</div>
                 <div className="metric-label">Total Time Viewing</div>
               </div>
             </div>
@@ -395,480 +317,92 @@ export default function Metrics() {
 
           {/* Charts Grid - Side by Side on Desktop */}
           <div className="metrics-grid">
-            {/* Visitors Over Time Chart */}
             <div className="metrics-section">
               <h3>Unique Visitors Over Time</h3>
               <p style={{ color: '#9ca3af', fontSize: '0.85rem', marginBottom: '0.75rem' }}>
                 Daily breakdown of unique visitors
               </p>
-            {loadingTimeSeries ? (
-              <div className="chart-loading">Loading chart data...</div>
-            ) : visitorsOverTime.length > 0 ? (
-              <div className="chart-container">
-                <ResponsiveContainer width="100%" height={300}>
-                  <AreaChart 
-                    data={visitorsOverTime.map(point => {
-                      // Parse date string as local time to avoid timezone shifting
-                      const [year, month, day] = point.date.toString().split(/[-T]/);
-                      const localDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
-                      return {
-                        ...point,
-                        formattedDate: localDate.toLocaleDateString('en-US', { 
-                          month: 'short', 
-                          day: 'numeric' 
-                        })
-                      };
-                    })}
-                    margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
-                  >
-                    <defs>
-                      <linearGradient id="colorVisitors" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor={secondaryColor} stopOpacity={0.6}/>
-                        <stop offset="95%" stopColor={secondaryColor} stopOpacity={0.05}/>
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#535353" opacity={0.5} />
-                    <XAxis 
-                      dataKey="formattedDate" 
-                      stroke="#9ca3af"
-                      style={{ fontSize: '0.875rem', fill: '#9ca3af' }}
-                      interval="preserveStartEnd"
-                      tick={{ fill: '#9ca3af' }}
-                    />
-                    <YAxis 
-                      stroke="#9ca3af"
-                      style={{ fontSize: '0.875rem', fill: '#9ca3af' }}
-                      allowDecimals={false}
-                      tick={{ fill: '#9ca3af' }}
-                    />
-                    <Tooltip 
-                      contentStyle={{ 
-                        backgroundColor: 'rgba(45, 45, 45, 0.98)',
-                        border: '1px solid #535353',
-                        borderRadius: '8px',
-                        boxShadow: '0 8px 24px rgba(0, 0, 0, 0.4)',
-                        color: '#e5e7eb'
-                      }}
-                      labelStyle={{ color: '#f9fafb', fontWeight: 600 }}
-                      itemStyle={{ color: secondaryColor }}
-                      formatter={(value: number) => [value, 'Visitors']}
-                    />
-                    <Area 
-                      type="linear" 
-                      dataKey="count" 
-                      stroke={secondaryColor} 
-                      strokeWidth={3}
-                      fillOpacity={1}
-                      fill="url(#colorVisitors)"
-                      animationDuration={1000}
-                    />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </div>
-            ) : (
-              <div className="no-data">No visitor data available for this time range</div>
-            )}
-          </div>
+              <VisitorsChart 
+                data={visitorsOverTime} 
+                loading={loadingTimeSeries} 
+                secondaryColor={secondaryColor} 
+              />
+            </div>
 
-          {/* Pageviews by Hour Chart */}
-          <div className="metrics-section">
-            <h3>Pageviews per Hour</h3>
-            <p style={{ color: '#9ca3af', fontSize: '0.85rem', marginBottom: '0.75rem' }}>
-              Hourly breakdown of page views
-            </p>
-            {loadingPageviewsByHour ? (
-              <div className="chart-loading">Loading chart data...</div>
-            ) : pageviewsByHour.length > 0 ? (
-              <div className="chart-container">
-                <ResponsiveContainer width="100%" height={300}>
-                  <AreaChart 
-                    data={pageviewsByHour}
-                    margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
-                  >
-                    <defs>
-                      <linearGradient id="colorPageviews" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor={secondaryColor} stopOpacity={0.6}/>
-                        <stop offset="95%" stopColor={secondaryColor} stopOpacity={0.05}/>
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#535353" opacity={0.5} />
-                    <XAxis 
-                      dataKey="hour" 
-                      stroke="#9ca3af"
-                      style={{ fontSize: '0.875rem', fill: '#9ca3af' }}
-                      tick={{ fill: '#9ca3af' }}
-                      ticks={pageviewsByHour
-                        .filter((d) => {
-                          const date = new Date(d.hour);
-                          const localHour = date.getHours();
-                          return localHour === 0; // Show only midnight hours
-                        })
-                        .map((d) => d.hour)}
-                      tickFormatter={(value: string) => {
-                        const date = new Date(value);
-                        return date.toLocaleDateString('en-US', {
-                          month: 'short',
-                          day: 'numeric'
-                        });
-                      }}
-                    />
-                    <YAxis 
-                      stroke="#9ca3af"
-                      style={{ fontSize: '0.875rem', fill: '#9ca3af' }}
-                      allowDecimals={false}
-                      tick={{ fill: '#9ca3af' }}
-                    />
-                    <Tooltip 
-                      contentStyle={{ 
-                        backgroundColor: 'rgba(45, 45, 45, 0.98)',
-                        border: '1px solid #535353',
-                        borderRadius: '8px',
-                        boxShadow: '0 8px 24px rgba(0, 0, 0, 0.4)',
-                        color: '#e5e7eb'
-                      }}
-                      labelStyle={{ color: '#f9fafb', fontWeight: 600 }}
-                      itemStyle={{ color: secondaryColor }}
-                      formatter={(value: number) => [value, 'Pageviews']}
-                    />
-                    <Area 
-                      type="linear" 
-                      dataKey="pageviews" 
-                      stroke={secondaryColor} 
-                      strokeWidth={3}
-                      fillOpacity={1}
-                      fill="url(#colorPageviews)"
-                      animationDuration={1000}
-                    />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </div>
-            ) : (
-              <div className="no-data">No hourly pageview data available for this time range</div>
-            )}
+            <div className="metrics-section">
+              <h3>Pageviews per Hour</h3>
+              <p style={{ color: '#9ca3af', fontSize: '0.85rem', marginBottom: '0.75rem' }}>
+                Hourly breakdown of page views
+              </p>
+              <PageviewsChart 
+                data={pageviewsByHour} 
+                loading={loadingPageviewsByHour} 
+                secondaryColor={secondaryColor} 
+              />
             </div>
           </div>
 
           {/* Tables Grid - Most Engaging Pictures and Top Pages */}
           <div className="metrics-grid">
-            {/* Top Pictures by View Duration */}
             <div className="metrics-section">
-            <h3>Most Engaging Pictures</h3>
-            <p style={{ color: '#9ca3af', fontSize: '0.85rem', marginBottom: '0.75rem' }}>
-              Pictures ranked by total time spent viewing
-            </p>
-            {stats.topPicturesByDuration && stats.topPicturesByDuration.length > 0 ? (
-              <>
-              <div className={`metrics-table-container ${isTableExpanded('pictures') ? 'expanded' : ''}`}>
-                <div className="metrics-table" data-table-name="pictures">
-                  <table>
-                  <thead>
-                    <tr>
-                      <th>Thumbnail</th>
-                      <th className="text-right">Total Time</th>
-                      <th className="text-right">Avg Time</th>
-                      <th className="text-right">Views</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {stats.topPicturesByDuration.map((picture, index) => {
-                      // Extract album and photo name from photo_id (e.g., "people/08053-00001.jpg")
-                      const [rawAlbumName, photoName] = picture.photo_id.split('/');
-                      // Normalize album name to handle old lowercase data
-                      const albumName = normalizeAlbumName(rawAlbumName);
-                      const photoUrl = `/album/${albumName}?photo=${encodeURIComponent(photoName)}`;
-                      const thumbnailUrl = `${API_URL}/photos/${albumName}/${photoName}`;
-                      const expanded = isRowExpanded('pictures', index);
-                      
-                      return (
-                        <>
-                          <tr 
-                            key={index} 
-                            className={`clickable-row ${expanded ? 'expanded-row' : ''}`}
-                            onClick={() => toggleRowExpansion('pictures', index)}
-                            style={{ cursor: 'pointer' }}
-                          >
-                            <td className="photo-thumbnail-cell">
-                              <div className="photo-thumbnail-wrapper">
-                                <img src={thumbnailUrl} alt={photoName} className="photo-thumbnail-small" />
-                                <div className="photo-thumbnail-preview">
-                                  <img src={thumbnailUrl} alt={photoName} />
-                                </div>
-                              </div>
-                            </td>
-                            <td className="text-right">{formatDuration(picture.total_duration)}</td>
-                            <td className="text-right">{formatDuration(picture.avg_duration)}</td>
-                            <td className="text-right">{formatNumber(picture.views)}</td>
-                          </tr>
-                          {expanded && (
-                            <tr key={`${index}-expanded`} className="expanded-content-row">
-                              <td colSpan={4}>
-                                <div className="expanded-content">
-                                  <div className="expanded-detail">
-                                    <strong>Photo ID:</strong> {picture.photo_id}
-                                  </div>
-                                  <div className="expanded-detail">
-                                    <strong>Album:</strong> {albumName}
-                                  </div>
-                                  <div className="expanded-detail">
-                                    <strong>File Name:</strong> {photoName}
-                                  </div>
-                                  <div className="expanded-actions">
-                                    <a 
-                                      href={photoUrl} 
-                                      className="view-photo-btn"
-                                      onClick={(e) => e.stopPropagation()}
-                                    >
-                                      View Photo →
-                                    </a>
-                                  </div>
-                                </div>
-                              </td>
-                            </tr>
-                          )}
-                        </>
-                      );
-                    })}
-                  </tbody>
-                  </table>
-                </div>
-              </div>
-              <button 
-                className="view-more-btn" 
-                onClick={() => toggleTableExpansion('pictures')}
-              >
-                {isTableExpanded('pictures') ? 'View Less ▲' : 'View More ▼'}
-              </button>
-              </>
-            ) : (
-              <div className="no-data">No picture view duration data available</div>
-            )}
+              <h3>Most Engaging Pictures</h3>
+              <p style={{ color: '#9ca3af', fontSize: '0.85rem', marginBottom: '0.75rem' }}>
+                Pictures ranked by total time spent viewing
+              </p>
+              <PicturesTable
+                pictures={stats.topPicturesByDuration || []}
+                expandedRows={expandedRows['pictures'] || new Set()}
+                isExpanded={expandedTables['pictures'] || false}
+                onToggleRow={(index) => toggleRowExpansion('pictures', index)}
+                onToggleTable={() => toggleTableExpansion('pictures')}
+              />
             </div>
 
-            {/* Top Pages */}
             <div className="metrics-section">
               <h3>Top Pages</h3>
               <p style={{ color: '#9ca3af', fontSize: '0.85rem', marginBottom: '0.75rem' }}>
                 Pages ranked by total views
               </p>
-              {stats.topPages.length > 0 ? (
-                <>
-                <div className={`metrics-table-container ${isTableExpanded('pages') ? 'expanded' : ''}`}>
-                  <div className="metrics-table" data-table-name="pages">
-                    <table>
-                  <thead>
-                    <tr>
-                      <th>Page Path</th>
-                      <th className="text-right">Views</th>
-                      <th className="text-right">% of Total</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {stats.topPages.map((page, index) => {
-                      const percentage = stats.pageViews > 0 
-                        ? ((page.views / stats.pageViews) * 100).toFixed(1)
-                        : '0';
-                      const expanded = isRowExpanded('pages', index);
-                      return (
-                        <>
-                          <tr 
-                            key={index} 
-                            className={`clickable-row ${expanded ? 'expanded-row' : ''}`}
-                            onClick={() => toggleRowExpansion('pages', index)}
-                            style={{ cursor: 'pointer' }}
-                          >
-                            <td className="page-path">{page.page_path}</td>
-                            <td className="text-right">{formatNumber(page.views)}</td>
-                            <td className="text-right">{percentage}%</td>
-                          </tr>
-                          {expanded && (
-                            <tr key={`${index}-expanded`} className="expanded-content-row">
-                              <td colSpan={3}>
-                                <div className="expanded-content">
-                                  <div className="expanded-detail">
-                                    <strong>Full Path:</strong> {page.page_path}
-                                  </div>
-                                  <div className="expanded-detail">
-                                    <strong>Total Views:</strong> {formatNumber(page.views)}
-                                  </div>
-                                  <div className="expanded-detail">
-                                    <strong>Percentage of Total:</strong> {percentage}% of all page views
-                                  </div>
-                                </div>
-                              </td>
-                            </tr>
-                          )}
-                        </>
-                      );
-                    })}
-                  </tbody>
-                    </table>
-                  </div>
-                </div>
-                <button 
-                  className="view-more-btn" 
-                  onClick={() => toggleTableExpansion('pages')}
-                >
-                  {isTableExpanded('pages') ? 'View Less ▲' : 'View More ▼'}
-                </button>
-                </>
-              ) : (
-                <div className="no-data">No page view data available</div>
-              )}
+              <PagesTable
+                pages={stats.topPages || []}
+                totalPageViews={stats.pageViews}
+                expandedRows={expandedRows['pages'] || new Set()}
+                isExpanded={expandedTables['pages'] || false}
+                onToggleRow={(index) => toggleRowExpansion('pages', index)}
+                onToggleTable={() => toggleTableExpansion('pages')}
+              />
             </div>
           </div>
 
           {/* Tables Grid - Top Referrers and Event Types */}
           <div className="metrics-grid">
-            {/* Top Referrers */}
             <div className="metrics-section">
               <h3>Top Referrers</h3>
-              {stats.topReferrers.length > 0 ? (
-                <>
-                <div className={`metrics-table-container ${isTableExpanded('referrers') ? 'expanded' : ''}`}>
-                  <div className="metrics-table" data-table-name="referrers">
-                    <table>
-                  <thead>
-                    <tr>
-                      <th>Referrer</th>
-                      <th className="text-right" style={{ width: '80px' }}>Visits</th>
-                      <th className="text-right" style={{ width: '80px' }}>% of Total</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {stats.topReferrers.map((referrer, index) => {
-                      const totalReferrers = stats.topReferrers.reduce((sum, r) => sum + r.count, 0);
-                      const percentage = totalReferrers > 0 
-                        ? ((referrer.count / totalReferrers) * 100).toFixed(1)
-                        : '0';
-                      const expanded = isRowExpanded('referrers', index);
-                      return (
-                        <>
-                          <tr 
-                            key={index}
-                            className={`clickable-row ${expanded ? 'expanded-row' : ''}`}
-                            onClick={() => toggleRowExpansion('referrers', index)}
-                            style={{ cursor: 'pointer' }}
-                          >
-                            <td className="referrer" title={referrer.referrer}>
-                              {referrer.referrer}
-                            </td>
-                            <td className="text-right">{formatNumber(referrer.count)}</td>
-                            <td className="text-right">{percentage}%</td>
-                          </tr>
-                          {expanded && (
-                            <tr key={`${index}-expanded`} className="expanded-content-row">
-                              <td colSpan={3}>
-                                <div className="expanded-content">
-                                  <div className="expanded-detail">
-                                    <strong>Full Referrer URL:</strong>
-                                    <div style={{ wordBreak: 'break-all', marginTop: '0.5rem' }}>
-                                      {referrer.referrer}
-                                    </div>
-                                  </div>
-                                  <div className="expanded-detail">
-                                    <strong>Total Visits:</strong> {formatNumber(referrer.count)}
-                                  </div>
-                                  <div className="expanded-detail">
-                                    <strong>Percentage:</strong> {percentage}% of all referrers
-                                  </div>
-                                </div>
-                              </td>
-                            </tr>
-                          )}
-                        </>
-                      );
-                    })}
-                  </tbody>
-                    </table>
-                  </div>
-                </div>
-                <button 
-                  className="view-more-btn" 
-                  onClick={() => toggleTableExpansion('referrers')}
-                >
-                  {isTableExpanded('referrers') ? 'View Less ▲' : 'View More ▼'}
-                </button>
-                </>
-              ) : (
-                <div className="no-data">No referrer data available</div>
-              )}
+              <ReferrersTable
+                referrers={stats.topReferrers || []}
+                expandedRows={expandedRows['referrers'] || new Set()}
+                isExpanded={expandedTables['referrers'] || false}
+                onToggleRow={(index) => toggleRowExpansion('referrers', index)}
+                onToggleTable={() => toggleTableExpansion('referrers')}
+              />
             </div>
 
-            {/* Event Types Distribution */}
             <div className="metrics-section">
               <h3>Event Types</h3>
-              {stats.eventTypes.length > 0 ? (
-                <>
-                <div className={`metrics-table-container ${isTableExpanded('events') ? 'expanded' : ''}`}>
-                  <div className="metrics-table" data-table-name="events">
-                    <table>
-                  <thead>
-                    <tr>
-                      <th>Event Type</th>
-                      <th className="text-right">Count</th>
-                      <th className="text-right">% of Total</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {stats.eventTypes.map((event, index) => {
-                      const totalEvents = stats.eventTypes.reduce((sum, e) => sum + e.count, 0);
-                      const percentage = totalEvents > 0 
-                        ? ((event.count / totalEvents) * 100).toFixed(1)
-                        : '0';
-                      const expanded = isRowExpanded('events', index);
-                      return (
-                        <>
-                          <tr 
-                            key={index}
-                            className={`clickable-row ${expanded ? 'expanded-row' : ''}`}
-                            onClick={() => toggleRowExpansion('events', index)}
-                            style={{ cursor: 'pointer' }}
-                          >
-                            <td className="event-type">{event.event_type}</td>
-                            <td className="text-right">{formatNumber(event.count)}</td>
-                            <td className="text-right">{percentage}%</td>
-                          </tr>
-                          {expanded && (
-                            <tr key={`${index}-expanded`} className="expanded-content-row">
-                              <td colSpan={3}>
-                                <div className="expanded-content">
-                                  <div className="expanded-detail">
-                                    <strong>Event Type:</strong> {event.event_type}
-                                  </div>
-                                  <div className="expanded-detail">
-                                    <strong>Total Count:</strong> {formatNumber(event.count)}
-                                  </div>
-                                  <div className="expanded-detail">
-                                    <strong>Percentage:</strong> {percentage}% of all events
-                                  </div>
-                                </div>
-                              </td>
-                            </tr>
-                          )}
-                        </>
-                      );
-                    })}
-                  </tbody>
-                    </table>
-                  </div>
-                </div>
-                <button 
-                  className="view-more-btn" 
-                  onClick={() => toggleTableExpansion('events')}
-                >
-                  {isTableExpanded('events') ? 'View Less ▲' : 'View More ▼'}
-                </button>
-                </>
-              ) : (
-                <div className="no-data">No event data available</div>
-              )}
+              <EventTypesTable
+                events={stats.eventTypes || []}
+                expandedRows={expandedRows['events'] || new Set()}
+                isExpanded={expandedTables['events'] || false}
+                onToggleRow={(index) => toggleRowExpansion('events', index)}
+                onToggleTable={() => toggleTableExpansion('events')}
+              />
             </div>
           </div>
 
           {/* Footer Info */}
           <div className="metrics-footer">
             <p>
-              Data from {formatDate(stats.timeRange.start)} to {formatDate(stats.timeRange.end)}
+              Data from {formatDateFromMicroseconds(stats.timeRange.start)} to {formatDateFromMicroseconds(stats.timeRange.end)}
             </p>
           </div>
         </>
@@ -876,4 +410,3 @@ export default function Metrics() {
     </section>
   );
 }
-

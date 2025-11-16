@@ -3,35 +3,130 @@
  * Main orchestrator for admin functionality - delegates to sub-components
  */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { API_URL } from '../../config';
-import './AdminPortal.css';
-import { AuthStatus, ExternalLink, BrandingConfig, Album, Tab } from './types';
+// CSS will be loaded dynamically to ensure proper loading in dev mode
+import { AuthStatus, ExternalLink, BrandingConfig, Album, AlbumFolder } from './types';
 import AlbumsManager from './AlbumsManager';
 import Metrics from './Metrics/Metrics';
 import ConfigManager from './ConfigManager';
+import { ProfileSection } from './ConfigManager/sections/ProfileSection';
+import SecuritySetupPrompt from './SecuritySetupPrompt';
 import {
   trackLoginSucceeded,
   trackLogout,
   trackAdminTabChange,
 } from '../../utils/analytics';
 import { useSSEToaster } from '../../contexts/SSEToasterContext';
+import { getActiveTab } from '../../utils/adminHelpers';
+import {
+  GoogleLogoIcon,
+  HomeIcon,
+  LogoutIcon,
+  ImageIcon,
+  BarChartIcon,
+  SettingsIcon,
+  LockIcon,
+  UserIcon
+} from '../icons/';
+import packageJson from '../../../../package.json';
+
+type AuthMethod = 'google' | 'credentials' | 'passkey' | null;
 
 export default function AdminPortal() {
   const navigate = useNavigate();
   const location = useLocation();
   const [authStatus, setAuthStatus] = useState<AuthStatus | null>(null);
   const [loading, setLoading] = useState(true);
+  const [cssLoaded, setCssLoaded] = useState(false);
   const sseToaster = useSSEToaster();
   
-  // Determine active tab from URL
-  const getActiveTab = (): Tab => {
-    if (location.pathname.includes('/settings')) return 'config';
-    if (location.pathname.includes('/metrics')) return 'metrics';
-    return 'albums';
+  // Login state
+  const [activeAuthTab, setActiveAuthTab] = useState<AuthMethod>(null);
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [mfaToken, setMfaToken] = useState('');
+  const [requiresMFA, setRequiresMFA] = useState(false);
+  const [loginLoading, setLoginLoading] = useState(false);
+  const [loginError, setLoginError] = useState<string | null>(null);
+  
+  // Load saved passkey email when switching to passkey tab
+  useEffect(() => {
+    if (activeAuthTab === 'passkey') {
+      const savedEmail = localStorage.getItem('passkeyEmail');
+      if (savedEmail) {
+        setUsername(savedEmail);
+      }
+    }
+  }, [activeAuthTab]);
+  
+  // Sync URL with auth tab state (when user clicks buttons)
+  const updateAuthRoute = (method: AuthMethod) => {
+    if (method === 'passkey') {
+      navigate('/admin/login/passkey');
+    } else if (method === 'credentials') {
+      navigate('/admin/login/password');
+    } else {
+      navigate('/admin/login');
+    }
+    setActiveAuthTab(method);
   };
-  const activeTab = getActiveTab();
+  
+  // Redirect to /admin/albums after successful login
+  useEffect(() => {
+    if (authStatus?.authenticated && location.pathname.startsWith('/admin/login')) {
+      navigate('/admin/albums', { replace: true });
+    }
+  }, [authStatus, location.pathname, navigate]);
+
+  // Read URL and set auth tab on mount/navigation (when user uses back button or direct URL)
+  useEffect(() => {
+    // Skip if authenticated
+    if (authStatus?.authenticated) return;
+    
+    const path = location.pathname;
+    
+    // Set active auth tab based on URL, but only if it doesn't match current state
+    if (path === '/admin/login/passkey' && activeAuthTab !== 'passkey') {
+      setActiveAuthTab('passkey');
+    } else if (path === '/admin/login/password' && activeAuthTab !== 'credentials') {
+      setActiveAuthTab('credentials');
+    } else if (path === '/admin/login' && activeAuthTab !== null) {
+      setActiveAuthTab(null);
+    } else if (!path.startsWith('/admin/login') && !path.startsWith('/admin/') && !authStatus) {
+      // User is not authenticated and not on any admin route - redirect to login
+      navigate('/admin/login', { replace: true });
+    } else if (path.startsWith('/admin/') && path !== '/admin/login' && !path.startsWith('/admin/login/') && authStatus === null && !loading) {
+      // User is trying to access admin route but not authenticated - redirect to login
+      // Only redirect if we're not still loading the auth status
+      navigate('/admin/login', { replace: true });
+    }
+  }, [location.pathname, authStatus, activeAuthTab, navigate, loading]);
+  
+  // Aggressively load CSS in dev mode
+  useEffect(() => {
+    const loadCSS = async () => {
+      try {
+        // Only import AdminPortal.css - other components import their own CSS
+        await import('./AdminPortal.css');
+        
+        // Wait for browser to process and apply styles
+        await new Promise(resolve => requestAnimationFrame(resolve));
+        
+        console.log('✅ Admin CSS loaded');
+      } catch (err) {
+        console.error('Failed to load CSS:', err);
+      } finally {
+        setCssLoaded(true);
+      }
+    };
+    
+    loadCSS();
+  }, []);
+  
+  // Determine active tab from URL
+  const activeTab = getActiveTab(location.pathname);
   
   // Shared state
   const [externalLinks, setExternalLinks] = useState<ExternalLink[]>([]);
@@ -42,10 +137,19 @@ export default function AdminPortal() {
     secondaryColor: '#22c55e',
     metaDescription: '',
     metaKeywords: '',
-    faviconPath: ''
+    faviconPath: '',
+    shuffleHomepage: true
   });
   const [albums, setAlbums] = useState<Album[]>([]);
+  const [folders, setFolders] = useState<AlbumFolder[]>([]);
   const [messages, setMessages] = useState<Array<{ id: number; type: 'success' | 'error'; text: string }>>([]);
+  const [showSecurityPrompt, setShowSecurityPrompt] = useState(false);
+  const [metricsEnabled, setMetricsEnabled] = useState(false);
+  const [availableAuthMethods, setAvailableAuthMethods] = useState({
+    google: false,
+    passkey: false,
+    password: false,
+  });
 
   // Helper to add a new message
   const addMessage = (message: { type: 'success' | 'error'; text: string }) => {
@@ -124,6 +228,14 @@ export default function AdminPortal() {
           loadExternalLinks();
           loadBranding();
           loadAlbums();
+          checkMetricsEnabled();
+        } else {
+          // Set available auth methods from auth status
+          setAvailableAuthMethods(data.availableAuthMethods || {
+            google: false,
+            passkey: false,
+            password: false,
+          });
         }
         setLoading(false);
       })
@@ -132,6 +244,40 @@ export default function AdminPortal() {
         setLoading(false);
       });
   }, []);
+  
+  // Check for success messages in URL params and show toast
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const message = params.get('message');
+    
+    if (message === 'signup-complete') {
+      addMessage({ type: 'success', text: '✓ Account created successfully! You can now sign in.' });
+      // Clean up URL
+      const newUrl = window.location.pathname;
+      window.history.replaceState({}, '', newUrl);
+    } else if (message === 'password-reset-complete') {
+      addMessage({ type: 'success', text: '✓ Password reset successfully! You can now sign in with your new password.' });
+      // Clean up URL
+      const newUrl = window.location.pathname;
+      window.history.replaceState({}, '', newUrl);
+    }
+  }, [location.search]);
+
+  // Check if OpenObserve analytics is enabled
+  const checkMetricsEnabled = async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/config`, {
+        credentials: 'include',
+      });
+      if (res.ok) {
+        const config = await res.json();
+        const isEnabled = config?.analytics?.openobserve?.enabled === true;
+        setMetricsEnabled(isEnabled);
+      }
+    } catch (err) {
+      console.error('Failed to check metrics config:', err);
+    }
+  };
 
   // Track tab changes
   useEffect(() => {
@@ -140,13 +286,135 @@ export default function AdminPortal() {
     }
   }, [activeTab, authStatus]);
 
+  // Redirect admins from profile to settings
+  useEffect(() => {
+    if (activeTab === 'profile' && authStatus?.user?.role === 'admin') {
+      navigate('/admin/settings');
+    }
+  }, [activeTab, authStatus, navigate]);
+
+  // Load branding and links when switching to Settings tab
+  useEffect(() => {
+    if (activeTab === 'config' && authStatus?.authenticated) {
+      console.log('[AdminPortal] Settings tab active, loading branding and links');
+      loadBranding();
+      loadExternalLinks();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTab, authStatus]);
+
+  // Redirect from metrics if it's disabled
+  useEffect(() => {
+    if (activeTab === 'metrics' && !metricsEnabled && authStatus?.authenticated) {
+      navigate('/admin');
+    }
+  }, [activeTab, metricsEnabled, authStatus, navigate]);
+
+  // Check if user needs security setup after fresh login
+  useEffect(() => {
+    const freshLogin = location.state?.freshLogin;
+    const dismissed = localStorage.getItem('security-setup-dismissed') === 'true';
+    
+    console.log('[Security Prompt] Check:', {
+      freshLogin,
+      dismissed,
+      authenticated: authStatus?.authenticated,
+      hasUser: !!authStatus?.user,
+      user: authStatus?.user,
+      locationState: location.state,
+    });
+    
+    if (freshLogin && authStatus?.authenticated && authStatus?.user && !dismissed) {
+      // Check if user has MFA or passkey set up
+      const user = authStatus.user;
+      const hasMFA = user.mfa_enabled === true;
+      const hasPasskey = user.passkey_enabled === true;
+      
+      // Only show prompt if user signed in with credentials (not Google OAuth) and has no MFA/passkey
+      const authMethods = user.auth_methods || [];
+      const isCredentialUser = authMethods.includes('credentials');
+      const isGoogleUser = authMethods.includes('google');
+      
+      console.log('[Security Prompt] User security status:', {
+        hasMFA,
+        hasPasskey,
+        authMethods,
+        isCredentialUser,
+        isGoogleUser,
+        shouldShow: isCredentialUser && !isGoogleUser && !hasMFA && !hasPasskey,
+      });
+      
+      if (isCredentialUser && !isGoogleUser && !hasMFA && !hasPasskey) {
+        console.log('[Security Prompt] Showing prompt!');
+        setShowSecurityPrompt(true);
+      }
+      
+      // Clear the freshLogin state so prompt doesn't show again on navigation
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [authStatus, location.state, navigate, location.pathname]);
+
+  // Define loadAlbums early so it can be used in other hooks
+  const loadAlbums = useCallback(async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/albums`, {
+        credentials: 'include',
+      });
+      const data = await res.json();
+      
+      // New API format: { albums: [...], folders: [...] }
+      // Handle backward compatibility with old array format
+      if (Array.isArray(data)) {
+        // Old format (array of albums)
+        const albumsList: Album[] = data.map((album: string | { name: string; published: boolean }) => {
+          if (typeof album === 'string') {
+            return { name: album, published: true };
+          }
+          return album;
+        });
+        setAlbums(albumsList);
+        setFolders([]);
+      } else {
+        // New format (object with albums and folders)
+        setAlbums(data.albums || []);
+        setFolders(data.folders || []);
+      }
+    } catch (err) {
+      console.error('Failed to load albums:', err);
+    }
+  }, []); // Empty deps - only depends on setState functions which are stable
+
+  // Listen for albums-updated events from AlbumsManager
+  useEffect(() => {
+    const handleAlbumsUpdated = (event: Event) => {
+      const customEvent = event as CustomEvent;
+      // Don't reload if the event came from AlbumsManager drag operations
+      // AlbumsManager already has the optimistic state
+      if (customEvent.detail?.skipReload) {
+        console.log('📢 AdminPortal: albums-updated event received, skipping reload (optimistic update)');
+        return;
+      }
+      console.log('📢 AdminPortal: albums-updated event received, reloading albums...');
+      loadAlbums();
+    };
+
+    window.addEventListener('albums-updated', handleAlbumsUpdated);
+    
+    return () => {
+      window.removeEventListener('albums-updated', handleAlbumsUpdated);
+    };
+  }, [loadAlbums]); // Added loadAlbums to dependencies to fix stale closure
+
   const loadExternalLinks = async () => {
     try {
       const res = await fetch(`${API_URL}/api/external-links`, {
         credentials: 'include',
       });
       const data = await res.json();
-      setExternalLinks(data.links || []);
+      console.log('[AdminPortal] Loaded external links from API:', data);
+      const linksData = data.links || [];
+      console.log('[AdminPortal] Setting externalLinks state to:', linksData);
+      setExternalLinks(linksData);
     } catch (err) {
       console.error('Failed to load external links:', err);
     }
@@ -158,57 +426,175 @@ export default function AdminPortal() {
         credentials: 'include',
       });
       const data = await res.json();
-      // Ensure all values are strings (not undefined)
-      setBranding({
+      console.log('[AdminPortal] Loaded branding data from API:', data);
+      // Ensure all values are set (not undefined)
+      const brandingData = {
         siteName: data.siteName || '',
         avatarPath: data.avatarPath || '',
         primaryColor: data.primaryColor || '#4ade80',
         secondaryColor: data.secondaryColor || '#22c55e',
         metaDescription: data.metaDescription || '',
         metaKeywords: data.metaKeywords || '',
-        faviconPath: data.faviconPath || ''
-      });
+        faviconPath: data.faviconPath || '',
+        shuffleHomepage: data.shuffleHomepage ?? true
+      };
+      console.log('[AdminPortal] Setting branding state to:', brandingData);
+      setBranding(brandingData);
     } catch (err) {
       console.error('Failed to load branding config:', err);
     }
   };
 
-  const loadAlbums = async () => {
-    try {
-      const res = await fetch(`${API_URL}/api/albums`, {
-        credentials: 'include',
-      });
-      const albumsData = await res.json();
-      
-      // Handle both array of strings and array of objects with published state
-      const albumsList: Album[] = albumsData.map((album: string | { name: string; published: boolean }) => {
-        if (typeof album === 'string') {
-          return { name: album, published: true };
-        }
-        return album;
-      });
-      
-      setAlbums(albumsList);
-    } catch (err) {
-      console.error('Failed to load albums:', err);
-    }
-  };
+  // Handle credential login
+  const handleCredentialsLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoginError(null);
+    setLoginLoading(true);
 
-  const handleLogout = async () => {
     try {
-      // Track logout before actually logging out
-      trackLogout(authStatus?.user?.email);
-      await fetch(`${API_URL}/api/auth/logout`, {
+      const res = await fetch(`${API_URL}/api/auth-extended/login`, {
         method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          email: username,
+          password,
+          mfaToken: mfaToken || undefined,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        if (data.requiresMFA) {
+          setRequiresMFA(true);
+          setLoginError(null);
+        } else {
+          setLoginError(data.error || 'Login failed');
+        }
+        setLoginLoading(false);
+        return;
+      }
+
+      // Success - fetch auth status and check if security prompt needed
+      const authRes = await fetch(`${API_URL}/api/auth/status`, {
         credentials: 'include',
       });
-      window.location.href = '/';
+      
+      if (authRes.ok) {
+        const authData = await authRes.json();
+        setAuthStatus(authData);
+        
+        // Load albums after successful login
+        loadAlbums();
+        
+        // Check if user needs security setup
+        const dismissed = localStorage.getItem('security-setup-dismissed') === 'true';
+        const user = authData.user;
+        
+        if (user && !dismissed) {
+          const hasMFA = user.mfa_enabled === true;
+          const hasPasskey = user.passkey_enabled === true;
+          const authMethods = user.auth_methods || [];
+          const isCredentialUser = authMethods.includes('credentials');
+          const isGoogleUser = authMethods.includes('google');
+          
+          console.log('[Login] Checking security setup after credential login:', {
+            hasMFA,
+            hasPasskey,
+            authMethods,
+            isCredentialUser,
+            isGoogleUser,
+            shouldShow: isCredentialUser && !isGoogleUser && !hasMFA && !hasPasskey,
+          });
+          
+          if (isCredentialUser && !isGoogleUser && !hasMFA && !hasPasskey) {
+            console.log('[Login] Showing security prompt after credential login');
+            setShowSecurityPrompt(true);
+          }
+        }
+        
+        setLoginLoading(false);
+      } else {
+        window.location.reload();
+      }
     } catch (err) {
-      console.error('Logout failed:', err);
+      setLoginError('Network error. Please try again.');
+      setLoginLoading(false);
     }
   };
 
-  if (loading) {
+  // Handle passkey login
+  const handlePasskeyLogin = async () => {
+    setLoginError(null);
+    setLoginLoading(true);
+
+    try {
+      // Get authentication options with email to narrow down passkeys
+      const optionsRes = await fetch(`${API_URL}/api/auth-extended/passkey/auth-options`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: username || undefined }),
+      });
+
+      if (!optionsRes.ok) {
+        throw new Error('Failed to get authentication options');
+      }
+
+      const { sessionId, ...options } = await optionsRes.json();
+
+      // Start WebAuthn authentication
+      const { startAuthentication } = await import('@simplewebauthn/browser');
+      const credential = await startAuthentication(options);
+
+      // Verify authentication
+      const verifyRes = await fetch(`${API_URL}/api/auth-extended/passkey/auth-verify`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ credential, sessionId }),
+      });
+
+      const data = await verifyRes.json();
+
+      if (!verifyRes.ok) {
+        setLoginError(data.error || 'Passkey authentication failed');
+        setLoginLoading(false);
+        return;
+      }
+
+      // Store email for next time
+      if (username) {
+        localStorage.setItem('passkeyEmail', username);
+      }
+
+      // Success - fetch auth status
+      const authRes = await fetch(`${API_URL}/api/auth/status`, {
+        credentials: 'include',
+      });
+      
+      if (authRes.ok) {
+        const authData = await authRes.json();
+        setAuthStatus(authData);
+        
+        // Load albums after successful login
+        loadAlbums();
+        
+        setLoginLoading(false);
+      } else {
+        window.location.reload();
+      }
+    } catch (err: any) {
+      if (err.name === 'NotAllowedError') {
+        setLoginError('Authentication cancelled');
+      } else {
+        setLoginError(err.message || 'Passkey authentication failed');
+      }
+      setLoginLoading(false);
+    }
+  };
+
+  if (loading || !cssLoaded) {
     return (
       <div className="admin-portal">
         <div className="admin-container">
@@ -224,7 +610,7 @@ export default function AdminPortal() {
             }}
           >
             <div className="loading-spinner"></div>
-            <p>Loading site settings...</p>
+            <p>{!cssLoaded ? 'Loading styles...' : 'Loading site settings...'}</p>
           </div>
         </div>
       </div>
@@ -238,40 +624,317 @@ export default function AdminPortal() {
           <div className="auth-section">
             <div className="auth-card">
               <div className="auth-icon">
-                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-                  <path d="M9 9h6v6H9z"/>
-                  <path d="M9 1v6"/>
-                  <path d="M15 1v6"/>
-                  <path d="M9 17v6"/>
-                  <path d="M15 17v6"/>
-                  <path d="M1 9h6"/>
-                  <path d="M17 9h6"/>
-                  <path d="M1 15h6"/>
-                  <path d="M17 15h6"/>
-                </svg>
+                <LockIcon width="48" height="48" />
               </div>
               
-              <h2>Authentication Required</h2>
+              <h2>Sign in to Galleria</h2>
               <p className="auth-description">
-                You need to sign in with your Google account to access the admin panel and manage your photography website.
+                Choose your authentication method to access Galleria.
               </p>
-              
-              <div className="auth-actions">
-                <a href={`${API_URL}/api/auth/google`} className="btn-login">
-                  <svg width="20" height="20" viewBox="0 0 18 18" style={{ marginRight: '12px' }}>
-                    <path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z"/>
-                    <path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z"/>
-                    <path fill="#FBBC05" d="M3.964 10.707c-.18-.54-.282-1.117-.282-1.707 0-.593.102-1.17.282-1.709V4.958H.957C.347 6.173 0 7.55 0 9s.348 2.827.957 4.042l3.007-2.335z"/>
-                    <path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/>
-                  </svg>
-                  Sign in with Google
-                </a>
+
+              {loginError && (
+                <div className="login-error" style={{
+                  background: '#fee2e2',
+                  border: '1px solid #ef4444',
+                  color: '#991b1b',
+                  padding: '0.75rem 1rem',
+                  borderRadius: '6px',
+                  marginBottom: '1.5rem',
+                  fontSize: '0.875rem'
+                }}>
+                  {loginError}
+                </div>
+              )}
+
+              {/* Auth Method Selection - Main Screen */}
+              {!activeAuthTab && (
+                <div className="auth-actions">
+                  {availableAuthMethods.google && (
+                    <a 
+                      href={`${API_URL}/api/auth/google`} 
+                      className="btn-login"
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        textDecoration: 'none',
+                        width: '100%',
+                        height: '56px',
+                        background: 'white',
+                        border: '1px solid #d1d5db',
+                        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)',
+                        color: '#374151'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.boxShadow = '0 6px 20px rgba(0, 0, 0, 0.12)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.08)';
+                      }}
+                    >
+                      <GoogleLogoIcon width="20" height="20" style={{ marginRight: '12px' }} />
+                      Sign in with Google
+                    </a>
+                  )}
+                  
+                  {availableAuthMethods.passkey && (
+                    <button
+                      onClick={() => updateAuthRoute('passkey')}
+                      className="btn-login"
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        width: '100%',
+                        height: '56px',
+                        background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+                        border: '1px solid rgba(59, 130, 246, 0.3)',
+                        boxShadow: '0 4px 12px rgba(59, 130, 246, 0.3)'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.boxShadow = '0 6px 20px rgba(59, 130, 246, 0.4)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.boxShadow = '0 4px 12px rgba(59, 130, 246, 0.3)';
+                      }}
+                    >
+                      <span style={{ fontSize: '1.2rem', marginRight: '12px' }}>🔑</span>
+                      Sign in with Passkey
+                    </button>
+                  )}
+                  
+                  {availableAuthMethods.password && (
+                    <button
+                      onClick={() => updateAuthRoute('credentials')}
+                      className="btn-login"
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        width: '100%',
+                        height: '56px',
+                        background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                        border: '1px solid rgba(16, 185, 129, 0.3)',
+                        boxShadow: '0 4px 12px rgba(16, 185, 129, 0.3)'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.boxShadow = '0 6px 20px rgba(16, 185, 129, 0.4)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.boxShadow = '0 4px 12px rgba(16, 185, 129, 0.3)';
+                      }}
+                    >
+                      <LockIcon width="20" height="20" style={{ marginRight: '12px' }} />
+                      Sign in with Password
+                    </button>
+                  )}
+                </div>
+              )}
+
+              {/* Google OAuth - Hidden (only via button) */}
+              {activeAuthTab === 'google' && availableAuthMethods.google && (
+                <div className="auth-actions">
+                  <a href={`${API_URL}/api/auth/google`} className="btn-login">
+                    <GoogleLogoIcon width="20" height="20" style={{ marginRight: '12px' }} />
+                    Sign in with Google
+                  </a>
+                </div>
+              )}
+
+              {/* Email/Password */}
+              {activeAuthTab === 'credentials' && (
+                <div className="auth-actions">
+                  {!requiresMFA ? (
+                    <form onSubmit={handleCredentialsLogin} style={{ width: '100%' }}>
+                      <div className="auth-input-group">
+                        <label className="auth-input-label">
+                          Email
+                        </label>
+                        <input
+                          type="email"
+                          className="auth-input"
+                          value={username}
+                          onChange={(e) => setUsername(e.target.value)}
+                          required
+                          autoComplete="email"
+                          disabled={loginLoading}
+                          placeholder="Enter your email"
+                          autoFocus
+                        />
+                      </div>
+                      <div className="auth-input-group" style={{ marginBottom: '1.5rem' }}>
+                        <label className="auth-input-label">
+                          Password
+                        </label>
+                        <input
+                          type="password"
+                          className="auth-input"
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          required
+                          autoComplete="current-password"
+                          disabled={loginLoading}
+                          placeholder="Enter your password"
+                        />
+                      </div>
+                      <button
+                        type="submit"
+                        className="btn-login"
+                        disabled={loginLoading}
+                        style={{ width: '100%' }}
+                      >
+                        {loginLoading ? 'Signing in...' : 'Sign In'}
+                      </button>
+                    </form>
+                  ) : (
+                    <form onSubmit={handleCredentialsLogin} style={{ width: '100%' }}>
+                      <div style={{
+                        textAlign: 'center',
+                        marginBottom: '1.5rem',
+                        padding: '1rem',
+                        background: '#f0fdf4',
+                        border: '1px solid #bbf7d0',
+                        borderRadius: '6px'
+                      }}>
+                        <p style={{ fontWeight: 600, color: '#15803d', margin: '0 0 0.5rem 0' }}>
+                          Two-Factor Authentication Required
+                        </p>
+                        <p style={{ fontSize: '0.875rem', color: '#16a34a', margin: '0 0 0.5rem 0' }}>
+                          Enter the 6-digit code from your authenticator app for:
+                        </p>
+                        <p style={{ fontSize: '0.875rem', color: '#15803d', fontWeight: 600, margin: 0, fontFamily: 'monospace' }}>
+                          {username}
+                        </p>
+                      </div>
+                      {/* Hidden username field for password managers */}
+                      <input
+                        type="text"
+                        name="username"
+                        value={username}
+                        autoComplete="username"
+                        readOnly
+                        style={{ display: 'none' }}
+                        tabIndex={-1}
+                        aria-hidden="true"
+                      />
+                      <div className="auth-input-group">
+                        <label className="auth-input-label">
+                          Authentication Code
+                        </label>
+                        <input
+                          type="text"
+                          className="auth-input"
+                          name="totp"
+                          value={mfaToken}
+                          onChange={(e) => setMfaToken(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                          placeholder="000000"
+                          required
+                          autoComplete="one-time-code"
+                          disabled={loginLoading}
+                          maxLength={6}
+                          style={{
+                            fontSize: '1.5rem',
+                            textAlign: 'center',
+                            letterSpacing: '0.5em',
+                            fontWeight: 600
+                          }}
+                          autoFocus
+                        />
+                      </div>
+                      <button
+                        type="submit"
+                        className="btn-login"
+                        disabled={loginLoading || mfaToken.length !== 6}
+                        style={{ width: '100%', marginBottom: '0.5rem' }}
+                      >
+                        {loginLoading ? 'Verifying...' : 'Verify & Sign In'}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setRequiresMFA(false);
+                          setMfaToken('');
+                          setLoginError(null);
+                          updateAuthRoute(null);
+                        }}
+                        disabled={loginLoading}
+                        style={{
+                          width: '100%',
+                          padding: '0.75rem',
+                          background: 'white',
+                          border: '1px solid #d1d5db',
+                          borderRadius: '6px',
+                          cursor: 'pointer',
+                          fontSize: '0.875rem',
+                          fontWeight: 500,
+                          color: '#6b7280'
+                        }}
+                      >
+                        Back
+                      </button>
+                    </form>
+                  )}
+                </div>
+              )}
+
+              {/* Passkey */}
+              {activeAuthTab === 'passkey' && (
+                <div className="auth-actions">
+                  <form onSubmit={(e) => { e.preventDefault(); handlePasskeyLogin(); }} style={{ width: '100%' }}>
+                    <div className="auth-input-group">
+                      <label className="auth-input-label">
+                        Email
+                      </label>
+                      <input
+                        type="email"
+                        className="auth-input"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        required
+                        autoComplete="email webauthn"
+                        disabled={loginLoading}
+                        placeholder="Enter your email"
+                        autoFocus
+                      />
+                    </div>
+                    <button
+                      type="submit"
+                      className="btn-login"
+                      disabled={loginLoading || !username}
+                      style={{ width: '100%', marginBottom: '0.5rem' }}
+                    >
+                      {loginLoading ? 'Authenticating...' : '🔑 Sign in with Passkey'}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        updateAuthRoute(null);
+                        setUsername('');
+                        setLoginError(null);
+                      }}
+                      disabled={loginLoading}
+                      style={{
+                        width: '100%',
+                        padding: '0.75rem',
+                        background: 'white',
+                        border: '1px solid #d1d5db',
+                        borderRadius: '6px',
+                        cursor: 'pointer',
+                        fontSize: '0.875rem',
+                        fontWeight: 500,
+                        color: '#6b7280'
+                      }}
+                    >
+                      Back
+                    </button>
+                  </form>
+                </div>
+              )}
+
+              {/* Return to Gallery Link */}
+              <div style={{ marginTop: '1.5rem', paddingTop: '1.5rem', borderTop: '1px solid #e5e7eb' }}>
                 <a href="/" className="btn-home">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ marginRight: '8px' }}>
-                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-                    <polyline points="9,22 9,12 15,12 15,22"/>
-                  </svg>
+                  <HomeIcon width="18" height="18" style={{ marginRight: '8px' }} />
                   Return to Gallery
                 </a>
               </div>
@@ -286,12 +949,32 @@ export default function AdminPortal() {
     <div className="admin-portal">
       <div className="admin-container">
         <div className="admin-header">
-          <button onClick={handleLogout} className="btn-logout">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '8px' }}>
-              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-              <polyline points="16 17 21 12 16 7"/>
-              <line x1="21" y1="12" x2="9" y2="12"/>
-            </svg>
+          <button
+            className="btn-logout"
+            style={{ display: 'inline-flex', alignItems: 'center' }}
+            onClick={async (e) => {
+              e.preventDefault();
+              try {
+                trackLogout(authStatus?.user?.email);
+              } catch (error) {
+                console.error('Analytics error:', error);
+              }
+              
+              // Call logout endpoint and wait for it to complete
+              try {
+                await fetch(`${API_URL}/api/auth/logout`, {
+                  method: 'POST',
+                  credentials: 'include',
+                });
+              } catch (error) {
+                console.error('Logout error:', error);
+              }
+              
+              // Navigate to homepage after logout completes
+              window.location.href = '/';
+            }}
+          >
+            <LogoutIcon width="18" height="18" style={{ marginRight: '8px' }} />
             Logout
           </button>
           <div className="admin-tabs">
@@ -299,43 +982,44 @@ export default function AdminPortal() {
               className={`tab-button ${activeTab === 'albums' ? 'active' : ''}`}
               onClick={() => navigate('/admin/albums')}
             >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '8px' }}>
-                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-                <circle cx="8.5" cy="8.5" r="1.5"/>
-                <polyline points="21 15 16 10 5 21"/>
-              </svg>
+              <ImageIcon width="20" height="20" style={{ marginRight: '8px' }} />
               Albums
             </button>
-            <button
-              className={`tab-button ${activeTab === 'metrics' ? 'active' : ''}`}
-              onClick={() => navigate('/admin/metrics')}
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '8px' }}>
-                <line x1="18" y1="20" x2="18" y2="10"/>
-                <line x1="12" y1="20" x2="12" y2="4"/>
-                <line x1="6" y1="20" x2="6" y2="14"/>
-              </svg>
-              Metrics
-            </button>
-            <button
-              className={`tab-button ${activeTab === 'config' ? 'active' : ''}`}
-              onClick={() => navigate('/admin/settings')}
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '8px' }}>
-                <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
-                <circle cx="12" cy="12" r="3"/>
-              </svg>
-              Settings
-            </button>
+            {metricsEnabled && (
+              <button
+                className={`tab-button ${activeTab === 'metrics' ? 'active' : ''}`}
+                onClick={() => navigate('/admin/metrics')}
+              >
+                <BarChartIcon width="20" height="20" style={{ marginRight: '8px' }} />
+                Metrics
+              </button>
+            )}
+            {/* Show Settings tab only for admins, Profile tab for viewers/managers */}
+            {authStatus?.user?.role === 'admin' ? (
+              <button
+                className={`tab-button ${activeTab === 'config' ? 'active' : ''}`}
+                onClick={() => navigate('/admin/settings')}
+              >
+                <SettingsIcon width="20" height="20" style={{ marginRight: '8px' }} />
+                Settings
+              </button>
+            ) : (
+              <button
+                className={`tab-button ${activeTab === 'profile' ? 'active' : ''}`}
+                onClick={() => navigate('/admin/profile')}
+              >
+                <UserIcon width="20" height="20" style={{ marginRight: '8px' }} />
+                Profile
+              </button>
+            )}
           </div>
         </div>
 
         <div className="toast-container">
-          {messages.map((message, index) => (
+          {messages.map((message) => (
             <div 
               key={message.id} 
               className={`toast toast-${message.type}`}
-              style={{ top: `${80 + index * 80}px` }}
             >
               <div className="toast-content">
                 <span className="toast-icon">
@@ -354,19 +1038,21 @@ export default function AdminPortal() {
           ))}
         </div>
 
-        {activeTab === 'metrics' && (
+        {activeTab === 'metrics' && metricsEnabled && (
           <Metrics />
         )}
 
         {activeTab === 'albums' && (
           <AlbumsManager
             albums={albums}
+            folders={folders}
             loadAlbums={loadAlbums}
             setMessage={addMessage}
+            userRole={(authStatus?.user?.role as 'admin' | 'manager' | 'viewer') || 'viewer'}
           />
         )}
 
-        {activeTab === 'config' && (
+        {activeTab === 'config' && authStatus?.user?.role === 'admin' && (
           <ConfigManager
             setMessage={addMessage}
             branding={branding}
@@ -376,6 +1062,47 @@ export default function AdminPortal() {
             setExternalLinks={setExternalLinks}
           />
         )}
+
+        {activeTab === 'profile' && authStatus?.user?.role !== 'admin' && (
+          <div className="admin-content">
+            <ProfileSection setMessage={addMessage} />
+          </div>
+        )}
+
+        {/* Security Setup Prompt Modal */}
+        {showSecurityPrompt && (
+          <SecuritySetupPrompt
+            onComplete={async () => {
+              // Refresh auth status to get updated MFA status
+              const authRes = await fetch(`${API_URL}/api/auth/status`, {
+                credentials: 'include',
+              });
+              
+              if (authRes.ok) {
+                const authData = await authRes.json();
+                setAuthStatus(authData);
+              }
+              
+              setShowSecurityPrompt(false);
+            }}
+            onDismiss={() => setShowSecurityPrompt(false)}
+          />
+        )}
+
+        {/* Powered by Galleria Footer */}
+        <div className="galleria-footer">
+          <span className="footer-text">
+            <a 
+              href="https://github.com/theodorecharles/photography-website" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="footer-galleria-link"
+            >
+              Galleria
+            </a>
+            {' '}v{packageJson.version}
+          </span>
+        </div>
       </div>
     </div>
   );

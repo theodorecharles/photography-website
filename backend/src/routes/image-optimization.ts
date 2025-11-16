@@ -41,16 +41,11 @@ function broadcastToClients(job: RunningJob | null, message: string) {
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Path to config.json
-const configPath = path.resolve(__dirname, '../../../config/config.json');
+import { DATA_DIR } from '../config.js';
+import { requireAuth, requireAdmin, requireManager } from '../auth/middleware.js';
 
-// Middleware to check if user is authenticated
-const requireAuth = (req: express.Request, res: express.Response, next: express.NextFunction) => {
-  if (req.isAuthenticated()) {
-    return next();
-  }
-  res.status(401).json({ error: 'Unauthorized' });
-};
+// Path to config.json
+const configPath = path.join(DATA_DIR, 'config.json');
 
 // GET /api/image-optimization/settings - Get current optimization settings
 router.get('/settings', requireAuth, (req, res) => {
@@ -75,7 +70,7 @@ router.get('/settings', requireAuth, (req, res) => {
 });
 
 // PUT /api/image-optimization/settings - Update optimization settings
-router.put('/settings', requireAuth, (req, res) => {
+router.put('/settings', requireAdmin, (req, res) => {
   try {
     const { concurrency, images } = req.body;
     
@@ -143,7 +138,7 @@ router.get('/status', requireAuth, (req, res) => {
 });
 
 // POST /api/image-optimization/stop - Stop running optimization job
-router.post('/stop', requireAuth, (req: any, res: any) => {
+router.post('/stop', requireManager, (req: any, res: any) => {
   if (!runningOptimizationJob || runningOptimizationJob.isComplete) {
     return res.json({ success: false, message: 'No running job to stop' });
   }
@@ -179,7 +174,7 @@ router.post('/stop', requireAuth, (req: any, res: any) => {
 });
 
 // POST /api/image-optimization/optimize - Run optimization script with SSE
-router.post('/optimize', requireAuth, (req, res) => {
+router.post('/optimize', requireManager, (req, res) => {
   const { force } = req.body;
   
   // If already running, reconnect to existing job
@@ -234,7 +229,7 @@ router.post('/optimize', requireAuth, (req, res) => {
   runningOptimizationJob.output.push(connectMsg);
   
   // Build command
-  const scriptPath = path.resolve(__dirname, '../../../optimize_all_images.js');
+  const scriptPath = path.resolve(__dirname, '../../../scripts/optimize_all_images.js');
   const args = force ? ['--force'] : [];
   
   // Check if script exists

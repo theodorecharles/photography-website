@@ -6,8 +6,9 @@
 
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { API_URL } from '../config';
 import './Footer.css';
+
+const API_URL = import.meta.env.VITE_API_URL || '';
 
 interface FooterProps {
   albums?: string[];
@@ -46,11 +47,23 @@ function Footer({ albums: _albums = [], externalLinks: _externalLinks = [], curr
     <footer className="footer">
       <div className="footer-content">
         <div className="footer-bottom">
-          <span>&copy; {currentYear} Ted Charles.</span>
-          <div className="footer-links">
+          <span>
+            &copy; {currentYear} Ted Charles.{' '}
+            <span className="footer-separator">•</span>{' '}
             <Link to="/license" className="footer-link">View License</Link>
-            <span className="footer-separator">•</span>
-            <a href={`${API_URL}/api/auth/google`} className="footer-link">Login</a>
+          </span>
+          <div className="footer-links">
+            <span className="footer-powered-by">
+              Powered by{' '}
+              <a 
+                href="https://github.com/theodorecharles/photography-website" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="footer-galleria-link"
+              >
+                Galleria
+              </a>
+            </span>
           </div>
         </div>
       </div>

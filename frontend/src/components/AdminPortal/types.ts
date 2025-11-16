@@ -7,6 +7,10 @@ export interface User {
   email: string;
   name: string;
   picture?: string;
+  role?: string;
+  mfa_enabled?: boolean;
+  passkey_enabled?: boolean;
+  auth_methods?: string[];
 }
 
 export interface AuthStatus {
@@ -27,6 +31,7 @@ export interface BrandingConfig {
   metaDescription: string;
   metaKeywords: string;
   faviconPath: string;
+  shuffleHomepage?: boolean;
 }
 
 export interface ImageOptimizationSettings {
@@ -51,18 +56,23 @@ export interface Album {
   name: string;
   photoCount?: number;
   published?: boolean;
+  show_on_homepage?: boolean;
   sort_order?: number | null;
+  folder_id?: number | null;
 }
 
-export interface Photo {
-  id: string;
-  title: string;
-  album: string;
-  src: string;
-  thumbnail: string;
-  modal: string;
-  download: string;
+export interface AlbumFolder {
+  id: number;
+  name: string;
+  published: boolean;
+  sort_order?: number | null;
+  created_at: string;
+  updated_at: string;
 }
+
+// Photo interface moved to canonical location: types/photo.ts
+// The old version had a 'src' field which is no longer used (originals not served)
+export type { Photo } from '../../types/photo';
 
 export type Tab = 'branding' | 'links' | 'albums' | 'metrics' | 'config';
 

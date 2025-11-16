@@ -7,7 +7,7 @@ import { Router, Request, Response } from 'express';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { isAuthenticated } from './auth.js';
+import { requireManager } from '../auth/middleware.js';
 import { csrfProtection } from '../security.js';
 
 const router = Router();
@@ -17,7 +17,9 @@ router.use(csrfProtection);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const configPath = path.join(__dirname, '../../../config/config.json');
+import { DATA_DIR } from '../config.js';
+
+const configPath = path.join(DATA_DIR, 'config.json');
 
 // GET external links - public endpoint for navigation menu
 router.get('/', (req: Request, res: Response) => {
@@ -31,7 +33,7 @@ router.get('/', (req: Request, res: Response) => {
 });
 
 // PUT (update) external links
-router.put('/', isAuthenticated, (req: Request, res: Response): void => {
+router.put('/', requireManager, (req: Request, res: Response): void => {
   try {
     const { links } = req.body;
 

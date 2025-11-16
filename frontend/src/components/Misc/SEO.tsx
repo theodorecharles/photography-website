@@ -5,6 +5,7 @@
 
 import { useEffect } from 'react';
 import { SITE_URL } from '../../config';
+import { updateMetaTag, updateCanonicalLink } from '../../utils/seoHelpers';
 
 interface SEOProps {
   title?: string;
@@ -17,7 +18,7 @@ interface SEOProps {
 export function SEO({ 
   title = "Ted Charles - Photography Portfolio",
   description = "Professional photography portfolio by Ted Charles. View stunning landscape, portrait, and creative photography collections.",
-  image = `${SITE_URL}/photos/derpatar.png`,
+  image = `${SITE_URL}/photos/avatar.png`,
   url = SITE_URL,
   type = "website"
 }: SEOProps) {
@@ -41,29 +42,5 @@ export function SEO({
   }, [title, description, image, url, type]);
   
   return null;
-}
-
-function updateMetaTag(attribute: string, key: string, content: string) {
-  let element = document.querySelector(`meta[${attribute}="${key}"]`);
-  
-  if (!element) {
-    element = document.createElement('meta');
-    element.setAttribute(attribute, key);
-    document.head.appendChild(element);
-  }
-  
-  element.setAttribute('content', content);
-}
-
-function updateCanonicalLink(url: string) {
-  let link = document.querySelector('link[rel="canonical"]');
-  
-  if (!link) {
-    link = document.createElement('link');
-    link.setAttribute('rel', 'canonical');
-    document.head.appendChild(link);
-  }
-  
-  link.setAttribute('href', url);
 }
 

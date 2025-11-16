@@ -1,0 +1,13 @@
+/* Admin CSS Bundle - Import all admin styles here to ensure they're always loaded */
+@import './components/AdminPortal/AdminPortal.css';
+@import './components/AdminPortal/AlbumsManager.css';
+@import './components/AdminPortal/PhotoOrderControls.css';
+@import './components/AdminPortal/ConfigManager.css';
+@import './components/AdminPortal/BrandingManager.css';
+@import './components/AdminPortal/LinksManager.css';
+@import './components/AdminPortal/ShareModal.css';
+@import './components/AdminPortal/PasswordInput.css';
+@import './components/AdminPortal/Metrics/Metrics.css';
+@import './components/AdminPortal/Metrics/VisitorMap.css';
+@import 'leaflet/dist/leaflet.css';
+

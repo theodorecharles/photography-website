@@ -46,6 +46,13 @@
   margin-bottom: 0.5rem;
 }
 
+.branding-description {
+  color: #a1a1aa;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  margin-bottom: 0.5rem;
+}
+
 .branding-input,
 .branding-textarea {
   padding: 0.875rem 1rem;
@@ -111,7 +118,7 @@
 .color-picker {
   width: 60px;
   height: 60px;
-  border: 2px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 8px;
   cursor: pointer;
   background: rgba(0, 0, 0, 0.3);
@@ -217,7 +224,7 @@
   width: 40px;
   height: 40px;
   border-radius: 6px;
-  border: 2px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 @media (max-width: 768px) {
@@ -228,6 +235,14 @@
 
   .branding-group {
     padding: 1.25rem;
+  }
+
+  .section-button-group {
+    flex-direction: column;
+  }
+
+  .section-button-group button {
+    width: 100%;
   }
 
   .current-avatar-preview {

@@ -1,0 +1,634 @@
+/**
+ * Photos Modal - Redesigned Styles
+ * Clean, modern modal for managing photos in an album
+ */
+
+/* ============================================
+   MODAL CONTAINER & BACKDROP
+   ============================================ */
+
+.photos-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.85);
+  opacity: 0;
+  animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  z-index: 1000;
+}
+
+.photos-modal-backdrop.closing {
+  animation: fadeOut 0.3s cubic-bezier(0.4, 0, 0.6, 1) forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.photos-modal {
+  position: fixed;
+  top: 54px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 1024px;
+  height: calc(100vh - 54px);
+  background: #1a1a1a;
+  border-left: 1px solid #444;
+  border-right: 1px solid #444;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+  z-index: 1001;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: flipUp 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.photos-modal.closing {
+  animation: flipDown 0.3s cubic-bezier(0.4, 0, 0.6, 1) forwards;
+}
+
+@keyframes flipUp {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(100%) rotateX(-15deg);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) rotateX(0deg);
+  }
+}
+
+@keyframes flipDown {
+  from {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) rotateX(0deg);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-50%) translateY(100%) rotateX(15deg);
+  }
+}
+
+.photos-modal.drag-over {
+  border: 1px solid var(--primary-color);
+  background: rgba(74, 222, 128, 0.03);
+}
+
+/* Modal Content (scrollable area) */
+.photos-modal-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background-color: #111;
+}
+
+.photos-grid {
+  padding: 1.5rem;
+}
+
+/* ============================================
+   HEADER
+   ============================================ */
+
+.photos-modal-header {
+  background: #1f1f1f;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  flex-shrink: 0;
+}
+
+/* Title Bar */
+.photos-title-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* Title Bar Left Group: Album title + photo count */
+.photos-title-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1; /* Allow left side to grow, pushing right side to the edge */
+  min-width: 0; /* Allow text truncation if needed */
+}
+
+/* Title Bar Right Group: Publish toggle + close button */
+.photos-title-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 0 0 auto; /* Don't grow or shrink */
+}
+
+/* Publish toggle in title bar - keep compact, don't expand */
+.publish-toggle-titlebar {
+  flex: 0 0 auto !important; /* Don't grow or shrink */
+}
+
+/* Mobile toggles stack container - wraps homepage and publish toggle */
+.mobile-toggles-stack {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 0 0 auto;
+}
+
+/* Homepage toggle - mobile icon version */
+.homepage-toggle-mobile {
+  flex: 0 0 auto !important; /* Don't grow or shrink */
+}
+
+/* Vertical toggle switch for mobile - toggle above label */
+.toggle-switch-mobile-vertical {
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  cursor: pointer;
+  position: relative;
+  margin-top: 0.5rem;
+}
+
+.toggle-switch-mobile-vertical input[type="checkbox"] {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  position: absolute;
+}
+
+.toggle-switch-mobile-vertical .toggle-slider {
+  position: relative;
+  display: block;
+  width: 36px;
+  height: 20px;
+  background-color: #374151;
+  border-radius: 20px;
+  transition: background-color 0.3s ease;
+}
+
+.toggle-switch-mobile-vertical .toggle-slider::before {
+  content: "";
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  left: 1px;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: #9ca3af;
+  border-radius: 50%;
+  transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.toggle-switch-mobile-vertical input[type="checkbox"]:checked + .toggle-slider {
+  background-color: rgba(34, 197, 94, 0.3);
+}
+
+.toggle-switch-mobile-vertical input[type="checkbox"]:checked + .toggle-slider::before {
+  transform: translateX(17px) translateY(-50%);
+  background-color: #4ade80;
+}
+
+.toggle-switch-mobile-vertical .toggle-label-below {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #9ca3af;
+  white-space: nowrap;
+  text-align: center;
+}
+
+.toggle-switch-mobile-vertical input[type="checkbox"]:checked ~ .toggle-label-below {
+  color: #4ade80;
+}
+
+.photos-modal-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #fff;
+  margin: 0;
+  margin-bottom: 0 !important;
+  letter-spacing: -0.02em;
+}
+
+.photos-count {
+  font-size: 0.9rem;
+  color: #888;
+  font-weight: 400;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.photos-close-btn {
+  background: transparent;
+  border: none;
+  color: #888;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  display: flex !important; /* Always visible */
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto; /* Don't grow or shrink */
+}
+
+.photos-close-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+/* Controls Bar */
+.photos-controls-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  gap: 1rem;
+  background-color: #1b1b1b;
+}
+
+.photos-controls-left,
+.photos-controls-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1; /* Allow controls sections to grow */
+}
+
+.photos-controls-right {
+  justify-content: flex-end; /* Stick content to the right */
+}
+
+/* Buttons should expand to fill available space */
+.photos-controls-left .photos-btn,
+.photos-controls-right .photos-btn {
+  flex: 1;
+  min-width: 0;
+}
+
+.photos-action-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* Toggle Switch - Compact variant */
+.toggle-switch.compact {
+  margin: 0;
+}
+
+/* Button Styles */
+.photos-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+  white-space: nowrap;
+  box-sizing: border-box; /* Ensure consistent sizing */
+  line-height: 1; /* Prevent extra height from line-height */
+}
+
+/* Ensure label buttons (like upload) match button height */
+label.photos-btn {
+  margin: 0;
+  line-height: 1;
+}
+
+.photos-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.photos-btn-primary {
+  background: var(--primary-color);
+  color: #000;
+  border-color: var(--primary-color);
+}
+
+.photos-btn-primary:hover:not(:disabled) {
+  background: #5eeb8f;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(74, 222, 128, 0.3);
+}
+
+.photos-btn-secondary {
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.photos-btn-secondary:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.10);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+.photos-btn-danger {
+  background: rgba(239, 68, 68, 0.12);
+  color: #ef4444;
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.photos-btn-danger:hover:not(:disabled) {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.5);
+  transform: translateY(-1px);
+}
+
+.photos-btn-success {
+  background: var(--primary-color);
+  color: #000;
+  border-color: var(--primary-color);
+}
+
+.photos-btn-success:hover:not(:disabled) {
+  background: #5eeb8f;
+  transform: translateY(-1px);
+}
+
+.photos-btn-ghost {
+  background: transparent;
+  color: #888;
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.photos-btn-ghost:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* View Toggle - Always fixed width, never expands */
+.view-toggle {
+  display: flex;
+  gap: 0;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 8px;
+  padding: 0.25rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  flex: 0 0 auto !important; /* Never grow or shrink */
+  width: fit-content !important; /* Use natural width */
+}
+
+.view-toggle-btn {
+  padding: 0.5rem;
+  background: transparent;
+  border: none;
+  color: #666;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.view-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #aaa;
+}
+
+.view-toggle-btn.active {
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--primary-color);
+}
+
+/* Reorder Bar - Part of modal layout, not fixed */
+.photos-reorder-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1.5rem;
+  background: #1f1f1f;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.5);
+  flex-shrink: 0; /* Don't shrink when content is large */
+  animation: slideUp 0.2s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.photos-reorder-left,
+.photos-reorder-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.reorder-hint {
+  font-size: 0.85rem;
+  color: #aaa;
+}
+
+/* Desktop: show hint next to shuffle button, hide mobile version */
+.reorder-hint-desktop {
+  display: inline;
+}
+
+.reorder-hint-mobile {
+  display: none;
+}
+
+/* Publish Toggle Position - Desktop: controls bar, Mobile: title bar */
+/* 
+  Desktop (> 740px): Title bar shows [Album Title] [Photo Count] [Close]
+                     Controls bar shows [Homepage Toggle] [Publish Toggle]
+  Mobile (<= 740px): Title bar shows [Album Title] [Photo Count] [Homepage Icon] [Publish Toggle] [Close]
+*/
+.publish-toggle-titlebar {
+  display: none !important; /* Hidden on desktop (> 740px) */
+}
+
+.publish-toggle-controlbar {
+  display: flex; /* Shown on desktop in controls bar (> 740px) */
+}
+
+.homepage-toggle-mobile {
+  display: none !important; /* Hidden on desktop (> 740px) */
+}
+
+.homepage-toggle-desktop {
+  display: flex; /* Shown on desktop in controls bar (> 740px) */
+}
+
+/* Mobile Responsive - 768px for modal sizing, 500px for controls layout */
+@media (max-width: 768px) {
+  .photos-modal {
+    top: 54px;
+    width: 100%;
+    max-width: 100%;
+    height: calc(100vh - 54px);
+  }
+
+  .photos-modal-title {
+    font-size: 1.25rem;
+  }
+}
+
+/* Hide photo count on very narrow screens */
+@media (max-width: 500px) {
+  .photos-count {
+    display: none;
+  }
+}
+
+/* Controls Bar Mobile Layout - 740px breakpoint */
+@media (max-width: 740px) {
+  /* 
+    Mobile Layout Changes:
+    - Publish toggle moves FROM controls bar TO title bar
+    - Homepage toggle shows as icon in title bar
+    - Controls bar stacks vertically
+    - Button text hidden (icons only)
+  */
+  .publish-toggle-titlebar {
+    display: flex !important; /* Show in title bar on mobile (<= 740px) */
+  }
+  
+  .publish-toggle-controlbar {
+    display: none !important; /* Hide from controls bar on mobile (<= 740px) */
+  }
+  
+  .homepage-toggle-mobile {
+    display: flex !important; /* Show icon in title bar on mobile (<= 740px) */
+  }
+  
+  .homepage-toggle-desktop {
+    display: none !important; /* Hide text toggle from controls bar on mobile (<= 740px) */
+  }
+  
+  .toggle-switch-mobile-vertical {
+    display: flex !important; /* Ensure vertical toggle shows on mobile */
+  }
+
+  .photos-controls-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0rem;
+  }
+
+  .photos-controls-left,
+  .photos-controls-right {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .photos-controls-right {
+    justify-content: stretch;
+  }
+  
+  /* Hide empty controls-right on mobile (publish toggle moved to title bar) */
+  .photos-controls-right:empty {
+    display: none;
+  }
+
+  .photos-btn {
+    padding: 0.6rem 0.8rem;
+    font-size: 0.85rem;
+    /* flex: 1 is already set in desktop styles */
+  }
+  
+  /* Hide button text on mobile, show icons only */
+  .photos-btn span {
+    display: none;
+  }
+
+  .photos-action-buttons {
+    display: flex;
+    gap: 0.5rem;
+    width: 100%;
+  }
+
+  .photos-action-buttons button {
+    flex: 1;
+  }
+
+  /* View toggle stays fixed width on mobile */
+  .view-toggle {
+    width: fit-content !important;
+    flex-shrink: 0;
+  }
+}
+
+/* Reorder Bar Mobile Layout - Only on very narrow screens */
+@media (max-width: 500px) {
+  .photos-reorder-bar {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: stretch;
+  }
+  
+  /* Show text for reorder bar buttons (shuffle, save, cancel) */
+  .photos-reorder-bar .photos-btn span {
+    display: inline;
+  }
+
+  .photos-reorder-left,
+  .photos-reorder-right {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  /* Make reorder bar buttons expand to fill space */
+  .photos-reorder-left .photos-btn,
+  .photos-reorder-right .photos-btn {
+    flex: 1;
+    min-width: 0;
+  }
+
+  /* Hide desktop hint, show mobile hint at bottom */
+  .reorder-hint-desktop {
+    display: none;
+  }
+  
+  .reorder-hint-mobile {
+    display: block;
+    width: 100%;
+    text-align: center;
+    order: 3; /* Put it last */
+    padding-top: 0.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+  }
+  
+  .photos-reorder-left {
+    order: 1;
+  }
+  
+  .photos-reorder-right {
+    order: 2;
+  }
+}
+

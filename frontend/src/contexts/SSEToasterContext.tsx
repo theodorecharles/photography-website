@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useRef, ReactNode, useEffect } from 'react';
+import { createContext, useContext, useState, useRef, ReactNode, useEffect, useMemo, useCallback } from 'react';
 
 interface SSEToasterContextType {
   // Titles job state
@@ -22,6 +22,16 @@ interface SSEToasterContextType {
   setOptimizationProgress: (value: number) => void;
   optimizationOutputRef: React.RefObject<HTMLDivElement | null>;
   optimizationAbortController: React.MutableRefObject<AbortController | null>;
+  
+  // Upload job state
+  isUploading: boolean;
+  setIsUploading: (value: boolean) => void;
+  uploadAlbum: string;
+  setUploadAlbum: (value: string) => void;
+  uploadCompleted: number;
+  setUploadCompleted: (value: number) => void;
+  uploadTotal: number;
+  setUploadTotal: (value: number) => void;
   
   // Toaster UI state
   isToasterCollapsed: boolean;
@@ -47,6 +57,12 @@ interface SSEToasterContextType {
   stopOptimizationHandler: (() => void) | null;
   setStopOptimizationHandler: (handler: (() => void) | null) => void;
   
+  // Title update callback (provided by AlbumsManager when mounted)
+  onTitleUpdate: ((album: string, filename: string, title: string) => void) | null;
+  setOnTitleUpdate: (handler: ((album: string, filename: string, title: string) => void) | null) => void;
+  addTitleUpdate: (album: string, filename: string, title: string) => void;
+  getBufferedUpdates: (album: string) => Record<string, string>;
+  
   // Helper methods
   resetToasterState: () => void;
 }
@@ -69,6 +85,12 @@ export function SSEToasterProvider({ children }: { children: ReactNode }) {
   const optimizationOutputRef = useRef<HTMLDivElement>(null);
   const optimizationAbortController = useRef<AbortController | null>(null);
   
+  // Upload job state
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadAlbum, setUploadAlbum] = useState('');
+  const [uploadCompleted, setUploadCompleted] = useState(0);
+  const [uploadTotal, setUploadTotal] = useState(0);
+  
   // Toaster UI state
   const [isToasterCollapsed, setIsToasterCollapsed] = useState(false);
   const [isToasterMaximized, setIsToasterMaximized] = useState(false);
@@ -83,14 +105,42 @@ export function SSEToasterProvider({ children }: { children: ReactNode }) {
   const [stopTitlesHandler, setStopTitlesHandler] = useState<(() => void) | null>(null);
   const [stopOptimizationHandler, setStopOptimizationHandler] = useState<(() => void) | null>(null);
   
+  // Title update callback (set by AlbumsManager when mounted)
+  const [onTitleUpdate, setOnTitleUpdate] = useState<((album: string, filename: string, title: string) => void) | null>(null);
+  
+  // Buffer for title updates (so they can be applied when album opens)
+  // Format: { albumName: { filename: title } }
+  const titleUpdatesBuffer = useRef<Record<string, Record<string, string>>>({});
+  
+  // Function to add title update to buffer and call callback if available
+  const addTitleUpdate = useCallback((album: string, filename: string, title: string) => {
+    // Add to buffer
+    if (!titleUpdatesBuffer.current[album]) {
+      titleUpdatesBuffer.current[album] = {};
+    }
+    titleUpdatesBuffer.current[album][filename] = title;
+    
+    // Call callback if available
+    if (onTitleUpdate) {
+      onTitleUpdate(album, filename, title);
+    }
+  }, [onTitleUpdate]);
+  
+  // Function to get and clear buffered updates for an album
+  const getBufferedUpdates = useCallback((album: string) => {
+    const updates = titleUpdatesBuffer.current[album] || {};
+    delete titleUpdatesBuffer.current[album];
+    return updates;
+  }, []);
+  
   // Reset toaster to default state
-  const resetToasterState = () => {
+  const resetToasterState = useCallback(() => {
     setToasterPosition('bottom-left');
     setIsToasterCollapsed(false);
     setIsToasterMaximized(false);
     setHasToasterAnimated(false);
     setIsScrollLocked(true); // Re-lock scroll when resetting
-  };
+  }, []);
   
   // Disable page scrolling when toaster is maximized
   useEffect(() => {
@@ -107,7 +157,7 @@ export function SSEToasterProvider({ children }: { children: ReactNode }) {
   
   // Mark toaster as animated after initial slide-in completes
   useEffect(() => {
-    const isAnyJobRunning = generatingTitles || isOptimizationRunning;
+    const isAnyJobRunning = generatingTitles || isOptimizationRunning || isUploading;
     if (isAnyJobRunning && !hasToasterAnimated) {
       const timer = setTimeout(() => {
         setHasToasterAnimated(true);
@@ -115,9 +165,14 @@ export function SSEToasterProvider({ children }: { children: ReactNode }) {
       
       return () => clearTimeout(timer);
     }
-  }, [generatingTitles, isOptimizationRunning, hasToasterAnimated]);
+  }, [generatingTitles, isOptimizationRunning, isUploading, hasToasterAnimated]);
   
-  const value = {
+  // Log when provider re-renders (for debugging)
+  useEffect(() => {
+    console.log('[SSEToasterProvider] Render');
+  });
+  
+  const value = useMemo(() => ({
     generatingTitles,
     setGeneratingTitles,
     titlesOutput,
@@ -136,6 +191,14 @@ export function SSEToasterProvider({ children }: { children: ReactNode }) {
     setOptimizationProgress,
     optimizationOutputRef,
     optimizationAbortController,
+    isUploading,
+    setIsUploading,
+    uploadAlbum,
+    setUploadAlbum,
+    uploadCompleted,
+    setUploadCompleted,
+    uploadTotal,
+    setUploadTotal,
     isToasterCollapsed,
     setIsToasterCollapsed,
     isToasterMaximized,
@@ -156,8 +219,42 @@ export function SSEToasterProvider({ children }: { children: ReactNode }) {
     setStopTitlesHandler,
     stopOptimizationHandler,
     setStopOptimizationHandler,
+    onTitleUpdate,
+    setOnTitleUpdate,
+    addTitleUpdate,
+    getBufferedUpdates,
     resetToasterState,
-  };
+  }), [
+    generatingTitles,
+    titlesOutput,
+    titlesProgress,
+    titlesWaiting,
+    titlesOutputRef,
+    titlesAbortController,
+    isOptimizationRunning,
+    optimizationLogs,
+    optimizationProgress,
+    optimizationOutputRef,
+    optimizationAbortController,
+    isUploading,
+    uploadAlbum,
+    uploadCompleted,
+    uploadTotal,
+    isToasterCollapsed,
+    isToasterMaximized,
+    toasterPosition,
+    isDragging,
+    dragStart,
+    dragOffset,
+    hasToasterAnimated,
+    isScrollLocked,
+    stopTitlesHandler,
+    stopOptimizationHandler,
+    onTitleUpdate,
+    addTitleUpdate,
+    getBufferedUpdates,
+    resetToasterState,
+  ]);
   
   return (
     <SSEToasterContext.Provider value={value}>

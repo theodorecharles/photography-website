@@ -6,6 +6,9 @@
 import express from 'express';
 import { createRequire } from 'module';
 import { csrfProtection } from '../security.js';
+import { requireManager } from '../auth/middleware.js';
+import { generateStaticJSONFiles } from './static-json.js';
+import { invalidateAlbumCache } from './albums.js';
 
 const require = createRequire(import.meta.url);
 
@@ -22,16 +25,6 @@ const router = express.Router();
 
 // Apply CSRF protection to all routes
 router.use(csrfProtection);
-
-/**
- * Middleware to check if user is authenticated (for write operations)
- */
-function requireAuth(req: any, res: any, next: any) {
-  if (!req.isAuthenticated || !req.isAuthenticated()) {
-    return res.status(401).json({ error: 'Unauthorized' });
-  }
-  next();
-}
 
 /**
  * GET /api/image-metadata/:album/:filename
@@ -90,7 +83,7 @@ router.get('/all', async (req, res) => {
  * POST /api/image-metadata
  * Save or update image metadata
  */
-router.post('/', requireAuth, express.json(), async (req, res) => {
+router.post('/', requireManager, express.json(), async (req, res) => {
   try {
     const { album, filename, title, description } = req.body;
     
@@ -101,6 +94,10 @@ router.post('/', requireAuth, express.json(), async (req, res) => {
     
     const db = await getDbFunctions();
     db.saveImageMetadata(album, filename, title || null, description || null);
+    
+    // Regenerate static JSON files (titles are included in JSON)
+    const appRoot = req.app.get('appRoot');
+    generateStaticJSONFiles(appRoot);
     
     res.json({ 
       success: true, 
@@ -116,7 +113,7 @@ router.post('/', requireAuth, express.json(), async (req, res) => {
  * PUT /api/image-metadata/:album/:filename
  * Update image metadata
  */
-router.put('/:album/:filename', requireAuth, express.json(), async (req, res) => {
+router.put('/:album/:filename', requireManager, express.json(), async (req, res) => {
   try {
     const { album, filename } = req.params;
     const { title, description } = req.body;
@@ -134,6 +131,13 @@ router.put('/:album/:filename', requireAuth, express.json(), async (req, res) =>
       return;
     }
     
+    // Invalidate album cache so next request gets fresh data
+    invalidateAlbumCache(album);
+    
+    // Regenerate static JSON files (titles are included in JSON)
+    const appRoot = req.app.get('appRoot');
+    generateStaticJSONFiles(appRoot);
+    
     res.json({ 
       success: true, 
       message: 'Metadata updated successfully' 
@@ -148,7 +152,7 @@ router.put('/:album/:filename', requireAuth, express.json(), async (req, res) =>
  * DELETE /api/image-metadata/:album/:filename
  * Delete image metadata
  */
-router.delete('/:album/:filename', requireAuth, async (req, res) => {
+router.delete('/:album/:filename', requireManager, async (req, res) => {
   try {
     const { album, filename } = req.params;
     
@@ -159,6 +163,10 @@ router.delete('/:album/:filename', requireAuth, async (req, res) => {
       res.status(404).json({ error: 'Metadata not found' });
       return;
     }
+    
+    // Regenerate static JSON files (titles are included in JSON)
+    const appRoot = req.app.get('appRoot');
+    generateStaticJSONFiles(appRoot);
     
     res.json({ 
       success: true, 

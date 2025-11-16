@@ -4,22 +4,15 @@
 
 import express from "express";
 import { csrfProtection } from "../security.js";
+import { requireAdmin } from '../auth/middleware.js';
 
 const router = express.Router();
 
 // Apply CSRF protection to all routes in this router
 router.use(csrfProtection);
 
-// Middleware to check if user is authenticated
-const requireAuth = (req: express.Request, res: express.Response, next: express.NextFunction) => {
-  if (req.isAuthenticated()) {
-    return next();
-  }
-  res.status(401).json({ error: 'Unauthorized' });
-};
-
 // POST /api/system/restart/backend - Restart the backend server
-router.post('/restart/backend', requireAuth, (req, res) => {
+router.post('/restart/backend', requireAdmin, (req, res) => {
   console.log('🔄 Backend restart requested by:', req.user);
   
   // Send response before exiting
@@ -36,7 +29,7 @@ router.post('/restart/backend', requireAuth, (req, res) => {
 });
 
 // POST /api/system/restart/frontend - Trigger frontend rebuild
-router.post('/restart/frontend', requireAuth, (req, res) => {
+router.post('/restart/frontend', requireAdmin, (req, res) => {
   console.log('🔄 Frontend restart requested by:', req.user);
   
   // Frontend restart is handled differently - it's typically a dev server

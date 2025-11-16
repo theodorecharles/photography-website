@@ -5,6 +5,7 @@
 
 import { Router, Request, Response } from "express";
 import { csrfProtection } from "../security.js";
+import { requireAuth, requireManager } from '../auth/middleware.js';
 import { 
   createShareLink, 
   getShareLinkBySecret, 
@@ -14,16 +15,6 @@ import {
 } from "../database.js";
 
 const router = Router();
-
-/**
- * Authentication middleware
- */
-const requireAuth = (req: Request, res: Response, next: Function) => {
-  if (req.isAuthenticated && req.isAuthenticated()) {
-    return next();
-  }
-  res.status(401).json({ error: 'Unauthorized' });
-};
 
 /**
  * Sanitize album name
@@ -43,7 +34,7 @@ const sanitizeName = (name: string): string | null => {
  * POST /api/share-links/create
  * Body: { album: string, expirationMinutes: number | null }
  */
-router.post("/create", csrfProtection, requireAuth, async (req: Request, res: Response): Promise<void> => {
+router.post("/create", csrfProtection, requireManager, async (req: Request, res: Response): Promise<void> => {
   try {
     const { album, expirationMinutes } = req.body;
     
@@ -176,7 +167,7 @@ router.get("/album/:album", requireAuth, async (req: Request, res: Response): Pr
  * Delete all share links for an album (admin only)
  * DELETE /api/share-links/album/:album
  */
-router.delete("/album/:album", csrfProtection, requireAuth, async (req: Request, res: Response): Promise<void> => {
+router.delete("/album/:album", csrfProtection, requireManager, async (req: Request, res: Response): Promise<void> => {
   try {
     const { album } = req.params;
     

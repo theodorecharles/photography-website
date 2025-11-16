@@ -3,9 +3,44 @@ import react from "@vitejs/plugin-react";
 import fs from 'fs';
 import path from 'path';
 
+// Default configuration for when config.json doesn't exist
+const defaultConfig = {
+  environment: {
+    frontend: {
+      port: 3000,
+      apiUrl: "http://localhost:3001"
+    }
+  },
+  branding: {
+    siteName: "Photography Portfolio",
+    avatarPath: "/photos/avatar.png"
+  },
+  analytics: {
+    openobserve: {
+      enabled: false
+    }
+  }
+};
+
 // Load config.json - the single source of truth
-const configPath = path.resolve(__dirname, '../config/config.json');
-const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+const configPath = path.resolve(__dirname, '../data/config.json');
+let config;
+let configExists = false;
+
+try {
+  if (fs.existsSync(configPath)) {
+    config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+    configExists = true;
+    console.log('✓ Loaded config.json');
+  } else {
+    console.log('⚠️  config.json not found - using defaults for setup mode');
+    config = defaultConfig;
+  }
+} catch (error) {
+  console.error('❌ Failed to load config.json, using defaults:', error);
+  config = defaultConfig;
+}
+
 const envConfig = config.environment;
 
 // Derive site URL from API URL
@@ -13,7 +48,7 @@ const envConfig = config.environment;
 // Otherwise (http://localhost), replace :3001 with :3000
 const siteUrl = envConfig.frontend.apiUrl.startsWith('https://') 
   ? envConfig.frontend.apiUrl.replace('api.', 'www.').replace('api-', 'www-')
-  : envConfig.frontend.apiUrl.replace(/:\d+$/, ':' + envConfig.frontend.port);
+  : envConfig.frontend.apiUrl.replace(/:\d+$/, ':' + (envConfig.frontend.port || 3000));
 
 // Determine if we should listen on all interfaces (for remote dev)
 // Listen on 0.0.0.0 if the apiUrl is not localhost
@@ -24,11 +59,13 @@ const hmrHost = isRemoteDev
   ? new URL(siteUrl).hostname 
   : 'localhost';
 
-console.log('Vite config loaded:');
-console.log('  API URL:', envConfig.frontend.apiUrl);
-console.log('  Site URL:', siteUrl);
-console.log('  Listen host:', isRemoteDev ? '0.0.0.0' : '127.0.0.1');
-console.log('  HMR host:', hmrHost);
+if (configExists) {
+  console.log('Vite config loaded:');
+  console.log('  API URL:', envConfig.frontend.apiUrl);
+  console.log('  Site URL:', siteUrl);
+  console.log('  Listen host:', isRemoteDev ? '0.0.0.0' : '127.0.0.1');
+  console.log('  HMR host:', hmrHost);
+}
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -49,6 +86,7 @@ export default defineConfig({
   ],
   define: {
     // Inject config values from config.json for both dev and build
+    // In OOBE mode, runtime API URL will be injected by server via <script> tag
     'import.meta.env.VITE_API_URL': JSON.stringify(envConfig.frontend.apiUrl),
     'import.meta.env.VITE_SITE_URL': JSON.stringify(siteUrl),
     'import.meta.env.VITE_SITE_NAME': JSON.stringify(config.branding.siteName),
@@ -59,6 +97,7 @@ export default defineConfig({
     'import.meta.env.VITE_AVATAR_PATH': JSON.stringify(config.branding.avatarPath),
   },
   build: {
+    cssCodeSplit: false, // CRITICAL: Keep all CSS in one file to prevent loading issues
     rollupOptions: {
       output: {
         manualChunks: {
@@ -80,12 +119,19 @@ export default defineConfig({
     // Increase chunk size warning limit slightly since we're optimizing
     chunkSizeWarningLimit: 600,
   },
+  css: {
+    devSourcemap: true,
+  },
   server: {
     host: isRemoteDev ? '0.0.0.0' : '127.0.0.1',
-    port: envConfig.frontend.port,
+    port: envConfig.frontend.port || 3000,
     strictPort: false,
     hmr: {
       host: hmrHost,
+    },
+    // Force pre-transform of all imports
+    warmup: {
+      clientFiles: ['./src/components/AdminPortal/**/*.{ts,tsx,css}'],
     },
   },
 });
