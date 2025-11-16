@@ -93,8 +93,7 @@ export const createDragDropHandlers = (props: DragDropHandlersProps) => {
         if (activeIndex !== overIndex && activeIndex !== -1 && overIndex !== -1) {
           const reordered = arrayMove(localFolders, activeIndex, overIndex);
           setLocalFolders(reordered);
-          // Auto-save folder order
-          await saveFolderOrder(reordered);
+          // Note: Save happens on drag end, not during drag over
         }
       }
       return;
@@ -163,7 +162,16 @@ export const createDragDropHandlers = (props: DragDropHandlersProps) => {
     const activeId = String(active.id);
     const overId = String(over.id);
     
-    console.log('🎯 Album drag end:', { activeId, overId });
+    console.log('🎯 Drag end:', { activeId, overId });
+    
+    // Handle folder drag end
+    if (isDraggingFolder(activeId) && isDraggingFolder(overId)) {
+      console.log('📁 Folder reordered via drag-and-drop');
+      // Folders were already reordered in handleAlbumDragOver
+      // Now save the order
+      await saveFolderOrder(localFolders);
+      return;
+    }
     
     const activeAlbum = localAlbums.find(a => a.name === activeId);
     if (!activeAlbum) return;

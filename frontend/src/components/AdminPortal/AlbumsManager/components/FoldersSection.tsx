@@ -66,7 +66,7 @@ const FoldersSection: React.FC<FoldersSectionProps> = ({
   onAlbumMoveUp,
   onAlbumMoveDown,
   onAlbumMoveToFolder,
-  hasFolders,
+  hasFolders = true,
   canEdit,
 }) => {
   if (localFolders.length === 0) return null;
