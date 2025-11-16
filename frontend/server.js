@@ -42,7 +42,7 @@ if (fs.existsSync(configPath)) {
 const app = express();
 const port = process.env.PORT || config.frontend.port;
 
-// Security headers middleware
+// Security headers middleware (except CSP which needs runtime API URL)
 app.use((req, res, next) => {
   // Prevent clickjacking
   res.setHeader("X-Frame-Options", "DENY");
@@ -57,30 +57,7 @@ app.use((req, res, next) => {
     "Permissions-Policy",
     "geolocation=(), microphone=(), camera=()"
   );
-  // Content Security Policy
-  const apiDomain = config.frontend.apiUrl;
-  const apiDomainHttps = apiDomain.replace("http://", "https://");
-  
-  // Get external analytics script host if configured
-  const analyticsScriptPath = configFile.analytics?.scriptPath || '';
-  const analyticsScriptHost = analyticsScriptPath && analyticsScriptPath.startsWith('http') 
-    ? new URL(analyticsScriptPath).origin 
-    : '';
-  
-  res.setHeader(
-    "Content-Security-Policy",
-    "default-src 'self'; " +
-    `script-src 'self' 'unsafe-inline'${analyticsScriptHost ? ' ' + analyticsScriptHost : ''}; ` + // unsafe-inline needed for React inline scripts
-    "style-src 'self' 'unsafe-inline'; " +
-    "worker-src 'self'; " + // Allow web workers from same origin
-    `img-src 'self' ${apiDomainHttps} ${apiDomain} data: blob: https://*.basemaps.cartocdn.com https://www.gravatar.com; ` + // Allow data URIs, blob URLs (upload previews), CartoDB map tiles, and Gravatar avatars
-    `connect-src 'self' ${apiDomainHttps} ${apiDomain}; ` + // No need to allow OpenObserve - backend handles it
-    "font-src 'self'; " +
-    "object-src 'none'; " +
-    "base-uri 'self'; " +
-    "form-action 'self'; " +
-    "frame-ancestors 'none';"
-  );
+  // CSP is set in catch-all route to use runtime API URL
   next();
 });
 
@@ -534,6 +511,28 @@ app.get("*", async (req, res) => {
         runtimeApiUrl = `${protocol}://api.${host}`;
       }
     }
+    
+    // Set Content Security Policy with runtime API URL
+    const apiDomainHttps = runtimeApiUrl.replace("http://", "https://");
+    const analyticsScriptPath = configFile.analytics?.scriptPath || '';
+    const analyticsScriptHost = analyticsScriptPath && analyticsScriptPath.startsWith('http') 
+      ? new URL(analyticsScriptPath).origin 
+      : '';
+    
+    res.setHeader(
+      "Content-Security-Policy",
+      "default-src 'self'; " +
+      `script-src 'self' 'unsafe-inline'${analyticsScriptHost ? ' ' + analyticsScriptHost : ''}; ` +
+      "style-src 'self' 'unsafe-inline'; " +
+      "worker-src 'self'; " +
+      `img-src 'self' ${apiDomainHttps} ${runtimeApiUrl} data: blob: https://*.basemaps.cartocdn.com https://www.gravatar.com; ` +
+      `connect-src 'self' ${apiDomainHttps} ${runtimeApiUrl}; ` +
+      "font-src 'self'; " +
+      "object-src 'none'; " +
+      "base-uri 'self'; " +
+      "form-action 'self'; " +
+      "frame-ancestors 'none';"
+    );
     
     // Inject runtime config before other scripts
     const modifiedHtml = html.replace(
