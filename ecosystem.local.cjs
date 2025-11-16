@@ -65,6 +65,7 @@ module.exports = {
         PORT: 3000,
         HOST: process.env.HOST || '0.0.0.0',
         DATA_DIR: dataDir,
+        // API_URL defaults to BACKEND_DOMAIN if not explicitly set
         API_URL: process.env.API_URL || process.env.BACKEND_DOMAIN || 'http://localhost:3001',
         FRONTEND_DOMAIN: process.env.FRONTEND_DOMAIN,
         BACKEND_DOMAIN: process.env.BACKEND_DOMAIN,
