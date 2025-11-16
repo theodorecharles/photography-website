@@ -147,7 +147,7 @@ export const createUploadHandlers = (props: UploadHandlersProps) => {
       return;
     }
 
-    console.log(`[Upload] Starting upload of ${validation.valid.length} files to album "${albumName}"`);
+    console.log(`[Upload] Starting upload of ${validation.valid.length} files to album "${albumName}" (4 concurrent uploads)`);
 
     // Initialize uploading images with upload index for ordering
     const newUploadingImages: UploadingImage[] = validation.valid.map((file, index) => ({
@@ -162,21 +162,33 @@ export const createUploadHandlers = (props: UploadHandlersProps) => {
     let successCount = 0;
     const failedUploads: Array<{ img: UploadingImage; retryCount: number }> = [];
 
-    // Upload images one-by-one (fast as possible)
-    // uploadSingleImage resolves as soon as upload finishes, 
-    // optimization/AI continues in background
-    for (const img of newUploadingImages) {
-      try {
-        await uploadSingleImage(img.file, img.filename, albumName, 0);
-        successCount++;
-        // Next upload starts immediately after previous file is uploaded
-        // (doesn't wait for optimization or AI)
-      } catch (err) {
-        console.error(`[Upload] Error:`, err);
-        failedUploads.push({ img, retryCount: 0 });
-        // Continue with next upload even if one fails
+    // Upload images with concurrency pool (4 at a time)
+    // This prevents one slow upload from blocking everything
+    const CONCURRENT_UPLOADS = 4;
+    const uploadPromises: Promise<void>[] = [];
+    let uploadIndex = 0;
+
+    const uploadNext = async (): Promise<void> => {
+      while (uploadIndex < newUploadingImages.length) {
+        const img = newUploadingImages[uploadIndex++];
+        
+        try {
+          await uploadSingleImage(img.file, img.filename, albumName, 0);
+          successCount++;
+        } catch (err) {
+          console.error(`[Upload] Error:`, err);
+          failedUploads.push({ img, retryCount: 0 });
+        }
       }
+    };
+
+    // Start concurrent upload workers
+    for (let i = 0; i < CONCURRENT_UPLOADS; i++) {
+      uploadPromises.push(uploadNext());
     }
+
+    // Wait for all uploads to complete
+    await Promise.all(uploadPromises);
 
     console.log(`[Upload] Batch complete: ${successCount} succeeded, ${failedUploads.length} failed`);
 
