@@ -18,6 +18,7 @@ export { default as EditDocumentIcon } from './EditDocumentIcon';
 export { default as EditIcon } from './EditIcon';
 export { default as ErrorCircleIcon } from './ErrorCircleIcon';
 export { default as EyeIcon } from './EyeIcon';
+export { default as FolderArrowIcon } from './FolderArrowIcon';
 export { default as FolderMinusIcon } from './FolderMinusIcon';
 export { default as FolderPlusIcon } from './FolderPlusIcon';
 export { default as FullscreenIcon } from './FullscreenIcon';

@@ -6,6 +6,7 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import ShareModal from '../../ShareModal';
+import MoveToFolderModal from './MoveToFolderModal';
 import { Photo, Folder } from '../types';
 import { cacheBustValue } from '../../../../config';
 import { MagicWandIcon } from '../../../icons';
@@ -84,6 +85,12 @@ interface ModalsCollectionProps {
   shareAlbumName: string | null;
   setShowShareModal: (show: boolean) => void;
   
+  // Move to Folder Modal
+  showMoveToFolderModal: boolean;
+  moveToFolderAlbumName: string | null;
+  setShowMoveToFolderModal: (show: boolean) => void;
+  handleMoveToFolder: (albumName: string, folderId: number | null) => void;
+  
   // Confirm Modal
   showConfirmModal: boolean;
   confirmConfig: ConfirmModalConfig | null;
@@ -144,6 +151,12 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
   showShareModal,
   shareAlbumName,
   setShowShareModal,
+  
+  // Move to Folder Modal
+  showMoveToFolderModal,
+  moveToFolderAlbumName,
+  setShowMoveToFolderModal,
+  handleMoveToFolder,
   
   // Confirm Modal
   showConfirmModal,
@@ -845,6 +858,17 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
         <ShareModal
           album={shareAlbumName}
           onClose={() => setShowShareModal(false)}
+        />
+      )}
+
+      {/* Move to Folder Modal */}
+      {showMoveToFolderModal && moveToFolderAlbumName && (
+        <MoveToFolderModal
+          albumName={moveToFolderAlbumName}
+          folders={localFolders}
+          currentFolderId={localAlbums.find(a => a.name === moveToFolderAlbumName)?.folder_id}
+          onClose={() => setShowMoveToFolderModal(false)}
+          onMoveToFolder={handleMoveToFolder}
         />
       )}
 

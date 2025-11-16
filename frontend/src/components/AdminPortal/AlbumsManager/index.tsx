@@ -27,6 +27,7 @@ import { createUploadHandlers } from './handlers/uploadHandlers';
 import { createAlbumHandlers } from './handlers/albumHandlers';
 import { createUIInteractionHandlers } from './handlers/uiInteractionHandlers';
 import { createPhotoHandlers } from './handlers/photoHandlers';
+import { createMobileReorderHandlers } from './handlers/mobileReorderHandlers';
 import { createOptimizationStreamHandlers } from './handlers/optimizationStreamHandlers';
 import '../AlbumsManager.css';
 import '../PhotoOrderControls.css';
@@ -351,6 +352,10 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   const [showShareModal, setShowShareModal] = useState(false);
   const [shareAlbumName, setShareAlbumName] = useState<string | null>(null);
   
+  // Move to Folder modal state
+  const [showMoveToFolderModal, setShowMoveToFolderModal] = useState(false);
+  const [moveToFolderAlbumName, setMoveToFolderAlbumName] = useState<string | null>(null);
+  
   // Folder deletion modal state
   const [showDeleteFolderModal, setShowDeleteFolderModal] = useState(false);
   const [deletingFolderName] = useState<string | null>(null);
@@ -366,7 +371,8 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     setLocalAlbums,
     localFolders,
     setLocalFolders,
-    setHasUnsavedChanges,
+    saveAlbumOrder: albumManagement.saveAlbumOrder,
+    loadAlbums,
     setAnimatingAlbum,
     setActiveAlbumId,
     setActiveFolderId,
@@ -432,6 +438,15 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     uploadingImages,
   });
 
+  const mobileReorderHandlers = createMobileReorderHandlers({
+    localAlbums,
+    setLocalAlbums,
+    localFolders,
+    setLocalFolders,
+    saveAlbumOrder: albumManagement.saveAlbumOrder,
+    saveFolderOrder: folderManagement.saveFolderOrder,
+  });
+
   const photoHandlers = createPhotoHandlers({
     selectedAlbum,
     loadPhotos: photoManagement.loadPhotos,
@@ -458,6 +473,38 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     setNewAlbumFiles([]);
     setNewAlbumModalError('');
     setTargetFolderId(null);
+  };
+
+  const handleOpenMoveToFolderModal = (albumName: string) => {
+    setMoveToFolderAlbumName(albumName);
+    setShowMoveToFolderModal(true);
+  };
+
+  const handleMoveToFolder = async (albumName: string, folderId: number | null) => {
+    // Get target folder's published state (if moving to a folder)
+    const targetFolder = folderId ? localFolders.find(f => f.id === folderId) : null;
+    const targetPublishedState = targetFolder ? targetFolder.published : undefined;
+    
+    // Update the album's folder_id and published state in local state
+    const updatedAlbums = localAlbums.map(album => 
+      album.name === albumName 
+        ? { 
+            ...album, 
+            folder_id: folderId || undefined,
+            // Sync published state with folder (or keep current if moving to uncategorized)
+            published: targetPublishedState !== undefined ? targetPublishedState : album.published
+          }
+        : album
+    );
+    setLocalAlbums(updatedAlbums);
+    
+    // Save immediately
+    const success = await albumManagement.saveAlbumOrder(updatedAlbums, true);
+    if (success) {
+      // Reload to get any backend updates (like folder published state changes)
+      await loadAlbums();
+      setMessage({ type: 'success', text: `Album moved to ${folderId ? localFolders.find(f => f.id === folderId)?.name || 'folder' : 'Uncategorized'}` });
+    }
   };
 
   const handleCreateAlbumFromModal = async () => {
@@ -599,6 +646,12 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
             onFolderGhostTileDragLeave={uiHandlers.handleFolderGhostTileDragLeave}
             onFolderGhostTileDrop={uiHandlers.handleFolderGhostTileDrop}
             onFolderGhostTileFileSelect={uiHandlers.handleFolderGhostTileFileSelect}
+            onFolderMoveUp={mobileReorderHandlers.handleFolderMoveUp}
+            onFolderMoveDown={mobileReorderHandlers.handleFolderMoveDown}
+            onAlbumMoveUp={mobileReorderHandlers.handleAlbumMoveUp}
+            onAlbumMoveDown={mobileReorderHandlers.handleAlbumMoveDown}
+            onAlbumMoveToFolder={handleOpenMoveToFolderModal}
+            hasFolders={localFolders.length > 0}
             canEdit={canEdit}
           />
           
@@ -621,6 +674,10 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
             onGhostTileDragLeave={uiHandlers.handleGhostTileDragLeave}
             onGhostTileDrop={uiHandlers.handleGhostTileDrop}
             onGhostTileFileSelect={uiHandlers.handleGhostTileFileSelect}
+            onAlbumMoveUp={mobileReorderHandlers.handleAlbumMoveUp}
+            onAlbumMoveDown={mobileReorderHandlers.handleAlbumMoveDown}
+            onAlbumMoveToFolder={handleOpenMoveToFolderModal}
+            hasFolders={localFolders.length > 0}
             canEdit={canEdit}
           />
           
@@ -769,6 +826,10 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
         showShareModal={showShareModal}
         shareAlbumName={shareAlbumName}
         setShowShareModal={setShowShareModal}
+        showMoveToFolderModal={showMoveToFolderModal}
+        moveToFolderAlbumName={moveToFolderAlbumName}
+        setShowMoveToFolderModal={setShowMoveToFolderModal}
+        handleMoveToFolder={handleMoveToFolder}
         showConfirmModal={showConfirmModal}
         confirmConfig={confirmConfig}
         setShowConfirmModal={setShowConfirmModal}

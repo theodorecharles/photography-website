@@ -30,6 +30,11 @@ interface FoldersSectionProps {
   onFolderGhostTileDragLeave: (e: React.DragEvent) => void;
   onFolderGhostTileDrop: (e: React.DragEvent, folderId: number) => void;
   onFolderGhostTileFileSelect: (e: React.ChangeEvent<HTMLInputElement>, folderId: number) => void;
+  onFolderMoveUp?: (folderId: number) => void;
+  onFolderMoveDown?: (folderId: number) => void;
+  onAlbumMoveUp?: (albumName: string) => void;
+  onAlbumMoveDown?: (albumName: string) => void;
+  onAlbumMoveToFolder?: (albumName: string) => void;
   canEdit: boolean;
 }
 
@@ -55,6 +60,11 @@ const FoldersSection: React.FC<FoldersSectionProps> = ({
   onFolderGhostTileDragLeave,
   onFolderGhostTileDrop,
   onFolderGhostTileFileSelect,
+  onFolderMoveUp,
+  onFolderMoveDown,
+  onAlbumMoveUp,
+  onAlbumMoveDown,
+  onAlbumMoveToFolder,
   canEdit,
 }) => {
   if (localFolders.length === 0) return null;
@@ -62,8 +72,8 @@ const FoldersSection: React.FC<FoldersSectionProps> = ({
   return (
     <div className="folders-section" style={{ marginBottom: '1rem' }}>
       <SortableContext items={localFolders.map(f => `folder-${f.id}`)} strategy={rectSortingStrategy}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          {localFolders.map((folder) => (
+        <div className="folders-container">
+          {localFolders.map((folder, index) => (
             <SortableFolderCard
               key={folder.id}
               folder={folder}
@@ -87,6 +97,14 @@ const FoldersSection: React.FC<FoldersSectionProps> = ({
               onGhostTileDragLeave={onFolderGhostTileDragLeave}
               onGhostTileDrop={onFolderGhostTileDrop}
               onGhostTileFileSelect={onFolderGhostTileFileSelect}
+              onMoveUp={onFolderMoveUp}
+              onMoveDown={onFolderMoveDown}
+              onAlbumMoveUp={onAlbumMoveUp}
+              onAlbumMoveDown={onAlbumMoveDown}
+              onAlbumMoveToFolder={onAlbumMoveToFolder}
+              isFirst={index === 0}
+              isLast={index === localFolders.length - 1}
+              hasFolders={localFolders.length > 0}
               canEdit={canEdit}
             />
           ))}

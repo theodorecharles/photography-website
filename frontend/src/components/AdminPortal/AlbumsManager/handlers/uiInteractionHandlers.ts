@@ -392,6 +392,9 @@ export const createUIInteractionHandlers = (props: UIInteractionHandlersProps) =
       // Error message already shown by saveAlbumOrder
       return;
     }
+    // Reload albums and folders to get updated published states
+    // (backend may auto-update folder published state when last album is removed)
+    await loadAlbums();
   };
 
   const handleCancelChanges = (): void => {
