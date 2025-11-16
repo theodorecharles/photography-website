@@ -197,7 +197,7 @@ const PhotosPanelGrid: React.FC<PhotosPanelGridProps> = ({
                   onRetryUpload={onRetryUpload}
                   selectedAlbum={selectedAlbum}
                   deletingPhotoId={deletingPhotoId}
-                  canEdit={canEdit && !hasActiveUploads}
+                  canEdit={img.state === 'error' ? canEdit : (canEdit && !hasActiveUploads)}
                   activeOverlayId={activeOverlayId}
                   setActiveOverlayId={setActiveOverlayId}
                 />
