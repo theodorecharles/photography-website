@@ -119,35 +119,67 @@ router.post('/initialize', async (req: Request, res: Response): Promise<void> =>
       return;
     }
 
-    // Auto-detect frontend and backend URLs from request
-    const protocol = req.headers['x-forwarded-proto'] || (req.secure ? 'https' : 'http');
-    const hostHeader = req.headers['x-forwarded-host'] || req.headers['host'] || 'localhost:3000';
-    const host = Array.isArray(hostHeader) ? hostHeader[0] : hostHeader;
+    // Try to use URLs from existing config.json first
+    const projectRoot = path.resolve(__dirname, '../../../');
+    const dataDir = process.env.DATA_DIR || path.join(projectRoot, 'data');
+    const existingConfigPath = path.join(dataDir, 'config.json');
     
-    // Determine backend and frontend URLs based on which domain the request came to
     let backendUrl;
     let frontendUrl;
     
-    if (host.includes('localhost')) {
-      // Localhost development
-      backendUrl = 'http://localhost:3001';
-      frontendUrl = 'http://localhost:3000';
-    } else if (host.startsWith('api.') || host.startsWith('api-')) {
-      // Request came to api.tedcharles.net or api-dev.tedcharles.net
-      // Backend URL is the current host, frontend is www.domain
-      backendUrl = `${protocol}://${host}`;
-      const domain = host.replace(/^api(-dev)?\./, '');
-      frontendUrl = `${protocol}://www${host.includes('api-dev') ? '-dev' : ''}.${domain}`;
-    } else if (host.startsWith('www.') || host.startsWith('www-')) {
-      // Request came to www.tedcharles.net or www-dev.tedcharles.net
-      // Frontend URL is the current host, backend is api.domain
-      frontendUrl = `${protocol}://${host}`;
-      const domain = host.replace(/^www(-dev)?\./, '');
-      backendUrl = `${protocol}://api${host.includes('www-dev') ? '-dev' : ''}.${domain}`;
-    } else {
-      // Bare domain (tedcharles.net)
-      frontendUrl = `${protocol}://www.${host}`;
-      backendUrl = `${protocol}://api.${host}`;
+    // Check if config.json exists and has URLs configured
+    if (fs.existsSync(existingConfigPath)) {
+      try {
+        const existingConfig = JSON.parse(fs.readFileSync(existingConfigPath, 'utf8'));
+        const existingApiUrl = existingConfig.environment?.frontend?.apiUrl;
+        const existingAllowedOrigins = existingConfig.environment?.backend?.allowedOrigins;
+        
+        if (existingApiUrl && existingAllowedOrigins && existingAllowedOrigins.length > 0) {
+          // Use URLs from existing config
+          backendUrl = existingApiUrl;
+          frontendUrl = existingAllowedOrigins[0];
+          console.log(`[Setup] Using URLs from existing config.json:`);
+          console.log(`  Frontend: ${frontendUrl}`);
+          console.log(`  Backend: ${backendUrl}`);
+        }
+      } catch (err) {
+        console.warn('[Setup] Failed to read existing config.json, will auto-detect URLs');
+      }
+    }
+    
+    // If not found in config, auto-detect from request
+    if (!backendUrl || !frontendUrl) {
+      const protocol = req.headers['x-forwarded-proto'] || (req.secure ? 'https' : 'http');
+      const hostHeader = req.headers['x-forwarded-host'] || req.headers['host'] || 'localhost:3000';
+      const host = Array.isArray(hostHeader) ? hostHeader[0] : hostHeader;
+      
+      // Determine backend and frontend URLs based on which domain the request came to
+      if (host.includes('localhost')) {
+        // Localhost development
+        backendUrl = 'http://localhost:3001';
+        frontendUrl = 'http://localhost:3000';
+      } else if (host.startsWith('api.') || host.startsWith('api-')) {
+        // Request came to api.tedcharles.net or api-dev.tedcharles.net
+        // Backend URL is the current host, frontend is www.domain
+        backendUrl = `${protocol}://${host}`;
+        const domain = host.replace(/^api(-dev)?\./, '');
+        frontendUrl = `${protocol}://www${host.includes('api-dev') ? '-dev' : ''}.${domain}`;
+      } else if (host.startsWith('www.') || host.startsWith('www-')) {
+        // Request came to www.tedcharles.net or www-dev.tedcharles.net
+        // Frontend URL is the current host, backend is api.domain
+        frontendUrl = `${protocol}://${host}`;
+        const domain = host.replace(/^www(-dev)?\./, '');
+        backendUrl = `${protocol}://api${host.includes('www-dev') ? '-dev' : ''}.${domain}`;
+      } else {
+        // Bare domain (tedcharles.net)
+        frontendUrl = `${protocol}://www.${host}`;
+        backendUrl = `${protocol}://api.${host}`;
+      }
+      
+      console.log(`[Setup] Auto-detected URLs from request:`);
+      console.log(`  Request host: ${host}`);
+      console.log(`  Frontend: ${frontendUrl}`);
+      console.log(`  Backend: ${backendUrl}`);
     }
     
     // Extract frontend hostname for allowedHosts (without protocol)
