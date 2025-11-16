@@ -10,6 +10,7 @@ import { UserCard } from "./UserManagement/UserCard";
 import { PasskeysModal } from "./UserManagement/PasskeysModal";
 import { PasswordChangeModal } from "./UserManagement/PasswordChangeModal";
 import { userManagementAPI } from "./UserManagement/utils";
+import { API_URL } from '../../../../config';
 import type {
   User,
   Passkey,
@@ -17,8 +18,6 @@ import type {
   PasswordChangeState,
   MessageType,
 } from "./UserManagement/types";
-
-const API_URL = import.meta.env.VITE_API_URL || "";
 
 interface ProfileSectionProps {
   setMessage: (message: MessageType) => void;

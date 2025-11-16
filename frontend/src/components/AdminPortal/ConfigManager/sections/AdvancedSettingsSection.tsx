@@ -10,14 +10,13 @@ import RegenerationControls from '../components/RegenerationControls';
 import AuthSettings from '../components/AuthSettings';
 import SMTPSettings from '../components/SMTPSettings';
 import AnalyticsSettings from '../components/AnalyticsSettings';
+import { API_URL } from '../../../../config';
 import {
   updateConfig as updateConfigHelper,
   updateArrayItem as updateArrayItemHelper,
   addArrayItem as addArrayItemHelper,
   removeArrayItem as removeArrayItemHelper,
 } from '../utils/configHelpers';
-
-const API_URL = import.meta.env.VITE_API_URL || '';
 
 interface AdvancedSettingsSectionProps {
   config: ConfigData | null;

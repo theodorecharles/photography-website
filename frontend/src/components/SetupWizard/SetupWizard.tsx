@@ -179,19 +179,19 @@ export default function SetupWizard() {
       setSuccess('Setup complete!');
       setCurrentStep(4);
 
-      // Show countdown while server restarts
-      let countdown = 8;
+      // Show countdown while server restarts (restart.sh rebuilds and restarts everything)
+      let countdown = 15;
       const countdownInterval = setInterval(() => {
         countdown--;
         if (countdown > 0) {
-          setSuccess(`Setup complete! Hang on while the server starts up with your new configuration... (${countdown})`);
+          setSuccess(`Setup complete! Hang on while the server rebuilds and starts up with your new configuration... (${countdown})`);
         } else {
           clearInterval(countdownInterval);
           setSuccess('Setup complete! Redirecting...');
         }
       }, 1000);
 
-      // Wait 8 seconds for backend to restart before redirecting
+      // Wait 15 seconds for full rebuild and restart before redirecting
       setTimeout(() => {
         clearInterval(countdownInterval);
         if (authMethod === 'google') {
@@ -201,7 +201,7 @@ export default function SetupWizard() {
           // For password auth, redirect to admin portal (will show login)
           window.location.href = '/admin';
         }
-      }, 8000);
+      }, 15000);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Setup failed. Please try again.');
       console.error('Setup initialization failed:', err);

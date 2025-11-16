@@ -12,9 +12,8 @@ import ModalControls from './ModalControls';
 import InfoPanel from './InfoPanel';
 import ImageCanvas from './ImageCanvas';
 import ModalNavigation from './ModalNavigation';
+import { API_URL } from '../../config';
 import './PhotoModal.css';
-
-const API_URL = import.meta.env.VITE_API_URL || '';
 
 interface PhotoModalProps {
   selectedPhoto: Photo;

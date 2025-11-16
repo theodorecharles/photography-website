@@ -30,6 +30,7 @@ import { createUIInteractionHandlers } from './handlers/uiInteractionHandlers';
 import { createPhotoHandlers } from './handlers/photoHandlers';
 import { createMobileReorderHandlers } from './handlers/mobileReorderHandlers';
 import { createOptimizationStreamHandlers } from './handlers/optimizationStreamHandlers';
+import { API_URL } from '../../../config';
 import '../AlbumsManager.css';
 import '../PhotoOrderControls.css';
 import {
@@ -45,8 +46,6 @@ import {
   sortableKeyboardCoordinates,
   rectSortingStrategy,
 } from '@dnd-kit/sortable';
-
-const API_URL = import.meta.env.VITE_API_URL || '';
 
 const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   albums,

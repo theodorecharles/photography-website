@@ -8,8 +8,7 @@ import { Album, AlbumFolder } from '../types';
 import { fetchWithRateLimitCheck } from '../../../../utils/fetchWrapper';
 import { trackAlbumCreated, trackAlbumDeleted } from '../../../../utils/analytics';
 
-const API_URL = import.meta.env.VITE_API_URL || '';
-
+import { API_URL } from '../../../../config';
 interface UseAlbumManagementProps {
   albums: Album[];
   folders: AlbumFolder[];

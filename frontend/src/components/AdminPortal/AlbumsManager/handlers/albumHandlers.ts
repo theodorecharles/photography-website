@@ -8,8 +8,7 @@ import { fetchWithRateLimitCheck } from '../../../../utils/fetchWrapper';
 import { trackAlbumDeleted } from '../../../../utils/analytics';
 import { sanitizeAndTitleCase, isValidAlbumName } from '../utils/albumHelpers';
 
-const API_URL = import.meta.env.VITE_API_URL || '';
-
+import { API_URL } from '../../../../config';
 interface AlbumHandlersProps {
   localAlbums: Album[];
   setLocalAlbums: (albums: Album[]) => void;
