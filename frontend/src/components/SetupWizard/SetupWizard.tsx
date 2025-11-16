@@ -180,7 +180,7 @@ export default function SetupWizard() {
       setCurrentStep(4);
 
       // Show countdown while server restarts
-      let countdown = 5;
+      let countdown = 8;
       const countdownInterval = setInterval(() => {
         countdown--;
         if (countdown > 0) {
@@ -191,7 +191,7 @@ export default function SetupWizard() {
         }
       }, 1000);
 
-      // Redirect after 5 seconds (matching backend restart delay)
+      // Wait 8 seconds for backend to restart before redirecting
       setTimeout(() => {
         clearInterval(countdownInterval);
         if (authMethod === 'google') {
@@ -201,7 +201,7 @@ export default function SetupWizard() {
           // For password auth, redirect to admin portal (will show login)
           window.location.href = '/admin';
         }
-      }, 5000);
+      }, 8000);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Setup failed. Please try again.');
       console.error('Setup initialization failed:', err);
