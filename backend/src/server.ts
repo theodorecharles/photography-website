@@ -452,8 +452,9 @@ app.use((err: any, req: any, res: any, next: any) => {
 // Start the server
 // For localhost, bind to 127.0.0.1 to avoid macOS permission issues
 // For remote dev/production, bind to 0.0.0.0 to accept external connections
+// Allow HOST environment variable to override
 const isLocalhost = config.frontend.apiUrl.includes("localhost");
-const bindHost = isLocalhost ? "127.0.0.1" : "0.0.0.0";
+const bindHost = process.env.HOST || (isLocalhost ? "127.0.0.1" : "0.0.0.0");
 
 const server = app.listen(PORT, bindHost, () => {
   console.log(`Server is running on ${bindHost}:${PORT}`);

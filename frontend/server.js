@@ -508,8 +508,9 @@ app.get("*", async (req, res) => {
 });
 
 // Listen on 0.0.0.0 for remote dev/production, 127.0.0.1 for localhost
+// Allow HOST environment variable to override
 const isLocalhost = config.frontend.apiUrl.includes('localhost');
-const bindHost = isLocalhost ? '127.0.0.1' : '0.0.0.0';
+const bindHost = process.env.HOST || (isLocalhost ? '127.0.0.1' : '0.0.0.0');
 
 app.listen(port, bindHost, () => {
   console.log(`Frontend server running on ${bindHost}:${port}`);

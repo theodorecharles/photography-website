@@ -133,3 +133,4 @@ const [deletingFolderName] = useState<string | null>(null);
 - Console.log statements may be intentional for debugging - review before removing
 - Data backup folders are already gitignored, so they won't affect version control
 
+
