@@ -185,8 +185,7 @@ router.post('/initialize', async (req: Request, res: Response): Promise<void> =>
     // Extract frontend hostname for allowedHosts (without protocol)
     const frontendHost = new URL(frontendUrl).host;
     
-    console.log(`[Setup] Auto-detected URLs:`);
-    console.log(`  Request host: ${host}`);
+    console.log(`[Setup] Final URLs:`);
     console.log(`  Frontend: ${frontendUrl}`);
     console.log(`  Backend: ${backendUrl}`);
     console.log(`  Allowed hosts: ${frontendHost}`);
