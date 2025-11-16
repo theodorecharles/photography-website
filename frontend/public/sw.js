@@ -4,7 +4,7 @@
  * All other resources (JS, CSS, JSON) are handled by the browser
  */
 
-const CACHE_VERSION = 'v6';
+const CACHE_VERSION = 'v7';
 const CACHE_NAME = `photo-site-${CACHE_VERSION}`;
 
 // Resources to cache immediately on install
@@ -76,6 +76,7 @@ function getCacheStrategy(url) {
 
 /**
  * Cache-first strategy: Try cache, fallback to network
+ * Includes timeout handling and retry logic for resilience
  */
 async function cacheFirst(request) {
   const cache = await caches.open(CACHE_NAME);
@@ -87,18 +88,42 @@ async function cacheFirst(request) {
   }
   
   console.log('[SW] Cache miss, fetching:', request.url);
-  try {
-    const response = await fetch(request);
+  
+  // Try fetching with retries
+  const maxRetries = 2;
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    // Create an AbortController for timeout handling
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout per attempt
     
-    // Only cache successful responses
-    if (response.ok) {
-      cache.put(request, response.clone());
+    try {
+      const response = await fetch(request, { signal: controller.signal });
+      clearTimeout(timeoutId);
+      
+      // Only cache successful responses
+      if (response.ok) {
+        cache.put(request, response.clone());
+        console.log('[SW] Cached image:', request.url);
+      }
+      
+      return response;
+    } catch (error) {
+      clearTimeout(timeoutId);
+      
+      // If it's the last attempt, throw the error
+      if (attempt === maxRetries) {
+        if (error.name === 'AbortError') {
+          console.error('[SW] Fetch timeout after retries:', request.url);
+        } else {
+          console.error('[SW] Fetch failed after retries:', request.url, error);
+        }
+        throw error;
+      }
+      
+      // Otherwise, log and retry
+      console.warn(`[SW] Fetch attempt ${attempt + 1} failed, retrying...`, request.url);
+      await new Promise(resolve => setTimeout(resolve, 1000 * (attempt + 1))); // Exponential backoff
     }
-    
-    return response;
-  } catch (error) {
-    console.error('[SW] Fetch failed:', request.url, error);
-    throw error;
   }
 }
 
@@ -184,10 +209,16 @@ self.addEventListener('fetch', (event) => {
       } catch (error) {
         console.error('[SW] Request failed:', event.request.url, error);
         
-        // Return a generic error response
-        return new Response('Network error', {
-          status: 408,
-          headers: { 'Content-Type': 'text/plain' },
+        // For image requests, return a 503 (Service Unavailable) instead of 408
+        // This indicates a temporary server issue rather than a request timeout
+        // The browser will handle this more gracefully
+        return new Response('Service temporarily unavailable', {
+          status: 503,
+          statusText: 'Service Unavailable',
+          headers: { 
+            'Content-Type': 'text/plain',
+            'Retry-After': '5' // Suggest retry after 5 seconds
+          },
         });
       }
     })()
