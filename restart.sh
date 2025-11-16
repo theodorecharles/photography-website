@@ -127,15 +127,43 @@ cd ..
 
 # Restart both services using PM2
 log "Restarting services with PM2..."
+
+# Determine data directory (use DATA_DIR env var or default to ./data)
+DATA_DIR="${DATA_DIR:-$(pwd)/data}"
+LOGS_DIR="$DATA_DIR/logs"
+
+# Ensure logs directory exists
+mkdir -p "$LOGS_DIR"
+
 if pm2 list | grep -q "backend\|frontend"; then
     # Services are running, restart them
+    log "Restarting existing services..."
     pm2 restart backend frontend --update-env || handle_error "Failed to restart services"
 else
-    # Services not running, start them using start-local.sh
+    # Services not running, start them
     log "Services not running, starting them..."
-    if ! ./start-local.sh; then
-        handle_error "Failed to start services"
-    fi
+    
+    # Start backend
+    log "Starting backend..."
+    cd backend || handle_error "Failed to cd into backend directory"
+    pm2 start npx --name backend \
+      --cwd "$(pwd)" \
+      --log "$LOGS_DIR/backend-out.log" \
+      --error "$LOGS_DIR/backend-error.log" \
+      -- tsx src/server.ts \
+      --update-env "NODE_ENV=production,PORT=3001,HOST=0.0.0.0,DATA_DIR=$DATA_DIR" || handle_error "Failed to start backend"
+    
+    # Start frontend
+    log "Starting frontend..."
+    cd ../frontend || handle_error "Failed to cd into frontend directory"
+    pm2 start node --name frontend \
+      --cwd "$(pwd)" \
+      --log "$LOGS_DIR/frontend-out.log" \
+      --error "$LOGS_DIR/frontend-error.log" \
+      -- server.js \
+      --update-env "NODE_ENV=production,PORT=3000,HOST=0.0.0.0,DATA_DIR=$DATA_DIR,API_URL=http://localhost:3001" || handle_error "Failed to start frontend"
+    
+    cd ..
 fi
 
 # Get commit information for notification

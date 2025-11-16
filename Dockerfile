@@ -44,13 +44,13 @@ EXPOSE 3000 3001
 
 # Copy frontend server to frontend directory (where node_modules are)
 # Copy startup script and Docker PM2 config
-COPY start.sh ./start.sh
+COPY start-docker.sh ./start-docker.sh
 COPY ecosystem.docker.cjs ./ecosystem.docker.cjs
-RUN chmod +x ./start.sh
+RUN chmod +x ./start-docker.sh
 
 # Create logs directory
 RUN mkdir -p /data/logs
 
 # Use the startup script
-CMD ["./start.sh"]
+CMD ["./start-docker.sh"]
 
