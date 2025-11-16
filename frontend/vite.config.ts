@@ -86,6 +86,7 @@ export default defineConfig({
   ],
   define: {
     // Inject config values from config.json for both dev and build
+    // In OOBE mode, runtime API URL will be injected by server via <script> tag
     'import.meta.env.VITE_API_URL': JSON.stringify(envConfig.frontend.apiUrl),
     'import.meta.env.VITE_SITE_URL': JSON.stringify(siteUrl),
     'import.meta.env.VITE_SITE_NAME': JSON.stringify(config.branding.siteName),

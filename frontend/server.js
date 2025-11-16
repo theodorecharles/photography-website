@@ -509,7 +509,37 @@ app.get("*", async (req, res) => {
   }
   
   // Default: serve the standard index.html
-  res.sendFile(indexPath);
+  // Inject runtime API URL for OOBE support
+  fs.readFile(indexPath, 'utf8', (err, html) => {
+    if (err) {
+      console.error('Error reading index.html:', err);
+      return res.sendFile(indexPath);
+    }
+    
+    // Auto-detect API URL if in setup mode
+    let runtimeApiUrl = config.frontend.apiUrl;
+    if (isSetupMode) {
+      const protocol = req.headers['x-forwarded-proto'] || (req.secure ? 'https' : 'http');
+      const hostHeader = req.headers['x-forwarded-host'] || req.headers['host'] || 'localhost:3000';
+      const host = Array.isArray(hostHeader) ? hostHeader[0] : hostHeader;
+      
+      if (host.includes('localhost')) {
+        runtimeApiUrl = 'http://localhost:3001';
+      } else if (host.startsWith('www.')) {
+        runtimeApiUrl = `${protocol}://api.${host.substring(4)}`;
+      } else {
+        runtimeApiUrl = `${protocol}://api.${host}`;
+      }
+    }
+    
+    // Inject runtime config before other scripts
+    const modifiedHtml = html.replace(
+      '<script type="module"',
+      `<script>window.__RUNTIME_API_URL__ = "${runtimeApiUrl}";</script>\n    <script type="module"`
+    );
+    
+    res.send(modifiedHtml);
+  });
 });
 
 // Listen on 0.0.0.0 for remote dev/production, 127.0.0.1 for localhost
