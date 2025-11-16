@@ -100,7 +100,7 @@ async function generateAITitleForImageAsync(
       title
     });
 
-    console.log(`✓ AI title generated for ${album}/${filename}: "${title}"`);
+    // console.log(`✓ AI title generated for ${album}/${filename}: "${title}"`);
   } catch (error: any) {
     console.error(`AI title generation failed for ${album}/${filename}:`, error);
     broadcastOptimizationUpdate(jobId, {
@@ -195,8 +195,6 @@ async function generateAITitleForImage(
       filename,
       title 
     })}\n\n`);
-    
-    console.log(`✓ Generated AI title for ${album}/${filename}: "${title}"`);
     
   } catch (error: any) {
     console.error(`Error generating AI title for ${album}/${filename}:`, error);
@@ -461,24 +459,20 @@ router.post("/:album/upload", requireManager, upload.single('photo'), async (req
 
     const destPath = path.join(albumPath, file.originalname);
     
-    try {
-      console.log(`[Upload] Processing ${file.originalname} (${Math.round(file.size / 1024)}KB)`);
-      
-      // Use sharp to auto-rotate based on EXIF orientation (fixes iPhone photos)
-      // This physically rotates the pixels and removes the EXIF orientation tag
-      // Set a timeout to prevent hanging on corrupt images
-      const sharpTimeout = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Sharp processing timeout')), 120000) // 2 minute timeout
-      );
-      
-      await Promise.race([
-        sharp(file.path)
-          .rotate() // Auto-rotate based on EXIF
-          .toFile(destPath),
-        sharpTimeout
-      ]);
-      
-      console.log(`[Upload] ✓ Processed ${file.originalname}`);
+        try {
+          // Use sharp to auto-rotate based on EXIF orientation (fixes iPhone photos)
+          // This physically rotates the pixels and removes the EXIF orientation tag
+          // Set a timeout to prevent hanging on corrupt images
+          const sharpTimeout = new Promise((_, reject) => 
+            setTimeout(() => reject(new Error('Sharp processing timeout')), 120000) // 2 minute timeout
+          );
+          
+          await Promise.race([
+            sharp(file.path)
+              .rotate() // Auto-rotate based on EXIF
+              .toFile(destPath),
+            sharpTimeout
+          ]);
       
       // Clean up temp file
       fs.unlinkSync(file.path);
@@ -522,7 +516,6 @@ router.post("/:album/upload", requireManager, upload.single('photo'), async (req
         async () => {
           // Add image to database (with null title initially)
           saveImageMetadata(sanitizedAlbum, file.originalname, null, null);
-          console.log(`✓ Added ${sanitizedAlbum}/${file.originalname} to database`);
           
           // Note: We don't invalidate cache here to avoid spam during batch uploads
           // Cache will be invalidated once at the end via static JSON regeneration

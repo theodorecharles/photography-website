@@ -74,8 +74,6 @@ export const createUploadHandlers = (props: UploadHandlersProps) => {
           try {
             const response = JSON.parse(xhr.responseText);
             if (response.success) {
-              console.log(`✅ File uploaded: ${filename}, optimization continues in background`);
-              
               // Update state to 'optimizing' (optimization tracked via separate SSE stream)
               setUploadingImages((prev: UploadingImage[]): UploadingImage[] =>
                 prev.map((img: UploadingImage): UploadingImage =>
@@ -167,7 +165,6 @@ export const createUploadHandlers = (props: UploadHandlersProps) => {
       try {
         await uploadSingleImage(img.file, img.filename, albumName);
         successCount++;
-        console.log(`[Upload] Progress: ${successCount}/${validation.valid.length} uploaded successfully`);
         // Next upload starts immediately after previous file is uploaded
         // (doesn't wait for optimization or AI)
       } catch (err) {
@@ -181,7 +178,6 @@ export const createUploadHandlers = (props: UploadHandlersProps) => {
 
     // Auto-retry failed uploads (up to 5 attempts)
     if (errorCount > 0) {
-      console.log(`[Upload] Retrying ${errorCount} failed uploads...`);
       const MAX_RETRIES = 5;
       
       // Get list of failed images
@@ -196,7 +192,6 @@ export const createUploadHandlers = (props: UploadHandlersProps) => {
         
         if (currentRetryCount < MAX_RETRIES) {
           try {
-            console.log(`[Upload] Retry ${currentRetryCount + 1}/${MAX_RETRIES}: ${img.filename}`);
             await uploadSingleImage(img.file, img.filename, albumName, currentRetryCount + 1);
             successCount++;
             errorCount--;
@@ -206,7 +201,9 @@ export const createUploadHandlers = (props: UploadHandlersProps) => {
         }
       }
       
-      console.log(`[Upload] After retries: ${successCount} succeeded, ${errorCount} failed`);
+      if (errorCount > 0) {
+        console.log(`[Upload] After auto-retry: ${errorCount} images still failed (max retries reached)`);
+      }
     }
 
     // Reload albums to update photo counts
@@ -215,17 +212,13 @@ export const createUploadHandlers = (props: UploadHandlersProps) => {
     // Regenerate static JSON once after the entire batch (instead of after each image)
     if (successCount > 0) {
       try {
-        console.log(`[Upload] Regenerating static JSON after batch upload...`);
-        const response = await fetch(`${API_URL}/api/static-json/regenerate`, {
+        await fetch(`${API_URL}/api/static-json/regenerate`, {
           method: 'POST',
           credentials: 'include',
           headers: {
             'Content-Type': 'application/json',
           },
         });
-        if (response.ok) {
-          console.log(`[Upload] ✓ Static JSON regenerated`);
-        }
       } catch (err) {
         console.error(`[Upload] Failed to regenerate static JSON:`, err);
       }
@@ -290,7 +283,6 @@ export const createUploadHandlers = (props: UploadHandlersProps) => {
     }
     
     try {
-      console.log(`[Upload] Manual retry ${currentRetryCount + 1}/${MAX_RETRIES}: ${filename}`);
       await uploadSingleImage(img.file, filename, albumName, currentRetryCount + 1);
       setMessage({ type: 'success', text: `Successfully uploaded ${filename}` });
       await loadAlbums(); // Refresh album list
