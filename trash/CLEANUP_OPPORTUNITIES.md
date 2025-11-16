@@ -134,3 +134,4 @@ const [deletingFolderName] = useState<string | null>(null);
 - Data backup folders are already gitignored, so they won't affect version control
 
 
+

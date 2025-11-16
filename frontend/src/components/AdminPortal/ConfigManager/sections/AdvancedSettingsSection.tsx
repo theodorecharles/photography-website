@@ -43,6 +43,8 @@ interface AdvancedSettingsSectionProps {
   scrollToSmtp?: boolean;
   setScrollToSmtp?: (value: boolean) => void;
   sectionRef?: React.RefObject<HTMLDivElement | null>;
+  // Restart modal callback
+  onOpenObserveSave?: () => void;
 }
 
 const AdvancedSettingsSection: React.FC<AdvancedSettingsSectionProps> = ({
@@ -58,6 +60,7 @@ const AdvancedSettingsSection: React.FC<AdvancedSettingsSectionProps> = ({
   generatingTitles,
   isOptimizationRunning,
   onGenerateTitles,
+  onOpenObserveSave,
   onStopTitles,
   onRunOptimization,
   onStopOptimization,
@@ -291,6 +294,7 @@ const AdvancedSettingsSection: React.FC<AdvancedSettingsSectionProps> = ({
           onCancel={() => setConfig(originalConfig!)}
           savingSection={savingSection}
           setMessage={setMessage}
+          onOpenObserveSave={onOpenObserveSave}
         />
       </div>
     </div>
