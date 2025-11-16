@@ -483,7 +483,8 @@ photography-website/
 ├── Dockerfile           # Single container Dockerfile
 ├── docker-compose.yml   # Docker Compose configuration
 ├── start-docker.sh      # PM2 startup script for Docker
-├── ecosystem.config.cjs # PM2 configuration
+├── ecosystem.config.cjs # PM2 configuration (local development)
+├── ecosystem.docker.cjs # PM2 configuration (Docker)
 ├── build.js             # Unified build script
 ├── restart.sh           # Automated deployment
 └── package.json         # Root dependencies
