@@ -176,11 +176,24 @@ export default function SetupWizard() {
         }
       }
 
-      setSuccess('Setup complete! Redirecting...');
+      setSuccess('Setup complete!');
       setCurrentStep(4);
 
-      // Redirect based on auth method
+      // Show countdown while server restarts
+      let countdown = 5;
+      const countdownInterval = setInterval(() => {
+        countdown--;
+        if (countdown > 0) {
+          setSuccess(`Setup complete! Hang on while the server starts up with your new configuration... (${countdown})`);
+        } else {
+          clearInterval(countdownInterval);
+          setSuccess('Setup complete! Redirecting...');
+        }
+      }, 1000);
+
+      // Redirect after 5 seconds (matching backend restart delay)
       setTimeout(() => {
+        clearInterval(countdownInterval);
         if (authMethod === 'google') {
           // For Google auth, redirect to Google OAuth flow
           window.location.href = `${API_URL}/api/auth/google`;
@@ -188,7 +201,7 @@ export default function SetupWizard() {
           // For password auth, redirect to admin portal (will show login)
           window.location.href = '/admin';
         }
-      }, 2000);
+      }, 5000);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Setup failed. Please try again.');
       console.error('Setup initialization failed:', err);

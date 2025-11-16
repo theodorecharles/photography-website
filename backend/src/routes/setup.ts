@@ -460,7 +460,7 @@ router.post('/initialize', async (req: Request, res: Response): Promise<void> =>
     setTimeout(() => {
       console.log('✓ Setup complete - exiting for restart');
       process.exit(0); // Exit cleanly - PM2 will restart the process
-    }, 1000); // Wait 1 second to ensure response is sent
+    }, 5000); // Wait 5 seconds to ensure response is sent and give frontend time to show message
   } catch (error) {
     console.error('Setup initialization failed:', error);
     res.status(500).json({ 
