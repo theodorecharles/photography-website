@@ -9,6 +9,7 @@ export interface User {
   auth_methods: string[];
   status?: string;
   picture?: string;
+  invite_token?: string | null;
 }
 
 export interface Passkey {
@@ -28,6 +29,7 @@ export interface MFASetupData {
 export interface NewUserState {
   email: string;
   role: string;
+  inviteToken?: string;
 }
 
 export interface PasswordChangeState {
