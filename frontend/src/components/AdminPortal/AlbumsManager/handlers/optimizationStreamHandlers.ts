@@ -10,11 +10,11 @@ const API_URL = import.meta.env.VITE_API_URL || '';
 
 interface OptimizationStreamHandlersProps {
   setUploadingImages: React.Dispatch<React.SetStateAction<UploadingImage[]>>;
-  selectedAlbumRef: React.MutableRefObject<string | null>;
+  uploadingAlbumRef: React.MutableRefObject<string>;
 }
 
 export const createOptimizationStreamHandlers = (props: OptimizationStreamHandlersProps) => {
-  const { setUploadingImages, selectedAlbumRef } = props;
+  const { setUploadingImages, uploadingAlbumRef } = props;
 
   let eventSource: EventSource | null = null;
 
@@ -60,10 +60,10 @@ export const createOptimizationStreamHandlers = (props: OptimizationStreamHandle
           // Update for a specific photo
           const { jobId, album, filename, progress, state, error, title } = data;
 
-          console.log(`[Optimization Stream] Update received: ${jobId} - ${state} (${progress}%) - Album: "${album}" vs Selected: "${selectedAlbumRef.current}"`);
+          console.log(`[Optimization Stream] Update received: ${jobId} - ${state} (${progress}%) - Album: "${album}" vs Uploading: "${uploadingAlbumRef.current}"`);
 
-          // Only update if it's for the currently selected album
-          if (album !== selectedAlbumRef.current) {
+          // Only update if it's for the currently uploading album
+          if (album !== uploadingAlbumRef.current) {
             console.log(`[Optimization Stream] Skipping update - album mismatch`);
             return;
           }

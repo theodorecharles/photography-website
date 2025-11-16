@@ -90,16 +90,6 @@ else
     log "Skipping image optimization (system not configured yet)"
 fi
 
-# Run database migrations
-log "Running database migrations..."
-if [ -f "migrate-show-on-homepage.js" ]; then
-    if ! node migrate-show-on-homepage.js; then
-        handle_error "Database migration failed"
-    fi
-else
-    log "WARNING: Migration script not found (migrate-show-on-homepage.js)"
-fi
-
 # Backend deployment process
 log "Installing backend dependencies..."
 cd backend || handle_error "Failed to cd into backend directory"

@@ -11,6 +11,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { UploadingImage, AlbumsManagerProps, ConfirmModalConfig, Photo } from './types';
 import { trackAlbumCreated } from '../../../utils/analytics';
+import { useSSEToaster } from '../../../contexts/SSEToasterContext';
 import PhotosPanel from './components/PhotosPanel';
 import AlbumToolbar from './components/AlbumToolbar';
 import FoldersSection from './components/FoldersSection';
@@ -79,6 +80,9 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   const photoManagement = usePhotoManagement({ setMessage, showConfirmation });
   const folderManagement = useFolderManagement({ setMessage, loadAlbums, showConfirmation });
   
+  // Get SSE toaster context for real-time title updates
+  const sseToaster = useSSEToaster();
+  
   // Extract commonly used values from hooks
   const {
     localAlbums,
@@ -92,7 +96,8 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   const {
     selectedAlbum,
     albumPhotos,
-    // setAlbumPhotos,
+    setAlbumPhotos,
+    setOriginalPhotoOrder,
     loadingPhotos,
     hasEverDragged,
     // setHasEverDragged,
@@ -108,6 +113,12 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     handleEditSave,
   } = photoManagement;
   
+  // Upload state (declare before useEffect that uses it)
+  const [uploadingImages, setUploadingImages] = useState<UploadingImage[]>([]);
+  const uploadingImagesRef = useRef<UploadingImage[]>([]);
+  const uploadBatchSizeRef = useRef(0); // Track original batch size
+  const [uploadingAlbum, setUploadingAlbum] = useState<string>(''); // Track which album is uploading
+  
   // Sync URL with selected album state
   useEffect(() => {
     const albumParam = searchParams.get('album');
@@ -116,13 +127,27 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     if (albumParam && albums.some(a => a.name === albumParam)) {
       // Only select if not already selected (to prevent infinite loop)
       if (selectedAlbum !== albumParam) {
-        selectAlbumInternal(albumParam);
+        // If we're currently uploading to this album, don't reload from DB
+        // Just set the selectedAlbum state without calling loadPhotos
+        if (uploadingAlbum === albumParam) {
+          console.log(`[Album Manager] Opening panel for album "${albumParam}" during active upload - skipping DB load`);
+          photoManagement.setSelectedAlbum(albumParam);
+        } else {
+          selectAlbumInternal(albumParam);
+        }
       }
     } else if (!albumParam && selectedAlbum) {
       // If URL has no album but state has one, deselect
       deselectAlbumInternal();
     }
-  }, [albums, searchParams, selectedAlbum, selectAlbumInternal, deselectAlbumInternal]);
+  }, [albums, searchParams, selectedAlbum, selectAlbumInternal, deselectAlbumInternal, uploadingAlbum, photoManagement]);
+  
+  // Calculate upload progress for the currently uploading album
+  const uploadProgress = uploadingAlbum ? {
+    album: uploadingAlbum,
+    completed: uploadingImages.filter(img => img.state === 'complete').length,
+    total: uploadBatchSizeRef.current,
+  } : null;
   
   // Wrapper to update URL when selecting an album
   const selectAlbum = useCallback((albumName: string) => {
@@ -135,35 +160,51 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     setSearchParams(searchParams, { replace: false });
   }, [searchParams, setSearchParams]);
   
-  // Upload state (keeping this in component for now due to complexity)
-  const [uploadingImages, setUploadingImages] = useState<UploadingImage[]>([]);
-  const uploadingImagesRef = useRef<UploadingImage[]>([]);
-  
-  // Move completed uploads from uploadingImages to albumPhotos when all uploads finish
+  // Move completed uploads from uploadingImages to albumPhotos when ALL uploads finish
   useEffect(() => {
     const completedUploads = uploadingImages.filter(img => img.state === 'complete' && img.photo);
     
-    // If there are completed uploads and no active uploads, move them to albumPhotos
-    if (completedUploads.length > 0) {
-      const hasActiveUploads = uploadingImages.some(img => img.state !== 'complete');
+    // Check if all uploads are done
+    const hasActiveUploads = uploadingImages.some(img => img.state !== 'complete');
+    
+    // Only move to albumPhotos when ALL uploads are complete
+    // Use uploadingAlbum instead of selectedAlbum so this works even if panel is closed
+    if (completedUploads.length > 0 && !hasActiveUploads && uploadingAlbum) {
+      console.log('[Upload Progress] All uploads complete, moving to albumPhotos:', completedUploads.length);
       
-      if (!hasActiveUploads) {
-        console.log('All uploads complete, moving to albumPhotos:', completedUploads.length);
-        
-        // Extract photos from completed uploads
-        const newPhotos = completedUploads.map(img => img.photo!).filter(p => p);
-        
+      // Sort by uploadIndex to maintain original order
+      const sortedCompleted = [...completedUploads].sort((a, b) => 
+        (a.uploadIndex ?? 0) - (b.uploadIndex ?? 0)
+      );
+      
+      // Extract photos from completed uploads in correct order
+      const newPhotos = sortedCompleted.map(img => img.photo!).filter(p => p);
+      
+      // Only update albumPhotos if the uploading album matches the currently selected album
+      if (uploadingAlbum === selectedAlbum) {
+        console.log('[Upload Progress] Uploading album matches selected album, updating UI');
         // Add to beginning of albumPhotos (they were rendered first in the grid)
         photoManagement.setAlbumPhotos((prev: Photo[]) => [...newPhotos, ...prev]);
         
         // ALSO update originalPhotoOrder so Cancel doesn't make photos disappear
         photoManagement.setOriginalPhotoOrder((prev: Photo[]) => [...newPhotos, ...prev]);
-        
-        // Clear uploadingImages
-        setUploadingImages([]);
+      } else {
+        console.log('[Upload Progress] Uploading album does not match selected album, showing completion toaster');
+        // Show success toaster if panel was closed during upload
+        setMessage({ 
+          type: 'success', 
+          text: `✓ Upload complete! ${completedUploads.length} ${completedUploads.length === 1 ? 'photo' : 'photos'} added to "${uploadingAlbum}"`
+        });
       }
+      
+      // Clear uploadingImages
+      setUploadingImages([]);
+      
+      // Clear uploading album state
+      setUploadingAlbum('');
+      uploadBatchSizeRef.current = 0;
     }
-  }, [uploadingImages, photoManagement]);
+  }, [uploadingImages, photoManagement, selectedAlbum, uploadingAlbum]);
 
   // Ref to track current selected album (avoids closure issues in SSE handler)
   const selectedAlbumRef = useRef<string | null>(selectedAlbum);
@@ -171,18 +212,73 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     selectedAlbumRef.current = selectedAlbum;
   }, [selectedAlbum]);
 
+  // Register title update callback for real-time updates during AI title generation
+  useEffect(() => {
+    const handleTitleUpdate = (album: string, filename: string, title: string) => {
+      // Only update if it's for the currently selected album
+      if (album === selectedAlbumRef.current) {
+        console.log(`[AlbumsManager] Updating title for ${album}/${filename}: "${title}"`);
+        setAlbumPhotos((prev: Photo[]) =>
+          prev.map((p) =>
+            (p.id.split('/').pop() || p.id) === filename ? { ...p, title } : p
+          )
+        );
+        setOriginalPhotoOrder((prev: Photo[]) =>
+          prev.map((p) =>
+            (p.id.split('/').pop() || p.id) === filename ? { ...p, title } : p
+          )
+        );
+      }
+    };
+    
+    sseToaster.setOnTitleUpdate(handleTitleUpdate);
+    
+    return () => {
+      sseToaster.setOnTitleUpdate(null);
+    };
+  }, [setAlbumPhotos, setOriginalPhotoOrder, sseToaster]);
+  
+  // Apply buffered title updates when album changes
+  useEffect(() => {
+    if (selectedAlbum && albumPhotos.length > 0) {
+      const bufferedUpdates = sseToaster.getBufferedUpdates(selectedAlbum);
+      const updateCount = Object.keys(bufferedUpdates).length;
+      
+      if (updateCount > 0) {
+        console.log(`[AlbumsManager] Applying ${updateCount} buffered title updates for ${selectedAlbum}`);
+        setAlbumPhotos((prev: Photo[]) =>
+          prev.map((p) => {
+            const filename = p.id.split('/').pop() || p.id;
+            return bufferedUpdates[filename] ? { ...p, title: bufferedUpdates[filename] } : p;
+          })
+        );
+        setOriginalPhotoOrder((prev: Photo[]) =>
+          prev.map((p) => {
+            const filename = p.id.split('/').pop() || p.id;
+            return bufferedUpdates[filename] ? { ...p, title: bufferedUpdates[filename] } : p;
+          })
+        );
+      }
+    }
+  }, [selectedAlbum, albumPhotos.length, setAlbumPhotos, setOriginalPhotoOrder, sseToaster]);
+
+  // Ref to track uploading album (persists even when panel is closed)
+  const uploadingAlbumRef = useRef<string>('');
+  useEffect(() => {
+    uploadingAlbumRef.current = uploadingAlbum;
+  }, [uploadingAlbum]);
+
   // Connect to optimization stream when PhotosPanel is open (memoize to prevent recreating on every render)
   const optimizationStreamHandlers = React.useMemo(
     () => createOptimizationStreamHandlers({
       setUploadingImages,
-      selectedAlbumRef
+      uploadingAlbumRef
     }),
-    [setUploadingImages, selectedAlbumRef]
+    [setUploadingImages]
   );
 
   // Track whether we have active uploads (to detect transitions)
   const hasActiveUploadsRef = useRef(false);
-  const prevSelectedAlbumRef = useRef<string | null>(null);
   
   // Check for active uploads and manage connection (runs on every uploadingImages change)
   useEffect(() => {
@@ -194,11 +290,8 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
       img.state === 'generating-title'
     );
     
-    const albumChanged = prevSelectedAlbumRef.current !== selectedAlbum;
-    prevSelectedAlbumRef.current = selectedAlbum;
-    
     // Transition: no uploads → has uploads
-    if (hasActive && !hasActiveUploadsRef.current && selectedAlbum) {
+    if (hasActive && !hasActiveUploadsRef.current && uploadingAlbum) {
       console.log('[Album Manager] 🚀 Active uploads started, connecting stream');
       hasActiveUploadsRef.current = true;
       optimizationStreamHandlers.connectOptimizationStream();
@@ -209,15 +302,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
       hasActiveUploadsRef.current = false;
       optimizationStreamHandlers.disconnectOptimizationStream();
     }
-    // Album changed while uploads are active
-    else if (albumChanged && hasActiveUploadsRef.current) {
-      console.log('[Album Manager] 📝 Album changed during uploads, reconnecting stream');
-      optimizationStreamHandlers.disconnectOptimizationStream();
-      if (selectedAlbum) {
-        optimizationStreamHandlers.connectOptimizationStream();
-      }
-    }
-  }, [uploadingImages, selectedAlbum]); // Removed optimizationStreamHandlers from deps
+  }, [uploadingImages, uploadingAlbum, optimizationStreamHandlers]);
 
   // Cleanup only on unmount
   useEffect(() => {
@@ -243,7 +328,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   const [showNewAlbumModal, setShowNewAlbumModal] = useState(false);
   const [newAlbumFiles, setNewAlbumFiles] = useState<File[]>([]);
   const [newAlbumModalName, setNewAlbumModalName] = useState('');
-  const [newAlbumPublished, setNewAlbumPublished] = useState(true);
+  const [newAlbumPublished, setNewAlbumPublished] = useState(false);
   const [newAlbumModalError, setNewAlbumModalError] = useState('');
   
   // Folder modal state
@@ -395,6 +480,8 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     uploadingImages,
     setUploadingImages,
     uploadingImagesRef,
+    uploadBatchSizeRef,
+    setUploadingAlbum,
     selectAlbum,
     setMessage,
     loadAlbums,
@@ -470,6 +557,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     setNewAlbumFiles([]);
     setNewAlbumModalError('');
     setTargetFolderId(null);
+    setNewAlbumPublished(false);
   };
 
   const handleOpenMoveToFolderModal = (albumName: string) => {
@@ -505,6 +593,12 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   };
 
   const handleCreateAlbumFromModal = async () => {
+    // Check for reserved "homepage" name
+    if (newAlbumModalName.trim().toLowerCase() === 'homepage') {
+      setNewAlbumModalError('HOMEPAGE_RESERVED');
+      return;
+    }
+    
     // Validate album name
     if (!isValidAlbumName(newAlbumModalName)) {
       setNewAlbumModalError('Album name must be at least 2 characters and contain only letters, numbers, spaces, hyphens, and underscores');
@@ -533,7 +627,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
       
       if (!res.ok) {
         const error = await res.json();
-        setNewAlbumModalError(error.error || 'Failed to create album');
+        setNewAlbumModalError(error.message || error.error || 'Failed to create album');
         return;
       }
       
@@ -594,7 +688,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
       <section className="admin-section">
         <div>
           <h2>Albums</h2>
-          <p className="section-description">Manage your photo albums and upload new images. Drag and drop.</p>
+          <p className="section-description">Manage your photo albums and upload new images.</p>
         </div>
         
         {/* Unified Drag-and-Drop Context for Folders and Albums */}
@@ -627,6 +721,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
             dragOverFolderId={dragOverFolderId}
             dragOverFolderGhostTile={dragOverFolderGhostTile}
             uploadingImages={uploadingImages}
+            uploadProgress={uploadProgress}
             folderGhostTileRefs={folderGhostTileRefs}
             onDeleteFolder={folderHandlers.handleDeleteFolder}
             onToggleFolderPublished={folderHandlers.handleToggleFolderPublished}
@@ -655,6 +750,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
             dragOverAlbum={dragOverAlbum}
             dragOverUncategorized={dragOverUncategorized}
             uploadingImages={uploadingImages}
+            uploadProgress={uploadProgress}
             isGhostAlbumDragOver={isGhostAlbumDragOver}
             uncategorizedSectionRef={uncategorizedSectionRef}
             ghostTileFileInputRef={ghostTileFileInputRef}
@@ -722,7 +818,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
             <PhotosPanel
               selectedAlbum={selectedAlbum}
               albumPhotos={albumPhotos}
-              uploadingImages={uploadingImages}
+              uploadingImages={uploadingAlbum === selectedAlbum ? uploadingImages : []}
               loadingPhotos={loadingPhotos}
               hasEverDragged={hasEverDragged}
               savingOrder={savingOrder}

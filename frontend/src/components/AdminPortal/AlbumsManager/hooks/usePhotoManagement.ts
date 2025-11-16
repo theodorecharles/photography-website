@@ -281,6 +281,7 @@ export const usePhotoManagement = ({ setMessage, showConfirmation }: UsePhotoMan
 
   return {
     selectedAlbum,
+    setSelectedAlbum,
     albumPhotos,
     setAlbumPhotos,
     setOriginalPhotoOrder,

@@ -8,7 +8,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useSortable, SortableContext } from '@dnd-kit/sortable';
-import { PlusCircleIcon, UploadIcon, HourglassIcon, DragHandleIcon, ChevronUpIcon, ChevronDownIcon } from '../../../icons';
+import { PlusCircleIcon, UploadIcon, DragHandleIcon, ChevronUpIcon, ChevronDownIcon } from '../../../icons';
 import { useDroppable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 import { rectSortingStrategy } from '@dnd-kit/sortable';
@@ -43,7 +43,9 @@ const FolderGhostTileDroppable: React.FC<{
     >
       <div className="ghost-tile-content">
         {uploadingImages.length > 0 ? (
-          <HourglassIcon width="48" height="48" />
+          <span style={{ fontSize: '0.875rem', color: '#94a3b8', textAlign: 'center' }}>
+            Upload in progress
+          </span>
         ) : isGhostTileDragOver ? (
           <UploadIcon width="48" height="48" />
         ) : (
@@ -72,6 +74,7 @@ interface SortableFolderCardProps {
   isDragOver: boolean;
   isGhostTileDragOver: boolean;
   uploadingImages: UploadingImage[];
+  uploadProgress?: { album: string; completed: number; total: number } | null;
   folderGhostTileRefs: React.MutableRefObject<Map<number, React.RefObject<HTMLInputElement>>>;
   onDelete: (folderName: string) => void;
   onTogglePublished: (folderName: string, currentPublished: boolean) => void;
@@ -105,6 +108,7 @@ const SortableFolderCard: React.FC<SortableFolderCardProps> = ({
   isDragOver,
   isGhostTileDragOver,
   uploadingImages,
+  uploadProgress,
   folderGhostTileRefs,
   onDelete,
   onTogglePublished,
@@ -292,6 +296,7 @@ const SortableFolderCard: React.FC<SortableFolderCardProps> = ({
               isSelected={selectedAlbum === album.name}
               isAnimating={animatingAlbum === album.name}
               isDragOver={dragOverAlbum === album.name}
+              uploadProgress={uploadProgress?.album === album.name ? { completed: uploadProgress.completed, total: uploadProgress.total } : null}
               onClick={() => onAlbumClick(album.name)}
               onDragOver={(e) => { onAlbumDragOver(e, album.name); }}
               onDragLeave={onAlbumDragLeave}

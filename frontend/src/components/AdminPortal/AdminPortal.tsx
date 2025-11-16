@@ -30,6 +30,7 @@ import {
   LockIcon,
   UserIcon
 } from '../icons/';
+import packageJson from '../../../../package.json';
 
 type AuthMethod = 'google' | 'credentials' | 'passkey' | null;
 
@@ -96,11 +97,12 @@ export default function AdminPortal() {
     } else if (!path.startsWith('/admin/login') && !path.startsWith('/admin/') && !authStatus) {
       // User is not authenticated and not on any admin route - redirect to login
       navigate('/admin/login', { replace: true });
-    } else if (path.startsWith('/admin/') && path !== '/admin/login' && !path.startsWith('/admin/login/') && authStatus === null) {
+    } else if (path.startsWith('/admin/') && path !== '/admin/login' && !path.startsWith('/admin/login/') && authStatus === null && !loading) {
       // User is trying to access admin route but not authenticated - redirect to login
+      // Only redirect if we're not still loading the auth status
       navigate('/admin/login', { replace: true });
     }
-  }, [location.pathname, authStatus, activeAuthTab, navigate]);
+  }, [location.pathname, authStatus, activeAuthTab, navigate, loading]);
   
   // Aggressively load CSS in dev mode
   useEffect(() => {
@@ -1086,6 +1088,21 @@ export default function AdminPortal() {
             onDismiss={() => setShowSecurityPrompt(false)}
           />
         )}
+
+        {/* Powered by Galleria Footer */}
+        <div className="galleria-footer">
+          <span className="footer-text">
+            <a 
+              href="https://github.com/theodorecharles/photography-website" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="footer-galleria-link"
+            >
+              Galleria
+            </a>
+            {' '}v{packageJson.version}
+          </span>
+        </div>
       </div>
     </div>
   );

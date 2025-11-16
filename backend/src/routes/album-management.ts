@@ -285,6 +285,15 @@ router.post("/", requireManager, async (req: Request, res: Response): Promise<vo
       return;
     }
 
+    // Prevent "homepage" as an album name (reserved for homepage feature)
+    if (sanitizedName.toLowerCase() === 'homepage') {
+      res.status(400).json({ 
+        error: 'RESERVED_NAME',
+        message: 'The name "homepage" is reserved for the homepage feature. Use the homepage toggle on individual albums instead.' 
+      });
+      return;
+    }
+
     const photosDir = req.app.get("photosDir");
     const albumPath = path.join(photosDir, sanitizedName);
 

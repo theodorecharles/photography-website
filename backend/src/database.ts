@@ -38,7 +38,7 @@ export function initializeDatabase(): any {
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL UNIQUE,
       published BOOLEAN NOT NULL DEFAULT 0,
-      show_on_homepage BOOLEAN NOT NULL DEFAULT 1,
+      show_on_homepage BOOLEAN NOT NULL DEFAULT 0,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )
@@ -316,8 +316,8 @@ export function saveAlbum(name: string, published: boolean = false): void {
   const db = getDatabase();
   
   const stmt = db.prepare(`
-    INSERT INTO albums (name, published)
-    VALUES (?, ?)
+    INSERT INTO albums (name, published, show_on_homepage)
+    VALUES (?, ?, 0)
     ON CONFLICT(name) 
     DO UPDATE SET 
       published = excluded.published,

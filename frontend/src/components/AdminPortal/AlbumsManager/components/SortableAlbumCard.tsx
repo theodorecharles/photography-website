@@ -14,6 +14,7 @@ interface SortableAlbumCardProps {
   isSelected: boolean;
   isAnimating: boolean;
   isDragOver: boolean;
+  uploadProgress?: { completed: number; total: number } | null;
   onClick: () => void;
   onDragOver: (e: React.DragEvent) => void;
   onDragLeave: (e: React.DragEvent) => void;
@@ -33,6 +34,7 @@ const SortableAlbumCard: React.FC<SortableAlbumCardProps> = ({
   isSelected,
   isAnimating,
   isDragOver,
+  uploadProgress,
   onClick,
   onDragOver,
   onDragLeave,
@@ -69,6 +71,7 @@ const SortableAlbumCard: React.FC<SortableAlbumCardProps> = ({
     disabled: !canEdit || isMobile,
     animateLayoutChanges: () => true, // Always animate layout changes
   });
+  
 
   const touchStartPos = useRef<{ x: number; y: number } | null>(null);
   const hasMoved = useRef(false);
@@ -223,11 +226,23 @@ const SortableAlbumCard: React.FC<SortableAlbumCardProps> = ({
           </span>
         </h4>
       </div>
-      {album.photoCount !== undefined && (
+      {uploadProgress && uploadProgress.total > 0 ? (
+        <div className="album-upload-progress">
+          <div className="upload-progress-text">
+            Uploading: {uploadProgress.completed}/{uploadProgress.total}
+          </div>
+          <div className="upload-progress-bar-container">
+            <div 
+              className="upload-progress-bar"
+              style={{ width: `${(uploadProgress.completed / uploadProgress.total) * 100}%` }}
+            />
+          </div>
+        </div>
+      ) : album.photoCount !== undefined ? (
         <div className="album-badge">
           {album.photoCount} {album.photoCount === 1 ? 'photo' : 'photos'}
         </div>
-      )}
+      ) : null}
       {isDragOver && (
         <div className="album-drop-overlay">
           <UploadIcon width="32" height="32" />

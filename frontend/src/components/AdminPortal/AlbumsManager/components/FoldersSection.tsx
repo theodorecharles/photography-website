@@ -17,6 +17,7 @@ interface FoldersSectionProps {
   dragOverFolderId: number | null;
   dragOverFolderGhostTile: number | null;
   uploadingImages: UploadingImage[];
+  uploadProgress: { album: string; completed: number; total: number } | null;
   folderGhostTileRefs: React.MutableRefObject<Map<number, React.RefObject<HTMLInputElement>>>;
   onDeleteFolder: (folderName: string) => void;
   onToggleFolderPublished: (folderName: string, currentPublished: boolean) => void;
@@ -47,6 +48,7 @@ const FoldersSection: React.FC<FoldersSectionProps> = ({
   dragOverFolderId,
   dragOverFolderGhostTile,
   uploadingImages,
+  uploadProgress,
   folderGhostTileRefs,
   onDeleteFolder,
   onToggleFolderPublished,
@@ -84,6 +86,7 @@ const FoldersSection: React.FC<FoldersSectionProps> = ({
               isDragOver={dragOverFolderId === folder.id}
               isGhostTileDragOver={dragOverFolderGhostTile === folder.id}
               uploadingImages={uploadingImages}
+              uploadProgress={uploadProgress}
               folderGhostTileRefs={folderGhostTileRefs}
               onDelete={onDeleteFolder}
               onTogglePublished={onToggleFolderPublished}

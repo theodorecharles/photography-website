@@ -12,6 +12,8 @@ interface UploadHandlersProps {
   uploadingImages: UploadingImage[];
   setUploadingImages: React.Dispatch<React.SetStateAction<UploadingImage[]>>;
   uploadingImagesRef: React.RefObject<UploadingImage[]>;
+  uploadBatchSizeRef: React.MutableRefObject<number>;
+  setUploadingAlbum: React.Dispatch<React.SetStateAction<string>>;
   selectAlbum: (albumName: string) => void;
   setMessage: (message: { type: 'success' | 'error'; text: string }) => void;
   loadAlbums: () => Promise<void>;
@@ -22,6 +24,8 @@ export const createUploadHandlers = (props: UploadHandlersProps) => {
     // uploadingImages, // not used directly, managed via setUploadingImages
     setUploadingImages,
     // uploadingImagesRef, // not used directly
+    uploadBatchSizeRef,
+    setUploadingAlbum,
     setMessage,
     loadAlbums,
     // setAlbumPhotos, // no longer used - photos stay in uploadingImages until complete
@@ -158,6 +162,8 @@ export const createUploadHandlers = (props: UploadHandlersProps) => {
     }));
 
     setUploadingImages(newUploadingImages);
+    uploadBatchSizeRef.current = newUploadingImages.length; // Track original batch size
+    setUploadingAlbum(albumName); // Track which album is uploading
 
     let successCount = 0;
     const failedUploads: Array<{ img: UploadingImage; retryCount: number }> = [];

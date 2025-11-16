@@ -21,7 +21,7 @@ const CONFIG_PATH = path.join(__dirname, '../data/config.json');
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 const Database = require('better-sqlite3');
-const DB_PATH = path.join(__dirname, 'gallery.db');
+const DB_PATH = path.join(__dirname, '../data/gallery.db');
 
 let processedCount = 0;
 let skippedCount = 0;
@@ -177,7 +177,7 @@ async function scanAndGenerateTitles() {
   }
   
   // Scan optimized/thumbnail directory
-  const thumbnailDir = path.join(__dirname, 'optimized/thumbnail');
+  const thumbnailDir = path.join(__dirname, '../data/optimized/thumbnail');
   
   if (!fs.existsSync(thumbnailDir)) {
     console.error('ERROR: Thumbnail directory not found:', thumbnailDir);
@@ -252,13 +252,17 @@ async function scanAndGenerateTitles() {
         await new Promise(resolve => setTimeout(resolve, delayBetweenRequests));
       }
       
-      await generateImageTitle(openai, thumbnailPath, album, filename, db);
+      const generatedTitle = await generateImageTitle(openai, thumbnailPath, album, filename, db);
       completed++;
       
       // Report progress for non-TTY (SSE streaming)
       if (!isTTY) {
         const percent = Math.floor((completed / total) * 100);
         console.log(`[${completed}/${total}] (${percent}%) ${album}/${filename}`);
+        // Send title update for real-time UI updates
+        if (generatedTitle) {
+          console.log(`TITLE_UPDATE:${JSON.stringify({ album, filename, title: generatedTitle })}`);
+        }
       }
     })
   );
