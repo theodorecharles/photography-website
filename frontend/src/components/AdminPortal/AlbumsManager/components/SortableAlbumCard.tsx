@@ -3,11 +3,11 @@
  * Drag-and-drop enabled album card with drop zone for file uploads
  */
 
-import { useRef } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Album } from '../types';
-import { FolderMinusIcon, UploadIcon } from '../../../icons';
+import { FolderMinusIcon, UploadIcon, ChevronUpIcon, ChevronDownIcon, FolderArrowIcon } from '../../../icons';
 
 interface SortableAlbumCardProps {
   album: Album;
@@ -19,6 +19,12 @@ interface SortableAlbumCardProps {
   onDragLeave: (e: React.DragEvent) => void;
   onDrop: (e: React.DragEvent) => void;
   onRemoveFromFolder?: (albumName: string) => void;
+  onMoveUp?: (albumName: string) => void;
+  onMoveDown?: (albumName: string) => void;
+  onMoveToFolder?: (albumName: string) => void;
+  isFirst?: boolean;
+  isLast?: boolean;
+  hasFolders?: boolean;
   canEdit: boolean;
 }
 
@@ -32,8 +38,25 @@ const SortableAlbumCard: React.FC<SortableAlbumCardProps> = ({
   onDragLeave,
   onDrop,
   onRemoveFromFolder,
+  onMoveUp,
+  onMoveDown,
+  onMoveToFolder,
+  isFirst,
+  isLast,
+  hasFolders = true,
   canEdit,
 }) => {
+  // Detect if we're on mobile
+  const [isMobile, setIsMobile] = useState(false);
+  
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
   const {
     attributes,
     listeners,
@@ -41,7 +64,11 @@ const SortableAlbumCard: React.FC<SortableAlbumCardProps> = ({
     transform,
     transition,
     isDragging,
-  } = useSortable({ id: album.name, disabled: !canEdit });
+  } = useSortable({ 
+    id: album.name, 
+    disabled: !canEdit || isMobile,
+    animateLayoutChanges: () => true, // Always animate layout changes
+  });
 
   const touchStartPos = useRef<{ x: number; y: number } | null>(null);
   const hasMoved = useRef(false);
@@ -97,11 +124,11 @@ const SortableAlbumCard: React.FC<SortableAlbumCardProps> = ({
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
-      onDragOver={canEdit ? onDragOver : undefined}
-      onDragLeave={canEdit ? onDragLeave : undefined}
-      onDrop={canEdit ? onDrop : undefined}
+      onDragOver={canEdit && !isMobile ? onDragOver : undefined}
+      onDragLeave={canEdit && !isMobile ? onDragLeave : undefined}
+      onDrop={canEdit && !isMobile ? onDrop : undefined}
       {...attributes}
-      {...(canEdit ? listeners : {})}
+      {...(canEdit && !isMobile ? listeners : {})}
     >
       {canEdit && onRemoveFromFolder && album.folder_id && (
         <button
@@ -114,6 +141,62 @@ const SortableAlbumCard: React.FC<SortableAlbumCardProps> = ({
         >
           <FolderMinusIcon width="16" height="16" />
         </button>
+      )}
+      
+      {/* Desktop: Move to folder button */}
+      {canEdit && !isMobile && onMoveToFolder && hasFolders && (
+        <button
+          className="album-move-folder-btn"
+          onClick={(e) => {
+            e.stopPropagation();
+            onMoveToFolder(album.name);
+          }}
+          title="Move to folder"
+        >
+          <FolderArrowIcon width="16" height="16" />
+        </button>
+      )}
+      
+      {/* Mobile: Arrow buttons for reordering and move to folder */}
+      {canEdit && isMobile && (onMoveUp || onMoveDown || onMoveToFolder) && (
+        <div className="album-mobile-arrows">
+          {!isFirst && onMoveUp && (
+            <button
+              className="arrow-btn arrow-up"
+              onClick={(e) => {
+                e.stopPropagation();
+                onMoveUp(album.name);
+              }}
+              title="Move up"
+            >
+              <ChevronUpIcon width="16" height="16" />
+            </button>
+          )}
+          {!isLast && onMoveDown && (
+            <button
+              className="arrow-btn arrow-down"
+              onClick={(e) => {
+                e.stopPropagation();
+                onMoveDown(album.name);
+              }}
+              title="Move down"
+            >
+              <ChevronDownIcon width="16" height="16" />
+            </button>
+          )}
+          {onMoveToFolder && hasFolders && (
+            <button
+              className="arrow-btn move-to-folder-btn"
+              onClick={(e) => {
+                e.stopPropagation();
+                onMoveToFolder(album.name);
+              }}
+              title="Move to folder"
+            >
+              <FolderArrowIcon width="16" height="16" />
+            </button>
+          )}
+        </div>
       )}
       <div className="album-card-header">
         <h4>

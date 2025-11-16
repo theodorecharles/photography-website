@@ -149,6 +149,33 @@ export const useFolderManagement = ({
     }
   }, [setMessage]);
 
+  const saveFolderOrder = useCallback(async (folders: Array<{ id: number; name: string; published: boolean; sort_order: number | null }>): Promise<boolean> => {
+    try {
+      // Format folders for the API (needs folderOrders array with name and sort_order)
+      const folderOrders = folders.map((folder, index) => ({
+        name: folder.name,
+        sort_order: index,
+      }));
+
+      const res = await fetchWithRateLimitCheck(`${API_URL}/api/folders/sort-order`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ folderOrders }),
+      });
+
+      if (!res.ok) {
+        throw new Error('Failed to save folder order');
+      }
+
+      setMessage({ type: 'success', text: 'Folder order saved!' });
+      return true;
+    } catch (err) {
+      setMessage({ type: 'error', text: 'Failed to save folder order' });
+      return false;
+    }
+  }, [setMessage]);
+
   return {
     newFolderName,
     setNewFolderName,
@@ -157,6 +184,7 @@ export const useFolderManagement = ({
     deleteFolder,
     toggleFolderPublished,
     moveAlbumToFolder,
+    saveFolderOrder,
   };
 };
 

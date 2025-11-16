@@ -13,7 +13,8 @@ interface DragDropHandlersProps {
   setLocalAlbums: (albums: Album[]) => void;
   localFolders: AlbumFolder[];
   setLocalFolders: (folders: AlbumFolder[]) => void;
-  setHasUnsavedChanges: (value: boolean) => void;
+  saveAlbumOrder: (albumsToSave?: Album[], silent?: boolean) => Promise<boolean>;
+  loadAlbums: () => Promise<void>;
   setAnimatingAlbum: (value: string | null) => void;
   setActiveAlbumId: (value: string | null) => void;
   setActiveFolderId: (value: number | null) => void;
@@ -29,7 +30,8 @@ export const createDragDropHandlers = (props: DragDropHandlersProps) => {
     setLocalAlbums,
     localFolders,
     setLocalFolders,
-    setHasUnsavedChanges,
+    saveAlbumOrder,
+    loadAlbums,
     setAnimatingAlbum,
     setActiveAlbumId,
     setActiveFolderId,
@@ -170,9 +172,12 @@ export const createDragDropHandlers = (props: DragDropHandlersProps) => {
         a.name === activeId ? { ...a, folder_id: null } : a
       );
       setLocalAlbums(updatedAlbums);
-      setHasUnsavedChanges(true);
       setAnimatingAlbum(activeId);
       setTimeout(() => setAnimatingAlbum(null), 300);
+      
+      // Save immediately
+      await saveAlbumOrder(updatedAlbums, true);
+      await loadAlbums(); // Reload to get any backend updates
       return;
     }
     
@@ -188,9 +193,12 @@ export const createDragDropHandlers = (props: DragDropHandlersProps) => {
             : a
         );
         setLocalAlbums(updatedAlbums);
-        setHasUnsavedChanges(true);
         setAnimatingAlbum(activeId);
         setTimeout(() => setAnimatingAlbum(null), 300);
+        
+        // Save immediately
+        await saveAlbumOrder(updatedAlbums, true);
+        await loadAlbums(); // Reload to get any backend updates
       }
       return;
     }
@@ -219,8 +227,11 @@ export const createDragDropHandlers = (props: DragDropHandlersProps) => {
             const otherAlbums = localAlbums.filter(
               a => a.folder_id !== contextFolderId
             );
-            setLocalAlbums([...otherAlbums, ...reordered]);
-            setHasUnsavedChanges(true);
+            const updatedAlbums = [...otherAlbums, ...reordered];
+            setLocalAlbums(updatedAlbums);
+            
+            // Save immediately
+            await saveAlbumOrder(updatedAlbums, true);
           }
         } else {
           // Different section: do nothing (only ghost tiles can move between sections)

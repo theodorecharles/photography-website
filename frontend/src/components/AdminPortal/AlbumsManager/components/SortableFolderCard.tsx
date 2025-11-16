@@ -6,9 +6,9 @@
  * - Sorting albums within the folder
  */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSortable, SortableContext } from '@dnd-kit/sortable';
-import { PlusCircleIcon, UploadIcon, HourglassIcon, DragHandleIcon } from '../../../icons';
+import { PlusCircleIcon, UploadIcon, HourglassIcon, DragHandleIcon, ChevronUpIcon, ChevronDownIcon } from '../../../icons';
 import { useDroppable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 import { rectSortingStrategy } from '@dnd-kit/sortable';
@@ -85,6 +85,14 @@ interface SortableFolderCardProps {
   onGhostTileDragLeave: (e: React.DragEvent) => void;
   onGhostTileDrop: (e: React.DragEvent, folderId: number) => void;
   onGhostTileFileSelect: (e: React.ChangeEvent<HTMLInputElement>, folderId: number) => void;
+  onMoveUp?: (folderId: number) => void;
+  onMoveDown?: (folderId: number) => void;
+  onAlbumMoveUp?: (albumName: string) => void;
+  onAlbumMoveDown?: (albumName: string) => void;
+  onAlbumMoveToFolder?: (albumName: string) => void;
+  isFirst?: boolean;
+  isLast?: boolean;
+  hasFolders?: boolean;
   canEdit: boolean;
 }
 
@@ -110,8 +118,27 @@ const SortableFolderCard: React.FC<SortableFolderCardProps> = ({
   onGhostTileDragLeave,
   onGhostTileDrop,
   onGhostTileFileSelect,
+  onMoveUp,
+  onMoveDown,
+  onAlbumMoveUp,
+  onAlbumMoveDown,
+  onAlbumMoveToFolder,
+  isFirst,
+  isLast,
+  hasFolders = true,
   canEdit,
 }) => {
+  // Detect if we're on mobile
+  const [isMobile, setIsMobile] = useState(false);
+  
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
   // Create/get ref for this folder's ghost tile file input
   useEffect(() => {
     if (!folderGhostTileRefs.current.has(folder.id)) {
@@ -127,7 +154,8 @@ const SortableFolderCard: React.FC<SortableFolderCardProps> = ({
     isDragging,
   } = useSortable({
     id: `folder-${folder.id}`,
-    disabled: !canEdit,
+    disabled: !canEdit || isMobile,
+    animateLayoutChanges: () => true, // Always animate layout changes
   });
 
   // Make the folder's album grid droppable
@@ -153,7 +181,7 @@ const SortableFolderCard: React.FC<SortableFolderCardProps> = ({
       <div 
         className="folder-card-header"
       >
-        {canEdit && (
+        {canEdit && !isMobile && (
           <div
             className="folder-drag-handle-icon"
             {...attributes}
@@ -173,6 +201,36 @@ const SortableFolderCard: React.FC<SortableFolderCardProps> = ({
             }}
           >
             <DragHandleIcon width="20" height="20" />
+          </div>
+        )}
+        
+        {/* Mobile: Arrow buttons for reordering folders */}
+        {canEdit && isMobile && (onMoveUp || onMoveDown) && (
+          <div className="folder-mobile-arrows">
+            {!isFirst && onMoveUp && (
+              <button
+                className="arrow-btn arrow-up"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onMoveUp(folder.id);
+                }}
+                title="Move up"
+              >
+                <ChevronUpIcon width="16" height="16" />
+              </button>
+            )}
+            {!isLast && onMoveDown && (
+              <button
+                className="arrow-btn arrow-down"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onMoveDown(folder.id);
+                }}
+                title="Move down"
+              >
+                <ChevronDownIcon width="16" height="16" />
+              </button>
+            )}
           </div>
         )}
         <div 
@@ -227,7 +285,7 @@ const SortableFolderCard: React.FC<SortableFolderCardProps> = ({
           ref={setDroppableRef}
           className="folder-albums-grid"
         >
-          {albums.map((album) => (
+          {albums.map((album, index) => (
             <SortableAlbumCard
               key={album.name}
               album={album}
@@ -238,6 +296,12 @@ const SortableFolderCard: React.FC<SortableFolderCardProps> = ({
               onDragOver={(e) => { onAlbumDragOver(e, album.name); }}
               onDragLeave={onAlbumDragLeave}
               onDrop={(e) => { onAlbumDrop(e, album.name); }}
+              onMoveUp={onAlbumMoveUp}
+              onMoveDown={onAlbumMoveDown}
+              onMoveToFolder={onAlbumMoveToFolder}
+              isFirst={index === 0}
+              isLast={index === albums.length - 1}
+              hasFolders={hasFolders}
               canEdit={canEdit}
             />
           ))}

@@ -279,6 +279,7 @@
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 1rem;
   margin-top: 1.25rem;
+  isolation: isolate; /* Create stacking context for smoother animations */
 }
 
 @media (max-width: 1200px) {
@@ -2496,6 +2497,7 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
   background: rgba(0, 0, 0, 0.2);
   border-radius: 8px;
+  isolation: isolate; /* Create stacking context for smoother animations */
 }
 
 @media (max-width: 768px) {
@@ -2660,5 +2662,355 @@ body.dragging .ghost-folder-tile {
   border-color: var(--primary-color) !important;
   transform: scale(1.05);
   box-shadow: 0 8px 24px rgba(74, 222, 128, 0.3);
+}
+
+/* Mobile Arrow Buttons for Reordering */
+.album-mobile-arrows,
+.folder-mobile-arrows {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  flex-direction: row;
+  gap: 4px;
+  z-index: 15;
+}
+
+.arrow-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: rgba(0, 0, 0, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(4px);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.arrow-btn:hover {
+  background: rgba(0, 0, 0, 0.9);
+  border-color: var(--primary-color);
+  transform: scale(1.1);
+}
+
+.arrow-btn:active {
+  transform: scale(0.95);
+}
+
+.arrow-btn svg {
+  pointer-events: none;
+  stroke: currentColor;
+}
+
+/* Hide arrow buttons on desktop */
+@media (min-width: 769px) {
+  .album-mobile-arrows,
+  .folder-mobile-arrows {
+    display: none;
+  }
+}
+
+/* Smooth transitions for reordering */
+.album-card,
+.folder-card {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.3s ease,
+              box-shadow 0.3s ease,
+              border-color 0.3s ease,
+              background 0.3s ease;
+  will-change: transform;
+}
+
+/* Add explicit animation for grid items */
+.album-grid > *,
+.folder-albums-grid > * {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Folder mobile arrows positioning */
+.folder-mobile-arrows {
+  top: 12px;
+  right: 12px;
+}
+
+/* Folders container for animation support */
+.folders-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  isolation: isolate;
+}
+
+.folders-container > * {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Desktop Move to Folder Button */
+.album-move-folder-btn {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+  padding: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(4px);
+  z-index: 10;
+  color: var(--primary-color);
+}
+
+/* On desktop, hide by default and show on hover */
+@media (min-width: 769px) {
+  .album-move-folder-btn {
+    display: none;
+  }
+  
+  .album-card:hover .album-move-folder-btn {
+    display: inline-flex;
+  }
+}
+
+.album-move-folder-btn:hover {
+  background: rgba(0, 0, 0, 0.8);
+  border-color: var(--primary-color);
+  transform: scale(1.1);
+}
+
+.album-move-folder-btn svg {
+  display: block;
+  stroke: currentColor;
+}
+
+/* Move to Folder Modal */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  z-index: 10000;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.move-folder-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.95);
+  width: 90%;
+  max-width: 500px;
+  background: linear-gradient(135deg, #1f1f1f 0%, #181818 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+  z-index: 10001;
+  opacity: 0;
+  animation: modalAppear 0.2s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modalAppear {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+.move-folder-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.move-folder-modal-header h3 {
+  margin: 0;
+  color: #fff;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.move-folder-modal-body {
+  padding: 1.5rem;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.move-folder-hint {
+  color: #a8a8a8;
+  font-size: 0.9rem;
+  margin: 0 0 1.5rem 0;
+  line-height: 1.5;
+}
+
+.folder-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.folder-option {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+  width: 100%;
+}
+
+.folder-option:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: var(--primary-color);
+  transform: translateX(4px);
+}
+
+.folder-option:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.folder-option.current {
+  background: rgba(74, 222, 128, 0.08);
+  border-color: rgba(74, 222, 128, 0.3);
+}
+
+.folder-option-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.folder-option-name {
+  flex: 1;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.current-badge {
+  padding: 0.25rem 0.75rem;
+  background: rgba(74, 222, 128, 0.2);
+  color: var(--primary-color);
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+@media (max-width: 600px) {
+  .move-folder-modal {
+    width: 95%;
+    max-width: none;
+  }
+  
+  .move-folder-modal-header,
+  .move-folder-modal-body {
+    padding: 1rem;
+  }
+}
+
+/* Album Toolbar Styles */
+.album-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 3rem;
+  margin-bottom: 1rem;
+  gap: 1rem;
+}
+
+.album-toolbar-top {
+  flex: 0 0 auto;
+}
+
+.album-toolbar-unsaved {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 0 0 auto;
+}
+
+.album-toolbar-unsaved .unsaved-text {
+  color: #fbbf24;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.album-toolbar-unsaved .unsaved-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+/* Mobile: Stack toolbar vertically */
+@media (max-width: 768px) {
+  .album-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+
+  .album-toolbar-top {
+    width: 100%;
+  }
+
+  .album-toolbar-top button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .album-toolbar-unsaved {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: rgba(251, 191, 36, 0.08);
+    border: 1px solid rgba(251, 191, 36, 0.2);
+    border-radius: 8px;
+  }
+
+  .album-toolbar-unsaved .unsaved-text {
+    text-align: center;
+  }
+
+  .album-toolbar-unsaved .unsaved-actions {
+    display: flex;
+    gap: 0.5rem;
+    width: 100%;
+  }
+
+  .album-toolbar-unsaved .unsaved-actions button {
+    flex: 1;
+    min-width: 0;
+  }
 }
 

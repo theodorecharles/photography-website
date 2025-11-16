@@ -29,15 +29,9 @@ const AlbumToolbar: React.FC<AlbumToolbarProps> = ({
   }
 
   return (
-    <div style={{ 
-      display: 'flex', 
-      justifyContent: 'space-between', 
-      alignItems: 'center', 
-      marginTop: '3rem', 
-      marginBottom: '1rem' 
-    }}>
-      {/* Left side - Create Folder Button */}
-      <div>
+    <div className="album-toolbar">
+      {/* Top - Create Folder Button */}
+      <div className="album-toolbar-top">
         <button 
           className="btn-action btn-upload" 
           onClick={onCreateFolder} 
@@ -48,26 +42,28 @@ const AlbumToolbar: React.FC<AlbumToolbarProps> = ({
         </button>
       </div>
       
-      {/* Right side - Save/Cancel buttons and unsaved indicator */}
+      {/* Bottom - Save/Cancel buttons and unsaved indicator */}
       {hasUnsavedChanges && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <span style={{ color: '#fbbf24', fontSize: '0.9rem', fontWeight: 500 }}>
+        <div className="album-toolbar-unsaved">
+          <span className="unsaved-text">
             ● Unsaved changes
           </span>
-          <button
-            onClick={onCancelChanges}
-            className="btn-secondary"
-            style={{ padding: '0.5rem 1rem' }}
-          >
-            Cancel
-          </button>
-          <button
-            onClick={onSaveChanges}
-            className="btn-action btn-upload"
-            style={{ padding: '0.5rem 1.5rem' }}
-          >
-            Save Changes
-          </button>
+          <div className="unsaved-actions">
+            <button
+              onClick={onCancelChanges}
+              className="btn-secondary"
+              style={{ padding: '0.5rem 1rem' }}
+            >
+              Cancel
+            </button>
+            <button
+              onClick={onSaveChanges}
+              className="btn-action btn-upload"
+              style={{ padding: '0.5rem 1.5rem' }}
+            >
+              Save Changes
+            </button>
+          </div>
         </div>
       )}
     </div>

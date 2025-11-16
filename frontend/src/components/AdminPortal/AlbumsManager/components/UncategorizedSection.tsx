@@ -74,6 +74,10 @@ interface UncategorizedSectionProps {
   onGhostTileDragLeave: (e: React.DragEvent) => void;
   onGhostTileDrop: (e: React.DragEvent) => void;
   onGhostTileFileSelect: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onAlbumMoveUp?: (albumName: string) => void;
+  onAlbumMoveDown?: (albumName: string) => void;
+  onAlbumMoveToFolder?: (albumName: string) => void;
+  hasFolders?: boolean;
   canEdit: boolean;
 }
 
@@ -96,6 +100,10 @@ const UncategorizedSection: React.FC<UncategorizedSectionProps> = ({
   onGhostTileDragLeave,
   onGhostTileDrop,
   onGhostTileFileSelect,
+  onAlbumMoveUp,
+  onAlbumMoveDown,
+  onAlbumMoveToFolder,
+  hasFolders = true,
   canEdit,
 }) => {
   const uncategorizedAlbums = localAlbums.filter(album => !album.folder_id);
@@ -126,7 +134,7 @@ const UncategorizedSection: React.FC<UncategorizedSectionProps> = ({
             strategy={rectSortingStrategy}
           >
             <div ref={setDroppableRef} className="album-grid">
-              {uncategorizedAlbums.map((album) => (
+              {uncategorizedAlbums.map((album, index) => (
                 <SortableAlbumCard
                   key={album.name}
                   album={album}
@@ -137,6 +145,12 @@ const UncategorizedSection: React.FC<UncategorizedSectionProps> = ({
                   onDragOver={(e) => onAlbumDragOver(e, album.name)}
                   onDragLeave={onAlbumDragLeave}
                   onDrop={(e) => onAlbumDrop(e, album.name)}
+                  onMoveUp={onAlbumMoveUp}
+                  onMoveDown={onAlbumMoveDown}
+                  onMoveToFolder={onAlbumMoveToFolder}
+                  isFirst={index === 0}
+                  isLast={index === uncategorizedAlbums.length - 1}
+                  hasFolders={hasFolders}
                   canEdit={canEdit}
                 />
               ))}

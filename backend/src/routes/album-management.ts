@@ -26,7 +26,9 @@ import {
   updateAlbumSortOrder,
   getAlbumState,
   getDatabase,
-  setAlbumFolder
+  setAlbumFolder,
+  getAlbumsInFolder,
+  setFolderPublished
 } from "../database.js";
 import { invalidateAlbumCache } from "./albums.js";
 import { generateStaticJSONFiles } from "./static-json.js";
@@ -1003,16 +1005,28 @@ router.put('/:albumName/move', requireManager, async (req: Request, res: Respons
       return;
     }
     
-    // Get folder ID if folderName is provided
+    // Get the album's current state to track which folder it's being moved FROM
+    const albumState = getAlbumState(albumName);
+    if (!albumState) {
+      res.status(404).json({ error: 'Album not found' });
+      return;
+    }
+    
+    const oldFolderId = (albumState as any).folder_id;
+    
+    // Get folder ID and published state if folderName is provided
     let folderId: number | null = null;
+    let folderPublishedState: boolean | null = null;
+    
     if (folderName) {
       const db = getDatabase();
-      const folder = db.prepare('SELECT id FROM album_folders WHERE name = ?').get(folderName) as { id: number } | undefined;
+      const folder = db.prepare('SELECT id, published FROM album_folders WHERE name = ?').get(folderName) as { id: number; published: number } | undefined;
       if (!folder) {
         res.status(404).json({ error: 'Folder not found' });
         return;
       }
       folderId = folder.id;
+      folderPublishedState = folder.published === 1;
     }
     
     // Move album to folder (or remove from folder if folderId is null)
@@ -1023,12 +1037,33 @@ router.put('/:albumName/move', requireManager, async (req: Request, res: Respons
       return;
     }
     
-    // Update published status if provided
-    if (typeof published === 'boolean') {
+    // Sync published state with folder
+    if (folderId !== null && folderPublishedState !== null) {
+      // Moving into a folder - sync album's published state with folder's published state
+      setAlbumPublished(albumName, folderPublishedState);
+      console.log(`✓ Set album "${albumName}" published state to ${folderPublishedState} (synced with folder)`);
+    } else if (typeof published === 'boolean') {
+      // Moving to uncategorized - use provided published state
       setAlbumPublished(albumName, published);
     }
+    // If moving to uncategorized and no published state provided, keep current state
     
     console.log(`✓ Moved album "${albumName}" to folder ${folderName || 'none'}`);
+    
+    // If the album was moved OUT of a folder, check if that old folder is now empty
+    // If so, automatically unpublish it
+    if (oldFolderId !== null && oldFolderId !== folderId) {
+      const albumsInOldFolder = getAlbumsInFolder(oldFolderId);
+      if (albumsInOldFolder.length === 0) {
+        // Get the old folder's name to unpublish it
+        const db = getDatabase();
+        const oldFolder = db.prepare('SELECT name FROM album_folders WHERE id = ?').get(oldFolderId) as { name: string } | undefined;
+        if (oldFolder) {
+          setFolderPublished(oldFolder.name, false);
+          console.log(`✓ Auto-unpublished empty folder: ${oldFolder.name}`);
+        }
+      }
+    }
     
     // Regenerate static JSON files
     const appRoot = req.app.get('appRoot');
