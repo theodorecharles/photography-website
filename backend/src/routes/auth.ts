@@ -6,7 +6,7 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
-import config, { DATA_DIR } from '../config.js';
+import config, { DATA_DIR, getCurrentConfig } from '../config.js';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -428,8 +428,11 @@ router.get('/status', (req: Request, res: Response) => {
   try {
     const allUsers = getAllUsers();
     
+    // Get fresh config (in case it was just updated by setup)
+    const currentConfig = getCurrentConfig();
+    
     // Google is enabled if config says so (regardless of whether any users have used it)
-    const googleEnabled = config.auth?.google?.enabled || false;
+    const googleEnabled = currentConfig.auth?.google?.enabled || false;
     
     // Passkey is available if any users have passkeys
     const hasPasskeyUsers = allUsers.some(user => 
