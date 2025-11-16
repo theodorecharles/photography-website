@@ -149,7 +149,7 @@ export const useFolderManagement = ({
     }
   }, [setMessage]);
 
-  const saveFolderOrder = useCallback(async (folders: Array<{ id: number; name: string; published: boolean; sort_order: number | null }>): Promise<boolean> => {
+  const saveFolderOrder = useCallback(async (folders: Array<{ id: number; name: string; published: boolean; sort_order?: number | null }>): Promise<boolean> => {
     try {
       // Format folders for the API (needs folderOrders array with name and sort_order)
       const folderOrders = folders.map((folder, index) => ({

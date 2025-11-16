@@ -36,7 +36,7 @@ interface UIInteractionHandlersProps {
   localAlbums: Album[];
   setLocalAlbums: (albums: Album[]) => void;
   albums: Album[];
-  setHasUnsavedChanges: (value: boolean) => void;
+  loadAlbums: () => Promise<void>;
   setShowNewAlbumModal: (show: boolean) => void;
   setNewAlbumFiles: (files: File[]) => void;
   setNewAlbumModalName: (name: string) => void;
@@ -55,7 +55,7 @@ export const createUIInteractionHandlers = (props: UIInteractionHandlersProps) =
     localAlbums,
     setLocalAlbums,
     albums,
-    setHasUnsavedChanges,
+    loadAlbums,
     setShowNewAlbumModal,
     setNewAlbumFiles,
     setNewAlbumModalName,
