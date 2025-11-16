@@ -1,5 +1,5 @@
 // PM2 ecosystem config for Docker
-// Used by start.sh in Docker container
+// Used by start-docker.sh in Docker container
 module.exports = {
   apps: [
     {

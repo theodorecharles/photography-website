@@ -52,5 +52,5 @@ RUN chmod +x ./start.sh
 RUN mkdir -p /data/logs
 
 # Use the startup script
-CMD ["./start.sh"]
+CMD ["./start-docker.sh"]
 
