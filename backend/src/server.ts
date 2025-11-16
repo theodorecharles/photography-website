@@ -161,13 +161,51 @@ app.use(
         return callback(null, true);
       }
 
+      // Check exact matches first
       if (ALLOWED_ORIGINS.indexOf(origin) !== -1) {
         callback(null, true);
-      } else {
-        // Reject origin by passing false (not an Error)
-        console.warn(`CORS blocked origin: ${origin}`);
-        callback(null, false);
+        return;
       }
+
+      // Allow localhost on any port (for development)
+      try {
+        const url = new URL(origin);
+        if (url.hostname === 'localhost' || url.hostname === '127.0.0.1') {
+          callback(null, true);
+          return;
+        }
+      } catch (e) {
+        // Invalid URL, continue to other checks
+      }
+
+      // Allow internal IPs on ports 3000 and 3001 (for Docker networking)
+      // Pattern: http://<ip>:3000 or http://<ip>:3001
+      try {
+        const url = new URL(origin);
+        const port = url.port ? parseInt(url.port) : (url.protocol === 'https:' ? 443 : 80);
+        
+        // Check if it's an internal IP (private IP ranges)
+        const hostname = url.hostname;
+        const isPrivateIP = 
+          hostname.startsWith('192.168.') ||
+          hostname.startsWith('10.') ||
+          hostname.startsWith('172.') ||
+          hostname.match(/^172\.(1[6-9]|2[0-9]|3[0-1])\./) ||
+          hostname === 'localhost' ||
+          hostname === '127.0.0.1';
+        
+        if (isPrivateIP && (port === 3000 || port === 3001)) {
+          console.log(`[CORS] Allowing internal IP: ${origin}`);
+          callback(null, true);
+          return;
+        }
+      } catch (e) {
+        // Invalid URL, continue to rejection
+      }
+
+      // Reject origin by passing false (not an Error)
+      console.warn(`CORS blocked origin: ${origin}`);
+      callback(null, false);
     },
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],

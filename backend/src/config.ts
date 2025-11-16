@@ -102,10 +102,54 @@ export const DB_PATH = path.join(DATA_DIR, 'gallery.db');
 
 // Export dynamic getters for config values that can change
 export function getAllowedOrigins(): string[] {
-  if (process.env.ALLOWED_ORIGINS) {
-    return process.env.ALLOWED_ORIGINS.split(',').map((o: string) => o.trim());
+  const origins: string[] = [];
+  
+  // Add FRONTEND_DOMAIN if provided (supports http:// and https://)
+  if (process.env.FRONTEND_DOMAIN) {
+    const frontendDomain = process.env.FRONTEND_DOMAIN.trim();
+    if (frontendDomain.startsWith('http://') || frontendDomain.startsWith('https://')) {
+      origins.push(frontendDomain);
+    } else {
+      // Auto-detect protocol based on BACKEND_DOMAIN or default to https
+      const protocol = process.env.BACKEND_DOMAIN?.startsWith('https://') ? 'https' : 'https';
+      origins.push(`${protocol}://${frontendDomain}`);
+    }
   }
-  return fullConfig.environment.backend.allowedOrigins;
+  
+  // Add BACKEND_DOMAIN if provided (for same-origin requests)
+  if (process.env.BACKEND_DOMAIN) {
+    const backendDomain = process.env.BACKEND_DOMAIN.trim();
+    if (backendDomain.startsWith('http://') || backendDomain.startsWith('https://')) {
+      origins.push(backendDomain);
+    } else {
+      const protocol = backendDomain.includes('localhost') ? 'http' : 'https';
+      origins.push(`${protocol}://${backendDomain}`);
+    }
+  }
+  
+  // Always allow localhost on any port (for development)
+  origins.push('http://localhost:3000');
+  origins.push('http://localhost:3001');
+  origins.push('http://127.0.0.1:3000');
+  origins.push('http://127.0.0.1:3001');
+  
+  // Allow internal IPs on ports 3000 and 3001 (for Docker networking)
+  // Pattern: http://<any-ip>:3000 or http://<any-ip>:3001
+  // We'll handle this dynamically in the CORS middleware
+  
+  // Add ALLOWED_ORIGINS from environment if provided
+  if (process.env.ALLOWED_ORIGINS) {
+    const envOrigins = process.env.ALLOWED_ORIGINS.split(',').map((o: string) => o.trim());
+    origins.push(...envOrigins);
+  }
+  
+  // Add origins from config.json (if exists and not overridden)
+  if (!process.env.ALLOWED_ORIGINS && !process.env.FRONTEND_DOMAIN) {
+    origins.push(...fullConfig.environment.backend.allowedOrigins);
+  }
+  
+  // Remove duplicates
+  return [...new Set(origins)];
 }
 
 // Export constants

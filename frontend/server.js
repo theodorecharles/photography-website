@@ -11,14 +11,25 @@ const jsonCache = new Map();
 const JSON_CACHE_MAX_AGE = 5 * 60 * 1000; // 5 minutes
 
 // Load configuration (or use defaults for setup mode)
-const configPath = path.join(__dirname, "../data/config.json");
+// In Docker, DATA_DIR env var points to mounted volume
+const dataDir = process.env.DATA_DIR || path.join(__dirname, "../data");
+const configPath = path.join(dataDir, "config.json");
 let configFile;
 let config;
 let isSetupMode = false;
 
+// Use API_URL from environment if provided (for Docker)
+const envApiUrl = process.env.API_URL || process.env.BACKEND_DOMAIN;
+
 if (fs.existsSync(configPath)) {
   configFile = JSON.parse(fs.readFileSync(configPath, "utf8"));
   config = configFile.environment;
+  
+  // Override API URL from environment if provided
+  if (envApiUrl) {
+    config.frontend.apiUrl = envApiUrl;
+    console.log(`[Config] Using API URL from environment: ${envApiUrl}`);
+  }
 } else {
   // Setup mode - use defaults
   console.log("⚠️  config.json not found - using defaults for setup mode");
@@ -29,7 +40,7 @@ if (fs.existsSync(configPath)) {
   config = {
     frontend: {
       port: 3000,
-      apiUrl: "http://localhost:3001",
+      apiUrl: envApiUrl || "http://localhost:3001",
     },
     security: {
       allowedHosts: ["localhost:3000", "127.0.0.1:3000"],
