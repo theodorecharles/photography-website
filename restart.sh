@@ -135,10 +135,63 @@ LOGS_DIR="$DATA_DIR/logs"
 # Ensure logs directory exists
 mkdir -p "$LOGS_DIR"
 
+# Determine frontend and backend domains from environment or config.json
+# These are used for CORS configuration
+FRONTEND_DOMAIN="${FRONTEND_DOMAIN:-}"
+BACKEND_DOMAIN="${BACKEND_DOMAIN:-}"
+API_URL="${API_URL:-}"
+
+# If not set, try to read from config.json
+if [ -z "$FRONTEND_DOMAIN" ] || [ -z "$BACKEND_DOMAIN" ]; then
+    CONFIG_FILE="data/config.json"
+    if [ ! -f "$CONFIG_FILE" ]; then
+        CONFIG_FILE="config/config.json"
+    fi
+    
+    if [ -f "$CONFIG_FILE" ] && command -v jq &> /dev/null; then
+        if [ -z "$FRONTEND_DOMAIN" ]; then
+            # Try to get from allowedOrigins first
+            FRONTEND_DOMAIN=$(jq -r '.environment.backend.allowedOrigins[0] // ""' "$CONFIG_FILE" 2>/dev/null || echo "")
+            # If still empty, try to construct from apiUrl
+            if [ -z "$FRONTEND_DOMAIN" ]; then
+                API_URL_FROM_CONFIG=$(jq -r '.environment.frontend.apiUrl // ""' "$CONFIG_FILE" 2>/dev/null || echo "")
+                if [ -n "$API_URL_FROM_CONFIG" ]; then
+                    # Extract domain from API URL and construct frontend URL
+                    BACKEND_DOMAIN="$API_URL_FROM_CONFIG"
+                    # Convert api-dev.tedcharles.net to www-dev.tedcharles.net
+                    FRONTEND_DOMAIN=$(echo "$API_URL_FROM_CONFIG" | sed 's|api-dev|www-dev|' | sed 's|api\.|www.|')
+                fi
+            fi
+        fi
+        
+        if [ -z "$BACKEND_DOMAIN" ]; then
+            BACKEND_DOMAIN=$(jq -r '.environment.frontend.apiUrl // ""' "$CONFIG_FILE" 2>/dev/null || echo "")
+        fi
+        
+        if [ -z "$API_URL" ]; then
+            API_URL=$(jq -r '.environment.frontend.apiUrl // "http://localhost:3001"' "$CONFIG_FILE" 2>/dev/null || echo "http://localhost:3001")
+        fi
+    fi
+fi
+
+# Fallback to localhost if still not set
+FRONTEND_DOMAIN="${FRONTEND_DOMAIN:-http://localhost:3000}"
+BACKEND_DOMAIN="${BACKEND_DOMAIN:-http://localhost:3001}"
+API_URL="${API_URL:-http://localhost:3001}"
+
+log "Using domains:"
+log "  FRONTEND_DOMAIN: $FRONTEND_DOMAIN"
+log "  BACKEND_DOMAIN: $BACKEND_DOMAIN"
+log "  API_URL: $API_URL"
+
 if pm2 list | grep -q "backend\|frontend"; then
-    # Services are running, restart them
+    # Services are running, restart them with updated env vars
     log "Restarting existing services..."
     pm2 restart backend frontend --update-env || handle_error "Failed to restart services"
+    
+    # Update environment variables for running processes
+    pm2 restart backend --update-env "FRONTEND_DOMAIN=$FRONTEND_DOMAIN,BACKEND_DOMAIN=$BACKEND_DOMAIN" 2>/dev/null || true
+    pm2 restart frontend --update-env "FRONTEND_DOMAIN=$FRONTEND_DOMAIN,BACKEND_DOMAIN=$BACKEND_DOMAIN,API_URL=$API_URL" 2>/dev/null || true
 else
     # Services not running, start them
     log "Services not running, starting them..."
@@ -151,7 +204,7 @@ else
       --log "$LOGS_DIR/backend-out.log" \
       --error "$LOGS_DIR/backend-error.log" \
       -- tsx src/server.ts \
-      --update-env "NODE_ENV=production,PORT=3001,HOST=0.0.0.0,DATA_DIR=$DATA_DIR" || handle_error "Failed to start backend"
+      --update-env "NODE_ENV=production,PORT=3001,HOST=0.0.0.0,DATA_DIR=$DATA_DIR,FRONTEND_DOMAIN=$FRONTEND_DOMAIN,BACKEND_DOMAIN=$BACKEND_DOMAIN" || handle_error "Failed to start backend"
     
     # Start frontend
     log "Starting frontend..."
@@ -161,7 +214,7 @@ else
       --log "$LOGS_DIR/frontend-out.log" \
       --error "$LOGS_DIR/frontend-error.log" \
       -- server.js \
-      --update-env "NODE_ENV=production,PORT=3000,HOST=0.0.0.0,DATA_DIR=$DATA_DIR,API_URL=http://localhost:3001" || handle_error "Failed to start frontend"
+      --update-env "NODE_ENV=production,PORT=3000,HOST=0.0.0.0,DATA_DIR=$DATA_DIR,API_URL=$API_URL,FRONTEND_DOMAIN=$FRONTEND_DOMAIN,BACKEND_DOMAIN=$BACKEND_DOMAIN" || handle_error "Failed to start frontend"
     
     cd ..
 fi
