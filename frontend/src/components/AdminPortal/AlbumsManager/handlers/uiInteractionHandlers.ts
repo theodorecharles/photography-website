@@ -34,8 +34,6 @@ interface FileSystemDirectoryReader {
 
 interface UIInteractionHandlersProps {
   localAlbums: Album[];
-  setLocalAlbums: (albums: Album[]) => void;
-  albums: Album[];
   loadAlbums: () => Promise<void>;
   setShowNewAlbumModal: (show: boolean) => void;
   setNewAlbumFiles: (files: File[]) => void;
@@ -53,8 +51,6 @@ interface UIInteractionHandlersProps {
 export const createUIInteractionHandlers = (props: UIInteractionHandlersProps) => {
   const {
     localAlbums,
-    setLocalAlbums,
-    albums,
     loadAlbums,
     setShowNewAlbumModal,
     setNewAlbumFiles,
