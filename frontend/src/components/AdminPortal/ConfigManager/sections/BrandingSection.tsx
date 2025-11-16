@@ -30,14 +30,17 @@ const BrandingSection: React.FC<BrandingSectionProps> = ({
   const [pendingAvatarFile, setPendingAvatarFile] = useState<File | null>(null);
   const [avatarPreviewUrl, setAvatarPreviewUrl] = useState<string | null>(null);
   const [isDraggingOver, setIsDraggingOver] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
   const avatarFileInputRef = useRef<HTMLInputElement>(null);
 
-  // Update originalBranding when branding prop changes (e.g., after data loads)
+  // Initialize originalBranding only once when branding prop is first populated
   useEffect(() => {
-    console.log('[BrandingSection] Received branding prop:', branding);
-    console.log('[BrandingSection] Setting originalBranding to:', branding);
-    setOriginalBranding(branding);
-  }, [branding]);
+    if (!isInitialized && branding.siteName) {
+      console.log('[BrandingSection] Initializing originalBranding:', branding);
+      setOriginalBranding(branding);
+      setIsInitialized(true);
+    }
+  }, [branding, isInitialized]);
 
   const handleAvatarFileSelect = (file: File) => {
     const reader = new FileReader();
@@ -204,7 +207,7 @@ const BrandingSection: React.FC<BrandingSectionProps> = ({
               style={{ 
                 cursor: 'pointer',
                 position: 'relative',
-                border: isDraggingOver ? '2px dashed var(--primary-color)' : '2px dashed transparent',
+                border: isDraggingOver ? '1px dashed var(--primary-color)' : '1px dashed transparent',
                 transition: 'border 0.2s ease'
               }}
             >
@@ -227,7 +230,7 @@ const BrandingSection: React.FC<BrandingSectionProps> = ({
                   flexDirection: 'column',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  border: '2px dashed rgba(255, 255, 255, 0.3)',
+                  border: '1px dashed rgba(255, 255, 255, 0.3)',
                   borderRadius: '8px',
                   color: 'rgba(255, 255, 255, 0.5)',
                   fontSize: '0.875rem',

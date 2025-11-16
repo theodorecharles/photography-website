@@ -12,6 +12,7 @@ import {
   getAllFolders,
   getFolderState,
   setAlbumFolder,
+  setAlbumPublished,
   getAlbumsInFolder,
   updateFolderSortOrder,
   deleteAlbumMetadata,
@@ -231,6 +232,15 @@ router.patch("/:folder/publish", requireManager, async (req: Request, res: Respo
     
     console.log(`✓ Set folder "${sanitizedFolder}" published state to: ${published}`);
 
+    // Cascade publish state to all albums in this folder
+    const albumsInFolder = getAlbumsInFolder(folderState.id);
+    let albumsUpdated = 0;
+    for (const album of albumsInFolder) {
+      setAlbumPublished(album.name, published);
+      albumsUpdated++;
+    }
+    console.log(`✓ Updated ${albumsUpdated} album(s) in folder to published=${published}`);
+
     // Regenerate static JSON files
     const appRoot = req.app.get('appRoot');
     generateStaticJSONFiles(appRoot);
@@ -238,7 +248,8 @@ router.patch("/:folder/publish", requireManager, async (req: Request, res: Respo
     res.json({ 
       success: true, 
       folder: sanitizedFolder,
-      published 
+      published,
+      albumsUpdated
     });
   } catch (error) {
     console.error('Error updating folder published state:', error);

@@ -23,6 +23,7 @@ interface PhotosPanelProps {
   isDragging: boolean;
   isShuffling: boolean;
   localAlbums: any[];
+  localFolders: any[];
   deletingPhotoId: string | null;
   onClose: () => void;
   setCloseHandler: (handler: () => void) => void;
@@ -39,7 +40,7 @@ interface PhotosPanelProps {
   onPhotoDragStart: (event: any, setActiveId?: (id: string | null) => void) => void;
   onPhotoDragEnd: (event: any, setActiveId?: (id: string | null) => void) => void;
   onOpenEditModal: (photo: Photo) => void;
-  onDeletePhoto: (album: string, filename: string, photoTitle?: string) => void;
+  onDeletePhoto: (album: string, filename: string, photoTitle?: string, thumbnail?: string) => void;
   onRetryOptimization?: (album: string, filename: string) => void;
   onRetryAI?: (album: string, filename: string) => void;
   onDragOver: (e: React.DragEvent<HTMLDivElement>) => void;
@@ -60,6 +61,7 @@ const PhotosPanel: React.FC<PhotosPanelProps> = ({
   isDragging,
   isShuffling,
   localAlbums,
+  localFolders,
   onClose,
   setCloseHandler,
   onUploadPhotos,
@@ -157,6 +159,7 @@ const PhotosPanel: React.FC<PhotosPanelProps> = ({
           <PhotosPanelHeader
           selectedAlbum={selectedAlbum}
           localAlbums={localAlbums}
+          localFolders={localFolders}
           albumPhotos={albumPhotos}
           uploadingImages={uploadingImages}
           viewMode={viewMode}

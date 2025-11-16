@@ -34,6 +34,11 @@ export interface ConfirmModalConfig {
   onConfirm: () => void;
   confirmText?: string;
   isDanger?: boolean;
+  photo?: {
+    thumbnail: string;
+    title?: string;
+    filename: string;
+  };
 }
 
 // Re-export types from parent

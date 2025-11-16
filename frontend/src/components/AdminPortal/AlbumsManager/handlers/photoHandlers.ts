@@ -121,12 +121,18 @@ export const createPhotoHandlers = (props: PhotoHandlersProps) => {
   const handleDeletePhoto = async (
     album: string,
     filename: string,
-    photoTitle: string = ''
+    photoTitle: string = '',
+    thumbnail: string = ''
   ): Promise<void> => {
     showConfirmation({
-      message: `Delete this photo${photoTitle ? ` (${photoTitle})` : ''}?\n\nThis action cannot be undone.`,
+      message: '', // Not used when photo is provided
       confirmText: 'Delete Photo',
       isDanger: true,
+      photo: thumbnail ? {
+        thumbnail,
+        title: photoTitle,
+        filename
+      } : undefined,
       onConfirm: async () => {
         // Trigger CRT animation by setting the photo ID
         const photoId = `${album}/${filename}`;

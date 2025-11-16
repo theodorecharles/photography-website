@@ -3,6 +3,7 @@
  * Handles ghost tile interactions, save/cancel, and folder creation
  */
 
+import React from 'react';
 import { Album } from '../types';
 import { validateImageFiles, sanitizeAndTitleCase } from '../utils/albumHelpers';
 
@@ -40,8 +41,10 @@ interface UIInteractionHandlersProps {
   setNewAlbumFiles: (files: File[]) => void;
   setNewAlbumModalName: (name: string) => void;
   setIsGhostAlbumDragOver: (value: boolean) => void;
+  setDragOverFolderGhostTile: (folderId: number | null) => void;
   setTargetFolderId: (id: number | null) => void;
   ghostTileFileInputRef: React.RefObject<HTMLInputElement | null>;
+  folderGhostTileRefs: React.MutableRefObject<Map<number, React.RefObject<HTMLInputElement>>>;
   setMessage: (message: { type: 'success' | 'error'; text: string }) => void;
   saveAlbumOrder: (albumsToSave?: Album[], silent?: boolean) => Promise<boolean>;
   uploadingImages: any[];
@@ -57,8 +60,10 @@ export const createUIInteractionHandlers = (props: UIInteractionHandlersProps) =
     setNewAlbumFiles,
     setNewAlbumModalName,
     setIsGhostAlbumDragOver,
+    setDragOverFolderGhostTile,
     setTargetFolderId,
     ghostTileFileInputRef,
+    folderGhostTileRefs,
     setMessage,
     saveAlbumOrder,
     uploadingImages,
@@ -245,11 +250,147 @@ export const createUIInteractionHandlers = (props: UIInteractionHandlersProps) =
     setShowNewAlbumModal(true);
   };
 
+  const handleFolderGhostTileClick = (folderId: number): void => {
+    if (uploadingImages.length > 0) return;
+    // Get or create ref for this folder
+    if (!folderGhostTileRefs.current.has(folderId)) {
+      folderGhostTileRefs.current.set(folderId, React.createRef<HTMLInputElement>() as React.RefObject<HTMLInputElement>);
+    }
+    const ref = folderGhostTileRefs.current.get(folderId);
+    ref?.current?.click();
+  };
+
+  const handleFolderGhostTileDragOver = (e: React.DragEvent, folderId: number): void => {
+    if (uploadingImages.length > 0) return;
+    e.preventDefault();
+    e.stopPropagation();
+    setDragOverFolderGhostTile(folderId);
+  };
+
+  const handleFolderGhostTileDragLeave = (e: React.DragEvent): void => {
+    if (uploadingImages.length > 0) return;
+    e.stopPropagation();
+    setDragOverFolderGhostTile(null);
+  };
+
+  const handleFolderGhostTileDrop = async (e: React.DragEvent, folderId: number): Promise<void> => {
+    if (uploadingImages.length > 0) return;
+    e.preventDefault();
+    e.stopPropagation();
+    setDragOverFolderGhostTile(null);
+
+    let allFiles: File[] = [];
+    let folderName = '';
+
+    // Handle folder drops using DataTransferItems API
+    if (e.dataTransfer.items) {
+      const items = Array.from(e.dataTransfer.items);
+      
+      // Process all items (folders and files)
+      for (const item of items) {
+        if (item.kind === 'file') {
+          const entry = item.webkitGetAsEntry?.();
+          if (entry) {
+            if (entry.isDirectory) {
+              // It's a folder - extract files recursively
+              folderName = entry.name;
+              const dirEntry = entry as unknown as FileSystemDirectoryEntry;
+              const files = await getAllFilesFromDirectory(dirEntry, entry.name);
+              allFiles.push(...files);
+            } else if (entry.isFile) {
+              // It's a file
+              const file = item.getAsFile();
+              if (file) allFiles.push(file);
+            }
+          }
+        }
+      }
+    }
+
+    // Fallback to dataTransfer.files if items API didn't work
+    if (allFiles.length === 0) {
+      allFiles = Array.from(e.dataTransfer.files);
+    }
+
+    const validation = validateImageFiles(allFiles);
+
+    // Only show error if NO valid images were found
+    if (validation.valid.length === 0) {
+      setMessage({ type: 'error', text: 'No valid image files found. Please select JPEG, PNG, GIF, or WebP images.' });
+      return;
+    }
+
+    // Use detected folder name or try to extract from file paths
+    if (!folderName && validation.valid.length > 0) {
+      const firstFile = validation.valid[0];
+      if (firstFile.webkitRelativePath) {
+        const pathParts = firstFile.webkitRelativePath.split('/');
+        if (pathParts.length > 1) {
+          folderName = pathParts[0];
+        }
+      }
+    }
+
+    if (folderName) {
+      setNewAlbumModalName(sanitizeAndTitleCase(folderName));
+    } else {
+      setNewAlbumModalName('');
+    }
+
+    setTargetFolderId(folderId);
+    setNewAlbumFiles(validation.valid);
+    setShowNewAlbumModal(true);
+  };
+
+  const handleFolderGhostTileFileSelect = (e: React.ChangeEvent<HTMLInputElement>, folderId: number): void => {
+    if (uploadingImages.length > 0) return;
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    const fileArray = Array.from(files);
+    const validation = validateImageFiles(fileArray);
+
+    // Only show error if NO valid images were found
+    if (validation.valid.length === 0) {
+      setMessage({ type: 'error', text: 'No valid image files found. Please select JPEG, PNG, GIF, or WebP images.' });
+      return;
+    }
+
+    // Extract folder name from the first file's path
+    const extractFolderName = (files: File[]): string => {
+      if (files.length === 0) return '';
+      
+      const firstFile = files[0];
+      // Check webkitRelativePath for folder selection
+      if (firstFile.webkitRelativePath) {
+        const pathParts = firstFile.webkitRelativePath.split('/');
+        if (pathParts.length > 1) {
+          return pathParts[0]; // First part is the folder name
+        }
+      }
+      return '';
+    };
+
+    const folderName = extractFolderName(validation.valid);
+    if (folderName) {
+      setNewAlbumModalName(sanitizeAndTitleCase(folderName));
+    } else {
+      setNewAlbumModalName('');
+    }
+
+    setTargetFolderId(folderId);
+    setNewAlbumFiles(validation.valid);
+    setShowNewAlbumModal(true);
+    e.target.value = '';
+  };
+
   const handleSaveChanges = async (): Promise<void> => {
     const success = await saveAlbumOrder(localAlbums);
-    if (success) {
-      setMessage({ type: 'success', text: 'Changes saved successfully!' });
-      setHasUnsavedChanges(false);
+    // saveAlbumOrder already shows success message and sets hasUnsavedChanges
+    // No need to duplicate the message here
+    if (!success) {
+      // Error message already shown by saveAlbumOrder
+      return;
     }
   };
 
@@ -266,6 +407,11 @@ export const createUIInteractionHandlers = (props: UIInteractionHandlersProps) =
     handleGhostTileDrop,
     handleGhostTileFileSelect,
     handleCreateAlbumInFolder,
+    handleFolderGhostTileClick,
+    handleFolderGhostTileDragOver,
+    handleFolderGhostTileDragLeave,
+    handleFolderGhostTileDrop,
+    handleFolderGhostTileFileSelect,
     handleSaveChanges,
     handleCancelChanges,
   };

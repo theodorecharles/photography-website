@@ -14,10 +14,12 @@ interface FolderHandlersProps {
   setMessage: (message: { type: 'success' | 'error'; text: string }) => void;
   loadAlbums: () => Promise<void>;
   saveAlbumOrder: (albumsToSave?: Album[], silent?: boolean) => Promise<boolean>;
+  setShowFolderDeleteModal: (show: boolean) => void;
+  setFolderToDelete: (folder: { name: string; albumCount: number } | null) => void;
 }
 
 export const createFolderHandlers = (props: FolderHandlersProps) => {
-  const { localAlbums, localFolders, setMessage, loadAlbums, saveAlbumOrder } = props;
+  const { localAlbums, localFolders, setMessage, loadAlbums, saveAlbumOrder, setShowFolderDeleteModal, setFolderToDelete } = props;
 
   const handleDeleteEmptyFolder = async (folderName: string): Promise<boolean> => {
     try {
@@ -60,11 +62,33 @@ export const createFolderHandlers = (props: FolderHandlersProps) => {
     if (albumsInFolder.length === 0) {
       await handleDeleteEmptyFolder(folderName);
     } else {
-      // Show confirmation modal for non-empty folder
-      setMessage({ 
-        type: 'error', 
-        text: `Folder "${folderName}" contains ${albumsInFolder.length} album(s). Please use the delete button in the folder card.` 
+      // Show custom modal with options to release or delete albums
+      setFolderToDelete({ name: folderName, albumCount: albumsInFolder.length });
+      setShowFolderDeleteModal(true);
+    }
+  };
+
+  const handleDeleteFolderWithAlbums = async (folderName: string, deleteAlbums: boolean): Promise<void> => {
+    try {
+      const url = `${API_URL}/api/folders/${encodeURIComponent(folderName)}${deleteAlbums ? '?deleteAlbums=true' : ''}`;
+      const res = await fetchWithRateLimitCheck(url, {
+        method: 'DELETE',
+        credentials: 'include',
       });
+
+      if (res.ok) {
+        const action = deleteAlbums ? 'deleted with all albums' : 'deleted (albums moved to Uncategorized)';
+        setMessage({ type: 'success', text: `Folder "${folderName}" ${action}` });
+        await loadAlbums();
+        
+        // Notify other components
+        window.dispatchEvent(new Event('albums-updated'));
+      } else {
+        const error = await res.json();
+        setMessage({ type: 'error', text: error.error || 'Failed to delete folder' });
+      }
+    } catch (err) {
+      setMessage({ type: 'error', text: 'Network error occurred' });
     }
   };
 
@@ -84,11 +108,17 @@ export const createFolderHandlers = (props: FolderHandlersProps) => {
       );
 
       if (res.ok) {
+        const data = await res.json();
         setMessage({
           type: 'success',
           text: `Folder "${folderName}" ${!currentPublished ? 'published' : 'unpublished'}`,
         });
         await loadAlbums();
+        
+        // Notify other components (like AdminPortal header dropdown)
+        window.dispatchEvent(new Event('albums-updated'));
+        
+        console.log(`✓ Folder "${folderName}" published=${!currentPublished}, ${data.albumsUpdated || 0} albums updated`);
       } else {
         const error = await res.json();
         setMessage({ type: 'error', text: error.error || 'Failed to update folder' });
@@ -101,6 +131,7 @@ export const createFolderHandlers = (props: FolderHandlersProps) => {
   return {
     handleDeleteFolder,
     handleDeleteEmptyFolder,
+    handleDeleteFolderWithAlbums,
     handleToggleFolderPublished,
   };
 };

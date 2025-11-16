@@ -28,7 +28,7 @@ interface PhotosPanelGridProps {
   onPhotoDragStart: (event: any, setActiveId?: (id: string | null) => void) => void;
   onPhotoDragEnd: (event: any, setActiveId?: (id: string | null) => void) => void;
   onOpenEditModal: (photo: Photo) => void;
-  onDeletePhoto: (album: string, filename: string, photoTitle?: string) => void;
+  onDeletePhoto: (album: string, filename: string, photoTitle?: string, thumbnail?: string) => void;
   onRetryOptimization?: (album: string, filename: string) => void;
   onRetryAI?: (album: string, filename: string) => void;
   setActiveId: (id: string | null) => void;

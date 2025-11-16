@@ -74,7 +74,7 @@
 
 .modal-controls-top button {
   background: rgba(0, 0, 0, 0.5);
-  border: 2px solid rgba(51, 51, 51, 0.5);
+  border: 1px solid rgba(51, 51, 51, 0.5);
   color: white;
   padding: 0.5rem;
   border-radius: 50%;
@@ -222,7 +222,7 @@
 
 .modal-navigation button {
   background: rgba(0, 0, 0, 0.6);
-  border: 2px solid rgba(51, 51, 51, 0.5);
+  border: 1px solid rgba(51, 51, 51, 0.5);
   color: white;
   border-radius: 50%;
   cursor: pointer;

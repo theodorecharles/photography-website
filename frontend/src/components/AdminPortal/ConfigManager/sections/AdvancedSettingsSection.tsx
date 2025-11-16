@@ -210,7 +210,7 @@ const AdvancedSettingsSection: React.FC<AdvancedSettingsSectionProps> = ({
             padding: "1rem 1.5rem",
             background:
               "linear-gradient(135deg, rgba(220, 38, 38, 0.15) 0%, rgba(153, 27, 27, 0.15) 100%)",
-            border: "2px solid rgba(220, 38, 38, 0.5)",
+            border: "1px solid rgba(220, 38, 38, 0.5)",
             borderRadius: "8px",
             display: "flex",
             alignItems: "center",

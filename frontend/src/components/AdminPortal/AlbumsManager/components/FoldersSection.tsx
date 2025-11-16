@@ -6,7 +6,7 @@
 import React from 'react';
 import { SortableContext, rectSortingStrategy } from '@dnd-kit/sortable';
 import SortableFolderCard from './SortableFolderCard';
-import { Folder, Album } from '../types';
+import { Folder, Album, UploadingImage } from '../types';
 
 interface FoldersSectionProps {
   localFolders: Folder[];
@@ -15,7 +15,9 @@ interface FoldersSectionProps {
   animatingAlbum: string | null;
   dragOverAlbum: string | null;
   dragOverFolderId: number | null;
-  placeholderInfo: { folderId: number | null; insertAtIndex: number } | null;
+  dragOverFolderGhostTile: number | null;
+  uploadingImages: UploadingImage[];
+  folderGhostTileRefs: React.MutableRefObject<Map<number, React.RefObject<HTMLInputElement>>>;
   onDeleteFolder: (folderName: string) => void;
   onToggleFolderPublished: (folderName: string, currentPublished: boolean) => void;
   onAlbumClick: (albumName: string) => void;
@@ -23,6 +25,11 @@ interface FoldersSectionProps {
   onAlbumDragLeave: (e: React.DragEvent) => void;
   onAlbumDrop: (e: React.DragEvent, albumName: string) => void;
   onCreateAlbumInFolder: (folderId: number) => void;
+  onFolderGhostTileClick: (folderId: number) => void;
+  onFolderGhostTileDragOver: (e: React.DragEvent, folderId: number) => void;
+  onFolderGhostTileDragLeave: (e: React.DragEvent) => void;
+  onFolderGhostTileDrop: (e: React.DragEvent, folderId: number) => void;
+  onFolderGhostTileFileSelect: (e: React.ChangeEvent<HTMLInputElement>, folderId: number) => void;
   canEdit: boolean;
 }
 
@@ -33,7 +40,9 @@ const FoldersSection: React.FC<FoldersSectionProps> = ({
   animatingAlbum,
   dragOverAlbum,
   dragOverFolderId,
-  placeholderInfo,
+  dragOverFolderGhostTile,
+  uploadingImages,
+  folderGhostTileRefs,
   onDeleteFolder,
   onToggleFolderPublished,
   onAlbumClick,
@@ -41,6 +50,11 @@ const FoldersSection: React.FC<FoldersSectionProps> = ({
   onAlbumDragLeave,
   onAlbumDrop,
   onCreateAlbumInFolder,
+  onFolderGhostTileClick,
+  onFolderGhostTileDragOver,
+  onFolderGhostTileDragLeave,
+  onFolderGhostTileDrop,
+  onFolderGhostTileFileSelect,
   canEdit,
 }) => {
   if (localFolders.length === 0) return null;
@@ -58,7 +72,9 @@ const FoldersSection: React.FC<FoldersSectionProps> = ({
               animatingAlbum={animatingAlbum}
               dragOverAlbum={dragOverAlbum}
               isDragOver={dragOverFolderId === folder.id}
-              showPlaceholderAtIndex={placeholderInfo?.folderId === folder.id ? placeholderInfo?.insertAtIndex : undefined}
+              isGhostTileDragOver={dragOverFolderGhostTile === folder.id}
+              uploadingImages={uploadingImages}
+              folderGhostTileRefs={folderGhostTileRefs}
               onDelete={onDeleteFolder}
               onTogglePublished={onToggleFolderPublished}
               onAlbumClick={onAlbumClick}
@@ -66,6 +82,11 @@ const FoldersSection: React.FC<FoldersSectionProps> = ({
               onAlbumDragLeave={onAlbumDragLeave}
               onAlbumDrop={onAlbumDrop}
               onCreateAlbumInFolder={onCreateAlbumInFolder}
+              onGhostTileClick={onFolderGhostTileClick}
+              onGhostTileDragOver={onFolderGhostTileDragOver}
+              onGhostTileDragLeave={onFolderGhostTileDragLeave}
+              onGhostTileDrop={onFolderGhostTileDrop}
+              onGhostTileFileSelect={onFolderGhostTileFileSelect}
               canEdit={canEdit}
             />
           ))}

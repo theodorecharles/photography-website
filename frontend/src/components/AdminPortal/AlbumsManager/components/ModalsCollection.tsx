@@ -3,11 +3,12 @@
  * Contains all modal dialogs used in AlbumsManager
  */
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import ShareModal from '../../ShareModal';
 import { Photo, Folder } from '../types';
 import { cacheBustValue } from '../../../../config';
+import { MagicWandIcon } from '../../../icons';
 
 const API_URL = import.meta.env.VITE_API_URL || '';
 
@@ -16,6 +17,11 @@ interface ConfirmModalConfig {
   onConfirm: () => void;
   confirmText?: string;
   isDanger?: boolean;
+  photo?: {
+    thumbnail: string;
+    title?: string;
+    filename: string;
+  };
 }
 
 interface ModalsCollectionProps {
@@ -52,6 +58,13 @@ interface ModalsCollectionProps {
   deletingFolderName: string | null;
   setShowDeleteFolderModal: (show: boolean) => void;
   handleDeleteFolder: (folderName: string) => void;
+  
+  // Folder Delete Modal (with album options)
+  showFolderDeleteModal: boolean;
+  setShowFolderDeleteModal: (show: boolean) => void;
+  folderToDelete: { name: string; albumCount: number } | null;
+  handleDeleteFolderWithAlbums: (folderName: string, deleteAlbums: boolean) => void;
+  
   localFolders: Folder[];
   localAlbums: any[];
   
@@ -64,6 +77,7 @@ interface ModalsCollectionProps {
   setNewAlbumPublished: (value: boolean) => void;
   newAlbumModalError: string;
   handleCreateAlbumSubmit: () => void;
+  targetFolderId: number | null;
   
   // Share Modal
   showShareModal: boolean;
@@ -105,6 +119,13 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
   deletingFolderName,
   setShowDeleteFolderModal,
   handleDeleteFolder,
+  
+  // Folder Delete Modal (with album options)
+  showFolderDeleteModal,
+  setShowFolderDeleteModal,
+  folderToDelete,
+  handleDeleteFolderWithAlbums,
+  
   localFolders,
   localAlbums,
   
@@ -117,6 +138,7 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
   setNewAlbumPublished,
   newAlbumModalError,
   handleCreateAlbumSubmit,
+  targetFolderId,
   
   // Share Modal
   showShareModal,
@@ -128,6 +150,67 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
   confirmConfig,
   setShowConfirmModal,
 }) => {
+  // Check if OpenAI is configured
+  const [hasOpenAI, setHasOpenAI] = useState(false);
+  const [generatingAITitle, setGeneratingAITitle] = useState(false);
+  const [aiTitleError, setAiTitleError] = useState<string | null>(null);
+  
+  useEffect(() => {
+    const checkOpenAI = async () => {
+      try {
+        const res = await fetch(`${API_URL}/api/config`, {
+          credentials: 'include',
+        });
+        if (res.ok) {
+          const config = await res.json();
+          setHasOpenAI(!!config.openai?.apiKey);
+        }
+      } catch (err) {
+        console.error('Failed to check OpenAI config:', err);
+      }
+    };
+    
+    if (showEditModal) {
+      checkOpenAI();
+      setAiTitleError(null); // Clear error when modal opens
+    }
+  }, [showEditModal]);
+  
+  // Generate AI title for current photo
+  const handleGenerateAITitle = async () => {
+    if (!editingPhoto || generatingAITitle) return;
+    
+    setGeneratingAITitle(true);
+    setAiTitleError(null);
+    try {
+      const parts = editingPhoto.id.split('/');
+      const album = parts[0];
+      const filename = parts[1];
+      
+      const res = await fetch(`${API_URL}/api/ai-titles/generate-single`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ album, filename }),
+        credentials: 'include',
+      });
+      
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.error || 'Failed to generate AI title');
+      }
+      
+      const data = await res.json();
+      if (data.title) {
+        setEditTitleValue(data.title);
+      }
+    } catch (err) {
+      console.error('Failed to generate AI title:', err);
+      setAiTitleError(err instanceof Error ? err.message : 'Unknown error');
+    } finally {
+      setGeneratingAITitle(false);
+    }
+  };
+  
   return (
     <>
       {/* Edit Photo Title Modal */}
@@ -156,26 +239,71 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
                 />
               </div>
               
-              <div className="edit-modal-info">
-                <label className="edit-modal-label">
-                  Filename: <span className="filename-display">{editingPhoto.id.split('/').pop()}</span>
-                </label>
-                
-                <label className="edit-modal-label">Title</label>
-                <input
-                  type="text"
-                  value={editTitleValue}
-                  onChange={(e) => setEditTitleValue(e.target.value)}
-                  className="edit-modal-input"
-                  placeholder="Enter title..."
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      handleSaveTitle();
-                    } else if (e.key === 'Escape') {
-                      handleCloseEditModal();
-                    }
-                  }}
-                />
+              <div className="edit-modal-info" style={{ marginTop: '1rem' }}>
+                <div style={{ position: 'relative' }}>
+                  <input
+                    type="text"
+                    value={editTitleValue}
+                    onChange={(e) => setEditTitleValue(e.target.value)}
+                    className="edit-modal-input"
+                    placeholder="Enter title..."
+                    style={{ paddingRight: hasOpenAI ? '3rem' : undefined }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        handleSaveTitle();
+                      } else if (e.key === 'Escape') {
+                        handleCloseEditModal();
+                      }
+                    }}
+                  />
+                  {hasOpenAI && (
+                    <button
+                      onClick={handleGenerateAITitle}
+                      disabled={generatingAITitle}
+                      style={{
+                        position: 'absolute',
+                        right: '0.5rem',
+                        top: '55%',
+                        transform: 'translateY(-50%)',
+                        background: 'transparent',
+                        border: 'none',
+                        cursor: generatingAITitle ? 'wait' : 'pointer',
+                        color: generatingAITitle ? '#888' : '#4ade80',
+                        padding: '0.5rem',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        transition: 'all 0.2s ease',
+                        opacity: generatingAITitle ? 0.5 : 1,
+                      }}
+                      title={generatingAITitle ? 'Generating AI title...' : 'Generate AI title'}
+                      type="button"
+                    >
+                      {generatingAITitle ? (
+                        <div style={{
+                          width: '18px',
+                          height: '18px',
+                          border: '1px solid transparent',
+                          borderTopColor: '#888',
+                          borderRadius: '50%',
+                          animation: 'spin 0.8s linear infinite'
+                        }} />
+                      ) : (
+                        <MagicWandIcon width="18" height="18" />
+                      )}
+                    </button>
+                  )}
+                </div>
+                {aiTitleError && (
+                  <p style={{ 
+                    color: '#ff4444', 
+                    fontSize: '0.875rem', 
+                    marginTop: '0.5rem',
+                    marginBottom: 0
+                  }}>
+                    {aiTitleError}
+                  </p>
+                )}
               </div>
             </div>
             
@@ -183,12 +311,14 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
               <button 
                 onClick={handleCloseEditModal}
                 className="btn-secondary"
+                style={{ flex: 1 }}
               >
                 Cancel
               </button>
               <button 
                 className="btn-primary"
                 onClick={handleSaveTitle}
+                style={{ flex: 1 }}
               >
                 Save Title
               </button>
@@ -295,7 +425,7 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
             </div>
             
             <div className="edit-modal-body">
-              <div className="edit-modal-info" style={{ width: '100%' }}>
+              <div className="edit-modal-info" style={{ width: '100%', marginTop: '1rem' }}>
                 <label className="edit-modal-label">Folder Name</label>
                 <input
                   type="text"
@@ -442,6 +572,139 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
         document.body
       )}
 
+      {/* Folder Delete Modal (with album options) */}
+      {showFolderDeleteModal && folderToDelete && createPortal(
+        <div 
+          className="edit-title-modal" 
+          onClick={() => setShowFolderDeleteModal(false)}
+        >
+          <div className="edit-modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '550px' }}>
+            <div className="edit-modal-header">
+              <h3>Delete Folder?</h3>
+              <button 
+                className="modal-close-btn"
+                onClick={() => setShowFolderDeleteModal(false)}
+                title="Close"
+              >
+                ×
+              </button>
+            </div>
+            
+            <div className="edit-modal-body">
+              <div className="edit-modal-info" style={{ width: '100%', marginTop: '1rem' }}>
+                {/* Option 1: Release Albums */}
+                <div
+                  onClick={() => {
+                    handleDeleteFolderWithAlbums(folderToDelete.name, false);
+                    setShowFolderDeleteModal(false);
+                  }}
+                  style={{
+                    padding: '1rem',
+                    background: 'rgba(34, 197, 94, 0.1)',
+                    border: '1px solid rgba(34, 197, 94, 0.3)',
+                    borderRadius: '6px',
+                    marginBottom: '0.75rem',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = 'rgba(34, 197, 94, 0.15)';
+                    e.currentTarget.style.borderColor = 'rgba(34, 197, 94, 0.5)';
+                    e.currentTarget.style.transform = 'translateX(4px)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = 'rgba(34, 197, 94, 0.1)';
+                    e.currentTarget.style.borderColor = 'rgba(34, 197, 94, 0.3)';
+                    e.currentTarget.style.transform = 'translateX(0)';
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem' }}>
+                    <span style={{ fontSize: '1.4rem', marginTop: '1px' }}>📤</span>
+                    <div>
+                      <p style={{ 
+                        fontWeight: 600, 
+                        fontSize: '0.95rem',
+                        marginBottom: '0.35rem',
+                        color: '#4ade80'
+                      }}>
+                        Release {folderToDelete.albumCount} {folderToDelete.albumCount === 1 ? 'album' : 'albums'}
+                      </p>
+                      <p style={{ 
+                        fontSize: '0.85rem', 
+                        color: '#aaa',
+                        margin: 0,
+                        lineHeight: '1.3'
+                      }}>
+                        Delete the folder and move all albums to Uncategorized
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Option 2: Delete All */}
+                <div
+                  onClick={() => {
+                    handleDeleteFolderWithAlbums(folderToDelete.name, true);
+                    setShowFolderDeleteModal(false);
+                  }}
+                  style={{
+                    padding: '1rem',
+                    background: 'rgba(239, 68, 68, 0.1)',
+                    border: '1px solid rgba(239, 68, 68, 0.3)',
+                    borderRadius: '6px',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = 'rgba(239, 68, 68, 0.15)';
+                    e.currentTarget.style.borderColor = 'rgba(239, 68, 68, 0.5)';
+                    e.currentTarget.style.transform = 'translateX(4px)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = 'rgba(239, 68, 68, 0.1)';
+                    e.currentTarget.style.borderColor = 'rgba(239, 68, 68, 0.3)';
+                    e.currentTarget.style.transform = 'translateX(0)';
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem' }}>
+                    <span style={{ fontSize: '1.4rem', marginTop: '1px' }}>🗑️</span>
+                    <div>
+                      <p style={{ 
+                        fontWeight: 600, 
+                        fontSize: '0.95rem',
+                        marginBottom: '0.35rem',
+                        color: '#f87171'
+                      }}>
+                        Delete Everything
+                      </p>
+                      <p style={{ 
+                        fontSize: '0.85rem', 
+                        color: '#aaa',
+                        margin: 0,
+                        lineHeight: '1.3'
+                      }}>
+                        Permanently delete the folder and all albums inside it
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="edit-modal-footer">
+              <button
+                onClick={() => setShowFolderDeleteModal(false)}
+                className="btn-secondary"
+                style={{ width: '100%' }}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
+
       {/* New Album Modal */}
       {showNewAlbumModal && createPortal(
         <div 
@@ -461,7 +724,7 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
             </div>
             
             <div className="edit-modal-body">
-              <div className="edit-modal-info" style={{ width: '100%' }}>
+              <div className="edit-modal-info" style={{ width: '100%', marginTop: '1rem' }}>
                 <label className="edit-modal-label">Album Name</label>
                 <input
                   type="text"
@@ -487,25 +750,74 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
                   Only letters, numbers, spaces, hyphens, and underscores are allowed
                 </p>
                 
-                <div style={{ marginTop: '1rem' }}>
-                  <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
-                    <input
-                      type="checkbox"
-                      checked={newAlbumPublished}
-                      onChange={(e) => setNewAlbumPublished(e.target.checked)}
-                      style={{ 
-                        marginRight: '0.75rem',
-                        width: '18px',
-                        height: '18px',
-                        cursor: 'pointer'
-                      }}
-                    />
-                    <span style={{ color: '#fff', fontSize: '1rem' }}>Publish album immediately</span>
-                  </label>
-                  <p style={{ color: '#aaa', fontSize: '0.875rem', marginTop: '0.375rem', marginLeft: '1.875rem' }}>
-                    Published albums are visible on the public gallery
-                  </p>
-                </div>
+                {(() => {
+                  // If creating in uncategorized (no folder), show the publish toggle
+                  if (targetFolderId === null) {
+                    return (
+                      <div style={{ marginTop: '1rem' }}>
+                        <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+                          <input
+                            type="checkbox"
+                            checked={newAlbumPublished}
+                            onChange={(e) => setNewAlbumPublished(e.target.checked)}
+                            style={{ 
+                              marginRight: '0.75rem',
+                              width: '18px',
+                              height: '18px',
+                              cursor: 'pointer'
+                            }}
+                          />
+                          <span style={{ color: '#fff', fontSize: '1rem' }}>Publish album immediately</span>
+                        </label>
+                        <p style={{ color: '#aaa', fontSize: '0.875rem', marginTop: '0.375rem', marginLeft: '1.875rem' }}>
+                          Published albums are visible on the public gallery
+                        </p>
+                      </div>
+                    );
+                  }
+                  
+                  // If creating in a folder, check if folder is published
+                  const targetFolder = localFolders.find(f => f.id === targetFolderId);
+                  if (targetFolder && targetFolder.published) {
+                    // Published folder - show green informational text
+                    return (
+                      <div style={{ 
+                        marginTop: '1rem',
+                        padding: '0.75rem 1rem',
+                        background: 'rgba(34, 197, 94, 0.1)',
+                        border: '1px solid rgba(34, 197, 94, 0.3)',
+                        borderRadius: '6px'
+                      }}>
+                        <p style={{ color: '#4ade80', fontSize: '0.9rem', margin: 0 }}>
+                          ✓ Album will be published right away
+                        </p>
+                        <p style={{ color: '#aaa', fontSize: '0.85rem', marginTop: '0.25rem', marginBottom: 0 }}>
+                          Albums in published folders are always published
+                        </p>
+                      </div>
+                    );
+                  } else if (targetFolder && !targetFolder.published) {
+                    // Unpublished folder - show lock informational text
+                    return (
+                      <div style={{ 
+                        marginTop: '1rem',
+                        padding: '0.75rem 1rem',
+                        background: 'rgba(255, 180, 0, 0.1)',
+                        border: '1px solid rgba(255, 180, 0, 0.3)',
+                        borderRadius: '6px'
+                      }}>
+                        <p style={{ color: '#ffb400', fontSize: '0.9rem', margin: 0 }}>
+                          🔒 Album will be private
+                        </p>
+                        <p style={{ color: '#aaa', fontSize: '0.85rem', marginTop: '0.25rem', marginBottom: 0 }}>
+                          Albums in unpublished folders are always private
+                        </p>
+                      </div>
+                    );
+                  }
+                  
+                  return null;
+                })()}
               </div>
             </div>
             
@@ -544,7 +856,7 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
         >
           <div className="edit-modal confirm-modal" onClick={(e) => e.stopPropagation()}>
             <div className="edit-modal-header">
-              <h3>Confirm Action</h3>
+              <h3>{confirmConfig.photo ? 'Delete Photo?' : 'Confirm Action'}</h3>
               <button 
                 className="modal-close-btn"
                 onClick={() => setShowConfirmModal(false)}
@@ -555,13 +867,31 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
             </div>
             
             <div className="edit-modal-body">
-              <p style={{ color: '#ccc' }}>{confirmConfig.message}</p>
+              <div className="edit-modal-info" style={{ width: '100%', marginTop: '1rem' }}>
+                {confirmConfig.photo ? (
+                  <div style={{ 
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center'
+                  }}>
+                    <div className="edit-modal-photo">
+                      <img 
+                        src={`${API_URL}${confirmConfig.photo.thumbnail}?i=${cacheBustValue}`}
+                        alt=""
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <p style={{ color: '#ccc', margin: 0 }}>{confirmConfig.message}</p>
+                )}
+              </div>
             </div>
             
             <div className="edit-modal-footer">
               <button
                 onClick={() => setShowConfirmModal(false)}
                 className="btn-secondary"
+                style={{ flex: 1 }}
               >
                 Cancel
               </button>
@@ -571,6 +901,7 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
                   setShowConfirmModal(false);
                 }}
                 className={confirmConfig.isDanger ? 'btn-danger' : 'btn-primary'}
+                style={{ flex: 1 }}
               >
                 {confirmConfig.confirmText || 'Confirm'}
               </button>

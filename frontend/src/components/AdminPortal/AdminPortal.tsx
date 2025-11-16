@@ -3,7 +3,7 @@
  * Main orchestrator for admin functionality - delegates to sub-components
  */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { API_URL } from '../../config';
 // CSS will be loaded dynamically to ensure proper loading in dev mode
@@ -72,6 +72,13 @@ export default function AdminPortal() {
     setActiveAuthTab(method);
   };
   
+  // Redirect to /admin/albums after successful login
+  useEffect(() => {
+    if (authStatus?.authenticated && location.pathname.startsWith('/admin/login')) {
+      navigate('/admin/albums', { replace: true });
+    }
+  }, [authStatus, location.pathname, navigate]);
+
   // Read URL and set auth tab on mount/navigation (when user uses back button or direct URL)
   useEffect(() => {
     // Skip if authenticated
@@ -344,6 +351,36 @@ export default function AdminPortal() {
     }
   }, [authStatus, location.state, navigate, location.pathname]);
 
+  // Define loadAlbums early so it can be used in other hooks
+  const loadAlbums = useCallback(async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/albums`, {
+        credentials: 'include',
+      });
+      const data = await res.json();
+      
+      // New API format: { albums: [...], folders: [...] }
+      // Handle backward compatibility with old array format
+      if (Array.isArray(data)) {
+        // Old format (array of albums)
+        const albumsList: Album[] = data.map((album: string | { name: string; published: boolean }) => {
+          if (typeof album === 'string') {
+            return { name: album, published: true };
+          }
+          return album;
+        });
+        setAlbums(albumsList);
+        setFolders([]);
+      } else {
+        // New format (object with albums and folders)
+        setAlbums(data.albums || []);
+        setFolders(data.folders || []);
+      }
+    } catch (err) {
+      console.error('Failed to load albums:', err);
+    }
+  }, []); // Empty deps - only depends on setState functions which are stable
+
   // Listen for albums-updated events from AlbumsManager
   useEffect(() => {
     const handleAlbumsUpdated = (event: Event) => {
@@ -363,7 +400,7 @@ export default function AdminPortal() {
     return () => {
       window.removeEventListener('albums-updated', handleAlbumsUpdated);
     };
-  }, []);
+  }, [loadAlbums]); // Added loadAlbums to dependencies to fix stale closure
 
   const loadExternalLinks = async () => {
     try {
@@ -403,36 +440,6 @@ export default function AdminPortal() {
       console.error('Failed to load branding config:', err);
     }
   };
-
-  const loadAlbums = async () => {
-    try {
-      const res = await fetch(`${API_URL}/api/albums`, {
-        credentials: 'include',
-      });
-      const data = await res.json();
-      
-      // New API format: { albums: [...], folders: [...] }
-      // Handle backward compatibility with old array format
-      if (Array.isArray(data)) {
-        // Old format (array of albums)
-        const albumsList: Album[] = data.map((album: string | { name: string; published: boolean }) => {
-          if (typeof album === 'string') {
-            return { name: album, published: true };
-          }
-          return album;
-        });
-        setAlbums(albumsList);
-        setFolders([]);
-      } else {
-        // New format (object with albums and folders)
-        setAlbums(data.albums || []);
-        setFolders(data.folders || []);
-      }
-    } catch (err) {
-      console.error('Failed to load albums:', err);
-    }
-  };
-
 
   // Handle credential login
   const handleCredentialsLogin = async (e: React.FormEvent) => {

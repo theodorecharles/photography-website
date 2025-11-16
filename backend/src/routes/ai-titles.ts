@@ -7,6 +7,7 @@ import express from 'express';
 import { spawn } from 'child_process';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import fs from 'fs';
 import { csrfProtection } from '../security.js';
 import { getDatabase } from '../database.js';
 import { requireAuth, requireAdmin, requireManager } from '../auth/middleware.js';
@@ -124,6 +125,115 @@ router.post('/stop', requireManager, (req: any, res: any) => {
   } catch (error: any) {
     console.error('[AI Titles] Error stopping job:', error);
     res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+/**
+ * POST /api/ai-titles/generate-single
+ * Generate AI title for a single photo
+ * Returns the title synchronously
+ */
+router.post('/generate-single', requireManager, async (req: any, res: any) => {
+  try {
+    const { album, filename } = req.body;
+    
+    if (!album || !filename) {
+      return res.status(400).json({ error: 'Album and filename are required' });
+    }
+    
+    // Load config to get OpenAI API key
+    const configPath = path.join(__dirname, '../../data/config.json');
+    let config: any = {};
+    try {
+      const configData = await fs.promises.readFile(configPath, 'utf-8');
+      config = JSON.parse(configData);
+    } catch (err) {
+      console.error('[AI Titles] Failed to load config:', err);
+      return res.status(500).json({ error: 'Failed to load configuration' });
+    }
+    
+    if (!config.openai?.apiKey) {
+      return res.status(400).json({ error: 'OpenAI API key not configured' });
+    }
+    
+    // Find the original image file
+    const projectRoot = path.resolve(__dirname, '../../..');
+    const dataDir = process.env.DATA_DIR || path.join(projectRoot, 'data');
+    const photosDir = path.join(dataDir, 'photos');
+    const imagePath = path.join(photosDir, album, filename);
+    
+    // Check if file exists
+    if (!fs.existsSync(imagePath)) {
+      console.error('[AI Titles] Image not found:', imagePath);
+      return res.status(404).json({ error: 'Image not found' });
+    }
+    
+    // Initialize OpenAI
+    const { default: OpenAI } = await import('openai');
+    const openai = new OpenAI({ apiKey: config.openai.apiKey });
+    
+    // Read the image and convert to base64
+    const imageBuffer = fs.readFileSync(imagePath);
+    const base64Image = imageBuffer.toString('base64');
+    const extension = path.extname(filename).toLowerCase().substring(1);
+    const mimeType = extension === 'jpg' || extension === 'jpeg' ? 'image/jpeg' : `image/${extension}`;
+    
+    // Call OpenAI Vision API (same prompt as upload flow)
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      messages: [
+        {
+          role: "user",
+          content: [
+            {
+              type: "text",
+              text: "Generate a concise, descriptive title for this image. The title should be 3-8 words and capture the essence of the image. Output ONLY the title, nothing else."
+            },
+            {
+              type: "image_url",
+              image_url: {
+                url: `data:${mimeType};base64,${base64Image}`,
+                detail: "low"
+              }
+            }
+          ]
+        }
+      ],
+      max_tokens: 50
+    });
+    
+    let title = response.choices[0]?.message?.content?.trim();
+    
+    if (!title) {
+      return res.status(500).json({ error: 'Failed to generate title (empty response)' });
+    }
+    
+    // Remove surrounding quotes if present
+    title = title.replace(/^["']|["']$/g, '');
+    title = title.trim();
+    
+    // Save to database
+    const db = getDatabase();
+    const stmt = db.prepare(`
+      INSERT INTO image_metadata (album, filename, title, description)
+      VALUES (?, ?, ?, NULL)
+      ON CONFLICT(album, filename) 
+      DO UPDATE SET 
+        title = excluded.title,
+        updated_at = CURRENT_TIMESTAMP
+    `);
+    
+    stmt.run(album, filename, title);
+    
+    console.log(`[AI Titles] Generated title for ${album}/${filename}: "${title}"`);
+    
+    res.json({ success: true, title });
+  } catch (error: any) {
+    console.error('[AI Titles] Error generating single title:', error);
+    res.status(500).json({ 
+      error: 'Failed to generate title',
+      message: error.message 
+    });
   }
 });
 

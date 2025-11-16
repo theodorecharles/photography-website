@@ -4,10 +4,10 @@ import fs from 'fs/promises';
 import { readFileSync } from 'fs';
 import path from 'path';
 import sharp from 'sharp';
-import os from 'os';
 
-// Configure sharp to use all available CPU cores
-sharp.concurrency(os.cpus().length);
+// Configure sharp for single-image optimization (low concurrency since versions are processed sequentially)
+// The parallelism comes from running multiple jobs via MAX_CONCURRENT_JOBS, not from sharp threads
+sharp.concurrency(1);
 
 // Parse command line arguments
 const args = process.argv.slice(2);

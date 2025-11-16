@@ -10,11 +10,11 @@ const API_URL = import.meta.env.VITE_API_URL || '';
 
 interface OptimizationStreamHandlersProps {
   setUploadingImages: React.Dispatch<React.SetStateAction<UploadingImage[]>>;
-  selectedAlbum: string | null;
+  selectedAlbumRef: React.MutableRefObject<string | null>;
 }
 
 export const createOptimizationStreamHandlers = (props: OptimizationStreamHandlersProps) => {
-  const { setUploadingImages, selectedAlbum } = props;
+  const { setUploadingImages, selectedAlbumRef } = props;
 
   let eventSource: EventSource | null = null;
 
@@ -22,18 +22,30 @@ export const createOptimizationStreamHandlers = (props: OptimizationStreamHandle
    * Connect to optimization stream SSE endpoint
    */
   const connectOptimizationStream = () => {
+    // Don't reconnect if already connected or connecting
     if (eventSource) {
-      return; // Already connected
+      if (eventSource.readyState === EventSource.OPEN) {
+        console.log('[Optimization Stream] Already connected, skipping reconnection');
+        return;
+      } else if (eventSource.readyState === EventSource.CONNECTING) {
+        console.log('[Optimization Stream] Connection in progress, skipping reconnection');
+        return;
+      } else {
+        // Connection is closed, clean it up
+        console.log('[Optimization Stream] Closing stale connection');
+        eventSource.close();
+        eventSource = null;
+      }
     }
 
-    console.log('[Optimization Stream] Connecting...');
+    console.log('[Optimization Stream] Establishing new connection...');
     
     eventSource = new EventSource(`${API_URL}/api/optimization-stream`, {
       withCredentials: true
     });
 
     eventSource.onopen = () => {
-      console.log('[Optimization Stream] Connected');
+      console.log('[Optimization Stream] ✅ Connected successfully');
     };
 
     eventSource.onmessage = (event) => {
@@ -48,12 +60,20 @@ export const createOptimizationStreamHandlers = (props: OptimizationStreamHandle
           // Update for a specific photo
           const { jobId, album, filename, progress, state, error, title } = data;
 
-          // Only update if it's for the currently selected album
-          if (album !== selectedAlbum) return;
+          console.log(`[Optimization Stream] Update received: ${jobId} - ${state} (${progress}%) - Album: "${album}" vs Selected: "${selectedAlbumRef.current}"`);
 
-          console.log(`[Optimization Stream] ${jobId}: ${state} (${progress}%)`);
+          // Only update if it's for the currently selected album
+          if (album !== selectedAlbumRef.current) {
+            console.log(`[Optimization Stream] Skipping update - album mismatch`);
+            return;
+          }
 
           setUploadingImages((prev: UploadingImage[]) => {
+            const imageExists = prev.some(img => img.filename === filename);
+            if (!imageExists) {
+              console.warn(`[Optimization Stream] Image ${filename} not found in uploadingImages array`);
+            }
+            
             return prev.map((img: UploadingImage) => {
               if (img.filename !== filename) return img;
 
@@ -76,6 +96,7 @@ export const createOptimizationStreamHandlers = (props: OptimizationStreamHandle
 
               // Complete
               if (state === 'complete') {
+                console.log(`[Optimization Stream] ✅ Marking ${filename} as complete`);
                 const completedPhoto: Photo = {
                   id: `${album}/${filename}`,
                   thumbnail: `/optimized/thumbnail/${encodeURIComponent(album)}/${encodeURIComponent(filename)}`,
@@ -125,10 +146,13 @@ export const createOptimizationStreamHandlers = (props: OptimizationStreamHandle
       }
     };
 
-    eventSource.onerror = () => {
-      console.error('[Optimization Stream] Connection error');
-      eventSource?.close();
-      eventSource = null;
+    eventSource.onerror = (error) => {
+      console.error('[Optimization Stream] Connection error', error);
+      if (eventSource) {
+        console.log('[Optimization Stream] EventSource readyState:', eventSource.readyState);
+        eventSource.close();
+        eventSource = null;
+      }
       // Don't auto-reconnect - the parent component will reconnect if needed
     };
   };
@@ -138,9 +162,11 @@ export const createOptimizationStreamHandlers = (props: OptimizationStreamHandle
    */
   const disconnectOptimizationStream = () => {
     if (eventSource) {
-      console.log('[Optimization Stream] Disconnecting...');
+      console.log('[Optimization Stream] 🔌 Disconnecting...');
       eventSource.close();
       eventSource = null;
+    } else {
+      console.log('[Optimization Stream] Already disconnected');
     }
   };
 
