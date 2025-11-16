@@ -66,6 +66,10 @@ export function initializeGoogleStrategy() {
   
   let latestConfig;
   try {
+    if (!fs.existsSync(configPath)) {
+      console.log('⚠️  Config file does not exist yet (OOBE mode) - Google OAuth not initialized');
+      return false;
+    }
     const configContent = fs.readFileSync(configPath, 'utf8');
     latestConfig = JSON.parse(configContent);
     console.log('✓ Config file loaded successfully');
