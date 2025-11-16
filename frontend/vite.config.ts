@@ -29,9 +29,33 @@ let configExists = false;
 
 try {
   if (fs.existsSync(configPath)) {
-    config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+    const loadedConfig = JSON.parse(fs.readFileSync(configPath, 'utf8'));
     configExists = true;
     console.log('✓ Loaded config.json');
+    
+    // Merge with defaults to ensure all required fields exist
+    config = {
+      environment: {
+        ...defaultConfig.environment,
+        ...loadedConfig.environment,
+        frontend: {
+          ...defaultConfig.environment.frontend,
+          ...loadedConfig.environment?.frontend,
+        },
+      },
+      branding: {
+        ...defaultConfig.branding,
+        ...loadedConfig.branding,
+      },
+      analytics: {
+        ...defaultConfig.analytics,
+        ...loadedConfig.analytics,
+        openobserve: {
+          ...defaultConfig.analytics.openobserve,
+          ...loadedConfig.analytics?.openobserve,
+        },
+      },
+    };
   } else {
     console.log('⚠️  config.json not found - using defaults for setup mode');
     config = defaultConfig;
