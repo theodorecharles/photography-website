@@ -670,6 +670,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
               onDeletePhoto={photoHandlers.handleDeletePhoto}
               onRetryOptimization={photoHandlers.handleRetryOptimization}
               onRetryAI={photoHandlers.handleRetryAI}
+              onRetryUpload={uploadHandlers.handleRetryUpload}
               onDragOver={uploadHandlers.handleDragOver}
               onDragLeave={uploadHandlers.handleDragLeave}
               onDrop={uploadHandlers.handleDrop}

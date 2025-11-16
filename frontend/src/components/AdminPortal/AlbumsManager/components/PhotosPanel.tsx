@@ -43,6 +43,7 @@ interface PhotosPanelProps {
   onDeletePhoto: (album: string, filename: string, photoTitle?: string, thumbnail?: string) => void;
   onRetryOptimization?: (album: string, filename: string) => void;
   onRetryAI?: (album: string, filename: string) => void;
+  onRetryUpload?: (filename: string, albumName: string) => void;
   onDragOver: (e: React.DragEvent<HTMLDivElement>) => void;
   onDragLeave: (e: React.DragEvent<HTMLDivElement>) => void;
   onDrop: (e: React.DragEvent<HTMLDivElement>) => void;
@@ -80,6 +81,7 @@ const PhotosPanel: React.FC<PhotosPanelProps> = ({
   onDeletePhoto,
   onRetryOptimization,
   onRetryAI,
+  onRetryUpload,
   onDragOver,
   onDragLeave,
   onDrop,
@@ -181,12 +183,14 @@ const PhotosPanel: React.FC<PhotosPanelProps> = ({
           activeId={photoActiveId}
           viewMode={viewMode}
           deletingPhotoId={deletingPhotoId}
+          selectedAlbum={selectedAlbum}
           onPhotoDragStart={onPhotoDragStart}
           onPhotoDragEnd={onPhotoDragEnd}
           onOpenEditModal={onOpenEditModal}
           onDeletePhoto={onDeletePhoto}
           onRetryOptimization={onRetryOptimization}
           onRetryAI={onRetryAI}
+          onRetryUpload={onRetryUpload}
           setActiveId={setPhotoActiveId}
           canEdit={canEdit}
         />

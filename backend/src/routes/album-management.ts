@@ -524,8 +524,8 @@ router.post("/:album/upload", requireManager, upload.single('photo'), async (req
           saveImageMetadata(sanitizedAlbum, file.originalname, null, null);
           console.log(`✓ Added ${sanitizedAlbum}/${file.originalname} to database`);
           
-          // Invalidate cache for this album
-          invalidateAlbumCache(sanitizedAlbum);
+          // Note: We don't invalidate cache here to avoid spam during batch uploads
+          // Cache will be invalidated once at the end via static JSON regeneration
           
           broadcastOptimizationUpdate(jobId, {
             album: sanitizedAlbum,
