@@ -98,6 +98,10 @@ export const PhotoListItem: React.FC<PhotoListItemProps> = ({
             src={`${API_URL}${thumbnailUrl}?t=${Date.now()}`}
             alt={title}
           />
+        ) : isUploading ? (
+          <div className="thumbnail-placeholder" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', width: '100%' }}>
+            <div className="loading-spinner" style={{ width: '24px', height: '24px', marginTop: '12px' }} />
+          </div>
         ) : (
           <div className="thumbnail-placeholder" />
         )}

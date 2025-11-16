@@ -523,6 +523,14 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
               sseToaster.setGeneratingTitles(false);
               sseToaster.titlesAbortController.current = null;
               checkMissingTitles(); // Refresh button visibility
+            } else if (data.startsWith("TITLE_UPDATE:")) {
+              // Handle real-time title updates
+              try {
+                const titleData = JSON.parse(data.substring(13));
+                sseToaster.addTitleUpdate(titleData.album, titleData.filename, titleData.title);
+              } catch (err) {
+                console.error("Failed to parse TITLE_UPDATE:", err);
+              }
             } else {
               try {
                 const parsed = JSON.parse(data);

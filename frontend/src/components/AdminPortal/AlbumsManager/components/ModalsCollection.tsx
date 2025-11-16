@@ -754,14 +754,61 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
                     }
                   }}
                 />
-                {newAlbumModalError && (
+                {newAlbumModalError && newAlbumModalError === 'HOMEPAGE_RESERVED' ? (
+                  <div style={{ 
+                    marginTop: '1rem',
+                    padding: '1rem',
+                    background: 'rgba(59, 130, 246, 0.1)',
+                    border: '1px solid rgba(59, 130, 246, 0.3)',
+                    borderRadius: '8px'
+                  }}>
+                    <p style={{ color: '#60a5fa', fontSize: '0.95rem', margin: '0 0 0.75rem 0', fontWeight: 500 }}>
+                      💡 The name "homepage" is reserved
+                    </p>
+                    <p style={{ color: '#ccc', fontSize: '0.9rem', margin: '0 0 0.75rem 0', lineHeight: '1.5' }}>
+                      To show an album on the home page, use the <strong>homepage toggle</strong>:
+                    </p>
+                    <div style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.75rem',
+                      padding: '0.75rem',
+                      background: 'rgba(255, 255, 255, 0.05)',
+                      borderRadius: '6px',
+                      border: '1px solid rgba(255, 255, 255, 0.1)'
+                    }}>
+                      <span style={{ color: '#aaa', fontSize: '0.9rem' }}>Show on Homepage</span>
+                      <div style={{
+                        position: 'relative',
+                        width: '44px',
+                        height: '24px',
+                        background: '#4ade80',
+                        borderRadius: '12px',
+                        boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.2)'
+                      }}>
+                        <div style={{
+                          position: 'absolute',
+                          top: '2px',
+                          right: '2px',
+                          width: '20px',
+                          height: '20px',
+                          background: '#fff',
+                          borderRadius: '50%',
+                          boxShadow: '0 2px 4px rgba(0,0,0,0.3)'
+                        }} />
+                      </div>
+                    </div>
+                  </div>
+                ) : newAlbumModalError ? (
                   <p style={{ color: '#ff4444', fontSize: '0.9rem', marginTop: '0.5rem' }}>
                     {newAlbumModalError}
                   </p>
+                ) : null}
+                {!newAlbumModalError && (
+                  <p style={{ color: '#888', fontSize: '0.9rem', marginTop: '0.5rem' }}>
+                    Only letters, numbers, spaces, hyphens, and underscores are allowed
+                  </p>
                 )}
-                <p style={{ color: '#888', fontSize: '0.9rem', marginTop: '0.5rem' }}>
-                  Only letters, numbers, spaces, hyphens, and underscores are allowed
-                </p>
                 
                 {(() => {
                   // If creating in uncategorized (no folder), show the publish toggle
