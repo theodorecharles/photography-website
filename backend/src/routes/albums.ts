@@ -275,6 +275,50 @@ router.get("/api/albums", (req: Request, res) => {
 });
 
 // Get photos in a specific album
+// Get static JSON for an album (authenticated endpoint)
+router.get("/api/albums/:album/photos-json", (req: Request, res): void => {
+  const { album } = req.params;
+
+  // Sanitize album parameter to prevent path traversal
+  const sanitizedAlbum = sanitizePath(album);
+  if (!sanitizedAlbum) {
+    res.status(400).json({ error: "Invalid album name" });
+    return;
+  }
+
+  // Check if user is authenticated (Passport or credentials)
+  const isAuthenticated = (req.isAuthenticated && req.isAuthenticated()) || !!(req.session as any)?.userId;
+  
+  // Check album published state
+  const albumState = getAlbumState(sanitizedAlbum);
+  
+  // Deny access if:
+  // 1. Album not in database (albumState is undefined)
+  // 2. Album is unpublished and user is not authenticated
+  if (!albumState || (!albumState.published && !isAuthenticated)) {
+    res.status(404).json({ error: "Album not found" });
+    return;
+  }
+
+  // Serve static JSON file if it exists
+  const appRoot = req.app.get('appRoot');
+  const jsonPath = path.join(appRoot, 'frontend', 'dist', 'albums-data', `${sanitizedAlbum}.json`);
+  
+  if (fs.existsSync(jsonPath)) {
+    try {
+      const jsonData = fs.readFileSync(jsonPath, 'utf8');
+      res.setHeader('Content-Type', 'application/json');
+      res.send(jsonData);
+      return;
+    } catch (error) {
+      console.error(`Error reading JSON file for ${sanitizedAlbum}:`, error);
+    }
+  }
+  
+  // Fallback: JSON doesn't exist, return 404
+  res.status(404).json({ error: "Album JSON not found" });
+});
+
 router.get("/api/albums/:album/photos", (req: Request, res): void => {
   const startTime = Date.now();
   const { album } = req.params;

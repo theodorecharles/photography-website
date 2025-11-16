@@ -185,11 +185,17 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
         setLoading(true);
 
         // Try to fetch from static JSON first for better performance
-        const staticJsonUrl = `/albums-data/${album === "homepage" ? "homepage" : album}.json`;
+        // Use authenticated endpoint to prevent unauthorized access to unpublished albums
+        const staticJsonUrl = album === "homepage" 
+          ? `/albums-data/homepage.json`  // Homepage is always public
+          : `${API_URL}/api/albums/${album}/photos-json`;  // Album JSON requires auth check
         
         try {
           // Disable caching to ensure we always get the latest JSON after publish/unpublish
-          const staticResponse = await fetch(staticJsonUrl, { cache: 'no-store' });
+          const staticResponse = await fetch(staticJsonUrl, { 
+            cache: 'no-store',
+            credentials: 'include' // Include auth cookies for unpublished albums
+          });
           if (staticResponse.ok) {
             const staticData = await staticResponse.json();
             console.log(`✨ Loaded ${staticData.length} photos from optimized static JSON (${album})`);
