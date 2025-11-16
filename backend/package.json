@@ -29,6 +29,7 @@
     "@types/passport-google-oauth20": "^2.0.17",
     "bcrypt": "^6.0.0",
     "better-sqlite3": "^12.4.1",
+    "better-sqlite3-session-store": "^0.1.0",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "exifr": "^7.1.3",
