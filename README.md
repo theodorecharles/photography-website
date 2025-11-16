@@ -482,7 +482,7 @@ photography-website/
 │   └── generate-ai-titles.js   # AI title generation
 ├── Dockerfile           # Single container Dockerfile
 ├── docker-compose.yml   # Docker Compose configuration
-├── start.sh             # PM2 startup script
+├── start-docker.sh      # PM2 startup script for Docker
 ├── ecosystem.config.cjs # PM2 configuration
 ├── build.js             # Unified build script
 ├── restart.sh           # Automated deployment
