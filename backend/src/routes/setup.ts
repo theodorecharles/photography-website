@@ -119,27 +119,45 @@ router.post('/initialize', async (req: Request, res: Response): Promise<void> =>
       return;
     }
 
-    // Auto-detect frontend URL from request
+    // Auto-detect frontend and backend URLs from request
     const protocol = req.headers['x-forwarded-proto'] || (req.secure ? 'https' : 'http');
     const hostHeader = req.headers['x-forwarded-host'] || req.headers['host'] || 'localhost:3000';
     const host = Array.isArray(hostHeader) ? hostHeader[0] : hostHeader;
-    const frontendUrl = `${protocol}://${host}`;
     
-    // Determine backend URL based on convention (api.domain.com)
+    // Determine backend and frontend URLs based on which domain the request came to
     let backendUrl;
+    let frontendUrl;
+    
     if (host.includes('localhost')) {
+      // Localhost development
       backendUrl = 'http://localhost:3001';
-    } else if (host.startsWith('www.')) {
-      // www.tedcharles.net -> api.tedcharles.net
-      backendUrl = `${protocol}://api.${host.substring(4)}`;
+      frontendUrl = 'http://localhost:3000';
+    } else if (host.startsWith('api.') || host.startsWith('api-')) {
+      // Request came to api.tedcharles.net or api-dev.tedcharles.net
+      // Backend URL is the current host, frontend is www.domain
+      backendUrl = `${protocol}://${host}`;
+      const domain = host.replace(/^api(-dev)?\./, '');
+      frontendUrl = `${protocol}://www${host.includes('api-dev') ? '-dev' : ''}.${domain}`;
+    } else if (host.startsWith('www.') || host.startsWith('www-')) {
+      // Request came to www.tedcharles.net or www-dev.tedcharles.net
+      // Frontend URL is the current host, backend is api.domain
+      frontendUrl = `${protocol}://${host}`;
+      const domain = host.replace(/^www(-dev)?\./, '');
+      backendUrl = `${protocol}://api${host.includes('www-dev') ? '-dev' : ''}.${domain}`;
     } else {
-      // tedcharles.net -> api.tedcharles.net
+      // Bare domain (tedcharles.net)
+      frontendUrl = `${protocol}://www.${host}`;
       backendUrl = `${protocol}://api.${host}`;
     }
     
+    // Extract frontend hostname for allowedHosts (without protocol)
+    const frontendHost = new URL(frontendUrl).host;
+    
     console.log(`[Setup] Auto-detected URLs:`);
+    console.log(`  Request host: ${host}`);
     console.log(`  Frontend: ${frontendUrl}`);
     console.log(`  Backend: ${backendUrl}`);
+    console.log(`  Allowed hosts: ${frontendHost}`);
 
     // Validate auth method specific fields
     if (authMethod === 'password') {
@@ -183,7 +201,7 @@ router.post('/initialize', async (req: Request, res: Response): Promise<void> =>
       // Override URLs with auto-detected values
       config.environment.frontend.apiUrl = backendUrl;
       config.environment.backend.allowedOrigins = [frontendUrl];
-      config.environment.security.allowedHosts = [host];
+      config.environment.security.allowedHosts = [frontendHost];
     } else {
       // Fallback: create minimal config structure
       config = {
@@ -206,7 +224,7 @@ router.post('/initialize', async (req: Request, res: Response): Promise<void> =>
             }
           },
           security: {
-            allowedHosts: [host],
+            allowedHosts: [frontendHost],
             rateLimitWindowMs: 1000,
             rateLimitMaxRequests: 30,
             redirectFrom: [],
