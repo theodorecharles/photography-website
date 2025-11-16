@@ -322,7 +322,9 @@ cd ../frontend && npm run build
 
 ```bash
 npm install -g pm2
-pm2 start ecosystem.config.cjs
+./restart.sh  # Handles installation, build, and PM2 startup
+# Or manually:
+pm2 start ecosystem.local.cjs
 pm2 save
 pm2 startup
 ```
@@ -485,7 +487,10 @@ photography-website/
 ├── start.sh             # PM2 startup script
 ├── ecosystem.config.cjs # PM2 configuration
 ├── build.js             # Unified build script
-├── restart.sh           # Automated deployment
+├── restart.sh           # Automated deployment (local)
+├── start-docker.sh      # Docker startup script
+├── ecosystem.docker.cjs # PM2 config for Docker
+├── ecosystem.local.cjs  # PM2 config for local development
 └── package.json         # Root dependencies
 ```
 
