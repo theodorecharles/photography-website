@@ -13,7 +13,7 @@ export function StructuredData() {
       "@type": "Person",
       "name": "Ted Charles",
       "url": SITE_URL,
-      "image": `${SITE_URL}/photos/derpatar.png`,
+      "image": `${SITE_URL}/photos/avatar.png`,
       "jobTitle": "Photographer",
       "sameAs": [
         "https://www.youtube.com/@ted_charles",

@@ -4,12 +4,15 @@
  */
 
 import { useState, useEffect, lazy, Suspense } from "react";
+import { useAuth } from "./contexts/AuthContext";
 import {
   BrowserRouter as Router,
   Routes,
   Route,
   useParams,
   useLocation,
+  useNavigate,
+  Link,
 } from "react-router-dom";
 import "./App.css";
 import PhotoGrid from "./components/PhotoGrid";
@@ -22,14 +25,22 @@ import { API_URL, SITE_URL } from "./config";
 import { trackPageView, trackError } from "./utils/analytics";
 import { fetchWithRateLimitCheck } from "./utils/fetchWrapper";
 import { SSEToasterProvider } from "./contexts/SSEToasterContext";
+import { AuthProvider } from "./contexts/AuthContext";
 import SSEToaster from "./components/SSEToaster";
+import { filterAlbums, filterFolders } from "./utils/albumFilters";
 
-// Lazy load components that aren't needed on initial page load
+// Import AdminPortal - CSS is handled within the component for dev mode compatibility
+import AdminPortal from "./components/AdminPortal";
+
+// Lazy load other components that aren't needed on initial page load
 const License = lazy(() => import("./components/Misc/License"));
-const AdminPortal = lazy(() => import("./components/AdminPortal"));
 const AuthError = lazy(() => import("./components/Misc/AuthError"));
-const NotFound = lazy(() => import("./components/Misc/NotFound"));
+import NotFound from "./components/Misc/NotFound";
 const SharedAlbum = lazy(() => import("./components/SharedAlbum"));
+const SetupWizard = lazy(() => import("./components/SetupWizard"));
+const InviteSignup = lazy(() => import("./components/Misc/InviteSignup"));
+const PasswordResetRequest = lazy(() => import("./components/Misc/PasswordResetRequest"));
+const PasswordResetComplete = lazy(() => import("./components/Misc/PasswordResetComplete"));
 
 // AlbumRoute component handles the routing for individual album pages
 function AlbumRoute({ onAlbumNotFound, onLoadComplete }: { onAlbumNotFound: () => void; onLoadComplete: () => void }) {
@@ -43,7 +54,7 @@ function AlbumRoute({ onAlbumNotFound, onLoadComplete }: { onAlbumNotFound: () =
         title={`${decodedAlbum} - Ted Charles Photography`}
         description={`View ${decodedAlbum} photos from Ted Charles' photography portfolio. Professional ${decodedAlbum} photography.`}
         url={`${SITE_URL}/album/${album}`}
-        image={`${SITE_URL}/photos/derpatar.png`}
+        image={`${SITE_URL}/photos/avatar.png`}
       />
       <PhotoGrid 
         album={decodedAlbum} 
@@ -63,6 +74,48 @@ function PrimesRedirect() {
   return <div className="loading">Loading benchmark...</div>;
 }
 
+// NotFoundRedirect component updates URL to /404 for catch-all routes
+function NotFoundRedirect() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  
+  useEffect(() => {
+    // Only redirect if we're not already at /404
+    if (location.pathname !== '/404') {
+      navigate('/404', { replace: true });
+    }
+  }, [navigate, location.pathname]);
+  
+  return <NotFound />;
+}
+
+// RateLimitError component for 429 error page
+function RateLimitError() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  
+  useEffect(() => {
+    // Only redirect if we're not already at /429
+    if (location.pathname !== '/429') {
+      navigate('/429', { replace: true });
+    }
+  }, [navigate, location.pathname]);
+  
+  return (
+    <div className="error rate-limit-error">
+      <div className="rate-limit-icon">🤠</div>
+      <h2>Whoa there, partner!</h2>
+      <p>Slow down there, feller. You're clicking faster than a tumbleweed in a tornado!</p>
+      <p>Give it a moment and try again.</p>
+      <div className="not-found-actions">
+        <Link to="/" className="home-button">
+          Head Back Home
+        </Link>
+      </div>
+    </div>
+  );
+}
+
 /**
  * Main App component that:
  * - Manages application state
@@ -72,10 +125,11 @@ function PrimesRedirect() {
  */
 function App() {
   // Application state
-  const [albums, setAlbums] = useState<string[]>([]);
+  const [albums, setAlbums] = useState<string[] | Array<{name: string; folder_id?: number | null}>>([]);
+  const [folders, setFolders] = useState<Array<{id: number; name: string; published: boolean}>>([]);
   const [externalLinks, setExternalLinks] = useState<ExternalLink[]>([]);
   const [siteName, setSiteName] = useState('Ted Charles');
-  const [avatarPath, setAvatarPath] = useState('/photos/derpatar.png');
+  const [avatarPath, setAvatarPath] = useState('/photos/avatar.png');
   const [avatarCacheBust, setAvatarCacheBust] = useState(Date.now());
   const [primaryColor, setPrimaryColor] = useState('#4ade80');
   const [secondaryColor, setSecondaryColor] = useState('#3b82f6');
@@ -86,8 +140,31 @@ function App() {
   );
   const [showFooter, setShowFooter] = useState(false);
   const [hideAlbumTitle, setHideAlbumTitle] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [setupComplete, setSetupComplete] = useState<boolean | null>(null);
   const location = useLocation();
+  const { isAuthenticated } = useAuth();
+
+  // Check if initial setup is complete
+  useEffect(() => {
+    const checkSetup = async () => {
+      try {
+        const response = await fetch(`${API_URL}/api/setup/status`);
+        const data = await response.json();
+        setSetupComplete(data.setupComplete);
+        
+        // Only proceed with normal loading if setup is complete
+        if (!data.setupComplete) {
+          setLoading(false);
+        }
+      } catch (err) {
+        console.error('Setup check failed:', err);
+        // Assume setup is complete if check fails (backward compatibility)
+        setSetupComplete(true);
+      }
+    };
+    
+    checkSetup();
+  }, []);
 
   // Global rate limit handler - any component can trigger this
   useEffect(() => {
@@ -101,25 +178,6 @@ function App() {
     };
   }, []);
 
-  // Check authentication status
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const res = await fetch(`${API_URL}/api/auth/status`, {
-          credentials: 'include',
-        });
-        if (res.ok) {
-          const data = await res.json();
-          setIsAuthenticated(data.authenticated === true);
-        } else {
-          setIsAuthenticated(false);
-        }
-      } catch {
-        setIsAuthenticated(false);
-      }
-    };
-    checkAuth();
-  }, [location.pathname]); // Re-check when route changes
 
   // Apply theme colors to CSS custom properties
   useEffect(() => {
@@ -186,13 +244,27 @@ function App() {
       const externalLinksData = await externalLinksResponse.json();
       const brandingData = await brandingResponse.json();
 
-      // Handle both array of strings (for non-authenticated) and array of objects (for authenticated)
-      // Show published albums for non-authenticated, show all albums for authenticated users
+      // Handle new API format: { albums: [...], folders: [...] } or old format: [...]
+      if (albumsData && typeof albumsData === 'object' && 'albums' in albumsData) {
+        // New format with folders
+        const filteredAlbums = filterAlbums(albumsData.albums || [], isAuthenticated);
+        const filteredFolders = filterFolders(albumsData.folders || [], isAuthenticated);
+        
+        console.log('🔍 App.tsx fetchData - isAuthenticated:', isAuthenticated);
+        console.log('🔍 App.tsx fetchData - Raw folders from backend:', albumsData.folders);
+        console.log('🔍 App.tsx fetchData - Filtered folders:', filteredFolders);
+        console.log('🔍 App.tsx fetchData - Filtered albums:', filteredAlbums);
+        
+        setAlbums(filteredAlbums);
+        // Normalize published field to boolean (SQLite returns 0/1)
+        setFolders(filteredFolders.map(f => ({ ...f, published: !!f.published })));
+      } else {
+        // Old format (array of strings or objects)
       const albumNames = Array.isArray(albumsData) 
         ? albumsData
             .filter((album: string | { name: string; published: boolean }) => {
-              // If it's a string, include it (legacy behavior)
-              if (typeof album === 'string') return true;
+                if (typeof album === 'string') return album !== 'homepage';
+                if (album.name === 'homepage') return false;
               // If it's an object, include all albums if authenticated, only published if not
               if (isAuthenticated) return true;
               return album.published === true;
@@ -200,13 +272,14 @@ function App() {
             .map((album: string | { name: string; published: boolean }) => 
               typeof album === 'string' ? album : album.name
             )
-            .filter((album: string) => album !== "homepage")
         : [];
       
       setAlbums(albumNames);
+        setFolders([]);
+      }
       setExternalLinks(externalLinksData.externalLinks);
       setSiteName(brandingData.siteName || 'Ted Charles');
-      setAvatarPath(brandingData.avatarPath || '/photos/derpatar.png');
+      setAvatarPath(brandingData.avatarPath || '/photos/avatar.png');
       setPrimaryColor(brandingData.primaryColor || '#4ade80');
       setSecondaryColor(brandingData.secondaryColor || '#3b82f6');
       setAvatarCacheBust(Date.now()); // Update cache bust when branding refreshes
@@ -221,9 +294,10 @@ function App() {
       
       setError(errorMessage);
       setAlbums([]);
+      setFolders([]);
       setExternalLinks([]);
       setSiteName('Ted Charles');
-      setAvatarPath('/photos/derpatar.png');
+      setAvatarPath('/photos/avatar.png');
       trackError(errorMessage, 'app_initialization');
     } finally {
       setLoading(false);
@@ -231,18 +305,36 @@ function App() {
   };
 
   useEffect(() => {
+    // Only fetch data if setup is complete
+    if (setupComplete === true) {
     fetchData();
+    }
 
     // Silent update for navigation without triggering loading state
     const updateNavigationSilently = async () => {
+      console.log('🔄 albums-updated event received, updating navigation...');
       try {
         const albumsResponse = await fetchWithRateLimitCheck(`${API_URL}/api/albums`);
         if (albumsResponse.ok) {
           const albumsData = await albumsResponse.json();
+          console.log('✅ Navigation updated with folders:', albumsData.folders);
+          
+          // Handle new API format: { albums: [...], folders: [...] } or old format: [...]
+          if (albumsData && typeof albumsData === 'object' && 'albums' in albumsData) {
+            // New format with folders
+            const filteredAlbums = filterAlbums(albumsData.albums || [], isAuthenticated);
+            const filteredFolders = filterFolders(albumsData.folders || [], isAuthenticated);
+            
+            setAlbums(filteredAlbums);
+            // Normalize published field to boolean (SQLite returns 0/1)
+            setFolders(filteredFolders.map(f => ({ ...f, published: !!f.published })));
+          } else {
+            // Old format (array of strings or objects)
           const albumNames = Array.isArray(albumsData) 
             ? albumsData
                 .filter((album: string | { name: string; published: boolean }) => {
-                  if (typeof album === 'string') return true;
+                    if (typeof album === 'string') return album !== 'homepage';
+                    if (album.name === 'homepage') return false;
                   // Include all albums if authenticated, only published if not
                   if (isAuthenticated) return true;
                   return album.published === true;
@@ -250,9 +342,11 @@ function App() {
                 .map((album: string | { name: string; published: boolean }) => 
                   typeof album === 'string' ? album : album.name
                 )
-                .filter((album: string) => album !== "homepage")
             : [];
+            
           setAlbums(albumNames);
+            setFolders([]);
+          }
         }
       } catch (err) {
         // Silently fail - don't disrupt user experience
@@ -270,7 +364,21 @@ function App() {
       window.removeEventListener('external-links-updated', fetchData);
       window.removeEventListener('branding-updated', fetchData);
     };
-  }, [isAuthenticated]); // Re-fetch when authentication changes
+  }, [isAuthenticated, setupComplete]); // Re-fetch when authentication or setup changes
+
+  // Show setup wizard if setup is not complete
+  if (setupComplete === false) {
+    return (
+      <Suspense fallback={
+        <div className="photo-grid-loading">
+          <div className="loading-spinner"></div>
+          <p>Loading setup...</p>
+        </div>
+      }>
+        <SetupWizard />
+      </Suspense>
+    );
+  }
 
   // Loading and error states
   // Skip loading state for admin routes - they handle their own loading
@@ -286,25 +394,70 @@ function App() {
   if (error) {
     if (error === "RATE_LIMIT") {
       return (
-        <div className="error rate-limit-error">
-          <div className="rate-limit-icon">🤠</div>
-          <h2>Whoa there, partner!</h2>
-          <p>Slow down there, feller. You're clicking faster than a tumbleweed in a tornado!</p>
-          <p>Give it a moment and try again.</p>
-          <button onClick={() => window.location.reload()} className="retry-button">
-            Try Again
-          </button>
+        <div className="app">
+          <Header
+            albums={albums}
+            folders={folders}
+            externalLinks={externalLinks}
+            currentAlbum={undefined}
+            siteName={siteName}
+            avatarPath={avatarPath}
+            avatarCacheBust={avatarCacheBust}
+          />
+          <main className="main-content">
+            <RateLimitError />
+          </main>
+          <div className="footer-wrapper visible">
+            <Footer
+              albums={Array.isArray(albums) && albums.length > 0 && typeof albums[0] === 'object' ? albums.map(a => typeof a === 'string' ? a : a.name) : albums as string[]}
+              externalLinks={externalLinks}
+              currentAlbum={undefined}
+            />
+          </div>
         </div>
       );
     }
-    return <div className="error">Error: {error}</div>;
+    return (
+      <div className="error backend-error">
+        <div className="error-icon-large">❌</div>
+        <h2>Backend Error</h2>
+        <p className="error-description">Unable to connect to the server</p>
+        <button onClick={() => window.location.reload()} className="retry-button">
+          Reload Page
+        </button>
+      </div>
+    );
   }
 
-  // Main application layout
+  // Check if current route is a standalone page (no main layout)
+  const isStandalonePage = location.pathname.startsWith('/shared/') ||
+                          location.pathname.startsWith('/setup');
+
+  // Standalone pages render without the main layout
+  if (isStandalonePage) {
+    return (
+      <div className="app">
+        <Suspense fallback={
+          <div className="photo-grid-loading">
+            <div className="loading-spinner"></div>
+            <p>Loading...</p>
+          </div>
+        }>
+          <Routes>
+            <Route path="/shared/:secretKey" element={<SharedAlbum />} />
+            <Route path="/setup" element={<SetupWizard />} />
+          </Routes>
+        </Suspense>
+      </div>
+    );
+  }
+
+  // Main application layout for regular pages
   return (
     <div className="app">
       <Header
         albums={albums}
+        folders={folders}
         externalLinks={externalLinks}
         currentAlbum={currentAlbum}
         siteName={siteName}
@@ -350,9 +503,13 @@ function App() {
               </>
             } />
             <Route path="/admin" element={<AdminPortal />} />
+            <Route path="/admin/login" element={<AdminPortal />} />
+            <Route path="/admin/login/password" element={<AdminPortal />} />
+            <Route path="/admin/login/passkey" element={<AdminPortal />} />
             <Route path="/admin/albums" element={<AdminPortal />} />
             <Route path="/admin/metrics" element={<AdminPortal />} />
             <Route path="/admin/settings" element={<AdminPortal />} />
+            <Route path="/admin/profile" element={<AdminPortal />} />
             <Route path="/auth/error" element={
               <>
                 <SEO 
@@ -363,26 +520,75 @@ function App() {
                 <AuthError />
               </>
             } />
-            <Route path="/shared/:secretKey" element={<SharedAlbum />} />
+            <Route path="/invite/:token" element={
+              <>
+                <SEO 
+                  title="Complete Registration - Ted Charles Photography"
+                  description="Complete your account registration"
+                  url={`${SITE_URL}/invite`}
+                />
+                <InviteSignup />
+              </>
+            } />
+            <Route path="/reset-password" element={
+              <>
+                <SEO 
+                  title="Reset Password - Ted Charles Photography"
+                  description="Reset your account password"
+                  url={`${SITE_URL}/reset-password`}
+                />
+                <PasswordResetRequest />
+              </>
+            } />
+            <Route path="/reset-password/:token" element={
+              <>
+                <SEO 
+                  title="Set New Password - Ted Charles Photography"
+                  description="Set a new password for your account"
+                  url={`${SITE_URL}/reset-password`}
+                />
+                <PasswordResetComplete />
+              </>
+            } />
             <Route path="/primes" element={<PrimesRedirect />} />
             <Route path="/primes/*" element={<PrimesRedirect />} />
+            <Route path="/404" element={
+              <>
+                <SEO 
+                  title="404 - Page Not Found - Ted Charles Photography"
+                  description="The page you're looking for doesn't exist."
+                  url={`${SITE_URL}/404`}
+                />
+                <NotFound />
+              </>
+            } />
+            <Route path="/429" element={
+              <>
+                <SEO 
+                  title="429 - Too Many Requests - Ted Charles Photography"
+                  description="Please slow down and try again."
+                  url={`${SITE_URL}/429`}
+                />
+                <RateLimitError />
+              </>
+            } />
             <Route path="*" element={
               <>
                 <SEO 
                   title="404 - Page Not Found - Ted Charles Photography"
                   description="The page you're looking for doesn't exist."
-                  url={`${SITE_URL}${location.pathname}`}
+                  url={`${SITE_URL}/404`}
                 />
-                <NotFound />
+                <NotFoundRedirect />
               </>
             } />
           </Routes>
         </Suspense>
       </main>
       {!location.pathname.startsWith('/admin') && (
-        <div className={`footer-wrapper ${showFooter ? 'visible' : ''}`}>
+        <div className={`footer-wrapper ${showFooter || location.pathname === '/404' || location.pathname === '/429' ? 'visible' : ''}`}>
           <Footer
-            albums={albums}
+            albums={Array.isArray(albums) && albums.length > 0 && typeof albums[0] === 'object' ? albums.map(a => typeof a === 'string' ? a : a.name) : albums as string[]}
             externalLinks={externalLinks}
           currentAlbum={
             location.pathname === "/"
@@ -408,10 +614,12 @@ function App() {
 function AppWrapper() {
   return (
     <Router>
-      <SSEToasterProvider>
-        <ScrollToTop />
-        <App />
-      </SSEToasterProvider>
+      <AuthProvider>
+        <SSEToasterProvider>
+          <ScrollToTop />
+          <App />
+        </SSEToasterProvider>
+      </AuthProvider>
     </Router>
   );
 }

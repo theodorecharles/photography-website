@@ -4,17 +4,10 @@
  */
 
 import { createRequire } from 'module';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import { DB_PATH } from './config.js';
 
 const require = createRequire(import.meta.url);
 const Database = require('better-sqlite3');
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// Database file path (in project root)
-const DB_PATH = path.join(__dirname, '..', '..', 'gallery.db');
 
 let db: any = null;
 
@@ -45,6 +38,18 @@ export function initializeDatabase(): any {
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL UNIQUE,
       published BOOLEAN NOT NULL DEFAULT 0,
+      show_on_homepage BOOLEAN NOT NULL DEFAULT 0,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+  
+  // Create album_folders table
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS album_folders (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL UNIQUE,
+      published BOOLEAN NOT NULL DEFAULT 0,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )
@@ -70,8 +75,80 @@ export function initializeDatabase(): any {
     ON image_metadata(album, filename)
   `);
   
+  // Add sort_order column if it doesn't exist (migration)
+  try {
+    const tableInfo = db.pragma('table_info(image_metadata)');
+    const hasSortOrder = tableInfo.some((col: any) => col.name === 'sort_order');
+    if (!hasSortOrder) {
+      console.log('📝 Adding sort_order column to image_metadata...');
+      db.exec('ALTER TABLE image_metadata ADD COLUMN sort_order INTEGER');
+    }
+  } catch (err) {
+    console.log('⚠️  Could not check/add sort_order column:', err);
+  }
+  
+  // Add sort_order column to albums if it doesn't exist (migration)
+  try {
+    const tableInfo = db.pragma('table_info(albums)');
+    const hasSortOrder = tableInfo.some((col: any) => col.name === 'sort_order');
+    if (!hasSortOrder) {
+      console.log('📝 Adding sort_order column to albums...');
+      db.exec('ALTER TABLE albums ADD COLUMN sort_order INTEGER');
+    }
+  } catch (err) {
+    console.log('⚠️  Could not check/add sort_order column to albums:', err);
+  }
+  
+  // Add sort_order column to album_folders if it doesn't exist (migration)
+  try {
+    const tableInfo = db.pragma('table_info(album_folders)');
+    const hasSortOrder = tableInfo.some((col: any) => col.name === 'sort_order');
+    if (!hasSortOrder) {
+      console.log('📝 Adding sort_order column to album_folders...');
+      db.exec('ALTER TABLE album_folders ADD COLUMN sort_order INTEGER');
+    }
+  } catch (err) {
+    console.log('⚠️  Could not check/add sort_order column to album_folders:', err);
+  }
+  
+  // Add folder_id column to albums if it doesn't exist (migration)
+  try {
+    const tableInfo = db.pragma('table_info(albums)');
+    const hasFolderId = tableInfo.some((col: any) => col.name === 'folder_id');
+    if (!hasFolderId) {
+      console.log('📝 Adding folder_id column to albums...');
+      db.exec('ALTER TABLE albums ADD COLUMN folder_id INTEGER REFERENCES album_folders(id) ON DELETE SET NULL');
+    }
+  } catch (err) {
+    console.log('⚠️  Could not check/add folder_id column to albums:', err);
+  }
+  
+  // Create share_links table if it doesn't exist
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS share_links (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      album TEXT NOT NULL,
+      secret_key TEXT NOT NULL UNIQUE,
+      expires_at DATETIME,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (album) REFERENCES albums(name) ON DELETE CASCADE
+    )
+  `);
+  
+  // Create index for share links
+  db.exec(`
+    CREATE INDEX IF NOT EXISTS idx_share_links_secret 
+    ON share_links(secret_key)
+  `);
+  
+  db.exec(`
+    CREATE INDEX IF NOT EXISTS idx_share_links_album 
+    ON share_links(album)
+  `);
+  
   console.log('✓ SQLite database initialized at:', DB_PATH);
   console.log('✓ WAL mode enabled for better performance');
+  console.log('✓ All tables and migrations applied');
   
   return db;
 }
@@ -239,8 +316,8 @@ export function saveAlbum(name: string, published: boolean = false): void {
   const db = getDatabase();
   
   const stmt = db.prepare(`
-    INSERT INTO albums (name, published)
-    VALUES (?, ?)
+    INSERT INTO albums (name, published, show_on_homepage)
+    VALUES (?, ?, 0)
     ON CONFLICT(name) 
     DO UPDATE SET 
       published = excluded.published,
@@ -257,6 +334,7 @@ export function getAlbumState(name: string): {
   id: number;
   name: string;
   published: boolean;
+  show_on_homepage: boolean;
   created_at: string;
   updated_at: string;
 } | undefined {
@@ -270,6 +348,7 @@ export function getAlbumState(name: string): {
   const result = stmt.get(name) as any;
   if (result) {
     result.published = Boolean(result.published);
+    result.show_on_homepage = Boolean(result.show_on_homepage);
   }
   return result;
 }
@@ -281,6 +360,8 @@ export function getAllAlbums(): Array<{
   id: number;
   name: string;
   published: boolean;
+  show_on_homepage: boolean;
+  folder_id: number | null;
   sort_order: number | null;
   created_at: string;
   updated_at: string;
@@ -298,7 +379,9 @@ export function getAllAlbums(): Array<{
   const results = stmt.all() as any[];
   return results.map(result => ({
     ...result,
-    published: Boolean(result.published)
+    published: Boolean(result.published),
+    show_on_homepage: Boolean(result.show_on_homepage),
+    folder_id: result.folder_id ?? null
   }));
 }
 
@@ -356,6 +439,22 @@ export function setAlbumPublished(name: string, published: boolean): boolean {
   `);
   
   const result = stmt.run(published ? 1 : 0, name);
+  return result.changes > 0;
+}
+
+/**
+ * Set album show_on_homepage state
+ */
+export function setAlbumShowOnHomepage(name: string, showOnHomepage: boolean): boolean {
+  const db = getDatabase();
+  
+  const stmt = db.prepare(`
+    UPDATE albums 
+    SET show_on_homepage = ?, updated_at = CURRENT_TIMESTAMP
+    WHERE name = ?
+  `);
+  
+  const result = stmt.run(showOnHomepage ? 1 : 0, name);
   return result.changes > 0;
 }
 
@@ -467,6 +566,31 @@ export function getImagesFromPublishedAlbums(): Array<{
     INNER JOIN albums a ON im.album = a.name
     WHERE a.published = 1
     ORDER BY im.album, im.filename
+  `);
+  
+  return stmt.all() as any[];
+}
+
+/**
+ * Get all images from albums that should be shown on homepage
+ */
+export function getImagesForHomepage(): Array<{
+  id: number;
+  album: string;
+  filename: string;
+  title: string | null;
+  description: string | null;
+  sort_order: number | null;
+  created_at: string;
+  updated_at: string;
+}> {
+  const db = getDatabase();
+  
+  const stmt = db.prepare(`
+    SELECT im.* FROM image_metadata im
+    INNER JOIN albums a ON im.album = a.name
+    WHERE a.published = 1 AND a.show_on_homepage = 1
+    ORDER BY a.sort_order, a.name, im.sort_order, im.filename
   `);
   
   return stmt.all() as any[];
@@ -660,6 +784,244 @@ export function deleteExpiredShareLinks(): number {
   
   const result = stmt.run();
   return result.changes;
+}
+
+/**
+ * Create or update an album folder in the database
+ */
+export function saveAlbumFolder(name: string, published: boolean = false): void {
+  const db = getDatabase();
+  
+  const stmt = db.prepare(`
+    INSERT INTO album_folders (name, published)
+    VALUES (?, ?)
+    ON CONFLICT(name) 
+    DO UPDATE SET 
+      published = excluded.published,
+      updated_at = CURRENT_TIMESTAMP
+  `);
+  
+  stmt.run(name, published ? 1 : 0);
+}
+
+/**
+ * Get folder state by name
+ */
+export function getFolderState(name: string): {
+  id: number;
+  name: string;
+  published: boolean;
+  sort_order: number | null;
+  created_at: string;
+  updated_at: string;
+} | undefined {
+  const db = getDatabase();
+  
+  const stmt = db.prepare(`
+    SELECT * FROM album_folders 
+    WHERE name = ?
+  `);
+  
+  const result = stmt.get(name) as any;
+  if (result) {
+    result.published = Boolean(result.published);
+  }
+  return result;
+}
+
+/**
+ * Get all album folders with their published state
+ */
+export function getAllFolders(): Array<{
+  id: number;
+  name: string;
+  published: boolean;
+  sort_order: number | null;
+  created_at: string;
+  updated_at: string;
+}> {
+  const db = getDatabase();
+  
+  const stmt = db.prepare(`
+    SELECT * FROM album_folders 
+    ORDER BY 
+      CASE WHEN sort_order IS NULL THEN 1 ELSE 0 END,
+      sort_order ASC,
+      name ASC
+  `);
+  
+  const results = stmt.all() as any[];
+  return results.map(result => ({
+    ...result,
+    published: Boolean(result.published)
+  }));
+}
+
+/**
+ * Get only published folders
+ */
+export function getPublishedFolders(): Array<{
+  id: number;
+  name: string;
+  published: boolean;
+  sort_order: number | null;
+  created_at: string;
+  updated_at: string;
+}> {
+  const db = getDatabase();
+  
+  const stmt = db.prepare(`
+    SELECT * FROM album_folders 
+    WHERE published = 1
+    ORDER BY 
+      CASE WHEN sort_order IS NULL THEN 1 ELSE 0 END,
+      sort_order ASC,
+      name ASC
+  `);
+  
+  const results = stmt.all() as any[];
+  return results.map(result => ({
+    ...result,
+    published: Boolean(result.published)
+  }));
+}
+
+/**
+ * Set folder published state
+ */
+export function setFolderPublished(name: string, published: boolean): boolean {
+  const db = getDatabase();
+  
+  const stmt = db.prepare(`
+    UPDATE album_folders 
+    SET published = ?, updated_at = CURRENT_TIMESTAMP
+    WHERE name = ?
+  `);
+  
+  const result = stmt.run(published ? 1 : 0, name);
+  return result.changes > 0;
+}
+
+/**
+ * Delete a folder from the database
+ * Note: This will set folder_id to NULL for all albums in this folder
+ */
+export function deleteFolderState(name: string): boolean {
+  const db = getDatabase();
+  
+  const stmt = db.prepare(`
+    DELETE FROM album_folders 
+    WHERE name = ?
+  `);
+  
+  const result = stmt.run(name);
+  return result.changes > 0;
+}
+
+/**
+ * Get albums in a specific folder
+ */
+export function getAlbumsInFolder(folderId: number): Array<{
+  id: number;
+  name: string;
+  published: boolean;
+  folder_id: number | null;
+  sort_order: number | null;
+  created_at: string;
+  updated_at: string;
+}> {
+  const db = getDatabase();
+  
+  const stmt = db.prepare(`
+    SELECT * FROM albums 
+    WHERE folder_id = ?
+    ORDER BY 
+      CASE WHEN sort_order IS NULL THEN 1 ELSE 0 END,
+      sort_order ASC,
+      name ASC
+  `);
+  
+  const results = stmt.all(folderId) as any[];
+  return results.map(result => ({
+    ...result,
+    published: Boolean(result.published),
+    folder_id: result.folder_id ?? null
+  }));
+}
+
+/**
+ * Get albums not in any folder
+ */
+export function getAlbumsWithoutFolder(): Array<{
+  id: number;
+  name: string;
+  published: boolean;
+  folder_id: number | null;
+  sort_order: number | null;
+  created_at: string;
+  updated_at: string;
+}> {
+  const db = getDatabase();
+  
+  const stmt = db.prepare(`
+    SELECT * FROM albums 
+    WHERE folder_id IS NULL
+    ORDER BY 
+      CASE WHEN sort_order IS NULL THEN 1 ELSE 0 END,
+      sort_order ASC,
+      name ASC
+  `);
+  
+  const results = stmt.all() as any[];
+  return results.map(result => ({
+    ...result,
+    published: Boolean(result.published),
+    folder_id: null
+  }));
+}
+
+/**
+ * Set album's folder
+ */
+export function setAlbumFolder(albumName: string, folderId: number | null): boolean {
+  const db = getDatabase();
+  
+  const stmt = db.prepare(`
+    UPDATE albums 
+    SET folder_id = ?, updated_at = CURRENT_TIMESTAMP
+    WHERE name = ?
+  `);
+  
+  const result = stmt.run(folderId, albumName);
+  return result.changes > 0;
+}
+
+/**
+ * Update sort order for multiple folders
+ */
+export function updateFolderSortOrder(folderOrders: { name: string; sort_order: number }[]): boolean {
+  const db = getDatabase();
+  
+  try {
+    // Use a transaction for atomic updates
+    const transaction = db.transaction(() => {
+      const stmt = db.prepare(`
+        UPDATE album_folders 
+        SET sort_order = ?, updated_at = CURRENT_TIMESTAMP
+        WHERE name = ?
+      `);
+      
+      for (const { name, sort_order } of folderOrders) {
+        stmt.run(sort_order, name);
+      }
+    });
+    
+    transaction();
+    return true;
+  } catch (error) {
+    console.error('Error updating folder sort order:', error);
+    return false;
+  }
 }
 
 /**

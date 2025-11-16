@@ -5,6 +5,7 @@
 
 import React from 'react';
 import { Photo, ExifData } from './types';
+import { formatFileSize } from '../../utils/formatters';
 
 interface InfoPanelProps {
   show: boolean;
@@ -15,11 +16,7 @@ interface InfoPanelProps {
   style?: React.CSSProperties;
 }
 
-const formatFileSize = (bytes: number): string => {
-  if (bytes < 1024) return bytes + ' B';
-  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
-  return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
-};
+// formatFileSize function moved to utils/formatters.ts
 
 const InfoPanel: React.FC<InfoPanelProps> = ({
   show,

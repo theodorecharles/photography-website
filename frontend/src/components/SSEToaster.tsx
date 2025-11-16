@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useSSEToaster } from '../contexts/SSEToasterContext';
 import './AdminPortal/ConfigManager.css'; // Reuse the CSS
+import { StopIcon, FullscreenIcon } from './icons/';
 
 /**
  * Global SSE Toaster component that displays job progress across all pages.
@@ -19,6 +20,10 @@ export default function SSEToaster() {
     optimizationLogs,
     optimizationProgress,
     optimizationOutputRef,
+    isUploading,
+    uploadAlbum,
+    uploadCompleted,
+    uploadTotal,
     isToasterCollapsed,
     setIsToasterCollapsed,
     isToasterMaximized,
@@ -38,7 +43,7 @@ export default function SSEToaster() {
     stopOptimizationHandler,
   } = useSSEToaster();
 
-  const isAnyJobRunning = generatingTitles || isOptimizationRunning;
+  const isAnyJobRunning = generatingTitles || isOptimizationRunning || isUploading;
 
   // Drag handlers
   const handleToasterDragStart = (e: React.MouseEvent) => {
@@ -228,12 +233,12 @@ export default function SSEToaster() {
         style={{ cursor: isToasterMaximized || window.innerWidth <= 768 ? 'default' : 'move' }}
       >
         <div className="sse-toaster-title">
-          <span className="sse-toaster-icon">⚙️</span>
+          <span className="sse-toaster-icon">{isUploading ? "📤" : "⚙️"}</span>
           <span className="sse-toaster-label">
-            {generatingTitles ? "Title Generation" : "Image Optimization"}
+            {isUploading ? `Uploading to ${uploadAlbum}` : (generatingTitles ? "Title Generation" : "Image Optimization")}
           </span>
           <span className="sse-toaster-progress">
-            {generatingTitles ? titlesProgress : optimizationProgress}%
+            {isUploading ? `${uploadCompleted}/${uploadTotal}` : `${generatingTitles ? titlesProgress : optimizationProgress}%`}
           </span>
         </div>
         <div className="sse-toaster-actions">
@@ -254,15 +259,7 @@ export default function SSEToaster() {
               }}
               title="Stop"
             >
-              <svg
-                width="14"
-                height="14"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-                stroke="none"
-              >
-                <rect x="4" y="4" width="16" height="16" rx="2" />
-              </svg>
+              <StopIcon width="14" height="14" />
             </button>
           )}
           <button
@@ -270,29 +267,7 @@ export default function SSEToaster() {
             onClick={handleMaximizeClick}
             title={isToasterMaximized ? "Restore" : "Maximize"}
           >
-            {isToasterMaximized ? (
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3" />
-              </svg>
-            ) : (
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3" />
-              </svg>
-            )}
+            <FullscreenIcon width="16" height="16" isExit={isToasterMaximized} />
           </button>
           <button
             className="sse-toaster-collapse-btn"
@@ -310,7 +285,9 @@ export default function SSEToaster() {
         <div
           className="sse-toaster-progress-bar"
           style={{
-            width: `${generatingTitles ? titlesProgress : optimizationProgress}%`,
+            width: isUploading 
+              ? `${(uploadCompleted / uploadTotal) * 100}%` 
+              : `${generatingTitles ? titlesProgress : optimizationProgress}%`,
           }}
         />
       </div>
@@ -320,10 +297,19 @@ export default function SSEToaster() {
           {/* Output Console */}
           <div
             className="sse-toaster-output"
-            ref={generatingTitles ? titlesOutputRef : optimizationOutputRef}
+            ref={isUploading ? null : (generatingTitles ? titlesOutputRef : optimizationOutputRef)}
           >
             <div className="sse-toaster-output-content">
-              {generatingTitles ? (
+              {isUploading ? (
+                <>
+                  <div className="output-line">
+                    Uploading {uploadCompleted} of {uploadTotal} photos...
+                  </div>
+                  <div className="output-line" style={{ marginTop: "0.5rem", color: "#4ade80" }}>
+                    ⏳ {uploadCompleted === uploadTotal ? "Completing upload..." : "Uploading..."}
+                  </div>
+                </>
+              ) : generatingTitles ? (
                 <>
                   {titlesOutput.map((line, index) => (
                     <div key={index} className="output-line">

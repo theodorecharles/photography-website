@@ -3,7 +3,7 @@
  * Manages site branding including logo, colors, and metadata
  */
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { BrandingConfig } from '../../types';
 import { trackBrandingUpdate, trackAvatarUpload } from '../../../../utils/analytics';
 import SectionHeader from '../components/SectionHeader';
@@ -30,7 +30,17 @@ const BrandingSection: React.FC<BrandingSectionProps> = ({
   const [pendingAvatarFile, setPendingAvatarFile] = useState<File | null>(null);
   const [avatarPreviewUrl, setAvatarPreviewUrl] = useState<string | null>(null);
   const [isDraggingOver, setIsDraggingOver] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
   const avatarFileInputRef = useRef<HTMLInputElement>(null);
+
+  // Initialize originalBranding only once when branding prop is first populated
+  useEffect(() => {
+    if (!isInitialized && branding.siteName) {
+      console.log('[BrandingSection] Initializing originalBranding:', branding);
+      setOriginalBranding(branding);
+      setIsInitialized(true);
+    }
+  }, [branding, isInitialized]);
 
   const handleAvatarFileSelect = (file: File) => {
     const reader = new FileReader();
@@ -71,7 +81,7 @@ const BrandingSection: React.FC<BrandingSectionProps> = ({
     avatarFileInputRef.current?.click();
   };
 
-  const handleBrandingChange = (field: keyof BrandingConfig, value: string) => {
+  const handleBrandingChange = (field: keyof BrandingConfig, value: string | boolean) => {
     setBranding({
       ...branding,
       [field]: value,
@@ -151,7 +161,7 @@ const BrandingSection: React.FC<BrandingSectionProps> = ({
     // Revert the specified fields to their original values
     const revertedBranding = { ...branding };
     fields.forEach(field => {
-      revertedBranding[field] = originalBranding[field];
+      (revertedBranding as any)[field] = originalBranding[field];
     });
     setBranding(revertedBranding);
     
@@ -197,7 +207,7 @@ const BrandingSection: React.FC<BrandingSectionProps> = ({
               style={{ 
                 cursor: 'pointer',
                 position: 'relative',
-                border: isDraggingOver ? '2px dashed var(--primary-color)' : '2px dashed transparent',
+                border: isDraggingOver ? '1px dashed var(--primary-color)' : '1px dashed transparent',
                 transition: 'border 0.2s ease'
               }}
             >
@@ -220,7 +230,7 @@ const BrandingSection: React.FC<BrandingSectionProps> = ({
                   flexDirection: 'column',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  border: '2px dashed rgba(255, 255, 255, 0.3)',
+                  border: '1px dashed rgba(255, 255, 255, 0.3)',
                   borderRadius: '8px',
                   color: 'rgba(255, 255, 255, 0.5)',
                   fontSize: '0.875rem',
@@ -300,6 +310,75 @@ const BrandingSection: React.FC<BrandingSectionProps> = ({
                 </button>
               </div>
             )}
+          </div>
+
+          <div className="branding-group">
+            <label className="branding-label">Shuffle Homepage Photos</label>
+            <p className="branding-description">
+              Randomize the order of photos on the homepage each time the page loads
+            </p>
+            <label className="toggle-switch">
+              <input
+                type="checkbox"
+                checked={branding.shuffleHomepage ?? true}
+                onChange={async (e) => {
+                  const newValue = e.target.checked;
+                  // Update state immediately with new value
+                  const updatedBranding = {
+                    ...branding,
+                    shuffleHomepage: newValue
+                  };
+                  setBranding(updatedBranding);
+                  
+                  // Save to backend
+                  setSavingBrandingSection('Homepage Settings');
+                  try {
+                    const res = await fetch(`${API_URL}/api/branding`, {
+                      method: 'PUT',
+                      headers: {
+                        'Content-Type': 'application/json',
+                      },
+                      credentials: 'include',
+                      body: JSON.stringify(updatedBranding),
+                    });
+
+                    if (res.ok) {
+                      // Regenerate static JSON to include new shuffle setting
+                      try {
+                        await fetch(`${API_URL}/api/static-json/generate`, {
+                          method: 'POST',
+                          credentials: 'include',
+                        });
+                        console.log('Static JSON regenerated with new shuffle setting');
+                      } catch (err) {
+                        console.error('Failed to regenerate static JSON:', err);
+                      }
+                      
+                      setMessage({ type: 'success', text: 'Homepage shuffle setting saved!' });
+                      setOriginalBranding(updatedBranding);
+                      // Don't reload - we already have the correct state
+                    } else {
+                      const errorData = await res.json().catch(() => ({ error: 'Unknown error' }));
+                      setMessage({ type: 'error', text: errorData.error || 'Failed to save setting' });
+                      // Revert on error
+                      setBranding(branding);
+                    }
+                  } catch (err) {
+                    const errorMessage = err instanceof Error ? err.message : 'Error saving setting';
+                    setMessage({ type: 'error', text: errorMessage });
+                    // Revert on error
+                    setBranding(branding);
+                  } finally {
+                    setSavingBrandingSection(null);
+                  }
+                }}
+                disabled={savingBrandingSection === 'Homepage Settings'}
+              />
+              <span className="toggle-slider"></span>
+              <span className="toggle-label">
+                {branding.shuffleHomepage ?? true ? 'Enabled' : 'Disabled'}
+              </span>
+            </label>
           </div>
 
           <div className="branding-group">

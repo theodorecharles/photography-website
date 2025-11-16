@@ -17,8 +17,12 @@ import {
   getAlbumsFromMetadata,
   getImagesInAlbum,
   getImagesFromPublishedAlbums,
+  getImagesForHomepage,
   getShareLinkBySecret,
-  isShareLinkExpired
+  isShareLinkExpired,
+  getAllFolders,
+  getPublishedFolders,
+  getAlbumsInFolder
 } from "../database.js";
 
 const router = Router();
@@ -74,7 +78,9 @@ const sanitizePath = (input: string): string | null => {
 const getAlbums = (photosDir: string) => {
   try {
     // Get albums from database
-    const dbAlbums = getAllAlbums().map(a => a.name);
+    const dbAlbums = getAllAlbums()
+      .map(a => a.name)
+      .filter(name => name !== 'homepage'); // Exclude homepage directory
     
     // If database has albums, use those
     if (dbAlbums.length > 0) {
@@ -85,7 +91,10 @@ const getAlbums = (photosDir: string) => {
     console.warn('Database has no albums, falling back to filesystem scan');
     return fs
       .readdirSync(photosDir)
-      .filter((file) => fs.statSync(path.join(photosDir, file)).isDirectory());
+      .filter((file) => {
+        // Exclude homepage directory and only include actual directories
+        return file !== 'homepage' && fs.statSync(path.join(photosDir, file)).isDirectory();
+      });
   } catch (error) {
     console.error("Error reading albums:", error);
     return [];
@@ -114,8 +123,8 @@ const getPhotosInAlbum = (photosDir: string, album: string) => {
         id: `${album}/${img.filename}`,
         title: img.title || defaultTitle,
         album: album,
-        src: `/optimized/modal/${album}/${img.filename}`,
         thumbnail: `/optimized/thumbnail/${album}/${img.filename}`,
+        modal: `/optimized/modal/${album}/${img.filename}`,
         download: `/optimized/download/${album}/${img.filename}`,
         sort_order: img.sort_order ?? null,
       };
@@ -175,8 +184,8 @@ const getAllPhotos = (photosDir: string, includeUnpublished: boolean = false) =>
         id: `${img.album}/${img.filename}`,
         title: img.title || defaultTitle,
         album: img.album,
-        src: `/optimized/modal/${img.album}/${img.filename}`,
         thumbnail: `/optimized/thumbnail/${img.album}/${img.filename}`,
+        modal: `/optimized/modal/${img.album}/${img.filename}`,
         download: `/optimized/download/${img.album}/${img.filename}`,
       };
     });
@@ -212,31 +221,107 @@ router.get("/api/albums", (req: Request, res) => {
   // Re-fetch album states after sync
   const updatedAlbumStates = getAllAlbums();
   
-  // Check if user is authenticated
-  const isAuthenticated = req.isAuthenticated && req.isAuthenticated();
+  // Check if user is authenticated (Passport or credentials)
+  const isAuthenticated = (req.isAuthenticated && req.isAuthenticated()) || !!(req.session as any)?.userId;
+  
+  console.log('[Albums API] Auth check:', {
+    isAuthenticated,
+    hasIsAuthenticatedFunc: !!req.isAuthenticated,
+    isAuthenticatedResult: req.isAuthenticated ? req.isAuthenticated() : false,
+    hasUserId: !!(req.session as any)?.userId,
+    userId: (req.session as any)?.userId,
+    sessionID: req.sessionID,
+    albumCount: allAlbums.length,
+  });
+  
+  // Get folders
+  const allFolders = isAuthenticated ? getAllFolders() : getPublishedFolders();
   
   if (isAuthenticated) {
-    // For authenticated users, return all albums with their published state
+    // For authenticated users, return all albums with their published state and folder info
     const albumsWithState = allAlbums.map((albumName: string) => {
       const state = updatedAlbumStates.find(a => a.name === albumName);
       return {
         name: albumName,
-        published: state?.published ?? false
+        published: state?.published ?? false,
+        show_on_homepage: state?.show_on_homepage ?? true,
+        folder_id: state?.folder_id ?? null
       };
     });
-    res.json(albumsWithState);
+    res.json({
+      albums: albumsWithState,
+      folders: allFolders
+    });
   } else {
-    // For non-authenticated users, only return published albums
+    // For non-authenticated users, only return published albums and folders
     const publishedAlbums = allAlbums.filter((albumName: string) => {
       const state = updatedAlbumStates.find(a => a.name === albumName);
       return state?.published === true;
     });
     
-    res.json(publishedAlbums);
+    // Group albums by folder for better structure
+    const albumsWithFolder = publishedAlbums.map((albumName: string) => {
+      const state = updatedAlbumStates.find(a => a.name === albumName);
+      return {
+        name: albumName,
+        folder_id: state?.folder_id ?? null,
+        published: true, // Already filtered to published albums
+        show_on_homepage: state?.show_on_homepage ?? true
+      };
+    });
+    
+    res.json({
+      albums: albumsWithFolder,
+      folders: allFolders
+    });
   }
 });
 
 // Get photos in a specific album
+// Get static JSON for an album (authenticated endpoint)
+router.get("/api/albums/:album/photos-json", (req: Request, res): void => {
+  const { album } = req.params;
+
+  // Sanitize album parameter to prevent path traversal
+  const sanitizedAlbum = sanitizePath(album);
+  if (!sanitizedAlbum) {
+    res.status(400).json({ error: "Invalid album name" });
+    return;
+  }
+
+  // Check if user is authenticated (Passport or credentials)
+  const isAuthenticated = (req.isAuthenticated && req.isAuthenticated()) || !!(req.session as any)?.userId;
+  
+  // Check album published state
+  const albumState = getAlbumState(sanitizedAlbum);
+  
+  // Deny access if:
+  // 1. Album not in database (albumState is undefined)
+  // 2. Album is unpublished and user is not authenticated
+  if (!albumState || (!albumState.published && !isAuthenticated)) {
+    res.status(404).json({ error: "Album not found" });
+    return;
+  }
+
+  // Serve static JSON file if it exists
+  const appRoot = req.app.get('appRoot');
+  const jsonPath = path.join(appRoot, 'frontend', 'dist', 'albums-data', `${sanitizedAlbum}.json`);
+  
+  if (fs.existsSync(jsonPath)) {
+    try {
+      const jsonData = fs.readFileSync(jsonPath, 'utf8');
+      res.setHeader('Content-Type', 'application/json');
+      res.send(jsonData);
+      return;
+    } catch (error) {
+      console.error(`Error reading JSON file for ${sanitizedAlbum}:`, error);
+    }
+  }
+  
+  // Fallback: JSON doesn't exist, return 404
+  res.status(404).json({ error: "Album JSON not found" });
+});
+
 router.get("/api/albums/:album/photos", (req: Request, res): void => {
   const startTime = Date.now();
   const { album } = req.params;
@@ -257,14 +342,16 @@ router.get("/api/albums/:album/photos", (req: Request, res): void => {
     return;
   }
 
-  // Check if user is authenticated
-  const isAuthenticated = req.isAuthenticated && req.isAuthenticated();
+  // Check if user is authenticated (Passport or credentials)
+  const isAuthenticated = (req.isAuthenticated && req.isAuthenticated()) || !!(req.session as any)?.userId;
   
   // Check album published state
   const albumState = getAlbumState(sanitizedAlbum);
   
-  // If album is unpublished and user is not authenticated, deny access
-  if (albumState && !albumState.published && !isAuthenticated) {
+  // Deny access if:
+  // 1. Album not in database (albumState is undefined)
+  // 2. Album is unpublished and user is not authenticated
+  if (!albumState || (!albumState.published && !isAuthenticated)) {
     res.status(404).json({ error: "Album not found" });
     return;
   }
@@ -297,10 +384,10 @@ router.get("/api/albums/:album/photos", (req: Request, res): void => {
   res.json(photos);
 });
 
-// Get all photos from all albums in random order
+// Get all photos from albums configured for homepage in random order
 router.get("/api/random-photos", (req: Request, res) => {
-  // Always only return photos from published albums (even for authenticated users)
-  const images = getImagesFromPublishedAlbums().filter(img => img.album !== 'homepage');
+  // Only return photos from albums that have show_on_homepage = true
+  const images = getImagesForHomepage().filter(img => img.album !== 'homepage');
   
   const allPhotos = images.map((img) => {
     // Generate title from filename by removing extension and replacing separators
@@ -312,14 +399,14 @@ router.get("/api/random-photos", (req: Request, res) => {
       id: `${img.album}/${img.filename}`,
       title: img.title || defaultTitle,
       album: img.album,
-      src: `/optimized/modal/${img.album}/${img.filename}`,
       thumbnail: `/optimized/thumbnail/${img.album}/${img.filename}`,
+      modal: `/optimized/modal/${img.album}/${img.filename}`,
       download: `/optimized/download/${img.album}/${img.filename}`,
     };
   });
 
   const albumCount = new Set(images.map(i => i.album)).size;
-  console.log(`API /api/random-photos: Returning ${allPhotos.length} photos from ${albumCount} albums`);
+  console.log(`API /api/random-photos: Returning ${allPhotos.length} photos from ${albumCount} homepage albums`);
   
   // Shuffle all photos for random order
   const shuffledPhotos = shuffleArray(allPhotos);

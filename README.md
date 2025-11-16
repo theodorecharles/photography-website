@@ -69,7 +69,9 @@ A modern, secure photography portfolio website built with React 19, TypeScript, 
 - **Node.js** 18+
 - **Google OAuth credentials** (optional, for admin features)
 
-### Installation
+### 🎉 New! Interactive Setup Wizard
+
+**For first-time setup, we now have an interactive setup wizard!**
 
 1. **Clone and install dependencies**
 
@@ -82,7 +84,28 @@ cd ../frontend && npm install
 cd ..
 ```
 
-2. **Configure your site**
+2. **Start the development server**
+
+```bash
+npm run dev
+```
+
+3. **Open your browser**
+
+Navigate to `http://localhost:3000` and follow the **Setup Wizard**! 🚀
+
+The wizard will guide you through:
+- Site name and branding
+- Admin email configuration
+- Color customization
+- Optional Google OAuth setup
+- Automatic database and directory creation
+
+**📖 For detailed setup instructions, see [SETUP_GUIDE.md](SETUP_GUIDE.md)**
+
+### Manual Configuration (Alternative)
+
+If you prefer manual configuration:
 
 ```bash
 cp config/config.example.json config/config.json

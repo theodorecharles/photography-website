@@ -4,7 +4,6 @@
  */
 
 import React, { useState, useEffect, useRef } from 'react';
-import { useSearchParams } from 'react-router-dom';
 import { ConfigData } from '../types';
 import { PasswordInput } from '../../PasswordInput';
 import SectionHeader from '../components/SectionHeader';
@@ -19,6 +18,10 @@ interface OpenAISectionProps {
   savingSection: string | null;
   setSavingSection: (section: string | null) => void;
   setMessage: (message: { type: "success" | "error"; text: string }) => void;
+  // Navigation
+  scrollToOpenAI?: boolean;
+  setScrollToOpenAI?: (value: boolean) => void;
+  sectionRef?: React.RefObject<HTMLDivElement | null>;
 }
 
 const OpenAISection: React.FC<OpenAISectionProps> = ({
@@ -29,31 +32,40 @@ const OpenAISection: React.FC<OpenAISectionProps> = ({
   savingSection,
   setSavingSection,
   setMessage,
+  scrollToOpenAI,
+  setScrollToOpenAI,
+  sectionRef,
 }) => {
-  const [searchParams] = useSearchParams();
   const [showOpenAI, setShowOpenAI] = useState(false);
   const openAISectionRef = useRef<HTMLDivElement>(null);
   const apiKeyInputRef = useRef<HTMLInputElement>(null);
 
-  // Handle section parameter from URL (e.g., ?section=openai)
+  // Handle scrollToOpenAI trigger from parent
   useEffect(() => {
-    const section = searchParams.get('section');
-    if (!section) return;
-    
-    setTimeout(() => {
-      if (section === 'openai') {
-        setShowOpenAI(true);
-        setTimeout(() => {
-          if (openAISectionRef.current) {
-            const yOffset = -100;
-            const element = openAISectionRef.current;
-            const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
-            window.scrollTo({ top: y, behavior: "smooth" });
-          }
-        }, 300);
-      }
-    }, 100);
-  }, [searchParams]);
+    if (scrollToOpenAI) {
+      setShowOpenAI(true);
+      setTimeout(() => {
+        // Use the sectionRef if provided, otherwise use local openAISectionRef
+        const refToUse = sectionRef?.current || openAISectionRef.current;
+        if (refToUse) {
+          const yOffset = -100; // Offset to account for header
+          const y = refToUse.getBoundingClientRect().top + window.pageYOffset + yOffset;
+          window.scrollTo({ top: y, behavior: 'smooth' });
+          
+          // Focus the API key input after scrolling
+          setTimeout(() => {
+            if (apiKeyInputRef.current) {
+              apiKeyInputRef.current.focus();
+            }
+          }, 400);
+        }
+        // Reset the trigger
+        if (setScrollToOpenAI) {
+          setScrollToOpenAI(false);
+        }
+      }, 400); // Wait for expansion animation
+    }
+  }, [scrollToOpenAI, setScrollToOpenAI, sectionRef]);
 
   // handleSetupOpenAI removed - handled by parent component now via URL params
 
@@ -236,7 +248,7 @@ const OpenAISection: React.FC<OpenAISectionProps> = ({
   if (!config) return null;
 
   return (
-    <div className="config-group full-width" ref={openAISectionRef}>
+    <div className="config-group full-width" ref={sectionRef || openAISectionRef}>
       <SectionHeader
         title="OpenAI"
         description="Configure AI-powered title generation"

@@ -5,13 +5,14 @@
  */
 
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import "./PhotoGrid.css";
 import { API_URL, cacheBustValue } from "../config";
 import { trackPhotoClick, trackError } from "../utils/analytics";
 import { fetchWithRateLimitCheck } from "../utils/fetchWrapper";
 import PhotoModal from "./PhotoModal";
 import NotFound from "./Misc/NotFound";
+import { reconstructPhoto, getNumColumns, distributePhotos } from "../utils/photoHelpers";
 
 interface PhotoGridProps {
   album: string;
@@ -20,24 +21,12 @@ interface PhotoGridProps {
   onLoadComplete?: () => void;
 }
 
-interface Photo {
-  id: string;
-  src: string;
-  thumbnail: string;
-  modal: string;
-  download: string;
-  title: string;
-  album: string;
-  metadata?: {
-    created: string;
-    modified: string;
-    size: number;
-  };
-  exif?: any; // EXIF data from exifr library
-}
+// Import Photo from canonical location
+import type { Photo } from '../types/photo';
 
 const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPhotos, onLoadComplete }) => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [allPhotos, setAllPhotos] = useState<Photo[]>([]);
   const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
@@ -60,21 +49,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
     return map;
   }, [allPhotos]);
 
-  // Reconstruct full photo object from optimized array format
-  // Format: [filename, title] for albums, [filename, title, album] for homepage
-  const reconstructPhoto = (data: string[], albumName: string): Photo => {
-    const [filename, title, albumFromData] = data;
-    const photoAlbum = albumFromData || albumName;
-    return {
-      id: `${photoAlbum}/${filename}`,
-      src: `/photos/${photoAlbum}/${filename}`,
-      thumbnail: `/optimized/thumbnail/${photoAlbum}/${filename}`,
-      modal: `/optimized/modal/${photoAlbum}/${filename}`,
-      download: `/optimized/download/${photoAlbum}/${filename}`,
-      title: title,
-      album: photoAlbum
-    };
-  };
+  // reconstructPhoto function moved to utils/photoHelpers.ts
 
   // Get query parameters from current URL for API calls (not for images)
   const queryParams = new URLSearchParams(location.search);
@@ -210,16 +185,43 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
         setLoading(true);
 
         // Try to fetch from static JSON first for better performance
-        const staticJsonUrl = `/albums-data/${album === "homepage" ? "homepage" : album}.json`;
+        // Use authenticated endpoint to prevent unauthorized access to unpublished albums
+        const staticJsonUrl = album === "homepage" 
+          ? `/albums-data/homepage.json`  // Homepage is always public
+          : `${API_URL}/api/albums/${album}/photos-json`;  // Album JSON requires auth check
         
         try {
-          const staticResponse = await fetch(staticJsonUrl);
+          // Disable caching to ensure we always get the latest JSON after publish/unpublish
+          const staticResponse = await fetch(staticJsonUrl, { 
+            cache: 'no-store',
+            credentials: 'include' // Include auth cookies for unpublished albums
+          });
           if (staticResponse.ok) {
             const staticData = await staticResponse.json();
-            console.log(`✨ Loaded ${staticData.length} photos from optimized static JSON (${album})`);
             
-            // Reconstruct full photo objects from optimized array format
-            const staticPhotos = staticData.map((data: string[]) => reconstructPhoto(data, album));
+            // Handle homepage format: { shuffle: boolean, photos: [...] }
+            let staticPhotos;
+            let shouldShuffle = false;
+            
+            if (album === "homepage" && staticData && typeof staticData === 'object' && 'photos' in staticData) {
+              // New homepage format with metadata
+              shouldShuffle = staticData.shuffle ?? true;
+              staticPhotos = staticData.photos.map((data: string[]) => reconstructPhoto(data, album));
+              console.log(`✨ Loaded ${staticPhotos.length} photos from homepage JSON (shuffle: ${shouldShuffle})`);
+              
+              // Shuffle homepage photos for random display order each time (if enabled)
+              if (shouldShuffle) {
+                staticPhotos = [...staticPhotos].sort(() => Math.random() - 0.5);
+                console.log(`🔀 Shuffled ${staticPhotos.length} homepage photos`);
+              } else {
+                console.log(`📌 Homepage shuffle disabled - displaying in order`);
+              }
+            } else {
+              // Regular album format or legacy homepage format (array of photos)
+              const photoArray = Array.isArray(staticData) ? staticData : (staticData.photos || []);
+              staticPhotos = photoArray.map((data: string[]) => reconstructPhoto(data, album));
+              console.log(`✨ Loaded ${staticPhotos.length} photos from optimized static JSON (${album})`);
+            }
             
             // Show first 100 immediately
             setAllPhotos(staticPhotos);
@@ -309,24 +311,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
     }));
   };
 
-  // Function to get number of columns based on window width and photo count
-  const getNumColumns = (photoCount: number) => {
-    // Always use 1 column on mobile (< 512px)
-    if (window.innerWidth < 512) return 1;
-    
-    // For albums with fewer than 12 images, use 2 columns
-    if (photoCount < 12) return 2;
-    
-    // For albums with 12-23 images, use 3 columns
-    if (photoCount >= 12 && photoCount <= 23) return 3;
-    
-    // For albums with > 24 images, use responsive columns based on width
-    if (window.innerWidth >= 1600) return 5;
-    if (window.innerWidth >= 1200) return 4;
-    if (window.innerWidth >= 900) return 3;
-    if (window.innerWidth >= 600) return 2;
-    return 1;
-  };
+  // getNumColumns function moved to utils/photoHelpers.ts
 
   // State for number of columns
   const [numColumns, setNumColumns] = useState(getNumColumns(photos.length));
@@ -352,58 +337,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
     return () => window.removeEventListener("resize", handleResize);
   }, [photos.length]);
 
-  // Function to distribute photos into columns
-  const distributePhotos = (photos: Photo[], numColumns: number) => {
-    // Initialize columns with empty arrays
-    const columns: Photo[][] = Array.from({ length: numColumns }, () => []);
-
-    // Calculate total height for each photo based on its aspect ratio
-    const photoHeights = photos.map((photo) => {
-      const dimensions = imageDimensions[photo.id];
-      if (!dimensions) return 1; // Default to 1 if dimensions not loaded yet
-      return dimensions.height / dimensions.width;
-    });
-
-    // Initialize column heights
-    const columnHeights = Array(numColumns).fill(0);
-
-    // Distribute photos to columns
-    photos.forEach((photo, index) => {
-      // Find the column with the smallest current height
-      let shortestColumnIndex = 0;
-      let shortestHeight = columnHeights[0];
-
-      for (let i = 1; i < numColumns; i++) {
-        if (columnHeights[i] < shortestHeight) {
-          shortestHeight = columnHeights[i];
-          shortestColumnIndex = i;
-        }
-      }
-
-      // If this is the last photo and all columns have the same number of photos,
-      // put it in the first column
-      if (index === photos.length - 1) {
-        const photosPerColumn = Math.floor(photos.length / numColumns);
-        const hasExtraPhoto = photos.length % numColumns === 1;
-
-        if (hasExtraPhoto) {
-          // Check if all columns have the same number of photos
-          const allColumnsEqual = columns.every(
-            (col) => col.length === photosPerColumn
-          );
-          if (allColumnsEqual) {
-            shortestColumnIndex = 0;
-          }
-        }
-      }
-
-      // Add photo to the shortest column
-      columns[shortestColumnIndex].push(photo);
-      columnHeights[shortestColumnIndex] += photoHeights[index];
-    });
-
-    return columns;
-  };
+  // distributePhotos function moved to utils/photoHelpers.ts
 
   // Effect to handle scroll-based column alignment
   useEffect(() => {
@@ -500,7 +434,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
 
   // Memoize the column distribution to avoid recomputing on every render
   const distributedColumns = useMemo(
-    () => distributePhotos(photos, numColumns),
+    () => distributePhotos(photos, numColumns, imageDimensions),
     [photos, numColumns, imageDimensions]
   );
 
@@ -517,13 +451,30 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
 
   if (error) {
     if (error === "ALBUM_NOT_FOUND") {
-      // Notify parent component to hide album title
+      // Update URL to /404 and notify parent component to hide album title
+      if (location.pathname !== '/404') {
+        navigate('/404', { replace: true });
+      }
       if (onAlbumNotFound) {
         onAlbumNotFound();
       }
       return <NotFound />;
     }
     return <div className="error">Error: {error}</div>;
+  }
+
+  // Empty state - no photos in the album
+  if (photos.length === 0) {
+    return (
+      <div className="empty-state">
+        <div className="empty-icon">📸</div>
+        <h2>No Photos Yet</h2>
+        <p>This album is empty. Time to add some amazing photos!</p>
+        <a href="/admin" className="empty-state-button">
+          Go to Admin Panel
+        </a>
+      </div>
+    );
   }
 
   return (

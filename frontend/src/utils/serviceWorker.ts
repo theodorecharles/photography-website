@@ -6,7 +6,34 @@
 import { showToast } from "./toast";
 
 export function registerServiceWorker() {
-  // Only register in production (when served over HTTPS or localhost)
+  // Disable service worker on localhost (development)
+  if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+    console.log('[SW] Service worker disabled on localhost - unregistering existing worker');
+    
+    // Actively unregister any existing service worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then((registrations) => {
+        for (const registration of registrations) {
+          registration.unregister();
+          console.log('[SW] Unregistered service worker:', registration.scope);
+        }
+      });
+      
+      // Clear all caches
+      if ('caches' in window) {
+        caches.keys().then((cacheNames) => {
+          cacheNames.forEach((cacheName) => {
+            caches.delete(cacheName);
+            console.log('[SW] Deleted cache:', cacheName);
+          });
+        });
+      }
+    }
+    
+    return;
+  }
+  
+  // Only register in production (when served over HTTPS)
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", () => {
       const swUrl = "/sw.js";
@@ -15,6 +42,9 @@ export function registerServiceWorker() {
         .register(swUrl)
         .then((registration) => {
           console.log("✓ Service Worker registered:", registration.scope);
+
+          // Force an immediate update check
+          registration.update();
 
           // Check for updates periodically
           setInterval(() => {
@@ -31,7 +61,7 @@ export function registerServiceWorker() {
                   navigator.serviceWorker.controller
                 ) {
                   // New service worker available
-                  console.log("📦 New version available! Refresh to update.");
+                  console.log("📦 New version available! Reloading...");
 
                   // Show toast notification only in dev/local (not in production)
                   const isProduction =
@@ -41,10 +71,15 @@ export function registerServiceWorker() {
 
                   if (!isProduction) {
                     showToast(
-                      "📦 New version available! Refresh to update.",
+                      "📦 New version available! Reloading...",
                       "info"
                     );
                   }
+                  
+                  // Auto-reload after a brief delay
+                  setTimeout(() => {
+                    window.location.reload();
+                  }, 1000);
                 }
               });
             }

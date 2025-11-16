@@ -397,10 +397,34 @@ const PhotoModal: React.FC<PhotoModalProps> = ({
 
   // Handle modal content click
   const handleModalContentClick = useCallback((e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (showInfo && !(e.target as HTMLElement).closest('.modal-info-panel') && !(e.target as HTMLElement).closest('.modal-controls-top button')) {
-      setShowInfo(false);
+    const target = e.target as HTMLElement;
+    
+    // Check if clicking on interactive elements that should NOT close the modal
+    const isDirectlyOnImage = target.tagName === 'IMG';
+    const isOnButton = target.closest('button') || target.closest('.modal-navigation-button');
+    const isOnInfoPanel = target.closest('.modal-info-panel');
+    const isOnControls = target.closest('.modal-controls-top');
+    const isOnImageTitle = target.closest('.modal-image-title');
+    
+    // If clicking on any interactive element, don't close the modal
+    if (isOnButton || isOnInfoPanel || isOnControls || isOnImageTitle) {
+      e.stopPropagation();
+      return;
     }
+    
+    // If clicking directly on the image, don't close modal
+    if (isDirectlyOnImage) {
+      e.stopPropagation();
+      
+      // Close info panel if clicking on image while it's open
+      if (showInfo) {
+        setShowInfo(false);
+      }
+      return;
+    }
+    
+    // For any other click (sides, above, below, background), close the modal
+    // Don't stop propagation - let it bubble to the outer modal div which calls handleClose
   }, [showInfo]);
 
   // Handle touch gestures
@@ -470,7 +494,7 @@ const PhotoModal: React.FC<PhotoModalProps> = ({
     if (selectedPhoto && !showModalImage) {
       const timer = setTimeout(() => {
         const img = new Image();
-        const modalUrl = `${API_URL}${selectedPhoto.src}${imageQueryString}`;
+        const modalUrl = `${API_URL}${selectedPhoto.modal}${imageQueryString}`;
 
         img.onload = () => {
           // Add image to DOM first with opacity: 0

@@ -1,9 +1,10 @@
 /**
  * Service Worker for Photography Website
- * Provides aggressive caching for images and static resources
+ * Provides aggressive caching for optimized images ONLY
+ * All other resources (JS, CSS, JSON) are handled by the browser
  */
 
-const CACHE_VERSION = 'v1';
+const CACHE_VERSION = 'v6';
 const CACHE_NAME = `photo-site-${CACHE_VERSION}`;
 
 // Resources to cache immediately on install
@@ -12,16 +13,10 @@ const PRECACHE_URLS = [
   '/manifest.json',
 ];
 
-// Cache strategies for different resource types
+// Cache strategy: Only cache optimized images
 const CACHE_STRATEGIES = {
   // Images: Cache first, network fallback (images rarely change)
   images: 'cache-first',
-  // Static JSON: Network first, cache fallback (needs to be fresh but can use stale)
-  json: 'network-first',
-  // Static assets: Cache first (JS/CSS/fonts rarely change and have cache busting)
-  static: 'cache-first',
-  // API calls: Network only (always need fresh data)
-  api: 'network-only',
 };
 
 /**
@@ -70,30 +65,13 @@ self.addEventListener('activate', (event) => {
 function getCacheStrategy(url) {
   const urlObj = new URL(url);
   
-  // API calls - always fetch fresh
-  if (urlObj.pathname.startsWith('/api/')) {
-    return CACHE_STRATEGIES.api;
-  }
-  
-  // Static JSON data
-  if (urlObj.pathname.startsWith('/albums-data/') && urlObj.pathname.endsWith('.json')) {
-    return CACHE_STRATEGIES.json;
-  }
-  
-  // Optimized images (thumbnail, modal, download)
+  // Optimized images (thumbnail, modal, download) - ONLY thing we cache
   if (urlObj.pathname.startsWith('/optimized/')) {
     return CACHE_STRATEGIES.images;
   }
   
-  // Static assets (JS, CSS, fonts, etc.)
-  if (
-    urlObj.pathname.match(/\.(js|css|woff2|woff|ttf|eot|svg|ico|png|jpg|jpeg|webp)$/)
-  ) {
-    return CACHE_STRATEGIES.static;
-  }
-  
-  // Default: network first
-  return CACHE_STRATEGIES.json;
+  // Everything else: don't cache
+  return null;
 }
 
 /**
@@ -175,14 +153,20 @@ self.addEventListener('fetch', (event) => {
     return;
   }
   
-  // Skip external map tile requests (let them handle their own caching/errors)
+  // Skip external requests (let them handle their own caching/errors)
   const urlObj = new URL(event.request.url);
   if (urlObj.hostname.includes('basemaps.cartocdn.com') || 
-      urlObj.hostname.includes('openstreetmap.org')) {
+      urlObj.hostname.includes('openstreetmap.org') ||
+      urlObj.hostname.includes('gravatar.com')) {
     return;
   }
   
   const strategy = getCacheStrategy(event.request.url);
+  
+  // Only intercept requests we want to cache (images)
+  if (!strategy) {
+    return; // Let browser handle everything else
+  }
   
   event.respondWith(
     (async () => {

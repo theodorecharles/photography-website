@@ -15,7 +15,9 @@ const __dirname = path.dirname(__filename);
  * Load configuration with environment variable overrides for sensitive data
  */
 export function loadSecureConfig() {
-  const configPath = path.join(__dirname, '../../config/config.json');
+  // Use DATA_DIR from environment or default to project_root/data
+  const dataDir = process.env.DATA_DIR || path.join(__dirname, '../../data');
+  const configPath = path.join(dataDir, 'config.json');
   const rawConfig = JSON.parse(fs.readFileSync(configPath, 'utf8'));
   
   const envConfig = rawConfig.environment;
@@ -134,8 +136,12 @@ export function csrfProtection(req: any, res: any, next: any) {
     return next();
   }
   
-  // For POST/PUT/DELETE, require authentication
-  if (!req.isAuthenticated || !req.isAuthenticated()) {
+  // For POST/PUT/DELETE, require authentication (check both Passport and credential sessions)
+  const isPassportAuth = req.isAuthenticated && req.isAuthenticated();
+  const isCredentialAuth = !!(req.session as any)?.userId;
+  
+  if (!isPassportAuth && !isCredentialAuth) {
+    console.log('[CSRF] Authentication required - not authenticated via any method');
     return res.status(401).json({ error: 'Authentication required for this operation' });
   }
   
@@ -146,9 +152,11 @@ export function csrfProtection(req: any, res: any, next: any) {
   if (origin) {
     const isAllowedOrigin = allowedOrigins.some((allowed: string) => origin.startsWith(allowed));
     if (!isAllowedOrigin) {
+      console.log('[CSRF] Origin not allowed:', origin);
       return res.status(403).json({ error: 'Request origin not allowed' });
     }
   }
   
+  console.log('[CSRF] ✅ Protection passed for', req.method, req.path);
   next();
 }

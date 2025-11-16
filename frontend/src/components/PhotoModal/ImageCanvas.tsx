@@ -52,7 +52,7 @@ const ImageCanvas: React.FC<ImageCanvasProps> = ({
       {/* Modal optimized image - overlays on top when loaded */}
       {showModalImage && (
         <img
-          src={`${apiUrl}${photo.src}${imageQueryString}`}
+          src={`${apiUrl}${photo.modal}${imageQueryString}`}
           alt={`${photo.album} photography by Ted Charles - ${photo.title}`}
           title={photo.title}
           style={{

@@ -51,7 +51,7 @@
 
 .albums-list h3 {
   padding-bottom: 0.625rem;
-  border-bottom: 2px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .albums-list h3::before {
@@ -154,6 +154,7 @@
   color: rgba(255, 255, 255, 0.8);
   font-weight: 500;
   min-width: 80px;
+  text-align: right;
 }
 
 .toggle-switch input:checked ~ .toggle-label {
@@ -162,7 +163,7 @@
 
 .main-drop-zone {
   background: linear-gradient(135deg, rgba(74, 222, 128, 0.08) 0%, rgba(74, 222, 128, 0.03) 100%);
-  border: 2px dashed rgba(74, 222, 128, 0.3);
+  border: 1px dashed rgba(74, 222, 128, 0.3);
   border-radius: 16px;
   padding: 2rem 1.5rem;
   min-height: 180px;
@@ -170,7 +171,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 1rem;
+  gap: 0.5rem;
   transition: all 0.3s ease;
   cursor: pointer;
   position: relative;
@@ -278,6 +279,7 @@
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 1rem;
   margin-top: 1.25rem;
+  isolation: isolate; /* Create stacking context for smoother animations */
 }
 
 @media (max-width: 1200px) {
@@ -295,17 +297,20 @@
 
 .album-card {
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.02) 100%);
-  border: 2px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 10px;
   padding: 1rem 1.125rem;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  /* Transition for hover/non-transform properties only - dnd-kit handles transform transitions */
+  transition: border-color 0.3s, background 0.3s, box-shadow 0.3s, opacity 0.3s, height 0.3s;
   position: relative;
   overflow: hidden;
-  min-height: 80px;
   display: flex;
   flex-direction: column;
   transform-style: preserve-3d;
+  min-height: 60px;
+  height: auto;
+  box-sizing: border-box;
 }
 
 .album-card.animating {
@@ -343,7 +348,6 @@
   .album-card:hover {
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 100%);
     border-color: rgba(255, 255, 255, 0.2);
-    transform: translateY(-4px);
     box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
   }
 
@@ -367,9 +371,9 @@
 .album-card-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  gap: 0.75rem;
-  flex: 1;
+  align-items: start;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
 }
 
 .album-card h4 {
@@ -377,33 +381,65 @@
   margin: 0;
   font-size: 1.05rem;
   font-weight: 600;
-  word-break: keep-all;
+  word-break: break-word;
   overflow-wrap: break-word;
   letter-spacing: -0.01em;
   display: flex;
   align-items: center;
   gap: 0.5rem;
   line-height: 1.3;
+  flex: 1;
+  min-width: 0;
 }
 
 .album-card h4 .album-name {
   flex: 1;
   min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.album-card h4::before {
-  content: '📁';
-  font-size: 1.2rem;
-  flex-shrink: 0;
+.album-rename-btn {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+  padding: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(4px);
+  z-index: 10;
 }
 
-.album-card.selected h4::before {
-  content: '📂';
+/* On desktop, hide by default and show on hover */
+@media (min-width: 769px) {
+  .album-rename-btn {
+    display: none;
+  }
+  
+  .album-card:hover .album-rename-btn {
+    display: inline-flex;
+  }
 }
 
-.album-card.unpublished h4::before {
-  content: '🔒';
+.album-rename-btn:hover {
+  background: rgba(0, 0, 0, 0.8);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: scale(1.1);
 }
+
+.album-rename-btn svg {
+  display: block;
+  stroke: #fff;
+}
+
+/* Icons now handled by JSX to allow conditional rendering based on folder_id */
 
 .btn-delete-small {
   background: rgba(220, 53, 69, 0.1);
@@ -454,16 +490,82 @@
 }
 
 .album-photos {
-  position: relative;
-  transition: border-color 0.2s ease, background-color 0.2s ease;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.9);
+  width: 90vw;
+  max-width: 1400px;
+  height: 85vh;
+  max-height: 900px;
+  background: #1e1e1e;
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  z-index: 1001;
+  overflow-y: auto;
+  animation: modalFadeIn 0.2s ease-out forwards;
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.album-photos-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 1000;
+  animation: fadeIn 0.2s ease-out forwards;
 }
 
 .album-photos.drag-over {
   border-color: var(--primary-color);
-  border-width: 2px;
+  border-width: 1px;
   background: rgba(74, 222, 128, 0.05);
-  border-radius: 8px;
-  padding: 2rem;
+}
+
+/* Mobile responsive modal */
+@media (max-width: 768px) {
+  .album-photos {
+    width: 95vw;
+    height: 90vh;
+    max-height: none;
+    border-radius: 16px;
+  }
+
+  .album-controls-row {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .album-controls-row .btn-action .btn-text {
+    display: none;
+  }
+
+  .album-controls-row .btn-action {
+    padding: 0.5rem;
+    min-width: 40px;
+    justify-content: center;
+  }
 }
 
 .drop-overlay {
@@ -512,13 +614,135 @@
 .photos-header {
   display: flex;
   flex-direction: column;
-  align-items: stretch;
-  margin-bottom: 2rem;
-  gap: 1.5rem;
+  gap: 1rem;
   padding: 1.5rem;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
+  background: #1e1e1e;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.photos-header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.photos-panel-title {
+  color: #fff;
+  font-size: 1.3rem;
+  margin: 0;
+  font-weight: 600;
+}
+
+.album-controls-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  margin-bottom: 1rem;
+}
+
+.album-controls-row .toggle-switch {
+  margin: 0;
+}
+
+.album-controls-row .btn-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.album-controls-row .btn-action:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.25);
+  transform: translateY(-1px);
+}
+
+.album-controls-row .btn-preview {
+  background: rgba(59, 130, 246, 0.15);
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+.album-controls-row .btn-preview:hover {
+  background: rgba(59, 130, 246, 0.25);
+  border-color: rgba(59, 130, 246, 0.5);
+}
+
+.album-controls-row .btn-generate-link {
+  background: rgba(249, 115, 22, 0.15);
+  border-color: rgba(249, 115, 22, 0.3);
+}
+
+.album-controls-row .btn-generate-link:hover {
+  background: rgba(249, 115, 22, 0.25);
+  border-color: rgba(249, 115, 22, 0.5);
+}
+
+.view-toggle {
+  display: flex;
+  gap: 0.25rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+  padding: 0.25rem;
+  margin-left: auto;
+}
+
+.view-toggle-btn {
+  padding: 0.4rem 0.6rem;
+  background: transparent;
+  border: none;
+  color: #888;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.view-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.view-toggle-btn.active {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+
+.photos-panel-close-btn {
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 2rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.photos-panel-close-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: scale(1.1);
 }
 
 .photos-header h3 {
@@ -532,39 +756,67 @@
   gap: 0.5rem;
 }
 
-.photos-header h3::before {
-  content: '🖼️';
-  font-size: 1.4rem;
-}
 
 .album-actions-grid {
   display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 0.5rem;
   width: 100%;
-  max-width: 100%;
   user-select: none;
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
 }
 
-@media (min-width: 769px) {
-  .album-actions-grid {
-    flex-direction: row;
-    align-items: stretch;
-  }
-  
-  .album-actions-grid .btn-action-item {
-    flex: 1;
-    min-width: 0;
-  }
-}
-
 .btn-action-item {
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  min-width: 40px;
+  height: 40px;
+}
+
+@media (max-width: 768px) {
+  .album-actions-grid {
+    gap: 0.5rem;
+  }
+  
+  .btn-action-item {
+    padding: 0.6rem;
+    min-width: 44px;
+    flex: 1;
+    height: 44px;
+    gap: 0;
+  }
+  
+  /* Icon-only buttons */
+  .btn-action-item:not(.toggle-switch) {
+    width: 44px;
+    flex: 0 0 44px;
+  }
+  
+  .btn-action-item svg {
+    width: 20px !important;
+    height: 20px !important;
+  }
+  
+  .btn-action-item .btn-text {
+    display: none;
+  }
+  
+  /* Keep toggle switch full width with label */
+  .toggle-switch.btn-action-item {
+    width: 100%;
+    flex: 1 1 100%;
+    padding: 0.75rem 1rem;
+  }
+  
+  .toggle-switch.btn-action-item .toggle-label {
+    display: inline;
+  }
 }
 
 .toggle-switch.btn-action-item {
@@ -660,26 +912,182 @@
 
 .photos-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 1.25rem;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 1rem;
   user-select: none;
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
+  --shuffle-columns: 5; /* Default columns, overridden dynamically during shuffle */
+  transition: grid-template-columns 0.3s ease, gap 0.3s ease;
+}
+
+/* Shuffling grid state - use more columns and tighter gap */
+.photos-grid.shuffling-grid {
+  grid-template-columns: repeat(var(--shuffle-columns, 5), 1fr);
+  gap: 0.5rem;
+}
+
+/* Responsive grid breakpoints */
+@media (min-width: 1400px) {
+  .photos-grid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  }
 }
 
 @media (max-width: 768px) {
   .photos-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
   }
-  
-  /* Scale down to 8 columns when shuffling on mobile */
-  .photos-grid.shuffling-grid {
-    grid-template-columns: repeat(8, 1fr);
-    gap: 0.25rem;
-    transition: all 0.3s ease;
-  }
+}
+
+/* List view styles */
+.photos-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  user-select: none;
+  overflow-y: auto;
+}
+
+
+/* ===== PhotoListItem Component ===== */
+.list-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1.5rem;
+  min-height: 76px;
+  border-bottom: 1px solid #2e2e2e;
+  background: #161616;
+  transition: background 0.15s ease;
+  cursor: grab;
+}
+
+.list-item:hover {
+  background: #232323;
+}
+
+.list-item:active {
+  cursor: grabbing;
+}
+
+.list-item:last-child {
+  border-bottom: none;
+}
+
+.list-item.deleting {
+  animation: crtDelete 0.8s cubic-bezier(0.4, 0.0, 0.2, 1) forwards;
+}
+
+.list-item.shuffling-active {
+  transition: transform 200ms ease !important;
+}
+
+.list-item-thumbnail {
+  flex-shrink: 0;
+  width: 60px;
+  height: 60px;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid rgba(95, 95, 95, 0.42);
+  transition: border-color 0.2s ease;
+}
+
+.list-item:hover .list-item-thumbnail {
+  border-color: var(--primary-color);
+}
+
+.list-item-thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.thumbnail-placeholder {
+  width: 100%;
+  height: 100%;
+  background: #1a1a1a;
+}
+
+.list-item-title {
+  flex: 1;
+  min-width: 0;
+}
+
+.title-text {
+  font-size: 1rem;
+  color: #cfcfcf;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.status-text {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  margin-top: 0.25rem;
+}
+
+.list-item-actions {
+  flex-shrink: 0;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.list-action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
+}
+
+/* Edit button - green/primary color */
+.list-action-btn:not(.delete) {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: var(--primary-color);
+}
+
+.list-action-btn:not(.delete):hover {
+  background: var(--primary-color);
+  color: #000;
+  border-color: var(--primary-color);
+  transform: scale(1.1);
+}
+
+/* Delete button - red */
+.list-action-btn.delete {
+  background: #dc3545;
+  border: none;
+  color: white;
+}
+
+.list-action-btn.delete:hover {
+  background: #c82333;
+  transform: scale(1.1);
+}
+
+/* Hide error badges in list view (info shown in table cells) */
+.photos-list .photo-error-badge {
+  display: none !important;
+}
+
+/* Last row should not have border */
+.photos-list .admin-photo-item:last-child > * {
+  border-bottom: none !important;
+}
+
+/* Hide photo-info in grid view (only show in list view) */
+.photos-grid .photo-info {
+  display: none;
 }
 
 .admin-photo-item {
@@ -689,20 +1097,21 @@
   border-radius: 12px;
   overflow: hidden;
   background: rgba(255, 255, 255, 0.03);
-  border: 2px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(95, 95, 95, 0.42);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  touch-action: manipulation; /* Allow scrolling but prevent double-tap zoom */
 }
 
-/* Only show hover effects on desktop, not on touch devices */
+/* Only show hover effects on desktop, not on touch devices - grid view only */
 @media (hover: hover) and (pointer: fine) {
-  .admin-photo-item:hover {
+  .photos-grid .admin-photo-item:hover {
     transform: translateY(-4px) scale(1.02);
     border-color: rgba(255, 255, 255, 0.2);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
   }
 
-  .admin-photo-item:hover .photo-overlay {
+  .photos-grid .admin-photo-item:hover .photo-overlay {
     opacity: 1;
   }
 }
@@ -721,18 +1130,26 @@
 @media (hover: none) and (pointer: coarse) {
   .photo-overlay {
     opacity: 0 !important;
-    pointer-events: none;
+    pointer-events: none !important;
     transition: opacity 0.2s ease;
+  }
+  
+  .photo-overlay button {
+    pointer-events: none !important;
   }
   
   /* Show overlay when active class is added via JS */
   .admin-photo-item.show-overlay .photo-overlay {
     opacity: 1 !important;
-    pointer-events: none;
+    pointer-events: none !important;
   }
   
   .admin-photo-item.show-overlay .photo-overlay .photo-actions {
-    pointer-events: auto;
+    pointer-events: auto !important;
+  }
+  
+  .admin-photo-item.show-overlay .photo-overlay button {
+    pointer-events: auto !important;
   }
   
   /* Prevent image from capturing touches when overlay is visible */
@@ -772,7 +1189,15 @@
   pointer-events: none;
 }
 
+.photo-overlay button {
+  pointer-events: none;
+}
+
 .admin-photo-item:hover .photo-overlay {
+  pointer-events: auto;
+}
+
+.admin-photo-item:hover .photo-overlay button {
   pointer-events: auto;
 }
 
@@ -924,6 +1349,11 @@
   color: #888;
 }
 
+/* Uploading placeholder */
+.uploading-placeholder {
+  background: #000 !important;
+}
+
 /* Spinner animation */
 .spinner {
   width: 40px;
@@ -932,6 +1362,8 @@
   border-top-color: var(--primary-color);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
+  flex-shrink: 0;
+  aspect-ratio: 1 / 1;
 }
 
 @keyframes spin {
@@ -1191,6 +1623,68 @@
   cursor: not-allowed;
 }
 
+/* Retry Button */
+.btn-retry-photo {
+  background: rgba(255, 193, 7, 0.2);
+  border: 1px solid rgba(255, 193, 7, 0.4);
+  color: #ffc107;
+  padding: 0.5rem;
+  border-radius: 50%;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.15s ease;
+}
+
+.btn-retry-photo:hover:not(:disabled) {
+  background: rgba(255, 193, 7, 0.3);
+  border-color: #ffc107;
+  transform: scale(1.1);
+}
+
+.btn-retry-photo:active {
+  transform: scale(0.95);
+}
+
+.btn-retry-photo:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Error Badges */
+.photo-error-badge {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  right: 8px;
+  padding: 0.4rem 0.6rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  z-index: 2;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.photo-error-badge.optimization-error {
+  background: rgba(220, 53, 69, 0.9);
+  border: 1px solid rgba(220, 53, 69, 1);
+  color: #fff;
+}
+
+.photo-error-badge.ai-error {
+  background: rgba(255, 193, 7, 0.9);
+  border: 1px solid rgba(255, 193, 7, 1);
+  color: #000;
+}
+
 /* Edit Title Modal */
 .edit-title-modal {
   position: fixed;
@@ -1290,7 +1784,7 @@
 }
 
 .edit-modal-body {
-  padding: 0.5rem 1.5rem 1.5rem 1.5rem;
+  padding: 0 1.5rem 1.5rem 1.5rem;
   overflow-y: auto;
   max-height: calc(90vh - 180px);
 }
@@ -1477,7 +1971,31 @@
 
 .photo-state-overlay.error {
   background: rgba(139, 0, 0, 0.3);
-  border: 2px solid #dc3545;
+  border: 1px solid #dc3545;
+  border-radius: 12px;
+}
+
+.retry-upload-btn {
+  margin-top: 0.75rem;
+  padding: 0.5rem 1rem;
+  background: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.retry-upload-btn:hover {
+  background: #c82333;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.retry-upload-btn:active {
+  transform: translateY(0);
 }
 
 .state-icon {
@@ -1534,7 +2052,7 @@
 /* Error Summary Section */
 .upload-errors-summary {
   background: rgba(239, 68, 68, 0.1);
-  border: 2px solid rgba(239, 68, 68, 0.3);
+  border: 1px solid rgba(239, 68, 68, 0.3);
   border-radius: 8px;
   padding: 1rem;
   margin: 1rem 0 1.5rem 0;
@@ -1626,8 +2144,8 @@
 .admin-photo-item {
   cursor: grab;
   position: relative;
-  /* Smooth transition for all animations */
-  transition: transform 200ms ease;
+  /* Smooth transition for all animations including grid reflow */
+  transition: all 200ms ease;
 }
 
 .admin-photo-item:active {
@@ -1646,9 +2164,54 @@
 }
 
 .admin-photo-item.shuffling-active[style*="translate"] {
-  transform: scale(0.85) var(--transform) !important;
+  /* Allow dnd-kit transforms during shuffle */
 }
 
+/* Flip animation when photo completes upload */
+.admin-photo-item.flip-complete {
+  animation: flipComplete 0.3s ease-in-out;
+}
+
+@keyframes flipComplete {
+  0% {
+    transform: perspective(800px) rotateY(0deg) scale(1);
+  }
+  50% {
+    transform: perspective(800px) rotateY(90deg) scale(0.95);
+  }
+  100% {
+    transform: perspective(800px) rotateY(0deg) scale(1);
+  }
+}
+
+/* CRT Delete Animation - Like an old TV turning off */
+.admin-photo-item.crt-delete {
+  animation: crtDelete 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  pointer-events: none;
+}
+
+@keyframes crtDelete {
+  0% {
+    transform: scaleY(1) scaleX(1);
+    opacity: 1;
+    filter: brightness(1) saturate(1);
+  }
+  30% {
+    transform: scaleY(0.01) scaleX(1);
+    opacity: 0.9;
+    filter: brightness(10) saturate(0);
+  }
+  70% {
+    transform: scaleY(0.01) scaleX(0.01);
+    opacity: 0.6;
+    filter: brightness(10) saturate(0);
+  }
+  100% {
+    transform: scaleY(0) scaleX(0);
+    opacity: 0;
+    filter: brightness(0) saturate(0);
+  }
+}
 
 /* Cancel order button */
 .btn-cancel-order {
@@ -1798,47 +2361,270 @@
 }
 
 /* Ghost album tile styles */
-.ghost-album-tile {
-  border: 2px dashed rgba(74, 222, 128, 0.4) !important;
-  background: linear-gradient(135deg, rgba(74, 222, 128, 0.05) 0%, rgba(74, 222, 128, 0.02) 100%) !important;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-  height: 80px;
+/* Folder card styles */
+.folder-card {
+  padding: 0.5rem 1rem 1rem 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+  position: relative;
+  transition: all 0.2s ease;
+  min-height: 100px;
 }
 
-.ghost-album-tile:hover {
+.folder-card.unpublished {
+  opacity: 0.7;
+  border-color: rgba(251, 191, 36, 0.3) !important;
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.08) 0%, rgba(251, 191, 36, 0.02) 100%) !important;
+}
+
+.folder-card:hover {
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Remove folder-level drag-over styling - we only highlight the grid now */
+.folder-card.drag-over {
+  /* No styling on folder card itself */
+}
+
+/* Highlight only the album grid when dragging over */
+.folder-card.drag-over .folder-albums-grid {
+  border-color: #3b82f6 !important;
+  background: rgba(59, 130, 246, 0.1) !important;
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.3) !important;
+}
+
+/* Insertion point styles removed - relying on dnd-kit's built-in sortable animation */
+
+.folder-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  gap: 1rem;
+  position: relative;
+}
+
+.folder-drag-handle {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.folder-card-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.folder-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+.folder-delete-btn {
+  background: transparent;
+  border: none;
+  color: #ef4444;
+  cursor: pointer;
+  padding: 0.25rem;
+  font-size: 1.2rem;
+  line-height: 1;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.folder-delete-btn:hover {
+  transform: scale(1.2);
+  color: #dc2626;
+}
+
+.folder-delete-btn-text {
+  background: rgba(220, 53, 69, 0.1);
+  border: 1px solid rgba(220, 53, 69, 0.3);
+  color: #ef4444;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.folder-delete-btn-text:hover {
+  background: rgba(220, 53, 69, 0.2);
+  border-color: #dc2626;
+  color: #dc2626;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(220, 53, 69, 0.2);
+}
+
+.folder-count {
+  font-size: 0.75rem;
+  color: #888;
+  font-weight: 400;
+  margin: 0;
+}
+
+.folder-albums-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 1rem;
+  margin: 0rem 0;
+  padding: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  isolation: isolate; /* Create stacking context for smoother animations */
+}
+
+@media (max-width: 768px) {
+  .folder-card-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+
+  .folder-drag-handle {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+
+  .folder-controls {
+    width: 100%;
+    justify-content: space-between;
+    padding-top: 0.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .folder-albums-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.uncategorized-section {
+  padding: 1rem 2rem 2rem 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.02);
+  transition: all 0.2s ease;
+  min-height: 170px;
+}
+
+.uncategorized-section.drag-over-uncategorized {
+  border-color: #3b82f6 !important;
+  background: rgba(59, 130, 246, 0.15) !important;
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.3) !important;
+}
+
+.ghost-album-tile, .ghost-folder-tile {
+  border: 1px dashed rgba(74, 222, 128, 0.4) !important;
+  background: linear-gradient(135deg, rgba(74, 222, 128, 0.05) 0%, rgba(74, 222, 128, 0.02) 100%) !important;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  /* Match album card structure */
+  padding: 0rem 1rem;
+  display: flex;
+  flex-direction: column;
+  height: 60px;
+  box-sizing: border-box;
+}
+
+/* Allow drag events to pass through ghost tiles to the grid underneath */
+body.dragging .ghost-album-tile,
+body.dragging .ghost-folder-tile {
+  pointer-events: none !important;
+}
+
+.ghost-album-tile:hover, .ghost-folder-tile:hover {
   border-color: rgba(74, 222, 128, 0.6) !important;
   background: linear-gradient(135deg, rgba(74, 222, 128, 0.1) 0%, rgba(74, 222, 128, 0.05) 100%) !important;
   transform: scale(1.02);
 }
 
-.ghost-album-tile.drag-over-ghost {
-  border-color: rgba(74, 222, 128, 0.8) !important;
-  background: linear-gradient(135deg, rgba(74, 222, 128, 0.15) 0%, rgba(74, 222, 128, 0.08) 100%) !important;
+.ghost-album-tile.drag-over-ghost, .ghost-folder-tile.drag-over-ghost {
+  border: 1px solid rgba(74, 222, 128, 0.9) !important;
+  background: linear-gradient(
+    135deg,
+    rgba(34, 197, 94, 0.25) 0%,
+    rgba(74, 222, 128, 0.3) 25%,
+    rgba(16, 185, 129, 0.25) 50%,
+    rgba(74, 222, 128, 0.3) 75%,
+    rgba(34, 197, 94, 0.25) 100%
+  ) !important;
+  background-size: 200% 200% !important;
+  animation: ghost-tile-glow 2s ease infinite !important;
   transform: scale(1.05);
+  box-shadow: 
+    0 0 15px rgba(74, 222, 128, 0.4),
+    0 0 25px rgba(74, 222, 128, 0.2),
+    inset 0 0 15px rgba(74, 222, 128, 0.08) !important;
+}
+
+@keyframes ghost-tile-glow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 .ghost-tile-content {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.75rem;
+  justify-content: center;
+  flex: 1;
+  gap: 0.1rem;
   color: rgba(74, 222, 128, 0.9);
-  padding: 1rem;
+}
+
+.ghost-tile-content svg {
+  margin: 0;
+  display: block;
 }
 
 .ghost-tile-text {
   font-size: 1rem;
   font-weight: 500;
+  margin: 0;
 }
 
 .ghost-tile-hint {
   font-size: 0.85rem;
   color: rgba(74, 222, 128, 0.7);
   font-style: italic;
+  margin: 0;
+  line-height: 1;
+}
+
+/* Disabled ghost tile */
+.ghost-tile-disabled {
+  border: 1px dashed rgba(156, 163, 175, 0.4) !important;
+  background: linear-gradient(135deg, rgba(107, 114, 128, 0.05) 0%, rgba(107, 114, 128, 0.02) 100%) !important;
+  cursor: not-allowed !important;
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.ghost-tile-disabled .ghost-tile-content {
+  color: rgba(156, 163, 175, 0.6);
 }
 
 /* Album tile drop overlay */
@@ -1865,5 +2651,392 @@
   border-color: var(--primary-color) !important;
   transform: scale(1.05);
   box-shadow: 0 8px 24px rgba(74, 222, 128, 0.3);
+}
+
+/* Mobile Arrow Buttons for Reordering */
+.album-mobile-arrows,
+.folder-mobile-arrows {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  flex-direction: row;
+  gap: 4px;
+  z-index: 15;
+}
+
+.arrow-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: rgba(0, 0, 0, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(4px);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.arrow-btn:hover {
+  background: rgba(0, 0, 0, 0.9);
+  border-color: var(--primary-color);
+  transform: scale(1.1);
+}
+
+.arrow-btn:active {
+  transform: scale(0.95);
+}
+
+.arrow-btn svg {
+  pointer-events: none;
+  stroke: currentColor;
+}
+
+/* Hide arrow buttons on desktop */
+@media (min-width: 769px) {
+  .album-mobile-arrows,
+  .folder-mobile-arrows {
+    display: none;
+  }
+}
+
+/* Smooth transitions for reordering */
+.album-card,
+.folder-card {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.3s ease,
+              box-shadow 0.3s ease,
+              border-color 0.3s ease,
+              background 0.3s ease;
+  will-change: transform;
+}
+
+/* Add explicit animation for grid items */
+.album-grid > *,
+.folder-albums-grid > * {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Folder mobile arrows positioning */
+.folder-mobile-arrows {
+  top: 12px;
+  right: 12px;
+}
+
+/* Folders container for animation support */
+.folders-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  isolation: isolate;
+}
+
+.folders-container > * {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Desktop Move to Folder Button */
+.album-move-folder-btn {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+  padding: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(4px);
+  z-index: 10;
+  color: var(--primary-color);
+}
+
+/* On desktop, hide by default and show on hover */
+@media (min-width: 769px) {
+  .album-move-folder-btn {
+    display: none;
+  }
+  
+  .album-card:hover .album-move-folder-btn {
+    display: inline-flex;
+  }
+}
+
+.album-move-folder-btn:hover {
+  background: rgba(0, 0, 0, 0.8);
+  border-color: var(--primary-color);
+  transform: scale(1.1);
+}
+
+.album-move-folder-btn svg {
+  display: block;
+  stroke: currentColor;
+}
+
+/* Move to Folder Modal */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  z-index: 10000;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.move-folder-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.95);
+  width: 90%;
+  max-width: 500px;
+  background: linear-gradient(135deg, #1f1f1f 0%, #181818 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+  z-index: 10001;
+  opacity: 0;
+  animation: modalAppear 0.2s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modalAppear {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+.move-folder-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.move-folder-modal-header h3 {
+  margin: 0;
+  color: #fff;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.move-folder-modal-body {
+  padding: 1.5rem;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.move-folder-hint {
+  color: #a8a8a8;
+  font-size: 0.9rem;
+  margin: 0 0 1.5rem 0;
+  line-height: 1.5;
+}
+
+.folder-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.folder-option {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+  width: 100%;
+}
+
+.folder-option:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: var(--primary-color);
+  transform: translateX(4px);
+}
+
+.folder-option:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.folder-option.current {
+  background: rgba(74, 222, 128, 0.08);
+  border-color: rgba(74, 222, 128, 0.3);
+}
+
+.folder-option-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.folder-option-name {
+  flex: 1;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.current-badge {
+  padding: 0.25rem 0.75rem;
+  background: rgba(74, 222, 128, 0.2);
+  color: var(--primary-color);
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+@media (max-width: 600px) {
+  .move-folder-modal {
+    width: 95%;
+    max-width: none;
+  }
+  
+  .move-folder-modal-header,
+  .move-folder-modal-body {
+    padding: 1rem;
+  }
+}
+
+/* Album Toolbar Styles */
+.album-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 3rem;
+  margin-bottom: 1rem;
+  gap: 1rem;
+}
+
+.album-toolbar-top {
+  flex: 0 0 auto;
+}
+
+.album-toolbar-unsaved {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 0 0 auto;
+}
+
+.album-toolbar-unsaved .unsaved-text {
+  color: #fbbf24;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.album-toolbar-unsaved .unsaved-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+/* Mobile: Hide icons only for albums in folders */
+@media (max-width: 768px) {
+  .album-card-icon-in-folder {
+    display: none;
+  }
+}
+
+/* Mobile: Stack toolbar vertically */
+@media (max-width: 768px) {
+  .album-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+
+  .album-toolbar-top {
+    width: 100%;
+  }
+
+  .album-toolbar-top button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .album-toolbar-unsaved {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: rgba(251, 191, 36, 0.08);
+    border: 1px solid rgba(251, 191, 36, 0.2);
+    border-radius: 8px;
+  }
+
+  .album-toolbar-unsaved .unsaved-text {
+    text-align: center;
+  }
+
+  .album-toolbar-unsaved .unsaved-actions {
+    display: flex;
+    gap: 0.5rem;
+    width: 100%;
+  }
+
+  .album-toolbar-unsaved .unsaved-actions button {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+/* Album Upload Progress */
+.album-upload-progress {
+  padding: 0.25rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-top: 0.25rem;
+}
+
+.upload-progress-text {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 500;
+}
+
+.upload-progress-bar-container {
+  width: 100%;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.upload-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #10b981 0%, #34d399 100%);
+  border-radius: 2px;
+  transition: width 0.3s ease;
 }
 

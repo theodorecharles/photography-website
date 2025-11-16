@@ -3,5 +3,4 @@
  */
 
 export { default } from './PhotoModal';
-export type { Photo, ExifData } from './types';
 
