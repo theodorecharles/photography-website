@@ -438,19 +438,7 @@
   stroke: #fff;
 }
 
-.album-card h4::before {
-  content: '📁';
-  font-size: 1.2rem;
-  flex-shrink: 0;
-}
-
-.album-card.selected h4::before {
-  content: '📂';
-}
-
-.album-card.unpublished h4::before {
-  content: '🔒';
-}
+/* Icons now handled by JSX to allow conditional rendering based on folder_id */
 
 .btn-delete-small {
   background: rgba(220, 53, 69, 0.1);
@@ -2968,6 +2956,13 @@ body.dragging .ghost-folder-tile {
 .album-toolbar-unsaved .unsaved-actions {
   display: flex;
   gap: 0.75rem;
+}
+
+/* Mobile: Hide icons only for albums in folders */
+@media (max-width: 768px) {
+  .album-card-icon-in-folder {
+    display: none;
+  }
 }
 
 /* Mobile: Stack toolbar vertically */

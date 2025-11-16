@@ -167,6 +167,11 @@ const SortableAlbumCard: React.FC<SortableAlbumCardProps> = ({
                 e.stopPropagation();
                 onMoveUp(album.name);
               }}
+              onTouchEnd={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                onMoveUp(album.name);
+              }}
               title="Move up"
             >
               <ChevronUpIcon width="16" height="16" />
@@ -177,6 +182,11 @@ const SortableAlbumCard: React.FC<SortableAlbumCardProps> = ({
               className="arrow-btn arrow-down"
               onClick={(e) => {
                 e.stopPropagation();
+                onMoveDown(album.name);
+              }}
+              onTouchEnd={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
                 onMoveDown(album.name);
               }}
               title="Move down"
@@ -191,6 +201,11 @@ const SortableAlbumCard: React.FC<SortableAlbumCardProps> = ({
                 e.stopPropagation();
                 onMoveToFolder(album.name);
               }}
+              onTouchEnd={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                onMoveToFolder(album.name);
+              }}
               title="Move to folder"
             >
               <FolderArrowIcon width="16" height="16" />
@@ -200,7 +215,12 @@ const SortableAlbumCard: React.FC<SortableAlbumCardProps> = ({
       )}
       <div className="album-card-header">
         <h4>
-          <span className="album-name">{album.name}</span>
+          <span className="album-name">
+            <span className={album.folder_id ? "album-card-icon-in-folder" : "album-card-icon-uncategorized"}>
+              {album.published !== false ? '📁' : '🔒'}{' '}
+            </span>
+            {album.name}
+          </span>
         </h4>
       </div>
       {album.photoCount !== undefined && (
