@@ -155,6 +155,12 @@ app.use(
       // Allow requests with no origin (mobile apps, curl, etc.)
       if (!origin) return callback(null, true);
 
+      // During OOBE (setup mode), allow any HTTPS origin to enable setup from any domain
+      if (!CONFIG_EXISTS && origin.startsWith('https://')) {
+        console.log(`[OOBE] Allowing CORS from: ${origin}`);
+        return callback(null, true);
+      }
+
       if (ALLOWED_ORIGINS.indexOf(origin) !== -1) {
         callback(null, true);
       } else {
