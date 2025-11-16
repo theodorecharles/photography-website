@@ -448,19 +448,27 @@ router.post('/initialize', async (req: Request, res: Response): Promise<void> =>
       console.error('  ❌ Failed to initialize Google OAuth:', err);
     }
 
+    // Only restart if Google OAuth is selected (needs OAuth strategy initialization)
+    // Password auth doesn't need restart - config reloaded dynamically
+    const requiresRestart = authMethod === 'google';
+    
     res.json({
       success: true,
       message: 'Configuration initialized successfully',
-      requiresRestart: false // No restart needed - config and OAuth reloaded dynamically
+      requiresRestart
     });
     
-    // Gracefully restart the backend after sending response
-    // This ensures session cookies and other startup-time config is properly initialized
-    console.log('\n🔄 Triggering backend restart to apply session configuration...');
-    setTimeout(() => {
-      console.log('✓ Setup complete - exiting for restart');
-      process.exit(0); // Exit cleanly - PM2 will restart the process
-    }, 500); // Wait 500ms to ensure response is sent, then restart immediately
+    if (requiresRestart) {
+      // Gracefully restart the backend after sending response
+      // This ensures Google OAuth strategy is properly initialized
+      console.log('\n🔄 Triggering backend restart to initialize Google OAuth...');
+      setTimeout(() => {
+        console.log('✓ Setup complete - exiting for restart');
+        process.exit(0); // Exit cleanly - PM2/Docker will restart the process
+      }, 500); // Wait 500ms to ensure response is sent, then restart immediately
+    } else {
+      console.log('\n✓ Setup complete - no restart needed for password auth');
+    }
   } catch (error) {
     console.error('Setup initialization failed:', error);
     res.status(500).json({ 
