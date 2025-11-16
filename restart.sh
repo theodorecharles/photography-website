@@ -125,15 +125,15 @@ fi
 # Return to project root
 cd ..
 
-# Restart both services using PM2 with ecosystem.local.cjs
+# Restart both services using PM2 with ecosystem.config.cjs
 log "Restarting services with PM2..."
 if pm2 list | grep -q "backend\|frontend"; then
     # Services are running, restart them
     pm2 restart backend frontend --update-env || handle_error "Failed to restart services"
 else
-    # Services not running, start them using ecosystem.local.cjs
+    # Services not running, start them using ecosystem.config.cjs
     log "Services not running, starting them..."
-    if ! pm2 start ecosystem.local.cjs; then
+    if ! pm2 start ecosystem.config.cjs; then
         handle_error "Failed to start services"
     fi
 fi
