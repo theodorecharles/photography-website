@@ -197,36 +197,9 @@ export const UserCard: React.FC<UserCardProps> = ({
             flexShrink: 0,
           }}
         >
-          {/* Admin-only actions: Resend Invite, Copy Invite, and Delete */}
+          {/* Admin-only actions: Resend Invite and Delete */}
           {currentUser && currentUser.role === "admin" && (
             <>
-              {(user.status === "invited" || user.status === "invite_expired") && user.invite_token && (
-                <button
-                  onClick={handleCopyInvite}
-                  className="btn-secondary"
-                  style={{
-                    padding: "0.4rem 0.8rem",
-                    fontSize: "0.85rem",
-                    background: copied ? "rgba(74, 222, 128, 0.2)" : "rgba(59, 130, 246, 0.2)",
-                    borderColor: copied ? "rgba(74, 222, 128, 0.3)" : "rgba(59, 130, 246, 0.3)",
-                    color: copied ? "#4ade80" : "#60a5fa",
-                  }}
-                  disabled={loading}
-                  title="Copy invitation link to clipboard"
-                  onMouseEnter={(e) => {
-                    if (!loading && !copied) {
-                      e.currentTarget.style.background = "rgba(59, 130, 246, 0.3)";
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (!copied) {
-                      e.currentTarget.style.background = "rgba(59, 130, 246, 0.2)";
-                    }
-                  }}
-                >
-                  {copied ? "✓ Copied" : "📋 Copy Invite"}
-                </button>
-              )}
               {user.status === "invite_expired" && (
                 <button
                   onClick={() => onResendInvite(user.id)}
@@ -474,34 +447,75 @@ export const UserCard: React.FC<UserCardProps> = ({
       </div>
 
       {/* User Actions */}
-      {currentUser &&
-        user.status !== "invited" &&
-        user.status !== "invite_expired" && (
-          <div
-            style={{
-              display: "flex",
-              flexWrap: "wrap",
-              gap: "0.5rem",
-              paddingTop: "0.75rem",
-              borderTop: "1px solid rgba(255, 255, 255, 0.1)",
-            }}
-          >
-            {/* Own Account Actions */}
-            {user.id === currentUser.id && (
-              <>
-                {/* Change Password */}
-                {user.auth_methods.includes("credentials") && (
-                  <button
-                    onClick={() => onOpenPasswordChange(user.id)}
-                    className="btn-secondary"
-                    style={{
-                      padding: "0.4rem 0.8rem",
-                      fontSize: "0.85rem",
-                    }}
-                  >
-                    Change Password
-                  </button>
-                )}
+      {currentUser && (
+        <>
+          {/* Invited/Expired Users - Show Copy Invite */}
+          {(user.status === "invited" || user.status === "invite_expired") && user.invite_token && (
+            <div
+              style={{
+                display: "flex",
+                flexWrap: "wrap",
+                gap: "0.5rem",
+                paddingTop: "0.75rem",
+                borderTop: "1px solid rgba(255, 255, 255, 0.1)",
+              }}
+            >
+              <button
+                onClick={handleCopyInvite}
+                className="btn-secondary"
+                style={{
+                  padding: "0.4rem 0.8rem",
+                  fontSize: "0.85rem",
+                  background: copied ? "rgba(74, 222, 128, 0.2)" : "rgba(59, 130, 246, 0.2)",
+                  borderColor: copied ? "rgba(74, 222, 128, 0.3)" : "rgba(59, 130, 246, 0.3)",
+                  color: copied ? "#4ade80" : "#60a5fa",
+                  whiteSpace: "nowrap",
+                }}
+                disabled={loading}
+                title="Copy invitation link to clipboard"
+                onMouseEnter={(e) => {
+                  if (!loading && !copied) {
+                    e.currentTarget.style.background = "rgba(59, 130, 246, 0.3)";
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!copied) {
+                    e.currentTarget.style.background = "rgba(59, 130, 246, 0.2)";
+                  }
+                }}
+              >
+                {copied ? "✓ Copied" : "Copy Invite Link"}
+              </button>
+            </div>
+          )}
+          
+          {/* Active Users - Show Auth/Security Actions */}
+          {user.status !== "invited" && user.status !== "invite_expired" && (
+            <div
+              style={{
+                display: "flex",
+                flexWrap: "wrap",
+                gap: "0.5rem",
+                paddingTop: "0.75rem",
+                borderTop: "1px solid rgba(255, 255, 255, 0.1)",
+              }}
+            >
+              {/* Own Account Actions */}
+              {user.id === currentUser.id && (
+                <>
+                  {/* Change Password */}
+                  {user.auth_methods.includes("credentials") && (
+                    <button
+                      onClick={() => onOpenPasswordChange(user.id)}
+                      className="btn-secondary"
+                      style={{
+                        padding: "0.4rem 0.8rem",
+                        fontSize: "0.85rem",
+                      }}
+                    >
+                      Change Password
+                    </button>
+                  )}
 
                 {/* MFA Toggle - Only show for non-Google users */}
                 {user.auth_methods.includes("credentials") &&
@@ -577,14 +591,14 @@ export const UserCard: React.FC<UserCardProps> = ({
                       Passkeys ({user.passkey_count})
                     </button>
                   )}
-              </>
-            )}
+                </>
+              )}
 
-            {/* Admin Actions for Other Users */}
-            {user.id !== currentUser.id && (
-              <>
-                {/* Reset MFA button - only for users with MFA enabled */}
-                {user.mfa_enabled && (
+              {/* Admin Actions for Other Users */}
+              {user.id !== currentUser.id && (
+                <>
+                  {/* Reset MFA button - only for users with MFA enabled */}
+                  {user.mfa_enabled && (
                   <button
                     onClick={() => onResetMFA(user.id)}
                     className="btn-secondary"
@@ -627,10 +641,12 @@ export const UserCard: React.FC<UserCardProps> = ({
                     Send Password Reset
                   </button>
                 )}
-              </>
-            )}
-          </div>
-        )}
+                </>
+              )}
+            </div>
+          )}
+        </>
+      )}
     </div>
   );
 };
