@@ -14,6 +14,7 @@ interface DragDropHandlersProps {
   localFolders: AlbumFolder[];
   setLocalFolders: (folders: AlbumFolder[]) => void;
   saveAlbumOrder: (albumsToSave?: Album[], silent?: boolean) => Promise<boolean>;
+  saveFolderOrder: (foldersToSave: AlbumFolder[]) => Promise<boolean>;
   loadAlbums: () => Promise<void>;
   setAnimatingAlbum: (value: string | null) => void;
   setActiveAlbumId: (value: string | null) => void;
@@ -31,6 +32,7 @@ export const createDragDropHandlers = (props: DragDropHandlersProps) => {
     localFolders,
     setLocalFolders,
     saveAlbumOrder,
+    saveFolderOrder,
     loadAlbums,
     setAnimatingAlbum,
     setActiveAlbumId,
@@ -91,7 +93,8 @@ export const createDragDropHandlers = (props: DragDropHandlersProps) => {
         if (activeIndex !== overIndex && activeIndex !== -1 && overIndex !== -1) {
           const reordered = arrayMove(localFolders, activeIndex, overIndex);
           setLocalFolders(reordered);
-          setHasUnsavedChanges(true);
+          // Auto-save folder order
+          await saveFolderOrder(reordered);
         }
       }
       return;
