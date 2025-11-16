@@ -15,13 +15,60 @@ const __dirname = path.dirname(__filename);
 
 const router = express.Router();
 
-// Apply CSRF protection to all routes
-router.use(csrfProtection);
-
 import { DATA_DIR, reloadConfig } from "../config.js";
 import { sendTestEmail } from "../email.js";
 
 const CONFIG_PATH = path.join(DATA_DIR, "config.json");
+
+/**
+ * GET /api/config/runtime
+ * Get runtime configuration for frontend (public endpoint for OOBE support)
+ * Returns API URL auto-detected from request headers when config doesn't exist
+ */
+router.get("/runtime", (req, res) => {
+  try {
+    // Check if config exists
+    const configExists = fs.existsSync(CONFIG_PATH);
+    
+    if (configExists) {
+      // Return API URL from config
+      const configData = fs.readFileSync(CONFIG_PATH, "utf8");
+      const config = JSON.parse(configData);
+      res.json({
+        apiUrl: config.environment.frontend.apiUrl,
+        configExists: true
+      });
+    } else {
+      // OOBE mode - auto-detect API URL from request
+      const protocol = req.headers['x-forwarded-proto'] || (req.secure ? 'https' : 'http');
+      const hostHeader = req.headers['x-forwarded-host'] || req.headers['host'] || 'localhost:3000';
+      const host = Array.isArray(hostHeader) ? hostHeader[0] : hostHeader;
+      
+      // Determine API URL based on convention
+      let apiUrl;
+      if (host.includes('localhost')) {
+        apiUrl = 'http://localhost:3001';
+      } else if (host.startsWith('www.')) {
+        // www.tedcharles.net -> api.tedcharles.net
+        apiUrl = `${protocol}://api.${host.substring(4)}`;
+      } else {
+        // tedcharles.net -> api.tedcharles.net
+        apiUrl = `${protocol}://api.${host}`;
+      }
+      
+      res.json({
+        apiUrl,
+        configExists: false
+      });
+    }
+  } catch (error) {
+    console.error("Error reading runtime config:", error);
+    res.status(500).json({ error: "Failed to read runtime configuration" });
+  }
+});
+
+// Apply CSRF protection to all other routes
+router.use(csrfProtection);
 
 /**
  * GET /api/config
