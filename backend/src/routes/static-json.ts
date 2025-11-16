@@ -8,6 +8,7 @@ import fs from "fs";
 import path from "path";
 import { getAllAlbums, getImagesInAlbum, getImagesFromPublishedAlbums } from "../database.js";
 import { requireAuth, requireAdmin, requireManager } from '../auth/middleware.js';
+import { invalidateAlbumCache } from './albums.js';
 
 const router = Router();
 
@@ -160,6 +161,9 @@ router.post("/generate", requireAdmin, async (req: Request, res: Response): Prom
   const appRoot = req.app.get('appRoot');
   const result = generateStaticJSONFiles(appRoot);
   
+  // Invalidate all album caches after regeneration
+  invalidateAlbumCache();
+  
   if (result.success) {
     res.json({ 
       success: true, 
@@ -181,6 +185,10 @@ router.post("/generate", requireAdmin, async (req: Request, res: Response): Prom
 router.post("/regenerate", requireManager, async (req: Request, res: Response): Promise<void> => {
   const appRoot = req.app.get('appRoot');
   const result = generateStaticJSONFiles(appRoot);
+  
+  // Invalidate all album caches after regeneration
+  // This ensures fresh data is served after batch uploads
+  invalidateAlbumCache();
   
   if (result.success) {
     res.json({ 
