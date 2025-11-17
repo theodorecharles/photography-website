@@ -80,7 +80,7 @@ interface UncategorizedSectionProps {
   onAlbumMoveUp?: (albumName: string) => void;
   onAlbumMoveDown?: (albumName: string) => void;
   onAlbumMoveToFolder?: (albumName: string) => void;
-  hasFolders?: boolean;
+  hasFolders: boolean;
   canEdit: boolean;
 }
 
@@ -107,7 +107,7 @@ const UncategorizedSection: React.FC<UncategorizedSectionProps> = ({
   onAlbumMoveUp,
   onAlbumMoveDown,
   onAlbumMoveToFolder,
-  hasFolders = true,
+  hasFolders,
   canEdit,
 }) => {
   const uncategorizedAlbums = localAlbums.filter(album => !album.folder_id);
