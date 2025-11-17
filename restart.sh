@@ -17,7 +17,7 @@ handle_error() {
     exit 1
 }
 
-# Get current branch name for notifications
+# Print current branch name
 CURRENT_BRANCH=$(git branch --show-current)
 log "Current branch: $CURRENT_BRANCH"
 
