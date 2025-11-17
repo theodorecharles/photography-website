@@ -52,8 +52,6 @@ docker-compose up -d --build
 - Frontend: http://localhost:3000
 - Admin Panel: http://localhost:3000/admin
 
-**📖 For detailed Docker documentation, see [README.docker.md](README.docker.md)**
-
 ---
 
 ### Option 2: Development Setup
@@ -134,8 +132,6 @@ environment:
   - FRONTEND_DOMAIN=http://localhost:3000  # or https://www.yourdomain.com
   - BACKEND_DOMAIN=http://localhost:3001   # or https://api.yourdomain.com
 ```
-
-**📖 For detailed Docker configuration, see [README.docker.md](README.docker.md)**
 
 ### Non-Docker Deployment
 
@@ -238,12 +234,6 @@ galleria/
 - ✅ HTTPS enforcement in production
 - ✅ Multiple auth methods (OAuth, password, passkey)
 - ✅ Role-based access control (viewer, manager, admin)
-
----
-
-## 📖 Additional Documentation
-
-- **[README.docker.md](README.docker.md)** - Detailed Docker deployment guide
 
 ---
 
