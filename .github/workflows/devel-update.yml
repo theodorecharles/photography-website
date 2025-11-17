@@ -95,9 +95,8 @@ jobs:
   docker:
     name: Build and push Docker image
     runs-on: [self-hosted, dev, photography-website]
-    environment: Dev
+    environment: Docker-Build-Dev
     needs: deploy
-    if: github.event.inputs.build_docker == 'true'
     steps:
       - name: Build and push Docker image
         if: vars.DOCKERHUB_USERNAME && vars.DOCKER_IMAGE_NAME
