@@ -2,14 +2,13 @@ name: Build Docker Image (Dev)
 
 on:
   workflow_dispatch:
-    branches:
-      - devel
 
 jobs:
   docker:
     name: Build and push Docker image
     runs-on: [self-hosted, dev, photography-website]
     environment: Dev
+    if: github.ref == 'refs/heads/devel'
     steps:
       - name: Build and push Docker image
         if: vars.DOCKERHUB_USERNAME && vars.DOCKER_IMAGE_NAME

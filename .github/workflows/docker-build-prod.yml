@@ -2,14 +2,13 @@ name: Build Docker Image (Prod)
 
 on:
   workflow_dispatch:
-    branches:
-      - master
 
 jobs:
   docker:
     name: Build and push Docker image
     runs-on: [self-hosted, prod, photography-website]
     environment: Prod
+    if: github.ref == 'refs/heads/master'
     steps:
       - name: Build and push Docker image
         if: vars.DOCKERHUB_USERNAME && vars.DOCKER_IMAGE_NAME
