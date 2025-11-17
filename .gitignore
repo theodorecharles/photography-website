@@ -21,7 +21,7 @@ frontend/public/albums-data/
 .env.test.local
 .env.production.local
 
-# Config (track only config.example.json, users should copy and customize)
+# Config (track only config.defaults.json, used as template/defaults)
 data/
 data-backup-*/
 config/config.local.json

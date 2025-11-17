@@ -24,9 +24,9 @@ const getExternalPages = () => {
     // Use DATA_DIR from environment or default to project_root/data
     const dataDir = process.env.DATA_DIR || path.join(__dirname, '../../../data');
     const configPath = path.join(dataDir, 'config.json');
-    const examplePath = path.join(__dirname, '../../../config/config.example.json');
+    const defaultsPath = path.join(__dirname, '../../../config/config.defaults.json');
     
-    const configFile = fs.existsSync(configPath) ? configPath : examplePath;
+    const configFile = fs.existsSync(configPath) ? configPath : defaultsPath;
     const data = fs.readFileSync(configFile, 'utf8');
     const config = JSON.parse(data);
     return { externalLinks: config.externalLinks || [] };
