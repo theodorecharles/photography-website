@@ -521,7 +521,11 @@ app.get("*", async (req, res) => {
       
       if (host.includes('localhost')) {
         runtimeApiUrl = 'http://localhost:3001';
+      } else if (host.startsWith('www-')) {
+        // www-dev.tedcharles.net -> api-dev.tedcharles.net
+        runtimeApiUrl = `${protocol}://api-${host.substring(4)}`;
       } else if (host.startsWith('www.')) {
+        // www.tedcharles.net -> api.tedcharles.net
         runtimeApiUrl = `${protocol}://api.${host.substring(4)}`;
       } else {
         runtimeApiUrl = `${protocol}://api.${host}`;
