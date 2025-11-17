@@ -54,7 +54,14 @@ router.get('/visitors-over-time', requireAuth, async (req: Request, res: Respons
     // Get time range from query params (default to last 30 days)
     const days = parseInt(req.query.days as string) || 30;
     // Get timezone offset from query params (default to 0 for UTC)
-    const timezoneOffset = parseFloat(req.query.timezoneOffset as string) || 0;
+    let timezoneOffset = parseFloat(req.query.timezoneOffset as string) || 0;
+    
+    // SECURITY: Validate timezone offset is within valid range (-14 to +14 hours)
+    // This prevents SQL injection via timezone offset parameter
+    if (isNaN(timezoneOffset) || timezoneOffset < -14 || timezoneOffset > 14) {
+      res.status(400).json({ error: 'Invalid timezone offset. Must be between -14 and +14.' });
+      return;
+    }
     
     // Calculate time range (OpenObserve uses microseconds)
     const endTime = Date.now() * 1000;
@@ -78,7 +85,8 @@ router.get('/visitors-over-time', requireAuth, async (req: Request, res: Respons
     // Determine the interval string for timezone adjustment
     // Positive offset means ahead of UTC (e.g., +5 for Eastern in winter)
     // Negative offset means behind UTC (e.g., -8 for Pacific)
-    const absOffset = Math.abs(timezoneOffset);
+    // Round to integer to prevent fractional SQL injection attempts
+    const absOffset = Math.abs(Math.floor(timezoneOffset));
     const intervalStr = timezoneOffset >= 0 
       ? `+ INTERVAL '${absOffset}' HOUR`
       : `- INTERVAL '${absOffset}' HOUR`;
@@ -279,7 +287,14 @@ router.get('/pageviews-by-hour', requireAuth, async (req: Request, res: Response
     // Get time range from query params (default to last 30 days, same as other metrics)
     const days = parseInt(req.query.days as string) || 30;
     // Get timezone offset from query params (default to 0 for UTC)
-    const timezoneOffset = parseFloat(req.query.timezoneOffset as string) || 0;
+    let timezoneOffset = parseFloat(req.query.timezoneOffset as string) || 0;
+    
+    // SECURITY: Validate timezone offset is within valid range (-14 to +14 hours)
+    // This prevents SQL injection via timezone offset parameter
+    if (isNaN(timezoneOffset) || timezoneOffset < -14 || timezoneOffset > 14) {
+      res.status(400).json({ error: 'Invalid timezone offset. Must be between -14 and +14.' });
+      return;
+    }
     
     // Calculate time range (OpenObserve uses microseconds)
     const endTime = Date.now() * 1000;
@@ -301,7 +316,8 @@ router.get('/pageviews-by-hour', requireAuth, async (req: Request, res: Response
     }
 
     // Determine the interval string for timezone adjustment
-    const absOffset = Math.abs(timezoneOffset);
+    // Round to integer to prevent fractional SQL injection attempts
+    const absOffset = Math.abs(Math.floor(timezoneOffset));
     const intervalStr = timezoneOffset >= 0 
       ? `+ INTERVAL '${absOffset}' HOUR`
       : `- INTERVAL '${absOffset}' HOUR`;

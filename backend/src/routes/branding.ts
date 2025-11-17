@@ -7,15 +7,12 @@ import { Router, Request, Response } from 'express';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { exec } from 'child_process';
-import { promisify } from 'util';
 import crypto from 'crypto';
 import multer from 'multer';
 import os from 'os';
+import sharp from 'sharp';
 import { requireManager } from '../auth/middleware.js';
 import { csrfProtection } from '../security.js';
-
-const execAsync = promisify(exec);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -190,28 +187,37 @@ router.post('/upload-avatar', requireManager, upload.single('avatar'), async (re
     const frontendDistDir = path.join(projectRoot, 'frontend', 'dist');
     const faviconIcoPathDist = path.join(frontendDistDir, 'favicon.ico');
     
-    // Read the uploaded file
-    const fileData = fs.readFileSync(file.path);
-    
-    // Write to photos directory
-    fs.writeFileSync(avatarPath, fileData);
-    
-    // Also copy to frontend public as favicon.png
-    fs.writeFileSync(faviconPngPath, fileData);
-    
-    // Generate favicon.ico from the avatar using ImageMagick convert command
+    // Use Sharp to process the avatar image
     try {
-      await execAsync(`convert "${faviconPngPath}" -resize 32x32 "${faviconIcoPath}"`);
-      console.log('[Avatar Upload] Generated favicon.ico from avatar using convert');
+      // Process and save avatar.png
+      await sharp(file.path)
+        .resize(512, 512, { fit: 'cover' })
+        .png()
+        .toFile(avatarPath);
       
-    // Also copy to dist directory so it's immediately served by nginx
-    if (fs.existsSync(frontendDistDir)) {
-      fs.copyFileSync(faviconIcoPath, faviconIcoPathDist);
+      // Create favicon.png (same as avatar)
+      await sharp(file.path)
+        .resize(512, 512, { fit: 'cover' })
+        .png()
+        .toFile(faviconPngPath);
+      
+      // Generate favicon.ico (32x32) using Sharp
+      await sharp(file.path)
+        .resize(32, 32, { fit: 'cover' })
+        .toFormat('png')
+        .toFile(faviconIcoPath);
+      
+      console.log('[Avatar Upload] ✓ Generated avatar.png and favicon files using Sharp');
+      
+      // Also copy to dist directory so it's immediately served by nginx
+      if (fs.existsSync(frontendDistDir)) {
+        fs.copyFileSync(faviconIcoPath, faviconIcoPathDist);
+      }
+    } catch (err: any) {
+      console.error('[Avatar Upload] Failed to process avatar with Sharp:', err);
+      res.status(500).json({ error: 'Failed to process avatar image' });
+      return;
     }
-  } catch (err: any) {
-    console.error('[Avatar Upload] Failed to generate favicon.ico:', err);
-    // Continue anyway - favicon.png will still work
-  }
   
   // Clean up temp file
   fs.unlinkSync(file.path);
