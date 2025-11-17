@@ -84,6 +84,92 @@ interface PhotoGridOptions {
 }
 
 /**
+ * Load and resize a single photo for grid cell
+ */
+async function loadPhotoForGrid(
+  photosDir: string,
+  albumName: string,
+  filename: string,
+  cellWidth: number,
+  cellHeight: number
+): Promise<Buffer> {
+  const thumbnailPath = path.join(photosDir, "../optimized/thumbnail", albumName, filename);
+  const modalPath = path.join(photosDir, "../optimized/modal", albumName, filename);
+  const originalPath = path.join(photosDir, albumName, filename);
+  
+  // Try thumbnail first, fall back to modal, then original
+  let imagePath = thumbnailPath;
+  if (!fs.existsSync(thumbnailPath)) {
+    imagePath = fs.existsSync(modalPath) ? modalPath : originalPath;
+  }
+  
+  if (!fs.existsSync(imagePath)) {
+    // Return a blank image if file doesn't exist
+    return (sharp as any)({
+      create: {
+        width: cellWidth,
+        height: cellHeight,
+        channels: 3,
+        background: { r: 40, g: 40, b: 40 }
+      }
+    }).jpeg().toBuffer();
+  }
+  
+  // Resize and crop to fit cell
+  return sharp(imagePath)
+    .resize(cellWidth, cellHeight, {
+      fit: 'cover',
+      position: 'center'
+    })
+    .jpeg({ quality: 85 })
+    .toBuffer();
+}
+
+/**
+ * Create a blank cell for grid
+ */
+async function createBlankCell(cellWidth: number, cellHeight: number): Promise<Buffer> {
+  return (sharp as any)({
+    create: {
+      width: cellWidth,
+      height: cellHeight,
+      channels: 3,
+      background: { r: 20, g: 20, b: 20 }
+    }
+  }).jpeg().toBuffer();
+}
+
+/**
+ * Add avatar overlay to composite inputs
+ */
+async function addAvatarOverlay(
+  compositeInputs: Array<{ input: Buffer; left: number; top: number }>,
+  photosDir: string,
+  gridWidth: number,
+  gridHeight: number
+): Promise<void> {
+  const avatarPath = getAvatarPath(photosDir);
+  if (!avatarPath) {
+    return;
+  }
+  
+  try {
+    const avatarSize = 120;
+    const avatarBuffer = await createCircularAvatar(avatarPath, avatarSize);
+    
+    // Position in bottom-left corner with 20px padding
+    compositeInputs.push({
+      input: avatarBuffer,
+      left: 20,
+      top: gridHeight - avatarSize - 20
+    });
+  } catch (error) {
+    console.error('Error adding avatar overlay:', error);
+    // Continue without avatar
+  }
+}
+
+/**
  * Generate a 2x2 grid image from up to 4 photos
  */
 async function generatePhotoGrid(options: PhotoGridOptions): Promise<Buffer> {
@@ -101,52 +187,14 @@ async function generatePhotoGrid(options: PhotoGridOptions): Promise<Buffer> {
   
   // Load and resize photos
   const photoBuffers = await Promise.all(
-    selectedPhotos.map(async (photo) => {
-      const thumbnailPath = path.join(photosDir, "../optimized/thumbnail", albumName, photo.filename);
-      const modalPath = path.join(photosDir, "../optimized/modal", albumName, photo.filename);
-      const originalPath = path.join(photosDir, albumName, photo.filename);
-      
-      // Try thumbnail first, fall back to modal, then original
-      let imagePath = thumbnailPath;
-      if (!fs.existsSync(thumbnailPath)) {
-        imagePath = fs.existsSync(modalPath) ? modalPath : originalPath;
-      }
-      
-      if (!fs.existsSync(imagePath)) {
-        // Return a blank image if file doesn't exist
-        return (sharp as any)({
-          create: {
-            width: cellWidth,
-            height: cellHeight,
-            channels: 3,
-            background: { r: 40, g: 40, b: 40 }
-          }
-        }).jpeg().toBuffer();
-      }
-      
-      // Resize and crop to fit cell
-      return sharp(imagePath)
-        .resize(cellWidth, cellHeight, {
-          fit: 'cover',
-          position: 'center'
-        })
-        .jpeg({ quality: 85 })
-        .toBuffer();
-    })
+    selectedPhotos.map(photo => 
+      loadPhotoForGrid(photosDir, albumName, photo.filename, cellWidth, cellHeight)
+    )
   );
   
   // If less than 4 photos, fill remaining cells with black
   while (photoBuffers.length < 4) {
-    photoBuffers.push(
-      await (sharp as any)({
-        create: {
-          width: cellWidth,
-          height: cellHeight,
-          channels: 3,
-          background: { r: 20, g: 20, b: 20 }
-        }
-      }).jpeg().toBuffer()
-    );
+    photoBuffers.push(await createBlankCell(cellWidth, cellHeight));
   }
   
   // Create composite layers
@@ -157,24 +205,8 @@ async function generatePhotoGrid(options: PhotoGridOptions): Promise<Buffer> {
     { input: photoBuffers[3], left: cellWidth, top: cellHeight },
   ];
   
-  // Try to add avatar overlay
-  const avatarPath = getAvatarPath(photosDir);
-  if (avatarPath) {
-    try {
-      const avatarSize = 120;
-      const avatarBuffer = await createCircularAvatar(avatarPath, avatarSize);
-      
-      // Position in bottom-left corner with 20px padding
-      compositeInputs.push({
-        input: avatarBuffer,
-        left: 20,
-        top: gridHeight - avatarSize - 20
-      });
-    } catch (error) {
-      console.error('Error adding avatar overlay:', error);
-      // Continue without avatar
-    }
-  }
+  // Add avatar overlay
+  await addAvatarOverlay(compositeInputs, photosDir, gridWidth, gridHeight);
   
   // Create 2x2 grid using sharp composite
   const grid = await (sharp as any)({
@@ -255,79 +287,26 @@ router.get("/homepage", async (req: Request, res: Response): Promise<void> => {
       return;
     }
     
-    // Take first 4 photos and convert to format expected by generatePhotoGrid
+    // Take first 4 photos
     const selectedPhotos = images.slice(0, 4);
     
-    // Group photos by album for grid generation
-    const photosByAlbum: { [key: string]: Array<{ filename: string }> } = {};
+    // Grid dimensions: 1200x630 for OG image (standard social media size)
+    const gridWidth = 1200;
+    const gridHeight = 630;
+    const cellWidth = gridWidth / 2;
+    const cellHeight = gridHeight / 2;
     
-    for (const img of selectedPhotos) {
-      if (!photosByAlbum[img.album]) {
-        photosByAlbum[img.album] = [];
-      }
-      photosByAlbum[img.album].push({ filename: img.filename });
-    }
-    
-    // Generate grid cells from different albums
-    const photoBuffers: Buffer[] = [];
-    const cellWidth = 600;
-    const cellHeight = 315;
-    
-    for (const img of selectedPhotos) {
-      const thumbnailPath = path.join(photosDir, "../optimized/thumbnail", img.album, img.filename);
-      const modalPath = path.join(photosDir, "../optimized/modal", img.album, img.filename);
-      const originalPath = path.join(photosDir, img.album, img.filename);
-      
-      // Try thumbnail first, fall back to modal, then original
-      let imagePath = thumbnailPath;
-      if (!fs.existsSync(thumbnailPath)) {
-        imagePath = fs.existsSync(modalPath) ? modalPath : originalPath;
-      }
-      
-      if (!fs.existsSync(imagePath)) {
-        // Return a blank image if file doesn't exist
-        photoBuffers.push(
-          await (sharp as any)({
-            create: {
-              width: cellWidth,
-              height: cellHeight,
-              channels: 3,
-              background: { r: 40, g: 40, b: 40 }
-            }
-          }).jpeg().toBuffer()
-        );
-        continue;
-      }
-      
-      // Resize and crop to fit cell
-      const buffer = await sharp(imagePath)
-        .resize(cellWidth, cellHeight, {
-          fit: 'cover',
-          position: 'center'
-        })
-        .jpeg({ quality: 85 })
-        .toBuffer();
-      
-      photoBuffers.push(buffer);
-    }
+    // Load photos from different albums
+    const photoBuffers = await Promise.all(
+      selectedPhotos.map(img => 
+        loadPhotoForGrid(photosDir, img.album, img.filename, cellWidth, cellHeight)
+      )
+    );
     
     // If less than 4 photos, fill remaining cells with black
     while (photoBuffers.length < 4) {
-      photoBuffers.push(
-        await (sharp as any)({
-          create: {
-            width: cellWidth,
-            height: cellHeight,
-            channels: 3,
-            background: { r: 20, g: 20, b: 20 }
-          }
-        }).jpeg().toBuffer()
-      );
+      photoBuffers.push(await createBlankCell(cellWidth, cellHeight));
     }
-    
-    // Create 2x2 grid
-    const gridWidth = 1200;
-    const gridHeight = 630;
     
     // Create composite layers
     const compositeInputs = [
@@ -337,25 +316,10 @@ router.get("/homepage", async (req: Request, res: Response): Promise<void> => {
       { input: photoBuffers[3], left: cellWidth, top: cellHeight },
     ];
     
-    // Try to add avatar overlay
-    const avatarPath = getAvatarPath(photosDir);
-    if (avatarPath) {
-      try {
-        const avatarSize = 120;
-        const avatarBuffer = await createCircularAvatar(avatarPath, avatarSize);
-        
-        // Position in bottom-left corner with 20px padding
-        compositeInputs.push({
-          input: avatarBuffer,
-          left: 20,
-          top: gridHeight - avatarSize - 20
-        });
-      } catch (error) {
-        console.error('Error adding avatar overlay:', error);
-        // Continue without avatar
-      }
-    }
+    // Add avatar overlay
+    await addAvatarOverlay(compositeInputs, photosDir, gridWidth, gridHeight);
     
+    // Create 2x2 grid
     const grid = await (sharp as any)({
       create: {
         width: gridWidth,
