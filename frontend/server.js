@@ -513,32 +513,36 @@ app.get("*", async (req, res) => {
     }
     
     // Determine runtime API URL
-    // Priority: 1) Environment variable, 2) Auto-detect from headers, 3) Config file
+    // Always auto-detect from request headers first (supports both IP and domain access)
+    const protocol = req.headers['x-forwarded-proto'] || (req.secure ? 'https' : 'http');
+    const hostHeader = req.headers['x-forwarded-host'] || req.headers['host'] || 'localhost:3000';
+    const host = Array.isArray(hostHeader) ? hostHeader[0] : hostHeader;
     let runtimeApiUrl;
     
-    if (process.env.BACKEND_DOMAIN || process.env.API_URL) {
-      // Use environment variable if provided (Docker deployments)
+    // Check if accessing via IP address (e.g., 4.20.69.219:3000)
+    const ipPattern = /^\d+\.\d+\.\d+\.\d+(:\d+)?$/;
+    if (ipPattern.test(host)) {
+      // Direct IP access: use same IP with port 3001
+      const ipAddress = host.split(':')[0];
+      runtimeApiUrl = `${protocol}://${ipAddress}:3001`;
+    } else if (host.includes('localhost')) {
+      // Localhost development
+      runtimeApiUrl = 'http://localhost:3001';
+    } else if (host.startsWith('www-')) {
+      // Domain with www- prefix (e.g., www-dev.tedcharles.net -> api-dev.tedcharles.net)
+      runtimeApiUrl = `${protocol}://api-${host.substring(4)}`;
+    } else if (host.startsWith('www.')) {
+      // Domain with www. prefix (e.g., www.tedcharles.net -> api.tedcharles.net)
+      runtimeApiUrl = `${protocol}://api.${host.substring(4)}`;
+    } else if (process.env.BACKEND_DOMAIN || process.env.API_URL) {
+      // Fall back to environment variable if provided
       runtimeApiUrl = process.env.BACKEND_DOMAIN || process.env.API_URL;
-    } else if (isSetupMode || !config.frontend.apiUrl || config.frontend.apiUrl.includes('localhost')) {
-      // Auto-detect from request headers (setup mode or missing/localhost config)
-      const protocol = req.headers['x-forwarded-proto'] || (req.secure ? 'https' : 'http');
-      const hostHeader = req.headers['x-forwarded-host'] || req.headers['host'] || 'localhost:3000';
-      const host = Array.isArray(hostHeader) ? hostHeader[0] : hostHeader;
-      
-      if (host.includes('localhost')) {
-        runtimeApiUrl = 'http://localhost:3001';
-      } else if (host.startsWith('www-')) {
-        // www-dev.tedcharles.net -> api-dev.tedcharles.net
-        runtimeApiUrl = `${protocol}://api-${host.substring(4)}`;
-      } else if (host.startsWith('www.')) {
-        // www.tedcharles.net -> api.tedcharles.net
-        runtimeApiUrl = `${protocol}://api.${host.substring(4)}`;
-      } else {
-        runtimeApiUrl = `${protocol}://api.${host}`;
-      }
-    } else {
-      // Use config file value
+    } else if (!isSetupMode && config.frontend.apiUrl && !config.frontend.apiUrl.includes('localhost')) {
+      // Use config file value if available
       runtimeApiUrl = config.frontend.apiUrl;
+    } else {
+      // Final fallback: derive from host
+      runtimeApiUrl = `${protocol}://api.${host}`;
     }
     
     // Set Content Security Policy with runtime API URL
