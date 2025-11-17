@@ -6,6 +6,46 @@ A modern photography portfolio website built with React 19, TypeScript, Express 
 
 ---
 
+## 🐳 Docker Hub
+
+Pre-built Docker images are available on Docker Hub:
+
+```bash
+# Pull latest production image
+docker pull yourusername/galleria:latest
+
+# Pull latest development image
+docker pull yourusername/galleria:dev
+
+# Pull specific version
+docker pull yourusername/galleria:v1.0.0
+```
+
+**Quick Start with Docker Hub image:**
+
+```bash
+# Create data directory
+mkdir -p ~/galleria-data
+
+# Run with Docker
+docker run -d \
+  --name galleria \
+  -p 3000:3000 \
+  -p 3001:3001 \
+  -v ~/galleria-data:/data \
+  -e DATA_DIR=/data \
+  -e FRONTEND_DOMAIN=http://localhost:3000 \
+  -e BACKEND_DOMAIN=http://localhost:3001 \
+  yourusername/galleria:latest
+```
+
+**Available tags:**
+- `:latest` - Latest production build
+- `:dev` - Latest development build  
+- `:vX.Y.Z` - Specific version (e.g., `:v1.2.3`)
+
+---
+
 ## Quick Start
 
 ### Prerequisites
