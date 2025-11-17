@@ -1,4 +1,0 @@
-User-agent: *
-Disallow: /primes/
-
-Sitemap: https://tedcharles.net/sitemap.xml

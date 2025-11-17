@@ -23,25 +23,33 @@ const getRPConfig = () => {
   let rpID = process.env.RP_ID;
   let origin = process.env.ORIGIN;
   
-  // If not set via env vars, try to infer from config
+  // If not set via env vars, try to infer from environment variables or config
   if (!rpID || !origin) {
     try {
-      if (config.frontend?.apiUrl) {
+      // First, try to use FRONTEND_DOMAIN from environment
+      if (process.env.FRONTEND_DOMAIN) {
+        const frontendUrl = new URL(process.env.FRONTEND_DOMAIN);
+        rpID = rpID || frontendUrl.hostname;
+        origin = origin || process.env.FRONTEND_DOMAIN;
+      } 
+      // Fallback to config.frontend.apiUrl if available
+      else if (config.frontend?.apiUrl) {
         const url = new URL(config.frontend.apiUrl);
         const hostname = url.hostname;
         
-        // Extract base domain (remove subdomains like 'api-dev' or 'www-dev')
-        if (hostname.includes('tedcharles.net')) {
-          // Use the full subdomain for RP ID to match origin exactly
-          rpID = rpID || 'www-dev.tedcharles.net';
-          origin = origin || config.frontend.apiUrl.replace('api-dev', 'www-dev').replace('api.', 'www.');
+        // If it's an API subdomain, try to convert to www subdomain for frontend
+        if (hostname.startsWith('api-dev.') || hostname.startsWith('api.')) {
+          const frontendHostname = hostname.replace('api-dev.', 'www-dev.').replace('api.', 'www.');
+          rpID = rpID || frontendHostname;
+          const protocol = url.protocol;
+          origin = origin || `${protocol}//${frontendHostname}`;
         } else if (hostname === 'localhost' || hostname === '127.0.0.1') {
           rpID = rpID || 'localhost';
           origin = origin || `http://localhost:${config.frontend?.port || 3000}`;
         }
       }
     } catch (err) {
-      console.warn('Could not infer RP config from config.json:', err);
+      console.warn('Could not infer RP config from environment or config:', err);
     }
   }
   

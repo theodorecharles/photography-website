@@ -49,10 +49,10 @@ router.get("/runtime", (req, res) => {
       if (host.includes('localhost')) {
         apiUrl = 'http://localhost:3001';
       } else if (host.startsWith('www.')) {
-        // www.tedcharles.net -> api.tedcharles.net
+        // www.example.com -> api.example.com
         apiUrl = `${protocol}://api.${host.substring(4)}`;
       } else {
-        // tedcharles.net -> api.tedcharles.net
+        // example.com -> api.example.com
         apiUrl = `${protocol}://api.${host}`;
       }
       

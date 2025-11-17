@@ -22,14 +22,36 @@ function getAlbums(): string[] {
   }
 }
 
+/**
+ * Dynamically determine the site URL from the request
+ */
+function getSiteUrl(req: any): string {
+  // First, try SITE_URL environment variable (set by build.js)
+  if (process.env.SITE_URL) {
+    return process.env.SITE_URL;
+  }
+  
+  // Fallback: derive from FRONTEND_DOMAIN or request
+  if (process.env.FRONTEND_DOMAIN) {
+    return process.env.FRONTEND_DOMAIN;
+  }
+  
+  // Last resort: derive from current request
+  const protocol = req.protocol || 'https';
+  const host = req.get('host') || 'localhost:3000';
+  
+  // If this is a backend domain (api.* or api-*), convert to frontend domain
+  if (host.startsWith('api.') || host.startsWith('api-')) {
+    const frontendHost = host.replace(/^api(-dev)?\./, 'www$1.');
+    return `${protocol}://${frontendHost}`;
+  }
+  
+  return `${protocol}://${host}`;
+}
+
 router.get('/sitemap.xml', (req, res) => {
   const albums = getAlbums();
-  
-  // Get base URL from environment (set by build.js from config.json)
-  if (!process.env.SITE_URL) {
-    throw new Error('SITE_URL environment variable not set. This should be set from config.json');
-  }
-  const baseUrl = process.env.SITE_URL;
+  const baseUrl = getSiteUrl(req);
   const today = new Date().toISOString().split('T')[0];
   
   let xml = `<?xml version="1.0" encoding="UTF-8"?>
@@ -70,6 +92,19 @@ router.get('/sitemap.xml', (req, res) => {
   
   res.header('Content-Type', 'application/xml');
   res.send(xml);
+});
+
+router.get('/robots.txt', (req, res) => {
+  const baseUrl = getSiteUrl(req);
+  
+  const robotsTxt = `User-agent: *
+Disallow: /primes/
+
+Sitemap: ${baseUrl}/sitemap.xml
+`;
+  
+  res.header('Content-Type', 'text/plain');
+  res.send(robotsTxt);
 });
 
 export default router;

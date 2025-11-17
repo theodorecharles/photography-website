@@ -46,17 +46,6 @@ console.log(`  VITE_SITE_URL=${process.env.VITE_SITE_URL}`);
 console.log(`  VITE_SITE_NAME=${process.env.VITE_SITE_NAME}`);
 console.log(`  VITE_ANALYTICS_ENABLED=${process.env.VITE_ANALYTICS_ENABLED}`);
 
-// Update robots.txt with correct sitemap URL from config.json
-console.log('\nUpdating robots.txt with sitemap URL from config.json...');
-const robotsTxtPath = path.join(__dirname, 'frontend', 'public', 'robots.txt');
-const robotsTxt = `User-agent: *
-Disallow: /primes/
-
-Sitemap: ${siteUrl}/sitemap.xml
-`;
-fs.writeFileSync(robotsTxtPath, robotsTxt);
-console.log(`✓ Updated robots.txt with sitemap: ${siteUrl}/sitemap.xml`);
-
 // Generate static JSON files for albums (requires backend database)
 console.log('\nGenerating static JSON files...');
 try {
