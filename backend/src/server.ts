@@ -281,7 +281,7 @@ try {
     cookieDomain = undefined;
     console.log("Cookie domain: undefined (localhost development)");
   } else {
-    // For production, extract base domain (e.g., 'tedcharles.net' from 'api.tedcharles.net')
+    // For production, extract base domain (e.g., 'example.com' from 'api.example.com')
     // Set to '.domain.com' to share across subdomains
     const parts = hostname.split(".");
     if (parts.length >= 2) {

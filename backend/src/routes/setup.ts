@@ -133,19 +133,19 @@ router.post('/initialize', async (req: Request, res: Response): Promise<void> =>
       backendUrl = 'http://localhost:3001';
       frontendUrl = 'http://localhost:3000';
     } else if (host.startsWith('api.') || host.startsWith('api-')) {
-      // Request came to api.tedcharles.net or api-dev.tedcharles.net
+      // Request came to api.example.com or api-dev.example.com
       // Backend URL is the current host, frontend is www.domain
       backendUrl = `${protocol}://${host}`;
       const domain = host.replace(/^api(-dev)?\./, '');
       frontendUrl = `${protocol}://www${host.includes('api-dev') ? '-dev' : ''}.${domain}`;
     } else if (host.startsWith('www.') || host.startsWith('www-')) {
-      // Request came to www.tedcharles.net or www-dev.tedcharles.net
+      // Request came to www.example.com or www-dev.example.com
       // Frontend URL is the current host, backend is api.domain
       frontendUrl = `${protocol}://${host}`;
       const domain = host.replace(/^www(-dev)?\./, '');
       backendUrl = `${protocol}://api${host.includes('www-dev') ? '-dev' : ''}.${domain}`;
     } else {
-      // Bare domain (tedcharles.net)
+      // Bare domain (example.com)
       frontendUrl = `${protocol}://www.${host}`;
       backendUrl = `${protocol}://api.${host}`;
     }
