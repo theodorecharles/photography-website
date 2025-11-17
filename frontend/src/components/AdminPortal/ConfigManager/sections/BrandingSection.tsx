@@ -8,7 +8,6 @@ import { API_URL } from '../../../../config';
 import { BrandingConfig } from '../../types';
 import { trackBrandingUpdate, trackAvatarUpload } from '../../../../utils/analytics';
 import SectionHeader from '../components/SectionHeader';
-import { API_URL } from '../../../../config';
 import '../../BrandingManager.css';
 
 

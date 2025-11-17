@@ -16,7 +16,6 @@ import { PasswordChangeModal } from "./UserManagement/PasswordChangeModal";
 import { InviteLinkModal } from "./UserManagement/InviteLinkModal";
 import { userManagementAPI } from "./UserManagement/utils";
 import { withLoadingAndErrorHandling } from "./UserManagement/handlers";
-import { API_URL } from '../../../../config';
 import type {
   User,
   Passkey,

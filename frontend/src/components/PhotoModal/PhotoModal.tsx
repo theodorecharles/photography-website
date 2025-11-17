@@ -13,7 +13,6 @@ import ModalControls from './ModalControls';
 import InfoPanel from './InfoPanel';
 import ImageCanvas from './ImageCanvas';
 import ModalNavigation from './ModalNavigation';
-import { API_URL } from '../../config';
 import './PhotoModal.css';
 
 
