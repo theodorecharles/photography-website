@@ -22,7 +22,8 @@ jobs:
           cd /home/ted/photography-website/
           CURRENT_BRANCH=$(git branch --show-current)
           echo "Current branch: $CURRENT_BRANCH"
-          git pull --ff-only origin "$CURRENT_BRANCH"
+          git fetch origin "$CURRENT_BRANCH"
+          git reset --hard "origin/$CURRENT_BRANCH"
 
       - name: Send deployment start notification
         if: vars.TELEGRAM_CHAT_ID
@@ -146,13 +147,13 @@ jobs:
           docker logout
 
       - name: Update Docker Hub README
-        if: success() && vars.DOCKERHUB_USERNAME && secrets.DOCKERHUB_TOKEN
+        if: success() && vars.DOCKERHUB_USERNAME
         run: |
           cd /home/ted/photography-website/
-          
+
           # Read README.md and escape for JSON
           README_CONTENT=$(cat README.md | jq -Rs .)
-          
+
           # Update Docker Hub full_description via API
           curl -X PATCH \
             "https://hub.docker.com/v2/repositories/${{ vars.DOCKERHUB_USERNAME }}/${{ vars.DOCKER_IMAGE_NAME }}/" \
@@ -176,7 +177,7 @@ jobs:
           fi
 
           VERSION=$(node -p "require('./package.json').version")
-          
+
           MESSAGE="🐳 Docker image built and pushed!
 
           🌐 Branch: master

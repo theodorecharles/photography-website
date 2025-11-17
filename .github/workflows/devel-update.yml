@@ -22,7 +22,8 @@ jobs:
           cd /home/ted/photography-website/
           CURRENT_BRANCH=$(git branch --show-current)
           echo "Current branch: $CURRENT_BRANCH"
-          git pull --ff-only origin "$CURRENT_BRANCH"
+          git fetch origin "$CURRENT_BRANCH"
+          git reset --hard "origin/$CURRENT_BRANCH"
 
       - name: Send deployment start notification
         if: vars.TELEGRAM_CHAT_ID
@@ -144,7 +145,7 @@ jobs:
           docker logout
 
       - name: Update Docker Hub README
-        if: success() && vars.DOCKERHUB_USERNAME && secrets.DOCKERHUB_TOKEN
+        if: success() && vars.DOCKERHUB_USERNAME
         run: |
           cd /home/ted/photography-website/
           
