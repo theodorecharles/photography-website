@@ -85,20 +85,6 @@ The wizard will guide you through:
 
 ---
 
-### Option 3: Unraid (One-Click Install)
-
-**Available in Community Applications.**
-
-1. Open Unraid Docker tab
-2. Click "Apps" tab
-3. Search for "Galleria"
-4. Click "Install"
-5. Configure your domains and click "Apply"
-
-📖 **Detailed guide:** [UNRAID-SETUP.md](UNRAID-SETUP.md)
-
----
-
 ## 📦 Production Deployment
 
 ### Using PM2
@@ -297,8 +283,6 @@ kill -9 <PID>  # Kill the process
 ## 📖 Additional Documentation
 
 - **[README.docker.md](README.docker.md)** - Detailed Docker deployment guide
-- **[UNRAID-SETUP.md](UNRAID-SETUP.md)** - Unraid Community Applications setup
-- **[UNRAID-COMMUNITY-APPS.md](UNRAID-COMMUNITY-APPS.md)** - Community Apps submission guide
 
 ---
 
