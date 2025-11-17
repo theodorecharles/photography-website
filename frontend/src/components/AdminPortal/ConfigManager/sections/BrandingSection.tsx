@@ -314,7 +314,7 @@ const BrandingSection: React.FC<BrandingSectionProps> = ({
             )}
           </div>
 
-          <div className="branding-group full-width">
+          <div className="branding-group">
             <label className="branding-label">Photo License</label>
             <p className="branding-description">
               Choose how others can use your photographs
