@@ -32,6 +32,7 @@ export interface BrandingConfig {
   metaKeywords: string;
   faviconPath: string;
   shuffleHomepage?: boolean;
+  photoLicense?: string;
 }
 
 export interface ImageOptimizationSettings {

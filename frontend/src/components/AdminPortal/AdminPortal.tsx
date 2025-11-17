@@ -399,7 +399,8 @@ export default function AdminPortal() {
         metaDescription: data.metaDescription || '',
         metaKeywords: data.metaKeywords || '',
         faviconPath: data.faviconPath || '',
-        shuffleHomepage: data.shuffleHomepage ?? true
+        shuffleHomepage: data.shuffleHomepage ?? true,
+        photoLicense: data.photoLicense || 'cc-by'
       };
       console.log('[AdminPortal] Setting branding state to:', brandingData);
       setBranding(brandingData);

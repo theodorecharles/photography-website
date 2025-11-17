@@ -18,6 +18,7 @@ interface FooterProps {
 
 function Footer({ albums: _albums = [], externalLinks: _externalLinks = [], currentAlbum: _currentAlbum }: FooterProps) {
   const [currentYear, setCurrentYear] = useState<number>(new Date().getFullYear());
+  const [siteName, setSiteName] = useState<string>('');
 
   useEffect(() => {
     // Fetch the current year from the backend to prevent clock manipulation
@@ -40,7 +41,21 @@ function Footer({ albums: _albums = [], externalLinks: _externalLinks = [], curr
       }
     };
 
+    // Fetch branding to get site name
+    const fetchBranding = async () => {
+      try {
+        const response = await fetch(`${API_URL}/api/branding`);
+        if (response.ok) {
+          const data = await response.json();
+          setSiteName(data.siteName || '');
+        }
+      } catch (error) {
+        console.debug('Failed to fetch branding:', error);
+      }
+    };
+
     fetchCurrentYear();
+    fetchBranding();
   }, []);
 
   return (
@@ -48,9 +63,11 @@ function Footer({ albums: _albums = [], externalLinks: _externalLinks = [], curr
       <div className="footer-content">
         <div className="footer-bottom">
           <span>
-            &copy; {currentYear} Ted Charles.{' '}
+            &copy; {currentYear} {siteName || 'Ted Charles'}.{' '}
             <span className="footer-separator">•</span>{' '}
-            <Link to="/license" className="footer-link">View License</Link>
+            <Link to="/license" className="footer-link">
+              License
+            </Link>
           </span>
           <div className="footer-links">
             <span className="footer-powered-by">
