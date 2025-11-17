@@ -56,7 +56,7 @@ function Footer({ albums: _albums = [], externalLinks: _externalLinks = [], curr
             <span className="footer-powered-by">
               Powered by{' '}
               <a 
-                href="https://github.com/theodorecharles/galleria" 
+                href="https://github.com/theodorecharles/Galleria" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="footer-galleria-link"
