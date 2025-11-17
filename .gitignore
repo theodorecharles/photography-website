@@ -26,6 +26,9 @@ data/
 data-backup-*/
 config/config.local.json
 
+# PM2 config (generated at runtime from ecosystem.local.cjs or ecosystem.docker.cjs)
+ecosystem.config.cjs
+
 # Database (persist gallery data across updates)
 gallery.db
 gallery.db-shm
@@ -40,6 +43,7 @@ image-metadata.db-wal
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+data/logs/*.log
 
 # IDE
 .idea/

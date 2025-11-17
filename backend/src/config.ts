@@ -102,20 +102,80 @@ export const DB_PATH = path.join(DATA_DIR, 'gallery.db');
 
 // Export dynamic getters for config values that can change
 export function getAllowedOrigins(): string[] {
-  if (process.env.ALLOWED_ORIGINS) {
-    return process.env.ALLOWED_ORIGINS.split(',').map((o: string) => o.trim());
+  const origins: string[] = [];
+  
+  console.log('[CORS Debug] Environment variables:');
+  console.log('  FRONTEND_DOMAIN:', process.env.FRONTEND_DOMAIN || '(not set)');
+  console.log('  BACKEND_DOMAIN:', process.env.BACKEND_DOMAIN || '(not set)');
+  console.log('  ALLOWED_ORIGINS:', process.env.ALLOWED_ORIGINS || '(not set)');
+  
+  // Add FRONTEND_DOMAIN if provided (supports http:// and https://)
+  if (process.env.FRONTEND_DOMAIN) {
+    const frontendDomain = process.env.FRONTEND_DOMAIN.trim();
+    if (frontendDomain.startsWith('http://') || frontendDomain.startsWith('https://')) {
+      origins.push(frontendDomain);
+      console.log('[CORS Debug] Added FRONTEND_DOMAIN:', frontendDomain);
+    } else {
+      // Auto-detect protocol based on BACKEND_DOMAIN or default to https
+      const protocol = process.env.BACKEND_DOMAIN?.startsWith('https://') ? 'https' : 'https';
+      const fullUrl = `${protocol}://${frontendDomain}`;
+      origins.push(fullUrl);
+      console.log('[CORS Debug] Added FRONTEND_DOMAIN with protocol:', fullUrl);
+    }
   }
-  return fullConfig.environment.backend.allowedOrigins;
+  
+  // Add BACKEND_DOMAIN if provided (for same-origin requests)
+  if (process.env.BACKEND_DOMAIN) {
+    const backendDomain = process.env.BACKEND_DOMAIN.trim();
+    if (backendDomain.startsWith('http://') || backendDomain.startsWith('https://')) {
+      origins.push(backendDomain);
+      console.log('[CORS Debug] Added BACKEND_DOMAIN:', backendDomain);
+    } else {
+      const protocol = backendDomain.includes('localhost') ? 'http' : 'https';
+      const fullUrl = `${protocol}://${backendDomain}`;
+      origins.push(fullUrl);
+      console.log('[CORS Debug] Added BACKEND_DOMAIN with protocol:', fullUrl);
+    }
+  }
+  
+  // Always allow localhost on any port (for development)
+  origins.push('http://localhost:3000');
+  origins.push('http://localhost:3001');
+  origins.push('http://127.0.0.1:3000');
+  origins.push('http://127.0.0.1:3001');
+  
+  // Allow internal IPs on ports 3000 and 3001 (for Docker networking)
+  // Pattern: http://<any-ip>:3000 or http://<any-ip>:3001
+  // We'll handle this dynamically in the CORS middleware
+  
+  // Add ALLOWED_ORIGINS from environment if provided
+  if (process.env.ALLOWED_ORIGINS) {
+    const envOrigins = process.env.ALLOWED_ORIGINS.split(',').map((o: string) => o.trim());
+    origins.push(...envOrigins);
+  }
+  
+  // Add origins from config.json (if exists and not overridden)
+  if (!process.env.ALLOWED_ORIGINS && !process.env.FRONTEND_DOMAIN) {
+    const configOrigins = fullConfig.environment.backend.allowedOrigins || [];
+    origins.push(...configOrigins);
+    console.log('[CORS Debug] Added origins from config.json:', configOrigins);
+  }
+  
+  // Remove duplicates
+  const uniqueOrigins = [...new Set(origins)];
+  console.log('[CORS Debug] Final allowed origins:', uniqueOrigins);
+  return uniqueOrigins;
 }
 
 // Export constants
 export const PORT = process.env.PORT ? parseInt(process.env.PORT) : fullConfig.environment.backend.port;
 export const RATE_LIMIT_WINDOW_MS = fullConfig.environment.security.rateLimitWindowMs;
 export const RATE_LIMIT_MAX_REQUESTS = fullConfig.environment.security.rateLimitMaxRequests;
-export const ALLOWED_ORIGINS = getAllowedOrigins();
 
-// Export flag indicating if config exists
-export const CONFIG_EXISTS = configExists;
+// Export function to check if config exists (dynamic, updated after reloadConfig)
+export function getConfigExists(): boolean {
+  return configExists;
+}
 
 // Export function to reload configuration (called after setup wizard completes)
 export function reloadConfig() {

@@ -4,11 +4,12 @@
  */
 
 import { Album, AlbumFolder, ConfirmModalConfig } from '../types';
+import { API_URL } from '../../../../config';
 import { fetchWithRateLimitCheck } from '../../../../utils/fetchWrapper';
 import { trackAlbumDeleted } from '../../../../utils/analytics';
 import { sanitizeAndTitleCase, isValidAlbumName } from '../utils/albumHelpers';
 
-import { API_URL } from '../../../../config';
+
 interface AlbumHandlersProps {
   localAlbums: Album[];
   setLocalAlbums: (albums: Album[]) => void;

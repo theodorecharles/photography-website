@@ -96,9 +96,13 @@ async function processQueue() {
       state: 'optimizing'
     });
 
-    // Spawn optimization process
+    // Spawn optimization process with DATA_DIR environment variable
     const childProcess = spawn('node', [job.scriptPath, job.album, job.filename], {
-      cwd: job.projectRoot
+      cwd: job.projectRoot,
+      env: {
+        ...process.env,
+        DATA_DIR: process.env.DATA_DIR || path.join(job.projectRoot, 'data')
+      }
     });
 
     activeJobs.add(childProcess);

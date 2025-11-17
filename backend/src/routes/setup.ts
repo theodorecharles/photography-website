@@ -448,30 +448,27 @@ router.post('/initialize', async (req: Request, res: Response): Promise<void> =>
       console.error('  ❌ Failed to initialize Google OAuth:', err);
     }
 
+    // Only restart if Google OAuth is selected (needs OAuth strategy initialization)
+    // Password auth doesn't need restart - config reloaded dynamically
+    const requiresRestart = authMethod === 'google';
+    
     res.json({
       success: true,
       message: 'Configuration initialized successfully',
-      requiresRestart: false // No restart needed - config and OAuth reloaded dynamically
+      requiresRestart
     });
     
-    // Trigger full restart via restart.sh after sending response
-    // This rebuilds frontend/backend and restarts all services with new configuration
-    console.log('\n🔄 Triggering full system restart via restart.sh...');
-    setTimeout(() => {
-      console.log('✓ Setup complete - executing restart.sh');
-      const { spawn } = require('child_process');
-      const scriptPath = path.join(__dirname, '..', '..', '..', 'restart.sh');
-      
-      // Spawn restart.sh in detached mode so it continues after this process exits
-      const restart = spawn('bash', [scriptPath], {
-        detached: true,
-        stdio: 'ignore',
-        cwd: path.join(__dirname, '..', '..', '..')
-      });
-      
-      restart.unref(); // Allow parent process to exit independently
-      process.exit(0); // Exit this process, restart.sh will handle the rest
-    }, 500); // Wait 500ms to ensure response is sent
+    if (requiresRestart) {
+      // Gracefully restart the backend after sending response
+      // This ensures Google OAuth strategy is properly initialized
+      console.log('\n🔄 Triggering backend restart to initialize Google OAuth...');
+      setTimeout(() => {
+        console.log('✓ Setup complete - exiting for restart');
+        process.exit(0); // Exit cleanly - PM2/Docker will restart the process
+      }, 500); // Wait 500ms to ensure response is sent, then restart immediately
+    } else {
+      console.log('\n✓ Setup complete - no restart needed for password auth');
+    }
   } catch (error) {
     console.error('Setup initialization failed:', error);
     res.status(500).json({ 

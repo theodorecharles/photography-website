@@ -4,9 +4,10 @@
  */
 
 import { UploadingImage } from '../types';
+import { API_URL } from '../../../../config';
 import { validateImageFiles } from '../utils/albumHelpers';
 
-import { API_URL } from '../../../../config';
+
 interface UploadHandlersProps {
   uploadingImages: UploadingImage[];
   setUploadingImages: React.Dispatch<React.SetStateAction<UploadingImage[]>>;

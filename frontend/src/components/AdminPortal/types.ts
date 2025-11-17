@@ -76,3 +76,5 @@ export type { Photo } from '../../types/photo';
 
 export type Tab = 'branding' | 'links' | 'albums' | 'metrics' | 'config';
 
+export type AuthMethod = 'google' | 'credentials' | 'passkey' | null;
+

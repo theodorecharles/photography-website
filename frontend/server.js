@@ -11,14 +11,25 @@ const jsonCache = new Map();
 const JSON_CACHE_MAX_AGE = 5 * 60 * 1000; // 5 minutes
 
 // Load configuration (or use defaults for setup mode)
-const configPath = path.join(__dirname, "../data/config.json");
+// In Docker, DATA_DIR env var points to mounted volume
+const dataDir = process.env.DATA_DIR || path.join(__dirname, "../data");
+const configPath = path.join(dataDir, "config.json");
 let configFile;
 let config;
 let isSetupMode = false;
 
+// Use API_URL from environment if provided (for Docker)
+const envApiUrl = process.env.API_URL || process.env.BACKEND_DOMAIN;
+
 if (fs.existsSync(configPath)) {
   configFile = JSON.parse(fs.readFileSync(configPath, "utf8"));
   config = configFile.environment;
+  
+  // Override API URL from environment if provided
+  if (envApiUrl) {
+    config.frontend.apiUrl = envApiUrl;
+    console.log(`[Config] Using API URL from environment: ${envApiUrl}`);
+  }
 } else {
   // Setup mode - use defaults
   console.log("⚠️  config.json not found - using defaults for setup mode");
@@ -29,7 +40,7 @@ if (fs.existsSync(configPath)) {
   config = {
     frontend: {
       port: 3000,
-      apiUrl: "http://localhost:3001",
+      apiUrl: envApiUrl || "http://localhost:3001",
     },
     security: {
       allowedHosts: ["localhost:3000", "127.0.0.1:3000"],
@@ -71,14 +82,21 @@ app.use((req, res, next) => {
   // Skip host validation during setup mode (OOBE)
   if (!isSetupMode) {
     // Validate host to prevent open redirect attacks
-    if (!allowedHosts.includes(host)) {
+    // Allow IP addresses for direct container access (e.g., Unraid WebUI)
+    const ipPattern = /^\d+\.\d+\.\d+\.\d+(:\d+)?$/;
+    const isIpAddress = ipPattern.test(host);
+    
+    if (!allowedHosts.includes(host) && !isIpAddress) {
       return res.status(400).send("Invalid host header");
     }
   }
 
   // Redirect to HTTPS if apiUrl uses https (production/remote dev)
+  // Skip HTTPS redirect for IP addresses (e.g., direct Docker access)
+  const ipPattern = /^\d+\.\d+\.\d+\.\d+(:\d+)?$/;
+  const isIpAddress = ipPattern.test(host);
   const isProduction = config.frontend.apiUrl.startsWith("https://");
-  if (isProduction && req.headers["x-forwarded-proto"] !== "https") {
+  if (isProduction && req.headers["x-forwarded-proto"] !== "https" && !isIpAddress) {
     return res.redirect(301, `https://${host}${req.originalUrl}`);
   }
   next();
@@ -120,6 +138,11 @@ app.get('/albums-data/*.json', (req, res, next) => {
     res.setHeader('X-Cache', 'NONE');
     res.send(data);
   });
+});
+
+// Health check endpoint (must come before static files to avoid conflicts)
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok', message: 'Frontend server is running' });
 });
 
 // Serve static files from the dist directory
@@ -496,20 +519,37 @@ app.get("*", async (req, res) => {
       return res.sendFile(indexPath);
     }
     
-    // Auto-detect API URL if in setup mode
-    let runtimeApiUrl = config.frontend.apiUrl;
-    if (isSetupMode) {
-      const protocol = req.headers['x-forwarded-proto'] || (req.secure ? 'https' : 'http');
-      const hostHeader = req.headers['x-forwarded-host'] || req.headers['host'] || 'localhost:3000';
-      const host = Array.isArray(hostHeader) ? hostHeader[0] : hostHeader;
-      
-      if (host.includes('localhost')) {
-        runtimeApiUrl = 'http://localhost:3001';
-      } else if (host.startsWith('www.')) {
-        runtimeApiUrl = `${protocol}://api.${host.substring(4)}`;
-      } else {
-        runtimeApiUrl = `${protocol}://api.${host}`;
-      }
+    // Determine runtime API URL
+    // Always auto-detect from request headers first (supports both IP and domain access)
+    const protocol = req.headers['x-forwarded-proto'] || (req.secure ? 'https' : 'http');
+    const hostHeader = req.headers['x-forwarded-host'] || req.headers['host'] || 'localhost:3000';
+    const host = Array.isArray(hostHeader) ? hostHeader[0] : hostHeader;
+    let runtimeApiUrl;
+    
+    // Check if accessing via IP address (e.g., 192.168.1.219:3000)
+    const ipPattern = /^\d+\.\d+\.\d+\.\d+(:\d+)?$/;
+    if (ipPattern.test(host)) {
+      // Direct IP access: use same IP with port 3001
+      const ipAddress = host.split(':')[0];
+      runtimeApiUrl = `${protocol}://${ipAddress}:3001`;
+    } else if (host.includes('localhost')) {
+      // Localhost development
+      runtimeApiUrl = 'http://localhost:3001';
+    } else if (host.startsWith('www-')) {
+      // Domain with www- prefix (e.g., www-dev.tedcharles.net -> api-dev.tedcharles.net)
+      runtimeApiUrl = `${protocol}://api-${host.substring(4)}`;
+    } else if (host.startsWith('www.')) {
+      // Domain with www. prefix (e.g., www.tedcharles.net -> api.tedcharles.net)
+      runtimeApiUrl = `${protocol}://api.${host.substring(4)}`;
+    } else if (process.env.BACKEND_DOMAIN || process.env.API_URL) {
+      // Fall back to environment variable if provided
+      runtimeApiUrl = process.env.BACKEND_DOMAIN || process.env.API_URL;
+    } else if (!isSetupMode && config.frontend.apiUrl && !config.frontend.apiUrl.includes('localhost')) {
+      // Use config file value if available
+      runtimeApiUrl = config.frontend.apiUrl;
+    } else {
+      // Final fallback: derive from host
+      runtimeApiUrl = `${protocol}://api.${host}`;
     }
     
     // Set Content Security Policy with runtime API URL

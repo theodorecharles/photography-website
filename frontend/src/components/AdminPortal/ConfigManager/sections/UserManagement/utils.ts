@@ -1,7 +1,8 @@
 import type { NewUserState } from './types';
+import { API_URL } from '../../../../../config';
 import md5 from 'md5';
 
-import { API_URL } from '../../../../../config';
+
 /**
  * Generate Gravatar URL from email address
  * @param email - User's email address

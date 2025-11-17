@@ -4,10 +4,11 @@
  */
 
 import React, { useState } from 'react';
+import { API_URL } from '../../../../config';
 import { ConfigData } from '../types';
 import SectionHeader from '../components/SectionHeader';
 
-import { API_URL } from '../../../../config';
+
 interface ImageOptimizationSectionProps {
   config: ConfigData | null;
   originalConfig: ConfigData | null;

@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useEffect } from "react";
+import { API_URL } from '../../../../config';
 import { MFASetupModal } from "./UserManagement/MFASetupModal";
 import { ConfirmationModal } from "./UserManagement/ConfirmationModal";
 import { UserCard } from "./UserManagement/UserCard";
@@ -18,6 +19,7 @@ import type {
   PasswordChangeState,
   MessageType,
 } from "./UserManagement/types";
+
 
 interface ProfileSectionProps {
   setMessage: (message: MessageType) => void;

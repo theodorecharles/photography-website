@@ -5,6 +5,7 @@
 
 import { useState, useEffect } from 'react';
 import { API_URL } from '../../config';
+import RestartModal from '../RestartModal';
 import './SetupWizard.css';
 import type { SetupStatus } from './types';
 
@@ -32,6 +33,18 @@ export default function SetupWizard() {
   const [adminName, setAdminName] = useState('');
   const [adminPassword, setAdminPassword] = useState('');
   const [adminPasswordConfirm, setAdminPasswordConfirm] = useState('');
+  const [showRestartModal, setShowRestartModal] = useState(false);
+  
+  // Handle restart modal close - redirect to appropriate auth flow
+  const handleRestartComplete = () => {
+    if (authMethod === 'google') {
+      // For Google auth, redirect to Google OAuth flow
+      window.location.href = `${API_URL}/api/auth/google`;
+    } else {
+      // For password auth, redirect to admin portal (will show login)
+      window.location.href = '/admin';
+    }
+  };
 
   // Check setup status on mount
   useEffect(() => {
@@ -179,29 +192,16 @@ export default function SetupWizard() {
       setSuccess('Setup complete!');
       setCurrentStep(4);
 
-      // Show countdown while server restarts (restart.sh rebuilds and restarts everything)
-      let countdown = 15;
-      const countdownInterval = setInterval(() => {
-        countdown--;
-        if (countdown > 0) {
-          setSuccess(`Setup complete! Hang on while the server rebuilds and starts up with your new configuration... (${countdown})`);
-        } else {
-          clearInterval(countdownInterval);
-          setSuccess('Setup complete! Redirecting...');
-        }
-      }, 1000);
-
-      // Wait 15 seconds for full rebuild and restart before redirecting
-      setTimeout(() => {
-        clearInterval(countdownInterval);
-        if (authMethod === 'google') {
-          // For Google auth, redirect to Google OAuth flow
-          window.location.href = `${API_URL}/api/auth/google`;
-        } else {
-          // For password auth, redirect to admin portal (will show login)
+      // Only show restart modal for Google OAuth (needs server restart)
+      // Password auth works immediately without restart
+      if (data.requiresRestart) {
+        setShowRestartModal(true);
+      } else {
+        // For password auth, redirect directly to admin portal
+        setTimeout(() => {
           window.location.href = '/admin';
-        }
-      }, 15000);
+        }, 2000); // Give user time to see success message
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Setup failed. Please try again.');
       console.error('Setup initialization failed:', err);
@@ -659,7 +659,7 @@ export default function SetupWizard() {
           <p>
             Need help? Check the{' '}
             <a 
-              href="https://github.com/theodoreroddy/photography-website" 
+              href="https://github.com/theodorecharles/photography-website" 
               target="_blank" 
               rel="noopener noreferrer"
             >
@@ -668,6 +668,14 @@ export default function SetupWizard() {
           </p>
         </div>
       </div>
+      
+      {/* Restart Modal */}
+      {showRestartModal && (
+        <RestartModal
+          onClose={handleRestartComplete}
+          message="Setup complete! Waiting for server to restart..."
+        />
+      )}
     </div>
   );
 }

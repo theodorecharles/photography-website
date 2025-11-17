@@ -4,9 +4,10 @@
  */
 
 import React, { useState, useEffect } from "react";
+import { API_URL } from '../../config';
 import { useNavigate } from "react-router-dom";
 
-import { API_URL } from '../../config';
+
 const PasswordResetRequest: React.FC = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");

@@ -4,11 +4,12 @@
  */
 
 import React, { useState, useEffect, useRef } from 'react';
+import { API_URL } from '../../../../config';
 import { ConfigData } from '../types';
 import { PasswordInput } from '../../PasswordInput';
 import SectionHeader from '../components/SectionHeader';
 
-import { API_URL } from '../../../../config';
+
 interface OpenAISectionProps {
   config: ConfigData | null;
   originalConfig: ConfigData | null;

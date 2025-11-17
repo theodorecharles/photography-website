@@ -8,6 +8,7 @@
  */
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { API_URL } from '../../../config';
 import { useSearchParams } from 'react-router-dom';
 import { UploadingImage, AlbumsManagerProps, ConfirmModalConfig, Photo } from './types';
 import { trackAlbumCreated } from '../../../utils/analytics';
@@ -46,6 +47,7 @@ import {
   sortableKeyboardCoordinates,
   rectSortingStrategy,
 } from '@dnd-kit/sortable';
+
 
 const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   albums,
@@ -654,6 +656,10 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
       setMessage({ type: 'success', text: `Album "${newAlbumModalName}" created` });
       trackAlbumCreated(newAlbumModalName);
       await loadAlbums();
+      
+      // Notify other components (like the header navigation)
+      window.dispatchEvent(new Event('albums-updated'));
+      
       handleCloseNewAlbumModal();
       selectAlbum(newAlbumModalName);
       
