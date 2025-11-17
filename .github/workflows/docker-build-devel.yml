@@ -1,0 +1,79 @@
+name: Build Docker Image (Dev)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  docker:
+    name: Build and push Docker image
+    runs-on: [self-hosted, dev, photography-website]
+    environment: Dev
+    steps:
+      - name: Build and push Docker image
+        if: vars.DOCKERHUB_USERNAME && vars.DOCKER_IMAGE_NAME
+        run: |
+          cd /home/ted/photography-website/
+          
+          # Login to Docker Hub
+          echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ vars.DOCKERHUB_USERNAME }}" --password-stdin
+          
+          # Set tag (use environment variable or default to 'dev')
+          TAG="${{ vars.DOCKER_TAG }}"
+          if [ -z "$TAG" ]; then
+            TAG="dev"
+          fi
+          
+          # Build and push
+          docker build -t ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.DOCKER_IMAGE_NAME }}:$TAG .
+          docker push ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.DOCKER_IMAGE_NAME }}:$TAG
+          
+          # Also tag and push with commit hash
+          COMMIT_HASH=$(git rev-parse --short HEAD)
+          docker tag ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.DOCKER_IMAGE_NAME }}:$TAG \
+                     ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.DOCKER_IMAGE_NAME }}:$COMMIT_HASH
+          docker push ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.DOCKER_IMAGE_NAME }}:$COMMIT_HASH
+          
+          # Logout
+          docker logout
+      
+      - name: Send success notification
+        if: success() && vars.TELEGRAM_CHAT_ID
+        run: |
+          cd /home/ted/photography-website/
+          COMMIT_HASH=$(git rev-parse --short HEAD)
+          TAG="${{ vars.DOCKER_TAG }}"
+          if [ -z "$TAG" ]; then
+            TAG="dev"
+          fi
+          
+          MESSAGE="🐳 Docker image built and pushed!
+
+          🌐 Branch: devel
+          📦 Image: ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.DOCKER_IMAGE_NAME }}:$TAG
+          🏷️ Also tagged: $COMMIT_HASH
+          
+          🔗 Workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          
+          curl -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+               -d "chat_id=${{ vars.TELEGRAM_CHAT_ID }}" \
+               -d "text=$MESSAGE" \
+               --silent --output /dev/null || true
+      
+      - name: Send failure notification
+        if: failure() && vars.TELEGRAM_CHAT_ID
+        run: |
+          cd /home/ted/photography-website/
+          COMMIT_HASH=$(git rev-parse --short HEAD)
+          
+          MESSAGE="❌ Docker build FAILED!
+
+          🌐 Branch: devel
+          📦 Commit: $COMMIT_HASH
+          
+          🔗 Workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          
+          curl -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+               -d "chat_id=${{ vars.TELEGRAM_CHAT_ID }}" \
+               -d "text=$MESSAGE" \
+               --silent --output /dev/null || true
+
