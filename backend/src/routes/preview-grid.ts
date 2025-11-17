@@ -7,9 +7,75 @@ import { Router, Request, Response } from "express";
 import sharp from "sharp";
 import fs from "fs";
 import path from "path";
-import { getShareLinkBySecret, isShareLinkExpired } from "../database.js";
+import { getShareLinkBySecret, isShareLinkExpired, getImagesForHomepage } from "../database.js";
+import { DATA_DIR } from "../config.js";
 
 const router = Router();
+
+/**
+ * Create a circular avatar with white border
+ */
+async function createCircularAvatar(avatarPath: string, size: number): Promise<Buffer> {
+  const borderWidth = 6;
+  const innerSize = size - (borderWidth * 2);
+  
+  // Create circular mask
+  const circleMask = Buffer.from(
+    `<svg width="${innerSize}" height="${innerSize}">
+      <circle cx="${innerSize / 2}" cy="${innerSize / 2}" r="${innerSize / 2}" fill="white"/>
+    </svg>`
+  );
+  
+  // Process avatar: resize and apply circular mask
+  const circularAvatar = await sharp(avatarPath)
+    .resize(innerSize, innerSize, { fit: 'cover', position: 'center' })
+    .composite([{
+      input: circleMask,
+      blend: 'dest-in'
+    }])
+    .toBuffer();
+  
+  // Create white circle border background
+  const whiteBorder = Buffer.from(
+    `<svg width="${size}" height="${size}">
+      <circle cx="${size / 2}" cy="${size / 2}" r="${size / 2}" fill="white"/>
+    </svg>`
+  );
+  
+  // Composite avatar on white border
+  const avatarWithBorder = await sharp(whiteBorder)
+    .composite([{
+      input: circularAvatar,
+      left: borderWidth,
+      top: borderWidth
+    }])
+    .png()
+    .toBuffer();
+  
+  return avatarWithBorder;
+}
+
+/**
+ * Get avatar path from config
+ */
+function getAvatarPath(photosDir: string): string | null {
+  try {
+    const configPath = path.join(DATA_DIR, 'config.json');
+    const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+    const avatarPath = config.branding?.avatarPath || '/photos/avatar.png';
+    
+    // Convert /photos/avatar.png to actual filesystem path
+    const fsAvatarPath = path.join(photosDir, avatarPath.replace('/photos/', ''));
+    
+    if (fs.existsSync(fsAvatarPath)) {
+      return fsAvatarPath;
+    }
+  } catch (error) {
+    console.error('Error getting avatar path:', error);
+  }
+  
+  return null;
+}
 
 interface PhotoGridOptions {
   photosDir: string;
@@ -83,6 +149,33 @@ async function generatePhotoGrid(options: PhotoGridOptions): Promise<Buffer> {
     );
   }
   
+  // Create composite layers
+  const compositeInputs = [
+    { input: photoBuffers[0], left: 0, top: 0 },
+    { input: photoBuffers[1], left: cellWidth, top: 0 },
+    { input: photoBuffers[2], left: 0, top: cellHeight },
+    { input: photoBuffers[3], left: cellWidth, top: cellHeight },
+  ];
+  
+  // Try to add avatar overlay
+  const avatarPath = getAvatarPath(photosDir);
+  if (avatarPath) {
+    try {
+      const avatarSize = 120;
+      const avatarBuffer = await createCircularAvatar(avatarPath, avatarSize);
+      
+      // Position in bottom-left corner with 20px padding
+      compositeInputs.push({
+        input: avatarBuffer,
+        left: 20,
+        top: gridHeight - avatarSize - 20
+      });
+    } catch (error) {
+      console.error('Error adding avatar overlay:', error);
+      // Continue without avatar
+    }
+  }
+  
   // Create 2x2 grid using sharp composite
   const grid = await (sharp as any)({
     create: {
@@ -92,12 +185,7 @@ async function generatePhotoGrid(options: PhotoGridOptions): Promise<Buffer> {
       background: { r: 0, g: 0, b: 0 }
     }
   })
-    .composite([
-      { input: photoBuffers[0], left: 0, top: 0 },
-      { input: photoBuffers[1], left: cellWidth, top: 0 },
-      { input: photoBuffers[2], left: 0, top: cellHeight },
-      { input: photoBuffers[3], left: cellWidth, top: cellHeight },
-    ])
+    .composite(compositeInputs)
     .jpeg({ quality: 90 })
     .toBuffer();
   
@@ -147,6 +235,149 @@ router.get("/album/:albumName", async (req: Request, res: Response): Promise<voi
     res.send(gridBuffer);
   } catch (error) {
     console.error("Error generating album preview grid:", error);
+    res.status(500).json({ error: "Failed to generate preview grid" });
+  }
+});
+
+/**
+ * GET /api/preview-grid/homepage
+ * Generate a 2x2 grid preview for the homepage
+ */
+router.get("/homepage", async (req: Request, res: Response): Promise<void> => {
+  try {
+    const photosDir = req.app.get("photosDir");
+    
+    // Get images from homepage (from published albums that show on homepage)
+    const images = getImagesForHomepage();
+    
+    if (images.length === 0) {
+      res.status(404).json({ error: "No photos available for homepage" });
+      return;
+    }
+    
+    // Take first 4 photos and convert to format expected by generatePhotoGrid
+    const selectedPhotos = images.slice(0, 4);
+    
+    // Group photos by album for grid generation
+    const photosByAlbum: { [key: string]: Array<{ filename: string }> } = {};
+    
+    for (const img of selectedPhotos) {
+      if (!photosByAlbum[img.album]) {
+        photosByAlbum[img.album] = [];
+      }
+      photosByAlbum[img.album].push({ filename: img.filename });
+    }
+    
+    // Generate grid cells from different albums
+    const photoBuffers: Buffer[] = [];
+    const cellWidth = 600;
+    const cellHeight = 315;
+    
+    for (const img of selectedPhotos) {
+      const thumbnailPath = path.join(photosDir, "../optimized/thumbnail", img.album, img.filename);
+      const modalPath = path.join(photosDir, "../optimized/modal", img.album, img.filename);
+      const originalPath = path.join(photosDir, img.album, img.filename);
+      
+      // Try thumbnail first, fall back to modal, then original
+      let imagePath = thumbnailPath;
+      if (!fs.existsSync(thumbnailPath)) {
+        imagePath = fs.existsSync(modalPath) ? modalPath : originalPath;
+      }
+      
+      if (!fs.existsSync(imagePath)) {
+        // Return a blank image if file doesn't exist
+        photoBuffers.push(
+          await (sharp as any)({
+            create: {
+              width: cellWidth,
+              height: cellHeight,
+              channels: 3,
+              background: { r: 40, g: 40, b: 40 }
+            }
+          }).jpeg().toBuffer()
+        );
+        continue;
+      }
+      
+      // Resize and crop to fit cell
+      const buffer = await sharp(imagePath)
+        .resize(cellWidth, cellHeight, {
+          fit: 'cover',
+          position: 'center'
+        })
+        .jpeg({ quality: 85 })
+        .toBuffer();
+      
+      photoBuffers.push(buffer);
+    }
+    
+    // If less than 4 photos, fill remaining cells with black
+    while (photoBuffers.length < 4) {
+      photoBuffers.push(
+        await (sharp as any)({
+          create: {
+            width: cellWidth,
+            height: cellHeight,
+            channels: 3,
+            background: { r: 20, g: 20, b: 20 }
+          }
+        }).jpeg().toBuffer()
+      );
+    }
+    
+    // Create 2x2 grid
+    const gridWidth = 1200;
+    const gridHeight = 630;
+    
+    // Create composite layers
+    const compositeInputs = [
+      { input: photoBuffers[0], left: 0, top: 0 },
+      { input: photoBuffers[1], left: cellWidth, top: 0 },
+      { input: photoBuffers[2], left: 0, top: cellHeight },
+      { input: photoBuffers[3], left: cellWidth, top: cellHeight },
+    ];
+    
+    // Try to add avatar overlay
+    const avatarPath = getAvatarPath(photosDir);
+    if (avatarPath) {
+      try {
+        const avatarSize = 120;
+        const avatarBuffer = await createCircularAvatar(avatarPath, avatarSize);
+        
+        // Position in bottom-left corner with 20px padding
+        compositeInputs.push({
+          input: avatarBuffer,
+          left: 20,
+          top: gridHeight - avatarSize - 20
+        });
+      } catch (error) {
+        console.error('Error adding avatar overlay:', error);
+        // Continue without avatar
+      }
+    }
+    
+    const grid = await (sharp as any)({
+      create: {
+        width: gridWidth,
+        height: gridHeight,
+        channels: 3,
+        background: { r: 0, g: 0, b: 0 }
+      }
+    })
+      .composite(compositeInputs)
+      .jpeg({ quality: 90 })
+      .toBuffer();
+    
+    // Set cache headers (cache for 1 hour)
+    res.set({
+      'Content-Type': 'image/jpeg',
+      'Cache-Control': 'public, max-age=3600',
+      'ETag': `"grid-homepage-${images.length}"`,
+    });
+    
+    res.send(grid);
+  } catch (error) {
+    console.error("Error generating homepage preview grid:", error);
     res.status(500).json({ error: "Failed to generate preview grid" });
   }
 });
