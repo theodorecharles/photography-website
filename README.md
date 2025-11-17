@@ -74,14 +74,7 @@ npm run dev
 ```
 
 3. **Open your browser:**
-Navigate to `http://localhost:3000` and follow the **Setup Wizard**! 🚀
-
-The wizard will guide you through:
-- Site name and branding
-- Admin account creation (password-based - no OAuth required)
-- Color customization
-- Optional Google OAuth setup (if you want OAuth login)
-- Automatic database and directory creation
+Navigate to `http://localhost:3000` - the setup wizard will guide you through initial configuration.
 
 ---
 
@@ -157,14 +150,6 @@ environment:
    BACKEND_DOMAIN=http://localhost:3001
    DATA_DIR=./data
    ```
-
-### Initial Setup
-
-On first run, the **Setup Wizard** will guide you through:
-- Site name and branding
-- Admin account creation
-- Color customization
-- Optional Google OAuth setup
 
 After initial setup, all configuration is managed through the **Admin Panel** at `/admin` → Settings.
 
