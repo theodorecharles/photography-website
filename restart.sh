@@ -125,23 +125,29 @@ fi
 # Return to project root
 cd ..
 
-# Restart both services using PM2
-log "Restarting services with PM2..."
+# Stop and delete all PM2 processes to avoid stale configuration
+log "Stopping and removing all PM2 processes..."
+if pm2 list 2>/dev/null | grep -q "online\|stopped\|errored"; then
+    log "Found existing PM2 processes, stopping them..."
+    pm2 stop all 2>/dev/null || true
+    pm2 delete all 2>/dev/null || true
+    log "All PM2 processes stopped and deleted"
+else
+    log "No existing PM2 processes found"
+fi
+
+# Start fresh with new builds
+log "Starting services with PM2..."
 
 # Copy ecosystem.local.cjs to ecosystem.config.cjs (PM2 requires this name)
 rm -f ecosystem.config.cjs
 cp ecosystem.local.cjs ecosystem.config.cjs
 
-if pm2 list | grep -q "backend\|frontend"; then
-    # Services are running, restart them
-    pm2 restart backend frontend --update-env || handle_error "Failed to restart services"
-else
-    # Services not running, start them
-    log "Services not running, starting them..."
-    if ! pm2 start ecosystem.config.cjs; then
-        handle_error "Failed to start services"
-    fi
+if ! pm2 start ecosystem.config.cjs; then
+    handle_error "Failed to start services"
 fi
+
+log "Services started successfully"
 
 # Get commit information for notification
 COMMIT_HASH=$(git rev-parse --short HEAD)
