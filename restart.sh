@@ -4,7 +4,7 @@ IFS=$'\n\t'        # Set Internal Field Separator for safer word splitting
 
 # Restart Script
 # This script handles the deployment and restart process for the photography website.
-# It pulls the latest changes, optimizes images, and restarts both frontend and backend services.
+# It pulls the latest changes, optimizes images, and restarts both frontend and backend services with PM2.
 
 # Function to log messages with timestamps
 log() {
