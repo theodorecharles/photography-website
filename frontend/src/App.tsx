@@ -42,6 +42,24 @@ const InviteSignup = lazy(() => import("./components/Misc/InviteSignup"));
 const PasswordResetRequest = lazy(() => import("./components/Misc/PasswordResetRequest"));
 const PasswordResetComplete = lazy(() => import("./components/Misc/PasswordResetComplete"));
 
+// LicenseWrapper component to show footer when license page loads
+function LicenseWrapper({ setShowFooter }: { setShowFooter: (show: boolean) => void }) {
+  useEffect(() => {
+    setShowFooter(true);
+  }, [setShowFooter]);
+
+  return (
+    <>
+      <SEO 
+        title="License - Ted Charles Photography"
+        description="License information for Ted Charles' photography. All photos are licensed under Creative Commons Attribution 4.0 International License."
+        url={`${SITE_URL}/license`}
+      />
+      <License />
+    </>
+  );
+}
+
 // AlbumRoute component handles the routing for individual album pages
 function AlbumRoute({ onAlbumNotFound, onLoadComplete }: { onAlbumNotFound: () => void; onLoadComplete: () => void }) {
   const { album } = useParams();
@@ -493,14 +511,7 @@ function App() {
             } />
             <Route path="/album/:album" element={<AlbumRoute onAlbumNotFound={() => setHideAlbumTitle(true)} onLoadComplete={() => setShowFooter(true)} />} />
             <Route path="/license" element={
-              <>
-                <SEO 
-                  title="License - Ted Charles Photography"
-                  description="License information for Ted Charles' photography. All photos are licensed under Creative Commons Attribution 4.0 International License."
-                  url={`${SITE_URL}/license`}
-                />
-                <License />
-              </>
+              <LicenseWrapper setShowFooter={setShowFooter} />
             } />
             <Route path="/admin" element={<AdminPortal />} />
             <Route path="/admin/login" element={<AdminPortal />} />
