@@ -24,8 +24,8 @@ A modern photography portfolio website built with React 19, TypeScript, Express 
 
 1. **Clone the repository:**
 ```bash
-git clone https://github.com/theodorecharles/galleria.git
-cd galleria
+git clone https://github.com/theodorecharles/Galleria.git
+cd Galleria
 ```
 
 2. **Create a data directory:**
@@ -60,8 +60,8 @@ docker-compose up -d --build
 
 1. **Clone and install dependencies:**
 ```bash
-git clone https://github.com/theodorecharles/galleria.git
-cd galleria
+git clone https://github.com/theodorecharles/Galleria.git
+cd Galleria
 npm install
 cd backend && npm install
 cd ../frontend && npm install
@@ -301,8 +301,8 @@ kill -9 <PID>  # Kill the process
 
 ## 🔗 Links
 
-- **📦 Repository:** [github.com/theodorecharles/galleria](https://github.com/theodorecharles/galleria)
-- **🐛 Issues:** [GitHub Issues](https://github.com/theodorecharles/galleria/issues)
+- **📦 Repository:** [github.com/theodorecharles/Galleria](https://github.com/theodorecharles/Galleria)
+- **🐛 Issues:** [GitHub Issues](https://github.com/theodorecharles/Galleria/issues)
 - **📧 Contact:** [me@tedcharles.net](mailto:me@tedcharles.net)
 
 ---
