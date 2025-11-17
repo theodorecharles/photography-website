@@ -151,6 +151,32 @@ app.use(express.static(path.join(__dirname, "dist"), {
   index: false, // Don't serve index.html automatically - let catch-all handle it
 }));
 
+/**
+ * Set Content Security Policy header
+ */
+function setCSPHeader(res, apiUrl, configFile) {
+  const apiDomainHttps = apiUrl.replace("http://", "https://");
+  const analyticsScriptPath = configFile.analytics?.scriptPath || '';
+  const analyticsScriptHost = analyticsScriptPath && analyticsScriptPath.startsWith('http') 
+    ? new URL(analyticsScriptPath).origin 
+    : '';
+  
+  res.setHeader(
+    "Content-Security-Policy",
+    "default-src 'self'; " +
+    `script-src 'self' 'unsafe-inline'${analyticsScriptHost ? ' ' + analyticsScriptHost : ''}; ` +
+    "style-src 'self' 'unsafe-inline'; " +
+    "worker-src 'self'; " +
+    `img-src 'self' ${apiDomainHttps} ${apiUrl} data: blob: https://*.basemaps.cartocdn.com https://www.gravatar.com; ` +
+    `connect-src 'self' ${apiDomainHttps} ${apiUrl}; ` +
+    "font-src 'self'; " +
+    "object-src 'none'; " +
+    "base-uri 'self'; " +
+    "form-action 'self'; " +
+    "frame-ancestors 'none';"
+  );
+}
+
 // Handle client-side routing (catch-all for React routes)
 // This must come AFTER all other routes
 app.get("*", async (req, res) => {
@@ -198,26 +224,7 @@ app.get("*", async (req, res) => {
             );
           
           // Set CSP and other security headers
-          const apiDomainHttps = apiUrl.replace("http://", "https://");
-          const analyticsScriptPath = configFile.analytics?.scriptPath || '';
-          const analyticsScriptHost = analyticsScriptPath && analyticsScriptPath.startsWith('http') 
-            ? new URL(analyticsScriptPath).origin 
-            : '';
-          
-          res.setHeader(
-            "Content-Security-Policy",
-            "default-src 'self'; " +
-            `script-src 'self' 'unsafe-inline'${analyticsScriptHost ? ' ' + analyticsScriptHost : ''}; ` +
-            "style-src 'self' 'unsafe-inline'; " +
-            "worker-src 'self'; " +
-            `img-src 'self' ${apiDomainHttps} ${apiUrl} data: blob: https://*.basemaps.cartocdn.com https://www.gravatar.com; ` +
-            `connect-src 'self' ${apiDomainHttps} ${apiUrl}; ` +
-            "font-src 'self'; " +
-            "object-src 'none'; " +
-            "base-uri 'self'; " +
-            "form-action 'self'; " +
-            "frame-ancestors 'none';"
-          );
+          setCSPHeader(res, apiUrl, configFile);
           
           // Inject runtime config
           const modifiedHtmlWithRuntime = modifiedHtml.replace(
@@ -638,26 +645,7 @@ app.get("*", async (req, res) => {
     }
     
     // Set Content Security Policy with runtime API URL
-    const apiDomainHttps = runtimeApiUrl.replace("http://", "https://");
-    const analyticsScriptPath = configFile.analytics?.scriptPath || '';
-    const analyticsScriptHost = analyticsScriptPath && analyticsScriptPath.startsWith('http') 
-      ? new URL(analyticsScriptPath).origin 
-      : '';
-    
-    res.setHeader(
-      "Content-Security-Policy",
-      "default-src 'self'; " +
-      `script-src 'self' 'unsafe-inline'${analyticsScriptHost ? ' ' + analyticsScriptHost : ''}; ` +
-      "style-src 'self' 'unsafe-inline'; " +
-      "worker-src 'self'; " +
-      `img-src 'self' ${apiDomainHttps} ${runtimeApiUrl} data: blob: https://*.basemaps.cartocdn.com https://www.gravatar.com; ` +
-      `connect-src 'self' ${apiDomainHttps} ${runtimeApiUrl}; ` +
-      "font-src 'self'; " +
-      "object-src 'none'; " +
-      "base-uri 'self'; " +
-      "form-action 'self'; " +
-      "frame-ancestors 'none';"
-    );
+    setCSPHeader(res, runtimeApiUrl, configFile);
     
     // Inject runtime config before other scripts
     const modifiedHtml = html.replace(
