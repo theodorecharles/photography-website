@@ -73,7 +73,22 @@ app.use((req, res, next) => {
 });
 
 // Allowed hosts for security (prevent open redirect attacks)
-const allowedHosts = config.security.allowedHosts;
+// Include both config.json values and FRONTEND_DOMAIN from environment
+const allowedHosts = [...config.security.allowedHosts];
+
+// Add FRONTEND_DOMAIN from environment if set
+if (process.env.FRONTEND_DOMAIN && process.env.FRONTEND_DOMAIN !== '-') {
+  try {
+    const frontendUrl = new URL(process.env.FRONTEND_DOMAIN);
+    const frontendHost = frontendUrl.host; // includes port if present
+    if (!allowedHosts.includes(frontendHost)) {
+      allowedHosts.push(frontendHost);
+      console.log(`[Security] Added FRONTEND_DOMAIN to allowedHosts: ${frontendHost}`);
+    }
+  } catch (e) {
+    console.warn(`[Security] Invalid FRONTEND_DOMAIN URL: ${process.env.FRONTEND_DOMAIN}`);
+  }
+}
 
 // HTTPS redirect middleware (only in production)
 app.use((req, res, next) => {
@@ -87,6 +102,8 @@ app.use((req, res, next) => {
     const isIpAddress = ipPattern.test(host);
 
     if (!allowedHosts.includes(host) && !isIpAddress) {
+      console.warn(`[Security] Invalid host header: ${host}`);
+      console.warn(`[Security] Allowed hosts: ${allowedHosts.join(', ')}`);
       return res.status(400).send("Invalid host header");
     }
   }
