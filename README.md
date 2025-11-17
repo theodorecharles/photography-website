@@ -170,17 +170,9 @@ Google OAuth is completely optional. You can use password-based authentication w
 
 ## 📸 Adding Photos
 
-**Via Admin Panel:**
 1. Navigate to `/admin`
 2. Select album → Upload Photos
 3. Images auto-optimize in background
-
-**Via Filesystem:**
-```bash
-mkdir data/photos/new-album
-cp *.jpg data/photos/new-album/
-node scripts/optimize_all_images.js
-```
 
 ---
 
