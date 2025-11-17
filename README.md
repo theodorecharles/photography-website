@@ -241,32 +241,6 @@ galleria/
 
 ---
 
-## 🐛 Troubleshooting
-
-**Images not showing:**
-```bash
-node scripts/optimize_all_images.js
-```
-
-**CORS errors:**
-- For Docker: Check `FRONTEND_DOMAIN` and `BACKEND_DOMAIN` environment variables in `docker-compose.yml`
-- For non-Docker: Check `FRONTEND_DOMAIN` and `BACKEND_DOMAIN` in `.env` file
-- Restart services after changing configuration
-
-**Authentication issues:**
-- For password auth: Ensure user account exists and password is set
-- For Google OAuth: Verify OAuth redirect URIs are correct (if using OAuth)
-- Check OAuth configuration in Admin Panel → Settings → Advanced Settings → Authentication
-- Ensure cookies are enabled
-
-**Port conflicts:**
-```bash
-lsof -i :3001  # Check what's using port
-kill -9 <PID>  # Kill the process
-```
-
----
-
 ## 📖 Additional Documentation
 
 - **[README.docker.md](README.docker.md)** - Detailed Docker deployment guide
@@ -278,27 +252,6 @@ kill -9 <PID>  # Kill the process
 - **📦 Repository:** [github.com/theodorecharles/Galleria](https://github.com/theodorecharles/Galleria)
 - **🐛 Issues:** [GitHub Issues](https://github.com/theodorecharles/Galleria/issues)
 - **📧 Contact:** [me@tedcharles.net](mailto:me@tedcharles.net)
-
----
-
-## License
-
-GNU General Public License v3.0
-
-Copyright (c) 2025 Ted Charles
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 ---
 
