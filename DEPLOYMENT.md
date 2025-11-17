@@ -74,10 +74,11 @@ Both setups automatically allow:
 |------|---------|
 | `.env` | Environment variables for non-Docker deployment |
 | `.env.example` | Template for `.env` with examples |
-| `ecosystem.config.cjs` | PM2 config for non-Docker (reads `.env`) |
+| `ecosystem.local.cjs` | PM2 config for non-Docker (reads `.env`) |
 | `ecosystem.docker.cjs` | PM2 config for Docker |
-| `restart.sh` | Deploy script for non-Docker |
-| `start-docker.sh` | Startup script for Docker |
+| `ecosystem.config.cjs` | Generated at runtime (gitignored) |
+| `restart.sh` | Deploy script for non-Docker (copies ecosystem.local.cjs) |
+| `start-docker.sh` | Startup script for Docker (copies ecosystem.docker.cjs) |
 | `docker-compose.yml` | Docker orchestration |
 
 ---
