@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { TrashIcon } from "../../../../icons";
 import type { Passkey } from "./types";
 
@@ -21,6 +21,23 @@ export const PasskeysModal: React.FC<PasskeysModalProps> = ({
   onRegister,
   onRemove,
 }) => {
+  // Disable body scroll when modal is open (iOS-compatible)
+  useEffect(() => {
+    const scrollY = window.scrollY;
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.width = '100%';
+    document.body.style.overflow = 'hidden';
+    
+    return () => {
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
+      document.body.style.overflow = '';
+      window.scrollTo(0, scrollY);
+    };
+  }, []);
+
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div

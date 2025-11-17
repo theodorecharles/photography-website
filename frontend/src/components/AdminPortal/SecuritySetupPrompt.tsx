@@ -3,7 +3,7 @@
  * Prompts users to set up MFA/Passkey after first credential login
  */
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { API_URL } from '../../config';
 
 
@@ -28,6 +28,23 @@ const SecuritySetupPrompt: React.FC<SecuritySetupPromptProps> = ({
   const [mfaToken, setMfaToken] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Disable body scroll when modal is open (iOS-compatible)
+  useEffect(() => {
+    const scrollY = window.scrollY;
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.width = '100%';
+    document.body.style.overflow = 'hidden';
+    
+    return () => {
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
+      document.body.style.overflow = '';
+      window.scrollTo(0, scrollY);
+    };
+  }, []);
 
   const handleDismiss = () => {
     if (dontAskAgain) {
@@ -103,7 +120,7 @@ const SecuritySetupPrompt: React.FC<SecuritySetupPromptProps> = ({
       <div
         className="share-modal"
         onClick={(e) => e.stopPropagation()}
-        style={{ maxWidth: mfaSetup ? "550px" : "500px" }}
+        style={{ maxWidth: "600px" }}
       >
         <div className="share-modal-header">
           <h2>
@@ -158,27 +175,27 @@ const SecuritySetupPrompt: React.FC<SecuritySetupPromptProps> = ({
                   background: "rgba(74, 222, 128, 0.1)",
                   border: "1px solid rgba(74, 222, 128, 0.3)",
                   borderRadius: "6px",
-                  padding: "1rem",
-                  marginBottom: "1.5rem",
+                  padding: "0.875rem",
+                  marginBottom: "1rem",
                 }}
               >
                 <h3
                   style={{
                     color: "#4ade80",
-                    fontSize: "0.95rem",
-                    marginBottom: "0.75rem",
+                    fontSize: "0.9rem",
+                    marginBottom: "0.5rem",
                     fontWeight: 600,
                   }}
                 >
                   ✓ Multi-Factor Authentication (MFA)
                 </h3>
                 <ul
-                  style={{ margin: 0, paddingLeft: "1.5rem", color: "#e5e7eb" }}
+                  style={{ margin: 0, paddingLeft: "1.25rem", color: "#e5e7eb", fontSize: "0.875rem" }}
                 >
-                  <li style={{ marginBottom: "0.5rem" }}>
+                  <li style={{ marginBottom: "0.25rem" }}>
                     Adds an extra layer of security with time-based codes
                   </li>
-                  <li style={{ marginBottom: "0.5rem" }}>
+                  <li style={{ marginBottom: "0.25rem" }}>
                     Works with apps like Google Authenticator or Authy
                   </li>
                   <li>Get backup codes for account recovery</li>
@@ -190,8 +207,8 @@ const SecuritySetupPrompt: React.FC<SecuritySetupPromptProps> = ({
                   background: "rgba(59, 130, 246, 0.1)",
                   border: "1px solid rgba(59, 130, 246, 0.3)",
                   borderRadius: "6px",
-                  padding: "1rem",
-                  marginBottom: "1.5rem",
+                  padding: "0.875rem",
+                  marginBottom: "1rem",
                 }}
               >
                 <h3
@@ -283,17 +300,18 @@ const SecuritySetupPrompt: React.FC<SecuritySetupPromptProps> = ({
           ) : (
             // MFA Setup Screen
             <>
-              <div style={{ marginBottom: "1.5rem" }}>
-                <p className="share-description">
+              <div style={{ marginBottom: "0.75rem" }}>
+                <p className="share-description" style={{ marginBottom: "0.625rem" }}>
                   Scan this QR code with your authenticator app (Google
                   Authenticator, Authy, 1Password, etc.)
                 </p>
-                <div style={{ textAlign: "center", marginBottom: "1rem" }}>
+                <div style={{ textAlign: "center", marginBottom: "0.625rem" }}>
                   <img
                     src={mfaSetup.qrCode}
                     alt="MFA QR Code"
                     style={{
                       maxWidth: "250px",
+                      width: "100%",
                       border: "1px solid #3a3a3a",
                       borderRadius: "8px",
                       background: "white",
@@ -305,20 +323,21 @@ const SecuritySetupPrompt: React.FC<SecuritySetupPromptProps> = ({
                   style={{
                     background: "#1e1e1e",
                     border: "1px solid #3a3a3a",
-                    padding: "0.75rem",
+                    padding: "0.5rem",
                     borderRadius: "6px",
-                    fontSize: "0.85rem",
+                    fontSize: "0.8rem",
                     textAlign: "center",
                     fontFamily: "monospace",
                     color: "#e5e7eb",
                     letterSpacing: "0.05em",
+                    wordBreak: "break-all",
                   }}
                 >
                   {mfaSetup.secret}
                 </div>
               </div>
 
-              <div style={{ marginBottom: "1.5rem" }}>
+              <div style={{ marginBottom: "0.75rem" }}>
                 <label className="branding-label">
                   Enter verification code from your app
                 </label>
@@ -355,7 +374,7 @@ const SecuritySetupPrompt: React.FC<SecuritySetupPromptProps> = ({
                   display: "flex",
                   gap: "0.75rem",
                   justifyContent: "flex-end",
-                  paddingTop: "1rem",
+                  paddingTop: "0.75rem",
                   borderTop: "1px solid #3a3a3a",
                 }}
               >

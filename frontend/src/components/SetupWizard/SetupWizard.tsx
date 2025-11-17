@@ -101,6 +101,11 @@ export default function SetupWizard() {
     setError(null);
     setSuccess(null);
     
+    // Only allow form submission on step 3 (final step)
+    if (currentStep !== 3) {
+      return;
+    }
+    
     // Validation
     if (!siteName.trim()) {
       setError('Site name is required');
@@ -301,6 +306,12 @@ export default function SetupWizard() {
                   id="siteName"
                   value={siteName}
                   onChange={(e) => setSiteName(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && siteName.trim()) {
+                      e.preventDefault();
+                      setCurrentStep(2);
+                    }
+                  }}
                   placeholder="John Doe Photography"
                   required
                   autoFocus
