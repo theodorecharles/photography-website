@@ -9,6 +9,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import crypto from "crypto";
 import multer from "multer";
+import sharp from "sharp";
 
 const router = Router();
 
@@ -19,7 +20,7 @@ const upload = multer({
     fileSize: 5 * 1024 * 1024, // 5MB limit
   },
   fileFilter: (req, file, cb) => {
-    // Accept images only
+    // Accept images only (including HEIC which will be converted to PNG)
     if (!file.mimetype.startsWith("image/")) {
       cb(new Error("Only image files are allowed"));
       return;
@@ -529,12 +530,21 @@ router.post(
         fs.mkdirSync(photosDir, { recursive: true });
       }
 
-      // Determine file extension from mimetype
-      const ext = file.mimetype.split("/")[1] || "png";
-      const avatarPath = path.join(photosDir, `avatar.${ext}`);
+      // Always save as PNG
+      const avatarPath = path.join(photosDir, "avatar.png");
 
-      // Save the file
-      fs.writeFileSync(avatarPath, file.buffer);
+      // Use Sharp to convert any image format (including HEIC) to PNG
+      try {
+        await sharp(file.buffer)
+          .rotate() // Auto-rotate based on EXIF orientation
+          .resize(512, 512, { fit: 'cover' })
+          .png()
+          .toFile(avatarPath);
+      } catch (err) {
+        console.error("Failed to process avatar image:", err);
+        res.status(500).json({ error: "Failed to process avatar image" });
+        return;
+      }
 
       // Update config.json with avatar path
       const configPath = path.join(dataDir, "config.json");
@@ -542,7 +552,7 @@ router.post(
         try {
           const configContent = fs.readFileSync(configPath, "utf8");
           const config = JSON.parse(configContent);
-          config.branding.avatarPath = `/photos/avatar.${ext}`;
+          config.branding.avatarPath = "/photos/avatar.png";
           fs.writeFileSync(configPath, JSON.stringify(config, null, 2), "utf8");
         } catch (err) {
           console.error("Failed to update config with avatar path:", err);
@@ -551,7 +561,7 @@ router.post(
 
       res.json({
         success: true,
-        avatarPath: `/photos/avatar.${ext}`,
+        avatarPath: "/photos/avatar.png",
       });
     } catch (error) {
       console.error("Avatar upload failed:", error);

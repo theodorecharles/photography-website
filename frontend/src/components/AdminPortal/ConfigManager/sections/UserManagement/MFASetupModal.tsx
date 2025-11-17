@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 interface MFASetupModalProps {
   mfaSetup: {
@@ -20,9 +20,30 @@ export const MFASetupModal: React.FC<MFASetupModalProps> = ({
   onTokenChange,
   onComplete,
 }) => {
+  // Disable body scroll when modal is open (iOS-compatible)
+  useEffect(() => {
+    const scrollY = window.scrollY;
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.width = '100%';
+    document.body.style.overflow = 'hidden';
+    
+    return () => {
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
+      document.body.style.overflow = '';
+      window.scrollTo(0, scrollY);
+    };
+  }, []);
+
   return (
-    <div className="modal-overlay">
-      <div className="share-modal" style={{ maxWidth: "550px" }}>
+    <div className="modal-overlay" onClick={onClose}>
+      <div
+        className="share-modal"
+        onClick={(e) => e.stopPropagation()}
+        style={{ maxWidth: "600px" }}
+      >
         <div className="share-modal-header">
           <h2>Enable Two-Factor Authentication</h2>
           <button className="close-button" onClick={onClose} aria-label="Close">
@@ -37,17 +58,18 @@ export const MFASetupModal: React.FC<MFASetupModalProps> = ({
           }}
           className="share-modal-content"
         >
-          <div style={{ marginBottom: "1.5rem" }}>
+          <div style={{ marginBottom: "1rem" }}>
             <p className="share-description">
               Scan this QR code with your authenticator app (Google
               Authenticator, Authy, 1Password, etc.)
             </p>
-            <div style={{ textAlign: "center", marginBottom: "1rem" }}>
+            <div style={{ textAlign: "center", marginBottom: "0.75rem" }}>
               <img
                 src={mfaSetup.qrCode}
                 alt="MFA QR Code"
                 style={{
                   maxWidth: "250px",
+                  width: "100%",
                   border: "1px solid #3a3a3a",
                   borderRadius: "8px",
                   background: "white",
@@ -59,20 +81,21 @@ export const MFASetupModal: React.FC<MFASetupModalProps> = ({
               style={{
                 background: "#1e1e1e",
                 border: "1px solid #3a3a3a",
-                padding: "0.75rem",
+                padding: "0.5rem",
                 borderRadius: "6px",
-                fontSize: "0.85rem",
+                fontSize: "0.8rem",
                 textAlign: "center",
                 fontFamily: "monospace",
                 color: "#e5e7eb",
                 letterSpacing: "0.05em",
+                wordBreak: "break-all",
               }}
             >
               {mfaSetup.secret}
             </div>
           </div>
 
-          <div style={{ marginBottom: "1.5rem" }}>
+          <div style={{ marginBottom: "1rem" }}>
             <label className="branding-label">
               Enter verification code from your app
             </label>

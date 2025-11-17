@@ -101,14 +101,18 @@ const BrandingSection: React.FC<BrandingSectionProps> = ({
         const formData = new FormData();
         formData.append('avatar', pendingAvatarFile);
 
+        console.log('[Avatar Upload] Starting upload...');
         const avatarRes = await fetch(`${API_URL}/api/branding/upload-avatar`, {
           method: 'POST',
           credentials: 'include',
           body: formData,
         });
 
+        console.log('[Avatar Upload] Response status:', avatarRes.status);
+        
         if (avatarRes.ok) {
           const data = await avatarRes.json();
+          console.log('[Avatar Upload] Success:', data);
           updatedBranding.avatarPath = data.avatarPath;
           setBranding({
             ...branding,
@@ -118,7 +122,14 @@ const BrandingSection: React.FC<BrandingSectionProps> = ({
           setPendingAvatarFile(null);
           setAvatarPreviewUrl(null);
         } else {
-          const errorData = await avatarRes.json().catch(() => ({ error: 'Unknown error' }));
+          const errorText = await avatarRes.text();
+          console.error('[Avatar Upload] Error response:', errorText);
+          let errorData;
+          try {
+            errorData = JSON.parse(errorText);
+          } catch {
+            errorData = { error: errorText || 'Unknown error' };
+          }
           throw new Error(errorData.error || 'Failed to upload avatar');
         }
       }
@@ -143,8 +154,8 @@ const BrandingSection: React.FC<BrandingSectionProps> = ({
         // Reload branding to get fresh data
         await loadBranding();
         
-        // Notify main app to refresh site name if it changed
-        if (fields.includes('siteName')) {
+        // Notify main app to refresh branding (site name or avatar)
+        if (fields.includes('siteName') || fields.includes('avatarPath')) {
           window.dispatchEvent(new Event('branding-updated'));
         }
       } else {
@@ -175,11 +186,16 @@ const BrandingSection: React.FC<BrandingSectionProps> = ({
   const hasBrandingChanges = (fields: (keyof BrandingConfig)[]): boolean => {
     // Check if avatar has pending upload
     if (fields.includes('avatarPath') && pendingAvatarFile) {
+      console.log('[BrandingSection] Has pending avatar file, showing save button');
       return true;
     }
     
     // Check if any field values have changed
-    return fields.some(field => branding[field] !== originalBranding[field]);
+    const hasChanges = fields.some(field => branding[field] !== originalBranding[field]);
+    if (hasChanges) {
+      console.log('[BrandingSection] Field changes detected:', fields);
+    }
+    return hasChanges;
   };
 
   return (
