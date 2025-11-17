@@ -103,7 +103,9 @@ export const DB_PATH = path.join(DATA_DIR, 'gallery.db');
 // Helper function to check if env var is actually set (not empty or "notset")
 // Exported for use in other modules
 export function isEnvSet(value: string | undefined): boolean {
-  return !!(value && value.trim() !== '' && value.trim().toLowerCase() !== 'notset');
+  if (!value) return false;
+  const trimmed = value.trim().toLowerCase();
+  return trimmed !== '' && trimmed !== 'notset' && trimmed !== 'none' && trimmed !== 'null';
 }
 
 // Export dynamic getters for config values that can change
