@@ -485,9 +485,9 @@ app.get("*", async (req, res) => {
           const safePhotoTitle = escapeHtml(photoTitle);
           
           // Derive site URL from API URL:
-          // Production: https://api.tedcharles.net -> https://www.tedcharles.net
+          // Production: https://api.example.com -> https://www.example.com
           // Development: http://localhost:3001 -> http://localhost:3000
-          // Dev server: https://api-dev.tedcharles.net -> https://www-dev.tedcharles.net
+          // Dev server: https://api-dev.example.com -> https://www-dev.example.com
           let siteUrl;
           if (apiUrl.includes('localhost')) {
             siteUrl = apiUrl.replace(':3001', ':3000');
@@ -617,10 +617,10 @@ app.get("*", async (req, res) => {
       // Localhost development
       runtimeApiUrl = 'http://localhost:3001';
     } else if (host.startsWith('www-')) {
-      // Domain with www- prefix (e.g., www-dev.tedcharles.net -> api-dev.tedcharles.net)
+      // Domain with www- prefix (e.g., www-dev.example.com -> api-dev.example.com)
       runtimeApiUrl = `${protocol}://api-${host.substring(4)}`;
     } else if (host.startsWith('www.')) {
-      // Domain with www. prefix (e.g., www.tedcharles.net -> api.tedcharles.net)
+      // Domain with www. prefix (e.g., www.example.com -> api.example.com)
       runtimeApiUrl = `${protocol}://api.${host.substring(4)}`;
     } else if (process.env.BACKEND_DOMAIN || process.env.API_URL) {
       // Fall back to environment variable if provided
