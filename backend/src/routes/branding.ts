@@ -33,7 +33,8 @@ const upload = multer({
     fileSize: 5 * 1024 * 1024, // 5MB
   },
   fileFilter: (req, file, cb) => {
-    if (file.mimetype.match(/^image\/(jpeg|jpg|png|gif)$/)) {
+    // Accept all image types (including HEIC) - will be converted to PNG
+    if (file.mimetype.startsWith('image/')) {
       cb(null, true);
     } else {
       cb(new Error('Only image files are allowed'));
