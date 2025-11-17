@@ -15,7 +15,7 @@ import type {
   RegistrationResponseJSON,
   AuthenticationResponseJSON,
 } from '@simplewebauthn/types';
-import config from '../config.js';
+import config, { isEnvSet } from '../config.js';
 
 // Get RP (Relying Party) configuration from environment or config
 const getRPConfig = () => {
@@ -27,8 +27,8 @@ const getRPConfig = () => {
   if (!rpID || !origin) {
     try {
       // First, try to use FRONTEND_DOMAIN from environment
-      if (process.env.FRONTEND_DOMAIN) {
-        const frontendUrl = new URL(process.env.FRONTEND_DOMAIN);
+      if (isEnvSet(process.env.FRONTEND_DOMAIN)) {
+        const frontendUrl = new URL(process.env.FRONTEND_DOMAIN!);
         rpID = rpID || frontendUrl.hostname;
         origin = origin || process.env.FRONTEND_DOMAIN;
       } 
