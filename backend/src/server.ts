@@ -268,20 +268,23 @@ if (!sessionSecret) {
 }
 
 // Determine cookie domain based on environment
-// For localhost, DON'T set domain (undefined) - browsers handle localhost specially
-// For production, extract the base domain to share across subdomains
+// For localhost/IPs, DON'T set domain (undefined) - browsers handle these specially
+// For production domains, extract the base domain to share across subdomains
 let cookieDomain: string | undefined = undefined;
 try {
   const backendUrl = new URL(config.frontend.apiUrl);
   const hostname = backendUrl.hostname;
 
-  if (hostname === "localhost" || hostname === "127.0.0.1") {
-    // For local development, leave domain undefined
-    // Setting explicit 'localhost' can cause issues with cookies across ports
+  // Check if hostname is an IP address (IPv4 pattern)
+  const isIpAddress = /^(\d{1,3}\.){3}\d{1,3}$/.test(hostname);
+
+  if (hostname === "localhost" || hostname === "127.0.0.1" || isIpAddress) {
+    // For local development or IP addresses, leave domain undefined
+    // Setting explicit domain on IPs causes cookie rejection
     cookieDomain = undefined;
-    console.log("Cookie domain: undefined (localhost development)");
+    console.log(`Cookie domain: undefined (${isIpAddress ? 'IP address' : 'localhost'})`);
   } else {
-    // For production, extract base domain (e.g., 'example.com' from 'api.example.com')
+    // For production domains, extract base domain (e.g., 'example.com' from 'api.example.com')
     // Set to '.domain.com' to share across subdomains
     const parts = hostname.split(".");
     if (parts.length >= 2) {
