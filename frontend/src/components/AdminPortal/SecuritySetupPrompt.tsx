@@ -287,11 +287,6 @@ const SecuritySetupPrompt: React.FC<SecuritySetupPromptProps> = ({
                   onClick={handleStartMFASetup}
                   className="btn-primary"
                   disabled={loading}
-                  style={{
-                    background: "rgba(74, 222, 128, 0.2)",
-                    borderColor: "rgba(74, 222, 128, 0.3)",
-                    color: "#4ade80",
-                  }}
                 >
                   {loading ? "Starting..." : "Set Up MFA Now"}
                 </button>
