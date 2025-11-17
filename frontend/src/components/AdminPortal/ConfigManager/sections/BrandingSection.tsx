@@ -8,6 +8,7 @@ import { API_URL } from '../../../../config';
 import { BrandingConfig } from '../../types';
 import { trackBrandingUpdate, trackAvatarUpload } from '../../../../utils/analytics';
 import SectionHeader from '../components/SectionHeader';
+import { LICENSE_OPTIONS, getLicenseById } from '../../../../utils/licenses';
 import '../../BrandingManager.css';
 
 
@@ -33,10 +34,11 @@ const BrandingSection: React.FC<BrandingSectionProps> = ({
   const [isInitialized, setIsInitialized] = useState(false);
   const avatarFileInputRef = useRef<HTMLInputElement>(null);
 
-  // Initialize originalBranding only once when branding prop is first populated
+  // Initialize originalBranding only once when component first loads
   useEffect(() => {
     if (!isInitialized && branding.siteName) {
       console.log('[BrandingSection] Initializing originalBranding:', branding);
+      console.log('[BrandingSection] photoLicense:', branding.photoLicense);
       setOriginalBranding(branding);
       setIsInitialized(true);
     }
@@ -307,6 +309,48 @@ const BrandingSection: React.FC<BrandingSectionProps> = ({
                   disabled={savingBrandingSection === 'Site Name'}
                 >
                   {savingBrandingSection === 'Site Name' ? 'Saving...' : 'Save'}
+                </button>
+              </div>
+            )}
+          </div>
+
+          <div className="branding-group full-width">
+            <label className="branding-label">Photo License</label>
+            <p className="branding-description">
+              Choose how others can use your photographs
+            </p>
+            <select
+              value={branding.photoLicense || 'cc-by'}
+              onChange={(e) => handleBrandingChange("photoLicense", e.target.value)}
+              className="branding-input"
+              disabled={savingBrandingSection === 'Photo License'}
+            >
+              {LICENSE_OPTIONS.map((license) => (
+                <option key={license.id} value={license.id}>
+                  {license.name}
+                </option>
+              ))}
+            </select>
+            {branding.photoLicense && (
+              <p className="branding-description" style={{ marginTop: '0.5rem', fontSize: '0.875rem', color: 'rgba(255, 255, 255, 0.7)' }}>
+                {getLicenseById(branding.photoLicense)?.description}
+              </p>
+            )}
+            {hasBrandingChanges(['photoLicense']) && (
+              <div className="section-button-group">
+                <button 
+                  onClick={() => cancelBrandingSection(['photoLicense'])} 
+                  className="btn-secondary btn-small"
+                  disabled={savingBrandingSection === 'Photo License'}
+                >
+                  Cancel
+                </button>
+                <button 
+                  onClick={() => saveBrandingSection('Photo License', ['photoLicense'])} 
+                  className="btn-primary btn-small"
+                  disabled={savingBrandingSection === 'Photo License'}
+                >
+                  {savingBrandingSection === 'Photo License' ? 'Saving...' : 'Save'}
                 </button>
               </div>
             )}

@@ -1,46 +1,131 @@
 /**
- * License component for displaying the Creative Commons license information.
- * This component provides detailed information about the license terms
- * and conditions for using the photographs.
+ * License Page Component
+ * Displays the full license text for the photography portfolio
  */
 
-import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { API_URL } from '../../config';
+import { getLicenseById, getDefaultLicense } from '../../utils/licenses';
 import './License.css';
 
 function License() {
-  return (
-    <div className="license-page">
-      <div className="license-content">
-        <h2>Creative Commons Attribution 4.0 International License</h2>
-        <p>
-          This work is licensed under the Creative Commons Attribution 4.0 International License.
-          To view a copy of this license, visit <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">https://creativecommons.org/licenses/by/4.0/</a>.
-        </p>
+  const [siteName, setSiteName] = useState<string>('');
+  const [currentYear, setCurrentYear] = useState<number>(new Date().getFullYear());
+  const [photoLicense, setPhotoLicense] = useState<string>('cc-by');
+  const [loading, setLoading] = useState(true);
 
-        <h2>You are free to:</h2>
-        <ul>
-          <li><strong>Share</strong> — copy and redistribute the material in any medium or format</li>
-          <li><strong>Adapt</strong> — remix, transform, and build upon the material for any purpose, even commercially</li>
-        </ul>
+  useEffect(() => {
+    // Scroll to top when page loads
+    window.scrollTo(0, 0);
 
-        <h2>Under the following terms:</h2>
-        <ul>
-          <li><strong>Attribution</strong> — You must give appropriate credit, provide a link to the license, and indicate if changes were made. You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.</li>
-          <li><strong>No additional restrictions</strong> — You may not apply legal terms or technological measures that legally restrict others from doing anything the license permits.</li>
-        </ul>
+    const fetchData = async () => {
+      try {
+        // Fetch branding to get site name and license
+        const brandingResponse = await fetch(`${API_URL}/api/branding`);
+        if (brandingResponse.ok) {
+          const brandingData = await brandingResponse.json();
+          const name = brandingData.siteName || '';
+          setSiteName(name);
+          setPhotoLicense(brandingData.photoLicense || 'cc-by');
+          
+          // Update document title
+          document.title = `License - ${name}`;
+        }
 
-        <p>
-          Notices:
-          You do not have to comply with the license for elements of the material in the public domain or where your use is permitted by an applicable exception or limitation.
-          No warranties are given. The license may not give you all of the permissions necessary for your intended use. For example, other rights such as publicity, privacy, or moral rights may limit how you use the material.
-        </p>
+        // Fetch current year
+        const yearResponse = await fetch(`${API_URL}/api/current-year`);
+        if (yearResponse.ok) {
+          const yearData = await yearResponse.json();
+          setCurrentYear(yearData.year);
+        }
+      } catch (error) {
+        console.error('Failed to fetch license data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-        <div className="license-links">
-          <Link to="/" className="license-link">Back to Home</Link>
+    fetchData();
+
+    // Trigger footer to show
+    window.dispatchEvent(new Event('show-footer'));
+
+    // Cleanup: reset title when component unmounts
+    return () => {
+      document.title = siteName || 'Photography Portfolio';
+    };
+  }, [siteName]);
+
+  const license = getLicenseById(photoLicense) || getDefaultLicense();
+
+  if (loading) {
+    return (
+      <div className="license-page">
+        <div className="license-container">
+          <p>Loading...</p>
         </div>
       </div>
-    </div>
+    );
+  }
+
+  return (
+    <div className="license-page">
+        <div className="license-container">
+          <h1>Photo License</h1>
+          
+          <div className="license-section">
+            <h2>{license.name}</h2>
+            {license.url && (
+              <p className="license-url">
+                <a href={license.url} target="_blank" rel="noopener noreferrer">
+                  {license.url}
+                </a>
+              </p>
+            )}
+          </div>
+
+          <div className="license-section">
+            <h3>Summary</h3>
+            <p>{license.description}</p>
+          </div>
+
+          <div className="license-section">
+            <h3>Full License Text</h3>
+            <p className="license-full-text">{license.fullText}</p>
+          </div>
+
+          <div className="license-section">
+            <h3>Copyright</h3>
+            <p>
+              © {currentYear} {siteName}. All photographs on this website are protected by copyright law.
+            </p>
+          </div>
+
+          {license.id.startsWith('cc-') && license.id !== 'cc0' && (
+            <div className="license-section license-notice">
+              <h3>How to Attribute</h3>
+              <p>If you use these photographs under this license, please provide attribution as follows:</p>
+              <div className="license-attribution-example">
+                <code>
+                  Photo by {siteName} - Licensed under {license.shortName}
+                  {license.url && ` (${license.url})`}
+                </code>
+              </div>
+            </div>
+          )}
+
+          {license.id === 'all-rights-reserved' && (
+            <div className="license-section license-notice">
+              <h3>Permissions</h3>
+              <p>
+                If you would like to use any photographs from this website, please contact the photographer 
+                to request permission.
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
   );
 }
 
-export default License; 
+export default License;
