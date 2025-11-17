@@ -4,13 +4,14 @@
  */
 
 import { useState, useCallback } from 'react';
+import { API_URL } from '../../../../config';
 import { DragEndEvent } from '@dnd-kit/core';
 import { arrayMove } from '@dnd-kit/sortable';
 import { Photo, ConfirmModalConfig } from '../types';
 import { fetchWithRateLimitCheck } from '../../../../utils/fetchWrapper';
 import { trackPhotoDeleted } from '../../../../utils/analytics';
 
-import { API_URL } from '../../../../config';
+
 interface UsePhotoManagementProps {
   setMessage: (message: { type: 'success' | 'error'; text: string }) => void;
   showConfirmation: (config: ConfirmModalConfig) => void;

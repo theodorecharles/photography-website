@@ -3,13 +3,14 @@
  */
 
 import React, { useState } from 'react';
+import { API_URL } from '../../../../config';
 import { ConfigData } from '../types';
 import { PasswordInput } from '../../PasswordInput';
 import { TestEmailModal } from './TestEmailModal';
 import { SMTPProvidersModal } from './SMTPProvidersModal';
 import { Toggle } from './Toggle';
 
-import { API_URL } from '../../../../config';
+
 interface SMTPSettingsProps {
   config: ConfigData;
   originalConfig: ConfigData;

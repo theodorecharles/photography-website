@@ -5,8 +5,8 @@
  */
 
 import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
-
 import { API_URL } from '../config';
+
 interface User {
   id: string;
   email: string;

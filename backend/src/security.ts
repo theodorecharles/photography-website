@@ -59,16 +59,31 @@ export function loadSecureConfig() {
  */
 export function validateProductionSecurity() {
   const secureConfig = loadSecureConfig();
+  
+  // Skip validation if we're in setup mode (temporary session secret)
+  const sessionSecret = secureConfig.auth?.sessionSecret;
+  if (!sessionSecret || sessionSecret === 'CHANGE_ME_IN_PRODUCTION_OR_SETUP_WILL_GENERATE_ONE') {
+    console.log('⚠️  Skipping security validation (setup mode)');
+    return;
+  }
+  
   const isProduction = secureConfig.frontend?.apiUrl?.startsWith('https://');
   
   if (isProduction) {
     // Load the config to check if required values are present
     const requiredChecks = [
       { name: 'GOOGLE_CLIENT_SECRET', value: secureConfig.auth?.google?.clientSecret },
-      { name: 'SESSION_SECRET', value: secureConfig.auth?.sessionSecret },
-      { name: 'ANALYTICS_USERNAME', value: secureConfig.analytics?.openobserve?.username },
-      { name: 'ANALYTICS_PASSWORD', value: secureConfig.analytics?.openobserve?.password }
+      { name: 'SESSION_SECRET', value: secureConfig.auth?.sessionSecret }
     ];
+    
+    // Only check analytics credentials if analytics is enabled
+    const analyticsEnabled = secureConfig.analytics?.enabled;
+    if (analyticsEnabled) {
+      requiredChecks.push(
+        { name: 'ANALYTICS_USERNAME', value: secureConfig.analytics?.openobserve?.username },
+        { name: 'ANALYTICS_PASSWORD', value: secureConfig.analytics?.openobserve?.password }
+      );
+    }
     
     const missing = requiredChecks.filter(check => !check.value);
     

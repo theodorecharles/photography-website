@@ -4,9 +4,10 @@
  */
 
 import { UploadingImage, Photo } from '../types';
+import { API_URL } from '../../../../config';
 import { trackPhotoUploaded } from '../../../../utils/analytics';
 
-import { API_URL } from '../../../../config';
+
 interface OptimizationStreamHandlersProps {
   setUploadingImages: React.Dispatch<React.SetStateAction<UploadingImage[]>>;
   uploadingAlbumRef: React.MutableRefObject<string>;

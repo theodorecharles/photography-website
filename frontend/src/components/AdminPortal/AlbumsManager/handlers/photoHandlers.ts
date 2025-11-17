@@ -4,10 +4,11 @@
  */
 
 import { fetchWithRateLimitCheck } from '../../../../utils/fetchWrapper';
+import { API_URL } from '../../../../config';
 import { trackPhotoDeleted } from '../../../../utils/analytics';
 import { ConfirmModalConfig, Photo } from '../types';
 
-import { API_URL } from '../../../../config';
+
 interface PhotoHandlersProps {
   selectedAlbum: string | null;
   loadPhotos: (albumName: string) => Promise<void>;

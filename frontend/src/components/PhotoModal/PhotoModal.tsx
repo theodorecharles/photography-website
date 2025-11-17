@@ -4,6 +4,7 @@
  */
 
 import React, { useRef, useState, useEffect, useCallback } from 'react';
+import { API_URL } from '../../config';
 import { trackPhotoNavigation, trackPhotoDownload, trackModalClose } from '../../utils/analytics';
 import { fetchWithRateLimitCheck } from '../../utils/fetchWrapper';
 import { SITE_URL, cacheBustValue } from '../../config';
@@ -14,6 +15,7 @@ import ImageCanvas from './ImageCanvas';
 import ModalNavigation from './ModalNavigation';
 import { API_URL } from '../../config';
 import './PhotoModal.css';
+
 
 interface PhotoModalProps {
   selectedPhoto: Photo;

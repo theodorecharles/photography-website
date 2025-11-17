@@ -13,6 +13,7 @@ import Metrics from './Metrics/Metrics';
 import ConfigManager from './ConfigManager';
 import { ProfileSection } from './ConfigManager/sections/ProfileSection';
 import SecuritySetupPrompt from './SecuritySetupPrompt';
+import LoginForm from './LoginForm';
 import {
   trackLoginSucceeded,
   trackLogout,
@@ -21,18 +22,13 @@ import {
 import { useSSEToaster } from '../../contexts/SSEToasterContext';
 import { getActiveTab } from '../../utils/adminHelpers';
 import {
-  GoogleLogoIcon,
-  HomeIcon,
   LogoutIcon,
   ImageIcon,
   BarChartIcon,
   SettingsIcon,
-  LockIcon,
   UserIcon
 } from '../icons/';
 import packageJson from '../../../../package.json';
-
-type AuthMethod = 'google' | 'credentials' | 'passkey' | null;
 
 export default function AdminPortal() {
   const navigate = useNavigate();
@@ -42,37 +38,6 @@ export default function AdminPortal() {
   const [cssLoaded, setCssLoaded] = useState(false);
   const sseToaster = useSSEToaster();
   
-  // Login state
-  const [activeAuthTab, setActiveAuthTab] = useState<AuthMethod>(null);
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [mfaToken, setMfaToken] = useState('');
-  const [requiresMFA, setRequiresMFA] = useState(false);
-  const [loginLoading, setLoginLoading] = useState(false);
-  const [loginError, setLoginError] = useState<string | null>(null);
-  
-  // Load saved passkey email when switching to passkey tab
-  useEffect(() => {
-    if (activeAuthTab === 'passkey') {
-      const savedEmail = localStorage.getItem('passkeyEmail');
-      if (savedEmail) {
-        setUsername(savedEmail);
-      }
-    }
-  }, [activeAuthTab]);
-  
-  // Sync URL with auth tab state (when user clicks buttons)
-  const updateAuthRoute = (method: AuthMethod) => {
-    if (method === 'passkey') {
-      navigate('/admin/login/passkey');
-    } else if (method === 'credentials') {
-      navigate('/admin/login/password');
-    } else {
-      navigate('/admin/login');
-    }
-    setActiveAuthTab(method);
-  };
-  
   // Redirect to /admin/albums after successful login
   useEffect(() => {
     if (authStatus?.authenticated && location.pathname.startsWith('/admin/login')) {
@@ -80,29 +45,15 @@ export default function AdminPortal() {
     }
   }, [authStatus, location.pathname, navigate]);
 
-  // Read URL and set auth tab on mount/navigation (when user uses back button or direct URL)
+  // Redirect unauthenticated users to login
   useEffect(() => {
-    // Skip if authenticated
-    if (authStatus?.authenticated) return;
-    
-    const path = location.pathname;
-    
-    // Set active auth tab based on URL, but only if it doesn't match current state
-    if (path === '/admin/login/passkey' && activeAuthTab !== 'passkey') {
-      setActiveAuthTab('passkey');
-    } else if (path === '/admin/login/password' && activeAuthTab !== 'credentials') {
-      setActiveAuthTab('credentials');
-    } else if (path === '/admin/login' && activeAuthTab !== null) {
-      setActiveAuthTab(null);
-    } else if (!path.startsWith('/admin/login') && !path.startsWith('/admin/') && !authStatus) {
-      // User is not authenticated and not on any admin route - redirect to login
-      navigate('/admin/login', { replace: true });
-    } else if (path.startsWith('/admin/') && path !== '/admin/login' && !path.startsWith('/admin/login/') && authStatus === null && !loading) {
-      // User is trying to access admin route but not authenticated - redirect to login
-      // Only redirect if we're not still loading the auth status
-      navigate('/admin/login', { replace: true });
+    if (authStatus === null && !loading) {
+      const path = location.pathname;
+      if (!path.startsWith('/admin/login') && path.startsWith('/admin/')) {
+        navigate('/admin/login', { replace: true });
+      }
     }
-  }, [location.pathname, authStatus, activeAuthTab, navigate, loading]);
+  }, [location.pathname, authStatus, navigate, loading]);
   
   // Aggressively load CSS in dev mode
   useEffect(() => {
@@ -264,7 +215,7 @@ export default function AdminPortal() {
   }, [location.search]);
 
   // Check if OpenObserve analytics is enabled
-  const checkMetricsEnabled = async () => {
+  const checkMetricsEnabled = useCallback(async () => {
     try {
       const res = await fetch(`${API_URL}/api/config`, {
         credentials: 'include',
@@ -272,12 +223,24 @@ export default function AdminPortal() {
       if (res.ok) {
         const config = await res.json();
         const isEnabled = config?.analytics?.openobserve?.enabled === true;
+        console.log('[AdminPortal] Metrics enabled check:', isEnabled);
         setMetricsEnabled(isEnabled);
       }
     } catch (err) {
       console.error('Failed to check metrics config:', err);
     }
-  };
+  }, []);
+
+  // Listen for config updates (triggered after restart)
+  useEffect(() => {
+    const handleConfigUpdate = () => {
+      console.log('[AdminPortal] Config update detected, reloading metrics status...');
+      checkMetricsEnabled();
+    };
+
+    window.addEventListener('config-updated', handleConfigUpdate);
+    return () => window.removeEventListener('config-updated', handleConfigUpdate);
+  }, [checkMetricsEnabled]);
 
   // Track tab changes
   useEffect(() => {
@@ -445,152 +408,38 @@ export default function AdminPortal() {
     }
   };
 
-  // Handle credential login
-  const handleCredentialsLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoginError(null);
-    setLoginLoading(true);
 
-    try {
-      const res = await fetch(`${API_URL}/api/auth-extended/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({
-          email: username,
-          password,
-          mfaToken: mfaToken || undefined,
-        }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        if (data.requiresMFA) {
-          setRequiresMFA(true);
-          setLoginError(null);
-        } else {
-          setLoginError(data.error || 'Login failed');
-        }
-        setLoginLoading(false);
-        return;
-      }
-
-      // Success - fetch auth status and check if security prompt needed
-      const authRes = await fetch(`${API_URL}/api/auth/status`, {
-        credentials: 'include',
-      });
+  // Handle successful login
+  const handleLoginSuccess = async () => {
+    // Refresh auth status
+    const authRes = await fetch(`${API_URL}/api/auth/status`, {
+      credentials: 'include',
+    });
+    
+    if (authRes.ok) {
+      const authData = await authRes.json();
+      setAuthStatus(authData);
       
-      if (authRes.ok) {
-        const authData = await authRes.json();
-        setAuthStatus(authData);
-        
-        // Load albums after successful login
-        loadAlbums();
-        
-        // Check if user needs security setup
-        const dismissed = localStorage.getItem('security-setup-dismissed') === 'true';
-        const user = authData.user;
-        
-        if (user && !dismissed) {
-          const hasMFA = user.mfa_enabled === true;
-          const hasPasskey = user.passkey_enabled === true;
-          const authMethods = user.auth_methods || [];
-          const isCredentialUser = authMethods.includes('credentials');
-          const isGoogleUser = authMethods.includes('google');
-          
-          console.log('[Login] Checking security setup after credential login:', {
-            hasMFA,
-            hasPasskey,
-            authMethods,
-            isCredentialUser,
-            isGoogleUser,
-            shouldShow: isCredentialUser && !isGoogleUser && !hasMFA && !hasPasskey,
-          });
-          
-          if (isCredentialUser && !isGoogleUser && !hasMFA && !hasPasskey) {
-            console.log('[Login] Showing security prompt after credential login');
-            setShowSecurityPrompt(true);
-          }
-        }
-        
-        setLoginLoading(false);
-      } else {
-        window.location.reload();
-      }
-    } catch (err) {
-      setLoginError('Network error. Please try again.');
-      setLoginLoading(false);
-    }
-  };
-
-  // Handle passkey login
-  const handlePasskeyLogin = async () => {
-    setLoginError(null);
-    setLoginLoading(true);
-
-    try {
-      // Get authentication options with email to narrow down passkeys
-      const optionsRes = await fetch(`${API_URL}/api/auth-extended/passkey/auth-options`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: username || undefined }),
-      });
-
-      if (!optionsRes.ok) {
-        throw new Error('Failed to get authentication options');
-      }
-
-      const { sessionId, ...options } = await optionsRes.json();
-
-      // Start WebAuthn authentication
-      const { startAuthentication } = await import('@simplewebauthn/browser');
-      const credential = await startAuthentication(options);
-
-      // Verify authentication
-      const verifyRes = await fetch(`${API_URL}/api/auth-extended/passkey/auth-verify`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ credential, sessionId }),
-      });
-
-      const data = await verifyRes.json();
-
-      if (!verifyRes.ok) {
-        setLoginError(data.error || 'Passkey authentication failed');
-        setLoginLoading(false);
-        return;
-      }
-
-      // Store email for next time
-      if (username) {
-        localStorage.setItem('passkeyEmail', username);
-      }
-
-      // Success - fetch auth status
-      const authRes = await fetch(`${API_URL}/api/auth/status`, {
-        credentials: 'include',
-      });
+      // Load albums after successful login
+      loadAlbums();
       
-      if (authRes.ok) {
-        const authData = await authRes.json();
-        setAuthStatus(authData);
+      // Check if user needs security setup
+      const dismissed = localStorage.getItem('security-setup-dismissed') === 'true';
+      const user = authData.user;
+      
+      if (user && !dismissed) {
+        const hasMFA = user.mfa_enabled === true;
+        const hasPasskey = user.passkey_enabled === true;
+        const authMethods = user.auth_methods || [];
+        const isCredentialUser = authMethods.includes('credentials');
+        const isGoogleUser = authMethods.includes('google');
         
-        // Load albums after successful login
-        loadAlbums();
-        
-        setLoginLoading(false);
-      } else {
-        window.location.reload();
+        if (isCredentialUser && !isGoogleUser && !hasMFA && !hasPasskey) {
+          setShowSecurityPrompt(true);
+        }
       }
-    } catch (err: any) {
-      if (err.name === 'NotAllowedError') {
-        setLoginError('Authentication cancelled');
-      } else {
-        setLoginError(err.message || 'Passkey authentication failed');
-      }
-      setLoginLoading(false);
+    } else {
+      window.location.reload();
     }
   };
 
@@ -598,17 +447,7 @@ export default function AdminPortal() {
     return (
       <div className="admin-portal">
         <div className="admin-container">
-          <div
-            className="loading-container"
-            style={{
-              minHeight: "calc(100vh - 100px)",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-              alignItems: "center",
-              paddingTop: "2rem",
-            }}
-          >
+          <div className="loading-container loading-container-full">
             <div className="loading-spinner"></div>
             <p>{!cssLoaded ? 'Loading styles...' : 'Loading site settings...'}</p>
           </div>
@@ -621,325 +460,10 @@ export default function AdminPortal() {
     return (
       <div className="admin-portal">
         <div className="admin-container">
-          <div className="auth-section">
-            <div className="auth-card">
-              <div className="auth-icon">
-                <LockIcon width="48" height="48" />
-              </div>
-              
-              <h2>Sign in to Galleria</h2>
-              <p className="auth-description">
-                Choose your authentication method to access Galleria.
-              </p>
-
-              {loginError && (
-                <div className="login-error" style={{
-                  background: '#fee2e2',
-                  border: '1px solid #ef4444',
-                  color: '#991b1b',
-                  padding: '0.75rem 1rem',
-                  borderRadius: '6px',
-                  marginBottom: '1.5rem',
-                  fontSize: '0.875rem'
-                }}>
-                  {loginError}
-                </div>
-              )}
-
-              {/* Auth Method Selection - Main Screen */}
-              {!activeAuthTab && (
-                <div className="auth-actions">
-                  {availableAuthMethods.google && (
-                    <a 
-                      href={`${API_URL}/api/auth/google`} 
-                      className="btn-login"
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        textDecoration: 'none',
-                        width: '100%',
-                        height: '56px',
-                        background: 'white',
-                        border: '1px solid #d1d5db',
-                        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)',
-                        color: '#374151'
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.boxShadow = '0 6px 20px rgba(0, 0, 0, 0.12)';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.08)';
-                      }}
-                    >
-                      <GoogleLogoIcon width="20" height="20" style={{ marginRight: '12px' }} />
-                      Sign in with Google
-                    </a>
-                  )}
-                  
-                  {availableAuthMethods.passkey && (
-                    <button
-                      onClick={() => updateAuthRoute('passkey')}
-                      className="btn-login"
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        width: '100%',
-                        height: '56px',
-                        background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
-                        border: '1px solid rgba(59, 130, 246, 0.3)',
-                        boxShadow: '0 4px 12px rgba(59, 130, 246, 0.3)'
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.boxShadow = '0 6px 20px rgba(59, 130, 246, 0.4)';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.boxShadow = '0 4px 12px rgba(59, 130, 246, 0.3)';
-                      }}
-                    >
-                      <span style={{ fontSize: '1.2rem', marginRight: '12px' }}>🔑</span>
-                      Sign in with Passkey
-                    </button>
-                  )}
-                  
-                  {availableAuthMethods.password && (
-                    <button
-                      onClick={() => updateAuthRoute('credentials')}
-                      className="btn-login"
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        width: '100%',
-                        height: '56px',
-                        background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                        border: '1px solid rgba(16, 185, 129, 0.3)',
-                        boxShadow: '0 4px 12px rgba(16, 185, 129, 0.3)'
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.boxShadow = '0 6px 20px rgba(16, 185, 129, 0.4)';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.boxShadow = '0 4px 12px rgba(16, 185, 129, 0.3)';
-                      }}
-                    >
-                      <LockIcon width="20" height="20" style={{ marginRight: '12px' }} />
-                      Sign in with Password
-                    </button>
-                  )}
-                </div>
-              )}
-
-              {/* Google OAuth - Hidden (only via button) */}
-              {activeAuthTab === 'google' && availableAuthMethods.google && (
-                <div className="auth-actions">
-                  <a href={`${API_URL}/api/auth/google`} className="btn-login">
-                    <GoogleLogoIcon width="20" height="20" style={{ marginRight: '12px' }} />
-                    Sign in with Google
-                  </a>
-                </div>
-              )}
-
-              {/* Email/Password */}
-              {activeAuthTab === 'credentials' && (
-                <div className="auth-actions">
-                  {!requiresMFA ? (
-                    <form onSubmit={handleCredentialsLogin} style={{ width: '100%' }}>
-                      <div className="auth-input-group">
-                        <label className="auth-input-label">
-                          Email
-                        </label>
-                        <input
-                          type="email"
-                          className="auth-input"
-                          value={username}
-                          onChange={(e) => setUsername(e.target.value)}
-                          required
-                          autoComplete="email"
-                          disabled={loginLoading}
-                          placeholder="Enter your email"
-                          autoFocus
-                        />
-                      </div>
-                      <div className="auth-input-group" style={{ marginBottom: '1.5rem' }}>
-                        <label className="auth-input-label">
-                          Password
-                        </label>
-                        <input
-                          type="password"
-                          className="auth-input"
-                          value={password}
-                          onChange={(e) => setPassword(e.target.value)}
-                          required
-                          autoComplete="current-password"
-                          disabled={loginLoading}
-                          placeholder="Enter your password"
-                        />
-                      </div>
-                      <button
-                        type="submit"
-                        className="btn-login"
-                        disabled={loginLoading}
-                        style={{ width: '100%' }}
-                      >
-                        {loginLoading ? 'Signing in...' : 'Sign In'}
-                      </button>
-                    </form>
-                  ) : (
-                    <form onSubmit={handleCredentialsLogin} style={{ width: '100%' }}>
-                      <div style={{
-                        textAlign: 'center',
-                        marginBottom: '1.5rem',
-                        padding: '1rem',
-                        background: '#f0fdf4',
-                        border: '1px solid #bbf7d0',
-                        borderRadius: '6px'
-                      }}>
-                        <p style={{ fontWeight: 600, color: '#15803d', margin: '0 0 0.5rem 0' }}>
-                          Two-Factor Authentication Required
-                        </p>
-                        <p style={{ fontSize: '0.875rem', color: '#16a34a', margin: '0 0 0.5rem 0' }}>
-                          Enter the 6-digit code from your authenticator app for:
-                        </p>
-                        <p style={{ fontSize: '0.875rem', color: '#15803d', fontWeight: 600, margin: 0, fontFamily: 'monospace' }}>
-                          {username}
-                        </p>
-                      </div>
-                      {/* Hidden username field for password managers */}
-                      <input
-                        type="text"
-                        name="username"
-                        value={username}
-                        autoComplete="username"
-                        readOnly
-                        style={{ display: 'none' }}
-                        tabIndex={-1}
-                        aria-hidden="true"
-                      />
-                      <div className="auth-input-group">
-                        <label className="auth-input-label">
-                          Authentication Code
-                        </label>
-                        <input
-                          type="text"
-                          className="auth-input"
-                          name="totp"
-                          value={mfaToken}
-                          onChange={(e) => setMfaToken(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                          placeholder="000000"
-                          required
-                          autoComplete="one-time-code"
-                          disabled={loginLoading}
-                          maxLength={6}
-                          style={{
-                            fontSize: '1.5rem',
-                            textAlign: 'center',
-                            letterSpacing: '0.5em',
-                            fontWeight: 600
-                          }}
-                          autoFocus
-                        />
-                      </div>
-                      <button
-                        type="submit"
-                        className="btn-login"
-                        disabled={loginLoading || mfaToken.length !== 6}
-                        style={{ width: '100%', marginBottom: '0.5rem' }}
-                      >
-                        {loginLoading ? 'Verifying...' : 'Verify & Sign In'}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setRequiresMFA(false);
-                          setMfaToken('');
-                          setLoginError(null);
-                          updateAuthRoute(null);
-                        }}
-                        disabled={loginLoading}
-                        style={{
-                          width: '100%',
-                          padding: '0.75rem',
-                          background: 'white',
-                          border: '1px solid #d1d5db',
-                          borderRadius: '6px',
-                          cursor: 'pointer',
-                          fontSize: '0.875rem',
-                          fontWeight: 500,
-                          color: '#6b7280'
-                        }}
-                      >
-                        Back
-                      </button>
-                    </form>
-                  )}
-                </div>
-              )}
-
-              {/* Passkey */}
-              {activeAuthTab === 'passkey' && (
-                <div className="auth-actions">
-                  <form onSubmit={(e) => { e.preventDefault(); handlePasskeyLogin(); }} style={{ width: '100%' }}>
-                    <div className="auth-input-group">
-                      <label className="auth-input-label">
-                        Email
-                      </label>
-                      <input
-                        type="email"
-                        className="auth-input"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        required
-                        autoComplete="email webauthn"
-                        disabled={loginLoading}
-                        placeholder="Enter your email"
-                        autoFocus
-                      />
-                    </div>
-                    <button
-                      type="submit"
-                      className="btn-login"
-                      disabled={loginLoading || !username}
-                      style={{ width: '100%', marginBottom: '0.5rem' }}
-                    >
-                      {loginLoading ? 'Authenticating...' : '🔑 Sign in with Passkey'}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        updateAuthRoute(null);
-                        setUsername('');
-                        setLoginError(null);
-                      }}
-                      disabled={loginLoading}
-                      style={{
-                        width: '100%',
-                        padding: '0.75rem',
-                        background: 'white',
-                        border: '1px solid #d1d5db',
-                        borderRadius: '6px',
-                        cursor: 'pointer',
-                        fontSize: '0.875rem',
-                        fontWeight: 500,
-                        color: '#6b7280'
-                      }}
-                    >
-                      Back
-                    </button>
-                  </form>
-                </div>
-              )}
-
-              {/* Return to Gallery Link */}
-              <div style={{ marginTop: '1.5rem', paddingTop: '1.5rem', borderTop: '1px solid #e5e7eb' }}>
-                <a href="/" className="btn-home">
-                  <HomeIcon width="18" height="18" style={{ marginRight: '8px' }} />
-                  Return to Gallery
-                </a>
-              </div>
-            </div>
-          </div>
+          <LoginForm 
+            availableAuthMethods={availableAuthMethods}
+            onLoginSuccess={handleLoginSuccess}
+          />
         </div>
       </div>
     );

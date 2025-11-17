@@ -24,10 +24,10 @@ import config, {
   PORT,
   PHOTOS_DIR,
   OPTIMIZED_DIR,
-  ALLOWED_ORIGINS,
+  getAllowedOrigins,
+  getConfigExists,
   RATE_LIMIT_WINDOW_MS,
   RATE_LIMIT_MAX_REQUESTS,
-  CONFIG_EXISTS,
 } from "./config.ts";
 import { validateProductionSecurity } from "./security.ts";
 import { initializeDatabase } from "./database.ts";
@@ -70,7 +70,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Validate production security before starting (skip if in setup mode)
-if (CONFIG_EXISTS) {
+if (getConfigExists()) {
   validateProductionSecurity();
 } else {
   console.log('⚙️  Setup mode detected - skipping production security validation');
@@ -90,10 +90,15 @@ app.set("trust proxy", 1);
 const isProduction = config.frontend.apiUrl.startsWith("https://");
 if (isProduction) {
   app.use((req, res, next) => {
+    // Skip HTTPS redirect for IP addresses (e.g., direct Docker access)
+    const host = req.headers.host || '';
+    const ipPattern = /^\d+\.\d+\.\d+\.\d+(:\d+)?$/;
+    const isIpAddress = ipPattern.test(host);
+    
     // Check if request is already HTTPS
     const isSecure = req.secure || req.headers["x-forwarded-proto"] === "https";
 
-    if (!isSecure) {
+    if (!isSecure && !isIpAddress) {
       // Redirect to HTTPS
       const httpsUrl = `https://${req.headers.host}${req.url}`;
       return res.redirect(301, httpsUrl);
@@ -155,19 +160,56 @@ app.use(
       // Allow requests with no origin (mobile apps, curl, etc.)
       if (!origin) return callback(null, true);
 
+      // Get current state (dynamic, updates after config changes)
+      const configExists = getConfigExists();
+      const allowedOrigins = getAllowedOrigins();
+      
       // During OOBE (setup mode), allow any HTTPS origin to enable setup from any domain
-      if (!CONFIG_EXISTS && origin.startsWith('https://')) {
+      if (!configExists && origin.startsWith('https://')) {
         console.log(`[OOBE] Allowing CORS from: ${origin}`);
         return callback(null, true);
       }
-
-      if (ALLOWED_ORIGINS.indexOf(origin) !== -1) {
+      
+      // Check exact matches first
+      if (allowedOrigins.indexOf(origin) !== -1) {
         callback(null, true);
-      } else {
-        // Reject origin by passing false (not an Error)
-        console.warn(`CORS blocked origin: ${origin}`);
-        callback(null, false);
+        return;
       }
+
+      // Allow localhost on any port (for development)
+      try {
+        const url = new URL(origin);
+        if (url.hostname === 'localhost' || url.hostname === '127.0.0.1') {
+          callback(null, true);
+          return;
+        }
+      } catch (e) {
+        // Invalid URL, continue to other checks
+      }
+
+      // Allow any IP address on ports 3000 and 3001 (for Docker direct access)
+      // Pattern: http://<any-ip>:3000 or http://<any-ip>:3001
+      try {
+        const url = new URL(origin);
+        const port = url.port ? parseInt(url.port) : (url.protocol === 'https:' ? 443 : 80);
+        
+        // Check if hostname is an IP address (IPv4 pattern)
+        const hostname = url.hostname;
+        const ipPattern = /^\d+\.\d+\.\d+\.\d+$/;
+        const isIpAddress = ipPattern.test(hostname);
+        
+        if (isIpAddress && (port === 3000 || port === 3001)) {
+          console.log(`[CORS] Allowing IP-based access: ${origin}`);
+          callback(null, true);
+          return;
+        }
+      } catch (e) {
+        // Invalid URL, continue to rejection
+      }
+
+      // Reject origin by passing false (not an Error)
+      console.warn(`CORS blocked origin: ${origin}`);
+      callback(null, false);
     },
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
@@ -201,7 +243,7 @@ app.use(express.json({ limit: "1mb" }));
 // Configure session middleware for authentication
 const sessionSecret = config.auth?.sessionSecret;
 if (!sessionSecret) {
-  if (CONFIG_EXISTS) {
+  if (getConfigExists()) {
     console.error('❌ CRITICAL ERROR: SESSION_SECRET is not configured!');
     console.error('Please set auth.sessionSecret in config.json or SESSION_SECRET environment variable.');
     console.error('Generate a secure secret with: openssl rand -hex 32');
@@ -468,7 +510,7 @@ const server = app.listen(PORT, bindHost, () => {
   console.log(`Photos directory: ${photosDir}`);
   
   // Regenerate static JSON files on startup (non-blocking)
-  if (CONFIG_EXISTS) {
+  if (getConfigExists()) {
     console.log('[Startup] Regenerating static JSON files...');
     const appRoot = path.resolve(__dirname, "../../");
     const result = generateStaticJSONFiles(appRoot);

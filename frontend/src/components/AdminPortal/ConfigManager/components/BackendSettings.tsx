@@ -3,9 +3,10 @@
  */
 
 import React, { useState } from 'react';
+import { API_URL } from '../../../../config';
 import { ConfigData } from '../types';
 
-import { API_URL } from '../../../../config';
+
 interface BackendSettingsProps {
   config: ConfigData;
   updateConfig: (path: string[], value: any) => void;

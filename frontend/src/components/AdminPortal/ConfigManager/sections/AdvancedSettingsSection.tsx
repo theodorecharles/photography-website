@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useEffect, useRef } from 'react';
+import { API_URL } from '../../../../config';
 import { ConfigData } from '../types';
 import SectionHeader from '../components/SectionHeader';
 import RegenerationControls from '../components/RegenerationControls';
@@ -17,6 +18,7 @@ import {
   addArrayItem as addArrayItemHelper,
   removeArrayItem as removeArrayItemHelper,
 } from '../utils/configHelpers';
+
 
 interface AdvancedSettingsSectionProps {
   config: ConfigData | null;
@@ -42,6 +44,8 @@ interface AdvancedSettingsSectionProps {
   scrollToSmtp?: boolean;
   setScrollToSmtp?: (value: boolean) => void;
   sectionRef?: React.RefObject<HTMLDivElement | null>;
+  // Restart modal callback
+  onOpenObserveSave?: () => void;
 }
 
 const AdvancedSettingsSection: React.FC<AdvancedSettingsSectionProps> = ({
@@ -57,6 +61,7 @@ const AdvancedSettingsSection: React.FC<AdvancedSettingsSectionProps> = ({
   generatingTitles,
   isOptimizationRunning,
   onGenerateTitles,
+  onOpenObserveSave,
   onStopTitles,
   onRunOptimization,
   onStopOptimization,
@@ -290,6 +295,7 @@ const AdvancedSettingsSection: React.FC<AdvancedSettingsSectionProps> = ({
           onCancel={() => setConfig(originalConfig!)}
           savingSection={savingSection}
           setMessage={setMessage}
+          onOpenObserveSave={onOpenObserveSave}
         />
       </div>
     </div>

@@ -1,0 +1,27 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: galleria
+    ports:
+      - "3000:3000"
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - HOST=0.0.0.0
+      - DATA_DIR=/data
+      - FRONTEND_DOMAIN=${FRONTEND_DOMAIN:-http://localhost:3000}
+      - BACKEND_DOMAIN=${BACKEND_DOMAIN:-http://localhost:3001}
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-}
+      - API_URL=${BACKEND_DOMAIN:-http://localhost:3001}
+    volumes:
+      - ${DATA_DIR:-/Users/Ted/Desktop/galleria-data}:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3001/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s

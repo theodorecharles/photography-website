@@ -4,10 +4,11 @@
  */
 
 import { useState, useCallback } from 'react';
+import { API_URL } from '../../../../config';
 import { ConfirmModalConfig } from '../types';
 import { fetchWithRateLimitCheck } from '../../../../utils/fetchWrapper';
 
-import { API_URL } from '../../../../config';
+
 interface UseFolderManagementProps {
   setMessage: (message: { type: 'success' | 'error'; text: string }) => void;
   loadAlbums: () => Promise<void>;

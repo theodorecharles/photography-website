@@ -4,6 +4,7 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from "react";
+import { API_URL } from '../../../config';
 import { ConfigManagerProps, ConfigData } from './types';
 import { useSSEToaster } from '../../../contexts/SSEToasterContext';
 import BrandingSection from './sections/BrandingSection';
@@ -12,8 +13,9 @@ import UserManagementSection from './sections/UserManagementSection';
 import OpenAISection from './sections/OpenAISection';
 import ImageOptimizationSection from './sections/ImageOptimizationSection';
 import AdvancedSettingsSection from './sections/AdvancedSettingsSection';
-import { API_URL } from '../../../config';
+import RestartModal from '../../RestartModal';
 import '../ConfigManager.css';
+
 
 const ConfigManager: React.FC<ConfigManagerProps> = ({
   setMessage,
@@ -58,6 +60,9 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
     message: string;
     onConfirm: () => void;
   } | null>(null);
+  
+  // Restart modal state
+  const [showRestartModal, setShowRestartModal] = useState(false);
 
   // Refs removed - handled by individual sections now
 
@@ -96,6 +101,11 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
       (window as any).__modalResolve(false);
       delete (window as any).__modalResolve;
     }
+  };
+  
+  // Handler for OpenObserve settings save (triggers restart)
+  const handleOpenObserveSave = () => {
+    setShowRestartModal(true);
   };
 
   useEffect(() => {
@@ -774,6 +784,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
           scrollToSmtp={scrollToSmtp}
           setScrollToSmtp={setScrollToSmtp}
           sectionRef={advancedSectionRef}
+          onOpenObserveSave={handleOpenObserveSave}
         />
       </div>
 
@@ -808,6 +819,14 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
             </div>
           </div>
         </div>
+      )}
+      
+      {/* Restart Modal */}
+      {showRestartModal && (
+        <RestartModal
+          onClose={() => setShowRestartModal(false)}
+          message="The server needs to restart to apply OpenObserve changes."
+        />
       )}
     </section>
   );

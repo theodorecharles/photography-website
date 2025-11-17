@@ -4,9 +4,10 @@
  */
 
 import { Album, AlbumFolder } from '../types';
+import { API_URL } from '../../../../config';
 import { fetchWithRateLimitCheck } from '../../../../utils/fetchWrapper';
 
-import { API_URL } from '../../../../config';
+
 interface FolderHandlersProps {
   localAlbums: Album[];
   localFolders: AlbumFolder[];

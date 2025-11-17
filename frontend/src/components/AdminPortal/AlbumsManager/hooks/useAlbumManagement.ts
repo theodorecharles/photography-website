@@ -4,11 +4,12 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
+import { API_URL } from '../../../../config';
 import { Album, AlbumFolder } from '../types';
 import { fetchWithRateLimitCheck } from '../../../../utils/fetchWrapper';
 import { trackAlbumCreated, trackAlbumDeleted } from '../../../../utils/analytics';
 
-import { API_URL } from '../../../../config';
+
 interface UseAlbumManagementProps {
   albums: Album[];
   folders: AlbumFolder[];
