@@ -6,7 +6,6 @@
 import React, { useState } from 'react';
 import { API_URL } from '../../config';
 import { PasswordInput } from './PasswordInput';
-import { API_URL } from '../../config';
 import './ShareModal.css';
 
 

@@ -31,7 +31,6 @@ import { createUIInteractionHandlers } from './handlers/uiInteractionHandlers';
 import { createPhotoHandlers } from './handlers/photoHandlers';
 import { createMobileReorderHandlers } from './handlers/mobileReorderHandlers';
 import { createOptimizationStreamHandlers } from './handlers/optimizationStreamHandlers';
-import { API_URL } from '../../../config';
 import '../AlbumsManager.css';
 import '../PhotoOrderControls.css';
 import {

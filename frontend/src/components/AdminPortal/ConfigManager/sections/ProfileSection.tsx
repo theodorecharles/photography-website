@@ -11,7 +11,6 @@ import { UserCard } from "./UserManagement/UserCard";
 import { PasskeysModal } from "./UserManagement/PasskeysModal";
 import { PasswordChangeModal } from "./UserManagement/PasswordChangeModal";
 import { userManagementAPI } from "./UserManagement/utils";
-import { API_URL } from '../../../../config';
 import type {
   User,
   Passkey,

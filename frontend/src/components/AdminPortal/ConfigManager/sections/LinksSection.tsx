@@ -10,7 +10,6 @@ import { ExternalLink } from '../../types';
 import { trackExternalLinksUpdate } from '../../../../utils/analytics';
 import SectionHeader from '../components/SectionHeader';
 import { ChevronUpIcon, ChevronDownIcon } from '../../../icons';
-import { API_URL } from '../../../../config';
 import '../../LinksManager.css';
 
 
