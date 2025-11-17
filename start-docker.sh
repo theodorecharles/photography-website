@@ -4,6 +4,13 @@ set -e
 # Use PM2 to manage processes in Docker
 cd /app
 
+# Ensure data directory structure exists
+echo "Ensuring data directory structure..."
+mkdir -p /data/photos
+mkdir -p /data/optimized
+mkdir -p /data/logs
+echo "✓ Data directories ready"
+
 # Copy Docker PM2 config to ecosystem.config.cjs (PM2 requires this name)
 cp ecosystem.docker.cjs ecosystem.config.cjs
 

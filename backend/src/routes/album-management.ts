@@ -461,6 +461,13 @@ router.post("/:album/upload", requireManager, upload.single('photo'), async (req
       return;
     }
 
+    // SECURITY: Sanitize filename to prevent path traversal attacks
+    const sanitizedFilename = sanitizePhotoName(file.originalname);
+    if (!sanitizedFilename) {
+      res.status(400).json({ error: 'Invalid filename. Use only alphanumeric characters, spaces, hyphens, underscores, and valid image extensions.' });
+      return;
+    }
+
     const photosDir = req.app.get("photosDir");
     const albumPath = path.join(photosDir, sanitizedAlbum);
     
@@ -469,7 +476,7 @@ router.post("/:album/upload", requireManager, upload.single('photo'), async (req
       return;
     }
 
-    const destPath = path.join(albumPath, file.originalname);
+    const destPath = path.join(albumPath, sanitizedFilename);
     
         try {
           // Use sharp to auto-rotate based on EXIF orientation (fixes iPhone photos)
@@ -501,25 +508,25 @@ router.post("/:album/upload", requireManager, upload.single('photo'), async (req
     }
 
     // Send success response immediately (don't keep connection open)
-    res.json({ success: true, filename: file.originalname });
+    res.json({ success: true, filename: sanitizedFilename });
 
     // Queue optimization job (will process sequentially)
     const projectRoot = path.resolve(__dirname, '../../../');
     const scriptPath = path.join(projectRoot, 'scripts', 'optimize_new_image.js');
-    const jobId = `${sanitizedAlbum}/${file.originalname}`;
+    const jobId = `${sanitizedAlbum}/${sanitizedFilename}`;
 
     if (fs.existsSync(scriptPath)) {
       queueOptimizationJob(
         jobId,
         sanitizedAlbum,
-        file.originalname,
+        sanitizedFilename,
         scriptPath,
         projectRoot,
         // onProgress callback
         (progress: number) => {
           broadcastOptimizationUpdate(jobId, {
             album: sanitizedAlbum,
-            filename: file.originalname,
+            filename: sanitizedFilename,
             progress,
             state: 'optimizing'
           });
@@ -527,14 +534,14 @@ router.post("/:album/upload", requireManager, upload.single('photo'), async (req
         // onComplete callback
         async () => {
           // Add image to database (with null title initially)
-          saveImageMetadata(sanitizedAlbum, file.originalname, null, null);
+          saveImageMetadata(sanitizedAlbum, sanitizedFilename, null, null);
           
           // Note: We don't invalidate cache here to avoid spam during batch uploads
           // Cache will be invalidated once at the end via static JSON regeneration
           
           broadcastOptimizationUpdate(jobId, {
             album: sanitizedAlbum,
-            filename: file.originalname,
+            filename: sanitizedFilename,
             progress: 100,
             state: 'complete'
           });
@@ -549,7 +556,7 @@ router.post("/:album/upload", requireManager, upload.single('photo'), async (req
             if (config.ai?.autoGenerateTitlesOnUpload && config.openai?.apiKey) {
               broadcastOptimizationUpdate(jobId, {
                 album: sanitizedAlbum,
-                filename: file.originalname,
+                filename: sanitizedFilename,
                 progress: 100,
                 state: 'generating-title'
               });
@@ -558,7 +565,7 @@ router.post("/:album/upload", requireManager, upload.single('photo'), async (req
               await generateAITitleForImageAsync(
                 config.openai.apiKey,
                 sanitizedAlbum,
-                file.originalname,
+                sanitizedFilename,
                 projectRoot,
                 jobId
               );
@@ -576,7 +583,7 @@ router.post("/:album/upload", requireManager, upload.single('photo'), async (req
         (error: string) => {
           broadcastOptimizationUpdate(jobId, {
             album: sanitizedAlbum,
-            filename: file.originalname,
+            filename: sanitizedFilename,
             progress: 0,
             state: 'error',
             error
@@ -586,7 +593,7 @@ router.post("/:album/upload", requireManager, upload.single('photo'), async (req
     } else {
       broadcastOptimizationUpdate(jobId, {
         album: sanitizedAlbum,
-        filename: file.originalname,
+        filename: sanitizedFilename,
         progress: 0,
         state: 'error',
         error: 'Optimization script not found'
@@ -773,7 +780,7 @@ router.patch("/:album/publish", requireManager, async (req: Request, res: Respon
     // Regenerate static JSON files
     console.log(`[Publish] Regenerating static JSON files...`);
     const appRoot = req.app.get('appRoot');
-    const result = generateStaticJSONFiles(appRoot);
+    const result = await generateStaticJSONFiles(appRoot);
     if (result.success) {
       console.log(`[Publish] ✓ Static JSON regenerated (${result.albumCount} albums)`);
     } else {
@@ -843,7 +850,7 @@ router.patch("/:album/show-on-homepage", requireManager, async (req: Request, re
     // Regenerate static JSON files (specifically homepage.json)
     console.log(`[Homepage] Regenerating static JSON files...`);
     const appRoot = req.app.get('appRoot');
-    const result = generateStaticJSONFiles(appRoot);
+    const result = await generateStaticJSONFiles(appRoot);
     if (result.success) {
       console.log(`[Homepage] ✓ Static JSON regenerated (${result.albumCount} albums)`);
     } else {
