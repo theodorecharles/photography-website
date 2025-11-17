@@ -4,10 +4,10 @@
  */
 
 import { fetchWithRateLimitCheck } from '../../../../utils/fetchWrapper';
+import { API_URL } from '../../../../config';
 import { trackPhotoDeleted } from '../../../../utils/analytics';
 import { ConfirmModalConfig, Photo } from '../types';
 
-const API_URL = import.meta.env.VITE_API_URL || '';
 
 interface PhotoHandlersProps {
   selectedAlbum: string | null;

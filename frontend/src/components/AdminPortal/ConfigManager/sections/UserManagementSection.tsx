@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useEffect } from "react";
+import { API_URL } from '../../../../config';
 import SectionHeader from "../components/SectionHeader";
 import { MFASetupModal } from "./UserManagement/MFASetupModal";
 import { ConfirmationModal } from "./UserManagement/ConfirmationModal";
@@ -24,7 +25,6 @@ import type {
   MessageType,
 } from "./UserManagement/types";
 
-const API_URL = import.meta.env.VITE_API_URL || "";
 
 interface UserManagementSectionProps {
   setMessage: (message: MessageType) => void;

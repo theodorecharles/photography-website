@@ -7,6 +7,7 @@
  */
 
 import React, { useRef, useLayoutEffect } from 'react';
+import { API_URL } from '../../../../config';
 import { DndContext, DragOverlay, closestCenter, PointerSensor, KeyboardSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { SortableContext, sortableKeyboardCoordinates, rectSortingStrategy } from '@dnd-kit/sortable';
 import PhotoGridItem from './PhotoGridItem';
@@ -14,7 +15,6 @@ import { PhotoListItem } from './PhotoListItem';
 import { Photo, UploadingImage } from '../types';
 import { cacheBustValue } from '../../../../config';
 
-const API_URL = import.meta.env.VITE_API_URL || '';
 
 type ViewMode = 'grid' | 'list';
 

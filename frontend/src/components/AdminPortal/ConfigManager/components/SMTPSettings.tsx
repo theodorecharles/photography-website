@@ -3,13 +3,13 @@
  */
 
 import React, { useState } from 'react';
+import { API_URL } from '../../../../config';
 import { ConfigData } from '../types';
 import { PasswordInput } from '../../PasswordInput';
 import { TestEmailModal } from './TestEmailModal';
 import { SMTPProvidersModal } from './SMTPProvidersModal';
 import { Toggle } from './Toggle';
 
-const API_URL = import.meta.env.VITE_API_URL || '';
 
 interface SMTPSettingsProps {
   config: ConfigData;

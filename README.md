@@ -75,6 +75,24 @@ A modern, secure photography portfolio website built with React 19, TypeScript, 
 
 ## Deployment Options
 
+### 📦 Unraid (Easiest)
+
+**One-click install from Community Applications.**
+
+1. Open Unraid Docker tab
+2. Click "Apps" tab
+3. Search for "Galleria"
+4. Click "Install"
+5. Configure your domains:
+   - **Frontend Domain**: `http://YOUR-SERVER-IP:3000` (or `https://photos.yourdomain.com` with reverse proxy)
+   - **Backend Domain**: `http://YOUR-SERVER-IP:3001` (or `https://api.yourdomain.com` with reverse proxy)
+6. Click "Apply"
+7. Access at `http://YOUR-SERVER-IP:3000`
+
+📖 **Detailed guide:** [UNRAID-SETUP.md](UNRAID-SETUP.md)
+
+---
+
 ### 🐳 Docker Deployment (Recommended)
 
 **Single container deployment with PM2 process management.**
@@ -83,7 +101,7 @@ A modern, secure photography portfolio website built with React 19, TypeScript, 
 
 1. **Clone the repository:**
 ```bash
-git clone https://github.com/theodoreroddy/photography-website.git
+git clone https://github.com/theodorecharles/photography-website.git
 cd photography-website
 ```
 
@@ -198,7 +216,7 @@ docker exec galleria tail -f /data/logs/backend-out.log
 
 1. **Clone and install dependencies:**
 ```bash
-git clone https://github.com/theodoreroddy/photography-website.git
+git clone https://github.com/theodorecharles/photography-website.git
 cd photography-website
 npm install
 cd backend && npm install
@@ -637,8 +655,8 @@ You are free to share and adapt with attribution.
 
 ## Links
 
-- **📦 Repository:** [github.com/theodoreroddy/photography-website](https://github.com/theodoreroddy/photography-website)
-- **🐛 Issues:** [GitHub Issues](https://github.com/theodoreroddy/photography-website/issues)
+- **📦 Repository:** [github.com/theodorecharles/photography-website](https://github.com/theodorecharles/photography-website)
+- **🐛 Issues:** [GitHub Issues](https://github.com/theodorecharles/photography-website/issues)
 - **📧 Contact:** [me@tedcharles.net](mailto:me@tedcharles.net)
 
 ---

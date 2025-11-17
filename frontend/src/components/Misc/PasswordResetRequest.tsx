@@ -4,9 +4,9 @@
  */
 
 import React, { useState, useEffect } from "react";
+import { API_URL } from '../../config';
 import { useNavigate } from "react-router-dom";
 
-const API_URL = import.meta.env.VITE_API_URL || "";
 
 const PasswordResetRequest: React.FC = () => {
   const navigate = useNavigate();

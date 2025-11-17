@@ -4,9 +4,9 @@
  */
 
 import { UploadingImage, Photo } from '../types';
+import { API_URL } from '../../../../config';
 import { trackPhotoUploaded } from '../../../../utils/analytics';
 
-const API_URL = import.meta.env.VITE_API_URL || '';
 
 interface OptimizationStreamHandlersProps {
   setUploadingImages: React.Dispatch<React.SetStateAction<UploadingImage[]>>;

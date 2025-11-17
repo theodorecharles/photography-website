@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useEffect, useRef } from 'react';
+import { API_URL } from '../../../../config';
 import { ConfigData } from '../types';
 import SectionHeader from '../components/SectionHeader';
 import RegenerationControls from '../components/RegenerationControls';
@@ -17,7 +18,6 @@ import {
   removeArrayItem as removeArrayItemHelper,
 } from '../utils/configHelpers';
 
-const API_URL = import.meta.env.VITE_API_URL || '';
 
 interface AdvancedSettingsSectionProps {
   config: ConfigData | null;

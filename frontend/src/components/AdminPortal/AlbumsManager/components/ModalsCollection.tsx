@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { API_URL } from '../../../../config';
 import { createPortal } from 'react-dom';
 import ShareModal from '../../ShareModal';
 import MoveToFolderModal from './MoveToFolderModal';
@@ -11,7 +12,6 @@ import { Photo, Folder } from '../types';
 import { cacheBustValue } from '../../../../config';
 import { MagicWandIcon } from '../../../icons';
 
-const API_URL = import.meta.env.VITE_API_URL || '';
 
 interface ConfirmModalConfig {
   message: string;

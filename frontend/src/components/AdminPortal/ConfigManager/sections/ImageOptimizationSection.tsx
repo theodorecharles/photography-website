@@ -4,10 +4,10 @@
  */
 
 import React, { useState } from 'react';
+import { API_URL } from '../../../../config';
 import { ConfigData } from '../types';
 import SectionHeader from '../components/SectionHeader';
 
-const API_URL = import.meta.env.VITE_API_URL || '';
 
 interface ImageOptimizationSectionProps {
   config: ConfigData | null;
