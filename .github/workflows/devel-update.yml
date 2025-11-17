@@ -131,15 +131,9 @@ jobs:
             TAG="dev"
           fi
 
-          # Build and push with environment tag
+          # Build and push with dev tag only (no version tags on devel branch)
           docker build -t ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.DOCKER_IMAGE_NAME }}:$TAG .
           docker push ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.DOCKER_IMAGE_NAME }}:$TAG
-
-          # Also tag and push with version from package.json
-          VERSION=$(node -p "require('./package.json').version")
-          docker tag ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.DOCKER_IMAGE_NAME }}:$TAG \
-                     ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.DOCKER_IMAGE_NAME }}:v$VERSION
-          docker push ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.DOCKER_IMAGE_NAME }}:v$VERSION
 
           # Logout
           docker logout
@@ -148,17 +142,17 @@ jobs:
         if: success() && vars.DOCKERHUB_USERNAME
         run: |
           cd /home/ted/photography-website/
-          
+
           # Read README.md and escape for JSON
           README_CONTENT=$(cat README.md | jq -Rs .)
-          
+
           # Get authentication token
           TOKEN=$(curl -s -X POST \
             'https://hub.docker.com/v2/users/login/' \
             -H 'Content-Type: application/json' \
             -d "{\"username\": \"${{ vars.DOCKERHUB_USERNAME }}\", \"password\": \"${{ secrets.DOCKERHUB_TOKEN }}\"}" \
             | jq -r .token)
-          
+
           # Update Docker Hub repository description
           curl -X PATCH \
             "https://hub.docker.com/v2/repositories/${{ vars.DOCKERHUB_USERNAME }}/${{ vars.DOCKER_IMAGE_NAME }}/" \
@@ -177,13 +171,10 @@ jobs:
             TAG="dev"
           fi
 
-          VERSION=$(node -p "require('./package.json').version")
-          
           MESSAGE="🐳 Docker image built and pushed!
 
           🌐 Branch: devel
           📦 Image: ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.DOCKER_IMAGE_NAME }}:$TAG
-          🏷️ Also tagged: v$VERSION
 
           🔗 Workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
 
