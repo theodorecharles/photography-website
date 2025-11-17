@@ -82,7 +82,11 @@ app.use((req, res, next) => {
   // Skip host validation during setup mode (OOBE)
   if (!isSetupMode) {
     // Validate host to prevent open redirect attacks
-    if (!allowedHosts.includes(host)) {
+    // Allow IP addresses for direct container access (e.g., Unraid WebUI)
+    const ipPattern = /^\d+\.\d+\.\d+\.\d+(:\d+)?$/;
+    const isIpAddress = ipPattern.test(host);
+    
+    if (!allowedHosts.includes(host) && !isIpAddress) {
       return res.status(400).send("Invalid host header");
     }
   }
@@ -519,7 +523,7 @@ app.get("*", async (req, res) => {
     const host = Array.isArray(hostHeader) ? hostHeader[0] : hostHeader;
     let runtimeApiUrl;
     
-    // Check if accessing via IP address (e.g., 4.20.69.219:3000)
+    // Check if accessing via IP address (e.g., 192.168.1.219:3000)
     const ipPattern = /^\d+\.\d+\.\d+\.\d+(:\d+)?$/;
     if (ipPattern.test(host)) {
       // Direct IP access: use same IP with port 3001
