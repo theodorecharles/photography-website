@@ -103,14 +103,14 @@ jobs:
         run: |
           cd /home/ted/photography-website/
           COMMIT_HASH=$(git rev-parse --short HEAD)
-          
+
           MESSAGE="🐳 Docker build starting...
 
           🌐 Branch: devel
           📦 Commit: $COMMIT_HASH
-          
+
           🔗 Workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-          
+
           curl -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
                -d "chat_id=${{ vars.TELEGRAM_CHAT_ID }}" \
                -d "text=$MESSAGE" \
@@ -130,15 +130,15 @@ jobs:
             TAG="dev"
           fi
 
-          # Build and push
+          # Build and push with environment tag
           docker build -t ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.DOCKER_IMAGE_NAME }}:$TAG .
           docker push ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.DOCKER_IMAGE_NAME }}:$TAG
 
-          # Also tag and push with commit hash
-          COMMIT_HASH=$(git rev-parse --short HEAD)
+          # Also tag and push with version from package.json
+          VERSION=$(node -p "require('./package.json').version")
           docker tag ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.DOCKER_IMAGE_NAME }}:$TAG \
-                     ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.DOCKER_IMAGE_NAME }}:$COMMIT_HASH
-          docker push ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.DOCKER_IMAGE_NAME }}:$COMMIT_HASH
+                     ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.DOCKER_IMAGE_NAME }}:v$VERSION
+          docker push ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.DOCKER_IMAGE_NAME }}:v$VERSION
 
           # Logout
           docker logout
@@ -153,11 +153,13 @@ jobs:
             TAG="dev"
           fi
 
+          VERSION=$(node -p "require('./package.json').version")
+          
           MESSAGE="🐳 Docker image built and pushed!
 
           🌐 Branch: devel
           📦 Image: ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.DOCKER_IMAGE_NAME }}:$TAG
-          🏷️ Also tagged: $COMMIT_HASH
+          🏷️ Also tagged: v$VERSION
 
           🔗 Workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
 
