@@ -512,9 +512,15 @@ app.get("*", async (req, res) => {
       return res.sendFile(indexPath);
     }
     
-    // Auto-detect API URL if in setup mode
-    let runtimeApiUrl = config.frontend.apiUrl;
-    if (isSetupMode) {
+    // Determine runtime API URL
+    // Priority: 1) Environment variable, 2) Auto-detect from headers, 3) Config file
+    let runtimeApiUrl;
+    
+    if (process.env.BACKEND_DOMAIN || process.env.API_URL) {
+      // Use environment variable if provided (Docker deployments)
+      runtimeApiUrl = process.env.BACKEND_DOMAIN || process.env.API_URL;
+    } else if (isSetupMode || !config.frontend.apiUrl || config.frontend.apiUrl.includes('localhost')) {
+      // Auto-detect from request headers (setup mode or missing/localhost config)
       const protocol = req.headers['x-forwarded-proto'] || (req.secure ? 'https' : 'http');
       const hostHeader = req.headers['x-forwarded-host'] || req.headers['host'] || 'localhost:3000';
       const host = Array.isArray(hostHeader) ? hostHeader[0] : hostHeader;
@@ -530,6 +536,9 @@ app.get("*", async (req, res) => {
       } else {
         runtimeApiUrl = `${protocol}://api.${host}`;
       }
+    } else {
+      // Use config file value
+      runtimeApiUrl = config.frontend.apiUrl;
     }
     
     // Set Content Security Policy with runtime API URL
