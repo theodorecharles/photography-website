@@ -154,8 +154,8 @@ const BrandingSection: React.FC<BrandingSectionProps> = ({
         // Reload branding to get fresh data
         await loadBranding();
         
-        // Notify main app to refresh site name if it changed
-        if (fields.includes('siteName')) {
+        // Notify main app to refresh branding (site name or avatar)
+        if (fields.includes('siteName') || fields.includes('avatarPath')) {
           window.dispatchEvent(new Event('branding-updated'));
         }
       } else {
