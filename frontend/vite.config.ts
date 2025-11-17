@@ -3,12 +3,31 @@ import react from "@vitejs/plugin-react";
 import fs from 'fs';
 import path from 'path';
 
+// Load .env file if it exists (for non-Docker deployments)
+const envPath = path.resolve(__dirname, '../.env');
+const envVars: Record<string, string> = {};
+
+if (fs.existsSync(envPath)) {
+  const envContent = fs.readFileSync(envPath, 'utf8');
+  envContent.split('\n').forEach(line => {
+    const trimmed = line.trim();
+    if (trimmed && !trimmed.startsWith('#')) {
+      const [key, ...valueParts] = trimmed.split('=');
+      if (key && valueParts.length > 0) {
+        const value = valueParts.join('=').trim();
+        envVars[key.trim()] = value.replace(/^["']|["']$/g, '');
+      }
+    }
+  });
+}
+
 // Default configuration for when config.json doesn't exist
 const defaultConfig = {
   environment: {
     frontend: {
       port: 3000,
-      apiUrl: "http://localhost:3001"
+      // Use BACKEND_DOMAIN from .env if available, otherwise localhost
+      apiUrl: envVars.BACKEND_DOMAIN || "http://localhost:3001"
     }
   },
   branding: {
@@ -33,8 +52,13 @@ try {
     configExists = true;
     console.log('✓ Loaded config.json');
   } else {
-    console.log('⚠️  config.json not found - using defaults for setup mode');
+    console.log('⚠️  config.json not found - checking .env file');
     config = defaultConfig;
+    if (envVars.BACKEND_DOMAIN) {
+      console.log(`✓ Using API URL from .env: ${envVars.BACKEND_DOMAIN}`);
+    } else {
+      console.log('⚠️  No .env file found - using localhost defaults');
+    }
   }
 } catch (error) {
   console.error('❌ Failed to load config.json, using defaults:', error);
