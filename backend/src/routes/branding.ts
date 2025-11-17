@@ -180,6 +180,14 @@ router.post('/upload-avatar', requireManager, upload.single('avatar'), async (re
     const photosDir = path.join(projectRoot, 'photos');
     const frontendPublicDir = path.join(projectRoot, 'frontend', 'public');
     
+    // Ensure directories exist
+    if (!fs.existsSync(photosDir)) {
+      fs.mkdirSync(photosDir, { recursive: true });
+    }
+    if (!fs.existsSync(frontendPublicDir)) {
+      fs.mkdirSync(frontendPublicDir, { recursive: true });
+    }
+    
     // Use .png extension for consistency
     const avatarFilename = 'avatar.png';
     const avatarPath = path.join(photosDir, avatarFilename);
