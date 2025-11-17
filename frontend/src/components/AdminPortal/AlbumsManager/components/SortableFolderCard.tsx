@@ -95,7 +95,7 @@ interface SortableFolderCardProps {
   onAlbumMoveToFolder?: (albumName: string) => void;
   isFirst?: boolean;
   isLast?: boolean;
-  hasFolders?: boolean;
+  hasFolders: boolean;
   canEdit: boolean;
 }
 
@@ -129,7 +129,7 @@ const SortableFolderCard: React.FC<SortableFolderCardProps> = ({
   onAlbumMoveToFolder,
   isFirst,
   isLast,
-  hasFolders = true,
+  hasFolders,
   canEdit,
 }) => {
   // Detect if we're on mobile
