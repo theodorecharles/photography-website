@@ -201,20 +201,23 @@ router.post('/upload-avatar', requireManager, upload.single('avatar'), async (re
     
     // Use Sharp to process the avatar image
     try {
-      // Process and save avatar.png
+      // Process and save avatar.png with auto-rotation based on EXIF
       await sharp(file.path)
+        .rotate() // Auto-rotate based on EXIF orientation
         .resize(512, 512, { fit: 'cover' })
         .png()
         .toFile(avatarPath);
       
       // Create favicon.png (same as avatar)
       await sharp(file.path)
+        .rotate() // Auto-rotate based on EXIF orientation
         .resize(512, 512, { fit: 'cover' })
         .png()
         .toFile(faviconPngPath);
       
       // Generate favicon.ico (32x32) using Sharp
       await sharp(file.path)
+        .rotate() // Auto-rotate based on EXIF orientation
         .resize(32, 32, { fit: 'cover' })
         .toFormat('png')
         .toFile(faviconIcoPath);

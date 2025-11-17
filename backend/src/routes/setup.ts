@@ -536,6 +536,7 @@ router.post(
       // Use Sharp to convert any image format (including HEIC) to PNG
       try {
         await sharp(file.buffer)
+          .rotate() // Auto-rotate based on EXIF orientation
           .resize(512, 512, { fit: 'cover' })
           .png()
           .toFile(avatarPath);
