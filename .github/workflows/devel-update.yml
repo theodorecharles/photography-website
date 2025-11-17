@@ -98,6 +98,24 @@ jobs:
     environment: Docker-Build-Dev
     needs: deploy
     steps:
+      - name: Send Docker build start notification
+        if: vars.TELEGRAM_CHAT_ID
+        run: |
+          cd /home/ted/photography-website/
+          COMMIT_HASH=$(git rev-parse --short HEAD)
+          
+          MESSAGE="🐳 Docker build starting...
+
+          🌐 Branch: devel
+          📦 Commit: $COMMIT_HASH
+          
+          🔗 Workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          
+          curl -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+               -d "chat_id=${{ vars.TELEGRAM_CHAT_ID }}" \
+               -d "text=$MESSAGE" \
+               --silent --output /dev/null || true
+
       - name: Build and push Docker image
         if: vars.DOCKERHUB_USERNAME && vars.DOCKER_IMAGE_NAME
         run: |
