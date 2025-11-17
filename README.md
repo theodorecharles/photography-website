@@ -8,17 +8,17 @@ A modern photography portfolio website built with React 19, TypeScript, Express 
 
 ## 🐳 Docker Hub
 
-Pre-built Docker images are available on Docker Hub:
+Pre-built Docker images are available on Docker Hub: **[hub.docker.com/r/tedcharles/galleria](https://hub.docker.com/r/tedcharles/galleria)**
 
 ```bash
 # Pull latest production image
-docker pull yourusername/galleria:latest
+docker pull tedcharles/galleria:latest
 
 # Pull latest development image
-docker pull yourusername/galleria:dev
+docker pull tedcharles/galleria:dev
 
 # Pull specific version
-docker pull yourusername/galleria:v1.0.0
+docker pull tedcharles/galleria:v1.0.1
 ```
 
 **Quick Start with Docker Hub image:**
@@ -36,12 +36,13 @@ docker run -d \
   -e DATA_DIR=/data \
   -e FRONTEND_DOMAIN=http://localhost:3000 \
   -e BACKEND_DOMAIN=http://localhost:3001 \
-  yourusername/galleria:latest
+  tedcharles/galleria:latest
 ```
 
 **Available tags:**
+
 - `:latest` - Latest production build
-- `:dev` - Latest development build  
+- `:dev` - Latest development build
 - `:vX.Y.Z` - Specific version (e.g., `:v1.2.3`)
 
 ---
@@ -63,32 +64,37 @@ docker run -d \
 **Single container deployment with PM2 process management.**
 
 1. **Clone the repository:**
+
 ```bash
 git clone https://github.com/theodorecharles/Galleria.git
 cd Galleria
 ```
 
 2. **Create a data directory:**
+
 ```bash
 mkdir -p ~/galleria-data
 ```
 
 3. **Configure environment variables** in `docker-compose.yml`:
+
 ```yaml
 environment:
   - DATA_DIR=/data
-  - FRONTEND_DOMAIN=http://localhost:3000  # or https://www.yourdomain.com
-  - BACKEND_DOMAIN=http://localhost:3001   # or https://api.yourdomain.com
+  - FRONTEND_DOMAIN=http://localhost:3000 # or https://www.yourdomain.com
+  - BACKEND_DOMAIN=http://localhost:3001 # or https://api.yourdomain.com
 volumes:
   - ~/galleria-data:/data
 ```
 
 4. **Build and start:**
+
 ```bash
 docker-compose up -d --build
 ```
 
 5. **Access the application:**
+
 - Frontend: http://localhost:3000
 - Admin Panel: http://localhost:3000/admin
 
@@ -97,6 +103,7 @@ docker-compose up -d --build
 ### Option 2: Development Setup
 
 1. **Clone and install dependencies:**
+
 ```bash
 git clone https://github.com/theodorecharles/Galleria.git
 cd Galleria
@@ -107,12 +114,13 @@ cd ..
 ```
 
 2. **Start the development server:**
+
 ```bash
 npm run dev
 ```
 
 3. **Open your browser:**
-Navigate to `http://localhost:3000` - the setup wizard will guide you through initial configuration.
+   Navigate to `http://localhost:3000` - the setup wizard will guide you through initial configuration.
 
 ---
 
@@ -144,12 +152,14 @@ See [Docker Deployment](#option-1-docker-recommended) section above.
 Push to `master` (prod) or `devel` branch, and GitHub Actions automatically deploys.
 
 **Manual deployment:**
+
 ```bash
 git pull origin <branch>
 ./restart.sh
 ```
 
 The `restart.sh` script handles:
+
 - Install all dependencies
 - Optimize all images
 - Build both frontend and backend
@@ -168,13 +178,14 @@ Configure via environment variables in `docker-compose.yml`:
 ```yaml
 environment:
   - DATA_DIR=/data
-  - FRONTEND_DOMAIN=http://localhost:3000  # or https://www.yourdomain.com
-  - BACKEND_DOMAIN=http://localhost:3001   # or https://api.yourdomain.com
+  - FRONTEND_DOMAIN=http://localhost:3000 # or https://www.yourdomain.com
+  - BACKEND_DOMAIN=http://localhost:3001 # or https://api.yourdomain.com
 ```
 
 ### Non-Docker Deployment
 
 1. **Copy the example environment file:**
+
    ```bash
    cp .env.example .env
    ```
@@ -214,16 +225,19 @@ Google OAuth is completely optional. You can use password-based authentication w
 ## 🛠️ Common Tasks
 
 **View logs (PM2):**
+
 ```bash
 pm2 logs
 ```
 
 **View logs (Docker):**
+
 ```bash
 docker exec galleria pm2 logs
 ```
 
 **Restart services:**
+
 ```bash
 pm2 restart all
 # or
@@ -231,6 +245,7 @@ docker-compose restart
 ```
 
 **Optimize images:**
+
 ```bash
 node scripts/optimize_all_images.js
 ```
