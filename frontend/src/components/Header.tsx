@@ -96,6 +96,17 @@ function Navigation({
       }
     };
     checkAuth();
+    
+    // Listen for logout events to immediately update auth state
+    const handleLogoutEvent = () => {
+      setIsAuthenticated(false);
+      setUserRole(null);
+    };
+    window.addEventListener('user-logged-out', handleLogoutEvent);
+    
+    return () => {
+      window.removeEventListener('user-logged-out', handleLogoutEvent);
+    };
   }, [location.pathname]); // Re-check when route changes
 
   // Close dropdowns when page is scrolled
@@ -416,9 +427,10 @@ function Navigation({
         </div>
         )}
 
-        {/* Right side navigation - External links dropdown */}
-        {hasLinksToShow && (
+        {/* Right side navigation - External links dropdown and edit button */}
+        {(hasLinksToShow || (isAuthenticated && userRole === 'admin')) && (
         <div className="nav-right">
+          {hasLinksToShow && (
           <div
             className="dropdown-container"
             onMouseEnter={handleLinksHover}
@@ -447,6 +459,7 @@ function Navigation({
               ))}
             </div>
           </div>
+          )}
           
           {/* Edit Links button - only shown for admins (links are in settings) */}
           {isAuthenticated && userRole === 'admin' && (
