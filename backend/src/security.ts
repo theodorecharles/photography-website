@@ -6,7 +6,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import config from './config.js';
+import config, { getAllowedOrigins } from './config.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -160,14 +160,56 @@ export function csrfProtection(req: any, res: any, next: any) {
     return res.status(401).json({ error: 'Authentication required for this operation' });
   }
   
-  // Additional check: ensure the request comes from the same origin
-  const origin = req.get('Origin') || req.get('Referer');
-  const allowedOrigins = config.backend.allowedOrigins;
+  // Additional check: ensure the request comes from an allowed origin
+  // Use Origin header, fallback to Referer
+  let origin = req.get('Origin');
+  if (!origin) {
+    const referer = req.get('Referer');
+    if (referer) {
+      // Extract origin from referer URL
+      try {
+        const refererUrl = new URL(referer);
+        origin = `${refererUrl.protocol}//${refererUrl.host}`;
+      } catch (e) {
+        // Invalid referer, skip origin check
+      }
+    }
+  }
   
   if (origin) {
-    const isAllowedOrigin = allowedOrigins.some((allowed: string) => origin.startsWith(allowed));
+    // Get dynamic allowed origins (includes config.json values)
+    const allowedOrigins = getAllowedOrigins();
+    
+    // Check exact match first
+    let isAllowedOrigin = allowedOrigins.some((allowed: string) => origin.startsWith(allowed));
+    
+    // If not in allowed list, check for localhost
+    if (!isAllowedOrigin) {
+      try {
+        const url = new URL(origin);
+        if (url.hostname === 'localhost' || url.hostname === '127.0.0.1') {
+          isAllowedOrigin = true;
+        }
+        
+        // Check for IP addresses on ports 3000 or 3001 (Docker/Unraid direct access)
+        if (!isAllowedOrigin) {
+          const port = url.port ? parseInt(url.port) : (url.protocol === 'https:' ? 443 : 80);
+          const ipPattern = /^\d+\.\d+\.\d+\.\d+$/;
+          const isIpAddress = ipPattern.test(url.hostname);
+          
+          if (isIpAddress && (port === 3000 || port === 3001)) {
+            isAllowedOrigin = true;
+            console.log(`[CSRF] Allowing IP-based access: ${origin}`);
+          }
+        }
+      } catch (e) {
+        // Invalid URL, reject
+      }
+    }
+    
     if (!isAllowedOrigin) {
       console.log('[CSRF] Origin not allowed:', origin);
+      console.log('[CSRF] Allowed origins:', allowedOrigins);
       return res.status(403).json({ error: 'Request origin not allowed' });
     }
   }
