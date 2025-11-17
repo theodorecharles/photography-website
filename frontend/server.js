@@ -152,6 +152,18 @@ app.use(express.static(path.join(__dirname, "dist"), {
 }));
 
 /**
+ * Escape HTML special characters for safe insertion
+ */
+function escapeHtml(str) {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+/**
  * Set Content Security Policy header
  */
 function setCSPHeader(res, apiUrl, configFile) {
@@ -260,14 +272,6 @@ app.get("*", async (req, res) => {
         const firstPhoto = photos[0];
         
         if (firstPhoto) {
-          // Escape HTML special characters
-          const escapeHtml = (str) => str
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#39;');
-          
           const safeAlbumName = escapeHtml(albumName);
           const albumTitleCase = albumName.charAt(0).toUpperCase() + albumName.slice(1);
           
@@ -392,13 +396,6 @@ app.get("*", async (req, res) => {
           console.log(`  Preview Image: ${gridUrl}`);
           console.log(`  Page URL: ${pageUrl}`);
           
-          const escapeHtml = (str) => str
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#39;');
-          
           const safeAlbumName = escapeHtml(albumTitleCase);
           
           // Read and modify HTML
@@ -485,14 +482,6 @@ app.get("*", async (req, res) => {
         if (photo) {
           // Use the actual title from the database
           const photoTitle = photo.title;
-          
-          // Escape HTML special characters in photo title for safe insertion
-          const escapeHtml = (str) => str
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#39;');
           const safePhotoTitle = escapeHtml(photoTitle);
           
           // Derive site URL from API URL:
