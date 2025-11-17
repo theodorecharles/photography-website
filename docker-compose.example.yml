@@ -16,9 +16,9 @@ services:
       - PORT=3001
       - DATA_DIR=/data
       # Set your frontend domain (with or without protocol)
-      - FRONTEND_DOMAIN=https://www.tedcharles.net
+      - FRONTEND_DOMAIN=https://www.example.com
       # Set your backend domain (with or without protocol)
-      - BACKEND_DOMAIN=https://api.tedcharles.net
+      - BACKEND_DOMAIN=https://api.example.com
       # Optional: Additional allowed origins (comma-separated)
       # - ALLOWED_ORIGINS=https://example.com,https://another.com
     volumes:
@@ -44,7 +44,7 @@ services:
       - PORT=3000
       - DATA_DIR=/data
       # Backend API URL (should match BACKEND_DOMAIN above)
-      - API_URL=https://api.tedcharles.net
+      - API_URL=https://api.example.com
     volumes:
       # Mount data directory read-only (for config.json)
       - /path/to/your/data:/data:ro
