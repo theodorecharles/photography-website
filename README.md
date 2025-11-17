@@ -52,8 +52,6 @@ docker-compose up -d --build
 - Frontend: http://localhost:3000
 - Admin Panel: http://localhost:3000/admin
 
-**📖 For detailed Docker documentation, see [README.docker.md](README.docker.md)**
-
 ---
 
 ### Option 2: Development Setup
@@ -74,14 +72,7 @@ npm run dev
 ```
 
 3. **Open your browser:**
-Navigate to `http://localhost:3000` and follow the **Setup Wizard**! 🚀
-
-The wizard will guide you through:
-- Site name and branding
-- Admin account creation (password-based - no OAuth required)
-- Color customization
-- Optional Google OAuth setup (if you want OAuth login)
-- Automatic database and directory creation
+Navigate to `http://localhost:3000` - the setup wizard will guide you through initial configuration.
 
 ---
 
@@ -129,34 +120,34 @@ The `restart.sh` script handles:
 
 ## ⚙️ Configuration
 
-Main config file: `data/config.json` (copy from `config/config.example.json`)
+Configuration is managed through environment variables or the admin panel - you don't need to edit config files directly.
 
-**Basic structure:**
-```json
-{
-  "environment": {
-    "frontend": {
-      "port": 3000,
-      "apiUrl": "http://localhost:3001"
-    },
-    "backend": {
-      "port": 3001,
-      "allowedOrigins": ["http://localhost:5173"]
-    },
-    "auth": {
-      "sessionSecret": "generate-random-secret",
-      "authorizedEmails": ["your-email@example.com"]
-    }
-  },
-  "branding": {
-    "siteName": "Your Name",
-    "primaryColor": "#4ade80",
-    "secondaryColor": "#22c55e"
-  }
-}
+### Docker Deployment
+
+Configure via environment variables in `docker-compose.yml`:
+
+```yaml
+environment:
+  - DATA_DIR=/data
+  - FRONTEND_DOMAIN=http://localhost:3000  # or https://www.yourdomain.com
+  - BACKEND_DOMAIN=http://localhost:3001   # or https://api.yourdomain.com
 ```
 
-**Note:** Google OAuth is optional - only add `"google"` section to `auth` if you want OAuth login.
+### Non-Docker Deployment
+
+1. **Copy the example environment file:**
+   ```bash
+   cp .env.example .env
+   ```
+
+2. **Edit `.env` with your settings:**
+   ```bash
+   FRONTEND_DOMAIN=http://localhost:3000
+   BACKEND_DOMAIN=http://localhost:3001
+   DATA_DIR=./data
+   ```
+
+After initial setup, all configuration is managed through the **Admin Panel** at `/admin` → Settings.
 
 ### Google OAuth Setup (Optional)
 
@@ -169,23 +160,15 @@ Google OAuth is completely optional. You can use password-based authentication w
 3. Add authorized redirect URIs:
    - Development: `http://localhost:3001/api/auth/google/callback`
    - Production: `https://api.yourdomain.com/api/auth/google/callback`
-4. Copy Client ID and Secret to `config.json` under `auth.google`
+4. Configure OAuth credentials in Admin Panel → Settings → Advanced Settings → Authentication
 
 ---
 
 ## 📸 Adding Photos
 
-**Via Admin Panel:**
 1. Navigate to `/admin`
 2. Select album → Upload Photos
 3. Images auto-optimize in background
-
-**Via Filesystem:**
-```bash
-mkdir data/photos/new-album
-cp *.jpg data/photos/new-album/
-node scripts/optimize_all_images.js
-```
 
 ---
 
@@ -228,12 +211,11 @@ galleria/
 │   ├── src/
 │   └── package.json
 ├── data/                # Data directory (not in Git)
-│   ├── config.json      # Main configuration
+│   ├── config.json      # Configuration (auto-generated, managed via admin panel)
 │   ├── photos/          # Original photos
 │   ├── optimized/       # Generated images
 │   └── gallery.db       # SQLite database
-├── config/
-│   └── config.example.json  # Config template
+├── .env.example         # Environment variables template (copy to .env)
 ├── scripts/             # Utility scripts
 ├── Dockerfile           # Docker container
 ├── docker-compose.yml   # Docker Compose config
@@ -255,63 +237,11 @@ galleria/
 
 ---
 
-## 🐛 Troubleshooting
-
-**Images not showing:**
-```bash
-node scripts/optimize_all_images.js
-```
-
-**CORS errors:**
-- Update `allowedOrigins` in `config.json` and restart backend
-- For Docker: Check `FRONTEND_DOMAIN` and `BACKEND_DOMAIN` environment variables
-
-**Authentication issues:**
-- For password auth: Ensure user account exists and password is set
-- For Google OAuth: Verify OAuth redirect URIs are correct (if using OAuth)
-- Check email is in `authorizedEmails` (for OAuth) or user exists (for password)
-- Ensure cookies are enabled
-
-**Port conflicts:**
-```bash
-lsof -i :3001  # Check what's using port
-kill -9 <PID>  # Kill the process
-```
-
----
-
-## 📖 Additional Documentation
-
-- **[README.docker.md](README.docker.md)** - Detailed Docker deployment guide
-
----
-
 ## 🔗 Links
 
 - **📦 Repository:** [github.com/theodorecharles/Galleria](https://github.com/theodorecharles/Galleria)
 - **🐛 Issues:** [GitHub Issues](https://github.com/theodorecharles/Galleria/issues)
 - **📧 Contact:** [me@tedcharles.net](mailto:me@tedcharles.net)
-
----
-
-## License
-
-GNU General Public License v3.0
-
-Copyright (c) 2025 Ted Charles
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 ---
 

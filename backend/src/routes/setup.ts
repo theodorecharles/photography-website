@@ -185,7 +185,7 @@ router.post('/initialize', async (req: Request, res: Response): Promise<void> =>
     const projectRoot = path.join(__dirname, '../../../');
     const dataDir = process.env.DATA_DIR || path.join(projectRoot, 'data');
     const configPath = path.join(dataDir, 'config.json');
-    const configExamplePath = path.join(projectRoot, 'config/config.example.json');
+    const configDefaultsPath = path.join(projectRoot, 'config/config.defaults.json');
 
     // Create config directory if it doesn't exist
     const configDir = path.dirname(configPath);
@@ -193,11 +193,11 @@ router.post('/initialize', async (req: Request, res: Response): Promise<void> =>
       fs.mkdirSync(configDir, { recursive: true });
     }
 
-    // Load example config as template
+    // Load defaults config as template
     let config;
-    if (fs.existsSync(configExamplePath)) {
-      const exampleContent = fs.readFileSync(configExamplePath, 'utf8');
-      config = JSON.parse(exampleContent);
+    if (fs.existsSync(configDefaultsPath)) {
+      const defaultsContent = fs.readFileSync(configDefaultsPath, 'utf8');
+      config = JSON.parse(defaultsContent);
       // Override URLs with auto-detected values
       config.environment.frontend.apiUrl = backendUrl;
       config.environment.backend.allowedOrigins = [frontendUrl];
