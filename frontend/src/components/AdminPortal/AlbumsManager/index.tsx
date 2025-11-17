@@ -8,6 +8,7 @@
  */
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { API_URL } from '../../../config';
 import { useSearchParams } from 'react-router-dom';
 import { UploadingImage, AlbumsManagerProps, ConfirmModalConfig, Photo } from './types';
 import { trackAlbumCreated } from '../../../utils/analytics';
@@ -46,7 +47,6 @@ import {
   rectSortingStrategy,
 } from '@dnd-kit/sortable';
 
-const API_URL = import.meta.env.VITE_API_URL || '';
 
 const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   albums,

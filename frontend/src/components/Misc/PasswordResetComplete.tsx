@@ -4,10 +4,10 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { API_URL } from '../../config';
 import { useParams, useNavigate } from 'react-router-dom';
 import { PasswordInput } from '../AdminPortal/PasswordInput';
 
-const API_URL = import.meta.env.VITE_API_URL || '';
 
 const PasswordResetComplete: React.FC = () => {
   const { token } = useParams<{ token: string }>();

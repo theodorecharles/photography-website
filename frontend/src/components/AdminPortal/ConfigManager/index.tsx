@@ -4,6 +4,7 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from "react";
+import { API_URL } from '../../../config';
 import { ConfigManagerProps, ConfigData } from './types';
 import { useSSEToaster } from '../../../contexts/SSEToasterContext';
 import BrandingSection from './sections/BrandingSection';
@@ -15,7 +16,6 @@ import AdvancedSettingsSection from './sections/AdvancedSettingsSection';
 import RestartModal from '../../RestartModal';
 import '../ConfigManager.css';
 
-const API_URL = import.meta.env.VITE_API_URL || "";
 
 const ConfigManager: React.FC<ConfigManagerProps> = ({
   setMessage,

@@ -4,10 +4,10 @@
  */
 
 import React, { useState } from 'react';
+import { API_URL } from '../../config';
 import { PasswordInput } from './PasswordInput';
 import './ShareModal.css';
 
-const API_URL = import.meta.env.VITE_API_URL || '';
 
 interface SMTPSetupWizardProps {
   onClose: () => void;

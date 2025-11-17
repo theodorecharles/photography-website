@@ -4,11 +4,11 @@
  */
 
 import { Album, AlbumFolder, ConfirmModalConfig } from '../types';
+import { API_URL } from '../../../../config';
 import { fetchWithRateLimitCheck } from '../../../../utils/fetchWrapper';
 import { trackAlbumDeleted } from '../../../../utils/analytics';
 import { sanitizeAndTitleCase, isValidAlbumName } from '../utils/albumHelpers';
 
-const API_URL = import.meta.env.VITE_API_URL || '';
 
 interface AlbumHandlersProps {
   localAlbums: Album[];

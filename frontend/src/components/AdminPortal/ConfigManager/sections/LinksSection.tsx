@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useEffect, useRef } from 'react';
+import { API_URL } from '../../../../config';
 import { useSearchParams } from 'react-router-dom';
 import { ExternalLink } from '../../types';
 import { trackExternalLinksUpdate } from '../../../../utils/analytics';
@@ -11,7 +12,6 @@ import SectionHeader from '../components/SectionHeader';
 import { ChevronUpIcon, ChevronDownIcon } from '../../../icons';
 import '../../LinksManager.css';
 
-const API_URL = import.meta.env.VITE_API_URL || '';
 
 interface LinksSectionProps {
   externalLinks: ExternalLink[];

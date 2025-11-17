@@ -90,10 +90,15 @@ app.set("trust proxy", 1);
 const isProduction = config.frontend.apiUrl.startsWith("https://");
 if (isProduction) {
   app.use((req, res, next) => {
+    // Skip HTTPS redirect for IP addresses (e.g., direct Docker access)
+    const host = req.headers.host || '';
+    const ipPattern = /^\d+\.\d+\.\d+\.\d+(:\d+)?$/;
+    const isIpAddress = ipPattern.test(host);
+    
     // Check if request is already HTTPS
     const isSecure = req.secure || req.headers["x-forwarded-proto"] === "https";
 
-    if (!isSecure) {
+    if (!isSecure && !isIpAddress) {
       // Redirect to HTTPS
       const httpsUrl = `https://${req.headers.host}${req.url}`;
       return res.redirect(301, httpsUrl);
@@ -182,24 +187,19 @@ app.use(
         // Invalid URL, continue to other checks
       }
 
-      // Allow internal IPs on ports 3000 and 3001 (for Docker networking)
-      // Pattern: http://<ip>:3000 or http://<ip>:3001
+      // Allow any IP address on ports 3000 and 3001 (for Docker direct access)
+      // Pattern: http://<any-ip>:3000 or http://<any-ip>:3001
       try {
         const url = new URL(origin);
         const port = url.port ? parseInt(url.port) : (url.protocol === 'https:' ? 443 : 80);
         
-        // Check if it's an internal IP (private IP ranges)
+        // Check if hostname is an IP address (IPv4 pattern)
         const hostname = url.hostname;
-        const isPrivateIP = 
-          hostname.startsWith('192.168.') ||
-          hostname.startsWith('10.') ||
-          hostname.startsWith('172.') ||
-          hostname.match(/^172\.(1[6-9]|2[0-9]|3[0-1])\./) ||
-          hostname === 'localhost' ||
-          hostname === '127.0.0.1';
+        const ipPattern = /^\d+\.\d+\.\d+\.\d+$/;
+        const isIpAddress = ipPattern.test(hostname);
         
-        if (isPrivateIP && (port === 3000 || port === 3001)) {
-          console.log(`[CORS] Allowing internal IP: ${origin}`);
+        if (isIpAddress && (port === 3000 || port === 3001)) {
+          console.log(`[CORS] Allowing IP-based access: ${origin}`);
           callback(null, true);
           return;
         }

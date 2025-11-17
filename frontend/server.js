@@ -92,8 +92,11 @@ app.use((req, res, next) => {
   }
 
   // Redirect to HTTPS if apiUrl uses https (production/remote dev)
+  // Skip HTTPS redirect for IP addresses (e.g., direct Docker access)
+  const ipPattern = /^\d+\.\d+\.\d+\.\d+(:\d+)?$/;
+  const isIpAddress = ipPattern.test(host);
   const isProduction = config.frontend.apiUrl.startsWith("https://");
-  if (isProduction && req.headers["x-forwarded-proto"] !== "https") {
+  if (isProduction && req.headers["x-forwarded-proto"] !== "https" && !isIpAddress) {
     return res.redirect(301, `https://${host}${req.originalUrl}`);
   }
   next();

@@ -5,13 +5,13 @@
  */
 
 import { useState, useRef, useEffect } from 'react';
+import { API_URL } from '../../../../config';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Photo, UploadingImage } from '../types';
 import { cacheBustValue } from '../../../../config';
 import { EditDocumentIcon, TrashIcon, HourglassIcon } from '../../../icons';
 
-const API_URL = import.meta.env.VITE_API_URL || '';
 
 interface PhotoGridItemProps {
   // For uploading images

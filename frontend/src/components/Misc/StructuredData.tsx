@@ -17,7 +17,7 @@ export function StructuredData() {
       "jobTitle": "Photographer",
       "sameAs": [
         "https://www.youtube.com/@ted_charles",
-        "https://github.com/theodoreroddy/"
+        "https://github.com/theodorecharles/"
       ],
       "knowsAbout": ["Photography", "Web Development", "Digital Art"],
       "hasOccupation": {
