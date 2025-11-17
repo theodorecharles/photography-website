@@ -114,7 +114,6 @@ The `restart.sh` script handles:
 - Optimize all images
 - Build both frontend and backend
 - Restart services via PM2
-- Send Telegram notifications on success/failure
 
 ---
 

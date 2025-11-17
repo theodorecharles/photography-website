@@ -11,56 +11,9 @@ log() {
     echo "$(date '+%Y-%m-%d %H:%M:%S') - $1"
 }
 
-# Function to send Telegram notification
-send_telegram_notification() {
-    local MESSAGE="$1"
-    # Try data/config.json first, fall back to old location
-    local CONFIG_FILE="data/config.json"
-    if [ ! -f "$CONFIG_FILE" ]; then
-        CONFIG_FILE="config/config.json"
-    fi
-    
-    if [ -f "$CONFIG_FILE" ] && command -v jq &> /dev/null; then
-        TELEGRAM_ENABLED=$(jq -r '.notifications.telegram.enabled // false' "$CONFIG_FILE")
-        
-        if [ "$TELEGRAM_ENABLED" = "true" ]; then
-            TELEGRAM_BOT_TOKEN=$(jq -r '.notifications.telegram.botToken // ""' "$CONFIG_FILE")
-            TELEGRAM_CHAT_ID=$(jq -r '.notifications.telegram.chatId // ""' "$CONFIG_FILE")
-            
-            if [ -n "$TELEGRAM_BOT_TOKEN" ] && [ -n "$TELEGRAM_CHAT_ID" ]; then
-                curl -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
-                     -d "chat_id=${TELEGRAM_CHAT_ID}" \
-                     -d "text=$MESSAGE" \
-                     --silent --output /dev/null --fail || true
-            fi
-        fi
-    fi
-}
-
 # Function to handle errors and exit the script
 handle_error() {
     log "ERROR: $1"
-    
-    # Get current branch and commit info
-    CURRENT_BRANCH=$(git branch --show-current 2>/dev/null || echo "unknown")
-    COMMIT_HASH=$(git rev-parse --short HEAD 2>/dev/null || echo "unknown")
-    # Try data/config.json first, fall back to old location
-    SITE_URL=""
-    if [ -f "data/config.json" ]; then
-        SITE_URL=$(jq -r '.environment.backend.allowedOrigins[0] // ""' "data/config.json" 2>/dev/null || echo "")
-    elif [ -f "config/config.json" ]; then
-        SITE_URL=$(jq -r '.environment.backend.allowedOrigins[0] // ""' "config/config.json" 2>/dev/null || echo "")
-    fi
-    
-    # Send error notification to Telegram
-    ERROR_NOTIFICATION="❌ Photography Website deployment FAILED!
-
-🌐 Branch: $CURRENT_BRANCH
-🔗 URL: $SITE_URL
-📦 Commit: $COMMIT_HASH
-⚠️ Error: $1"
-    
-    send_telegram_notification "$ERROR_NOTIFICATION"
     exit 1
 }
 
@@ -149,19 +102,6 @@ fi
 
 log "Services started successfully"
 
-# Get commit information for notification
-COMMIT_HASH=$(git rev-parse --short HEAD)
-COMMIT_MSG=$(git log -1 --pretty=%B | head -n 1)
-# Try data/config.json first, fall back to old location
-SITE_URL=""
-if [ -f "data/config.json" ]; then
-    SITE_URL=$(jq -r '.environment.backend.allowedOrigins[0] // ""' "data/config.json" 2>/dev/null || echo "")
-elif [ -f "config/config.json" ]; then
-    SITE_URL=$(jq -r '.environment.backend.allowedOrigins[0] // ""' "config/config.json" 2>/dev/null || echo "")
-fi
-
-log "Deployment completed successfully!"
-
 # Generate static JSON files for performance optimization (only if configured)
 if [ -f "data/config.json" ]; then
     log "Generating static JSON files..."
@@ -174,13 +114,4 @@ else
     log "Skipping static JSON generation (system not configured yet)"
 fi
 
-# Send success notification to Telegram
-SUCCESS_NOTIFICATION="✅ Photography Website deployed successfully!
-
-🌐 Branch: $CURRENT_BRANCH
-🔗 URL: $SITE_URL
-📦 Commit: $COMMIT_HASH
-💬 $COMMIT_MSG"
-
-log "Sending deployment notification to Telegram..."
-send_telegram_notification "$SUCCESS_NOTIFICATION"
+log "Deployment completed successfully!"

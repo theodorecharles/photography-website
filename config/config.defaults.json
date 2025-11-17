@@ -62,13 +62,6 @@
     },
     "hmacSecret": ""
   },
-  "notifications": {
-    "telegram": {
-      "enabled": false,
-      "botToken": "your-telegram-bot-token",
-      "chatId": "your-telegram-chat-id"
-    }
-  },
   "externalLinks": [
     {
       "title": "My Blog",
