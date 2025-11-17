@@ -100,6 +100,12 @@ export const PHOTOS_DIR = path.join(DATA_DIR, 'photos');
 export const OPTIMIZED_DIR = path.join(DATA_DIR, 'optimized');
 export const DB_PATH = path.join(DATA_DIR, 'gallery.db');
 
+// Helper function to check if env var is actually set (not empty or "notset")
+// Exported for use in other modules
+export function isEnvSet(value: string | undefined): boolean {
+  return !!(value && value.trim() !== '' && value.trim().toLowerCase() !== 'notset');
+}
+
 // Export dynamic getters for config values that can change
 export function getAllowedOrigins(): string[] {
   const origins: string[] = [];
@@ -110,14 +116,14 @@ export function getAllowedOrigins(): string[] {
   console.log('  ALLOWED_ORIGINS:', process.env.ALLOWED_ORIGINS || '(not set)');
   
   // Add FRONTEND_DOMAIN if provided (supports http:// and https://)
-  if (process.env.FRONTEND_DOMAIN) {
-    const frontendDomain = process.env.FRONTEND_DOMAIN.trim();
+  if (isEnvSet(process.env.FRONTEND_DOMAIN)) {
+    const frontendDomain = process.env.FRONTEND_DOMAIN!.trim();
     if (frontendDomain.startsWith('http://') || frontendDomain.startsWith('https://')) {
       origins.push(frontendDomain);
       console.log('[CORS Debug] Added FRONTEND_DOMAIN:', frontendDomain);
     } else {
       // Auto-detect protocol based on BACKEND_DOMAIN or default to https
-      const protocol = process.env.BACKEND_DOMAIN?.startsWith('https://') ? 'https' : 'https';
+      const protocol = isEnvSet(process.env.BACKEND_DOMAIN) && process.env.BACKEND_DOMAIN!.startsWith('https://') ? 'https' : 'https';
       const fullUrl = `${protocol}://${frontendDomain}`;
       origins.push(fullUrl);
       console.log('[CORS Debug] Added FRONTEND_DOMAIN with protocol:', fullUrl);
@@ -125,8 +131,8 @@ export function getAllowedOrigins(): string[] {
   }
   
   // Add BACKEND_DOMAIN if provided (for same-origin requests)
-  if (process.env.BACKEND_DOMAIN) {
-    const backendDomain = process.env.BACKEND_DOMAIN.trim();
+  if (isEnvSet(process.env.BACKEND_DOMAIN)) {
+    const backendDomain = process.env.BACKEND_DOMAIN!.trim();
     if (backendDomain.startsWith('http://') || backendDomain.startsWith('https://')) {
       origins.push(backendDomain);
       console.log('[CORS Debug] Added BACKEND_DOMAIN:', backendDomain);
@@ -155,7 +161,7 @@ export function getAllowedOrigins(): string[] {
   }
   
   // Add origins from config.json (if exists and not overridden)
-  if (!process.env.ALLOWED_ORIGINS && !process.env.FRONTEND_DOMAIN) {
+  if (!isEnvSet(process.env.ALLOWED_ORIGINS) && !isEnvSet(process.env.FRONTEND_DOMAIN)) {
     const configOrigins = fullConfig.environment.backend.allowedOrigins || [];
     origins.push(...configOrigins);
     console.log('[CORS Debug] Added origins from config.json:', configOrigins);

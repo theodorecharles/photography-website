@@ -5,6 +5,7 @@
 
 import { Router } from 'express';
 import { getPublishedAlbums } from '../database.js';
+import { isEnvSet } from '../config.js';
 
 const router = Router();
 
@@ -27,13 +28,13 @@ function getAlbums(): string[] {
  */
 function getSiteUrl(req: any): string {
   // First, try SITE_URL environment variable (set by build.js)
-  if (process.env.SITE_URL) {
-    return process.env.SITE_URL;
+  if (isEnvSet(process.env.SITE_URL)) {
+    return process.env.SITE_URL!;
   }
   
   // Fallback: derive from FRONTEND_DOMAIN or request
-  if (process.env.FRONTEND_DOMAIN) {
-    return process.env.FRONTEND_DOMAIN;
+  if (isEnvSet(process.env.FRONTEND_DOMAIN)) {
+    return process.env.FRONTEND_DOMAIN!;
   }
   
   // Last resort: derive from current request
