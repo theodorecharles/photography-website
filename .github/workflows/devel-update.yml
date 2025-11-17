@@ -22,7 +22,8 @@ jobs:
           cd /home/ted/photography-website/
           CURRENT_BRANCH=$(git branch --show-current)
           echo "Current branch: $CURRENT_BRANCH"
-          git pull --ff-only origin "$CURRENT_BRANCH"
+          git fetch origin "$CURRENT_BRANCH"
+          git reset --hard "origin/$CURRENT_BRANCH"
 
       - name: Send deployment start notification
         if: vars.TELEGRAM_CHAT_ID
