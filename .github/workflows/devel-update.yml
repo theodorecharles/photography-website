@@ -8,6 +8,7 @@ jobs:
   deploy:
     name: Run update.sh on devel VM
     runs-on: [self-hosted, dev, photography-website]
+    environment: Dev
     steps:
       - name: Pull latest changes from GitHub
         run: |
@@ -15,40 +16,71 @@ jobs:
           CURRENT_BRANCH=$(git branch --show-current)
           echo "Current branch: $CURRENT_BRANCH"
           git pull --ff-only origin "$CURRENT_BRANCH"
-      
+
+      - name: Send deployment start notification
+        if: vars.TELEGRAM_CHAT_ID != '' && secrets.TELEGRAM_BOT_TOKEN != ''
+        run: |
+          cd /home/ted/photography-website/
+          COMMIT_HASH=$(git rev-parse --short HEAD)
+          COMMIT_MSG=$(git log -1 --pretty=%B | head -n 1)
+
+          MESSAGE="🔄 Starting deployment...
+
+          🌐 Branch: devel
+          🔗 URL: ${{ vars.SITE_URL || '' }}
+          📦 Commit: $COMMIT_HASH
+          💬 $COMMIT_MSG
+
+          🔗 Workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+
+          curl -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+               -d "chat_id=${{ vars.TELEGRAM_CHAT_ID }}" \
+               -d "text=$MESSAGE" \
+               --silent --output /dev/null || true
+
       - name: Run deployment script
         run: |
           cd /home/ted/photography-website/
           ./restart.sh
-      
-      - name: Send failure notification
-        if: failure()
+
+      - name: Send success notification
+        if: success() && vars.TELEGRAM_CHAT_ID != '' && secrets.TELEGRAM_BOT_TOKEN != ''
         run: |
           cd /home/ted/photography-website/
-          
-          # Read Telegram config
-          TELEGRAM_ENABLED=$(jq -r '.notifications.telegram.enabled // false' data/config.json)
-          
-          if [ "$TELEGRAM_ENABLED" = "true" ]; then
-            TELEGRAM_BOT_TOKEN=$(jq -r '.notifications.telegram.botToken // ""' data/config.json)
-            TELEGRAM_CHAT_ID=$(jq -r '.notifications.telegram.chatId // ""' data/config.json)
-            SITE_URL=$(jq -r '.environment.backend.allowedOrigins[0] // ""' data/config.json)
-            COMMIT_HASH=$(git rev-parse --short HEAD)
-            COMMIT_MSG=$(git log -1 --pretty=%B | head -n 1)
-            
-            if [ -n "$TELEGRAM_BOT_TOKEN" ] && [ -n "$TELEGRAM_CHAT_ID" ]; then
-              MESSAGE="❌ GitHub Actions FAILED on devel!
+          COMMIT_HASH=$(git rev-parse --short HEAD)
+          COMMIT_MSG=$(git log -1 --pretty=%B | head -n 1)
+
+          MESSAGE="✅ Photography Website deployed successfully!
 
           🌐 Branch: devel
-          🔗 URL: $SITE_URL
+          🔗 URL: ${{ vars.SITE_URL || '' }}
           📦 Commit: $COMMIT_HASH
           💬 $COMMIT_MSG
-          
-          Check GitHub Actions for details."
-              
-              curl -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
-                   -d "chat_id=${TELEGRAM_CHAT_ID}" \
-                   -d "text=$MESSAGE" \
-                   --silent --output /dev/null || true
-            fi
-          fi
+
+          🔗 Workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+
+          curl -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+               -d "chat_id=${{ vars.TELEGRAM_CHAT_ID }}" \
+               -d "text=$MESSAGE" \
+               --silent --output /dev/null || true
+
+      - name: Send failure notification
+        if: failure() && vars.TELEGRAM_CHAT_ID != '' && secrets.TELEGRAM_BOT_TOKEN != ''
+        run: |
+          cd /home/ted/photography-website/
+          COMMIT_HASH=$(git rev-parse --short HEAD)
+          COMMIT_MSG=$(git log -1 --pretty=%B | head -n 1)
+
+          MESSAGE="❌ Photography Website deployment FAILED!
+
+          🌐 Branch: devel
+          🔗 URL: ${{ vars.SITE_URL || '' }}
+          📦 Commit: $COMMIT_HASH
+          💬 $COMMIT_MSG
+
+          🔗 Workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+
+          curl -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+               -d "chat_id=${{ vars.TELEGRAM_CHAT_ID }}" \
+               -d "text=$MESSAGE" \
+               --silent --output /dev/null || true
