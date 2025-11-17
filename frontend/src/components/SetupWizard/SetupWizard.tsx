@@ -659,7 +659,7 @@ export default function SetupWizard() {
           <p>
             Need help? Check the{' '}
             <a 
-              href="https://github.com/theodorecharles/photography-website" 
+              href="https://github.com/theodorecharles/galleria" 
               target="_blank" 
               rel="noopener noreferrer"
             >
