@@ -19,12 +19,12 @@ This guide walks you through submitting Galleria to the Unraid Community Applica
    ```
 
 2. **Verify the icon is accessible:**
-   - URL: https://raw.githubusercontent.com/theodorecharles/photography-website/master/frontend/public/icon-512.png
+   - URL: https://raw.githubusercontent.com/theodorecharles/Galleria/master/frontend/public/icon-512.png
    - Must be 512x512 PNG format
    - Test in browser to ensure it loads
 
 3. **Verify the template is accessible:**
-   - URL: https://raw.githubusercontent.com/theodorecharles/photography-website/master/unraid-template.xml
+   - URL: https://raw.githubusercontent.com/theodorecharles/Galleria/master/unraid-template.xml
    - Test in browser to ensure it loads
 
 ## Step 2: Test Your Template Locally
@@ -37,7 +37,7 @@ Before submitting, test your template on your own Unraid server:
    - Toggle "Show more settings..." at bottom
    - In "Template repositories" field, add:
      ```
-     https://github.com/theodorecharles/photography-website
+     https://github.com/theodorecharles/Galleria
      ```
    - Click "Save"
 
@@ -116,7 +116,7 @@ Before submitting, test your template on your own Unraid server:
    - Public album sharing with secret links
    
    Docker Hub: https://hub.docker.com/r/tedcharles/galleria
-   GitHub: https://github.com/theodorecharles/photography-website
+   GitHub: https://github.com/theodorecharles/Galleria
    Documentation: Full setup guide included in UNRAID-SETUP.md
    
    Testing: Tested on Unraid 6.12.x with both direct IP access and reverse proxy (Nginx Proxy Manager).
