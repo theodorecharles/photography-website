@@ -22,7 +22,8 @@ jobs:
           cd /home/ted/photography-website/
           CURRENT_BRANCH=$(git branch --show-current)
           echo "Current branch: $CURRENT_BRANCH"
-          git pull --ff-only origin "$CURRENT_BRANCH"
+          git fetch origin "$CURRENT_BRANCH"
+          git reset --hard "origin/$CURRENT_BRANCH"
 
       - name: Send deployment start notification
         if: vars.TELEGRAM_CHAT_ID
@@ -144,21 +145,24 @@ jobs:
           docker logout
 
       - name: Update Docker Hub README
-        if: success() && vars.DOCKERHUB_USERNAME && secrets.DOCKERHUB_TOKEN
+        if: success() && vars.DOCKERHUB_USERNAME
         run: |
           cd /home/ted/photography-website/
           
           # Read README.md and escape for JSON
           README_CONTENT=$(cat README.md | jq -Rs .)
           
-          # Update Docker Hub full_description via API
+          # Get authentication token
+          TOKEN=$(curl -s -X POST \
+            'https://hub.docker.com/v2/users/login/' \
+            -H 'Content-Type: application/json' \
+            -d "{\"username\": \"${{ vars.DOCKERHUB_USERNAME }}\", \"password\": \"${{ secrets.DOCKERHUB_TOKEN }}\"}" \
+            | jq -r .token)
+          
+          # Update Docker Hub repository description
           curl -X PATCH \
             "https://hub.docker.com/v2/repositories/${{ vars.DOCKERHUB_USERNAME }}/${{ vars.DOCKER_IMAGE_NAME }}/" \
-            -H "Authorization: JWT $(curl -s -X POST \
-              'https://hub.docker.com/v2/users/login/' \
-              -H 'Content-Type: application/json' \
-              -d "{\"username\": \"${{ vars.DOCKERHUB_USERNAME }}\", \"password\": \"${{ secrets.DOCKERHUB_TOKEN }}\"}" \
-              | jq -r .token)" \
+            -H "Authorization: JWT $TOKEN" \
             -H "Content-Type: application/json" \
             -d "{\"full_description\": $README_CONTENT}" \
             --silent --output /dev/null || true

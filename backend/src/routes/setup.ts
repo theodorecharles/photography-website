@@ -134,10 +134,23 @@ router.post(
       let backendUrl;
       let frontendUrl;
 
+      // Extract IP or hostname without port for IP address detection
+      const hostWithoutPort = host.split(":")[0];
+      const isIpAddress = /^(\d{1,3}\.){3}\d{1,3}$/.test(hostWithoutPort);
+
       if (host.includes("localhost")) {
         // Localhost development
         backendUrl = "http://localhost:3001";
         frontendUrl = "http://localhost:3000";
+      } else if (isIpAddress) {
+        // IP address - use same IP for both frontend and backend with different ports
+        // Extract port from host if present, otherwise use defaults
+        const port = host.includes(":") ? host.split(":")[1] : "3000";
+        const frontendPort = port === "3001" ? "3000" : port;
+        const backendPort = port === "3000" ? "3001" : port;
+        
+        frontendUrl = `${protocol}://${hostWithoutPort}:${frontendPort}`;
+        backendUrl = `${protocol}://${hostWithoutPort}:${backendPort}`;
       } else if (host.startsWith("api.") || host.startsWith("api-")) {
         // Request came to api.example.com or api-dev.example.com
         // Backend URL is the current host, frontend is www.domain
