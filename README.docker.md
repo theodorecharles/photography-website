@@ -5,11 +5,7 @@ This guide explains how to run Galleria in Docker containers.
 ## Prerequisites
 
 - Docker and Docker Compose installed
-- A data directory containing:
-  - `config.json` (can be created via setup wizard)
-  - `photos/` directory with your photos
-  - `optimized/` directory (will be created automatically)
-  - `gallery.db` (SQLite database, will be created automatically)
+- A data directory (will be created automatically if it doesn't exist)
 
 ## Quick Start
 
@@ -63,8 +59,6 @@ The backend automatically allows:
 
 3. **Provided Domains** - From `FRONTEND_DOMAIN` and `BACKEND_DOMAIN` environment variables
 
-4. **Config.json** - Origins from `config.json` (if not overridden by env vars)
-
 ## Usage Scenarios
 
 ### Localhost Development
@@ -101,11 +95,11 @@ volumes:
   - /host/path/to/data:/data:ro     # Frontend (read-only)
 ```
 
-The data directory should contain:
-- `config.json` - Application configuration
-- `photos/` - Original photos
-- `optimized/` - Optimized images (generated)
-- `gallery.db` - SQLite database
+The data directory will contain (created automatically):
+- `config.json` - Application configuration (auto-generated via setup wizard or admin panel)
+- `photos/` - Original photos (create albums here)
+- `optimized/` - Optimized images (generated automatically)
+- `gallery.db` - SQLite database (created automatically)
 - `logs/` - Application logs
 
 ## Health Checks
@@ -127,8 +121,9 @@ If you see CORS errors, check:
 
 If `config.json` doesn't exist:
 1. The app will run in setup mode
-2. Access `/setup` to configure
-3. Config will be saved to `/data/config.json`
+2. Access `/setup` to configure via the setup wizard
+3. Configuration will be saved automatically to `/data/config.json`
+4. After initial setup, manage configuration via Admin Panel → Settings
 
 ### Port Conflicts
 

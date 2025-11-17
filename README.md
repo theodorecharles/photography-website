@@ -129,34 +129,44 @@ The `restart.sh` script handles:
 
 ## ⚙️ Configuration
 
-Main config file: `data/config.json` (copy from `config/config.example.json`)
+Configuration is managed through environment variables or the admin panel - you don't need to edit config files directly.
 
-**Basic structure:**
-```json
-{
-  "environment": {
-    "frontend": {
-      "port": 3000,
-      "apiUrl": "http://localhost:3001"
-    },
-    "backend": {
-      "port": 3001,
-      "allowedOrigins": ["http://localhost:5173"]
-    },
-    "auth": {
-      "sessionSecret": "generate-random-secret",
-      "authorizedEmails": ["your-email@example.com"]
-    }
-  },
-  "branding": {
-    "siteName": "Your Name",
-    "primaryColor": "#4ade80",
-    "secondaryColor": "#22c55e"
-  }
-}
+### Docker Deployment
+
+Configure via environment variables in `docker-compose.yml`:
+
+```yaml
+environment:
+  - DATA_DIR=/data
+  - FRONTEND_DOMAIN=http://localhost:3000  # or https://www.yourdomain.com
+  - BACKEND_DOMAIN=http://localhost:3001   # or https://api.yourdomain.com
 ```
 
-**Note:** Google OAuth is optional - only add `"google"` section to `auth` if you want OAuth login.
+**📖 For detailed Docker configuration, see [README.docker.md](README.docker.md)**
+
+### Non-Docker Deployment
+
+1. **Copy the example environment file:**
+   ```bash
+   cp .env.example .env
+   ```
+
+2. **Edit `.env` with your settings:**
+   ```bash
+   FRONTEND_DOMAIN=http://localhost:3000
+   BACKEND_DOMAIN=http://localhost:3001
+   DATA_DIR=./data
+   ```
+
+### Initial Setup
+
+On first run, the **Setup Wizard** will guide you through:
+- Site name and branding
+- Admin account creation
+- Color customization
+- Optional Google OAuth setup
+
+After initial setup, all configuration is managed through the **Admin Panel** at `/admin` → Settings.
 
 ### Google OAuth Setup (Optional)
 
@@ -169,7 +179,7 @@ Google OAuth is completely optional. You can use password-based authentication w
 3. Add authorized redirect URIs:
    - Development: `http://localhost:3001/api/auth/google/callback`
    - Production: `https://api.yourdomain.com/api/auth/google/callback`
-4. Copy Client ID and Secret to `config.json` under `auth.google`
+4. Configure OAuth credentials in Admin Panel → Settings → Advanced Settings → Authentication
 
 ---
 
@@ -228,12 +238,11 @@ galleria/
 │   ├── src/
 │   └── package.json
 ├── data/                # Data directory (not in Git)
-│   ├── config.json      # Main configuration
+│   ├── config.json      # Configuration (auto-generated, managed via admin panel)
 │   ├── photos/          # Original photos
 │   ├── optimized/       # Generated images
 │   └── gallery.db       # SQLite database
-├── config/
-│   └── config.example.json  # Config template
+├── .env.example         # Environment variables template (copy to .env)
 ├── scripts/             # Utility scripts
 ├── Dockerfile           # Docker container
 ├── docker-compose.yml   # Docker Compose config
@@ -263,13 +272,14 @@ node scripts/optimize_all_images.js
 ```
 
 **CORS errors:**
-- Update `allowedOrigins` in `config.json` and restart backend
-- For Docker: Check `FRONTEND_DOMAIN` and `BACKEND_DOMAIN` environment variables
+- For Docker: Check `FRONTEND_DOMAIN` and `BACKEND_DOMAIN` environment variables in `docker-compose.yml`
+- For non-Docker: Check `FRONTEND_DOMAIN` and `BACKEND_DOMAIN` in `.env` file
+- Restart services after changing configuration
 
 **Authentication issues:**
 - For password auth: Ensure user account exists and password is set
 - For Google OAuth: Verify OAuth redirect URIs are correct (if using OAuth)
-- Check email is in `authorizedEmails` (for OAuth) or user exists (for password)
+- Check OAuth configuration in Admin Panel → Settings → Advanced Settings → Authentication
 - Ensure cookies are enabled
 
 **Port conflicts:**
