@@ -22,8 +22,8 @@ Your app is ready to submit! Here's what to do:
    ```
 
 2. **Verify URLs work:**
-   - Template: https://raw.githubusercontent.com/theodorecharles/photography-website/master/unraid-template.xml
-   - Icon: https://raw.githubusercontent.com/theodorecharles/photography-website/master/frontend/public/icon-512.png
+   - Template: https://raw.githubusercontent.com/theodorecharles/galleria/master/unraid-template.xml
+   - Icon: https://raw.githubusercontent.com/theodorecharles/galleria/master/frontend/public/icon-512.png
 
 3. **Test locally (optional but recommended):**
    - Add template repo in Unraid Docker tab
