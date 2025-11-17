@@ -100,12 +100,13 @@ export const PHOTOS_DIR = path.join(DATA_DIR, 'photos');
 export const OPTIMIZED_DIR = path.join(DATA_DIR, 'optimized');
 export const DB_PATH = path.join(DATA_DIR, 'gallery.db');
 
-// Helper function to check if env var is actually set (not empty or "notset")
+// Helper function to check if env var is actually set (not empty or sentinel values)
 // Exported for use in other modules
 export function isEnvSet(value: string | undefined): boolean {
   if (!value) return false;
   const trimmed = value.trim().toLowerCase();
-  return trimmed !== '' && trimmed !== 'notset' && trimmed !== 'none' && trimmed !== 'null';
+  // Treat common "not set" sentinel values as unset
+  return trimmed !== '' && trimmed !== '-' && trimmed !== 'notset' && trimmed !== 'none' && trimmed !== 'null';
 }
 
 // Export dynamic getters for config values that can change
