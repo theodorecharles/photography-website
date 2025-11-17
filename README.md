@@ -12,7 +12,7 @@ A modern photography portfolio website built with React 19, TypeScript, Express 
 
 - **Node.js** 18+ (for development)
 - **Docker & Docker Compose** (for Docker deployment)
-- **Google OAuth credentials** (optional, for admin features)
+- **Google OAuth credentials** (optional - password-based authentication works without it)
 
 ---
 
@@ -78,9 +78,9 @@ Navigate to `http://localhost:3000` and follow the **Setup Wizard**! 🚀
 
 The wizard will guide you through:
 - Site name and branding
-- Admin account creation (password or Google OAuth)
+- Admin account creation (password-based - no OAuth required)
 - Color customization
-- Optional Google OAuth setup
+- Optional Google OAuth setup (if you want OAuth login)
 - Automatic database and directory creation
 
 ---
@@ -158,10 +158,6 @@ Main config file: `data/config.json` (copy from `config/config.example.json`)
       "allowedOrigins": ["http://localhost:5173"]
     },
     "auth": {
-      "google": {
-        "clientId": "your-client-id",
-        "clientSecret": "your-client-secret"
-      },
       "sessionSecret": "generate-random-secret",
       "authorizedEmails": ["your-email@example.com"]
     }
@@ -174,14 +170,20 @@ Main config file: `data/config.json` (copy from `config/config.example.json`)
 }
 ```
 
-### Google OAuth Setup
+**Note:** Google OAuth is optional - only add `"google"` section to `auth` if you want OAuth login.
+
+### Google OAuth Setup (Optional)
+
+Google OAuth is completely optional. You can use password-based authentication without any OAuth setup.
+
+**To enable Google OAuth login:**
 
 1. Go to [Google Cloud Console](https://console.cloud.google.com)
 2. Create OAuth 2.0 credentials
 3. Add authorized redirect URIs:
    - Development: `http://localhost:3001/api/auth/google/callback`
    - Production: `https://api.yourdomain.com/api/auth/google/callback`
-4. Copy Client ID and Secret to `config.json`
+4. Copy Client ID and Secret to `config.json` under `auth.google`
 
 ---
 
@@ -279,8 +281,9 @@ node scripts/optimize_all_images.js
 - For Docker: Check `FRONTEND_DOMAIN` and `BACKEND_DOMAIN` environment variables
 
 **Authentication issues:**
-- Verify Google OAuth redirect URIs
-- Check email is in `authorizedEmails`
+- For password auth: Ensure user account exists and password is set
+- For Google OAuth: Verify OAuth redirect URIs are correct (if using OAuth)
+- Check email is in `authorizedEmails` (for OAuth) or user exists (for password)
 - Ensure cookies are enabled
 
 **Port conflicts:**
