@@ -45,7 +45,7 @@ const SortableAlbumCard: React.FC<SortableAlbumCardProps> = ({
   onMoveToFolder,
   isFirst,
   isLast,
-  hasFolders = true,
+  hasFolders = false,
   canEdit,
 }) => {
   // Detect if we're on mobile
