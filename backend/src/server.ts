@@ -24,10 +24,10 @@ import config, {
   PORT,
   PHOTOS_DIR,
   OPTIMIZED_DIR,
-  ALLOWED_ORIGINS,
+  getAllowedOrigins,
+  getConfigExists,
   RATE_LIMIT_WINDOW_MS,
   RATE_LIMIT_MAX_REQUESTS,
-  CONFIG_EXISTS,
 } from "./config.ts";
 import { validateProductionSecurity } from "./security.ts";
 import { initializeDatabase } from "./database.ts";
@@ -70,7 +70,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Validate production security before starting (skip if in setup mode)
-if (CONFIG_EXISTS) {
+if (getConfigExists()) {
   validateProductionSecurity();
 } else {
   console.log('⚙️  Setup mode detected - skipping production security validation');
@@ -155,14 +155,18 @@ app.use(
       // Allow requests with no origin (mobile apps, curl, etc.)
       if (!origin) return callback(null, true);
 
+      // Get current state (dynamic, updates after config changes)
+      const configExists = getConfigExists();
+      const allowedOrigins = getAllowedOrigins();
+      
       // During OOBE (setup mode), allow any HTTPS origin to enable setup from any domain
-      if (!CONFIG_EXISTS && origin.startsWith('https://')) {
+      if (!configExists && origin.startsWith('https://')) {
         console.log(`[OOBE] Allowing CORS from: ${origin}`);
         return callback(null, true);
       }
-
+      
       // Check exact matches first
-      if (ALLOWED_ORIGINS.indexOf(origin) !== -1) {
+      if (allowedOrigins.indexOf(origin) !== -1) {
         callback(null, true);
         return;
       }
@@ -239,7 +243,7 @@ app.use(express.json({ limit: "1mb" }));
 // Configure session middleware for authentication
 const sessionSecret = config.auth?.sessionSecret;
 if (!sessionSecret) {
-  if (CONFIG_EXISTS) {
+  if (getConfigExists()) {
     console.error('❌ CRITICAL ERROR: SESSION_SECRET is not configured!');
     console.error('Please set auth.sessionSecret in config.json or SESSION_SECRET environment variable.');
     console.error('Generate a secure secret with: openssl rand -hex 32');
@@ -506,7 +510,7 @@ const server = app.listen(PORT, bindHost, () => {
   console.log(`Photos directory: ${photosDir}`);
   
   // Regenerate static JSON files on startup (non-blocking)
-  if (CONFIG_EXISTS) {
+  if (getConfigExists()) {
     console.log('[Startup] Regenerating static JSON files...');
     const appRoot = path.resolve(__dirname, "../../");
     const result = generateStaticJSONFiles(appRoot);

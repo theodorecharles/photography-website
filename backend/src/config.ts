@@ -156,10 +156,11 @@ export function getAllowedOrigins(): string[] {
 export const PORT = process.env.PORT ? parseInt(process.env.PORT) : fullConfig.environment.backend.port;
 export const RATE_LIMIT_WINDOW_MS = fullConfig.environment.security.rateLimitWindowMs;
 export const RATE_LIMIT_MAX_REQUESTS = fullConfig.environment.security.rateLimitMaxRequests;
-export const ALLOWED_ORIGINS = getAllowedOrigins();
 
-// Export flag indicating if config exists
-export const CONFIG_EXISTS = configExists;
+// Export function to check if config exists (dynamic, updated after reloadConfig)
+export function getConfigExists(): boolean {
+  return configExists;
+}
 
 // Export function to reload configuration (called after setup wizard completes)
 export function reloadConfig() {
