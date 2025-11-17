@@ -32,10 +32,10 @@ function ensureOutputDir(outputDir: string): void {
 /**
  * Write JSON file to dist directory
  */
-function writeJSON(outputDir: string, filename: string, data: any): void {
+async function writeJSON(outputDir: string, filename: string, data: any): Promise<void> {
   const jsonString = JSON.stringify(data, null, 2);
   const filePath = path.join(outputDir, filename);
-  fs.writeFileSync(filePath, jsonString);
+  await fs.promises.writeFile(filePath, jsonString);
 }
 
 /**
@@ -59,7 +59,7 @@ function transformImageToArray(img: any, album: string, includeAlbum: boolean = 
 /**
  * Generate static JSON files for all albums
  */
-export function generateStaticJSONFiles(appRoot: string): { success: boolean; error?: string; albumCount?: number } {
+export async function generateStaticJSONFiles(appRoot: string): Promise<{ success: boolean; error?: string; albumCount?: number }> {
   try {
     const outputDir = getOutputDir(appRoot);
     ensureOutputDir(outputDir);
@@ -86,16 +86,18 @@ export function generateStaticJSONFiles(appRoot: string): { success: boolean; er
       }
     }
 
-    // Generate JSON for each album (optimized array format)
-    for (const album of albums) {
-      try {
-        const images = getImagesInAlbum(album);
-        const photos = images.map((img) => transformImageToArray(img, album, false));
-        writeJSON(outputDir, `${album}.json`, photos);
-      } catch (error) {
-        console.error(`[Static JSON] Error generating JSON for album "${album}":`, error);
-      }
-    }
+    // Generate JSON for each album in parallel (optimized array format)
+    await Promise.all(
+      albums.map(async (album) => {
+        try {
+          const images = getImagesInAlbum(album);
+          const photos = images.map((img) => transformImageToArray(img, album, false));
+          await writeJSON(outputDir, `${album}.json`, photos);
+        } catch (error) {
+          console.error(`[Static JSON] Error generating JSON for album "${album}":`, error);
+        }
+      })
+    );
 
     // Generate homepage JSON (photos from albums with show_on_homepage enabled, in order)
     try {
@@ -118,21 +120,22 @@ export function generateStaticJSONFiles(appRoot: string): { success: boolean; er
         photos: photos
       };
       
-      writeJSON(outputDir, 'homepage.json', homepageData);
+      await writeJSON(outputDir, 'homepage.json', homepageData);
     } catch (error) {
       console.error('[Static JSON] Error generating homepage.json:', error);
     }
 
-    // Generate albums list
-    writeJSON(outputDir, 'albums-list.json', albums);
-
-    // Generate metadata file
+    // Generate albums list and metadata file in parallel
     const metadata = {
       generatedAt: new Date().toISOString(),
       albumCount: albums.length,
       albums: albums
     };
-    writeJSON(outputDir, '_metadata.json', metadata);
+    
+    await Promise.all([
+      writeJSON(outputDir, 'albums-list.json', albums),
+      writeJSON(outputDir, '_metadata.json', metadata)
+    ]);
 
     console.log(`[Static JSON] ✓ Generation complete! (${albums.length} albums)`);
     return { success: true, albumCount: albums.length };
@@ -149,7 +152,7 @@ export function generateStaticJSONFiles(appRoot: string): { success: boolean; er
  */
 router.post("/generate", requireAdmin, async (req: Request, res: Response): Promise<void> => {
   const appRoot = req.app.get('appRoot');
-  const result = generateStaticJSONFiles(appRoot);
+  const result = await generateStaticJSONFiles(appRoot);
   
   // Invalidate all album caches after regeneration
   invalidateAlbumCache();
@@ -174,7 +177,7 @@ router.post("/generate", requireAdmin, async (req: Request, res: Response): Prom
  */
 router.post("/regenerate", requireManager, async (req: Request, res: Response): Promise<void> => {
   const appRoot = req.app.get('appRoot');
-  const result = generateStaticJSONFiles(appRoot);
+  const result = await generateStaticJSONFiles(appRoot);
   
   // Invalidate all album caches after regeneration
   // This ensures fresh data is served after batch uploads

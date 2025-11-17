@@ -235,7 +235,21 @@ const limiter = rateLimit({
   skipFailedRequests: true,
 });
 
+// Stricter rate limiting for authentication endpoints to prevent brute force attacks
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 10, // Limit each IP to 10 requests per windowMs
+  message: "Too many authentication attempts from this IP, please try again after 15 minutes.",
+  standardHeaders: true,
+  legacyHeaders: false,
+  skipSuccessfulRequests: true, // Don't count successful logins
+});
+
 app.use("/api/", limiter);
+// Apply stricter rate limiting to authentication endpoints
+app.use("/api/auth-extended/login", authLimiter);
+app.use("/api/auth-extended/password-reset", authLimiter);
+app.use("/api/auth/google", authLimiter);
 
 // Parse JSON request bodies with size limit
 app.use(express.json({ limit: "1mb" }));
@@ -513,12 +527,15 @@ const server = app.listen(PORT, bindHost, () => {
   if (getConfigExists()) {
     console.log('[Startup] Regenerating static JSON files...');
     const appRoot = path.resolve(__dirname, "../../");
-    const result = generateStaticJSONFiles(appRoot);
-    if (result.success) {
-      console.log(`[Startup] ✓ Static JSON files updated (${result.albumCount} albums)`);
-    } else {
-      console.error('[Startup] ✗ Failed to generate static JSON:', result.error);
-    }
+    generateStaticJSONFiles(appRoot).then((result) => {
+      if (result.success) {
+        console.log(`[Startup] ✓ Static JSON files updated (${result.albumCount} albums)`);
+      } else {
+        console.error('[Startup] ✗ Failed to generate static JSON:', result.error);
+      }
+    }).catch((error) => {
+      console.error('[Startup] ✗ Failed to generate static JSON:', error);
+    });
   }
 });
 
