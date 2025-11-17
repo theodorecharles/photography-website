@@ -71,8 +71,38 @@ jobs:
                -d "text=$MESSAGE" \
                --silent --output /dev/null || true
 
+      - name: Send failure notification
+        if: failure() && vars.TELEGRAM_CHAT_ID
+        run: |
+          cd /home/ted/photography-website/
+          COMMIT_HASH=$(git rev-parse --short HEAD)
+          COMMIT_MSG=$(git log -1 --pretty=%B | head -n 1)
+
+          MESSAGE="❌ Photography Website deployment FAILED!
+
+          🌐 Branch: master
+          🔗 URL: ${{ vars.SITE_URL || '' }}
+          📦 Commit: $COMMIT_HASH
+          💬 $COMMIT_MSG
+
+          ⚠️ PRODUCTION DEPLOYMENT FAILED - URGENT!
+
+          🔗 Workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+
+          curl -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+               -d "chat_id=${{ vars.TELEGRAM_CHAT_ID }}" \
+               -d "text=$MESSAGE" \
+               --silent --output /dev/null || true
+  
+  docker:
+    name: Build and push Docker image
+    runs-on: [self-hosted, prod, photography-website]
+    environment: Prod
+    needs: deploy
+    if: github.event.inputs.build_docker == 'true'
+    steps:
       - name: Build and push Docker image
-        if: github.event.inputs.build_docker == 'true' && vars.DOCKERHUB_USERNAME && vars.DOCKER_IMAGE_NAME
+        if: vars.DOCKERHUB_USERNAME && vars.DOCKER_IMAGE_NAME
         run: |
           cd /home/ted/photography-website/
           
@@ -98,8 +128,8 @@ jobs:
           # Logout
           docker logout
       
-      - name: Send Docker build notification
-        if: success() && github.event.inputs.build_docker == 'true' && vars.TELEGRAM_CHAT_ID
+      - name: Send success notification
+        if: success() && vars.TELEGRAM_CHAT_ID
         run: |
           cd /home/ted/photography-website/
           COMMIT_HASH=$(git rev-parse --short HEAD)
@@ -126,19 +156,15 @@ jobs:
         run: |
           cd /home/ted/photography-website/
           COMMIT_HASH=$(git rev-parse --short HEAD)
-          COMMIT_MSG=$(git log -1 --pretty=%B | head -n 1)
-
-          MESSAGE="❌ Photography Website deployment FAILED!
+          
+          MESSAGE="❌ Docker build FAILED!
 
           🌐 Branch: master
-          🔗 URL: ${{ vars.SITE_URL || '' }}
           📦 Commit: $COMMIT_HASH
-          💬 $COMMIT_MSG
-
-          ⚠️ PRODUCTION DEPLOYMENT FAILED - URGENT!
-
+          
+          ⚠️ PRODUCTION DOCKER BUILD FAILED!
           🔗 Workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-
+          
           curl -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
                -d "chat_id=${{ vars.TELEGRAM_CHAT_ID }}" \
                -d "text=$MESSAGE" \
