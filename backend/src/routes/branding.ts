@@ -177,7 +177,8 @@ router.post('/upload-avatar', requireManager, upload.single('avatar'), async (re
 
     // Determine paths
     const projectRoot = path.resolve(__dirname, '../../..');
-    const photosDir = path.join(projectRoot, 'photos');
+    const dataDir = process.env.DATA_DIR || path.join(projectRoot, 'data');
+    const photosDir = path.join(dataDir, 'photos');
     const frontendPublicDir = path.join(projectRoot, 'frontend', 'public');
     
     // Ensure directories exist
