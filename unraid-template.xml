@@ -29,10 +29,10 @@
     For local/testing: Use http://[SERVER-IP]:3000 and http://[SERVER-IP]:3001
     For production: Set up reverse proxy (Nginx Proxy Manager recommended) with SSL
   </Requires>
-  <Config Name="WebUI Port" Target="3000" Default="3000" Mode="tcp" Description="Frontend web interface port" Type="Port" Display="always" Required="true" Mask="false">3000</Config>
-  <Config Name="API Port" Target="3001" Default="3001" Mode="tcp" Description="Backend API port" Type="Port" Display="always" Required="true" Mask="false">3001</Config>
-  <Config Name="Data Directory" Target="/app/data" Default="/mnt/user/appdata/galleria" Mode="rw" Description="Directory for photos, database, and configuration files" Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/galleria</Config>
-  <Config Name="Frontend Domain" Target="FRONTEND_DOMAIN" Default="-" Mode="" Description="The URL where users access your site. Leave as '-' for local IP access. For production with reverse proxy use https://photos.yourdomain.com" Type="Variable" Display="always" Required="false" Mask="false">-</Config>
-  <Config Name="Backend Domain" Target="BACKEND_DOMAIN" Default="-" Mode="" Description="The API URL. Leave as '-' for local IP access. For production with reverse proxy use https://api.yourdomain.com" Type="Variable" Display="always" Required="false" Mask="false">-</Config>
+  <Config Name="WebUI Port" Target="3000" Default="3000" Mode="tcp" Description="Frontend web interface port" Type="Port" Display="always" Required="true" Mask="false"/>
+  <Config Name="API Port" Target="3001" Default="3001" Mode="tcp" Description="Backend API port" Type="Port" Display="always" Required="true" Mask="false"/>
+  <Config Name="Data Directory" Target="/app/data" Default="/mnt/user/appdata/galleria" Mode="rw" Description="Directory for photos, database, and configuration files" Type="Path" Display="always" Required="true" Mask="false"/>
+  <Config Name="Frontend Domain" Target="FRONTEND_DOMAIN" Default="-" Mode="" Description="The URL where users access your site. Leave as '-' for local IP access. For production with reverse proxy use https://photos.yourdomain.com" Type="Variable" Display="always" Required="false" Mask="false"/>
+  <Config Name="Backend Domain" Target="BACKEND_DOMAIN" Default="-" Mode="" Description="The API URL. Leave as '-' for local IP access. For production with reverse proxy use https://api.yourdomain.com" Type="Variable" Display="always" Required="false" Mask="false"/>
 </Container>
 
