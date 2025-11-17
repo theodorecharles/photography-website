@@ -104,15 +104,23 @@ export const DB_PATH = path.join(DATA_DIR, 'gallery.db');
 export function getAllowedOrigins(): string[] {
   const origins: string[] = [];
   
+  console.log('[CORS Debug] Environment variables:');
+  console.log('  FRONTEND_DOMAIN:', process.env.FRONTEND_DOMAIN || '(not set)');
+  console.log('  BACKEND_DOMAIN:', process.env.BACKEND_DOMAIN || '(not set)');
+  console.log('  ALLOWED_ORIGINS:', process.env.ALLOWED_ORIGINS || '(not set)');
+  
   // Add FRONTEND_DOMAIN if provided (supports http:// and https://)
   if (process.env.FRONTEND_DOMAIN) {
     const frontendDomain = process.env.FRONTEND_DOMAIN.trim();
     if (frontendDomain.startsWith('http://') || frontendDomain.startsWith('https://')) {
       origins.push(frontendDomain);
+      console.log('[CORS Debug] Added FRONTEND_DOMAIN:', frontendDomain);
     } else {
       // Auto-detect protocol based on BACKEND_DOMAIN or default to https
       const protocol = process.env.BACKEND_DOMAIN?.startsWith('https://') ? 'https' : 'https';
-      origins.push(`${protocol}://${frontendDomain}`);
+      const fullUrl = `${protocol}://${frontendDomain}`;
+      origins.push(fullUrl);
+      console.log('[CORS Debug] Added FRONTEND_DOMAIN with protocol:', fullUrl);
     }
   }
   
@@ -121,9 +129,12 @@ export function getAllowedOrigins(): string[] {
     const backendDomain = process.env.BACKEND_DOMAIN.trim();
     if (backendDomain.startsWith('http://') || backendDomain.startsWith('https://')) {
       origins.push(backendDomain);
+      console.log('[CORS Debug] Added BACKEND_DOMAIN:', backendDomain);
     } else {
       const protocol = backendDomain.includes('localhost') ? 'http' : 'https';
-      origins.push(`${protocol}://${backendDomain}`);
+      const fullUrl = `${protocol}://${backendDomain}`;
+      origins.push(fullUrl);
+      console.log('[CORS Debug] Added BACKEND_DOMAIN with protocol:', fullUrl);
     }
   }
   
@@ -145,11 +156,15 @@ export function getAllowedOrigins(): string[] {
   
   // Add origins from config.json (if exists and not overridden)
   if (!process.env.ALLOWED_ORIGINS && !process.env.FRONTEND_DOMAIN) {
-    origins.push(...fullConfig.environment.backend.allowedOrigins);
+    const configOrigins = fullConfig.environment.backend.allowedOrigins || [];
+    origins.push(...configOrigins);
+    console.log('[CORS Debug] Added origins from config.json:', configOrigins);
   }
   
   // Remove duplicates
-  return [...new Set(origins)];
+  const uniqueOrigins = [...new Set(origins)];
+  console.log('[CORS Debug] Final allowed origins:', uniqueOrigins);
+  return uniqueOrigins;
 }
 
 // Export constants
