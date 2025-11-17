@@ -18,7 +18,7 @@ jobs:
           git pull --ff-only origin "$CURRENT_BRANCH"
 
       - name: Send deployment start notification
-        if: vars.TELEGRAM_CHAT_ID != '' && secrets.TELEGRAM_BOT_TOKEN != ''
+        if: vars.TELEGRAM_CHAT_ID && secrets.TELEGRAM_BOT_TOKEN
         run: |
           cd /home/ted/photography-website/
           COMMIT_HASH=$(git rev-parse --short HEAD)
@@ -44,7 +44,7 @@ jobs:
           ./restart.sh
 
       - name: Send success notification
-        if: success() && vars.TELEGRAM_CHAT_ID != '' && secrets.TELEGRAM_BOT_TOKEN != ''
+        if: success() && vars.TELEGRAM_CHAT_ID && secrets.TELEGRAM_BOT_TOKEN
         run: |
           cd /home/ted/photography-website/
           COMMIT_HASH=$(git rev-parse --short HEAD)
@@ -65,7 +65,7 @@ jobs:
                --silent --output /dev/null || true
 
       - name: Send failure notification
-        if: failure() && vars.TELEGRAM_CHAT_ID != '' && secrets.TELEGRAM_BOT_TOKEN != ''
+        if: failure() && vars.TELEGRAM_CHAT_ID && secrets.TELEGRAM_BOT_TOKEN
         run: |
           cd /home/ted/photography-website/
           COMMIT_HASH=$(git rev-parse --short HEAD)
