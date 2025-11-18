@@ -11,26 +11,36 @@ const __dirname = path.dirname(__filename);
 const jsonCache = new Map();
 const JSON_CACHE_MAX_AGE = 5 * 60 * 1000; // 5 minutes
 
-// Load configuration (or use defaults for setup mode)
-// In Docker, DATA_DIR env var points to mounted volume
+// Configuration paths and defaults
 const dataDir = process.env.DATA_DIR || path.join(__dirname, "../data");
 const configPath = path.join(dataDir, "config.json");
+const envApiUrl = process.env.API_URL || process.env.BACKEND_DOMAIN;
+
+// Load initial configuration
 let configFile;
 let config;
 let isSetupMode = false;
 
-// Use API_URL from environment if provided (for Docker)
-const envApiUrl = process.env.API_URL || process.env.BACKEND_DOMAIN;
+/**
+ * Load configuration from disk
+ */
+function loadConfig() {
+  if (fs.existsSync(configPath)) {
+    configFile = JSON.parse(fs.readFileSync(configPath, "utf8"));
+    config = configFile.environment;
 
-if (fs.existsSync(configPath)) {
-  configFile = JSON.parse(fs.readFileSync(configPath, "utf8"));
-  config = configFile.environment;
-
-  // Override API URL from environment if provided
-  if (envApiUrl) {
-    config.frontend.apiUrl = envApiUrl;
-    info(`[Config] Using API URL from environment: ${envApiUrl}`);
+    // Override API URL from environment if provided
+    if (envApiUrl) {
+      config.frontend.apiUrl = envApiUrl;
+    }
+    
+    info("[Frontend] Configuration reloaded");
   }
+}
+
+// Load initial config
+if (fs.existsSync(configPath)) {
+  loadConfig();
 } else {
   // Setup mode - use defaults
   info("[Frontend] config.json not found - using defaults for setup mode");
@@ -49,6 +59,23 @@ if (fs.existsSync(configPath)) {
       redirectTo: null,
     },
   };
+}
+
+// Watch config file for changes and reload automatically
+if (!isSetupMode) {
+  fs.watch(configPath, (eventType) => {
+    if (eventType === 'change') {
+      // Debounce: wait a bit for write to complete
+      setTimeout(() => {
+        try {
+          loadConfig();
+        } catch (err) {
+          error("[Frontend] Failed to reload config:", err);
+        }
+      }, 100);
+    }
+  });
+  info("[Frontend] Watching config.json for changes");
 }
 
 const app = express();
@@ -168,6 +195,69 @@ app.get("/health", (req, res) => {
   res.json({ status: "ok", message: "Frontend server is running" });
 });
 
+// Serve dynamic manifest.json with branding values
+app.get("/manifest.json", (req, res) => {
+  const siteName = configFile.branding?.siteName || "Photography Portfolio";
+  const avatarPath = configFile.branding?.avatarPath || "/photos/avatar.png";
+  
+  // Derive site URL from API URL
+  const apiUrl = config.frontend.apiUrl;
+  let siteUrl;
+  if (apiUrl.includes("localhost")) {
+    siteUrl = apiUrl.replace(":3001", ":3000");
+  } else {
+    siteUrl = apiUrl.replace(/api(-dev)?\./, "www$1.");
+  }
+  
+  // Build full avatar URL
+  const avatarUrl = `${apiUrl}${avatarPath}`;
+  
+  const manifest = {
+    name: siteName,
+    short_name: siteName,
+    description: `Photography portfolio by ${siteName}`,
+    start_url: "/",
+    display: "standalone",
+    background_color: "#000000",
+    theme_color: "#000000",
+    orientation: "portrait-primary",
+    icons: [
+      {
+        src: avatarUrl,
+        sizes: "192x192",
+        type: "image/png",
+        purpose: "any"
+      },
+      {
+        src: avatarUrl,
+        sizes: "512x512",
+        type: "image/png",
+        purpose: "any"
+      },
+      {
+        src: avatarUrl,
+        sizes: "512x512",
+        type: "image/png",
+        purpose: "maskable"
+      }
+    ]
+  };
+  
+  res.setHeader("Content-Type", "application/json");
+  res.setHeader("Cache-Control", "no-cache"); // Don't cache - always fresh
+  res.json(manifest);
+});
+
+// Serve dynamic apple-touch-icon for iOS home screen
+app.get("/apple-touch-icon.png", (req, res) => {
+  const apiUrl = config.frontend.apiUrl;
+  const avatarPath = configFile.branding?.avatarPath || "/photos/avatar.png";
+  const avatarUrl = `${apiUrl}${avatarPath}`;
+  
+  // Redirect to the avatar image
+  res.redirect(307, avatarUrl);
+});
+
 // Serve static files from the dist directory
 // But exclude index.html so we can inject runtime config
 app.use(
@@ -186,6 +276,22 @@ function escapeHtml(str) {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#39;");
+}
+
+/**
+ * Replace runtime placeholders with current config values
+ */
+function replaceRuntimePlaceholders(html, apiUrl) {
+  const siteName = configFile.branding?.siteName || "Photography Portfolio";
+  const avatarPath = configFile.branding?.avatarPath || "/photos/avatar.png";
+  const runtimeSiteUrl = apiUrl.includes('localhost')
+    ? apiUrl.replace(':3001', ':3000')
+    : apiUrl.replace(/api(-dev)?\./, 'www$1.');
+
+  return html
+    .replace(/__RUNTIME_SITE_NAME__/g, escapeHtml(siteName))
+    .replace(/__RUNTIME_AVATAR_PATH__/g, escapeHtml(avatarPath))
+    .replace(/__RUNTIME_SITE_URL__/g, escapeHtml(runtimeSiteUrl));
 }
 
 /**
@@ -269,8 +375,11 @@ app.get("*", async (req, res) => {
           // Set CSP and other security headers
           setCSPHeader(res, apiUrl, configFile);
 
+          // Replace runtime placeholders
+          let htmlWithPlaceholders = replaceRuntimePlaceholders(modifiedHtml, apiUrl);
+
           // Inject runtime config
-          const modifiedHtmlWithRuntime = modifiedHtml.replace(
+          const modifiedHtmlWithRuntime = htmlWithPlaceholders.replace(
             '<script type="module"',
             `<script>window.__RUNTIME_API_URL__ = "${apiUrl}";</script>\n    <script type="module"`
           );
@@ -389,7 +498,9 @@ app.get("*", async (req, res) => {
               `<meta property="twitter:image" content="${gridUrl}" />`
             );
 
-          return res.send(modifiedHtml);
+          // Replace runtime placeholders
+          const htmlWithPlaceholders = replaceRuntimePlaceholders(modifiedHtml, apiUrl);
+          return res.send(htmlWithPlaceholders);
         }
       }
     } catch (error) {
@@ -512,7 +623,9 @@ app.get("*", async (req, res) => {
               `<meta property="twitter:image" content="${gridUrl}" />`
             );
 
-          return res.send(modifiedHtml);
+          // Replace runtime placeholders
+          const htmlWithPlaceholders = replaceRuntimePlaceholders(modifiedHtml, apiUrl);
+          return res.send(htmlWithPlaceholders);
         }
       }
     } catch (error) {
@@ -654,7 +767,9 @@ app.get("*", async (req, res) => {
               `<meta property="twitter:image" content="${thumbnailUrl}" />`
             );
 
-          return res.send(modifiedHtml);
+          // Replace runtime placeholders
+          const htmlWithPlaceholders = replaceRuntimePlaceholders(modifiedHtml, apiUrl);
+          return res.send(htmlWithPlaceholders);
         }
       }
     } catch (error) {
@@ -715,8 +830,11 @@ app.get("*", async (req, res) => {
     // Set Content Security Policy with runtime API URL
     setCSPHeader(res, runtimeApiUrl, configFile);
 
+    // Replace runtime placeholders with current config values
+    let modifiedHtml = replaceRuntimePlaceholders(html, runtimeApiUrl);
+
     // Inject runtime config before other scripts
-    const modifiedHtml = html.replace(
+    modifiedHtml = modifiedHtml.replace(
       '<script type="module"',
       `<script>window.__RUNTIME_API_URL__ = "${runtimeApiUrl}";</script>\n    <script type="module"`
     );
