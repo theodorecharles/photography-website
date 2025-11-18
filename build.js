@@ -13,21 +13,19 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Read config.json
-const configPath = path.join(__dirname, 'config', 'config.json');
+const configPath = path.join(__dirname, 'data', 'config.json');
 const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
 
-// Determine environment
-const env = process.env.NODE_ENV || 'production';
-console.log(`Building for ${env} environment...`);
-
 // Set ALL environment variables from config.json
-const frontendConfig = config[env].frontend;
+const frontendConfig = config.environment.frontend;
 
-// For production: derive site URL from API URL (remove "api." subdomain)
-// For development: derive from API URL (change port from 3001 to 3000)
-const siteUrl = env === 'production' 
-  ? frontendConfig.apiUrl.replace('api.', '') 
-  : frontendConfig.apiUrl.replace(':3001', ':3000');
+// Derive site URL from API URL
+// If apiUrl includes localhost, change port from 3001 to 3000
+// Otherwise, replace api. or api- with www. or www-
+const apiUrl = frontendConfig.apiUrl;
+const siteUrl = apiUrl.includes('localhost')
+  ? apiUrl.replace(':3001', ':3000')
+  : apiUrl.replace(/api(-dev)?\./, 'www$1.');
 
 process.env.VITE_API_URL = frontendConfig.apiUrl;
 process.env.VITE_SITE_URL = siteUrl;
