@@ -201,15 +201,22 @@ pm2 save --force 2>/dev/null || true
 
 log "Services started successfully"
 
-# Wait a moment and verify services are running
-sleep 3
-if ! pm2 list | grep -q "online"; then
-    log "WARNING: Services may not have started correctly"
-    pm2 list
-    handle_error "Services are not running after start"
-fi
-
-log "✓ All services verified running"
+# Poll for services to be online (max 10 seconds)
+log "Verifying services are online..."
+for i in {1..20}; do
+    if pm2 list | grep -q "online"; then
+        log "✓ All services verified running (took ${i}/2 seconds)"
+        break
+    fi
+    
+    if [ $i -eq 20 ]; then
+        log "WARNING: Services did not come online within 10 seconds"
+        pm2 list
+        handle_error "Services are not running after start"
+    fi
+    
+    sleep 0.5
+done
 
 # Generate static JSON files for performance optimization (only if configured)
 if [ -f "data/config.json" ]; then
