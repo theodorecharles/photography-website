@@ -5,6 +5,7 @@
 import React from 'react';
 import { ConfigData } from '../types';
 import { PasswordInput } from '../../PasswordInput';
+import { Toggle } from './Toggle';
 
 interface AuthSettingsProps {
   config: ConfigData;
@@ -89,30 +90,22 @@ const AuthSettings: React.FC<AuthSettingsProps> = ({
 
       {/* Enable/Disable Toggle */}
       <div className="branding-group" style={{ margin: 0, marginBottom: "1.5rem" }}>
-        <label className="branding-label" style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-          <input
-            type="checkbox"
-            checked={isEnabled}
-            onChange={(e) =>
-              updateConfig(
-                ["environment", "auth", "google", "enabled"],
-                e.target.checked
-              )
-            }
-            style={{
-              width: "1.25rem",
-              height: "1.25rem",
-              cursor: "pointer",
-            }}
-          />
-          <span>Enable Google Sign-In</span>
-        </label>
+        <Toggle
+          checked={isEnabled}
+          onChange={() =>
+            updateConfig(
+              ["environment", "auth", "google", "enabled"],
+              !isEnabled
+            )
+          }
+          label="Enable Google Sign-In"
+        />
         <p
           style={{
             fontSize: "0.8rem",
             color: "#666",
             marginTop: "0.5rem",
-            marginLeft: "2rem",
+            marginLeft: "52px", // Align with toggle label
           }}
         >
           {isEnabled

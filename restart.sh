@@ -78,46 +78,53 @@ fi
 # Return to project root
 cd ..
 
-# Stop and delete all PM2 processes to avoid stale configuration
-log "Stopping and removing all PM2 processes..."
+# Check if PM2 processes exist (for zero-downtime reload vs fresh start)
+PM2_PROCESSES_EXIST=false
 if pm2 list 2>/dev/null | grep -q "online\|stopped\|errored"; then
-    log "Found existing PM2 processes, stopping them..."
-    pm2 stop all 2>/dev/null || true
-    pm2 delete all 2>/dev/null || true
-    log "All PM2 processes stopped and deleted"
+    PM2_PROCESSES_EXIST=true
+    log "Found existing PM2 processes - will use graceful reload"
 else
-    log "No existing PM2 processes found"
+    log "No existing PM2 processes found - will do fresh start"
 fi
 
-# Wait for processes to fully terminate and release ports
-log "Waiting for ports to be released..."
-sleep 3
-
-# Function to kill process on a specific port
+# Function to kill ALL processes on a specific port
 kill_port() {
     local PORT=$1
-    local PID=""
+    local PIDS=""
+    local KILLED=0
     
-    # Try lsof first (most reliable)
+    # Try lsof first (most reliable, -t returns only PIDs)
     if command -v lsof &> /dev/null; then
-        PID=$(lsof -ti:$PORT 2>/dev/null || true)
+        PIDS=$(lsof -ti:$PORT 2>/dev/null || true)
     # Fallback to fuser
     elif command -v fuser &> /dev/null; then
-        PID=$(fuser $PORT/tcp 2>/dev/null | awk '{print $1}' || true)
-    # Fallback to netstat + grep
+        PIDS=$(fuser $PORT/tcp 2>/dev/null || true)
+    # Fallback to ss (faster than netstat)
+    elif command -v ss &> /dev/null; then
+        PIDS=$(ss -lptn "sport = :$PORT" 2>/dev/null | grep -oP 'pid=\K[0-9]+' || true)
+    # Final fallback to netstat
     elif command -v netstat &> /dev/null; then
-        PID=$(netstat -tlnp 2>/dev/null | grep ":$PORT " | awk '{print $7}' | cut -d'/' -f1 || true)
+        PIDS=$(netstat -tlnp 2>/dev/null | grep ":$PORT " | awk '{print $7}' | cut -d'/' -f1 || true)
     fi
     
-    if [ -n "$PID" ]; then
-        log "Found process on port $PORT (PID: $PID), killing it..."
-        kill -9 $PID 2>/dev/null || true
-        sleep 1
-        return 0
-    else
-        log "No process found on port $PORT"
-        return 1
+    if [ -n "$PIDS" ]; then
+        # Kill each PID (there might be multiple)
+        for PID in $PIDS; do
+            if [ -n "$PID" ] && [ "$PID" != "-" ]; then
+                log "Found process on port $PORT (PID: $PID), killing it..."
+                kill -9 $PID 2>/dev/null || true
+                KILLED=1
+            fi
+        done
+        
+        if [ $KILLED -eq 1 ]; then
+            sleep 1
+            return 0
+        fi
     fi
+    
+    log "No process found on port $PORT"
+    return 1
 }
 
 # Function to check if port is free
@@ -140,40 +147,91 @@ check_port_free() {
     return 0
 }
 
-# Clean up both frontend (3000) and backend (3001) ports
-log "Checking and cleaning up ports..."
-
-for PORT in 3000 3001; do
-    log "Cleaning port $PORT..."
-    kill_port $PORT || true
-    
-    # Double-check port is free
-    if ! check_port_free $PORT; then
-        # Try one more time with force
-        log "Port $PORT still in use, attempting force kill..."
-        kill_port $PORT || true
-        sleep 2
-        
-        if ! check_port_free $PORT; then
-            handle_error "Port $PORT is still in use after cleanup! Please manually kill the process using: lsof -ti:$PORT | xargs kill -9"
-        fi
+# Only clean ports if doing a fresh start (not a reload)
+if [ "$PM2_PROCESSES_EXIST" = false ]; then
+    # Kill any orphaned node processes that might be using our ports
+    log "Checking for orphaned node processes..."
+    ORPHANED=$(ps aux | grep -E "node.*server\.(js|ts)|tsx.*server\.ts" | grep -v grep | awk '{print $2}' || true)
+    if [ -n "$ORPHANED" ]; then
+        log "Found orphaned node processes, killing them..."
+        echo "$ORPHANED" | xargs kill -9 2>/dev/null || true
+        sleep 1
     fi
-    
-    log "✓ Port $PORT is free and ready"
-done
 
-# Start fresh with new builds
-log "Starting services with PM2..."
+    # Clean up both frontend (3000) and backend (3001) ports
+    log "Checking and cleaning up ports..."
+
+    for PORT in 3000 3001; do
+        log "Cleaning port $PORT..."
+        
+        # Try up to 3 times to kill processes on this port
+        for ATTEMPT in 1 2 3; do
+            if check_port_free $PORT; then
+                log "✓ Port $PORT is free and ready"
+                break
+            fi
+            
+            log "Attempt $ATTEMPT: Port $PORT is in use, killing process..."
+            kill_port $PORT || true
+            sleep 2
+            
+            if [ $ATTEMPT -eq 3 ] && ! check_port_free $PORT; then
+                # Last resort: find and kill with lsof directly
+                log "Final attempt: Force killing all processes on port $PORT..."
+                lsof -ti:$PORT 2>/dev/null | xargs -r kill -9 2>/dev/null || true
+                sleep 2
+                
+                if ! check_port_free $PORT; then
+                    handle_error "Port $PORT is STILL in use after 3 attempts! Manual intervention required: sudo lsof -ti:$PORT | xargs kill -9"
+                fi
+            fi
+        done
+    done
+fi
 
 # Copy ecosystem.local.cjs to ecosystem.config.cjs (PM2 requires this name)
 rm -f ecosystem.config.cjs
 cp ecosystem.local.cjs ecosystem.config.cjs
 
-if ! pm2 start ecosystem.config.cjs; then
-    handle_error "Failed to start services"
+# Use graceful reload if processes exist, otherwise fresh start
+if [ "$PM2_PROCESSES_EXIST" = true ]; then
+    log "Performing zero-downtime reload..."
+    if ! pm2 reload ecosystem.config.cjs --update-env; then
+        log "Reload failed, falling back to restart..."
+        pm2 restart ecosystem.config.cjs --update-env || handle_error "Failed to restart services"
+    fi
+    log "Services reloaded successfully (zero downtime)"
+else
+    log "Starting services with PM2..."
+    if ! pm2 start ecosystem.config.cjs; then
+        handle_error "Failed to start services"
+    fi
+    log "Services started successfully"
 fi
 
-log "Services started successfully"
+# Save PM2 process list to ensure it persists across reboots and remote sessions
+log "Saving PM2 process list..."
+pm2 save --force 2>/dev/null || true
+
+# Ensure PM2 daemon persists (startup hook for systemd/init)
+pm2 startup systemd -u ted --hp /home/ted 2>/dev/null || true
+
+# Poll for services to be online (max 10 seconds)
+log "Verifying services are online..."
+for i in {1..20}; do
+    if pm2 list | grep -q "online"; then
+        log "✓ All services verified running (took ${i}/2 seconds)"
+        break
+    fi
+    
+    if [ $i -eq 20 ]; then
+        log "WARNING: Services did not come online within 10 seconds"
+        pm2 list
+        handle_error "Services are not running after start"
+    fi
+    
+    sleep 0.5
+done
 
 # Generate static JSON files for performance optimization (only if configured)
 if [ -f "data/config.json" ]; then
