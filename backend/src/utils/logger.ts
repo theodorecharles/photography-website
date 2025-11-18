@@ -11,6 +11,7 @@
  */
 
 export enum LogLevel {
+  SILENT = -1,
   ERROR = 0,
   WARN = 1,
   INFO = 2,
@@ -28,6 +29,11 @@ export function initLogger(logLevel?: string | LogLevel): void {
     if (typeof logLevel === 'string') {
       const level = logLevel.toLowerCase().trim();
       switch (level) {
+        case 'silent':
+        case 'none':
+        case 'off':
+          currentLogLevel = LogLevel.SILENT;
+          break;
         case 'error':
           currentLogLevel = LogLevel.ERROR;
           break;
@@ -55,6 +61,11 @@ export function initLogger(logLevel?: string | LogLevel): void {
     const envLevel = process.env.LOG_LEVEL?.toLowerCase().trim();
     if (envLevel) {
       switch (envLevel) {
+        case 'silent':
+        case 'none':
+        case 'off':
+          currentLogLevel = LogLevel.SILENT;
+          break;
         case 'error':
           currentLogLevel = LogLevel.ERROR;
           break;
@@ -92,11 +103,10 @@ export function setLogLevel(level: LogLevel): void {
 }
 
 /**
- * Format log message with timestamp and level
+ * Format log message with level (no timestamp)
  */
 function formatMessage(level: string, ...args: any[]): string {
-  const timestamp = new Date().toISOString();
-  return `[${timestamp}] [${level}] ${args.map(arg => 
+  return `[${level}] ${args.map(arg => 
     typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
   ).join(' ')}`;
 }
@@ -105,7 +115,7 @@ function formatMessage(level: string, ...args: any[]): string {
  * Log error (always shown)
  */
 export function error(...args: any[]): void {
-  if (currentLogLevel >= LogLevel.ERROR) {
+  if (currentLogLevel >= LogLevel.ERROR && currentLogLevel !== LogLevel.SILENT) {
     console.error(formatMessage('ERROR', ...args));
   }
 }
@@ -114,7 +124,7 @@ export function error(...args: any[]): void {
  * Log warning (always shown)
  */
 export function warn(...args: any[]): void {
-  if (currentLogLevel >= LogLevel.WARN) {
+  if (currentLogLevel >= LogLevel.WARN && currentLogLevel !== LogLevel.SILENT) {
     console.warn(formatMessage('WARN', ...args));
   }
 }
@@ -123,7 +133,7 @@ export function warn(...args: any[]): void {
  * Log info (default level and above)
  */
 export function info(...args: any[]): void {
-  if (currentLogLevel >= LogLevel.INFO) {
+  if (currentLogLevel >= LogLevel.INFO && currentLogLevel !== LogLevel.SILENT) {
     console.log(formatMessage('INFO', ...args));
   }
 }
@@ -132,7 +142,7 @@ export function info(...args: any[]): void {
  * Log debug (debug level and above)
  */
 export function debug(...args: any[]): void {
-  if (currentLogLevel >= LogLevel.DEBUG) {
+  if (currentLogLevel >= LogLevel.DEBUG && currentLogLevel !== LogLevel.SILENT) {
     console.log(formatMessage('DEBUG', ...args));
   }
 }
@@ -141,7 +151,7 @@ export function debug(...args: any[]): void {
  * Log verbose (verbose level only)
  */
 export function verbose(...args: any[]): void {
-  if (currentLogLevel >= LogLevel.VERBOSE) {
+  if (currentLogLevel >= LogLevel.VERBOSE && currentLogLevel !== LogLevel.SILENT) {
     console.log(formatMessage('VERBOSE', ...args));
   }
 }

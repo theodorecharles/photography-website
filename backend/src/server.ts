@@ -78,7 +78,7 @@ const __dirname = path.dirname(__filename);
 if (getConfigExists()) {
   validateProductionSecurity();
 } else {
-  info('⚙️  Setup mode detected - skipping production security validation');
+  info('[Server] Setup mode detected - skipping production security validation');
 }
 
 // Initialize database lazily (on first use) to avoid ESM/CommonJS issues
@@ -121,24 +121,24 @@ let optimizedDir = path.resolve(__dirname, "../../", OPTIMIZED_DIR);
 // Resolve symlinks to get the real path (important for macOS TCC permissions)
 try {
   photosDir = fs.realpathSync(photosDir);
-  debug("Photos directory (real path):", photosDir);
+  debug("[Server] Photos directory (real path):", photosDir);
 } catch (err) {
-  warn("Warning: Could not resolve photos directory:", photosDir);
+    warn("[Server] Could not resolve photos directory:", photosDir);
 }
 
 try {
   optimizedDir = fs.realpathSync(optimizedDir);
-  debug("Optimized directory (real path):", optimizedDir);
+  debug("[Server] Optimized directory (real path):", optimizedDir);
 } catch (err) {
-  warn("Warning: Could not resolve optimized directory:", optimizedDir);
+    warn("[Server] Could not resolve optimized directory:", optimizedDir);
 }
 
 // Verify directory paths exist
 if (!fs.existsSync(photosDir)) {
-  warn("Warning: Photos directory does not exist:", photosDir);
+    warn("[Server] Photos directory does not exist:", photosDir);
 }
 if (!fs.existsSync(optimizedDir)) {
-  warn("Warning: Optimized directory does not exist:", optimizedDir);
+    warn("[Server] Optimized directory does not exist:", optimizedDir);
 }
 
 // Configure security middleware
@@ -263,12 +263,12 @@ app.use(express.json({ limit: "1mb" }));
 const sessionSecret = config.auth?.sessionSecret;
 if (!sessionSecret) {
   if (getConfigExists()) {
-    error('❌ CRITICAL ERROR: SESSION_SECRET is not configured!');
-    error('Please set auth.sessionSecret in config.json or SESSION_SECRET environment variable.');
-    error('Generate a secure secret with: openssl rand -hex 32');
+    error('[Server] CRITICAL ERROR: SESSION_SECRET is not configured!');
+    error('[Server] Please set auth.sessionSecret in config.json or SESSION_SECRET environment variable.');
+    error('[Server] Generate a secure secret with: openssl rand -hex 32');
     process.exit(1);
   } else {
-    info('⚙️  Using temporary session secret for setup mode');
+    info('[Server] Using temporary session secret for setup mode');
   }
 }
 
@@ -309,7 +309,7 @@ try {
 // For production, use 'lax' for OAuth compatibility
 const sameSiteValue = isProduction ? "lax" : false;
 
-debug("Session cookie config:", {
+debug("[Server] Session cookie config:", {
   secure: isProduction,
   httpOnly: true,
   sameSite: sameSiteValue,
@@ -506,7 +506,7 @@ app.use((req, res) => {
 
 // Global error handler - must be last
 app.use((err: any, req: any, res: any, next: any) => {
-  error("Server error:", err);
+  error("[Server] Server error:", err);
 
   // Don't leak error details in production (HTTPS = production)
   const isProduction = config.frontend.apiUrl.startsWith("https://");
@@ -564,7 +564,7 @@ server.on("error", (err: NodeJS.ErrnoException) => {
       `Permission denied to bind to port ${PORT}. Try using a port above 1024.`
     );
   } else {
-    error("Server error:", err);
+    error("[Server] Server error:", err);
   }
   process.exit(1);
 });

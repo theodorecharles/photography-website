@@ -65,7 +65,7 @@ router.get('/settings', requireAuth, (req, res) => {
     
     res.json(settings);
   } catch (err) {
-    error('Error reading optimization settings:', err);
+    error('[ImageOptimization] Failed to read optimization settings:', err);
     res.status(500).json({ error: 'Failed to read optimization settings' });
   }
 });
@@ -120,7 +120,7 @@ router.put('/settings', requireAdmin, (req, res) => {
     
     res.json({ success: true, settings: config.environment.optimization });
   } catch (err) {
-    error('Error updating optimization settings:', err);
+    error('[ImageOptimization] Failed to update optimization settings:', err);
     res.status(500).json({ error: 'Failed to update optimization settings' });
   }
 });

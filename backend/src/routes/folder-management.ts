@@ -51,7 +51,7 @@ router.get("/", requireAuth, async (req: Request, res: Response): Promise<void> 
     const folders = getAllFolders();
     res.json(folders);
   } catch (err) {
-    error('Error fetching folders:', err);
+    error('[FolderManagement] Failed to fetch folders:', err);
     res.status(500).json({ error: 'Failed to fetch folders' });
   }
 });
@@ -83,7 +83,7 @@ router.post("/", requireManager, async (req: Request, res: Response): Promise<vo
 
     // Create folder in database (unpublished by default unless specified)
     saveAlbumFolder(sanitizedName, published === true);
-    info(`Created folder: ${sanitizedName} (${published ? 'published' : 'unpublished'})`);
+    info(`[FolderManagement] Created folder: ${sanitizedName} (${published ? 'published' : 'unpublished'})`);
 
     // Get the newly created folder to return full object
     const newFolder = getFolderState(sanitizedName);
@@ -98,7 +98,7 @@ router.post("/", requireManager, async (req: Request, res: Response): Promise<vo
 
     res.json(newFolder);
   } catch (err) {
-    error('Error creating folder:', err);
+    error('[FolderManagement] Failed to create folder:', err);
     res.status(500).json({ error: 'Failed to create folder' });
   }
 });
@@ -129,7 +129,7 @@ router.delete("/:folder", requireManager, async (req: Request, res: Response): P
     // If deleteAlbums is true, delete all albums in the folder
     if (deleteAlbums) {
       const albumsInFolder = getAlbumsInFolder(folderState.id);
-      info(`⚠ Deleting ${albumsInFolder.length} albums in folder "${sanitizedFolder}"`);
+      info(`[FolderManagement] Deleting ${albumsInFolder.length} albums in folder "${sanitizedFolder}"`);
       
       const photosDir = req.app.get('photosDir');
       const optimizedDir = req.app.get('optimizedDir');
@@ -157,9 +157,9 @@ router.delete("/:folder", requireManager, async (req: Request, res: Response): P
           // Delete album state from database
           deleteAlbumState(album.name);
           
-          info(`  Deleted album: ${album.name}`);
+          info(`[FolderManagement] Deleted album: ${album.name}`);
         } catch (err) {
-          error(`  Failed to delete album ${album.name}:`, err);
+          error(`[FolderManagement] Failed to delete album ${album.name}:`, err);
           // Continue deleting other albums even if one fails
         }
       }
@@ -168,9 +168,9 @@ router.delete("/:folder", requireManager, async (req: Request, res: Response): P
     // Delete folder state from database
     const folderDeleted = deleteFolderState(sanitizedFolder);
     if (folderDeleted) {
-      info(`Deleted folder: ${sanitizedFolder}`);
+      info(`[FolderManagement] Deleted folder: ${sanitizedFolder}`);
     } else {
-      info(`⚠ Folder not found in database: ${sanitizedFolder}`);
+      info(`[FolderManagement] Folder not found in database: ${sanitizedFolder}`);
       res.status(404).json({ error: 'Folder not found' });
       return;
     }
@@ -183,7 +183,7 @@ router.delete("/:folder", requireManager, async (req: Request, res: Response): P
 
     res.json({ success: true });
   } catch (err) {
-    error('Error deleting folder:', err);
+    error('[FolderManagement] Failed to delete folder:', err);
     res.status(500).json({ error: 'Failed to delete folder' });
   }
 });
@@ -231,7 +231,7 @@ router.patch("/:folder/publish", requireManager, async (req: Request, res: Respo
       return;
     }
     
-    info(`Set folder "${sanitizedFolder}" published state to: ${published}`);
+    info(`[FolderManagement] Set folder "${sanitizedFolder}" published state to: ${published}`);
 
     // Cascade publish state to all albums in this folder
     const albumsInFolder = getAlbumsInFolder(folderState.id);
@@ -240,7 +240,7 @@ router.patch("/:folder/publish", requireManager, async (req: Request, res: Respo
       setAlbumPublished(album.name, published);
       albumsUpdated++;
     }
-    info(`Updated ${albumsUpdated} album(s) in folder to published=${published}`);
+    info(`[FolderManagement] Updated ${albumsUpdated} album(s) in folder to published=${published}`);
 
     // Regenerate static JSON files
     const appRoot = req.app.get('appRoot');
@@ -253,7 +253,7 @@ router.patch("/:folder/publish", requireManager, async (req: Request, res: Respo
       albumsUpdated
     });
   } catch (err) {
-    error('Error updating folder published state:', err);
+    error('[FolderManagement] Failed to update folder published state:', err);
     res.status(500).json({ error: 'Failed to update folder published state' });
   }
 });
@@ -299,7 +299,7 @@ router.patch("/:folder/albums/:album", requireManager, async (req: Request, res:
       return;
     }
     
-    info(`Moved album "${sanitizedAlbum}" to folder ${folderId ? folder : 'none'}`);
+    info(`[FolderManagement] Moved album "${sanitizedAlbum}" to folder ${folderId ? folder : 'none'}`);
 
     // Regenerate static JSON files
     const appRoot = req.app.get('appRoot');
@@ -307,7 +307,7 @@ router.patch("/:folder/albums/:album", requireManager, async (req: Request, res:
 
     res.json({ success: true });
   } catch (err) {
-    error('Error moving album to folder:', err);
+    error('[FolderManagement] Failed to move album to folder:', err);
     res.status(500).json({ error: 'Failed to move album to folder' });
   }
 });
@@ -335,7 +335,7 @@ router.put('/sort-order', requireManager, async (req: Request, res: Response): P
     const success = updateFolderSortOrder(folderOrders);
     
     if (success) {
-      info(`Updated sort order for ${folderOrders.length} folders`);
+      info(`[FolderManagement] Updated sort order for ${folderOrders.length} folders`);
       
       // Regenerate static JSON files
       const appRoot = req.app.get('appRoot');
@@ -346,7 +346,7 @@ router.put('/sort-order', requireManager, async (req: Request, res: Response): P
       res.status(500).json({ error: 'Failed to update folder order' });
     }
   } catch (err) {
-    error('Error updating folder order:', err);
+    error('[FolderManagement] Failed to update folder order:', err);
     res.status(500).json({ error: 'Failed to update folder order' });
   }
 });

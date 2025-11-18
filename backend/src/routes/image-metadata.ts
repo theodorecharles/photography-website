@@ -44,7 +44,7 @@ router.get('/:album/:filename', async (req, res) => {
     
     res.json(metadata);
   } catch (err) {
-    error('Error fetching image metadata:', err);
+    error('[ImageMetadata] Failed to fetch image metadata:', err);
     res.status(500).json({ error: 'Failed to fetch metadata' });
   }
 });
@@ -60,7 +60,7 @@ router.get('/album/:album', async (req, res) => {
     const metadata = db.getAlbumMetadata(album);
     res.json(metadata);
   } catch (err) {
-    error('Error fetching album metadata:', err);
+    error('[ImageMetadata] Failed to fetch album metadata:', err);
     res.status(500).json({ error: 'Failed to fetch album metadata' });
   }
 });
@@ -75,7 +75,7 @@ router.get('/all', async (req, res) => {
     const metadata = db.getAllMetadata();
     res.json(metadata);
   } catch (err) {
-    error('Error fetching all metadata:', err);
+    error('[ImageMetadata] Failed to fetch all metadata:', err);
     res.status(500).json({ error: 'Failed to fetch metadata' });
   }
 });
@@ -105,7 +105,7 @@ router.post('/', requireManager, express.json(), async (req, res) => {
       message: 'Metadata saved successfully' 
     });
   } catch (err) {
-    error('Error saving image metadata:', err);
+    error('[ImageMetadata] Failed to save image metadata:', err);
     res.status(500).json({ error: 'Failed to save metadata' });
   }
 });
@@ -144,7 +144,7 @@ router.put('/:album/:filename', requireManager, express.json(), async (req, res)
       message: 'Metadata updated successfully' 
     });
   } catch (err) {
-    error('Error updating image metadata:', err);
+    error('[ImageMetadata] Failed to update image metadata:', err);
     res.status(500).json({ error: 'Failed to update metadata' });
   }
 });
@@ -174,7 +174,7 @@ router.delete('/:album/:filename', requireManager, async (req, res) => {
       message: 'Metadata deleted successfully' 
     });
   } catch (err) {
-    error('Error deleting image metadata:', err);
+    error('[ImageMetadata] Failed to delete image metadata:', err);
     res.status(500).json({ error: 'Failed to delete metadata' });
   }
 });

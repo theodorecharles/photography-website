@@ -74,7 +74,7 @@ router.post("/create", csrfProtection, requireManager, async (req: Request, res:
       }
     });
   } catch (err) {
-    error('Error creating share link:', err);
+    error('[ShareLinks] Failed to create share link:', err);
     res.status(500).json({ error: 'Failed to create share link' });
   }
 });
@@ -123,7 +123,7 @@ router.get("/validate/:secretKey", async (req: Request, res: Response): Promise<
       expiresAt: shareLink.expires_at
     });
   } catch (err) {
-    error('Error validating share link:', err);
+    error('[ShareLinks] Failed to validate share link:', err);
     res.status(500).json({ 
       error: 'Failed to validate share link',
       valid: false 
@@ -159,7 +159,7 @@ router.get("/album/:album", requireAuth, async (req: Request, res: Response): Pr
       }))
     });
   } catch (err) {
-    error('Error getting share links:', err);
+    error('[ShareLinks] Failed to get share links:', err);
     res.status(500).json({ error: 'Failed to get share links' });
   }
 });
@@ -180,14 +180,14 @@ router.delete("/album/:album", csrfProtection, requireManager, async (req: Reque
 
     const deletedCount = deleteShareLinksForAlbum(sanitizedAlbum);
     
-    info(`Deleted ${deletedCount} share links for album: ${sanitizedAlbum}`);
+    info(`[ShareLinks] Deleted ${deletedCount} share links for album: ${sanitizedAlbum}`);
 
     res.json({
       success: true,
       deletedCount
     });
   } catch (err) {
-    error('Error deleting share links:', err);
+    error('[ShareLinks] Failed to delete share links:', err);
     res.status(500).json({ error: 'Failed to delete share links' });
   }
 });

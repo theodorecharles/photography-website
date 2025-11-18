@@ -87,7 +87,7 @@ router.get('/', (req: Request, res: Response) => {
     
     res.json(brandingConfig);
   } catch (err) {
-    error('Error reading branding config:', err);
+    error('[Branding] Failed to read branding config:', err);
     res.status(500).json({ error: 'Failed to read branding configuration' });
   }
 });
@@ -162,7 +162,7 @@ router.put('/', requireManager, (req: Request, res: Response) => {
       branding: config.branding
     });
   } catch (err) {
-    error('Error updating branding config:', err);
+    error('[Branding] Failed to update branding config:', err);
     res.status(500).json({ error: 'Failed to update branding configuration' });
   }
 });
@@ -264,7 +264,7 @@ router.post('/upload-avatar', requireManager, upload.single('avatar'), async (re
       faviconPath: '/favicon.ico'
     });
   } catch (err) {
-    error('Error uploading avatar:', err);
+    error('[Branding] Failed to upload avatar:', err);
     res.status(500).json({ error: 'Failed to upload avatar' });
   }
 });

@@ -63,7 +63,7 @@ router.get("/runtime", (req, res) => {
       });
     }
   } catch (err) {
-    error("Error reading runtime config:", err);
+    error("[Config] Failed to read runtime config:", err);
     res.status(500).json({ error: "Failed to read runtime configuration" });
   }
 });
@@ -84,7 +84,7 @@ router.get("/", requireAuth, (req, res) => {
     // (sensitive fields will be masked on frontend if needed)
     res.json(config);
   } catch (err) {
-    error("Error reading config:", err);
+    error("[Config] Failed to read config:", err);
     res.status(500).json({ error: "Failed to read configuration" });
   }
 });
@@ -167,14 +167,14 @@ router.put("/", requireAdmin, express.json(), (req, res) => {
     // Reload configuration cache so changes take effect immediately
     reloadConfig();
 
-    info("Configuration updated by:", req.user);
+    info("[Config] Configuration updated by:", req.user);
 
     res.json({
       success: true,
       message: "Configuration updated successfully",
     });
   } catch (err) {
-    error("Error updating config:", err);
+    error("[Config] Failed to update config:", err);
     res.status(500).json({ error: "Failed to update configuration" });
   }
 });

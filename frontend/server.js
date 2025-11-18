@@ -2,6 +2,7 @@ import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
 import fs from "fs";
+import { error } from "./logger.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -32,7 +33,7 @@ if (fs.existsSync(configPath)) {
   }
 } else {
   // Setup mode - use defaults
-  console.log("⚠️  config.json not found - using defaults for setup mode");
+  console.log("[Frontend] config.json not found - using defaults for setup mode");
   isSetupMode = true;
   configFile = {
     analytics: {},
@@ -277,7 +278,7 @@ app.get("*", async (req, res) => {
         }
       }
     } catch (error) {
-      console.error("[Meta Injection] Error fetching homepage data:", error);
+      error("[MetaInjection] Failed to fetch homepage data:", error);
       // Fall through to default handling
     }
   }
@@ -514,7 +515,7 @@ app.get("*", async (req, res) => {
         }
       }
     } catch (error) {
-      console.error("[Meta Injection] Error fetching album data:", error);
+      error("[MetaInjection] Failed to fetch album data:", error);
       // Fall through to default handling
     }
   }
@@ -656,7 +657,7 @@ app.get("*", async (req, res) => {
         }
       }
     } catch (error) {
-      console.error("[Meta Injection] Error fetching photo data:", error);
+      error("[MetaInjection] Failed to fetch photo data:", error);
       // Fall through to default handling
     }
   }
@@ -665,7 +666,7 @@ app.get("*", async (req, res) => {
   // Inject runtime API URL for OOBE support
   fs.readFile(indexPath, "utf8", (err, html) => {
     if (err) {
-      console.error("Error reading index.html:", err);
+      error("[Frontend] Failed to read index.html:", err);
       return res.sendFile(indexPath);
     }
 

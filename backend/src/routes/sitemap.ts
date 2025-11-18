@@ -19,7 +19,7 @@ function getAlbums(): string[] {
       .map(a => a.name)
       .filter(name => name !== 'homepage');
   } catch (err) {
-    error('Error getting albums for sitemap:', err);
+    error('[Sitemap] Failed to get albums for sitemap:', err);
     return [];
   }
 }

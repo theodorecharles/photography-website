@@ -32,7 +32,7 @@ const getExternalPages = () => {
     const config = JSON.parse(data);
     return { externalLinks: config.externalLinks || [] };
   } catch (err) {
-    error('Error reading external links from config:', err);
+    error('[ExternalPages] Failed to read external links from config:', err);
     return { externalLinks: [] };
   }
 };

@@ -322,7 +322,7 @@ router.post("/", requireManager, async (req: Request, res: Response): Promise<vo
 
     res.json({ success: true, album: sanitizedName });
   } catch (err) {
-    error('Error creating album:', err);
+    error('[AlbumManagement] Failed to create album:', err);
     res.status(500).json({ error: 'Failed to create album' });
   }
 });
@@ -348,9 +348,9 @@ router.delete("/:album", requireManager, async (req: Request, res: Response): Pr
     // Delete from photos directory (if it exists)
     if (fs.existsSync(albumPath)) {
       fs.rmSync(albumPath, { recursive: true, force: true });
-      info(`Deleted directory: ${sanitizedAlbum}`);
+      info(`[AlbumManagement] Deleted directory: ${sanitizedAlbum}`);
     } else {
-      info(`⚠ Directory not found (already deleted?): ${sanitizedAlbum}`);
+      info(`[AlbumManagement] Directory not found (already deleted?): ${sanitizedAlbum}`);
     }
 
     // Delete from optimized directory (if exists)
@@ -363,14 +363,14 @@ router.delete("/:album", requireManager, async (req: Request, res: Response): Pr
 
     // Delete all metadata for this album from database
     const deletedCount = deleteAlbumMetadata(sanitizedAlbum);
-    info(`Deleted ${deletedCount} metadata entries for album: ${sanitizedAlbum}`);
+    info(`[AlbumManagement] Deleted ${deletedCount} metadata entries for album: ${sanitizedAlbum}`);
 
     // Delete album state from database
     const albumDeleted = deleteAlbumState(sanitizedAlbum);
     if (albumDeleted) {
-      info(`Deleted album state for: ${sanitizedAlbum}`);
+      info(`[AlbumManagement] Deleted album state for: ${sanitizedAlbum}`);
     } else {
-      info(`⚠ Album state not found in database: ${sanitizedAlbum}`);
+      info(`[AlbumManagement] Album state not found in database: ${sanitizedAlbum}`);
     }
 
     // Invalidate cache for this album
@@ -382,7 +382,7 @@ router.delete("/:album", requireManager, async (req: Request, res: Response): Pr
 
     res.json({ success: true });
   } catch (err) {
-    error('Error deleting album:', err);
+    error('[AlbumManagement] Failed to delete album:', err);
     res.status(500).json({ error: 'Failed to delete album' });
   }
 });
@@ -438,7 +438,7 @@ router.delete("/:album/photos/:photo", requireManager, async (req: Request, res:
 
     res.json({ success: true });
   } catch (err) {
-    error('Error deleting photo:', err);
+    error('[AlbumManagement] Failed to delete photo:', err);
     res.status(500).json({ error: 'Failed to delete photo' });
   }
 });
@@ -572,7 +572,7 @@ router.post("/:album/upload", requireManager, upload.single('photo'), async (req
               );
             }
           } catch (err) {
-            error('Error with AI title generation:', err);
+            error('[AlbumManagement] Failed to with AI title generation:', err);
           }
           
           // Don't regenerate static JSON after every single image - too expensive!
@@ -601,7 +601,7 @@ router.post("/:album/upload", requireManager, upload.single('photo'), async (req
       });
     }
   } catch (err) {
-    error('Error uploading photo:', err);
+    error('[AlbumManagement] Failed to upload photo:', err);
     res.status(500).json({ error: 'Failed to upload photo' });
   }
 });
@@ -733,7 +733,7 @@ router.patch("/:album/rename", requireManager, async (req: Request, res: Respons
       newName: sanitizedNewName
     });
   } catch (err) {
-    error('Error renaming album:', err);
+    error('[AlbumManagement] Failed to rename album:', err);
     res.status(500).json({ error: 'Failed to rename album' });
   }
 });
@@ -767,16 +767,16 @@ router.patch("/:album/publish", requireManager, async (req: Request, res: Respon
 
     // Update or create album state
     saveAlbum(sanitizedAlbum, published);
-    info(`Set album "${sanitizedAlbum}" published state to: ${published}`);
+    info(`[AlbumManagement] Set album "${sanitizedAlbum}" published state to: ${published}`);
     
     // Verify the state was saved correctly
     const albumState = getAlbumState(sanitizedAlbum);
     if (!albumState) {
-      error(`Failed to save album state for "${sanitizedAlbum}"`);
+      error(`[AlbumManagement] Failed to save album state for "${sanitizedAlbum}"`);
       res.status(500).json({ error: 'Failed to save album state' });
       return;
     }
-    info(`Verified album state in DB: published=${albumState.published}`);
+    info(`[AlbumManagement] Verified album state in DB: published=${albumState.published}`);
 
     // Regenerate static JSON files
     info(`[Publish] Regenerating static JSON files...`);
@@ -794,7 +794,7 @@ router.patch("/:album/publish", requireManager, async (req: Request, res: Respon
       published 
     });
   } catch (err) {
-    error('Error updating album published state:', err);
+    error('[AlbumManagement] Failed to update album published state:', err);
     res.status(500).json({ error: 'Failed to update album published state' });
   }
 });
@@ -841,12 +841,12 @@ router.patch("/:album/show-on-homepage", requireManager, async (req: Request, re
     // Update show_on_homepage state
     const success = setAlbumShowOnHomepage(sanitizedAlbum, showOnHomepage);
     if (!success) {
-      error(`Failed to update show_on_homepage for "${sanitizedAlbum}"`);
+      error(`[AlbumManagement] Failed to update show_on_homepage for "${sanitizedAlbum}"`);
       res.status(500).json({ error: 'Failed to update show on homepage state' });
       return;
     }
     
-    info(`Set album "${sanitizedAlbum}" show_on_homepage state to: ${showOnHomepage}`);
+    info(`[AlbumManagement] Set album "${sanitizedAlbum}" show_on_homepage state to: ${showOnHomepage}`);
 
     // Regenerate static JSON files (specifically homepage.json)
     info(`[Homepage] Regenerating static JSON files...`);
@@ -864,7 +864,7 @@ router.patch("/:album/show-on-homepage", requireManager, async (req: Request, re
       showOnHomepage 
     });
   } catch (err) {
-    error('Error updating album show_on_homepage state:', err);
+    error('[AlbumManagement] Failed to update album show_on_homepage state:', err);
     res.status(500).json({ error: 'Failed to update album show on homepage state' });
   }
 });
@@ -898,9 +898,9 @@ router.post("/:album/optimize", requireAdmin, async (req: Request, res: Response
     
     execFile('node', [scriptPath, albumPath], (err, stdout, stderr) => {
       if (err) {
-        error('Optimization error:', err);
+        error('[AlbumManagement] Optimization error:', err);
       } else {
-        info('Optimization complete for album:', sanitizedAlbum);
+        info('[AlbumManagement] Optimization complete for album:', sanitizedAlbum);
       }
     });
 
@@ -909,7 +909,7 @@ router.post("/:album/optimize", requireAdmin, async (req: Request, res: Response
       message: 'Optimization started in background' 
     });
   } catch (err) {
-    error('Error triggering optimization:', err);
+    error('[AlbumManagement] Failed to trigger optimization:', err);
     res.status(500).json({ error: 'Failed to trigger optimization' });
   }
 });
@@ -961,11 +961,11 @@ router.post("/:album/photo-order", requireManager, async (req: Request, res: Res
     const appRoot = req.app.get('appRoot');
     generateStaticJSONFiles(appRoot);
     
-    info(`Updated photo order for album: ${sanitizedAlbum} (${imageOrders.length} photos)`);
+    info(`[AlbumManagement] Updated photo order for album: ${sanitizedAlbum} (${imageOrders.length} photos)`);
 
     res.json({ success: true });
   } catch (err) {
-    error('Error updating photo order:', err);
+    error('[AlbumManagement] Failed to update photo order:', err);
     res.status(500).json({ error: 'Failed to update photo order' });
   }
 });
@@ -993,7 +993,7 @@ router.put('/sort-order', requireManager, async (req: Request, res: Response): P
     const success = updateAlbumSortOrder(albumOrders);
     
     if (success) {
-      info(`Updated sort order for ${albumOrders.length} albums`);
+      info(`[AlbumManagement] Updated sort order for ${albumOrders.length} albums`);
       
       // Regenerate static JSON files
       const appRoot = req.app.get('appRoot');
@@ -1004,7 +1004,7 @@ router.put('/sort-order', requireManager, async (req: Request, res: Response): P
       res.status(500).json({ error: 'Failed to update album order' });
     }
   } catch (err) {
-    error('Error updating album order:', err);
+    error('[AlbumManagement] Failed to update album order:', err);
     res.status(500).json({ error: 'Failed to update album order' });
   }
 });
@@ -1088,7 +1088,7 @@ router.put('/:albumName/move', requireManager, async (req: Request, res: Respons
     
     res.json({ success: true });
   } catch (err) {
-    error('Error moving album:', err);
+    error('[AlbumManagement] Failed to move album:', err);
     res.status(500).json({ error: 'Failed to move album' });
   }
 });

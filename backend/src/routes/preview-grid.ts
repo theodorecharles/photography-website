@@ -72,7 +72,7 @@ function getAvatarPath(photosDir: string): string | null {
       return fsAvatarPath;
     }
   } catch (err) {
-    error('Error getting avatar path:', err);
+    error('[PreviewGrid] Failed to get avatar path:', err);
   }
   
   return null;
@@ -165,7 +165,7 @@ async function addAvatarOverlay(
       top: gridHeight - avatarSize - 20
     });
   } catch (err) {
-    error('Error adding avatar overlay:', err);
+    error('[PreviewGrid] Failed to add avatar overlay:', err);
     // Continue without avatar
   }
 }
@@ -267,7 +267,7 @@ router.get("/album/:albumName", async (req: Request, res: Response): Promise<voi
     
     res.send(gridBuffer);
   } catch (err) {
-    error("Error generating album preview grid:", err);
+    error("[PreviewGrid] Failed to generate album preview grid:", err);
     res.status(500).json({ error: "Failed to generate preview grid" });
   }
 });
@@ -342,7 +342,7 @@ router.get("/homepage", async (req: Request, res: Response): Promise<void> => {
     
     res.send(grid);
   } catch (err) {
-    error("Error generating homepage preview grid:", err);
+    error("[PreviewGrid] Failed to generate homepage preview grid:", err);
     res.status(500).json({ error: "Failed to generate preview grid" });
   }
 });
@@ -410,7 +410,7 @@ router.get("/shared/:secretKey", async (req: Request, res: Response): Promise<vo
     
     res.send(gridBuffer);
   } catch (err) {
-    error("Error generating shared album preview grid:", err);
+    error("[PreviewGrid] Failed to generate shared album preview grid:", err);
     res.status(500).json({ error: "Failed to generate preview grid" });
   }
 });
