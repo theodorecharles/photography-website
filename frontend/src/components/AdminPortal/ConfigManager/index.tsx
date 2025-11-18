@@ -289,6 +289,10 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
     const controller = new AbortController();
     sseToaster.optimizationAbortController.current = controller;
 
+    // Track image optimization start
+    const { trackImageOptimizationStarted } = await import('../../utils/analytics');
+    trackImageOptimizationStarted('all');
+
     try {
       const res = await fetch(`${API_URL}/api/image-optimization/optimize`, {
         method: "POST",
@@ -399,6 +403,10 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
 
   const handleStopTitles = useCallback(async () => {
     console.log('[handleStopTitles] Called');
+    // Track AI title generation stop
+    const { trackAITitleGenerationStopped } = await import('../../utils/analytics');
+    trackAITitleGenerationStopped(true);
+    
     try {
       // Call backend to kill the process
       const response = await fetch(`${API_URL}/api/ai-titles/stop`, {
@@ -432,6 +440,10 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
 
   const handleStopOptimization = useCallback(async () => {
     console.log('[handleStopOptimization] Called');
+    // Track image optimization stop
+    const { trackImageOptimizationStopped } = await import('../../utils/analytics');
+    trackImageOptimizationStopped(true);
+    
     try {
       // Call backend to kill the process
       const response = await fetch(`${API_URL}/api/image-optimization/stop`, {
@@ -474,6 +486,10 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
   }, []);
 
   const handleGenerateTitles = async (forceRegenerate = false) => {
+    // Track AI title generation start
+    const { trackAITitleGenerationStarted } = await import('../../utils/analytics');
+    trackAITitleGenerationStarted(forceRegenerate);
+    
     // Initialize global context state to show toaster
     sseToaster.setGeneratingTitles(true);
     sseToaster.setTitlesOutput([]);

@@ -61,6 +61,10 @@ const ImageOptimizationSection: React.FC<ImageOptimizationSectionProps> = ({
       });
 
       if (res.ok) {
+        // Track config settings save
+        const { trackConfigSettingsSaved } = await import('../../../utils/analytics');
+        trackConfigSettingsSaved(sectionName);
+        
         setMessage({ type: "success", text: `${sectionName} settings saved!` });
         // Update original config after successful save
         setOriginalConfig(structuredClone(config));

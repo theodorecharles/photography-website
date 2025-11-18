@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import PhotoGrid from './PhotoGrid';
 import { API_URL } from '../config';
+import { trackSharedAlbumView } from '../utils/analytics';
 import ExpiredLink from './Misc/ExpiredLink';
 import NotFound from './Misc/NotFound';
 import Header, { ExternalLink } from './Header';
@@ -128,6 +129,15 @@ export default function SharedAlbum() {
         setAlbumName(data.album);
         setPhotos(data.photos || []);
         setExpiresAt(data.expiresAt);
+        
+        // Track shared album view (hash secret key for privacy)
+        if (secretKey && data.album) {
+          // Simple hash: use first 16 chars of secret key (already 64 hex chars)
+          // This provides enough uniqueness while maintaining privacy
+          const hashedKey = secretKey.substring(0, 16);
+          trackSharedAlbumView(data.album, hashedKey);
+        }
+        
         setLoading(false);
       } catch (err) {
         console.error('Error validating share link:', err);

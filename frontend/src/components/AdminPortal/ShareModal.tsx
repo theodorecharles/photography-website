@@ -5,6 +5,7 @@
 
 import { useState, useEffect } from 'react';
 import { API_URL, SITE_URL } from '../../config';
+import { trackShareLinkCreated } from '../../utils/analytics';
 import './ShareModal.css';
 
 interface ShareModalProps {
@@ -58,6 +59,7 @@ export default function ShareModal({ album, onClose }: ShareModalProps) {
       const data = await response.json();
       const url = `${SITE_URL}/shared/${data.shareLink.secretKey}`;
       setGeneratedLink(url);
+      trackShareLinkCreated(album, expirationMinutes);
     } catch (err) {
       console.error('Error generating share link:', err);
       setError(err instanceof Error ? err.message : 'Failed to generate share link');

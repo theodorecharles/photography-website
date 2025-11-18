@@ -45,6 +45,7 @@ export const useFolderManagement = ({
         throw new Error(data.error || 'Failed to create folder');
       }
 
+      trackFolderCreated(sanitizedName);
       await loadAlbums();
       setMessage({ type: 'success', text: `Folder "${sanitizedName}" created!` });
       setNewFolderName('');

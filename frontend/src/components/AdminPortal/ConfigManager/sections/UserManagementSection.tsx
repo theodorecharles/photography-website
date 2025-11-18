@@ -206,6 +206,10 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
         }
       }
 
+      // Track user invited
+      const { trackUserInvited } = await import('../../../utils/analytics');
+      trackUserInvited(newUser.email, newUser.role);
+      
       loadUsers();
     } catch (err: any) {
       setMessage({
@@ -304,6 +308,14 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
       }
 
       const data = await res.json();
+      
+      // Track MFA reset
+      const user = users.find(u => u.id === userId);
+      if (user) {
+        const { trackMFAReset } = await import('../../../utils/analytics');
+        trackMFAReset(user.email, userId);
+      }
+      
       setMessage({
         type: "success",
         text: data.message || "MFA disabled successfully",
@@ -349,6 +361,14 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
       }
 
       const data = await res.json();
+      
+      // Track password reset sent
+      const user = users.find(u => u.id === userId);
+      if (user) {
+        const { trackPasswordResetSent } = await import('../../../utils/analytics');
+        trackPasswordResetSent(user.email, userId);
+      }
+      
       setMessage({
         type: "success",
         text: data.message || "Password reset email sent successfully",
@@ -393,6 +413,13 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
       });
 
       if (!res.ok) throw new Error("Failed to delete user");
+
+      // Track user deleted
+      const user = users.find(u => u.id === userId);
+      if (user) {
+        const { trackUserDeleted } = await import('../../../utils/analytics');
+        trackUserDeleted(user.email, userId);
+      }
 
       setMessage({
         type: "success",
@@ -668,7 +695,18 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
   const handleUpdateRole = async (userId: number, role: string) => {
     setLoading(true);
     try {
+      // Get old role before updating
+      const user = users.find(u => u.id === userId);
+      const oldRole = user?.role || '';
+      
       await userManagementAPI.updateUserRole(userId, role);
+      
+      // Track role change
+      if (user) {
+        const { trackUserRoleChanged } = await import('../../../utils/analytics');
+        trackUserRoleChanged(user.email, userId, oldRole, role);
+      }
+      
       setMessage({ type: "success", text: `User role updated to ${role}` });
       loadUsers();
     } catch (err: any) {

@@ -217,6 +217,10 @@ const OpenAISection: React.FC<OpenAISectionProps> = ({
       });
 
       if (res.ok) {
+        // Track config settings save
+        const { trackConfigSettingsSaved } = await import('../../../utils/analytics');
+        trackConfigSettingsSaved('OpenAI');
+        
         setMessage({ type: "success", text: `OpenAI settings saved!` });
         // Update original config after successful save
         setOriginalConfig(structuredClone(config));

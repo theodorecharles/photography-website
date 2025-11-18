@@ -9,7 +9,12 @@ import { DragEndEvent } from '@dnd-kit/core';
 import { arrayMove } from '@dnd-kit/sortable';
 import { Photo, ConfirmModalConfig } from '../types';
 import { fetchWithRateLimitCheck } from '../../../../utils/fetchWrapper';
-import { trackPhotoDeleted } from '../../../../utils/analytics';
+import { 
+  trackPhotoDeleted, 
+  trackPhotoOrderSaved, 
+  trackPhotoShuffle, 
+  trackPhotoTitleEdited 
+} from '../../../../utils/analytics';
 
 
 interface UsePhotoManagementProps {
@@ -131,6 +136,7 @@ export const usePhotoManagement = ({ setMessage, showConfirmation }: UsePhotoMan
         throw new Error('Failed to save photo order');
       }
 
+      trackPhotoOrderSaved(selectedAlbum, albumPhotos.length);
       setOriginalPhotoOrder([...albumPhotos]);
       setHasEverDragged(false);
       setMessage({ type: 'success', text: 'Photo order saved!' });
@@ -150,6 +156,9 @@ export const usePhotoManagement = ({ setMessage, showConfirmation }: UsePhotoMan
   }, [originalPhotoOrder, setMessage]);
 
   const shufflePhotos = useCallback(() => {
+    if (selectedAlbum) {
+      trackPhotoShuffle(selectedAlbum);
+    }
     setAlbumPhotos((prev) => {
       const shuffled = [...prev];
       for (let i = shuffled.length - 1; i > 0; i--) {
@@ -180,6 +189,15 @@ export const usePhotoManagement = ({ setMessage, showConfirmation }: UsePhotoMan
           throw new Error('Failed to update title');
         }
 
+        // Find the photo to get old title
+        const photo = albumPhotos.find((p) => (p.id.split('/').pop() || p.id) === filename);
+        const oldTitle = photo?.title || '';
+        
+        // Track title edit
+        if (selectedAlbum && photo) {
+          trackPhotoTitleEdited(selectedAlbum, photo.id, oldTitle, newTitle);
+        }
+        
         // Update local state
         setAlbumPhotos((prev) =>
           prev.map((p) =>
@@ -199,7 +217,7 @@ export const usePhotoManagement = ({ setMessage, showConfirmation }: UsePhotoMan
         return false;
       }
     },
-    [selectedAlbum, setMessage]
+    [selectedAlbum, albumPhotos, setMessage]
   );
 
   const openEditModal = useCallback((photo: Photo) => {
