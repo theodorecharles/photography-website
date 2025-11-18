@@ -407,6 +407,9 @@ const AdvancedSettingsSection: React.FC<AdvancedSettingsSectionProps> = ({
             </div>
 
             <div>
+              <label className="branding-label" style={{ display: 'block', marginBottom: '0.5rem', opacity: 0, pointerEvents: 'none' }}>
+                Spacer
+              </label>
               <button
                 className="btn-secondary"
                 onClick={() => window.open('/logs', 'LogViewer', 'width=1200,height=800,menubar=no,toolbar=no,location=no,status=no')}
