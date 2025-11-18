@@ -8,6 +8,7 @@ import { API_URL } from '../../../../config';
 import { ConfigData } from '../types';
 import { trackConfigSettingsSaved } from '../../../../utils/analytics';
 import SectionHeader from '../components/SectionHeader';
+import { error } from '../../../../utils/logger';
 
 
 interface ImageOptimizationSectionProps {
@@ -81,7 +82,7 @@ const ImageOptimizationSection: React.FC<ImageOptimizationSectionProps> = ({
       const errorMessage =
         err instanceof Error ? err.message : "Error saving configuration";
       setMessage({ type: "error", text: errorMessage });
-      console.error("Failed to save config:", err);
+      error("Failed to save config:", err);
     } finally {
       setSavingSection(null);
     }

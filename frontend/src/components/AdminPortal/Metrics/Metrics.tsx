@@ -19,6 +19,7 @@ import './Metrics.css';
 
 // Import interfaces from types.ts (canonical location)
 import type { Stats, TimeSeriesData, HourlyPageviewData, VisitorLocation } from './types';
+import { error as logError } from '../../../utils/logger';
 
 export default function Metrics() {
   // Get the secondary color from CSS custom property
@@ -52,7 +53,7 @@ export default function Metrics() {
       const data = await res.json();
       setStats(data);
     } catch (err) {
-      console.error('Failed to load metrics:', err);
+      logError('Failed to load metrics:', err);
       setError(err instanceof Error ? err.message : 'Failed to load metrics');
     } finally {
       setLoading(false);
@@ -99,7 +100,7 @@ export default function Metrics() {
       
       setVisitorsOverTime(filledData);
     } catch (err) {
-      console.error('Failed to load time series:', err);
+      logError('Failed to load time series:', err);
     } finally {
       setLoadingTimeSeries(false);
     }
@@ -151,7 +152,7 @@ export default function Metrics() {
       
       setPageviewsByHour(filledData);
     } catch (err) {
-      console.error('Failed to load hourly pageviews:', err);
+      logError('Failed to load hourly pageviews:', err);
     } finally {
       setLoadingPageviewsByHour(false);
     }
@@ -169,7 +170,7 @@ export default function Metrics() {
       const data = await res.json();
       setVisitorLocations(data.locations || []);
     } catch (err) {
-      console.error('Failed to load visitor locations:', err);
+      logError('Failed to load visitor locations:', err);
     } finally {
       setLoadingLocations(false);
     }

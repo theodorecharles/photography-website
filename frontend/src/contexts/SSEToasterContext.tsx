@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useRef, ReactNode, useEffect, useMemo, useCallback } from 'react';
+import { info } from '../utils/logger';
 
 interface SSEToasterContextType {
   // Titles job state
@@ -20,6 +21,8 @@ interface SSEToasterContextType {
   setOptimizationLogs: (value: string[] | ((prev: string[]) => string[])) => void;
   optimizationProgress: number;
   setOptimizationProgress: (value: number) => void;
+  optimizationComplete: boolean;
+  setOptimizationComplete: (value: boolean) => void;
   optimizationOutputRef: React.RefObject<HTMLDivElement | null>;
   optimizationAbortController: React.MutableRefObject<AbortController | null>;
   
@@ -82,6 +85,7 @@ export function SSEToasterProvider({ children }: { children: ReactNode }) {
   const [isOptimizationRunning, setIsOptimizationRunning] = useState(false);
   const [optimizationLogs, setOptimizationLogs] = useState<string[]>([]);
   const [optimizationProgress, setOptimizationProgress] = useState(0);
+  const [optimizationComplete, setOptimizationComplete] = useState(false);
   const optimizationOutputRef = useRef<HTMLDivElement>(null);
   const optimizationAbortController = useRef<AbortController | null>(null);
   
@@ -169,7 +173,7 @@ export function SSEToasterProvider({ children }: { children: ReactNode }) {
   
   // Log when provider re-renders (for debugging)
   useEffect(() => {
-    console.log('[SSEToasterProvider] Render');
+    info('[SSEToasterProvider] Render');
   });
   
   const value = useMemo(() => ({
@@ -189,6 +193,8 @@ export function SSEToasterProvider({ children }: { children: ReactNode }) {
     setOptimizationLogs,
     optimizationProgress,
     setOptimizationProgress,
+    optimizationComplete,
+    setOptimizationComplete,
     optimizationOutputRef,
     optimizationAbortController,
     isUploading,
@@ -234,6 +240,7 @@ export function SSEToasterProvider({ children }: { children: ReactNode }) {
     isOptimizationRunning,
     optimizationLogs,
     optimizationProgress,
+    optimizationComplete,
     optimizationOutputRef,
     optimizationAbortController,
     isUploading,

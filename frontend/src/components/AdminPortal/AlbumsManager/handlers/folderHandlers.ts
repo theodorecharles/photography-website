@@ -10,6 +10,7 @@ import {
   trackFolderDeleted, 
   trackFolderPublishToggle 
 } from '../../../../utils/analytics';
+import { info } from '../../../../utils/logger';
 
 
 interface FolderHandlersProps {
@@ -129,7 +130,7 @@ export const createFolderHandlers = (props: FolderHandlersProps) => {
         // Notify other components (like AdminPortal header dropdown)
         window.dispatchEvent(new Event('albums-updated'));
         
-        console.log(`✓ Folder "${folderName}" published=${!currentPublished}, ${albumsUpdated} albums updated`);
+        info(`✓ Folder "${folderName}" published=${!currentPublished}, ${albumsUpdated} albums updated`);
       } else {
         const error = await res.json();
         setMessage({ type: 'error', text: error.error || 'Failed to update folder' });

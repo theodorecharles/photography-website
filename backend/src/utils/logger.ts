@@ -1,13 +1,14 @@
 /**
  * Logging utility with configurable log levels
- * Supports: error, warn, info, debug, verbose
+ * Supports: error, warn, info, debug, verbose, trace
  * 
  * Log levels:
- * - error: Always shown (critical errors)
- * - warn: Always shown (warnings)
- * - info: Default level and above (important information)
+ * - error: Default level (critical errors)
+ * - warn: Warnings and above
+ * - info: Important information and above
  * - debug: Debug level and above (detailed debugging)
- * - verbose: Verbose level only (very detailed, noisy)
+ * - verbose: Business logic details (HTTP requests, config changes, etc.)
+ * - trace: Everything including framework internals (CORS, CSRF, auth middleware)
  */
 
 export enum LogLevel {
@@ -16,10 +17,11 @@ export enum LogLevel {
   WARN = 1,
   INFO = 2,
   DEBUG = 3,
-  VERBOSE = 4
+  VERBOSE = 4,
+  TRACE = 5
 }
 
-let currentLogLevel: LogLevel = LogLevel.INFO; // Default to INFO
+let currentLogLevel: LogLevel = LogLevel.ERROR; // Default to ERROR
 
 /**
  * Initialize logger with log level from environment or config
@@ -49,12 +51,16 @@ export function initLogger(logLevel?: string | LogLevel): void {
         case 'verbose':
           currentLogLevel = LogLevel.VERBOSE;
           break;
+        case 'trace':
+        case 'all':
+          currentLogLevel = LogLevel.TRACE;
+          break;
         default:
           // Only warn if we're not already in silent mode
           const wasSilent = currentLogLevel === LogLevel.SILENT;
-          currentLogLevel = LogLevel.INFO;
+          currentLogLevel = LogLevel.ERROR;
           if (!wasSilent) {
-            console.warn(`[Logger] Unknown log level "${logLevel}", defaulting to INFO`);
+            console.warn(`[Logger] Unknown log level "${logLevel}", defaulting to ERROR`);
           }
       }
     } else {
@@ -84,6 +90,10 @@ export function initLogger(logLevel?: string | LogLevel): void {
           break;
         case 'verbose':
           currentLogLevel = LogLevel.VERBOSE;
+          break;
+        case 'trace':
+        case 'all':
+          currentLogLevel = LogLevel.TRACE;
           break;
         default:
           currentLogLevel = LogLevel.INFO;
@@ -152,11 +162,20 @@ export function debug(...args: any[]): void {
 }
 
 /**
- * Log verbose (verbose level only)
+ * Log verbose (business logic details)
  */
 export function verbose(...args: any[]): void {
   if (currentLogLevel >= LogLevel.VERBOSE && currentLogLevel !== LogLevel.SILENT) {
     console.log(formatMessage('VERBOSE', ...args));
+  }
+}
+
+/**
+ * Log trace (everything including framework internals)
+ */
+export function trace(...args: any[]): void {
+  if (currentLogLevel >= LogLevel.TRACE && currentLogLevel !== LogLevel.SILENT) {
+    console.log(formatMessage('TRACE', ...args));
   }
 }
 

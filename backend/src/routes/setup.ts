@@ -259,6 +259,9 @@ router.post(
               redirectFrom: [],
               redirectTo: "",
             },
+            logging: {
+              level: "error",
+            },
             auth: {
               google: {
                 enabled: false,

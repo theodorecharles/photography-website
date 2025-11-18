@@ -7,6 +7,7 @@ import { useState, useEffect } from 'react';
 import { API_URL } from '../../config';
 import { getLicenseById, getDefaultLicense } from '../../utils/licenses';
 import './License.css';
+import { error as logError } from '../../utils/logger';
 
 function License() {
   const [siteName, setSiteName] = useState<string>('');
@@ -38,8 +39,8 @@ function License() {
           const yearData = await yearResponse.json();
           setCurrentYear(yearData.year);
         }
-      } catch (error) {
-        console.error('Failed to fetch license data:', error);
+      } catch (err) {
+        logError('Failed to fetch license data:', err);
       } finally {
         setLoading(false);
       }

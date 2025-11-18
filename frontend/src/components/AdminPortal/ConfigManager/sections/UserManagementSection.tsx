@@ -31,6 +31,7 @@ import type {
   PasswordChangeState,
   MessageType,
 } from "./UserManagement/types";
+import { error } from '../../../../utils/logger';
 
 
 interface UserManagementSectionProps {
@@ -143,7 +144,7 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
         setCurrentUser(user);
       }
     } catch (err) {
-      console.error("Failed to fetch current user:", err);
+      error("Failed to fetch current user:", err);
     }
   };
 
@@ -164,7 +165,7 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
       const isConfigured = await userManagementAPI.checkSmtpConfig();
       setSmtpConfigured(isConfigured);
     } catch (err) {
-      console.error("Failed to check SMTP config:", err);
+      error("Failed to check SMTP config:", err);
     }
   };
 

@@ -29,6 +29,7 @@ import {
   UserIcon
 } from '../icons/';
 import packageJson from '../../../../package.json';
+import { error as logError, info } from '../../utils/logger';
 
 export default function AdminPortal() {
   const navigate = useNavigate();
@@ -65,9 +66,9 @@ export default function AdminPortal() {
         // Wait for browser to process and apply styles
         await new Promise(resolve => requestAnimationFrame(resolve));
         
-        console.log('✅ Admin CSS loaded');
+        info('✅ Admin CSS loaded');
       } catch (err) {
-        console.error('Failed to load CSS:', err);
+        logError('Failed to load CSS:', err);
       } finally {
         setCssLoaded(true);
       }
@@ -129,7 +130,7 @@ export default function AdminPortal() {
         if (titlesRes.ok) {
           const titlesStatus = await titlesRes.json();
           if (titlesStatus.running && !titlesStatus.isComplete) {
-            console.log("[AdminPortal] Found running titles job, ensuring toaster visibility");
+            info("[AdminPortal] Found running titles job, ensuring toaster visibility");
             sseToaster.setGeneratingTitles(true);
           }
         }
@@ -141,12 +142,12 @@ export default function AdminPortal() {
         if (optRes.ok) {
           const optStatus = await optRes.json();
           if (optStatus.running && !optStatus.isComplete) {
-            console.log("[AdminPortal] Found running optimization job, ensuring toaster visibility");
+            info("[AdminPortal] Found running optimization job, ensuring toaster visibility");
             sseToaster.setIsOptimizationRunning(true);
           }
         }
       } catch (err) {
-        console.error("[AdminPortal] Failed to check for running jobs:", err);
+        logError("[AdminPortal] Failed to check for running jobs:", err);
       }
     };
 
@@ -191,7 +192,7 @@ export default function AdminPortal() {
         setLoading(false);
       })
       .catch((err) => {
-        console.error('Failed to check auth status:', err);
+        logError('Failed to check auth status:', err);
         setLoading(false);
       });
   }, []);
@@ -223,18 +224,18 @@ export default function AdminPortal() {
       if (res.ok) {
         const config = await res.json();
         const isEnabled = config?.analytics?.openobserve?.enabled === true;
-        console.log('[AdminPortal] Metrics enabled check:', isEnabled);
+        info('[AdminPortal] Metrics enabled check:', isEnabled);
         setMetricsEnabled(isEnabled);
       }
     } catch (err) {
-      console.error('Failed to check metrics config:', err);
+      logError('Failed to check metrics config:', err);
     }
   }, []);
 
   // Listen for config updates (triggered after restart)
   useEffect(() => {
     const handleConfigUpdate = () => {
-      console.log('[AdminPortal] Config update detected, reloading metrics status...');
+      info('[AdminPortal] Config update detected, reloading metrics status...');
       checkMetricsEnabled();
     };
 
@@ -259,7 +260,7 @@ export default function AdminPortal() {
   // Load branding and links when switching to Settings tab
   useEffect(() => {
     if (activeTab === 'config' && authStatus?.authenticated) {
-      console.log('[AdminPortal] Settings tab active, loading branding and links');
+      info('[AdminPortal] Settings tab active, loading branding and links');
       loadBranding();
       loadExternalLinks();
     }
@@ -278,7 +279,7 @@ export default function AdminPortal() {
     const freshLogin = location.state?.freshLogin;
     const dismissed = localStorage.getItem('security-setup-dismissed') === 'true';
     
-    console.log('[Security Prompt] Check:', {
+    info('[Security Prompt] Check:', {
       freshLogin,
       dismissed,
       authenticated: authStatus?.authenticated,
@@ -298,7 +299,7 @@ export default function AdminPortal() {
       const isCredentialUser = authMethods.includes('credentials');
       const isGoogleUser = authMethods.includes('google');
       
-      console.log('[Security Prompt] User security status:', {
+      info('[Security Prompt] User security status:', {
         hasMFA,
         hasPasskey,
         authMethods,
@@ -308,7 +309,7 @@ export default function AdminPortal() {
       });
       
       if (isCredentialUser && !isGoogleUser && !hasMFA && !hasPasskey) {
-        console.log('[Security Prompt] Showing prompt!');
+        info('[Security Prompt] Showing prompt!');
         setShowSecurityPrompt(true);
       }
       
@@ -343,7 +344,7 @@ export default function AdminPortal() {
         setFolders(data.folders || []);
       }
     } catch (err) {
-      console.error('Failed to load albums:', err);
+      logError('Failed to load albums:', err);
     }
   }, []); // Empty deps - only depends on setState functions which are stable
 
@@ -354,10 +355,10 @@ export default function AdminPortal() {
       // Don't reload if the event came from AlbumsManager drag operations
       // AlbumsManager already has the optimistic state
       if (customEvent.detail?.skipReload) {
-        console.log('📢 AdminPortal: albums-updated event received, skipping reload (optimistic update)');
+        info('📢 AdminPortal: albums-updated event received, skipping reload (optimistic update)');
         return;
       }
-      console.log('📢 AdminPortal: albums-updated event received, reloading albums...');
+      info('📢 AdminPortal: albums-updated event received, reloading albums...');
       loadAlbums();
     };
 
@@ -374,12 +375,12 @@ export default function AdminPortal() {
         credentials: 'include',
       });
       const data = await res.json();
-      console.log('[AdminPortal] Loaded external links from API:', data);
+      info('[AdminPortal] Loaded external links from API:', data);
       const linksData = data.links || [];
-      console.log('[AdminPortal] Setting externalLinks state to:', linksData);
+      info('[AdminPortal] Setting externalLinks state to:', linksData);
       setExternalLinks(linksData);
     } catch (err) {
-      console.error('Failed to load external links:', err);
+      logError('Failed to load external links:', err);
     }
   };
 
@@ -389,7 +390,7 @@ export default function AdminPortal() {
         credentials: 'include',
       });
       const data = await res.json();
-      console.log('[AdminPortal] Loaded branding data from API:', data);
+      info('[AdminPortal] Loaded branding data from API:', data);
       // Ensure all values are set (not undefined)
       const brandingData = {
         siteName: data.siteName || '',
@@ -402,10 +403,10 @@ export default function AdminPortal() {
         shuffleHomepage: data.shuffleHomepage ?? true,
         photoLicense: data.photoLicense || 'cc-by'
       };
-      console.log('[AdminPortal] Setting branding state to:', brandingData);
+      info('[AdminPortal] Setting branding state to:', brandingData);
       setBranding(brandingData);
     } catch (err) {
-      console.error('Failed to load branding config:', err);
+      logError('Failed to load branding config:', err);
     }
   };
 
@@ -481,8 +482,8 @@ export default function AdminPortal() {
               e.preventDefault();
               try {
                 trackLogout(authStatus?.user?.email);
-              } catch (error) {
-                console.error('Analytics error:', error);
+              } catch (err) {
+                logError('Analytics error:', err);
               }
               
               // Call logout endpoint and wait for it to complete
@@ -491,8 +492,8 @@ export default function AdminPortal() {
                   method: 'POST',
                   credentials: 'include',
                 });
-              } catch (error) {
-                console.error('Logout error:', error);
+              } catch (err) {
+                logError('Logout error:', err);
               }
               
               // Navigate to homepage after logout completes

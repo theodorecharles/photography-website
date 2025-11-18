@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import type { User } from "./types";
 import { getGravatarUrl, copyInvitationUrl } from "./utils";
+import { error, info } from '../../../../../utils/logger';
 
 interface UserCardProps {
   user: User;
@@ -39,7 +40,7 @@ export const UserCard: React.FC<UserCardProps> = ({
 
   // Debug: Log current user on first render
   if (isFirstUser) {
-    console.log("[UserManagement] Rendering users. CurrentUser:", currentUser);
+    info("[UserManagement] Rendering users. CurrentUser:", currentUser);
   }
 
   const handleCopyInvite = async () => {
@@ -50,7 +51,7 @@ export const UserCard: React.FC<UserCardProps> = ({
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
-      console.error('Failed to copy invitation link:', err);
+      error('Failed to copy invitation link:', err);
     }
   };
 

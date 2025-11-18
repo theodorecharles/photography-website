@@ -13,6 +13,7 @@ import NotFound from './Misc/NotFound';
 import Header, { ExternalLink } from './Header';
 import Footer from './Footer';
 import '../App.css'; // Import for main-content-title styles
+import { error as logError, warn, info } from '../utils/logger';
 
 interface Photo {
   id: string;
@@ -103,12 +104,12 @@ export default function SharedAlbum() {
         // Handle external links
         if (externalLinksResponse.ok) {
           const linksData = await externalLinksResponse.json();
-          console.log('SharedAlbum: External links loaded:', linksData);
+          info('SharedAlbum: External links loaded:', linksData);
           // API returns { externalLinks: [...] }, extract the array
           const linksArray = linksData.externalLinks || linksData || [];
           setExternalLinks(linksArray);
         } else {
-          console.warn('SharedAlbum: External links response not ok:', externalLinksResponse.status);
+          warn('SharedAlbum: External links response not ok:', externalLinksResponse.status);
         }
         
         // Handle share link validation
@@ -140,7 +141,7 @@ export default function SharedAlbum() {
         
         setLoading(false);
       } catch (err) {
-        console.error('Error validating share link:', err);
+        logError('Error validating share link:', err);
         setError('Failed to load shared album');
         setLoading(false);
       }
@@ -249,7 +250,7 @@ export default function SharedAlbum() {
     return <NotFound />;
   }
 
-  console.log('SharedAlbum rendering Header with:', { 
+  info('SharedAlbum rendering Header with:', { 
     albumsCount: albums.length, 
     externalLinksCount: externalLinks.length,
     externalLinks 

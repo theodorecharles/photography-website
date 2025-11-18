@@ -11,6 +11,7 @@ import { trackExternalLinksUpdate } from '../../../../utils/analytics';
 import SectionHeader from '../components/SectionHeader';
 import { ChevronUpIcon, ChevronDownIcon } from '../../../icons';
 import '../../LinksManager.css';
+import { info } from '../../../../utils/logger';
 
 
 interface LinksSectionProps {
@@ -34,7 +35,7 @@ const LinksSection: React.FC<LinksSectionProps> = ({
   // Initialize originalExternalLinks only once when data is first loaded
   useEffect(() => {
     if (!isInitialized && externalLinks.length >= 0) {
-      console.log('[LinksSection] Initializing originalExternalLinks:', externalLinks);
+      info('[LinksSection] Initializing originalExternalLinks:', externalLinks);
       setOriginalExternalLinks(structuredClone(externalLinks));
       setIsInitialized(true);
     }

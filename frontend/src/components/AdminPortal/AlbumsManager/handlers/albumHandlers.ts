@@ -14,6 +14,7 @@ import {
   trackAlbumMovedToFolder 
 } from '../../../../utils/analytics';
 import { sanitizeAndTitleCase, isValidAlbumName } from '../utils/albumHelpers';
+import { error } from '../../../../utils/logger';
 
 
 interface AlbumHandlersProps {
@@ -239,7 +240,7 @@ export const createAlbumHandlers = (props: AlbumHandlersProps) => {
       // Dispatch global event to update navigation dropdown
       window.dispatchEvent(new Event('albums-updated'));
     } catch (err) {
-      console.error('Failed to rename album:', err);
+      error('Failed to rename album:', err);
       setMessage({ type: 'error', text: 'Error renaming album' });
     }
   };

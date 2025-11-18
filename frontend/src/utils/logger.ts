@@ -3,9 +3,9 @@
  * Supports: error, warn, info, debug, verbose
  * 
  * Log levels:
- * - error: Always shown (critical errors)
- * - warn: Always shown (warnings)
- * - info: Default level and above (important information)
+ * - error: Default level (critical errors)
+ * - warn: Warnings and above
+ * - info: Important information and above
  * - debug: Debug level and above (detailed debugging)
  * - verbose: Verbose level only (very detailed, noisy)
  */
@@ -19,7 +19,7 @@ export enum LogLevel {
   VERBOSE = 4
 }
 
-let currentLogLevel: LogLevel = LogLevel.INFO; // Default to INFO
+let currentLogLevel: LogLevel = LogLevel.ERROR; // Default to ERROR
 
 /**
  * Initialize logger with log level from environment or API
@@ -50,8 +50,8 @@ export function initLogger(logLevel?: string | LogLevel): void {
           currentLogLevel = LogLevel.VERBOSE;
           break;
         default:
-          currentLogLevel = LogLevel.INFO;
-          console.warn(`[Logger] Unknown log level "${logLevel}", defaulting to INFO`);
+          currentLogLevel = LogLevel.ERROR;
+          console.warn(`[Logger] Unknown log level "${logLevel}", defaulting to ERROR`);
       }
     } else {
       currentLogLevel = logLevel;

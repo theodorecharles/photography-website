@@ -24,6 +24,7 @@ import {
   ChevronRightIcon,
   LogoutIcon
 } from "./icons/";
+import { error } from '../utils/logger';
 
 export interface ExternalLink {
   title: string;
@@ -531,7 +532,7 @@ export default function Header({
       // Navigate home
       navigate('/');
     } catch (err) {
-      console.error('Logout failed:', err);
+      error('Logout failed:', err);
     }
   };
 

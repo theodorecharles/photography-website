@@ -11,6 +11,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { Photo, UploadingImage } from '../types';
 import { cacheBustValue } from '../../../../config';
 import { EditDocumentIcon, TrashIcon, HourglassIcon } from '../../../icons';
+import { info } from '../../../../utils/logger';
 
 
 interface PhotoGridItemProps {
@@ -253,7 +254,7 @@ const PhotoGridItem: React.FC<PhotoGridItemProps> = ({
             </div>
           )}
           {uploadingImage.state === 'error' && (() => {
-            console.log(`[PhotoGridItem] Error state for ${filename}:`, {
+            info(`[PhotoGridItem] Error state for ${filename}:`, {
               canEdit,
               hasRetryHandler: !!onRetryUpload,
               selectedAlbum,
@@ -270,7 +271,7 @@ const PhotoGridItem: React.FC<PhotoGridItemProps> = ({
                     className="retry-upload-btn"
                     onClick={(e) => {
                       e.stopPropagation();
-                      console.log(`[PhotoGridItem] Retry button clicked for ${filename}`);
+                      info(`[PhotoGridItem] Retry button clicked for ${filename}`);
                       onRetryUpload(filename, selectedAlbum);
                     }}
                     title={`Retry upload (${uploadingImage.retryCount || 0}/5 attempts)`}
@@ -377,7 +378,7 @@ const PhotoGridItem: React.FC<PhotoGridItemProps> = ({
                 // Extract filename from ID (format: "album/filename.jpg")
                 const parts = photoData.id.split('/');
                 const filename = parts.length > 1 ? parts[parts.length - 1] : parts[0];
-                console.log('Delete photo:', { album: photoData.album, filename, id: photoData.id });
+                info('Delete photo:', { album: photoData.album, filename, id: photoData.id });
                 if (onDelete) onDelete(photoData.album, decodeURIComponent(filename), photoData.title, photoData.thumbnail);
               }}
               onTouchEnd={(e) => {
@@ -386,7 +387,7 @@ const PhotoGridItem: React.FC<PhotoGridItemProps> = ({
                 // Extract filename from ID (format: "album/filename.jpg")
                 const parts = photoData.id.split('/');
                 const filename = parts.length > 1 ? parts[parts.length - 1] : parts[0];
-                console.log('Delete photo:', { album: photoData.album, filename, id: photoData.id });
+                info('Delete photo:', { album: photoData.album, filename, id: photoData.id });
                 if (onDelete) onDelete(photoData.album, decodeURIComponent(filename), photoData.title, photoData.thumbnail);
               }}
               className="btn-delete-photo"

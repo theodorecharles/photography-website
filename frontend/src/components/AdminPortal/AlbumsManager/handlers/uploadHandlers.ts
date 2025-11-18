@@ -6,6 +6,7 @@
 import { UploadingImage } from '../types';
 import { API_URL } from '../../../../config';
 import { validateImageFiles } from '../utils/albumHelpers';
+import { error, info } from '../../../../utils/logger';
 
 
 interface UploadHandlersProps {
@@ -96,7 +97,7 @@ export const createUploadHandlers = (props: UploadHandlersProps) => {
           }
         } else {
           const errorMsg = `Upload failed: ${xhr.status}`;
-          console.log(`[Upload] ${filename}: ${errorMsg}`);
+          info(`[Upload] ${filename}: ${errorMsg}`);
           setUploadingImages((prev: UploadingImage[]): UploadingImage[] =>
             prev.map((img: UploadingImage): UploadingImage =>
               img.filename === filename
@@ -109,7 +110,7 @@ export const createUploadHandlers = (props: UploadHandlersProps) => {
       };
       
       xhr.onerror = () => {
-        console.log(`[Upload] ${filename}: Network error (retryCount: ${retryCount})`);
+        info(`[Upload] ${filename}: Network error (retryCount: ${retryCount})`);
         setUploadingImages((prev: UploadingImage[]): UploadingImage[] =>
           prev.map((img: UploadingImage): UploadingImage =>
             img.filename === filename
@@ -121,7 +122,7 @@ export const createUploadHandlers = (props: UploadHandlersProps) => {
       };
       
       xhr.ontimeout = () => {
-        console.log(`[Upload] ${filename}: Upload timed out (retryCount: ${retryCount})`);
+        info(`[Upload] ${filename}: Upload timed out (retryCount: ${retryCount})`);
         setUploadingImages((prev: UploadingImage[]): UploadingImage[] =>
           prev.map((img: UploadingImage): UploadingImage =>
             img.filename === filename
@@ -135,7 +136,7 @@ export const createUploadHandlers = (props: UploadHandlersProps) => {
       xhr.open('POST', `${API_URL}/api/albums/${encodeURIComponent(albumName)}/upload`);
       xhr.send(formData);
     }).catch((err) => {
-      console.error(`Upload failed for ${filename}:`, err);
+      error(`Upload failed for ${filename}:`, err);
       throw err;
     });
   };
@@ -151,7 +152,7 @@ export const createUploadHandlers = (props: UploadHandlersProps) => {
       return;
     }
 
-    console.log(`[Upload] Starting upload of ${validation.valid.length} files to album "${albumName}" (4 concurrent uploads)`);
+    info(`[Upload] Starting upload of ${validation.valid.length} files to album "${albumName}" (4 concurrent uploads)`);
 
     // Initialize uploading images with upload index for ordering
     const newUploadingImages: UploadingImage[] = validation.valid.map((file, index) => ({
@@ -182,7 +183,7 @@ export const createUploadHandlers = (props: UploadHandlersProps) => {
           await uploadSingleImage(img.file, img.filename, albumName, 0);
           successCount++;
         } catch (err) {
-          console.error(`[Upload] Error:`, err);
+          error(`[Upload] Error:`, err);
           failedUploads.push({ img, retryCount: 0 });
         }
       }
@@ -196,33 +197,33 @@ export const createUploadHandlers = (props: UploadHandlersProps) => {
     // Wait for all uploads to complete
     await Promise.all(uploadPromises);
 
-    console.log(`[Upload] Batch complete: ${successCount} succeeded, ${failedUploads.length} failed`);
+    info(`[Upload] Batch complete: ${successCount} succeeded, ${failedUploads.length} failed`);
 
     // Auto-retry failed uploads (up to 5 attempts)
     const MAX_RETRIES = 5;
     let remainingFailures = failedUploads.length;
     
     if (failedUploads.length > 0) {
-      console.log(`[Upload] 🔄 Auto-retrying ${failedUploads.length} failed uploads...`);
+      info(`[Upload] 🔄 Auto-retrying ${failedUploads.length} failed uploads...`);
       
       for (const failed of failedUploads) {
         let uploaded = false;
         let currentRetry = 1;
         
-        console.log(`[Upload] Starting retry loop for ${failed.img.filename}`);
+        info(`[Upload] Starting retry loop for ${failed.img.filename}`);
         
         while (!uploaded && currentRetry <= MAX_RETRIES) {
           try {
-            console.log(`[Upload] Attempt ${currentRetry}/${MAX_RETRIES} for ${failed.img.filename}...`);
+            info(`[Upload] Attempt ${currentRetry}/${MAX_RETRIES} for ${failed.img.filename}...`);
             await uploadSingleImage(failed.img.file, failed.img.filename, albumName, currentRetry);
             successCount++;
             remainingFailures--;
             uploaded = true;
-            console.log(`[Upload] ✓ Retry ${currentRetry}/${MAX_RETRIES} succeeded for ${failed.img.filename}`);
+            info(`[Upload] ✓ Retry ${currentRetry}/${MAX_RETRIES} succeeded for ${failed.img.filename}`);
           } catch (err) {
-            console.log(`[Upload] ✗ Retry ${currentRetry}/${MAX_RETRIES} failed for ${failed.img.filename}`);
+            info(`[Upload] ✗ Retry ${currentRetry}/${MAX_RETRIES} failed for ${failed.img.filename}`);
             if (currentRetry === MAX_RETRIES) {
-              console.error(`[Upload] ✗ All ${MAX_RETRIES} retries exhausted for ${failed.img.filename}`);
+              error(`[Upload] ✗ All ${MAX_RETRIES} retries exhausted for ${failed.img.filename}`);
             }
             currentRetry++;
           }
@@ -230,9 +231,9 @@ export const createUploadHandlers = (props: UploadHandlersProps) => {
       }
       
       if (remainingFailures > 0) {
-        console.log(`[Upload] ⚠️  ${remainingFailures} images failed after ${MAX_RETRIES} retry attempts`);
+        info(`[Upload] ⚠️  ${remainingFailures} images failed after ${MAX_RETRIES} retry attempts`);
       } else {
-        console.log(`[Upload] ✅ All failed uploads recovered via auto-retry!`);
+        info(`[Upload] ✅ All failed uploads recovered via auto-retry!`);
       }
     }
 
@@ -250,7 +251,7 @@ export const createUploadHandlers = (props: UploadHandlersProps) => {
           },
         });
       } catch (err) {
-        console.error(`[Upload] Failed to regenerate static JSON:`, err);
+        error(`[Upload] Failed to regenerate static JSON:`, err);
       }
     }
   };
@@ -300,7 +301,7 @@ export const createUploadHandlers = (props: UploadHandlersProps) => {
   const handleRetryUpload = async (filename: string, albumName: string): Promise<void> => {
     const img = props.uploadingImagesRef.current?.find((i) => i.filename === filename);
     if (!img || img.state !== 'error') {
-      console.error(`Cannot retry ${filename}: image not found or not in error state`);
+      error(`Cannot retry ${filename}: image not found or not in error state`);
       return;
     }
     
@@ -317,7 +318,7 @@ export const createUploadHandlers = (props: UploadHandlersProps) => {
       setMessage({ type: 'success', text: `Successfully uploaded ${filename}` });
       await loadAlbums(); // Refresh album list
     } catch (err) {
-      console.error(`[Upload] Manual retry failed for ${filename}:`, err);
+      error(`[Upload] Manual retry failed for ${filename}:`, err);
       setMessage({ type: 'error', text: `Retry failed for ${filename}` });
     }
   };

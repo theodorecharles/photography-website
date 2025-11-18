@@ -6,7 +6,7 @@
 
 import { Request, Response, NextFunction } from 'express';
 import { getUserByEmail, getUserById } from '../database-users.js';
-import { debug } from '../utils/logger.js';
+import { trace } from '../utils/logger.js';
 
 /**
  * Middleware to check if user is authenticated
@@ -15,7 +15,7 @@ import { debug } from '../utils/logger.js';
  */
 export function requireAuth(req: Request, res: Response, next: NextFunction) {
   // Debug logging
-  debug('[Auth Middleware]', {
+  trace('[Auth Middleware]', {
     path: req.path,
     method: req.method,
     hasIsAuthenticated: !!req.isAuthenticated,
@@ -34,17 +34,17 @@ export function requireAuth(req: Request, res: Response, next: NextFunction) {
     if (sessionUser?.email) {
       const dbUser = getUserByEmail(sessionUser.email);
       if (!dbUser) {
-        debug('[Auth Middleware] User no longer exists (Google OAuth):', sessionUser.email);
+        trace('[Auth Middleware] User no longer exists (Google OAuth):', sessionUser.email);
         // Destroy session and return 401
         req.logout((err) => {
-          if (err) debug('[Auth Middleware] Logout error:', err);
+          if (err) trace('[Auth Middleware] Logout error:', err);
         });
         req.session.destroy(() => {});
         return res.status(401).json({ error: 'User account no longer exists' });
       }
     }
     
-    debug('[Auth Middleware] Authenticated via Passport');
+    trace('[Auth Middleware] Authenticated via Passport');
     return next();
   }
   
@@ -55,17 +55,17 @@ export function requireAuth(req: Request, res: Response, next: NextFunction) {
     // Verify user still exists in database
     const dbUser = getUserById(userId);
     if (!dbUser) {
-      debug('[Auth Middleware] User no longer exists (credentials):', userId);
+      trace('[Auth Middleware] User no longer exists (credentials):', userId);
       // Destroy session and return 401
       req.session.destroy(() => {});
       return res.status(401).json({ error: 'User account no longer exists' });
     }
     
-    debug('[Auth Middleware] Authenticated via credentials');
+    trace('[Auth Middleware] Authenticated via credentials');
     return next();
   }
   
-  debug('[Auth Middleware] Not authenticated');
+  trace('[Auth Middleware] Not authenticated');
   return res.status(401).json({ error: 'Not authenticated' });
 }
 
@@ -122,14 +122,14 @@ export async function requireAdmin(req: Request, res: Response, next: NextFuncti
   const isAuth = (req.isAuthenticated && req.isAuthenticated()) || !!(req.session as any)?.userId;
   
   if (!isAuth) {
-    debug('[Admin Middleware] Not authenticated');
+    trace('[Admin Middleware] Not authenticated');
     return res.status(401).json({ error: 'Not authenticated' });
   }
   
   // Get user and check role
   const user = await getUserFromRequest(req);
   
-  debug('[Admin Middleware] User lookup result:', {
+  trace('[Admin Middleware] User lookup result:', {
     hasUser: !!user,
     email: user?.email,
     role: user?.role,
@@ -137,16 +137,16 @@ export async function requireAdmin(req: Request, res: Response, next: NextFuncti
   });
   
   if (!user || !user.role) {
-    debug('[Admin Middleware] No user or role found');
+    trace('[Admin Middleware] No user or role found');
     return res.status(403).json({ error: 'Access denied - role required' });
   }
   
   if (user.role !== 'admin') {
-    debug('[Admin Middleware] User is not admin:', user.role);
+    trace('[Admin Middleware] User is not admin:', user.role);
     return res.status(403).json({ error: 'Access denied - admin role required' });
   }
   
-  debug('[Admin Middleware] User is admin');
+  trace('[Admin Middleware] User is admin');
   next();
 }
 
@@ -159,7 +159,7 @@ export async function requireManager(req: Request, res: Response, next: NextFunc
   const isAuth = (req.isAuthenticated && req.isAuthenticated()) || !!(req.session as any)?.userId;
   
   if (!isAuth) {
-    debug('[Manager Middleware] Not authenticated');
+    trace('[Manager Middleware] Not authenticated');
     return res.status(401).json({ error: 'Not authenticated' });
   }
   
@@ -167,15 +167,15 @@ export async function requireManager(req: Request, res: Response, next: NextFunc
   const user = await getUserFromRequest(req);
   
   if (!user || !user.role) {
-    debug('[Manager Middleware] No user or role found');
+    trace('[Manager Middleware] No user or role found');
     return res.status(403).json({ error: 'Access denied - role required' });
   }
   
   if (user.role !== 'admin' && user.role !== 'manager') {
-    debug('[Manager Middleware] User is not admin or manager:', user.role);
+    trace('[Manager Middleware] User is not admin or manager:', user.role);
     return res.status(403).json({ error: 'Access denied - manager role required' });
   }
   
-  debug('[Manager Middleware] User is admin or manager');
+  trace('[Manager Middleware] User is admin or manager');
   next();
 }

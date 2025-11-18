@@ -42,6 +42,7 @@ const SetupWizard = lazy(() => import("./components/SetupWizard"));
 const InviteSignup = lazy(() => import("./components/Misc/InviteSignup"));
 const PasswordResetRequest = lazy(() => import("./components/Misc/PasswordResetRequest"));
 const PasswordResetComplete = lazy(() => import("./components/Misc/PasswordResetComplete"));
+const LogViewer = lazy(() => import("./components/LogViewer/LogViewer"));
 
 // LicenseWrapper component to show footer when license page loads
 function LicenseWrapper({ setShowFooter }: { setShowFooter: (show: boolean) => void }) {
@@ -450,7 +451,8 @@ function App() {
 
   // Check if current route is a standalone page (no main layout)
   const isStandalonePage = location.pathname.startsWith('/shared/') ||
-                          location.pathname.startsWith('/setup');
+                          location.pathname.startsWith('/setup') ||
+                          location.pathname.startsWith('/logs');
 
   // Standalone pages render without the main layout
   if (isStandalonePage) {
@@ -465,6 +467,7 @@ function App() {
           <Routes>
             <Route path="/shared/:secretKey" element={<SharedAlbum />} />
             <Route path="/setup" element={<SetupWizard />} />
+            <Route path="/logs" element={<LogViewer />} />
           </Routes>
         </Suspense>
       </div>
@@ -522,6 +525,7 @@ function App() {
             <Route path="/admin/metrics" element={<AdminPortal />} />
             <Route path="/admin/settings" element={<AdminPortal />} />
             <Route path="/admin/profile" element={<AdminPortal />} />
+            <Route path="/logs" element={<LogViewer />} />
             <Route path="/auth/error" element={
               <>
                 <SEO 

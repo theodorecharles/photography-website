@@ -7,6 +7,7 @@ import { useState, useEffect } from 'react';
 import { API_URL, SITE_URL } from '../../config';
 import { trackShareLinkCreated } from '../../utils/analytics';
 import './ShareModal.css';
+import { error as logError } from '../../utils/logger';
 
 interface ShareModalProps {
   album: string;
@@ -61,7 +62,7 @@ export default function ShareModal({ album, onClose }: ShareModalProps) {
       setGeneratedLink(url);
       trackShareLinkCreated(album, expirationMinutes);
     } catch (err) {
-      console.error('Error generating share link:', err);
+      logError('Error generating share link:', err);
       setError(err instanceof Error ? err.message : 'Failed to generate share link');
     } finally {
       setLoading(false);
@@ -104,7 +105,7 @@ export default function ShareModal({ album, onClose }: ShareModalProps) {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
-      console.error('Failed to copy link:', err);
+      logError('Failed to copy link:', err);
     }
   };
 

@@ -10,7 +10,7 @@ dotenv.config();
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { info, warn, error, debug, verbose } from './utils/logger.js';
+import { info, warn, error, trace } from './utils/logger.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -122,23 +122,23 @@ export function isEnvSet(value: string | undefined): boolean {
 export function getAllowedOrigins(): string[] {
   const origins: string[] = [];
   
-  verbose('[CORS Debug] Environment variables:');
-  verbose('  FRONTEND_DOMAIN:', process.env.FRONTEND_DOMAIN || '(not set)');
-  verbose('  BACKEND_DOMAIN:', process.env.BACKEND_DOMAIN || '(not set)');
-  verbose('  ALLOWED_ORIGINS:', process.env.ALLOWED_ORIGINS || '(not set)');
+  trace('[CORS Debug] Environment variables:');
+  trace('  FRONTEND_DOMAIN:', process.env.FRONTEND_DOMAIN || '(not set)');
+  trace('  BACKEND_DOMAIN:', process.env.BACKEND_DOMAIN || '(not set)');
+  trace('  ALLOWED_ORIGINS:', process.env.ALLOWED_ORIGINS || '(not set)');
   
   // Add FRONTEND_DOMAIN if provided (supports http:// and https://)
   if (isEnvSet(process.env.FRONTEND_DOMAIN)) {
     const frontendDomain = process.env.FRONTEND_DOMAIN!.trim();
     if (frontendDomain.startsWith('http://') || frontendDomain.startsWith('https://')) {
       origins.push(frontendDomain);
-      debug('[CORS Debug] Added FRONTEND_DOMAIN:', frontendDomain);
+      trace('[CORS Debug] Added FRONTEND_DOMAIN:', frontendDomain);
     } else {
       // Auto-detect protocol based on BACKEND_DOMAIN or default to https
       const protocol = isEnvSet(process.env.BACKEND_DOMAIN) && process.env.BACKEND_DOMAIN!.startsWith('https://') ? 'https' : 'https';
       const fullUrl = `${protocol}://${frontendDomain}`;
       origins.push(fullUrl);
-      debug('[CORS Debug] Added FRONTEND_DOMAIN with protocol:', fullUrl);
+      trace('[CORS Debug] Added FRONTEND_DOMAIN with protocol:', fullUrl);
     }
   }
   
@@ -147,12 +147,12 @@ export function getAllowedOrigins(): string[] {
     const backendDomain = process.env.BACKEND_DOMAIN!.trim();
     if (backendDomain.startsWith('http://') || backendDomain.startsWith('https://')) {
       origins.push(backendDomain);
-      debug('[CORS Debug] Added BACKEND_DOMAIN:', backendDomain);
+      trace('[CORS Debug] Added BACKEND_DOMAIN:', backendDomain);
     } else {
       const protocol = backendDomain.includes('localhost') ? 'http' : 'https';
       const fullUrl = `${protocol}://${backendDomain}`;
       origins.push(fullUrl);
-      debug('[CORS Debug] Added BACKEND_DOMAIN with protocol:', fullUrl);
+      trace('[CORS Debug] Added BACKEND_DOMAIN with protocol:', fullUrl);
     }
   }
   
@@ -176,12 +176,12 @@ export function getAllowedOrigins(): string[] {
   if (!isEnvSet(process.env.ALLOWED_ORIGINS) && !isEnvSet(process.env.FRONTEND_DOMAIN)) {
     const configOrigins = fullConfig.environment.backend.allowedOrigins || [];
     origins.push(...configOrigins);
-    debug('[CORS Debug] Added origins from config.json:', configOrigins);
+    trace('[CORS Debug] Added origins from config.json:', configOrigins);
   }
   
   // Remove duplicates
   const uniqueOrigins = [...new Set(origins)];
-  debug('[CORS Debug] Final allowed origins:', uniqueOrigins);
+  trace('[CORS Debug] Final allowed origins:', uniqueOrigins);
   return uniqueOrigins;
 }
 
@@ -208,7 +208,7 @@ export function reloadConfig() {
 // Export log level getter
 /**
  * Get log level from environment variable (highest priority) or config.json
- * Priority: LOG_LEVEL env var > config.json > default 'info'
+ * Priority: LOG_LEVEL env var > config.json > default 'error'
  */
 export function getLogLevel(): string {
   // Environment variable takes highest priority (for Docker/.env)
@@ -219,8 +219,8 @@ export function getLogLevel(): string {
   if (fullConfig.environment?.logging?.level) {
     return fullConfig.environment.logging.level;
   }
-  // Default to info
-  return 'info';
+  // Default to error
+  return 'error';
 }
 
 // Export function to get current config (always fresh)

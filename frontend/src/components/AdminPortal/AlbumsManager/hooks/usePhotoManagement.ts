@@ -15,6 +15,7 @@ import {
   trackPhotoShuffle, 
   trackPhotoTitleEdited 
 } from '../../../../utils/analytics';
+import { warn } from '../../../../utils/logger';
 
 
 interface UsePhotoManagementProps {
@@ -286,7 +287,7 @@ export const usePhotoManagement = ({ setMessage, showConfirmation }: UsePhotoMan
           return arrayMove(photos, oldIndex, newIndex);
         }
         
-        console.warn('Invalid drag: item not found in albumPhotos', { 
+        warn('Invalid drag: item not found in albumPhotos', { 
           activeId: active.id, 
           overId: over.id,
           oldIndex,

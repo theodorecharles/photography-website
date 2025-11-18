@@ -33,7 +33,7 @@
       "redirectTo": ""
     },
     "logging": {
-      "level": "info"
+      "level": "error"
     },
     "auth": {
       "google": {

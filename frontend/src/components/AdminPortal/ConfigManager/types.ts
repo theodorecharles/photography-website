@@ -27,6 +27,9 @@ export interface EnvironmentConfig {
     rateLimitWindowMs: number;
     rateLimitMaxRequests: number;
   };
+  logging?: {
+    level: string;
+  };
   auth: {
     google: {
       enabled: boolean;

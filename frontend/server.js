@@ -278,8 +278,8 @@ app.get("*", async (req, res) => {
           return res.send(modifiedHtmlWithRuntime);
         }
       }
-    } catch (error) {
-      error("[MetaInjection] Failed to fetch homepage data:", error);
+    } catch (err) {
+      error("[MetaInjection] Failed to fetch homepage data:", err);
       // Fall through to default handling
     }
   }

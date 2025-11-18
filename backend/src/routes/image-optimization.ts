@@ -273,8 +273,12 @@ router.post('/optimize', requireManager, (req, res) => {
             percent: parseInt(percent),
             message: line 
           });
+          // Log progress to file (verbose level)
+          verbose(`[Optimization] ${line}`);
         } else {
           output = JSON.stringify({ type: 'stdout', message: line });
+          // Log stdout to file (info level)
+          info(`[Optimization] ${line}`);
         }
         
         // Store output and broadcast to all clients
@@ -293,6 +297,9 @@ router.post('/optimize', requireManager, (req, res) => {
       if (line.trim()) {
         const errorOutput = JSON.stringify({ type: 'stderr', message: line });
         
+        // Log stderr to file (warn level)
+        warn(`[Optimization] ${line}`);
+        
         // Store output and broadcast to all clients
         if (runningOptimizationJob) {
           runningOptimizationJob.output.push(errorOutput);
@@ -304,6 +311,8 @@ router.post('/optimize', requireManager, (req, res) => {
   
   // Handle process completion
   child.on('close', (code) => {
+    info(`[Optimization] Process completed with exit code ${code}`);
+    
     const completeMsg = JSON.stringify({ 
       type: 'complete', 
       message: `Process exited with code ${code}`,
@@ -334,6 +343,8 @@ router.post('/optimize', requireManager, (req, res) => {
   
   // Handle errors
   child.on('error', (err) => {
+    error(`[Optimization] Failed to start process:`, err);
+    
     const errorMsg = JSON.stringify({ 
       type: 'error', 
       message: `Failed to start process: ${err.message}` 

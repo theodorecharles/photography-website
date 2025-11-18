@@ -7,6 +7,7 @@
  */
 
 import { API_URL } from '../config';
+import { debug } from '../utils/logger';
 // import { showToast } from './toast'; // Disabled - working correctly
 
 interface AnalyticsEvent {
@@ -112,7 +113,7 @@ async function flushQueue(useBeacon = false): Promise<void> {
     }
   } catch (error) {
     // Silently fail - don't break the app if analytics fails
-    console.debug('Analytics tracking failed:', error);
+    debug('Analytics tracking failed:', error);
   }
 }
 

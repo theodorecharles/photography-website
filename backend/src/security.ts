@@ -7,7 +7,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import config, { getAllowedOrigins } from './config.js';
-import { info, warn, error, debug, verbose } from './utils/logger.js';
+import { info, warn, error, debug, verbose, trace } from './utils/logger.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -157,7 +157,7 @@ export function csrfProtection(req: any, res: any, next: any) {
   const isCredentialAuth = !!(req.session as any)?.userId;
   
   if (!isPassportAuth && !isCredentialAuth) {
-    debug('[CSRF] Authentication required - not authenticated via any method');
+    trace('[CSRF] Authentication required - not authenticated via any method');
     return res.status(401).json({ error: 'Authentication required for this operation' });
   }
   
@@ -200,7 +200,7 @@ export function csrfProtection(req: any, res: any, next: any) {
           
           if (isIpAddress && (port === 3000 || port === 3001)) {
             isAllowedOrigin = true;
-            debug(`[CSRF] Allowing IP-based access: ${origin}`);
+            trace(`[CSRF] Allowing IP-based access: ${origin}`);
           }
         }
       } catch (e) {
@@ -210,11 +210,11 @@ export function csrfProtection(req: any, res: any, next: any) {
     
     if (!isAllowedOrigin) {
       warn('[CSRF] Origin not allowed:', origin);
-      verbose('[CSRF] Allowed origins:', allowedOrigins);
+      trace('[CSRF] Allowed origins:', allowedOrigins);
       return res.status(403).json({ error: 'Request origin not allowed' });
     }
   }
   
-  verbose('[CSRF] ✅ Protection passed for', req.method, req.path);
+  trace('[CSRF] ✅ Protection passed for', req.method, req.path);
   next();
 }

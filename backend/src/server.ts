@@ -32,7 +32,7 @@ import config, {
 } from "./config.ts";
 import { validateProductionSecurity } from "./security.ts";
 import { initializeDatabase } from "./database.ts";
-import { initLogger, info, warn, error, debug, verbose } from "./utils/logger.ts";
+import { initLogger, info, warn, error, debug, verbose, trace } from "./utils/logger.ts";
 
 // Initialize logger early with config or environment variable
 initLogger(getLogLevel());
@@ -44,6 +44,9 @@ const imageCache = new Map<
 >();
 const IMAGE_CACHE_MAX_AGE = 24 * 60 * 60 * 1000; // 24 hours
 const IMAGE_CACHE_MAX_ITEMS = 2000; // Limit cache size (thumbnails + modals)
+
+// Import authentication middleware
+import { requireAdmin } from "./auth/middleware.ts";
 
 // Import route handlers
 import albumsRouter from "./routes/albums.ts";
@@ -90,6 +93,20 @@ const app = express();
 // Trust proxy - required for production behind nginx/reverse proxy
 // This allows express to read X-Forwarded-* headers correctly
 app.set("trust proxy", 1);
+
+// Request logging middleware (verbose level)
+app.use((req, res, next) => {
+  // Skip logging for static assets (photos, optimized, fonts, etc.)
+  const isStaticAsset = req.path.startsWith('/photos/') || 
+                        req.path.startsWith('/optimized/') || 
+                        req.path.startsWith('/fonts/') ||
+                        req.path.startsWith('/favicon.ico');
+  
+  if (!isStaticAsset) {
+    verbose(`[HTTP] ${req.method} ${req.path} - ${req.ip || req.socket.remoteAddress}`);
+  }
+  next();
+});
 
 // HTTPS redirect middleware (production only)
 const isProduction = config.frontend.apiUrl.startsWith("https://");
@@ -172,7 +189,7 @@ app.use(
       
       // During OOBE (setup mode), allow any HTTPS origin to enable setup from any domain
       if (!configExists && origin.startsWith('https://')) {
-        debug(`[OOBE] Allowing CORS from: ${origin}`);
+        trace(`[OOBE] Allowing CORS from: ${origin}`);
         return callback(null, true);
       }
       
@@ -205,7 +222,7 @@ app.use(
         const isIpAddress = ipPattern.test(hostname);
         
         if (isIpAddress && (port === 3000 || port === 3001)) {
-          debug(`[CORS] Allowing IP-based access: ${origin}`);
+          trace(`[CORS] Allowing IP-based access: ${origin}`);
           callback(null, true);
           return;
         }
@@ -465,6 +482,13 @@ app.use(
     },
   })
 );
+
+// Serve logs.html for /logs route (requires admin authentication)
+app.get("/logs", requireAdmin, (req, res) => {
+  const logsPath = path.join(__dirname, "../../backend/public/logs.html");
+  verbose(`[Logs] Serving logs.html from: ${logsPath}`);
+  res.sendFile(logsPath);
+});
 
 // Store directory paths in app for use in routes
 app.set("photosDir", photosDir);

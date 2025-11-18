@@ -18,6 +18,7 @@ import {
   addArrayItem as addArrayItemHelper,
   removeArrayItem as removeArrayItemHelper,
 } from '../utils/configHelpers';
+import { error } from '../../../../utils/logger';
 
 
 interface AdvancedSettingsSectionProps {
@@ -148,7 +149,7 @@ const AdvancedSettingsSection: React.FC<AdvancedSettingsSectionProps> = ({
       const errorMessage =
         err instanceof Error ? err.message : "Error saving configuration";
       setMessage({ type: "error", text: errorMessage });
-      console.error("Failed to save config:", err);
+      error("Failed to save config:", err);
     } finally {
       setSavingSection(null);
     }
@@ -300,6 +301,81 @@ const AdvancedSettingsSection: React.FC<AdvancedSettingsSectionProps> = ({
           setMessage={setMessage}
           onOpenObserveSave={onOpenObserveSave}
         />
+
+        {/* Logging Settings */}
+        <div style={{ marginTop: '2rem' }}>
+          <h3 style={{ 
+            fontSize: '1.1rem', 
+            fontWeight: 600, 
+            marginBottom: '1rem',
+            color: '#e0e0e0'
+          }}>
+            Logging
+          </h3>
+          
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+            gap: '1.5rem',
+            marginBottom: '1rem'
+          }}>
+            <div>
+              <label className="branding-label">
+                Log Level
+                <select
+                  className="branding-input"
+                  value={config?.environment?.logging?.level || 'info'}
+                  onChange={(e) => updateConfig(['environment', 'logging', 'level'], e.target.value)}
+                  style={{ marginTop: '0.5rem' }}
+                >
+                  <option value="silent">Silent (No logging)</option>
+                  <option value="error">Error (Default - Critical errors only)</option>
+                  <option value="warn">Warning (Warnings and above)</option>
+                  <option value="info">Info (Important info)</option>
+                  <option value="debug">Debug (Detailed debugging)</option>
+                  <option value="verbose">Verbose (Business logic)</option>
+                  <option value="trace">Trace (Everything incl. CORS/CSRF)</option>
+                </select>
+              </label>
+              <p style={{ 
+                fontSize: '0.85rem', 
+                color: '#888', 
+                marginTop: '0.5rem',
+                lineHeight: '1.4'
+              }}>
+                Controls the verbosity of application logs. Changes take effect after saving and restarting.
+              </p>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'flex-end' }}>
+              <button
+                className="btn-secondary"
+                onClick={() => window.open('/logs', 'LogViewer', 'width=1200,height=800,menubar=no,toolbar=no,location=no,status=no')}
+                style={{ 
+                  width: '100%',
+                  padding: '0.75rem 1.5rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '0.5rem'
+                }}
+              >
+                📋 View Live Logs
+              </button>
+            </div>
+          </div>
+
+          {hasUnsavedChanges("Logging") && (
+            <button
+              className="btn-primary"
+              onClick={() => handleSaveSection("Logging")}
+              disabled={savingSection === "Logging"}
+              style={{ marginTop: '1rem' }}
+            >
+              {savingSection === "Logging" ? "Saving..." : "Save Logging Settings"}
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );

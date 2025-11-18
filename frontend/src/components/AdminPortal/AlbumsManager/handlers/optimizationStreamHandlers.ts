@@ -6,6 +6,7 @@
 import { UploadingImage, Photo } from '../types';
 import { API_URL } from '../../../../config';
 import { trackPhotoUploaded } from '../../../../utils/analytics';
+import { error as logError, warn, info } from '../../../../utils/logger';
 
 
 interface OptimizationStreamHandlersProps {
@@ -25,27 +26,27 @@ export const createOptimizationStreamHandlers = (props: OptimizationStreamHandle
     // Don't reconnect if already connected or connecting
     if (eventSource) {
       if (eventSource.readyState === EventSource.OPEN) {
-        console.log('[Optimization Stream] Already connected, skipping reconnection');
+        info('[Optimization Stream] Already connected, skipping reconnection');
         return;
       } else if (eventSource.readyState === EventSource.CONNECTING) {
-        console.log('[Optimization Stream] Connection in progress, skipping reconnection');
+        info('[Optimization Stream] Connection in progress, skipping reconnection');
         return;
       } else {
         // Connection is closed, clean it up
-        console.log('[Optimization Stream] Closing stale connection');
+        info('[Optimization Stream] Closing stale connection');
         eventSource.close();
         eventSource = null;
       }
     }
 
-    console.log('[Optimization Stream] Establishing new connection...');
+    info('[Optimization Stream] Establishing new connection...');
     
     eventSource = new EventSource(`${API_URL}/api/optimization-stream`, {
       withCredentials: true
     });
 
     eventSource.onopen = () => {
-      console.log('[Optimization Stream] ✅ Connected successfully');
+      info('[Optimization Stream] ✅ Connected successfully');
     };
 
     eventSource.onmessage = (event) => {
@@ -54,24 +55,24 @@ export const createOptimizationStreamHandlers = (props: OptimizationStreamHandle
 
         if (data.type === 'initial-state') {
           // Server sent current state of all jobs
-          console.log(`[Optimization Stream] Received ${data.jobs?.length || 0} active jobs`);
+          info(`[Optimization Stream] Received ${data.jobs?.length || 0} active jobs`);
           // TODO: Could sync with existing uploadingImages if needed
         } else if (data.type === 'optimization-update') {
           // Update for a specific photo
           const { jobId, album, filename, progress, state, error, title } = data;
 
-          console.log(`[Optimization Stream] Update received: ${jobId} - ${state} (${progress}%) - Album: "${album}" vs Uploading: "${uploadingAlbumRef.current}"`);
+          info(`[Optimization Stream] Update received: ${jobId} - ${state} (${progress}%) - Album: "${album}" vs Uploading: "${uploadingAlbumRef.current}"`);
 
           // Only update if it's for the currently uploading album
           if (album !== uploadingAlbumRef.current) {
-            console.log(`[Optimization Stream] Skipping update - album mismatch`);
+            info(`[Optimization Stream] Skipping update - album mismatch`);
             return;
           }
 
           setUploadingImages((prev: UploadingImage[]) => {
             const imageExists = prev.some(img => img.filename === filename);
             if (!imageExists) {
-              console.warn(`[Optimization Stream] Image ${filename} not found in uploadingImages array`);
+              warn(`[Optimization Stream] Image ${filename} not found in uploadingImages array`);
             }
             
             return prev.map((img: UploadingImage) => {
@@ -96,7 +97,7 @@ export const createOptimizationStreamHandlers = (props: OptimizationStreamHandle
 
               // Complete
               if (state === 'complete') {
-                console.log(`[Optimization Stream] ✅ Marking ${filename} as complete`);
+                info(`[Optimization Stream] ✅ Marking ${filename} as complete`);
                 const completedPhoto: Photo = {
                   id: `${album}/${filename}`,
                   thumbnail: `/optimized/thumbnail/${encodeURIComponent(album)}/${encodeURIComponent(filename)}`,
@@ -142,14 +143,14 @@ export const createOptimizationStreamHandlers = (props: OptimizationStreamHandle
           });
         }
       } catch (err) {
-        console.error('[Optimization Stream] Parse error:', err);
+        logError('[Optimization Stream] Parse error:', err);
       }
     };
 
-    eventSource.onerror = (error) => {
-      console.error('[Optimization Stream] Connection error', error);
+    eventSource.onerror = (err) => {
+      logError('[Optimization Stream] Connection error', err);
       if (eventSource) {
-        console.log('[Optimization Stream] EventSource readyState:', eventSource.readyState);
+        info('[Optimization Stream] EventSource readyState:', eventSource.readyState);
         eventSource.close();
         eventSource = null;
       }
@@ -162,11 +163,11 @@ export const createOptimizationStreamHandlers = (props: OptimizationStreamHandle
    */
   const disconnectOptimizationStream = () => {
     if (eventSource) {
-      console.log('[Optimization Stream] 🔌 Disconnecting...');
+      info('[Optimization Stream] 🔌 Disconnecting...');
       eventSource.close();
       eventSource = null;
     } else {
-      console.log('[Optimization Stream] Already disconnected');
+      info('[Optimization Stream] Already disconnected');
     }
   };
 

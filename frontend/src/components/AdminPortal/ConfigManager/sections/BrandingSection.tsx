@@ -10,6 +10,7 @@ import { trackBrandingUpdate, trackAvatarUpload } from '../../../../utils/analyt
 import SectionHeader from '../components/SectionHeader';
 import { LICENSE_OPTIONS, getLicenseById } from '../../../../utils/licenses';
 import '../../BrandingManager.css';
+import { error, info } from '../../../../utils/logger';
 
 
 interface BrandingSectionProps {
@@ -37,8 +38,8 @@ const BrandingSection: React.FC<BrandingSectionProps> = ({
   // Initialize originalBranding only once when component first loads
   useEffect(() => {
     if (!isInitialized && branding.siteName) {
-      console.log('[BrandingSection] Initializing originalBranding:', branding);
-      console.log('[BrandingSection] photoLicense:', branding.photoLicense);
+      info('[BrandingSection] Initializing originalBranding:', branding);
+      info('[BrandingSection] photoLicense:', branding.photoLicense);
       setOriginalBranding(branding);
       setIsInitialized(true);
     }
@@ -101,18 +102,18 @@ const BrandingSection: React.FC<BrandingSectionProps> = ({
         const formData = new FormData();
         formData.append('avatar', pendingAvatarFile);
 
-        console.log('[Avatar Upload] Starting upload...');
+        info('[Avatar Upload] Starting upload...');
         const avatarRes = await fetch(`${API_URL}/api/branding/upload-avatar`, {
           method: 'POST',
           credentials: 'include',
           body: formData,
         });
 
-        console.log('[Avatar Upload] Response status:', avatarRes.status);
+        info('[Avatar Upload] Response status:', avatarRes.status);
         
         if (avatarRes.ok) {
           const data = await avatarRes.json();
-          console.log('[Avatar Upload] Success:', data);
+          info('[Avatar Upload] Success:', data);
           updatedBranding.avatarPath = data.avatarPath;
           setBranding({
             ...branding,
@@ -123,7 +124,7 @@ const BrandingSection: React.FC<BrandingSectionProps> = ({
           setAvatarPreviewUrl(null);
         } else {
           const errorText = await avatarRes.text();
-          console.error('[Avatar Upload] Error response:', errorText);
+          error('[Avatar Upload] Error response:', errorText);
           let errorData;
           try {
             errorData = JSON.parse(errorText);
@@ -186,14 +187,14 @@ const BrandingSection: React.FC<BrandingSectionProps> = ({
   const hasBrandingChanges = (fields: (keyof BrandingConfig)[]): boolean => {
     // Check if avatar has pending upload
     if (fields.includes('avatarPath') && pendingAvatarFile) {
-      console.log('[BrandingSection] Has pending avatar file, showing save button');
+      info('[BrandingSection] Has pending avatar file, showing save button');
       return true;
     }
     
     // Check if any field values have changed
     const hasChanges = fields.some(field => branding[field] !== originalBranding[field]);
     if (hasChanges) {
-      console.log('[BrandingSection] Field changes detected:', fields);
+      info('[BrandingSection] Field changes detected:', fields);
     }
     return hasChanges;
   };
@@ -409,9 +410,9 @@ const BrandingSection: React.FC<BrandingSectionProps> = ({
                           method: 'POST',
                           credentials: 'include',
                         });
-                        console.log('Static JSON regenerated with new shuffle setting');
+                        info('Static JSON regenerated with new shuffle setting');
                       } catch (err) {
-                        console.error('Failed to regenerate static JSON:', err);
+                        error('Failed to regenerate static JSON:', err);
                       }
                       
                       setMessage({ type: 'success', text: 'Homepage shuffle setting saved!' });

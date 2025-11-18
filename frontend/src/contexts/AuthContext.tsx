@@ -6,6 +6,7 @@
 
 import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import { API_URL } from '../config';
+import { error as logError } from '../utils/logger';
 
 interface User {
   id: string;
@@ -45,8 +46,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setIsAuthenticated(false);
         setUser(null);
       }
-    } catch (error) {
-      console.error('Auth check failed:', error);
+    } catch (err) {
+      logError('Auth check failed:', err);
       setIsAuthenticated(false);
       setUser(null);
     } finally {
@@ -62,8 +63,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
       setIsAuthenticated(false);
       setUser(null);
-    } catch (error) {
-      console.error('Logout failed:', error);
+    } catch (err) {
+      logError('Logout failed:', err);
     }
   }, []);
 
