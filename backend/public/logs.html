@@ -272,6 +272,42 @@
       return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     }
 
+    /**
+     * Process log line to convert timestamps to local time
+     * Format: [BE] 2025-11-18 17:59:24 -05:00: [VERBOSE] ...
+     * Converts to: [BE] 17:59:24: [VERBOSE] ...
+     */
+    function processLogLine(line) {
+      // Regex to match timestamp format: YYYY-MM-DD HH:MM:SS ±HH:MM
+      const timestampRegex = /(\d{4}-\d{2}-\d{2}\s+)(\d{2}:\d{2}:\d{2})(\s+[+-]\d{2}:\d{2})/g;
+      
+      return line.replace(timestampRegex, (match, date, time, timezone) => {
+        try {
+          // Reconstruct full ISO timestamp for parsing
+          const isoTimestamp = `${date.trim()}T${time}${timezone.replace(' ', '')}`;
+          const dateObj = new Date(isoTimestamp);
+          
+          // Check if date is valid
+          if (isNaN(dateObj.getTime())) {
+            return match; // Return original if parsing fails
+          }
+          
+          // Format as local time (HH:MM:SS)
+          const localTime = dateObj.toLocaleTimeString('en-US', {
+            hour12: false,
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit'
+          });
+          
+          return localTime;
+        } catch (err) {
+          console.error('Failed to parse timestamp:', match, err);
+          return match; // Return original if parsing fails
+        }
+      });
+    }
+
     function applyFilterAndSearch() {
       const logLines = logsContainer.querySelectorAll('.log-line');
       let visibleCount = 0;
@@ -335,10 +371,11 @@
             logsContainer.innerHTML = '';
             if (data.logs && data.logs.length > 0) {
               data.logs.forEach(line => {
+                const processedLine = processLogLine(line);
                 const div = document.createElement('div');
                 div.className = 'log-line';
-                div.setAttribute('data-original-text', line);
-                div.textContent = line;
+                div.setAttribute('data-original-text', processedLine);
+                div.textContent = processedLine;
                 logsContainer.appendChild(div);
               });
               applyFilterAndSearch();
@@ -354,10 +391,11 @@
               logsContainer.removeChild(emptyMsg);
             }
             
+            const processedLine = processLogLine(data.line);
             const div = document.createElement('div');
             div.className = 'log-line';
-            div.setAttribute('data-original-text', data.line);
-            div.textContent = data.line;
+            div.setAttribute('data-original-text', processedLine);
+            div.textContent = processedLine;
             logsContainer.appendChild(div);
             
             // Apply filter and search to the new line
