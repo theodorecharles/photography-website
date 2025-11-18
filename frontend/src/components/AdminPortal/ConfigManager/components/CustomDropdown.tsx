@@ -112,12 +112,24 @@ export default function CustomDropdown({
         <div
           style={{
             position: 'fixed',
-            top: dropdownRef.current
-              ? dropdownRef.current.getBoundingClientRect().bottom + 4
-              : 0,
-            left: dropdownRef.current
-              ? dropdownRef.current.getBoundingClientRect().left
-              : 0,
+            ...(() => {
+              if (!dropdownRef.current) return { top: 0, left: 0 };
+              
+              const rect = dropdownRef.current.getBoundingClientRect();
+              const dropdownHeight = 300; // maxHeight
+              const spaceBelow = window.innerHeight - rect.bottom;
+              const spaceAbove = rect.top;
+              
+              // If not enough space below, flip upward
+              const shouldFlipUp = spaceBelow < dropdownHeight && spaceAbove > spaceBelow;
+              
+              return {
+                [shouldFlipUp ? 'bottom' : 'top']: shouldFlipUp 
+                  ? window.innerHeight - rect.top + 4
+                  : rect.bottom + 4,
+                left: rect.left,
+              };
+            })(),
             width: dropdownRef.current
               ? dropdownRef.current.getBoundingClientRect().width
               : 'auto',

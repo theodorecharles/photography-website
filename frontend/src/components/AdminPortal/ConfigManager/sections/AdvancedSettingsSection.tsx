@@ -406,7 +406,7 @@ const AdvancedSettingsSection: React.FC<AdvancedSettingsSectionProps> = ({
               </p>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'flex-end' }}>
+            <div>
               <button
                 className="btn-secondary"
                 onClick={() => window.open('/logs', 'LogViewer', 'width=1200,height=800,menubar=no,toolbar=no,location=no,status=no')}
