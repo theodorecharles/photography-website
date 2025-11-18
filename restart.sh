@@ -78,46 +78,52 @@ fi
 # Return to project root
 cd ..
 
-# Stop and delete all PM2 processes to avoid stale configuration
-log "Stopping and removing all PM2 processes..."
-if pm2 list 2>/dev/null | grep -q "online\|stopped\|errored"; then
-    log "Found existing PM2 processes, stopping them..."
-    pm2 stop all 2>/dev/null || true
-    pm2 delete all 2>/dev/null || true
-    log "All PM2 processes stopped and deleted"
-else
-    log "No existing PM2 processes found"
-fi
+# Nuclear option: Kill PM2 daemon and all managed processes
+log "Stopping PM2 daemon and all processes..."
+pm2 kill 2>/dev/null || true
+log "PM2 daemon stopped"
 
-# Wait for processes to fully terminate and release ports
-log "Waiting for ports to be released..."
-sleep 3
+# Wait for PM2 to fully shut down
+sleep 2
 
-# Function to kill process on a specific port
+# Function to kill ALL processes on a specific port
 kill_port() {
     local PORT=$1
-    local PID=""
+    local PIDS=""
+    local KILLED=0
     
-    # Try lsof first (most reliable)
+    # Try lsof first (most reliable, -t returns only PIDs)
     if command -v lsof &> /dev/null; then
-        PID=$(lsof -ti:$PORT 2>/dev/null || true)
+        PIDS=$(lsof -ti:$PORT 2>/dev/null || true)
     # Fallback to fuser
     elif command -v fuser &> /dev/null; then
-        PID=$(fuser $PORT/tcp 2>/dev/null | awk '{print $1}' || true)
-    # Fallback to netstat + grep
+        PIDS=$(fuser $PORT/tcp 2>/dev/null || true)
+    # Fallback to ss (faster than netstat)
+    elif command -v ss &> /dev/null; then
+        PIDS=$(ss -lptn "sport = :$PORT" 2>/dev/null | grep -oP 'pid=\K[0-9]+' || true)
+    # Final fallback to netstat
     elif command -v netstat &> /dev/null; then
-        PID=$(netstat -tlnp 2>/dev/null | grep ":$PORT " | awk '{print $7}' | cut -d'/' -f1 || true)
+        PIDS=$(netstat -tlnp 2>/dev/null | grep ":$PORT " | awk '{print $7}' | cut -d'/' -f1 || true)
     fi
     
-    if [ -n "$PID" ]; then
-        log "Found process on port $PORT (PID: $PID), killing it..."
-        kill -9 $PID 2>/dev/null || true
-        sleep 1
-        return 0
-    else
-        log "No process found on port $PORT"
-        return 1
+    if [ -n "$PIDS" ]; then
+        # Kill each PID (there might be multiple)
+        for PID in $PIDS; do
+            if [ -n "$PID" ] && [ "$PID" != "-" ]; then
+                log "Found process on port $PORT (PID: $PID), killing it..."
+                kill -9 $PID 2>/dev/null || true
+                KILLED=1
+            fi
+        done
+        
+        if [ $KILLED -eq 1 ]; then
+            sleep 1
+            return 0
+        fi
     fi
+    
+    log "No process found on port $PORT"
+    return 1
 }
 
 # Function to check if port is free
@@ -140,26 +146,43 @@ check_port_free() {
     return 0
 }
 
+# Kill any orphaned node processes that might be using our ports
+log "Checking for orphaned node processes..."
+ORPHANED=$(ps aux | grep -E "node.*server\.(js|ts)|tsx.*server\.ts" | grep -v grep | awk '{print $2}' || true)
+if [ -n "$ORPHANED" ]; then
+    log "Found orphaned node processes, killing them..."
+    echo "$ORPHANED" | xargs kill -9 2>/dev/null || true
+    sleep 1
+fi
+
 # Clean up both frontend (3000) and backend (3001) ports
 log "Checking and cleaning up ports..."
 
 for PORT in 3000 3001; do
     log "Cleaning port $PORT..."
-    kill_port $PORT || true
     
-    # Double-check port is free
-    if ! check_port_free $PORT; then
-        # Try one more time with force
-        log "Port $PORT still in use, attempting force kill..."
+    # Try up to 3 times to kill processes on this port
+    for ATTEMPT in 1 2 3; do
+        if check_port_free $PORT; then
+            log "✓ Port $PORT is free and ready"
+            break
+        fi
+        
+        log "Attempt $ATTEMPT: Port $PORT is in use, killing process..."
         kill_port $PORT || true
         sleep 2
         
-        if ! check_port_free $PORT; then
-            handle_error "Port $PORT is still in use after cleanup! Please manually kill the process using: lsof -ti:$PORT | xargs kill -9"
+        if [ $ATTEMPT -eq 3 ] && ! check_port_free $PORT; then
+            # Last resort: find and kill with lsof directly
+            log "Final attempt: Force killing all processes on port $PORT..."
+            lsof -ti:$PORT 2>/dev/null | xargs -r kill -9 2>/dev/null || true
+            sleep 2
+            
+            if ! check_port_free $PORT; then
+                handle_error "Port $PORT is STILL in use after 3 attempts! Manual intervention required: sudo lsof -ti:$PORT | xargs kill -9"
+            fi
         fi
-    fi
-    
-    log "✓ Port $PORT is free and ready"
+    done
 done
 
 # Start fresh with new builds
@@ -173,7 +196,20 @@ if ! pm2 start ecosystem.config.cjs; then
     handle_error "Failed to start services"
 fi
 
+# Save PM2 process list to ensure it persists across reboots
+pm2 save --force 2>/dev/null || true
+
 log "Services started successfully"
+
+# Wait a moment and verify services are running
+sleep 3
+if ! pm2 list | grep -q "online"; then
+    log "WARNING: Services may not have started correctly"
+    pm2 list
+    handle_error "Services are not running after start"
+fi
+
+log "✓ All services verified running"
 
 # Generate static JSON files for performance optimization (only if configured)
 if [ -f "data/config.json" ]; then
