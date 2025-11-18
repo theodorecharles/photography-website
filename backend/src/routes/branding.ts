@@ -33,7 +33,8 @@ const upload = multer({
     fileSize: 5 * 1024 * 1024, // 5MB
   },
   fileFilter: (req, file, cb) => {
-    if (file.mimetype.match(/^image\/(jpeg|jpg|png|gif)$/)) {
+    // Accept all image types (including HEIC) - will be converted to PNG
+    if (file.mimetype.startsWith('image/')) {
       cb(null, true);
     } else {
       cb(new Error('Only image files are allowed'));
@@ -176,8 +177,17 @@ router.post('/upload-avatar', requireManager, upload.single('avatar'), async (re
 
     // Determine paths
     const projectRoot = path.resolve(__dirname, '../../..');
-    const photosDir = path.join(projectRoot, 'photos');
+    const dataDir = process.env.DATA_DIR || path.join(projectRoot, 'data');
+    const photosDir = path.join(dataDir, 'photos');
     const frontendPublicDir = path.join(projectRoot, 'frontend', 'public');
+    
+    // Ensure directories exist
+    if (!fs.existsSync(photosDir)) {
+      fs.mkdirSync(photosDir, { recursive: true });
+    }
+    if (!fs.existsSync(frontendPublicDir)) {
+      fs.mkdirSync(frontendPublicDir, { recursive: true });
+    }
     
     // Use .png extension for consistency
     const avatarFilename = 'avatar.png';
@@ -191,20 +201,23 @@ router.post('/upload-avatar', requireManager, upload.single('avatar'), async (re
     
     // Use Sharp to process the avatar image
     try {
-      // Process and save avatar.png
+      // Process and save avatar.png with auto-rotation based on EXIF
       await sharp(file.path)
+        .rotate() // Auto-rotate based on EXIF orientation
         .resize(512, 512, { fit: 'cover' })
         .png()
         .toFile(avatarPath);
       
       // Create favicon.png (same as avatar)
       await sharp(file.path)
+        .rotate() // Auto-rotate based on EXIF orientation
         .resize(512, 512, { fit: 'cover' })
         .png()
         .toFile(faviconPngPath);
       
       // Generate favicon.ico (32x32) using Sharp
       await sharp(file.path)
+        .rotate() // Auto-rotate based on EXIF orientation
         .resize(32, 32, { fit: 'cover' })
         .toFormat('png')
         .toFile(faviconIcoPath);
