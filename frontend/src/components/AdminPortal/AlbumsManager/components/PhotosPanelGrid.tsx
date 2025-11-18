@@ -174,7 +174,10 @@ const PhotosPanelGrid: React.FC<PhotosPanelGridProps> = ({
   ];
 
   return (
-    <div className="photos-modal-content" id="photos-scroll-container">
+    <div 
+      className={`photos-modal-content ${activeId ? 'is-dragging' : ''}`} 
+      id="photos-scroll-container"
+    >
       <DndContext
         sensors={photoSensors}
         collisionDetection={closestCenter}

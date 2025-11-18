@@ -1111,11 +1111,11 @@
 }
 
 /* When dragging, disable touch scrolling to allow dnd-kit auto-scroll */
-.photos-modal-content:has(.admin-photo-item.dragging) .admin-photo-item {
+.photos-modal-content.is-dragging .admin-photo-item {
   touch-action: none;
 }
 
-.photos-modal-content:has(.list-item.dragging) .list-item {
+.photos-modal-content.is-dragging .list-item {
   touch-action: none;
 }
 
