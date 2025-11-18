@@ -78,19 +78,14 @@ fi
 # Return to project root
 cd ..
 
-# Stop and delete all PM2 processes (don't kill daemon - safer for remote execution)
-log "Stopping and removing all PM2 processes..."
+# Check if PM2 processes exist (for zero-downtime reload vs fresh start)
+PM2_PROCESSES_EXIST=false
 if pm2 list 2>/dev/null | grep -q "online\|stopped\|errored"; then
-    log "Found existing PM2 processes, stopping them..."
-    pm2 stop all 2>/dev/null || true
-    pm2 delete all 2>/dev/null || true
-    log "All PM2 processes stopped and deleted"
+    PM2_PROCESSES_EXIST=true
+    log "Found existing PM2 processes - will use graceful reload"
 else
-    log "No existing PM2 processes found"
+    log "No existing PM2 processes found - will do fresh start"
 fi
-
-# Wait for processes to fully terminate
-sleep 2
 
 # Function to kill ALL processes on a specific port
 kill_port() {
@@ -152,57 +147,67 @@ check_port_free() {
     return 0
 }
 
-# Kill any orphaned node processes that might be using our ports
-log "Checking for orphaned node processes..."
-ORPHANED=$(ps aux | grep -E "node.*server\.(js|ts)|tsx.*server\.ts" | grep -v grep | awk '{print $2}' || true)
-if [ -n "$ORPHANED" ]; then
-    log "Found orphaned node processes, killing them..."
-    echo "$ORPHANED" | xargs kill -9 2>/dev/null || true
-    sleep 1
-fi
+# Only clean ports if doing a fresh start (not a reload)
+if [ "$PM2_PROCESSES_EXIST" = false ]; then
+    # Kill any orphaned node processes that might be using our ports
+    log "Checking for orphaned node processes..."
+    ORPHANED=$(ps aux | grep -E "node.*server\.(js|ts)|tsx.*server\.ts" | grep -v grep | awk '{print $2}' || true)
+    if [ -n "$ORPHANED" ]; then
+        log "Found orphaned node processes, killing them..."
+        echo "$ORPHANED" | xargs kill -9 2>/dev/null || true
+        sleep 1
+    fi
 
-# Clean up both frontend (3000) and backend (3001) ports
-log "Checking and cleaning up ports..."
+    # Clean up both frontend (3000) and backend (3001) ports
+    log "Checking and cleaning up ports..."
 
-for PORT in 3000 3001; do
-    log "Cleaning port $PORT..."
-    
-    # Try up to 3 times to kill processes on this port
-    for ATTEMPT in 1 2 3; do
-        if check_port_free $PORT; then
-            log "✓ Port $PORT is free and ready"
-            break
-        fi
+    for PORT in 3000 3001; do
+        log "Cleaning port $PORT..."
         
-        log "Attempt $ATTEMPT: Port $PORT is in use, killing process..."
-        kill_port $PORT || true
-        sleep 2
-        
-        if [ $ATTEMPT -eq 3 ] && ! check_port_free $PORT; then
-            # Last resort: find and kill with lsof directly
-            log "Final attempt: Force killing all processes on port $PORT..."
-            lsof -ti:$PORT 2>/dev/null | xargs -r kill -9 2>/dev/null || true
+        # Try up to 3 times to kill processes on this port
+        for ATTEMPT in 1 2 3; do
+            if check_port_free $PORT; then
+                log "✓ Port $PORT is free and ready"
+                break
+            fi
+            
+            log "Attempt $ATTEMPT: Port $PORT is in use, killing process..."
+            kill_port $PORT || true
             sleep 2
             
-            if ! check_port_free $PORT; then
-                handle_error "Port $PORT is STILL in use after 3 attempts! Manual intervention required: sudo lsof -ti:$PORT | xargs kill -9"
+            if [ $ATTEMPT -eq 3 ] && ! check_port_free $PORT; then
+                # Last resort: find and kill with lsof directly
+                log "Final attempt: Force killing all processes on port $PORT..."
+                lsof -ti:$PORT 2>/dev/null | xargs -r kill -9 2>/dev/null || true
+                sleep 2
+                
+                if ! check_port_free $PORT; then
+                    handle_error "Port $PORT is STILL in use after 3 attempts! Manual intervention required: sudo lsof -ti:$PORT | xargs kill -9"
+                fi
             fi
-        fi
+        done
     done
-done
-
-# Start fresh with new builds
-log "Starting services with PM2..."
+fi
 
 # Copy ecosystem.local.cjs to ecosystem.config.cjs (PM2 requires this name)
 rm -f ecosystem.config.cjs
 cp ecosystem.local.cjs ecosystem.config.cjs
 
-if ! pm2 start ecosystem.config.cjs; then
-    handle_error "Failed to start services"
+# Use graceful reload if processes exist, otherwise fresh start
+if [ "$PM2_PROCESSES_EXIST" = true ]; then
+    log "Performing zero-downtime reload..."
+    if ! pm2 reload ecosystem.config.cjs --update-env; then
+        log "Reload failed, falling back to restart..."
+        pm2 restart ecosystem.config.cjs --update-env || handle_error "Failed to restart services"
+    fi
+    log "Services reloaded successfully (zero downtime)"
+else
+    log "Starting services with PM2..."
+    if ! pm2 start ecosystem.config.cjs; then
+        handle_error "Failed to start services"
+    fi
+    log "Services started successfully"
 fi
-
-log "Services started successfully"
 
 # Save PM2 process list to ensure it persists across reboots and remote sessions
 log "Saving PM2 process list..."
