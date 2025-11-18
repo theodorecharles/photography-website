@@ -172,16 +172,22 @@ const PhotoGridItem: React.FC<PhotoGridItemProps> = ({
     ? `${API_URL}${photoData.thumbnail}?i=${cacheBustValue}`
     : uploadingImage?.thumbnailUrl;
 
+  // Only use custom touch handlers on touch devices when NOT in drag mode
+  const isTouchDevice = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+  const useCustomTouchHandlers = isTouchDevice && !canEdit;
+
   return (
     <div
       ref={setNodeRef}
       style={style}
       data-photo-id={itemId}
       className={`admin-photo-item ${isDragging ? 'dragging' : ''} ${showOverlay ? 'show-overlay' : ''} ${isUploading ? 'uploading' : ''} ${isDeleting ? 'crt-delete' : ''}`}
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
-      onTouchCancel={handleTouchCancel}
+      {...(useCustomTouchHandlers ? {
+        onTouchStart: handleTouchStart,
+        onTouchMove: handleTouchMove,
+        onTouchEnd: handleTouchEnd,
+        onTouchCancel: handleTouchCancel,
+      } : {})}
       {...(canEdit && !isUploading ? attributes : {})}
       {...(canEdit && !isUploading ? listeners : {})}
     >
