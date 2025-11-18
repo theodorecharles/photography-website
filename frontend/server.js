@@ -101,8 +101,9 @@ app.use((req, res, next) => {
     // Allow IP addresses for direct container access (e.g., Unraid WebUI)
     const ipPattern = /^\d+\.\d+\.\d+\.\d+(:\d+)?$/;
     const isIpAddress = ipPattern.test(host);
+    const isLocalhost = host && (host.startsWith('localhost') || host.startsWith('127.0.0.1'));
 
-    if (!allowedHosts.includes(host) && !isIpAddress) {
+    if (!allowedHosts.includes(host) && !isIpAddress && !isLocalhost) {
       warn(`[Security] Invalid host header: ${host}`);
       warn(`[Security] Allowed hosts: ${allowedHosts.join(', ')}`);
       return res.status(400).send("Invalid host header");
