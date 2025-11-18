@@ -6,6 +6,7 @@
 import React, { useState } from 'react';
 import { API_URL } from '../../../../config';
 import { ConfigData } from '../types';
+import { trackConfigSettingsSaved } from '../../../../utils/analytics';
 import SectionHeader from '../components/SectionHeader';
 
 
@@ -62,7 +63,6 @@ const ImageOptimizationSection: React.FC<ImageOptimizationSectionProps> = ({
 
       if (res.ok) {
         // Track config settings save
-        const { trackConfigSettingsSaved } = await import('../../../utils/analytics');
         trackConfigSettingsSaved(sectionName);
         
         setMessage({ type: "success", text: `${sectionName} settings saved!` });

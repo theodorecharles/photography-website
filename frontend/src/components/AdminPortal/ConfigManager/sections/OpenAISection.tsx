@@ -6,6 +6,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { API_URL } from '../../../../config';
 import { ConfigData } from '../types';
+import { trackConfigSettingsSaved } from '../../../../utils/analytics';
 import { PasswordInput } from '../../PasswordInput';
 import SectionHeader from '../components/SectionHeader';
 
@@ -218,7 +219,6 @@ const OpenAISection: React.FC<OpenAISectionProps> = ({
 
       if (res.ok) {
         // Track config settings save
-        const { trackConfigSettingsSaved } = await import('../../../utils/analytics');
         trackConfigSettingsSaved('OpenAI');
         
         setMessage({ type: "success", text: `OpenAI settings saved!` });

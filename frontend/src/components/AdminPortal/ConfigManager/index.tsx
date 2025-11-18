@@ -7,6 +7,12 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { API_URL } from '../../../config';
 import { ConfigManagerProps, ConfigData } from './types';
 import { useSSEToaster } from '../../../contexts/SSEToasterContext';
+import { 
+  trackAITitleGenerationStarted, 
+  trackAITitleGenerationStopped,
+  trackImageOptimizationStarted,
+  trackImageOptimizationStopped 
+} from '../../../utils/analytics';
 import BrandingSection from './sections/BrandingSection';
 import LinksSection from './sections/LinksSection';
 import UserManagementSection from './sections/UserManagementSection';
@@ -290,7 +296,6 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
     sseToaster.optimizationAbortController.current = controller;
 
     // Track image optimization start
-    const { trackImageOptimizationStarted } = await import('../../utils/analytics');
     trackImageOptimizationStarted('all');
 
     try {
@@ -404,7 +409,6 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
   const handleStopTitles = useCallback(async () => {
     console.log('[handleStopTitles] Called');
     // Track AI title generation stop
-    const { trackAITitleGenerationStopped } = await import('../../utils/analytics');
     trackAITitleGenerationStopped(true);
     
     try {
@@ -441,7 +445,6 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
   const handleStopOptimization = useCallback(async () => {
     console.log('[handleStopOptimization] Called');
     // Track image optimization stop
-    const { trackImageOptimizationStopped } = await import('../../utils/analytics');
     trackImageOptimizationStopped(true);
     
     try {
@@ -487,7 +490,6 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
 
   const handleGenerateTitles = async (forceRegenerate = false) => {
     // Track AI title generation start
-    const { trackAITitleGenerationStarted } = await import('../../utils/analytics');
     trackAITitleGenerationStarted(forceRegenerate);
     
     // Initialize global context state to show toaster

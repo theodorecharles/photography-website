@@ -5,6 +5,13 @@
 
 import React, { useState, useEffect } from "react";
 import { API_URL } from '../../../../config';
+import { 
+  trackUserInvited, 
+  trackUserDeleted, 
+  trackUserRoleChanged, 
+  trackMFAReset, 
+  trackPasswordResetSent 
+} from '../../../../utils/analytics';
 import SectionHeader from "../components/SectionHeader";
 import { MFASetupModal } from "./UserManagement/MFASetupModal";
 import { ConfirmationModal } from "./UserManagement/ConfirmationModal";
@@ -207,7 +214,6 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
       }
 
       // Track user invited
-      const { trackUserInvited } = await import('../../../utils/analytics');
       trackUserInvited(newUser.email, newUser.role);
       
       loadUsers();
@@ -312,7 +318,6 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
       // Track MFA reset
       const user = users.find(u => u.id === userId);
       if (user) {
-        const { trackMFAReset } = await import('../../../utils/analytics');
         trackMFAReset(user.email, userId);
       }
       
@@ -365,7 +370,6 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
       // Track password reset sent
       const user = users.find(u => u.id === userId);
       if (user) {
-        const { trackPasswordResetSent } = await import('../../../utils/analytics');
         trackPasswordResetSent(user.email, userId);
       }
       
@@ -417,7 +421,6 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
       // Track user deleted
       const user = users.find(u => u.id === userId);
       if (user) {
-        const { trackUserDeleted } = await import('../../../utils/analytics');
         trackUserDeleted(user.email, userId);
       }
 
@@ -703,7 +706,6 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
       
       // Track role change
       if (user) {
-        const { trackUserRoleChanged } = await import('../../../utils/analytics');
         trackUserRoleChanged(user.email, userId, oldRole, role);
       }
       
