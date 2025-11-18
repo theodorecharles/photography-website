@@ -137,7 +137,7 @@ const PhotosPanelGrid: React.FC<PhotosPanelGridProps> = ({
   // Drag-and-drop works correctly without it, though you may need to manually
   // scroll when reordering items across a long list
   
-  // Configure dnd-kit sensors for photos
+  // Configure dnd-kit sensors for photos with auto-scroll enabled
   // Desktop: minimal delay for instant drag, mobile: longer delay to differentiate tap vs drag
   const photoSensors = useSensors(
     useSensor(PointerSensor, {
@@ -152,6 +152,17 @@ const PhotosPanelGrid: React.FC<PhotosPanelGridProps> = ({
       coordinateGetter: sortableKeyboardCoordinates,
     })
   );
+  
+  // Auto-scroll configuration for dnd-kit
+  const autoScrollOptions = {
+    layoutShiftCompensation: false,
+    acceleration: 30, // Speed multiplier
+    interval: 5, // Check every 5ms
+    threshold: {
+      x: 0.2, // Start scrolling when within 20% of edge
+      y: 0.2,
+    },
+  };
 
   if (loadingPhotos) {
     return (
@@ -184,6 +195,7 @@ const PhotosPanelGrid: React.FC<PhotosPanelGridProps> = ({
         collisionDetection={closestCenter}
         onDragStart={(event) => onPhotoDragStart(event, setActiveId)}
         onDragEnd={(event) => onPhotoDragEnd(event, setActiveId)}
+        autoScroll={autoScrollOptions}
       >
         {viewMode === 'grid' ? (
           <div ref={gridRef} className="photos-grid">
@@ -255,33 +267,91 @@ const PhotosPanelGrid: React.FC<PhotosPanelGridProps> = ({
           </div>
         )}
         <DragOverlay dropAnimation={null}>
-          {activeId ? (
-            <div style={{ 
-              width: '120px',
-              height: '120px',
-              borderRadius: '12px',
-              overflow: 'hidden',
-              boxShadow: '0 8px 24px rgba(0, 0, 0, 0.4)',
-              cursor: 'grabbing',
-              opacity: 0.9,
-              transform: 'translate(0%, -50%)',
-            }}>
-              <img
-                src={`${API_URL}${
-                  [...uploadingImages.map(img => img.photo), ...albumPhotos]
-                    .filter(p => p)
-                    .find(p => p!.id === activeId)
-                    ?.thumbnail
-                }?i=${cacheBustValue}`}
-                alt=""
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'cover',
-                }}
-              />
-            </div>
-          ) : null}
+          {activeId ? (() => {
+            const draggedPhoto = [...uploadingImages.map(img => img.photo), ...albumPhotos]
+              .filter(p => p)
+              .find(p => p!.id === activeId);
+            
+            if (!draggedPhoto) return null;
+            
+            // List view: show full row with title
+            if (viewMode === 'list') {
+              const filename = draggedPhoto.id.split('/').pop() || draggedPhoto.id;
+              const title = draggedPhoto.title || filename;
+              
+              return (
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '1rem',
+                  padding: '0.75rem 1.5rem',
+                  minHeight: '76px',
+                  background: '#161616',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  borderRadius: '8px',
+                  boxShadow: '0 8px 24px rgba(0, 0, 0, 0.6)',
+                  cursor: 'grabbing',
+                  opacity: 0.95,
+                  minWidth: '300px',
+                  maxWidth: '500px',
+                }}>
+                  <div style={{
+                    flexShrink: 0,
+                    width: '60px',
+                    height: '60px',
+                    borderRadius: '6px',
+                    overflow: 'hidden',
+                    border: '1px solid #3a3a3a',
+                  }}>
+                    <img
+                      src={`${API_URL}${draggedPhoto.thumbnail}?i=${cacheBustValue}`}
+                      alt=""
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                      }}
+                    />
+                  </div>
+                  <div style={{
+                    flex: 1,
+                    minWidth: 0,
+                    color: '#cfcfcf',
+                    fontSize: '1rem',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                  }}>
+                    {title}
+                  </div>
+                </div>
+              );
+            }
+            
+            // Grid view: show thumbnail only
+            return (
+              <div style={{ 
+                width: '120px',
+                height: '120px',
+                borderRadius: '12px',
+                overflow: 'hidden',
+                boxShadow: '0 8px 24px rgba(0, 0, 0, 0.4)',
+                cursor: 'grabbing',
+                opacity: 0.9,
+                transform: 'translate(0%, -50%)',
+              }}>
+                <img
+                  src={`${API_URL}${draggedPhoto.thumbnail}?i=${cacheBustValue}`}
+                  alt=""
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                  }}
+                />
+              </div>
+            );
+          })() : null}
         </DragOverlay>
       </DndContext>
     </div>
