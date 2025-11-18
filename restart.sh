@@ -93,24 +93,74 @@ fi
 log "Waiting for ports to be released..."
 sleep 3
 
-# Force kill any remaining processes on port 3001
-if command -v lsof &> /dev/null; then
-    PORT_3001_PID=$(lsof -ti:3001 2>/dev/null || true)
-    if [ -n "$PORT_3001_PID" ]; then
-        log "Found process on port 3001 (PID: $PORT_3001_PID), killing it..."
-        kill -9 $PORT_3001_PID 2>/dev/null || true
+# Function to kill process on a specific port
+kill_port() {
+    local PORT=$1
+    local PID=""
+    
+    # Try lsof first (most reliable)
+    if command -v lsof &> /dev/null; then
+        PID=$(lsof -ti:$PORT 2>/dev/null || true)
+    # Fallback to fuser
+    elif command -v fuser &> /dev/null; then
+        PID=$(fuser $PORT/tcp 2>/dev/null | awk '{print $1}' || true)
+    # Fallback to netstat + grep
+    elif command -v netstat &> /dev/null; then
+        PID=$(netstat -tlnp 2>/dev/null | grep ":$PORT " | awk '{print $7}' | cut -d'/' -f1 || true)
+    fi
+    
+    if [ -n "$PID" ]; then
+        log "Found process on port $PORT (PID: $PID), killing it..."
+        kill -9 $PID 2>/dev/null || true
         sleep 1
-    fi
-fi
-
-# Double-check port is free
-if command -v lsof &> /dev/null; then
-    if lsof -i:3001 &> /dev/null; then
-        handle_error "Port 3001 is still in use after cleanup!"
+        return 0
     else
-        log "Port 3001 is free and ready"
+        log "No process found on port $PORT"
+        return 1
     fi
-fi
+}
+
+# Function to check if port is free
+check_port_free() {
+    local PORT=$1
+    
+    if command -v lsof &> /dev/null; then
+        if lsof -i:$PORT &> /dev/null; then
+            return 1
+        fi
+    elif command -v fuser &> /dev/null; then
+        if fuser $PORT/tcp &> /dev/null 2>&1; then
+            return 1
+        fi
+    elif command -v netstat &> /dev/null; then
+        if netstat -tln 2>/dev/null | grep -q ":$PORT "; then
+            return 1
+        fi
+    fi
+    return 0
+}
+
+# Clean up both frontend (3000) and backend (3001) ports
+log "Checking and cleaning up ports..."
+
+for PORT in 3000 3001; do
+    log "Cleaning port $PORT..."
+    kill_port $PORT || true
+    
+    # Double-check port is free
+    if ! check_port_free $PORT; then
+        # Try one more time with force
+        log "Port $PORT still in use, attempting force kill..."
+        kill_port $PORT || true
+        sleep 2
+        
+        if ! check_port_free $PORT; then
+            handle_error "Port $PORT is still in use after cleanup! Please manually kill the process using: lsof -ti:$PORT | xargs kill -9"
+        fi
+    fi
+    
+    log "✓ Port $PORT is free and ready"
+done
 
 # Start fresh with new builds
 log "Starting services with PM2..."
