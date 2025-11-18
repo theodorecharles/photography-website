@@ -43,7 +43,7 @@ async function sendAnalyticsEvent(eventData: any) {
     });
   } catch (err) {
     // Silently fail - don't break auth flow
-    console.debug('Analytics tracking failed:', err);
+    debug('[Auth] Analytics tracking failed:', err);
   }
 }
 

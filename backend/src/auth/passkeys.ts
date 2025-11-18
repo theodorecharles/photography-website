@@ -16,6 +16,7 @@ import type {
   AuthenticationResponseJSON,
 } from '@simplewebauthn/types';
 import config, { isEnvSet } from '../config.js';
+import { debug, warn } from '../utils/logger.js';
 
 // Get RP (Relying Party) configuration from environment or config
 const getRPConfig = () => {
@@ -49,7 +50,7 @@ const getRPConfig = () => {
         }
       }
     } catch (err) {
-      console.warn('Could not infer RP config from environment or config:', err);
+      warn('[Passkeys] Could not infer RP config from environment or config:', err);
     }
   }
   
@@ -58,7 +59,7 @@ const getRPConfig = () => {
   origin = origin || 'http://localhost:3000';
   const rpName = process.env.RP_NAME || 'Photography Portfolio';
   
-  console.log('[Passkeys] RP Config:', { rpID, rpName, origin });
+  debug('[Passkeys] RP Config:', { rpID, rpName, origin });
   
   return { rpID, rpName, origin };
 };
@@ -126,7 +127,7 @@ export async function generatePasskeyAuthenticationOptions(
 ) {
   const { rpID } = getRPConfig();
   
-  console.log('[Passkey Auth Options] Generating for RP:', rpID);
+  debug('[Passkeys] Generating auth options for RP:', rpID);
   
   // Don't specify allowCredentials - this lets password managers (like 1Password)
   // automatically offer their stored passkeys without browser showing generic options

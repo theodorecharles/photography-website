@@ -50,8 +50,12 @@ export function initLogger(logLevel?: string | LogLevel): void {
           currentLogLevel = LogLevel.VERBOSE;
           break;
         default:
+          // Only warn if we're not already in silent mode
+          const wasSilent = currentLogLevel === LogLevel.SILENT;
           currentLogLevel = LogLevel.INFO;
-          console.warn(`[Logger] Unknown log level "${logLevel}", defaulting to INFO`);
+          if (!wasSilent) {
+            console.warn(`[Logger] Unknown log level "${logLevel}", defaulting to INFO`);
+          }
       }
     } else {
       currentLogLevel = logLevel;

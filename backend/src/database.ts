@@ -5,6 +5,7 @@
 
 import { createRequire } from 'module';
 import { DB_PATH } from './config.js';
+import { info, warn, error } from './utils/logger.js';
 
 const require = createRequire(import.meta.url);
 const Database = require('better-sqlite3');
@@ -80,11 +81,11 @@ export function initializeDatabase(): any {
     const tableInfo = db.pragma('table_info(image_metadata)');
     const hasSortOrder = tableInfo.some((col: any) => col.name === 'sort_order');
     if (!hasSortOrder) {
-      console.log('📝 Adding sort_order column to image_metadata...');
+      info('[Database] Adding sort_order column to image_metadata...');
       db.exec('ALTER TABLE image_metadata ADD COLUMN sort_order INTEGER');
     }
   } catch (err) {
-    console.log('⚠️  Could not check/add sort_order column:', err);
+    warn('[Database] Could not check/add sort_order column:', err);
   }
   
   // Add sort_order column to albums if it doesn't exist (migration)
@@ -92,11 +93,11 @@ export function initializeDatabase(): any {
     const tableInfo = db.pragma('table_info(albums)');
     const hasSortOrder = tableInfo.some((col: any) => col.name === 'sort_order');
     if (!hasSortOrder) {
-      console.log('📝 Adding sort_order column to albums...');
+      info('[Database] Adding sort_order column to albums...');
       db.exec('ALTER TABLE albums ADD COLUMN sort_order INTEGER');
     }
   } catch (err) {
-    console.log('⚠️  Could not check/add sort_order column to albums:', err);
+    warn('[Database] Could not check/add sort_order column to albums:', err);
   }
   
   // Add sort_order column to album_folders if it doesn't exist (migration)
@@ -104,11 +105,11 @@ export function initializeDatabase(): any {
     const tableInfo = db.pragma('table_info(album_folders)');
     const hasSortOrder = tableInfo.some((col: any) => col.name === 'sort_order');
     if (!hasSortOrder) {
-      console.log('📝 Adding sort_order column to album_folders...');
+      info('[Database] Adding sort_order column to album_folders...');
       db.exec('ALTER TABLE album_folders ADD COLUMN sort_order INTEGER');
     }
   } catch (err) {
-    console.log('⚠️  Could not check/add sort_order column to album_folders:', err);
+    warn('[Database] Could not check/add sort_order column to album_folders:', err);
   }
   
   // Add folder_id column to albums if it doesn't exist (migration)
@@ -116,11 +117,11 @@ export function initializeDatabase(): any {
     const tableInfo = db.pragma('table_info(albums)');
     const hasFolderId = tableInfo.some((col: any) => col.name === 'folder_id');
     if (!hasFolderId) {
-      console.log('📝 Adding folder_id column to albums...');
+      info('[Database] Adding folder_id column to albums...');
       db.exec('ALTER TABLE albums ADD COLUMN folder_id INTEGER REFERENCES album_folders(id) ON DELETE SET NULL');
     }
   } catch (err) {
-    console.log('⚠️  Could not check/add folder_id column to albums:', err);
+    warn('[Database] Could not check/add folder_id column to albums:', err);
   }
   
   // Create share_links table if it doesn't exist
@@ -146,9 +147,9 @@ export function initializeDatabase(): any {
     ON share_links(album)
   `);
   
-  console.log('✓ SQLite database initialized at:', DB_PATH);
-  console.log('✓ WAL mode enabled for better performance');
-  console.log('✓ All tables and migrations applied');
+  info('[Database] SQLite database initialized at:', DB_PATH);
+  info('[Database] WAL mode enabled for better performance');
+  info('[Database] All tables and migrations applied');
   
   return db;
 }
@@ -498,8 +499,8 @@ export function updateImageSortOrder(album: string, imageOrders: { filename: str
     
     transaction();
     return true;
-  } catch (error) {
-    console.error('Error updating image sort order:', error);
+  } catch (err) {
+    error('[Database] Failed to update image sort order:', err);
     return false;
   }
 }
@@ -647,8 +648,8 @@ export function updateAlbumSortOrder(albumOrders: { name: string; sort_order: nu
     
     transaction();
     return true;
-  } catch (error) {
-    console.error('Error updating album sort order:', error);
+  } catch (err) {
+    error('[Database] Failed to update album sort order:', err);
     return false;
   }
 }
@@ -1018,8 +1019,8 @@ export function updateFolderSortOrder(folderOrders: { name: string; sort_order: 
     
     transaction();
     return true;
-  } catch (error) {
-    console.error('Error updating folder sort order:', error);
+  } catch (err) {
+    error('[Database] Failed to update folder sort order:', err);
     return false;
   }
 }
@@ -1031,7 +1032,7 @@ export function closeDatabase(): void {
   if (db) {
     db.close();
     db = null;
-    console.log('✓ Database connection closed');
+    info('[Database] Database connection closed');
   }
 }
 

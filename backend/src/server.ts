@@ -430,7 +430,7 @@ const cacheImageMiddleware = (
     });
 
     const sizeType = req.path.includes("/thumbnail/") ? "thumbnail" : "modal";
-    console.log(
+    debug(
       `[Cache] Cached ${sizeType}: ${path.basename(imagePath)} (${(
         data.length / 1024
       ).toFixed(1)} KB, total: ${imageCache.size})`

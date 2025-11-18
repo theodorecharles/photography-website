@@ -119,8 +119,8 @@ export default defineConfig({
     'import.meta.env.VITE_SITE_URL_FULL': JSON.stringify(siteUrl),
     'import.meta.env.VITE_API_URL_FULL': JSON.stringify(envConfig.frontend.apiUrl),
     'import.meta.env.VITE_AVATAR_PATH': JSON.stringify(config.branding.avatarPath),
-    // Note: VITE_LOG_LEVEL is automatically exposed by Vite from .env files
-    // No need to manually define it here
+    // Map LOG_LEVEL to VITE_LOG_LEVEL so we only need one variable
+    'import.meta.env.VITE_LOG_LEVEL': JSON.stringify(envVars.LOG_LEVEL || 'info'),
   },
   build: {
     cssCodeSplit: false, // CRITICAL: Keep all CSS in one file to prevent loading issues

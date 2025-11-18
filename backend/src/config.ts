@@ -85,16 +85,16 @@ function loadConfig() {
       fullConfig = JSON.parse(fs.readFileSync(configPath, 'utf8'));
       configExists = true;
       // Use console.log here since logger might not be initialized yet
-      console.log(`✓ Loaded configuration from config.json`);
+      info('[Config] Loaded configuration from config.json');
       return true;
     } else {
-      console.log(`⚠️  config.json not found - using defaults for setup mode`);
+      warn('[Config] config.json not found - using defaults for setup mode');
       fullConfig = defaultConfig;
       configExists = false;
       return false;
     }
-  } catch (error) {
-    console.error(`❌ Failed to load config.json, using defaults:`, error);
+  } catch (err) {
+    error('[Config] Failed to load config.json, using defaults:', err);
     fullConfig = defaultConfig;
     configExists = false;
     return false;

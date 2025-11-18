@@ -21,6 +21,7 @@ import {
   type User,
 } from '../database-users.js';
 import { verifyTOTP } from './mfa.js';
+import { warn } from '../utils/logger.js';
 
 // Extend the Session type to include our user data
 declare module '@auth/core/types' {
@@ -54,7 +55,7 @@ export function getAuthConfig(): AuthConfig {
   const sessionSecret = config.auth?.sessionSecret;
   
   if (!sessionSecret) {
-    console.error('⚠️  No session secret configured! Auth will not work properly.');
+    warn('[AuthConfig] No session secret configured! Auth will not work properly.');
   }
 
   return {

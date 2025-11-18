@@ -5,6 +5,7 @@
 
 import nodemailer from 'nodemailer';
 import { getCurrentConfig } from './config.js';
+import { error, info } from './utils/logger.js';
 
 export interface EmailConfig {
   enabled: boolean;
@@ -87,7 +88,7 @@ export async function sendInvitationEmail(
   const emailConfig = getEmailConfig();
   
   if (!transporter || !emailConfig) {
-    console.error('[Email] Email service not configured - cannot send invitation');
+    error('[Email] Email service not configured - cannot send invitation');
     return false;
   }
   
@@ -201,10 +202,10 @@ If you didn't expect this invitation, you can safely ignore this email.
   
   try {
     await transporter.sendMail(mailOptions);
-    console.log(`[Email] Invitation sent to ${toEmail}`);
+    info(`[Email] Invitation sent to ${toEmail}`);
     return true;
-  } catch (error) {
-    console.error('[Email] Failed to send invitation:', error);
+  } catch (err) {
+    error('[Email] Failed to send invitation:', err);
     return false;
   }
 }
@@ -221,7 +222,7 @@ export async function sendPasswordResetEmail(
   const emailConfig = getEmailConfig();
   
   if (!transporter || !emailConfig) {
-    console.error('[Email] Email service not configured - cannot send password reset');
+    error('[Email] Email service not configured - cannot send password reset');
     return false;
   }
   
@@ -355,10 +356,10 @@ This is an automated message, please do not reply to this email.
   
   try {
     await transporter.sendMail(mailOptions);
-    console.log(`[Email] Password reset sent to ${toEmail}`);
+    info(`[Email] Password reset sent to ${toEmail}`);
     return true;
-  } catch (error) {
-    console.error('[Email] Failed to send password reset:', error);
+  } catch (err) {
+    error('[Email] Failed to send password reset:', err);
     return false;
   }
 }
@@ -389,7 +390,7 @@ export async function sendTestEmail(toEmail: string): Promise<boolean> {
   const emailConfig = getEmailConfig();
   
   if (!transporter || !emailConfig) {
-    console.error('[Email] Email service not configured - cannot send test email');
+    error('[Email] Email service not configured - cannot send test email');
     return false;
   }
   
@@ -464,10 +465,10 @@ You can safely ignore or delete this email.
   
   try {
     await transporter.sendMail(mailOptions);
-    console.log(`[Email] Test email sent to ${toEmail}`);
+    info(`[Email] Test email sent to ${toEmail}`);
     return true;
-  } catch (error) {
-    console.error('[Email] Failed to send test email:', error);
+  } catch (err) {
+    error('[Email] Failed to send test email:', err);
     return false;
   }
 }
