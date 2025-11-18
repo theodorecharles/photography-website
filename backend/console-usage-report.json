@@ -1,0 +1,43 @@
+{
+  "timestamp": "2025-11-18T02:37:16.306Z",
+  "totalFiles": 2,
+  "totalInstances": 8,
+  "files": {
+    "./src/utils/logger.ts": [
+      {
+        "line": 57,
+        "content": "console.warn(`[Logger] Unknown log level \"${logLevel}\", defaulting to INFO`);"
+      },
+      {
+        "line": 123,
+        "content": "console.error(formatMessage('ERROR', ...args));"
+      },
+      {
+        "line": 132,
+        "content": "console.warn(formatMessage('WARN', ...args));"
+      },
+      {
+        "line": 141,
+        "content": "console.log(formatMessage('INFO', ...args));"
+      },
+      {
+        "line": 150,
+        "content": "console.log(formatMessage('DEBUG', ...args));"
+      },
+      {
+        "line": 159,
+        "content": "console.log(formatMessage('VERBOSE', ...args));"
+      },
+      {
+        "line": 164,
+        "content": "* Legacy console.log replacement - maps to info"
+      }
+    ],
+    "./src/config.ts": [
+      {
+        "line": 87,
+        "content": "// Use console.log here since logger might not be initialized yet"
+      }
+    ]
+  }
+}

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import "./PasswordInput.css";
 import { EyeIcon, CopyIcon } from "../icons/";
+import { error } from '../../utils/logger';
 
 interface PasswordInputProps {
   value: string;
@@ -32,7 +33,7 @@ export const PasswordInput: React.FC<PasswordInputProps> = ({
       await navigator.clipboard.writeText(value);
       // Optional: Could add a toast notification here
     } catch (err) {
-      console.error("Failed to copy:", err);
+      error("Failed to copy:", err);
     }
   };
 

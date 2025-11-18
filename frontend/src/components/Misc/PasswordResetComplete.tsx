@@ -7,6 +7,7 @@ import React, { useState, useEffect } from 'react';
 import { API_URL } from '../../config';
 import { useParams, useNavigate } from 'react-router-dom';
 import { PasswordInput } from '../AdminPortal/PasswordInput';
+import { error as logError } from '../../utils/logger';
 
 
 const PasswordResetComplete: React.FC = () => {
@@ -33,7 +34,7 @@ const PasswordResetComplete: React.FC = () => {
           setPrimaryColor(data.primaryColor || '#4ade80');
         }
       } catch (err) {
-        console.error('Failed to load branding:', err);
+        logError('Failed to load branding:', err);
       }
     };
 

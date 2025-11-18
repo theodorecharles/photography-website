@@ -13,6 +13,7 @@ import { fetchWithRateLimitCheck } from "../utils/fetchWrapper";
 import PhotoModal from "./PhotoModal";
 import NotFound from "./Misc/NotFound";
 import { reconstructPhoto, getNumColumns, distributePhotos } from "../utils/photoHelpers";
+import { info } from '../utils/logger';
 
 interface PhotoGridProps {
   album: string;
@@ -207,20 +208,20 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
               // New homepage format with metadata
               shouldShuffle = staticData.shuffle ?? true;
               staticPhotos = staticData.photos.map((data: string[]) => reconstructPhoto(data, album));
-              console.log(`✨ Loaded ${staticPhotos.length} photos from homepage JSON (shuffle: ${shouldShuffle})`);
+              info(`✨ Loaded ${staticPhotos.length} photos from homepage JSON (shuffle: ${shouldShuffle})`);
               
               // Shuffle homepage photos for random display order each time (if enabled)
               if (shouldShuffle) {
                 staticPhotos = [...staticPhotos].sort(() => Math.random() - 0.5);
-                console.log(`🔀 Shuffled ${staticPhotos.length} homepage photos`);
+                info(`🔀 Shuffled ${staticPhotos.length} homepage photos`);
               } else {
-                console.log(`📌 Homepage shuffle disabled - displaying in order`);
+                info(`📌 Homepage shuffle disabled - displaying in order`);
               }
             } else {
               // Regular album format or legacy homepage format (array of photos)
               const photoArray = Array.isArray(staticData) ? staticData : (staticData.photos || []);
               staticPhotos = photoArray.map((data: string[]) => reconstructPhoto(data, album));
-              console.log(`✨ Loaded ${staticPhotos.length} photos from optimized static JSON (${album})`);
+              info(`✨ Loaded ${staticPhotos.length} photos from optimized static JSON (${album})`);
             }
             
             // Show first 100 immediately
@@ -234,7 +235,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
           }
         } catch (staticError) {
           // Static JSON not available or failed, fall back to API
-          console.log(`⚠️  Static JSON unavailable for ${album}, falling back to API`);
+          info(`⚠️  Static JSON unavailable for ${album}, falling back to API`);
         }
 
         // Fallback to API if static JSON is not available

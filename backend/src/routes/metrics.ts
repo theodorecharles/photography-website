@@ -7,6 +7,7 @@
 import { Router, Request, Response } from 'express';
 import config from '../config.ts';
 import { requireAuth, requireAdmin } from '../auth/middleware.js';
+import { error, warn, info, debug, verbose } from '../utils/logger.js';
 
 const router = Router();
 
@@ -132,17 +133,17 @@ router.get('/visitors-over-time', requireAuth, async (req: Request, res: Respons
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('OpenObserve query error:', response.status, errorText);
-      console.error('Query that failed:', sql);
+      error('OpenObserve query error:', response.status, errorText);
+      error('Query that failed:', sql);
       res.status(500).json({ error: 'Failed to retrieve time series data' });
       return;
     }
 
     const data = await response.json();
-    console.log('Visitors over time query returned:', data.hits?.length || 0, 'results');
+    info('Visitors over time query returned:', data.hits?.length || 0, 'results');
     res.status(200).json({ hits: data.hits || [] });
-  } catch (error) {
-    console.error('Visitors over time error:', error);
+  } catch (err) {
+    error('Visitors over time error:', err);
     res.status(500).json({ 
       error: 'Failed to retrieve time series data. Please try again later.'
     });
@@ -240,17 +241,17 @@ router.get('/visitor-locations', requireAuth, async (req: Request, res: Response
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('OpenObserve query error:', response.status, errorText);
-      console.error('Query that failed:', sql);
+      error('OpenObserve query error:', response.status, errorText);
+      error('Query that failed:', sql);
       res.status(500).json({ error: 'Failed to retrieve location data' });
       return;
     }
 
     const data = await response.json();
-    console.log('Visitor locations query returned:', data.hits?.length || 0, 'locations');
+    info('Visitor locations query returned:', data.hits?.length || 0, 'locations');
     res.status(200).json({ locations: data.hits || [] });
-  } catch (error) {
-    console.error('Visitor locations error:', error);
+  } catch (err) {
+    error('Visitor locations error:', err);
     res.status(500).json({ 
       error: 'Failed to retrieve location data. Please try again later.'
     });
@@ -353,20 +354,20 @@ router.get('/pageviews-by-hour', requireAuth, async (req: Request, res: Response
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('OpenObserve query failed:', response.status, errorText);
+      error('OpenObserve query failed:', response.status, errorText);
       throw new Error(`OpenObserve query failed: ${response.status}`);
     }
 
     const result = await response.json();
     
-    console.log(`[Pageviews by hour] Returning ${result.hits?.length || 0} hours of data for ${days} day(s) time range`);
+    info(`[Pageviews by hour] Returning ${result.hits?.length || 0} hours of data for ${days} day(s) time range`);
     
     res.status(200).json({
       hits: result.hits || [],
       took: result.took
     });
-  } catch (error) {
-    console.error('Pageviews by hour error:', error);
+  } catch (err) {
+    error('Pageviews by hour error:', err);
     res.status(500).json({ 
       error: 'Failed to retrieve hourly pageviews. Please try again later.'
     });
@@ -443,7 +444,7 @@ router.get('/stats', requireAuth, async (req: Request, res: Response): Promise<v
       if (!response.ok) {
         const errorText = await response.text();
         // Don't include detailed error messages that might leak infrastructure details
-        console.error('OpenObserve query error:', response.status, errorText);
+        error('OpenObserve query error:', response.status, errorText);
         throw new Error(`Query failed with status ${response.status}`);
       }
 
@@ -500,8 +501,8 @@ router.get('/stats', requireAuth, async (req: Request, res: Response): Promise<v
     };
 
     res.status(200).json(stats);
-  } catch (error) {
-    console.error('Metrics stats error:', error);
+  } catch (err) {
+    error('Metrics stats error:', err);
     // Don't leak error details to client - they could expose infrastructure info
     res.status(500).json({ 
       error: 'Failed to retrieve metrics. Please try again later.'

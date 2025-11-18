@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import type { NewUserState } from './types';
 import { copyInvitationUrl } from './utils';
+import { error } from '../../../../../utils/logger';
 
 interface NewUserFormProps {
   newUser: NewUserState;
@@ -27,7 +28,7 @@ export const NewUserForm: React.FC<NewUserFormProps> = ({
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
-      console.error('Failed to copy invitation link:', err);
+      error('Failed to copy invitation link:', err);
     }
   };
 

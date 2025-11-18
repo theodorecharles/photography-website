@@ -5,7 +5,11 @@
 
 import { fetchWithRateLimitCheck } from '../../../../utils/fetchWrapper';
 import { API_URL } from '../../../../config';
-import { trackPhotoDeleted } from '../../../../utils/analytics';
+import { 
+  trackPhotoDeleted, 
+  trackPhotoRetryOptimization, 
+  trackPhotoRetryAI 
+} from '../../../../utils/analytics';
 import { ConfirmModalConfig, Photo } from '../types';
 
 
@@ -55,6 +59,7 @@ export const createPhotoHandlers = (props: PhotoHandlersProps) => {
         throw new Error('Failed to retry optimization');
       }
       
+      trackPhotoRetryOptimization(album, `${album}/${filename}`);
       setMessage({ type: 'success', text: `Optimization restarted for ${filename}` });
       
       // Reload photos to get the updated version
@@ -101,6 +106,7 @@ export const createPhotoHandlers = (props: PhotoHandlersProps) => {
         throw new Error('Failed to retry AI title generation');
       }
       
+      trackPhotoRetryAI(album, `${album}/${filename}`);
       setMessage({ type: 'success', text: `AI title generation restarted for ${filename}` });
       
       // Reload photos to get the updated version

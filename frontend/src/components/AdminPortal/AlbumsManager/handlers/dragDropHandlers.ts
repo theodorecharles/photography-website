@@ -7,6 +7,7 @@ import { DragEndEvent, DragOverEvent } from '@dnd-kit/core';
 import { arrayMove } from '@dnd-kit/sortable';
 import { Album, AlbumFolder } from '../types';
 import { isDraggingFolder, isDraggingAlbum, extractFolderId } from '../utils/dragDropHelpers';
+import { info } from '../../../../utils/logger';
 
 interface DragDropHandlersProps {
   localAlbums: Album[];
@@ -45,11 +46,11 @@ export const createDragDropHandlers = (props: DragDropHandlersProps) => {
 
   // Photo drag handlers
   const handlePhotoDragStart = (event: DragEndEvent) => {
-    console.log('📸 Photo drag started:', event.active.id);
+    info('📸 Photo drag started:', event.active.id);
   };
 
   const handlePhotoDragEnd = (event: DragEndEvent) => {
-    console.log('📸 Photo drag ended:', event.active.id);
+    info('📸 Photo drag ended:', event.active.id);
   };
 
   // Album drag handlers
@@ -104,7 +105,7 @@ export const createDragDropHandlers = (props: DragDropHandlersProps) => {
       const activeAlbum = localAlbums.find(a => a.name === activeId);
       if (!activeAlbum) return;
       
-      console.log('🔍 Album drag over:', {
+      info('🔍 Album drag over:', {
         activeId,
         activeFolderId: activeAlbum.folder_id,
         overId,
@@ -115,31 +116,31 @@ export const createDragDropHandlers = (props: DragDropHandlersProps) => {
       if (overId === 'ghost-uncategorized') {
         // Only highlight if dragging FROM a folder (not from uncategorized itself)
         if (activeAlbum.folder_id !== null) {
-          console.log('  ✅ Highlighting uncategorized ghost (dragging from folder', activeAlbum.folder_id, ')');
+          info('  ✅ Highlighting uncategorized ghost (dragging from folder', activeAlbum.folder_id, ')');
           setDragOverUncategorized(true);
           setDragOverFolderId(null);
         } else {
-          console.log('  ❌ Same section (uncategorized), not highlighting');
+          info('  ❌ Same section (uncategorized), not highlighting');
           setDragOverUncategorized(false);
           setDragOverFolderId(null);
         }
       } else if (overId.startsWith('ghost-folder-')) {
         const folderId = parseInt(overId.replace('ghost-folder-', ''));
-        console.log('  📍 Over ghost-folder-', folderId, ', active is in folder', activeAlbum.folder_id);
+        info('  📍 Over ghost-folder-', folderId, ', active is in folder', activeAlbum.folder_id);
         
         // Only highlight if dragging FROM a different folder or from uncategorized
         if (activeAlbum.folder_id !== folderId) {
-          console.log('  ✅ Highlighting folder', folderId, 'ghost (different section)');
+          info('  ✅ Highlighting folder', folderId, 'ghost (different section)');
           setDragOverFolderId(folderId);
           setDragOverUncategorized(false);
         } else {
-          console.log('  ❌ Same folder, not highlighting');
+          info('  ❌ Same folder, not highlighting');
           setDragOverFolderId(null);
           setDragOverUncategorized(false);
         }
       } else {
         // Not over a ghost tile - clear highlights
-        console.log('  ⚪ Not over ghost tile, clearing highlights');
+        info('  ⚪ Not over ghost tile, clearing highlights');
         setDragOverFolderId(null);
         setDragOverUncategorized(false);
       }
@@ -162,11 +163,11 @@ export const createDragDropHandlers = (props: DragDropHandlersProps) => {
     const activeId = String(active.id);
     const overId = String(over.id);
     
-    console.log('🎯 Drag end:', { activeId, overId });
+    info('🎯 Drag end:', { activeId, overId });
     
     // Handle folder drag end
     if (isDraggingFolder(activeId) && isDraggingFolder(overId)) {
-      console.log('📁 Folder reordered via drag-and-drop');
+      info('📁 Folder reordered via drag-and-drop');
       // Folders were already reordered in handleAlbumDragOver
       // Now save the order
       await saveFolderOrder(localFolders);
@@ -178,7 +179,7 @@ export const createDragDropHandlers = (props: DragDropHandlersProps) => {
     
     // Handle dropping on ghost tiles (for empty folders/uncategorized)
     if (overId === 'ghost-uncategorized') {
-      console.log('📍 Dropped on uncategorized ghost tile');
+      info('📍 Dropped on uncategorized ghost tile');
       const updatedAlbums = localAlbums.map(a =>
         a.name === activeId ? { ...a, folder_id: null } : a
       );
@@ -195,7 +196,7 @@ export const createDragDropHandlers = (props: DragDropHandlersProps) => {
     if (overId.startsWith('ghost-folder-')) {
       const folderId = parseInt(overId.replace('ghost-folder-', ''));
       const targetFolder = localFolders.find(f => f.id === folderId);
-      console.log('📍 Dropped on folder ghost tile:', folderId);
+      info('📍 Dropped on folder ghost tile:', folderId);
       
       if (targetFolder) {
         const updatedAlbums = localAlbums.map(a =>
@@ -223,7 +224,7 @@ export const createDragDropHandlers = (props: DragDropHandlersProps) => {
         
         if (isSameContext) {
           // Same section: reorder albums
-          console.log('📍 Reordering within same section');
+          info('📍 Reordering within same section');
           const contextFolderId = overAlbum.folder_id;
           
           // Get albums in the same context
@@ -246,7 +247,7 @@ export const createDragDropHandlers = (props: DragDropHandlersProps) => {
           }
         } else {
           // Different section: do nothing (only ghost tiles can move between sections)
-          console.log('📍 Cross-section drop ignored (use ghost tiles to move)');
+          info('📍 Cross-section drop ignored (use ghost tiles to move)');
         }
       }
     }

@@ -12,6 +12,7 @@ import { csrfProtection } from '../security.js';
 import { getDatabase } from '../database.js';
 import { requireAuth, requireAdmin, requireManager } from '../auth/middleware.js';
 import { DATA_DIR } from '../config.js';
+import { error, warn, info, debug, verbose } from '../utils/logger.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -84,8 +85,8 @@ router.get('/check-missing', requireAuth, (req, res) => {
       hasMissingTitles: result.count > 0,
       missingCount: result.count
     });
-  } catch (error: any) {
-    console.error('[AI Titles] Error checking missing titles:', error);
+  } catch (err: any) {
+    error('[AITitles] Failed to check missing titles:', err);
     res.status(500).json({ error: 'Failed to check missing titles' });
   }
 });
@@ -103,7 +104,7 @@ router.post('/stop', requireManager, (req: any, res: any) => {
     // Kill the process
     if (runningJobs.aiTitles.process) {
       runningJobs.aiTitles.process.kill('SIGTERM');
-      console.log('[AI Titles] Job stopped by user');
+      info('[AITitles] Job stopped by user');
     }
     
     // Mark as complete and broadcast to all clients
@@ -123,9 +124,9 @@ router.post('/stop', requireManager, (req: any, res: any) => {
     runningJobs.aiTitles.clients.clear();
     
     res.json({ success: true, message: 'Job stopped successfully' });
-  } catch (error: any) {
-    console.error('[AI Titles] Error stopping job:', error);
-    res.status(500).json({ success: false, message: error.message });
+  } catch (err: any) {
+    error('[AITitles] Failed to stop job:', err);
+    res.status(500).json({ success: false, message: err.message });
   }
 });
 
@@ -149,7 +150,7 @@ router.post('/generate-single', requireManager, async (req: any, res: any) => {
       const configData = await fs.promises.readFile(configPath, 'utf-8');
       config = JSON.parse(configData);
     } catch (err) {
-      console.error('[AI Titles] Failed to load config:', err);
+      error('[AITitles] Failed to load config:', err);
       return res.status(500).json({ error: 'Failed to load configuration' });
     }
     
@@ -165,12 +166,12 @@ router.post('/generate-single', requireManager, async (req: any, res: any) => {
     // Try thumbnail first, fall back to original if not found
     let imagePath = path.join(optimizedDir, 'thumbnail', album, filename);
     if (!fs.existsSync(imagePath)) {
-      console.log('[AI Titles] Thumbnail not found, falling back to original');
+      info('[AITitles] Thumbnail not found, falling back to original');
       const photosDir = path.join(dataDir, 'photos');
       imagePath = path.join(photosDir, album, filename);
       
       if (!fs.existsSync(imagePath)) {
-        console.error('[AI Titles] Image not found:', imagePath);
+        error('[AITitles] Image not found:', imagePath);
         return res.status(404).json({ error: 'Image not found' });
       }
     }
@@ -185,7 +186,7 @@ router.post('/generate-single', requireManager, async (req: any, res: any) => {
     const extension = path.extname(filename).toLowerCase().substring(1);
     const mimeType = extension === 'jpg' || extension === 'jpeg' ? 'image/jpeg' : `image/${extension}`;
     
-    console.log(`[AI Titles] Using image: ${imagePath} (${(imageBuffer.length / 1024).toFixed(1)} KB)`);
+    info(`[AITitles] Using image: ${imagePath} (${(imageBuffer.length / 1024).toFixed(1)} KB)`);
     
     // Call OpenAI Vision API (same prompt as upload flow)
     const response = await openai.chat.completions.create({
@@ -234,14 +235,14 @@ router.post('/generate-single', requireManager, async (req: any, res: any) => {
     
     stmt.run(album, filename, title);
     
-    console.log(`[AI Titles] Generated title for ${album}/${filename}: "${title}"`);
+    info(`[AITitles] Generated title for ${album}/${filename}: "${title}"`);
     
     res.json({ success: true, title });
-  } catch (error: any) {
-    console.error('[AI Titles] Error generating single title:', error);
+  } catch (err: any) {
+    error('[AITitles] Failed to generate single title:', err);
     res.status(500).json({ 
       error: 'Failed to generate title',
-      message: error.message 
+      message: err.message 
     });
   }
 });
@@ -256,7 +257,7 @@ router.post('/generate', requireManager, (req, res) => {
   
   // If already running, reconnect to existing job
   if (runningJobs.aiTitles && !runningJobs.aiTitles.isComplete) {
-    console.log('[AI Titles] Reconnecting to existing job');
+    info('[AITitles] Reconnecting to existing job');
     
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
@@ -302,10 +303,10 @@ router.post('/generate', requireManager, (req, res) => {
   const projectRoot = path.resolve(__dirname, '../../..');
   const scriptPath = path.join(projectRoot, 'scripts', 'generate-ai-titles.js');
 
-  console.log('[AI Titles] Starting generation...');
-  console.log('[AI Titles] Force regenerate:', forceRegenerate);
-  console.log('[AI Titles] Script path:', scriptPath);
-  console.log('[AI Titles] Working directory:', projectRoot);
+  info('[AITitles] Starting generation...');
+  info('[AITitles] Force regenerate:', forceRegenerate);
+  info('[AITitles] Script path:', scriptPath);
+  info('[AITitles] Working directory:', projectRoot);
 
   // Build script arguments
   const scriptArgs = [scriptPath];
@@ -332,7 +333,7 @@ router.post('/generate', requireManager, (req, res) => {
   child.stdout.on('data', (data) => {
     const lines = data.toString().split('\n').filter((line: string) => line.trim());
     lines.forEach((line: string) => {
-      console.log('[AI Titles]', line);
+      info('[AITitles]', line);
       
       let output = '';
       
@@ -374,7 +375,7 @@ router.post('/generate', requireManager, (req, res) => {
   child.stderr.on('data', (data) => {
     const lines = data.toString().split('\n').filter((line: string) => line.trim());
     lines.forEach((line: string) => {
-      console.error('[AI Titles Error]', line);
+      error('[AI Titles Error]', line);
       const errorOutput = `ERROR: ${line}`;
       
       // Store output and broadcast to all clients
@@ -387,7 +388,7 @@ router.post('/generate', requireManager, (req, res) => {
 
   // Handle process completion
   child.on('close', (code) => {
-    console.log(`[AI Titles] Process exited with code ${code}`);
+    info(`[AITitles] Process exited with code ${code}`);
     
     const completeMsg = code === 0 ? '__COMPLETE__' : `__ERROR__ Process exited with code ${code}`;
     
@@ -414,9 +415,9 @@ router.post('/generate', requireManager, (req, res) => {
   });
 
   // Handle errors
-  child.on('error', (error) => {
-    console.error('[AI Titles] Failed to start process:', error);
-    const errorMsg = `__ERROR__ ${error.message}`;
+  child.on('error', (err) => {
+    error('[AITitles] Failed to start process:', err);
+    const errorMsg = `__ERROR__ ${err.message}`;
     
     if (runningJobs.aiTitles) {
       runningJobs.aiTitles.output.push(errorMsg);

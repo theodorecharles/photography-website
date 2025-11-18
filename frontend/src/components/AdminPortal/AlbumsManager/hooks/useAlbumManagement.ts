@@ -8,6 +8,7 @@ import { API_URL } from '../../../../config';
 import { Album, AlbumFolder } from '../types';
 import { fetchWithRateLimitCheck } from '../../../../utils/fetchWrapper';
 import { trackAlbumCreated, trackAlbumDeleted } from '../../../../utils/analytics';
+import { info } from '../../../../utils/logger';
 
 
 interface UseAlbumManagementProps {
@@ -157,7 +158,7 @@ export const useAlbumManagement = ({
         return originalFolderId !== newFolderId;
       });
       
-      console.log('Albums that changed folders:', albumsThatMovedFolders.map(a => ({
+      info('Albums that changed folders:', albumsThatMovedFolders.map(a => ({
         name: a.name,
         from: albums.find(orig => orig.name === a.name)?.folder_id,
         to: a.folder_id,
@@ -168,7 +169,7 @@ export const useAlbumManagement = ({
         const folder = localFolders.find(f => f.id === album.folder_id);
         const folderName = folder?.name || null;
         
-        console.log(`Moving album "${album.name}" to folder:`, folderName);
+        info(`Moving album "${album.name}" to folder:`, folderName);
         
         const moveRes = await fetchWithRateLimitCheck(`${API_URL}/api/albums/${encodeURIComponent(album.name)}/move`, {
           method: 'PUT',

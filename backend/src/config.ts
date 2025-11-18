@@ -3,9 +3,14 @@
  * This is the ONLY source of truth for all configuration
  */
 
+// Load environment variables from .env file first (before any other imports)
+import dotenv from 'dotenv';
+dotenv.config();
+
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { info, warn, error, trace } from './utils/logger.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -32,6 +37,9 @@ const defaultConfig = {
       allowedHosts: ["localhost:3000"],
       rateLimitWindowMs: 1000,
       rateLimitMaxRequests: 100
+    },
+    logging: {
+      level: "info"
     },
     auth: {
       google: {
@@ -76,16 +84,17 @@ function loadConfig() {
     if (fs.existsSync(configPath)) {
       fullConfig = JSON.parse(fs.readFileSync(configPath, 'utf8'));
       configExists = true;
-      console.log(`✓ Loaded configuration from config.json`);
+      // Use console.log here since logger might not be initialized yet
+      info('[Config] Loaded configuration from config.json');
       return true;
     } else {
-      console.log(`⚠️  config.json not found - using defaults for setup mode`);
+      warn('[Config] config.json not found - using defaults for setup mode');
       fullConfig = defaultConfig;
       configExists = false;
       return false;
     }
-  } catch (error) {
-    console.error(`❌ Failed to load config.json, using defaults:`, error);
+  } catch (err) {
+    error('[Config] Failed to load config.json, using defaults:', err);
     fullConfig = defaultConfig;
     configExists = false;
     return false;
@@ -113,23 +122,23 @@ export function isEnvSet(value: string | undefined): boolean {
 export function getAllowedOrigins(): string[] {
   const origins: string[] = [];
   
-  console.log('[CORS Debug] Environment variables:');
-  console.log('  FRONTEND_DOMAIN:', process.env.FRONTEND_DOMAIN || '(not set)');
-  console.log('  BACKEND_DOMAIN:', process.env.BACKEND_DOMAIN || '(not set)');
-  console.log('  ALLOWED_ORIGINS:', process.env.ALLOWED_ORIGINS || '(not set)');
+  trace('[CORS Debug] Environment variables:');
+  trace('  FRONTEND_DOMAIN:', process.env.FRONTEND_DOMAIN || '(not set)');
+  trace('  BACKEND_DOMAIN:', process.env.BACKEND_DOMAIN || '(not set)');
+  trace('  ALLOWED_ORIGINS:', process.env.ALLOWED_ORIGINS || '(not set)');
   
   // Add FRONTEND_DOMAIN if provided (supports http:// and https://)
   if (isEnvSet(process.env.FRONTEND_DOMAIN)) {
     const frontendDomain = process.env.FRONTEND_DOMAIN!.trim();
     if (frontendDomain.startsWith('http://') || frontendDomain.startsWith('https://')) {
       origins.push(frontendDomain);
-      console.log('[CORS Debug] Added FRONTEND_DOMAIN:', frontendDomain);
+      trace('[CORS Debug] Added FRONTEND_DOMAIN:', frontendDomain);
     } else {
       // Auto-detect protocol based on BACKEND_DOMAIN or default to https
       const protocol = isEnvSet(process.env.BACKEND_DOMAIN) && process.env.BACKEND_DOMAIN!.startsWith('https://') ? 'https' : 'https';
       const fullUrl = `${protocol}://${frontendDomain}`;
       origins.push(fullUrl);
-      console.log('[CORS Debug] Added FRONTEND_DOMAIN with protocol:', fullUrl);
+      trace('[CORS Debug] Added FRONTEND_DOMAIN with protocol:', fullUrl);
     }
   }
   
@@ -138,12 +147,12 @@ export function getAllowedOrigins(): string[] {
     const backendDomain = process.env.BACKEND_DOMAIN!.trim();
     if (backendDomain.startsWith('http://') || backendDomain.startsWith('https://')) {
       origins.push(backendDomain);
-      console.log('[CORS Debug] Added BACKEND_DOMAIN:', backendDomain);
+      trace('[CORS Debug] Added BACKEND_DOMAIN:', backendDomain);
     } else {
       const protocol = backendDomain.includes('localhost') ? 'http' : 'https';
       const fullUrl = `${protocol}://${backendDomain}`;
       origins.push(fullUrl);
-      console.log('[CORS Debug] Added BACKEND_DOMAIN with protocol:', fullUrl);
+      trace('[CORS Debug] Added BACKEND_DOMAIN with protocol:', fullUrl);
     }
   }
   
@@ -167,12 +176,12 @@ export function getAllowedOrigins(): string[] {
   if (!isEnvSet(process.env.ALLOWED_ORIGINS) && !isEnvSet(process.env.FRONTEND_DOMAIN)) {
     const configOrigins = fullConfig.environment.backend.allowedOrigins || [];
     origins.push(...configOrigins);
-    console.log('[CORS Debug] Added origins from config.json:', configOrigins);
+    trace('[CORS Debug] Added origins from config.json:', configOrigins);
   }
   
   // Remove duplicates
   const uniqueOrigins = [...new Set(origins)];
-  console.log('[CORS Debug] Final allowed origins:', uniqueOrigins);
+  trace('[CORS Debug] Final allowed origins:', uniqueOrigins);
   return uniqueOrigins;
 }
 
@@ -188,12 +197,30 @@ export function getConfigExists(): boolean {
 
 // Export function to reload configuration (called after setup wizard completes)
 export function reloadConfig() {
-  console.log('🔄 Reloading configuration...');
+  info('🔄 Reloading configuration...');
   const success = loadConfig();
   if (success) {
-    console.log('✅ Configuration reloaded successfully');
+    info('✅ Configuration reloaded successfully');
   }
   return { success, configExists };
+}
+
+// Export log level getter
+/**
+ * Get log level from environment variable (highest priority) or config.json
+ * Priority: LOG_LEVEL env var > config.json > default 'error'
+ */
+export function getLogLevel(): string {
+  // Environment variable takes highest priority (for Docker/.env)
+  if (process.env.LOG_LEVEL) {
+    return process.env.LOG_LEVEL.toLowerCase().trim();
+  }
+  // Fall back to config.json
+  if (fullConfig.environment?.logging?.level) {
+    return fullConfig.environment.logging.level;
+  }
+  // Default to error
+  return 'error';
 }
 
 // Export function to get current config (always fresh)

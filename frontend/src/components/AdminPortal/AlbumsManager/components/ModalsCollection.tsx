@@ -11,6 +11,7 @@ import MoveToFolderModal from './MoveToFolderModal';
 import { Photo, Folder } from '../types';
 import { cacheBustValue } from '../../../../config';
 import { MagicWandIcon } from '../../../icons';
+import { error } from '../../../../utils/logger';
 
 
 interface ConfirmModalConfig {
@@ -179,7 +180,7 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
           setHasOpenAI(!!config.openai?.apiKey);
         }
       } catch (err) {
-        console.error('Failed to check OpenAI config:', err);
+        error('Failed to check OpenAI config:', err);
       }
     };
     
@@ -217,7 +218,7 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
         setEditTitleValue(data.title);
       }
     } catch (err) {
-      console.error('Failed to generate AI title:', err);
+      error('Failed to generate AI title:', err);
       setAiTitleError(err instanceof Error ? err.message : 'Unknown error');
     } finally {
       setGeneratingAITitle(false);

@@ -28,9 +28,14 @@ import config, {
   getConfigExists,
   RATE_LIMIT_WINDOW_MS,
   RATE_LIMIT_MAX_REQUESTS,
+  getLogLevel,
 } from "./config.ts";
 import { validateProductionSecurity } from "./security.ts";
 import { initializeDatabase } from "./database.ts";
+import { initLogger, info, warn, error, debug, verbose, trace } from "./utils/logger.ts";
+
+// Initialize logger early with config or environment variable
+initLogger(getLogLevel());
 
 // In-memory cache for optimized images (thumbnails + modals)
 const imageCache = new Map<
@@ -39,6 +44,9 @@ const imageCache = new Map<
 >();
 const IMAGE_CACHE_MAX_AGE = 24 * 60 * 60 * 1000; // 24 hours
 const IMAGE_CACHE_MAX_ITEMS = 2000; // Limit cache size (thumbnails + modals)
+
+// Import authentication middleware
+import { requireAdmin } from "./auth/middleware.ts";
 
 // Import route handlers
 import albumsRouter from "./routes/albums.ts";
@@ -73,7 +81,7 @@ const __dirname = path.dirname(__filename);
 if (getConfigExists()) {
   validateProductionSecurity();
 } else {
-  console.log('⚙️  Setup mode detected - skipping production security validation');
+  info('[Server] Setup mode detected - skipping production security validation');
 }
 
 // Initialize database lazily (on first use) to avoid ESM/CommonJS issues
@@ -86,19 +94,34 @@ const app = express();
 // This allows express to read X-Forwarded-* headers correctly
 app.set("trust proxy", 1);
 
+// Request logging middleware (verbose level)
+app.use((req, res, next) => {
+  // Skip logging for static assets (photos, optimized, fonts, etc.)
+  const isStaticAsset = req.path.startsWith('/photos/') || 
+                        req.path.startsWith('/optimized/') || 
+                        req.path.startsWith('/fonts/') ||
+                        req.path.startsWith('/favicon.ico');
+  
+  if (!isStaticAsset) {
+    verbose(`[HTTP] ${req.method} ${req.path} - ${req.ip || req.socket.remoteAddress}`);
+  }
+  next();
+});
+
 // HTTPS redirect middleware (production only)
 const isProduction = config.frontend.apiUrl.startsWith("https://");
 if (isProduction) {
   app.use((req, res, next) => {
-    // Skip HTTPS redirect for IP addresses (e.g., direct Docker access)
+    // Skip HTTPS redirect for IP addresses (e.g., direct Docker access) and localhost
     const host = req.headers.host || '';
     const ipPattern = /^\d+\.\d+\.\d+\.\d+(:\d+)?$/;
     const isIpAddress = ipPattern.test(host);
+    const isLocalhost = host.startsWith('localhost') || host.startsWith('127.0.0.1');
     
     // Check if request is already HTTPS
     const isSecure = req.secure || req.headers["x-forwarded-proto"] === "https";
 
-    if (!isSecure && !isIpAddress) {
+    if (!isSecure && !isIpAddress && !isLocalhost) {
       // Redirect to HTTPS
       const httpsUrl = `https://${req.headers.host}${req.url}`;
       return res.redirect(301, httpsUrl);
@@ -116,24 +139,24 @@ let optimizedDir = path.resolve(__dirname, "../../", OPTIMIZED_DIR);
 // Resolve symlinks to get the real path (important for macOS TCC permissions)
 try {
   photosDir = fs.realpathSync(photosDir);
-  console.log("Photos directory (real path):", photosDir);
+  debug("[Server] Photos directory (real path):", photosDir);
 } catch (err) {
-  console.warn("Warning: Could not resolve photos directory:", photosDir);
+    warn("[Server] Could not resolve photos directory:", photosDir);
 }
 
 try {
   optimizedDir = fs.realpathSync(optimizedDir);
-  console.log("Optimized directory (real path):", optimizedDir);
+  debug("[Server] Optimized directory (real path):", optimizedDir);
 } catch (err) {
-  console.warn("Warning: Could not resolve optimized directory:", optimizedDir);
+    warn("[Server] Could not resolve optimized directory:", optimizedDir);
 }
 
 // Verify directory paths exist
 if (!fs.existsSync(photosDir)) {
-  console.warn("Warning: Photos directory does not exist:", photosDir);
+    warn("[Server] Photos directory does not exist:", photosDir);
 }
 if (!fs.existsSync(optimizedDir)) {
-  console.warn("Warning: Optimized directory does not exist:", optimizedDir);
+    warn("[Server] Optimized directory does not exist:", optimizedDir);
 }
 
 // Configure security middleware
@@ -166,7 +189,7 @@ app.use(
       
       // During OOBE (setup mode), allow any HTTPS origin to enable setup from any domain
       if (!configExists && origin.startsWith('https://')) {
-        console.log(`[OOBE] Allowing CORS from: ${origin}`);
+        trace(`[OOBE] Allowing CORS from: ${origin}`);
         return callback(null, true);
       }
       
@@ -199,7 +222,7 @@ app.use(
         const isIpAddress = ipPattern.test(hostname);
         
         if (isIpAddress && (port === 3000 || port === 3001)) {
-          console.log(`[CORS] Allowing IP-based access: ${origin}`);
+          trace(`[CORS] Allowing IP-based access: ${origin}`);
           callback(null, true);
           return;
         }
@@ -208,7 +231,7 @@ app.use(
       }
 
       // Reject origin by passing false (not an Error)
-      console.warn(`CORS blocked origin: ${origin}`);
+      warn(`CORS blocked origin: ${origin}`);
       callback(null, false);
     },
     credentials: true,
@@ -258,12 +281,12 @@ app.use(express.json({ limit: "1mb" }));
 const sessionSecret = config.auth?.sessionSecret;
 if (!sessionSecret) {
   if (getConfigExists()) {
-    console.error('❌ CRITICAL ERROR: SESSION_SECRET is not configured!');
-    console.error('Please set auth.sessionSecret in config.json or SESSION_SECRET environment variable.');
-    console.error('Generate a secure secret with: openssl rand -hex 32');
+    error('[Server] CRITICAL ERROR: SESSION_SECRET is not configured!');
+    error('[Server] Please set auth.sessionSecret in config.json or SESSION_SECRET environment variable.');
+    error('[Server] Generate a secure secret with: openssl rand -hex 32');
     process.exit(1);
   } else {
-    console.log('⚙️  Using temporary session secret for setup mode');
+    info('[Server] Using temporary session secret for setup mode');
   }
 }
 
@@ -282,7 +305,7 @@ try {
     // For local development or IP addresses, leave domain undefined
     // Setting explicit domain on IPs causes cookie rejection
     cookieDomain = undefined;
-    console.log(`Cookie domain: undefined (${isIpAddress ? 'IP address' : 'localhost'})`);
+    debug(`Cookie domain: undefined (${isIpAddress ? 'IP address' : 'localhost'})`);
   } else {
     // For production domains, extract base domain (e.g., 'example.com' from 'api.example.com')
     // Set to '.domain.com' to share across subdomains
@@ -290,11 +313,11 @@ try {
     if (parts.length >= 2) {
       // Get last two parts (domain.tld)
       cookieDomain = "." + parts.slice(-2).join(".");
-      console.log(`Cookie domain set to: ${cookieDomain}`);
+      debug(`Cookie domain set to: ${cookieDomain}`);
     }
   }
 } catch (err) {
-  console.warn(
+  warn(
     "Could not parse backend URL for cookie domain, using undefined"
   );
 }
@@ -304,7 +327,7 @@ try {
 // For production, use 'lax' for OAuth compatibility
 const sameSiteValue = isProduction ? "lax" : false;
 
-console.log("Session cookie config:", {
+debug("[Server] Session cookie config:", {
   secure: isProduction,
   httpOnly: true,
   sameSite: sameSiteValue,
@@ -347,9 +370,9 @@ app.use(passport.session());
 // Debug middleware - log requests to metrics endpoints
 if (!isProduction) {
   app.use("/api/metrics", (req, res, next) => {
-    console.log(`[Metrics Request] ${req.method} ${req.path}`);
-    console.log("  Cookies:", req.headers.cookie || "NONE");
-    console.log("  Session ID:", req.sessionID);
+    verbose(`[Metrics Request] ${req.method} ${req.path}`);
+    verbose("  Cookies:", req.headers.cookie || "NONE");
+    verbose("  Session ID:", req.sessionID);
     next();
   });
 }
@@ -425,7 +448,7 @@ const cacheImageMiddleware = (
     });
 
     const sizeType = req.path.includes("/thumbnail/") ? "thumbnail" : "modal";
-    console.log(
+    debug(
       `[Cache] Cached ${sizeType}: ${path.basename(imagePath)} (${(
         data.length / 1024
       ).toFixed(1)} KB, total: ${imageCache.size})`
@@ -459,6 +482,13 @@ app.use(
     },
   })
 );
+
+// Serve logs.html for /logs route (requires admin authentication)
+app.get("/logs", requireAdmin, (req, res) => {
+  const logsPath = path.join(__dirname, "../../backend/public/logs.html");
+  verbose(`[Logs] Serving logs.html from: ${logsPath}`);
+  res.sendFile(logsPath);
+});
 
 // Store directory paths in app for use in routes
 app.set("photosDir", photosDir);
@@ -501,7 +531,7 @@ app.use((req, res) => {
 
 // Global error handler - must be last
 app.use((err: any, req: any, res: any, next: any) => {
-  console.error("Server error:", err);
+  error("[Server] Server error:", err);
 
   // Don't leak error details in production (HTTPS = production)
   const isProduction = config.frontend.apiUrl.startsWith("https://");
@@ -522,22 +552,22 @@ const isLocalhost = config.frontend.apiUrl.includes("localhost");
 const bindHost = process.env.HOST || (isLocalhost ? "127.0.0.1" : "0.0.0.0");
 
 const server = app.listen(PORT, bindHost, () => {
-  console.log(`Server is running on ${bindHost}:${PORT}`);
-  console.log(`API URL: ${config.frontend.apiUrl}`);
-  console.log(`Photos directory: ${photosDir}`);
+  info(`Server is running on ${bindHost}:${PORT}`);
+  info(`API URL: ${config.frontend.apiUrl}`);
+  debug(`Photos directory: ${photosDir}`);
   
   // Regenerate static JSON files on startup (non-blocking)
   if (getConfigExists()) {
-    console.log('[Startup] Regenerating static JSON files...');
+    info('[Startup] Regenerating static JSON files...');
     const appRoot = path.resolve(__dirname, "../../");
     generateStaticJSONFiles(appRoot).then((result) => {
       if (result.success) {
-        console.log(`[Startup] ✓ Static JSON files updated (${result.albumCount} albums)`);
+        info(`[Startup] ✓ Static JSON files updated (${result.albumCount} albums)`);
       } else {
-        console.error('[Startup] ✗ Failed to generate static JSON:', result.error);
+        error('[Startup] ✗ Failed to generate static JSON:', result.error);
       }
     }).catch((error) => {
-      console.error('[Startup] ✗ Failed to generate static JSON:', error);
+      error('[Startup] ✗ Failed to generate static JSON:', error);
     });
   }
 });
@@ -549,17 +579,17 @@ server.keepAliveTimeout = 610000; // Slightly longer than timeout
 server.headersTimeout = 620000; // Slightly longer than keepAliveTimeout
 
 // Handle server errors
-server.on("error", (error: NodeJS.ErrnoException) => {
-  if (error.code === "EADDRINUSE") {
-    console.error(
+server.on("error", (err: NodeJS.ErrnoException) => {
+  if (err.code === "EADDRINUSE") {
+    error(
       `Port ${PORT} is already in use. Please free the port or use a different one.`
     );
-  } else if (error.code === "EACCES") {
-    console.error(
+  } else if (err.code === "EACCES") {
+    error(
       `Permission denied to bind to port ${PORT}. Try using a port above 1024.`
     );
   } else {
-    console.error("Server error:", error);
+    error("[Server] Server error:", err);
   }
   process.exit(1);
 });

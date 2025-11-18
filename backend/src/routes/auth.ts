@@ -11,6 +11,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { getUserByEmail, createUser, getUserByGoogleId, linkGoogleAccount, getUserById, getAllUsers } from '../database-users.js';
+import { error, warn, info, debug, verbose } from '../utils/logger.js';
 
 const router = Router();
 
@@ -40,9 +41,9 @@ async function sendAnalyticsEvent(eventData: any) {
         timestamp: new Date().toISOString(),
       }]),
     });
-  } catch (error) {
+  } catch (err) {
     // Silently fail - don't break auth flow
-    console.debug('Analytics tracking failed:', error);
+    debug('[Auth] Analytics tracking failed:', err);
   }
 }
 
@@ -56,7 +57,7 @@ interface AuthenticatedUser {
 
 // Function to initialize Google OAuth Strategy
 export function initializeGoogleStrategy() {
-  console.log('🔄 Attempting to initialize Google OAuth strategy...');
+  info('Attempting to initialize Google OAuth strategy...');
   
   // Reload config to get latest values
   // Go up one level from backend to project root
@@ -67,14 +68,14 @@ export function initializeGoogleStrategy() {
   let latestConfig;
   try {
     if (!fs.existsSync(configPath)) {
-      console.log('⚠️  Config file does not exist yet (OOBE mode) - Google OAuth not initialized');
+      info('⚠️  Config file does not exist yet (OOBE mode) - Google OAuth not initialized');
       return false;
     }
     const configContent = fs.readFileSync(configPath, 'utf8');
     latestConfig = JSON.parse(configContent);
-    console.log('✓ Config file loaded successfully');
+    info('Config file loaded successfully');
   } catch (err) {
-    console.log('⚠️  Could not load config for Google OAuth:', err);
+    info('⚠️  Could not load config for Google OAuth:', err);
     return false;
   }
   
@@ -82,20 +83,20 @@ export function initializeGoogleStrategy() {
   const authorizedEmails = latestConfig.environment?.auth?.authorizedEmails || [];
   const callbackURL = `${latestConfig.environment?.frontend?.apiUrl}/api/auth/google/callback`;
 
-  console.log('📋 OAuth config check:');
-  console.log('  - Client ID:', googleConfig?.clientId ? '✓ Present' : '✗ Missing');
-  console.log('  - Client Secret:', googleConfig?.clientSecret ? '✓ Present' : '✗ Missing');
-  console.log('  - Authorized Emails:', authorizedEmails.length);
-  console.log('  - Callback URL:', callbackURL);
+  info('📋 OAuth config check:');
+  info('  - Client ID:', googleConfig?.clientId ? 'Present' : 'Missing');
+  info('  - Client Secret:', googleConfig?.clientSecret ? 'Present' : 'Missing');
+  info('  - Authorized Emails:', authorizedEmails.length);
+  info('  - Callback URL:', callbackURL);
 
   if (googleConfig?.clientId && googleConfig?.clientSecret) {
     // Remove existing strategy if it exists
     try {
       passport.unuse('google');
-      console.log('✓ Removed old Google strategy');
+      info('Removed old Google strategy');
     } catch (e) {
       // Strategy doesn't exist yet, that's fine
-      console.log('ℹ️  No existing Google strategy to remove');
+      info('ℹ️  No existing Google strategy to remove');
     }
     
     passport.use(
@@ -140,11 +141,11 @@ export function initializeGoogleStrategy() {
                 email_verified: true,
                 role: isFirstUser ? 'admin' : 'viewer',
               });
-              console.log(`[Google OAuth] Created new user: ${email} with role: ${dbUser.role}`);
+              info(`[Auth] Created new user: ${email} with role: ${dbUser.role}`);
             } else if (!dbUser.google_id) {
               // Link Google account to existing user
               linkGoogleAccount(dbUser.id, profile.id, profile.displayName, profile.photos?.[0]?.value);
-              console.log(`[Google OAuth] Linked Google account to existing user: ${email}`);
+              info(`[Auth] Linked Google account to existing user: ${email}`);
             }
 
             // Create user object for session
@@ -156,9 +157,9 @@ export function initializeGoogleStrategy() {
             };
 
             return done(null, user);
-          } catch (error) {
-            console.error('[Google OAuth] Error during authentication:', error);
-            return done(error as Error);
+          } catch (err) {
+            error('[Auth] Error during authentication:', err);
+            return done(err as Error);
           }
         }
       )
@@ -174,10 +175,10 @@ export function initializeGoogleStrategy() {
       done(null, user);
     });
     
-    console.log('✅ Google OAuth strategy initialized successfully!');
+    info('✅ Google OAuth strategy initialized successfully!');
     return true;
   } else {
-    console.log('⚠️  Google OAuth not configured - admin login disabled');
+    info('⚠️  Google OAuth not configured - admin login disabled');
     return false;
   }
 }
@@ -216,7 +217,7 @@ router.get(
         currentConfig = JSON.parse(configContent);
       } catch (err) {
         // Fall back to imported config if reload fails
-        console.warn('[OAuth Callback] Could not reload config, using default');
+        warn('[Auth] Could not reload config, using default');
       }
       
       // Derive frontend URL from config
@@ -230,7 +231,7 @@ router.get(
       // Handle authentication errors
       if (err) {
         if (!isProduction) {
-          console.log('[OAuth] Authentication error:', err.message);
+          info('[Auth] Authentication error:', err.message);
         }
         const reason = err.message || 'failed';
         // Track authentication failure
@@ -244,7 +245,7 @@ router.get(
 
       if (!user) {
         if (!isProduction) {
-          console.log('[OAuth] No user returned');
+          info('[Auth] No user returned');
         }
         // Track authentication failure
         sendAnalyticsEvent({
@@ -258,7 +259,7 @@ router.get(
       req.logIn(user, (err) => {
         if (err) {
           if (!isProduction) {
-            console.log('[OAuth] Login error:', err);
+            info('[Auth] Login error:', err);
           }
           // Track authentication failure
           sendAnalyticsEvent({
@@ -273,7 +274,7 @@ router.get(
         req.session.save(async (err) => {
           if (err) {
             if (!isProduction) {
-              console.log('[OAuth] Session save error:', err);
+              info('[Auth] Session save error:', err);
             }
             // Track authentication failure
             await sendAnalyticsEvent({
@@ -314,16 +315,16 @@ router.get('/status', (req: Request, res: Response) => {
     const dbUser = getUserByEmail(passportUser.email);
     if (!dbUser) {
       // User was deleted - destroy session and return not authenticated
-      console.log('[Auth Status] User no longer exists (Google OAuth):', passportUser.email);
+      info('[Auth Status] User no longer exists (Google OAuth):', passportUser.email);
       req.logout((err) => {
-        if (err) console.error('Logout error:', err);
+        if (err) error('Logout error:', err);
       });
       req.session.destroy(() => {});
       return res.json({ authenticated: false });
     }
     
     if (dbUser) {
-      console.log('[Auth Status] Google user passkeys:', {
+      info('[Auth Status] Google user passkeys:', {
         email: dbUser.email,
         passkeys: dbUser.passkeys,
         passkeyCount: dbUser.passkeys ? dbUser.passkeys.length : 0,
@@ -359,7 +360,7 @@ router.get('/status', (req: Request, res: Response) => {
     const dbUser = getUserById(userId);
     if (!dbUser) {
       // User was deleted - destroy session and return not authenticated
-      console.log('[Auth Status] User no longer exists (credentials):', userId);
+      info('[Auth Status] User no longer exists (credentials):', userId);
       req.session.destroy(() => {});
       return res.json({ authenticated: false });
     }
@@ -368,7 +369,7 @@ router.get('/status', (req: Request, res: Response) => {
     if (sessionUser) {
       const passkeyCount = dbUser?.passkeys ? dbUser.passkeys.length : 0;
       
-      console.log('[Auth Status] Session user passkey count:', {
+      info('[Auth Status] Session user passkey count:', {
         email: sessionUser.email,
         passkeyCount,
       });
@@ -391,7 +392,7 @@ router.get('/status', (req: Request, res: Response) => {
     
     // Fallback: use dbUser we already fetched
     if (dbUser) {
-      console.log('[Auth Status] Credential user passkeys:', {
+      info('[Auth Status] Credential user passkeys:', {
         email: dbUser.email,
         passkeys: dbUser.passkeys,
         passkeyCount: dbUser.passkeys ? dbUser.passkeys.length : 0,
@@ -450,7 +451,7 @@ router.get('/status', (req: Request, res: Response) => {
       password: hasPasswordUsers,
     };
   } catch (err) {
-    console.error('Failed to check available auth methods:', err);
+    error('Failed to check available auth methods:', err);
   }
   
   res.json({
@@ -462,22 +463,22 @@ router.get('/status', (req: Request, res: Response) => {
 
 // Route: Logout via GET redirect (for simple links)
 router.get('/logout-redirect', (req: Request, res: Response) => {
-  console.log('[Logout Redirect] Starting logout for session:', req.sessionID);
+  info('[Logout Redirect] Starting logout for session:', req.sessionID);
   
   // Handle both auth methods
   if (req.isAuthenticated && req.isAuthenticated()) {
     req.logout((err) => {
-      if (err) console.error('[Logout Redirect] Passport logout error:', err);
+      if (err) error('[Logout Redirect] Passport logout error:', err);
       req.session.destroy((err) => {
-        if (err) console.error('[Logout Redirect] Session destroy error:', err);
-        console.log('[Logout Redirect] ✅ Logged out, redirecting to homepage');
+        if (err) error('[Logout Redirect] Session destroy error:', err);
+        info('[Logout Redirect] ✅ Logged out, redirecting to homepage');
         res.redirect('/');
       });
     });
   } else {
     req.session.destroy((err) => {
-      if (err) console.error('[Logout Redirect] Session destroy error:', err);
-      console.log('[Logout Redirect] ✅ Logged out, redirecting to homepage');
+      if (err) error('[Logout Redirect] Session destroy error:', err);
+      info('[Logout Redirect] ✅ Logged out, redirecting to homepage');
       res.redirect('/');
     });
   }
@@ -486,8 +487,8 @@ router.get('/logout-redirect', (req: Request, res: Response) => {
 // Route: Logout
 // Allow both Passport and credential sessions to logout
 router.post('/logout', (req: Request, res: Response) => {
-  console.log('[Logout] Starting logout for session:', req.sessionID);
-  console.log('[Logout] Session data:', {
+  info('[Logout] Starting logout for session:', req.sessionID);
+  info('[Logout] Session data:', {
     hasIsAuthenticated: !!req.isAuthenticated,
     isAuthenticatedResult: req.isAuthenticated ? req.isAuthenticated() : false,
     hasUserId: !!(req.session as any)?.userId,
@@ -497,31 +498,31 @@ router.post('/logout', (req: Request, res: Response) => {
   // Always destroy the session regardless of auth method
   // For Passport sessions, call logout first
   if (req.isAuthenticated && req.isAuthenticated()) {
-    console.log('[Logout] Passport session detected - calling req.logout()');
+    info('[Logout] Passport session detected - calling req.logout()');
     req.logout((err) => {
       if (err) {
-        console.error('[Logout] Passport logout error:', err);
+        error('[Logout] Passport logout error:', err);
       }
       
       // Always destroy session even if Passport logout fails
       req.session.destroy((err) => {
         if (err) {
-          console.error('[Logout] Session destroy error:', err);
+          error('[Logout] Session destroy error:', err);
           return res.status(500).json({ error: 'Session destruction failed' });
         }
-        console.log('[Logout] ✅ Passport session destroyed successfully');
+        info('[Logout] ✅ Passport session destroyed successfully');
         res.json({ success: true });
       });
     });
   } else {
     // Credential-based session or already logged out
-    console.log('[Logout] Credential session detected - destroying session');
+    info('[Logout] Credential session detected - destroying session');
     req.session.destroy((err) => {
       if (err) {
-        console.error('[Logout] Session destroy error:', err);
+        error('[Logout] Session destroy error:', err);
         return res.status(500).json({ error: 'Session destruction failed' });
       }
-      console.log('[Logout] ✅ Credential session destroyed successfully');
+      info('[Logout] ✅ Credential session destroyed successfully');
       res.json({ success: true });
     });
   }

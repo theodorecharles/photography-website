@@ -8,6 +8,7 @@ import { useState, useEffect } from 'react';
 import { API_URL } from '../config';
 import { Link } from 'react-router-dom';
 import './Footer.css';
+import { debug } from '../utils/logger';
 
 
 interface FooterProps {
@@ -37,7 +38,7 @@ function Footer({ albums: _albums = [], externalLinks: _externalLinks = [], curr
         }
       } catch (error) {
         // Silently fail and use local year as fallback
-        console.debug('Failed to fetch server year, using local time:', error);
+        debug('Failed to fetch server year, using local time:', error);
       }
     };
 
@@ -50,7 +51,7 @@ function Footer({ albums: _albums = [], externalLinks: _externalLinks = [], curr
           setSiteName(data.siteName || '');
         }
       } catch (error) {
-        console.debug('Failed to fetch branding:', error);
+        debug('Failed to fetch branding:', error);
       }
     };
 

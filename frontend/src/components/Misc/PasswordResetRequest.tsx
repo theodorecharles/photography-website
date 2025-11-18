@@ -6,6 +6,7 @@
 import React, { useState, useEffect } from "react";
 import { API_URL } from '../../config';
 import { useNavigate } from "react-router-dom";
+import { error as logError } from '../../utils/logger';
 
 
 const PasswordResetRequest: React.FC = () => {
@@ -26,7 +27,7 @@ const PasswordResetRequest: React.FC = () => {
           setPrimaryColor(data.primaryColor || '#4ade80');
         }
       } catch (err) {
-        console.error('Failed to load branding:', err);
+        logError('Failed to load branding:', err);
       }
     };
 

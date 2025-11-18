@@ -8,6 +8,7 @@ import { API_URL } from '../../config';
 import RestartModal from '../RestartModal';
 import './SetupWizard.css';
 import type { SetupStatus } from './types';
+import { error as logError, warn } from '../../utils/logger';
 
 export default function SetupWizard() {
   const [loading, setLoading] = useState(true);
@@ -90,7 +91,7 @@ export default function SetupWizard() {
       }
     } catch (err) {
       setError('Failed to check setup status. Please try again.');
-      console.error('Setup status check failed:', err);
+      logError('Setup status check failed:', err);
     } finally {
       setLoading(false);
     }
@@ -186,10 +187,10 @@ export default function SetupWizard() {
           });
           
           if (!avatarResponse.ok) {
-            console.warn('Avatar upload failed, but continuing with setup');
+            warn('Avatar upload failed, but continuing with setup');
           }
         } catch (err) {
-          console.warn('Avatar upload failed:', err);
+          warn('Avatar upload failed:', err);
           // Don't fail the entire setup if avatar upload fails
         }
       }
@@ -209,7 +210,7 @@ export default function SetupWizard() {
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Setup failed. Please try again.');
-      console.error('Setup initialization failed:', err);
+      logError('Setup initialization failed:', err);
     } finally {
       setSubmitting(false);
     }

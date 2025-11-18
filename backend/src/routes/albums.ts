@@ -24,6 +24,7 @@ import {
   getPublishedFolders,
   getAlbumsInFolder
 } from "../database.js";
+import { error, warn, info, debug, verbose } from '../utils/logger.js';
 
 const router = Router();
 
@@ -40,10 +41,10 @@ const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 export const invalidateAlbumCache = (albumName?: string) => {
   if (albumName) {
     albumCache.delete(albumName);
-    console.log(`Cache invalidated for album: ${albumName}`);
+    debug(`[Albums] Cache invalidated for album: ${albumName}`);
   } else {
     albumCache.clear();
-    console.log('All album caches cleared');
+    debug('[Albums] All album caches cleared');
   }
 };
 
@@ -88,15 +89,15 @@ const getAlbums = (photosDir: string) => {
     }
     
     // Fallback to filesystem scan if database is empty (backward compatibility)
-    console.warn('Database has no albums, falling back to filesystem scan');
+    warn('[Albums] Database has no albums, falling back to filesystem scan');
     return fs
       .readdirSync(photosDir)
       .filter((file) => {
         // Exclude homepage directory and only include actual directories
         return file !== 'homepage' && fs.statSync(path.join(photosDir, file)).isDirectory();
       });
-  } catch (error) {
-    console.error("Error reading albums:", error);
+  } catch (err) {
+    error('[Albums] Failed to read albums:', err);
     return [];
   }
 };
@@ -132,8 +133,8 @@ const getPhotosInAlbum = (photosDir: string, album: string) => {
     
     // Photos are already sorted by the database query
     return photos;
-  } catch (error) {
-    console.error(`Error reading album ${album}:`, error);
+  } catch (err) {
+    error(`[Albums] Failed to read album ${album}:`, err);
     return [];
   }
 };
@@ -191,12 +192,12 @@ const getAllPhotos = (photosDir: string, includeUnpublished: boolean = false) =>
     });
 
     const albumCount = new Set(images.map(i => i.album)).size;
-    console.log(`getAllPhotos: Found ${allPhotos.length} total photos across ${albumCount} albums`);
+    debug(`[Albums] Found ${allPhotos.length} total photos across ${albumCount} albums`);
     
     // Shuffle all photos for random order
     return shuffleArray(allPhotos);
-  } catch (error) {
-    console.error("Error getting all photos:", error);
+  } catch (err) {
+    error('[Albums] Failed to get all photos:', err);
     return [];
   }
 };
@@ -214,7 +215,7 @@ router.get("/api/albums", (req: Request, res) => {
     if (!albumsInDB.has(albumName) && albumName !== 'homepage') {
       // Auto-add missing albums as unpublished (for manually created folders)
       saveAlbum(albumName, false);
-      console.log(`Auto-synced album to database: ${albumName} (unpublished - manually created folder)`);
+      debug(`[Albums] Auto-synced album to database: ${albumName} (unpublished - manually created folder)`);
     }
   }
   
@@ -224,7 +225,7 @@ router.get("/api/albums", (req: Request, res) => {
   // Check if user is authenticated (Passport or credentials)
   const isAuthenticated = (req.isAuthenticated && req.isAuthenticated()) || !!(req.session as any)?.userId;
   
-  console.log('[Albums API] Auth check:', {
+  verbose('[Albums] Auth check:', {
     isAuthenticated,
     hasIsAuthenticatedFunc: !!req.isAuthenticated,
     isAuthenticatedResult: req.isAuthenticated ? req.isAuthenticated() : false,
@@ -313,8 +314,8 @@ router.get("/api/albums/:album/photos-json", (req: Request, res): void => {
       res.setHeader('Content-Type', 'application/json');
       res.send(jsonData);
       return;
-    } catch (error) {
-      console.error(`Error reading JSON file for ${sanitizedAlbum}:`, error);
+    } catch (err) {
+      error(`[Albums] Failed to read JSON file for ${sanitizedAlbum}:`, err);
     }
   }
   
@@ -362,13 +363,13 @@ router.get("/api/albums/:album/photos", (req: Request, res): void => {
   
   if (cached && (now - cached.timestamp) < CACHE_TTL) {
     const duration = Date.now() - startTime;
-    console.log(`Cache hit for album: ${sanitizedAlbum} (${cached.photos.length} photos, ${duration}ms)`);
+    debug(`[Albums] Cache hit for album: ${sanitizedAlbum} (${cached.photos.length} photos, ${duration}ms)`);
     res.json(cached.photos);
     return;
   }
 
   // Cache miss or expired - fetch from filesystem
-  console.log(`Cache miss for album: ${sanitizedAlbum}`);
+  debug(`[Albums] Cache miss for album: ${sanitizedAlbum}`);
   const fetchStart = Date.now();
   const photos = getPhotosInAlbum(photosDir, sanitizedAlbum);
   const fetchDuration = Date.now() - fetchStart;
@@ -380,7 +381,7 @@ router.get("/api/albums/:album/photos", (req: Request, res): void => {
   });
   
   const totalDuration = Date.now() - startTime;
-  console.log(`Fetched ${photos.length} photos in ${fetchDuration}ms, total request: ${totalDuration}ms`);
+  debug(`[Albums] Fetched ${photos.length} photos in ${fetchDuration}ms, total request: ${totalDuration}ms`);
   res.json(photos);
 });
 
@@ -406,7 +407,7 @@ router.get("/api/random-photos", (req: Request, res) => {
   });
 
   const albumCount = new Set(images.map(i => i.album)).size;
-  console.log(`API /api/random-photos: Returning ${allPhotos.length} photos from ${albumCount} homepage albums`);
+  debug(`[Albums] Returning ${allPhotos.length} photos from ${albumCount} homepage albums`);
   
   // Shuffle all photos for random order
   const shuffledPhotos = shuffleArray(allPhotos);
@@ -496,8 +497,8 @@ router.get("/api/photos/:album/:filename/exif", async (req, res): Promise<void> 
     }
 
     res.json(exif);
-  } catch (error) {
-    console.error(`Error reading EXIF for ${album}/${filename}:`, error);
+  } catch (err) {
+    error(`[Albums] Failed to read EXIF for ${album}/${filename}:`, err);
     res.status(500).json({ error: "Failed to read EXIF data" });
   }
 });

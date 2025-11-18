@@ -5,6 +5,13 @@
 
 import React, { useState, useEffect } from "react";
 import { API_URL } from '../../../../config';
+import { 
+  trackUserInvited, 
+  trackUserDeleted, 
+  trackUserRoleChanged, 
+  trackMFAReset, 
+  trackPasswordResetSent 
+} from '../../../../utils/analytics';
 import SectionHeader from "../components/SectionHeader";
 import { MFASetupModal } from "./UserManagement/MFASetupModal";
 import { ConfirmationModal } from "./UserManagement/ConfirmationModal";
@@ -24,6 +31,7 @@ import type {
   PasswordChangeState,
   MessageType,
 } from "./UserManagement/types";
+import { error } from '../../../../utils/logger';
 
 
 interface UserManagementSectionProps {
@@ -136,7 +144,7 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
         setCurrentUser(user);
       }
     } catch (err) {
-      console.error("Failed to fetch current user:", err);
+      error("Failed to fetch current user:", err);
     }
   };
 
@@ -157,7 +165,7 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
       const isConfigured = await userManagementAPI.checkSmtpConfig();
       setSmtpConfigured(isConfigured);
     } catch (err) {
-      console.error("Failed to check SMTP config:", err);
+      error("Failed to check SMTP config:", err);
     }
   };
 
@@ -206,6 +214,9 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
         }
       }
 
+      // Track user invited
+      trackUserInvited(newUser.email, newUser.role);
+      
       loadUsers();
     } catch (err: any) {
       setMessage({
@@ -304,6 +315,13 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
       }
 
       const data = await res.json();
+      
+      // Track MFA reset
+      const user = users.find(u => u.id === userId);
+      if (user) {
+        trackMFAReset(user.email, userId);
+      }
+      
       setMessage({
         type: "success",
         text: data.message || "MFA disabled successfully",
@@ -349,6 +367,13 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
       }
 
       const data = await res.json();
+      
+      // Track password reset sent
+      const user = users.find(u => u.id === userId);
+      if (user) {
+        trackPasswordResetSent(user.email, userId);
+      }
+      
       setMessage({
         type: "success",
         text: data.message || "Password reset email sent successfully",
@@ -393,6 +418,12 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
       });
 
       if (!res.ok) throw new Error("Failed to delete user");
+
+      // Track user deleted
+      const user = users.find(u => u.id === userId);
+      if (user) {
+        trackUserDeleted(user.email, userId);
+      }
 
       setMessage({
         type: "success",
@@ -668,7 +699,17 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
   const handleUpdateRole = async (userId: number, role: string) => {
     setLoading(true);
     try {
+      // Get old role before updating
+      const user = users.find(u => u.id === userId);
+      const oldRole = user?.role || '';
+      
       await userManagementAPI.updateUserRole(userId, role);
+      
+      // Track role change
+      if (user) {
+        trackUserRoleChanged(user.email, userId, oldRole, role);
+      }
+      
       setMessage({ type: "success", text: `User role updated to ${role}` });
       loadUsers();
     } catch (err: any) {

@@ -5,6 +5,7 @@
 
 import { Router, Request, Response } from 'express';
 import { requireAuth, requireAdmin } from '../auth/middleware.js';
+import { error, warn, info, debug, verbose } from '../utils/logger.js';
 import {
   getUserById,
   updateUser,
@@ -150,7 +151,7 @@ router.post('/login', async (req: Request, res: Response) => {
       auth_methods: user.auth_methods,
     };
 
-    console.log('[Login] Creating session for user:', {
+    info('[Login] Creating session for user:', {
       userId: user.id,
       email: user.email,
       role: user.role,
@@ -161,11 +162,11 @@ router.post('/login', async (req: Request, res: Response) => {
     // Save session explicitly
     req.session.save((err) => {
       if (err) {
-        console.error('[Login] Session save error:', err);
+        error('[Login] Session save error:', err);
         return res.status(500).json({ error: 'Session creation failed' });
       }
 
-      console.log('[Login] ✅ Session saved successfully:', {
+      info('[Login] ✅ Session saved successfully:', {
         sessionID: req.sessionID,
         userId: (req.session as any).userId,
       });
@@ -180,8 +181,8 @@ router.post('/login', async (req: Request, res: Response) => {
         },
       });
     });
-  } catch (error) {
-    console.error('Login error:', error);
+  } catch (err) {
+    error('[AuthExtended] Login error:', err);
     res.status(500).json({ error: 'Login failed' });
   }
 });
@@ -276,8 +277,8 @@ router.post('/invite', requireAdmin, async (req: Request, res: Response) => {
       emailEnabled,
       inviteUrl, // Only present when email is disabled
     });
-  } catch (error) {
-    console.error('Invitation error:', error);
+  } catch (err) {
+    error('[AuthExtended] Invitation error:', err);
     res.status(500).json({ error: 'Failed to send invitation' });
   }
 });
@@ -338,8 +339,8 @@ router.post('/invite/resend/:userId', requireAdmin, async (req: Request, res: Re
       emailEnabled,
       inviteUrl, // Only present when email is disabled
     });
-  } catch (error) {
-    console.error('Resend invitation error:', error);
+  } catch (err) {
+    error('[AuthExtended] Resend invitation error:', err);
     res.status(500).json({ error: 'Failed to resend invitation' });
   }
 });
@@ -374,8 +375,8 @@ router.get('/invite/:token', async (req: Request, res: Response) => {
       email: user.email,
       role: user.role,
     });
-  } catch (error) {
-    console.error('Validate invite error:', error);
+  } catch (err) {
+    error('[AuthExtended] Validate invite error:', err);
     res.status(500).json({ error: 'Failed to validate invitation' });
   }
 });
@@ -445,8 +446,8 @@ router.post('/invite/:token/complete', async (req: Request, res: Response) => {
         role: updatedUser!.role,
       },
     });
-  } catch (error) {
-    console.error('Complete signup error:', error);
+  } catch (err) {
+    error('[AuthExtended] Complete signup error:', err);
     res.status(500).json({ error: 'Failed to complete signup' });
   }
 });
@@ -487,7 +488,7 @@ router.post('/password-reset/request', async (req: Request, res: Response) => {
     const emailSent = await sendPasswordResetEmail(user.email, resetToken, user.name);
 
     if (!emailSent) {
-      console.error('[Password Reset] Failed to send email');
+      error('[Password Reset] Failed to send email');
       return res.status(500).json({ error: 'Failed to send password reset email. Please check your SMTP configuration.' });
     }
 
@@ -498,8 +499,8 @@ router.post('/password-reset/request', async (req: Request, res: Response) => {
       success: true, 
       message: 'If the email exists, a password reset link has been sent' 
     });
-  } catch (error) {
-    console.error('Password reset request error:', error);
+  } catch (err) {
+    error('[AuthExtended] Password reset request error:', err);
     res.status(500).json({ error: 'Failed to process password reset request' });
   }
 });
@@ -528,8 +529,8 @@ router.get('/password-reset/:token', async (req: Request, res: Response) => {
       valid: true,
       email: user.email,
     });
-  } catch (error) {
-    console.error('Validate password reset error:', error);
+  } catch (err) {
+    error('[AuthExtended] Validate password reset error:', err);
     res.status(500).json({ error: 'Failed to validate password reset link' });
   }
 });
@@ -572,8 +573,8 @@ router.post('/password-reset/:token/complete', async (req: Request, res: Respons
     clearPasswordResetToken(user.id);
 
     res.json({ success: true });
-  } catch (error) {
-    console.error('Complete password reset error:', error);
+  } catch (err) {
+    error('[AuthExtended] Complete password reset error:', err);
     res.status(500).json({ error: 'Failed to reset password' });
   }
 });
@@ -597,14 +598,14 @@ router.post('/users/:userId/reset-mfa', requireAdmin, async (req: Request, res: 
     // Disable MFA
     disableMFA(userId);
 
-    console.log(`[Admin] MFA disabled for user ${user.email} (ID: ${userId})`);
+    info(`[Admin] MFA disabled for user ${user.email} (ID: ${userId})`);
 
     res.json({
       success: true,
       message: 'MFA has been disabled',
     });
-  } catch (error) {
-    console.error('Reset MFA error:', error);
+  } catch (err) {
+    error('[AuthExtended] Reset MFA error:', err);
     res.status(500).json({ error: 'Failed to reset MFA' });
   }
 });
@@ -636,7 +637,7 @@ router.post('/users/:userId/send-password-reset', requireAdmin, async (req: Requ
     const emailSent = await sendPasswordResetEmail(user.email, resetToken, user.name);
 
     if (!emailSent) {
-      console.error('[Admin] Failed to send password reset email');
+      error('[Admin] Failed to send password reset email');
       return res.status(500).json({ 
         error: 'Failed to send password reset email. Please check your SMTP configuration.' 
       });
@@ -645,15 +646,15 @@ router.post('/users/:userId/send-password-reset', requireAdmin, async (req: Requ
     // Only save reset token if email was sent successfully
     setPasswordResetToken(userId, resetToken, expiresAt.toISOString());
 
-    console.log(`[Admin] Password reset email sent to ${user.email} (ID: ${userId})`);
+    info(`[Admin] Password reset email sent to ${user.email} (ID: ${userId})`);
 
     res.json({
       success: true,
       emailSent,
       message: 'Password reset email has been sent',
     });
-  } catch (error) {
-    console.error('Send password reset error:', error);
+  } catch (err) {
+    error('[AuthExtended] Send password reset error:', err);
     res.status(500).json({ error: 'Failed to send password reset email' });
   }
 });
@@ -692,8 +693,8 @@ router.post('/change-password', requireAuth, async (req: Request, res: Response)
     updatePassword(userId, newPassword);
 
     res.json({ success: true });
-  } catch (error) {
-    console.error('Password change error:', error);
+  } catch (err) {
+    error('[AuthExtended] Password change error:', err);
     res.status(500).json({ error: 'Password change failed' });
   }
 });
@@ -740,8 +741,8 @@ router.post('/mfa/setup', requireAuth, async (req: Request, res: Response) => {
       secret,
       backupCodes,
     });
-  } catch (error) {
-    console.error('MFA setup error:', error);
+  } catch (err) {
+    error('[AuthExtended] MFA setup error:', err);
     res.status(500).json({ error: 'MFA setup failed' });
   }
 });
@@ -777,8 +778,8 @@ router.post('/mfa/verify-setup', requireAuth, async (req: Request, res: Response
     challenges.delete(`mfa-setup-${setupToken}`);
 
     res.json({ success: true });
-  } catch (error) {
-    console.error('MFA verification error:', error);
+  } catch (err) {
+    error('[AuthExtended] MFA verification error:', err);
     res.status(500).json({ error: 'MFA verification failed' });
   }
 });
@@ -807,8 +808,8 @@ router.post('/mfa/disable', requireAuth, async (req: Request, res: Response) => 
     disableMFA(userId);
 
     res.json({ success: true });
-  } catch (error) {
-    console.error('MFA disable error:', error);
+  } catch (err) {
+    error('[AuthExtended] MFA disable error:', err);
     res.status(500).json({ error: 'Failed to disable MFA' });
   }
 });
@@ -839,8 +840,8 @@ router.post('/mfa/backup-codes', requireAuth, async (req: Request, res: Response
     enableMFA(userId, user.totp_secret!, backupCodes);
 
     res.json({ backupCodes });
-  } catch (error) {
-    console.error('Backup codes error:', error);
+  } catch (err) {
+    error('[AuthExtended] Backup codes error:', err);
     res.status(500).json({ error: 'Failed to generate backup codes' });
   }
 });
@@ -867,7 +868,7 @@ router.post('/passkey/register-options', requireAuth, async (req: Request, res: 
       user.passkeys || []
     );
 
-    console.log('[Passkey Registration] Generated options:', {
+    info('[Passkey Registration] Generated options:', {
       challengeLength: options.challenge.length,
       challenge: options.challenge,
       userId: options.user.id,
@@ -887,8 +888,8 @@ router.post('/passkey/register-options', requireAuth, async (req: Request, res: 
     });
 
     res.json(options);
-  } catch (error) {
-    console.error('Passkey registration options error:', error);
+  } catch (err) {
+    error('[AuthExtended] Passkey registration options error:', err);
     res.status(500).json({ error: 'Failed to generate registration options' });
   }
 });
@@ -944,11 +945,11 @@ router.post('/passkey/register-verify', requireAuth, async (req: Request, res: R
     challenges.delete(challengeKey);
 
     res.json({ success: true, passkey: { id: passkey.id, name: passkey.name } });
-  } catch (error: any) {
-    console.error('Passkey registration verification error:', error);
-    console.error('Error stack:', error.stack);
-    console.error('Error message:', error.message);
-    res.status(500).json({ error: error.message || 'Passkey registration failed' });
+  } catch (err: any) {
+    error('[AuthExtended] Passkey registration verification error:', err);
+    error('[AuthExtended] Error stack:', err.stack);
+    error('[AuthExtended] Error message:', err.message);
+    res.status(500).json({ error: err.message || 'Passkey registration failed' });
   }
 });
 
@@ -965,7 +966,7 @@ router.post('/passkey/auth-options', async (req: Request, res: Response) => {
       const user = getUserByEmail(email);
       if (user && user.passkeys) {
         passkeys = user.passkeys;
-        console.log('[Passkey Auth] Found user with passkeys:', {
+        info('[Passkey Auth] Found user with passkeys:', {
           email,
           passkeyCount: passkeys.length,
           passkeys: passkeys.map(pk => ({
@@ -976,10 +977,10 @@ router.post('/passkey/auth-options', async (req: Request, res: Response) => {
           }))
         });
       } else {
-        console.log('[Passkey Auth] User not found or has no passkeys:', email);
+        info('[Passkey Auth] User not found or has no passkeys:', email);
       }
     } else {
-      console.log('[Passkey Auth] No email provided, returning empty allowCredentials');
+      info('[Passkey Auth] No email provided, returning empty allowCredentials');
     }
 
     const options = await generatePasskeyAuthenticationOptions(passkeys);
@@ -992,8 +993,8 @@ router.post('/passkey/auth-options', async (req: Request, res: Response) => {
     });
 
     res.json({ ...options, sessionId });
-  } catch (error) {
-    console.error('Passkey auth options error:', error);
+  } catch (err) {
+    error('[AuthExtended] Passkey auth options error:', err);
     res.status(500).json({ error: 'Failed to generate auth options' });
   }
 });
@@ -1052,7 +1053,7 @@ router.post('/passkey/auth-verify', async (req: Request, res: Response) => {
       auth_methods: user.auth_methods,
     };
 
-    console.log('[Passkey Login] Creating session for user:', {
+    info('[Passkey Login] Creating session for user:', {
       userId: user.id,
       email: user.email,
       role: user.role,
@@ -1063,11 +1064,11 @@ router.post('/passkey/auth-verify', async (req: Request, res: Response) => {
     // Save session explicitly
     req.session.save((err) => {
       if (err) {
-        console.error('[Passkey Login] Session save error:', err);
+        error('[Passkey Login] Session save error:', err);
         return res.status(500).json({ error: 'Session creation failed' });
       }
 
-      console.log('[Passkey Login] ✅ Session saved successfully');
+      info('[Passkey Login] ✅ Session saved successfully');
       
       res.json({
         success: true,
@@ -1079,8 +1080,8 @@ router.post('/passkey/auth-verify', async (req: Request, res: Response) => {
         },
       });
     });
-  } catch (error) {
-    console.error('Passkey auth verification error:', error);
+  } catch (err) {
+    error('[AuthExtended] Passkey auth verification error:', err);
     res.status(500).json({ error: 'Passkey authentication failed' });
   }
 });
@@ -1107,8 +1108,8 @@ router.get('/passkey/list', requireAuth, (req: Request, res: Response) => {
     }));
 
     res.json({ passkeys });
-  } catch (error) {
-    console.error('Passkey list error:', error);
+  } catch (err) {
+    error('[AuthExtended] Passkey list error:', err);
     res.status(500).json({ error: 'Failed to list passkeys' });
   }
 });
@@ -1131,8 +1132,8 @@ router.delete('/passkey/:id', requireAuth, (req: Request, res: Response) => {
     }
 
     res.json({ success: true });
-  } catch (error) {
-    console.error('Passkey removal error:', error);
+  } catch (err) {
+    error('[AuthExtended] Passkey removal error:', err);
     res.status(500).json({ error: 'Failed to remove passkey' });
   }
 });
@@ -1184,8 +1185,8 @@ router.get('/users', requireAuth, (req: Request, res: Response) => {
     });
 
     res.json({ users: sanitizedUsers });
-  } catch (error) {
-    console.error('List users error:', error);
+  } catch (err) {
+    error('[AuthExtended] List users error:', err);
     res.status(500).json({ error: 'Failed to list users' });
   }
 });
@@ -1225,7 +1226,7 @@ router.delete('/users/:userId', requireAdmin, (req: Request, res: Response) => {
     if (sessionStore && sessionStore.all) {
       sessionStore.all((err: Error | null, sessions: any) => {
         if (err) {
-          console.error('Error getting sessions:', err);
+          error('[AuthExtended] Failed to getting sessions:', err);
           return;
         }
         
@@ -1236,9 +1237,9 @@ router.delete('/users/:userId', requireAdmin, (req: Request, res: Response) => {
             if (session?.passport?.user === userId) {
               sessionStore.destroy(sid, (destroyErr) => {
                 if (destroyErr) {
-                  console.error(`Failed to destroy session ${sid}:`, destroyErr);
+                  error(`Failed to destroy session ${sid}:`, destroyErr);
                 } else {
-                  console.log(`[Session] Destroyed session ${sid} for deleted user ${userId}`);
+                  info(`[Session] Destroyed session ${sid} for deleted user ${userId}`);
                 }
               });
             }
@@ -1247,14 +1248,14 @@ router.delete('/users/:userId', requireAdmin, (req: Request, res: Response) => {
       });
     }
     
-    console.log(`[User Management] User ${targetUser.email} (ID: ${userId}) deleted by user ID: ${currentUserId}`);
+    info(`[User Management] User ${targetUser.email} (ID: ${userId}) deleted by user ID: ${currentUserId}`);
     
     res.json({
       success: true,
       message: 'User deleted successfully',
     });
-  } catch (error) {
-    console.error('Delete user error:', error);
+  } catch (err) {
+    error('[AuthExtended] Delete user error:', err);
     res.status(500).json({ error: 'Failed to delete user' });
   }
 });
@@ -1292,15 +1293,15 @@ router.patch('/users/:userId/role', requireAdmin, (req: Request, res: Response) 
     // Update user role
     updateUser(userId, { role });
     
-    console.log(`[User Management] User ${targetUser.email} (ID: ${userId}) role changed to ${role} by user ID: ${currentUserId}`);
+    info(`[User Management] User ${targetUser.email} (ID: ${userId}) role changed to ${role} by user ID: ${currentUserId}`);
     
     res.json({
       success: true,
       message: 'User role updated successfully',
       role,
     });
-  } catch (error) {
-    console.error('Update user role error:', error);
+  } catch (err) {
+    error('[AuthExtended] Update user role error:', err);
     res.status(500).json({ error: 'Failed to update user role' });
   }
 });
@@ -1327,8 +1328,8 @@ router.get('/user/methods', requireAuth, (req: Request, res: Response) => {
       hasPassword: !!user.password_hash,
       hasGoogleLinked: !!user.google_id,
     });
-  } catch (error) {
-    console.error('Auth methods error:', error);
+  } catch (err) {
+    error('[AuthExtended] Auth methods error:', err);
     res.status(500).json({ error: 'Failed to get auth methods' });
   }
 });

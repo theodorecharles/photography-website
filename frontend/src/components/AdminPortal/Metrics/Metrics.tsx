@@ -8,6 +8,7 @@ import { API_URL } from '../../../config';
 import { fetchWithRateLimitCheck } from '../../../utils/fetchWrapper';
 import { formatNumber } from '../../../utils/formatters';
 import { formatDateFromMicroseconds, formatDurationDetailed } from '../../../utils/metricsHelpers';
+import CustomDropdown from '../ConfigManager/components/CustomDropdown';
 import VisitorMap from './VisitorMap';
 import VisitorsChart from './VisitorsChart';
 import PageviewsChart from './PageviewsChart';
@@ -19,6 +20,7 @@ import './Metrics.css';
 
 // Import interfaces from types.ts (canonical location)
 import type { Stats, TimeSeriesData, HourlyPageviewData, VisitorLocation } from './types';
+import { error as logError } from '../../../utils/logger';
 
 export default function Metrics() {
   // Get the secondary color from CSS custom property
@@ -52,7 +54,7 @@ export default function Metrics() {
       const data = await res.json();
       setStats(data);
     } catch (err) {
-      console.error('Failed to load metrics:', err);
+      logError('Failed to load metrics:', err);
       setError(err instanceof Error ? err.message : 'Failed to load metrics');
     } finally {
       setLoading(false);
@@ -99,7 +101,7 @@ export default function Metrics() {
       
       setVisitorsOverTime(filledData);
     } catch (err) {
-      console.error('Failed to load time series:', err);
+      logError('Failed to load time series:', err);
     } finally {
       setLoadingTimeSeries(false);
     }
@@ -151,7 +153,7 @@ export default function Metrics() {
       
       setPageviewsByHour(filledData);
     } catch (err) {
-      console.error('Failed to load hourly pageviews:', err);
+      logError('Failed to load hourly pageviews:', err);
     } finally {
       setLoadingPageviewsByHour(false);
     }
@@ -169,7 +171,7 @@ export default function Metrics() {
       const data = await res.json();
       setVisitorLocations(data.locations || []);
     } catch (err) {
-      console.error('Failed to load visitor locations:', err);
+      logError('Failed to load visitor locations:', err);
     } finally {
       setLoadingLocations(false);
     }
@@ -263,17 +265,18 @@ export default function Metrics() {
           <p className="section-description">View analytics and visitor data for your photography website</p>
         </div>
         <div className="metrics-time-range">
-          <label>Time Range:</label>
-          <select 
-            value={timeRange} 
-            onChange={(e) => setTimeRange(Number(e.target.value))}
-            className="time-range-select"
-          >
-            <option value={7}>Last 7 days</option>
-            <option value={30}>Last 30 days</option>
-            <option value={90}>Last 90 days</option>
-            <option value={365}>Last year</option>
-          </select>
+          <label style={{ marginRight: '0.5rem' }}>Time Range:</label>
+          <CustomDropdown
+            value={String(timeRange)}
+            options={[
+              { value: '7', label: 'Last 7 days', emoji: '📅' },
+              { value: '30', label: 'Last 30 days', emoji: '📆' },
+              { value: '90', label: 'Last 90 days', emoji: '🗓️' },
+              { value: '365', label: 'Last year', emoji: '📊' },
+            ]}
+            onChange={(value) => setTimeRange(Number(value))}
+            style={{ minWidth: '200px' }}
+          />
         </div>
       </div>
 

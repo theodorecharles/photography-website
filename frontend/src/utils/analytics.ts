@@ -7,6 +7,7 @@
  */
 
 import { API_URL } from '../config';
+import { debug } from '../utils/logger';
 // import { showToast } from './toast'; // Disabled - working correctly
 
 interface AnalyticsEvent {
@@ -112,7 +113,7 @@ async function flushQueue(useBeacon = false): Promise<void> {
     }
   } catch (error) {
     // Silently fail - don't break the app if analytics fails
-    console.debug('Analytics tracking failed:', error);
+    debug('Analytics tracking failed:', error);
   }
 }
 
@@ -393,6 +394,295 @@ export function trackBrandingUpdate(fields: string[]) {
 export function trackAvatarUpload() {
   sendEvent({
     event_type: 'admin_avatar_upload',
+  });
+}
+
+/**
+ * Track album rename
+ */
+export function trackAlbumRenamed(oldAlbumName: string, newAlbumName: string) {
+  sendEvent({
+    event_type: 'album_renamed',
+    old_album_name: oldAlbumName,
+    new_album_name: newAlbumName,
+  });
+}
+
+/**
+ * Track album publish/unpublish
+ */
+export function trackAlbumPublishToggle(albumName: string, published: boolean) {
+  sendEvent({
+    event_type: 'album_publish_toggle',
+    album: albumName,
+    published: published,
+  });
+}
+
+/**
+ * Track album show on homepage toggle
+ */
+export function trackAlbumHomepageToggle(albumName: string, showOnHomepage: boolean) {
+  sendEvent({
+    event_type: 'album_homepage_toggle',
+    album: albumName,
+    show_on_homepage: showOnHomepage,
+  });
+}
+
+/**
+ * Track album moved to folder
+ */
+export function trackAlbumMovedToFolder(albumName: string, folderName: string | null, folderId: number | null) {
+  sendEvent({
+    event_type: 'album_moved_to_folder',
+    album: albumName,
+    folder_name: folderName || 'uncategorized',
+    folder_id: folderId || 0,
+  });
+}
+
+/**
+ * Track share link created
+ */
+export function trackShareLinkCreated(albumName: string, expirationMinutes: number | null) {
+  sendEvent({
+    event_type: 'share_link_created',
+    album: albumName,
+    expiration_minutes: expirationMinutes || 0,
+    expires_never: expirationMinutes === null,
+  });
+}
+
+/**
+ * Track share link deleted
+ */
+export function trackShareLinkDeleted(albumName: string, shareId: number) {
+  sendEvent({
+    event_type: 'share_link_deleted',
+    album: albumName,
+    share_id: shareId,
+  });
+}
+
+/**
+ * Track AI title generation started
+ */
+export function trackAITitleGenerationStarted(forceRegenerate: boolean) {
+  sendEvent({
+    event_type: 'ai_title_generation_started',
+    force_regenerate: forceRegenerate,
+  });
+}
+
+/**
+ * Track AI title generation stopped
+ */
+export function trackAITitleGenerationStopped(manuallyStopped: boolean) {
+  sendEvent({
+    event_type: 'ai_title_generation_stopped',
+    manually_stopped: manuallyStopped,
+  });
+}
+
+/**
+ * Track image optimization started
+ */
+export function trackImageOptimizationStarted(scope: 'all' | 'single', album?: string, filename?: string) {
+  sendEvent({
+    event_type: 'image_optimization_started',
+    scope: scope,
+    album: album || '',
+    filename: filename || '',
+  });
+}
+
+/**
+ * Track image optimization stopped
+ */
+export function trackImageOptimizationStopped(manuallyStopped: boolean) {
+  sendEvent({
+    event_type: 'image_optimization_stopped',
+    manually_stopped: manuallyStopped,
+  });
+}
+
+/**
+ * Track photo title edited
+ */
+export function trackPhotoTitleEdited(album: string, photoId: string, oldTitle: string, newTitle: string) {
+  sendEvent({
+    event_type: 'photo_title_edited',
+    album: album,
+    photo_id: photoId,
+    old_title: oldTitle,
+    new_title: newTitle,
+  });
+}
+
+/**
+ * Track photo order saved
+ */
+export function trackPhotoOrderSaved(album: string, photoCount: number) {
+  sendEvent({
+    event_type: 'photo_order_saved',
+    album: album,
+    photo_count: photoCount,
+  });
+}
+
+/**
+ * Track photo shuffle
+ */
+export function trackPhotoShuffle(album: string) {
+  sendEvent({
+    event_type: 'photo_shuffle',
+    album: album,
+  });
+}
+
+/**
+ * Track photo retry optimization
+ */
+export function trackPhotoRetryOptimization(album: string, photoId: string) {
+  sendEvent({
+    event_type: 'photo_retry_optimization',
+    album: album,
+    photo_id: photoId,
+  });
+}
+
+/**
+ * Track photo retry AI title generation
+ */
+export function trackPhotoRetryAI(album: string, photoId: string) {
+  sendEvent({
+    event_type: 'photo_retry_ai',
+    album: album,
+    photo_id: photoId,
+  });
+}
+
+/**
+ * Track folder created
+ */
+export function trackFolderCreated(folderName: string) {
+  sendEvent({
+    event_type: 'folder_created',
+    folder_name: folderName,
+  });
+}
+
+/**
+ * Track folder deleted
+ */
+export function trackFolderDeleted(folderName: string, deleteAlbums: boolean, albumCount: number) {
+  sendEvent({
+    event_type: 'folder_deleted',
+    folder_name: folderName,
+    delete_albums: deleteAlbums,
+    album_count: albumCount,
+  });
+}
+
+/**
+ * Track folder renamed
+ */
+export function trackFolderRenamed(oldFolderName: string, newFolderName: string) {
+  sendEvent({
+    event_type: 'folder_renamed',
+    old_folder_name: oldFolderName,
+    new_folder_name: newFolderName,
+  });
+}
+
+/**
+ * Track folder publish/unpublish toggle
+ */
+export function trackFolderPublishToggle(folderName: string, published: boolean, albumsUpdated: number) {
+  sendEvent({
+    event_type: 'folder_publish_toggle',
+    folder_name: folderName,
+    published: published,
+    albums_updated: albumsUpdated,
+  });
+}
+
+/**
+ * Track config settings saved
+ */
+export function trackConfigSettingsSaved(section: string) {
+  sendEvent({
+    event_type: 'admin_config_settings_saved',
+    section: section,
+  });
+}
+
+/**
+ * Track user invited
+ */
+export function trackUserInvited(userEmail: string, role: string) {
+  sendEvent({
+    event_type: 'admin_user_invited',
+    user_email: userEmail,
+    role: role,
+  });
+}
+
+/**
+ * Track user deleted
+ */
+export function trackUserDeleted(userEmail: string, userId: number) {
+  sendEvent({
+    event_type: 'admin_user_deleted',
+    user_email: userEmail,
+    user_id: userId,
+  });
+}
+
+/**
+ * Track user role changed
+ */
+export function trackUserRoleChanged(userEmail: string, userId: number, oldRole: string, newRole: string) {
+  sendEvent({
+    event_type: 'admin_user_role_changed',
+    user_email: userEmail,
+    user_id: userId,
+    old_role: oldRole,
+    new_role: newRole,
+  });
+}
+
+/**
+ * Track MFA reset
+ */
+export function trackMFAReset(userEmail: string, userId: number) {
+  sendEvent({
+    event_type: 'admin_mfa_reset',
+    user_email: userEmail,
+    user_id: userId,
+  });
+}
+
+/**
+ * Track password reset sent
+ */
+export function trackPasswordResetSent(userEmail: string, userId: number) {
+  sendEvent({
+    event_type: 'admin_password_reset_sent',
+    user_email: userEmail,
+    user_id: userId,
+  });
+}
+
+/**
+ * Track shared album view
+ */
+export function trackSharedAlbumView(albumName: string, secretKeyHash: string) {
+  sendEvent({
+    event_type: 'shared_album_view',
+    album: albumName,
+    secret_key_hash: secretKeyHash, // Hashed for privacy
   });
 }
 

@@ -34,6 +34,7 @@ import { invalidateAlbumCache } from "./albums.js";
 import { generateStaticJSONFiles } from "./static-json.js";
 import { broadcastOptimizationUpdate, queueOptimizationJob } from "./optimization-stream.js";
 import OpenAI from "openai";
+import { error, warn, info, debug, verbose } from '../utils/logger.js';
 
 const router = Router();
 const execFileAsync = promisify(execFile);
@@ -103,15 +104,15 @@ async function generateAITitleForImageAsync(
       title
     });
 
-    // console.log(`✓ AI title generated for ${album}/${filename}: "${title}"`);
-  } catch (error: any) {
-    console.error(`AI title generation failed for ${album}/${filename}:`, error);
+    // info(`AI title generated for ${album}/${filename}: "${title}"`);
+  } catch (err: any) {
+    error(`AI title generation failed for ${album}/${filename}:`, err);
     broadcastOptimizationUpdate(jobId, {
       album,
       filename,
       progress: 100,
       state: 'complete',
-      error: `AI error: ${error.message}`
+      error: `AI error: ${err.message}`
     });
   }
 }
@@ -199,12 +200,12 @@ async function generateAITitleForImage(
       title 
     })}\n\n`);
     
-  } catch (error: any) {
-    console.error(`Error generating AI title for ${album}/${filename}:`, error);
+  } catch (err: any) {
+    error(`Error generating AI title for ${album}/${filename}:`, err);
     res.write(`data: ${JSON.stringify({ 
       type: 'ai-error', 
       filename,
-      error: error.message || 'Failed to generate AI title' 
+      error: err.message || 'Failed to generate AI title' 
     })}\n\n`);
   }
 }
@@ -307,12 +308,12 @@ router.post("/", requireManager, async (req: Request, res: Response): Promise<vo
 
     // Create album in database as unpublished by default
     saveAlbum(sanitizedName, false);
-    console.log(`✓ Created unpublished album: ${sanitizedName}`);
+    info(`Created unpublished album: ${sanitizedName}`);
     
     // Set folder if provided
     if (folder_id !== undefined && folder_id !== null) {
       setAlbumFolder(sanitizedName, folder_id);
-      console.log(`✓ Assigned album "${sanitizedName}" to folder ID: ${folder_id}`);
+      info(`Assigned album "${sanitizedName}" to folder ID: ${folder_id}`);
     }
 
     // Regenerate static JSON files
@@ -320,8 +321,8 @@ router.post("/", requireManager, async (req: Request, res: Response): Promise<vo
     generateStaticJSONFiles(appRoot);
 
     res.json({ success: true, album: sanitizedName });
-  } catch (error) {
-    console.error('Error creating album:', error);
+  } catch (err) {
+    error('[AlbumManagement] Failed to create album:', err);
     res.status(500).json({ error: 'Failed to create album' });
   }
 });
@@ -347,9 +348,9 @@ router.delete("/:album", requireManager, async (req: Request, res: Response): Pr
     // Delete from photos directory (if it exists)
     if (fs.existsSync(albumPath)) {
       fs.rmSync(albumPath, { recursive: true, force: true });
-      console.log(`✓ Deleted directory: ${sanitizedAlbum}`);
+      info(`[AlbumManagement] Deleted directory: ${sanitizedAlbum}`);
     } else {
-      console.log(`⚠ Directory not found (already deleted?): ${sanitizedAlbum}`);
+      info(`[AlbumManagement] Directory not found (already deleted?): ${sanitizedAlbum}`);
     }
 
     // Delete from optimized directory (if exists)
@@ -362,14 +363,14 @@ router.delete("/:album", requireManager, async (req: Request, res: Response): Pr
 
     // Delete all metadata for this album from database
     const deletedCount = deleteAlbumMetadata(sanitizedAlbum);
-    console.log(`✓ Deleted ${deletedCount} metadata entries for album: ${sanitizedAlbum}`);
+    info(`[AlbumManagement] Deleted ${deletedCount} metadata entries for album: ${sanitizedAlbum}`);
 
     // Delete album state from database
     const albumDeleted = deleteAlbumState(sanitizedAlbum);
     if (albumDeleted) {
-      console.log(`✓ Deleted album state for: ${sanitizedAlbum}`);
+      info(`[AlbumManagement] Deleted album state for: ${sanitizedAlbum}`);
     } else {
-      console.log(`⚠ Album state not found in database: ${sanitizedAlbum}`);
+      info(`[AlbumManagement] Album state not found in database: ${sanitizedAlbum}`);
     }
 
     // Invalidate cache for this album
@@ -380,8 +381,8 @@ router.delete("/:album", requireManager, async (req: Request, res: Response): Pr
     generateStaticJSONFiles(appRoot);
 
     res.json({ success: true });
-  } catch (error) {
-    console.error('Error deleting album:', error);
+  } catch (err) {
+    error('[AlbumManagement] Failed to delete album:', err);
     res.status(500).json({ error: 'Failed to delete album' });
   }
 });
@@ -425,7 +426,7 @@ router.delete("/:album/photos/:photo", requireManager, async (req: Request, res:
     // Delete metadata from database
     const deleted = deleteImageMetadata(sanitizedAlbum, sanitizedPhoto);
     if (deleted) {
-      console.log(`✓ Deleted metadata for photo: ${sanitizedAlbum}/${sanitizedPhoto}`);
+      info(`Deleted metadata for photo: ${sanitizedAlbum}/${sanitizedPhoto}`);
     }
 
     // Invalidate cache for this album
@@ -436,8 +437,8 @@ router.delete("/:album/photos/:photo", requireManager, async (req: Request, res:
     generateStaticJSONFiles(appRoot);
 
     res.json({ success: true });
-  } catch (error) {
-    console.error('Error deleting photo:', error);
+  } catch (err) {
+    error('[AlbumManagement] Failed to delete photo:', err);
     res.status(500).json({ error: 'Failed to delete photo' });
   }
 });
@@ -496,7 +497,7 @@ router.post("/:album/upload", requireManager, upload.single('photo'), async (req
       // Clean up temp file
       fs.unlinkSync(file.path);
     } catch (err: any) {
-      console.error(`[Upload] ✗ Failed to process ${file.originalname}:`, err.message);
+      error(`[Upload] Failed to process ${file.originalname}:`, err.message);
       // Clean up temp file if processing failed
       try {
         fs.unlinkSync(file.path);
@@ -571,7 +572,7 @@ router.post("/:album/upload", requireManager, upload.single('photo'), async (req
               );
             }
           } catch (err) {
-            console.error('Error with AI title generation:', err);
+            error('[AlbumManagement] Failed to with AI title generation:', err);
           }
           
           // Don't regenerate static JSON after every single image - too expensive!
@@ -599,8 +600,8 @@ router.post("/:album/upload", requireManager, upload.single('photo'), async (req
         error: 'Optimization script not found'
       });
     }
-  } catch (error) {
-    console.error('Error uploading photo:', error);
+  } catch (err) {
+    error('[AlbumManagement] Failed to upload photo:', err);
     res.status(500).json({ error: 'Failed to upload photo' });
   }
 });
@@ -701,12 +702,12 @@ router.patch("/:album/rename", requireManager, async (req: Request, res: Respons
     });
     
     transaction();
-    console.log(`✓ Updated database: ${sanitizedOldName} -> ${sanitizedNewName}`);
+    info(`Updated database: ${sanitizedOldName} -> ${sanitizedNewName}`);
 
     // Now rename filesystem directories
     // Rename photos directory
     fs.renameSync(oldAlbumPath, newAlbumPath);
-    console.log(`✓ Renamed photos directory: ${sanitizedOldName} -> ${sanitizedNewName}`);
+    info(`Renamed photos directory: ${sanitizedOldName} -> ${sanitizedNewName}`);
 
     // Rename optimized directories
     ['thumbnail', 'modal', 'download'].forEach(dir => {
@@ -714,7 +715,7 @@ router.patch("/:album/rename", requireManager, async (req: Request, res: Respons
       const newOptimizedPath = path.join(optimizedDir, dir, sanitizedNewName);
       if (fs.existsSync(oldOptimizedPath)) {
         fs.renameSync(oldOptimizedPath, newOptimizedPath);
-        console.log(`✓ Renamed optimized/${dir}: ${sanitizedOldName} -> ${sanitizedNewName}`);
+        info(`Renamed optimized/${dir}: ${sanitizedOldName} -> ${sanitizedNewName}`);
       }
     });
 
@@ -731,8 +732,8 @@ router.patch("/:album/rename", requireManager, async (req: Request, res: Respons
       oldName: sanitizedOldName,
       newName: sanitizedNewName
     });
-  } catch (error) {
-    console.error('Error renaming album:', error);
+  } catch (err) {
+    error('[AlbumManagement] Failed to rename album:', err);
     res.status(500).json({ error: 'Failed to rename album' });
   }
 });
@@ -766,25 +767,25 @@ router.patch("/:album/publish", requireManager, async (req: Request, res: Respon
 
     // Update or create album state
     saveAlbum(sanitizedAlbum, published);
-    console.log(`✓ Set album "${sanitizedAlbum}" published state to: ${published}`);
+    info(`[AlbumManagement] Set album "${sanitizedAlbum}" published state to: ${published}`);
     
     // Verify the state was saved correctly
     const albumState = getAlbumState(sanitizedAlbum);
     if (!albumState) {
-      console.error(`✗ Failed to save album state for "${sanitizedAlbum}"`);
+      error(`[AlbumManagement] Failed to save album state for "${sanitizedAlbum}"`);
       res.status(500).json({ error: 'Failed to save album state' });
       return;
     }
-    console.log(`✓ Verified album state in DB: published=${albumState.published}`);
+    info(`[AlbumManagement] Verified album state in DB: published=${albumState.published}`);
 
     // Regenerate static JSON files
-    console.log(`[Publish] Regenerating static JSON files...`);
+    info(`[Publish] Regenerating static JSON files...`);
     const appRoot = req.app.get('appRoot');
     const result = await generateStaticJSONFiles(appRoot);
     if (result.success) {
-      console.log(`[Publish] ✓ Static JSON regenerated (${result.albumCount} albums)`);
+      info(`[Publish] Static JSON regenerated (${result.albumCount} albums)`);
     } else {
-      console.error(`[Publish] ✗ Failed to regenerate static JSON:`, result.error);
+      error(`[Publish] Failed to regenerate static JSON:`, result.error);
     }
 
     res.json({ 
@@ -792,8 +793,8 @@ router.patch("/:album/publish", requireManager, async (req: Request, res: Respon
       album: sanitizedAlbum,
       published 
     });
-  } catch (error) {
-    console.error('Error updating album published state:', error);
+  } catch (err) {
+    error('[AlbumManagement] Failed to update album published state:', err);
     res.status(500).json({ error: 'Failed to update album published state' });
   }
 });
@@ -840,21 +841,21 @@ router.patch("/:album/show-on-homepage", requireManager, async (req: Request, re
     // Update show_on_homepage state
     const success = setAlbumShowOnHomepage(sanitizedAlbum, showOnHomepage);
     if (!success) {
-      console.error(`✗ Failed to update show_on_homepage for "${sanitizedAlbum}"`);
+      error(`[AlbumManagement] Failed to update show_on_homepage for "${sanitizedAlbum}"`);
       res.status(500).json({ error: 'Failed to update show on homepage state' });
       return;
     }
     
-    console.log(`✓ Set album "${sanitizedAlbum}" show_on_homepage state to: ${showOnHomepage}`);
+    info(`[AlbumManagement] Set album "${sanitizedAlbum}" show_on_homepage state to: ${showOnHomepage}`);
 
     // Regenerate static JSON files (specifically homepage.json)
-    console.log(`[Homepage] Regenerating static JSON files...`);
+    info(`[Homepage] Regenerating static JSON files...`);
     const appRoot = req.app.get('appRoot');
     const result = await generateStaticJSONFiles(appRoot);
     if (result.success) {
-      console.log(`[Homepage] ✓ Static JSON regenerated (${result.albumCount} albums)`);
+      info(`[Homepage] Static JSON regenerated (${result.albumCount} albums)`);
     } else {
-      console.error(`[Homepage] ✗ Failed to regenerate static JSON:`, result.error);
+      error(`[Homepage] Failed to regenerate static JSON:`, result.error);
     }
 
     res.json({ 
@@ -862,8 +863,8 @@ router.patch("/:album/show-on-homepage", requireManager, async (req: Request, re
       album: sanitizedAlbum,
       showOnHomepage 
     });
-  } catch (error) {
-    console.error('Error updating album show_on_homepage state:', error);
+  } catch (err) {
+    error('[AlbumManagement] Failed to update album show_on_homepage state:', err);
     res.status(500).json({ error: 'Failed to update album show on homepage state' });
   }
 });
@@ -895,11 +896,11 @@ router.post("/:album/optimize", requireAdmin, async (req: Request, res: Response
     const photosDir = req.app.get("photosDir");
     const albumPath = path.join(photosDir, sanitizedAlbum);
     
-    execFile('node', [scriptPath, albumPath], (error, stdout, stderr) => {
-      if (error) {
-        console.error('Optimization error:', error);
+    execFile('node', [scriptPath, albumPath], (err, stdout, stderr) => {
+      if (err) {
+        error('[AlbumManagement] Optimization error:', err);
       } else {
-        console.log('Optimization complete for album:', sanitizedAlbum);
+        info('[AlbumManagement] Optimization complete for album:', sanitizedAlbum);
       }
     });
 
@@ -907,8 +908,8 @@ router.post("/:album/optimize", requireAdmin, async (req: Request, res: Response
       success: true, 
       message: 'Optimization started in background' 
     });
-  } catch (error) {
-    console.error('Error triggering optimization:', error);
+  } catch (err) {
+    error('[AlbumManagement] Failed to trigger optimization:', err);
     res.status(500).json({ error: 'Failed to trigger optimization' });
   }
 });
@@ -960,11 +961,11 @@ router.post("/:album/photo-order", requireManager, async (req: Request, res: Res
     const appRoot = req.app.get('appRoot');
     generateStaticJSONFiles(appRoot);
     
-    console.log(`✓ Updated photo order for album: ${sanitizedAlbum} (${imageOrders.length} photos)`);
+    info(`[AlbumManagement] Updated photo order for album: ${sanitizedAlbum} (${imageOrders.length} photos)`);
 
     res.json({ success: true });
-  } catch (error) {
-    console.error('Error updating photo order:', error);
+  } catch (err) {
+    error('[AlbumManagement] Failed to update photo order:', err);
     res.status(500).json({ error: 'Failed to update photo order' });
   }
 });
@@ -992,7 +993,7 @@ router.put('/sort-order', requireManager, async (req: Request, res: Response): P
     const success = updateAlbumSortOrder(albumOrders);
     
     if (success) {
-      console.log(`✓ Updated sort order for ${albumOrders.length} albums`);
+      info(`[AlbumManagement] Updated sort order for ${albumOrders.length} albums`);
       
       // Regenerate static JSON files
       const appRoot = req.app.get('appRoot');
@@ -1002,8 +1003,8 @@ router.put('/sort-order', requireManager, async (req: Request, res: Response): P
     } else {
       res.status(500).json({ error: 'Failed to update album order' });
     }
-  } catch (error) {
-    console.error('Error updating album order:', error);
+  } catch (err) {
+    error('[AlbumManagement] Failed to update album order:', err);
     res.status(500).json({ error: 'Failed to update album order' });
   }
 });
@@ -1057,14 +1058,14 @@ router.put('/:albumName/move', requireManager, async (req: Request, res: Respons
     if (folderId !== null && folderPublishedState !== null) {
       // Moving into a folder - sync album's published state with folder's published state
       setAlbumPublished(albumName, folderPublishedState);
-      console.log(`✓ Set album "${albumName}" published state to ${folderPublishedState} (synced with folder)`);
+      info(`Set album "${albumName}" published state to ${folderPublishedState} (synced with folder)`);
     } else if (typeof published === 'boolean') {
       // Moving to uncategorized - use provided published state
       setAlbumPublished(albumName, published);
     }
     // If moving to uncategorized and no published state provided, keep current state
     
-    console.log(`✓ Moved album "${albumName}" to folder ${folderName || 'none'}`);
+    info(`Moved album "${albumName}" to folder ${folderName || 'none'}`);
     
     // If the album was moved OUT of a folder, check if that old folder is now empty
     // If so, automatically unpublish it
@@ -1076,7 +1077,7 @@ router.put('/:albumName/move', requireManager, async (req: Request, res: Respons
         const oldFolder = db.prepare('SELECT name FROM album_folders WHERE id = ?').get(oldFolderId) as { name: string } | undefined;
         if (oldFolder) {
           setFolderPublished(oldFolder.name, false);
-          console.log(`✓ Auto-unpublished empty folder: ${oldFolder.name}`);
+          info(`Auto-unpublished empty folder: ${oldFolder.name}`);
         }
       }
     }
@@ -1086,8 +1087,8 @@ router.put('/:albumName/move', requireManager, async (req: Request, res: Respons
     generateStaticJSONFiles(appRoot);
     
     res.json({ success: true });
-  } catch (error) {
-    console.error('Error moving album:', error);
+  } catch (err) {
+    error('[AlbumManagement] Failed to move album:', err);
     res.status(500).json({ error: 'Failed to move album' });
   }
 });

@@ -9,6 +9,7 @@ import { csrfProtection } from '../security.js';
 import { requireManager } from '../auth/middleware.js';
 import { generateStaticJSONFiles } from './static-json.js';
 import { invalidateAlbumCache } from './albums.js';
+import { error, warn, info, debug, verbose } from '../utils/logger.js';
 
 const require = createRequire(import.meta.url);
 
@@ -42,8 +43,8 @@ router.get('/:album/:filename', async (req, res) => {
     }
     
     res.json(metadata);
-  } catch (error) {
-    console.error('Error fetching image metadata:', error);
+  } catch (err) {
+    error('[ImageMetadata] Failed to fetch image metadata:', err);
     res.status(500).json({ error: 'Failed to fetch metadata' });
   }
 });
@@ -58,8 +59,8 @@ router.get('/album/:album', async (req, res) => {
     const db = await getDbFunctions();
     const metadata = db.getAlbumMetadata(album);
     res.json(metadata);
-  } catch (error) {
-    console.error('Error fetching album metadata:', error);
+  } catch (err) {
+    error('[ImageMetadata] Failed to fetch album metadata:', err);
     res.status(500).json({ error: 'Failed to fetch album metadata' });
   }
 });
@@ -73,8 +74,8 @@ router.get('/all', async (req, res) => {
     const db = await getDbFunctions();
     const metadata = db.getAllMetadata();
     res.json(metadata);
-  } catch (error) {
-    console.error('Error fetching all metadata:', error);
+  } catch (err) {
+    error('[ImageMetadata] Failed to fetch all metadata:', err);
     res.status(500).json({ error: 'Failed to fetch metadata' });
   }
 });
@@ -103,8 +104,8 @@ router.post('/', requireManager, express.json(), async (req, res) => {
       success: true, 
       message: 'Metadata saved successfully' 
     });
-  } catch (error) {
-    console.error('Error saving image metadata:', error);
+  } catch (err) {
+    error('[ImageMetadata] Failed to save image metadata:', err);
     res.status(500).json({ error: 'Failed to save metadata' });
   }
 });
@@ -142,8 +143,8 @@ router.put('/:album/:filename', requireManager, express.json(), async (req, res)
       success: true, 
       message: 'Metadata updated successfully' 
     });
-  } catch (error) {
-    console.error('Error updating image metadata:', error);
+  } catch (err) {
+    error('[ImageMetadata] Failed to update image metadata:', err);
     res.status(500).json({ error: 'Failed to update metadata' });
   }
 });
@@ -172,8 +173,8 @@ router.delete('/:album/:filename', requireManager, async (req, res) => {
       success: true, 
       message: 'Metadata deleted successfully' 
     });
-  } catch (error) {
-    console.error('Error deleting image metadata:', error);
+  } catch (err) {
+    error('[ImageMetadata] Failed to delete image metadata:', err);
     res.status(500).json({ error: 'Failed to delete metadata' });
   }
 });

@@ -6,6 +6,11 @@
 import { Album, AlbumFolder } from '../types';
 import { API_URL } from '../../../../config';
 import { fetchWithRateLimitCheck } from '../../../../utils/fetchWrapper';
+import { 
+  trackFolderDeleted, 
+  trackFolderPublishToggle 
+} from '../../../../utils/analytics';
+import { info } from '../../../../utils/logger';
 
 
 interface FolderHandlersProps {
@@ -77,6 +82,11 @@ export const createFolderHandlers = (props: FolderHandlersProps) => {
       });
 
       if (res.ok) {
+        const albumsInFolder = localAlbums.filter(a => {
+          const folder = localFolders.find(f => f.name === folderName);
+          return folder && a.folder_id === folder.id;
+        }).length;
+        trackFolderDeleted(folderName, deleteAlbums, albumsInFolder);
         const action = deleteAlbums ? 'deleted with all albums' : 'deleted (albums moved to Uncategorized)';
         setMessage({ type: 'success', text: `Folder "${folderName}" ${action}` });
         await loadAlbums();
@@ -109,6 +119,8 @@ export const createFolderHandlers = (props: FolderHandlersProps) => {
 
       if (res.ok) {
         const data = await res.json();
+        const albumsUpdated = data.albumsUpdated || 0;
+        trackFolderPublishToggle(folderName, !currentPublished, albumsUpdated);
         setMessage({
           type: 'success',
           text: `Folder "${folderName}" ${!currentPublished ? 'published' : 'unpublished'}`,
@@ -118,7 +130,7 @@ export const createFolderHandlers = (props: FolderHandlersProps) => {
         // Notify other components (like AdminPortal header dropdown)
         window.dispatchEvent(new Event('albums-updated'));
         
-        console.log(`✓ Folder "${folderName}" published=${!currentPublished}, ${data.albumsUpdated || 0} albums updated`);
+        info(`✓ Folder "${folderName}" published=${!currentPublished}, ${albumsUpdated} albums updated`);
       } else {
         const error = await res.json();
         setMessage({ type: 'error', text: error.error || 'Failed to update folder' });

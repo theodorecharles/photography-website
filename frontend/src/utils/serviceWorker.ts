@@ -4,18 +4,19 @@
  */
 
 import { showToast } from "./toast";
+import { info } from '../utils/logger';
 
 export function registerServiceWorker() {
   // Disable service worker on localhost (development)
   if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-    console.log('[SW] Service worker disabled on localhost - unregistering existing worker');
+    info('[SW] Service worker disabled on localhost - unregistering existing worker');
     
     // Actively unregister any existing service worker
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.getRegistrations().then((registrations) => {
         for (const registration of registrations) {
           registration.unregister();
-          console.log('[SW] Unregistered service worker:', registration.scope);
+          info('[SW] Unregistered service worker:', registration.scope);
         }
       });
       
@@ -24,7 +25,7 @@ export function registerServiceWorker() {
         caches.keys().then((cacheNames) => {
           cacheNames.forEach((cacheName) => {
             caches.delete(cacheName);
-            console.log('[SW] Deleted cache:', cacheName);
+            info('[SW] Deleted cache:', cacheName);
           });
         });
       }
@@ -41,7 +42,7 @@ export function registerServiceWorker() {
       navigator.serviceWorker
         .register(swUrl)
         .then((registration) => {
-          console.log("✓ Service Worker registered:", registration.scope);
+          info("✓ Service Worker registered:", registration.scope);
 
           // Force an immediate update check
           registration.update();
@@ -61,7 +62,7 @@ export function registerServiceWorker() {
                   navigator.serviceWorker.controller
                 ) {
                   // New service worker available
-                  console.log("📦 New version available! Reloading...");
+                  info("📦 New version available! Reloading...");
 
                   // Show toast notification only in dev/local (not in production)
                   const isProduction =
@@ -86,13 +87,13 @@ export function registerServiceWorker() {
           });
         })
         .catch((error) => {
-          console.error("Service Worker registration failed:", error);
+          error("Service Worker registration failed:", error);
         });
 
       // Listen for messages from the service worker
       navigator.serviceWorker.addEventListener("message", (event) => {
         if (event.data && event.data.type === "CACHE_CLEARED") {
-          console.log("✓ Cache cleared by service worker");
+          info("✓ Cache cleared by service worker");
         }
       });
     });
@@ -106,7 +107,7 @@ export function unregisterServiceWorker() {
         registration.unregister();
       })
       .catch((error) => {
-        console.error("Service Worker unregistration failed:", error);
+        error("Service Worker unregistration failed:", error);
       });
   }
 }

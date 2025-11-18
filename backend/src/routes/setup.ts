@@ -10,6 +10,7 @@ import { fileURLToPath } from "url";
 import crypto from "crypto";
 import multer from "multer";
 import sharp from "sharp";
+import { error, warn, info, debug, verbose } from '../utils/logger.js';
 
 const router = Router();
 
@@ -85,8 +86,8 @@ router.get("/status", async (req: Request, res: Response): Promise<void> => {
       setupComplete,
       checks,
     });
-  } catch (error) {
-    console.error("Setup status check failed:", error);
+  } catch (err) {
+    error("Setup status check failed:", err);
     res.status(500).json({
       error: "Failed to check setup status",
       setupComplete: false,
@@ -177,11 +178,11 @@ router.post(
       // Extract frontend hostname for allowedHosts (without protocol)
       const frontendHost = new URL(frontendUrl).host;
 
-      console.log(`[Setup] Auto-detected URLs:`);
-      console.log(`  Request host: ${host}`);
-      console.log(`  Frontend: ${frontendUrl}`);
-      console.log(`  Backend: ${backendUrl}`);
-      console.log(`  Allowed hosts: ${frontendHost}`);
+      info(`[Setup] Auto-detected URLs:`);
+      info(`  Request host: ${host}`);
+      info(`  Frontend: ${frontendUrl}`);
+      info(`  Backend: ${backendUrl}`);
+      info(`  Allowed hosts: ${frontendHost}`);
 
       // Validate auth method specific fields
       if (authMethod === "password") {
@@ -258,6 +259,9 @@ router.post(
               redirectFrom: [],
               redirectTo: "",
             },
+            logging: {
+              level: "error",
+            },
             auth: {
               google: {
                 enabled: false,
@@ -325,33 +329,33 @@ router.post(
 
       // Save config
       fs.writeFileSync(configPath, JSON.stringify(config, null, 2), "utf8");
-      console.log("✓ Configuration saved to:", configPath);
+      info("Configuration saved to:", configPath);
 
       // Create necessary directories
       const photosDir = path.join(dataDir, "photos");
       const optimizedDir = path.join(dataDir, "optimized");
 
-      console.log("Creating directories:");
-      console.log("  Photos:", photosDir);
-      console.log("  Optimized:", optimizedDir);
+      info("Creating directories:");
+      info("  Photos:", photosDir);
+      info("  Optimized:", optimizedDir);
 
       if (!fs.existsSync(photosDir)) {
         fs.mkdirSync(photosDir, { recursive: true });
-        console.log("  ✓ Created photos directory");
+        info("  Created photos directory");
       }
       if (!fs.existsSync(optimizedDir)) {
         fs.mkdirSync(optimizedDir, { recursive: true });
-        console.log("  ✓ Created optimized directory");
+        info("  Created optimized directory");
       }
 
       // Initialize the database to create gallery.db
       try {
         const { initializeDatabase } = await import("../database.js");
         const db = initializeDatabase();
-        console.log("  ✓ Database initialized");
+        info("  Database initialized");
 
         // Create users table if it doesn't exist
-        console.log("  📝 Creating users table...");
+        info("  📝 Creating users table...");
         db.exec(`
         CREATE TABLE IF NOT EXISTS users (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -393,14 +397,14 @@ router.post(
         CREATE INDEX IF NOT EXISTS idx_users_password_reset_token ON users(password_reset_token)
       `);
 
-        console.log("  ✓ Users table created");
+        info("  Users table created");
       } catch (err) {
-        console.error("Failed to initialize database:", err);
+        error("Failed to initialize database:", err);
         // Continue anyway - database will be created on first access
       }
 
       // Create the first admin user
-      console.log("\n👤 Creating admin user...");
+      info("\n👤 Creating admin user...");
       try {
         const { createUser, getUserByEmail } = await import(
           "../database-users.js"
@@ -409,7 +413,7 @@ router.post(
         // Check if user already exists
         const existingUser = getUserByEmail(authorizedEmail);
         if (existingUser) {
-          console.log("  ⚠️ User already exists, skipping user creation");
+          info("  ⚠️ User already exists, skipping user creation");
         } else {
           // Prepare auth methods array
           const authMethods =
@@ -436,10 +440,10 @@ router.post(
           }
 
           const user = createUser(userData);
-          console.log("  ✓ Admin user created:", user.email);
+          info("  Admin user created:", user.email);
         }
       } catch (err) {
-        console.error("  ❌ Failed to create admin user:", err);
+        error("  Failed to create admin user:", err);
         res.status(500).json({
           error: "Failed to create admin user",
           details: err instanceof Error ? err.message : "Unknown error",
@@ -448,29 +452,29 @@ router.post(
       }
 
       // Reload backend configuration
-      console.log("\n🔄 Reloading backend configuration...");
+      info("\nReloading backend configuration...");
       try {
         const { reloadConfig } = await import("../config.js");
         const reloadResult = reloadConfig();
         if (reloadResult.success) {
-          console.log("  ✓ Configuration reloaded successfully");
+          info("  Configuration reloaded successfully");
         }
       } catch (err) {
-        console.error("  ❌ Failed to reload configuration:", err);
+        error("  Failed to reload configuration:", err);
       }
 
       // Initialize Google OAuth strategy with new config
-      console.log("\n🔐 Initializing Google OAuth...");
+      info("\n🔐 Initializing Google OAuth...");
       try {
         const { initializeGoogleStrategy } = await import("./auth.js");
         const oauthInitialized = initializeGoogleStrategy();
         if (oauthInitialized) {
-          console.log("  ✓ Google OAuth strategy initialized from setup");
+          info("  Google OAuth strategy initialized from setup");
         } else {
-          console.log("  ⚠️ Google OAuth initialization returned false");
+          info("  ⚠️ Google OAuth initialization returned false");
         }
       } catch (err) {
-        console.error("  ❌ Failed to initialize Google OAuth:", err);
+        error("  Failed to initialize Google OAuth:", err);
       }
 
       // Only restart if Google OAuth is selected (needs OAuth strategy initialization)
@@ -486,21 +490,21 @@ router.post(
       if (requiresRestart) {
         // Gracefully restart the backend after sending response
         // This ensures Google OAuth strategy is properly initialized
-        console.log(
-          "\n🔄 Triggering backend restart to initialize Google OAuth..."
+        info(
+          "\nTriggering backend restart to initialize Google OAuth..."
         );
         setTimeout(() => {
-          console.log("✓ Setup complete - exiting for restart");
+          info("Setup complete - exiting for restart");
           process.exit(0); // Exit cleanly - PM2/Docker will restart the process
         }, 500); // Wait 500ms to ensure response is sent, then restart immediately
       } else {
-        console.log("\n✓ Setup complete - no restart needed for password auth");
+        info("\nSetup complete - no restart needed for password auth");
       }
-    } catch (error) {
-      console.error("Setup initialization failed:", error);
+    } catch (err) {
+      error("Setup initialization failed:", err);
       res.status(500).json({
         error: "Failed to initialize configuration",
-        details: error instanceof Error ? error.message : "Unknown error",
+        details: err instanceof Error ? err.message : "Unknown error",
       });
     }
   }
@@ -541,7 +545,7 @@ router.post(
           .png()
           .toFile(avatarPath);
       } catch (err) {
-        console.error("Failed to process avatar image:", err);
+        error("Failed to process avatar image:", err);
         res.status(500).json({ error: "Failed to process avatar image" });
         return;
       }
@@ -555,7 +559,7 @@ router.post(
           config.branding.avatarPath = "/photos/avatar.png";
           fs.writeFileSync(configPath, JSON.stringify(config, null, 2), "utf8");
         } catch (err) {
-          console.error("Failed to update config with avatar path:", err);
+          error("Failed to update config with avatar path:", err);
         }
       }
 
@@ -563,11 +567,11 @@ router.post(
         success: true,
         avatarPath: "/photos/avatar.png",
       });
-    } catch (error) {
-      console.error("Avatar upload failed:", error);
+    } catch (err) {
+      error("Avatar upload failed:", err);
       res.status(500).json({
         error: "Failed to upload avatar",
-        details: error instanceof Error ? error.message : "Unknown error",
+        details: err instanceof Error ? err.message : "Unknown error",
       });
     }
   }

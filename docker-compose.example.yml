@@ -21,6 +21,8 @@ services:
       - BACKEND_DOMAIN=https://api.example.com
       # Optional: Additional allowed origins (comma-separated)
       # - ALLOWED_ORIGINS=https://example.com,https://another.com
+      # Optional: Logging level (error, warn, info, debug, verbose)
+      # - LOG_LEVEL=info
     volumes:
       # Mount your data directory (photos, database, config, etc.)
       - /path/to/your/data:/data
@@ -45,6 +47,8 @@ services:
       - DATA_DIR=/data
       # Backend API URL (should match BACKEND_DOMAIN above)
       - API_URL=https://api.example.com
+      # Optional: Logging level (error, warn, info, debug, verbose)
+      # - VITE_LOG_LEVEL=info
     volumes:
       # Mount data directory read-only (for config.json)
       - /path/to/your/data:/data:ro

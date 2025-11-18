@@ -46,6 +46,7 @@ import {
   sortableKeyboardCoordinates,
   rectSortingStrategy,
 } from '@dnd-kit/sortable';
+import { info } from '../../../utils/logger';
 
 
 const AlbumsManager: React.FC<AlbumsManagerProps> = ({
@@ -130,7 +131,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
         // If we're currently uploading to this album, don't reload from DB
         // Just set the selectedAlbum state without calling loadPhotos
         if (uploadingAlbum === albumParam) {
-          console.log(`[Album Manager] Opening panel for album "${albumParam}" during active upload - skipping DB load`);
+          info(`[Album Manager] Opening panel for album "${albumParam}" during active upload - skipping DB load`);
           photoManagement.setSelectedAlbum(albumParam);
         } else {
           selectAlbumInternal(albumParam);
@@ -170,7 +171,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     // Only move to albumPhotos when ALL uploads are complete
     // Use uploadingAlbum instead of selectedAlbum so this works even if panel is closed
     if (completedUploads.length > 0 && !hasActiveUploads && uploadingAlbum) {
-      console.log('[Upload Progress] All uploads complete, moving to albumPhotos:', completedUploads.length);
+      info('[Upload Progress] All uploads complete, moving to albumPhotos:', completedUploads.length);
       
       // Sort by uploadIndex to maintain original order
       const sortedCompleted = [...completedUploads].sort((a, b) => 
@@ -182,14 +183,14 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
       
       // Only update albumPhotos if the uploading album matches the currently selected album
       if (uploadingAlbum === selectedAlbum) {
-        console.log('[Upload Progress] Uploading album matches selected album, updating UI');
+        info('[Upload Progress] Uploading album matches selected album, updating UI');
         // Add to beginning of albumPhotos (they were rendered first in the grid)
         photoManagement.setAlbumPhotos((prev: Photo[]) => [...newPhotos, ...prev]);
         
         // ALSO update originalPhotoOrder so Cancel doesn't make photos disappear
         photoManagement.setOriginalPhotoOrder((prev: Photo[]) => [...newPhotos, ...prev]);
       } else {
-        console.log('[Upload Progress] Uploading album does not match selected album, showing completion toaster');
+        info('[Upload Progress] Uploading album does not match selected album, showing completion toaster');
         // Show success toaster if panel was closed during upload
         setMessage({ 
           type: 'success', 
@@ -217,7 +218,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     const handleTitleUpdate = (album: string, filename: string, title: string) => {
       // Only update if it's for the currently selected album
       if (album === selectedAlbumRef.current) {
-        console.log(`[AlbumsManager] Updating title for ${album}/${filename}: "${title}"`);
+        info(`[AlbumsManager] Updating title for ${album}/${filename}: "${title}"`);
         setAlbumPhotos((prev: Photo[]) =>
           prev.map((p) =>
             (p.id.split('/').pop() || p.id) === filename ? { ...p, title } : p
@@ -245,7 +246,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
       const updateCount = Object.keys(bufferedUpdates).length;
       
       if (updateCount > 0) {
-        console.log(`[AlbumsManager] Applying ${updateCount} buffered title updates for ${selectedAlbum}`);
+        info(`[AlbumsManager] Applying ${updateCount} buffered title updates for ${selectedAlbum}`);
         setAlbumPhotos((prev: Photo[]) =>
           prev.map((p) => {
             const filename = p.id.split('/').pop() || p.id;
@@ -292,13 +293,13 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     
     // Transition: no uploads → has uploads
     if (hasActive && !hasActiveUploadsRef.current && uploadingAlbum) {
-      console.log('[Album Manager] 🚀 Active uploads started, connecting stream');
+      info('[Album Manager] 🚀 Active uploads started, connecting stream');
       hasActiveUploadsRef.current = true;
       optimizationStreamHandlers.connectOptimizationStream();
     }
     // Transition: has uploads → no uploads  
     else if (!hasActive && hasActiveUploadsRef.current) {
-      console.log('[Album Manager] ✅ All uploads complete, disconnecting stream');
+      info('[Album Manager] ✅ All uploads complete, disconnecting stream');
       hasActiveUploadsRef.current = false;
       optimizationStreamHandlers.disconnectOptimizationStream();
     }
@@ -307,7 +308,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   // Cleanup only on unmount
   useEffect(() => {
     return () => {
-      console.log('[Album Manager] Component unmounting, cleaning up stream');
+      info('[Album Manager] Component unmounting, cleaning up stream');
       optimizationStreamHandlers.disconnectOptimizationStream();
       hasActiveUploadsRef.current = false;
     };

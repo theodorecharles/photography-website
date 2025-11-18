@@ -6,17 +6,20 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { API_URL } from '../../../../config';
 import { ConfigData } from '../types';
+import { trackConfigSettingsSaved } from '../../../../utils/analytics';
 import SectionHeader from '../components/SectionHeader';
 import RegenerationControls from '../components/RegenerationControls';
 import AuthSettings from '../components/AuthSettings';
 import SMTPSettings from '../components/SMTPSettings';
 import AnalyticsSettings from '../components/AnalyticsSettings';
+import CustomDropdown from '../components/CustomDropdown';
 import {
   updateConfig as updateConfigHelper,
   updateArrayItem as updateArrayItemHelper,
   addArrayItem as addArrayItemHelper,
   removeArrayItem as removeArrayItemHelper,
 } from '../utils/configHelpers';
+import { error } from '../../../../utils/logger';
 
 
 interface AdvancedSettingsSectionProps {
@@ -128,6 +131,9 @@ const AdvancedSettingsSection: React.FC<AdvancedSettingsSectionProps> = ({
       });
 
       if (res.ok) {
+        // Track config settings save
+        trackConfigSettingsSaved(sectionName);
+        
         setMessage({ type: "success", text: `${sectionName} settings saved!` });
         // Update original config after successful save
         setOriginalConfig(structuredClone(config));
@@ -144,7 +150,7 @@ const AdvancedSettingsSection: React.FC<AdvancedSettingsSectionProps> = ({
       const errorMessage =
         err instanceof Error ? err.message : "Error saving configuration";
       setMessage({ type: "error", text: errorMessage });
-      console.error("Failed to save config:", err);
+      error("Failed to save config:", err);
     } finally {
       setSavingSection(null);
     }
@@ -184,8 +190,67 @@ const AdvancedSettingsSection: React.FC<AdvancedSettingsSectionProps> = ({
           JSON.stringify(config.analytics) !==
           JSON.stringify(originalConfig.analytics)
         );
+      case "Logging":
+        return (
+          JSON.stringify(config.environment?.logging) !==
+          JSON.stringify(originalConfig.environment?.logging)
+        );
       default:
         return false;
+    }
+  };
+
+  // Auto-save log level changes with toast notification
+  const handleLogLevelChange = async (newLevel: string) => {
+    updateConfig(['environment', 'logging', 'level'], newLevel);
+    
+    // Auto-save immediately
+    try {
+      const response = await fetch(`${API_URL}/api/config`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          ...config,
+          environment: {
+            ...config!.environment,
+            logging: {
+              ...config!.environment.logging,
+              level: newLevel,
+            },
+          },
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to save log level');
+      }
+
+      // Update original config to match
+      if (setOriginalConfig && config) {
+        setOriginalConfig({
+          ...config,
+          environment: {
+            ...config.environment,
+            logging: {
+              ...config.environment.logging,
+              level: newLevel,
+            },
+          },
+        });
+      }
+
+      setMessage({ 
+        type: 'success', 
+        text: `Log level changed to ${newLevel}` 
+      });
+      trackConfigSettingsSaved('Logging');
+    } catch (err) {
+      error('[AdvancedSettings] Failed to save log level:', err);
+      setMessage({ 
+        type: 'error', 
+        text: 'Failed to save log level' 
+      });
     }
   };
 
@@ -296,6 +361,69 @@ const AdvancedSettingsSection: React.FC<AdvancedSettingsSectionProps> = ({
           setMessage={setMessage}
           onOpenObserveSave={onOpenObserveSave}
         />
+
+        {/* Logging Settings */}
+        <div style={{ marginTop: '2rem' }}>
+          <h3 style={{ 
+            fontSize: '1.1rem', 
+            fontWeight: 600, 
+            marginBottom: '1rem',
+            color: '#e0e0e0'
+          }}>
+            Logging
+          </h3>
+          
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+            gap: '1.5rem',
+            marginBottom: '1rem'
+          }}>
+            <div>
+              <label className="branding-label" style={{ display: 'block', marginBottom: '0.5rem' }}>
+                Log Level
+              </label>
+              <CustomDropdown
+                value={config?.environment?.logging?.level || 'error'}
+                options={[
+                  { value: 'silent', label: 'Silent (No logging)', emoji: '🔇' },
+                  { value: 'error', label: 'Error (Default - Critical errors only)', emoji: '❌' },
+                  { value: 'warn', label: 'Warning (Warnings and above)', emoji: '⚠️' },
+                  { value: 'info', label: 'Info (Important info)', emoji: 'ℹ️' },
+                  { value: 'debug', label: 'Debug (Detailed debugging)', emoji: '🐛' },
+                  { value: 'verbose', label: 'Verbose (Business logic)', emoji: '📝' },
+                  { value: 'trace', label: 'Trace (Everything incl. CORS/CSRF)', emoji: '🔍' },
+                ]}
+                onChange={handleLogLevelChange}
+              />
+              <p style={{ 
+                fontSize: '0.85rem', 
+                color: '#888', 
+                marginTop: '0.5rem',
+                lineHeight: '1.4'
+              }}>
+                Controls the verbosity of application logs. Changes save automatically and take effect immediately.
+              </p>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'flex-end' }}>
+              <button
+                className="btn-secondary"
+                onClick={() => window.open('/logs', 'LogViewer', 'width=1200,height=800,menubar=no,toolbar=no,location=no,status=no')}
+                style={{ 
+                  width: '100%',
+                  padding: '0.75rem 1.5rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '0.5rem'
+                }}
+              >
+                📋 View Live Logs
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -9,6 +9,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { requireManager } from '../auth/middleware.js';
 import { csrfProtection } from '../security.js';
+import { error, warn, info, debug, verbose } from '../utils/logger.js';
 
 const router = Router();
 
@@ -26,8 +27,8 @@ router.get('/', (req: Request, res: Response) => {
   try {
     const configData = JSON.parse(fs.readFileSync(configPath, 'utf8'));
     res.json({ links: configData.externalLinks || [] });
-  } catch (error) {
-    console.error('Failed to read external links:', error);
+  } catch (err) {
+    error('Failed to read external links:', err);
     res.status(500).json({ error: 'Failed to load external links' });
   }
 });
@@ -89,8 +90,8 @@ router.put('/', requireManager, (req: Request, res: Response): void => {
     fs.writeFileSync(configPath, JSON.stringify(configData, null, 2), 'utf8');
 
     res.json({ success: true, links });
-  } catch (error) {
-    console.error('Failed to update external links:', error);
+  } catch (err) {
+    error('Failed to update external links:', err);
     res.status(500).json({ error: 'Failed to save external links' });
   }
 });

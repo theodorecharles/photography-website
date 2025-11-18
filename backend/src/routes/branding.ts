@@ -13,6 +13,7 @@ import os from 'os';
 import sharp from 'sharp';
 import { requireManager } from '../auth/middleware.js';
 import { csrfProtection } from '../security.js';
+import { error, warn, info, debug, verbose } from '../utils/logger.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -49,8 +50,8 @@ router.use(csrfProtection);
 import { DATA_DIR } from '../config.js';
 
 const configPath = path.join(DATA_DIR, 'config.json');
-console.log('[Branding Routes] Config path resolved to:', configPath);
-console.log('[Branding Routes] __dirname is:', __dirname);
+info('[Branding Routes] Config path resolved to:', configPath);
+info('[Branding Routes] __dirname is:', __dirname);
 
 interface BrandingConfig {
   siteName: string;
@@ -85,8 +86,8 @@ router.get('/', (req: Request, res: Response) => {
     };
     
     res.json(brandingConfig);
-  } catch (error) {
-    console.error('Error reading branding config:', error);
+  } catch (err) {
+    error('[Branding] Failed to read branding config:', err);
     res.status(500).json({ error: 'Failed to read branding configuration' });
   }
 });
@@ -160,8 +161,8 @@ router.put('/', requireManager, (req: Request, res: Response) => {
       message: 'Branding configuration updated successfully',
       branding: config.branding
     });
-  } catch (error) {
-    console.error('Error updating branding config:', error);
+  } catch (err) {
+    error('[Branding] Failed to update branding config:', err);
     res.status(500).json({ error: 'Failed to update branding configuration' });
   }
 });
@@ -222,14 +223,14 @@ router.post('/upload-avatar', requireManager, upload.single('avatar'), async (re
         .toFormat('png')
         .toFile(faviconIcoPath);
       
-      console.log('[Avatar Upload] ✓ Generated avatar.png and favicon files using Sharp');
+      info('[Avatar Upload] Generated avatar.png and favicon files using Sharp');
       
       // Also copy to dist directory so it's immediately served by nginx
       if (fs.existsSync(frontendDistDir)) {
         fs.copyFileSync(faviconIcoPath, faviconIcoPathDist);
       }
     } catch (err: any) {
-      console.error('[Avatar Upload] Failed to process avatar with Sharp:', err);
+      error('[Avatar Upload] Failed to process avatar with Sharp:', err);
       res.status(500).json({ error: 'Failed to process avatar image' });
       return;
     }
@@ -262,8 +263,8 @@ router.post('/upload-avatar', requireManager, upload.single('avatar'), async (re
       avatarPath: `/photos/${avatarFilename}`,
       faviconPath: '/favicon.ico'
     });
-  } catch (error) {
-    console.error('Error uploading avatar:', error);
+  } catch (err) {
+    error('[Branding] Failed to upload avatar:', err);
     res.status(500).json({ error: 'Failed to upload avatar' });
   }
 });

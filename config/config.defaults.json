@@ -32,6 +32,9 @@
       "redirectFrom": [],
       "redirectTo": ""
     },
+    "logging": {
+      "level": "error"
+    },
     "auth": {
       "google": {
         "clientId": "your-google-client-id",

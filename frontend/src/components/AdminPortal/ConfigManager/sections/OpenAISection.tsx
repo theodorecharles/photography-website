@@ -6,8 +6,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { API_URL } from '../../../../config';
 import { ConfigData } from '../types';
+import { trackConfigSettingsSaved } from '../../../../utils/analytics';
 import { PasswordInput } from '../../PasswordInput';
 import SectionHeader from '../components/SectionHeader';
+import { error as logError } from '../../../../utils/logger';
 
 
 interface OpenAISectionProps {
@@ -179,8 +181,8 @@ const OpenAISection: React.FC<OpenAISectionProps> = ({
 
       const data = await response.json();
       return data.valid;
-    } catch (error) {
-      console.error("Error validating OpenAI key:", error);
+    } catch (err) {
+      logError("Error validating OpenAI key:", err);
       return false;
     }
   };
@@ -217,6 +219,9 @@ const OpenAISection: React.FC<OpenAISectionProps> = ({
       });
 
       if (res.ok) {
+        // Track config settings save
+        trackConfigSettingsSaved('OpenAI');
+        
         setMessage({ type: "success", text: `OpenAI settings saved!` });
         // Update original config after successful save
         setOriginalConfig(structuredClone(config));
@@ -233,7 +238,7 @@ const OpenAISection: React.FC<OpenAISectionProps> = ({
       const errorMessage =
         err instanceof Error ? err.message : "Error saving configuration";
       setMessage({ type: "error", text: errorMessage });
-      console.error("Failed to save config:", err);
+      logError("Failed to save config:", err);
     } finally {
       setSavingSection(null);
     }

@@ -7,6 +7,7 @@ import { useState, useCallback } from 'react';
 import { API_URL } from '../../../../config';
 import { ConfirmModalConfig } from '../types';
 import { fetchWithRateLimitCheck } from '../../../../utils/fetchWrapper';
+import { trackFolderCreated } from '../../../../utils/analytics';
 
 
 interface UseFolderManagementProps {
@@ -45,6 +46,7 @@ export const useFolderManagement = ({
         throw new Error(data.error || 'Failed to create folder');
       }
 
+      trackFolderCreated(sanitizedName);
       await loadAlbums();
       setMessage({ type: 'success', text: `Folder "${sanitizedName}" created!` });
       setNewFolderName('');

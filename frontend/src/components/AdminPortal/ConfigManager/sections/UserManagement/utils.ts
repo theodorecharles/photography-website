@@ -1,6 +1,7 @@
 import type { NewUserState } from './types';
 import { API_URL } from '../../../../../config';
 import md5 from 'md5';
+import { info } from '../../../../../utils/logger';
 
 
 /**
@@ -43,9 +44,9 @@ export const userManagementAPI = {
     });
     if (res.ok) {
       const data = await res.json();
-      console.log('[UserManagement] Auth status response:', data);
+      info('[UserManagement] Auth status response:', data);
       if (data.authenticated && data.user) {
-        console.log('[UserManagement] Setting current user:', {
+        info('[UserManagement] Setting current user:', {
           id: data.user.id,
           email: data.user.email,
           role: data.user.role,

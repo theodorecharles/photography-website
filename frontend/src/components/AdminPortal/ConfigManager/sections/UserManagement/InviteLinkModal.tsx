@@ -4,6 +4,7 @@
  */
 
 import React, { useState } from 'react';
+import { error } from '../../../../../utils/logger';
 
 interface InviteLinkModalProps {
   inviteUrl: string;
@@ -24,7 +25,7 @@ export const InviteLinkModal: React.FC<InviteLinkModalProps> = ({
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
-      console.error('Failed to copy:', err);
+      error('Failed to copy:', err);
     }
   };
 

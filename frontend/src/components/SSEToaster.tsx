@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { useSSEToaster } from '../contexts/SSEToasterContext';
 import './AdminPortal/ConfigManager.css'; // Reuse the CSS
 import { StopIcon, FullscreenIcon } from './icons/';
+import { info } from '../utils/logger';
 
 /**
  * Global SSE Toaster component that displays job progress across all pages.
@@ -19,6 +20,7 @@ export default function SSEToaster() {
     isOptimizationRunning,
     optimizationLogs,
     optimizationProgress,
+    optimizationComplete,
     optimizationOutputRef,
     isUploading,
     uploadAlbum,
@@ -134,10 +136,10 @@ export default function SSEToaster() {
       
       // Lock if at bottom, unlock if scrolled up
       if (isAtBottom && !isScrollLocked) {
-        console.log('[SSEToaster] Re-locking scroll (user scrolled back to bottom)');
+        info('[SSEToaster] Re-locking scroll (user scrolled back to bottom)');
         setIsScrollLocked(true);
       } else if (!isAtBottom && isScrollLocked) {
-        console.log('[SSEToaster] Unlocking scroll (user scrolled up)');
+        info('[SSEToaster] Unlocking scroll (user scrolled up)');
         setIsScrollLocked(false);
       }
     };
@@ -192,7 +194,7 @@ export default function SSEToaster() {
     
     // When expanding, re-activate scroll lock and scroll to bottom
     if (!newCollapsedState) {
-      console.log('[SSEToaster] Expanding - activating scroll lock');
+      info('[SSEToaster] Expanding - activating scroll lock');
       setIsScrollLocked(true);
       
       const outputRef = generatingTitles ? titlesOutputRef : optimizationOutputRef;
@@ -204,7 +206,7 @@ export default function SSEToaster() {
             requestAnimationFrame(() => {
               if (element) {
                 element.scrollTop = element.scrollHeight;
-                console.log('[SSEToaster] Scrolled to bottom on expand:', element.scrollTop, element.scrollHeight);
+                info('[SSEToaster] Scrolled to bottom on expand:', element.scrollTop, element.scrollHeight);
               }
             });
           });
@@ -242,24 +244,33 @@ export default function SSEToaster() {
           </span>
         </div>
         <div className="sse-toaster-actions">
-          {/* Stop button - only shown when handler is available */}
-          {((generatingTitles && stopTitlesHandler) || (isOptimizationRunning && stopOptimizationHandler)) && (
+          {/* Stop/Close button */}
+          {(generatingTitles || isOptimizationRunning || optimizationComplete) && (
             <button
               className="sse-toaster-stop-btn"
               onClick={() => {
-                console.log('[SSEToaster Stop Button] Clicked. generatingTitles:', generatingTitles, 'stopTitlesHandler:', typeof stopTitlesHandler);
-                console.log('[SSEToaster Stop Button] isOptimizationRunning:', isOptimizationRunning, 'stopOptimizationHandler:', typeof stopOptimizationHandler);
+                // If job is complete, just hide the toaster
+                if (optimizationComplete && !isOptimizationRunning) {
+                  info('[SSEToaster Close Button] Hiding completed optimization toaster');
+                  // Just visually hide - don't reset state yet
+                  setIsToasterCollapsed(true);
+                  return;
+                }
+                
+                // Otherwise stop the running job
+                info('[SSEToaster Stop Button] Clicked. generatingTitles:', generatingTitles, 'stopTitlesHandler:', typeof stopTitlesHandler);
+                info('[SSEToaster Stop Button] isOptimizationRunning:', isOptimizationRunning, 'stopOptimizationHandler:', typeof stopOptimizationHandler);
                 if (generatingTitles && stopTitlesHandler) {
-                  console.log('[SSEToaster Stop Button] Calling stopTitlesHandler');
+                  info('[SSEToaster Stop Button] Calling stopTitlesHandler');
                   stopTitlesHandler();
                 } else if (isOptimizationRunning && stopOptimizationHandler) {
-                  console.log('[SSEToaster Stop Button] Calling stopOptimizationHandler');
+                  info('[SSEToaster Stop Button] Calling stopOptimizationHandler');
                   stopOptimizationHandler();
                 }
               }}
-              title="Stop"
+              title={optimizationComplete && !isOptimizationRunning ? "Close" : "Stop"}
             >
-              <StopIcon width="14" height="14" />
+              {optimizationComplete && !isOptimizationRunning ? "✕" : <StopIcon width="14" height="14" />}
             </button>
           )}
           <button

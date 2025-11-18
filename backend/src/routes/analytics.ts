@@ -8,6 +8,7 @@
 
 import { Router } from 'express';
 import config from '../config.ts';
+import { error, warn, info, debug, verbose } from '../utils/logger.js';
 
 const router = Router();
 
@@ -27,7 +28,7 @@ router.post('/track', async (req, res): Promise<void> => {
     const { endpoint, organization, stream, username, password } = analyticsConfig;
 
     if (!endpoint || !organization || !stream || !username || !password) {
-      console.error('Analytics configuration incomplete');
+      error('Analytics configuration incomplete');
       res.status(200).json({ success: true, message: 'Analytics not configured' });
       return;
     }
@@ -42,7 +43,7 @@ router.post('/track', async (req, res): Promise<void> => {
     if (origin) {
       const isAllowedOrigin = allowedOrigins.some((allowed: string) => origin.startsWith(allowed));
       if (!isAllowedOrigin) {
-        console.warn('Analytics request from unauthorized origin:', origin);
+        warn('Analytics request from unauthorized origin:', origin);
         res.status(403).json({ error: 'Unauthorized origin' });
         return;
       }
@@ -86,15 +87,15 @@ router.post('/track', async (req, res): Promise<void> => {
       if (!response.ok) {
         const errorText = await response.text();
         // Log detailed error on server, but don't send to client
-        console.error('OpenObserve error:', response.status, errorText);
+        error('OpenObserve error:', response.status, errorText);
         // Return success anyway to not break frontend or leak infrastructure details
         res.status(200).json({ success: true });
         return;
       }
 
       res.status(200).json({ success: true });
-    } catch (error) {
-      console.error('Analytics proxy error:', error);
+    } catch (err) {
+      error('Analytics proxy error:', err);
       // Return success anyway to not break frontend or leak error details
       res.status(200).json({ success: true });
     }

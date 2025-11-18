@@ -7,6 +7,12 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { API_URL } from '../../../config';
 import { ConfigManagerProps, ConfigData } from './types';
 import { useSSEToaster } from '../../../contexts/SSEToasterContext';
+import { 
+  trackAITitleGenerationStarted, 
+  trackAITitleGenerationStopped,
+  trackImageOptimizationStarted,
+  trackImageOptimizationStopped 
+} from '../../../utils/analytics';
 import BrandingSection from './sections/BrandingSection';
 import LinksSection from './sections/LinksSection';
 import UserManagementSection from './sections/UserManagementSection';
@@ -15,6 +21,7 @@ import ImageOptimizationSection from './sections/ImageOptimizationSection';
 import AdvancedSettingsSection from './sections/AdvancedSettingsSection';
 import RestartModal from '../../RestartModal';
 import '../ConfigManager.css';
+import { error, info } from '../../../utils/logger';
 
 
 const ConfigManager: React.FC<ConfigManagerProps> = ({
@@ -30,11 +37,11 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
 
   // Debug logging for props
   useEffect(() => {
-    console.log('[ConfigManager] Received branding prop:', branding);
+    info('[ConfigManager] Received branding prop:', branding);
   }, [branding]);
 
   useEffect(() => {
-    console.log('[ConfigManager] Received externalLinks prop:', externalLinks);
+    info('[ConfigManager] Received externalLinks prop:', externalLinks);
   }, [externalLinks]);
   
   const [config, setConfig] = useState<ConfigData | null>(null);
@@ -109,14 +116,14 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
   };
 
   useEffect(() => {
-    console.log('[ConfigManager Mount] generatingTitles:', sseToaster.generatingTitles, 'isOptimizationRunning:', sseToaster.isOptimizationRunning);
+    info('[ConfigManager Mount] generatingTitles:', sseToaster.generatingTitles, 'isOptimizationRunning:', sseToaster.isOptimizationRunning);
     loadConfig();
     // Only check for running jobs if there's no job already running in the global context
     if (!sseToaster.generatingTitles && !sseToaster.isOptimizationRunning) {
-      console.log('[ConfigManager] No active job in context, checking backend for running jobs');
+      info('[ConfigManager] No active job in context, checking backend for running jobs');
       checkForRunningJobs();
     } else {
-      console.log('[ConfigManager] Job already running in context, skipping backend check');
+      info('[ConfigManager] Job already running in context, skipping backend check');
     }
     checkMissingTitles();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -132,7 +139,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
       if (titlesRes.ok) {
         const titlesStatus = await titlesRes.json();
         if (titlesStatus.running && !titlesStatus.isComplete) {
-          console.log("Reconnecting to AI titles job...");
+          info("Reconnecting to AI titles job...");
           
           // Parse stored output
           const parsedOutput: string[] = [];
@@ -171,7 +178,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
       if (optRes.ok) {
         const optStatus = await optRes.json();
         if (optStatus.running && !optStatus.isComplete) {
-          console.log("Reconnecting to optimization job...");
+          info("Reconnecting to optimization job...");
 
           // Parse stored output
           const parsedOutput: string[] = [];
@@ -201,7 +208,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
         }
       }
     } catch (err) {
-      console.error("Error checking for running jobs:", err);
+      error("Error checking for running jobs:", err);
     }
   };
 
@@ -273,10 +280,10 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
       }
     } catch (err: any) {
       if (err.name === "AbortError") {
-        console.log("AI titles job stopped by user");
+        info("AI titles job stopped by user");
         sseToaster.titlesAbortController.current = null;
       } else {
-        console.error("Failed to reconnect to titles job:", err);
+        error("Failed to reconnect to titles job:", err);
         sseToaster.setGeneratingTitles(false);
         sseToaster.titlesAbortController.current = null;
       }
@@ -288,6 +295,9 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
     // Create new abort controller for this reconnection
     const controller = new AbortController();
     sseToaster.optimizationAbortController.current = controller;
+
+    // Track image optimization start
+    trackImageOptimizationStarted('all');
 
     try {
       const res = await fetch(`${API_URL}/api/image-optimization/optimize`, {
@@ -344,17 +354,17 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
                 sseToaster.optimizationAbortController.current = null;
               }
             } catch (e) {
-              console.error("Failed to parse SSE data:", e);
+              error("Failed to parse SSE data:", e);
             }
           }
         }
       }
     } catch (err: any) {
       if (err.name === "AbortError") {
-        console.log("Optimization job stopped by user");
+        info("Optimization job stopped by user");
         sseToaster.optimizationAbortController.current = null;
       } else {
-        console.error("Failed to reconnect to optimization job:", err);
+        error("Failed to reconnect to optimization job:", err);
         sseToaster.setIsOptimizationRunning(false);
         sseToaster.optimizationAbortController.current = null;
       }
@@ -375,7 +385,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
         setMessage({ type: "error", text: "Failed to load configuration" });
       }
     } catch (err) {
-      console.error("Failed to load config:", err);
+      error("Failed to load config:", err);
       setMessage({ type: "error", text: "Failed to load configuration" });
     } finally {
       setLoading(false);
@@ -393,12 +403,15 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
         setHasMissingTitles(data.hasMissingTitles);
       }
     } catch (err) {
-      console.error("Failed to check missing titles:", err);
+      error("Failed to check missing titles:", err);
     }
   };
 
   const handleStopTitles = useCallback(async () => {
-    console.log('[handleStopTitles] Called');
+    info('[handleStopTitles] Called');
+    // Track AI title generation stop
+    trackAITitleGenerationStopped(true);
+    
     try {
       // Call backend to kill the process
       const response = await fetch(`${API_URL}/api/ai-titles/stop`, {
@@ -408,30 +421,33 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
           "Content-Type": "application/json",
         },
       });
-      console.log('[handleStopTitles] Backend response:', response.ok);
+      info('[handleStopTitles] Backend response:', response.ok);
 
       // Abort the SSE connection using global context
       if (sseToaster.titlesAbortController.current) {
-        console.log('[handleStopTitles] Aborting SSE connection');
+        info('[handleStopTitles] Aborting SSE connection');
         sseToaster.titlesAbortController.current.abort();
         sseToaster.titlesAbortController.current = null;
       }
 
       // Clear output and reset state using global context setters
-      console.log('[handleStopTitles] Clearing global state');
+      info('[handleStopTitles] Clearing global state');
       sseToaster.setGeneratingTitles(false);
       sseToaster.setTitlesOutput([]);
       sseToaster.setTitlesProgress(0);
       sseToaster.setTitlesWaiting(null);
-      console.log('[handleStopTitles] Done');
+      info('[handleStopTitles] Done');
     } catch (err) {
-      console.error("Failed to stop AI titles job:", err);
+      error("Failed to stop AI titles job:", err);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleStopOptimization = useCallback(async () => {
-    console.log('[handleStopOptimization] Called');
+    info('[handleStopOptimization] Called');
+    // Track image optimization stop
+    trackImageOptimizationStopped(true);
+    
     try {
       // Call backend to kill the process
       const response = await fetch(`${API_URL}/api/image-optimization/stop`, {
@@ -442,38 +458,42 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
         },
       });
       const result = await response.json();
-      console.log('[handleStopOptimization] Backend response:', result.success);
+      info('[handleStopOptimization] Backend response:', result.success);
 
       // Abort the SSE connection using global context
       if (sseToaster.optimizationAbortController.current) {
-        console.log('[handleStopOptimization] Aborting SSE connection');
+        info('[handleStopOptimization] Aborting SSE connection');
         sseToaster.optimizationAbortController.current.abort();
         sseToaster.optimizationAbortController.current = null;
       }
 
       // Clear output and reset state using global context setters
-      console.log('[handleStopOptimization] Clearing global state');
+      info('[handleStopOptimization] Clearing global state');
       sseToaster.setIsOptimizationRunning(false);
+      sseToaster.setOptimizationComplete(false);
       sseToaster.setOptimizationLogs([]);
       sseToaster.setOptimizationProgress(0);
       setOptimizationComplete(false);
-      console.log('[handleStopOptimization] Done');
+      info('[handleStopOptimization] Done');
     } catch (err) {
-      console.error("Failed to stop optimization job:", err);
+      error("Failed to stop optimization job:", err);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   
   // Register stop handlers with global context
   useEffect(() => {
-    console.log('[ConfigManager] Registering stop handlers');
+    info('[ConfigManager] Registering stop handlers');
     sseToaster.setStopTitlesHandler(() => handleStopTitles);
     sseToaster.setStopOptimizationHandler(() => handleStopOptimization);
-    console.log('[ConfigManager] Stop handlers registered');
+    info('[ConfigManager] Stop handlers registered');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleGenerateTitles = async (forceRegenerate = false) => {
+    // Track AI title generation start
+    trackAITitleGenerationStarted(forceRegenerate);
+    
     // Initialize global context state to show toaster
     sseToaster.setGeneratingTitles(true);
     sseToaster.setTitlesOutput([]);
@@ -538,7 +558,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
                 const titleData = JSON.parse(data.substring(13));
                 sseToaster.addTitleUpdate(titleData.album, titleData.filename, titleData.title);
               } catch (err) {
-                console.error("Failed to parse TITLE_UPDATE:", err);
+                error("Failed to parse TITLE_UPDATE:", err);
               }
             } else {
               try {
@@ -566,7 +586,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
       const errorMessage =
         err instanceof Error ? err.message : "Error generating titles";
       setMessage({ type: "error", text: errorMessage });
-      console.error("Failed to generate titles:", err);
+      error("Failed to generate titles:", err);
       sseToaster.setGeneratingTitles(false);
       sseToaster.titlesAbortController.current = null;
       checkMissingTitles(); // Refresh button visibility
@@ -583,6 +603,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
 
     // Initialize global context state to show toaster
     sseToaster.setIsOptimizationRunning(true);
+    sseToaster.setOptimizationComplete(false);
     sseToaster.setOptimizationLogs([]);
     sseToaster.setOptimizationProgress(0);
     setOptimizationComplete(false);
@@ -634,7 +655,12 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
       while (true) {
         const { done, value } = await reader.read();
 
-        if (done) break;
+        if (done) {
+          // Stream ended - ensure state is cleaned up
+          sseToaster.setIsOptimizationRunning(false);
+          sseToaster.optimizationAbortController.current = null;
+          break;
+        }
 
         buffer += decoder.decode(value, { stream: true });
         const lines = buffer.split("\n");
@@ -651,27 +677,23 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
               } else if (data.type === "stdout" || data.type === "stderr") {
                 sseToaster.setOptimizationLogs((prev) => [...prev, data.message]);
               } else if (data.type === "complete") {
-                // Only mark as complete and show final message for the last completion
-                if (data.message.includes("AI title generation")) {
-                  setOptimizationComplete(true);
-                  sseToaster.setOptimizationLogs((prev) =>
-                    prev.filter((log) => !log.startsWith("Generating"))
-                  );
-                  setMessage({
-                    type: data.exitCode === 0 ? "success" : "error",
-                    text:
-                      data.exitCode === 0
-                        ? "Optimization and AI title generation completed!"
-                        : "AI title generation failed",
-                  });
-                } else {
-                  sseToaster.setOptimizationLogs((prev) => [...prev, data.message]);
-                }
+                // Handle optimization completion
+                setOptimizationComplete(true);
+                sseToaster.setIsOptimizationRunning(false);
+                sseToaster.setOptimizationComplete(true);
+                sseToaster.setOptimizationLogs((prev) => [...prev, data.message]);
+                setMessage({
+                  type: data.exitCode === 0 ? "success" : "error",
+                  text:
+                    data.exitCode === 0
+                      ? "Optimization completed successfully!"
+                      : "Optimization failed",
+                });
               } else if (data.type === "error") {
                 setMessage({ type: "error", text: data.message });
               }
             } catch (e) {
-              console.error("Failed to parse SSE data:", e);
+              error("Failed to parse SSE data:", e);
             }
           }
         }
@@ -680,7 +702,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
       if (err instanceof Error && err.name === "AbortError") {
         return;
       }
-      console.error("Optimization error:", err);
+      error("Optimization error:", err);
       setMessage({ type: "error", text: "Network error occurred" });
       sseToaster.setIsOptimizationRunning(false);
       sseToaster.optimizationAbortController.current = null;

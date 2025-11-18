@@ -9,16 +9,19 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { csrfProtection } from "../security.js";
 import { requireAuth, requireAdmin } from "../auth/middleware.js";
+import { error, warn, info, debug, verbose } from '../utils/logger.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const router = express.Router();
 
-import { DATA_DIR, reloadConfig } from "../config.js";
+import { DATA_DIR, reloadConfig, getLogLevel } from "../config.js";
 import { sendTestEmail } from "../email.js";
+import { initLogger } from '../utils/logger.js';
 
 const CONFIG_PATH = path.join(DATA_DIR, "config.json");
+const LOGS_DIR = path.join(DATA_DIR, "logs");
 
 /**
  * GET /api/config/runtime
@@ -61,8 +64,8 @@ router.get("/runtime", (req, res) => {
         configExists: false
       });
     }
-  } catch (error) {
-    console.error("Error reading runtime config:", error);
+  } catch (err) {
+    error("[Config] Failed to read runtime config:", err);
     res.status(500).json({ error: "Failed to read runtime configuration" });
   }
 });
@@ -82,8 +85,8 @@ router.get("/", requireAuth, (req, res) => {
     // Return full config for admin to edit
     // (sensitive fields will be masked on frontend if needed)
     res.json(config);
-  } catch (error) {
-    console.error("Error reading config:", error);
+  } catch (err) {
+    error("[Config] Failed to read config:", err);
     res.status(500).json({ error: "Failed to read configuration" });
   }
 });
@@ -105,7 +108,7 @@ router.post(
         return;
       }
 
-      console.log("[OpenAI Validation] Testing API key...");
+      info("[OpenAI Validation] Testing API key...");
 
       // Test the API key by calling OpenAI's models endpoint
       const response = await fetch("https://api.openai.com/v1/models", {
@@ -115,18 +118,18 @@ router.post(
         },
       });
 
-      console.log("[OpenAI Validation] Response status:", response.status);
-      console.log("[OpenAI Validation] Response ok:", response.ok);
+      info("[OpenAI Validation] Response status:", response.status);
+      info("[OpenAI Validation] Response ok:", response.ok);
 
       // If not ok, log the error details
       if (!response.ok) {
         const errorText = await response.text();
-        console.error("[OpenAI Validation] Error response:", errorText);
+        error("[OpenAI Validation] Error response:", errorText);
       }
 
       res.json({ valid: response.ok });
-    } catch (error) {
-      console.error("[OpenAI Validation] Exception:", error);
+    } catch (err) {
+      error("[OpenAI Validation] Exception:", err);
       res.json({ valid: false });
     }
   }
@@ -166,14 +169,20 @@ router.put("/", requireAdmin, express.json(), (req, res) => {
     // Reload configuration cache so changes take effect immediately
     reloadConfig();
 
-    console.log("✓ Configuration updated by:", req.user);
+    // If log level was changed, log it BEFORE changing (so it's always visible)
+    if (updatedConfig.environment?.logging?.level) {
+      info(`[Config] Changing log level to: ${updatedConfig.environment.logging.level}`);
+      initLogger(updatedConfig.environment.logging.level);
+    }
+
+    verbose("[Config] Configuration updated by:", req.user);
 
     res.json({
       success: true,
       message: "Configuration updated successfully",
     });
-  } catch (error) {
-    console.error("Error updating config:", error);
+  } catch (err) {
+    error("[Config] Failed to update config:", err);
     res.status(500).json({ error: "Failed to update configuration" });
   }
 });
@@ -195,7 +204,7 @@ router.post(
         return;
       }
 
-      console.log(`[Test Email] Sending test email to ${email}...`);
+      info(`[Test Email] Sending test email to ${email}...`);
 
       const success = await sendTestEmail(email);
 
@@ -209,10 +218,121 @@ router.post(
           error: "Failed to send test email. Please check your SMTP configuration.",
         });
       }
-    } catch (error) {
-      console.error("[Test Email] Error:", error);
+    } catch (err) {
+      error("[Test Email] Error:", err);
       res.status(500).json({ error: "Failed to send test email" });
     }
+  }
+);
+
+/**
+ * GET /api/config/logs/stream
+ * Stream logs via SSE (admin only) - combines frontend and backend logs (stdout + stderr)
+ */
+router.get(
+  "/logs/stream",
+  requireAdmin,
+  (req, res) => {
+    const backendOutPath = path.join(LOGS_DIR, 'backend-out-0.log');
+    const backendErrPath = path.join(LOGS_DIR, 'backend-error-0.log');
+    const frontendOutPath = path.join(LOGS_DIR, 'frontend-out.log');
+    const frontendErrPath = path.join(LOGS_DIR, 'frontend-error.log');
+
+    // Set SSE headers
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+    res.setHeader('X-Accel-Buffering', 'no');
+    res.setTimeout(0);
+
+    info(`[Log Stream] Client connected - streaming combined logs`);
+
+    // Send initial logs (last 100 lines combined from all sources)
+    const allLogs: Array<{ timestamp: Date; line: string }> = [];
+    
+    // Helper to read and parse logs
+    const readLogs = (logPath: string, prefix: string) => {
+      if (fs.existsSync(logPath)) {
+        const logContent = fs.readFileSync(logPath, 'utf-8');
+        const lines = logContent.split('\n').filter(line => line.trim());
+        lines.forEach(line => {
+          const timestampMatch = line.match(/^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} [+-]\d{2}:\d{2}):/);
+          const timestamp = timestampMatch ? new Date(timestampMatch[1]) : new Date(0);
+          allLogs.push({ timestamp, line: `${prefix} ${line}` });
+        });
+      }
+    };
+
+    readLogs(backendOutPath, '[BE]');
+    readLogs(backendErrPath, '[BE-ERR]');
+    readLogs(frontendOutPath, '[FE]');
+    readLogs(frontendErrPath, '[FE-ERR]');
+
+    // Sort by timestamp and take last 100
+    allLogs.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+    const lastLines = allLogs.slice(-100).map(log => log.line);
+    
+    res.write(`data: ${JSON.stringify({ type: 'init', logs: lastLines })}\n\n`);
+
+    // Track file sizes for all log files
+    const fileSizes = {
+      backendOut: fs.existsSync(backendOutPath) ? fs.statSync(backendOutPath).size : 0,
+      backendErr: fs.existsSync(backendErrPath) ? fs.statSync(backendErrPath).size : 0,
+      frontendOut: fs.existsSync(frontendOutPath) ? fs.statSync(frontendOutPath).size : 0,
+      frontendErr: fs.existsSync(frontendErrPath) ? fs.statSync(frontendErrPath).size : 0,
+    };
+
+    // Helper to watch a log file
+    const watchLogFile = (logPath: string, prefix: string, sizeKey: keyof typeof fileSizes) => {
+      fs.watchFile(logPath, { interval: 500 }, (curr, prev) => {
+        if (curr.size > fileSizes[sizeKey]) {
+          const stream = fs.createReadStream(logPath, {
+            start: fileSizes[sizeKey],
+            end: curr.size,
+            encoding: 'utf-8'
+          });
+
+          let buffer = '';
+          stream.on('data', (chunk) => {
+            buffer += chunk;
+            const lines = buffer.split('\n');
+            buffer = lines.pop() || '';
+
+            lines.forEach(line => {
+              if (line.trim()) {
+                res.write(`data: ${JSON.stringify({ type: 'log', line: `${prefix} ${line}` })}\n\n`);
+              }
+            });
+          });
+
+          stream.on('end', () => {
+            fileSizes[sizeKey] = curr.size;
+          });
+        }
+      });
+    };
+
+    // Watch all log files
+    watchLogFile(backendOutPath, '[BE]', 'backendOut');
+    watchLogFile(backendErrPath, '[BE-ERR]', 'backendErr');
+    watchLogFile(frontendOutPath, '[FE]', 'frontendOut');
+    watchLogFile(frontendErrPath, '[FE-ERR]', 'frontendErr');
+
+    // Heartbeat to keep connection alive
+    const heartbeat = setInterval(() => {
+      res.write(': heartbeat\n\n');
+    }, 30000);
+
+    // Cleanup on client disconnect
+    req.on('close', () => {
+      info(`[Log Stream] Client disconnected`);
+      fs.unwatchFile(backendOutPath);
+      fs.unwatchFile(backendErrPath);
+      fs.unwatchFile(frontendOutPath);
+      fs.unwatchFile(frontendErrPath);
+      clearInterval(heartbeat);
+      res.end();
+    });
   }
 );
 

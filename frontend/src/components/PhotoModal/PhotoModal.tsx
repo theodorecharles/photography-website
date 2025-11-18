@@ -14,6 +14,7 @@ import InfoPanel from './InfoPanel';
 import ImageCanvas from './ImageCanvas';
 import ModalNavigation from './ModalNavigation';
 import './PhotoModal.css';
+import { error as logError } from '../../utils/logger';
 
 
 interface PhotoModalProps {
@@ -84,7 +85,7 @@ const PhotoModal: React.FC<PhotoModalProps> = ({
           setSiteName(data.siteName || 'Photo');
         }
       } catch (err) {
-        console.error('Failed to fetch branding:', err);
+        logError('Failed to fetch branding:', err);
       }
     };
     fetchBranding();
@@ -112,7 +113,7 @@ const PhotoModal: React.FC<PhotoModalProps> = ({
         // No title found - this is okay
         setImageTitle(null);
       }
-    } catch (error) {
+    } catch (err) {
       // Silently fail - titles are optional
       setImageTitle(null);
     }
@@ -237,7 +238,7 @@ const PhotoModal: React.FC<PhotoModalProps> = ({
       setCopiedLink(true);
       setTimeout(() => setCopiedLink(false), 2000);
     } catch (err) {
-      console.error('Failed to copy link:', err);
+      logError('Failed to copy link:', err);
     }
   }, [getPhotoPermalink]);
 
@@ -253,7 +254,7 @@ const PhotoModal: React.FC<PhotoModalProps> = ({
       try {
         await document.exitFullscreen();
       } catch (err) {
-        console.error('Error exiting fullscreen:', err);
+        logError('Error exiting fullscreen:', err);
       }
     }
     
@@ -278,14 +279,14 @@ const PhotoModal: React.FC<PhotoModalProps> = ({
         await document.documentElement.requestFullscreen();
         setIsFullscreen(true);
       } catch (err) {
-        console.error('Error attempting to enable fullscreen:', err);
+        logError('Error attempting to enable fullscreen:', err);
       }
     } else {
       try {
         await document.exitFullscreen();
         setIsFullscreen(false);
       } catch (err) {
-        console.error('Error attempting to exit fullscreen:', err);
+        logError('Error attempting to exit fullscreen:', err);
       }
     }
   }, []);
@@ -305,11 +306,11 @@ const PhotoModal: React.FC<PhotoModalProps> = ({
         const data = await res.json();
         setExifData(data);
       } else {
-        console.error('Failed to load EXIF data');
+        logError('Failed to load EXIF data');
         setExifData({ error: 'Failed to load' });
       }
-    } catch (error) {
-      console.error('Error fetching EXIF:', error);
+    } catch (err) {
+      logError('Error fetching EXIF:', err);
       setExifData({ error: 'Failed to load' });
     } finally {
       setLoadingExif(false);
@@ -353,8 +354,8 @@ const PhotoModal: React.FC<PhotoModalProps> = ({
       URL.revokeObjectURL(blobUrl);
       
       trackPhotoDownload(photo.id, photo.album, photo.title);
-    } catch (error) {
-      console.error('Download failed:', error);
+    } catch (err) {
+      logError('Download failed:', err);
       window.open(`${API_URL}${photo.download}${imageQueryString}`, '_blank');
     }
   }, [imageQueryString, imageTitle, siteName]);
@@ -508,7 +509,7 @@ const PhotoModal: React.FC<PhotoModalProps> = ({
         };
 
         img.onerror = () => {
-          console.error('Modal image preload failed');
+          logError('Modal image preload failed');
         };
 
         img.src = modalUrl;

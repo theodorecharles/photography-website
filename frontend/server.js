@@ -2,6 +2,7 @@ import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
 import fs from "fs";
+import { error, info, warn } from "./logger.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -28,11 +29,11 @@ if (fs.existsSync(configPath)) {
   // Override API URL from environment if provided
   if (envApiUrl) {
     config.frontend.apiUrl = envApiUrl;
-    console.log(`[Config] Using API URL from environment: ${envApiUrl}`);
+    info(`[Config] Using API URL from environment: ${envApiUrl}`);
   }
 } else {
   // Setup mode - use defaults
-  console.log("⚠️  config.json not found - using defaults for setup mode");
+  info("[Frontend] config.json not found - using defaults for setup mode");
   isSetupMode = true;
   configFile = {
     analytics: {},
@@ -83,10 +84,10 @@ if (process.env.FRONTEND_DOMAIN && process.env.FRONTEND_DOMAIN !== '-') {
     const frontendHost = frontendUrl.host; // includes port if present
     if (!allowedHosts.includes(frontendHost)) {
       allowedHosts.push(frontendHost);
-      console.log(`[Security] Added FRONTEND_DOMAIN to allowedHosts: ${frontendHost}`);
+      info(`[Security] Added FRONTEND_DOMAIN to allowedHosts: ${frontendHost}`);
     }
   } catch (e) {
-    console.warn(`[Security] Invalid FRONTEND_DOMAIN URL: ${process.env.FRONTEND_DOMAIN}`);
+    warn(`[Security] Invalid FRONTEND_DOMAIN URL: ${process.env.FRONTEND_DOMAIN}`);
   }
 }
 
@@ -100,10 +101,11 @@ app.use((req, res, next) => {
     // Allow IP addresses for direct container access (e.g., Unraid WebUI)
     const ipPattern = /^\d+\.\d+\.\d+\.\d+(:\d+)?$/;
     const isIpAddress = ipPattern.test(host);
+    const isLocalhost = host && (host.startsWith('localhost') || host.startsWith('127.0.0.1'));
 
-    if (!allowedHosts.includes(host) && !isIpAddress) {
-      console.warn(`[Security] Invalid host header: ${host}`);
-      console.warn(`[Security] Allowed hosts: ${allowedHosts.join(', ')}`);
+    if (!allowedHosts.includes(host) && !isIpAddress && !isLocalhost) {
+      warn(`[Security] Invalid host header: ${host}`);
+      warn(`[Security] Allowed hosts: ${allowedHosts.join(', ')}`);
       return res.status(400).send("Invalid host header");
     }
   }
@@ -244,10 +246,10 @@ app.get("*", async (req, res) => {
           const gridUrl = `${apiUrl}/api/preview-grid/homepage`;
           const pageUrl = siteUrl;
 
-          console.log(`[Meta Injection] Homepage detected:`);
-          console.log(`  Photos: ${photos.length}`);
-          console.log(`  Preview Image: ${gridUrl}`);
-          console.log(`  Page URL: ${pageUrl}`);
+          debug(`[Meta Injection] Homepage detected:`);
+          debug(`  Photos: ${photos.length}`);
+          debug(`  Preview Image: ${gridUrl}`);
+          debug(`  Page URL: ${pageUrl}`);
 
           // Read and modify index.html
           const html = fs.readFileSync(indexPath, "utf8");
@@ -276,8 +278,8 @@ app.get("*", async (req, res) => {
           return res.send(modifiedHtmlWithRuntime);
         }
       }
-    } catch (error) {
-      console.error("[Meta Injection] Error fetching homepage data:", error);
+    } catch (err) {
+      error("[MetaInjection] Failed to fetch homepage data:", err);
       // Fall through to default handling
     }
   }
@@ -318,11 +320,11 @@ app.get("*", async (req, res) => {
           const pageUrl = `${siteUrl}/shared/${secretKey}`;
 
           // Log meta tag injection
-          console.log(`[Meta Injection] Shared album link detected:`);
-          console.log(`  Album: ${albumName}`);
-          console.log(`  Secret Key: ${secretKey}`);
-          console.log(`  Preview Image: ${gridUrl}`);
-          console.log(`  Page URL: ${pageUrl}`);
+          debug(`[Meta Injection] Shared album link detected:`);
+          debug(`  Album: ${albumName}`);
+          debug(`  Secret Key: ${secretKey}`);
+          debug(`  Preview Image: ${gridUrl}`);
+          debug(`  Page URL: ${pageUrl}`);
 
           // Read and modify index.html
           const html = fs.readFileSync(indexPath, "utf8");
@@ -391,8 +393,8 @@ app.get("*", async (req, res) => {
         }
       }
     } catch (error) {
-      console.error(
-        "[Meta Injection] Error fetching shared album data:",
+      error(
+        "[MetaInjection] Failed to fetch shared album data:",
         error
       );
       // Fall through to default index.html
@@ -431,11 +433,11 @@ app.get("*", async (req, res) => {
           const albumTitleCase =
             albumName.charAt(0).toUpperCase() + albumName.slice(1);
 
-          console.log(`[Meta Injection] Album page detected:`);
-          console.log(`  Album: ${albumName}`);
-          console.log(`  Photos: ${photos.length}`);
-          console.log(`  Preview Image: ${gridUrl}`);
-          console.log(`  Page URL: ${pageUrl}`);
+          debug(`[Meta Injection] Album page detected:`);
+          debug(`  Album: ${albumName}`);
+          debug(`  Photos: ${photos.length}`);
+          debug(`  Preview Image: ${gridUrl}`);
+          debug(`  Page URL: ${pageUrl}`);
 
           const safeAlbumName = escapeHtml(albumTitleCase);
 
@@ -514,7 +516,7 @@ app.get("*", async (req, res) => {
         }
       }
     } catch (error) {
-      console.error("[Meta Injection] Error fetching album data:", error);
+      error("[MetaInjection] Failed to fetch album data:", error);
       // Fall through to default handling
     }
   }
@@ -565,18 +567,18 @@ app.get("*", async (req, res) => {
             albumName.charAt(0).toUpperCase() + albumName.slice(1);
 
           // Log meta tag injection for debugging
-          console.log(`[Meta Injection] Photo permalink detected:`);
-          console.log(`  Album: ${albumName}`);
-          console.log(`  Photo: ${photoFilename}`);
-          console.log(`  Title: ${photoTitle}`);
-          console.log(`  OG Image: ${thumbnailUrl}`);
-          console.log(
+          debug(`[Meta Injection] Photo permalink detected:`);
+          debug(`  Album: ${albumName}`);
+          debug(`  Photo: ${photoFilename}`);
+          debug(`  Title: ${photoTitle}`);
+          debug(`  OG Image: ${thumbnailUrl}`);
+          debug(
             `  OG Image (secure): ${thumbnailUrl.replace(
               "http://",
               "https://"
             )}`
           );
-          console.log(`  Page URL: ${pageUrl}`);
+          debug(`  Page URL: ${pageUrl}`);
 
           // Read the index.html file
           const html = fs.readFileSync(indexPath, "utf8");
@@ -656,7 +658,7 @@ app.get("*", async (req, res) => {
         }
       }
     } catch (error) {
-      console.error("[Meta Injection] Error fetching photo data:", error);
+      error("[MetaInjection] Failed to fetch photo data:", error);
       // Fall through to default handling
     }
   }
@@ -665,7 +667,7 @@ app.get("*", async (req, res) => {
   // Inject runtime API URL for OOBE support
   fs.readFile(indexPath, "utf8", (err, html) => {
     if (err) {
-      console.error("Error reading index.html:", err);
+      error("[Frontend] Failed to read index.html:", err);
       return res.sendFile(indexPath);
     }
 
@@ -729,6 +731,6 @@ const isLocalhost = config.frontend.apiUrl.includes("localhost");
 const bindHost = process.env.HOST || (isLocalhost ? "127.0.0.1" : "0.0.0.0");
 
 app.listen(port, bindHost, () => {
-  console.log(`Frontend server running on ${bindHost}:${port}`);
-  console.log(`API URL: ${config.frontend.apiUrl}`);
+  info(`[Frontend] Server running on ${bindHost}:${port}`);
+  info(`[Frontend] API URL: ${config.frontend.apiUrl}`);
 });

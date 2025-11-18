@@ -6,8 +6,15 @@
 import { Album, AlbumFolder, ConfirmModalConfig } from '../types';
 import { API_URL } from '../../../../config';
 import { fetchWithRateLimitCheck } from '../../../../utils/fetchWrapper';
-import { trackAlbumDeleted } from '../../../../utils/analytics';
+import { 
+  trackAlbumDeleted, 
+  trackAlbumRenamed, 
+  trackAlbumPublishToggle, 
+  trackAlbumHomepageToggle,
+  trackAlbumMovedToFolder 
+} from '../../../../utils/analytics';
 import { sanitizeAndTitleCase, isValidAlbumName } from '../utils/albumHelpers';
+import { error } from '../../../../utils/logger';
 
 
 interface AlbumHandlersProps {
@@ -118,6 +125,7 @@ export const createAlbumHandlers = (props: AlbumHandlersProps) => {
       );
 
       if (res.ok) {
+        trackAlbumPublishToggle(albumName, newPublishedState);
         setMessage({
           type: 'success',
           text: `Album "${albumName}" ${newPublishedState ? 'published' : 'unpublished'}`,
@@ -156,6 +164,7 @@ export const createAlbumHandlers = (props: AlbumHandlersProps) => {
       );
 
       if (res.ok) {
+        trackAlbumHomepageToggle(albumName, newShowOnHomepageState);
         setMessage({
           type: 'success',
           text: `Album "${albumName}" ${newShowOnHomepageState ? 'added to' : 'removed from'} homepage`,
@@ -215,6 +224,7 @@ export const createAlbumHandlers = (props: AlbumHandlersProps) => {
         throw new Error(error.error || 'Failed to rename album');
       }
 
+      trackAlbumRenamed(renamingAlbum, sanitized);
       setMessage({ type: 'success', text: `Album renamed to "${sanitized}"` });
       setShowRenameModal(false);
       setRenamingAlbum(null);
@@ -230,7 +240,7 @@ export const createAlbumHandlers = (props: AlbumHandlersProps) => {
       // Dispatch global event to update navigation dropdown
       window.dispatchEvent(new Event('albums-updated'));
     } catch (err) {
-      console.error('Failed to rename album:', err);
+      error('Failed to rename album:', err);
       setMessage({ type: 'error', text: 'Error renaming album' });
     }
   };
@@ -270,8 +280,9 @@ export const createAlbumHandlers = (props: AlbumHandlersProps) => {
         throw new Error('Failed to move album');
       }
 
-      const folderName = targetFolder?.name || 'Uncategorized';
-      setMessage({ type: 'success', text: `Album moved to ${folderName}` });
+      const folderName = targetFolder?.name || null;
+      trackAlbumMovedToFolder(albumName, folderName, folderId);
+      setMessage({ type: 'success', text: `Album moved to ${folderName || 'Uncategorized'}` });
       await loadAlbums();
     } catch (err) {
       setMessage({ type: 'error', text: 'Failed to move album' });

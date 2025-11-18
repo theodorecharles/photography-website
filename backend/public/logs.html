@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Logs</title>
+  <style>
+    @font-face {
+      font-family: 'Modern DOS';
+      src: url('https://www-dev.tedcharles.net/fonts/ModernDOS8x16.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      background: #000;
+      color: #fff;
+      font-family: 'Modern DOS', 'Courier New', monospace;
+      font-size: 6px;
+      line-height: 1.1;
+    }
+
+    #logs {
+      width: 100vw;
+      height: 100vh;
+      overflow-y: scroll;
+      overflow-x: auto;
+      padding: 4px;
+    }
+
+    .log-line {
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    .log-empty {
+      color: #999;
+    }
+
+    .error-msg {
+      color: #f88;
+      padding: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div id="logs">
+    <div class="log-empty">Connecting to log stream...</div>
+  </div>
+
+  <script>
+    const logsContainer = document.getElementById('logs');
+    let userScrolledUp = false;
+    let eventSource = null;
+
+    function isAtBottom() {
+      const threshold = 100;
+      return logsContainer.scrollHeight - logsContainer.scrollTop - logsContainer.clientHeight < threshold;
+    }
+
+    function scrollToBottom() {
+      if (!userScrolledUp) {
+        logsContainer.scrollTop = logsContainer.scrollHeight;
+      }
+    }
+
+    logsContainer.addEventListener('scroll', () => {
+      userScrolledUp = !isAtBottom();
+    });
+
+    function connectToStream() {
+      if (eventSource) {
+        eventSource.close();
+      }
+
+      // Use relative URL since we're on the same domain
+      eventSource = new EventSource('/api/config/logs/stream', { 
+        withCredentials: true 
+      });
+
+      eventSource.onopen = () => {
+        console.log('SSE connection opened');
+      };
+
+      eventSource.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          
+          if (data.type === 'init') {
+            logsContainer.innerHTML = '';
+            if (data.logs && data.logs.length > 0) {
+              data.logs.forEach(line => {
+                const div = document.createElement('div');
+                div.className = 'log-line';
+                div.textContent = line;
+                logsContainer.appendChild(div);
+              });
+            } else {
+              logsContainer.innerHTML = '<div class="log-empty">No logs yet...</div>';
+            }
+            scrollToBottom();
+          } else if (data.type === 'log') {
+            // Remove "no logs" message if present
+            const emptyMsg = logsContainer.querySelector('.log-empty');
+            if (emptyMsg) {
+              logsContainer.removeChild(emptyMsg);
+            }
+            
+            const div = document.createElement('div');
+            div.className = 'log-line';
+            div.textContent = data.line;
+            logsContainer.appendChild(div);
+            scrollToBottom();
+          }
+        } catch (err) {
+          console.error('Failed to parse log message:', err, event.data);
+        }
+      };
+
+      eventSource.onerror = (err) => {
+        console.error('SSE error:', err);
+        logsContainer.innerHTML = '<div class="error-msg">Connection lost. Reconnecting in 3 seconds...</div>';
+        eventSource.close();
+        setTimeout(connectToStream, 3000);
+      };
+    }
+
+    connectToStream();
+  </script>
+</body>
+</html>
