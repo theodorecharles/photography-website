@@ -213,8 +213,8 @@ const PhotosPanelGrid: React.FC<PhotosPanelGridProps> = ({
   const photoSensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: isTouchDevice ? {
-        delay: 300, // Mobile: require 300ms hold before drag starts
-        tolerance: 8, // Mobile: allow 8px movement during the delay
+        delay: 250, // Mobile: require 250ms hold before drag starts
+        tolerance: 50, // Mobile: allow 50px movement during delay to enable scrolling
       } : {
         distance: 5, // Desktop: require 5px movement to start drag (prevents accidental drags on click)
       },

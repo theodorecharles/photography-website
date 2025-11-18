@@ -963,7 +963,8 @@
   background: #161616;
   transition: background 0.15s ease;
   cursor: grab;
-  touch-action: none; /* Prevent default touch behaviors for drag-and-drop */
+  /* Allow vertical pan (scrolling) but prevent other gestures */
+  touch-action: pan-y;
   -webkit-user-select: none;
   user-select: none;
 }
@@ -1103,7 +1104,8 @@
   border: 1px solid rgba(95, 95, 95, 0.42);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-  touch-action: none; /* Prevent all default touch behaviors for drag-and-drop */
+  /* Allow vertical pan (scrolling) but prevent other gestures */
+  touch-action: pan-y;
   -webkit-user-select: none;
   user-select: none;
 }
@@ -1176,7 +1178,6 @@
   -webkit-touch-callout: none; /* Disable long-press menu on iOS */
   -webkit-user-select: none; /* Prevent text selection */
   user-select: none;
-  pointer-events: none; /* Let parent handle touch events */
 }
 
 .admin-photo-item img {
