@@ -6,9 +6,9 @@
  * - Loading state
  */
 
-import React, { useRef, useLayoutEffect } from 'react';
+import React, { useRef, useLayoutEffect, useState, useEffect } from 'react';
 import { API_URL } from '../../../../config';
-import { DndContext, DragOverlay, closestCenter, PointerSensor, KeyboardSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { DndContext, DragOverlay, closestCenter, PointerSensor, KeyboardSensor, useSensor, useSensors, DragStartEvent, DragMoveEvent, DragEndEvent } from '@dnd-kit/core';
 import { SortableContext, sortableKeyboardCoordinates, rectSortingStrategy } from '@dnd-kit/sortable';
 import PhotoGridItem from './PhotoGridItem';
 import { PhotoListItem } from './PhotoListItem';
@@ -60,6 +60,11 @@ const PhotosPanelGrid: React.FC<PhotosPanelGridProps> = ({
   
   // Track which photo has its overlay visible (only one at a time)
   const [activeOverlayId, setActiveOverlayId] = React.useState<string | null>(null);
+  
+  // Auto-scroll state
+  const [isDraggingActive, setIsDraggingActive] = useState(false);
+  const scrollIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const lastPointerY = useRef<number>(0);
   
   // FLIP animation for smooth reflow on delete
   const gridRef = useRef<HTMLDivElement>(null);
@@ -133,6 +138,76 @@ const PhotosPanelGrid: React.FC<PhotosPanelGridProps> = ({
     prevAlbumPhotosLengthRef.current = currentLength;
   }, [albumPhotos, deletingPhotoId]);
   
+  // Auto-scroll when dragging near edges
+  useEffect(() => {
+    if (!isDraggingActive) {
+      if (scrollIntervalRef.current) {
+        clearInterval(scrollIntervalRef.current);
+        scrollIntervalRef.current = null;
+      }
+      return;
+    }
+
+    const checkAndScroll = () => {
+      const modalContent = document.querySelector('.photos-modal-content') as HTMLElement;
+      if (!modalContent) return;
+
+      const pointerY = lastPointerY.current;
+      const rect = modalContent.getBoundingClientRect();
+      const scrollThreshold = 100; // Distance from edge to trigger scroll
+      const scrollSpeed = 10; // Pixels to scroll per frame
+
+      // Calculate distance from top and bottom
+      const distanceFromTop = pointerY - rect.top;
+      const distanceFromBottom = rect.bottom - pointerY;
+
+      // Scroll up if near top
+      if (distanceFromTop < scrollThreshold && distanceFromTop > 0) {
+        const scrollAmount = Math.max(1, scrollSpeed * (1 - distanceFromTop / scrollThreshold));
+        modalContent.scrollTop -= scrollAmount;
+      }
+      // Scroll down if near bottom
+      else if (distanceFromBottom < scrollThreshold && distanceFromBottom > 0) {
+        const scrollAmount = Math.max(1, scrollSpeed * (1 - distanceFromBottom / scrollThreshold));
+        modalContent.scrollTop += scrollAmount;
+      }
+    };
+
+    // Start scroll interval
+    scrollIntervalRef.current = setInterval(checkAndScroll, 16); // ~60fps
+
+    return () => {
+      if (scrollIntervalRef.current) {
+        clearInterval(scrollIntervalRef.current);
+        scrollIntervalRef.current = null;
+      }
+    };
+  }, [isDraggingActive]);
+  
+  // Handle drag start
+  const handleDragStart = (event: DragStartEvent) => {
+    setIsDraggingActive(true);
+    onPhotoDragStart(event, setActiveId);
+  };
+
+  // Handle drag move to track pointer position
+  const handleDragMove = (event: DragMoveEvent) => {
+    if (event.activatorEvent) {
+      const pointerEvent = event.activatorEvent as PointerEvent | TouchEvent;
+      if ('clientY' in pointerEvent) {
+        lastPointerY.current = pointerEvent.clientY;
+      } else if ('touches' in pointerEvent && pointerEvent.touches.length > 0) {
+        lastPointerY.current = pointerEvent.touches[0].clientY;
+      }
+    }
+  };
+
+  // Handle drag end
+  const handleDragEnd = (event: DragEndEvent) => {
+    setIsDraggingActive(false);
+    onPhotoDragEnd(event, setActiveId);
+  };
+  
   // Configure dnd-kit sensors for photos
   // Desktop: minimal delay for instant drag, mobile: longer delay to differentiate tap vs drag
   const photoSensors = useSensors(
@@ -178,8 +253,9 @@ const PhotosPanelGrid: React.FC<PhotosPanelGridProps> = ({
       <DndContext
         sensors={photoSensors}
         collisionDetection={closestCenter}
-        onDragStart={(event) => onPhotoDragStart(event, setActiveId)}
-        onDragEnd={(event) => onPhotoDragEnd(event, setActiveId)}
+        onDragStart={handleDragStart}
+        onDragMove={handleDragMove}
+        onDragEnd={handleDragEnd}
       >
         {viewMode === 'grid' ? (
           <div ref={gridRef} className="photos-grid">

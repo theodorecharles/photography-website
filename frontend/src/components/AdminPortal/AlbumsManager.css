@@ -963,6 +963,9 @@
   background: #161616;
   transition: background 0.15s ease;
   cursor: grab;
+  touch-action: none; /* Prevent default touch behaviors for drag-and-drop */
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .list-item:hover {
@@ -1100,7 +1103,9 @@
   border: 1px solid rgba(95, 95, 95, 0.42);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-  touch-action: manipulation; /* Allow scrolling but prevent double-tap zoom */
+  touch-action: none; /* Prevent all default touch behaviors for drag-and-drop */
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 /* Only show hover effects on desktop, not on touch devices - grid view only */
@@ -1167,6 +1172,11 @@
   object-fit: cover;
   display: block;
   opacity: 1 !important;
+  /* Prevent default touch behaviors on mobile */
+  -webkit-touch-callout: none; /* Disable long-press menu on iOS */
+  -webkit-user-select: none; /* Prevent text selection */
+  user-select: none;
+  pointer-events: none; /* Let parent handle touch events */
 }
 
 .admin-photo-item img {
