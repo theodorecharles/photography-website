@@ -252,6 +252,22 @@ function escapeHtml(str) {
 }
 
 /**
+ * Replace runtime placeholders with current config values
+ */
+function replaceRuntimePlaceholders(html, apiUrl, configFile) {
+  const siteName = configFile.branding?.siteName || "Photography Portfolio";
+  const avatarPath = configFile.branding?.avatarPath || "/photos/avatar.png";
+  const runtimeSiteUrl = apiUrl.includes('localhost')
+    ? apiUrl.replace(':3001', ':3000')
+    : apiUrl.replace(/api(-dev)?\./, 'www$1.');
+
+  return html
+    .replace(/__RUNTIME_SITE_NAME__/g, escapeHtml(siteName))
+    .replace(/__RUNTIME_AVATAR_PATH__/g, escapeHtml(avatarPath))
+    .replace(/__RUNTIME_SITE_URL__/g, escapeHtml(runtimeSiteUrl));
+}
+
+/**
  * Set Content Security Policy header
  */
 function setCSPHeader(res, apiUrl, configFile) {
@@ -332,8 +348,11 @@ app.get("*", async (req, res) => {
           // Set CSP and other security headers
           setCSPHeader(res, apiUrl, configFile);
 
+          // Replace runtime placeholders
+          let htmlWithPlaceholders = replaceRuntimePlaceholders(modifiedHtml, apiUrl, configFile);
+
           // Inject runtime config
-          const modifiedHtmlWithRuntime = modifiedHtml.replace(
+          const modifiedHtmlWithRuntime = htmlWithPlaceholders.replace(
             '<script type="module"',
             `<script>window.__RUNTIME_API_URL__ = "${apiUrl}";</script>\n    <script type="module"`
           );
@@ -452,7 +471,9 @@ app.get("*", async (req, res) => {
               `<meta property="twitter:image" content="${gridUrl}" />`
             );
 
-          return res.send(modifiedHtml);
+          // Replace runtime placeholders
+          const htmlWithPlaceholders = replaceRuntimePlaceholders(modifiedHtml, apiUrl, configFile);
+          return res.send(htmlWithPlaceholders);
         }
       }
     } catch (error) {
@@ -575,7 +596,9 @@ app.get("*", async (req, res) => {
               `<meta property="twitter:image" content="${gridUrl}" />`
             );
 
-          return res.send(modifiedHtml);
+          // Replace runtime placeholders
+          const htmlWithPlaceholders = replaceRuntimePlaceholders(modifiedHtml, apiUrl, configFile);
+          return res.send(htmlWithPlaceholders);
         }
       }
     } catch (error) {
@@ -717,7 +740,9 @@ app.get("*", async (req, res) => {
               `<meta property="twitter:image" content="${thumbnailUrl}" />`
             );
 
-          return res.send(modifiedHtml);
+          // Replace runtime placeholders
+          const htmlWithPlaceholders = replaceRuntimePlaceholders(modifiedHtml, apiUrl, configFile);
+          return res.send(htmlWithPlaceholders);
         }
       }
     } catch (error) {
@@ -778,8 +803,11 @@ app.get("*", async (req, res) => {
     // Set Content Security Policy with runtime API URL
     setCSPHeader(res, runtimeApiUrl, configFile);
 
+    // Replace runtime placeholders with current config values
+    let modifiedHtml = replaceRuntimePlaceholders(html, runtimeApiUrl, configFile);
+
     // Inject runtime config before other scripts
-    const modifiedHtml = html.replace(
+    modifiedHtml = modifiedHtml.replace(
       '<script type="module"',
       `<script>window.__RUNTIME_API_URL__ = "${runtimeApiUrl}";</script>\n    <script type="module"`
     );

@@ -72,23 +72,9 @@ try {
   process.exit(1);
 }
 
-// Replace placeholders in the built HTML file
-console.log('\\nReplacing placeholders in HTML...');
-const htmlPath = path.join(__dirname, 'frontend', 'dist', 'index.html');
-if (fs.existsSync(htmlPath)) {
-  let htmlContent = fs.readFileSync(htmlPath, 'utf8');
-  
-  // Replace placeholders with actual values
-  htmlContent = htmlContent.replace(/%VITE_SITE_URL_FULL%/g, siteUrl);
-  htmlContent = htmlContent.replace(/%VITE_API_URL_FULL%/g, frontendConfig.apiUrl);
-  htmlContent = htmlContent.replace(/%VITE_SITE_NAME%/g, config.branding.siteName);
-  htmlContent = htmlContent.replace(/%VITE_AVATAR_PATH%/g, config.branding.avatarPath);
-  
-  fs.writeFileSync(htmlPath, htmlContent);
-  console.log('✓ HTML placeholders replaced');
-} else {
-  console.warn('⚠ HTML file not found, skipping placeholder replacement');
-}
+// Note: HTML placeholders are NOT replaced during build
+// They are replaced at runtime by server.js for dynamic branding updates
+console.log('\\n✓ HTML placeholders will be replaced at runtime');
 
 // Build backend (just compile TypeScript)
 console.log('\nCompiling backend...');
