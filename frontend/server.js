@@ -168,6 +168,69 @@ app.get("/health", (req, res) => {
   res.json({ status: "ok", message: "Frontend server is running" });
 });
 
+// Serve dynamic manifest.json with branding values
+app.get("/manifest.json", (req, res) => {
+  const siteName = configFile.branding?.siteName || "Photography Portfolio";
+  const avatarPath = configFile.branding?.avatarPath || "/photos/avatar.png";
+  
+  // Derive site URL from API URL
+  const apiUrl = config.frontend.apiUrl;
+  let siteUrl;
+  if (apiUrl.includes("localhost")) {
+    siteUrl = apiUrl.replace(":3001", ":3000");
+  } else {
+    siteUrl = apiUrl.replace(/api(-dev)?\./, "www$1.");
+  }
+  
+  // Build full avatar URL
+  const avatarUrl = `${apiUrl}${avatarPath}`;
+  
+  const manifest = {
+    name: siteName,
+    short_name: siteName,
+    description: `Photography portfolio by ${siteName}`,
+    start_url: "/",
+    display: "standalone",
+    background_color: "#000000",
+    theme_color: "#000000",
+    orientation: "portrait-primary",
+    icons: [
+      {
+        src: avatarUrl,
+        sizes: "192x192",
+        type: "image/png",
+        purpose: "any"
+      },
+      {
+        src: avatarUrl,
+        sizes: "512x512",
+        type: "image/png",
+        purpose: "any"
+      },
+      {
+        src: avatarUrl,
+        sizes: "512x512",
+        type: "image/png",
+        purpose: "maskable"
+      }
+    ]
+  };
+  
+  res.setHeader("Content-Type", "application/json");
+  res.setHeader("Cache-Control", "public, max-age=3600"); // Cache for 1 hour
+  res.json(manifest);
+});
+
+// Serve dynamic apple-touch-icon for iOS home screen
+app.get("/apple-touch-icon.png", (req, res) => {
+  const apiUrl = config.frontend.apiUrl;
+  const avatarPath = configFile.branding?.avatarPath || "/photos/avatar.png";
+  const avatarUrl = `${apiUrl}${avatarPath}`;
+  
+  // Redirect to the avatar image
+  res.redirect(307, avatarUrl);
+});
+
 // Serve static files from the dist directory
 // But exclude index.html so we can inject runtime config
 app.use(
