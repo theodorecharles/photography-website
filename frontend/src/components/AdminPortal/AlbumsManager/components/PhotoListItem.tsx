@@ -87,7 +87,7 @@ export const PhotoListItem: React.FC<PhotoListItemProps> = ({
     <div
       ref={setNodeRef}
       style={style}
-      className={`list-item ${isDeleting ? 'deleting' : ''} ${isUploading ? 'uploading' : ''}`}
+      className={`list-item ${isDragging ? 'dragging' : ''} ${isDeleting ? 'deleting' : ''} ${isUploading ? 'uploading' : ''}`}
       {...attributes}
       {...listeners}
     >
