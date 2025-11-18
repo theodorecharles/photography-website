@@ -89,6 +89,29 @@ else
     log "No existing PM2 processes found"
 fi
 
+# Wait for processes to fully terminate and release ports
+log "Waiting for ports to be released..."
+sleep 3
+
+# Force kill any remaining processes on port 3001
+if command -v lsof &> /dev/null; then
+    PORT_3001_PID=$(lsof -ti:3001 2>/dev/null || true)
+    if [ -n "$PORT_3001_PID" ]; then
+        log "Found process on port 3001 (PID: $PORT_3001_PID), killing it..."
+        kill -9 $PORT_3001_PID 2>/dev/null || true
+        sleep 1
+    fi
+fi
+
+# Double-check port is free
+if command -v lsof &> /dev/null; then
+    if lsof -i:3001 &> /dev/null; then
+        handle_error "Port 3001 is still in use after cleanup!"
+    else
+        log "Port 3001 is free and ready"
+    fi
+fi
+
 # Start fresh with new builds
 log "Starting services with PM2..."
 
