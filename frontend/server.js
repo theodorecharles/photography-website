@@ -11,26 +11,36 @@ const __dirname = path.dirname(__filename);
 const jsonCache = new Map();
 const JSON_CACHE_MAX_AGE = 5 * 60 * 1000; // 5 minutes
 
-// Load configuration (or use defaults for setup mode)
-// In Docker, DATA_DIR env var points to mounted volume
+// Configuration paths and defaults
 const dataDir = process.env.DATA_DIR || path.join(__dirname, "../data");
 const configPath = path.join(dataDir, "config.json");
+const envApiUrl = process.env.API_URL || process.env.BACKEND_DOMAIN;
+
+// Load initial configuration
 let configFile;
 let config;
 let isSetupMode = false;
 
-// Use API_URL from environment if provided (for Docker)
-const envApiUrl = process.env.API_URL || process.env.BACKEND_DOMAIN;
+/**
+ * Load configuration from disk
+ */
+function loadConfig() {
+  if (fs.existsSync(configPath)) {
+    configFile = JSON.parse(fs.readFileSync(configPath, "utf8"));
+    config = configFile.environment;
 
-if (fs.existsSync(configPath)) {
-  configFile = JSON.parse(fs.readFileSync(configPath, "utf8"));
-  config = configFile.environment;
-
-  // Override API URL from environment if provided
-  if (envApiUrl) {
-    config.frontend.apiUrl = envApiUrl;
-    info(`[Config] Using API URL from environment: ${envApiUrl}`);
+    // Override API URL from environment if provided
+    if (envApiUrl) {
+      config.frontend.apiUrl = envApiUrl;
+    }
+    
+    info("[Frontend] Configuration reloaded");
   }
+}
+
+// Load initial config
+if (fs.existsSync(configPath)) {
+  loadConfig();
 } else {
   // Setup mode - use defaults
   info("[Frontend] config.json not found - using defaults for setup mode");
@@ -49,6 +59,23 @@ if (fs.existsSync(configPath)) {
       redirectTo: null,
     },
   };
+}
+
+// Watch config file for changes and reload automatically
+if (!isSetupMode) {
+  fs.watch(configPath, (eventType) => {
+    if (eventType === 'change') {
+      // Debounce: wait a bit for write to complete
+      setTimeout(() => {
+        try {
+          loadConfig();
+        } catch (err) {
+          error("[Frontend] Failed to reload config:", err);
+        }
+      }, 100);
+    }
+  });
+  info("[Frontend] Watching config.json for changes");
 }
 
 const app = express();
@@ -217,7 +244,7 @@ app.get("/manifest.json", (req, res) => {
   };
   
   res.setHeader("Content-Type", "application/json");
-  res.setHeader("Cache-Control", "public, max-age=3600"); // Cache for 1 hour
+  res.setHeader("Cache-Control", "no-cache"); // Don't cache - always fresh
   res.json(manifest);
 });
 
@@ -254,7 +281,7 @@ function escapeHtml(str) {
 /**
  * Replace runtime placeholders with current config values
  */
-function replaceRuntimePlaceholders(html, apiUrl, configFile) {
+function replaceRuntimePlaceholders(html, apiUrl) {
   const siteName = configFile.branding?.siteName || "Photography Portfolio";
   const avatarPath = configFile.branding?.avatarPath || "/photos/avatar.png";
   const runtimeSiteUrl = apiUrl.includes('localhost')
@@ -349,7 +376,7 @@ app.get("*", async (req, res) => {
           setCSPHeader(res, apiUrl, configFile);
 
           // Replace runtime placeholders
-          let htmlWithPlaceholders = replaceRuntimePlaceholders(modifiedHtml, apiUrl, configFile);
+          let htmlWithPlaceholders = replaceRuntimePlaceholders(modifiedHtml, apiUrl);
 
           // Inject runtime config
           const modifiedHtmlWithRuntime = htmlWithPlaceholders.replace(
@@ -472,7 +499,7 @@ app.get("*", async (req, res) => {
             );
 
           // Replace runtime placeholders
-          const htmlWithPlaceholders = replaceRuntimePlaceholders(modifiedHtml, apiUrl, configFile);
+          const htmlWithPlaceholders = replaceRuntimePlaceholders(modifiedHtml, apiUrl);
           return res.send(htmlWithPlaceholders);
         }
       }
@@ -597,7 +624,7 @@ app.get("*", async (req, res) => {
             );
 
           // Replace runtime placeholders
-          const htmlWithPlaceholders = replaceRuntimePlaceholders(modifiedHtml, apiUrl, configFile);
+          const htmlWithPlaceholders = replaceRuntimePlaceholders(modifiedHtml, apiUrl);
           return res.send(htmlWithPlaceholders);
         }
       }
@@ -741,7 +768,7 @@ app.get("*", async (req, res) => {
             );
 
           // Replace runtime placeholders
-          const htmlWithPlaceholders = replaceRuntimePlaceholders(modifiedHtml, apiUrl, configFile);
+          const htmlWithPlaceholders = replaceRuntimePlaceholders(modifiedHtml, apiUrl);
           return res.send(htmlWithPlaceholders);
         }
       }
@@ -804,7 +831,7 @@ app.get("*", async (req, res) => {
     setCSPHeader(res, runtimeApiUrl, configFile);
 
     // Replace runtime placeholders with current config values
-    let modifiedHtml = replaceRuntimePlaceholders(html, runtimeApiUrl, configFile);
+    let modifiedHtml = replaceRuntimePlaceholders(html, runtimeApiUrl);
 
     // Inject runtime config before other scripts
     modifiedHtml = modifiedHtml.replace(
