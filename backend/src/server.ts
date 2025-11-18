@@ -95,15 +95,16 @@ app.set("trust proxy", 1);
 const isProduction = config.frontend.apiUrl.startsWith("https://");
 if (isProduction) {
   app.use((req, res, next) => {
-    // Skip HTTPS redirect for IP addresses (e.g., direct Docker access)
+    // Skip HTTPS redirect for IP addresses (e.g., direct Docker access) and localhost
     const host = req.headers.host || '';
     const ipPattern = /^\d+\.\d+\.\d+\.\d+(:\d+)?$/;
     const isIpAddress = ipPattern.test(host);
+    const isLocalhost = host.startsWith('localhost') || host.startsWith('127.0.0.1');
     
     // Check if request is already HTTPS
     const isSecure = req.secure || req.headers["x-forwarded-proto"] === "https";
 
-    if (!isSecure && !isIpAddress) {
+    if (!isSecure && !isIpAddress && !isLocalhost) {
       // Redirect to HTTPS
       const httpsUrl = `https://${req.headers.host}${req.url}`;
       return res.redirect(301, httpsUrl);
