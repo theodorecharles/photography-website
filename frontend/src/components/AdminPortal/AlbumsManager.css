@@ -963,10 +963,15 @@
   background: #161616;
   transition: background 0.15s ease;
   cursor: grab;
-  /* Allow vertical pan (scrolling) but prevent other gestures */
+  /* Allow vertical scrolling by default (for viewers) */
   touch-action: pan-y;
   -webkit-user-select: none;
   user-select: none;
+}
+
+/* When editable, disable touch gestures to allow drag-and-drop */
+.list-item.editable {
+  touch-action: none;
 }
 
 .list-item:hover {
@@ -1112,11 +1117,11 @@
 
 /* When dragging, disable touch scrolling to allow dnd-kit auto-scroll */
 .photos-modal-content.is-dragging .admin-photo-item {
-  touch-action: none;
+  touch-action: none !important;
 }
 
 .photos-modal-content.is-dragging .list-item {
-  touch-action: none;
+  touch-action: none !important;
 }
 
 /* Only show hover effects on desktop, not on touch devices - grid view only */
