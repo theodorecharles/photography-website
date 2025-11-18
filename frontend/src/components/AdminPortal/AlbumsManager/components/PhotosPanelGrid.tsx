@@ -8,7 +8,7 @@
 
 import React, { useRef, useLayoutEffect, useState, useEffect } from 'react';
 import { API_URL } from '../../../../config';
-import { DndContext, DragOverlay, closestCenter, PointerSensor, KeyboardSensor, useSensor, useSensors, DragStartEvent, DragMoveEvent, DragEndEvent } from '@dnd-kit/core';
+import { DndContext, DragOverlay, closestCenter, PointerSensor, KeyboardSensor, useSensor, useSensors, DragStartEvent, DragEndEvent } from '@dnd-kit/core';
 import { SortableContext, sortableKeyboardCoordinates, rectSortingStrategy } from '@dnd-kit/sortable';
 import PhotoGridItem from './PhotoGridItem';
 import { PhotoListItem } from './PhotoListItem';
@@ -65,6 +65,7 @@ const PhotosPanelGrid: React.FC<PhotosPanelGridProps> = ({
   const [isDraggingActive, setIsDraggingActive] = useState(false);
   const scrollIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const lastPointerY = useRef<number>(0);
+  const lastPointerX = useRef<number>(0);
   
   // FLIP animation for smooth reflow on delete
   const gridRef = useRef<HTMLDivElement>(null);
@@ -138,6 +139,29 @@ const PhotosPanelGrid: React.FC<PhotosPanelGridProps> = ({
     prevAlbumPhotosLengthRef.current = currentLength;
   }, [albumPhotos, deletingPhotoId]);
   
+  // Track pointer position globally during drag
+  useEffect(() => {
+    if (!isDraggingActive) return;
+
+    const updatePointerPosition = (e: PointerEvent | TouchEvent) => {
+      if ('clientY' in e) {
+        lastPointerY.current = e.clientY;
+        lastPointerX.current = e.clientX;
+      } else if ('touches' in e && e.touches.length > 0) {
+        lastPointerY.current = e.touches[0].clientY;
+        lastPointerX.current = e.touches[0].clientX;
+      }
+    };
+
+    window.addEventListener('pointermove', updatePointerPosition as any);
+    window.addEventListener('touchmove', updatePointerPosition as any, { passive: true });
+
+    return () => {
+      window.removeEventListener('pointermove', updatePointerPosition as any);
+      window.removeEventListener('touchmove', updatePointerPosition as any);
+    };
+  }, [isDraggingActive]);
+
   // Auto-scroll when dragging near edges
   useEffect(() => {
     if (!isDraggingActive) {
@@ -155,7 +179,7 @@ const PhotosPanelGrid: React.FC<PhotosPanelGridProps> = ({
       const pointerY = lastPointerY.current;
       const rect = modalContent.getBoundingClientRect();
       const scrollThreshold = 100; // Distance from edge to trigger scroll
-      const scrollSpeed = 10; // Pixels to scroll per frame
+      const scrollSpeed = 15; // Pixels to scroll per frame
 
       // Calculate distance from top and bottom
       const distanceFromTop = pointerY - rect.top;
@@ -188,18 +212,6 @@ const PhotosPanelGrid: React.FC<PhotosPanelGridProps> = ({
   const handleDragStart = (event: DragStartEvent) => {
     setIsDraggingActive(true);
     onPhotoDragStart(event, setActiveId);
-  };
-
-  // Handle drag move to track pointer position
-  const handleDragMove = (event: DragMoveEvent) => {
-    if (event.activatorEvent) {
-      const pointerEvent = event.activatorEvent as PointerEvent | TouchEvent;
-      if ('clientY' in pointerEvent) {
-        lastPointerY.current = pointerEvent.clientY;
-      } else if ('touches' in pointerEvent && pointerEvent.touches.length > 0) {
-        lastPointerY.current = pointerEvent.touches[0].clientY;
-      }
-    }
   };
 
   // Handle drag end
@@ -254,7 +266,6 @@ const PhotosPanelGrid: React.FC<PhotosPanelGridProps> = ({
         sensors={photoSensors}
         collisionDetection={closestCenter}
         onDragStart={handleDragStart}
-        onDragMove={handleDragMove}
         onDragEnd={handleDragEnd}
       >
         {viewMode === 'grid' ? (
