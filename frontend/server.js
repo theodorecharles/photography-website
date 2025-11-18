@@ -851,4 +851,9 @@ const bindHost = process.env.HOST || (isLocalhost ? "127.0.0.1" : "0.0.0.0");
 app.listen(port, bindHost, () => {
   info(`[Frontend] Server running on ${bindHost}:${port}`);
   info(`[Frontend] API URL: ${config.frontend.apiUrl}`);
+  
+  // Signal PM2 that app is ready (for zero-downtime reloads)
+  if (process.send) {
+    process.send('ready');
+  }
 });

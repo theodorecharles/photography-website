@@ -556,6 +556,11 @@ const server = app.listen(PORT, bindHost, () => {
   info(`API URL: ${config.frontend.apiUrl}`);
   debug(`Photos directory: ${photosDir}`);
   
+  // Signal PM2 that app is ready (for zero-downtime reloads)
+  if (process.send) {
+    process.send('ready');
+  }
+  
   // Regenerate static JSON files on startup (non-blocking)
   if (getConfigExists()) {
     info('[Startup] Regenerating static JSON files...');
