@@ -963,15 +963,10 @@
   background: #161616;
   transition: background 0.15s ease;
   cursor: grab;
-  /* Allow vertical scrolling by default (for viewers) */
+  /* Allow vertical scrolling - drag requires holding still (150px tolerance) */
   touch-action: pan-y;
   -webkit-user-select: none;
   user-select: none;
-}
-
-/* When editable, disable touch gestures to allow drag-and-drop */
-.list-item.editable {
-  touch-action: none;
 }
 
 .list-item:hover {

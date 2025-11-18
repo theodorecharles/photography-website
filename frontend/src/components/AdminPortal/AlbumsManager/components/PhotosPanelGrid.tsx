@@ -61,6 +61,11 @@ const PhotosPanelGrid: React.FC<PhotosPanelGridProps> = ({
   // Track which photo has its overlay visible (only one at a time)
   const [activeOverlayId, setActiveOverlayId] = React.useState<string | null>(null);
   
+  // Debug: log activeId changes
+  React.useEffect(() => {
+    console.log('[PhotosPanelGrid] activeId changed to:', activeId, 'is-dragging class:', activeId ? 'ADDED' : 'REMOVED');
+  }, [activeId]);
+  
   // FLIP animation for smooth reflow on delete
   const gridRef = useRef<HTMLDivElement>(null);
   const firstPositionsRef = useRef<Map<string, DOMRect>>(new Map());
@@ -134,14 +139,16 @@ const PhotosPanelGrid: React.FC<PhotosPanelGridProps> = ({
   }, [albumPhotos, deletingPhotoId]);
   
   // Configure dnd-kit sensors for photos
-  // Desktop: minimal delay for instant drag, mobile: longer delay to differentiate tap vs drag
+  // Desktop: minimal delay for instant drag
+  // Mobile Grid: 50px tolerance to allow some scrolling
+  // Mobile List: 150px tolerance to allow easy scrolling (since items fill screen)
   const photoSensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: isTouchDevice ? {
-        delay: 300, // Mobile: require 300ms hold before drag starts (increased to allow state cleanup)
-        tolerance: 50, // Mobile: allow 50px movement during delay to enable scrolling
+        delay: 300, // Mobile: require 300ms hold before drag starts
+        tolerance: viewMode === 'list' ? 150 : 50, // List: higher tolerance for scrolling
       } : {
-        distance: 5, // Desktop: require 5px movement to start drag (prevents accidental drags on click)
+        distance: 5, // Desktop: require 5px movement to start drag
       },
     }),
     useSensor(KeyboardSensor, {
@@ -181,8 +188,16 @@ const PhotosPanelGrid: React.FC<PhotosPanelGridProps> = ({
       <DndContext
         sensors={photoSensors}
         collisionDetection={closestCenter}
-        onDragStart={(event) => onPhotoDragStart(event, setActiveId)}
-        onDragEnd={(event) => onPhotoDragEnd(event, setActiveId)}
+        onDragStart={(event) => {
+          console.log('[PhotosPanelGrid] onDragStart - setting activeId:', event.active.id);
+          onPhotoDragStart(event, setActiveId);
+          console.log('[PhotosPanelGrid] onDragStart - activeId after set:', activeId);
+        }}
+        onDragEnd={(event) => {
+          console.log('[PhotosPanelGrid] onDragEnd - clearing activeId');
+          onPhotoDragEnd(event, setActiveId);
+          console.log('[PhotosPanelGrid] onDragEnd - activeId after clear:', activeId);
+        }}
         autoScroll={{
           enabled: true,
           layoutShiftCompensation: false,
