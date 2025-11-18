@@ -6,6 +6,7 @@
 import { Router } from 'express';
 import { getPublishedAlbums } from '../database.js';
 import { isEnvSet } from '../config.js';
+import { error, warn, info, debug, verbose } from '../utils/logger.js';
 
 const router = Router();
 
@@ -17,8 +18,8 @@ function getAlbums(): string[] {
     return getPublishedAlbums()
       .map(a => a.name)
       .filter(name => name !== 'homepage');
-  } catch (error) {
-    console.error('Error getting albums for sitemap:', error);
+  } catch (err) {
+    error('Error getting albums for sitemap:', err);
     return [];
   }
 }

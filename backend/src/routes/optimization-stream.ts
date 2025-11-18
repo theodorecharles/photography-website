@@ -7,6 +7,7 @@ import express from 'express';
 import { spawn, ChildProcess } from 'child_process';
 import path from 'path';
 import { requireAuth } from '../auth/middleware.js';
+import { error, warn, info, debug, verbose } from '../utils/logger.js';
 
 const router = express.Router();
 
@@ -86,7 +87,7 @@ async function processQueue() {
   while (activeJobs.size < MAX_CONCURRENT_JOBS && optimizationQueue.length > 0) {
     const job = optimizationQueue.shift()!;
 
-    // console.log(`[Optimization Queue] Starting ${job.jobId} (${activeJobs.size + 1}/${MAX_CONCURRENT_JOBS} active, ${optimizationQueue.length} queued)`);
+    // info(`[OptimizationStream] Starting ${job.jobId} (${activeJobs.size + 1}/${MAX_CONCURRENT_JOBS} active, ${optimizationQueue.length} queued)`);
 
     // Update job state to optimizing
     broadcastOptimizationUpdate(job.jobId, {
@@ -109,7 +110,7 @@ async function processQueue() {
 
     // Add timeout to prevent hung processes (5 minutes)
     const timeout = setTimeout(() => {
-      console.error(`[Optimization Queue] Job ${job.jobId} timed out after 5 minutes, killing process`);
+      error(`[OptimizationStream] Job ${job.jobId} timed out after 5 minutes, killing process`);
       childProcess.kill('SIGTERM');
       activeJobs.delete(childProcess);
       job.onError('Optimization timed out');
@@ -132,7 +133,7 @@ async function processQueue() {
     childProcess.stderr?.on('data', (data) => {
       const errorOutput = data.toString().trim();
       if (errorOutput) {
-        console.error(`[${job.album}/${job.filename}] Optimization stderr:`, errorOutput);
+        error(`[${job.album}/${job.filename}] Optimization stderr:`, errorOutput);
       }
     });
 
@@ -143,10 +144,10 @@ async function processQueue() {
 
       if (code === 0) {
         job.onComplete();
-        // console.log(`[Optimization Queue] ✓ Completed ${job.jobId} (${activeJobs.size}/${MAX_CONCURRENT_JOBS} active, ${optimizationQueue.length} queued)`);
+        // info(`[OptimizationStream] Completed ${job.jobId} (${activeJobs.size}/${MAX_CONCURRENT_JOBS} active, ${optimizationQueue.length} queued)`);
       } else {
         job.onError(`Optimization failed with code ${code}`);
-        console.error(`[Optimization Queue] ✗ Failed ${job.jobId} with code ${code} (${activeJobs.size}/${MAX_CONCURRENT_JOBS} active, ${optimizationQueue.length} queued)`);
+        error(`[OptimizationStream] Failed ${job.jobId} with code ${code} (${activeJobs.size}/${MAX_CONCURRENT_JOBS} active, ${optimizationQueue.length} queued)`);
       }
 
       // Process next job in queue
@@ -154,11 +155,11 @@ async function processQueue() {
     });
 
     // Handle errors
-    childProcess.on('error', (error) => {
+    childProcess.on('error', (err) => {
       clearTimeout(timeout);
       activeJobs.delete(childProcess);
-      console.error(`[Optimization Queue] ✗ Error in ${job.jobId}:`, error.message);
-      job.onError(error.message);
+      error(`[OptimizationStream] Error in job ${job.jobId}:`, err);
+      job.onError(err.message);
       processQueue();
     });
   }
@@ -197,7 +198,7 @@ export function queueOptimizationJob(
     state: 'queued'
   });
 
-  // console.log(`[Optimization Queue] Added ${jobId} to queue (position: ${optimizationQueue.length})`);
+  // info(`[OptimizationStream] Added ${jobId} to queue (position: ${optimizationQueue.length})`);
 
   // Start processing if not already running
   processQueue();
@@ -234,7 +235,7 @@ router.get('/', requireAuth, (req, res) => {
 
   // Add client to set
   clients.add(res);
-  // console.log(`[Optimization Stream] Client connected (${clients.size} total)`);
+  // info(`[Optimization Stream] Client connected (${clients.size} total)`);
 
   // Send current state of all active jobs
   const activeJobs = Array.from(optimizationJobs.entries()).map(([jobId, job]) => ({
@@ -266,7 +267,7 @@ router.get('/', requireAuth, (req, res) => {
   req.on('close', () => {
     clearInterval(heartbeat);
     clients.delete(res);
-    // console.log(`[Optimization Stream] Client disconnected (${clients.size} remaining)`);
+    // info(`[Optimization Stream] Client disconnected (${clients.size} remaining)`);
   });
 });
 

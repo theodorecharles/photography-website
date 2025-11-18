@@ -7,6 +7,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import config, { getAllowedOrigins } from './config.js';
+import { info, warn, error, debug, verbose } from './utils/logger.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -63,7 +64,7 @@ export function validateProductionSecurity() {
   // Skip validation if we're in setup mode (temporary session secret)
   const sessionSecret = secureConfig.auth?.sessionSecret;
   if (!sessionSecret || sessionSecret === 'CHANGE_ME_IN_PRODUCTION_OR_SETUP_WILL_GENERATE_ONE') {
-    console.log('⚠️  Skipping security validation (setup mode)');
+    info('⚠️  Skipping security validation (setup mode)');
     return;
   }
   
@@ -88,9 +89,9 @@ export function validateProductionSecurity() {
     const missing = requiredChecks.filter(check => !check.value);
     
     if (missing.length > 0) {
-      console.error('❌ SECURITY ERROR: Missing required security configuration in production:');
-      missing.forEach(check => console.error(`  - ${check.name}`));
-      console.error('\nPlease ensure these values are properly configured in config.json.');
+      error('❌ SECURITY ERROR: Missing required security configuration in production:');
+      missing.forEach(check => error(`  - ${check.name}`));
+      error('\nPlease ensure these values are properly configured in config.json.');
       process.exit(1);
     }
   }
@@ -156,7 +157,7 @@ export function csrfProtection(req: any, res: any, next: any) {
   const isCredentialAuth = !!(req.session as any)?.userId;
   
   if (!isPassportAuth && !isCredentialAuth) {
-    console.log('[CSRF] Authentication required - not authenticated via any method');
+    debug('[CSRF] Authentication required - not authenticated via any method');
     return res.status(401).json({ error: 'Authentication required for this operation' });
   }
   
@@ -199,7 +200,7 @@ export function csrfProtection(req: any, res: any, next: any) {
           
           if (isIpAddress && (port === 3000 || port === 3001)) {
             isAllowedOrigin = true;
-            console.log(`[CSRF] Allowing IP-based access: ${origin}`);
+            debug(`[CSRF] Allowing IP-based access: ${origin}`);
           }
         }
       } catch (e) {
@@ -208,12 +209,12 @@ export function csrfProtection(req: any, res: any, next: any) {
     }
     
     if (!isAllowedOrigin) {
-      console.log('[CSRF] Origin not allowed:', origin);
-      console.log('[CSRF] Allowed origins:', allowedOrigins);
+      warn('[CSRF] Origin not allowed:', origin);
+      verbose('[CSRF] Allowed origins:', allowedOrigins);
       return res.status(403).json({ error: 'Request origin not allowed' });
     }
   }
   
-  console.log('[CSRF] ✅ Protection passed for', req.method, req.path);
+  verbose('[CSRF] ✅ Protection passed for', req.method, req.path);
   next();
 }

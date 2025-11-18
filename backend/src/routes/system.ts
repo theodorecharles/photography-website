@@ -9,6 +9,7 @@ import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { requireAuth } from '../auth/middleware.js';
+import { error, warn, info, debug, verbose } from '../utils/logger.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -23,8 +24,8 @@ router.post('/restart', requireAuth, (req, res) => {
     const sessionUser = (req.session as any)?.user;
     const userEmail = sessionUser?.email || (req.user as any)?.email || 'unknown user';
     
-    console.log('🔄 Server restart initiated by:', userEmail);
-    console.log('[Restart] Session info:', {
+    info('Server restart initiated by:', userEmail);
+    info('[Restart] Session info:', {
       userId,
       hasSessionUser: !!sessionUser,
       sessionId: req.sessionID,
@@ -72,22 +73,22 @@ router.post('/restart', requireAuth, (req, res) => {
 
         // Handle process events for logging
         restart.on('error', (err) => {
-          logStream.write(`\n❌ ERROR: Failed to restart PM2: ${err.message}\n`);
+          logStream.write(`\nERROR: Failed to restart PM2: ${err.message}\n`);
           logStream.end();
-          console.error('Failed to restart PM2:', err);
+          error('Failed to restart PM2:', err);
         });
 
         restart.on('exit', (code, signal) => {
-          logStream.write(`\n✓ PM2 restart completed with code ${code} and signal ${signal}\n`);
+          logStream.write(`\nPM2 restart completed with code ${code} and signal ${signal}\n`);
           logStream.end();
         });
 
         // Unref the child process so it continues running independently
         restart.unref();
 
-        console.log('✅ PM2 restart initiated');
-        console.log('⏳ Services will reload configuration and restart');
-        console.log(`📝 Restart output logged to: ${logFile}`);
+        info('✅ PM2 restart initiated');
+        info('⏳ Services will reload configuration and restart');
+        info(`📝 Restart output logged to: ${logFile}`);
       } else {
         // Fallback: Exit process (Docker will restart container, PM2 will restart process)
         logStream.write(`\n\n=== Process Restart initiated at ${timestamp} ===\n`);
@@ -95,16 +96,16 @@ router.post('/restart', requireAuth, (req, res) => {
         logStream.write(`Reason: Config reload\n\n`);
         logStream.end();
         
-        console.log('✅ Process restart - exiting');
-        console.log('⏳ Process manager will restart the process');
-        console.log(`📝 Restart logged to: ${logFile}`);
+        info('✅ Process restart - exiting');
+        info('⏳ Process manager will restart the process');
+        info(`📝 Restart logged to: ${logFile}`);
         
         // Exit gracefully - PM2/Docker will restart
         process.exit(0);
       }
     }, 500);
-  } catch (error) {
-    console.error('❌ Failed to initiate restart:', error);
+  } catch (err) {
+    error('Failed to initiate restart:', err);
     res.status(500).json({ 
       success: false, 
       error: 'Failed to initiate restart' 

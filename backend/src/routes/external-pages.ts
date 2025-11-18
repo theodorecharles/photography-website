@@ -8,6 +8,7 @@ import { Router } from 'express';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { error, warn, info, debug, verbose } from '../utils/logger.js';
 
 const router = Router();
 
@@ -30,8 +31,8 @@ const getExternalPages = () => {
     const data = fs.readFileSync(configFile, 'utf8');
     const config = JSON.parse(data);
     return { externalLinks: config.externalLinks || [] };
-  } catch (error) {
-    console.error('Error reading external links from config:', error);
+  } catch (err) {
+    error('Error reading external links from config:', err);
     return { externalLinks: [] };
   }
 };

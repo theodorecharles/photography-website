@@ -28,9 +28,14 @@ import config, {
   getConfigExists,
   RATE_LIMIT_WINDOW_MS,
   RATE_LIMIT_MAX_REQUESTS,
+  getLogLevel,
 } from "./config.ts";
 import { validateProductionSecurity } from "./security.ts";
 import { initializeDatabase } from "./database.ts";
+import { initLogger, info, warn, error, debug, verbose } from "./utils/logger.ts";
+
+// Initialize logger early with config or environment variable
+initLogger(getLogLevel());
 
 // In-memory cache for optimized images (thumbnails + modals)
 const imageCache = new Map<
@@ -73,7 +78,7 @@ const __dirname = path.dirname(__filename);
 if (getConfigExists()) {
   validateProductionSecurity();
 } else {
-  console.log('⚙️  Setup mode detected - skipping production security validation');
+  info('⚙️  Setup mode detected - skipping production security validation');
 }
 
 // Initialize database lazily (on first use) to avoid ESM/CommonJS issues
@@ -116,24 +121,24 @@ let optimizedDir = path.resolve(__dirname, "../../", OPTIMIZED_DIR);
 // Resolve symlinks to get the real path (important for macOS TCC permissions)
 try {
   photosDir = fs.realpathSync(photosDir);
-  console.log("Photos directory (real path):", photosDir);
+  debug("Photos directory (real path):", photosDir);
 } catch (err) {
-  console.warn("Warning: Could not resolve photos directory:", photosDir);
+  warn("Warning: Could not resolve photos directory:", photosDir);
 }
 
 try {
   optimizedDir = fs.realpathSync(optimizedDir);
-  console.log("Optimized directory (real path):", optimizedDir);
+  debug("Optimized directory (real path):", optimizedDir);
 } catch (err) {
-  console.warn("Warning: Could not resolve optimized directory:", optimizedDir);
+  warn("Warning: Could not resolve optimized directory:", optimizedDir);
 }
 
 // Verify directory paths exist
 if (!fs.existsSync(photosDir)) {
-  console.warn("Warning: Photos directory does not exist:", photosDir);
+  warn("Warning: Photos directory does not exist:", photosDir);
 }
 if (!fs.existsSync(optimizedDir)) {
-  console.warn("Warning: Optimized directory does not exist:", optimizedDir);
+  warn("Warning: Optimized directory does not exist:", optimizedDir);
 }
 
 // Configure security middleware
@@ -166,7 +171,7 @@ app.use(
       
       // During OOBE (setup mode), allow any HTTPS origin to enable setup from any domain
       if (!configExists && origin.startsWith('https://')) {
-        console.log(`[OOBE] Allowing CORS from: ${origin}`);
+        debug(`[OOBE] Allowing CORS from: ${origin}`);
         return callback(null, true);
       }
       
@@ -199,7 +204,7 @@ app.use(
         const isIpAddress = ipPattern.test(hostname);
         
         if (isIpAddress && (port === 3000 || port === 3001)) {
-          console.log(`[CORS] Allowing IP-based access: ${origin}`);
+          debug(`[CORS] Allowing IP-based access: ${origin}`);
           callback(null, true);
           return;
         }
@@ -208,7 +213,7 @@ app.use(
       }
 
       // Reject origin by passing false (not an Error)
-      console.warn(`CORS blocked origin: ${origin}`);
+      warn(`CORS blocked origin: ${origin}`);
       callback(null, false);
     },
     credentials: true,
@@ -258,12 +263,12 @@ app.use(express.json({ limit: "1mb" }));
 const sessionSecret = config.auth?.sessionSecret;
 if (!sessionSecret) {
   if (getConfigExists()) {
-    console.error('❌ CRITICAL ERROR: SESSION_SECRET is not configured!');
-    console.error('Please set auth.sessionSecret in config.json or SESSION_SECRET environment variable.');
-    console.error('Generate a secure secret with: openssl rand -hex 32');
+    error('❌ CRITICAL ERROR: SESSION_SECRET is not configured!');
+    error('Please set auth.sessionSecret in config.json or SESSION_SECRET environment variable.');
+    error('Generate a secure secret with: openssl rand -hex 32');
     process.exit(1);
   } else {
-    console.log('⚙️  Using temporary session secret for setup mode');
+    info('⚙️  Using temporary session secret for setup mode');
   }
 }
 
@@ -282,7 +287,7 @@ try {
     // For local development or IP addresses, leave domain undefined
     // Setting explicit domain on IPs causes cookie rejection
     cookieDomain = undefined;
-    console.log(`Cookie domain: undefined (${isIpAddress ? 'IP address' : 'localhost'})`);
+    debug(`Cookie domain: undefined (${isIpAddress ? 'IP address' : 'localhost'})`);
   } else {
     // For production domains, extract base domain (e.g., 'example.com' from 'api.example.com')
     // Set to '.domain.com' to share across subdomains
@@ -290,11 +295,11 @@ try {
     if (parts.length >= 2) {
       // Get last two parts (domain.tld)
       cookieDomain = "." + parts.slice(-2).join(".");
-      console.log(`Cookie domain set to: ${cookieDomain}`);
+      debug(`Cookie domain set to: ${cookieDomain}`);
     }
   }
 } catch (err) {
-  console.warn(
+  warn(
     "Could not parse backend URL for cookie domain, using undefined"
   );
 }
@@ -304,7 +309,7 @@ try {
 // For production, use 'lax' for OAuth compatibility
 const sameSiteValue = isProduction ? "lax" : false;
 
-console.log("Session cookie config:", {
+debug("Session cookie config:", {
   secure: isProduction,
   httpOnly: true,
   sameSite: sameSiteValue,
@@ -347,9 +352,9 @@ app.use(passport.session());
 // Debug middleware - log requests to metrics endpoints
 if (!isProduction) {
   app.use("/api/metrics", (req, res, next) => {
-    console.log(`[Metrics Request] ${req.method} ${req.path}`);
-    console.log("  Cookies:", req.headers.cookie || "NONE");
-    console.log("  Session ID:", req.sessionID);
+    verbose(`[Metrics Request] ${req.method} ${req.path}`);
+    verbose("  Cookies:", req.headers.cookie || "NONE");
+    verbose("  Session ID:", req.sessionID);
     next();
   });
 }
@@ -501,7 +506,7 @@ app.use((req, res) => {
 
 // Global error handler - must be last
 app.use((err: any, req: any, res: any, next: any) => {
-  console.error("Server error:", err);
+  error("Server error:", err);
 
   // Don't leak error details in production (HTTPS = production)
   const isProduction = config.frontend.apiUrl.startsWith("https://");
@@ -522,22 +527,22 @@ const isLocalhost = config.frontend.apiUrl.includes("localhost");
 const bindHost = process.env.HOST || (isLocalhost ? "127.0.0.1" : "0.0.0.0");
 
 const server = app.listen(PORT, bindHost, () => {
-  console.log(`Server is running on ${bindHost}:${PORT}`);
-  console.log(`API URL: ${config.frontend.apiUrl}`);
-  console.log(`Photos directory: ${photosDir}`);
+  info(`Server is running on ${bindHost}:${PORT}`);
+  info(`API URL: ${config.frontend.apiUrl}`);
+  debug(`Photos directory: ${photosDir}`);
   
   // Regenerate static JSON files on startup (non-blocking)
   if (getConfigExists()) {
-    console.log('[Startup] Regenerating static JSON files...');
+    info('[Startup] Regenerating static JSON files...');
     const appRoot = path.resolve(__dirname, "../../");
     generateStaticJSONFiles(appRoot).then((result) => {
       if (result.success) {
-        console.log(`[Startup] ✓ Static JSON files updated (${result.albumCount} albums)`);
+        info(`[Startup] ✓ Static JSON files updated (${result.albumCount} albums)`);
       } else {
-        console.error('[Startup] ✗ Failed to generate static JSON:', result.error);
+        error('[Startup] ✗ Failed to generate static JSON:', result.error);
       }
     }).catch((error) => {
-      console.error('[Startup] ✗ Failed to generate static JSON:', error);
+      error('[Startup] ✗ Failed to generate static JSON:', error);
     });
   }
 });
@@ -549,17 +554,17 @@ server.keepAliveTimeout = 610000; // Slightly longer than timeout
 server.headersTimeout = 620000; // Slightly longer than keepAliveTimeout
 
 // Handle server errors
-server.on("error", (error: NodeJS.ErrnoException) => {
-  if (error.code === "EADDRINUSE") {
-    console.error(
+server.on("error", (err: NodeJS.ErrnoException) => {
+  if (err.code === "EADDRINUSE") {
+    error(
       `Port ${PORT} is already in use. Please free the port or use a different one.`
     );
-  } else if (error.code === "EACCES") {
-    console.error(
+  } else if (err.code === "EACCES") {
+    error(
       `Permission denied to bind to port ${PORT}. Try using a port above 1024.`
     );
   } else {
-    console.error("Server error:", error);
+    error("Server error:", err);
   }
   process.exit(1);
 });

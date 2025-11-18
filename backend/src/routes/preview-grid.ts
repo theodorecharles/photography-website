@@ -9,6 +9,7 @@ import fs from "fs";
 import path from "path";
 import { getShareLinkBySecret, isShareLinkExpired, getImagesForHomepage } from "../database.js";
 import { DATA_DIR } from "../config.js";
+import { error, warn, info, debug, verbose } from '../utils/logger.js';
 
 const router = Router();
 
@@ -70,8 +71,8 @@ function getAvatarPath(photosDir: string): string | null {
     if (fs.existsSync(fsAvatarPath)) {
       return fsAvatarPath;
     }
-  } catch (error) {
-    console.error('Error getting avatar path:', error);
+  } catch (err) {
+    error('Error getting avatar path:', err);
   }
   
   return null;
@@ -163,8 +164,8 @@ async function addAvatarOverlay(
       left: 20,
       top: gridHeight - avatarSize - 20
     });
-  } catch (error) {
-    console.error('Error adding avatar overlay:', error);
+  } catch (err) {
+    error('Error adding avatar overlay:', err);
     // Continue without avatar
   }
 }
@@ -265,8 +266,8 @@ router.get("/album/:albumName", async (req: Request, res: Response): Promise<voi
     });
     
     res.send(gridBuffer);
-  } catch (error) {
-    console.error("Error generating album preview grid:", error);
+  } catch (err) {
+    error("Error generating album preview grid:", err);
     res.status(500).json({ error: "Failed to generate preview grid" });
   }
 });
@@ -340,8 +341,8 @@ router.get("/homepage", async (req: Request, res: Response): Promise<void> => {
     });
     
     res.send(grid);
-  } catch (error) {
-    console.error("Error generating homepage preview grid:", error);
+  } catch (err) {
+    error("Error generating homepage preview grid:", err);
     res.status(500).json({ error: "Failed to generate preview grid" });
   }
 });
@@ -408,8 +409,8 @@ router.get("/shared/:secretKey", async (req: Request, res: Response): Promise<vo
     });
     
     res.send(gridBuffer);
-  } catch (error) {
-    console.error("Error generating shared album preview grid:", error);
+  } catch (err) {
+    error("Error generating shared album preview grid:", err);
     res.status(500).json({ error: "Failed to generate preview grid" });
   }
 });

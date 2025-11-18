@@ -13,6 +13,7 @@ import {
   deleteShareLinksForAlbum,
   getShareLinksForAlbum
 } from "../database.js";
+import { error, warn, info, debug, verbose } from '../utils/logger.js';
 
 const router = Router();
 
@@ -60,7 +61,7 @@ router.post("/create", csrfProtection, requireManager, async (req: Request, res:
     // Create the share link
     const shareLink = createShareLink(sanitizedAlbum, expiresAt);
     
-    console.log(`✓ Created share link for album "${sanitizedAlbum}": ${shareLink.secret_key} (expires: ${expiresAt || 'never'})`);
+    info(`Created share link for album "${sanitizedAlbum}": ${shareLink.secret_key} (expires: ${expiresAt || 'never'})`);
 
     res.json({
       success: true,
@@ -72,8 +73,8 @@ router.post("/create", csrfProtection, requireManager, async (req: Request, res:
         createdAt: shareLink.created_at
       }
     });
-  } catch (error) {
-    console.error('Error creating share link:', error);
+  } catch (err) {
+    error('Error creating share link:', err);
     res.status(500).json({ error: 'Failed to create share link' });
   }
 });
@@ -121,8 +122,8 @@ router.get("/validate/:secretKey", async (req: Request, res: Response): Promise<
       album: shareLink.album,
       expiresAt: shareLink.expires_at
     });
-  } catch (error) {
-    console.error('Error validating share link:', error);
+  } catch (err) {
+    error('Error validating share link:', err);
     res.status(500).json({ 
       error: 'Failed to validate share link',
       valid: false 
@@ -157,8 +158,8 @@ router.get("/album/:album", requireAuth, async (req: Request, res: Response): Pr
         expired: isShareLinkExpired(link)
       }))
     });
-  } catch (error) {
-    console.error('Error getting share links:', error);
+  } catch (err) {
+    error('Error getting share links:', err);
     res.status(500).json({ error: 'Failed to get share links' });
   }
 });
@@ -179,14 +180,14 @@ router.delete("/album/:album", csrfProtection, requireManager, async (req: Reque
 
     const deletedCount = deleteShareLinksForAlbum(sanitizedAlbum);
     
-    console.log(`✓ Deleted ${deletedCount} share links for album: ${sanitizedAlbum}`);
+    info(`Deleted ${deletedCount} share links for album: ${sanitizedAlbum}`);
 
     res.json({
       success: true,
       deletedCount
     });
-  } catch (error) {
-    console.error('Error deleting share links:', error);
+  } catch (err) {
+    error('Error deleting share links:', err);
     res.status(500).json({ error: 'Failed to delete share links' });
   }
 });

@@ -10,6 +10,7 @@ import { getAllAlbums, getImagesInAlbum, getImagesForHomepage } from "../databas
 import { requireAuth, requireAdmin, requireManager } from '../auth/middleware.js';
 import { invalidateAlbumCache } from './albums.js';
 import { DATA_DIR } from '../config.js';
+import { error, warn, info, debug, verbose } from '../utils/logger.js';
 
 const router = Router();
 
@@ -93,8 +94,8 @@ export async function generateStaticJSONFiles(appRoot: string): Promise<{ succes
           const images = getImagesInAlbum(album);
           const photos = images.map((img) => transformImageToArray(img, album, false));
           await writeJSON(outputDir, `${album}.json`, photos);
-        } catch (error) {
-          console.error(`[Static JSON] Error generating JSON for album "${album}":`, error);
+        } catch (err) {
+          error(`[StaticJSON] Error generating JSON for album "${album}":`, err);
         }
       })
     );
@@ -121,8 +122,8 @@ export async function generateStaticJSONFiles(appRoot: string): Promise<{ succes
       };
       
       await writeJSON(outputDir, 'homepage.json', homepageData);
-    } catch (error) {
-      console.error('[Static JSON] Error generating homepage.json:', error);
+    } catch (err) {
+      error('[StaticJSON] Error generating homepage.json:', err);
     }
 
     // Generate albums list and metadata file in parallel
@@ -137,11 +138,11 @@ export async function generateStaticJSONFiles(appRoot: string): Promise<{ succes
       writeJSON(outputDir, '_metadata.json', metadata)
     ]);
 
-    console.log(`[Static JSON] ✓ Generation complete! (${albums.length} albums)`);
+    info(`[StaticJSON] Generation complete! (${albums.length} albums)`);
     return { success: true, albumCount: albums.length };
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    console.error('[Static JSON] ✗ Generation failed:', errorMessage);
+  } catch (err) {
+    const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+    error('[StaticJSON] Generation failed:', errorMessage);
     return { success: false, error: errorMessage };
   }
 }
@@ -219,7 +220,7 @@ router.get("/status", async (req: Request, res: Response): Promise<void> => {
       exists: true,
       ...metadata
     });
-  } catch (error) {
+  } catch (err) {
     res.status(500).json({ 
       error: 'Failed to read static JSON status' 
     });

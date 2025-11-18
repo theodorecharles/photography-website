@@ -24,6 +24,7 @@ import { StructuredData } from "./components/Misc/StructuredData";
 import { API_URL, SITE_URL } from "./config";
 import { trackPageView, trackError } from "./utils/analytics";
 import { fetchWithRateLimitCheck } from "./utils/fetchWrapper";
+import { error, debug, verbose } from "./utils/logger";
 import { SSEToasterProvider } from "./contexts/SSEToasterContext";
 import { AuthProvider } from "./contexts/AuthContext";
 import SSEToaster from "./components/SSEToaster";
@@ -152,7 +153,7 @@ function App() {
   const [primaryColor, setPrimaryColor] = useState('#4ade80');
   const [secondaryColor, setSecondaryColor] = useState('#3b82f6');
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [errorState, setErrorState] = useState<string | null>(null);
   const [currentAlbum, setCurrentAlbum] = useState<string | undefined>(
     undefined
   );
@@ -175,7 +176,7 @@ function App() {
           setLoading(false);
         }
       } catch (err) {
-        console.error('Setup check failed:', err);
+        error('Setup check failed:', err);
         // Assume setup is complete if check fails (backward compatibility)
         setSetupComplete(true);
       }
@@ -187,7 +188,7 @@ function App() {
   // Global rate limit handler - any component can trigger this
   useEffect(() => {
     (window as any).handleRateLimit = () => {
-      setError("RATE_LIMIT");
+      setErrorState("RATE_LIMIT");
       setLoading(false);
     };
 
@@ -268,10 +269,10 @@ function App() {
         const filteredAlbums = filterAlbums(albumsData.albums || [], isAuthenticated);
         const filteredFolders = filterFolders(albumsData.folders || [], isAuthenticated);
         
-        console.log('🔍 App.tsx fetchData - isAuthenticated:', isAuthenticated);
-        console.log('🔍 App.tsx fetchData - Raw folders from backend:', albumsData.folders);
-        console.log('🔍 App.tsx fetchData - Filtered folders:', filteredFolders);
-        console.log('🔍 App.tsx fetchData - Filtered albums:', filteredAlbums);
+        debug('🔍 App.tsx fetchData - isAuthenticated:', isAuthenticated);
+        verbose('🔍 App.tsx fetchData - Raw folders from backend:', albumsData.folders);
+        verbose('🔍 App.tsx fetchData - Filtered folders:', filteredFolders);
+        verbose('🔍 App.tsx fetchData - Filtered albums:', filteredAlbums);
         
         setAlbums(filteredAlbums);
         // Normalize published field to boolean (SQLite returns 0/1)
@@ -301,7 +302,7 @@ function App() {
       setPrimaryColor(brandingData.primaryColor || '#4ade80');
       setSecondaryColor(brandingData.secondaryColor || '#3b82f6');
       setAvatarCacheBust(Date.now()); // Update cache bust when branding refreshes
-      setError(null);
+      setErrorState(null);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "An error occurred";
       
@@ -310,7 +311,7 @@ function App() {
         return;
       }
       
-      setError(errorMessage);
+      setErrorState(errorMessage);
       setAlbums([]);
       setFolders([]);
       setExternalLinks([]);
@@ -330,12 +331,12 @@ function App() {
 
     // Silent update for navigation without triggering loading state
     const updateNavigationSilently = async () => {
-      console.log('🔄 albums-updated event received, updating navigation...');
+      debug('🔄 albums-updated event received, updating navigation...');
       try {
         const albumsResponse = await fetchWithRateLimitCheck(`${API_URL}/api/albums`);
         if (albumsResponse.ok) {
           const albumsData = await albumsResponse.json();
-          console.log('✅ Navigation updated with folders:', albumsData.folders);
+          debug('✅ Navigation updated with folders:', albumsData.folders);
           
           // Handle new API format: { albums: [...], folders: [...] } or old format: [...]
           if (albumsData && typeof albumsData === 'object' && 'albums' in albumsData) {
@@ -368,7 +369,7 @@ function App() {
         }
       } catch (err) {
         // Silently fail - don't disrupt user experience
-        console.error('Failed to update navigation:', err);
+        error('Failed to update navigation:', err);
       }
     };
 
@@ -409,8 +410,8 @@ function App() {
     );
   }
 
-  if (error) {
-    if (error === "RATE_LIMIT") {
+  if (errorState) {
+    if (errorState === "RATE_LIMIT") {
       return (
         <div className="app">
           <Header

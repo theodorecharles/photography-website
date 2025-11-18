@@ -9,6 +9,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { csrfProtection } from "../security.js";
 import { requireAuth, requireAdmin } from "../auth/middleware.js";
+import { error, warn, info, debug, verbose } from '../utils/logger.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -61,8 +62,8 @@ router.get("/runtime", (req, res) => {
         configExists: false
       });
     }
-  } catch (error) {
-    console.error("Error reading runtime config:", error);
+  } catch (err) {
+    error("Error reading runtime config:", err);
     res.status(500).json({ error: "Failed to read runtime configuration" });
   }
 });
@@ -82,8 +83,8 @@ router.get("/", requireAuth, (req, res) => {
     // Return full config for admin to edit
     // (sensitive fields will be masked on frontend if needed)
     res.json(config);
-  } catch (error) {
-    console.error("Error reading config:", error);
+  } catch (err) {
+    error("Error reading config:", err);
     res.status(500).json({ error: "Failed to read configuration" });
   }
 });
@@ -105,7 +106,7 @@ router.post(
         return;
       }
 
-      console.log("[OpenAI Validation] Testing API key...");
+      info("[OpenAI Validation] Testing API key...");
 
       // Test the API key by calling OpenAI's models endpoint
       const response = await fetch("https://api.openai.com/v1/models", {
@@ -115,18 +116,18 @@ router.post(
         },
       });
 
-      console.log("[OpenAI Validation] Response status:", response.status);
-      console.log("[OpenAI Validation] Response ok:", response.ok);
+      info("[OpenAI Validation] Response status:", response.status);
+      info("[OpenAI Validation] Response ok:", response.ok);
 
       // If not ok, log the error details
       if (!response.ok) {
         const errorText = await response.text();
-        console.error("[OpenAI Validation] Error response:", errorText);
+        error("[OpenAI Validation] Error response:", errorText);
       }
 
       res.json({ valid: response.ok });
-    } catch (error) {
-      console.error("[OpenAI Validation] Exception:", error);
+    } catch (err) {
+      error("[OpenAI Validation] Exception:", err);
       res.json({ valid: false });
     }
   }
@@ -166,14 +167,14 @@ router.put("/", requireAdmin, express.json(), (req, res) => {
     // Reload configuration cache so changes take effect immediately
     reloadConfig();
 
-    console.log("✓ Configuration updated by:", req.user);
+    info("Configuration updated by:", req.user);
 
     res.json({
       success: true,
       message: "Configuration updated successfully",
     });
-  } catch (error) {
-    console.error("Error updating config:", error);
+  } catch (err) {
+    error("Error updating config:", err);
     res.status(500).json({ error: "Failed to update configuration" });
   }
 });
@@ -195,7 +196,7 @@ router.post(
         return;
       }
 
-      console.log(`[Test Email] Sending test email to ${email}...`);
+      info(`[Test Email] Sending test email to ${email}...`);
 
       const success = await sendTestEmail(email);
 
@@ -209,8 +210,8 @@ router.post(
           error: "Failed to send test email. Please check your SMTP configuration.",
         });
       }
-    } catch (error) {
-      console.error("[Test Email] Error:", error);
+    } catch (err) {
+      error("[Test Email] Error:", err);
       res.status(500).json({ error: "Failed to send test email" });
     }
   }

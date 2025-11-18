@@ -8,6 +8,7 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { csrfProtection } from "../security.js";
+import { error, warn, info, debug, verbose } from '../utils/logger.js';
 
 const router = express.Router();
 
@@ -63,8 +64,8 @@ router.get('/settings', requireAuth, (req, res) => {
     };
     
     res.json(settings);
-  } catch (error) {
-    console.error('Error reading optimization settings:', error);
+  } catch (err) {
+    error('Error reading optimization settings:', err);
     res.status(500).json({ error: 'Failed to read optimization settings' });
   }
 });
@@ -118,8 +119,8 @@ router.put('/settings', requireAdmin, (req, res) => {
     fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
     
     res.json({ success: true, settings: config.environment.optimization });
-  } catch (error) {
-    console.error('Error updating optimization settings:', error);
+  } catch (err) {
+    error('Error updating optimization settings:', err);
     res.status(500).json({ error: 'Failed to update optimization settings' });
   }
 });
@@ -147,7 +148,7 @@ router.post('/stop', requireManager, (req: any, res: any) => {
     // Kill the process
     if (runningOptimizationJob.process) {
       runningOptimizationJob.process.kill('SIGTERM');
-      console.log('[Optimization] Job stopped by user');
+      info('[Optimization] Job stopped by user');
     }
     
     // Mark as complete and broadcast to all clients
@@ -167,9 +168,9 @@ router.post('/stop', requireManager, (req: any, res: any) => {
     runningOptimizationJob.clients.clear();
     
     res.json({ success: true, message: 'Job stopped successfully' });
-  } catch (error: any) {
-    console.error('[Optimization] Error stopping job:', error);
-    res.status(500).json({ success: false, message: error.message });
+  } catch (err: any) {
+    error('[Optimization] Error stopping job:', err);
+    res.status(500).json({ success: false, message: err.message });
   }
 });
 
@@ -179,7 +180,7 @@ router.post('/optimize', requireManager, (req, res) => {
   
   // If already running, reconnect to existing job
   if (runningOptimizationJob && !runningOptimizationJob.isComplete) {
-    console.log('[Optimization] Reconnecting to existing job');
+    info('[Optimization] Reconnecting to existing job');
     
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
@@ -332,10 +333,10 @@ router.post('/optimize', requireManager, (req, res) => {
   });
   
   // Handle errors
-  child.on('error', (error) => {
+  child.on('error', (err) => {
     const errorMsg = JSON.stringify({ 
       type: 'error', 
-      message: `Failed to start process: ${error.message}` 
+      message: `Failed to start process: ${err.message}` 
     });
     
     if (runningOptimizationJob) {
