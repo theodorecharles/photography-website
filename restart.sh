@@ -145,13 +145,13 @@ log "Checking and cleaning up ports..."
 
 for PORT in 3000 3001; do
     log "Cleaning port $PORT..."
-    kill_port $PORT
+    kill_port $PORT || true
     
     # Double-check port is free
     if ! check_port_free $PORT; then
         # Try one more time with force
         log "Port $PORT still in use, attempting force kill..."
-        kill_port $PORT
+        kill_port $PORT || true
         sleep 2
         
         if ! check_port_free $PORT; then
