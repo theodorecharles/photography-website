@@ -528,36 +528,74 @@ router.post(
       const projectRoot = path.join(__dirname, "../../../");
       const dataDir = process.env.DATA_DIR || path.join(projectRoot, "data");
       const photosDir = path.join(dataDir, "photos");
+      const frontendPublicDir = path.join(projectRoot, 'frontend', 'public');
 
-      // Create photos directory if it doesn't exist
+      // Create directories if they don't exist
       if (!fs.existsSync(photosDir)) {
         fs.mkdirSync(photosDir, { recursive: true });
+      }
+      if (!fs.existsSync(frontendPublicDir)) {
+        fs.mkdirSync(frontendPublicDir, { recursive: true });
       }
 
       // Always save as PNG
       const avatarPath = path.join(photosDir, "avatar.png");
+      const faviconPngPath = path.join(frontendPublicDir, 'favicon.png');
+      const faviconIcoPath = path.join(frontendPublicDir, 'favicon.ico');
 
-      // Use Sharp to convert any image format (including HEIC) to PNG
+      // Also define dist path for immediate serving
+      const frontendDistDir = path.join(projectRoot, 'frontend', 'dist');
+      const faviconIcoPathDist = path.join(frontendDistDir, 'favicon.ico');
+
+      // Use Sharp to convert any image format (including HEIC) to PNG and generate favicons
       try {
+        // Process and save avatar.png with auto-rotation based on EXIF
         await sharp(file.buffer)
           .rotate() // Auto-rotate based on EXIF orientation
           .resize(512, 512, { fit: 'cover' })
           .png()
           .toFile(avatarPath);
+
+        // Create favicon.png (same as avatar)
+        await sharp(file.buffer)
+          .rotate() // Auto-rotate based on EXIF orientation
+          .resize(512, 512, { fit: 'cover' })
+          .png()
+          .toFile(faviconPngPath);
+
+        // Generate favicon.ico (32x32) using Sharp
+        await sharp(file.buffer)
+          .rotate() // Auto-rotate based on EXIF orientation
+          .resize(32, 32, { fit: 'cover' })
+          .toFormat('png')
+          .toFile(faviconIcoPath);
+
+        info('[Setup] Generated avatar.png and favicon files');
+
+        // Also copy to dist directory so it's immediately served
+        if (fs.existsSync(frontendDistDir)) {
+          fs.copyFileSync(faviconIcoPath, faviconIcoPathDist);
+          info('[Setup] Copied favicon.ico to dist directory');
+        }
       } catch (err) {
         error("Failed to process avatar image:", err);
         res.status(500).json({ error: "Failed to process avatar image" });
         return;
       }
 
-      // Update config.json with avatar path
+      // Update config.json with avatar and favicon paths
       const configPath = path.join(dataDir, "config.json");
       if (fs.existsSync(configPath)) {
         try {
           const configContent = fs.readFileSync(configPath, "utf8");
           const config = JSON.parse(configContent);
+          if (!config.branding) {
+            config.branding = {};
+          }
           config.branding.avatarPath = "/photos/avatar.png";
+          config.branding.faviconPath = "/favicon.ico";
           fs.writeFileSync(configPath, JSON.stringify(config, null, 2), "utf8");
+          info('[Setup] Updated config with avatar and favicon paths');
         } catch (err) {
           error("Failed to update config with avatar path:", err);
         }
