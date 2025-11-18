@@ -12,6 +12,7 @@ import RegenerationControls from '../components/RegenerationControls';
 import AuthSettings from '../components/AuthSettings';
 import SMTPSettings from '../components/SMTPSettings';
 import AnalyticsSettings from '../components/AnalyticsSettings';
+import CustomDropdown from '../components/CustomDropdown';
 import {
   updateConfig as updateConfigHelper,
   updateArrayItem as updateArrayItemHelper,
@@ -189,8 +190,67 @@ const AdvancedSettingsSection: React.FC<AdvancedSettingsSectionProps> = ({
           JSON.stringify(config.analytics) !==
           JSON.stringify(originalConfig.analytics)
         );
+      case "Logging":
+        return (
+          JSON.stringify(config.environment?.logging) !==
+          JSON.stringify(originalConfig.environment?.logging)
+        );
       default:
         return false;
+    }
+  };
+
+  // Auto-save log level changes with toast notification
+  const handleLogLevelChange = async (newLevel: string) => {
+    updateConfig(['environment', 'logging', 'level'], newLevel);
+    
+    // Auto-save immediately
+    try {
+      const response = await fetch(`${API_URL}/api/config`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          ...config,
+          environment: {
+            ...config!.environment,
+            logging: {
+              ...config!.environment.logging,
+              level: newLevel,
+            },
+          },
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to save log level');
+      }
+
+      // Update original config to match
+      if (setOriginalConfig && config) {
+        setOriginalConfig({
+          ...config,
+          environment: {
+            ...config.environment,
+            logging: {
+              ...config.environment.logging,
+              level: newLevel,
+            },
+          },
+        });
+      }
+
+      setMessage({ 
+        type: 'success', 
+        text: `Log level changed to ${newLevel}` 
+      });
+      trackConfigSettingsSaved('Logging');
+    } catch (err) {
+      error('[AdvancedSettings] Failed to save log level:', err);
+      setMessage({ 
+        type: 'error', 
+        text: 'Failed to save log level' 
+      });
     }
   };
 
@@ -320,30 +380,29 @@ const AdvancedSettingsSection: React.FC<AdvancedSettingsSectionProps> = ({
             marginBottom: '1rem'
           }}>
             <div>
-              <label className="branding-label">
+              <label className="branding-label" style={{ display: 'block', marginBottom: '0.5rem' }}>
                 Log Level
-                <select
-                  className="branding-input"
-                  value={config?.environment?.logging?.level || 'info'}
-                  onChange={(e) => updateConfig(['environment', 'logging', 'level'], e.target.value)}
-                  style={{ marginTop: '0.5rem' }}
-                >
-                  <option value="silent">Silent (No logging)</option>
-                  <option value="error">Error (Default - Critical errors only)</option>
-                  <option value="warn">Warning (Warnings and above)</option>
-                  <option value="info">Info (Important info)</option>
-                  <option value="debug">Debug (Detailed debugging)</option>
-                  <option value="verbose">Verbose (Business logic)</option>
-                  <option value="trace">Trace (Everything incl. CORS/CSRF)</option>
-                </select>
               </label>
+              <CustomDropdown
+                value={config?.environment?.logging?.level || 'error'}
+                options={[
+                  { value: 'silent', label: 'Silent (No logging)', emoji: '🔇' },
+                  { value: 'error', label: 'Error (Default - Critical errors only)', emoji: '❌' },
+                  { value: 'warn', label: 'Warning (Warnings and above)', emoji: '⚠️' },
+                  { value: 'info', label: 'Info (Important info)', emoji: 'ℹ️' },
+                  { value: 'debug', label: 'Debug (Detailed debugging)', emoji: '🐛' },
+                  { value: 'verbose', label: 'Verbose (Business logic)', emoji: '📝' },
+                  { value: 'trace', label: 'Trace (Everything incl. CORS/CSRF)', emoji: '🔍' },
+                ]}
+                onChange={handleLogLevelChange}
+              />
               <p style={{ 
                 fontSize: '0.85rem', 
                 color: '#888', 
                 marginTop: '0.5rem',
                 lineHeight: '1.4'
               }}>
-                Controls the verbosity of application logs. Changes take effect after saving and restarting.
+                Controls the verbosity of application logs. Changes save automatically and take effect immediately.
               </p>
             </div>
 
@@ -364,17 +423,6 @@ const AdvancedSettingsSection: React.FC<AdvancedSettingsSectionProps> = ({
               </button>
             </div>
           </div>
-
-          {hasUnsavedChanges("Logging") && (
-            <button
-              className="btn-primary"
-              onClick={() => handleSaveSection("Logging")}
-              disabled={savingSection === "Logging"}
-              style={{ marginTop: '1rem' }}
-            >
-              {savingSection === "Logging" ? "Saving..." : "Save Logging Settings"}
-            </button>
-          )}
         </div>
       </div>
     </div>

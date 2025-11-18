@@ -8,6 +8,7 @@ import { API_URL } from '../../../../config';
 import { BrandingConfig } from '../../types';
 import { trackBrandingUpdate, trackAvatarUpload } from '../../../../utils/analytics';
 import SectionHeader from '../components/SectionHeader';
+import CustomDropdown from '../components/CustomDropdown';
 import { LICENSE_OPTIONS, getLicenseById } from '../../../../utils/licenses';
 import '../../BrandingManager.css';
 import { error, info } from '../../../../utils/logger';
@@ -332,44 +333,66 @@ const BrandingSection: React.FC<BrandingSectionProps> = ({
           </div>
 
           <div className="branding-group">
-            <label className="branding-label">Photo License</label>
+            <label className="branding-label" style={{ display: 'block', marginBottom: '0.5rem' }}>
+              Photo License
+            </label>
             <p className="branding-description">
               Choose how others can use your photographs
             </p>
-            <select
+            <CustomDropdown
               value={branding.photoLicense || 'cc-by'}
-              onChange={(e) => handleBrandingChange("photoLicense", e.target.value)}
-              className="branding-input"
+              options={LICENSE_OPTIONS.map((license) => ({
+                value: license.id,
+                label: license.name,
+                emoji: license.id.startsWith('cc-') && license.id !== 'cc0' ? '🆓' : 
+                       license.id === 'cc0' ? '🌐' : '©️'
+              }))}
+              onChange={async (newValue) => {
+                handleBrandingChange("photoLicense", newValue);
+                
+                // Auto-save immediately
+                setSavingBrandingSection('Photo License');
+                try {
+                  const updatedBranding = {
+                    ...branding,
+                    photoLicense: newValue
+                  };
+                  
+                  const res = await fetch(`${API_URL}/api/branding`, {
+                    method: 'PUT',
+                    headers: {
+                      'Content-Type': 'application/json',
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify(updatedBranding),
+                  });
+
+                  if (res.ok) {
+                    setMessage({ type: 'success', text: 'Photo license updated!' });
+                    trackBrandingUpdate(['photoLicense']);
+                    setOriginalBranding(updatedBranding);
+                    await loadBranding();
+                  } else {
+                    const errorData = await res.json().catch(() => ({ error: 'Unknown error' }));
+                    setMessage({ type: 'error', text: errorData.error || 'Failed to save license' });
+                    // Revert on error
+                    setBranding(branding);
+                  }
+                } catch (err) {
+                  const errorMessage = err instanceof Error ? err.message : 'Error saving license';
+                  setMessage({ type: 'error', text: errorMessage });
+                  // Revert on error
+                  setBranding(branding);
+                } finally {
+                  setSavingBrandingSection(null);
+                }
+              }}
               disabled={savingBrandingSection === 'Photo License'}
-            >
-              {LICENSE_OPTIONS.map((license) => (
-                <option key={license.id} value={license.id}>
-                  {license.name}
-                </option>
-              ))}
-            </select>
+            />
             {branding.photoLicense && (
               <p className="branding-description" style={{ marginTop: '0.5rem', fontSize: '0.875rem', color: 'rgba(255, 255, 255, 0.7)' }}>
                 {getLicenseById(branding.photoLicense)?.description}
               </p>
-            )}
-            {hasBrandingChanges(['photoLicense']) && (
-              <div className="section-button-group">
-                <button 
-                  onClick={() => cancelBrandingSection(['photoLicense'])} 
-                  className="btn-secondary btn-small"
-                  disabled={savingBrandingSection === 'Photo License'}
-                >
-                  Cancel
-                </button>
-                <button 
-                  onClick={() => saveBrandingSection('Photo License', ['photoLicense'])} 
-                  className="btn-primary btn-small"
-                  disabled={savingBrandingSection === 'Photo License'}
-                >
-                  {savingBrandingSection === 'Photo License' ? 'Saving...' : 'Save'}
-                </button>
-              </div>
             )}
           </div>
 

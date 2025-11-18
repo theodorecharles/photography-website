@@ -6,6 +6,7 @@
 import { useState, useEffect } from 'react';
 import { API_URL, SITE_URL } from '../../config';
 import { trackShareLinkCreated } from '../../utils/analytics';
+import CustomDropdown from './ConfigManager/components/CustomDropdown';
 import './ShareModal.css';
 import { error as logError } from '../../utils/logger';
 
@@ -126,26 +127,26 @@ export default function ShareModal({ album, onClose }: ShareModalProps) {
           </p>
 
           <div className="expiration-selector">
-            <label htmlFor="expiration">Link expires in:</label>
-            <select
-              id="expiration"
-              value={isCustom ? -1 : (selectedExpiration === null ? 'null' : selectedExpiration)}
-              onChange={(e) => {
-                const value = e.target.value;
+            <label htmlFor="expiration" style={{ display: 'block', marginBottom: '0.5rem' }}>
+              Link expires in:
+            </label>
+            <CustomDropdown
+              value={isCustom ? '-1' : (selectedExpiration === null ? 'null' : String(selectedExpiration))}
+              options={EXPIRATION_OPTIONS.map((option) => ({
+                value: option.minutes === null ? 'null' : String(option.minutes),
+                label: option.label,
+                emoji: option.minutes === null ? '♾️' :
+                       option.minutes === -1 ? '⚙️' :
+                       option.minutes <= 60 ? '⏱️' :
+                       option.minutes <= 1440 ? '⏰' :
+                       option.minutes <= 10080 ? '📅' : '📆'
+              }))}
+              onChange={(value) => {
                 const newExpiration = value === 'null' ? null : parseInt(value);
                 handleExpirationChange(newExpiration);
               }}
               disabled={loading}
-            >
-              {EXPIRATION_OPTIONS.map((option) => (
-                <option
-                  key={option.label}
-                  value={option.minutes === null ? 'null' : option.minutes}
-                >
-                  {option.label}
-                </option>
-              ))}
-            </select>
+            />
           </div>
 
           {isCustom && (
