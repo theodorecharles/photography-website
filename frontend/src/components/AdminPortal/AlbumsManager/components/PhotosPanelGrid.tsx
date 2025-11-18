@@ -133,11 +133,7 @@ const PhotosPanelGrid: React.FC<PhotosPanelGridProps> = ({
     prevAlbumPhotosLengthRef.current = currentLength;
   }, [albumPhotos, deletingPhotoId]);
   
-  // Auto-scroll disabled - it was interfering with dnd-kit's collision detection
-  // Drag-and-drop works correctly without it, though you may need to manually
-  // scroll when reordering items across a long list
-  
-  // Configure dnd-kit sensors for photos with auto-scroll enabled
+  // Configure dnd-kit sensors for photos
   // Desktop: minimal delay for instant drag, mobile: longer delay to differentiate tap vs drag
   const photoSensors = useSensors(
     useSensor(PointerSensor, {
@@ -152,17 +148,6 @@ const PhotosPanelGrid: React.FC<PhotosPanelGridProps> = ({
       coordinateGetter: sortableKeyboardCoordinates,
     })
   );
-  
-  // Auto-scroll configuration for dnd-kit
-  const autoScrollOptions = {
-    layoutShiftCompensation: false,
-    acceleration: 30, // Speed multiplier
-    interval: 5, // Check every 5ms
-    threshold: {
-      x: 0.2, // Start scrolling when within 20% of edge
-      y: 0.2,
-    },
-  };
 
   if (loadingPhotos) {
     return (
@@ -189,13 +174,20 @@ const PhotosPanelGrid: React.FC<PhotosPanelGridProps> = ({
   ];
 
   return (
-    <div className="photos-modal-content">
+    <div className="photos-modal-content" id="photos-scroll-container">
       <DndContext
         sensors={photoSensors}
         collisionDetection={closestCenter}
         onDragStart={(event) => onPhotoDragStart(event, setActiveId)}
         onDragEnd={(event) => onPhotoDragEnd(event, setActiveId)}
-        autoScroll={autoScrollOptions}
+        autoScroll={{
+          enabled: true,
+          layoutShiftCompensation: false,
+          threshold: {
+            x: 0.2,
+            y: 0.2,
+          },
+        }}
       >
         {viewMode === 'grid' ? (
           <div ref={gridRef} className="photos-grid">

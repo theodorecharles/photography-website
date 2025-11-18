@@ -1110,6 +1110,15 @@
   user-select: none;
 }
 
+/* When dragging, disable touch scrolling to allow dnd-kit auto-scroll */
+.photos-modal-content:has(.admin-photo-item.dragging) .admin-photo-item {
+  touch-action: none;
+}
+
+.photos-modal-content:has(.list-item.dragging) .list-item {
+  touch-action: none;
+}
+
 /* Only show hover effects on desktop, not on touch devices - grid view only */
 @media (hover: hover) and (pointer: fine) {
   .photos-grid .admin-photo-item:hover {
