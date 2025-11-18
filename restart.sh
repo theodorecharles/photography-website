@@ -78,12 +78,18 @@ fi
 # Return to project root
 cd ..
 
-# Nuclear option: Kill PM2 daemon and all managed processes
-log "Stopping PM2 daemon and all processes..."
-pm2 kill 2>/dev/null || true
-log "PM2 daemon stopped"
+# Stop and delete all PM2 processes (don't kill daemon - safer for remote execution)
+log "Stopping and removing all PM2 processes..."
+if pm2 list 2>/dev/null | grep -q "online\|stopped\|errored"; then
+    log "Found existing PM2 processes, stopping them..."
+    pm2 stop all 2>/dev/null || true
+    pm2 delete all 2>/dev/null || true
+    log "All PM2 processes stopped and deleted"
+else
+    log "No existing PM2 processes found"
+fi
 
-# Wait for PM2 to fully shut down
+# Wait for processes to fully terminate
 sleep 2
 
 # Function to kill ALL processes on a specific port
@@ -196,10 +202,14 @@ if ! pm2 start ecosystem.config.cjs; then
     handle_error "Failed to start services"
 fi
 
-# Save PM2 process list to ensure it persists across reboots
+log "Services started successfully"
+
+# Save PM2 process list to ensure it persists across reboots and remote sessions
+log "Saving PM2 process list..."
 pm2 save --force 2>/dev/null || true
 
-log "Services started successfully"
+# Ensure PM2 daemon persists (startup hook for systemd/init)
+pm2 startup systemd -u ted --hp /home/ted 2>/dev/null || true
 
 # Poll for services to be online (max 10 seconds)
 log "Verifying services are online..."
