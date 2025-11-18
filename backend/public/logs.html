@@ -32,6 +32,14 @@
       line-height: 1.1;
     }
 
+    /* Bigger font on desktop */
+    @media (min-width: 512px) {
+      body {
+        font-size: 10pt;
+        line-height: 1.1;
+      }
+    }
+
     #logs {
       width: 100vw;
       height: 100vh;
@@ -45,6 +53,10 @@
       word-break: break-all;
     }
 
+    .log-line.hidden {
+      display: none;
+    }
+
     .log-empty {
       color: #999;
     }
@@ -53,17 +65,139 @@
       color: #f88;
       padding: 10px;
     }
+
+    /* Floating controls */
+    .controls {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      display: flex;
+      gap: 8px;
+      flex-direction: column;
+      align-items: flex-end;
+      z-index: 1000;
+    }
+
+    .control-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    button {
+      background: #222;
+      color: #0f0;
+      border: 1px solid #0f0;
+      padding: 6px 12px;
+      font-family: 'Modern DOS', 'Courier New', monospace;
+      font-size: 9pt;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    button:hover {
+      background: #0f0;
+      color: #000;
+    }
+
+    button.active {
+      background: #0f0;
+      color: #000;
+    }
+
+    input[type="text"] {
+      background: #111;
+      color: #0f0;
+      border: 1px solid #0f0;
+      padding: 6px 12px;
+      font-family: 'Modern DOS', 'Courier New', monospace;
+      font-size: 9pt;
+      width: 250px;
+      outline: none;
+    }
+
+    input[type="text"]:focus {
+      border-color: #0ff;
+      color: #0ff;
+    }
+
+    input[type="text"]::placeholder {
+      color: #555;
+    }
+
+    .highlight {
+      background-color: #ff0;
+      color: #000;
+      font-weight: bold;
+    }
+
+    .stats {
+      background: #111;
+      color: #0f0;
+      border: 1px solid #0f0;
+      padding: 4px 10px;
+      font-size: 8pt;
+    }
+
+    @media (max-width: 768px) {
+      .controls {
+        top: 5px;
+        right: 5px;
+        gap: 6px;
+      }
+
+      button {
+        padding: 5px 10px;
+        font-size: 8pt;
+      }
+
+      input[type="text"] {
+        width: 180px;
+        padding: 5px 10px;
+        font-size: 8pt;
+      }
+
+      .stats {
+        font-size: 7pt;
+        padding: 3px 8px;
+      }
+    }
   </style>
 </head>
 <body>
+  <!-- Floating controls -->
+  <div class="controls">
+    <div class="control-row">
+      <div class="stats" id="stats">Lines: 0 | Visible: 0</div>
+    </div>
+    <div class="control-row">
+      <input type="text" id="filterInput" placeholder="Filter logs..." style="display: none;">
+      <button id="filterBtn">Filter</button>
+    </div>
+    <div class="control-row">
+      <input type="text" id="searchInput" placeholder="Highlight text..." style="display: none;">
+      <button id="searchBtn">Search</button>
+    </div>
+  </div>
+
   <div id="logs">
     <div class="log-empty">Connecting to log stream...</div>
   </div>
 
   <script>
     const logsContainer = document.getElementById('logs');
+    const filterBtn = document.getElementById('filterBtn');
+    const searchBtn = document.getElementById('searchBtn');
+    const filterInput = document.getElementById('filterInput');
+    const searchInput = document.getElementById('searchInput');
+    const statsDiv = document.getElementById('stats');
+    
     let userScrolledUp = false;
     let eventSource = null;
+    let filterActive = false;
+    let searchActive = false;
+    let filterText = '';
+    let searchText = '';
 
     function isAtBottom() {
       const threshold = 100;
@@ -79,6 +213,141 @@
     logsContainer.addEventListener('scroll', () => {
       userScrolledUp = !isAtBottom();
     });
+
+    // Toggle filter
+    filterBtn.addEventListener('click', () => {
+      filterActive = !filterActive;
+      filterBtn.classList.toggle('active', filterActive);
+      filterInput.style.display = filterActive ? 'block' : 'none';
+      
+      if (filterActive) {
+        filterInput.focus();
+      } else {
+        filterText = '';
+        filterInput.value = '';
+        applyFilterAndSearch();
+      }
+    });
+
+    // Toggle search
+    searchBtn.addEventListener('click', () => {
+      searchActive = !searchActive;
+      searchBtn.classList.toggle('active', searchActive);
+      searchInput.style.display = searchActive ? 'block' : 'none';
+      
+      if (searchActive) {
+        searchInput.focus();
+      } else {
+        searchText = '';
+        searchInput.value = '';
+        applyFilterAndSearch();
+      }
+    });
+
+    // Handle filter input
+    filterInput.addEventListener('input', (e) => {
+      filterText = e.target.value.toLowerCase();
+      applyFilterAndSearch();
+    });
+
+    // Handle search input
+    searchInput.addEventListener('input', (e) => {
+      searchText = e.target.value;
+      applyFilterAndSearch();
+    });
+
+    // Escape key to clear both
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        if (filterActive) {
+          filterBtn.click();
+        }
+        if (searchActive) {
+          searchBtn.click();
+        }
+      }
+    });
+
+    function escapeRegex(str) {
+      return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
+
+    /**
+     * Process log line to convert timestamps to local time
+     * Format: [BE] 2025-11-18 17:59:24 -05:00: [VERBOSE] ...
+     * Converts to: [BE] 17:59:24: [VERBOSE] ...
+     */
+    function processLogLine(line) {
+      // Regex to match timestamp format: YYYY-MM-DD HH:MM:SS ±HH:MM
+      const timestampRegex = /(\d{4}-\d{2}-\d{2}\s+)(\d{2}:\d{2}:\d{2})(\s+[+-]\d{2}:\d{2})/g;
+      
+      return line.replace(timestampRegex, (match, date, time, timezone) => {
+        try {
+          // Reconstruct full ISO timestamp for parsing
+          const isoTimestamp = `${date.trim()}T${time}${timezone.replace(' ', '')}`;
+          const dateObj = new Date(isoTimestamp);
+          
+          // Check if date is valid
+          if (isNaN(dateObj.getTime())) {
+            return match; // Return original if parsing fails
+          }
+          
+          // Format as local time (HH:MM:SS)
+          const localTime = dateObj.toLocaleTimeString('en-US', {
+            hour12: false,
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit'
+          });
+          
+          return localTime;
+        } catch (err) {
+          console.error('Failed to parse timestamp:', match, err);
+          return match; // Return original if parsing fails
+        }
+      });
+    }
+
+    function applyFilterAndSearch() {
+      const logLines = logsContainer.querySelectorAll('.log-line');
+      let visibleCount = 0;
+      
+      logLines.forEach(line => {
+        const originalText = line.getAttribute('data-original-text') || line.textContent;
+        
+        // Store original text if not already stored
+        if (!line.hasAttribute('data-original-text')) {
+          line.setAttribute('data-original-text', originalText);
+        }
+
+        // Apply filter (hide lines that don't match)
+        let shouldShow = true;
+        if (filterText) {
+          shouldShow = originalText.toLowerCase().includes(filterText);
+        }
+
+        if (shouldShow) {
+          line.classList.remove('hidden');
+          visibleCount++;
+
+          // Apply search highlighting
+          if (searchText) {
+            const escapedSearch = escapeRegex(searchText);
+            const regex = new RegExp(`(${escapedSearch})`, 'gi');
+            const highlightedText = originalText.replace(regex, '<span class="highlight">$1</span>');
+            line.innerHTML = highlightedText;
+          } else {
+            line.textContent = originalText;
+          }
+        } else {
+          line.classList.add('hidden');
+        }
+      });
+
+      // Update stats
+      const totalLines = logLines.length;
+      statsDiv.textContent = `Lines: ${totalLines} | Visible: ${visibleCount}`;
+    }
 
     function connectToStream() {
       if (eventSource) {
@@ -102,13 +371,17 @@
             logsContainer.innerHTML = '';
             if (data.logs && data.logs.length > 0) {
               data.logs.forEach(line => {
+                const processedLine = processLogLine(line);
                 const div = document.createElement('div');
                 div.className = 'log-line';
-                div.textContent = line;
+                div.setAttribute('data-original-text', processedLine);
+                div.textContent = processedLine;
                 logsContainer.appendChild(div);
               });
+              applyFilterAndSearch();
             } else {
               logsContainer.innerHTML = '<div class="log-empty">No logs yet...</div>';
+              statsDiv.textContent = 'Lines: 0 | Visible: 0';
             }
             scrollToBottom();
           } else if (data.type === 'log') {
@@ -118,10 +391,15 @@
               logsContainer.removeChild(emptyMsg);
             }
             
+            const processedLine = processLogLine(data.line);
             const div = document.createElement('div');
             div.className = 'log-line';
-            div.textContent = data.line;
+            div.setAttribute('data-original-text', processedLine);
+            div.textContent = processedLine;
             logsContainer.appendChild(div);
+            
+            // Apply filter and search to the new line
+            applyFilterAndSearch();
             scrollToBottom();
           }
         } catch (err) {
