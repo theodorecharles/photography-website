@@ -32,6 +32,7 @@ import config, {
 } from "./config.ts";
 import { validateProductionSecurity } from "./security.ts";
 import { initializeDatabase } from "./database.ts";
+import { initPromise as i18nInitPromise } from './i18n.js';
 import {
   initLogger,
   info,
@@ -582,17 +583,19 @@ app.use((err: any, req: any, res: any, next: any) => {
   });
 });
 
-// Start the server
+// Start the server after i18n initialization
 // For localhost, bind to 127.0.0.1 to avoid macOS permission issues
 // For remote dev/production, bind to 0.0.0.0 to accept external connections
 // Allow HOST environment variable to override
 const isLocalhost = config.frontend.apiUrl.includes("localhost");
 const bindHost = process.env.HOST || (isLocalhost ? "127.0.0.1" : "0.0.0.0");
 
-const server = app.listen(PORT, bindHost, () => {
-  info(`Server is running on ${bindHost}:${PORT}`);
-  info(`API URL: ${config.frontend.apiUrl}`);
-  debug(`Photos directory: ${photosDir}`);
+// Wait for i18n to initialize before starting server
+i18nInitPromise.then(() => {
+  const server = app.listen(PORT, bindHost, () => {
+    info(`Server is running on ${bindHost}:${PORT}`);
+    info(`API URL: ${config.frontend.apiUrl}`);
+    debug(`Photos directory: ${photosDir}`);
 
   // Signal PM2 that app is ready (for zero-downtime reloads)
   if (process.send) {
@@ -617,26 +620,30 @@ const server = app.listen(PORT, bindHost, () => {
         error("[Startup] ✗ Failed to generate static JSON:", error);
       });
   }
-});
+  });
 
-// Set server timeout to 10 minutes for long-running SSE connections
-// (image optimization can take a while for large images)
-server.timeout = 600000; // 10 minutes
-server.keepAliveTimeout = 610000; // Slightly longer than timeout
-server.headersTimeout = 620000; // Slightly longer than keepAliveTimeout
+  // Set server timeout to 10 minutes for long-running SSE connections
+  // (image optimization can take a while for large images)
+  server.timeout = 600000; // 10 minutes
+  server.keepAliveTimeout = 610000; // Slightly longer than timeout
+  server.headersTimeout = 620000; // Slightly longer than keepAliveTimeout
 
-// Handle server errors
-server.on("error", (err: NodeJS.ErrnoException) => {
-  if (err.code === "EADDRINUSE") {
-    error(
-      `Port ${PORT} is already in use. Please free the port or use a different one.`
-    );
-  } else if (err.code === "EACCES") {
-    error(
-      `Permission denied to bind to port ${PORT}. Try using a port above 1024.`
-    );
-  } else {
-    error("[Server] Server error:", err);
-  }
+  // Handle server errors
+  server.on("error", (err: NodeJS.ErrnoException) => {
+    if (err.code === "EADDRINUSE") {
+      error(
+        `Port ${PORT} is already in use. Please free the port or use a different one.`
+      );
+    } else if (err.code === "EACCES") {
+      error(
+        `Permission denied to bind to port ${PORT}. Try using a port above 1024.`
+      );
+    } else {
+      error("[Server] Server error:", err);
+    }
+    process.exit(1);
+  });
+}).catch((err) => {
+  error('[Server] Failed to initialize i18n:', err);
   process.exit(1);
 });
