@@ -1040,5 +1040,18 @@
       "footerTimestamp": "이것은 {{timestamp}}에 전송된 테스트 메시지입니다.",
       "footerIgnore": "이 이메일은 안전하게 무시하거나 삭제해도 됩니다."
     }
+  },
+  "testEmailModal": {
+    "title": "테스트 이메일 보내기  ",
+    "description": "테스트 메시지를 보내고 SMTP 구성이 올바르게 작동하는지 확인하려면 이메일 주소를 입력하세요.  ",
+    "emailLabel": "이메일 주소  ",
+    "emailPlaceholder": "your@email.com  ",
+    "close": "닫기  ",
+    "sendButton": "테스트 이메일 보내기  ",
+    "sending": "전송 중...  ",
+    "invalidEmail": "유효한 이메일 주소를 입력하세요  ",
+    "successMessage": "테스트 이메일이 성공적으로 전송되었습니다! 받은 편지함을 확인하세요.  ",
+    "errorMessage": "테스트 이메일 전송에 실패했습니다.",
+    "errorMessageDetail": "테스트 이메일 전송에 실패했습니다. 설정을 확인해 주세요."
   }
 }

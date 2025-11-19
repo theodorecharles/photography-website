@@ -1040,5 +1040,18 @@
       "footerTimestamp": "Esta é uma mensagem de teste enviada em {{timestamp}}.",
       "footerIgnore": "Você pode ignorar ou excluir este e-mail com segurança."
     }
+  },
+  "testEmailModal": {
+    "title": "Enviar Email de Teste  ",
+    "description": "Digite um endereço de email para enviar uma mensagem de teste e verificar se sua configuração SMTP está funcionando corretamente.  ",
+    "emailLabel": "Endereço de Email  ",
+    "emailPlaceholder": "seu@email.com  ",
+    "close": "Fechar  ",
+    "sendButton": "Enviar Email de Teste  ",
+    "sending": "Enviando...  ",
+    "invalidEmail": "Por favor, insira um endereço de email válido  ",
+    "successMessage": "Email de teste enviado com sucesso! Verifique sua caixa de entrada.  ",
+    "errorMessage": "Falha ao enviar email de teste",
+    "errorMessageDetail": "Falha ao enviar o e-mail de teste. Verifique sua configuração."
   }
 }

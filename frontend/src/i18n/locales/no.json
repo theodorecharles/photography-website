@@ -1040,5 +1040,18 @@
       "footerTimestamp": "Dette er en testmelding sendt kl {{timestamp}}.",
       "footerIgnore": "Du kan trygt ignorere eller slette denne e-posten."
     }
+  },
+  "testEmailModal": {
+    "title": "Send test-e-post  ",
+    "description": "Skriv inn en e-postadresse for å sende en testmelding og bekrefte at SMTP-konfigurasjonen din fungerer som den skal.  ",
+    "emailLabel": "E-postadresse  ",
+    "emailPlaceholder": "your@email.com  ",
+    "close": "Lukk  ",
+    "sendButton": "Send test-e-post  ",
+    "sending": "Sender...  ",
+    "invalidEmail": "Vennligst skriv inn en gyldig e-postadresse  ",
+    "successMessage": "Test-e-posten ble sendt! Sjekk innboksen din.  ",
+    "errorMessage": "Kunne ikke sende test-e-posten",
+    "errorMessageDetail": "Sending av test-e-post mislyktes. Vennligst sjekk konfigurasjonen din."
   }
 }

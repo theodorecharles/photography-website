@@ -243,7 +243,9 @@ router.post('/invite', requireAdmin, async (req: Request, res: Response) => {
     
     if (emailEnabled) {
       // Get user's language from Accept-Language header (e.g., 'en', 'ja', 'es')
-      const userLanguage = req.headers['accept-language']?.split(',')[0]?.split('-')[0] || 'en';
+      const acceptLanguage = req.headers['accept-language'];
+      const userLanguage = acceptLanguage?.split(',')[0]?.split('-')[0] || 'en';
+      info(`[Invite] Accept-Language: ${acceptLanguage}, Using language: ${userLanguage}`);
       
       // Try to send invitation email FIRST
       emailSent = await sendInvitationEmail(email, inviteToken, inviterName, userLanguage);

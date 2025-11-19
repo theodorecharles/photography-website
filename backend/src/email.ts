@@ -116,7 +116,12 @@ export async function sendInvitationEmail(
   const avatarUrl = `${frontendUrl}${avatarPath}`;
 
   // Get translations for the specified language
+  info(`[Email] Sending invitation email in language: ${language}`);
   const t = i18next.getFixedT(language);
+  
+  // Test translation
+  const testSubject = t('email.invitation.subject', { siteName });
+  info(`[Email] Test translation - Subject: ${testSubject}`);
 
   const mailOptions = {
     from: `"${emailConfig.from.name}" <${emailConfig.from.address}>`,
@@ -421,7 +426,14 @@ export async function sendTestEmail(toEmail: string, language: string = 'en'): P
   const siteName = config.branding?.siteName || "Galleria";
 
   // Get translations for the specified language
+  info(`[Email] Test email language: ${language}`);
+  info(`[Email] Available languages: ${i18next.languages.join(', ')}`);
   const t = i18next.getFixedT(language);
+  
+  // Test translation
+  const testSubject = t('email.test.subject', { siteName });
+  info(`[Email] Test translation - Subject: ${testSubject}`);
+  
   const timestamp = new Date().toLocaleString();
 
   const mailOptions = {

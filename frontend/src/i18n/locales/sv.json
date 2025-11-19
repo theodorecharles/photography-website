@@ -1040,5 +1040,18 @@
       "footerTimestamp": "Detta är ett testmeddelande skickat vid {{timestamp}}.",
       "footerIgnore": "Du kan säkert ignorera eller radera detta e-postmeddelande."
     }
+  },
+  "testEmailModal": {
+    "title": "Skicka test-e-post  ",
+    "description": "Ange en e-postadress för att skicka ett testmeddelande och verifiera att din SMTP-konfiguration fungerar korrekt.  ",
+    "emailLabel": "E-postadress  ",
+    "emailPlaceholder": "din@email.com  ",
+    "close": "Stäng  ",
+    "sendButton": "Skicka test-e-post  ",
+    "sending": "Skickar...  ",
+    "invalidEmail": "Vänligen ange en giltig e-postadress  ",
+    "successMessage": "Test-e-post skickad framgångsrikt! Kontrollera din inkorg.  ",
+    "errorMessage": "Misslyckades med att skicka test-e-post",
+    "errorMessageDetail": "Misslyckades med att skicka test-e-post. Kontrollera din konfiguration."
   }
 }

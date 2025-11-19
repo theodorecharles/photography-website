@@ -1040,5 +1040,18 @@
       "footerTimestamp": "Questo è un messaggio di prova inviato il {{timestamp}}.",
       "footerIgnore": "Puoi ignorare o eliminare questa email in tutta sicurezza."
     }
+  },
+  "testEmailModal": {
+    "title": "Invia Email di Prova  ",
+    "description": "Inserisci un indirizzo email per inviare un messaggio di prova e verificare che la tua configurazione SMTP funzioni correttamente.  ",
+    "emailLabel": "Indirizzo Email  ",
+    "emailPlaceholder": "tuo@email.com  ",
+    "close": "Chiudi  ",
+    "sendButton": "Invia Email di Prova  ",
+    "sending": "Invio in corso...  ",
+    "invalidEmail": "Si prega di inserire un indirizzo email valido  ",
+    "successMessage": "Email di prova inviata con successo! Controlla la tua casella di posta.  ",
+    "errorMessage": "Invio dell'email di prova non riuscito",
+    "errorMessageDetail": "Invio dell'email di prova non riuscito. Controlla la tua configurazione."
   }
 }

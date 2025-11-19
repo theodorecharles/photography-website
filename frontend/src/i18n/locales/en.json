@@ -820,6 +820,19 @@
     "settingsDescription": "Manage branding, links, and system configuration",
     "failedToLoadConfig": "Failed to load configuration"
   },
+  "testEmailModal": {
+    "title": "Send Test Email",
+    "description": "Enter an email address to send a test message and verify your SMTP configuration is working correctly.",
+    "emailLabel": "Email Address",
+    "emailPlaceholder": "your@email.com",
+    "close": "Close",
+    "sendButton": "Send Test Email",
+    "sending": "Sending...",
+    "invalidEmail": "Please enter a valid email address",
+    "successMessage": "Test email sent successfully! Check your inbox.",
+    "errorMessage": "Failed to send test email",
+    "errorMessageDetail": "Failed to send test email. Please check your configuration."
+  },
   "email": {
     "invitation": {
       "subject": "You've been invited to {{siteName}}",

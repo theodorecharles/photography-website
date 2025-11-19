@@ -1040,5 +1040,18 @@
       "footerTimestamp": "Acesta este un mesaj de test trimis la {{timestamp}}.",
       "footerIgnore": "Puteți ignora sau șterge în siguranță acest email."
     }
+  },
+  "testEmailModal": {
+    "title": "Trimite email de test  ",
+    "description": "Introduceți o adresă de email pentru a trimite un mesaj de test și verificați dacă configurația dvs. SMTP funcționează corect.  ",
+    "emailLabel": "Adresă de email  ",
+    "emailPlaceholder": "your@email.com  ",
+    "close": "Închide  ",
+    "sendButton": "Trimite email de test  ",
+    "sending": "Se trimite...  ",
+    "invalidEmail": "Vă rugăm să introduceți o adresă de email validă  ",
+    "successMessage": "Emailul de test a fost trimis cu succes! Verificați-vă inboxul.  ",
+    "errorMessage": "A eșuat trimiterea emailului de test",
+    "errorMessageDetail": "Trimiterea emailului de test a eșuat. Vă rugăm să verificați configurația dvs."
   }
 }

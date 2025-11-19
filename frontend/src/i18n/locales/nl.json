@@ -1040,5 +1040,18 @@
       "footerTimestamp": "Dit is een testbericht verzonden op {{timestamp}}.",
       "footerIgnore": "Je kunt deze e-mail veilig negeren of verwijderen."
     }
+  },
+  "testEmailModal": {
+    "title": "Verstuur test-e-mail  ",
+    "description": "Voer een e-mailadres in om een testbericht te verzenden en te verifiëren of uw SMTP-configuratie correct werkt.  ",
+    "emailLabel": "E-mailadres  ",
+    "emailPlaceholder": "your@email.com  ",
+    "close": "Sluiten  ",
+    "sendButton": "Verstuur test-e-mail  ",
+    "sending": "Verzenden...  ",
+    "invalidEmail": "Voer een geldig e-mailadres in  ",
+    "successMessage": "Test-e-mail succesvol verzonden! Controleer uw inbox.  ",
+    "errorMessage": "Verzenden van test-e-mail mislukt",
+    "errorMessageDetail": "Het verzenden van de test-e-mail is mislukt. Controleer uw configuratie."
   }
 }

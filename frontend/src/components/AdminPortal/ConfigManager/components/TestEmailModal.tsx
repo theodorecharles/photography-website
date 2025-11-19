@@ -4,6 +4,7 @@
  */
 
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { API_URL } from '../../../../config';
 
 
@@ -12,13 +13,14 @@ interface TestEmailModalProps {
 }
 
 export const TestEmailModal: React.FC<TestEmailModalProps> = ({ onClose }) => {
+  const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
   const handleSendTest = async () => {
     if (!email || !email.includes('@')) {
-      setResult({ type: 'error', message: 'Please enter a valid email address' });
+      setResult({ type: 'error', message: t('testEmailModal.invalidEmail') });
       return;
     }
 
@@ -38,18 +40,18 @@ export const TestEmailModal: React.FC<TestEmailModalProps> = ({ onClose }) => {
       if (res.ok) {
         setResult({
           type: 'success',
-          message: data.message || 'Test email sent successfully! Check your inbox.',
+          message: data.message || t('testEmailModal.successMessage'),
         });
       } else {
         setResult({
           type: 'error',
-          message: data.error || 'Failed to send test email',
+          message: data.error || t('testEmailModal.errorMessage'),
         });
       }
     } catch (error) {
       setResult({
         type: 'error',
-        message: 'Failed to send test email. Please check your configuration.',
+        message: t('testEmailModal.errorMessageDetail'),
       });
     } finally {
       setLoading(false);
@@ -64,23 +66,23 @@ export const TestEmailModal: React.FC<TestEmailModalProps> = ({ onClose }) => {
         style={{ maxWidth: '500px' }}
       >
         <div className="share-modal-header">
-          <h2>Send Test Email</h2>
-          <button className="close-button" onClick={onClose} aria-label="Close">
+          <h2>{t('testEmailModal.title')}</h2>
+          <button className="close-button" onClick={onClose} aria-label={t('common.close')}>
             ×
           </button>
         </div>
         <div className="share-modal-content">
           <p style={{ marginBottom: '1.5rem', color: '#d1d5db', fontSize: '0.95rem' }}>
-            Enter an email address to send a test message and verify your SMTP configuration is working correctly.
+            {t('testEmailModal.description')}
           </p>
 
           <div style={{ marginBottom: '1.5rem' }}>
-            <label className="branding-label">Email Address</label>
+            <label className="branding-label">{t('testEmailModal.emailLabel')}</label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="your@email.com"
+              placeholder={t('testEmailModal.emailPlaceholder')}
               className="branding-input"
               style={{ width: '100%' }}
               disabled={loading}
@@ -113,14 +115,14 @@ export const TestEmailModal: React.FC<TestEmailModalProps> = ({ onClose }) => {
 
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
             <button onClick={onClose} className="btn-secondary" disabled={loading}>
-              Close
+              {t('testEmailModal.close')}
             </button>
             <button 
               onClick={handleSendTest} 
               className="btn-primary" 
               disabled={loading || !email}
             >
-              {loading ? 'Sending...' : 'Send Test Email'}
+              {loading ? t('testEmailModal.sending') : t('testEmailModal.sendButton')}
             </button>
           </div>
         </div>

@@ -1040,5 +1040,18 @@
       "footerTimestamp": "这是在 {{timestamp}} 发送的测试消息。",
       "footerIgnore": "您可以安全地忽略或删除此电子邮件。"
     }
+  },
+  "testEmailModal": {
+    "title": "发送测试邮件  ",
+    "description": "输入电子邮件地址以发送测试消息并验证您的SMTP配置是否正常工作。  ",
+    "emailLabel": "电子邮件地址  ",
+    "emailPlaceholder": "your@email.com  ",
+    "close": "关闭  ",
+    "sendButton": "发送测试邮件  ",
+    "sending": "发送中...  ",
+    "invalidEmail": "请输入有效的电子邮件地址  ",
+    "successMessage": "测试邮件发送成功！请检查您的收件箱。  ",
+    "errorMessage": "发送测试邮件失败",
+    "errorMessageDetail": "发送测试邮件失败。请检查您的配置。"
   }
 }

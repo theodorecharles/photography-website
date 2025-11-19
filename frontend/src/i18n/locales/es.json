@@ -1040,5 +1040,18 @@
       "footerTimestamp": "Este es un mensaje de prueba enviado en {{timestamp}}.",
       "footerIgnore": "Puedes ignorar o eliminar este correo electrónico de forma segura."
     }
+  },
+  "testEmailModal": {
+    "title": "Enviar correo electrónico de prueba  ",
+    "description": "Introduce una dirección de correo electrónico para enviar un mensaje de prueba y verificar que tu configuración SMTP está funcionando correctamente.  ",
+    "emailLabel": "Dirección de correo electrónico  ",
+    "emailPlaceholder": "tu@correo.com  ",
+    "close": "Cerrar  ",
+    "sendButton": "Enviar correo electrónico de prueba  ",
+    "sending": "Enviando...  ",
+    "invalidEmail": "Por favor, introduce una dirección de correo electrónico válida  ",
+    "successMessage": "¡Correo electrónico de prueba enviado con éxito! Revisa tu bandeja de entrada.  ",
+    "errorMessage": "Error al enviar el correo electrónico de prueba",
+    "errorMessageDetail": "Error al enviar el correo electrónico de prueba. Por favor, verifica tu configuración."
   }
 }

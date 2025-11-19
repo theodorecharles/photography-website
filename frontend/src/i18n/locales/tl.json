@@ -1040,5 +1040,18 @@
       "footerTimestamp": "Ito ay isang test na mensahe na ipinadala sa {{timestamp}}.",
       "footerIgnore": "Maaari mong ligtas na balewalain o tanggalin ang email na ito."
     }
+  },
+  "testEmailModal": {
+    "title": "Magpadala ng Test Email  ",
+    "description": "Maglagay ng email address upang magpadala ng test na mensahe at tiyakin na gumagana nang tama ang iyong SMTP configuration.  ",
+    "emailLabel": "Email Address  ",
+    "emailPlaceholder": "your@email.com  ",
+    "close": "Isara  ",
+    "sendButton": "Magpadala ng Test Email  ",
+    "sending": "Nagpapadala...  ",
+    "invalidEmail": "Pakisuyong maglagay ng wastong email address  ",
+    "successMessage": "Matagumpay na naipadala ang test email! Suriin ang iyong inbox.  ",
+    "errorMessage": "Nabigong magpadala ng test email",
+    "errorMessageDetail": "Nabigong magpadala ng test email. Pakisuri ang iyong configuration."
   }
 }

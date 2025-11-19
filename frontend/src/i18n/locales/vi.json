@@ -1040,5 +1040,18 @@
       "footerTimestamp": "Đây là một tin nhắn thử nghiệm được gửi vào {{timestamp}}.",
       "footerIgnore": "Bạn có thể an toàn bỏ qua hoặc xóa email này."
     }
+  },
+  "testEmailModal": {
+    "title": "Gửi Email Kiểm Tra  ",
+    "description": "Nhập địa chỉ email để gửi tin nhắn kiểm tra và xác minh cấu hình SMTP của bạn hoạt động chính xác.  ",
+    "emailLabel": "Địa chỉ Email  ",
+    "emailPlaceholder": "your@email.com  ",
+    "close": "Đóng  ",
+    "sendButton": "Gửi Email Kiểm Tra  ",
+    "sending": "Đang gửi...  ",
+    "invalidEmail": "Vui lòng nhập một địa chỉ email hợp lệ  ",
+    "successMessage": "Email kiểm tra đã được gửi thành công! Kiểm tra hộp thư đến của bạn.  ",
+    "errorMessage": "Gửi email kiểm tra không thành công",
+    "errorMessageDetail": "Gửi email thử nghiệm không thành công. Vui lòng kiểm tra cấu hình của bạn."
   }
 }

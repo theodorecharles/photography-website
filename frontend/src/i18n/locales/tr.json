@@ -1040,5 +1040,18 @@
       "footerTimestamp": "Bu, {{timestamp}}'de gönderilen bir test mesajıdır.",
       "footerIgnore": "Bu e-postayı güvenle göz ardı edebilir veya silebilirsiniz."
     }
+  },
+  "testEmailModal": {
+    "title": "Test E-postası Gönder  ",
+    "description": "Bir test mesajı göndermek ve SMTP yapılandırmanızın doğru çalıştığını doğrulamak için bir e-posta adresi girin.  ",
+    "emailLabel": "E-posta Adresi  ",
+    "emailPlaceholder": "your@email.com  ",
+    "close": "Kapat  ",
+    "sendButton": "Test E-postası Gönder  ",
+    "sending": "Gönderiliyor...  ",
+    "invalidEmail": "Lütfen geçerli bir e-posta adresi girin  ",
+    "successMessage": "Test e-postası başarıyla gönderildi! Gelen kutunuzu kontrol edin.  ",
+    "errorMessage": "Test e-postası gönderilemedi",
+    "errorMessageDetail": "Test e-postası gönderilemedi. Lütfen yapılandırmanızı kontrol edin."
   }
 }

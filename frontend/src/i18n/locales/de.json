@@ -1040,5 +1040,18 @@
       "footerTimestamp": "Dies ist eine Testnachricht, die am {{timestamp}} gesendet wurde.",
       "footerIgnore": "Sie können diese E-Mail sicher ignorieren oder löschen."
     }
+  },
+  "testEmailModal": {
+    "title": "Test-E-Mail senden  ",
+    "description": "Geben Sie eine E-Mail-Adresse ein, um eine Testnachricht zu senden und zu überprüfen, ob Ihre SMTP-Konfiguration korrekt funktioniert.  ",
+    "emailLabel": "E-Mail-Adresse  ",
+    "emailPlaceholder": "your@email.com  ",
+    "close": "Schließen  ",
+    "sendButton": "Test-E-Mail senden  ",
+    "sending": "Wird gesendet...  ",
+    "invalidEmail": "Bitte geben Sie eine gültige E-Mail-Adresse ein  ",
+    "successMessage": "Test-E-Mail erfolgreich gesendet! Überprüfen Sie Ihren Posteingang.  ",
+    "errorMessage": "Fehler beim Senden der Test-E-Mail",
+    "errorMessageDetail": "Fehler beim Senden der Test-E-Mail. Bitte überprüfen Sie Ihre Konfiguration."
   }
 }

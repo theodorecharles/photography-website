@@ -1040,5 +1040,18 @@
       "footerTimestamp": "これは{{timestamp}}に送信されたテストメッセージです。",
       "footerIgnore": "このメールは安全に無視するか削除できます。"
     }
+  },
+  "testEmailModal": {
+    "title": "テストメールを送信  ",
+    "description": "テストメッセージを送信し、SMTP設定が正しく機能していることを確認するためにメールアドレスを入力してください。  ",
+    "emailLabel": "メールアドレス  ",
+    "emailPlaceholder": "your@email.com  ",
+    "close": "閉じる  ",
+    "sendButton": "テストメールを送信  ",
+    "sending": "送信中...  ",
+    "invalidEmail": "有効なメールアドレスを入力してください  ",
+    "successMessage": "テストメールが正常に送信されました！受信トレイを確認してください。  ",
+    "errorMessage": "テストメールの送信に失敗しました",
+    "errorMessageDetail": "テストメールの送信に失敗しました。設定を確認してください。"
   }
 }

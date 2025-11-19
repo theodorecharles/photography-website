@@ -1040,5 +1040,18 @@
       "footerTimestamp": "Ini adalah pesan uji yang dikirim pada {{timestamp}}.",
       "footerIgnore": "Anda dapat dengan aman mengabaikan atau menghapus email ini."
     }
+  },
+  "testEmailModal": {
+    "title": "Kirim Email Uji  ",
+    "description": "Masukkan alamat email untuk mengirim pesan uji dan verifikasi konfigurasi SMTP Anda berfungsi dengan baik.  ",
+    "emailLabel": "Alamat Email  ",
+    "emailPlaceholder": "your@email.com  ",
+    "close": "Tutup  ",
+    "sendButton": "Kirim Email Uji  ",
+    "sending": "Mengirim...  ",
+    "invalidEmail": "Silakan masukkan alamat email yang valid  ",
+    "successMessage": "Email uji berhasil dikirim! Periksa kotak masuk Anda.  ",
+    "errorMessage": "Gagal mengirim email uji",
+    "errorMessageDetail": "Gagal mengirim email uji. Silakan periksa konfigurasi Anda."
   }
 }
