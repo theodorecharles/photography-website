@@ -1104,10 +1104,15 @@
   border: 1px solid rgba(95, 95, 95, 0.42);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-  /* Allow vertical pan (scrolling) but prevent other gestures */
+  /* Allow vertical pan (scrolling) by default (for viewers) */
   touch-action: pan-y;
   -webkit-user-select: none;
   user-select: none;
+}
+
+/* When editable, disable touch gestures upfront to allow drag-and-drop */
+.admin-photo-item.editable {
+  touch-action: none;
 }
 
 /* When dragging, disable touch scrolling to allow dnd-kit auto-scroll */

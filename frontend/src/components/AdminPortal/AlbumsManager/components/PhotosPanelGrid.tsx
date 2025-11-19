@@ -150,6 +150,9 @@ const PhotosPanelGrid: React.FC<PhotosPanelGridProps> = ({
       } : {
         distance: 5, // Desktop: require 5px movement to start drag
       },
+      onActivation: (event) => {
+        console.log('[PointerSensor] Drag activation triggered!', event);
+      },
     }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,

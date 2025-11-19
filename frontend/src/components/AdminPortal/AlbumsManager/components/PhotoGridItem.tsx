@@ -88,22 +88,32 @@ const PhotoGridItem: React.FC<PhotoGridItemProps> = ({
       setShowOverlay(false);
     }
   }, [activeOverlayId, itemId, showOverlay]);
+  
+  // Debug: Log computed touch-action value
+  useEffect(() => {
+    const element = document.querySelector(`[data-photo-id="${itemId}"]`) as HTMLElement;
+    if (element) {
+      const computedStyle = window.getComputedStyle(element);
+      const touchAction = computedStyle.touchAction;
+      console.log('[PhotoGridItem] Computed touch-action for', itemId, ':', touchAction, 
+        'canEdit:', canEdit, 
+        'isDragging:', isDragging,
+        'classList:', element.classList.toString());
+    }
+  }, [itemId, canEdit, isDragging]);
 
   // Clear touch tracking when drag starts
   useEffect(() => {
     if (isDragging) {
+      console.log('[PhotoGridItem] Drag started for item:', itemId);
       touchStartPos.current = null;
       hasMoved.current = false;
       setShowOverlay(false);
+    } else {
+      console.log('[PhotoGridItem] Drag ended/cleared for item:', itemId);
     }
-  }, [isDragging]);
+  }, [isDragging, itemId]);
 
-  const handleTouchStart = (e: React.TouchEvent) => {
-    if (isUploading || isDragging) return; // Don't interfere with dragging
-    const touch = e.touches[0];
-    touchStartPos.current = { x: touch.clientX, y: touch.clientY };
-    hasMoved.current = false;
-  };
 
   const handleTouchMove = (e: React.TouchEvent) => {
     if (isUploading || isDragging || !touchStartPos.current) return; // Don't interfere with dragging
@@ -175,15 +185,34 @@ const PhotoGridItem: React.FC<PhotoGridItemProps> = ({
   // Only use custom touch handlers on touch devices when NOT in drag mode
   const isTouchDevice = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
   const useCustomTouchHandlers = isTouchDevice && !canEdit;
+  
+  // Touch handler with debug logging
+  const handleTouchStartWithDebug = (e: React.TouchEvent) => {
+    // Debug logging
+    const element = e.currentTarget as HTMLElement;
+    const computedStyle = window.getComputedStyle(element);
+    console.log('[PhotoGridItem] TOUCH START on', itemId, 
+      '- touch-action:', computedStyle.touchAction,
+      '- has .editable:', element.classList.contains('editable'),
+      '- canEdit:', canEdit,
+      '- isDragging:', isDragging);
+    
+    // Custom touch handler logic (only for viewers)
+    if (useCustomTouchHandlers && !isUploading && !isDragging) {
+      const touch = e.touches[0];
+      touchStartPos.current = { x: touch.clientX, y: touch.clientY };
+      hasMoved.current = false;
+    }
+  };
 
   return (
     <div
       ref={setNodeRef}
       style={style}
       data-photo-id={itemId}
-      className={`admin-photo-item ${isDragging ? 'dragging' : ''} ${showOverlay ? 'show-overlay' : ''} ${isUploading ? 'uploading' : ''} ${isDeleting ? 'crt-delete' : ''}`}
+      className={`admin-photo-item ${canEdit ? 'editable' : ''} ${isDragging ? 'dragging' : ''} ${showOverlay ? 'show-overlay' : ''} ${isUploading ? 'uploading' : ''} ${isDeleting ? 'crt-delete' : ''}`}
+      onTouchStart={handleTouchStartWithDebug}
       {...(useCustomTouchHandlers ? {
-        onTouchStart: handleTouchStart,
         onTouchMove: handleTouchMove,
         onTouchEnd: handleTouchEnd,
         onTouchCancel: handleTouchCancel,
