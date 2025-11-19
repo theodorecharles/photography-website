@@ -9,97 +9,132 @@
   align-items: center;
   justify-content: center;
   padding: 2rem;
-  background: linear-gradient(-45deg, #0a1820, #0d2825, #1a1a1a, #1f280a, #1a1a1a, #281a0a, #0a1f28);
-  background-size: 600% 600%;
-  animation: gradientShift 8s ease-in-out infinite;
+  background: #1a1a1a;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
   position: relative;
   overflow: hidden;
 }
 
-/* Animated gradient background with rotation */
-@keyframes gradientShift {
+/* Rotating gradient overlay */
+.setup-wizard::before {
+  content: '';
+  position: absolute;
+  inset: -50%;
+  background: conic-gradient(
+    from 0deg at 50% 50%,
+    #0a1820 0deg,
+    #0d2825 45deg,
+    #1f280a 90deg,
+    #281a0a 135deg,
+    #0a1f28 180deg,
+    #152820 225deg,
+    #201a15 270deg,
+    #0d2825 315deg,
+    #0a1820 360deg
+  );
+  animation: rotateGradient 20s linear infinite;
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+/* Rotating gradient animation */
+@keyframes rotateGradient {
   0% {
-    background-position: 0% 50%;
-  }
-  15% {
-    background-position: 70% 80%;
-  }
-  35% {
-    background-position: 30% 20%;
-  }
-  50% {
-    background-position: 100% 60%;
-  }
-  65% {
-    background-position: 60% 90%;
-  }
-  85% {
-    background-position: 20% 40%;
+    transform: rotate(0deg);
   }
   100% {
-    background-position: 0% 50%;
+    transform: rotate(360deg);
   }
 }
 
 /* Speed boost animation when steps change */
-.setup-wizard.animation-boost {
-  animation: gradientShift 2s ease infinite !important;
-}
-
 .setup-wizard.animation-boost::before {
-  animation: float 3s ease-in-out infinite, pulse 1s ease-in-out infinite !important;
+  animation: rotateGradient 4s linear infinite !important;
 }
 
 .setup-wizard.animation-boost::after {
+  animation: float 3s ease-in-out infinite, pulse 1s ease-in-out infinite !important;
+}
+
+.setup-wizard.animation-boost .setup-container::before {
+  animation: float 3.2s ease-in-out infinite, pulse 1.3s ease-in-out infinite !important;
+}
+
+.setup-wizard.animation-boost .setup-container::after {
   animation: float 2.5s ease-in-out infinite reverse, pulse 1.2s ease-in-out infinite reverse !important;
 }
 
 /* Vibrant bokeh/lens effect circles matching icon gradient colors */
-.setup-wizard::before {
+.setup-wizard::after {
   content: '';
   position: absolute;
-  top: -50%;
+  top: -30%;
   right: -10%;
   width: 700px;
   height: 700px;
   background: radial-gradient(circle, rgba(255, 193, 7, 0.15) 0%, rgba(255, 152, 0, 0.08) 40%, transparent 70%);
   border-radius: 50%;
-  animation: float 12s ease-in-out infinite, pulse 4s ease-in-out infinite;
+  animation: float 18s ease-in-out infinite, pulse 6s ease-in-out infinite;
   pointer-events: none;
+  z-index: 0;
 }
 
-.setup-wizard::after {
+.setup-container::after {
   content: '';
-  position: absolute;
-  bottom: -30%;
+  position: fixed;
+  bottom: -20%;
   left: -5%;
   width: 600px;
   height: 600px;
   background: radial-gradient(circle, rgba(0, 188, 212, 0.15) 0%, rgba(0, 150, 136, 0.08) 40%, transparent 70%);
   border-radius: 50%;
-  animation: float 10s ease-in-out infinite reverse, pulse 5s ease-in-out infinite reverse;
+  animation: float 22s ease-in-out infinite reverse, pulse 8s ease-in-out infinite reverse;
   pointer-events: none;
+  z-index: 0;
+}
+
+.setup-container::before {
+  content: '';
+  position: fixed;
+  top: 40%;
+  left: 50%;
+  width: 550px;
+  height: 550px;
+  background: radial-gradient(circle, rgba(74, 222, 128, 0.12) 0%, rgba(34, 197, 94, 0.06) 40%, transparent 70%);
+  border-radius: 50%;
+  animation: float 25s ease-in-out infinite, pulse 10s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
+  transform: translate(-50%, -50%);
 }
 
 @keyframes float {
   0% {
     transform: translate(0, 0) scale(1) rotate(0deg);
   }
-  20% {
-    transform: translate(60px, -50px) scale(1.1) rotate(72deg);
+  12% {
+    transform: translate(-60px, 40px) scale(1.08) rotate(45deg);
   }
-  40% {
-    transform: translate(-20px, 40px) scale(0.9) rotate(180deg);
+  25% {
+    transform: translate(80px, -30px) scale(0.92) rotate(110deg);
   }
-  60% {
-    transform: translate(40px, 20px) scale(1.15) rotate(260deg);
+  37% {
+    transform: translate(-40px, -60px) scale(1.12) rotate(195deg);
   }
-  80% {
-    transform: translate(-50px, -30px) scale(1.05) rotate(320deg);
+  50% {
+    transform: translate(50px, 70px) scale(0.95) rotate(250deg);
+  }
+  62% {
+    transform: translate(-70px, -20px) scale(1.06) rotate(300deg);
+  }
+  75% {
+    transform: translate(30px, -80px) scale(1.1) rotate(340deg);
+  }
+  87% {
+    transform: translate(-50px, 50px) scale(0.98) rotate(390deg);
   }
   100% {
-    transform: translate(0, 0) scale(1) rotate(360deg);
+    transform: translate(0, 0) scale(1) rotate(450deg);
   }
 }
 
@@ -122,7 +157,7 @@
 }
 
 .setup-container {
-  background: #2a2a2a;
+  background: rgba(42, 42, 42, 0.95);
   border-radius: 12px;
   border: 1px solid #404040;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
@@ -131,9 +166,8 @@
   padding: 3rem;
   animation: slideUp 0.4s ease-out;
   position: relative;
-  z-index: 1;
+  z-index: 2;
   backdrop-filter: blur(10px);
-  background: rgba(42, 42, 42, 0.95);
 }
 
 @keyframes slideUp {
@@ -150,6 +184,8 @@
 .setup-header {
   text-align: center;
   margin-bottom: 2.5rem;
+  position: relative;
+  z-index: 10;
 }
 
 .setup-header h1 {
@@ -172,6 +208,8 @@
   justify-content: space-between;
   margin-bottom: 3rem;
   padding: 0 1rem;
+  position: relative;
+  z-index: 3;
 }
 
 .progress-step {
@@ -277,6 +315,8 @@
 /* Form Styles */
 .setup-form {
   margin-bottom: 2rem;
+  position: relative;
+  z-index: 3;
 }
 
 .setup-step {
@@ -672,6 +712,8 @@
   border-top: 1px solid #404040;
   color: #6b7280;
   font-size: 0.875rem;
+  position: relative;
+  z-index: 3;
 }
 
 .setup-footer a {

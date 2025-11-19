@@ -113,6 +113,7 @@ router.post(
         primaryColor,
         secondaryColor,
         metaDescription,
+        language,
       } = req.body;
 
       // Validate required fields
@@ -280,6 +281,7 @@ router.post(
             metaDescription: "",
             metaKeywords: "",
             faviconPath: "/favicon.ico",
+            language: "en",
           },
           analytics: {
             scriptPath: "",
@@ -313,6 +315,7 @@ router.post(
       config.branding.metaDescription =
         metaDescription || `Photography portfolio by ${siteName}`;
       config.branding.metaKeywords = `photography, portfolio, ${siteName.toLowerCase()}`;
+      config.branding.language = language || "en";
 
       config.environment.auth.sessionSecret = sessionSecret;
       config.environment.auth.authorizedEmails = [authorizedEmail];

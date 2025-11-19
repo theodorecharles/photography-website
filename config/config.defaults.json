@@ -51,7 +51,8 @@
     "secondaryColor": "#22c55e",
     "metaDescription": "Photography portfolio by Your Name",
     "metaKeywords": "photography, portfolio, your name",
-    "faviconPath": "/favicon.ico"
+    "faviconPath": "/favicon.ico",
+    "language": "en"
   },
   "analytics": {
     "scriptPath": "",

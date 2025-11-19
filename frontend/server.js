@@ -463,7 +463,7 @@ app.get("*", async (req, res) => {
             )
             .replace(
               /<meta name="description" content=".*?" \/>/,
-              `<meta name="description" content="View the ${safeAlbumName} album shared by Ted Charles. ${
+              `<meta name="description" content="View the ${safeAlbumName} album shared. ${
                 photos.length
               } photo${photos.length !== 1 ? "s" : ""} available." />`
             )
@@ -485,7 +485,7 @@ app.get("*", async (req, res) => {
             )
             .replace(
               /<meta property="og:description" content=".*?" \/>/,
-              `<meta property="og:description" content="View the ${albumTitleCase} album shared by Ted Charles. ${
+              `<meta property="og:description" content="View the ${albumTitleCase} album shared by. ${
                 photos.length
               } photo${photos.length !== 1 ? "s" : ""} available." />`
             )
@@ -494,7 +494,7 @@ app.get("*", async (req, res) => {
               `<meta property="og:image" content="${gridUrl}" />\n    <meta property="og:image:secure_url" content="${gridUrl.replace(
                 "http://",
                 "https://"
-              )}" />\n    <meta property="og:image:alt" content="${safeAlbumName} - Photography by Ted Charles" />\n    <meta property="og:image:type" content="image/jpeg" />\n    <meta property="og:image:width" content="1200" />\n    <meta property="og:image:height" content="630" />`
+              )}" />\n    <meta property="og:image:alt" content="${safeAlbumName} - Galleria" />\n    <meta property="og:image:type" content="image/jpeg" />\n    <meta property="og:image:width" content="1200" />\n    <meta property="og:image:height" content="630" />`
             )
             .replace(
               /<meta property="twitter:url" content=".*?" \/>/,
@@ -506,7 +506,7 @@ app.get("*", async (req, res) => {
             )
             .replace(
               /<meta property="twitter:description" content=".*?" \/>/,
-              `<meta property="twitter:description" content="View the ${albumTitleCase} album shared by Ted Charles. ${photos.length} photos available." />`
+              `<meta property="twitter:description" content="View the ${albumTitleCase} album shared. ${photos.length} photos available." />`
             )
             .replace(
               /<meta property="twitter:image" content=".*?" \/>/,
@@ -588,7 +588,7 @@ app.get("*", async (req, res) => {
                 photos.length
               } photo${
                 photos.length !== 1 ? "s" : ""
-              } from the ${safeAlbumName} album by Ted Charles." />`
+              } from the ${safeAlbumName} album." />`
             )
             .replace(
               /<link rel="canonical" href=".*?" \/>/,
@@ -619,7 +619,7 @@ app.get("*", async (req, res) => {
               `<meta property="og:image" content="${gridUrl}" />\n    <meta property="og:image:secure_url" content="${gridUrl.replace(
                 "http://",
                 "https://"
-              )}" />\n    <meta property="og:image:alt" content="${safeAlbumName} - Photography by Ted Charles" />\n    <meta property="og:image:type" content="image/jpeg" />\n    <meta property="og:image:width" content="1200" />\n    <meta property="og:image:height" content="630" />`
+              )}" />\n    <meta property="og:image:alt" content="${safeAlbumName} - Galleria" />\n    <meta property="og:image:type" content="image/jpeg" />\n    <meta property="og:image:width" content="1200" />\n    <meta property="og:image:height" content="630" />`
             )
             .replace(
               /<meta property="twitter:url" content=".*?" \/>/,
@@ -770,7 +770,7 @@ app.get("*", async (req, res) => {
               `<meta property="og:image" content="${thumbnailUrl}" />\n    <meta property="og:image:secure_url" content="${thumbnailUrl.replace(
                 "http://",
                 "https://"
-              )}" />\n    <meta property="og:image:alt" content="${safePhotoTitle} - Photography by Ted Charles" />\n    <meta property="og:image:type" content="image/jpeg" />`
+              )}" />\n    <meta property="og:image:alt" content="${safePhotoTitle} - Galleria" />\n    <meta property="og:image:type" content="image/jpeg" />`
             )
             // Update twitter:url
             .replace(

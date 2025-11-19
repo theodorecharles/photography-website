@@ -68,11 +68,15 @@ export default function SetupWizard() {
     checkSetupStatus();
   }, []);
 
-  // Sync currentLanguage with i18n language changes
+  // Sync currentLanguage with i18n language changes and force re-render
   useEffect(() => {
     console.log(`[OOBE] i18n language changed to: ${i18n.language}, ready: ${ready}`);
-    setCurrentLanguage(i18n.language);
-  }, [i18n.language, ready]);
+    console.log(`[OOBE] Translation test after change: oobe.title = "${t('oobe.title')}"`);
+    console.log(`[OOBE] Translation test after change: oobe.subtitle = "${t('oobe.subtitle')}"`);
+    if (i18n.language !== currentLanguage) {
+      setCurrentLanguage(i18n.language);
+    }
+  }, [i18n.language, ready, currentLanguage, t]);
 
   // Debug: Log when component mounts
   useEffect(() => {
@@ -193,7 +197,8 @@ export default function SetupWizard() {
           googleClientSecret: authMethod === 'google' ? googleClientSecret : undefined,
           primaryColor,
           secondaryColor,
-          metaDescription: metaDescription || `Photography portfolio by ${siteName}`,
+          metaDescription: metaDescription || t('oobe.siteDescriptionPlaceholder', { siteName }),
+          language: currentLanguage,
         }),
       });
 
@@ -223,7 +228,7 @@ export default function SetupWizard() {
         }
       }
 
-      setSuccess('Setup complete!');
+      setSuccess(t('oobe.completeHeading'));
       setCurrentStep(4);
 
       // Only show restart modal for Google OAuth (needs server restart)
@@ -295,15 +300,15 @@ export default function SetupWizard() {
     { value: 'id', label: 'Bahasa Indonesia', emoji: '🇮🇩' },
   ];
 
-  const handleLanguageChange = async (languageCode: string) => {
+  const handleLanguageChange = (languageCode: string) => {
     console.log(`[OOBE] Changing language to: ${languageCode}`);
-    try {
-      await i18n.changeLanguage(languageCode);
-      setCurrentLanguage(languageCode);
-      console.log(`[OOBE] Language changed successfully to: ${i18n.language}`);
-    } catch (error) {
+    // Change the language - this will trigger i18n to load translations
+    // The useEffect will sync currentLanguage state, and useTranslation will trigger re-render
+    i18n.changeLanguage(languageCode).then(() => {
+      console.log(`[OOBE] Language changed successfully to: ${languageCode}`);
+    }).catch((error) => {
       console.error(`[OOBE] Failed to change language:`, error);
-    }
+    });
   };
 
   return (
@@ -320,13 +325,17 @@ export default function SetupWizard() {
           <div style={{ 
             marginTop: '1rem',
             display: 'flex',
-            justifyContent: 'center',
+            flexDirection: 'row',
             alignItems: 'center',
-            gap: '0.5rem'
+            justifyContent: 'center',
+            gap: '0.75rem',
+            position: 'relative',
+            zIndex: 1000
           }}>
             <label style={{ 
               color: '#9ca3af',
               fontSize: '0.875rem',
+              whiteSpace: 'nowrap'
             }}>
               🌐 {t('oobe.language')}:
             </label>
@@ -773,7 +782,7 @@ export default function SetupWizard() {
       {showRestartModal && (
         <RestartModal
           onClose={handleRestartComplete}
-          message="Setup complete! Waiting for server to restart..."
+          message={t('oobe.setupCompleteWaitingRestart')}
         />
       )}
     </div>

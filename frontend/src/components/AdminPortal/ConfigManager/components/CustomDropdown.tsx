@@ -13,6 +13,7 @@ interface CustomDropdownProps {
   disabled?: boolean;
   placeholder?: string;
   style?: React.CSSProperties;
+  openUpward?: boolean;
 }
 
 export default function CustomDropdown({
@@ -22,6 +23,7 @@ export default function CustomDropdown({
   disabled = false,
   placeholder = 'Select...',
   style = {},
+  openUpward = false,
 }: CustomDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -139,37 +141,18 @@ export default function CustomDropdown({
         <div
           ref={menuRef}
           style={{
-            position: 'fixed',
-            ...(() => {
-              if (!dropdownRef.current) return { top: 0, left: 0 };
-              
-              const rect = dropdownRef.current.getBoundingClientRect();
-              const dropdownHeight = 300; // maxHeight
-              const spaceBelow = window.innerHeight - rect.bottom;
-              const spaceAbove = rect.top;
-              
-              // If not enough space below, flip upward
-              const shouldFlipUp = spaceBelow < dropdownHeight && spaceAbove > spaceBelow;
-              
-              return {
-                [shouldFlipUp ? 'bottom' : 'top']: shouldFlipUp 
-                  ? window.innerHeight - rect.top + 4
-                  : rect.bottom + 4,
-                left: rect.left,
-              };
-            })(),
-            width: dropdownRef.current
-              ? dropdownRef.current.getBoundingClientRect().width
-              : 'auto',
-            background: '#2a2a2a',
+            position: 'absolute',
+            ...(openUpward ? { bottom: '100%', marginBottom: '4px' } : { top: '100%', marginTop: '4px' }),
+            left: 0,
+            right: 0,
+            background: '#1a1a1a',
             border: '1px solid #3a3a3a',
             borderRadius: '8px',
-            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
-            zIndex: 100001,
+            boxShadow: '0 8px 24px rgba(0, 0, 0, 0.5)',
+            zIndex: 999999,
             maxHeight: '300px',
             overflowY: 'auto',
             overscrollBehavior: 'contain', // Prevent scroll chaining to parent
-            animation: 'dropdownFadeIn 0.15s ease-out',
           }}
         >
           {options.map((option) => (

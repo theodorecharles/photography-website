@@ -402,6 +402,7 @@ const BrandingSection: React.FC<BrandingSectionProps> = ({
                 emoji: license.id.startsWith('cc-') && license.id !== 'cc0' ? '🆓' : 
                        license.id === 'cc0' ? '🌐' : '©️'
               }))}
+              openUpward={true}
               onChange={async (newValue) => {
                 handleBrandingChange("photoLicense", newValue);
                 
@@ -684,6 +685,7 @@ const BrandingSection: React.FC<BrandingSectionProps> = ({
                 label: lang.name,
                 emoji: lang.flag
               }))}
+              openUpward={true}
               onChange={async (newValue) => {
                 handleBrandingChange("language", newValue);
                 
