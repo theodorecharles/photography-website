@@ -1,9 +1,15 @@
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
+import enTranslations from "./locales/en.json";
 
-// Lazy load translation files only when needed
+// Lazy load translation files only when needed (except English which is preloaded)
 const loadTranslation = async (language: string) => {
+  // English is already loaded, return it directly
+  if (language === "en") {
+    return enTranslations;
+  }
+  
   console.log(`[i18n] Loading translation for: ${language}`);
   try {
     const translations = await import(`./locales/${language}.json`);
@@ -73,8 +79,12 @@ i18n
     ],
     // Prevent loading fallback language immediately - wait for branding API
     load: "languageOnly",
-    // Preload English so translations are available immediately
-    preload: ["en"],
+    // Provide English translations directly so they're available immediately
+    resources: {
+      en: {
+        translation: enTranslations,
+      },
+    },
   });
 
 // After i18n is initialized, fetch and apply branding language
