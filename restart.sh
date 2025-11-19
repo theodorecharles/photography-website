@@ -70,7 +70,15 @@ if ! npm install; then
     handle_error "Frontend npm install failed"
 fi
 
+# Generate favicons from icon-192.png (before frontend build)
+cd ..
+log "Generating favicons and setting up icons..."
+if ! ./scripts/generate-favicons.js; then
+    handle_error "Favicon generation failed"
+fi
+
 log "Building frontend..."
+cd frontend || handle_error "Failed to cd into frontend directory"
 if ! npm run build; then
     handle_error "Frontend build failed"
 fi
