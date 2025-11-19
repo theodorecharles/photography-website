@@ -13,6 +13,10 @@ node_modules/
 # Generated albums data (dynamically created by frontend)
 frontend/public/albums-data/
 
+# Generated favicons (dynamically created from icon-192.png)
+frontend/public/favicon.ico
+frontend/public/favicon.png
+
 # Misc
 .DS_Store
 .env
