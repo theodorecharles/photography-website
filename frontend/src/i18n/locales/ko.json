@@ -169,7 +169,13 @@
     "failedToSaveSetting": "설정을 저장하지 못했습니다",
     "errorSavingLicense": "라이선스를 저장하는 중 오류 발생",
     "errorSavingLanguage": "언어를 저장하는 중 오류 발생",
-    "errorSavingSetting": "설정을 저장하는 중 오류 발생"
+    "errorSavingSetting": "설정을 저장하는 중 오류 발생",
+    "logoSaved": "로고가 성공적으로 저장되었습니다!",
+    "siteNameSaved": "사이트 이름이 성공적으로 저장되었습니다!",
+    "primaryColorSaved": "기본 색상이 성공적으로 저장되었습니다!",
+    "secondaryColorSaved": "보조 색상이 성공적으로 저장되었습니다!",
+    "metaDescriptionSaved": "메타 설명이 성공적으로 저장되었습니다!",
+    "metaKeywordsSaved": "메타 키워드가 성공적으로 저장되었습니다!"
   },
   "license": {
     "title": "사진 라이선스",

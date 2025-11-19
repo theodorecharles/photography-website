@@ -202,7 +202,9 @@ const BrandingSection: React.FC<BrandingSectionProps> = ({
       });
 
       if (res.ok) {
-                    setMessage({ type: 'success', text: t('branding.savedSuccessfully', { section: sectionName }) });
+                    // Use section-specific translation key
+                    const sectionKey = sectionName + 'Saved';
+                    setMessage({ type: 'success', text: t(`branding.${sectionKey}`) });
         trackBrandingUpdate(fields.map(f => String(f)));
         
         // Update original branding to reflect the saved state
@@ -344,7 +346,7 @@ const BrandingSection: React.FC<BrandingSectionProps> = ({
                 <button 
                   onClick={(e) => {
                     e.stopPropagation();
-                    saveBrandingSection('Logo', ['avatarPath']);
+                    saveBrandingSection('logo', ['avatarPath']);
                   }}
                   className="btn-primary btn-small"
                   disabled={savingBrandingSection === 'Logo'}
@@ -377,7 +379,7 @@ const BrandingSection: React.FC<BrandingSectionProps> = ({
                   {t('common.cancel')}
                 </button>
                 <button 
-                  onClick={() => saveBrandingSection('Site Name', ['siteName'])} 
+                  onClick={() => saveBrandingSection('siteName', ['siteName'])} 
                   className="btn-primary btn-small"
                   disabled={savingBrandingSection === 'Site Name'}
                 >
@@ -554,7 +556,7 @@ const BrandingSection: React.FC<BrandingSectionProps> = ({
                   {t('common.cancel')}
                 </button>
                 <button 
-                  onClick={() => saveBrandingSection('Primary Color', ['primaryColor'])} 
+                  onClick={() => saveBrandingSection('primaryColor', ['primaryColor'])} 
                   className="btn-primary btn-small"
                   disabled={savingBrandingSection === 'Primary Color'}
                 >
@@ -597,7 +599,7 @@ const BrandingSection: React.FC<BrandingSectionProps> = ({
                   {t('common.cancel')}
                 </button>
                 <button 
-                  onClick={() => saveBrandingSection('Secondary Color', ['secondaryColor'])} 
+                  onClick={() => saveBrandingSection('secondaryColor', ['secondaryColor'])} 
                   className="btn-primary btn-small"
                   disabled={savingBrandingSection === 'Secondary Color'}
                 >
@@ -629,7 +631,7 @@ const BrandingSection: React.FC<BrandingSectionProps> = ({
                   {t('common.cancel')}
                 </button>
                 <button 
-                  onClick={() => saveBrandingSection('Meta Description', ['metaDescription'])} 
+                  onClick={() => saveBrandingSection('metaDescription', ['metaDescription'])} 
                   className="btn-primary btn-small"
                   disabled={savingBrandingSection === 'Meta Description'}
                 >
@@ -661,7 +663,7 @@ const BrandingSection: React.FC<BrandingSectionProps> = ({
                   {t('common.cancel')}
                 </button>
                 <button 
-                  onClick={() => saveBrandingSection('Meta Keywords', ['metaKeywords'])} 
+                  onClick={() => saveBrandingSection('metaKeywords', ['metaKeywords'])} 
                   className="btn-primary btn-small"
                   disabled={savingBrandingSection === 'Meta Keywords'}
                 >

@@ -169,7 +169,13 @@
     "failedToSaveSetting": "Lưu cài đặt không thành công",
     "errorSavingLicense": "Lỗi khi lưu giấy phép",
     "errorSavingLanguage": "Lỗi khi lưu ngôn ngữ",
-    "errorSavingSetting": "Lỗi khi lưu cài đặt"
+    "errorSavingSetting": "Lỗi khi lưu cài đặt",
+    "logoSaved": "Logo đã được lưu thành công!",
+    "siteNameSaved": "Tên trang đã được lưu thành công!",
+    "primaryColorSaved": "Màu chính đã được lưu thành công!",
+    "secondaryColorSaved": "Màu phụ đã được lưu thành công!",
+    "metaDescriptionSaved": "Mô tả meta đã được lưu thành công!",
+    "metaKeywordsSaved": "Từ khóa meta đã được lưu thành công!"
   },
   "license": {
     "title": "Giấy phép Ảnh",

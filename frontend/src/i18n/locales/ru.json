@@ -169,7 +169,13 @@
     "failedToSaveSetting": "Не удалось сохранить настройку",
     "errorSavingLicense": "Ошибка при сохранении лицензии",
     "errorSavingLanguage": "Ошибка при сохранении языка",
-    "errorSavingSetting": "Ошибка при сохранении настройки"
+    "errorSavingSetting": "Ошибка при сохранении настройки",
+    "logoSaved": "Логотип успешно сохранён!",
+    "siteNameSaved": "Имя сайта успешно сохранено!",
+    "primaryColorSaved": "Основной цвет успешно сохранён!",
+    "secondaryColorSaved": "Вторичный цвет успешно сохранён!",
+    "metaDescriptionSaved": "Мета-описание успешно сохранено!",
+    "metaKeywordsSaved": "Мета-ключевые слова успешно сохранены!"
   },
   "license": {
     "title": "Лицензия на фото",

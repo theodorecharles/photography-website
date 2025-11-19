@@ -169,7 +169,13 @@
     "failedToSaveSetting": "Misslyckades med att spara inställning",
     "errorSavingLicense": "Fel vid sparande av licens",
     "errorSavingLanguage": "Fel vid sparande av språk",
-    "errorSavingSetting": "Fel vid sparande av inställning"
+    "errorSavingSetting": "Fel vid sparande av inställning",
+    "logoSaved": "Logotypen har sparats framgångsrikt!",
+    "siteNameSaved": "Webbplatsnamn har sparats framgångsrikt!",
+    "primaryColorSaved": "Primär färg har sparats framgångsrikt!",
+    "secondaryColorSaved": "Sekundär färg har sparats framgångsrikt!",
+    "metaDescriptionSaved": "Meta-beskrivning har sparats framgångsrikt!",
+    "metaKeywordsSaved": "Meta-nyckelord har sparats framgångsrikt!"
   },
   "license": {
     "title": "Fotolicens",

@@ -169,7 +169,13 @@
     "failedToSaveSetting": "Gagal menyimpan pengaturan",
     "errorSavingLicense": "Kesalahan saat menyimpan lisensi",
     "errorSavingLanguage": "Kesalahan saat menyimpan bahasa",
-    "errorSavingSetting": "Kesalahan saat menyimpan pengaturan"
+    "errorSavingSetting": "Kesalahan saat menyimpan pengaturan",
+    "logoSaved": "Logo berhasil disimpan!",
+    "siteNameSaved": "Nama Situs berhasil disimpan!",
+    "primaryColorSaved": "Warna Utama berhasil disimpan!",
+    "secondaryColorSaved": "Warna Sekunder berhasil disimpan!",
+    "metaDescriptionSaved": "Deskripsi Meta berhasil disimpan!",
+    "metaKeywordsSaved": "Kata Kunci Meta berhasil disimpan!"
   },
   "license": {
     "title": "Lisensi Foto",

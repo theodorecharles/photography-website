@@ -169,7 +169,13 @@
     "failedToSaveSetting": "Kunne ikke lagre innstilling",
     "errorSavingLicense": "Feil ved lagring av lisens",
     "errorSavingLanguage": "Feil ved lagring av språk",
-    "errorSavingSetting": "Feil ved lagring av innstilling"
+    "errorSavingSetting": "Feil ved lagring av innstilling",
+    "logoSaved": "Logo lagret vellykket!  ",
+    "siteNameSaved": "Nettstedsnavn lagret vellykket!  ",
+    "primaryColorSaved": "Primærfarge lagret vellykket!  ",
+    "secondaryColorSaved": "Sekundærfarge lagret vellykket!  ",
+    "metaDescriptionSaved": "Meta-beskrivelse lagret vellykket!  ",
+    "metaKeywordsSaved": "Meta-nøkkelord lagret vellykket!"
   },
   "license": {
     "title": "Fotolisens",

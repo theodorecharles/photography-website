@@ -169,7 +169,13 @@
     "failedToSaveSetting": "設定の保存に失敗しました",
     "errorSavingLicense": "ライセンスの保存中にエラーが発生しました",
     "errorSavingLanguage": "言語の保存中にエラーが発生しました",
-    "errorSavingSetting": "設定の保存中にエラーが発生しました"
+    "errorSavingSetting": "設定の保存中にエラーが発生しました",
+    "logoSaved": "ロゴが正常に保存されました！",
+    "siteNameSaved": "サイト名が正常に保存されました！",
+    "primaryColorSaved": "プライマリカラーが正常に保存されました！",
+    "secondaryColorSaved": "セカンダリカラーが正常に保存されました！",
+    "metaDescriptionSaved": "メタディスクリプションが正常に保存されました！",
+    "metaKeywordsSaved": "メタキーワードが正常に保存されました！"
   },
   "license": {
     "title": "写真ライセンス",

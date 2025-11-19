@@ -169,7 +169,13 @@
     "failedToSaveSetting": "Échec de l'enregistrement du paramètre",
     "errorSavingLicense": "Erreur lors de l'enregistrement de la licence",
     "errorSavingLanguage": "Erreur lors de l'enregistrement de la langue",
-    "errorSavingSetting": "Erreur lors de l'enregistrement du paramètre"
+    "errorSavingSetting": "Erreur lors de l'enregistrement du paramètre",
+    "logoSaved": "Logo enregistré avec succès !  ",
+    "siteNameSaved": "Nom du site enregistré avec succès !  ",
+    "primaryColorSaved": "Couleur principale enregistrée avec succès !  ",
+    "secondaryColorSaved": "Couleur secondaire enregistrée avec succès !  ",
+    "metaDescriptionSaved": "Description méta enregistrée avec succès !  ",
+    "metaKeywordsSaved": "Mots-clés méta enregistrés avec succès !"
   },
   "license": {
     "title": "Licence Photo",

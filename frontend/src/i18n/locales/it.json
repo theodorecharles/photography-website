@@ -169,7 +169,13 @@
     "failedToSaveSetting": "Impossibile salvare l'impostazione",
     "errorSavingLicense": "Errore nel salvataggio della licenza",
     "errorSavingLanguage": "Errore nel salvataggio della lingua",
-    "errorSavingSetting": "Errore nel salvataggio dell'impostazione"
+    "errorSavingSetting": "Errore nel salvataggio dell'impostazione",
+    "logoSaved": "Logo salvato con successo!  ",
+    "siteNameSaved": "Nome del sito salvato con successo!  ",
+    "primaryColorSaved": "Colore primario salvato con successo!  ",
+    "secondaryColorSaved": "Colore secondario salvato con successo!  ",
+    "metaDescriptionSaved": "Descrizione meta salvata con successo!  ",
+    "metaKeywordsSaved": "Parole chiave meta salvate con successo!"
   },
   "license": {
     "title": "Licenza Foto",

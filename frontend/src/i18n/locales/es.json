@@ -169,7 +169,13 @@
     "failedToSaveSetting": "Error al guardar la configuración",
     "errorSavingLicense": "Error al guardar la licencia",
     "errorSavingLanguage": "Error al guardar el idioma",
-    "errorSavingSetting": "Error al guardar la configuración"
+    "errorSavingSetting": "Error al guardar la configuración",
+    "logoSaved": "¡Logo guardado con éxito!  ",
+    "siteNameSaved": "¡Nombre del sitio guardado con éxito!  ",
+    "primaryColorSaved": "¡Color primario guardado con éxito!  ",
+    "secondaryColorSaved": "¡Color secundario guardado con éxito!  ",
+    "metaDescriptionSaved": "¡Descripción meta guardada con éxito!  ",
+    "metaKeywordsSaved": "¡Palabras clave meta guardadas con éxito!"
   },
   "license": {
     "title": "Licencia de Fotos",

@@ -169,7 +169,13 @@
     "failedToSaveSetting": "保存设置失败",
     "errorSavingLicense": "保存许可时出错",
     "errorSavingLanguage": "保存语言时出错",
-    "errorSavingSetting": "保存设置时出错"
+    "errorSavingSetting": "保存设置时出错",
+    "logoSaved": "徽标保存成功！",
+    "siteNameSaved": "网站名称保存成功！",
+    "primaryColorSaved": "主色保存成功！",
+    "secondaryColorSaved": "副色保存成功！",
+    "metaDescriptionSaved": "元描述保存成功！",
+    "metaKeywordsSaved": "元关键词保存成功！"
   },
   "license": {
     "title": "照片许可",

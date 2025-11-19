@@ -169,7 +169,13 @@
     "failedToSaveSetting": "Nu s-a putut salva setarea",
     "errorSavingLicense": "Eroare la salvarea licenței",
     "errorSavingLanguage": "Eroare la salvarea limbii",
-    "errorSavingSetting": "Eroare la salvarea setării"
+    "errorSavingSetting": "Eroare la salvarea setării",
+    "logoSaved": "Logo salvat cu succes!  ",
+    "siteNameSaved": "Numele site-ului salvat cu succes!  ",
+    "primaryColorSaved": "Culoare principală salvată cu succes!  ",
+    "secondaryColorSaved": "Culoare secundară salvată cu succes!  ",
+    "metaDescriptionSaved": "Descriere meta salvată cu succes!  ",
+    "metaKeywordsSaved": "Cuvinte cheie meta salvate cu succes!"
   },
   "license": {
     "title": "Licența foto",

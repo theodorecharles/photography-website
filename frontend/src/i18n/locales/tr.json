@@ -169,7 +169,13 @@
     "failedToSaveSetting": "Ayar kaydedilemedi",
     "errorSavingLicense": "Lisans kaydedilirken hata oluştu",
     "errorSavingLanguage": "Dil kaydedilirken hata oluştu",
-    "errorSavingSetting": "Ayar kaydedilirken hata oluştu"
+    "errorSavingSetting": "Ayar kaydedilirken hata oluştu",
+    "logoSaved": "Logo başarıyla kaydedildi!",
+    "siteNameSaved": "Site Adı başarıyla kaydedildi!",
+    "primaryColorSaved": "Ana Renk başarıyla kaydedildi!",
+    "secondaryColorSaved": "İkincil Renk başarıyla kaydedildi!",
+    "metaDescriptionSaved": "Meta Açıklama başarıyla kaydedildi!",
+    "metaKeywordsSaved": "Meta Anahtar Kelimeler başarıyla kaydedildi!"
   },
   "license": {
     "title": "Fotoğraf Lisansı",

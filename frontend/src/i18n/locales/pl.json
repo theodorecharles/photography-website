@@ -169,7 +169,13 @@
     "failedToSaveSetting": "Nie udało się zapisać ustawienia",
     "errorSavingLicense": "Błąd podczas zapisywania licencji",
     "errorSavingLanguage": "Błąd podczas zapisywania języka",
-    "errorSavingSetting": "Błąd podczas zapisywania ustawienia"
+    "errorSavingSetting": "Błąd podczas zapisywania ustawienia",
+    "logoSaved": "Logo zapisane pomyślnie!",
+    "siteNameSaved": "Nazwa witryny zapisana pomyślnie!",
+    "primaryColorSaved": "Kolor podstawowy zapisany pomyślnie!",
+    "secondaryColorSaved": "Kolor dodatkowy zapisany pomyślnie!",
+    "metaDescriptionSaved": "Opis meta zapisany pomyślnie!",
+    "metaKeywordsSaved": "Słowa kluczowe meta zapisane pomyślnie!"
   },
   "license": {
     "title": "Licencja na zdjęcia",

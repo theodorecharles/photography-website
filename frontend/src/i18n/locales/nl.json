@@ -169,7 +169,13 @@
     "failedToSaveSetting": "Kon instelling niet opslaan",
     "errorSavingLicense": "Fout bij opslaan van licentie",
     "errorSavingLanguage": "Fout bij opslaan van taal",
-    "errorSavingSetting": "Fout bij opslaan van instelling"
+    "errorSavingSetting": "Fout bij opslaan van instelling",
+    "logoSaved": "Logo succesvol opgeslagen!  ",
+    "siteNameSaved": "Site naam succesvol opgeslagen!  ",
+    "primaryColorSaved": "Primaire kleur succesvol opgeslagen!  ",
+    "secondaryColorSaved": "Secundaire kleur succesvol opgeslagen!  ",
+    "metaDescriptionSaved": "Meta beschrijving succesvol opgeslagen!  ",
+    "metaKeywordsSaved": "Meta zoekwoorden succesvol opgeslagen!"
   },
   "license": {
     "title": "Fotolicentie",

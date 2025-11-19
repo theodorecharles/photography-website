@@ -169,7 +169,13 @@
     "failedToSaveSetting": "Fehler beim Speichern der Einstellung",
     "errorSavingLicense": "Fehler beim Speichern der Lizenz",
     "errorSavingLanguage": "Fehler beim Speichern der Sprache",
-    "errorSavingSetting": "Fehler beim Speichern der Einstellung"
+    "errorSavingSetting": "Fehler beim Speichern der Einstellung",
+    "logoSaved": "Logo erfolgreich gespeichert!  ",
+    "siteNameSaved": "Site-Name erfolgreich gespeichert!  ",
+    "primaryColorSaved": "Primärfarbe erfolgreich gespeichert!  ",
+    "secondaryColorSaved": "Sekundärfarbe erfolgreich gespeichert!  ",
+    "metaDescriptionSaved": "Meta-Beschreibung erfolgreich gespeichert!  ",
+    "metaKeywordsSaved": "Meta-Keywords erfolgreich gespeichert!"
   },
   "license": {
     "title": "Foto-Lizenz",

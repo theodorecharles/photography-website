@@ -169,7 +169,13 @@
     "failedToSaveSetting": "Nabigong i-save ang setting",
     "errorSavingLicense": "Error sa pag-save ng lisensya",
     "errorSavingLanguage": "Error sa pag-save ng wika",
-    "errorSavingSetting": "Error sa pag-save ng setting"
+    "errorSavingSetting": "Error sa pag-save ng setting",
+    "logoSaved": "Logo na-save nang matagumpay!",
+    "siteNameSaved": "Pangalan ng Site na-save nang matagumpay!",
+    "primaryColorSaved": "Pangunahing Kulay na-save nang matagumpay!",
+    "secondaryColorSaved": "Pangalawang Kulay na-save nang matagumpay!",
+    "metaDescriptionSaved": "Meta Paglalarawan na-save nang matagumpay!",
+    "metaKeywordsSaved": "Meta Mga Keyword na-save nang matagumpay!"
   },
   "license": {
     "title": "Lisensya ng Larawan",
