@@ -359,7 +359,12 @@
     "maxRetryAttemptsReached": "Maximale Anzahl an Wiederholungsversuchen ({{maxRetries}}) für {{filename}} erreicht",
     "successfullyUploaded": "{{filename}} erfolgreich hochgeladen",
     "retryFailed": "Wiederholungsversuch für {{filename}} fehlgeschlagen",
-    "noValidImageFiles": "Keine gültigen Bilddateien gefunden. Bitte wählen Sie JPEG-, PNG-, GIF- oder WebP-Bilder aus."
+    "noValidImageFiles": "Keine gültigen Bilddateien gefunden. Bitte wählen Sie JPEG-, PNG-, GIF- oder WebP-Bilder aus.",
+    "renameAlbumFailed": "Album konnte nicht umbenannt werden  ",
+    "invalidAlbumName": "Ungültiger Albumname  ",
+    "nameUnchanged": "Albumname wurde nicht geändert  ",
+    "albumNotFound": "Album nicht gefunden  ",
+    "databaseUpdateFailed": "Datenbankaktualisierung fehlgeschlagen"
   },
   "settings": {
     "saved": "{{section}} Einstellungen gespeichert!",

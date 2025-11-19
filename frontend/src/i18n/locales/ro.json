@@ -359,7 +359,12 @@
     "maxRetryAttemptsReached": "S-a atins numărul maxim de încercări ({{maxRetries}}) pentru {{filename}}",
     "successfullyUploaded": "{{filename}} a fost încărcat cu succes",
     "retryFailed": "Reîncercarea a eșuat pentru {{filename}}",
-    "noValidImageFiles": "Nu au fost găsite fișiere de imagine valide. Vă rugăm să selectați imagini JPEG, PNG, GIF sau WebP."
+    "noValidImageFiles": "Nu au fost găsite fișiere de imagine valide. Vă rugăm să selectați imagini JPEG, PNG, GIF sau WebP.",
+    "renameAlbumFailed": "Nu s-a reușit redenumirea albumului  ",
+    "invalidAlbumName": "Nume de album invalid  ",
+    "nameUnchanged": "Numele albumului nu s-a schimbat  ",
+    "albumNotFound": "Albumul nu a fost găsit  ",
+    "databaseUpdateFailed": "Nu s-a reușit actualizarea bazei de date"
   },
   "settings": {
     "saved": "Setările {{section}} au fost salvate!",

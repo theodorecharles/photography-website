@@ -359,7 +359,12 @@
     "maxRetryAttemptsReached": "Maximale aantal pogingen ({{maxRetries}}) bereikt voor {{filename}}",
     "successfullyUploaded": "{{filename}} succesvol geüpload",
     "retryFailed": "Proberen mislukt voor {{filename}}",
-    "noValidImageFiles": "Geen geldige afbeeldingsbestanden gevonden. Selecteer alstublieft JPEG-, PNG-, GIF- of WebP-afbeeldingen."
+    "noValidImageFiles": "Geen geldige afbeeldingsbestanden gevonden. Selecteer alstublieft JPEG-, PNG-, GIF- of WebP-afbeeldingen.",
+    "renameAlbumFailed": "Album hernoemen mislukt  ",
+    "invalidAlbumName": "Ongeldige albumnaam  ",
+    "nameUnchanged": "Albumnaam is onveranderd  ",
+    "albumNotFound": "Album niet gevonden  ",
+    "databaseUpdateFailed": "Bijwerken van de database mislukt"
   },
   "settings": {
     "saved": "{{section}} instellingen opgeslagen!",

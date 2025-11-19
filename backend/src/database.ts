@@ -132,7 +132,7 @@ export function initializeDatabase(): any {
       secret_key TEXT NOT NULL UNIQUE,
       expires_at DATETIME,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY (album) REFERENCES albums(name) ON DELETE CASCADE
+      FOREIGN KEY (album) REFERENCES albums(name) ON DELETE CASCADE ON UPDATE CASCADE
     )
   `);
   
@@ -475,7 +475,7 @@ export function deleteAlbumState(name: string): boolean {
 }
 
 /**
- * Rename an album (updates albums table, image_metadata, and share_links)
+ * Rename an album (updates albums table, image_metadata, and share_links via CASCADE)
  */
 export function renameAlbum(oldName: string, newName: string): boolean {
   const db = getDatabase();
@@ -483,14 +483,6 @@ export function renameAlbum(oldName: string, newName: string): boolean {
   try {
     // Use a transaction to ensure atomicity
     const transaction = db.transaction(() => {
-      // Update share_links first (due to foreign key constraint)
-      const shareLinksStmt = db.prepare(`
-        UPDATE share_links 
-        SET album = ? 
-        WHERE album = ?
-      `);
-      shareLinksStmt.run(newName, oldName);
-      
       // Update image_metadata entries
       const metadataStmt = db.prepare(`
         UPDATE image_metadata 
@@ -499,7 +491,7 @@ export function renameAlbum(oldName: string, newName: string): boolean {
       `);
       metadataStmt.run(newName, oldName);
       
-      // Update albums table last
+      // Update albums table (share_links will auto-update via ON UPDATE CASCADE)
       const albumStmt = db.prepare(`
         UPDATE albums 
         SET name = ? 

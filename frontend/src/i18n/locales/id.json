@@ -359,7 +359,12 @@
     "maxRetryAttemptsReached": "Jumlah percobaan ulang maksimum ({{maxRetries}}) tercapai untuk {{filename}}",
     "successfullyUploaded": "Berhasil mengunggah {{filename}}",
     "retryFailed": "Percobaan ulang gagal untuk {{filename}}",
-    "noValidImageFiles": "Tidak ada file gambar yang valid ditemukan. Silakan pilih gambar JPEG, PNG, GIF, atau WebP."
+    "noValidImageFiles": "Tidak ada file gambar yang valid ditemukan. Silakan pilih gambar JPEG, PNG, GIF, atau WebP.",
+    "renameAlbumFailed": "Gagal mengganti nama album  ",
+    "invalidAlbumName": "Nama album tidak valid  ",
+    "nameUnchanged": "Nama album tidak berubah  ",
+    "albumNotFound": "Album tidak ditemukan  ",
+    "databaseUpdateFailed": "Gagal memperbarui basis data"
   },
   "settings": {
     "saved": "Pengaturan {{section}} disimpan!",

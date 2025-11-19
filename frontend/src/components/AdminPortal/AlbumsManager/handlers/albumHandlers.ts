@@ -276,7 +276,39 @@ export const createAlbumHandlers = (props: AlbumHandlersProps) => {
 
     if (!res.ok) {
       const errorData = await res.json();
-      throw new Error(errorData.error || 'Failed to rename album');
+      
+      // Map error codes to translated messages
+      const errorCode = errorData.errorCode;
+      let errorMessage: string;
+      
+      switch (errorCode) {
+        case 'INVALID_ALBUM_NAME':
+        case 'INVALID_NEW_NAME':
+          errorMessage = t('albumsManager.invalidAlbumName');
+          break;
+        case 'NAME_REQUIRED':
+          errorMessage = t('albumsManager.albumNameRequired');
+          break;
+        case 'NAME_UNCHANGED':
+          errorMessage = t('albumsManager.nameUnchanged');
+          break;
+        case 'ALBUM_NOT_FOUND':
+          errorMessage = t('albumsManager.albumNotFound');
+          break;
+        case 'ALBUM_EXISTS':
+          errorMessage = t('albumsManager.albumAlreadyExists', { albumName: sanitized });
+          break;
+        case 'DATABASE_UPDATE_FAILED':
+          errorMessage = t('albumsManager.databaseUpdateFailed');
+          break;
+        case 'RENAME_FAILED':
+          errorMessage = t('albumsManager.renameAlbumFailed');
+          break;
+        default:
+          errorMessage = errorData.error || t('albumsManager.renameAlbumFailed');
+      }
+      
+      throw new Error(errorMessage);
     }
 
     trackAlbumRenamed(oldName, sanitized);

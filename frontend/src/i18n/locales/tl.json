@@ -359,7 +359,12 @@
     "maxRetryAttemptsReached": "Naabot na ang maximum na bilang ng mga pagsubok na muli ({{maxRetries}}) para sa {{filename}}  ",
     "successfullyUploaded": "Matagumpay na na-upload ang {{filename}}  ",
     "retryFailed": "Nabigong muling subukan para sa {{filename}}  ",
-    "noValidImageFiles": "Walang natagpuang wastong mga file ng imahe. Mangyaring pumili ng mga JPEG, PNG, GIF, o WebP na mga imahe."
+    "noValidImageFiles": "Walang natagpuang wastong mga file ng imahe. Mangyaring pumili ng mga JPEG, PNG, GIF, o WebP na mga imahe.",
+    "renameAlbumFailed": "Nabigong palitan ang pangalan ng album  ",
+    "invalidAlbumName": "Hindi wastong pangalan ng album  ",
+    "nameUnchanged": "Walang pagbabago sa pangalan ng album  ",
+    "albumNotFound": "Hindi natagpuan ang album  ",
+    "databaseUpdateFailed": "Nabigong i-update ang database"
   },
   "settings": {
     "saved": "{{section}} mga setting ay na-save!",

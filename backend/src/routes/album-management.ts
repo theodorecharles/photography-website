@@ -365,23 +365,23 @@ router.put("/:album/rename", requireManager, async (req: Request, res: Response)
     
     const sanitizedOldName = sanitizeName(album);
     if (!sanitizedOldName) {
-      res.status(400).json({ error: 'Invalid album name' });
+      res.status(400).json({ errorCode: 'INVALID_ALBUM_NAME', error: 'Invalid album name' });
       return;
     }
     
     if (!newName || typeof newName !== 'string') {
-      res.status(400).json({ error: 'New name is required' });
+      res.status(400).json({ errorCode: 'NAME_REQUIRED', error: 'New name is required' });
       return;
     }
     
     const sanitizedNewName = sanitizeName(newName);
     if (!sanitizedNewName) {
-      res.status(400).json({ error: 'Invalid new album name' });
+      res.status(400).json({ errorCode: 'INVALID_NEW_NAME', error: 'Invalid new album name' });
       return;
     }
     
     if (sanitizedOldName === sanitizedNewName) {
-      res.status(400).json({ error: 'New name is the same as old name' });
+      res.status(400).json({ errorCode: 'NAME_UNCHANGED', error: 'New name is the same as old name' });
       return;
     }
     
@@ -393,13 +393,13 @@ router.put("/:album/rename", requireManager, async (req: Request, res: Response)
     
     // Check if old album exists
     if (!fs.existsSync(oldAlbumPath)) {
-      res.status(404).json({ error: 'Album not found' });
+      res.status(404).json({ errorCode: 'ALBUM_NOT_FOUND', error: 'Album not found' });
       return;
     }
     
     // Check if new name already exists
     if (fs.existsSync(newAlbumPath)) {
-      res.status(409).json({ error: 'An album with that name already exists' });
+      res.status(409).json({ errorCode: 'ALBUM_EXISTS', error: 'An album with that name already exists' });
       return;
     }
     
@@ -428,7 +428,7 @@ router.put("/:album/rename", requireManager, async (req: Request, res: Response)
           fs.renameSync(newOptimizedPath, oldOptimizedPath);
         }
       });
-      res.status(500).json({ error: 'Failed to update database' });
+      res.status(500).json({ errorCode: 'DATABASE_UPDATE_FAILED', error: 'Failed to update database' });
       return;
     }
     
@@ -445,7 +445,7 @@ router.put("/:album/rename", requireManager, async (req: Request, res: Response)
     res.json({ success: true, newName: sanitizedNewName });
   } catch (err) {
     error('[AlbumManagement] Failed to rename album:', err);
-    res.status(500).json({ error: 'Failed to rename album' });
+    res.status(500).json({ errorCode: 'RENAME_FAILED', error: 'Failed to rename album' });
   }
 });
 

@@ -359,7 +359,12 @@
     "maxRetryAttemptsReached": "Maksimale antall forsøk ({{maxRetries}}) nådd for {{filename}}",
     "successfullyUploaded": "Lastet opp {{filename}} med suksess",
     "retryFailed": "Forsøk på nytt mislyktes for {{filename}}",
-    "noValidImageFiles": "Ingen gyldige bildefiler funnet. Vennligst velg JPEG, PNG, GIF eller WebP-bilder."
+    "noValidImageFiles": "Ingen gyldige bildefiler funnet. Vennligst velg JPEG, PNG, GIF eller WebP-bilder.",
+    "renameAlbumFailed": "Feil ved omdøping av album  ",
+    "invalidAlbumName": "Ugyldig albumnavn  ",
+    "nameUnchanged": "Albumnavnet er uendret  ",
+    "albumNotFound": "Album ikke funnet  ",
+    "databaseUpdateFailed": "Feil ved oppdatering av databasen"
   },
   "settings": {
     "saved": "{{section}} innstillinger lagret!",

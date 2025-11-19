@@ -359,7 +359,12 @@
     "maxRetryAttemptsReached": "{{filename}} için maksimum tekrar deneme sayısına ({{maxRetries}}) ulaşıldı",
     "successfullyUploaded": "{{filename}} başarıyla yüklendi",
     "retryFailed": "{{filename}} için tekrar deneme başarısız oldu",
-    "noValidImageFiles": "Geçerli resim dosyası bulunamadı. Lütfen JPEG, PNG, GIF veya WebP resimlerini seçin."
+    "noValidImageFiles": "Geçerli resim dosyası bulunamadı. Lütfen JPEG, PNG, GIF veya WebP resimlerini seçin.",
+    "renameAlbumFailed": "Albüm adı değiştirilemedi  ",
+    "invalidAlbumName": "Geçersiz albüm adı  ",
+    "nameUnchanged": "Albüm adı değişmedi  ",
+    "albumNotFound": "Albüm bulunamadı  ",
+    "databaseUpdateFailed": "Veritabanı güncellenemedi"
   },
   "settings": {
     "saved": "{{section}} ayarları kaydedildi!",

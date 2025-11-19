@@ -359,7 +359,12 @@
     "maxRetryAttemptsReached": "{{filename}}の最大再試行回数（{{maxRetries}}）に達しました",
     "successfullyUploaded": "{{filename}}のアップロードに成功しました",
     "retryFailed": "{{filename}}の再試行に失敗しました",
-    "noValidImageFiles": "有効な画像ファイルが見つかりませんでした。JPEG、PNG、GIF、またはWebP画像を選択してください。"
+    "noValidImageFiles": "有効な画像ファイルが見つかりませんでした。JPEG、PNG、GIF、またはWebP画像を選択してください。",
+    "renameAlbumFailed": "アルバムの名前の変更に失敗しました  ",
+    "invalidAlbumName": "無効なアルバム名  ",
+    "nameUnchanged": "アルバム名は変更されていません  ",
+    "albumNotFound": "アルバムが見つかりません  ",
+    "databaseUpdateFailed": "データベースの更新に失敗しました"
   },
   "settings": {
     "saved": "{{section}}設定が保存されました！",
