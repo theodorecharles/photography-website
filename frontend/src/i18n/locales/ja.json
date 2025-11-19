@@ -169,7 +169,13 @@
     "failedToSaveSetting": "設定の保存に失敗しました",
     "errorSavingLicense": "ライセンスの保存中にエラーが発生しました",
     "errorSavingLanguage": "言語の保存中にエラーが発生しました",
-    "errorSavingSetting": "設定の保存中にエラーが発生しました"
+    "errorSavingSetting": "設定の保存中にエラーが発生しました",
+    "logoSaved": "ロゴが正常に保存されました！",
+    "siteNameSaved": "サイト名が正常に保存されました！",
+    "primaryColorSaved": "プライマリカラーが正常に保存されました！",
+    "secondaryColorSaved": "セカンダリカラーが正常に保存されました！",
+    "metaDescriptionSaved": "メタディスクリプションが正常に保存されました！",
+    "metaKeywordsSaved": "メタキーワードが正常に保存されました！"
   },
   "license": {
     "title": "写真ライセンス",
@@ -213,7 +219,7 @@
     "create": "作成",
     "cancel": "キャンセル",
     "deleteAlbum": "アルバムを削除",
-    "deleteAlbumConfirm": "「{{albumName}}」を削除してもよろしいですか？これにより、このアルバム内のすべての写真も削除されます。",
+    "deleteAlbumConfirm": "アルバム「{{albumName}}」を削除してもよろしいですか？\n\nこの操作により、このアルバム内のすべての写真が永久に削除されます。\n\nこの操作は元に戻すことができません。",
     "renameAlbum": "アルバムの名前を変更",
     "newName": "新しい名前",
     "newNamePlaceholder": "新しい名前を入力",
@@ -315,6 +321,9 @@
     "albumsInPublishedFolders": "公開フォルダ内のアルバムは常に公開されています",
     "albumWillBePrivate": "🔒 アルバムは非公開になります",
     "albumsInUnpublishedFolders": "非公開フォルダ内のアルバムは常に非公開です",
+    "moveToFolderTitle": "「{{albumName}}」をフォルダに移動",
+    "moveToFolderHint": "移動先のフォルダを選択するか、「未分類」を選択してフォルダから削除してください。",
+    "currentFolder": "現在",
     "title": "アルバム",
     "description": "写真アルバムを管理し、新しい画像をアップロードします。",
     "uploadInProgress": "アップロード中",
@@ -322,7 +331,28 @@
     "moveDown": "下に移動",
     "cannotPublishEmptyFolder": "空のフォルダーを公開できません",
     "deleteFolderTitle": "フォルダーを削除",
-    "album": "アルバム"
+    "album": "アルバム",
+    "albums": "アルバム",
+    "changesDiscarded": "変更は破棄されました  ",
+    "deletePhotoQuestion": "写真を削除しますか？  ",
+    "confirmAction": "アクションを確認する",
+    "albumDeleted": "アルバム \"{{albumName}}\" が削除されました  ",
+    "albumRenamed": "アルバムの名前が \"{{albumName}}\" に変更されました  ",
+    "albumAlreadyExists": "アルバム \"{{albumName}}\" はすでに存在します  ",
+    "failedToSaveChangesBeforeDeletingAlbum": "アルバムを削除する前に変更を保存できませんでした  ",
+    "failedToSaveChangesBeforeDeletingFolder": "フォルダーを削除する前に変更を保存できませんでした  ",
+    "networkErrorOccurred": "ネットワークエラーが発生しました  ",
+    "folderDeleted": "フォルダー \"{{folderName}}\" が削除されました  ",
+    "folderActionCompleted": "フォルダー \"{{folderName}}\" {{action}}  ",
+    "retryingOptimization": "{{filename}} の最適化を再試行しています...  ",
+    "optimizationRestarted": "{{filename}} の最適化が再起動されました",
+    "retryingAIGeneration": "{{filename}}のAIタイトル生成を再試行中...",
+    "aiGenerationRestarted": "{{filename}}のAIタイトル生成が再起動されました",
+    "failedToDeletePhoto": "写真の削除に失敗しました",
+    "maxRetryAttemptsReached": "{{filename}}の最大再試行回数（{{maxRetries}}）に達しました",
+    "successfullyUploaded": "{{filename}}のアップロードに成功しました",
+    "retryFailed": "{{filename}}の再試行に失敗しました",
+    "noValidImageFiles": "有効な画像ファイルが見つかりませんでした。JPEG、PNG、GIF、またはWebP画像を選択してください。"
   },
   "settings": {
     "saved": "{{section}}設定が保存されました！",
@@ -675,6 +705,23 @@
       "totalCount": "総カウント",
       "percentage": "割合",
       "percentageText": "全イベントの{{percentage}}%"
+    },
+    "map": {
+      "loadingMapData": "マップデータを読み込み中...",
+      "noLocationData": "この期間の訪問者位置データがありません",
+      "visitorActivity": "訪問者アクティビティ",
+      "low": "低",
+      "medium": "中",
+      "high": "高",
+      "totalVisits": "総訪問数",
+      "uniqueVisitors": "ユニークビジター"
+    },
+    "charts": {
+      "loadingChartData": "チャートデータを読み込み中...",
+      "noVisitorData": "この期間の訪問者データがありません",
+      "noPageviewData": "この期間の時間別ページビューデータがありません",
+      "visitors": "訪問者",
+      "pageviews": "ページビュー"
     }
   },
   "imageOptimization": {

@@ -168,9 +168,9 @@ const PhotoGridItem: React.FC<PhotoGridItemProps> = ({
     ? `${API_URL}${photoData.thumbnail}?i=${cacheBustValue}`
     : uploadingImage?.thumbnailUrl;
 
-  // Only use custom touch handlers on touch devices when NOT in drag mode
+  // Use custom touch handlers on touch devices (overlay tap to show/hide)
   const isTouchDevice = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
-  const useCustomTouchHandlers = isTouchDevice && !canEdit;
+  const useCustomTouchHandlers = isTouchDevice;
   
   const handleTouchStart = (e: React.TouchEvent) => {
     if (isUploading || isDragging) return;

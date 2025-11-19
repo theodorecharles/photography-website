@@ -169,7 +169,13 @@
     "failedToSaveSetting": "保存设置失败",
     "errorSavingLicense": "保存许可时出错",
     "errorSavingLanguage": "保存语言时出错",
-    "errorSavingSetting": "保存设置时出错"
+    "errorSavingSetting": "保存设置时出错",
+    "logoSaved": "徽标保存成功！",
+    "siteNameSaved": "网站名称保存成功！",
+    "primaryColorSaved": "主色保存成功！",
+    "secondaryColorSaved": "副色保存成功！",
+    "metaDescriptionSaved": "元描述保存成功！",
+    "metaKeywordsSaved": "元关键词保存成功！"
   },
   "license": {
     "title": "照片许可",
@@ -213,7 +219,7 @@
     "create": "创建",
     "cancel": "取消",
     "deleteAlbum": "删除相册",
-    "deleteAlbumConfirm": "您确定要删除 \"{{albumName}}\" 吗？这也会删除此相册中的所有照片。",
+    "deleteAlbumConfirm": "您确定要删除相册 \"{{albumName}}\" 吗？\n\n这将永久删除该相册中的所有照片。\n\n此操作无法撤销。",
     "renameAlbum": "重命名相册",
     "newName": "新名称",
     "newNamePlaceholder": "输入新名称",
@@ -322,7 +328,31 @@
     "moveDown": "向下移动",
     "cannotPublishEmptyFolder": "无法发布空文件夹",
     "deleteFolderTitle": "删除文件夹",
-    "album": "相册"
+    "album": "相册",
+    "albums": "相册",
+    "moveToFolderTitle": "将 \"{{albumName}}\" 移动到文件夹  ",
+    "moveToFolderHint": "选择目标文件夹或选择“未分类”以从任何文件夹中移除。  ",
+    "currentFolder": "当前  ",
+    "changesDiscarded": "更改已丢弃  ",
+    "deletePhotoQuestion": "删除照片？  ",
+    "confirmAction": "确认操作",
+    "albumDeleted": "相册 \"{{albumName}}\" 已删除  ",
+    "albumRenamed": "相册重命名为 \"{{albumName}}\"  ",
+    "albumAlreadyExists": "相册 \"{{albumName}}\" 已存在  ",
+    "failedToSaveChangesBeforeDeletingAlbum": "在删除相册之前保存更改失败  ",
+    "failedToSaveChangesBeforeDeletingFolder": "在删除文件夹之前保存更改失败  ",
+    "networkErrorOccurred": "发生网络错误  ",
+    "folderDeleted": "文件夹 \"{{folderName}}\" 已删除  ",
+    "folderActionCompleted": "文件夹 \"{{folderName}}\" {{action}}  ",
+    "retryingOptimization": "正在重试对 {{filename}} 的优化...  ",
+    "optimizationRestarted": "已重新启动对 {{filename}} 的优化",
+    "retryingAIGeneration": "正在重试 AI 标题生成 {{filename}}...",
+    "aiGenerationRestarted": "AI 标题生成已重新启动 {{filename}}",
+    "failedToDeletePhoto": "删除照片失败",
+    "maxRetryAttemptsReached": "已达到最大重试次数 ({{maxRetries}}) 对于 {{filename}}",
+    "successfullyUploaded": "成功上传 {{filename}}",
+    "retryFailed": "重试失败 {{filename}}",
+    "noValidImageFiles": "未找到有效的图像文件。请选取 JPEG、PNG、GIF 或 WebP 格式的图像。"
   },
   "settings": {
     "saved": "{{section}} 设置已保存！",
@@ -675,6 +705,23 @@
       "totalCount": "总计数",
       "percentage": "百分比",
       "percentageText": "占所有事件的 {{percentage}}%"
+    },
+    "map": {
+      "loadingMapData": "正在加载地图数据...  ",
+      "noLocationData": "此时间范围内没有访客位置数据可用  ",
+      "visitorActivity": "访客活动  ",
+      "low": "低  ",
+      "medium": "中  ",
+      "high": "高  ",
+      "totalVisits": "总访问次数",
+      "uniqueVisitors": "独立访客  "
+    },
+    "charts": {
+      "loadingChartData": "加载图表数据...  ",
+      "noVisitorData": "此时间范围内没有访客数据可用  ",
+      "noPageviewData": "此时间范围内没有每小时页面浏览数据可用  ",
+      "visitors": "访客  ",
+      "pageviews": "页面浏览量"
     }
   },
   "imageOptimization": {

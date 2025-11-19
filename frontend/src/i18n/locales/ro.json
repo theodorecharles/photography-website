@@ -169,7 +169,13 @@
     "failedToSaveSetting": "Nu s-a putut salva setarea",
     "errorSavingLicense": "Eroare la salvarea licenței",
     "errorSavingLanguage": "Eroare la salvarea limbii",
-    "errorSavingSetting": "Eroare la salvarea setării"
+    "errorSavingSetting": "Eroare la salvarea setării",
+    "logoSaved": "Logo salvat cu succes!  ",
+    "siteNameSaved": "Numele site-ului salvat cu succes!  ",
+    "primaryColorSaved": "Culoare principală salvată cu succes!  ",
+    "secondaryColorSaved": "Culoare secundară salvată cu succes!  ",
+    "metaDescriptionSaved": "Descriere meta salvată cu succes!  ",
+    "metaKeywordsSaved": "Cuvinte cheie meta salvate cu succes!"
   },
   "license": {
     "title": "Licența foto",
@@ -215,7 +221,7 @@
     "create": "Creează",
     "cancel": "Anulează",
     "deleteAlbum": "Șterge Albumul",
-    "deleteAlbumConfirm": "Ești sigur că vrei să ștergi \"{{albumName}}\"? Acest lucru va șterge și toate fotografiile din acest album.",
+    "deleteAlbumConfirm": "Ești sigur că vrei să ștergi albumul \"{{albumName}}\"?\n\nAceasta va șterge permanent toate fotografiile din acest album.\n\nAceastă acțiune nu poate fi anulată.",
     "renameAlbum": "Renumește Albumul",
     "newName": "Nume Nou",
     "newNamePlaceholder": "Introdu noul nume",
@@ -259,6 +265,7 @@
     "cannotPublishEmptyFolder": "Nu se poate publica un folder gol",
     "deleteFolderTitle": "Șterge folderul",
     "album": "album",
+    "albums": "albume",
     "loadingPhotos": "Se încarcă fotografiile...",
     "savingOrder": "Se salvează ordinea...",
     "saveOrder": "Salvează ordinea",
@@ -322,7 +329,30 @@
     "albumWillBePublished": "✓ Albumul va fi publicat imediat",
     "albumsInPublishedFolders": "Albumele din folderele publicate sunt întotdeauna publicate",
     "albumWillBePrivate": "🔒 Albumul va fi privat",
-    "albumsInUnpublishedFolders": "Albumele din folderele nepublicate sunt întotdeauna private"
+    "albumsInUnpublishedFolders": "Albumele din folderele nepublicate sunt întotdeauna private",
+    "moveToFolderTitle": "Mută \"{{albumName}}\" în folder  ",
+    "moveToFolderHint": "Selectați un folder de destinație sau alegeți Fără categorie pentru a elimina din orice folder.  ",
+    "currentFolder": "Curent  ",
+    "changesDiscarded": "Modificările au fost abandonate  ",
+    "deletePhotoQuestion": "Șterge fotografia?  ",
+    "confirmAction": "Confirmă acțiunea",
+    "albumDeleted": "Albumul \"{{albumName}}\" a fost șters  ",
+    "albumRenamed": "Album redenumit în \"{{albumName}}\"  ",
+    "albumAlreadyExists": "Albumul \"{{albumName}}\" există deja  ",
+    "failedToSaveChangesBeforeDeletingAlbum": "Nu s-au putut salva modificările înainte de a șterge albumul  ",
+    "failedToSaveChangesBeforeDeletingFolder": "Nu s-au putut salva modificările înainte de a șterge folderul  ",
+    "networkErrorOccurred": "A apărut o eroare de rețea  ",
+    "folderDeleted": "Folderul \"{{folderName}}\" a fost șters  ",
+    "folderActionCompleted": "Folderul \"{{folderName}}\" {{action}}  ",
+    "retryingOptimization": "Se reîncercă optimizarea pentru {{filename}}...  ",
+    "optimizationRestarted": "Optimizarea a fost repornită pentru {{filename}}",
+    "retryingAIGeneration": "Se reîncercă generarea titlului AI pentru {{filename}}...",
+    "aiGenerationRestarted": "Generarea titlului AI a fost repornită pentru {{filename}}",
+    "failedToDeletePhoto": "Ștergerea fotografiei a eșuat",
+    "maxRetryAttemptsReached": "S-a atins numărul maxim de încercări ({{maxRetries}}) pentru {{filename}}",
+    "successfullyUploaded": "{{filename}} a fost încărcat cu succes",
+    "retryFailed": "Reîncercarea a eșuat pentru {{filename}}",
+    "noValidImageFiles": "Nu au fost găsite fișiere de imagine valide. Vă rugăm să selectați imagini JPEG, PNG, GIF sau WebP."
   },
   "settings": {
     "saved": "Setările {{section}} au fost salvate!",
@@ -675,6 +705,23 @@
       "totalCount": "Număr total",
       "percentage": "Procentaj",
       "percentageText": "{{percentage}}% din toate evenimentele"
+    },
+    "map": {
+      "loadingMapData": "Se încarcă datele hărții...  ",
+      "noLocationData": "Nu sunt disponibile date despre locația vizitatorilor pentru această perioadă de timp  ",
+      "visitorActivity": "Activitate vizitatori  ",
+      "low": "Scăzut  ",
+      "medium": "Medie  ",
+      "high": "Ridicat  ",
+      "totalVisits": "Vizite totale",
+      "uniqueVisitors": "Vizitatori unici  "
+    },
+    "charts": {
+      "loadingChartData": "Încărcare date grafic...  ",
+      "noVisitorData": "Nu sunt disponibile date despre vizitatori pentru această perioadă  ",
+      "noPageviewData": "Nu sunt disponibile date despre vizualizările pe oră pentru această perioadă  ",
+      "visitors": "Vizitatori  ",
+      "pageviews": "Vizualizări de pagină"
     }
   },
   "imageOptimization": {

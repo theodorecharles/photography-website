@@ -169,7 +169,13 @@
     "failedToSaveSetting": "Kunne ikke lagre innstilling",
     "errorSavingLicense": "Feil ved lagring av lisens",
     "errorSavingLanguage": "Feil ved lagring av språk",
-    "errorSavingSetting": "Feil ved lagring av innstilling"
+    "errorSavingSetting": "Feil ved lagring av innstilling",
+    "logoSaved": "Logo lagret vellykket!  ",
+    "siteNameSaved": "Nettstedsnavn lagret vellykket!  ",
+    "primaryColorSaved": "Primærfarge lagret vellykket!  ",
+    "secondaryColorSaved": "Sekundærfarge lagret vellykket!  ",
+    "metaDescriptionSaved": "Meta-beskrivelse lagret vellykket!  ",
+    "metaKeywordsSaved": "Meta-nøkkelord lagret vellykket!"
   },
   "license": {
     "title": "Fotolisens",
@@ -213,7 +219,7 @@
     "create": "Opprett",
     "cancel": "Avbryt",
     "deleteAlbum": "Slett album",
-    "deleteAlbumConfirm": "Er du sikker på at du vil slette \"{{albumName}}\"? Dette vil også slette alle bilder i dette albumet.",
+    "deleteAlbumConfirm": "Er du sikker på at du vil slette albumet \"{{albumName}}\"?\n\nDette vil permanent slette alle bilder i dette albumet.\n\nDenne handlingen kan ikke angres.",
     "renameAlbum": "Gi nytt navn til album",
     "newName": "Nytt navn",
     "newNamePlaceholder": "Skriv inn nytt navn",
@@ -322,7 +328,31 @@
     "moveDown": "Flytt ned",
     "cannotPublishEmptyFolder": "Kan ikke publisere tom mappe",
     "deleteFolderTitle": "Slett mappe",
-    "album": "album"
+    "album": "album",
+    "albums": "album",
+    "moveToFolderTitle": "Flytt \"{{albumName}}\" til mappe  ",
+    "moveToFolderHint": "Velg en destinasjonsmappe eller velg Uklassifisert for å fjerne fra enhver mappe.  ",
+    "currentFolder": "Nåværende  ",
+    "changesDiscarded": "Endringer forkastet  ",
+    "deletePhotoQuestion": "Slette foto?  ",
+    "confirmAction": "Bekreft handling",
+    "albumDeleted": "Album \"{{albumName}}\" slettet  ",
+    "albumRenamed": "Album omdøpt til \"{{albumName}}\"  ",
+    "albumAlreadyExists": "Album \"{{albumName}}\" eksisterer allerede  ",
+    "failedToSaveChangesBeforeDeletingAlbum": "Kunne ikke lagre endringer før album ble slettet  ",
+    "failedToSaveChangesBeforeDeletingFolder": "Kunne ikke lagre endringer før mappe ble slettet  ",
+    "networkErrorOccurred": "Det oppstod en nettverksfeil  ",
+    "folderDeleted": "Mappe \"{{folderName}}\" slettet  ",
+    "folderActionCompleted": "Mappe \"{{folderName}}\" {{action}}  ",
+    "retryingOptimization": "Prøver å optimalisere {{filename}} på nytt...  ",
+    "optimizationRestarted": "Optimalisering startet på nytt for {{filename}}",
+    "retryingAIGeneration": "Prøver igjen å generere AI-titler for {{filename}}...",
+    "aiGenerationRestarted": "AI-tittelgenerering startet på nytt for {{filename}}",
+    "failedToDeletePhoto": "Kunne ikke slette bildet",
+    "maxRetryAttemptsReached": "Maksimale antall forsøk ({{maxRetries}}) nådd for {{filename}}",
+    "successfullyUploaded": "Lastet opp {{filename}} med suksess",
+    "retryFailed": "Forsøk på nytt mislyktes for {{filename}}",
+    "noValidImageFiles": "Ingen gyldige bildefiler funnet. Vennligst velg JPEG, PNG, GIF eller WebP-bilder."
   },
   "settings": {
     "saved": "{{section}} innstillinger lagret!",
@@ -675,6 +705,23 @@
       "totalCount": "Totalt antall",
       "percentage": "Prosent",
       "percentageText": "{{percentage}}% av alle hendelser"
+    },
+    "map": {
+      "loadingMapData": "Laster kartdata...  ",
+      "noLocationData": "Ingen besøksdata tilgjengelig for dette tidsrommet  ",
+      "visitorActivity": "Besøkendes aktivitet  ",
+      "low": "Lav  ",
+      "medium": "Moderat  ",
+      "high": "Høy  ",
+      "totalVisits": "Totalt antall besøk",
+      "uniqueVisitors": "Unike besøkende  "
+    },
+    "charts": {
+      "loadingChartData": "Laster inn diagramdata...  ",
+      "noVisitorData": "Ingen besøksdata tilgjengelig for dette tidsintervallet  ",
+      "noPageviewData": "Ingen timevisninger tilgjengelig for dette tidsintervallet  ",
+      "visitors": "Besøkende  ",
+      "pageviews": "Sidevisninger"
     }
   },
   "imageOptimization": {

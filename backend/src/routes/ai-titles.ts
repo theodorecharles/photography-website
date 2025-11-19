@@ -137,7 +137,7 @@ router.post('/stop', requireManager, (req: any, res: any) => {
  */
 router.post('/generate-single', requireManager, async (req: any, res: any) => {
   try {
-    const { album, filename } = req.body;
+    const { album, filename, language = 'en' } = req.body;
     
     if (!album || !filename) {
       return res.status(400).json({ error: 'Album and filename are required' });
@@ -188,6 +188,32 @@ router.post('/generate-single', requireManager, async (req: any, res: any) => {
     
     info(`[AITitles] Using image: ${imagePath} (${(imageBuffer.length / 1024).toFixed(1)} KB)`);
     
+    // Language names for prompt
+    const languageNames: Record<string, string> = {
+      en: 'English',
+      ja: 'Japanese',
+      es: 'Spanish',
+      fr: 'French',
+      de: 'German',
+      it: 'Italian',
+      pt: 'Portuguese',
+      ru: 'Russian',
+      zh: 'Chinese',
+      ko: 'Korean',
+      nl: 'Dutch',
+      pl: 'Polish',
+      tr: 'Turkish',
+      sv: 'Swedish',
+      no: 'Norwegian',
+      ro: 'Romanian',
+      vi: 'Vietnamese',
+      id: 'Indonesian',
+      tl: 'Tagalog'
+    };
+    
+    const languageName = languageNames[language] || 'English';
+    const promptText = `Generate a concise, descriptive title for this image in ${languageName}. The title should be 3-8 words and capture the essence of the image. Output ONLY the title in ${languageName}, nothing else.`;
+    
     // Call OpenAI Vision API (same prompt as upload flow)
     const response = await openai.chat.completions.create({
       model: "gpt-4o-mini",
@@ -197,7 +223,7 @@ router.post('/generate-single', requireManager, async (req: any, res: any) => {
           content: [
             {
               type: "text",
-              text: "Generate a concise, descriptive title for this image. The title should be 3-8 words and capture the essence of the image. Output ONLY the title, nothing else."
+              text: promptText
             },
             {
               type: "image_url",

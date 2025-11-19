@@ -634,6 +634,71 @@ Photography portfolio website with React 19, TypeScript, Express 5, and SQLite.
 - Disable animations causing jumpy behavior
 - Test on < 600px viewport
 
+## Localization
+
+**Rule**: ALL user-facing text MUST be localized using i18n. NEVER hardcode English strings in UI components.
+
+### Adding New Localized Strings
+
+**Workflow**:
+
+1. **Add to English locale** (`frontend/src/i18n/locales/en.json`):
+   - Add keys with actual English text
+   - Use descriptive key names (e.g., `albumsManager.changesDiscarded`)
+   - Group related keys logically in sections
+
+2. **Add placeholder keys to other languages**:
+   - Copy the same keys to all language files
+   - Prefix the English text with `[EN]` (e.g., `"changesDiscarded": "[EN] Changes discarded"`)
+   - This marks them for auto-translation
+
+3. **Run auto-translate script**:
+   ```bash
+   node scripts/auto-translate.js
+   ```
+   - Uses OpenAI GPT-4 to translate `[EN]` placeholders
+   - Translates to all 18 supported languages
+   - Preserves formatting, variables, and HTML tags
+
+4. **Validate translations**:
+   ```bash
+   node scripts/validate-translation-schema.js
+   ```
+   - Ensures all languages have matching keys
+   - Detects missing or extra translations
+   - Validates variable consistency (e.g., `{{variable}}`)
+
+5. **Rebuild frontend**:
+   ```bash
+   cd frontend && npm run build
+   pm2 restart frontend
+   ```
+
+### Translation Guidelines
+
+**DO**:
+- Use `t('section.key')` for all UI text
+- Keep keys descriptive and organized by feature
+- Use variables for dynamic content: `"Welcome {{name}}"`
+- Test in at least one non-English language
+
+**DON'T**:
+- Hardcode strings like `"Delete Photo?"` directly in components
+- Split sentences across multiple keys (breaks translation context)
+- Use string concatenation (word order differs by language)
+- Forget to run auto-translate after adding new keys
+
+### Supported Languages
+
+**18 languages total**: English (en), Spanish (es), French (fr), German (de), Japanese (ja), Dutch (nl), Italian (it), Portuguese (pt), Russian (ru), Chinese Simplified (zh), Korean (ko), Polish (pl), Turkish (tr), Swedish (sv), Norwegian (no), Romanian (ro), Filipino/Tagalog (tl), Vietnamese (vi), Indonesian (id)
+
+### Files
+
+- **Locale files**: `frontend/src/i18n/locales/*.json`
+- **Auto-translate**: `scripts/auto-translate.js`
+- **Validation**: `scripts/validate-translation-schema.js`
+- **Fix script**: `scripts/fix-translations.js` (for bulk fixes)
+
 ## Documentation
 
 ### Rules

@@ -3,6 +3,7 @@
  */
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   AreaChart,
   Area,
@@ -21,12 +22,14 @@ interface PageviewsChartProps {
 }
 
 const PageviewsChart: React.FC<PageviewsChartProps> = ({ data, loading, secondaryColor }) => {
+  const { t } = useTranslation();
+  
   if (loading) {
-    return <div className="chart-loading">Loading chart data...</div>;
+    return <div className="chart-loading">{t('metrics.charts.loadingChartData')}</div>;
   }
 
   if (data.length === 0) {
-    return <div className="no-data">No hourly pageview data available for this time range</div>;
+    return <div className="no-data">{t('metrics.charts.noPageviewData')}</div>;
   }
 
   return (
@@ -79,7 +82,7 @@ const PageviewsChart: React.FC<PageviewsChartProps> = ({ data, loading, secondar
             }}
             labelStyle={{ color: '#f9fafb', fontWeight: 600 }}
             itemStyle={{ color: secondaryColor }}
-            formatter={(value: number) => [value, 'Pageviews']}
+            formatter={(value: number) => [value, t('metrics.charts.pageviews')]}
           />
           <Area 
             type="linear" 

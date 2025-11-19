@@ -4,6 +4,7 @@
  */
 
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { MapContainer, TileLayer, CircleMarker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import './VisitorMap.css';
@@ -18,6 +19,7 @@ interface VisitorMapProps {
 }
 
 export default function VisitorMap({ locations, loading }: VisitorMapProps) {
+  const { t } = useTranslation();
   const [maxVisits, setMaxVisits] = useState(0);
 
   useEffect(() => {
@@ -33,7 +35,7 @@ export default function VisitorMap({ locations, loading }: VisitorMapProps) {
     return (
       <div className="visitor-map-loading">
         <div className="loading-spinner"></div>
-        <p>Loading map data...</p>
+        <p>{t('metrics.map.loadingMapData')}</p>
       </div>
     );
   }
@@ -41,7 +43,7 @@ export default function VisitorMap({ locations, loading }: VisitorMapProps) {
   if (locations.length === 0) {
     return (
       <div className="visitor-map-empty">
-        <p>No visitor location data available for this time range</p>
+        <p>{t('metrics.map.noLocationData')}</p>
       </div>
     );
   }
@@ -83,11 +85,11 @@ export default function VisitorMap({ locations, loading }: VisitorMapProps) {
                 </div>
                 <div className="popup-stats">
                   <div className="popup-stat">
-                    <span className="stat-label">Total Visits:</span>
+                    <span className="stat-label">{t('metrics.map.totalVisits')}:</span>
                     <span className="stat-value">{location.visit_count.toLocaleString()}</span>
                   </div>
                   <div className="popup-stat">
-                    <span className="stat-label">Unique Visitors:</span>
+                    <span className="stat-label">{t('metrics.map.uniqueVisitors')}:</span>
                     <span className="stat-value">{location.unique_visitors.toLocaleString()}</span>
                   </div>
                 </div>
@@ -97,19 +99,19 @@ export default function VisitorMap({ locations, loading }: VisitorMapProps) {
         ))}
       </MapContainer>
       <div className="visitor-map-legend">
-        <div className="legend-title">Visitor Activity</div>
+        <div className="legend-title">{t('metrics.map.visitorActivity')}</div>
         <div className="legend-items">
           <div className="legend-item">
             <div className="legend-marker legend-marker-low"></div>
-            <span>Low</span>
+            <span>{t('metrics.map.low')}</span>
           </div>
           <div className="legend-item">
             <div className="legend-marker legend-marker-medium"></div>
-            <span>Medium</span>
+            <span>{t('metrics.map.medium')}</span>
           </div>
           <div className="legend-item">
             <div className="legend-marker legend-marker-high"></div>
-            <span>High</span>
+            <span>{t('metrics.map.high')}</span>
           </div>
         </div>
       </div>

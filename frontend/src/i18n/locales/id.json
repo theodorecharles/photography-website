@@ -169,7 +169,13 @@
     "failedToSaveSetting": "Gagal menyimpan pengaturan",
     "errorSavingLicense": "Kesalahan saat menyimpan lisensi",
     "errorSavingLanguage": "Kesalahan saat menyimpan bahasa",
-    "errorSavingSetting": "Kesalahan saat menyimpan pengaturan"
+    "errorSavingSetting": "Kesalahan saat menyimpan pengaturan",
+    "logoSaved": "Logo berhasil disimpan!",
+    "siteNameSaved": "Nama Situs berhasil disimpan!",
+    "primaryColorSaved": "Warna Utama berhasil disimpan!",
+    "secondaryColorSaved": "Warna Sekunder berhasil disimpan!",
+    "metaDescriptionSaved": "Deskripsi Meta berhasil disimpan!",
+    "metaKeywordsSaved": "Kata Kunci Meta berhasil disimpan!"
   },
   "license": {
     "title": "Lisensi Foto",
@@ -215,7 +221,7 @@
     "create": "Buat",
     "cancel": "Batal",
     "deleteAlbum": "Hapus Album",
-    "deleteAlbumConfirm": "Apakah Anda yakin ingin menghapus \"{{albumName}}\"? Ini juga akan menghapus semua foto dalam album ini.",
+    "deleteAlbumConfirm": "Apakah Anda yakin ingin menghapus album \"{{albumName}}\"?\n\nIni akan menghapus semua foto di album ini secara permanen.\n\nTindakan ini tidak dapat dibatalkan.",
     "renameAlbum": "Ganti Nama Album",
     "newName": "Nama Baru",
     "newNamePlaceholder": "Masukkan nama baru",
@@ -259,6 +265,7 @@
     "cannotPublishEmptyFolder": "Tidak dapat menerbitkan folder kosong",
     "deleteFolderTitle": "Hapus folder",
     "album": "album",
+    "albums": "album",
     "loadingPhotos": "Memuat foto...",
     "savingOrder": "Menyimpan urutan...",
     "saveOrder": "Simpan Urutan",
@@ -322,7 +329,30 @@
     "albumWillBePublished": "✓ Album akan diterbitkan segera",
     "albumsInPublishedFolders": "Album di folder yang diterbitkan selalu diterbitkan",
     "albumWillBePrivate": "🔒 Album akan bersifat pribadi",
-    "albumsInUnpublishedFolders": "Album di folder yang belum diterbitkan selalu bersifat pribadi"
+    "albumsInUnpublishedFolders": "Album di folder yang belum diterbitkan selalu bersifat pribadi",
+    "moveToFolderTitle": "Pindahkan \"{{albumName}}\" ke Folder  ",
+    "moveToFolderHint": "Pilih folder tujuan atau pilih Tanpa Kategori untuk menghapus dari folder mana pun.  ",
+    "currentFolder": "Saat ini  ",
+    "changesDiscarded": "Perubahan dibatalkan  ",
+    "deletePhotoQuestion": "Hapus Foto?  ",
+    "confirmAction": "Konfirmasi Tindakan",
+    "albumDeleted": "Album \"{{albumName}}\" dihapus  ",
+    "albumRenamed": "Album diubah namanya menjadi \"{{albumName}}\"  ",
+    "albumAlreadyExists": "Album \"{{albumName}}\" sudah ada  ",
+    "failedToSaveChangesBeforeDeletingAlbum": "Gagal menyimpan perubahan sebelum menghapus album  ",
+    "failedToSaveChangesBeforeDeletingFolder": "Gagal menyimpan perubahan sebelum menghapus folder  ",
+    "networkErrorOccurred": "Terjadi kesalahan jaringan  ",
+    "folderDeleted": "Folder \"{{folderName}}\" dihapus  ",
+    "folderActionCompleted": "Folder \"{{folderName}}\" {{action}}  ",
+    "retryingOptimization": "Mencoba kembali optimasi untuk {{filename}}...  ",
+    "optimizationRestarted": "Optimasi dimulai ulang untuk {{filename}}",
+    "retryingAIGeneration": "Mencoba kembali pembuatan judul AI untuk {{filename}}...",
+    "aiGenerationRestarted": "Pembuatan judul AI dimulai ulang untuk {{filename}}",
+    "failedToDeletePhoto": "Gagal menghapus foto",
+    "maxRetryAttemptsReached": "Jumlah percobaan ulang maksimum ({{maxRetries}}) tercapai untuk {{filename}}",
+    "successfullyUploaded": "Berhasil mengunggah {{filename}}",
+    "retryFailed": "Percobaan ulang gagal untuk {{filename}}",
+    "noValidImageFiles": "Tidak ada file gambar yang valid ditemukan. Silakan pilih gambar JPEG, PNG, GIF, atau WebP."
   },
   "settings": {
     "saved": "Pengaturan {{section}} disimpan!",
@@ -675,6 +705,23 @@
       "totalCount": "Total Jumlah",
       "percentage": "Persentase",
       "percentageText": "{{percentage}}% dari semua acara"
+    },
+    "map": {
+      "loadingMapData": "Memuat data peta...  ",
+      "noLocationData": "Tidak ada data lokasi pengunjung yang tersedia untuk rentang waktu ini  ",
+      "visitorActivity": "Aktivitas Pengunjung  ",
+      "low": "Rendah  ",
+      "medium": "Sedang  ",
+      "high": "Tinggi  ",
+      "totalVisits": "Total Kunjungan",
+      "uniqueVisitors": "Pengunjung Unik  "
+    },
+    "charts": {
+      "loadingChartData": "Memuat data grafik...  ",
+      "noVisitorData": "Tidak ada data pengunjung tersedia untuk rentang waktu ini  ",
+      "noPageviewData": "Tidak ada data tampilan halaman per jam tersedia untuk rentang waktu ini  ",
+      "visitors": "Pengunjung  ",
+      "pageviews": "Tampilan Halaman"
     }
   },
   "imageOptimization": {

@@ -57,7 +57,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   setMessage,
   userRole,
 }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   // Check if user can edit (admin or manager)
   const canEdit = userRole === 'admin' || userRole === 'manager';
   const [searchParams, setSearchParams] = useSearchParams();
@@ -481,6 +481,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     saveAlbumOrder: albumManagement.saveAlbumOrder,
     setShowFolderDeleteModal,
     setFolderToDelete,
+    t,
   });
 
   const uploadHandlers = createUploadHandlers({
@@ -492,6 +493,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     selectAlbum,
     setMessage,
     loadAlbums,
+    language: i18n.language,
   });
 
   const albumHandlers = createAlbumHandlers({
@@ -511,6 +513,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     newAlbumName,
     showConfirmation,
     closePhotosPanel: photosPanelCloseHandler || undefined,
+    t,
   });
 
   const uiHandlers = createUIInteractionHandlers({
@@ -550,6 +553,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     shuffleIntervalRef,
     speedupTimeoutsRef,
     setIsShuffling,
+    t,
   });
 
   // Handlers are accessed via namespace pattern (e.g., dragDropHandlers.handlePhotoDragStart)

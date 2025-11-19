@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Logs</title>
   <style>
     @font-face {
@@ -46,6 +46,11 @@
       overflow-y: scroll;
       overflow-x: auto;
       padding: 4px;
+      /* Add safe area padding for mobile Safari to prevent content being hidden */
+      padding-top: calc(4px + env(safe-area-inset-top, 0px));
+      padding-bottom: calc(4px + env(safe-area-inset-bottom, 0px) + 20px);
+      padding-left: calc(4px + env(safe-area-inset-left, 0px));
+      padding-right: calc(4px + env(safe-area-inset-right, 0px));
     }
 
     .log-line {
@@ -76,6 +81,9 @@
       flex-direction: column;
       align-items: flex-end;
       z-index: 1000;
+      /* Add safe area padding for notch/dynamic island on iPhone */
+      top: calc(10px + env(safe-area-inset-top, 0px));
+      right: calc(10px + env(safe-area-inset-right, 0px));
     }
 
     .control-row {
@@ -141,8 +149,8 @@
 
     @media (max-width: 768px) {
       .controls {
-        top: 5px;
-        right: 5px;
+        top: calc(5px + env(safe-area-inset-top, 0px));
+        right: calc(5px + env(safe-area-inset-right, 0px));
         gap: 6px;
       }
 

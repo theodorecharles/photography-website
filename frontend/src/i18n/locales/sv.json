@@ -169,7 +169,13 @@
     "failedToSaveSetting": "Misslyckades med att spara inställning",
     "errorSavingLicense": "Fel vid sparande av licens",
     "errorSavingLanguage": "Fel vid sparande av språk",
-    "errorSavingSetting": "Fel vid sparande av inställning"
+    "errorSavingSetting": "Fel vid sparande av inställning",
+    "logoSaved": "Logotypen har sparats framgångsrikt!",
+    "siteNameSaved": "Webbplatsnamn har sparats framgångsrikt!",
+    "primaryColorSaved": "Primär färg har sparats framgångsrikt!",
+    "secondaryColorSaved": "Sekundär färg har sparats framgångsrikt!",
+    "metaDescriptionSaved": "Meta-beskrivning har sparats framgångsrikt!",
+    "metaKeywordsSaved": "Meta-nyckelord har sparats framgångsrikt!"
   },
   "license": {
     "title": "Fotolicens",
@@ -213,7 +219,7 @@
     "create": "Skapa",
     "cancel": "Avbryt",
     "deleteAlbum": "Ta bort Album",
-    "deleteAlbumConfirm": "Är du säker på att du vill ta bort \"{{albumName}}\"? Detta kommer också att ta bort alla foton i detta album.",
+    "deleteAlbumConfirm": "Är du säker på att du vill radera albumet \"{{albumName}}\"?\n\nDetta kommer permanent att radera alla foton i detta album.\n\nDenna åtgärd kan inte ångras.",
     "renameAlbum": "Byt namn på Album",
     "newName": "Nytt Namn",
     "newNamePlaceholder": "Ange nytt namn",
@@ -322,7 +328,31 @@
     "moveDown": "Flytta ner",
     "cannotPublishEmptyFolder": "Kan inte publicera tom mapp",
     "deleteFolderTitle": "Ta bort mapp",
-    "album": "album"
+    "album": "album",
+    "albums": "album",
+    "moveToFolderTitle": "Flytta \"{{albumName}}\" till mapp  ",
+    "moveToFolderHint": "Välj en destinationsmapp eller välj Oklassificerad för att ta bort från någon mapp.  ",
+    "currentFolder": "Aktuell  ",
+    "changesDiscarded": "Ändringar borttagna  ",
+    "deletePhotoQuestion": "Ta bort foto?  ",
+    "confirmAction": "Bekräfta åtgärd",
+    "albumDeleted": "Album \"{{albumName}}\" raderad  ",
+    "albumRenamed": "Album omdöpt till \"{{albumName}}\"  ",
+    "albumAlreadyExists": "Album \"{{albumName}}\" finns redan  ",
+    "failedToSaveChangesBeforeDeletingAlbum": "Misslyckades med att spara ändringar innan album raderades  ",
+    "failedToSaveChangesBeforeDeletingFolder": "Misslyckades med att spara ändringar innan mapp raderades  ",
+    "networkErrorOccurred": "Ett nätverksfel inträffade  ",
+    "folderDeleted": "Mapp \"{{folderName}}\" raderad  ",
+    "folderActionCompleted": "Mapp \"{{folderName}}\" {{action}}  ",
+    "retryingOptimization": "Försöker optimera {{filename}} igen...  ",
+    "optimizationRestarted": "Optimering återstartad för {{filename}}",
+    "retryingAIGeneration": "Försöker igen med AI-titelgenerering för {{filename}}...",
+    "aiGenerationRestarted": "AI-titelgenerering har startats om för {{filename}}",
+    "failedToDeletePhoto": "Misslyckades med att ta bort fotot",
+    "maxRetryAttemptsReached": "Maximala försök ({{maxRetries}}) nådda för {{filename}}",
+    "successfullyUploaded": "Uppladdning av {{filename}} lyckades",
+    "retryFailed": "Försök misslyckades för {{filename}}",
+    "noValidImageFiles": "Inga giltiga bildfiler hittades. Vänligen välj JPEG, PNG, GIF eller WebP-bilder."
   },
   "settings": {
     "saved": "{{section}} inställningar sparade!",
@@ -675,6 +705,23 @@
       "totalCount": "Totalt antal",
       "percentage": "Procent",
       "percentageText": "{{percentage}}% av alla händelser"
+    },
+    "map": {
+      "loadingMapData": "Laddar kartdata...  ",
+      "noLocationData": "Ingen besökarplatsdata tillgänglig för detta tidsintervall  ",
+      "visitorActivity": "Besökaraktivitet  ",
+      "low": "Låg  ",
+      "medium": "Medel  ",
+      "high": "Hög  ",
+      "totalVisits": "Totala besök",
+      "uniqueVisitors": "Unika besökare  "
+    },
+    "charts": {
+      "loadingChartData": "Laddar diagramdata...  ",
+      "noVisitorData": "Ingen besöksdata tillgänglig för detta tidsintervall  ",
+      "noPageviewData": "Ingen timvis sidvisningsdata tillgänglig för detta tidsintervall  ",
+      "visitors": "Besökare  ",
+      "pageviews": "Sidvisningar"
     }
   },
   "imageOptimization": {

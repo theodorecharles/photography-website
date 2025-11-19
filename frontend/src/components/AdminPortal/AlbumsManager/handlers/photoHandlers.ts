@@ -3,6 +3,7 @@
  * Handles photo deletion, shuffle functionality, and retry operations
  */
 
+import { TFunction } from 'i18next';
 import { fetchWithRateLimitCheck } from '../../../../utils/fetchWrapper';
 import { API_URL } from '../../../../config';
 import { 
@@ -25,15 +26,16 @@ interface PhotoHandlersProps {
   shuffleIntervalRef: React.MutableRefObject<NodeJS.Timeout | null>;
   speedupTimeoutsRef: React.MutableRefObject<NodeJS.Timeout[]>;
   setIsShuffling: React.Dispatch<React.SetStateAction<boolean>>;
+  t: TFunction;
 }
 
 export const createPhotoHandlers = (props: PhotoHandlersProps) => {
-  const { /* selectedAlbum, */ loadPhotos, shufflePhotos, setMessage, showConfirmation, setAlbumPhotos, setOriginalPhotoOrder, setDeletingPhotoId, shuffleIntervalRef, speedupTimeoutsRef, setIsShuffling } = props;
+  const { /* selectedAlbum, */ loadPhotos, shufflePhotos, setMessage, showConfirmation, setAlbumPhotos, setOriginalPhotoOrder, setDeletingPhotoId, shuffleIntervalRef, speedupTimeoutsRef, setIsShuffling, t } = props;
   
   // Retry optimization for a photo
   const handleRetryOptimization = async (album: string, filename: string): Promise<void> => {
     try {
-      setMessage({ type: 'success', text: `Retrying optimization for ${filename}...` });
+      setMessage({ type: 'success', text: t('albumsManager.retryingOptimization', { filename }) });
       
       // Clear the error state immediately
       setAlbumPhotos((prev: Photo[]) =>
@@ -60,12 +62,12 @@ export const createPhotoHandlers = (props: PhotoHandlersProps) => {
       }
       
       trackPhotoRetryOptimization(album, `${album}/${filename}`);
-      setMessage({ type: 'success', text: `Optimization restarted for ${filename}` });
+      setMessage({ type: 'success', text: t('albumsManager.optimizationRestarted', { filename }) });
       
       // Reload photos to get the updated version
       await loadPhotos(album);
     } catch (err) {
-      setMessage({ type: 'error', text: 'Failed to retry optimization' });
+      setMessage({ type: 'error', text: t('albumsManager.failedToRetryOptimization') });
       // Restore error state
       setAlbumPhotos((prev: Photo[]) =>
         prev.map((photo: Photo) =>
@@ -80,7 +82,7 @@ export const createPhotoHandlers = (props: PhotoHandlersProps) => {
   // Retry AI title generation for a photo
   const handleRetryAI = async (album: string, filename: string): Promise<void> => {
     try {
-      setMessage({ type: 'success', text: `Retrying AI title generation for ${filename}...` });
+      setMessage({ type: 'success', text: t('albumsManager.retryingAIGeneration', { filename }) });
       
       // Clear the error state immediately
       setAlbumPhotos((prev: Photo[]) =>
@@ -107,12 +109,12 @@ export const createPhotoHandlers = (props: PhotoHandlersProps) => {
       }
       
       trackPhotoRetryAI(album, `${album}/${filename}`);
-      setMessage({ type: 'success', text: `AI title generation restarted for ${filename}` });
+      setMessage({ type: 'success', text: t('albumsManager.aiGenerationRestarted', { filename }) });
       
       // Reload photos to get the updated version
       await loadPhotos(album);
     } catch (err) {
-      setMessage({ type: 'error', text: 'Failed to retry AI title generation' });
+      setMessage({ type: 'error', text: t('albumsManager.failedToRetryAIGeneration') });
       // Restore error state
       setAlbumPhotos((prev: Photo[]) =>
         prev.map((photo: Photo) =>
@@ -132,7 +134,7 @@ export const createPhotoHandlers = (props: PhotoHandlersProps) => {
   ): Promise<void> => {
     showConfirmation({
       message: '', // Not used when photo is provided
-      confirmText: 'Delete Photo',
+      confirmText: t('albumsManager.deletePhoto'),
       isDanger: true,
       photo: thumbnail ? {
         thumbnail,
@@ -157,7 +159,7 @@ export const createPhotoHandlers = (props: PhotoHandlersProps) => {
           );
 
           if (res.ok) {
-            setMessage({ type: 'success', text: 'Photo deleted' });
+            setMessage({ type: 'success', text: t('albumsManager.photoDeleted') });
             trackPhotoDeleted(album, filename, photoTitle || filename);
             
             // Remove photo from both local state AND original order
@@ -169,11 +171,11 @@ export const createPhotoHandlers = (props: PhotoHandlersProps) => {
             setDeletingPhotoId(null);
           } else {
             const error = await res.json();
-            setMessage({ type: 'error', text: error.error || 'Failed to delete photo' });
+            setMessage({ type: 'error', text: error.error || t('albumsManager.failedToDeletePhoto') });
             setDeletingPhotoId(null); // Clear deleting state on error
           }
         } catch (err) {
-          setMessage({ type: 'error', text: 'Network error occurred' });
+          setMessage({ type: 'error', text: t('albumsManager.networkErrorOccurred') });
           setDeletingPhotoId(null); // Clear deleting state on error
         }
       },
@@ -182,6 +184,12 @@ export const createPhotoHandlers = (props: PhotoHandlersProps) => {
 
   // Shuffle handlers
   const handleShuffleClick = (): void => {
+    // Hide any visible overlays when shuffle happens
+    const photoElements = document.querySelectorAll('.admin-photo-item');
+    photoElements.forEach((el) => {
+      el.classList.remove('show-overlay');
+    });
+    
     shufflePhotos(); // Full shuffle on single click
   };
 
@@ -206,6 +214,8 @@ export const createPhotoHandlers = (props: PhotoHandlersProps) => {
       
       photoElements.forEach((el) => {
         el.classList.add('shuffling-active');
+        // Hide any visible overlays when shuffle starts
+        el.classList.remove('show-overlay');
       });
       
       // Get album size for calculations

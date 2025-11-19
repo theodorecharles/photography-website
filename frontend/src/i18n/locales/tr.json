@@ -169,7 +169,13 @@
     "failedToSaveSetting": "Ayar kaydedilemedi",
     "errorSavingLicense": "Lisans kaydedilirken hata oluştu",
     "errorSavingLanguage": "Dil kaydedilirken hata oluştu",
-    "errorSavingSetting": "Ayar kaydedilirken hata oluştu"
+    "errorSavingSetting": "Ayar kaydedilirken hata oluştu",
+    "logoSaved": "Logo başarıyla kaydedildi!",
+    "siteNameSaved": "Site Adı başarıyla kaydedildi!",
+    "primaryColorSaved": "Ana Renk başarıyla kaydedildi!",
+    "secondaryColorSaved": "İkincil Renk başarıyla kaydedildi!",
+    "metaDescriptionSaved": "Meta Açıklama başarıyla kaydedildi!",
+    "metaKeywordsSaved": "Meta Anahtar Kelimeler başarıyla kaydedildi!"
   },
   "license": {
     "title": "Fotoğraf Lisansı",
@@ -213,7 +219,7 @@
     "create": "Oluştur",
     "cancel": "İptal",
     "deleteAlbum": "Albümü Sil",
-    "deleteAlbumConfirm": "\"{{albumName}}\" adlı albümü silmek istediğinizden emin misiniz? Bu, bu albümdeki tüm fotoğrafları da silecektir.",
+    "deleteAlbumConfirm": "\"{{albumName}}\" albümünü silmek istediğinize emin misiniz?\n\nBu, bu albümdeki tüm fotoğrafları kalıcı olarak silecektir.\n\nBu işlem geri alınamaz.",
     "renameAlbum": "Albümü Yeniden Adlandır",
     "newName": "Yeni Ad",
     "newNamePlaceholder": "Yeni adı girin",
@@ -322,7 +328,31 @@
     "moveDown": "Aşağı taşı",
     "cannotPublishEmptyFolder": "Boş klasör yayımlanamaz",
     "deleteFolderTitle": "Klasörü sil",
-    "album": "albüm"
+    "album": "albüm",
+    "albums": "albümler",
+    "moveToFolderTitle": "\"{{albumName}}\" Klasöre Taşı",
+    "moveToFolderHint": "Bir hedef klasör seçin veya herhangi bir klasörden çıkarmak için Sınıflandırılmamış'ı seçin.",
+    "currentFolder": "Mevcut",
+    "changesDiscarded": "Değişiklikler iptal edildi  ",
+    "deletePhotoQuestion": "Fotoğrafı sil?  ",
+    "confirmAction": "Eylemi onayla",
+    "albumDeleted": "Albüm \"{{albumName}}\" silindi  ",
+    "albumRenamed": "Albüm \"{{albumName}}\" olarak yeniden adlandırıldı  ",
+    "albumAlreadyExists": "Albüm \"{{albumName}}\" zaten mevcut  ",
+    "failedToSaveChangesBeforeDeletingAlbum": "Albümü silmeden önce değişiklikleri kaydetme başarısız oldu  ",
+    "failedToSaveChangesBeforeDeletingFolder": "Klasörü silmeden önce değişiklikleri kaydetme başarısız oldu  ",
+    "networkErrorOccurred": "Ağ hatası oluştu  ",
+    "folderDeleted": "Klasör \"{{folderName}}\" silindi  ",
+    "folderActionCompleted": "Klasör \"{{folderName}}\" {{action}}  ",
+    "retryingOptimization": "{{filename}} için optimizasyon tekrar deneniyor...  ",
+    "optimizationRestarted": "{{filename}} için optimizasyon yeniden başlatıldı",
+    "retryingAIGeneration": "{{filename}} için AI başlık oluşturma tekrar deniliyor...",
+    "aiGenerationRestarted": "{{filename}} için AI başlık oluşturma yeniden başlatıldı",
+    "failedToDeletePhoto": "Fotoğraf silinemedi",
+    "maxRetryAttemptsReached": "{{filename}} için maksimum tekrar deneme sayısına ({{maxRetries}}) ulaşıldı",
+    "successfullyUploaded": "{{filename}} başarıyla yüklendi",
+    "retryFailed": "{{filename}} için tekrar deneme başarısız oldu",
+    "noValidImageFiles": "Geçerli resim dosyası bulunamadı. Lütfen JPEG, PNG, GIF veya WebP resimlerini seçin."
   },
   "settings": {
     "saved": "{{section}} ayarları kaydedildi!",
@@ -675,6 +705,23 @@
       "totalCount": "Toplam Sayı",
       "percentage": "Yüzde",
       "percentageText": "Tüm etkinliklerin {{percentage}}%'si"
+    },
+    "map": {
+      "loadingMapData": "Harita verileri yükleniyor...",
+      "noLocationData": "Bu zaman aralığı için ziyaretçi konum verisi mevcut değil",
+      "visitorActivity": "Ziyaretçi Aktivitesi",
+      "low": "Düşük",
+      "medium": "Orta",
+      "high": "Yüksek",
+      "totalVisits": "Toplam Ziyaretler",
+      "uniqueVisitors": "Benzersiz Ziyaretçiler  "
+    },
+    "charts": {
+      "loadingChartData": "Grafik verileri yükleniyor...  ",
+      "noVisitorData": "Bu zaman dilimi için ziyaretçi verisi mevcut değil  ",
+      "noPageviewData": "Bu zaman dilimi için saatlik sayfa görüntüleme verisi mevcut değil  ",
+      "visitors": "Ziyaretçiler  ",
+      "pageviews": "Sayfa Görüntülemeleri"
     }
   },
   "imageOptimization": {

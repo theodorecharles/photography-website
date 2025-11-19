@@ -169,7 +169,13 @@
     "failedToSaveSetting": "Не удалось сохранить настройку",
     "errorSavingLicense": "Ошибка при сохранении лицензии",
     "errorSavingLanguage": "Ошибка при сохранении языка",
-    "errorSavingSetting": "Ошибка при сохранении настройки"
+    "errorSavingSetting": "Ошибка при сохранении настройки",
+    "logoSaved": "Логотип успешно сохранён!",
+    "siteNameSaved": "Имя сайта успешно сохранено!",
+    "primaryColorSaved": "Основной цвет успешно сохранён!",
+    "secondaryColorSaved": "Вторичный цвет успешно сохранён!",
+    "metaDescriptionSaved": "Мета-описание успешно сохранено!",
+    "metaKeywordsSaved": "Мета-ключевые слова успешно сохранены!"
   },
   "license": {
     "title": "Лицензия на фото",
@@ -213,7 +219,7 @@
     "create": "Создать",
     "cancel": "Отмена",
     "deleteAlbum": "Удалить альбом",
-    "deleteAlbumConfirm": "Вы уверены, что хотите удалить \"{{albumName}}\"? Это также удалит все фотографии в этом альбоме.",
+    "deleteAlbumConfirm": "Вы уверены, что хотите удалить альбом \"{{albumName}}\"?\n\nЭто приведет к постоянному удалению всех фотографий в этом альбоме.\n\nЭто действие нельзя отменить.",
     "renameAlbum": "Переименовать альбом",
     "newName": "Новое имя",
     "newNamePlaceholder": "Введите новое имя",
@@ -322,7 +328,31 @@
     "moveDown": "Переместить вниз",
     "cannotPublishEmptyFolder": "Невозможно опубликовать пустую папку",
     "deleteFolderTitle": "Удалить папку",
-    "album": "альбом"
+    "album": "альбом",
+    "albums": "альбомы",
+    "moveToFolderTitle": "Переместить \"{{albumName}}\" в папку  ",
+    "moveToFolderHint": "Выберите папку назначения или выберите Без категории, чтобы удалить из любой папки.  ",
+    "currentFolder": "Текущий  ",
+    "changesDiscarded": "Изменения отменены  ",
+    "deletePhotoQuestion": "Удалить фото?  ",
+    "confirmAction": "Подтвердить действие",
+    "albumDeleted": "Альбом \"{{albumName}}\" удалён  ",
+    "albumRenamed": "Альбом переименован в \"{{albumName}}\"  ",
+    "albumAlreadyExists": "Альбом \"{{albumName}}\" уже существует  ",
+    "failedToSaveChangesBeforeDeletingAlbum": "Не удалось сохранить изменения перед удалением альбома  ",
+    "failedToSaveChangesBeforeDeletingFolder": "Не удалось сохранить изменения перед удалением папки  ",
+    "networkErrorOccurred": "Произошла ошибка сети  ",
+    "folderDeleted": "Папка \"{{folderName}}\" удалена  ",
+    "folderActionCompleted": "Папка \"{{folderName}}\" {{action}}  ",
+    "retryingOptimization": "Повторная попытка оптимизации для {{filename}}...  ",
+    "optimizationRestarted": "Оптимизация перезапущена для {{filename}}",
+    "retryingAIGeneration": "Повторная попытка генерации заголовка ИИ для {{filename}}...",
+    "aiGenerationRestarted": "Генерация заголовка ИИ перезапущена для {{filename}}",
+    "failedToDeletePhoto": "Не удалось удалить фото",
+    "maxRetryAttemptsReached": "Достигнуто максимальное количество попыток ({{maxRetries}}) для {{filename}}",
+    "successfullyUploaded": "{{filename}} успешно загружен",
+    "retryFailed": "Повторная попытка не удалась для {{filename}}",
+    "noValidImageFiles": "Не найдено действительных файлов изображений. Пожалуйста, выберите изображения в формате JPEG, PNG, GIF или WebP."
   },
   "settings": {
     "saved": "Настройки {{section}} сохранены!",
@@ -675,6 +705,23 @@
       "totalCount": "Общее количество",
       "percentage": "Процент",
       "percentageText": "{{percentage}}% от всех событий"
+    },
+    "map": {
+      "loadingMapData": "Загрузка данных карты...  ",
+      "noLocationData": "Нет данных о местоположении посетителей за этот период  ",
+      "visitorActivity": "Активность посетителей  ",
+      "low": "Низкий  ",
+      "medium": "Средний  ",
+      "high": "Высокий  ",
+      "totalVisits": "Всего посещений",
+      "uniqueVisitors": "Уникальные посетители  "
+    },
+    "charts": {
+      "loadingChartData": "Загрузка данных графика...  ",
+      "noVisitorData": "Нет данных о посетителях за этот период времени  ",
+      "noPageviewData": "Нет данных о просмотрах страниц за этот период времени  ",
+      "visitors": "Посетители  ",
+      "pageviews": "Просмотры страниц"
     }
   },
   "imageOptimization": {

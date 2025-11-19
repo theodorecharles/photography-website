@@ -165,7 +165,7 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
   confirmConfig,
   setShowConfirmModal,
 }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   // Check if OpenAI is configured
   const [hasOpenAI, setHasOpenAI] = useState(false);
   const [generatingAITitle, setGeneratingAITitle] = useState(false);
@@ -206,7 +206,7 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
       const res = await fetch(`${API_URL}/api/ai-titles/generate-single`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ album, filename }),
+        body: JSON.stringify({ album, filename, language: i18n.language }),
         credentials: 'include',
       });
       
@@ -933,11 +933,11 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
         >
           <div className="edit-modal confirm-modal" onClick={(e) => e.stopPropagation()}>
             <div className="edit-modal-header">
-              <h3>{confirmConfig.photo ? 'Delete Photo?' : 'Confirm Action'}</h3>
+              <h3>{confirmConfig.photo ? t('albumsManager.deletePhotoQuestion') : t('albumsManager.confirmAction')}</h3>
               <button 
                 className="modal-close-btn"
                 onClick={() => setShowConfirmModal(false)}
-                title="Close"
+                title={t('common.close')}
               >
                 ×
               </button>
@@ -970,7 +970,7 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
                 className="btn-secondary"
                 style={{ flex: 1 }}
               >
-                Cancel
+                {t('common.cancel')}
               </button>
               <button
                 onClick={() => {
@@ -980,7 +980,7 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
                 className={confirmConfig.isDanger ? 'btn-danger' : 'btn-primary'}
                 style={{ flex: 1 }}
               >
-                {confirmConfig.confirmText || 'Confirm'}
+                {confirmConfig.confirmText || t('albumsManager.confirmAction')}
               </button>
             </div>
           </div>

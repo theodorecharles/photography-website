@@ -18,6 +18,7 @@ interface UploadHandlersProps {
   selectAlbum: (albumName: string) => void;
   setMessage: (message: { type: 'success' | 'error'; text: string }) => void;
   loadAlbums: () => Promise<void>;
+  language: string;
 }
 
 export const createUploadHandlers = (props: UploadHandlersProps) => {
@@ -30,6 +31,7 @@ export const createUploadHandlers = (props: UploadHandlersProps) => {
     setMessage,
     loadAlbums,
     // setAlbumPhotos, // no longer used - photos stay in uploadingImages until complete
+    language,
   } = props;
 
   // Upload single image (returns immediately, optimization tracked via SSE stream)
@@ -51,6 +53,7 @@ export const createUploadHandlers = (props: UploadHandlersProps) => {
     return new Promise<void>((resolve, reject) => {
       const formData = new FormData();
       formData.append('photo', file, filename);
+      formData.append('language', language);
 
       // Use XMLHttpRequest to track upload progress
       const xhr = new XMLHttpRequest();

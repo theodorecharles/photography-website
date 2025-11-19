@@ -423,6 +423,8 @@ label.photos-btn {
   justify-content: space-between;
   align-items: center;
   padding: 0.75rem 1.5rem;
+  /* Add safe area padding for mobile Safari bottom bar */
+  padding-bottom: calc(0.75rem + env(safe-area-inset-bottom, 0px));
   background: #1f1f1f;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.5);
@@ -495,6 +497,16 @@ label.photos-btn {
 
   .photos-modal-title {
     font-size: 1.25rem;
+  }
+
+  /* Add bottom padding to modal content to ensure reorder bar is visible above Safari UI */
+  .photos-modal-content {
+    padding-bottom: 180px; /* Space for reorder bar + Safari toolbar */
+  }
+
+  /* Position reorder bar with extra safe area for Safari */
+  .photos-reorder-bar {
+    padding-bottom: max(0.75rem, calc(0.75rem + env(safe-area-inset-bottom, 0px) + 60px));
   }
 }
 

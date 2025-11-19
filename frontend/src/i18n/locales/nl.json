@@ -169,7 +169,13 @@
     "failedToSaveSetting": "Kon instelling niet opslaan",
     "errorSavingLicense": "Fout bij opslaan van licentie",
     "errorSavingLanguage": "Fout bij opslaan van taal",
-    "errorSavingSetting": "Fout bij opslaan van instelling"
+    "errorSavingSetting": "Fout bij opslaan van instelling",
+    "logoSaved": "Logo succesvol opgeslagen!  ",
+    "siteNameSaved": "Site naam succesvol opgeslagen!  ",
+    "primaryColorSaved": "Primaire kleur succesvol opgeslagen!  ",
+    "secondaryColorSaved": "Secundaire kleur succesvol opgeslagen!  ",
+    "metaDescriptionSaved": "Meta beschrijving succesvol opgeslagen!  ",
+    "metaKeywordsSaved": "Meta zoekwoorden succesvol opgeslagen!"
   },
   "license": {
     "title": "Fotolicentie",
@@ -213,7 +219,7 @@
     "create": "Maken",
     "cancel": "Annuleren",
     "deleteAlbum": "Album verwijderen",
-    "deleteAlbumConfirm": "Weet u zeker dat u \"{{albumName}}\" wilt verwijderen? Dit verwijdert ook alle foto's in dit album.",
+    "deleteAlbumConfirm": "Weet je zeker dat je het album \"{{albumName}}\" wilt verwijderen?\n\nDit zal alle foto's in dit album permanent verwijderen.\n\nDeze actie kan niet ongedaan gemaakt worden.",
     "renameAlbum": "Album hernoemen",
     "newName": "Nieuwe naam",
     "newNamePlaceholder": "Voer nieuwe naam in",
@@ -322,7 +328,31 @@
     "moveDown": "Omlaag verplaatsen",
     "cannotPublishEmptyFolder": "Kan lege map niet publiceren",
     "deleteFolderTitle": "Verwijder map",
-    "album": "album"
+    "album": "album",
+    "albums": "albums",
+    "moveToFolderTitle": "Verplaats \"{{albumName}}\" naar map  ",
+    "moveToFolderHint": "Selecteer een bestemmingsmap of kies Ongesorteerd om uit elke map te verwijderen.  ",
+    "currentFolder": "Huidig  ",
+    "changesDiscarded": "Wijzigingen verworpen  ",
+    "deletePhotoQuestion": "Foto verwijderen?  ",
+    "confirmAction": "Actie bevestigen",
+    "albumDeleted": "Album \"{{albumName}}\" verwijderd  ",
+    "albumRenamed": "Album hernoemd naar \"{{albumName}}\"  ",
+    "albumAlreadyExists": "Album \"{{albumName}}\" bestaat al  ",
+    "failedToSaveChangesBeforeDeletingAlbum": "Wijzigingen konden niet worden opgeslagen voordat het album werd verwijderd  ",
+    "failedToSaveChangesBeforeDeletingFolder": "Wijzigingen konden niet worden opgeslagen voordat de map werd verwijderd  ",
+    "networkErrorOccurred": "Er is een netwerkfout opgetreden  ",
+    "folderDeleted": "Map \"{{folderName}}\" verwijderd  ",
+    "folderActionCompleted": "Map \"{{folderName}}\" {{action}}  ",
+    "retryingOptimization": "Optimalisatie voor {{filename}} opnieuw proberen...  ",
+    "optimizationRestarted": "Optimalisatie opnieuw gestart voor {{filename}}",
+    "retryingAIGeneration": "Proberen AI-titelgeneratie voor {{filename}} opnieuw...",
+    "aiGenerationRestarted": "AI-titelgeneratie opnieuw gestart voor {{filename}}",
+    "failedToDeletePhoto": "Verwijderen van foto mislukt",
+    "maxRetryAttemptsReached": "Maximale aantal pogingen ({{maxRetries}}) bereikt voor {{filename}}",
+    "successfullyUploaded": "{{filename}} succesvol geüpload",
+    "retryFailed": "Proberen mislukt voor {{filename}}",
+    "noValidImageFiles": "Geen geldige afbeeldingsbestanden gevonden. Selecteer alstublieft JPEG-, PNG-, GIF- of WebP-afbeeldingen."
   },
   "settings": {
     "saved": "{{section}} instellingen opgeslagen!",
@@ -675,6 +705,23 @@
       "totalCount": "Totaal Aantal",
       "percentage": "Percentage",
       "percentageText": "{{percentage}}% van alle gebeurtenissen"
+    },
+    "map": {
+      "loadingMapData": "Laad kaartgegevens...  ",
+      "noLocationData": "Geen bezoekerslocatiegegevens beschikbaar voor deze tijdsperiode  ",
+      "visitorActivity": "Bezoekersactiviteit  ",
+      "low": "Laag  ",
+      "medium": "Gemiddeld  ",
+      "high": "Hoog  ",
+      "totalVisits": "Totaal aantal bezoeken",
+      "uniqueVisitors": "Unieke bezoekers  "
+    },
+    "charts": {
+      "loadingChartData": "Grafiekgegevens laden...  ",
+      "noVisitorData": "Geen bezoekersgegevens beschikbaar voor deze tijdsperiode  ",
+      "noPageviewData": "Geen uurlijkse paginaweergavegegevens beschikbaar voor deze tijdsperiode  ",
+      "visitors": "Bezoekers  ",
+      "pageviews": "Paginaweergaven"
     }
   },
   "imageOptimization": {

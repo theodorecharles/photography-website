@@ -169,7 +169,13 @@
     "failedToSaveSetting": "Échec de l'enregistrement du paramètre",
     "errorSavingLicense": "Erreur lors de l'enregistrement de la licence",
     "errorSavingLanguage": "Erreur lors de l'enregistrement de la langue",
-    "errorSavingSetting": "Erreur lors de l'enregistrement du paramètre"
+    "errorSavingSetting": "Erreur lors de l'enregistrement du paramètre",
+    "logoSaved": "Logo enregistré avec succès !  ",
+    "siteNameSaved": "Nom du site enregistré avec succès !  ",
+    "primaryColorSaved": "Couleur principale enregistrée avec succès !  ",
+    "secondaryColorSaved": "Couleur secondaire enregistrée avec succès !  ",
+    "metaDescriptionSaved": "Description méta enregistrée avec succès !  ",
+    "metaKeywordsSaved": "Mots-clés méta enregistrés avec succès !"
   },
   "license": {
     "title": "Licence Photo",
@@ -272,7 +278,7 @@
     "create": "Créer",
     "cancel": "Annuler",
     "deleteAlbum": "Supprimer l'album",
-    "deleteAlbumConfirm": "Êtes-vous sûr de vouloir supprimer \"{{albumName}}\" ? Cela supprimera également toutes les photos de cet album.",
+    "deleteAlbumConfirm": "Êtes-vous sûr de vouloir supprimer l'album \"{{albumName}}\" ?\n\nCela supprimera définitivement toutes les photos de cet album.\n\nCette action ne peut pas être annulée.",
     "renameAlbum": "Renommer l'album",
     "newName": "Nouveau nom",
     "newNamePlaceholder": "Entrez un nouveau nom",
@@ -322,7 +328,31 @@
     "moveDown": "Déplacer vers le bas",
     "cannotPublishEmptyFolder": "Impossible de publier un dossier vide",
     "deleteFolderTitle": "Supprimer le dossier",
-    "album": "album"
+    "album": "album",
+    "albums": "albums",
+    "moveToFolderTitle": "Déplacer \"{{albumName}}\" vers le dossier  ",
+    "moveToFolderHint": "Sélectionnez un dossier de destination ou choisissez Non classé pour retirer de tout dossier.  ",
+    "currentFolder": "Actuel  ",
+    "changesDiscarded": "Modifications annulées  ",
+    "deletePhotoQuestion": "Supprimer la photo ?  ",
+    "confirmAction": "Confirmer l'action",
+    "albumDeleted": "Album \"{{albumName}}\" supprimé  ",
+    "albumRenamed": "Album renommé en \"{{albumName}}\"  ",
+    "albumAlreadyExists": "L'album \"{{albumName}}\" existe déjà  ",
+    "failedToSaveChangesBeforeDeletingAlbum": "Échec de l'enregistrement des modifications avant la suppression de l'album  ",
+    "failedToSaveChangesBeforeDeletingFolder": "Échec de l'enregistrement des modifications avant la suppression du dossier  ",
+    "networkErrorOccurred": "Une erreur réseau s'est produite  ",
+    "folderDeleted": "Dossier \"{{folderName}}\" supprimé  ",
+    "folderActionCompleted": "Dossier \"{{folderName}}\" {{action}}  ",
+    "retryingOptimization": "Nouvelle tentative d'optimisation pour {{filename}}...  ",
+    "optimizationRestarted": "Optimisation redémarrée pour {{filename}}",
+    "retryingAIGeneration": "Nouvelle tentative de génération de titre AI pour {{filename}}...",
+    "aiGenerationRestarted": "Génération de titre AI redémarrée pour {{filename}}",
+    "failedToDeletePhoto": "Échec de la suppression de la photo",
+    "maxRetryAttemptsReached": "Nombre maximum de tentatives de réessai ({{maxRetries}}) atteint pour {{filename}}",
+    "successfullyUploaded": "{{filename}} téléchargé avec succès",
+    "retryFailed": "Échec de la nouvelle tentative pour {{filename}}",
+    "noValidImageFiles": "Aucun fichier image valide trouvé. Veuillez sélectionner des images JPEG, PNG, GIF ou WebP."
   },
   "settings": {
     "saved": "Paramètres de {{section}} enregistrés !",
@@ -675,6 +705,23 @@
       "totalCount": "Nombre Total",
       "percentage": "Pourcentage",
       "percentageText": "{{percentage}}% de tous les événements"
+    },
+    "map": {
+      "loadingMapData": "Chargement des données de la carte...  ",
+      "noLocationData": "Aucune donnée de localisation des visiteurs disponible pour cette plage horaire  ",
+      "visitorActivity": "Activité des visiteurs  ",
+      "low": "Faible  ",
+      "medium": "Moyen  ",
+      "high": "Élevé  ",
+      "totalVisits": "Visites totales",
+      "uniqueVisitors": "Visiteurs uniques  "
+    },
+    "charts": {
+      "loadingChartData": "Chargement des données du graphique...  ",
+      "noVisitorData": "Aucune donnée de visiteur disponible pour cette plage horaire  ",
+      "noPageviewData": "Aucune donnée de page vue horaire disponible pour cette plage horaire  ",
+      "visitors": "Visiteurs  ",
+      "pageviews": "Pages vues"
     }
   },
   "imageOptimization": {

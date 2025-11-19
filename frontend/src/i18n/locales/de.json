@@ -169,7 +169,13 @@
     "failedToSaveSetting": "Fehler beim Speichern der Einstellung",
     "errorSavingLicense": "Fehler beim Speichern der Lizenz",
     "errorSavingLanguage": "Fehler beim Speichern der Sprache",
-    "errorSavingSetting": "Fehler beim Speichern der Einstellung"
+    "errorSavingSetting": "Fehler beim Speichern der Einstellung",
+    "logoSaved": "Logo erfolgreich gespeichert!  ",
+    "siteNameSaved": "Site-Name erfolgreich gespeichert!  ",
+    "primaryColorSaved": "Primärfarbe erfolgreich gespeichert!  ",
+    "secondaryColorSaved": "Sekundärfarbe erfolgreich gespeichert!  ",
+    "metaDescriptionSaved": "Meta-Beschreibung erfolgreich gespeichert!  ",
+    "metaKeywordsSaved": "Meta-Keywords erfolgreich gespeichert!"
   },
   "license": {
     "title": "Foto-Lizenz",
@@ -213,7 +219,7 @@
     "create": "Erstellen",
     "cancel": "Abbrechen",
     "deleteAlbum": "Album löschen",
-    "deleteAlbumConfirm": "Sind Sie sicher, dass Sie \"{{albumName}}\" löschen möchten? Dies löscht auch alle Fotos in diesem Album.",
+    "deleteAlbumConfirm": "Sind Sie sicher, dass Sie das Album \"{{albumName}}\" löschen möchten?\n\nDadurch werden alle Fotos in diesem Album dauerhaft gelöscht.\n\nDiese Aktion kann nicht rückgängig gemacht werden.",
     "renameAlbum": "Album umbenennen",
     "newName": "Neuer Name",
     "newNamePlaceholder": "Neuen Namen eingeben",
@@ -322,7 +328,31 @@
     "moveDown": "Nach unten verschieben",
     "cannotPublishEmptyFolder": "Leere Ordner können nicht veröffentlicht werden",
     "deleteFolderTitle": "Ordner löschen",
-    "album": "Album"
+    "album": "Album",
+    "albums": "Alben",
+    "moveToFolderTitle": "Verschieben von \"{{albumName}}\" in den Ordner  ",
+    "moveToFolderHint": "Wählen Sie einen Zielordner oder wählen Sie Unkategorisiert, um aus einem Ordner zu entfernen.  ",
+    "currentFolder": "Aktuell  ",
+    "changesDiscarded": "Änderungen verworfen  ",
+    "deletePhotoQuestion": "Foto löschen?  ",
+    "confirmAction": "Aktion bestätigen",
+    "albumDeleted": "Album \"{{albumName}}\" gelöscht  ",
+    "albumRenamed": "Album in \"{{albumName}}\" umbenannt  ",
+    "albumAlreadyExists": "Album \"{{albumName}}\" existiert bereits  ",
+    "failedToSaveChangesBeforeDeletingAlbum": "Änderungen konnten vor dem Löschen des Albums nicht gespeichert werden  ",
+    "failedToSaveChangesBeforeDeletingFolder": "Änderungen konnten vor dem Löschen des Ordners nicht gespeichert werden  ",
+    "networkErrorOccurred": "Netzwerkfehler aufgetreten  ",
+    "folderDeleted": "Ordner \"{{folderName}}\" gelöscht  ",
+    "folderActionCompleted": "Ordner \"{{folderName}}\" {{action}}  ",
+    "retryingOptimization": "Wiederhole die Optimierung für {{filename}}...  ",
+    "optimizationRestarted": "Optimierung für {{filename}} neu gestartet",
+    "retryingAIGeneration": "Versuche erneut, die KI-Titelgenerierung für {{filename}}...",
+    "aiGenerationRestarted": "Die KI-Titelgenerierung wurde für {{filename}} neu gestartet",
+    "failedToDeletePhoto": "Foto konnte nicht gelöscht werden",
+    "maxRetryAttemptsReached": "Maximale Anzahl an Wiederholungsversuchen ({{maxRetries}}) für {{filename}} erreicht",
+    "successfullyUploaded": "{{filename}} erfolgreich hochgeladen",
+    "retryFailed": "Wiederholungsversuch für {{filename}} fehlgeschlagen",
+    "noValidImageFiles": "Keine gültigen Bilddateien gefunden. Bitte wählen Sie JPEG-, PNG-, GIF- oder WebP-Bilder aus."
   },
   "settings": {
     "saved": "{{section}} Einstellungen gespeichert!",
@@ -675,6 +705,23 @@
       "totalCount": "Gesamtanzahl",
       "percentage": "Prozentanteil",
       "percentageText": "{{percentage}}% aller Ereignisse"
+    },
+    "map": {
+      "loadingMapData": "Lade Kartendaten...  ",
+      "noLocationData": "Keine Besucherdaten für diesen Zeitraum verfügbar  ",
+      "visitorActivity": "Besucheraktivität  ",
+      "low": "Niedrig  ",
+      "medium": "Mittel  ",
+      "high": "Hoch  ",
+      "totalVisits": "Gesamtbesuche",
+      "uniqueVisitors": "Eindeutige Besucher  "
+    },
+    "charts": {
+      "loadingChartData": "Lade Diagrammdaten...  ",
+      "noVisitorData": "Keine Besucherdaten für diesen Zeitraum verfügbar  ",
+      "noPageviewData": "Keine stündlichen Seitenaufrufdaten für diesen Zeitraum verfügbar  ",
+      "visitors": "Besucher  ",
+      "pageviews": "Seitenaufrufe"
     }
   },
   "imageOptimization": {

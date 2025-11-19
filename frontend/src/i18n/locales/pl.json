@@ -169,7 +169,13 @@
     "failedToSaveSetting": "Nie udało się zapisać ustawienia",
     "errorSavingLicense": "Błąd podczas zapisywania licencji",
     "errorSavingLanguage": "Błąd podczas zapisywania języka",
-    "errorSavingSetting": "Błąd podczas zapisywania ustawienia"
+    "errorSavingSetting": "Błąd podczas zapisywania ustawienia",
+    "logoSaved": "Logo zapisane pomyślnie!",
+    "siteNameSaved": "Nazwa witryny zapisana pomyślnie!",
+    "primaryColorSaved": "Kolor podstawowy zapisany pomyślnie!",
+    "secondaryColorSaved": "Kolor dodatkowy zapisany pomyślnie!",
+    "metaDescriptionSaved": "Opis meta zapisany pomyślnie!",
+    "metaKeywordsSaved": "Słowa kluczowe meta zapisane pomyślnie!"
   },
   "license": {
     "title": "Licencja na zdjęcia",
@@ -213,7 +219,7 @@
     "create": "Utwórz",
     "cancel": "Anuluj",
     "deleteAlbum": "Usuń album",
-    "deleteAlbumConfirm": "Czy na pewno chcesz usunąć \"{{albumName}}\"? To również usunie wszystkie zdjęcia w tym albumie.",
+    "deleteAlbumConfirm": "Czy na pewno chcesz usunąć album \"{{albumName}}\"?\n\nTo spowoduje trwałe usunięcie wszystkich zdjęć w tym albumie.\n\nTej akcji nie można cofnąć.",
     "renameAlbum": "Zmień nazwę albumu",
     "newName": "Nowa nazwa",
     "newNamePlaceholder": "Wpisz nową nazwę",
@@ -322,7 +328,31 @@
     "moveDown": "Przenieś w dół",
     "cannotPublishEmptyFolder": "Nie można opublikować pustego folderu",
     "deleteFolderTitle": "Usuń folder",
-    "album": "album"
+    "album": "album",
+    "albums": "albumy",
+    "moveToFolderTitle": "Przenieś \"{{albumName}}\" do folderu  ",
+    "moveToFolderHint": "Wybierz folder docelowy lub wybierz Nieklasyfikowane, aby usunąć z dowolnego folderu.  ",
+    "currentFolder": "Bieżący  ",
+    "changesDiscarded": "Zmiany odrzucone  ",
+    "deletePhotoQuestion": "Usunąć zdjęcie?  ",
+    "confirmAction": "Potwierdź akcję",
+    "albumDeleted": "Album \"{{albumName}}\" został usunięty  ",
+    "albumRenamed": "Album został przemianowany na \"{{albumName}}\"  ",
+    "albumAlreadyExists": "Album \"{{albumName}}\" już istnieje  ",
+    "failedToSaveChangesBeforeDeletingAlbum": "Nie udało się zapisać zmian przed usunięciem albumu  ",
+    "failedToSaveChangesBeforeDeletingFolder": "Nie udało się zapisać zmian przed usunięciem folderu  ",
+    "networkErrorOccurred": "Wystąpił błąd sieciowy  ",
+    "folderDeleted": "Folder \"{{folderName}}\" został usunięty  ",
+    "folderActionCompleted": "Folder \"{{folderName}}\" {{action}}  ",
+    "retryingOptimization": "Ponawianie optymalizacji dla {{filename}}...  ",
+    "optimizationRestarted": "Optymalizacja została wznowiona dla {{filename}}",
+    "retryingAIGeneration": "Ponowne próby generowania tytułu AI dla {{filename}}...",
+    "aiGenerationRestarted": "Generowanie tytułu AI zostało zrestartowane dla {{filename}}",
+    "failedToDeletePhoto": "Nie udało się usunąć zdjęcia",
+    "maxRetryAttemptsReached": "Osiągnięto maksymalną liczbę prób ({{maxRetries}}) dla {{filename}}",
+    "successfullyUploaded": "Pomyślnie przesłano {{filename}}",
+    "retryFailed": "Ponowne próby nie powiodły się dla {{filename}}",
+    "noValidImageFiles": "Nie znaleziono ważnych plików graficznych. Proszę wybrać obrazy w formacie JPEG, PNG, GIF lub WebP."
   },
   "settings": {
     "saved": "Ustawienia {{section}} zapisane!",
@@ -675,6 +705,23 @@
       "totalCount": "Całkowita Liczba",
       "percentage": "Procent",
       "percentageText": "{{percentage}}% wszystkich zdarzeń"
+    },
+    "map": {
+      "loadingMapData": "Ładowanie danych mapy...  ",
+      "noLocationData": "Brak danych o lokalizacji odwiedzających w tym zakresie czasowym  ",
+      "visitorActivity": "Aktywność odwiedzających  ",
+      "low": "Niski  ",
+      "medium": "Średni  ",
+      "high": "Wysoki  ",
+      "totalVisits": "Łączna liczba wizyt",
+      "uniqueVisitors": "Unikalni odwiedzający  "
+    },
+    "charts": {
+      "loadingChartData": "Ładowanie danych wykresu...  ",
+      "noVisitorData": "Brak danych o odwiedzających w tym zakresie czasowym  ",
+      "noPageviewData": "Brak danych o wyświetleniach stron w tym zakresie czasowym  ",
+      "visitors": "Odwiedzający  ",
+      "pageviews": "Wyświetlenia stron"
     }
   },
   "imageOptimization": {

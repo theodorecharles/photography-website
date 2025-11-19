@@ -169,7 +169,13 @@
     "failedToSaveSetting": "Error al guardar la configuración",
     "errorSavingLicense": "Error al guardar la licencia",
     "errorSavingLanguage": "Error al guardar el idioma",
-    "errorSavingSetting": "Error al guardar la configuración"
+    "errorSavingSetting": "Error al guardar la configuración",
+    "logoSaved": "¡Logo guardado con éxito!  ",
+    "siteNameSaved": "¡Nombre del sitio guardado con éxito!  ",
+    "primaryColorSaved": "¡Color primario guardado con éxito!  ",
+    "secondaryColorSaved": "¡Color secundario guardado con éxito!  ",
+    "metaDescriptionSaved": "¡Descripción meta guardada con éxito!  ",
+    "metaKeywordsSaved": "¡Palabras clave meta guardadas con éxito!"
   },
   "license": {
     "title": "Licencia de Fotos",
@@ -272,7 +278,7 @@
     "create": "Crear",
     "cancel": "Cancelar",
     "deleteAlbum": "Eliminar álbum",
-    "deleteAlbumConfirm": "¿Estás seguro de que quieres eliminar \"{{albumName}}\"? Esto también eliminará todas las fotos en este álbum.",
+    "deleteAlbumConfirm": "¿Estás seguro de que deseas eliminar el álbum \"{{albumName}}\"?\n\nEsto eliminará permanentemente todas las fotos en este álbum.\n\nEsta acción no se puede deshacer.",
     "renameAlbum": "Renombrar Álbum",
     "newName": "Nuevo Nombre",
     "newNamePlaceholder": "Ingresa un nuevo nombre",
@@ -322,7 +328,31 @@
     "moveDown": "Mover hacia abajo",
     "cannotPublishEmptyFolder": "No se puede publicar una carpeta vacía",
     "deleteFolderTitle": "Eliminar carpeta",
-    "album": "álbum"
+    "album": "álbum",
+    "albums": "álbumes",
+    "moveToFolderTitle": "Mover \"{{albumName}}\" a la carpeta  ",
+    "moveToFolderHint": "Seleccione una carpeta de destino o elija Sin clasificar para eliminar de cualquier carpeta.  ",
+    "currentFolder": "Actual  ",
+    "changesDiscarded": "Cambios descartados  ",
+    "deletePhotoQuestion": "¿Eliminar foto?  ",
+    "confirmAction": "Confirmar acción",
+    "albumDeleted": "Álbum \"{{albumName}}\" eliminado  ",
+    "albumRenamed": "Álbum renombrado a \"{{albumName}}\"  ",
+    "albumAlreadyExists": "El álbum \"{{albumName}}\" ya existe  ",
+    "failedToSaveChangesBeforeDeletingAlbum": "No se pudieron guardar los cambios antes de eliminar el álbum  ",
+    "failedToSaveChangesBeforeDeletingFolder": "No se pudieron guardar los cambios antes de eliminar la carpeta  ",
+    "networkErrorOccurred": "Ocurrió un error de red  ",
+    "folderDeleted": "Carpeta \"{{folderName}}\" eliminada  ",
+    "folderActionCompleted": "Carpeta \"{{folderName}}\" {{action}}  ",
+    "retryingOptimization": "Reintentando la optimización para {{filename}}...  ",
+    "optimizationRestarted": "Optimización reiniciada para {{filename}}",
+    "retryingAIGeneration": "Reintentando la generación de títulos de IA para {{filename}}...",
+    "aiGenerationRestarted": "Generación de títulos de IA reiniciada para {{filename}}",
+    "failedToDeletePhoto": "Error al eliminar la foto",
+    "maxRetryAttemptsReached": "Se alcanzó el número máximo de intentos de reintento ({{maxRetries}}) para {{filename}}",
+    "successfullyUploaded": "{{filename}} subido con éxito",
+    "retryFailed": "El reintento falló para {{filename}}",
+    "noValidImageFiles": "No se encontraron archivos de imagen válidos. Por favor, seleccione imágenes en formato JPEG, PNG, GIF o WebP."
   },
   "settings": {
     "saved": "¡Configuración de {{section}} guardada!",
@@ -675,6 +705,23 @@
       "totalCount": "Cantidad Total",
       "percentage": "Porcentaje",
       "percentageText": "{{percentage}}% de todos los eventos"
+    },
+    "map": {
+      "loadingMapData": "Cargando datos del mapa...  ",
+      "noLocationData": "No hay datos de ubicación de visitantes disponibles para este rango de tiempo  ",
+      "visitorActivity": "Actividad del visitante  ",
+      "low": "Bajo  ",
+      "medium": "Medio  ",
+      "high": "Alto  ",
+      "totalVisits": "Visitas totales",
+      "uniqueVisitors": "Visitantes únicos  "
+    },
+    "charts": {
+      "loadingChartData": "Cargando datos del gráfico...  ",
+      "noVisitorData": "No hay datos de visitantes disponibles para este rango de tiempo  ",
+      "noPageviewData": "No hay datos de vistas de página por hora disponibles para este rango de tiempo  ",
+      "visitors": "Visitantes  ",
+      "pageviews": "Vistas de página"
     }
   },
   "imageOptimization": {

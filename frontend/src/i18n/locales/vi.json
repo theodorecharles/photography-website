@@ -169,7 +169,13 @@
     "failedToSaveSetting": "Lưu cài đặt không thành công",
     "errorSavingLicense": "Lỗi khi lưu giấy phép",
     "errorSavingLanguage": "Lỗi khi lưu ngôn ngữ",
-    "errorSavingSetting": "Lỗi khi lưu cài đặt"
+    "errorSavingSetting": "Lỗi khi lưu cài đặt",
+    "logoSaved": "Logo đã được lưu thành công!",
+    "siteNameSaved": "Tên trang đã được lưu thành công!",
+    "primaryColorSaved": "Màu chính đã được lưu thành công!",
+    "secondaryColorSaved": "Màu phụ đã được lưu thành công!",
+    "metaDescriptionSaved": "Mô tả meta đã được lưu thành công!",
+    "metaKeywordsSaved": "Từ khóa meta đã được lưu thành công!"
   },
   "license": {
     "title": "Giấy phép Ảnh",
@@ -215,7 +221,7 @@
     "create": "Tạo",
     "cancel": "Hủy",
     "deleteAlbum": "Xóa Album",
-    "deleteAlbumConfirm": "Bạn có chắc chắn muốn xóa \"{{albumName}}\" không? Điều này cũng sẽ xóa tất cả ảnh trong album này.",
+    "deleteAlbumConfirm": "Bạn có chắc chắn muốn xóa album \"{{albumName}}\" không?\n\nĐiều này sẽ xóa vĩnh viễn tất cả ảnh trong album này.\n\nHành động này không thể hoàn tác.",
     "renameAlbum": "Đổi tên Album",
     "newName": "Tên Mới",
     "newNamePlaceholder": "Nhập tên mới",
@@ -259,6 +265,7 @@
     "cannotPublishEmptyFolder": "Không thể xuất bản thư mục trống",
     "deleteFolderTitle": "Xóa thư mục",
     "album": "album",
+    "albums": "album",
     "loadingPhotos": "Đang tải ảnh...",
     "savingOrder": "Đang lưu thứ tự...",
     "saveOrder": "Lưu thứ tự",
@@ -322,7 +329,30 @@
     "albumWillBePublished": "✓ Album sẽ được xuất bản ngay lập tức",
     "albumsInPublishedFolders": "Các album trong thư mục đã xuất bản luôn được xuất bản",
     "albumWillBePrivate": "🔒 Album sẽ là riêng tư",
-    "albumsInUnpublishedFolders": "Các album trong thư mục chưa xuất bản luôn là riêng tư"
+    "albumsInUnpublishedFolders": "Các album trong thư mục chưa xuất bản luôn là riêng tư",
+    "moveToFolderTitle": "Di chuyển \"{{albumName}}\" đến Thư mục  ",
+    "moveToFolderHint": "Chọn một thư mục đích hoặc chọn Chưa phân loại để xóa khỏi bất kỳ thư mục nào.  ",
+    "currentFolder": "Hiện tại  ",
+    "changesDiscarded": "Thay đổi đã bị bỏ qua  ",
+    "deletePhotoQuestion": "Xóa ảnh?  ",
+    "confirmAction": "Xác nhận hành động",
+    "albumDeleted": "Album \"{{albumName}}\" đã bị xóa  ",
+    "albumRenamed": "Album đã được đổi tên thành \"{{albumName}}\"  ",
+    "albumAlreadyExists": "Album \"{{albumName}}\" đã tồn tại  ",
+    "failedToSaveChangesBeforeDeletingAlbum": "Không thể lưu thay đổi trước khi xóa album  ",
+    "failedToSaveChangesBeforeDeletingFolder": "Không thể lưu thay đổi trước khi xóa thư mục  ",
+    "networkErrorOccurred": "Đã xảy ra lỗi mạng  ",
+    "folderDeleted": "Thư mục \"{{folderName}}\" đã bị xóa  ",
+    "folderActionCompleted": "Thư mục \"{{folderName}}\" {{action}}  ",
+    "retryingOptimization": "Đang thử lại tối ưu hóa cho {{filename}}...  ",
+    "optimizationRestarted": "Tối ưu hóa đã được khởi động lại cho {{filename}}",
+    "retryingAIGeneration": "Đang thử lại việc tạo tiêu đề AI cho {{filename}}...",
+    "aiGenerationRestarted": "Việc tạo tiêu đề AI đã được khởi động lại cho {{filename}}",
+    "failedToDeletePhoto": "Xóa ảnh không thành công",
+    "maxRetryAttemptsReached": "Đã đạt số lần thử tối đa ({{maxRetries}}) cho {{filename}}",
+    "successfullyUploaded": "Tải lên {{filename}} thành công",
+    "retryFailed": "Thử lại không thành công cho {{filename}}",
+    "noValidImageFiles": "Không tìm thấy tệp hình ảnh hợp lệ. Vui lòng chọn hình ảnh JPEG, PNG, GIF hoặc WebP."
   },
   "settings": {
     "saved": "Cài đặt {{section}} đã được lưu!",
@@ -675,6 +705,23 @@
       "totalCount": "Tổng Số Lượng",
       "percentage": "Phần trăm",
       "percentageText": "{{percentage}}% của tất cả các sự kiện"
+    },
+    "map": {
+      "loadingMapData": "Đang tải dữ liệu bản đồ...  ",
+      "noLocationData": "Không có dữ liệu vị trí khách truy cập nào cho khoảng thời gian này  ",
+      "visitorActivity": "Hoạt động của khách truy cập  ",
+      "low": "Thấp  ",
+      "medium": "Trung bình  ",
+      "high": "Cao  ",
+      "totalVisits": "Tổng số lượt truy cập",
+      "uniqueVisitors": "Lượt truy cập độc nhất  "
+    },
+    "charts": {
+      "loadingChartData": "Đang tải dữ liệu biểu đồ...  ",
+      "noVisitorData": "Không có dữ liệu khách truy cập cho khoảng thời gian này  ",
+      "noPageviewData": "Không có dữ liệu lượt xem trang theo giờ cho khoảng thời gian này  ",
+      "visitors": "Khách truy cập  ",
+      "pageviews": "Lượt xem trang"
     }
   },
   "imageOptimization": {

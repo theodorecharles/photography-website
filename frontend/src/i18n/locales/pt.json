@@ -169,7 +169,13 @@
     "failedToSaveSetting": "Falha ao salvar configuração",
     "errorSavingLicense": "Erro ao salvar licença",
     "errorSavingLanguage": "Erro ao salvar idioma",
-    "errorSavingSetting": "Erro ao salvar configuração"
+    "errorSavingSetting": "Erro ao salvar configuração",
+    "logoSaved": "Logotipo salvo com sucesso!  ",
+    "siteNameSaved": "Nome do Site salvo com sucesso!  ",
+    "primaryColorSaved": "Cor Primária salva com sucesso!  ",
+    "secondaryColorSaved": "Cor Secundária salva com sucesso!  ",
+    "metaDescriptionSaved": "Descrição Meta salva com sucesso!  ",
+    "metaKeywordsSaved": "Palavras-chave Meta salvas com sucesso!"
   },
   "license": {
     "title": "Licença de Foto",
@@ -213,7 +219,7 @@
     "create": "Criar",
     "cancel": "Cancelar",
     "deleteAlbum": "Excluir Álbum",
-    "deleteAlbumConfirm": "Tem certeza de que deseja excluir \"{{albumName}}\"? Isso também excluirá todas as fotos neste álbum.",
+    "deleteAlbumConfirm": "Você tem certeza de que deseja excluir o álbum \"{{albumName}}\"?\n\nIsso excluirá permanentemente todas as fotos deste álbum.\n\nEsta ação não pode ser desfeita.",
     "renameAlbum": "Renomear Álbum",
     "newName": "Novo Nome",
     "newNamePlaceholder": "Digite o novo nome",
@@ -322,7 +328,31 @@
     "moveDown": "Mover para baixo",
     "cannotPublishEmptyFolder": "Não é possível publicar pasta vazia",
     "deleteFolderTitle": "Excluir pasta",
-    "album": "álbum"
+    "album": "álbum",
+    "albums": "álbuns",
+    "moveToFolderTitle": "Mover \"{{albumName}}\" para a Pasta  ",
+    "moveToFolderHint": "Selecione uma pasta de destino ou escolha Não Classificado para remover de qualquer pasta.  ",
+    "currentFolder": "Atual  ",
+    "changesDiscarded": "Mudanças descartadas  ",
+    "deletePhotoQuestion": "Excluir Foto?  ",
+    "confirmAction": "Confirmar Ação",
+    "albumDeleted": "Álbum \"{{albumName}}\" excluído  ",
+    "albumRenamed": "Álbum renomeado para \"{{albumName}}\"  ",
+    "albumAlreadyExists": "Álbum \"{{albumName}}\" já existe  ",
+    "failedToSaveChangesBeforeDeletingAlbum": "Falha ao salvar as alterações antes de excluir o álbum  ",
+    "failedToSaveChangesBeforeDeletingFolder": "Falha ao salvar as alterações antes de excluir a pasta  ",
+    "networkErrorOccurred": "Ocorreu um erro de rede  ",
+    "folderDeleted": "Pasta \"{{folderName}}\" excluída  ",
+    "folderActionCompleted": "Pasta \"{{folderName}}\" {{action}}  ",
+    "retryingOptimization": "Tentando otimizar novamente {{filename}}...  ",
+    "optimizationRestarted": "Otimização reiniciada para {{filename}}",
+    "retryingAIGeneration": "Reiniciando a geração de título de IA para {{filename}}...",
+    "aiGenerationRestarted": "Geração de título de IA reiniciada para {{filename}}",
+    "failedToDeletePhoto": "Falha ao excluir a foto",
+    "maxRetryAttemptsReached": "Número máximo de tentativas de repetição ({{maxRetries}}) alcançado para {{filename}}",
+    "successfullyUploaded": "{{filename}} enviado com sucesso",
+    "retryFailed": "Falha na repetição para {{filename}}",
+    "noValidImageFiles": "Nenhum arquivo de imagem válido encontrado. Por favor, selecione imagens JPEG, PNG, GIF ou WebP."
   },
   "settings": {
     "saved": "Configurações de {{section}} salvas!",
@@ -675,6 +705,23 @@
       "totalCount": "Contagem Total",
       "percentage": "Porcentagem",
       "percentageText": "{{percentage}}% de todos os eventos"
+    },
+    "map": {
+      "loadingMapData": "Carregando dados do mapa...  ",
+      "noLocationData": "Nenhum dado de localização do visitante disponível para este intervalo de tempo  ",
+      "visitorActivity": "Atividade do Visitante  ",
+      "low": "Baixo  ",
+      "medium": "Médio  ",
+      "high": "Alto  ",
+      "totalVisits": "Total de Visitas",
+      "uniqueVisitors": "Visitantes Únicos  "
+    },
+    "charts": {
+      "loadingChartData": "Carregando dados do gráfico...  ",
+      "noVisitorData": "Nenhum dado de visitante disponível para este intervalo de tempo  ",
+      "noPageviewData": "Nenhum dado de visualização de página por hora disponível para este intervalo de tempo  ",
+      "visitors": "Visitantes  ",
+      "pageviews": "Visualizações de Página"
     }
   },
   "imageOptimization": {

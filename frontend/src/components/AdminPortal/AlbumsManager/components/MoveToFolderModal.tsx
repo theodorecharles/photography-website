@@ -4,6 +4,7 @@
  */
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { AlbumFolder } from '../types';
 import { CloseIcon } from '../../../icons';
 
@@ -22,6 +23,7 @@ const MoveToFolderModal: React.FC<MoveToFolderModalProps> = ({
   onClose,
   onMoveToFolder,
 }) => {
+  const { t } = useTranslation();
   const handleMove = (folderId: number | null) => {
     onMoveToFolder(albumName, folderId);
     onClose();
@@ -32,14 +34,14 @@ const MoveToFolderModal: React.FC<MoveToFolderModalProps> = ({
       <div className="modal-backdrop" onClick={onClose} />
       <div className="move-folder-modal">
         <div className="move-folder-modal-header">
-          <h3>Move "{albumName}" to Folder</h3>
+          <h3>{t('albumsManager.moveToFolderTitle', { albumName })}</h3>
           <button onClick={onClose} className="modal-close-btn">
             <CloseIcon width="20" height="20" />
           </button>
         </div>
         <div className="move-folder-modal-body">
           <p className="move-folder-hint">
-            Select a destination folder or choose Uncategorized to remove from any folder.
+            {t('albumsManager.moveToFolderHint')}
           </p>
           
           <div className="folder-list">
@@ -50,9 +52,9 @@ const MoveToFolderModal: React.FC<MoveToFolderModalProps> = ({
               disabled={currentFolderId === null}
             >
               <span className="folder-option-icon">📚</span>
-              <span className="folder-option-name">Uncategorized</span>
+              <span className="folder-option-name">{t('albumsManager.uncategorized')}</span>
               {currentFolderId === null && (
-                <span className="current-badge">Current</span>
+                <span className="current-badge">{t('albumsManager.currentFolder')}</span>
               )}
             </button>
             
@@ -69,7 +71,7 @@ const MoveToFolderModal: React.FC<MoveToFolderModalProps> = ({
                 </span>
                 <span className="folder-option-name">{folder.name}</span>
                 {currentFolderId === folder.id && (
-                  <span className="current-badge">Current</span>
+                  <span className="current-badge">{t('albumsManager.currentFolder')}</span>
                 )}
               </button>
             ))}

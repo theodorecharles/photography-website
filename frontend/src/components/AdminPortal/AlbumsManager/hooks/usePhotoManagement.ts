@@ -4,6 +4,7 @@
  */
 
 import { useState, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { API_URL } from '../../../../config';
 import { DragEndEvent } from '@dnd-kit/core';
 import { arrayMove } from '@dnd-kit/sortable';
@@ -24,6 +25,7 @@ interface UsePhotoManagementProps {
 }
 
 export const usePhotoManagement = ({ setMessage, showConfirmation }: UsePhotoManagementProps) => {
+  const { t } = useTranslation();
   const [selectedAlbum, setSelectedAlbum] = useState<string | null>(null);
   const [albumPhotos, setAlbumPhotos] = useState<Photo[]>([]);
   const [loadingPhotos, setLoadingPhotos] = useState(false);
@@ -153,8 +155,8 @@ export const usePhotoManagement = ({ setMessage, showConfirmation }: UsePhotoMan
   const cancelPhotoReorder = useCallback(() => {
     setAlbumPhotos([...originalPhotoOrder]);
     setHasEverDragged(false);
-    setMessage({ type: 'success', text: 'Changes discarded' });
-  }, [originalPhotoOrder, setMessage]);
+    setMessage({ type: 'success', text: t('albumsManager.changesDiscarded') });
+  }, [originalPhotoOrder, setMessage, t]);
 
   const shufflePhotos = useCallback(() => {
     if (selectedAlbum) {
