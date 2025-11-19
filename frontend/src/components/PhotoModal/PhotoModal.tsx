@@ -48,7 +48,6 @@ const PhotoModal: React.FC<PhotoModalProps> = ({
   const [showNavigationHint, setShowNavigationHint] = useState(
     () => !localStorage.getItem('hideNavigationHint')
   );
-  const [imageTitle, setImageTitle] = useState<string | null>(null);
   const [siteName, setSiteName] = useState<string>('Galleria');
   
   const touchStartX = useRef<number | null>(null);
@@ -98,26 +97,6 @@ const PhotoModal: React.FC<PhotoModalProps> = ({
     return `${SITE_URL}${baseUrl}?photo=${encodeURIComponent(filename || '')}`;
   }, []);
 
-  // Fetch image title
-  const fetchImageTitle = useCallback(async (photo: Photo) => {
-    try {
-      const filename = photo.id.split('/').pop();
-      const res = await fetchWithRateLimitCheck(
-        `${API_URL}/api/image-metadata/${photo.album}/${filename}`
-      );
-      
-      if (res.ok) {
-        const data = await res.json();
-        setImageTitle(data.title || null);
-      } else {
-        // No title found - this is okay
-        setImageTitle(null);
-      }
-    } catch (err) {
-      // Silently fail - titles are optional
-      setImageTitle(null);
-    }
-  }, []);
 
   // Reset state when photo changes
   useEffect(() => {
@@ -125,15 +104,11 @@ const PhotoModal: React.FC<PhotoModalProps> = ({
     setShowModalImage(false);
     setThumbnailLoaded(false);
     setExifData(null);
-    setImageTitle(null);
     modalOpenTimeRef.current = Date.now();
     
     // Update URL with photo parameter
     updateURLWithPhoto(selectedPhoto);
-    
-    // Fetch image title
-    fetchImageTitle(selectedPhoto);
-  }, [selectedPhoto.id, updateURLWithPhoto, fetchImageTitle]);
+  }, [selectedPhoto.id, updateURLWithPhoto]);
 
 
   // Calculate actual image bounds for aligning controls
@@ -201,10 +176,10 @@ const PhotoModal: React.FC<PhotoModalProps> = ({
     element.setAttribute('content', content);
   }, []);
 
-  // Update page title and meta tags when image title changes
+  // Update page title and meta tags when photo changes
   useEffect(() => {
-    if (imageTitle && selectedPhoto) {
-      const pageTitle = `${imageTitle} - ${siteName}`;
+    if (selectedPhoto && selectedPhoto.title) {
+      const pageTitle = `${selectedPhoto.title} - ${siteName}`;
       const photoUrl = getPhotoPermalink(selectedPhoto);
       const imageUrl = `${API_URL}${selectedPhoto.modal}`;
       
@@ -219,15 +194,15 @@ const PhotoModal: React.FC<PhotoModalProps> = ({
       updateMetaTag('name', 'twitter:title', pageTitle);
       updateMetaTag('name', 'twitter:image', imageUrl);
       updateMetaTag('name', 'twitter:card', 'summary_large_image');
-      updateMetaTag('name', 'description', imageTitle);
-      updateMetaTag('property', 'og:description', imageTitle);
-      updateMetaTag('name', 'twitter:description', imageTitle);
+      updateMetaTag('name', 'description', selectedPhoto.title);
+      updateMetaTag('property', 'og:description', selectedPhoto.title);
+      updateMetaTag('name', 'twitter:description', selectedPhoto.title);
     } else if (selectedPhoto) {
-      // If no title yet, show a temporary title while loading
+      // If no title, just show site name
       const tempTitle = `${siteName}`;
       document.title = tempTitle;
     }
-  }, [imageTitle, selectedPhoto, siteName, getPhotoPermalink, updateMetaTag]);
+  }, [selectedPhoto, siteName, getPhotoPermalink, updateMetaTag]);
   
   // Restore default title only when modal closes (component unmounts)
   useEffect(() => {
@@ -337,11 +312,11 @@ const PhotoModal: React.FC<PhotoModalProps> = ({
     const originalFilename = photo.id.split('/').pop() || 'photo.jpg';
     const fileExtension = originalFilename.substring(originalFilename.lastIndexOf('.'));
     
-    // Create filename as "Site Name - AI Title.jpg" or fallback to original
+    // Create filename as "Site Name - Photo Title.jpg" or fallback to original
     let downloadFilename = originalFilename;
-    if (imageTitle) {
+    if (photo.title) {
       // Sanitize title for filename (remove special characters)
-      const sanitizedTitle = imageTitle.replace(/[/\\?%*:|"<>]/g, '-');
+      const sanitizedTitle = photo.title.replace(/[/\\?%*:|"<>]/g, '-');
       downloadFilename = `${siteName} - ${sanitizedTitle}${fileExtension}`;
     }
     
@@ -364,7 +339,7 @@ const PhotoModal: React.FC<PhotoModalProps> = ({
       logError('Download failed:', err);
       window.open(`${API_URL}${photo.download}${imageQueryString}`, '_blank');
     }
-  }, [imageQueryString, imageTitle, siteName]);
+  }, [imageQueryString, siteName]);
 
   // Navigate to previous photo
   const handleNavigatePrev = useCallback(() => {
@@ -578,7 +553,7 @@ const PhotoModal: React.FC<PhotoModalProps> = ({
             photo={selectedPhoto}
             exifData={exifData}
             loadingExif={loadingExif}
-            imageTitle={imageTitle}
+            imageTitle={selectedPhoto.title}
             style={imageBounds ? { left: `${imageBounds.left}px` } : {}}
           />
 
@@ -599,9 +574,9 @@ const PhotoModal: React.FC<PhotoModalProps> = ({
           />
 
           {/* Image Title */}
-          {imageTitle && thumbnailLoaded && (
+          {selectedPhoto.title && thumbnailLoaded && (
             <div className="modal-image-title">
-              {imageTitle}
+              {selectedPhoto.title}
             </div>
           )}
         </div>
