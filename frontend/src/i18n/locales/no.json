@@ -323,7 +323,10 @@
     "cannotPublishEmptyFolder": "Kan ikke publisere tom mappe",
     "deleteFolderTitle": "Slett mappe",
     "album": "album",
-    "albums": "album"
+    "albums": "album",
+    "moveToFolderTitle": "[EN] Move \"{{albumName}}\" to Folder",
+    "moveToFolderHint": "[EN] Select a destination folder or choose Uncategorized to remove from any folder.",
+    "currentFolder": "[EN] Current"
   },
   "settings": {
     "saved": "{{section}} innstillinger lagret!",
@@ -676,6 +679,23 @@
       "totalCount": "Totalt antall",
       "percentage": "Prosent",
       "percentageText": "{{percentage}}% av alle hendelser"
+    },
+    "map": {
+      "loadingMapData": "[EN] Loading map data...",
+      "noLocationData": "[EN] No visitor location data available for this time range",
+      "visitorActivity": "[EN] Visitor Activity",
+      "low": "[EN] Low",
+      "medium": "[EN] Medium",
+      "high": "[EN] High",
+      "totalVisits": "[EN] Total Visits",
+      "uniqueVisitors": "[EN] Unique Visitors"
+    },
+    "charts": {
+      "loadingChartData": "[EN] Loading chart data...",
+      "noVisitorData": "[EN] No visitor data available for this time range",
+      "noPageviewData": "[EN] No hourly pageview data available for this time range",
+      "visitors": "[EN] Visitors",
+      "pageviews": "[EN] Pageviews"
     }
   },
   "imageOptimization": {

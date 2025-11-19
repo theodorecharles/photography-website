@@ -323,7 +323,10 @@
     "cannotPublishEmptyFolder": "빈 폴더를 게시할 수 없습니다",
     "deleteFolderTitle": "폴더 삭제",
     "album": "앨범",
-    "albums": "앨범"
+    "albums": "앨범",
+    "moveToFolderTitle": "[EN] Move \"{{albumName}}\" to Folder",
+    "moveToFolderHint": "[EN] Select a destination folder or choose Uncategorized to remove from any folder.",
+    "currentFolder": "[EN] Current"
   },
   "settings": {
     "saved": "{{section}} 설정이 저장되었습니다!",
@@ -676,6 +679,23 @@
       "totalCount": "총 개수",
       "percentage": "비율",
       "percentageText": "전체 이벤트의 {{percentage}}%"
+    },
+    "map": {
+      "loadingMapData": "[EN] Loading map data...",
+      "noLocationData": "[EN] No visitor location data available for this time range",
+      "visitorActivity": "[EN] Visitor Activity",
+      "low": "[EN] Low",
+      "medium": "[EN] Medium",
+      "high": "[EN] High",
+      "totalVisits": "[EN] Total Visits",
+      "uniqueVisitors": "[EN] Unique Visitors"
+    },
+    "charts": {
+      "loadingChartData": "[EN] Loading chart data...",
+      "noVisitorData": "[EN] No visitor data available for this time range",
+      "noPageviewData": "[EN] No hourly pageview data available for this time range",
+      "visitors": "[EN] Visitors",
+      "pageviews": "[EN] Pageviews"
     }
   },
   "imageOptimization": {

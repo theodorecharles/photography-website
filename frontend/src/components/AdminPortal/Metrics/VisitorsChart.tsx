@@ -3,6 +3,7 @@
  */
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   AreaChart,
   Area,
@@ -21,12 +22,14 @@ interface VisitorsChartProps {
 }
 
 const VisitorsChart: React.FC<VisitorsChartProps> = ({ data, loading, secondaryColor }) => {
+  const { t } = useTranslation();
+  
   if (loading) {
-    return <div className="chart-loading">Loading chart data...</div>;
+    return <div className="chart-loading">{t('metrics.charts.loadingChartData')}</div>;
   }
 
   if (data.length === 0) {
-    return <div className="no-data">No visitor data available for this time range</div>;
+    return <div className="no-data">{t('metrics.charts.noVisitorData')}</div>;
   }
 
   return (
@@ -77,7 +80,7 @@ const VisitorsChart: React.FC<VisitorsChartProps> = ({ data, loading, secondaryC
             }}
             labelStyle={{ color: '#f9fafb', fontWeight: 600 }}
             itemStyle={{ color: secondaryColor }}
-            formatter={(value: number) => [value, 'Visitors']}
+            formatter={(value: number) => [value, t('metrics.charts.visitors')]}
           />
           <Area 
             type="linear" 

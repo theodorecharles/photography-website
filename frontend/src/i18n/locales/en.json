@@ -343,7 +343,10 @@
     "albumWillBePublished": "✓ Album will be published right away",
     "albumsInPublishedFolders": "Albums in published folders are always published",
     "albumWillBePrivate": "🔒 Album will be private",
-    "albumsInUnpublishedFolders": "Albums in unpublished folders are always private"
+    "albumsInUnpublishedFolders": "Albums in unpublished folders are always private",
+    "moveToFolderTitle": "Move \"{{albumName}}\" to Folder",
+    "moveToFolderHint": "Select a destination folder or choose Uncategorized to remove from any folder.",
+    "currentFolder": "Current"
   },
   "settings": {
     "saved": "{{section}} settings saved!",
@@ -696,6 +699,23 @@
       "totalCount": "Total Count",
       "percentage": "Percentage",
       "percentageText": "{{percentage}}% of all events"
+    },
+    "map": {
+      "loadingMapData": "Loading map data...",
+      "noLocationData": "No visitor location data available for this time range",
+      "visitorActivity": "Visitor Activity",
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "totalVisits": "Total Visits",
+      "uniqueVisitors": "Unique Visitors"
+    },
+    "charts": {
+      "loadingChartData": "Loading chart data...",
+      "noVisitorData": "No visitor data available for this time range",
+      "noPageviewData": "No hourly pageview data available for this time range",
+      "visitors": "Visitors",
+      "pageviews": "Pageviews"
     }
   },
   "imageOptimization": {

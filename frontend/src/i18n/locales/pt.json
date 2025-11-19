@@ -323,7 +323,10 @@
     "cannotPublishEmptyFolder": "Não é possível publicar pasta vazia",
     "deleteFolderTitle": "Excluir pasta",
     "album": "álbum",
-    "albums": "álbuns"
+    "albums": "álbuns",
+    "moveToFolderTitle": "[EN] Move \"{{albumName}}\" to Folder",
+    "moveToFolderHint": "[EN] Select a destination folder or choose Uncategorized to remove from any folder.",
+    "currentFolder": "[EN] Current"
   },
   "settings": {
     "saved": "Configurações de {{section}} salvas!",
@@ -676,6 +679,23 @@
       "totalCount": "Contagem Total",
       "percentage": "Porcentagem",
       "percentageText": "{{percentage}}% de todos os eventos"
+    },
+    "map": {
+      "loadingMapData": "[EN] Loading map data...",
+      "noLocationData": "[EN] No visitor location data available for this time range",
+      "visitorActivity": "[EN] Visitor Activity",
+      "low": "[EN] Low",
+      "medium": "[EN] Medium",
+      "high": "[EN] High",
+      "totalVisits": "[EN] Total Visits",
+      "uniqueVisitors": "[EN] Unique Visitors"
+    },
+    "charts": {
+      "loadingChartData": "[EN] Loading chart data...",
+      "noVisitorData": "[EN] No visitor data available for this time range",
+      "noPageviewData": "[EN] No hourly pageview data available for this time range",
+      "visitors": "[EN] Visitors",
+      "pageviews": "[EN] Pageviews"
     }
   },
   "imageOptimization": {

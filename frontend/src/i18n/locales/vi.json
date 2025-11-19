@@ -323,7 +323,10 @@
     "albumWillBePublished": "✓ Album sẽ được xuất bản ngay lập tức",
     "albumsInPublishedFolders": "Các album trong thư mục đã xuất bản luôn được xuất bản",
     "albumWillBePrivate": "🔒 Album sẽ là riêng tư",
-    "albumsInUnpublishedFolders": "Các album trong thư mục chưa xuất bản luôn là riêng tư"
+    "albumsInUnpublishedFolders": "Các album trong thư mục chưa xuất bản luôn là riêng tư",
+    "moveToFolderTitle": "[EN] Move \"{{albumName}}\" to Folder",
+    "moveToFolderHint": "[EN] Select a destination folder or choose Uncategorized to remove from any folder.",
+    "currentFolder": "[EN] Current"
   },
   "settings": {
     "saved": "Cài đặt {{section}} đã được lưu!",
@@ -676,6 +679,23 @@
       "totalCount": "Tổng Số Lượng",
       "percentage": "Phần trăm",
       "percentageText": "{{percentage}}% của tất cả các sự kiện"
+    },
+    "map": {
+      "loadingMapData": "[EN] Loading map data...",
+      "noLocationData": "[EN] No visitor location data available for this time range",
+      "visitorActivity": "[EN] Visitor Activity",
+      "low": "[EN] Low",
+      "medium": "[EN] Medium",
+      "high": "[EN] High",
+      "totalVisits": "[EN] Total Visits",
+      "uniqueVisitors": "[EN] Unique Visitors"
+    },
+    "charts": {
+      "loadingChartData": "[EN] Loading chart data...",
+      "noVisitorData": "[EN] No visitor data available for this time range",
+      "noPageviewData": "[EN] No hourly pageview data available for this time range",
+      "visitors": "[EN] Visitors",
+      "pageviews": "[EN] Pageviews"
     }
   },
   "imageOptimization": {

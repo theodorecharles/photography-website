@@ -323,7 +323,10 @@
     "albumWillBePublished": "✓ Ang album ay ipo-publish kaagad",
     "albumsInPublishedFolders": "Ang mga album sa na-publish na mga folder ay palaging na-publish",
     "albumWillBePrivate": "🔒 Ang album ay magiging pribado",
-    "albumsInUnpublishedFolders": "Ang mga album sa hindi na-publish na mga folder ay palaging pribado"
+    "albumsInUnpublishedFolders": "Ang mga album sa hindi na-publish na mga folder ay palaging pribado",
+    "moveToFolderTitle": "[EN] Move \"{{albumName}}\" to Folder",
+    "moveToFolderHint": "[EN] Select a destination folder or choose Uncategorized to remove from any folder.",
+    "currentFolder": "[EN] Current"
   },
   "settings": {
     "saved": "{{section}} mga setting ay na-save!",
@@ -676,6 +679,23 @@
       "totalCount": "Kabuuang Bilang",
       "percentage": "Porsyento",
       "percentageText": "{{percentage}}% ng lahat ng kaganapan"
+    },
+    "map": {
+      "loadingMapData": "[EN] Loading map data...",
+      "noLocationData": "[EN] No visitor location data available for this time range",
+      "visitorActivity": "[EN] Visitor Activity",
+      "low": "[EN] Low",
+      "medium": "[EN] Medium",
+      "high": "[EN] High",
+      "totalVisits": "[EN] Total Visits",
+      "uniqueVisitors": "[EN] Unique Visitors"
+    },
+    "charts": {
+      "loadingChartData": "[EN] Loading chart data...",
+      "noVisitorData": "[EN] No visitor data available for this time range",
+      "noPageviewData": "[EN] No hourly pageview data available for this time range",
+      "visitors": "[EN] Visitors",
+      "pageviews": "[EN] Pageviews"
     }
   },
   "imageOptimization": {

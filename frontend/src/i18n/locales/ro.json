@@ -323,7 +323,10 @@
     "albumWillBePublished": "✓ Albumul va fi publicat imediat",
     "albumsInPublishedFolders": "Albumele din folderele publicate sunt întotdeauna publicate",
     "albumWillBePrivate": "🔒 Albumul va fi privat",
-    "albumsInUnpublishedFolders": "Albumele din folderele nepublicate sunt întotdeauna private"
+    "albumsInUnpublishedFolders": "Albumele din folderele nepublicate sunt întotdeauna private",
+    "moveToFolderTitle": "[EN] Move \"{{albumName}}\" to Folder",
+    "moveToFolderHint": "[EN] Select a destination folder or choose Uncategorized to remove from any folder.",
+    "currentFolder": "[EN] Current"
   },
   "settings": {
     "saved": "Setările {{section}} au fost salvate!",
@@ -676,6 +679,23 @@
       "totalCount": "Număr total",
       "percentage": "Procentaj",
       "percentageText": "{{percentage}}% din toate evenimentele"
+    },
+    "map": {
+      "loadingMapData": "[EN] Loading map data...",
+      "noLocationData": "[EN] No visitor location data available for this time range",
+      "visitorActivity": "[EN] Visitor Activity",
+      "low": "[EN] Low",
+      "medium": "[EN] Medium",
+      "high": "[EN] High",
+      "totalVisits": "[EN] Total Visits",
+      "uniqueVisitors": "[EN] Unique Visitors"
+    },
+    "charts": {
+      "loadingChartData": "[EN] Loading chart data...",
+      "noVisitorData": "[EN] No visitor data available for this time range",
+      "noPageviewData": "[EN] No hourly pageview data available for this time range",
+      "visitors": "[EN] Visitors",
+      "pageviews": "[EN] Pageviews"
     }
   },
   "imageOptimization": {

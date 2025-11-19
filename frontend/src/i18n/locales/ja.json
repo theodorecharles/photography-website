@@ -315,6 +315,9 @@
     "albumsInPublishedFolders": "公開フォルダ内のアルバムは常に公開されています",
     "albumWillBePrivate": "🔒 アルバムは非公開になります",
     "albumsInUnpublishedFolders": "非公開フォルダ内のアルバムは常に非公開です",
+    "moveToFolderTitle": "「{{albumName}}」をフォルダに移動",
+    "moveToFolderHint": "移動先のフォルダを選択するか、「未分類」を選択してフォルダから削除してください。",
+    "currentFolder": "現在",
     "title": "アルバム",
     "description": "写真アルバムを管理し、新しい画像をアップロードします。",
     "uploadInProgress": "アップロード中",
@@ -676,6 +679,23 @@
       "totalCount": "総カウント",
       "percentage": "割合",
       "percentageText": "全イベントの{{percentage}}%"
+    },
+    "map": {
+      "loadingMapData": "マップデータを読み込み中...",
+      "noLocationData": "この期間の訪問者位置データがありません",
+      "visitorActivity": "訪問者アクティビティ",
+      "low": "低",
+      "medium": "中",
+      "high": "高",
+      "totalVisits": "総訪問数",
+      "uniqueVisitors": "ユニークビジター"
+    },
+    "charts": {
+      "loadingChartData": "チャートデータを読み込み中...",
+      "noVisitorData": "この期間の訪問者データがありません",
+      "noPageviewData": "この期間の時間別ページビューデータがありません",
+      "visitors": "訪問者",
+      "pageviews": "ページビュー"
     }
   },
   "imageOptimization": {
