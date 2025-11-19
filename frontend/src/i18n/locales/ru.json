@@ -39,6 +39,7 @@
   },
   "app": {
     "loadingAlbums": "Загрузка альбомов...",
+    "loadingAlbum": "[EN] Loading album...",
     "loadingSetup": "Загрузка настроек...",
     "backendError": "Ошибка сервера",
     "unableToConnect": "Не удается подключиться к серверу",

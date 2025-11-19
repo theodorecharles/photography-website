@@ -39,6 +39,7 @@
   },
   "app": {
     "loadingAlbums": "Cargando álbumes...",
+    "loadingAlbum": "[EN] Loading album...",
     "loadingSetup": "Cargando configuración...",
     "backendError": "Error del Servidor",
     "unableToConnect": "No se puede conectar al servidor",

@@ -648,8 +648,8 @@ Photography portfolio website with React 19, TypeScript, Express 5, and SQLite.
    - Group related keys logically in sections
 
 2. **Add placeholder keys to other languages**:
-   - Copy the same keys to all language files
-   - Prefix the English text with `[EN]` (e.g., `"changesDiscarded": "[EN] Changes discarded"`)
+   - Copy the same keys to all language files (use a script to loop over all languages and add the key)
+   - Prefix the English text with `[EN]` (e.g., `"changesDiscarded": "[EN] Changes discarded"`) in the other language files
    - This marks them for auto-translation
 
 3. **Run auto-translate script**:

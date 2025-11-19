@@ -39,6 +39,7 @@
   },
   "app": {
     "loadingAlbums": "Laddar album...",
+    "loadingAlbum": "[EN] Loading album...",
     "loadingSetup": "Laddar inställningar...",
     "backendError": "Backend-fel",
     "unableToConnect": "Kan inte ansluta till servern",

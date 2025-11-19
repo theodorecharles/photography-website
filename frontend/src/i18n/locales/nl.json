@@ -39,6 +39,7 @@
   },
   "app": {
     "loadingAlbums": "Albums laden...",
+    "loadingAlbum": "[EN] Loading album...",
     "loadingSetup": "Setup laden...",
     "backendError": "Backendfout",
     "unableToConnect": "Kan geen verbinding maken met de server",

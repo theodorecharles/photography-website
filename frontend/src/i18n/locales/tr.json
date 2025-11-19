@@ -39,6 +39,7 @@
   },
   "app": {
     "loadingAlbums": "Albümler yükleniyor...",
+    "loadingAlbum": "[EN] Loading album...",
     "loadingSetup": "Kurulum yükleniyor...",
     "backendError": "Arka Uç Hatası",
     "unableToConnect": "Sunucuya bağlanılamıyor",

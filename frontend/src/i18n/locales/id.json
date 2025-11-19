@@ -39,6 +39,7 @@
   },
   "app": {
     "loadingAlbums": "Memuat album...",
+    "loadingAlbum": "[EN] Loading album...",
     "loadingSetup": "Memuat pengaturan...",
     "backendError": "Kesalahan Backend",
     "unableToConnect": "Tidak dapat terhubung ke server",

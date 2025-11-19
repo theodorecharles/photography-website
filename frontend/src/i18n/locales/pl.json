@@ -39,6 +39,7 @@
   },
   "app": {
     "loadingAlbums": "Ładowanie albumów...",
+    "loadingAlbum": "[EN] Loading album...",
     "loadingSetup": "Ładowanie konfiguracji...",
     "backendError": "Błąd zaplecza",
     "unableToConnect": "Nie można połączyć się z serwerem",

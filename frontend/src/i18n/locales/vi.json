@@ -39,6 +39,7 @@
   },
   "app": {
     "loadingAlbums": "Đang tải các album...",
+    "loadingAlbum": "[EN] Loading album...",
     "loadingSetup": "Đang tải thiết lập...",
     "backendError": "Lỗi phía máy chủ",
     "unableToConnect": "Không thể kết nối với máy chủ",

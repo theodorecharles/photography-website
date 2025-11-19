@@ -39,6 +39,7 @@
   },
   "app": {
     "loadingAlbums": "앨범을 불러오는 중...",
+    "loadingAlbum": "[EN] Loading album...",
     "loadingSetup": "설정을 불러오는 중...",
     "backendError": "백엔드 오류",
     "unableToConnect": "서버에 연결할 수 없습니다",
