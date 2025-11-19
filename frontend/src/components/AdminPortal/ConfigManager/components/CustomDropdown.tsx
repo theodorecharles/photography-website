@@ -45,12 +45,26 @@ export default function CustomDropdown({
       setIsOpen(false);
     };
 
+    const handleMenuScroll = (event: Event) => {
+      // Stop propagation to prevent parent scroll events from closing the dropdown
+      event.stopPropagation();
+    };
+
     if (isOpen) {
       document.addEventListener('mousedown', handleClickOutside);
       window.addEventListener('scroll', handleScroll, true); // Use capture phase to catch all scroll events
+      
+      // Add scroll listener to menu to stop propagation
+      if (menuRef.current) {
+        menuRef.current.addEventListener('scroll', handleMenuScroll);
+      }
+      
       return () => {
         document.removeEventListener('mousedown', handleClickOutside);
         window.removeEventListener('scroll', handleScroll, true);
+        if (menuRef.current) {
+          menuRef.current.removeEventListener('scroll', handleMenuScroll);
+        }
       };
     }
   }, [isOpen]);
@@ -154,6 +168,7 @@ export default function CustomDropdown({
             zIndex: 100001,
             maxHeight: '300px',
             overflowY: 'auto',
+            overscrollBehavior: 'contain', // Prevent scroll chaining to parent
             animation: 'dropdownFadeIn 0.15s ease-out',
           }}
         >
