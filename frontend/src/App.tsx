@@ -4,7 +4,9 @@
  */
 
 import { useState, useEffect, lazy, Suspense } from "react";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "./contexts/AuthContext";
+import i18n from "./i18n/config";
 import {
   BrowserRouter as Router,
   Routes,
@@ -87,11 +89,12 @@ function AlbumRoute({ onAlbumNotFound, onLoadComplete }: { onAlbumNotFound: () =
 
 // PrimesRedirect component forces a full page load to the primes static page
 function PrimesRedirect() {
+  const { t } = useTranslation();
   useEffect(() => {
     // Force a full page reload to the primes page
     window.location.replace("/primes/");
   }, []);
-  return <div className="loading">Loading benchmark...</div>;
+  return <div className="loading">{t('common.loading')}</div>;
 }
 
 // NotFoundRedirect component updates URL to /404 for catch-all routes
@@ -111,6 +114,7 @@ function NotFoundRedirect() {
 
 // RateLimitError component for 429 error page
 function RateLimitError() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   
@@ -124,12 +128,12 @@ function RateLimitError() {
   return (
     <div className="error rate-limit-error">
       <div className="rate-limit-icon">🤠</div>
-      <h2>Whoa there, partner!</h2>
-      <p>Slow down there, feller. You're clicking faster than a tumbleweed in a tornado!</p>
-      <p>Give it a moment and try again.</p>
+      <h2>{t('app.rateLimitTitle')}</h2>
+      <p>{t('app.rateLimitMessage')}</p>
+      <p>{t('app.rateLimitAction')}</p>
       <div className="not-found-actions">
         <Link to="/" className="home-button">
-          Head Back Home
+          {t('app.headBackHome')}
         </Link>
       </div>
     </div>
@@ -144,6 +148,7 @@ function RateLimitError() {
  * - Renders the main layout
  */
 function App() {
+  const { t } = useTranslation();
   // Application state
   const [albums, setAlbums] = useState<string[] | Array<{name: string; folder_id?: number | null}>>([]);
   const [folders, setFolders] = useState<Array<{id: number; name: string; published: boolean}>>([]);
@@ -303,6 +308,12 @@ function App() {
       setPrimaryColor(brandingData.primaryColor || '#4ade80');
       setSecondaryColor(brandingData.secondaryColor || '#3b82f6');
       setAvatarCacheBust(Date.now()); // Update cache bust when branding refreshes
+      
+      // Update language from branding config if available
+      if (brandingData.language && i18n.language !== brandingData.language) {
+        i18n.changeLanguage(brandingData.language);
+      }
+      
       setErrorState(null);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "An error occurred";
@@ -392,7 +403,7 @@ function App() {
       <Suspense fallback={
         <div className="photo-grid-loading">
           <div className="loading-spinner"></div>
-          <p>Loading setup...</p>
+          <p>{t('app.loadingSetup')}</p>
         </div>
       }>
         <SetupWizard />
@@ -406,7 +417,7 @@ function App() {
     return (
       <div className="photo-grid-loading">
         <div className="loading-spinner"></div>
-        <p>Loading albums...</p>
+        <p>{t('app.loadingAlbums')}</p>
       </div>
     );
   }
@@ -440,10 +451,10 @@ function App() {
     return (
       <div className="error backend-error">
         <div className="error-icon-large">❌</div>
-        <h2>Backend Error</h2>
-        <p className="error-description">Unable to connect to the server</p>
+        <h2>{t('app.backendError')}</h2>
+        <p className="error-description">{t('app.unableToConnect')}</p>
         <button onClick={() => window.location.reload()} className="retry-button">
-          Reload Page
+          {t('app.reloadPage')}
         </button>
       </div>
     );
@@ -458,18 +469,18 @@ function App() {
   if (isStandalonePage) {
     return (
       <div className="app">
-        <Suspense fallback={
-          <div className="photo-grid-loading">
-            <div className="loading-spinner"></div>
-            <p>Loading...</p>
-          </div>
-        }>
-          <Routes>
-            <Route path="/shared/:secretKey" element={<SharedAlbum />} />
-            <Route path="/setup" element={<SetupWizard />} />
-            <Route path="/logs" element={<LogViewer />} />
-          </Routes>
-        </Suspense>
+      <Suspense fallback={
+        <div className="photo-grid-loading">
+          <div className="loading-spinner"></div>
+          <p>{t('common.loading')}</p>
+        </div>
+      }>
+        <Routes>
+          <Route path="/shared/:secretKey" element={<SharedAlbum />} />
+          <Route path="/setup" element={<SetupWizard />} />
+          <Route path="/logs" element={<LogViewer />} />
+        </Routes>
+      </Suspense>
       </div>
     );
   }

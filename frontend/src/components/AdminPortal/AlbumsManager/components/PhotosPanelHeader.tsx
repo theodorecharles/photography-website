@@ -10,6 +10,7 @@
  */
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { UploadIcon, TrashIcon, LinkIcon, CloseIcon, EyeIcon, GridViewIcon, ListViewIcon } from '../../../icons';
 
 type ViewMode = 'grid' | 'list';
@@ -49,6 +50,7 @@ const PhotosPanelHeader: React.FC<PhotosPanelHeaderProps> = ({
   onViewModeChange,
   canEdit,
 }) => {
+  const { t } = useTranslation();
   const currentAlbum = localAlbums.find(a => a.name === selectedAlbum);
   const isPublished = currentAlbum?.published !== false;
   const showOnHomepage = currentAlbum?.show_on_homepage !== false;
@@ -75,10 +77,10 @@ const PhotosPanelHeader: React.FC<PhotosPanelHeaderProps> = ({
         <div className="photos-title-left">
           <h2 className="photos-modal-title">{selectedAlbum}</h2>
           <span className="photos-count">
-            {photoCount} {photoCount === 1 ? 'photo' : 'photos'}
+            {photoCount} {photoCount === 1 ? t('albumsManager.photo') : t('albumsManager.photos')}
             {hasActiveUploads && totalUploading > 0 && (
               <span style={{ marginLeft: '0.5rem', color: '#4ade80' }}>
-                ({uploadProgress}% complete)
+                ({uploadProgress}% {t('albumsManager.complete')})
               </span>
             )}
           </span>
@@ -98,7 +100,7 @@ const PhotosPanelHeader: React.FC<PhotosPanelHeaderProps> = ({
                 />
                 <span className="toggle-slider"></span>
                 <span className="toggle-label-below">
-                  Homepage
+                  {t('albumsManager.homepage')}
                 </span>
               </label>
             )}
@@ -113,7 +115,7 @@ const PhotosPanelHeader: React.FC<PhotosPanelHeaderProps> = ({
                 />
                 <span className="toggle-slider"></span>
                 <span className="toggle-label-below">
-                  {isPublished ? 'Published' : 'Unpublished'}
+                  {isPublished ? t('albumsManager.published') : t('albumsManager.unpublished')}
                 </span>
               </label>
             ) : (
@@ -126,12 +128,12 @@ const PhotosPanelHeader: React.FC<PhotosPanelHeaderProps> = ({
                 color: isPublished ? '#4ade80' : '#fbbf24',
                 border: isPublished ? '1px solid rgba(34, 197, 94, 0.3)' : '1px solid rgba(251, 191, 36, 0.3)',
               }}>
-                {isPublished ? 'Published' : 'Unpublished'}
+                {isPublished ? t('albumsManager.published') : t('albumsManager.unpublished')}
               </span>
             )}
           </div>
           
-          <button onClick={onClose} className="photos-close-btn" title="Close">
+          <button onClick={onClose} className="photos-close-btn" title={t('common.close')}>
             <CloseIcon width="20" height="20" />
           </button>
         </div>
@@ -144,14 +146,14 @@ const PhotosPanelHeader: React.FC<PhotosPanelHeaderProps> = ({
             <button
               className={`view-toggle-btn ${viewMode === 'grid' ? 'active' : ''}`}
               onClick={() => onViewModeChange('grid')}
-              title="Grid view"
+              title={t('albumsManager.gridView')}
             >
               <GridViewIcon width="16" height="16" />
             </button>
             <button
               className={`view-toggle-btn ${viewMode === 'list' ? 'active' : ''}`}
               onClick={() => onViewModeChange('list')}
-              title="List view"
+              title={t('albumsManager.listView')}
             >
               <ListViewIcon width="16" height="16" />
             </button>
@@ -167,7 +169,7 @@ const PhotosPanelHeader: React.FC<PhotosPanelHeaderProps> = ({
                 }}
               >
                 <UploadIcon width="16" height="16" />
-                <span>{hasActiveUploads ? 'Uploading...' : 'Upload'}</span>
+                <span>{hasActiveUploads ? t('sse.uploading') : t('albumsManager.upload')}</span>
                 <input
                   type="file"
                   multiple
@@ -181,11 +183,11 @@ const PhotosPanelHeader: React.FC<PhotosPanelHeaderProps> = ({
               <button
                 onClick={() => onDeleteAlbum(selectedAlbum)}
                 className="photos-btn photos-btn-danger"
-                title="Delete album"
+                title={t('albumsManager.deleteAlbum')}
                 disabled={hasActiveUploads}
               >
                 <TrashIcon width="16" height="16" />
-                <span>Delete</span>
+                <span>{t('common.delete')}</span>
               </button>
               
               {!isPublished && (
@@ -193,18 +195,18 @@ const PhotosPanelHeader: React.FC<PhotosPanelHeaderProps> = ({
                   <button
                     onClick={() => onPreviewAlbum(selectedAlbum)}
                     className="photos-btn photos-btn-secondary"
-                    title="Preview album"
+                    title={t('albumsManager.previewAlbum')}
                   >
                     <EyeIcon width="16" height="16" />
-                    <span>Preview</span>
+                    <span>{t('albumsManager.preview')}</span>
                   </button>
                   <button
                     onClick={() => onShareAlbum(selectedAlbum)}
                     className="photos-btn photos-btn-secondary"
-                    title="Generate shareable link"
+                    title={t('albumsManager.generateShareableLink')}
                   >
                     <LinkIcon width="16" height="16" />
-                    <span>Share</span>
+                    <span>{t('photo.share')}</span>
                   </button>
                 </>
               )}
@@ -217,7 +219,7 @@ const PhotosPanelHeader: React.FC<PhotosPanelHeaderProps> = ({
           {canEdit && isPublished && (
             <label className="toggle-switch compact homepage-toggle-desktop" onClick={(e) => e.stopPropagation()} style={{ marginRight: '0.75rem' }}>
               <span className="toggle-label">
-                {showOnHomepage ? 'On Homepage' : 'Not on Homepage'}
+                {showOnHomepage ? t('albumsManager.onHomepage') : t('albumsManager.notOnHomepage')}
               </span>
               <input
                 type="checkbox"
@@ -232,7 +234,7 @@ const PhotosPanelHeader: React.FC<PhotosPanelHeaderProps> = ({
           {canEdit && !isInFolder ? (
             <label className="toggle-switch compact publish-toggle-controlbar" onClick={(e) => e.stopPropagation()}>
               <span className="toggle-label">
-                {isPublished ? 'Published' : 'Unpublished'}
+                {isPublished ? t('albumsManager.published') : t('albumsManager.unpublished')}
               </span>
               <input
                 type="checkbox"
@@ -251,7 +253,7 @@ const PhotosPanelHeader: React.FC<PhotosPanelHeaderProps> = ({
               color: isPublished ? '#4ade80' : '#fbbf24',
               border: isPublished ? '1px solid rgba(34, 197, 94, 0.3)' : '1px solid rgba(251, 191, 36, 0.3)',
             }}>
-              {isPublished ? 'Published' : 'Unpublished'}
+              {isPublished ? t('albumsManager.published') : t('albumsManager.unpublished')}
             </span>
           )}
         </div>

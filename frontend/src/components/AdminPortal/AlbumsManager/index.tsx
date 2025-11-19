@@ -8,6 +8,7 @@
  */
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { API_URL } from '../../../config';
 import { useSearchParams } from 'react-router-dom';
 import { UploadingImage, AlbumsManagerProps, ConfirmModalConfig, Photo } from './types';
@@ -56,6 +57,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   setMessage,
   userRole,
 }) => {
+  const { t } = useTranslation();
   // Check if user can edit (admin or manager)
   const canEdit = userRole === 'admin' || userRole === 'manager';
   const [searchParams, setSearchParams] = useSearchParams();
@@ -194,7 +196,11 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
         // Show success toaster if panel was closed during upload
         setMessage({ 
           type: 'success', 
-          text: `✓ Upload complete! ${completedUploads.length} ${completedUploads.length === 1 ? 'photo' : 'photos'} added to "${uploadingAlbum}"`
+          text: t('albumsManager.uploadComplete', { 
+            count: completedUploads.length, 
+            photo: completedUploads.length === 1 ? t('albumsManager.photo') : t('albumsManager.photos'),
+            album: uploadingAlbum
+          })
         });
       }
       

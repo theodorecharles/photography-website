@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { API_URL } from '../../config';
 import { useParams, useNavigate } from 'react-router-dom';
 import { PasswordInput } from '../AdminPortal/PasswordInput';
@@ -11,6 +12,7 @@ import { error as logError } from '../../utils/logger';
 
 
 const PasswordResetComplete: React.FC = () => {
+  const { t } = useTranslation();
   const { token } = useParams<{ token: string }>();
   const navigate = useNavigate();
 
@@ -44,7 +46,7 @@ const PasswordResetComplete: React.FC = () => {
   // Validation
   useEffect(() => {
     if (!token) {
-      setError('Invalid reset link');
+      setError(t('passwordResetComplete.invalidResetLink'));
       setLoading(false);
       return;
     }
@@ -60,14 +62,14 @@ const PasswordResetComplete: React.FC = () => {
 
       if (!res.ok) {
         const data = await res.json();
-        throw new Error(data.error || 'Invalid or expired reset link');
+        throw new Error(data.error || t('passwordResetComplete.invalidOrExpired'));
       }
 
       const data = await res.json();
       setEmail(data.email);
       setLoading(false);
     } catch (err: any) {
-      setError(err.message || 'Failed to validate reset link');
+      setError(err.message || t('passwordResetComplete.failedToValidate'));
       setLoading(false);
     }
   };
@@ -78,12 +80,12 @@ const PasswordResetComplete: React.FC = () => {
 
     // Validation
     if (password.length < 8) {
-      setError('Password must be at least 8 characters');
+      setError(t('passwordResetComplete.passwordMinLength'));
       return;
     }
 
     if (password !== confirmPassword) {
-      setError('Passwords do not match');
+      setError(t('passwordResetComplete.passwordsDoNotMatch'));
       return;
     }
 
@@ -98,7 +100,7 @@ const PasswordResetComplete: React.FC = () => {
 
       if (!res.ok) {
         const data = await res.json();
-        throw new Error(data.error || 'Failed to reset password');
+        throw new Error(data.error || t('passwordResetComplete.failedToReset'));
       }
 
       setSuccess(true);
@@ -108,7 +110,7 @@ const PasswordResetComplete: React.FC = () => {
         navigate('/admin?message=password-reset-complete');
       }, 2000);
     } catch (err: any) {
-      setError(err.message || 'Failed to reset password');
+      setError(err.message || t('passwordResetComplete.failedToReset'));
       setLoading(false);
     }
   };
@@ -135,7 +137,7 @@ const PasswordResetComplete: React.FC = () => {
             boxShadow: "0 20px 60px rgba(0, 0, 0, 0.5)",
           }}
         >
-          <p style={{ color: "#9ca3af" }}>Validating reset link...</p>
+          <p style={{ color: "#9ca3af" }}>{t('passwordResetComplete.validating')}</p>
         </div>
       </div>
     );
@@ -171,7 +173,7 @@ const PasswordResetComplete: React.FC = () => {
               color: "#ffffff",
             }}
           >
-            Invalid Reset Link
+            {t('passwordResetComplete.invalidResetLink')}
           </h1>
           <p
             style={{
@@ -189,7 +191,7 @@ const PasswordResetComplete: React.FC = () => {
               fontSize: "1rem",
             }}
           >
-            Request New Link
+            {t('passwordResetComplete.requestNewLink')}
           </button>
         </div>
       </div>
@@ -226,7 +228,7 @@ const PasswordResetComplete: React.FC = () => {
               color: "#ffffff",
             }}
           >
-            Password Reset Successfully
+            {t('passwordResetComplete.success')}
           </h1>
           <p
             style={{
@@ -235,7 +237,7 @@ const PasswordResetComplete: React.FC = () => {
               lineHeight: 1.6,
             }}
           >
-            Your password has been updated. You can now sign in with your new password.
+            {t('passwordResetComplete.successMessage')}
           </p>
           <p
             style={{
@@ -243,7 +245,7 @@ const PasswordResetComplete: React.FC = () => {
               fontSize: "0.875rem",
             }}
           >
-            Redirecting to login...
+            {t('passwordResetComplete.redirecting')}
           </p>
         </div>
       </div>
@@ -280,10 +282,10 @@ const PasswordResetComplete: React.FC = () => {
               color: "#ffffff",
             }}
           >
-            Set New Password
+            {t('passwordResetComplete.setNewPassword')}
           </h1>
           <p style={{ color: "#9ca3af", fontSize: "0.95rem" }}>
-            Create a new password for your account.
+            {t('passwordResetComplete.description')}
           </p>
         </div>
 
@@ -299,7 +301,7 @@ const PasswordResetComplete: React.FC = () => {
           }}
         >
           <div style={{ fontSize: "0.85rem", color: "#9ca3af", marginBottom: "0.25rem" }}>
-            Resetting password for
+            {t('passwordResetComplete.resettingPasswordFor')}
           </div>
           <div style={{ fontWeight: 600, color: "#e5e7eb" }}>
             {email}
@@ -310,12 +312,12 @@ const PasswordResetComplete: React.FC = () => {
         <form onSubmit={handleSubmit}>
           <div style={{ marginBottom: "1.5rem" }}>
             <label className="branding-label">
-              New Password *
+              {t('passwordResetComplete.newPassword')} *
             </label>
             <PasswordInput
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Min 8 characters"
+              placeholder={t('passwordResetComplete.passwordPlaceholder')}
               required
             />
             <p
@@ -325,18 +327,18 @@ const PasswordResetComplete: React.FC = () => {
                 marginTop: "0.5rem",
               }}
             >
-              Must be at least 8 characters long
+              {t('passwordResetComplete.passwordMinLengthHint')}
             </p>
           </div>
 
           <div style={{ marginBottom: "1.5rem" }}>
             <label className="branding-label">
-              Confirm New Password *
+              {t('passwordResetComplete.confirmNewPassword')} *
             </label>
             <PasswordInput
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              placeholder="Re-enter password"
+              placeholder={t('passwordResetComplete.reenterPassword')}
               required
             />
           </div>
@@ -384,7 +386,7 @@ const PasswordResetComplete: React.FC = () => {
               e.currentTarget.style.filter = 'brightness(1)';
             }}
           >
-            {loading ? 'Resetting Password...' : 'Reset Password'}
+            {loading ? t('passwordResetComplete.resetting') : t('passwordResetComplete.resetPassword')}
           </button>
         </form>
 
@@ -396,7 +398,7 @@ const PasswordResetComplete: React.FC = () => {
             color: "#9ca3af",
           }}
         >
-          Remember your password?{" "}
+          {t('passwordResetComplete.rememberPassword')}{" "}
           <a
             href="/admin"
             style={{
@@ -405,7 +407,7 @@ const PasswordResetComplete: React.FC = () => {
               fontWeight: 500,
             }}
           >
-            Sign in
+            {t('passwordResetComplete.signIn')}
           </a>
         </p>
       </div>

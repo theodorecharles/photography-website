@@ -4,6 +4,7 @@
  */
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { ConfigData } from '../types';
 
 interface RegenerationControlsProps {
@@ -33,6 +34,7 @@ const RegenerationControls: React.FC<RegenerationControlsProps> = ({
   onSetupOpenAI,
   showConfirmation,
 }) => {
+  const { t } = useTranslation();
   const isAnyJobRunning = generatingTitles || isOptimizationRunning;
 
   if (!config) return null;
@@ -53,7 +55,7 @@ const RegenerationControls: React.FC<RegenerationControlsProps> = ({
           className="openai-section-label"
           style={{ display: "block", marginBottom: "0.75rem" }}
         >
-          TITLE GENERATION
+          {t('advancedSettings.regenerationControls.titleGeneration')}
         </label>
         <div
           style={{
@@ -72,7 +74,7 @@ const RegenerationControls: React.FC<RegenerationControlsProps> = ({
               style={{ flex: "1 1 auto", minWidth: "200px" }}
               disabled={isOptimizationRunning}
             >
-              Set Up OpenAI
+              {t('advancedSettings.regenerationControls.setUpOpenAI')}
             </button>
           ) : !generatingTitles ? (
             <>
@@ -86,14 +88,14 @@ const RegenerationControls: React.FC<RegenerationControlsProps> = ({
                   style={{ flex: "1 1 auto", minWidth: "200px" }}
                   disabled={isAnyJobRunning}
                 >
-                  Backfill Missing Titles
+                  {t('advancedSettings.regenerationControls.backfillMissingTitles')}
                 </button>
               )}
               <button
                 type="button"
                 onClick={async () => {
                   const confirmed = await showConfirmation(
-                    "⚠️ This will regenerate ALL image titles and overwrite any custom titles you have set. This action cannot be undone.\n\nAre you sure you want to continue?"
+                    t('advancedSettings.regenerationControls.forceRegenerateAllConfirm')
                   );
                   if (confirmed) {
                     onGenerateTitles(true);
@@ -103,7 +105,7 @@ const RegenerationControls: React.FC<RegenerationControlsProps> = ({
                 style={{ flex: "1 1 auto", minWidth: "200px" }}
                 disabled={isOptimizationRunning}
               >
-                Force Regenerate All
+                {t('advancedSettings.regenerationControls.forceRegenerateAll')}
               </button>
             </>
           ) : (
@@ -118,7 +120,7 @@ const RegenerationControls: React.FC<RegenerationControlsProps> = ({
                 minWidth: "200px",
               }}
             >
-              Stop
+              {t('advancedSettings.regenerationControls.stop')}
             </button>
           )}
         </div>
@@ -130,7 +132,7 @@ const RegenerationControls: React.FC<RegenerationControlsProps> = ({
           className="openai-section-label"
           style={{ display: "block", marginBottom: "0.75rem" }}
         >
-          OPTIMIZED IMAGES
+          {t('advancedSettings.regenerationControls.optimizedImages')}
         </label>
         <div
           style={{
@@ -149,7 +151,7 @@ const RegenerationControls: React.FC<RegenerationControlsProps> = ({
               style={{ flex: "1 1 auto", minWidth: "200px" }}
               disabled={generatingTitles}
             >
-              Force Regenerate All
+              {t('advancedSettings.regenerationControls.forceRegenerateAll')}
             </button>
           ) : (
             <button
@@ -163,7 +165,7 @@ const RegenerationControls: React.FC<RegenerationControlsProps> = ({
                 minWidth: "200px",
               }}
             >
-              Stop
+              {t('advancedSettings.regenerationControls.stop')}
             </button>
           )}
           {optimizationComplete && !isOptimizationRunning && (

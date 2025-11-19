@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { API_URL } from '../../config';
 import { useParams, useNavigate } from 'react-router-dom';
 import { PasswordInput } from '../AdminPortal/PasswordInput';
@@ -11,6 +12,7 @@ import { error as logError } from '../../utils/logger';
 
 
 const InviteSignup: React.FC = () => {
+  const { t } = useTranslation();
   const { token } = useParams<{ token: string }>();
   const navigate = useNavigate();
 
@@ -69,7 +71,7 @@ const InviteSignup: React.FC = () => {
   // Validation
   useEffect(() => {
     if (!token) {
-      setError('Invalid invitation link');
+      setError(t('inviteSignup.invalidInvitationLink'));
       setLoading(false);
       return;
     }
@@ -85,14 +87,14 @@ const InviteSignup: React.FC = () => {
 
       if (!res.ok) {
         const data = await res.json();
-        throw new Error(data.error || 'Invalid invitation');
+        throw new Error(data.error || t('inviteSignup.invalidInvitation'));
       }
 
       const data = await res.json();
       setEmail(data.email);
       setLoading(false);
     } catch (err: any) {
-      setError(err.message || 'Failed to validate invitation');
+      setError(err.message || t('inviteSignup.failedToValidate'));
       setLoading(false);
     }
   };
@@ -103,17 +105,17 @@ const InviteSignup: React.FC = () => {
 
     // Validation
     if (!name.trim()) {
-      setError('Name is required');
+      setError(t('inviteSignup.nameRequired'));
       return;
     }
 
     if (password.length < 8) {
-      setError('Password must be at least 8 characters');
+      setError(t('inviteSignup.passwordMinLength'));
       return;
     }
 
     if (password !== confirmPassword) {
-      setError('Passwords do not match');
+      setError(t('inviteSignup.passwordsDoNotMatch'));
       return;
     }
 
@@ -128,13 +130,13 @@ const InviteSignup: React.FC = () => {
 
       if (!res.ok) {
         const data = await res.json();
-        throw new Error(data.error || 'Failed to complete signup');
+        throw new Error(data.error || t('inviteSignup.failedToComplete'));
       }
 
       // Signup successful - redirect to login
       navigate('/admin?message=signup-complete');
     } catch (err: any) {
-      setError(err.message || 'Failed to complete signup');
+      setError(err.message || t('inviteSignup.failedToComplete'));
       setLoading(false);
     }
   };
@@ -157,7 +159,7 @@ const InviteSignup: React.FC = () => {
           textAlign: 'center',
           boxShadow: '0 20px 60px rgba(0, 0, 0, 0.5)',
         }}>
-          <p style={{ color: '#9ca3af' }}>Validating invitation...</p>
+          <p style={{ color: '#9ca3af' }}>{t('inviteSignup.validating')}</p>
         </div>
       </div>
     );
@@ -192,7 +194,7 @@ const InviteSignup: React.FC = () => {
             marginBottom: '1rem',
             color: '#ffffff',
           }}>
-            Invalid Invitation
+            {t('inviteSignup.invalidInvitation')}
           </h1>
           <p style={{
             color: '#9ca3af',
@@ -220,7 +222,7 @@ const InviteSignup: React.FC = () => {
               e.currentTarget.style.filter = 'brightness(1)';
             }}
           >
-            Go to Homepage
+            {t('inviteSignup.goToHomepage')}
           </button>
         </div>
       </div>
@@ -251,10 +253,10 @@ const InviteSignup: React.FC = () => {
             marginBottom: '0.5rem',
             color: '#ffffff',
           }}>
-            Complete Your Registration
+            {t('inviteSignup.completeRegistration')}
           </h1>
           <p style={{ color: '#9ca3af', fontSize: '0.95rem' }}>
-            You've been invited to join. Please set up your account.
+            {t('inviteSignup.description')}
           </p>
         </div>
 
@@ -268,7 +270,7 @@ const InviteSignup: React.FC = () => {
           textAlign: 'center',
         }}>
           <div style={{ fontSize: '0.85rem', color: '#9ca3af', marginBottom: '0.25rem' }}>
-            Signing up as
+            {t('inviteSignup.signingUpAs')}
           </div>
           <div style={{ fontWeight: 600, color: '#e5e7eb' }}>
             {email}
@@ -279,13 +281,13 @@ const InviteSignup: React.FC = () => {
         <form onSubmit={handleSubmit}>
           <div style={{ marginBottom: '1.5rem' }}>
             <label className="branding-label">
-              Full Name *
+              {t('inviteSignup.fullName')} *
             </label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Your name"
+              placeholder={t('inviteSignup.yourName')}
               required
               className="branding-input"
               style={{
@@ -296,12 +298,12 @@ const InviteSignup: React.FC = () => {
 
           <div style={{ marginBottom: '1.5rem' }}>
             <label className="branding-label">
-              Password *
+              {t('inviteSignup.password')} *
             </label>
             <PasswordInput
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Min 8 characters"
+              placeholder={t('inviteSignup.passwordPlaceholder')}
               required
             />
             <p style={{
@@ -309,18 +311,18 @@ const InviteSignup: React.FC = () => {
               color: '#9ca3af',
               marginTop: '0.5rem',
             }}>
-              Must be at least 8 characters long
+              {t('inviteSignup.passwordMinLengthHint')}
             </p>
           </div>
 
           <div style={{ marginBottom: '1.5rem' }}>
             <label className="branding-label">
-              Confirm Password *
+              {t('inviteSignup.confirmPassword')} *
             </label>
             <PasswordInput
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              placeholder="Re-enter password"
+              placeholder={t('inviteSignup.reenterPassword')}
               required
             />
           </div>
@@ -366,7 +368,7 @@ const InviteSignup: React.FC = () => {
               e.currentTarget.style.filter = 'brightness(1)';
             }}
           >
-            {loading ? 'Creating Account...' : 'Complete Registration'}
+            {loading ? t('inviteSignup.creatingAccount') : t('inviteSignup.completeRegistration')}
           </button>
         </form>
 
@@ -376,7 +378,7 @@ const InviteSignup: React.FC = () => {
           fontSize: '0.875rem',
           color: '#9ca3af',
         }}>
-          Already have an account?{' '}
+          {t('inviteSignup.alreadyHaveAccount')}{' '}
           <a
             href="/admin"
             style={{
@@ -385,7 +387,7 @@ const InviteSignup: React.FC = () => {
               fontWeight: 500,
             }}
           >
-            Sign in
+            {t('inviteSignup.signIn')}
           </a>
         </p>
       </div>

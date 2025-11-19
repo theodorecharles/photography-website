@@ -5,6 +5,7 @@
  */
 
 import { useState, useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { API_URL } from '../../../../config';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
@@ -54,6 +55,7 @@ const PhotoGridItem: React.FC<PhotoGridItemProps> = ({
   selectedAlbum,
   canEdit,
 }) => {
+  const { t } = useTranslation();
   const isUploading = !!uploadingImage && uploadingImage.state !== 'complete';
   const isComplete = !!photo || (uploadingImage?.state === 'complete' && uploadingImage.photo);
   
@@ -209,7 +211,7 @@ const PhotoGridItem: React.FC<PhotoGridItemProps> = ({
           {uploadingImage.state === 'queued' && (
             <div className="photo-state-overlay queued">
               <HourglassIcon width="32" height="32" style={{ opacity: 0.8 }} />
-              <span className="state-text">Queued</span>
+              <span className="state-text">{t('sse.queued')}</span>
             </div>
           )}
           {uploadingImage.state === 'uploading' && (
@@ -232,7 +234,7 @@ const PhotoGridItem: React.FC<PhotoGridItemProps> = ({
                 </svg>
                 <div className="progress-percentage">{uploadingImage.progress || 0}%</div>
               </div>
-              <span className="state-text">Uploading</span>
+              <span className="state-text">{t('sse.uploadingLabel')}</span>
             </div>
           )}
           {uploadingImage.state === 'optimizing' && (
@@ -261,13 +263,13 @@ const PhotoGridItem: React.FC<PhotoGridItemProps> = ({
                   <div className="progress-percentage">{uploadingImage.optimizeProgress}%</div>
                 </div>
               )}
-              <span className="state-text">Optimizing</span>
+              <span className="state-text">{t('sse.optimizing')}</span>
             </div>
           )}
           {uploadingImage.state === 'generating-title' && (
             <div className="photo-state-overlay generating-title">
               <div className="spinner"></div>
-              <span className="state-text">Generating Title...</span>
+              <span className="state-text">{t('sse.generatingTitle')}</span>
             </div>
           )}
           {uploadingImage.state === 'error' && (() => {

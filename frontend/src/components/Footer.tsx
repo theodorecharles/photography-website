@@ -5,6 +5,7 @@
  */
 
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { API_URL } from '../config';
 import { Link } from 'react-router-dom';
 import './Footer.css';
@@ -18,6 +19,7 @@ interface FooterProps {
 }
 
 function Footer({ albums: _albums = [], externalLinks: _externalLinks = [], currentAlbum: _currentAlbum }: FooterProps) {
+  const { t } = useTranslation();
   const [currentYear, setCurrentYear] = useState<number>(new Date().getFullYear());
   const [siteName, setSiteName] = useState<string>('');
 
@@ -67,19 +69,19 @@ function Footer({ albums: _albums = [], externalLinks: _externalLinks = [], curr
             &copy; {currentYear} {siteName || 'Ted Charles'}.{' '}
             <span className="footer-separator">•</span>{' '}
             <Link to="/license" className="footer-link">
-              License
+              {t('footer.license')}
             </Link>
           </span>
           <div className="footer-links">
             <span className="footer-powered-by">
-              Powered by{' '}
+              {t('footer.poweredBy')}{' '}
               <a 
                 href="https://github.com/theodorecharles/Galleria" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="footer-galleria-link"
               >
-                Galleria
+                {t('footer.galleria')}
               </a>
             </span>
           </div>

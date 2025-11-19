@@ -30,8 +30,10 @@ import {
 } from '../icons/';
 import packageJson from '../../../../package.json';
 import { error as logError, info } from '../../utils/logger';
+import { useTranslation } from 'react-i18next';
 
 export default function AdminPortal() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const [authStatus, setAuthStatus] = useState<AuthStatus | null>(null);
@@ -501,7 +503,7 @@ export default function AdminPortal() {
             }}
           >
             <LogoutIcon width="18" height="18" style={{ marginRight: '8px' }} />
-            Logout
+            {t('adminPortal.logout')}
           </button>
           <div className="admin-tabs">
             <button
@@ -509,7 +511,7 @@ export default function AdminPortal() {
               onClick={() => navigate('/admin/albums')}
             >
               <ImageIcon width="20" height="20" style={{ marginRight: '8px' }} />
-              Albums
+              {t('adminPortal.albums')}
             </button>
             {metricsEnabled && (
               <button
@@ -517,7 +519,7 @@ export default function AdminPortal() {
                 onClick={() => navigate('/admin/metrics')}
               >
                 <BarChartIcon width="20" height="20" style={{ marginRight: '8px' }} />
-                Metrics
+                {t('adminPortal.metrics')}
               </button>
             )}
             {/* Show Settings tab only for admins, Profile tab for viewers/managers */}
@@ -527,7 +529,7 @@ export default function AdminPortal() {
                 onClick={() => navigate('/admin/settings')}
               >
                 <SettingsIcon width="20" height="20" style={{ marginRight: '8px' }} />
-                Settings
+                {t('adminPortal.settings')}
               </button>
             ) : (
               <button
@@ -535,7 +537,7 @@ export default function AdminPortal() {
                 onClick={() => navigate('/admin/profile')}
               >
                 <UserIcon width="20" height="20" style={{ marginRight: '8px' }} />
-                Profile
+                {t('adminPortal.profile')}
               </button>
             )}
           </div>

@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { API_URL } from '../../../../config';
 import { BrandingConfig } from '../../types';
 import { trackBrandingUpdate, trackAvatarUpload } from '../../../../utils/analytics';
@@ -21,12 +22,31 @@ interface BrandingSectionProps {
   setMessage: (message: { type: "success" | "error"; text: string }) => void;
 }
 
+const SUPPORTED_LANGUAGES = [
+  { code: 'en', name: 'English', flag: '🇺🇸' },
+  { code: 'es', name: 'Español', flag: '🇪🇸' },
+  { code: 'fr', name: 'Français', flag: '🇫🇷' },
+  { code: 'de', name: 'Deutsch', flag: '🇩🇪' },
+  { code: 'ja', name: '日本語', flag: '🇯🇵' },
+  { code: 'nl', name: 'Nederlands', flag: '🇳🇱' },
+  { code: 'it', name: 'Italiano', flag: '🇮🇹' },
+  { code: 'pt', name: 'Português', flag: '🇵🇹' },
+  { code: 'ru', name: 'Русский', flag: '🇷🇺' },
+  { code: 'zh-CN', name: '简体中文', flag: '🇨🇳' },
+  { code: 'ko', name: '한국어', flag: '🇰🇷' },
+  { code: 'pl', name: 'Polski', flag: '🇵🇱' },
+  { code: 'tr', name: 'Türkçe', flag: '🇹🇷' },
+  { code: 'sv', name: 'Svenska', flag: '🇸🇪' },
+  { code: 'no', name: 'Norsk', flag: '🇳🇴' },
+];
+
 const BrandingSection: React.FC<BrandingSectionProps> = ({
   branding,
   setBranding,
   loadBranding,
   setMessage,
 }) => {
+  const { t, i18n } = useTranslation();
   const [showBranding, setShowBranding] = useState(false);
   const [originalBranding, setOriginalBranding] = useState<BrandingConfig>(branding);
   const [savingBrandingSection, setSavingBrandingSection] = useState<string | null>(null);
@@ -35,6 +55,27 @@ const BrandingSection: React.FC<BrandingSectionProps> = ({
   const [isDraggingOver, setIsDraggingOver] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
   const avatarFileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleBrandingChange = (field: keyof BrandingConfig, value: string | boolean) => {
+    setBranding({
+      ...branding,
+      [field]: value,
+    });
+  };
+  
+  // Initialize language from branding config or use current i18n language
+  useEffect(() => {
+    if (branding.language) {
+      i18n.changeLanguage(branding.language);
+    } else {
+      // If no language in branding, use current i18n language
+      const currentLang = i18n.language.split('-')[0];
+      if (currentLang !== 'en') {
+        // Only change if it's not already English (default)
+        i18n.changeLanguage(currentLang);
+      }
+    }
+  }, [branding.language, i18n]);
 
   // Initialize originalBranding only once when component first loads
   useEffect(() => {
@@ -83,13 +124,6 @@ const BrandingSection: React.FC<BrandingSectionProps> = ({
 
   const handleAvatarClick = () => {
     avatarFileInputRef.current?.click();
-  };
-
-  const handleBrandingChange = (field: keyof BrandingConfig, value: string | boolean) => {
-    setBranding({
-      ...branding,
-      [field]: value,
-    });
   };
 
   const saveBrandingSection = async (sectionName: string, fields: (keyof BrandingConfig)[]) => {
@@ -147,7 +181,7 @@ const BrandingSection: React.FC<BrandingSectionProps> = ({
       });
 
       if (res.ok) {
-        setMessage({ type: 'success', text: `${sectionName} saved successfully!` });
+                    setMessage({ type: 'success', text: t('branding.savedSuccessfully', { section: sectionName }) });
         trackBrandingUpdate(fields.map(f => String(f)));
         
         // Update original branding to reflect the saved state
@@ -161,11 +195,11 @@ const BrandingSection: React.FC<BrandingSectionProps> = ({
           window.dispatchEvent(new Event('branding-updated'));
         }
       } else {
-        const errorData = await res.json().catch(() => ({ error: 'Unknown error' }));
-        setMessage({ type: 'error', text: errorData.error || `Failed to save ${sectionName}` });
+        const errorData = await res.json().catch(() => ({ error: t('common.unknownError') }));
+        setMessage({ type: 'error', text: errorData.error || t('branding.failedToSave', { section: sectionName }) });
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : `Error saving ${sectionName}`;
+      const errorMessage = err instanceof Error ? err.message : t('branding.failedToSave', { section: sectionName });
       setMessage({ type: 'error', text: errorMessage });
     } finally {
       setSavingBrandingSection(null);
@@ -203,8 +237,8 @@ const BrandingSection: React.FC<BrandingSectionProps> = ({
   return (
     <div className="config-group full-width">
       <SectionHeader
-        title="Branding"
-        description="Customize your site's name, subtitle, and avatar"
+        title={t('branding.title')}
+        description={t('branding.description')}
         isExpanded={showBranding}
         onToggle={() => setShowBranding(!showBranding)}
       />
@@ -217,7 +251,7 @@ const BrandingSection: React.FC<BrandingSectionProps> = ({
       >
         <div className="branding-grid">
           <div className="branding-group">
-            <label className="branding-label">Logo</label>
+            <label className="branding-label">{t('branding.logo')}</label>
             <div 
               className={`avatar-upload-container ${isDraggingOver ? 'dragging-over' : ''}`}
               onDragOver={handleAvatarDragOver}
@@ -237,7 +271,7 @@ const BrandingSection: React.FC<BrandingSectionProps> = ({
                     avatarPreviewUrl ||
                     `${API_URL}${branding.avatarPath}?v=${Date.now()}`
                   }
-                  alt="Current avatar"
+                  alt={t('branding.currentAvatar')}
                   className="current-avatar-preview"
                   key={avatarPreviewUrl || branding.avatarPath}
                   style={{ cursor: 'pointer' }}
@@ -257,7 +291,7 @@ const BrandingSection: React.FC<BrandingSectionProps> = ({
                   textAlign: 'center',
                   padding: '1rem'
                 }}>
-                  <span>Click or drag image here</span>
+                  <span>{t('branding.clickOrDrag')}</span>
                 </div>
               )}
               <input
@@ -284,7 +318,7 @@ const BrandingSection: React.FC<BrandingSectionProps> = ({
                   className="btn-secondary btn-small"
                   disabled={savingBrandingSection === 'Logo'}
                 >
-                  Cancel
+                  {t('common.cancel')}
                 </button>
                 <button 
                   onClick={(e) => {
@@ -294,14 +328,14 @@ const BrandingSection: React.FC<BrandingSectionProps> = ({
                   className="btn-primary btn-small"
                   disabled={savingBrandingSection === 'Logo'}
                 >
-                  {savingBrandingSection === 'Logo' ? 'Saving...' : 'Save'}
+                  {savingBrandingSection === 'Logo' ? t('common.saving') : t('common.save')}
                 </button>
               </div>
             )}
           </div>
 
           <div className="branding-group">
-            <label className="branding-label">Site Name</label>
+            <label className="branding-label">{t('branding.siteName')}</label>
             <input
               type="text"
               value={branding.siteName}
@@ -309,7 +343,7 @@ const BrandingSection: React.FC<BrandingSectionProps> = ({
                 handleBrandingChange("siteName", e.target.value)
               }
               className="branding-input"
-              placeholder="Your site name"
+              placeholder={t('branding.siteNamePlaceholder')}
               disabled={savingBrandingSection === 'Site Name'}
             />
             {hasBrandingChanges(['siteName']) && (
@@ -319,14 +353,14 @@ const BrandingSection: React.FC<BrandingSectionProps> = ({
                   className="btn-secondary btn-small"
                   disabled={savingBrandingSection === 'Site Name'}
                 >
-                  Cancel
+                  {t('common.cancel')}
                 </button>
                 <button 
                   onClick={() => saveBrandingSection('Site Name', ['siteName'])} 
                   className="btn-primary btn-small"
                   disabled={savingBrandingSection === 'Site Name'}
                 >
-                  {savingBrandingSection === 'Site Name' ? 'Saving...' : 'Save'}
+                  {savingBrandingSection === 'Site Name' ? t('common.saving') : t('common.save')}
                 </button>
               </div>
             )}
@@ -334,10 +368,10 @@ const BrandingSection: React.FC<BrandingSectionProps> = ({
 
           <div className="branding-group">
             <label className="branding-label" style={{ display: 'block', marginBottom: '0.5rem' }}>
-              Photo License
+              {t('branding.photoLicense')}
             </label>
             <p className="branding-description">
-              Choose how others can use your photographs
+              {t('branding.photoLicenseDescription')}
             </p>
             <CustomDropdown
               value={branding.photoLicense || 'cc-by'}
@@ -368,18 +402,18 @@ const BrandingSection: React.FC<BrandingSectionProps> = ({
                   });
 
                   if (res.ok) {
-                    setMessage({ type: 'success', text: 'Photo license updated!' });
+                    setMessage({ type: 'success', text: t('branding.photoLicenseUpdated') });
                     trackBrandingUpdate(['photoLicense']);
                     setOriginalBranding(updatedBranding);
                     await loadBranding();
                   } else {
-                    const errorData = await res.json().catch(() => ({ error: 'Unknown error' }));
-                    setMessage({ type: 'error', text: errorData.error || 'Failed to save license' });
+                    const errorData = await res.json().catch(() => ({ error: t('common.unknownError') }));
+                    setMessage({ type: 'error', text: errorData.error || t('branding.failedToSaveLicense') });
                     // Revert on error
                     setBranding(branding);
                   }
                 } catch (err) {
-                  const errorMessage = err instanceof Error ? err.message : 'Error saving license';
+                  const errorMessage = err instanceof Error ? err.message : t('branding.errorSavingLicense');
                   setMessage({ type: 'error', text: errorMessage });
                   // Revert on error
                   setBranding(branding);
@@ -397,9 +431,9 @@ const BrandingSection: React.FC<BrandingSectionProps> = ({
           </div>
 
           <div className="branding-group">
-            <label className="branding-label">Shuffle Homepage Photos</label>
+            <label className="branding-label">{t('branding.shuffleHomepage')}</label>
             <p className="branding-description">
-              Randomize the order of photos on the homepage each time the page loads
+              {t('branding.shuffleHomepageDescription')}
             </p>
             <label className="toggle-switch">
               <input
@@ -438,17 +472,17 @@ const BrandingSection: React.FC<BrandingSectionProps> = ({
                         error('Failed to regenerate static JSON:', err);
                       }
                       
-                      setMessage({ type: 'success', text: 'Homepage shuffle setting saved!' });
+                      setMessage({ type: 'success', text: t('branding.homepageShuffleSaved') });
                       setOriginalBranding(updatedBranding);
                       // Don't reload - we already have the correct state
                     } else {
-                      const errorData = await res.json().catch(() => ({ error: 'Unknown error' }));
-                      setMessage({ type: 'error', text: errorData.error || 'Failed to save setting' });
+                      const errorData = await res.json().catch(() => ({ error: t('common.unknownError') }));
+                      setMessage({ type: 'error', text: errorData.error || t('branding.failedToSaveSetting') });
                       // Revert on error
                       setBranding(branding);
                     }
                   } catch (err) {
-                    const errorMessage = err instanceof Error ? err.message : 'Error saving setting';
+                    const errorMessage = err instanceof Error ? err.message : t('branding.errorSavingSetting');
                     setMessage({ type: 'error', text: errorMessage });
                     // Revert on error
                     setBranding(branding);
@@ -460,13 +494,13 @@ const BrandingSection: React.FC<BrandingSectionProps> = ({
               />
               <span className="toggle-slider"></span>
               <span className="toggle-label">
-                {branding.shuffleHomepage ?? true ? 'Enabled' : 'Disabled'}
+                {branding.shuffleHomepage ?? true ? t('common.enabled') : t('common.disabled')}
               </span>
             </label>
           </div>
 
           <div className="branding-group">
-            <label className="branding-label">Primary Color</label>
+            <label className="branding-label">{t('branding.primaryColor')}</label>
             <div className="color-input-group">
               <input
                 type="color"
@@ -495,21 +529,21 @@ const BrandingSection: React.FC<BrandingSectionProps> = ({
                   className="btn-secondary btn-small"
                   disabled={savingBrandingSection === 'Primary Color'}
                 >
-                  Cancel
+                  {t('common.cancel')}
                 </button>
                 <button 
                   onClick={() => saveBrandingSection('Primary Color', ['primaryColor'])} 
                   className="btn-primary btn-small"
                   disabled={savingBrandingSection === 'Primary Color'}
                 >
-                  {savingBrandingSection === 'Primary Color' ? 'Saving...' : 'Save'}
+                  {savingBrandingSection === 'Primary Color' ? t('common.saving') : t('common.save')}
                 </button>
               </div>
             )}
           </div>
 
           <div className="branding-group">
-            <label className="branding-label">Secondary Color</label>
+            <label className="branding-label">{t('branding.secondaryColor')}</label>
             <div className="color-input-group">
               <input
                 type="color"
@@ -538,28 +572,28 @@ const BrandingSection: React.FC<BrandingSectionProps> = ({
                   className="btn-secondary btn-small"
                   disabled={savingBrandingSection === 'Secondary Color'}
                 >
-                  Cancel
+                  {t('common.cancel')}
                 </button>
                 <button 
                   onClick={() => saveBrandingSection('Secondary Color', ['secondaryColor'])} 
                   className="btn-primary btn-small"
                   disabled={savingBrandingSection === 'Secondary Color'}
                 >
-                  {savingBrandingSection === 'Secondary Color' ? 'Saving...' : 'Save'}
+                  {savingBrandingSection === 'Secondary Color' ? t('common.saving') : t('common.save')}
                 </button>
               </div>
             )}
           </div>
 
           <div className="branding-group">
-            <label className="branding-label">Meta Description</label>
+            <label className="branding-label">{t('branding.metaDescription')}</label>
             <textarea
               value={branding.metaDescription}
               onChange={(e) =>
                 handleBrandingChange("metaDescription", e.target.value)
               }
               className="branding-textarea"
-              placeholder="Brief description of your site for search engines"
+              placeholder={t('branding.metaDescriptionPlaceholder')}
               rows={3}
               disabled={savingBrandingSection === 'Meta Description'}
             />
@@ -570,28 +604,28 @@ const BrandingSection: React.FC<BrandingSectionProps> = ({
                   className="btn-secondary btn-small"
                   disabled={savingBrandingSection === 'Meta Description'}
                 >
-                  Cancel
+                  {t('common.cancel')}
                 </button>
                 <button 
                   onClick={() => saveBrandingSection('Meta Description', ['metaDescription'])} 
                   className="btn-primary btn-small"
                   disabled={savingBrandingSection === 'Meta Description'}
                 >
-                  {savingBrandingSection === 'Meta Description' ? 'Saving...' : 'Save'}
+                  {savingBrandingSection === 'Meta Description' ? t('common.saving') : t('common.save')}
                 </button>
               </div>
             )}
           </div>
 
           <div className="branding-group">
-            <label className="branding-label">Meta Keywords</label>
+            <label className="branding-label">{t('branding.metaKeywords')}</label>
             <textarea
               value={branding.metaKeywords}
               onChange={(e) =>
                 handleBrandingChange("metaKeywords", e.target.value)
               }
               className="branding-textarea"
-              placeholder="photography, portfolio, your name (comma separated)"
+              placeholder={t('branding.metaKeywordsPlaceholder')}
               rows={3}
               disabled={savingBrandingSection === 'Meta Keywords'}
             />
@@ -602,17 +636,80 @@ const BrandingSection: React.FC<BrandingSectionProps> = ({
                   className="btn-secondary btn-small"
                   disabled={savingBrandingSection === 'Meta Keywords'}
                 >
-                  Cancel
+                  {t('common.cancel')}
                 </button>
                 <button 
                   onClick={() => saveBrandingSection('Meta Keywords', ['metaKeywords'])} 
                   className="btn-primary btn-small"
                   disabled={savingBrandingSection === 'Meta Keywords'}
                 >
-                  {savingBrandingSection === 'Meta Keywords' ? 'Saving...' : 'Save'}
+                  {savingBrandingSection === 'Meta Keywords' ? t('common.saving') : t('common.save')}
                 </button>
               </div>
             )}
+          </div>
+
+          <div className="branding-group">
+            <label className="branding-label" style={{ display: 'block', marginBottom: '0.5rem' }}>
+              {t('branding.language')}
+            </label>
+            <p className="branding-description">
+              {t('branding.languageDescription')}
+            </p>
+            <CustomDropdown
+              value={branding.language || i18n.language.split('-')[0] || 'en'}
+              options={SUPPORTED_LANGUAGES.map((lang) => ({
+                value: lang.code,
+                label: lang.name,
+                emoji: lang.flag
+              }))}
+              onChange={async (newValue) => {
+                handleBrandingChange("language", newValue);
+                
+                // Change i18n language immediately
+                i18n.changeLanguage(newValue);
+                
+                // Auto-save immediately
+                setSavingBrandingSection('Language');
+                try {
+                  const updatedBranding = {
+                    ...branding,
+                    language: newValue
+                  };
+                  
+                  const res = await fetch(`${API_URL}/api/branding`, {
+                    method: 'PUT',
+                    headers: {
+                      'Content-Type': 'application/json',
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify(updatedBranding),
+                  });
+
+                  if (res.ok) {
+                    setMessage({ type: 'success', text: t('branding.languageUpdated') });
+                    trackBrandingUpdate(['language']);
+                    setOriginalBranding(updatedBranding);
+                    await loadBranding();
+                  } else {
+                    const errorData = await res.json().catch(() => ({ error: t('common.unknownError') }));
+                    setMessage({ type: 'error', text: errorData.error || t('branding.failedToSaveLanguage') });
+                    // Revert on error
+                    setBranding(branding);
+                    i18n.changeLanguage(branding.language || 'en');
+                  }
+                } catch (err) {
+                  const errorMessage = err instanceof Error ? err.message : t('branding.errorSavingLanguage');
+                  setMessage({ type: 'error', text: errorMessage });
+                  // Revert on error
+                  setBranding(branding);
+                  i18n.changeLanguage(branding.language || 'en');
+                } finally {
+                  setSavingBrandingSection(null);
+                }
+              }}
+              disabled={savingBrandingSection === 'Language'}
+            />
           </div>
         </div>
       </div>

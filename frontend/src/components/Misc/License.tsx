@@ -4,12 +4,14 @@
  */
 
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { API_URL } from '../../config';
 import { getLicenseById, getDefaultLicense } from '../../utils/licenses';
 import './License.css';
 import { error as logError } from '../../utils/logger';
 
 function License() {
+  const { t } = useTranslation();
   const [siteName, setSiteName] = useState<string>('');
   const [currentYear, setCurrentYear] = useState<number>(new Date().getFullYear());
   const [photoLicense, setPhotoLicense] = useState<string>('cc-by');
@@ -30,7 +32,7 @@ function License() {
           setPhotoLicense(brandingData.photoLicense || 'cc-by');
           
           // Update document title
-          document.title = `License - ${name}`;
+          document.title = `${t('license.title')} - ${name}`;
         }
 
         // Fetch current year
@@ -53,9 +55,9 @@ function License() {
 
     // Cleanup: reset title when component unmounts
     return () => {
-      document.title = siteName || 'Photography Portfolio';
+      document.title = siteName || t('license.photographyPortfolio');
     };
-  }, [siteName]);
+  }, [siteName, t]);
 
   const license = getLicenseById(photoLicense) || getDefaultLicense();
 
@@ -63,7 +65,7 @@ function License() {
     return (
       <div className="license-page">
         <div className="license-container">
-          <p>Loading...</p>
+          <p>{t('common.loading')}</p>
         </div>
       </div>
     );
@@ -72,7 +74,7 @@ function License() {
   return (
     <div className="license-page">
         <div className="license-container">
-          <h1>Photo License</h1>
+          <h1>{t('license.title')}</h1>
           
           <div className="license-section">
             <h2>{license.name}</h2>
@@ -86,30 +88,33 @@ function License() {
           </div>
 
           <div className="license-section">
-            <h3>Summary</h3>
+            <h3>{t('license.summary')}</h3>
             <p>{license.description}</p>
           </div>
 
           <div className="license-section">
-            <h3>Full License Text</h3>
+            <h3>{t('license.fullLicenseText')}</h3>
             <p className="license-full-text">{license.fullText}</p>
           </div>
 
           <div className="license-section">
-            <h3>Copyright</h3>
+            <h3>{t('license.copyright')}</h3>
             <p>
-              © {currentYear} {siteName}. All photographs on this website are protected by copyright law.
+              {t('license.copyrightText', { year: currentYear, siteName })}
             </p>
           </div>
 
           {license.id.startsWith('cc-') && license.id !== 'cc0' && (
             <div className="license-section license-notice">
-              <h3>How to Attribute</h3>
-              <p>If you use these photographs under this license, please provide attribution as follows:</p>
+              <h3>{t('license.howToAttribute')}</h3>
+              <p>{t('license.attributionText')}</p>
               <div className="license-attribution-example">
                 <code>
-                  Photo by {siteName} - Licensed under {license.shortName}
-                  {license.url && ` (${license.url})`}
+                  {t('license.attributionExample', { 
+                    siteName, 
+                    licenseName: license.shortName,
+                    url: license.url ? ` (${license.url})` : ''
+                  })}
                 </code>
               </div>
             </div>
@@ -117,10 +122,9 @@ function License() {
 
           {license.id === 'all-rights-reserved' && (
             <div className="license-section license-notice">
-              <h3>Permissions</h3>
+              <h3>{t('license.permissions')}</h3>
               <p>
-                If you would like to use any photographs from this website, please contact the photographer 
-                to request permission.
+                {t('license.permissionsText')}
               </p>
             </div>
           )}

@@ -4,6 +4,7 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from "react";
+import { useTranslation } from 'react-i18next';
 import { API_URL } from '../../../config';
 import { ConfigManagerProps, ConfigData } from './types';
 import { useSSEToaster } from '../../../contexts/SSEToasterContext';
@@ -32,6 +33,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
   externalLinks,
   setExternalLinks,
 }) => {
+  const { t } = useTranslation();
   // Get global SSE toaster context
   const sseToaster = useSSEToaster();
 
@@ -730,17 +732,17 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
   if (!config) {
     return (
       <section className="admin-section">
-        <h2>Settings</h2>
-        <p>Failed to load configuration</p>
+        <h2>{t('adminPortal.settings')}</h2>
+        <p>{t('adminPortal.failedToLoadConfig')}</p>
       </section>
     );
   }
 
   return (
     <section className="admin-section">
-      <h2>Settings</h2>
+      <h2>{t('adminPortal.settings')}</h2>
       <p className="section-description">
-        Manage branding, links, and system configuration
+        {t('adminPortal.settingsDescription')}
       </p>
 
       <div className="config-grid">

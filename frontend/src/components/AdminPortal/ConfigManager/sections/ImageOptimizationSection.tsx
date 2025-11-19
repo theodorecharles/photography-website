@@ -4,6 +4,7 @@
  */
 
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { API_URL } from '../../../../config';
 import { ConfigData } from '../types';
 import { trackConfigSettingsSaved } from '../../../../utils/analytics';
@@ -30,6 +31,7 @@ const ImageOptimizationSection: React.FC<ImageOptimizationSectionProps> = ({
   setSavingSection,
   setMessage,
 }) => {
+  const { t } = useTranslation();
   const [showImageOptimization, setShowImageOptimization] = useState(false);
 
   const updateConfig = (path: string[], value: any) => {
@@ -66,21 +68,21 @@ const ImageOptimizationSection: React.FC<ImageOptimizationSectionProps> = ({
         // Track config settings save
         trackConfigSettingsSaved(sectionName);
         
-        setMessage({ type: "success", text: `${sectionName} settings saved!` });
+        setMessage({ type: "success", text: t('settings.saved', { section: sectionName }) });
         // Update original config after successful save
         setOriginalConfig(structuredClone(config));
       } else {
         const errorData = await res
           .json()
-          .catch(() => ({ error: "Unknown error" }));
+          .catch(() => ({ error: t('common.unknownError') }));
         setMessage({
           type: "error",
-          text: errorData.error || "Failed to save configuration",
+          text: errorData.error || t('settings.failedToSave'),
         });
       }
     } catch (err) {
       const errorMessage =
-        err instanceof Error ? err.message : "Error saving configuration";
+        err instanceof Error ? err.message : t('settings.errorSaving');
       setMessage({ type: "error", text: errorMessage });
       error("Failed to save config:", err);
     } finally {
@@ -122,8 +124,8 @@ const ImageOptimizationSection: React.FC<ImageOptimizationSectionProps> = ({
   return (
     <div className="config-group full-width">
       <SectionHeader
-        title="Image Optimization"
-        description="Optimize and manage image processing"
+        title={t('imageOptimization.title')}
+        description={t('imageOptimization.description')}
         isExpanded={showImageOptimization}
         onToggle={() => setShowImageOptimization(!showImageOptimization)}
       />
@@ -148,7 +150,7 @@ const ImageOptimizationSection: React.FC<ImageOptimizationSectionProps> = ({
                 marginBottom: "0.75rem",
               }}
             >
-              <label className="openai-section-label">THUMBNAIL</label>
+              <label className="openai-section-label">{t('imageOptimization.thumbnail')}</label>
               {hasUnsavedChanges("Thumbnail") && (
                 <div style={{ display: "flex", gap: "0.5rem" }}>
                   <button
@@ -163,7 +165,7 @@ const ImageOptimizationSection: React.FC<ImageOptimizationSectionProps> = ({
                       fontSize: "0.85rem",
                     }}
                   >
-                    Cancel
+                    {t('common.cancel')}
                   </button>
                   <button
                     type="button"
@@ -175,13 +177,13 @@ const ImageOptimizationSection: React.FC<ImageOptimizationSectionProps> = ({
                       fontSize: "0.85rem",
                     }}
                   >
-                    {savingSection === "Thumbnail" ? "Saving..." : "Save"}
+                    {savingSection === "Thumbnail" ? t('common.saving') : t('common.save')}
                   </button>
                 </div>
               )}
             </div>
             <div className="branding-group">
-              <label className="branding-label">Quality</label>
+              <label className="branding-label">{t('imageOptimization.quality')}</label>
               <input
                 type="number"
                 value={
@@ -205,7 +207,7 @@ const ImageOptimizationSection: React.FC<ImageOptimizationSectionProps> = ({
               />
             </div>
             <div className="branding-group">
-              <label className="branding-label">Max Dimension</label>
+              <label className="branding-label">{t('imageOptimization.maxDimension')}</label>
               <input
                 type="number"
                 value={
@@ -239,7 +241,7 @@ const ImageOptimizationSection: React.FC<ImageOptimizationSectionProps> = ({
                 marginBottom: "0.75rem",
               }}
             >
-              <label className="openai-section-label">MODAL</label>
+              <label className="openai-section-label">{t('imageOptimization.modal')}</label>
               {hasUnsavedChanges("Modal") && (
                 <div style={{ display: "flex", gap: "0.5rem" }}>
                   <button
@@ -254,7 +256,7 @@ const ImageOptimizationSection: React.FC<ImageOptimizationSectionProps> = ({
                       fontSize: "0.85rem",
                     }}
                   >
-                    Cancel
+                    {t('common.cancel')}
                   </button>
                   <button
                     type="button"
@@ -266,13 +268,13 @@ const ImageOptimizationSection: React.FC<ImageOptimizationSectionProps> = ({
                       fontSize: "0.85rem",
                     }}
                   >
-                    {savingSection === "Modal" ? "Saving..." : "Save"}
+                    {savingSection === "Modal" ? t('common.saving') : t('common.save')}
                   </button>
                 </div>
               )}
             </div>
             <div className="branding-group">
-              <label className="branding-label">Quality</label>
+              <label className="branding-label">{t('imageOptimization.quality')}</label>
               <input
                 type="number"
                 value={config.environment.optimization.images.modal.quality}
@@ -294,7 +296,7 @@ const ImageOptimizationSection: React.FC<ImageOptimizationSectionProps> = ({
               />
             </div>
             <div className="branding-group">
-              <label className="branding-label">Max Dimension</label>
+              <label className="branding-label">{t('imageOptimization.maxDimension')}</label>
               <input
                 type="number"
                 value={
@@ -327,7 +329,7 @@ const ImageOptimizationSection: React.FC<ImageOptimizationSectionProps> = ({
                 marginBottom: "0.75rem",
               }}
             >
-              <label className="openai-section-label">DOWNLOAD</label>
+              <label className="openai-section-label">{t('imageOptimization.download')}</label>
               {hasUnsavedChanges("Download") && (
                 <div style={{ display: "flex", gap: "0.5rem" }}>
                   <button
@@ -342,7 +344,7 @@ const ImageOptimizationSection: React.FC<ImageOptimizationSectionProps> = ({
                       fontSize: "0.85rem",
                     }}
                   >
-                    Cancel
+                    {t('common.cancel')}
                   </button>
                   <button
                     type="button"
@@ -354,13 +356,13 @@ const ImageOptimizationSection: React.FC<ImageOptimizationSectionProps> = ({
                       fontSize: "0.85rem",
                     }}
                   >
-                    {savingSection === "Download" ? "Saving..." : "Save"}
+                    {savingSection === "Download" ? t('common.saving') : t('common.save')}
                   </button>
                 </div>
               )}
             </div>
             <div className="branding-group">
-              <label className="branding-label">Quality</label>
+              <label className="branding-label">{t('imageOptimization.quality')}</label>
               <input
                 type="number"
                 value={
@@ -384,7 +386,7 @@ const ImageOptimizationSection: React.FC<ImageOptimizationSectionProps> = ({
               />
             </div>
             <div className="branding-group">
-              <label className="branding-label">Max Dimension</label>
+              <label className="branding-label">{t('imageOptimization.maxDimension')}</label>
               <input
                 type="number"
                 value={
@@ -418,7 +420,7 @@ const ImageOptimizationSection: React.FC<ImageOptimizationSectionProps> = ({
                 marginBottom: "0.75rem",
               }}
             >
-              <label className="openai-section-label">CONCURRENCY</label>
+              <label className="openai-section-label">{t('imageOptimization.concurrency')}</label>
               {hasUnsavedChanges("Concurrency") && (
                 <div style={{ display: "flex", gap: "0.5rem" }}>
                   <button
@@ -433,7 +435,7 @@ const ImageOptimizationSection: React.FC<ImageOptimizationSectionProps> = ({
                       fontSize: "0.85rem",
                     }}
                   >
-                    Cancel
+                    {t('common.cancel')}
                   </button>
                   <button
                     type="button"
@@ -445,7 +447,7 @@ const ImageOptimizationSection: React.FC<ImageOptimizationSectionProps> = ({
                       fontSize: "0.85rem",
                     }}
                   >
-                    {savingSection === "Concurrency" ? "Saving..." : "Save"}
+                    {savingSection === "Concurrency" ? t('common.saving') : t('common.save')}
                   </button>
                 </div>
               )}
@@ -458,8 +460,7 @@ const ImageOptimizationSection: React.FC<ImageOptimizationSectionProps> = ({
                 marginBottom: "1rem",
               }}
             >
-              Maximum number of images to process simultaneously. Higher
-              values speed up batch processing but use more CPU and memory.
+              {t('imageOptimization.concurrencyDescription1')}
             </p>
             <p
               style={{
@@ -469,11 +470,10 @@ const ImageOptimizationSection: React.FC<ImageOptimizationSectionProps> = ({
                 marginBottom: "1rem",
               }}
             >
-              Rule of thumb: ~4× your logical CPU cores. Recommended: 8-16
-              for typical systems, 32-64 for high-performance servers.
+              {t('imageOptimization.concurrencyDescription2')}
             </p>
             <div className="branding-group">
-              <label className="branding-label">Max Parallel Jobs</label>
+              <label className="branding-label">{t('imageOptimization.maxParallelJobs')}</label>
               <input
                 type="number"
                 value={config.environment.optimization.concurrency}

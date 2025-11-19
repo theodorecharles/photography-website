@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useTranslation } from 'react-i18next';
 import type { User } from "./types";
 import { getGravatarUrl, copyInvitationUrl } from "./utils";
 import { error, info } from '../../../../../utils/logger';
@@ -34,6 +35,7 @@ export const UserCard: React.FC<UserCardProps> = ({
   onSendPasswordReset,
   onUpdateRole,
 }) => {
+  const { t } = useTranslation();
   const [showRoleDropdown, setShowRoleDropdown] = useState(false);
   const [copied, setCopied] = useState(false);
   const roleDropdownRef = useRef<HTMLDivElement>(null);
@@ -147,7 +149,7 @@ export const UserCard: React.FC<UserCardProps> = ({
                   fontWeight: 600,
                 }}
               >
-                You
+                {t('userManagement.you')}
               </span>
             )}
             {user.status === "invited" && (
@@ -162,7 +164,7 @@ export const UserCard: React.FC<UserCardProps> = ({
                   border: "1px solid rgba(59, 130, 246, 0.3)",
                 }}
               >
-                ✉️ Invited
+                ✉️ {t('userManagement.invited')}
               </span>
             )}
             {user.status === "invite_expired" && (
@@ -177,7 +179,7 @@ export const UserCard: React.FC<UserCardProps> = ({
                   border: "1px solid rgba(239, 68, 68, 0.3)",
                 }}
               >
-                ⏱️ Invite Expired
+                ⏱️ {t('userManagement.inviteExpired')}
               </span>
             )}
           </h4>
@@ -210,9 +212,9 @@ export const UserCard: React.FC<UserCardProps> = ({
                     fontSize: "0.85rem",
                   }}
                   disabled={loading}
-                  title="Resend invitation email"
+                  title={t('userManagement.resendInvite')}
                 >
-                  Resend Invite
+                  {t('userManagement.resendInvite')}
                 </button>
               )}
               <button
@@ -240,8 +242,8 @@ export const UserCard: React.FC<UserCardProps> = ({
                 }
                 title={
                   currentUser && user.id === currentUser.id
-                    ? "Cannot delete your own account"
-                    : "Delete user"
+                    ? t('userManagement.cannotDeleteOwnAccount')
+                    : t('userManagement.deleteUser')
                 }
                 onMouseEnter={(e) => {
                   if (
@@ -264,7 +266,7 @@ export const UserCard: React.FC<UserCardProps> = ({
                   }
                 }}
               >
-                Delete
+                {t('common.delete')}
               </button>
             </>
           )}
@@ -331,13 +333,13 @@ export const UserCard: React.FC<UserCardProps> = ({
                 e.currentTarget.style.boxShadow = "none";
               }
             }}
-            title={canEditRole ? "Click to change role" : undefined}
+            title={canEditRole ? t('userManagement.clickToChangeRole') : undefined}
           >
             {user.role === "admin"
-              ? "👑 Admin"
+              ? `👑 ${t('userManagement.admin')}`
               : user.role === "manager"
-              ? "📝 Manager"
-              : "👁️ Viewer"}
+              ? `📝 ${t('userManagement.manager')}`
+              : `👁️ ${t('userManagement.viewer')}`}
             {canEditRole && " ▾"}
           </span>
 
@@ -386,7 +388,7 @@ export const UserCard: React.FC<UserCardProps> = ({
                   {role === "admin" && "👑 "}
                   {role === "manager" && "📝 "}
                   {role === "viewer" && "👁️ "}
-                  {role.charAt(0).toUpperCase() + role.slice(1)}
+                  {t(`userManagement.${role}`)}
                   {user.role === role && " ✓"}
                 </div>
               ))}
@@ -409,7 +411,7 @@ export const UserCard: React.FC<UserCardProps> = ({
               }}
             >
               {method === "credentials"
-                ? "🔑 Password"
+                ? t('userCard.password')
                 : method === "google"
                 ? "🔐 Google"
                 : method}
@@ -442,7 +444,7 @@ export const UserCard: React.FC<UserCardProps> = ({
               fontWeight: 600,
             }}
           >
-            🔑 {user.passkey_count} Passkey{user.passkey_count !== 1 ? "s" : ""}
+            🔑 {user.passkey_count} {user.passkey_count !== 1 ? t('userManagement.passkeys') : t('userManagement.passkey')}
           </span>
         )}
       </div>
@@ -473,7 +475,7 @@ export const UserCard: React.FC<UserCardProps> = ({
                   whiteSpace: "nowrap",
                 }}
                 disabled={loading}
-                title="Copy invitation link to clipboard"
+                title={t('userManagement.copyInvitationLink')}
                 onMouseEnter={(e) => {
                   if (!loading && !copied) {
                     e.currentTarget.style.background = "rgba(59, 130, 246, 0.3)";
@@ -485,7 +487,7 @@ export const UserCard: React.FC<UserCardProps> = ({
                   }
                 }}
               >
-                {copied ? "✓ Copied" : "Copy Invite Link"}
+                {copied ? t('photo.copied') : t('userManagement.copyInviteLink')}
               </button>
             </div>
           )}
@@ -514,7 +516,7 @@ export const UserCard: React.FC<UserCardProps> = ({
                         fontSize: "0.85rem",
                       }}
                     >
-                      Change Password
+                      {t('userCard.changePassword')}
                     </button>
                   )}
 
@@ -532,7 +534,7 @@ export const UserCard: React.FC<UserCardProps> = ({
                           }}
                           disabled={loading}
                         >
-                          Enable MFA
+                          {t('userCard.enableMfa')}
                         </button>
                       ) : (
                         <button
@@ -589,7 +591,7 @@ export const UserCard: React.FC<UserCardProps> = ({
                           "rgba(59, 130, 246, 0.2)";
                       }}
                     >
-                      Passkeys ({user.passkey_count})
+                      {t('userManagement.passkeys')} ({user.passkey_count})
                     </button>
                   )}
                 </>
@@ -611,7 +613,7 @@ export const UserCard: React.FC<UserCardProps> = ({
                       color: "#ef4444",
                     }}
                     disabled={loading}
-                    title="Disable MFA for this user"
+                    title={t('userManagement.disableMfaForUser')}
                     onMouseEnter={(e) => {
                       if (!loading) {
                         e.currentTarget.style.background =
@@ -623,7 +625,7 @@ export const UserCard: React.FC<UserCardProps> = ({
                         "rgba(239, 68, 68, 0.2)";
                     }}
                   >
-                    Reset MFA
+                    {t('userManagement.resetMfa')}
                   </button>
                 )}
 
@@ -637,9 +639,9 @@ export const UserCard: React.FC<UserCardProps> = ({
                       fontSize: "0.85rem",
                     }}
                     disabled={loading}
-                    title="Send password reset email to this user"
+                    title={t('userManagement.sendPasswordResetForUser')}
                   >
-                    Send Password Reset
+                    {t('userManagement.sendPasswordReset')}
                   </button>
                 )}
                 </>

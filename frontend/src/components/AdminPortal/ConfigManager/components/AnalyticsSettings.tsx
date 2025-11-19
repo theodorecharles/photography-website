@@ -3,6 +3,7 @@
  */
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { API_URL } from '../../../../config';
 import { ConfigData } from '../types';
 import { PasswordInput } from '../../PasswordInput';
@@ -33,6 +34,7 @@ const AnalyticsSettings: React.FC<AnalyticsSettingsProps> = ({
   setMessage,
   onOpenObserveSave,
 }) => {
+  const { t } = useTranslation();
   // Handle save with restart modal
   const handleSaveAnalytics = async () => {
     try {
@@ -57,7 +59,7 @@ const AnalyticsSettings: React.FC<AnalyticsSettingsProps> = ({
         setOriginalConfig(structuredClone(config));
         setMessage({
           type: "success",
-          text: "Analytics settings saved!",
+          text: t('analyticsSettings.settingsSaved'),
         });
         
         // If OpenObserve settings changed, show restart modal
@@ -68,11 +70,11 @@ const AnalyticsSettings: React.FC<AnalyticsSettingsProps> = ({
         const error = await res.json();
         setMessage({
           type: "error",
-          text: error.error || "Failed to update setting",
+          text: error.error || t('analyticsSettings.failedToUpdate'),
         });
       }
     } catch (err) {
-      setMessage({ type: "error", text: "Network error occurred" });
+      setMessage({ type: "error", text: t('analyticsSettings.networkError') });
     }
   };
 
@@ -86,7 +88,7 @@ const AnalyticsSettings: React.FC<AnalyticsSettingsProps> = ({
           marginBottom: "0.75rem",
         }}
       >
-        <label className="openai-section-label">ANALYTICS</label>
+        <label className="openai-section-label">{t('analyticsSettings.title')}</label>
         {hasUnsavedChanges && (
           <div style={{ display: "flex", gap: "0.5rem" }}>
             <button
@@ -102,7 +104,7 @@ const AnalyticsSettings: React.FC<AnalyticsSettingsProps> = ({
                 fontSize: "0.85rem",
               }}
             >
-              Cancel
+              {t('analyticsSettings.cancel')}
             </button>
             <button
               type="button"
@@ -114,7 +116,7 @@ const AnalyticsSettings: React.FC<AnalyticsSettingsProps> = ({
               className="btn-primary"
               style={{ padding: "0.4rem 0.8rem", fontSize: "0.85rem" }}
             >
-              {savingSection === "Analytics" ? "Saving..." : "Save"}
+              {savingSection === t('analyticsSettings.sectionName') ? t('analyticsSettings.saving') : t('analyticsSettings.save')}
             </button>
           </div>
         )}
@@ -127,13 +129,12 @@ const AnalyticsSettings: React.FC<AnalyticsSettingsProps> = ({
           marginBottom: "1rem",
         }}
       >
-        Analytics tracking configuration including OpenObserve
-        integration
+        {t('analyticsSettings.description')}
       </p>
       <div className="config-grid-inner">
         <div className="branding-group">
           <label className="branding-label">
-            Enable OpenObserve Integration
+            {t('analyticsSettings.enableOpenObserve')}
           </label>
           <div className="ai-toggle-container">
             <div className="ai-toggle-controls">
@@ -187,15 +188,15 @@ const AnalyticsSettings: React.FC<AnalyticsSettingsProps> = ({
                 }}
               >
                 {config.analytics.openobserve.enabled
-                  ? "Enabled"
-                  : "Disabled"}
+                  ? t('analyticsSettings.enabled')
+                  : t('analyticsSettings.disabled')}
               </span>
             </div>
           </div>
         </div>
 
         <div className="branding-group">
-          <label className="branding-label">Script Path</label>
+          <label className="branding-label">{t('analyticsSettings.scriptPath')}</label>
           <input
             type="text"
             value={config.analytics.scriptPath}
@@ -203,7 +204,7 @@ const AnalyticsSettings: React.FC<AnalyticsSettingsProps> = ({
               updateConfig(["analytics", "scriptPath"], e.target.value)
             }
             className="branding-input"
-            placeholder="/analytics.js"
+            placeholder={t('analyticsSettings.scriptPathPlaceholder')}
           />
         </div>
 
@@ -211,7 +212,7 @@ const AnalyticsSettings: React.FC<AnalyticsSettingsProps> = ({
           <>
             <div className="branding-group">
               <label className="branding-label">
-                OpenObserve Endpoint
+                {t('analyticsSettings.openObserveEndpoint')}
               </label>
               <input
                 type="text"
@@ -223,12 +224,12 @@ const AnalyticsSettings: React.FC<AnalyticsSettingsProps> = ({
                   )
                 }
                 className="branding-input"
-                placeholder="https://api.openobserve.ai"
+                placeholder={t('analyticsSettings.endpointPlaceholder')}
               />
             </div>
 
             <div className="branding-group">
-              <label className="branding-label">Organization</label>
+              <label className="branding-label">{t('analyticsSettings.organization')}</label>
               <input
                 type="text"
                 value={config.analytics.openobserve.organization}
@@ -243,7 +244,7 @@ const AnalyticsSettings: React.FC<AnalyticsSettingsProps> = ({
             </div>
 
             <div className="branding-group">
-              <label className="branding-label">Username</label>
+              <label className="branding-label">{t('analyticsSettings.username')}</label>
               <input
                 type="text"
                 value={config.analytics.openobserve.username}
@@ -258,7 +259,7 @@ const AnalyticsSettings: React.FC<AnalyticsSettingsProps> = ({
             </div>
 
             <div className="branding-group">
-              <label className="branding-label">Password</label>
+              <label className="branding-label">{t('analyticsSettings.password')}</label>
               <PasswordInput
                 value={config.analytics.openobserve.password}
                 onChange={(e) =>
@@ -272,7 +273,7 @@ const AnalyticsSettings: React.FC<AnalyticsSettingsProps> = ({
             </div>
 
             <div className="branding-group">
-              <label className="branding-label">Stream</label>
+              <label className="branding-label">{t('analyticsSettings.stream')}</label>
               <input
                 type="text"
                 value={config.analytics.openobserve.stream}

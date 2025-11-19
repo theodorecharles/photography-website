@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { useTranslation } from 'react-i18next';
 
 interface MFASetupModalProps {
   mfaSetup: {
@@ -20,6 +21,7 @@ export const MFASetupModal: React.FC<MFASetupModalProps> = ({
   onTokenChange,
   onComplete,
 }) => {
+  const { t } = useTranslation();
   // Disable body scroll when modal is open (iOS-compatible)
   useEffect(() => {
     const scrollY = window.scrollY;
@@ -45,8 +47,8 @@ export const MFASetupModal: React.FC<MFASetupModalProps> = ({
         style={{ maxWidth: "600px" }}
       >
         <div className="share-modal-header">
-          <h2>Enable Two-Factor Authentication</h2>
-          <button className="close-button" onClick={onClose} aria-label="Close">
+          <h2>{t('userManagement.enableTwoFactorAuthentication')}</h2>
+          <button className="close-button" onClick={onClose} aria-label={t('common.close')}>
             ×
           </button>
         </div>
@@ -60,13 +62,12 @@ export const MFASetupModal: React.FC<MFASetupModalProps> = ({
         >
           <div style={{ marginBottom: "1rem" }}>
             <p className="share-description">
-              Scan this QR code with your authenticator app (Google
-              Authenticator, Authy, 1Password, etc.)
+              {t('userManagement.scanQrCodeDescription')}
             </p>
             <div style={{ textAlign: "center", marginBottom: "0.75rem" }}>
               <img
                 src={mfaSetup.qrCode}
-                alt="MFA QR Code"
+                alt={t('userManagement.mfaQrCode')}
                 style={{
                   maxWidth: "250px",
                   width: "100%",
@@ -97,7 +98,7 @@ export const MFASetupModal: React.FC<MFASetupModalProps> = ({
 
           <div style={{ marginBottom: "1rem" }}>
             <label className="branding-label">
-              Enter verification code from your app
+              {t('userManagement.enterVerificationCode')}
             </label>
             <div style={{ display: "flex", justifyContent: "center" }}>
               <input
@@ -150,7 +151,7 @@ export const MFASetupModal: React.FC<MFASetupModalProps> = ({
               className="btn-secondary"
               disabled={loading}
             >
-              Cancel
+              {t('common.cancel')}
             </button>
             <button
               type="button"
@@ -158,7 +159,7 @@ export const MFASetupModal: React.FC<MFASetupModalProps> = ({
               className="btn-primary"
               disabled={loading || mfaToken.length !== 6}
             >
-              {loading ? "Verifying..." : "Enable MFA"}
+              {loading ? t('userManagement.verifying') : t('userManagement.enableMfa')}
             </button>
           </div>
         </form>

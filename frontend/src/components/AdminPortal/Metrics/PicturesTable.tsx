@@ -3,6 +3,7 @@
  */
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { API_URL } from '../../../config';
 import { formatNumber } from '../../../utils/formatters';
 import { normalizeAlbumName, formatDurationDetailed } from '../../../utils/metricsHelpers';
@@ -29,8 +30,9 @@ const PicturesTable: React.FC<PicturesTableProps> = ({
   onToggleRow,
   onToggleTable,
 }) => {
+  const { t } = useTranslation();
   if (!pictures || pictures.length === 0) {
-    return <div className="no-data">No picture view duration data available</div>;
+    return <div className="no-data">{t('metrics.picturesTable.noData')}</div>;
   }
 
   return (
@@ -40,10 +42,10 @@ const PicturesTable: React.FC<PicturesTableProps> = ({
           <table>
             <thead>
               <tr>
-                <th>Thumbnail</th>
-                <th className="text-right">Total Time</th>
-                <th className="text-right">Avg Time</th>
-                <th className="text-right">Views</th>
+                <th>{t('metrics.picturesTable.thumbnail')}</th>
+                <th className="text-right">{t('metrics.picturesTable.totalTime')}</th>
+                <th className="text-right">{t('metrics.picturesTable.avgTime')}</th>
+                <th className="text-right">{t('metrics.picturesTable.views')}</th>
               </tr>
             </thead>
             <tbody>
@@ -80,13 +82,13 @@ const PicturesTable: React.FC<PicturesTableProps> = ({
                         <td colSpan={4}>
                           <div className="expanded-content">
                             <div className="expanded-detail">
-                              <strong>Photo ID:</strong> {picture.photo_id}
+                              <strong>{t('metrics.picturesTable.photoId')}:</strong> {picture.photo_id}
                             </div>
                             <div className="expanded-detail">
-                              <strong>Album:</strong> {albumName}
+                              <strong>{t('metrics.picturesTable.album')}:</strong> {albumName}
                             </div>
                             <div className="expanded-detail">
-                              <strong>File Name:</strong> {photoName}
+                              <strong>{t('metrics.picturesTable.fileName')}:</strong> {photoName}
                             </div>
                             <div className="expanded-actions">
                               <a 
@@ -94,7 +96,7 @@ const PicturesTable: React.FC<PicturesTableProps> = ({
                                 className="view-photo-btn"
                                 onClick={(e) => e.stopPropagation()}
                               >
-                                View Photo →
+                                {t('metrics.picturesTable.viewPhoto')} →
                               </a>
                             </div>
                           </div>
@@ -112,7 +114,7 @@ const PicturesTable: React.FC<PicturesTableProps> = ({
         className="view-more-btn" 
         onClick={onToggleTable}
       >
-        {isExpanded ? 'View Less ▲' : 'View More ▼'}
+        {isExpanded ? t('metrics.viewLess') : t('metrics.viewMore')}
       </button>
     </>
   );

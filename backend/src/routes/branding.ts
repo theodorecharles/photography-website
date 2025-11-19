@@ -63,6 +63,7 @@ interface BrandingConfig {
   faviconPath: string;
   shuffleHomepage?: boolean;
   photoLicense?: string;
+  language?: string;
 }
 
 // Get current branding configuration
@@ -83,6 +84,7 @@ router.get('/', (req: Request, res: Response) => {
       faviconPath: branding.faviconPath || '/favicon.ico',
       shuffleHomepage: branding.shuffleHomepage ?? true,
       photoLicense: branding.photoLicense || 'cc-by',
+      language: branding.language || 'en',
     };
     
     res.json(brandingConfig);
@@ -104,7 +106,7 @@ router.put('/', requireManager, (req: Request, res: Response) => {
     }
     
     // Validate each field if provided
-    const validFields = ['siteName', 'avatarPath', 'primaryColor', 'secondaryColor', 'metaDescription', 'metaKeywords', 'faviconPath', 'shuffleHomepage', 'photoLicense'];
+    const validFields = ['siteName', 'avatarPath', 'primaryColor', 'secondaryColor', 'metaDescription', 'metaKeywords', 'faviconPath', 'shuffleHomepage', 'photoLicense', 'language'];
     for (const [key, value] of Object.entries(updates)) {
       if (!validFields.includes(key)) {
         res.status(400).json({ error: `Invalid field: ${key}` });
@@ -123,8 +125,14 @@ router.put('/', requireManager, (req: Request, res: Response) => {
           return;
         }
         
-        // Length limits (only for strings)
-        if (value.length > 500) {
+        // Length limits (only for strings, but language is short)
+        if (key === 'language') {
+          // Language code should be 2-5 characters (e.g., 'en', 'es', 'fr', 'en-US')
+          if (value.length > 10) {
+            res.status(400).json({ error: `Field ${key} is too long (max 10 characters)` });
+            return;
+          }
+        } else if (value.length > 500) {
           res.status(400).json({ error: `Field ${key} is too long (max 500 characters)` });
           return;
         }

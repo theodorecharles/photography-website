@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { API_URL } from '../../../../config';
 import { createPortal } from 'react-dom';
 import ShareModal from '../../ShareModal';
@@ -164,6 +165,7 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
   confirmConfig,
   setShowConfirmModal,
 }) => {
+  const { t } = useTranslation();
   // Check if OpenAI is configured
   const [hasOpenAI, setHasOpenAI] = useState(false);
   const [generatingAITitle, setGeneratingAITitle] = useState(false);
@@ -210,7 +212,7 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
       
       if (!res.ok) {
         const error = await res.json();
-        throw new Error(error.error || 'Failed to generate AI title');
+        throw new Error(error.error || t('albumsManager.failedToRetryAIGeneration'));
       }
       
       const data = await res.json();
@@ -219,7 +221,7 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
       }
     } catch (err) {
       error('Failed to generate AI title:', err);
-      setAiTitleError(err instanceof Error ? err.message : 'Unknown error');
+      setAiTitleError(err instanceof Error ? err.message : t('common.unknownError'));
     } finally {
       setGeneratingAITitle(false);
     }
@@ -235,11 +237,11 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
         >
           <div className="edit-modal" onClick={(e) => e.stopPropagation()}>
             <div className="edit-modal-header">
-              <h3>Edit Photo Title</h3>
+              <h3>{t('albumsManager.editPhotoTitle')}</h3>
               <button 
                 className="modal-close-btn"
                 onClick={handleCloseEditModal}
-                title="Close"
+                title={t('common.close')}
               >
                 ×
               </button>
@@ -260,7 +262,7 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
                     value={editTitleValue}
                     onChange={(e) => setEditTitleValue(e.target.value)}
                     className="edit-modal-input"
-                    placeholder="Enter title..."
+                    placeholder={t('albumsManager.enterTitle')}
                     style={{ paddingRight: hasOpenAI ? '3rem' : undefined }}
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') {
@@ -290,7 +292,7 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
                         transition: 'all 0.2s ease',
                         opacity: generatingAITitle ? 0.5 : 1,
                       }}
-                      title={generatingAITitle ? 'Generating AI title...' : 'Generate AI title'}
+                      title={generatingAITitle ? t('albumsManager.generatingAITitle') : t('albumsManager.generateAITitle')}
                       type="button"
                     >
                       {generatingAITitle ? (
@@ -327,14 +329,14 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
                 className="btn-secondary"
                 style={{ flex: 1 }}
               >
-                Cancel
+                {t('common.cancel')}
               </button>
               <button 
                 className="btn-primary"
                 onClick={handleSaveTitle}
                 style={{ flex: 1 }}
               >
-                Save Title
+                {t('albumsManager.saveTitle')}
               </button>
             </div>
           </div>
@@ -350,11 +352,11 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
         >
           <div className="edit-modal" onClick={(e) => e.stopPropagation()}>
             <div className="edit-modal-header">
-              <h3>Rename Album</h3>
+              <h3>{t('albumsManager.renameAlbum')}</h3>
               <button 
                 className="modal-close-btn"
                 onClick={() => setShowRenameModal(false)}
-                title="Close"
+                title={t('common.close')}
               >
                 ×
               </button>
@@ -362,7 +364,7 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
             
             <div className="edit-modal-body">
               <div className="edit-modal-info" style={{ width: '100%' }}>
-                <label className="edit-modal-label">Current Name</label>
+                <label className="edit-modal-label">{t('albumsManager.currentName')}</label>
                 <div style={{ 
                   padding: '0.5rem', 
                   background: 'rgba(255, 255, 255, 0.05)', 
@@ -373,13 +375,13 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
                   {renamingAlbum}
                 </div>
                 
-                <label className="edit-modal-label">New Name</label>
+                <label className="edit-modal-label">{t('albumsManager.newName')}</label>
                 <input
                   type="text"
                   value={newAlbumName}
                   onChange={(e) => setNewAlbumName(e.target.value)}
                   className="edit-modal-input"
-                  placeholder="Enter new album name..."
+                  placeholder={t('albumsManager.enterNewAlbumName')}
                   autoFocus
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') {
@@ -390,7 +392,7 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
                   }}
                 />
                 <p style={{ color: '#888', fontSize: '0.9rem', marginTop: '0.5rem' }}>
-                  Only letters, numbers, spaces, hyphens, and underscores are allowed
+                  {t('albumsManager.albumNameRules')}
                 </p>
               </div>
             </div>
@@ -400,13 +402,13 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
                 onClick={() => setShowRenameModal(false)}
                 className="btn-secondary"
               >
-                Cancel
+                {t('common.cancel')}
               </button>
               <button
                 onClick={handleRenameAlbum}
                 className="btn-primary"
               >
-                Rename Album
+                {t('albumsManager.renameAlbum')}
               </button>
             </div>
           </div>
@@ -425,14 +427,14 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
         >
           <div className="edit-modal" onClick={(e) => e.stopPropagation()}>
             <div className="edit-modal-header">
-              <h3>Create New Folder</h3>
+              <h3>{t('albumsManager.createFolder')}</h3>
               <button 
                 className="modal-close-btn"
                 onClick={() => {
                   setShowFolderModal(false);
                   setFolderModalError('');
                 }}
-                title="Close"
+                title={t('common.close')}
               >
                 ×
               </button>
@@ -440,13 +442,13 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
             
             <div className="edit-modal-body">
               <div className="edit-modal-info" style={{ width: '100%', marginTop: '1rem' }}>
-                <label className="edit-modal-label">Folder Name</label>
+                <label className="edit-modal-label">{t('albumsManager.folderName')}</label>
                 <input
                   type="text"
                   value={folderManagement.newFolderName}
                   onChange={(e) => folderManagement.setNewFolderName(e.target.value)}
                   className="edit-modal-input"
-                  placeholder="Enter folder name..."
+                  placeholder={t('albumsManager.folderNamePlaceholder')}
                   autoFocus
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' && !folderManagement.isCreatingFolder) {
@@ -463,7 +465,7 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
                   </p>
                 )}
                 <p style={{ color: '#888', fontSize: '0.9rem', marginTop: '0.5rem' }}>
-                  Folders help organize multiple albums. Unpublished by default.
+                  {t('albumsManager.foldersHelpOrganize')}
                 </p>
               </div>
             </div>
@@ -477,14 +479,14 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
                 className="btn-secondary"
                 disabled={folderManagement.isCreatingFolder}
               >
-                Cancel
+                {t('common.cancel')}
               </button>
               <button
                 onClick={folderManagement.handleCreateFolder}
                 className="btn-primary"
                 disabled={folderManagement.isCreatingFolder}
               >
-                {folderManagement.isCreatingFolder ? 'Creating...' : 'Create Folder'}
+                {folderManagement.isCreatingFolder ? t('common.creating') : t('albumsManager.createFolder')}
               </button>
             </div>
           </div>
@@ -500,11 +502,11 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
         >
           <div className="edit-modal" onClick={(e) => e.stopPropagation()}>
             <div className="edit-modal-header">
-              <h3>Delete Folder</h3>
+              <h3>{t('albumsManager.deleteFolder')}</h3>
               <button 
                 className="modal-close-btn"
                 onClick={() => setShowDeleteFolderModal(false)}
-                title="Close"
+                title={t('common.close')}
               >
                 ×
               </button>
@@ -513,7 +515,7 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
             <div className="edit-modal-body">
               <div className="edit-modal-info" style={{ width: '100%' }}>
                 <p style={{ marginBottom: '1rem' }}>
-                  Are you sure you want to delete the folder <strong>"{deletingFolderName}"</strong>?
+                  {t('albumsManager.deleteFolderConfirm', { folderName: deletingFolderName })}
                 </p>
                 
                 {(() => {
@@ -530,11 +532,14 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
                         marginBottom: '1rem'
                       }}>
                         <p style={{ color: '#ffb400', marginBottom: '0.5rem', fontWeight: 600 }}>
-                          ⚠️ Warning
+                          {t('albumsManager.deleteFolderWarning')}
                         </p>
-                        <p style={{ color: '#ffb400', marginBottom: '0.5rem' }}>
-                          This folder contains <strong>{albumsInFolder.length}</strong> album{albumsInFolder.length !== 1 ? 's' : ''}:
-                        </p>
+                        <p style={{ color: '#ffb400', marginBottom: '0.5rem' }} dangerouslySetInnerHTML={{
+                          __html: t('albumsManager.folderContainsAlbums', { 
+                            count: albumsInFolder.length,
+                            album: albumsInFolder.length !== 1 ? t('common.albums') : t('common.album')
+                          })
+                        }} />
                         <ul style={{ 
                           color: '#ffb400', 
                           marginLeft: '1.5rem', 
@@ -545,12 +550,12 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
                             <li key={album.name}>{album.name}</li>
                           ))}
                           {albumsInFolder.length > 5 && (
-                            <li>...and {albumsInFolder.length - 5} more</li>
+                            <li>{t('albumsManager.andMore', { count: albumsInFolder.length - 5 })}</li>
                           )}
                         </ul>
-                        <p style={{ color: '#ffb400', marginTop: '0.5rem' }}>
-                          These albums will be moved to <strong>Uncategorized</strong> and keep their current published status.
-                        </p>
+                        <p style={{ color: '#ffb400', marginTop: '0.5rem' }} dangerouslySetInnerHTML={{
+                          __html: t('albumsManager.albumsWillMoveToUncategorized')
+                        }} />
                       </div>
                     );
                   }
@@ -559,7 +564,7 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
                 })()}
                 
                 <p style={{ color: '#888', fontSize: '0.9rem' }}>
-                  This action cannot be undone.
+                  {t('common.actionCannotBeUndone')}
                 </p>
               </div>
             </div>
@@ -569,7 +574,7 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
                 onClick={() => setShowDeleteFolderModal(false)}
                 className="btn-secondary"
               >
-                Cancel
+                {t('common.cancel')}
               </button>
               <button
                 onClick={() => {
@@ -578,7 +583,7 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
                 }}
                 className="btn-danger"
               >
-                Delete Folder
+                {t('albumsManager.deleteFolder')}
               </button>
             </div>
           </div>
@@ -594,11 +599,11 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
         >
           <div className="edit-modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '550px' }}>
             <div className="edit-modal-header">
-              <h3>Delete Folder?</h3>
+              <h3>{t('albumsManager.deleteFolderQuestion')}</h3>
               <button 
                 className="modal-close-btn"
                 onClick={() => setShowFolderDeleteModal(false)}
-                title="Close"
+                title={t('common.close')}
               >
                 ×
               </button>
@@ -641,7 +646,7 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
                         marginBottom: '0.35rem',
                         color: '#4ade80'
                       }}>
-                        Release {folderToDelete.albumCount} {folderToDelete.albumCount === 1 ? 'album' : 'albums'}
+                        {t('albumsManager.releaseAlbums', { count: folderToDelete.albumCount, album: folderToDelete.albumCount === 1 ? t('common.album') : t('common.albums') })}
                       </p>
                       <p style={{ 
                         fontSize: '0.85rem', 
@@ -649,7 +654,7 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
                         margin: 0,
                         lineHeight: '1.3'
                       }}>
-                        Delete the folder and move all albums to Uncategorized
+                        {t('albumsManager.releaseAlbumsDescription')}
                       </p>
                     </div>
                   </div>
@@ -689,7 +694,7 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
                         marginBottom: '0.35rem',
                         color: '#f87171'
                       }}>
-                        Delete Everything
+                        {t('albumsManager.deleteEverything')}
                       </p>
                       <p style={{ 
                         fontSize: '0.85rem', 
@@ -697,7 +702,7 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
                         margin: 0,
                         lineHeight: '1.3'
                       }}>
-                        Permanently delete the folder and all albums inside it
+                        {t('albumsManager.deleteEverythingDescription')}
                       </p>
                     </div>
                   </div>
@@ -711,7 +716,7 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
                 className="btn-secondary"
                 style={{ width: '100%' }}
               >
-                Cancel
+                {t('common.cancel')}
               </button>
             </div>
           </div>
@@ -727,11 +732,11 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
         >
           <div className="edit-modal" onClick={(e) => e.stopPropagation()}>
             <div className="edit-modal-header">
-              <h3>Create New Album</h3>
+              <h3>{t('albumsManager.createAlbum')}</h3>
               <button 
                 className="modal-close-btn"
                 onClick={() => setShowNewAlbumModal(false)}
-                title="Close"
+                title={t('common.close')}
               >
                 ×
               </button>
@@ -739,13 +744,13 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
             
             <div className="edit-modal-body">
               <div className="edit-modal-info" style={{ width: '100%', marginTop: '1rem' }}>
-                <label className="edit-modal-label">Album Name</label>
+                <label className="edit-modal-label">{t('albumsManager.albumName')}</label>
                 <input
                   type="text"
                   value={newAlbumNameInput}
                   onChange={(e) => setNewAlbumNameInput(e.target.value)}
                   className="edit-modal-input"
-                  placeholder="Enter album name..."
+                  placeholder={t('albumsManager.albumNamePlaceholder')}
                   autoFocus
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') {
@@ -764,10 +769,10 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
                     borderRadius: '8px'
                   }}>
                     <p style={{ color: '#60a5fa', fontSize: '0.95rem', margin: '0 0 0.75rem 0', fontWeight: 500 }}>
-                      💡 The name "homepage" is reserved
+                      {t('albumsManager.homepageReservedMessage')}
                     </p>
                     <p style={{ color: '#ccc', fontSize: '0.9rem', margin: '0 0 0.75rem 0', lineHeight: '1.5' }}>
-                      To show an album on the home page, use the <strong>homepage toggle</strong>:
+                      {t('albumsManager.homepageReservedInstructions')}
                     </p>
                     <div style={{
                       display: 'flex',
@@ -778,7 +783,7 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
                       borderRadius: '6px',
                       border: '1px solid rgba(255, 255, 255, 0.1)'
                     }}>
-                      <span style={{ color: '#aaa', fontSize: '0.9rem' }}>Show on Homepage</span>
+                      <span style={{ color: '#aaa', fontSize: '0.9rem' }}>{t('albumsManager.showOnHomepage')}</span>
                       <div style={{
                         position: 'relative',
                         width: '44px',
@@ -807,7 +812,7 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
                 ) : null}
                 {!newAlbumModalError && (
                   <p style={{ color: '#888', fontSize: '0.9rem', marginTop: '0.5rem' }}>
-                    Only letters, numbers, spaces, hyphens, and underscores are allowed
+                    {t('albumsManager.albumNameRules')}
                   </p>
                 )}
                 
@@ -828,10 +833,10 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
                               cursor: 'pointer'
                             }}
                           />
-                          <span style={{ color: '#fff', fontSize: '1rem' }}>Publish album immediately</span>
+                          <span style={{ color: '#fff', fontSize: '1rem' }}>{t('albumsManager.publishAlbumImmediately')}</span>
                         </label>
                         <p style={{ color: '#aaa', fontSize: '0.875rem', marginTop: '0.375rem', marginLeft: '1.875rem' }}>
-                          Published albums are visible on the public gallery
+                          {t('albumsManager.publishedAlbumsVisible')}
                         </p>
                       </div>
                     );
@@ -840,7 +845,7 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
                   // If creating in a folder, check if folder is published
                   const targetFolder = localFolders.find(f => f.id === targetFolderId);
                   if (targetFolder && targetFolder.published) {
-                    // Published folder - show green informational text
+                    // Published folder - show green informational text (localized below)
                     return (
                       <div style={{ 
                         marginTop: '1rem',
@@ -850,10 +855,10 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
                         borderRadius: '6px'
                       }}>
                         <p style={{ color: '#4ade80', fontSize: '0.9rem', margin: 0 }}>
-                          ✓ Album will be published right away
+                          {t('albumsManager.albumWillBePublished')}
                         </p>
                         <p style={{ color: '#aaa', fontSize: '0.85rem', marginTop: '0.25rem', marginBottom: 0 }}>
-                          Albums in published folders are always published
+                          {t('albumsManager.albumsInPublishedFolders')}
                         </p>
                       </div>
                     );
@@ -868,10 +873,10 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
                         borderRadius: '6px'
                       }}>
                         <p style={{ color: '#ffb400', fontSize: '0.9rem', margin: 0 }}>
-                          🔒 Album will be private
+                          {t('albumsManager.albumWillBePrivate')}
                         </p>
                         <p style={{ color: '#aaa', fontSize: '0.85rem', marginTop: '0.25rem', marginBottom: 0 }}>
-                          Albums in unpublished folders are always private
+                          {t('albumsManager.albumsInUnpublishedFolders')}
                         </p>
                       </div>
                     );
@@ -887,13 +892,13 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
                 onClick={() => setShowNewAlbumModal(false)}
                 className="btn-secondary"
               >
-                Cancel
+                {t('common.cancel')}
               </button>
               <button
                 onClick={handleCreateAlbumSubmit}
                 className="btn-primary"
               >
-                Create Album
+                {t('albumsManager.createAlbum')}
               </button>
             </div>
           </div>

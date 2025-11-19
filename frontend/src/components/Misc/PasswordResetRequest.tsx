@@ -4,12 +4,14 @@
  */
 
 import React, { useState, useEffect } from "react";
+import { useTranslation } from 'react-i18next';
 import { API_URL } from '../../config';
 import { useNavigate } from "react-router-dom";
 import { error as logError } from '../../utils/logger';
 
 
 const PasswordResetRequest: React.FC = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
@@ -39,7 +41,7 @@ const PasswordResetRequest: React.FC = () => {
     setError(null);
 
     if (!email.trim()) {
-      setError("Email is required");
+      setError(t('passwordReset.emailRequired'));
       return;
     }
 
@@ -58,12 +60,12 @@ const PasswordResetRequest: React.FC = () => {
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data.error || "Failed to request password reset");
+        throw new Error(data.error || t('passwordReset.failedToRequest'));
       }
 
       setSuccess(true);
     } catch (err: any) {
-      setError(err.message || "Failed to request password reset");
+      setError(err.message || t('passwordReset.failedToRequest'));
     } finally {
       setLoading(false);
     }
@@ -100,7 +102,7 @@ const PasswordResetRequest: React.FC = () => {
               color: "#ffffff",
             }}
           >
-            Check Your Email
+            {t('passwordReset.checkYourEmail')}
           </h1>
           <p
             style={{
@@ -108,10 +110,11 @@ const PasswordResetRequest: React.FC = () => {
               marginBottom: "2rem",
               lineHeight: 1.6,
             }}
-          >
-            If an account exists with <strong style={{ color: "#e5e7eb" }}>{email}</strong>, you will receive
-            a password reset link shortly.
-          </p>
+            dangerouslySetInnerHTML={{
+              __html: t('passwordReset.emailSentMessage', { email })
+                .replace(/\{\{email\}\}/g, `<strong style="color: #e5e7eb">${email}</strong>`)
+            }}
+          />
           <p
             style={{
               color: "#9ca3af",
@@ -119,7 +122,7 @@ const PasswordResetRequest: React.FC = () => {
               marginBottom: "2rem",
             }}
           >
-            The link will expire in 1 hour.
+            {t('passwordReset.linkExpires')}
           </p>
           <button
             onClick={() => navigate("/admin")}
@@ -129,7 +132,7 @@ const PasswordResetRequest: React.FC = () => {
               fontSize: "1rem",
             }}
           >
-            Back to Login
+            {t('passwordReset.backToLogin')}
           </button>
         </div>
       </div>
@@ -166,18 +169,17 @@ const PasswordResetRequest: React.FC = () => {
               color: "#ffffff",
             }}
           >
-            Reset Your Password
+            {t('passwordReset.resetYourPassword')}
           </h1>
           <p style={{ color: "#9ca3af", fontSize: "0.95rem" }}>
-            Enter your email address and we'll send you a link to reset your
-            password.
+            {t('passwordReset.description')}
           </p>
         </div>
 
         <form onSubmit={handleSubmit}>
           <div style={{ marginBottom: "1.5rem" }}>
             <label className="branding-label">
-              Email Address
+              {t('passwordReset.emailAddress')}
             </label>
             <input
               type="email"
@@ -235,7 +237,7 @@ const PasswordResetRequest: React.FC = () => {
               e.currentTarget.style.filter = 'brightness(1)';
             }}
           >
-            {loading ? "Sending..." : "Send Reset Link"}
+            {loading ? t('passwordReset.sending') : t('passwordReset.sendResetLink')}
           </button>
         </form>
 
@@ -247,7 +249,7 @@ const PasswordResetRequest: React.FC = () => {
             color: "#9ca3af",
           }}
         >
-          Remember your password?{" "}
+          {t('passwordReset.rememberPassword')}{" "}
           <a
             href="/admin"
             style={{
@@ -256,7 +258,7 @@ const PasswordResetRequest: React.FC = () => {
               fontWeight: 500,
             }}
           >
-            Sign in
+            {t('passwordReset.signIn')}
           </a>
         </div>
 
@@ -271,9 +273,7 @@ const PasswordResetRequest: React.FC = () => {
             color: "#fbbf24",
           }}
         >
-          <strong>Note:</strong> Password reset is only available for accounts
-          without MFA enabled. If you have MFA enabled, please contact an
-          administrator for assistance.
+          <strong>{t('passwordReset.note')}:</strong> {t('passwordReset.mfaNote')}
         </div>
       </div>
     </div>

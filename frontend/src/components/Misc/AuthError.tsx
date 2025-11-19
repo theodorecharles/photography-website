@@ -4,11 +4,13 @@
  */
 
 import { useSearchParams, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import './AuthError.css';
 import { getErrorMessage } from '../../utils/errorMessages';
 import { ErrorCircleIcon } from '../icons/';
 
 export default function AuthError() {
+  const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const reason = searchParams.get('reason') || 'unknown';
   const error = getErrorMessage(reason);
@@ -26,7 +28,7 @@ export default function AuthError() {
         
         <div className="error-actions">
           <Link to="/" className="btn-home">
-            Return Home
+            {t('common.back')}
           </Link>
         </div>
       </div>

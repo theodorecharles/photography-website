@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Photo, UploadingImage } from '../types';
@@ -29,6 +30,7 @@ export const PhotoListItem: React.FC<PhotoListItemProps> = ({
   deletingPhotoId,
   canEdit,
 }) => {
+  const { t } = useTranslation();
   // Determine the data source
   const photoData = uploadingImage?.photo || photo;
   const isComplete = uploadingImage ? uploadingImage.state === 'complete' : true;
@@ -68,13 +70,13 @@ export const PhotoListItem: React.FC<PhotoListItemProps> = ({
     
     switch (uploadingImage.state) {
       case 'queued':
-        return 'Queued...';
+        return t('sse.queuedWithEllipsis');
       case 'uploading':
-        return `Uploading ${uploadingImage.progress}%`;
+        return t('sse.uploadingWithProgress', { progress: uploadingImage.progress });
       case 'optimizing':
-        return `Optimizing ${uploadingImage.optimizeProgress}%`;
+        return t('sse.optimizingWithProgress', { progress: uploadingImage.optimizeProgress });
       case 'generating-title':
-        return 'Generating title...';
+        return t('sse.generatingTitleLowercase');
       case 'error':
         return 'Error';
       default:
