@@ -291,6 +291,45 @@ galleria/
 
 ---
 
+## 🌍 Internationalization
+
+Galleria supports **19 languages** with full UI and SEO localization:
+
+- 🇺🇸 English
+- 🇪🇸 Spanish
+- 🇫🇷 French
+- 🇩🇪 German
+- 🇯🇵 Japanese
+- 🇳🇱 Dutch
+- 🇮🇹 Italian
+- 🇵🇹 Portuguese
+- 🇷🇺 Russian
+- 🇨🇳 Chinese (Simplified)
+- 🇰🇷 Korean
+- 🇵🇱 Polish
+- 🇹🇷 Turkish
+- 🇸🇪 Swedish
+- 🇳🇴 Norwegian
+- 🇷🇴 Romanian
+- 🇵🇭 Filipino
+- 🇻🇳 Vietnamese
+- 🇮🇩 Indonesian
+
+### Changing Language
+
+1. Navigate to **Admin Panel → Settings → Branding**
+2. Select your preferred language from the dropdown
+3. The entire site (including SEO meta tags) updates instantly
+
+The selected language applies to:
+- All UI elements and buttons
+- Navigation and menus
+- Admin panel
+- SEO titles and descriptions
+- Error messages and notifications
+
+---
+
 ## 🔗 Links
 
 - **📦 Repository:** [github.com/theodorecharles/Galleria](https://github.com/theodorecharles/Galleria)
