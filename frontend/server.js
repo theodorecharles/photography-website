@@ -357,15 +357,23 @@ app.get("*", async (req, res) => {
           debug(`  Preview Image: ${gridUrl}`);
           debug(`  Page URL: ${pageUrl}`);
 
+          // Get site name from branding
+          const siteName = configFile.branding?.siteName || "Photography Portfolio";
+          const safeSiteName = escapeHtml(siteName);
+
           // Read and modify index.html
           const html = fs.readFileSync(indexPath, "utf8");
           const modifiedHtml = html
+            .replace(
+              /<title>.*?<\/title>/,
+              `<title>${safeSiteName} - Photography Portfolio</title>`
+            )
             .replace(
               /<meta property="og:image" content=".*?" \/>/,
               `<meta property="og:image" content="${gridUrl}" />\n    <meta property="og:image:secure_url" content="${gridUrl.replace(
                 "http://",
                 "https://"
-              )}" />\n    <meta property="og:image:alt" content="Photography by Ted Charles" />\n    <meta property="og:image:type" content="image/jpeg" />\n    <meta property="og:image:width" content="1200" />\n    <meta property="og:image:height" content="630" />`
+              )}" />\n    <meta property="og:image:alt" content="Photography by ${safeSiteName}" />\n    <meta property="og:image:width" content="1200" />\n    <meta property="og:image:height" content="630" />`
             )
             .replace(
               /<meta property="twitter:image" content=".*?" \/>/,
@@ -835,8 +843,18 @@ app.get("*", async (req, res) => {
     res.setHeader('Pragma', 'no-cache');
     res.setHeader('Expires', '0');
 
+    // Get site name from branding and update title
+    const siteName = configFile.branding?.siteName || "Photography Portfolio";
+    const safeSiteName = escapeHtml(siteName);
+    
+    // Replace title tag with site name
+    let modifiedHtml = html.replace(
+      /<title>.*?<\/title>/,
+      `<title>${safeSiteName} - Photography Portfolio</title>`
+    );
+    
     // Replace runtime placeholders with current config values
-    let modifiedHtml = replaceRuntimePlaceholders(html, runtimeApiUrl);
+    modifiedHtml = replaceRuntimePlaceholders(modifiedHtml, runtimeApiUrl);
 
     // Inject runtime config before other scripts
     modifiedHtml = modifiedHtml.replace(
