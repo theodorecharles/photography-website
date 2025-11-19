@@ -326,7 +326,10 @@
     "albums": "Alben",
     "moveToFolderTitle": "Verschieben von \"{{albumName}}\" in den Ordner  ",
     "moveToFolderHint": "Wählen Sie einen Zielordner oder wählen Sie Unkategorisiert, um aus einem Ordner zu entfernen.  ",
-    "currentFolder": "Aktuell  "
+    "currentFolder": "Aktuell  ",
+    "changesDiscarded": "Änderungen verworfen  ",
+    "deletePhotoQuestion": "Foto löschen?  ",
+    "confirmAction": "Aktion bestätigen"
   },
   "settings": {
     "saved": "{{section}} Einstellungen gespeichert!",

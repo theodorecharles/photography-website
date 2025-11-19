@@ -326,7 +326,10 @@
     "cannotPublishEmptyFolder": "空のフォルダーを公開できません",
     "deleteFolderTitle": "フォルダーを削除",
     "album": "アルバム",
-    "albums": "アルバム"
+    "albums": "アルバム",
+    "changesDiscarded": "変更は破棄されました  ",
+    "deletePhotoQuestion": "写真を削除しますか？  ",
+    "confirmAction": "アクションを確認する"
   },
   "settings": {
     "saved": "{{section}}設定が保存されました！",

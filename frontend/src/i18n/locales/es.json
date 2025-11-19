@@ -326,7 +326,10 @@
     "albums": "álbumes",
     "moveToFolderTitle": "Mover \"{{albumName}}\" a la carpeta  ",
     "moveToFolderHint": "Seleccione una carpeta de destino o elija Sin clasificar para eliminar de cualquier carpeta.  ",
-    "currentFolder": "Actual  "
+    "currentFolder": "Actual  ",
+    "changesDiscarded": "Cambios descartados  ",
+    "deletePhotoQuestion": "¿Eliminar foto?  ",
+    "confirmAction": "Confirmar acción"
   },
   "settings": {
     "saved": "¡Configuración de {{section}} guardada!",

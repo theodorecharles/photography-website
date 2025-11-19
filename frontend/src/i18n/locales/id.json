@@ -326,7 +326,10 @@
     "albumsInUnpublishedFolders": "Album di folder yang belum diterbitkan selalu bersifat pribadi",
     "moveToFolderTitle": "Pindahkan \"{{albumName}}\" ke Folder  ",
     "moveToFolderHint": "Pilih folder tujuan atau pilih Tanpa Kategori untuk menghapus dari folder mana pun.  ",
-    "currentFolder": "Saat ini  "
+    "currentFolder": "Saat ini  ",
+    "changesDiscarded": "Perubahan dibatalkan  ",
+    "deletePhotoQuestion": "Hapus Foto?  ",
+    "confirmAction": "Konfirmasi Tindakan"
   },
   "settings": {
     "saved": "Pengaturan {{section}} disimpan!",

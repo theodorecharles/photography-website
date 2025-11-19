@@ -326,7 +326,10 @@
     "albums": "albumy",
     "moveToFolderTitle": "Przenieś \"{{albumName}}\" do folderu  ",
     "moveToFolderHint": "Wybierz folder docelowy lub wybierz Nieklasyfikowane, aby usunąć z dowolnego folderu.  ",
-    "currentFolder": "Bieżący  "
+    "currentFolder": "Bieżący  ",
+    "changesDiscarded": "Zmiany odrzucone  ",
+    "deletePhotoQuestion": "Usunąć zdjęcie?  ",
+    "confirmAction": "Potwierdź akcję"
   },
   "settings": {
     "saved": "Ustawienia {{section}} zapisane!",

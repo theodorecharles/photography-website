@@ -326,7 +326,10 @@
     "albums": "albums",
     "moveToFolderTitle": "Déplacer \"{{albumName}}\" vers le dossier  ",
     "moveToFolderHint": "Sélectionnez un dossier de destination ou choisissez Non classé pour retirer de tout dossier.  ",
-    "currentFolder": "Actuel  "
+    "currentFolder": "Actuel  ",
+    "changesDiscarded": "Modifications annulées  ",
+    "deletePhotoQuestion": "Supprimer la photo ?  ",
+    "confirmAction": "Confirmer l'action"
   },
   "settings": {
     "saved": "Paramètres de {{section}} enregistrés !",

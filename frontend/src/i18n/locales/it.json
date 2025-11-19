@@ -326,7 +326,10 @@
     "albums": "album",
     "moveToFolderTitle": "Sposta \"{{albumName}}\" nella cartella  ",
     "moveToFolderHint": "Seleziona una cartella di destinazione o scegli Non classificato per rimuovere da qualsiasi cartella.  ",
-    "currentFolder": "Attuale  "
+    "currentFolder": "Attuale  ",
+    "changesDiscarded": "Modifiche scartate  ",
+    "deletePhotoQuestion": "Elimina foto?  ",
+    "confirmAction": "Conferma azione"
   },
   "settings": {
     "saved": "Impostazioni di {{section}} salvate!",

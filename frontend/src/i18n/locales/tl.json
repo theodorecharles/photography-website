@@ -326,7 +326,10 @@
     "albumsInUnpublishedFolders": "Ang mga album sa hindi na-publish na mga folder ay palaging pribado",
     "moveToFolderTitle": "Ilipat ang \"{{albumName}}\" sa Folder  ",
     "moveToFolderHint": "Pumili ng patutunguhang folder o pumili ng Uncategorized upang alisin mula sa anumang folder.  ",
-    "currentFolder": "Kasalukuyan  "
+    "currentFolder": "Kasalukuyan  ",
+    "changesDiscarded": "Mga pagbabagong itinapon  ",
+    "deletePhotoQuestion": "Tanggalin ang Larawan?  ",
+    "confirmAction": "Kumpirmahin ang Aksyon"
   },
   "settings": {
     "saved": "{{section}} mga setting ay na-save!",

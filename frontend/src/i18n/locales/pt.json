@@ -326,7 +326,10 @@
     "albums": "álbuns",
     "moveToFolderTitle": "Mover \"{{albumName}}\" para a Pasta  ",
     "moveToFolderHint": "Selecione uma pasta de destino ou escolha Não Classificado para remover de qualquer pasta.  ",
-    "currentFolder": "Atual  "
+    "currentFolder": "Atual  ",
+    "changesDiscarded": "Mudanças descartadas  ",
+    "deletePhotoQuestion": "Excluir Foto?  ",
+    "confirmAction": "Confirmar Ação"
   },
   "settings": {
     "saved": "Configurações de {{section}} salvas!",

@@ -326,7 +326,10 @@
     "albums": "相册",
     "moveToFolderTitle": "将 \"{{albumName}}\" 移动到文件夹  ",
     "moveToFolderHint": "选择目标文件夹或选择“未分类”以从任何文件夹中移除。  ",
-    "currentFolder": "当前  "
+    "currentFolder": "当前  ",
+    "changesDiscarded": "更改已丢弃  ",
+    "deletePhotoQuestion": "删除照片？  ",
+    "confirmAction": "确认操作"
   },
   "settings": {
     "saved": "{{section}} 设置已保存！",

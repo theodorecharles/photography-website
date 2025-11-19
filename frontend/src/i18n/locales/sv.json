@@ -326,7 +326,10 @@
     "albums": "album",
     "moveToFolderTitle": "Flytta \"{{albumName}}\" till mapp  ",
     "moveToFolderHint": "Välj en destinationsmapp eller välj Oklassificerad för att ta bort från någon mapp.  ",
-    "currentFolder": "Aktuell  "
+    "currentFolder": "Aktuell  ",
+    "changesDiscarded": "Ändringar borttagna  ",
+    "deletePhotoQuestion": "Ta bort foto?  ",
+    "confirmAction": "Bekräfta åtgärd"
   },
   "settings": {
     "saved": "{{section}} inställningar sparade!",

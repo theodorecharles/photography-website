@@ -326,7 +326,10 @@
     "albums": "albümler",
     "moveToFolderTitle": "\"{{albumName}}\" Klasöre Taşı",
     "moveToFolderHint": "Bir hedef klasör seçin veya herhangi bir klasörden çıkarmak için Sınıflandırılmamış'ı seçin.",
-    "currentFolder": "Mevcut"
+    "currentFolder": "Mevcut",
+    "changesDiscarded": "Değişiklikler iptal edildi  ",
+    "deletePhotoQuestion": "Fotoğrafı sil?  ",
+    "confirmAction": "Eylemi onayla"
   },
   "settings": {
     "saved": "{{section}} ayarları kaydedildi!",

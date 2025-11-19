@@ -326,7 +326,10 @@
     "albumsInUnpublishedFolders": "Albumele din folderele nepublicate sunt întotdeauna private",
     "moveToFolderTitle": "Mută \"{{albumName}}\" în folder  ",
     "moveToFolderHint": "Selectați un folder de destinație sau alegeți Fără categorie pentru a elimina din orice folder.  ",
-    "currentFolder": "Curent  "
+    "currentFolder": "Curent  ",
+    "changesDiscarded": "Modificările au fost abandonate  ",
+    "deletePhotoQuestion": "Șterge fotografia?  ",
+    "confirmAction": "Confirmă acțiunea"
   },
   "settings": {
     "saved": "Setările {{section}} au fost salvate!",

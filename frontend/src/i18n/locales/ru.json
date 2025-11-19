@@ -326,7 +326,10 @@
     "albums": "альбомы",
     "moveToFolderTitle": "Переместить \"{{albumName}}\" в папку  ",
     "moveToFolderHint": "Выберите папку назначения или выберите Без категории, чтобы удалить из любой папки.  ",
-    "currentFolder": "Текущий  "
+    "currentFolder": "Текущий  ",
+    "changesDiscarded": "Изменения отменены  ",
+    "deletePhotoQuestion": "Удалить фото?  ",
+    "confirmAction": "Подтвердить действие"
   },
   "settings": {
     "saved": "Настройки {{section}} сохранены!",

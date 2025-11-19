@@ -326,7 +326,10 @@
     "albums": "albums",
     "moveToFolderTitle": "Verplaats \"{{albumName}}\" naar map  ",
     "moveToFolderHint": "Selecteer een bestemmingsmap of kies Ongesorteerd om uit elke map te verwijderen.  ",
-    "currentFolder": "Huidig  "
+    "currentFolder": "Huidig  ",
+    "changesDiscarded": "Wijzigingen verworpen  ",
+    "deletePhotoQuestion": "Foto verwijderen?  ",
+    "confirmAction": "Actie bevestigen"
   },
   "settings": {
     "saved": "{{section}} instellingen opgeslagen!",

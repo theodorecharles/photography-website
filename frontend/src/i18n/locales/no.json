@@ -326,7 +326,10 @@
     "albums": "album",
     "moveToFolderTitle": "Flytt \"{{albumName}}\" til mappe  ",
     "moveToFolderHint": "Velg en destinasjonsmappe eller velg Uklassifisert for å fjerne fra enhver mappe.  ",
-    "currentFolder": "Nåværende  "
+    "currentFolder": "Nåværende  ",
+    "changesDiscarded": "Endringer forkastet  ",
+    "deletePhotoQuestion": "Slette foto?  ",
+    "confirmAction": "Bekreft handling"
   },
   "settings": {
     "saved": "{{section}} innstillinger lagret!",

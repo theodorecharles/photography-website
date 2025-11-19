@@ -326,7 +326,10 @@
     "albumsInUnpublishedFolders": "Các album trong thư mục chưa xuất bản luôn là riêng tư",
     "moveToFolderTitle": "Di chuyển \"{{albumName}}\" đến Thư mục  ",
     "moveToFolderHint": "Chọn một thư mục đích hoặc chọn Chưa phân loại để xóa khỏi bất kỳ thư mục nào.  ",
-    "currentFolder": "Hiện tại  "
+    "currentFolder": "Hiện tại  ",
+    "changesDiscarded": "Thay đổi đã bị bỏ qua  ",
+    "deletePhotoQuestion": "Xóa ảnh?  ",
+    "confirmAction": "Xác nhận hành động"
   },
   "settings": {
     "saved": "Cài đặt {{section}} đã được lưu!",
