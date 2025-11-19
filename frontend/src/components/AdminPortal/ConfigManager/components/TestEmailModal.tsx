@@ -35,17 +35,17 @@ export const TestEmailModal: React.FC<TestEmailModalProps> = ({ onClose }) => {
         body: JSON.stringify({ email }),
       });
 
-      const data = await res.json();
+      await res.json(); // Consume response
 
       if (res.ok) {
         setResult({
           type: 'success',
-          message: data.message || t('testEmailModal.successMessage'),
+          message: t('testEmailModal.successMessage'),
         });
       } else {
         setResult({
           type: 'error',
-          message: data.error || t('testEmailModal.errorMessage'),
+          message: t('testEmailModal.errorMessage'),
         });
       }
     } catch (error) {

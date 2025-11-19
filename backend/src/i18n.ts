@@ -12,6 +12,11 @@ import { info, error as logError } from './utils/logger.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
+// Debug: Log the resolved path
+const localePath = join(__dirname, '../../frontend/src/i18n/locales/{{lng}}.json');
+info(`[i18n] Loading translations from: ${localePath.replace('{{lng}}', 'en')}`);
+info(`[i18n] __dirname is: ${__dirname}`);
+
 // Initialize i18next for backend use
 const initPromise = i18next
   .use(Backend)
@@ -20,8 +25,8 @@ const initPromise = i18next
     fallbackLng: 'en',
     supportedLngs: ['en', 'es', 'fr', 'de', 'ja', 'nl', 'it', 'pt', 'ru', 'zh', 'ko', 'pl', 'tr', 'sv', 'no', 'ro', 'tl', 'vi', 'id'],
     backend: {
-      // Load from frontend locale files
-      loadPath: join(__dirname, '../../frontend/src/i18n/locales/{{lng}}.json'),
+      // Load from frontend locale files  
+      loadPath: localePath,
     },
     interpolation: {
       escapeValue: false, // HTML will be escaped manually when needed
