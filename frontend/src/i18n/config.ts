@@ -9,7 +9,7 @@ const loadTranslation = async (language: string) => {
   if (language === "en") {
     return enTranslations;
   }
-  
+
   console.log(`[i18n] Loading translation for: ${language}`);
   try {
     const translations = await import(`./locales/${language}.json`);
@@ -46,7 +46,7 @@ i18n
   .use(initReactI18next) // Passes i18n down to react-i18next
   .init({
     fallbackLng: "en", // Default language
-    debug: false, // Set to true for development debugging
+    debug: true, // Set to true for development debugging
     interpolation: {
       escapeValue: false, // React already escapes values
     },

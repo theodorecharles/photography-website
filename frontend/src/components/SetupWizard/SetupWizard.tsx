@@ -39,6 +39,18 @@ export default function SetupWizard() {
   const [adminPassword, setAdminPassword] = useState('');
   const [adminPasswordConfirm, setAdminPasswordConfirm] = useState('');
   const [showRestartModal, setShowRestartModal] = useState(false);
+  const [animationBoost, setAnimationBoost] = useState(false);
+  
+  // Trigger animation boost when step changes
+  useEffect(() => {
+    if (currentStep >= 2) {
+      setAnimationBoost(true);
+      const timer = setTimeout(() => {
+        setAnimationBoost(false);
+      }, 2000); // Boost for 2 seconds
+      return () => clearTimeout(timer);
+    }
+  }, [currentStep]);
   
   // Handle restart modal close - redirect to appropriate auth flow
   const handleRestartComplete = () => {
@@ -58,8 +70,15 @@ export default function SetupWizard() {
 
   // Sync currentLanguage with i18n language changes
   useEffect(() => {
+    console.log(`[OOBE] i18n language changed to: ${i18n.language}, ready: ${ready}`);
     setCurrentLanguage(i18n.language);
-  }, [i18n.language]);
+  }, [i18n.language, ready]);
+
+  // Debug: Log when component mounts
+  useEffect(() => {
+    console.log(`[OOBE] Component mounted. i18n ready: ${ready}, language: ${i18n.language}`);
+    console.log(`[OOBE] Sample translation test:`, t('oobe.title'));
+  }, []);
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -277,12 +296,18 @@ export default function SetupWizard() {
   ];
 
   const handleLanguageChange = async (languageCode: string) => {
-    await i18n.changeLanguage(languageCode);
-    setCurrentLanguage(languageCode);
+    console.log(`[OOBE] Changing language to: ${languageCode}`);
+    try {
+      await i18n.changeLanguage(languageCode);
+      setCurrentLanguage(languageCode);
+      console.log(`[OOBE] Language changed successfully to: ${i18n.language}`);
+    } catch (error) {
+      console.error(`[OOBE] Failed to change language:`, error);
+    }
   };
 
   return (
-    <div className="setup-wizard">
+    <div className={`setup-wizard ${animationBoost ? 'animation-boost' : ''}`}>
       <div className="setup-container">
         <div className="setup-header">
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
