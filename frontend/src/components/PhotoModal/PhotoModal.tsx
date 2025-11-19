@@ -207,9 +207,16 @@ const PhotoModal: React.FC<PhotoModalProps> = ({
   // Restore default title only when modal closes (component unmounts)
   useEffect(() => {
     return () => {
-      document.title = siteName;
+      // Restore appropriate title based on context
+      if (album === 'homepage') {
+        document.title = `${siteName} - Galleria`;
+      } else {
+        // On an album page, restore to "Album Name - Site Name"
+        const albumTitleCase = album.charAt(0).toUpperCase() + album.slice(1);
+        document.title = `${albumTitleCase} - ${siteName}`;
+      }
     };
-  }, [siteName]);
+  }, [siteName, album]);
 
   // Handle copy link
   const handleCopyLink = useCallback(async (photo: Photo) => {
