@@ -12,6 +12,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { UploadIcon, TrashIcon, LinkIcon, CloseIcon, EyeIcon, GridViewIcon, ListViewIcon } from '../../../icons';
+import { showToast } from '../../../../utils/toast';
 
 type ViewMode = 'grid' | 'list';
 
@@ -107,7 +108,7 @@ const PhotosPanelHeader: React.FC<PhotosPanelHeaderProps> = ({
     
     // Validation
     if (!trimmedTitle) {
-      alert(t('albumsManager.albumNameRequired'));
+      showToast('Album name cannot be empty', 'error');
       return;
     }
     
@@ -118,7 +119,7 @@ const PhotosPanelHeader: React.FC<PhotosPanelHeaderProps> = ({
     
     // Check if name already exists
     if (localAlbums.some(a => a.name === trimmedTitle)) {
-      alert(t('albumsManager.albumAlreadyExists'));
+      showToast(`Album "${trimmedTitle}" already exists`, 'error');
       return;
     }
     
@@ -128,7 +129,8 @@ const PhotosPanelHeader: React.FC<PhotosPanelHeaderProps> = ({
       setIsEditingTitle(false);
     } catch (error) {
       console.error('Failed to rename album:', error);
-      alert(t('albumsManager.renameAlbumFailed'));
+      const errorMessage = error instanceof Error ? error.message : 'Failed to rename album';
+      showToast(errorMessage, 'error');
     } finally {
       setIsSaving(false);
     }

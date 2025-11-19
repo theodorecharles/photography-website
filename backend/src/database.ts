@@ -475,6 +475,40 @@ export function deleteAlbumState(name: string): boolean {
 }
 
 /**
+ * Rename an album (updates albums table and all image_metadata entries)
+ */
+export function renameAlbum(oldName: string, newName: string): boolean {
+  const db = getDatabase();
+  
+  try {
+    // Use a transaction to ensure atomicity
+    const transaction = db.transaction(() => {
+      // Update albums table
+      const albumStmt = db.prepare(`
+        UPDATE albums 
+        SET name = ? 
+        WHERE name = ?
+      `);
+      albumStmt.run(newName, oldName);
+      
+      // Update all image_metadata entries
+      const metadataStmt = db.prepare(`
+        UPDATE image_metadata 
+        SET album = ? 
+        WHERE album = ?
+      `);
+      metadataStmt.run(newName, oldName);
+    });
+    
+    transaction();
+    return true;
+  } catch (err) {
+    error('[Database] Failed to rename album:', err);
+    return false;
+  }
+}
+
+/**
  * Update sort order for multiple images in an album
  */
 export function updateImageSortOrder(album: string, imageOrders: { filename: string; sort_order: number }[]): boolean {

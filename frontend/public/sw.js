@@ -4,7 +4,7 @@
  * All other resources (JS, CSS, JSON) are handled by the browser
  */
 
-const CACHE_VERSION = 'v8';
+const CACHE_VERSION = 'v9';
 const CACHE_NAME = `photo-site-${CACHE_VERSION}`;
 
 // Resources to cache immediately on install
@@ -14,10 +14,12 @@ const PRECACHE_URLS = [
   '/photos/avatar.png', // User avatar - cache aggressively
 ];
 
-// Cache strategy: Only cache optimized images
+// Cache strategy: Cache images and critical API data
 const CACHE_STRATEGIES = {
   // Images: Cache first, network fallback (images rarely change)
   images: 'cache-first',
+  // Branding: Stale-while-revalidate for instant load + background update
+  branding: 'stale-while-revalidate',
 };
 
 /**
@@ -74,6 +76,11 @@ function getCacheStrategy(url) {
   // User avatar - cache aggressively
   if (urlObj.pathname === '/photos/avatar.png') {
     return CACHE_STRATEGIES.images;
+  }
+  
+  // Branding API - cache aggressively to prevent flash of default name
+  if (urlObj.pathname === '/api/branding') {
+    return CACHE_STRATEGIES.branding;
   }
   
   // Everything else: don't cache
@@ -171,6 +178,36 @@ async function networkOnly(request) {
 }
 
 /**
+ * Stale-while-revalidate strategy: Serve from cache immediately,
+ * then fetch and update cache in background
+ */
+async function staleWhileRevalidate(request) {
+  const cache = await caches.open(CACHE_NAME);
+  const cached = await cache.match(request);
+  
+  // Fetch fresh data in the background
+  const fetchPromise = fetch(request).then((response) => {
+    if (response.ok) {
+      cache.put(request, response.clone());
+      console.log('[SW] Background updated cache:', request.url);
+    }
+    return response;
+  }).catch((error) => {
+    console.warn('[SW] Background fetch failed:', request.url, error);
+  });
+  
+  // Return cached version immediately if available
+  if (cached) {
+    console.log('[SW] Serving from cache (revalidating in background):', request.url);
+    return cached;
+  }
+  
+  // If no cache, wait for the fetch
+  console.log('[SW] No cache, waiting for network:', request.url);
+  return fetchPromise;
+}
+
+/**
  * Fetch event - intercept and cache requests
  */
 self.addEventListener('fetch', (event) => {
@@ -209,6 +246,8 @@ self.addEventListener('fetch', (event) => {
             return await networkFirst(event.request);
           case 'network-only':
             return await networkOnly(event.request);
+          case 'stale-while-revalidate':
+            return await staleWhileRevalidate(event.request);
           default:
             return await networkFirst(event.request);
         }
