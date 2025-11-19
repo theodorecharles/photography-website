@@ -73,8 +73,8 @@ i18n
     ],
     // Prevent loading fallback language immediately - wait for branding API
     load: "languageOnly",
-    // Don't preload any languages - only load when explicitly requested
-    preload: [],
+    // Preload English so translations are available immediately
+    preload: ["en"],
   });
 
 // After i18n is initialized, fetch and apply branding language

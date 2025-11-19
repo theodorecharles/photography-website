@@ -13,7 +13,7 @@ import type { SetupStatus } from './types';
 import { error as logError, warn } from '../../utils/logger';
 
 export default function SetupWizard() {
-  const { t, i18n } = useTranslation();
+  const { t, i18n, ready } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [setupStatus, setSetupStatus] = useState<SetupStatus | null>(null);
   const [currentStep, setCurrentStep] = useState(1);
@@ -55,6 +55,11 @@ export default function SetupWizard() {
   useEffect(() => {
     checkSetupStatus();
   }, []);
+
+  // Sync currentLanguage with i18n language changes
+  useEffect(() => {
+    setCurrentLanguage(i18n.language);
+  }, [i18n.language]);
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -220,13 +225,13 @@ export default function SetupWizard() {
     }
   };
 
-  if (loading) {
+  if (loading || !ready) {
     return (
       <div className="setup-wizard">
         <div className="setup-container">
           <div className="setup-loading">
             <div className="loading-spinner"></div>
-            <p>Checking setup status...</p>
+            <p>{ready ? 'Checking setup status...' : 'Loading...'}</p>
           </div>
         </div>
       </div>
@@ -280,14 +285,17 @@ export default function SetupWizard() {
     <div className="setup-wizard">
       <div className="setup-container">
         <div className="setup-header">
-          <h1>📸 {t('oobe.title')}</h1>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
+            <img src="/icon-192.png" alt="Galleria" style={{ width: '48px', height: '48px' }} />
+            <h1 style={{ margin: 0 }}>{t('oobe.title')}</h1>
+          </div>
           <p>{t('oobe.subtitle')}</p>
           
           {/* Language Selector */}
           <div style={{ 
             marginTop: '1rem',
             display: 'flex',
-            justifyContent: 'flex-start',
+            justifyContent: 'center',
             alignItems: 'center',
             gap: '0.5rem'
           }}>
