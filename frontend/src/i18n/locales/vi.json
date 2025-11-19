@@ -1,6 +1,8 @@
 {
   "common": {
     "loading": "Đang tải...",
+    "checkingSetupStatus": "Đang kiểm tra trạng thái thiết lập...",
+    "loadingSharedAlbum": "Đang tải album chia sẻ...",
     "error": "Lỗi",
     "save": "Lưu",
     "cancel": "Hủy",
@@ -121,7 +123,7 @@
     "inviteSignup": "Hoàn tất đăng ký"
   },
   "sse": {
-    "uploading": "Đang tải lên",
+    "uploading": "Đang tải lên...",
     "uploadingTo": "Đang tải lên {{album}}",
     "uploadingProgress": "Đang tải lên {{completed}} trong tổng số {{total}} ảnh...",
     "uploadingLabel": "Đang tải lên",
@@ -267,6 +269,7 @@
     "album": "album",
     "albums": "album",
     "loadingPhotos": "Đang tải ảnh...",
+    "uploadingEllipsis": "Đang tải lên...",
     "savingOrder": "Đang lưu thứ tự...",
     "saveOrder": "Lưu thứ tự",
     "shuffle": "Xáo trộn",
@@ -998,5 +1001,57 @@
     "errorPasswordTooShort": "Mật khẩu phải có ít nhất 8 ký tự  ",
     "errorRequiredField": "Trường này là bắt buộc",
     "setupCompleteWaitingRestart": "Cài đặt hoàn tất! Đang chờ máy chủ khởi động lại..."
+  },
+  "email": {
+    "invitation": {
+      "subject": "Bạn đã được mời tham gia {{siteName}}  ",
+      "title": "Tham gia Galleria của {{siteName}}  ",
+      "greeting": "Chào bạn,  ",
+      "body": "{{inviterName}} đã mời bạn tham gia <strong>Galleria của {{siteName}}</strong>.  ",
+      "instructions": "Để chấp nhận lời mời này và thiết lập tài khoản của bạn, hãy nhấp vào nút bên dưới:  ",
+      "button": "Chấp nhận lời mời  ",
+      "orCopyLink": "Hoặc sao chép và dán liên kết này vào trình duyệt của bạn:  ",
+      "expiry": "Lời mời này sẽ hết hạn sau 7 ngày.  ",
+      "footerIgnore": "Nếu bạn không mong đợi lời mời này, bạn có thể an tâm bỏ qua email này.  ",
+      "footerAutomatic": "Đây là một tin nhắn tự động, vui lòng không trả lời email này."
+    },
+    "passwordReset": {
+      "subject": "Yêu cầu đặt lại mật khẩu - {{siteName}}  ",
+      "title": "Yêu cầu đặt lại mật khẩu  ",
+      "greeting": "Chào {{userName}},  ",
+      "greetingFallback": "Xin chào,  ",
+      "body": "Chúng tôi đã nhận được yêu cầu đặt lại mật khẩu của bạn cho <strong>{{siteName}}'s Galleria</strong>.  ",
+      "instructions": "Để đặt lại mật khẩu của bạn, hãy nhấp vào nút bên dưới:  ",
+      "button": "Đặt lại mật khẩu  ",
+      "orCopyLink": "Hoặc sao chép và dán liên kết này vào trình duyệt của bạn:  ",
+      "warningTitle": "⚠️ Quan trọng:  ",
+      "warningExpiry": "Liên kết này sẽ hết hạn sau 1 giờ",
+      "warningIgnore": "Nếu bạn không yêu cầu điều này, vui lòng bỏ qua email này  ",
+      "warningNoChange": "Mật khẩu của bạn sẽ không thay đổi cho đến khi bạn tạo một mật khẩu mới  ",
+      "footerAutomatic": "Đây là một tin nhắn tự động, vui lòng không trả lời email này.  ",
+      "footerContact": "Nếu bạn cần hỗ trợ, vui lòng liên hệ với quản trị viên của bạn.  "
+    },
+    "test": {
+      "subject": "Email kiểm tra từ {{siteName}}  ",
+      "title": "Kiểm tra cấu hình email  ",
+      "success": "✓  ",
+      "body1": "Chúc mừng! Cấu hình SMTP của bạn đang hoạt động chính xác.  ",
+      "body2": "Email thử nghiệm này được gửi từ <strong>{{siteName}}</strong> để xác minh rằng dịch vụ email của bạn được cấu hình đúng và có thể gửi tin nhắn.  ",
+      "footerTimestamp": "Đây là một tin nhắn thử nghiệm được gửi vào {{timestamp}}.",
+      "footerIgnore": "Bạn có thể an toàn bỏ qua hoặc xóa email này."
+    }
+  },
+  "testEmailModal": {
+    "title": "Gửi Email Kiểm Tra  ",
+    "description": "Nhập địa chỉ email để gửi tin nhắn kiểm tra và xác minh cấu hình SMTP của bạn hoạt động chính xác.  ",
+    "emailLabel": "Địa chỉ Email  ",
+    "emailPlaceholder": "your@email.com  ",
+    "close": "Đóng  ",
+    "sendButton": "Gửi Email Kiểm Tra  ",
+    "sending": "Đang gửi...  ",
+    "invalidEmail": "Vui lòng nhập một địa chỉ email hợp lệ  ",
+    "successMessage": "Email kiểm tra đã được gửi thành công! Kiểm tra hộp thư đến của bạn.  ",
+    "errorMessage": "Gửi email kiểm tra không thành công",
+    "errorMessageDetail": "Gửi email thử nghiệm không thành công. Vui lòng kiểm tra cấu hình của bạn."
   }
 }

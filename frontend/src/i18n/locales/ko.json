@@ -1,6 +1,8 @@
 {
   "common": {
     "loading": "로딩 중...",
+    "checkingSetupStatus": "설정 상태 확인 중...",
+    "loadingSharedAlbum": "공유 앨범 로딩 중...",
     "error": "오류",
     "save": "저장",
     "cancel": "취소",
@@ -121,7 +123,7 @@
     "invalidCredentials": "잘못된 자격 증명"
   },
   "sse": {
-    "uploading": "업로드 중",
+    "uploading": "업로드 중...",
     "uploadingTo": "{{album}}에 업로드 중",
     "uploadingProgress": "{{completed}} / {{total}} 사진 업로드 중...",
     "uploadingLabel": "업로드 중",
@@ -258,6 +260,7 @@
     "uncategorized": "미분류",
     "noPhotosInAlbum": "이 앨범에 사진이 없습니다",
     "loadingPhotos": "사진 로딩 중...",
+    "uploadingEllipsis": "업로드 중...",
     "savingOrder": "순서 저장 중...",
     "saveOrder": "순서 저장",
     "shuffle": "섞기",
@@ -998,5 +1001,57 @@
     "errorPasswordTooShort": "비밀번호는 최소 8자 이상이어야 합니다  ",
     "errorRequiredField": "이 필드는 필수입니다",
     "setupCompleteWaitingRestart": "설정이 완료되었습니다! 서버가 재시작되기를 기다리고 있습니다..."
+  },
+  "email": {
+    "invitation": {
+      "subject": "{{siteName}}에 초대되었습니다  ",
+      "title": "{{siteName}}의 갤러리에 참여하세요  ",
+      "greeting": "안녕하세요,  ",
+      "body": "{{inviterName}}님이 <strong>{{siteName}}의 갤러리</strong>에 참여하도록 초대했습니다.  ",
+      "instructions": "이 초대를 수락하고 계정을 설정하려면 아래 버튼을 클릭하세요:  ",
+      "button": "초대 수락  ",
+      "orCopyLink": "또는 이 링크를 복사하여 브라우저에 붙여넣으세요:  ",
+      "expiry": "이 초대는 7일 후에 만료됩니다.  ",
+      "footerIgnore": "이 초대를 예상하지 못하셨다면, 이 이메일을 무시하셔도 됩니다.  ",
+      "footerAutomatic": "이 메시지는 자동으로 생성된 것입니다. 이 이메일에 회신하지 마세요."
+    },
+    "passwordReset": {
+      "subject": "비밀번호 재설정 요청 - {{siteName}}  ",
+      "title": "비밀번호 재설정 요청  ",
+      "greeting": "안녕하세요 {{userName}},  ",
+      "greetingFallback": "안녕하세요,  ",
+      "body": "<strong>{{siteName}}의 갤러리</strong>에 대한 비밀번호 재설정 요청을 받았습니다.  ",
+      "instructions": "비밀번호를 재설정하려면 아래 버튼을 클릭하세요:  ",
+      "button": "비밀번호 재설정  ",
+      "orCopyLink": "또는 이 링크를 복사하여 브라우저에 붙여넣으세요:  ",
+      "warningTitle": "⚠️ 중요:  ",
+      "warningExpiry": "이 링크는 1시간 후에 만료됩니다.",
+      "warningIgnore": "이 이메일을 요청하지 않으셨다면 무시해 주시기 바랍니다  ",
+      "warningNoChange": "비밀번호는 새 비밀번호를 생성할 때까지 변경되지 않습니다  ",
+      "footerAutomatic": "이것은 자동 생성된 메시지입니다. 이 이메일에 회신하지 마십시오.  ",
+      "footerContact": "도움이 필요하시면 관리자에게 문의해 주십시오.  "
+    },
+    "test": {
+      "subject": "{{siteName}}에서 보낸 테스트 이메일  ",
+      "title": "이메일 구성 테스트  ",
+      "success": "✓  ",
+      "body1": "축하합니다! 귀하의 SMTP 구성이 올바르게 작동하고 있습니다.  ",
+      "body2": "이 테스트 이메일은 <strong>{{siteName}}</strong>에서 귀하의 이메일 서비스가 제대로 구성되어 메시지를 전달할 수 있는지 확인하기 위해 전송되었습니다.  ",
+      "footerTimestamp": "이것은 {{timestamp}}에 전송된 테스트 메시지입니다.",
+      "footerIgnore": "이 이메일은 안전하게 무시하거나 삭제해도 됩니다."
+    }
+  },
+  "testEmailModal": {
+    "title": "테스트 이메일 보내기  ",
+    "description": "테스트 메시지를 보내고 SMTP 구성이 올바르게 작동하는지 확인하려면 이메일 주소를 입력하세요.  ",
+    "emailLabel": "이메일 주소  ",
+    "emailPlaceholder": "your@email.com  ",
+    "close": "닫기  ",
+    "sendButton": "테스트 이메일 보내기  ",
+    "sending": "전송 중...  ",
+    "invalidEmail": "유효한 이메일 주소를 입력하세요  ",
+    "successMessage": "테스트 이메일이 성공적으로 전송되었습니다! 받은 편지함을 확인하세요.  ",
+    "errorMessage": "테스트 이메일 전송에 실패했습니다.",
+    "errorMessageDetail": "테스트 이메일 전송에 실패했습니다. 설정을 확인해 주세요."
   }
 }

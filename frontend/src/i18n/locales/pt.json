@@ -1,6 +1,8 @@
 {
   "common": {
     "loading": "Carregando...",
+    "checkingSetupStatus": "Verificando o status da configuração...",
+    "loadingSharedAlbum": "Carregando álbum compartilhado...",
     "error": "Erro",
     "save": "Salvar",
     "cancel": "Cancelar",
@@ -121,7 +123,7 @@
     "invalidCredentials": "Credenciais inválidas"
   },
   "sse": {
-    "uploading": "Carregando",
+    "uploading": "Enviando...",
     "uploadingTo": "Carregando para {{album}}",
     "uploadingProgress": "Carregando {{completed}} de {{total}} fotos...",
     "uploadingLabel": "Carregando",
@@ -258,6 +260,7 @@
     "uncategorized": "Não categorizados",
     "noPhotosInAlbum": "Nenhuma foto neste álbum",
     "loadingPhotos": "Carregando fotos...",
+    "uploadingEllipsis": "Enviando...",
     "savingOrder": "Salvando ordem...",
     "saveOrder": "Salvar Ordem",
     "shuffle": "Embaralhar",
@@ -998,5 +1001,57 @@
     "errorPasswordTooShort": "A senha deve ter pelo menos 8 caracteres  ",
     "errorRequiredField": "Este campo é obrigatório",
     "setupCompleteWaitingRestart": "Configuração concluída! Aguardando o servidor reiniciar..."
+  },
+  "email": {
+    "invitation": {
+      "subject": "Você foi convidado para {{siteName}}",
+      "title": "Junte-se à Galleria do {{siteName}}",
+      "greeting": "Olá,",
+      "body": "{{inviterName}} convidou você para se juntar à <strong>Galleria do {{siteName}}</strong>.",
+      "instructions": "Para aceitar este convite e configurar sua conta, clique no botão abaixo:",
+      "button": "Aceitar Convite",
+      "orCopyLink": "Ou copie e cole este link no seu navegador:",
+      "expiry": "Este convite expirará em 7 dias.",
+      "footerIgnore": "Se você não esperava por este convite, pode ignorar este e-mail com segurança.",
+      "footerAutomatic": "Esta é uma mensagem automática, por favor, não responda a este e-mail."
+    },
+    "passwordReset": {
+      "subject": "Solicitação de Redefinição de Senha - {{siteName}}  ",
+      "title": "Solicitação de Redefinição de Senha  ",
+      "greeting": "Olá {{userName}},  ",
+      "greetingFallback": "Olá,  ",
+      "body": "Recebemos uma solicitação para redefinir sua senha para <strong>Galleria do {{siteName}}</strong>.  ",
+      "instructions": "Para redefinir sua senha, clique no botão abaixo:  ",
+      "button": "Redefinir Senha  ",
+      "orCopyLink": "Ou copie e cole este link no seu navegador:  ",
+      "warningTitle": "⚠️ Importante:  ",
+      "warningExpiry": "Este link expirará em 1 hora",
+      "warningIgnore": "Se você não solicitou isso, por favor, ignore este e-mail  ",
+      "warningNoChange": "Sua senha não mudará até que você crie uma nova  ",
+      "footerAutomatic": "Esta é uma mensagem automática, por favor, não responda a este e-mail.  ",
+      "footerContact": "Se você precisar de assistência, entre em contato com seu administrador.  "
+    },
+    "test": {
+      "subject": "E-mail de Teste de {{siteName}}  ",
+      "title": "Teste de Configuração de E-mail  ",
+      "success": "✓  ",
+      "body1": "Parabéns! Sua configuração SMTP está funcionando corretamente.  ",
+      "body2": "Este e-mail de teste foi enviado de <strong>{{siteName}}</strong> para verificar se seu serviço de e-mail está configurado corretamente e pode entregar mensagens.  ",
+      "footerTimestamp": "Esta é uma mensagem de teste enviada em {{timestamp}}.",
+      "footerIgnore": "Você pode ignorar ou excluir este e-mail com segurança."
+    }
+  },
+  "testEmailModal": {
+    "title": "Enviar Email de Teste  ",
+    "description": "Digite um endereço de email para enviar uma mensagem de teste e verificar se sua configuração SMTP está funcionando corretamente.  ",
+    "emailLabel": "Endereço de Email  ",
+    "emailPlaceholder": "seu@email.com  ",
+    "close": "Fechar  ",
+    "sendButton": "Enviar Email de Teste  ",
+    "sending": "Enviando...  ",
+    "invalidEmail": "Por favor, insira um endereço de email válido  ",
+    "successMessage": "Email de teste enviado com sucesso! Verifique sua caixa de entrada.  ",
+    "errorMessage": "Falha ao enviar email de teste",
+    "errorMessageDetail": "Falha ao enviar o e-mail de teste. Verifique sua configuração."
   }
 }

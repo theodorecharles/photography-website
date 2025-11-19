@@ -316,10 +316,10 @@ export default function SSEToaster() {
               {isUploading ? (
                 <>
                   <div className="output-line">
-                    Uploading {uploadCompleted} of {uploadTotal} photos...
+                    {t('sse.uploadingProgress', { completed: uploadCompleted, total: uploadTotal })}
                   </div>
                   <div className="output-line" style={{ marginTop: "0.5rem", color: "#4ade80" }}>
-                    ⏳ {uploadCompleted === uploadTotal ? "Completing upload..." : "Uploading..."}
+                    ⏳ {uploadCompleted === uploadTotal ? t('sse.completingUpload') : t('sse.uploading')}
                   </div>
                 </>
               ) : generatingTitles ? (

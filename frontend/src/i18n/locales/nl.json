@@ -1,6 +1,8 @@
 {
   "common": {
     "loading": "Laden...",
+    "checkingSetupStatus": "Controleer de status van de installatie...",
+    "loadingSharedAlbum": "De gedeelde album wordt geladen...",
     "error": "Fout",
     "save": "Opslaan",
     "cancel": "Annuleren",
@@ -121,7 +123,7 @@
     "invalidCredentials": "Ongeldige inloggegevens"
   },
   "sse": {
-    "uploading": "Uploaden",
+    "uploading": "Uploaden...",
     "uploadingTo": "Uploaden naar {{album}}",
     "uploadingProgress": "{{completed}} van {{total}} foto's uploaden...",
     "uploadingLabel": "Uploaden",
@@ -258,6 +260,7 @@
     "uncategorized": "Ongesorteerd",
     "noPhotosInAlbum": "Geen foto's in dit album",
     "loadingPhotos": "Foto's laden...",
+    "uploadingEllipsis": "Uploaden...",
     "savingOrder": "Volgorde opslaan...",
     "saveOrder": "Volgorde opslaan",
     "shuffle": "Willekeurig",
@@ -998,5 +1001,57 @@
     "errorPasswordTooShort": "Wachtwoord moet minimaal 8 tekens zijn  ",
     "errorRequiredField": "Dit veld is verplicht",
     "setupCompleteWaitingRestart": "Installatie voltooid! Wachten op server om opnieuw op te starten..."
+  },
+  "email": {
+    "invitation": {
+      "subject": "Je bent uitgenodigd voor {{siteName}}  ",
+      "title": "Word lid van <strong>{{siteName}}'s Galleria</strong>  ",
+      "greeting": "Hallo,  ",
+      "body": "{{inviterName}} heeft je uitgenodigd om lid te worden van <strong>{{siteName}}'s Galleria</strong>.  ",
+      "instructions": "Om deze uitnodiging te accepteren en je account in te stellen, klik op de knop hieronder:  ",
+      "button": "Uitnodiging Accepteren  ",
+      "orCopyLink": "Of kopieer en plak deze link in je browser:  ",
+      "expiry": "Deze uitnodiging vervalt over 7 dagen.  ",
+      "footerIgnore": "Als je deze uitnodiging niet verwachtte, kun je deze e-mail veilig negeren.  ",
+      "footerAutomatic": "Dit is een automatisch bericht, gelieve niet op deze e-mail te reageren."
+    },
+    "passwordReset": {
+      "subject": "Wachtwoordresetverzoek - {{siteName}}  ",
+      "title": "Wachtwoordresetverzoek  ",
+      "greeting": "Hallo {{userName}},  ",
+      "greetingFallback": "Hallo daar,  ",
+      "body": "We hebben een verzoek ontvangen om je wachtwoord voor <strong>{{siteName}}'s Galleria</strong> te resetten.  ",
+      "instructions": "Om je wachtwoord te resetten, klik op de knop hieronder:  ",
+      "button": "Wachtwoord resetten  ",
+      "orCopyLink": "Of kopieer en plak deze link in je browser:  ",
+      "warningTitle": "⚠️ Belangrijk:  ",
+      "warningExpiry": "Deze link vervalt over 1 uur",
+      "warningIgnore": "Als u dit niet heeft aangevraagd, negeer dan deze e-mail",
+      "warningNoChange": "Uw wachtwoord zal niet veranderen totdat u een nieuw wachtwoord aanmaakt",
+      "footerAutomatic": "Dit is een automatisch bericht, gelieve niet op deze e-mail te antwoorden.",
+      "footerContact": "Als u hulp nodig heeft, neem dan contact op met uw beheerder."
+    },
+    "test": {
+      "subject": "Test e-mail van {{siteName}}",
+      "title": "E-mailconfiguratietest",
+      "success": "✓",
+      "body1": "Gefeliciteerd! Uw SMTP-configuratie werkt correct.",
+      "body2": "Deze test-e-mail is verzonden van <strong>{{siteName}}</strong> om te verifiëren dat uw e-mailservice correct is geconfigureerd en berichten kan afleveren.",
+      "footerTimestamp": "Dit is een testbericht verzonden op {{timestamp}}.",
+      "footerIgnore": "Je kunt deze e-mail veilig negeren of verwijderen."
+    }
+  },
+  "testEmailModal": {
+    "title": "Verstuur test-e-mail  ",
+    "description": "Voer een e-mailadres in om een testbericht te verzenden en te verifiëren of uw SMTP-configuratie correct werkt.  ",
+    "emailLabel": "E-mailadres  ",
+    "emailPlaceholder": "your@email.com  ",
+    "close": "Sluiten  ",
+    "sendButton": "Verstuur test-e-mail  ",
+    "sending": "Verzenden...  ",
+    "invalidEmail": "Voer een geldig e-mailadres in  ",
+    "successMessage": "Test-e-mail succesvol verzonden! Controleer uw inbox.  ",
+    "errorMessage": "Verzenden van test-e-mail mislukt",
+    "errorMessageDetail": "Het verzenden van de test-e-mail is mislukt. Controleer uw configuratie."
   }
 }

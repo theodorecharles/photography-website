@@ -1,6 +1,8 @@
 {
   "common": {
     "loading": "Lädt...",
+    "checkingSetupStatus": "Überprüfe den Einrichtungsstatus...",
+    "loadingSharedAlbum": "Lade freigegebenes Album...",
     "error": "Fehler",
     "save": "Speichern",
     "cancel": "Abbrechen",
@@ -121,7 +123,7 @@
     "invalidCredentials": "Ungültige Anmeldeinformationen"
   },
   "sse": {
-    "uploading": "Lädt hoch",
+    "uploading": "Hochladen...",
     "uploadingTo": "Lädt hoch nach {{album}}",
     "uploadingProgress": "Lädt {{completed}} von {{total}} Fotos hoch...",
     "uploadingLabel": "Lädt hoch",
@@ -258,6 +260,7 @@
     "uncategorized": "Nicht kategorisiert",
     "noPhotosInAlbum": "Keine Fotos in diesem Album",
     "loadingPhotos": "Lade Fotos...",
+    "uploadingEllipsis": "Hochladen...",
     "savingOrder": "Speichere Reihenfolge...",
     "saveOrder": "Reihenfolge speichern",
     "shuffle": "Mischen",
@@ -998,5 +1001,57 @@
     "errorPasswordTooShort": "Das Passwort muss mindestens 8 Zeichen lang sein  ",
     "errorRequiredField": "Dieses Feld ist erforderlich",
     "setupCompleteWaitingRestart": "Einrichtung abgeschlossen! Warte auf den Neustart des Servers..."
+  },
+  "email": {
+    "invitation": {
+      "subject": "Sie wurden eingeladen, {{siteName}} beizutreten  ",
+      "title": "Treten Sie der Galleria von {{siteName}} bei  ",
+      "greeting": "Hallo,  ",
+      "body": "{{inviterName}} hat Sie eingeladen, der <strong>Galleria von {{siteName}}</strong> beizutreten.  ",
+      "instructions": "Um diese Einladung anzunehmen und Ihr Konto einzurichten, klicken Sie auf die Schaltfläche unten:  ",
+      "button": "Einladung annehmen  ",
+      "orCopyLink": "Oder kopieren Sie diesen Link und fügen Sie ihn in Ihren Browser ein:  ",
+      "expiry": "Diese Einladung läuft in 7 Tagen ab.  ",
+      "footerIgnore": "Wenn Sie diese Einladung nicht erwartet haben, können Sie diese E-Mail sicher ignorieren.  ",
+      "footerAutomatic": "Dies ist eine automatisierte Nachricht, bitte antworten Sie nicht auf diese E-Mail."
+    },
+    "passwordReset": {
+      "subject": "Passwortzurücksetzungsanfrage - {{siteName}}  ",
+      "title": "Passwortzurücksetzungsanfrage  ",
+      "greeting": "Hallo {{userName}},  ",
+      "greetingFallback": "Hallo,  ",
+      "body": "Wir haben eine Anfrage zum Zurücksetzen Ihres Passworts für <strong>{{siteName}}'s Galleria</strong> erhalten.  ",
+      "instructions": "Um Ihr Passwort zurückzusetzen, klicken Sie auf die Schaltfläche unten:  ",
+      "button": "Passwort zurücksetzen  ",
+      "orCopyLink": "Oder kopieren Sie diesen Link und fügen Sie ihn in Ihren Browser ein:  ",
+      "warningTitle": "⚠️ Wichtig:  ",
+      "warningExpiry": "Dieser Link läuft in 1 Stunde ab",
+      "warningIgnore": "Wenn Sie dies nicht angefordert haben, ignorieren Sie bitte diese E-Mail  ",
+      "warningNoChange": "Ihr Passwort wird nicht geändert, bis Sie ein neues erstellen  ",
+      "footerAutomatic": "Dies ist eine automatische Nachricht, bitte antworten Sie nicht auf diese E-Mail.  ",
+      "footerContact": "Wenn Sie Hilfe benötigen, wenden Sie sich bitte an Ihren Administrator.  "
+    },
+    "test": {
+      "subject": "Test-E-Mail von {{siteName}}  ",
+      "title": "E-Mail-Konfigurationstest  ",
+      "success": "✓  ",
+      "body1": "Herzlichen Glückwunsch! Ihre SMTP-Konfiguration funktioniert korrekt.  ",
+      "body2": "Diese Test-E-Mail wurde von <strong>{{siteName}}</strong> gesendet, um zu überprüfen, ob Ihr E-Mail-Dienst ordnungsgemäß konfiguriert ist und Nachrichten zustellen kann.  ",
+      "footerTimestamp": "Dies ist eine Testnachricht, die am {{timestamp}} gesendet wurde.",
+      "footerIgnore": "Sie können diese E-Mail sicher ignorieren oder löschen."
+    }
+  },
+  "testEmailModal": {
+    "title": "Test-E-Mail senden  ",
+    "description": "Geben Sie eine E-Mail-Adresse ein, um eine Testnachricht zu senden und zu überprüfen, ob Ihre SMTP-Konfiguration korrekt funktioniert.  ",
+    "emailLabel": "E-Mail-Adresse  ",
+    "emailPlaceholder": "your@email.com  ",
+    "close": "Schließen  ",
+    "sendButton": "Test-E-Mail senden  ",
+    "sending": "Wird gesendet...  ",
+    "invalidEmail": "Bitte geben Sie eine gültige E-Mail-Adresse ein  ",
+    "successMessage": "Test-E-Mail erfolgreich gesendet! Überprüfen Sie Ihren Posteingang.  ",
+    "errorMessage": "Fehler beim Senden der Test-E-Mail",
+    "errorMessageDetail": "Fehler beim Senden der Test-E-Mail. Bitte überprüfen Sie Ihre Konfiguration."
   }
 }

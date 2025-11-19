@@ -1,6 +1,8 @@
 {
   "common": {
     "loading": "Laddar...",
+    "checkingSetupStatus": "Kontrollerar installationsstatus...",
+    "loadingSharedAlbum": "Laddar delat album...",
     "error": "Fel",
     "save": "Spara",
     "cancel": "Avbryt",
@@ -121,7 +123,7 @@
     "invalidCredentials": "Ogiltiga inloggningsuppgifter"
   },
   "sse": {
-    "uploading": "Laddar upp",
+    "uploading": "Laddar upp...",
     "uploadingTo": "Laddar upp till {{album}}",
     "uploadingProgress": "Laddar upp {{completed}} av {{total}} foton...",
     "uploadingLabel": "Laddar upp",
@@ -258,6 +260,7 @@
     "uncategorized": "Okategoriserade",
     "noPhotosInAlbum": "Inga foton i detta album",
     "loadingPhotos": "Laddar foton...",
+    "uploadingEllipsis": "Laddar upp...",
     "savingOrder": "Sparar ordning...",
     "saveOrder": "Spara Ordning",
     "shuffle": "Blanda",
@@ -998,5 +1001,57 @@
     "errorPasswordTooShort": "Lösenordet måste vara minst 8 tecken  ",
     "errorRequiredField": "Detta fält är obligatoriskt",
     "setupCompleteWaitingRestart": "Installation klar! Väntar på att servern ska starta om..."
+  },
+  "email": {
+    "invitation": {
+      "subject": "Du har blivit inbjuden till {{siteName}}  ",
+      "title": "Gå med i <strong>{{siteName}}'s Galleria</strong>  ",
+      "greeting": "Hej,  ",
+      "body": "{{inviterName}} har bjudit in dig att gå med i <strong>{{siteName}}'s Galleria</strong>.  ",
+      "instructions": "För att acceptera denna inbjudan och skapa ditt konto, klicka på knappen nedan:  ",
+      "button": "Acceptera inbjudan  ",
+      "orCopyLink": "Eller kopiera och klistra in denna länk i din webbläsare:  ",
+      "expiry": "Denna inbjudan kommer att gå ut om 7 dagar.  ",
+      "footerIgnore": "Om du inte förväntade dig denna inbjudan kan du säkert ignorera detta e-postmeddelande.  ",
+      "footerAutomatic": "Detta är ett automatiskt meddelande, vänligen svara inte på detta e-postmeddelande."
+    },
+    "passwordReset": {
+      "subject": "Återställningsbegäran av lösenord - {{siteName}}  ",
+      "title": "Återställningsbegäran av lösenord  ",
+      "greeting": "Hej {{userName}},  ",
+      "greetingFallback": "Hej där,  ",
+      "body": "Vi har mottagit en begäran om att återställa ditt lösenord för <strong>{{siteName}}'s Galleria</strong>.  ",
+      "instructions": "För att återställa ditt lösenord, klicka på knappen nedan:  ",
+      "button": "Återställ lösenord  ",
+      "orCopyLink": "Eller kopiera och klistra in denna länk i din webbläsare:  ",
+      "warningTitle": "⚠️ Viktigt:  ",
+      "warningExpiry": "Denna länk kommer att gå ut om 1 timme",
+      "warningIgnore": "Om du inte begärde detta, vänligen ignorera detta e-postmeddelande  ",
+      "warningNoChange": "Ditt lösenord kommer inte att ändras förrän du skapar ett nytt  ",
+      "footerAutomatic": "Detta är ett automatiserat meddelande, vänligen svara inte på detta e-postmeddelande.  ",
+      "footerContact": "Om du behöver hjälp, vänligen kontakta din administratör.  "
+    },
+    "test": {
+      "subject": "Test-e-post från {{siteName}}  ",
+      "title": "E-postkonfigurationstest  ",
+      "success": "✓  ",
+      "body1": "Grattis! Din SMTP-konfiguration fungerar korrekt.  ",
+      "body2": "Detta test-e-postmeddelande skickades från <strong>{{siteName}}</strong> för att verifiera att din e-posttjänst är korrekt konfigurerad och kan leverera meddelanden.  ",
+      "footerTimestamp": "Detta är ett testmeddelande skickat vid {{timestamp}}.",
+      "footerIgnore": "Du kan säkert ignorera eller radera detta e-postmeddelande."
+    }
+  },
+  "testEmailModal": {
+    "title": "Skicka test-e-post  ",
+    "description": "Ange en e-postadress för att skicka ett testmeddelande och verifiera att din SMTP-konfiguration fungerar korrekt.  ",
+    "emailLabel": "E-postadress  ",
+    "emailPlaceholder": "din@email.com  ",
+    "close": "Stäng  ",
+    "sendButton": "Skicka test-e-post  ",
+    "sending": "Skickar...  ",
+    "invalidEmail": "Vänligen ange en giltig e-postadress  ",
+    "successMessage": "Test-e-post skickad framgångsrikt! Kontrollera din inkorg.  ",
+    "errorMessage": "Misslyckades med att skicka test-e-post",
+    "errorMessageDetail": "Misslyckades med att skicka test-e-post. Kontrollera din konfiguration."
   }
 }

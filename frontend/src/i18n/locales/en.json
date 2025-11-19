@@ -1,6 +1,8 @@
 {
   "common": {
     "loading": "Loading...",
+    "checkingSetupStatus": "Checking setup status...",
+    "loadingSharedAlbum": "Loading shared album...",
     "error": "Error",
     "save": "Save",
     "cancel": "Cancel",
@@ -141,10 +143,10 @@
     "inviteSignup": "Complete Registration"
   },
   "sse": {
-    "uploading": "Uploading",
     "uploadingTo": "Uploading to {{album}}",
     "uploadingProgress": "Uploading {{completed}} of {{total}} photos...",
     "uploadingLabel": "Uploading",
+    "uploading": "Uploading...",
     "queued": "Queued",
     "queuedWithEllipsis": "Queued...",
     "optimizing": "Optimizing",
@@ -289,6 +291,7 @@
     "album": "album",
     "albums": "albums",
     "loadingPhotos": "Loading photos...",
+    "uploadingEllipsis": "Uploading...",
     "savingOrder": "Saving order...",
     "saveOrder": "Save Order",
     "shuffle": "Shuffle",
@@ -816,6 +819,58 @@
     "profile": "Profile",
     "settingsDescription": "Manage branding, links, and system configuration",
     "failedToLoadConfig": "Failed to load configuration"
+  },
+  "testEmailModal": {
+    "title": "Send Test Email",
+    "description": "Enter an email address to send a test message and verify your SMTP configuration is working correctly.",
+    "emailLabel": "Email Address",
+    "emailPlaceholder": "your@email.com",
+    "close": "Close",
+    "sendButton": "Send Test Email",
+    "sending": "Sending...",
+    "invalidEmail": "Please enter a valid email address",
+    "successMessage": "Test email sent successfully! Check your inbox.",
+    "errorMessage": "Failed to send test email",
+    "errorMessageDetail": "Failed to send test email. Please check your configuration."
+  },
+  "email": {
+    "invitation": {
+      "subject": "You've been invited to {{siteName}}",
+      "title": "Join {{siteName}}'s Galleria",
+      "greeting": "Hi there,",
+      "body": "{{inviterName}} has invited you to join <strong>{{siteName}}'s Galleria</strong>.",
+      "instructions": "To accept this invitation and set up your account, click the button below:",
+      "button": "Accept Invitation",
+      "orCopyLink": "Or copy and paste this link into your browser:",
+      "expiry": "This invitation will expire in 7 days.",
+      "footerIgnore": "If you didn't expect this invitation, you can safely ignore this email.",
+      "footerAutomatic": "This is an automated message, please do not reply to this email."
+    },
+    "passwordReset": {
+      "subject": "Password Reset Request - {{siteName}}",
+      "title": "Password Reset Request",
+      "greeting": "Hi {{userName}},",
+      "greetingFallback": "Hi there,",
+      "body": "We received a request to reset your password for <strong>{{siteName}}'s Galleria</strong>.",
+      "instructions": "To reset your password, click the button below:",
+      "button": "Reset Password",
+      "orCopyLink": "Or copy and paste this link into your browser:",
+      "warningTitle": "⚠️ Important:",
+      "warningExpiry": "This link will expire in 1 hour",
+      "warningIgnore": "If you didn't request this, please ignore this email",
+      "warningNoChange": "Your password will not change until you create a new one",
+      "footerAutomatic": "This is an automated message, please do not reply to this email.",
+      "footerContact": "If you need assistance, please contact your administrator."
+    },
+    "test": {
+      "subject": "Test Email from {{siteName}}",
+      "title": "Email Configuration Test",
+      "success": "✓",
+      "body1": "Congratulations! Your SMTP configuration is working correctly.",
+      "body2": "This test email was sent from <strong>{{siteName}}</strong> to verify that your email service is properly configured and can deliver messages.",
+      "footerTimestamp": "This is a test message sent at {{timestamp}}.",
+      "footerIgnore": "You can safely ignore or delete this email."
+    }
   },
   "securitySetup": {
     "title": "🔐 Secure Your Account",

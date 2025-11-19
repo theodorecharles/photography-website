@@ -1,6 +1,8 @@
 {
   "common": {
     "loading": "Caricamento...",
+    "checkingSetupStatus": "Controllo stato configurazione...",
+    "loadingSharedAlbum": "Caricamento album condiviso...",
     "error": "Errore",
     "save": "Salva",
     "cancel": "Annulla",
@@ -121,7 +123,7 @@
     "invalidCredentials": "Credenziali non valide"
   },
   "sse": {
-    "uploading": "Caricamento",
+    "uploading": "Caricamento...",
     "uploadingTo": "Caricamento su {{album}}",
     "uploadingProgress": "Caricamento di {{completed}} su {{total}} foto...",
     "uploadingLabel": "Caricamento",
@@ -258,6 +260,7 @@
     "uncategorized": "Non categorizzati",
     "noPhotosInAlbum": "Nessuna foto in questo album",
     "loadingPhotos": "Caricamento foto...",
+    "uploadingEllipsis": "Caricamento...",
     "savingOrder": "Salvataggio ordine...",
     "saveOrder": "Salva Ordine",
     "shuffle": "Mescola",
@@ -998,5 +1001,57 @@
     "errorPasswordTooShort": "La password deve contenere almeno 8 caratteri  ",
     "errorRequiredField": "Questo campo è obbligatorio",
     "setupCompleteWaitingRestart": "Impostazione completata! In attesa del riavvio del server..."
+  },
+  "email": {
+    "invitation": {
+      "subject": "Sei stato invitato a {{siteName}}",
+      "title": "Unisciti alla Galleria di {{siteName}}",
+      "greeting": "Ciao,",
+      "body": "{{inviterName}} ti ha invitato a unirti alla <strong>Galleria di {{siteName}}</strong>.",
+      "instructions": "Per accettare questo invito e impostare il tuo account, fai clic sul pulsante qui sotto:",
+      "button": "Accetta l'invito",
+      "orCopyLink": "Oppure copia e incolla questo link nel tuo browser:",
+      "expiry": "Questo invito scadrà tra 7 giorni.",
+      "footerIgnore": "Se non ti aspettavi questo invito, puoi ignorare tranquillamente questa email.",
+      "footerAutomatic": "Questo è un messaggio automatico, ti preghiamo di non rispondere a questa email."
+    },
+    "passwordReset": {
+      "subject": "Richiesta di reimpostazione della password - {{siteName}}  ",
+      "title": "Richiesta di reimpostazione della password  ",
+      "greeting": "Ciao {{userName}},  ",
+      "greetingFallback": "Ciao,  ",
+      "body": "Abbiamo ricevuto una richiesta per reimpostare la tua password per <strong>la Galleria di {{siteName}}</strong>.  ",
+      "instructions": "Per reimpostare la tua password, clicca sul pulsante qui sotto:  ",
+      "button": "Reimposta password  ",
+      "orCopyLink": "Oppure copia e incolla questo link nel tuo browser:  ",
+      "warningTitle": "⚠️ Importante:  ",
+      "warningExpiry": "Questo link scadrà in 1 ora",
+      "warningIgnore": "Se non hai richiesto questo, ti preghiamo di ignorare questa email  ",
+      "warningNoChange": "La tua password non cambierà finché non ne creerai una nuova  ",
+      "footerAutomatic": "Questo è un messaggio automatico, ti preghiamo di non rispondere a questa email.  ",
+      "footerContact": "Se hai bisogno di assistenza, ti preghiamo di contattare il tuo amministratore.  "
+    },
+    "test": {
+      "subject": "Email di prova da {{siteName}}  ",
+      "title": "Test di configurazione email  ",
+      "success": "✓  ",
+      "body1": "Congratulazioni! La tua configurazione SMTP sta funzionando correttamente.  ",
+      "body2": "Questa email di prova è stata inviata da <strong>{{siteName}}</strong> per verificare che il tuo servizio email sia configurato correttamente e possa inviare messaggi.  ",
+      "footerTimestamp": "Questo è un messaggio di prova inviato il {{timestamp}}.",
+      "footerIgnore": "Puoi ignorare o eliminare questa email in tutta sicurezza."
+    }
+  },
+  "testEmailModal": {
+    "title": "Invia Email di Prova  ",
+    "description": "Inserisci un indirizzo email per inviare un messaggio di prova e verificare che la tua configurazione SMTP funzioni correttamente.  ",
+    "emailLabel": "Indirizzo Email  ",
+    "emailPlaceholder": "tuo@email.com  ",
+    "close": "Chiudi  ",
+    "sendButton": "Invia Email di Prova  ",
+    "sending": "Invio in corso...  ",
+    "invalidEmail": "Si prega di inserire un indirizzo email valido  ",
+    "successMessage": "Email di prova inviata con successo! Controlla la tua casella di posta.  ",
+    "errorMessage": "Invio dell'email di prova non riuscito",
+    "errorMessageDetail": "Invio dell'email di prova non riuscito. Controlla la tua configurazione."
   }
 }

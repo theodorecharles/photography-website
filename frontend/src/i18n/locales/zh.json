@@ -1,6 +1,8 @@
 {
   "common": {
     "loading": "加载中...",
+    "checkingSetupStatus": "检查设置状态...",
+    "loadingSharedAlbum": "加载共享相册...",
     "error": "错误",
     "save": "保存",
     "cancel": "取消",
@@ -121,7 +123,7 @@
     "invalidCredentials": "凭证无效"
   },
   "sse": {
-    "uploading": "上传中",
+    "uploading": "正在上传...",
     "uploadingTo": "上传到{{album}}",
     "uploadingProgress": "正在上传 {{completed}} 张，共 {{total}} 张照片...",
     "uploadingLabel": "上传中",
@@ -258,6 +260,7 @@
     "uncategorized": "未分类",
     "noPhotosInAlbum": "此相册中没有照片",
     "loadingPhotos": "正在加载照片...",
+    "uploadingEllipsis": "正在上传...",
     "savingOrder": "正在保存顺序...",
     "saveOrder": "保存顺序",
     "shuffle": "随机播放",
@@ -998,5 +1001,57 @@
     "errorPasswordTooShort": "密码必须至少为8个字符  ",
     "errorRequiredField": "此字段为必填项",
     "setupCompleteWaitingRestart": "设置完成！等待服务器重启…"
+  },
+  "email": {
+    "invitation": {
+      "subject": "您已被邀请加入{{siteName}}  ",
+      "title": "加入{{siteName}}的画廊  ",
+      "greeting": "您好，  ",
+      "body": "{{inviterName}}邀请您加入<strong>{{siteName}}的画廊</strong>。  ",
+      "instructions": "要接受此邀请并设置您的帐户，请点击下面的按钮：  ",
+      "button": "接受邀请  ",
+      "orCopyLink": "或将此链接复制并粘贴到您的浏览器中：  ",
+      "expiry": "此邀请将在7天内过期。  ",
+      "footerIgnore": "如果您没有预期此邀请，可以安全地忽略此电子邮件。  ",
+      "footerAutomatic": "这是自动生成的消息，请勿回复此电子邮件。"
+    },
+    "passwordReset": {
+      "subject": "密码重置请求 - {{siteName}}  ",
+      "title": "密码重置请求  ",
+      "greeting": "嗨 {{userName}}，  ",
+      "greetingFallback": "你好，  ",
+      "body": "我们收到了重置您在 <strong>{{siteName}} 的 Galleria</strong> 的密码的请求。  ",
+      "instructions": "要重置您的密码，请点击下面的按钮：  ",
+      "button": "重置密码  ",
+      "orCopyLink": "或者将此链接复制并粘贴到您的浏览器中：  ",
+      "warningTitle": "⚠️ 重要：  ",
+      "warningExpiry": "此链接将在 1 小时内过期",
+      "warningIgnore": "如果您没有请求此操作，请忽略此电子邮件  ",
+      "warningNoChange": "您的密码在您创建新密码之前不会更改  ",
+      "footerAutomatic": "这是自动生成的消息，请不要回复此电子邮件。  ",
+      "footerContact": "如果您需要帮助，请联系您的管理员。  "
+    },
+    "test": {
+      "subject": "来自 {{siteName}} 的测试电子邮件  ",
+      "title": "电子邮件配置测试  ",
+      "success": "✓  ",
+      "body1": "恭喜！您的 SMTP 配置正常工作。  ",
+      "body2": "此测试电子邮件是从 <strong>{{siteName}}</strong> 发送的，以验证您的电子邮件服务已正确配置并能够发送消息。  ",
+      "footerTimestamp": "这是在 {{timestamp}} 发送的测试消息。",
+      "footerIgnore": "您可以安全地忽略或删除此电子邮件。"
+    }
+  },
+  "testEmailModal": {
+    "title": "发送测试邮件  ",
+    "description": "输入电子邮件地址以发送测试消息并验证您的SMTP配置是否正常工作。  ",
+    "emailLabel": "电子邮件地址  ",
+    "emailPlaceholder": "your@email.com  ",
+    "close": "关闭  ",
+    "sendButton": "发送测试邮件  ",
+    "sending": "发送中...  ",
+    "invalidEmail": "请输入有效的电子邮件地址  ",
+    "successMessage": "测试邮件发送成功！请检查您的收件箱。  ",
+    "errorMessage": "发送测试邮件失败",
+    "errorMessageDetail": "发送测试邮件失败。请检查您的配置。"
   }
 }

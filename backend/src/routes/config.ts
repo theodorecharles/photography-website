@@ -206,7 +206,14 @@ router.post(
 
       info(`[Test Email] Sending test email to ${email}...`);
 
-      const success = await sendTestEmail(email);
+      // Reload config from disk to get latest language setting
+      const { reloadConfig, getCurrentConfig } = await import('../config.js');
+      reloadConfig();
+      const currentConfig = getCurrentConfig();
+      const siteLanguage = (currentConfig as any).branding?.language || 'en';
+      info(`[Test Email] Using site language: ${siteLanguage}`);
+
+      const success = await sendTestEmail(email, siteLanguage);
 
       if (success) {
         res.json({

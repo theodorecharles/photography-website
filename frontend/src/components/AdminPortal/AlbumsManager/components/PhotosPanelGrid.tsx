@@ -7,6 +7,7 @@
  */
 
 import React, { useRef, useLayoutEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { API_URL } from '../../../../config';
 import { DndContext, DragOverlay, closestCenter, PointerSensor, KeyboardSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { SortableContext, sortableKeyboardCoordinates, rectSortingStrategy } from '@dnd-kit/sortable';
@@ -55,6 +56,7 @@ const PhotosPanelGrid: React.FC<PhotosPanelGridProps> = ({
   onRetryUpload,
   setActiveId,
 }) => {
+  const { t } = useTranslation();
   // Detect if device supports touch
   const isTouchDevice = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
   
@@ -197,7 +199,7 @@ const PhotosPanelGrid: React.FC<PhotosPanelGridProps> = ({
     return (
       <div className="loading-container">
         <div className="loading-spinner"></div>
-        <p>Loading photos...</p>
+        <p>{t('albumsManager.loadingPhotos')}</p>
       </div>
     );
   }

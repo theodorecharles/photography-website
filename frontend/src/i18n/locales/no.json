@@ -1,6 +1,8 @@
 {
   "common": {
     "loading": "Laster...",
+    "checkingSetupStatus": "Sjekker oppsettstatus...",
+    "loadingSharedAlbum": "Laster inn delt album...",
     "error": "Feil",
     "save": "Lagre",
     "cancel": "Avbryt",
@@ -121,7 +123,7 @@
     "invalidCredentials": "Ugyldige legitimasjonsopplysninger"
   },
   "sse": {
-    "uploading": "Laster opp",
+    "uploading": "Laster opp...",
     "uploadingTo": "Laster opp til {{album}}",
     "uploadingProgress": "Laster opp {{completed}} av {{total}} bilder...",
     "uploadingLabel": "Laster opp",
@@ -258,6 +260,7 @@
     "uncategorized": "Ukategorisert",
     "noPhotosInAlbum": "Ingen bilder i dette albumet",
     "loadingPhotos": "Laster bilder...",
+    "uploadingEllipsis": "Laster opp...",
     "savingOrder": "Lagrer rekkefølge...",
     "saveOrder": "Lagre rekkefølge",
     "shuffle": "Bland",
@@ -998,5 +1001,57 @@
     "errorPasswordTooShort": "Passordet må være minst 8 tegn  ",
     "errorRequiredField": "Dette feltet er påkrevd",
     "setupCompleteWaitingRestart": "Oppsett fullført! Venter på at serveren skal starte på nytt..."
+  },
+  "email": {
+    "invitation": {
+      "subject": "Du har blitt invitert til {{siteName}}  ",
+      "title": "Bli med i <strong>{{siteName}}'s Galleria</strong>  ",
+      "greeting": "Hei,  ",
+      "body": "{{inviterName}} har invitert deg til å bli med i <strong>{{siteName}}'s Galleria</strong>.  ",
+      "instructions": "For å akseptere denne invitasjonen og sette opp kontoen din, klikk på knappen nedenfor:  ",
+      "button": "Aksepter invitasjon  ",
+      "orCopyLink": "Eller kopier og lim inn denne lenken i nettleseren din:  ",
+      "expiry": "Denne invitasjonen vil utløpe om 7 dager.  ",
+      "footerIgnore": "Hvis du ikke forventet denne invitasjonen, kan du trygt ignorere denne e-posten.  ",
+      "footerAutomatic": "Dette er en automatisk melding, vennligst ikke svar på denne e-posten."
+    },
+    "passwordReset": {
+      "subject": "Passordtilbakestillingsforespørsel - {{siteName}}  ",
+      "title": "Passordtilbakestillingsforespørsel  ",
+      "greeting": "Hei {{userName}},  ",
+      "greetingFallback": "Hei der,  ",
+      "body": "Vi har mottatt en forespørsel om å tilbakestille passordet ditt for <strong>{{siteName}}'s Galleria</strong>.  ",
+      "instructions": "For å tilbakestille passordet ditt, klikk på knappen nedenfor:  ",
+      "button": "Tilbakestill passord  ",
+      "orCopyLink": "Eller kopier og lim inn denne lenken i nettleseren din:  ",
+      "warningTitle": "⚠️ Viktig:  ",
+      "warningExpiry": "Denne lenken vil utløpe om 1 time",
+      "warningIgnore": "Hvis du ikke ba om dette, vennligst ignorer denne e-posten  ",
+      "warningNoChange": "Passordet ditt vil ikke endres før du oppretter et nytt  ",
+      "footerAutomatic": "Dette er en automatisert melding, vennligst ikke svar på denne e-posten.  ",
+      "footerContact": "Hvis du trenger hjelp, vennligst kontakt administratoren din.  "
+    },
+    "test": {
+      "subject": "Test e-post fra {{siteName}}  ",
+      "title": "E-postkonfigurasjonstest  ",
+      "success": "✓  ",
+      "body1": "Gratulerer! Din SMTP-konfigurasjon fungerer korrekt.  ",
+      "body2": "Denne test-e-posten ble sendt fra <strong>{{siteName}}</strong> for å bekrefte at e-posttjenesten din er riktig konfigurert og kan levere meldinger.  ",
+      "footerTimestamp": "Dette er en testmelding sendt kl {{timestamp}}.",
+      "footerIgnore": "Du kan trygt ignorere eller slette denne e-posten."
+    }
+  },
+  "testEmailModal": {
+    "title": "Send test-e-post  ",
+    "description": "Skriv inn en e-postadresse for å sende en testmelding og bekrefte at SMTP-konfigurasjonen din fungerer som den skal.  ",
+    "emailLabel": "E-postadresse  ",
+    "emailPlaceholder": "your@email.com  ",
+    "close": "Lukk  ",
+    "sendButton": "Send test-e-post  ",
+    "sending": "Sender...  ",
+    "invalidEmail": "Vennligst skriv inn en gyldig e-postadresse  ",
+    "successMessage": "Test-e-posten ble sendt! Sjekk innboksen din.  ",
+    "errorMessage": "Kunne ikke sende test-e-posten",
+    "errorMessageDetail": "Sending av test-e-post mislyktes. Vennligst sjekk konfigurasjonen din."
   }
 }

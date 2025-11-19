@@ -38,7 +38,7 @@ export const PhotoListItem: React.FC<PhotoListItemProps> = ({
   
   // Extract info
   const photoId = photoData?.id || `uploading-${uploadingIndex}`;
-  const filename = photoData?.id ? decodeURIComponent(photoData.id.split('/')[1]) : 'Uploading...';
+  const filename = photoData?.id ? decodeURIComponent(photoData.id.split('/')[1]) : t('albumsManager.uploadingEllipsis');
   const album = photoData?.id ? photoData.id.split('/')[0] : '';
   const title = photoData?.title || filename;
   const thumbnailUrl = photoData?.thumbnail || '';

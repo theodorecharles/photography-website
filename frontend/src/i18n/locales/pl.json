@@ -1,6 +1,8 @@
 {
   "common": {
     "loading": "Ładowanie...",
+    "checkingSetupStatus": "Sprawdzanie statusu konfiguracji...",
+    "loadingSharedAlbum": "Ładowanie udostępnionego albumu...",
     "error": "Błąd",
     "save": "Zapisz",
     "cancel": "Anuluj",
@@ -121,7 +123,7 @@
     "invalidCredentials": "Nieprawidłowe dane logowania"
   },
   "sse": {
-    "uploading": "Przesyłanie",
+    "uploading": "Przesyłanie...",
     "uploadingTo": "Przesyłanie do {{album}}",
     "uploadingProgress": "Przesyłanie {{completed}} z {{total}} zdjęć...",
     "uploadingLabel": "Przesyłanie",
@@ -258,6 +260,7 @@
     "uncategorized": "Nieskategoryzowane",
     "noPhotosInAlbum": "Brak zdjęć w tym albumie",
     "loadingPhotos": "Ładowanie zdjęć...",
+    "uploadingEllipsis": "Przesyłanie...",
     "savingOrder": "Zapisywanie kolejności...",
     "saveOrder": "Zapisz kolejność",
     "shuffle": "Przetasuj",
@@ -998,5 +1001,57 @@
     "errorPasswordTooShort": "Hasło musi mieć co najmniej 8 znaków  ",
     "errorRequiredField": "To pole jest wymagane",
     "setupCompleteWaitingRestart": "Konfiguracja zakończona! Oczekiwanie na ponowne uruchomienie serwera..."
+  },
+  "email": {
+    "invitation": {
+      "subject": "Zostałeś zaproszony do {{siteName}}  ",
+      "title": "Dołącz do Gallerii {{siteName}}  ",
+      "greeting": "Cześć,  ",
+      "body": "{{inviterName}} zaprosił Cię do dołączenia do <strong>Gallerii {{siteName}}</strong>.  ",
+      "instructions": "Aby zaakceptować to zaproszenie i założyć konto, kliknij przycisk poniżej:  ",
+      "button": "Akceptuj zaproszenie  ",
+      "orCopyLink": "Lub skopiuj i wklej ten link do swojej przeglądarki:  ",
+      "expiry": "To zaproszenie wygaśnie za 7 dni.  ",
+      "footerIgnore": "Jeśli nie spodziewałeś się tego zaproszenia, możesz bezpiecznie zignorować ten e-mail.  ",
+      "footerAutomatic": "To jest automatyczna wiadomość, proszę nie odpowiadać na ten e-mail."
+    },
+    "passwordReset": {
+      "subject": "Prośba o zresetowanie hasła - {{siteName}}  ",
+      "title": "Prośba o zresetowanie hasła  ",
+      "greeting": "Cześć {{userName}},  ",
+      "greetingFallback": "Witaj,  ",
+      "body": "Otrzymaliśmy prośbę o zresetowanie hasła do <strong>Galerii {{siteName}}</strong>.  ",
+      "instructions": "Aby zresetować hasło, kliknij przycisk poniżej:  ",
+      "button": "Zresetuj hasło  ",
+      "orCopyLink": "Lub skopiuj i wklej ten link do swojej przeglądarki:  ",
+      "warningTitle": "⚠️ Ważne:  ",
+      "warningExpiry": "Ten link wygaśnie za 1 godzinę",
+      "warningIgnore": "Jeśli nie prosiłeś o to, zignoruj ten e-mail  ",
+      "warningNoChange": "Twoje hasło nie zmieni się, dopóki nie utworzysz nowego  ",
+      "footerAutomatic": "To jest automatyczna wiadomość, proszę nie odpowiadać na ten e-mail.  ",
+      "footerContact": "Jeśli potrzebujesz pomocy, skontaktuj się ze swoim administratorem.  "
+    },
+    "test": {
+      "subject": "Testowy e-mail z {{siteName}}  ",
+      "title": "Test konfiguracji e-maila  ",
+      "success": "✓  ",
+      "body1": "Gratulacje! Twoja konfiguracja SMTP działa poprawnie.  ",
+      "body2": "Ten testowy e-mail został wysłany z <strong>{{siteName}}</strong>, aby zweryfikować, że Twoja usługa e-mail jest poprawnie skonfigurowana i może dostarczać wiadomości.  ",
+      "footerTimestamp": "To jest wiadomość testowa wysłana o {{timestamp}}.",
+      "footerIgnore": "Możesz bezpiecznie zignorować lub usunąć ten e-mail."
+    }
+  },
+  "testEmailModal": {
+    "title": "Wyślij wiadomość testową  ",
+    "description": "Wprowadź adres e-mail, aby wysłać wiadomość testową i zweryfikować, czy Twoja konfiguracja SMTP działa poprawnie.  ",
+    "emailLabel": "Adres e-mail  ",
+    "emailPlaceholder": "twoj@email.com  ",
+    "close": "Zamknij  ",
+    "sendButton": "Wyślij wiadomość testową  ",
+    "sending": "Wysyłanie...  ",
+    "invalidEmail": "Proszę wprowadzić prawidłowy adres e-mail  ",
+    "successMessage": "Wiadomość testowa została pomyślnie wysłana! Sprawdź swoją skrzynkę odbiorczą.  ",
+    "errorMessage": "Nie udało się wysłać wiadomości testowej",
+    "errorMessageDetail": "Nie udało się wysłać testowego e-maila. Proszę sprawdzić swoją konfigurację."
   }
 }
