@@ -933,11 +933,11 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
         >
           <div className="edit-modal confirm-modal" onClick={(e) => e.stopPropagation()}>
             <div className="edit-modal-header">
-              <h3>{confirmConfig.photo ? 'Delete Photo?' : 'Confirm Action'}</h3>
+              <h3>{confirmConfig.photo ? t('albumsManager.deletePhotoQuestion') : t('albumsManager.confirmAction')}</h3>
               <button 
                 className="modal-close-btn"
                 onClick={() => setShowConfirmModal(false)}
-                title="Close"
+                title={t('common.close')}
               >
                 ×
               </button>

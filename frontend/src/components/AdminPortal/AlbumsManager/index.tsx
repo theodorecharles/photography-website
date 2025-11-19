@@ -551,6 +551,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     shuffleIntervalRef,
     speedupTimeoutsRef,
     setIsShuffling,
+    t,
   });
 
   // Handlers are accessed via namespace pattern (e.g., dragDropHandlers.handlePhotoDragStart)
