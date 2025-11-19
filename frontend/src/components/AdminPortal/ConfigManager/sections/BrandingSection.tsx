@@ -32,7 +32,7 @@ const SUPPORTED_LANGUAGES = [
   { code: 'it', name: 'Italiano', flag: '🇮🇹' },
   { code: 'pt', name: 'Português', flag: '🇵🇹' },
   { code: 'ru', name: 'Русский', flag: '🇷🇺' },
-  { code: 'zh-CN', name: '简体中文', flag: '🇨🇳' },
+  { code: 'zh', name: '简体中文', flag: '🇨🇳' },
   { code: 'ko', name: '한국어', flag: '🇰🇷' },
   { code: 'pl', name: 'Polski', flag: '🇵🇱' },
   { code: 'tr', name: 'Türkçe', flag: '🇹🇷' },
@@ -693,6 +693,9 @@ const BrandingSection: React.FC<BrandingSectionProps> = ({
                   // Change i18n language and wait for it to load
                   await i18n.changeLanguage(newValue);
                   
+                  // Give React a moment to re-render with the new language
+                  await new Promise(resolve => setTimeout(resolve, 50));
+                  
                   const updatedBranding = {
                     ...branding,
                     language: newValue
@@ -708,8 +711,8 @@ const BrandingSection: React.FC<BrandingSectionProps> = ({
                   });
 
                   if (res.ok) {
-                    // Get the message in the NEW language (already changed above)
-                    setMessage({ type: 'success', text: t('branding.languageUpdated') });
+                    // Get the message in the NEW language using i18n.t() directly
+                    setMessage({ type: 'success', text: i18n.t('branding.languageUpdated') });
                     trackBrandingUpdate(['language']);
                     setOriginalBranding(updatedBranding);
                     await loadBranding();

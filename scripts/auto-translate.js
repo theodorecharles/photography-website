@@ -27,7 +27,7 @@ const languages = {
   it: "Italian",
   pt: "Portuguese",
   ru: "Russian",
-  "zh-CN": "Chinese (Simplified)",
+  zh: "Chinese (Simplified)",
   ko: "Korean",
   pl: "Polish",
   tr: "Turkish",

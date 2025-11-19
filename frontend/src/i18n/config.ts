@@ -4,8 +4,15 @@ import LanguageDetector from "i18next-browser-languagedetector";
 
 // Lazy load translation files only when needed
 const loadTranslation = async (language: string) => {
-  const translations = await import(`./locales/${language}.json`);
-  return translations.default;
+  console.log(`[i18n] Loading translation for: ${language}`);
+  try {
+    const translations = await import(`./locales/${language}.json`);
+    console.log(`[i18n] Successfully loaded: ${language}`);
+    return translations.default;
+  } catch (error) {
+    console.error(`[i18n] Failed to load ${language}:`, error);
+    throw error;
+  }
 };
 
 // Custom backend for lazy loading
@@ -53,7 +60,7 @@ i18n
       "it",
       "pt",
       "ru",
-      "zh-CN",
+      "zh",
       "ko",
       "pl",
       "tr",
@@ -77,8 +84,17 @@ const applyBrandingLanguage = async () => {
     const response = await fetch(`${apiUrl}/api/branding`);
     if (response.ok) {
       const data = await response.json();
+      console.log(
+        `[i18n] Branding language: ${data.language}, current: ${i18n.language}`
+      );
       if (data.language && i18n.language !== data.language) {
+        console.log(
+          `[i18n] Changing language from ${i18n.language} to ${data.language}`
+        );
         await i18n.changeLanguage(data.language);
+        console.log(
+          `[i18n] Language changed successfully, now: ${i18n.language}`
+        );
       }
     }
   } catch (error) {
