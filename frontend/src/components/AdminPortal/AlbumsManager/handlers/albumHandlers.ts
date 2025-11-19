@@ -3,6 +3,7 @@
  * Handles album deletion, renaming, publishing, and moving between folders
  */
 
+import { TFunction } from 'i18next';
 import { Album, AlbumFolder, ConfirmModalConfig } from '../types';
 import { API_URL } from '../../../../config';
 import { fetchWithRateLimitCheck } from '../../../../utils/fetchWrapper';
@@ -34,6 +35,7 @@ interface AlbumHandlersProps {
   newAlbumName: string;
   showConfirmation: (config: ConfirmModalConfig) => void;
   closePhotosPanel?: () => void; // Optional handler to trigger closing animation
+  t: TFunction;
 }
 
 export const createAlbumHandlers = (props: AlbumHandlersProps) => {
@@ -54,6 +56,7 @@ export const createAlbumHandlers = (props: AlbumHandlersProps) => {
     newAlbumName,
     showConfirmation,
     closePhotosPanel,
+    t,
   } = props;
 
   const handleDeleteAlbum = async (albumName: string): Promise<void> => {
@@ -65,8 +68,8 @@ export const createAlbumHandlers = (props: AlbumHandlersProps) => {
     }
 
     showConfirmation({
-      message: `Are you sure you want to delete the album "${albumName}"?\n\nThis will permanently delete all photos in this album.\n\nThis action cannot be undone.`,
-      confirmText: 'Delete Album',
+      message: t('albumsManager.deleteAlbumConfirm', { albumName }),
+      confirmText: t('albumsManager.deleteAlbum'),
       isDanger: true,
       onConfirm: async () => {
         try {

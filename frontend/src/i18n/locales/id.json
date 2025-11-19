@@ -215,7 +215,7 @@
     "create": "Buat",
     "cancel": "Batal",
     "deleteAlbum": "Hapus Album",
-    "deleteAlbumConfirm": "Apakah Anda yakin ingin menghapus \"{{albumName}}\"? Ini juga akan menghapus semua foto dalam album ini.",
+    "deleteAlbumConfirm": "Apakah Anda yakin ingin menghapus album \"{{albumName}}\"?\n\nIni akan menghapus semua foto di album ini secara permanen.\n\nTindakan ini tidak dapat dibatalkan.",
     "renameAlbum": "Ganti Nama Album",
     "newName": "Nama Baru",
     "newNamePlaceholder": "Masukkan nama baru",

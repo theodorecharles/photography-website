@@ -215,7 +215,7 @@
     "create": "Creează",
     "cancel": "Anulează",
     "deleteAlbum": "Șterge Albumul",
-    "deleteAlbumConfirm": "Ești sigur că vrei să ștergi \"{{albumName}}\"? Acest lucru va șterge și toate fotografiile din acest album.",
+    "deleteAlbumConfirm": "Ești sigur că vrei să ștergi albumul \"{{albumName}}\"?\n\nAceasta va șterge permanent toate fotografiile din acest album.\n\nAceastă acțiune nu poate fi anulată.",
     "renameAlbum": "Renumește Albumul",
     "newName": "Nume Nou",
     "newNamePlaceholder": "Introdu noul nume",

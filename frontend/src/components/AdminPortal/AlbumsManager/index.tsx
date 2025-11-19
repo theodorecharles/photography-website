@@ -512,6 +512,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     newAlbumName,
     showConfirmation,
     closePhotosPanel: photosPanelCloseHandler || undefined,
+    t,
   });
 
   const uiHandlers = createUIInteractionHandlers({

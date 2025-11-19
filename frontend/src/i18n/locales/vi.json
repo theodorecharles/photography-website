@@ -215,7 +215,7 @@
     "create": "Tạo",
     "cancel": "Hủy",
     "deleteAlbum": "Xóa Album",
-    "deleteAlbumConfirm": "Bạn có chắc chắn muốn xóa \"{{albumName}}\" không? Điều này cũng sẽ xóa tất cả ảnh trong album này.",
+    "deleteAlbumConfirm": "Bạn có chắc chắn muốn xóa album \"{{albumName}}\" không?\n\nĐiều này sẽ xóa vĩnh viễn tất cả ảnh trong album này.\n\nHành động này không thể hoàn tác.",
     "renameAlbum": "Đổi tên Album",
     "newName": "Tên Mới",
     "newNamePlaceholder": "Nhập tên mới",

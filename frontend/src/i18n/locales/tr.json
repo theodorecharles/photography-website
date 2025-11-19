@@ -213,7 +213,7 @@
     "create": "Oluştur",
     "cancel": "İptal",
     "deleteAlbum": "Albümü Sil",
-    "deleteAlbumConfirm": "\"{{albumName}}\" adlı albümü silmek istediğinizden emin misiniz? Bu, bu albümdeki tüm fotoğrafları da silecektir.",
+    "deleteAlbumConfirm": "\"{{albumName}}\" albümünü silmek istediğinize emin misiniz?\n\nBu, bu albümdeki tüm fotoğrafları kalıcı olarak silecektir.\n\nBu işlem geri alınamaz.",
     "renameAlbum": "Albümü Yeniden Adlandır",
     "newName": "Yeni Ad",
     "newNamePlaceholder": "Yeni adı girin",

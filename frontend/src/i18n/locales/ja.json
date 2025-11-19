@@ -213,7 +213,7 @@
     "create": "作成",
     "cancel": "キャンセル",
     "deleteAlbum": "アルバムを削除",
-    "deleteAlbumConfirm": "「{{albumName}}」を削除してもよろしいですか？これにより、このアルバム内のすべての写真も削除されます。",
+    "deleteAlbumConfirm": "アルバム「{{albumName}}」を削除してもよろしいですか？\n\nこの操作により、このアルバム内のすべての写真が永久に削除されます。\n\nこの操作は元に戻すことができません。",
     "renameAlbum": "アルバムの名前を変更",
     "newName": "新しい名前",
     "newNamePlaceholder": "新しい名前を入力",

@@ -213,7 +213,7 @@
     "create": "Erstellen",
     "cancel": "Abbrechen",
     "deleteAlbum": "Album löschen",
-    "deleteAlbumConfirm": "Sind Sie sicher, dass Sie \"{{albumName}}\" löschen möchten? Dies löscht auch alle Fotos in diesem Album.",
+    "deleteAlbumConfirm": "Sind Sie sicher, dass Sie das Album \"{{albumName}}\" löschen möchten?\n\nDadurch werden alle Fotos in diesem Album dauerhaft gelöscht.\n\nDiese Aktion kann nicht rückgängig gemacht werden.",
     "renameAlbum": "Album umbenennen",
     "newName": "Neuer Name",
     "newNamePlaceholder": "Neuen Namen eingeben",

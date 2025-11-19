@@ -235,7 +235,7 @@
     "create": "Create",
     "cancel": "Cancel",
     "deleteAlbum": "Delete Album",
-    "deleteAlbumConfirm": "Are you sure you want to delete \"{{albumName}}\"? This will also delete all photos in this album.",
+    "deleteAlbumConfirm": "Are you sure you want to delete the album \"{{albumName}}\"?\n\nThis will permanently delete all photos in this album.\n\nThis action cannot be undone.",
     "renameAlbum": "Rename Album",
     "newName": "New Name",
     "newNamePlaceholder": "Enter new name",

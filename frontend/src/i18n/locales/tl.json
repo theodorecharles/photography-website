@@ -215,7 +215,7 @@
     "create": "Lumikha",
     "cancel": "Kanselahin",
     "deleteAlbum": "Tanggalin ang Album",
-    "deleteAlbumConfirm": "Sigurado ka bang nais mong tanggalin ang \"{{albumName}}\"? Ito ay magtatanggal din ng lahat ng mga larawan sa album na ito.",
+    "deleteAlbumConfirm": "Sigurado ka bang nais mong tanggalin ang album na \"{{albumName}}\"?\n\nPermanenteng matatanggal ang lahat ng mga larawan sa album na ito.\n\nAng aksyong ito ay hindi maibabalik.",
     "renameAlbum": "Pangalanan muli ang Album",
     "newName": "Bagong Pangalan",
     "newNamePlaceholder": "Ilagay ang bagong pangalan",

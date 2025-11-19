@@ -213,7 +213,7 @@
     "create": "创建",
     "cancel": "取消",
     "deleteAlbum": "删除相册",
-    "deleteAlbumConfirm": "您确定要删除 \"{{albumName}}\" 吗？这也会删除此相册中的所有照片。",
+    "deleteAlbumConfirm": "您确定要删除相册 \"{{albumName}}\" 吗？\n\n这将永久删除该相册中的所有照片。\n\n此操作无法撤销。",
     "renameAlbum": "重命名相册",
     "newName": "新名称",
     "newNamePlaceholder": "输入新名称",
