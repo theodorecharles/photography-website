@@ -1,6 +1,6 @@
 {
   "name": "galleria",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "type": "module",
   "scripts": {
     "dev": "concurrently --kill-others --names \"BACKEND,FRONTEND\" --prefix-colors \"blue,green\" \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\"",
