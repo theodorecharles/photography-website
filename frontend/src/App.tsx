@@ -92,8 +92,11 @@ function AlbumRoute({
   return (
     <>
       <SEO
-        title={t('seo.albumTitle', { albumName: decodedAlbum, siteName })}
-        description={t('seo.albumDescription', { albumName: decodedAlbum, siteName })}
+        title={t("seo.albumTitle", { albumName: decodedAlbum, siteName })}
+        description={t("seo.albumDescription", {
+          albumName: decodedAlbum,
+          siteName,
+        })}
         url={`${SITE_URL}/album/${album}`}
         image={`${SITE_URL}/photos/avatar.png`}
       />
@@ -637,99 +640,99 @@ function App() {
             <Route path="/admin/settings" element={<AdminPortal />} />
             <Route path="/admin/profile" element={<AdminPortal />} />
             <Route path="/logs" element={<LogViewer />} />
-             <Route
-               path="/auth/error"
-               element={
-                 <>
-                   <SEO
-                     title={t('seo.authErrorTitle', { siteName })}
-                     description={t('seo.authErrorDescription')}
-                     url={`${SITE_URL}/auth/error`}
-                   />
-                   <AuthError />
-                 </>
-               }
-             />
-             <Route
-               path="/invite/:token"
-               element={
-                 <>
-                   <SEO
-                     title={t('seo.inviteTitle', { siteName })}
-                     description={t('seo.inviteDescription')}
-                     url={`${SITE_URL}/invite`}
-                   />
-                   <InviteSignup />
-                 </>
-               }
-             />
-             <Route
-               path="/reset-password"
-               element={
-                 <>
-                   <SEO
-                     title={t('seo.passwordResetTitle', { siteName })}
-                     description={t('seo.passwordResetDescription')}
-                     url={`${SITE_URL}/reset-password`}
-                   />
-                   <PasswordResetRequest />
-                 </>
-               }
-             />
-             <Route
-               path="/reset-password/:token"
-               element={
-                 <>
-                   <SEO
-                     title={t('seo.passwordResetCompleteTitle', { siteName })}
-                     description={t('seo.passwordResetCompleteDescription')}
-                     url={`${SITE_URL}/reset-password`}
-                   />
-                   <PasswordResetComplete />
-                 </>
-               }
-             />
+            <Route
+              path="/auth/error"
+              element={
+                <>
+                  <SEO
+                    title={t("seo.authErrorTitle", { siteName })}
+                    description={t("seo.authErrorDescription")}
+                    url={`${SITE_URL}/auth/error`}
+                  />
+                  <AuthError />
+                </>
+              }
+            />
+            <Route
+              path="/invite/:token"
+              element={
+                <>
+                  <SEO
+                    title={t("seo.inviteTitle", { siteName })}
+                    description={t("seo.inviteDescription")}
+                    url={`${SITE_URL}/invite`}
+                  />
+                  <InviteSignup />
+                </>
+              }
+            />
+            <Route
+              path="/reset-password"
+              element={
+                <>
+                  <SEO
+                    title={t("seo.passwordResetTitle", { siteName })}
+                    description={t("seo.passwordResetDescription")}
+                    url={`${SITE_URL}/reset-password`}
+                  />
+                  <PasswordResetRequest />
+                </>
+              }
+            />
+            <Route
+              path="/reset-password/:token"
+              element={
+                <>
+                  <SEO
+                    title={t("seo.passwordResetCompleteTitle", { siteName })}
+                    description={t("seo.passwordResetCompleteDescription")}
+                    url={`${SITE_URL}/reset-password`}
+                  />
+                  <PasswordResetComplete />
+                </>
+              }
+            />
             <Route path="/primes" element={<PrimesRedirect />} />
             <Route path="/primes/*" element={<PrimesRedirect />} />
-             <Route
-               path="/404"
-               element={
-                 <>
-                   <SEO
-                     title={t('seo.notFoundTitle', { siteName })}
-                     description={t('seo.notFoundDescription')}
-                     url={`${SITE_URL}/404`}
-                   />
-                   <NotFound />
-                 </>
-               }
-             />
-             <Route
-               path="/429"
-               element={
-                 <>
-                   <SEO
-                     title={t('seo.rateLimitTitle', { siteName })}
-                     description={t('seo.rateLimitDescription')}
-                     url={`${SITE_URL}/429`}
-                   />
-                   <RateLimitError />
-                 </>
-               }
-             />
-             <Route
-               path="*"
-               element={
-                 <>
-                   <SEO
-                     title={t('seo.notFoundTitle', { siteName })}
-                     description={t('seo.notFoundDescription')}
-                     url={`${SITE_URL}/404`}
-                   />
-                   <NotFoundRedirect />
-                 </>
-               }
-             />
+            <Route
+              path="/404"
+              element={
+                <>
+                  <SEO
+                    title={t("seo.notFoundTitle", { siteName })}
+                    description={t("seo.notFoundDescription")}
+                    url={`${SITE_URL}/404`}
+                  />
+                  <NotFound />
+                </>
+              }
+            />
+            <Route
+              path="/429"
+              element={
+                <>
+                  <SEO
+                    title={t("seo.rateLimitTitle", { siteName })}
+                    description={t("seo.rateLimitDescription")}
+                    url={`${SITE_URL}/429`}
+                  />
+                  <RateLimitError />
+                </>
+              }
+            />
+            <Route
+              path="*"
+              element={
+                <>
+                  <SEO
+                    title={t("seo.notFoundTitle", { siteName })}
+                    description={t("seo.notFoundDescription")}
+                    url={`${SITE_URL}/404`}
+                  />
+                  <NotFoundRedirect />
+                </>
+              }
+            />
           </Routes>
         </Suspense>
       </main>
