@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { PasswordInput } from '../../../PasswordInput';
 
 interface ConfirmationModalProps {
@@ -26,6 +27,7 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   onConfirm,
   onClose,
 }) => {
+  const { t } = useTranslation();
   if (!show) return null;
 
   const handleConfirm = () => {
@@ -43,7 +45,7 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
       <div className="share-modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '500px' }}>
         <div className="share-modal-header">
           <h2>{title}</h2>
-          <button className="close-button" onClick={handleClose} aria-label="Close">
+          <button className="close-button" onClick={handleClose} aria-label={t('common.close')}>
             ×
           </button>
         </div>
@@ -61,11 +63,11 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
 
           {requirePassword && (
             <div style={{ marginBottom: '1.5rem' }}>
-              <label className="branding-label">Password</label>
+              <label className="branding-label">{t('userManagement.password')}</label>
               <PasswordInput
                 value={password}
                 onChange={(e) => onPasswordChange(e.target.value)}
-                placeholder="Enter your password to confirm"
+                placeholder={t('userManagement.enterPasswordToConfirm')}
                 required
               />
             </div>
@@ -81,7 +83,7 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
             }}
           >
             <button type="button" onClick={handleClose} className="btn-secondary">
-              Cancel
+              {t('common.cancel')}
             </button>
             <button
               type="button"

@@ -3,6 +3,7 @@
  */
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { ConfigData } from '../types';
 import { PasswordInput } from '../../PasswordInput';
 import { Toggle } from './Toggle';
@@ -30,6 +31,7 @@ const AuthSettings: React.FC<AuthSettingsProps> = ({
   onCancel,
   savingSection,
 }) => {
+  const { t } = useTranslation();
   const isEnabled = config.environment.auth.google.enabled;
 
   return (
@@ -42,7 +44,7 @@ const AuthSettings: React.FC<AuthSettingsProps> = ({
           marginBottom: "0.75rem",
         }}
       >
-        <label className="openai-section-label">GOOGLE SIGN ON</label>
+        <label className="openai-section-label">{t('authSettings.title')}</label>
         {hasUnsavedChanges && (
           <div style={{ display: "flex", gap: "0.5rem" }}>
             <button
@@ -58,7 +60,7 @@ const AuthSettings: React.FC<AuthSettingsProps> = ({
                 fontSize: "0.85rem",
               }}
             >
-              Cancel
+              {t('authSettings.cancel')}
             </button>
             <button
               type="button"
@@ -70,9 +72,9 @@ const AuthSettings: React.FC<AuthSettingsProps> = ({
               className="btn-primary"
               style={{ padding: "0.4rem 0.8rem", fontSize: "0.85rem" }}
             >
-              {savingSection === "Authentication"
-                ? "Saving..."
-                : "Save"}
+              {savingSection === t('authSettings.sectionName')
+                ? t('authSettings.saving')
+                : t('authSettings.save')}
             </button>
           </div>
         )}
@@ -85,7 +87,7 @@ const AuthSettings: React.FC<AuthSettingsProps> = ({
           marginBottom: "1rem",
         }}
       >
-        Google OAuth credentials for admin sign-in
+        {t('authSettings.description')}
       </p>
 
       {/* Enable/Disable Toggle */}
@@ -98,7 +100,7 @@ const AuthSettings: React.FC<AuthSettingsProps> = ({
               !isEnabled
             )
           }
-          label="Enable Google Sign-In"
+          label={t('authSettings.enableGoogleSignIn')}
         />
         <p
           style={{
@@ -109,100 +111,102 @@ const AuthSettings: React.FC<AuthSettingsProps> = ({
           }}
         >
           {isEnabled
-            ? "Users will see the 'Sign in with Google' button on the login page"
-            : "Google sign-in will be hidden from the login page"}
+            ? t('authSettings.enabledDescription')
+            : t('authSettings.disabledDescription')}
         </p>
       </div>
 
-      <div className="config-grid-inner">
-        <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-          <div className="branding-group" style={{ margin: 0 }}>
-            <label className="branding-label">Google Client ID</label>
-            <input
-              type="text"
-              value={config.environment.auth.google.clientId}
-              onChange={(e) =>
-                updateConfig(
-                  ["environment", "auth", "google", "clientId"],
-                  e.target.value
-                )
-              }
-              className="branding-input"
-            />
+      {isEnabled && (
+        <div className="config-grid-inner">
+          <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+            <div className="branding-group" style={{ margin: 0 }}>
+              <label className="branding-label">{t('authSettings.googleClientId')}</label>
+              <input
+                type="text"
+                value={config.environment.auth.google.clientId}
+                onChange={(e) =>
+                  updateConfig(
+                    ["environment", "auth", "google", "clientId"],
+                    e.target.value
+                  )
+                }
+                className="branding-input"
+              />
+            </div>
+
+            <div className="branding-group" style={{ margin: 0 }}>
+              <label className="branding-label">{t('authSettings.googleClientSecret')}</label>
+              <PasswordInput
+                value={config.environment.auth.google.clientSecret}
+                onChange={(e) =>
+                  updateConfig(
+                    ["environment", "auth", "google", "clientSecret"],
+                    e.target.value
+                  )
+                }
+                className="branding-input"
+              />
+            </div>
+
+            <div className="branding-group" style={{ margin: 0 }}>
+              <label className="branding-label">{t('authSettings.sessionSecret')}</label>
+              <PasswordInput
+                value={config.environment.auth.sessionSecret}
+                onChange={(e) =>
+                  updateConfig(
+                    ["environment", "auth", "sessionSecret"],
+                    e.target.value
+                  )
+                }
+                className="branding-input"
+              />
+            </div>
           </div>
 
           <div className="branding-group" style={{ margin: 0 }}>
-            <label className="branding-label">Google Client Secret</label>
-            <PasswordInput
-              value={config.environment.auth.google.clientSecret}
-              onChange={(e) =>
-                updateConfig(
-                  ["environment", "auth", "google", "clientSecret"],
-                  e.target.value
-                )
+            <label className="branding-label">{t('authSettings.authorizedEmails')}</label>
+            {config.environment.auth.authorizedEmails.map(
+              (email, index) => (
+                <div key={index} className="array-item">
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) =>
+                      updateArrayItem(
+                        ["environment", "auth", "authorizedEmails"],
+                        index,
+                        e.target.value
+                      )
+                    }
+                    className="branding-input"
+                  />
+                  <button
+                    type="button"
+                    onClick={() =>
+                      removeArrayItem(
+                        ["environment", "auth", "authorizedEmails"],
+                        index
+                      )
+                    }
+                    className="btn-remove"
+                  >
+                    ×
+                  </button>
+                </div>
+              )
+            )}
+            <button
+              type="button"
+              onClick={() =>
+                addArrayItem(["environment", "auth", "authorizedEmails"])
               }
-              className="branding-input"
-            />
-          </div>
-
-          <div className="branding-group" style={{ margin: 0 }}>
-            <label className="branding-label">Session Secret</label>
-            <PasswordInput
-              value={config.environment.auth.sessionSecret}
-              onChange={(e) =>
-                updateConfig(
-                  ["environment", "auth", "sessionSecret"],
-                  e.target.value
-                )
-              }
-              className="branding-input"
-            />
+              className="btn-add"
+            >
+              {t('authSettings.addEmail')}
+            </button>
           </div>
         </div>
-
-        <div className="branding-group" style={{ margin: 0 }}>
-          <label className="branding-label">Authorized Emails</label>
-          {config.environment.auth.authorizedEmails.map(
-            (email, index) => (
-              <div key={index} className="array-item">
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) =>
-                    updateArrayItem(
-                      ["environment", "auth", "authorizedEmails"],
-                      index,
-                      e.target.value
-                    )
-                  }
-                  className="branding-input"
-                />
-                <button
-                  type="button"
-                  onClick={() =>
-                    removeArrayItem(
-                      ["environment", "auth", "authorizedEmails"],
-                      index
-                    )
-                  }
-                  className="btn-remove"
-                >
-                  ×
-                </button>
-              </div>
-            )
-          )}
-          <button
-            type="button"
-            onClick={() =>
-              addArrayItem(["environment", "auth", "authorizedEmails"])
-            }
-            className="btn-add"
-          >
-            + Add Email
-          </button>
-        </div>
-      </div>
+      )}
     </div>
   );
 };

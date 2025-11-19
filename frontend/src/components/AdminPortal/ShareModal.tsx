@@ -4,6 +4,7 @@
  */
 
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { API_URL, SITE_URL } from '../../config';
 import { trackShareLinkCreated } from '../../utils/analytics';
 import CustomDropdown from './ConfigManager/components/CustomDropdown';
@@ -15,18 +16,19 @@ interface ShareModalProps {
   onClose: () => void;
 }
 
-const EXPIRATION_OPTIONS = [
-  { label: '15 minutes', minutes: 15 },
-  { label: '1 hour', minutes: 60 },
-  { label: '12 hours', minutes: 720 },
-  { label: '1 day', minutes: 1440 },
-  { label: '1 week', minutes: 10080 },
-  { label: '1 month', minutes: 43200 },
-  { label: 'Forever', minutes: null },
-  { label: 'Custom...', minutes: -1 }, // Special value for custom
+const getExpirationOptions = (t: (key: string) => string) => [
+  { label: t('shareModal.expiration15Minutes'), minutes: 15 },
+  { label: t('shareModal.expiration1Hour'), minutes: 60 },
+  { label: t('shareModal.expiration12Hours'), minutes: 720 },
+  { label: t('shareModal.expiration1Day'), minutes: 1440 },
+  { label: t('shareModal.expiration1Week'), minutes: 10080 },
+  { label: t('shareModal.expiration1Month'), minutes: 43200 },
+  { label: t('shareModal.expirationForever'), minutes: null },
+  { label: t('shareModal.expirationCustom'), minutes: -1 }, // Special value for custom
 ];
 
 export default function ShareModal({ album, onClose }: ShareModalProps) {
+  const { t } = useTranslation();
   const [selectedExpiration, setSelectedExpiration] = useState<number | null>(1440); // Default: 1 day
   const [loading, setLoading] = useState(true); // Start loading immediately
   const [error, setError] = useState<string | null>(null);
@@ -55,7 +57,7 @@ export default function ShareModal({ album, onClose }: ShareModalProps) {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to create share link');
+        throw new Error(t('shareModal.failedToCreate'));
       }
 
       const data = await response.json();
@@ -64,7 +66,7 @@ export default function ShareModal({ album, onClose }: ShareModalProps) {
       trackShareLinkCreated(album, expirationMinutes);
     } catch (err) {
       logError('Error generating share link:', err);
-      setError(err instanceof Error ? err.message : 'Failed to generate share link');
+      setError(err instanceof Error ? err.message : t('shareModal.failedToGenerate'));
     } finally {
       setLoading(false);
     }
@@ -91,7 +93,7 @@ export default function ShareModal({ album, onClose }: ShareModalProps) {
   const handleCustomMinutesSubmit = () => {
     const minutes = parseInt(customMinutes);
     if (isNaN(minutes) || minutes <= 0) {
-      setError('Please enter a valid number of minutes');
+      setError(t('shareModal.invalidMinutes'));
       return;
     }
     setSelectedExpiration(minutes);
@@ -114,7 +116,7 @@ export default function ShareModal({ album, onClose }: ShareModalProps) {
     <div className="modal-overlay" onClick={onClose}>
       <div className="share-modal" onClick={(e) => e.stopPropagation()}>
         <div className="share-modal-header">
-          <h2>Share Album: {album}</h2>
+          <h2>{t('shareModal.shareAlbum', { album })}</h2>
           <button className="close-button" onClick={onClose}>
             ×
           </button>
@@ -122,17 +124,16 @@ export default function ShareModal({ album, onClose }: ShareModalProps) {
 
         <div className="share-modal-content">
           <p className="share-description">
-            Create a shareable link to give visitors access to this unpublished album.
-            The link can be set to expire after a certain time.
+            {t('shareModal.description')}
           </p>
 
           <div className="expiration-selector">
             <label htmlFor="expiration" style={{ display: 'block', marginBottom: '0.5rem' }}>
-              Link expires in:
+              {t('shareModal.linkExpiresIn')}:
             </label>
             <CustomDropdown
               value={isCustom ? '-1' : (selectedExpiration === null ? 'null' : String(selectedExpiration))}
-              options={EXPIRATION_OPTIONS.map((option) => ({
+              options={getExpirationOptions(t).map((option) => ({
                 value: option.minutes === null ? 'null' : String(option.minutes),
                 label: option.label,
                 emoji: option.minutes === null ? '♾️' :
@@ -152,7 +153,7 @@ export default function ShareModal({ album, onClose }: ShareModalProps) {
           {isCustom && (
             <div className="custom-minutes-input">
               <label htmlFor="customMinutes">
-                Custom minutes: {selectedExpiration && !loading && `(${selectedExpiration} min)`}
+                {t('shareModal.customMinutes')}: {selectedExpiration && !loading && `(${selectedExpiration} ${t('shareModal.min')})`}
               </label>
               <div className="custom-input-group">
                 <input
@@ -160,7 +161,7 @@ export default function ShareModal({ album, onClose }: ShareModalProps) {
                   id="customMinutes"
                   value={customMinutes}
                   onChange={(e) => setCustomMinutes(e.target.value)}
-                  placeholder="Enter minutes"
+                  placeholder={t('shareModal.enterMinutes')}
                   min="1"
                   autoFocus
                 />
@@ -169,21 +170,21 @@ export default function ShareModal({ album, onClose }: ShareModalProps) {
                   onClick={handleCustomMinutesSubmit}
                   disabled={!customMinutes || loading}
                 >
-                  Apply
+                  {t('shareModal.apply')}
                 </button>
               </div>
             </div>
           )}
 
           {error && <div className="share-error">{error}</div>}
-          {copied && <div className="share-success-inline">✓ Link copied to clipboard!</div>}
+          {copied && <div className="share-success-inline">{t('shareModal.linkCopied')}</div>}
 
           <button
             className="copy-link-button"
             onClick={handleCopyClick}
             disabled={loading || !generatedLink}
           >
-            {loading ? 'Generating...' : 'Copy Link'}
+            {loading ? t('shareModal.generating') : t('shareModal.copyLink')}
           </button>
         </div>
       </div>

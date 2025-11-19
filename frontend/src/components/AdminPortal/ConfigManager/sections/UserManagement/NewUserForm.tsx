@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { NewUserState } from './types';
 import { copyInvitationUrl } from './utils';
 import { error } from '../../../../../utils/logger';
@@ -18,6 +19,7 @@ export const NewUserForm: React.FC<NewUserFormProps> = ({
   onCancel,
   onSubmit,
 }) => {
+  const { t } = useTranslation();
   const [copied, setCopied] = useState(false);
 
   const handleCopyInvite = async () => {
@@ -35,7 +37,7 @@ export const NewUserForm: React.FC<NewUserFormProps> = ({
   return (
     <>
       <div className="branding-group">
-        <label className="branding-label">Email *</label>
+        <label className="branding-label">{t('userManagement.email')} *</label>
         <input
           type="email"
           value={newUser.email}
@@ -51,20 +53,20 @@ export const NewUserForm: React.FC<NewUserFormProps> = ({
             margin: '0.5rem 0 0 0',
           }}
         >
-          An invitation email will be sent to this address. The user will set up their name, password, and MFA.
+          {t('userManagement.invitationEmailDescription')}
         </p>
       </div>
       <div className="branding-group">
-        <label className="branding-label">Role *</label>
+        <label className="branding-label">{t('userManagement.role')} *</label>
         <select
           value={newUser.role}
           onChange={(e) => onChange({ ...newUser, role: e.target.value })}
           className="branding-input"
           disabled={!!newUser.inviteToken}
         >
-          <option value="viewer">Viewer</option>
-          <option value="manager">Manager</option>
-          <option value="admin">Admin</option>
+          <option value="viewer">{t('userManagement.viewer')}</option>
+          <option value="manager">{t('userManagement.manager')}</option>
+          <option value="admin">{t('userManagement.admin')}</option>
         </select>
       </div>
       
@@ -79,20 +81,20 @@ export const NewUserForm: React.FC<NewUserFormProps> = ({
           }}
         >
           <p style={{ margin: 0, fontSize: '0.9rem', color: '#4ade80', lineHeight: 1.6 }}>
-            <strong>✓ Invitation Sent</strong>
+            <strong>{t('userManagement.invitationSent')}</strong>
             <br />
-            You can also copy the invitation link below to send it manually.
+            {t('userManagement.copyInvitationLinkManually')}
           </p>
         </div>
       )}
 
       <div className="section-button-group">
         <button onClick={onCancel} className="btn-secondary" disabled={loading}>
-          {newUser.inviteToken ? 'Close' : 'Cancel'}
+          {newUser.inviteToken ? t('common.close') : t('common.cancel')}
         </button>
         {!newUser.inviteToken ? (
           <button onClick={onSubmit} className="btn-primary" disabled={loading}>
-            {loading ? 'Sending...' : 'Send Invitation'}
+            {loading ? t('userManagement.sending') : t('userManagement.sendInvitation')}
           </button>
         ) : (
           <button 
@@ -102,7 +104,7 @@ export const NewUserForm: React.FC<NewUserFormProps> = ({
               background: copied ? '#4ade80' : 'var(--primary-color)',
             }}
           >
-            {copied ? '✓ Copied' : '📋 Copy Invitation Link'}
+            {copied ? t('photo.copied') : t('userManagement.copyInvitationLinkButton')}
           </button>
         )}
       </div>

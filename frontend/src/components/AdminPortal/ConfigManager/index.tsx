@@ -4,6 +4,7 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from "react";
+import { useTranslation } from 'react-i18next';
 import { API_URL } from '../../../config';
 import { ConfigManagerProps, ConfigData } from './types';
 import { useSSEToaster } from '../../../contexts/SSEToasterContext';
@@ -32,6 +33,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
   externalLinks,
   setExternalLinks,
 }) => {
+  const { t } = useTranslation();
   // Get global SSE toaster context
   const sseToaster = useSSEToaster();
 
@@ -596,8 +598,8 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
   const handleRunOptimization = async (force: boolean = false) => {
     const confirmed = await showConfirmation(
       force
-        ? "Force regenerate ALL images? This will take a while."
-        : "Run image optimization on all photos?"
+        ? t('advancedSettings.regenerationControls.forceRegenerateImagesConfirm')
+        : t('advancedSettings.regenerationControls.runOptimizationConfirm')
     );
     if (!confirmed) return;
 
@@ -730,17 +732,17 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
   if (!config) {
     return (
       <section className="admin-section">
-        <h2>Settings</h2>
-        <p>Failed to load configuration</p>
+        <h2>{t('adminPortal.settings')}</h2>
+        <p>{t('adminPortal.failedToLoadConfig')}</p>
       </section>
     );
   }
 
   return (
     <section className="admin-section">
-      <h2>Settings</h2>
+      <h2>{t('adminPortal.settings')}</h2>
       <p className="section-description">
-        Manage branding, links, and system configuration
+        {t('adminPortal.settingsDescription')}
       </p>
 
       <div className="config-grid">
@@ -815,8 +817,8 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
         <div className="modal-overlay" onClick={handleModalCancel}>
           <div className="share-modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '500px' }}>
             <div className="share-modal-header">
-              <h2>Confirm Action</h2>
-              <button className="close-button" onClick={handleModalCancel} aria-label="Close">
+              <h2>{t('common.confirmAction')}</h2>
+              <button className="close-button" onClick={handleModalCancel} aria-label={t('common.close')}>
                 ×
               </button>
             </div>
@@ -832,10 +834,10 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
                 }}
               >
                 <button onClick={handleModalCancel} className="btn-secondary">
-                  Cancel
+                  {t('common.cancel')}
                 </button>
                 <button onClick={confirmConfig.onConfirm} className="btn-primary">
-                  Confirm
+                  {t('common.confirm')}
                 </button>
               </div>
             </div>

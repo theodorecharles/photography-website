@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useEffect } from "react";
+import { useTranslation } from 'react-i18next';
 import { API_URL } from '../../../../config';
 import { 
   trackUserInvited, 
@@ -43,6 +44,7 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
   setMessage,
   onNavigateToSmtp,
 }) => {
+  const { t } = useTranslation();
   const [showSection, setShowSection] = useState(false);
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -105,7 +107,7 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
     show: false,
     title: "",
     message: "",
-    confirmText: "Confirm",
+    confirmText: t('common.confirm'),
     onConfirm: () => {},
     isDangerous: false,
     requirePassword: false,
@@ -154,7 +156,7 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
       const users = await userManagementAPI.loadUsers();
       setUsers(users);
     } catch (err) {
-      setMessage({ type: "error", text: "Failed to load users" });
+      setMessage({ type: "error", text: t('userManagement.failedToLoadUsers') });
     } finally {
       setLoading(false);
     }
@@ -171,7 +173,7 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
 
   const handleInviteUser = async () => {
     if (!newUser.email) {
-      setMessage({ type: "error", text: "Email is required" });
+      setMessage({ type: "error", text: t('userManagement.emailRequired') });
       return;
     }
 
@@ -188,7 +190,7 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
         });
         setMessage({
           type: "success",
-          text: "User created successfully. Copy the invitation link to send to the user.",
+          text: t('userManagement.userCreatedCopyLink'),
         });
         // Store invite token in form so user can copy it
         setNewUser({ 
@@ -197,8 +199,8 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
         });
       } else {
         const message = data.emailSent
-          ? "Invitation sent successfully"
-          : "User created but email failed to send";
+          ? t('userManagement.invitationSentSuccessfully')
+          : t('userManagement.userCreatedEmailFailed');
 
         setMessage({
           type: data.emailSent ? "success" : "error",
@@ -221,7 +223,7 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
     } catch (err: any) {
       setMessage({
         type: "error",
-        text: err.message || "Failed to send invitation",
+        text: err.message || t('userManagement.failedToInvite'),
       });
       setLoading(false);
     } finally {
@@ -237,9 +239,9 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
   const handleResendInvite = async (userId: number) => {
     setConfirmModal({
       show: true,
-      title: "Resend Invitation",
-      message: "Resend invitation email to this user?",
-      confirmText: "Resend",
+      title: t('userManagement.resendInvite'),
+      message: t('userManagement.resendInviteConfirm'),
+      confirmText: t('userManagement.resendInvite'),
       isDangerous: false,
       onConfirm: () => {
         setConfirmModal({ ...confirmModal, show: false });
@@ -265,12 +267,12 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
             });
             setMessage({
               type: "success",
-              text: "Invitation link generated. Copy the link to send to the user.",
+              text: t('userManagement.invitationLinkGenerated'),
             });
           } else {
             const message = data.emailSent
-              ? "Invitation resent successfully"
-              : "Invitation updated but email failed to send";
+              ? t('userManagement.invitationResentSuccessfully')
+              : t('userManagement.invitationUpdatedEmailFailed');
             setMessage({
               type: data.emailSent ? "success" : "error",
               text: message,
@@ -278,7 +280,7 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
           }
           loadUsers();
         },
-        errorMessage: "Failed to resend invitation",
+        errorMessage: t('userManagement.failedToResendInvite'),
       }
     );
   };
@@ -286,10 +288,9 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
   const handleResetMFA = async (userId: number) => {
     setConfirmModal({
       show: true,
-      title: "Reset MFA",
-      message:
-        "This will disable MFA for this user. They will be able to log in with just their password. Continue?",
-      confirmText: "Disable MFA",
+      title: t('userManagement.resetMfa'),
+      message: t('userManagement.resetMfaConfirm'),
+      confirmText: t('userManagement.disableMfa'),
       isDangerous: true,
       onConfirm: () => {
         setConfirmModal({ ...confirmModal, show: false });
@@ -311,7 +312,7 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
 
       if (!res.ok) {
         const data = await res.json();
-        throw new Error(data.error || "Failed to reset MFA");
+        throw new Error(data.error || t('userManagement.failedToResetMfa'));
       }
 
       const data = await res.json();
@@ -324,12 +325,12 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
       
       setMessage({
         type: "success",
-        text: data.message || "MFA disabled successfully",
+        text: data.message || t('userManagement.mfaReset'),
       });
 
       loadUsers();
     } catch (err: any) {
-      setMessage({ type: "error", text: err.message || "Failed to reset MFA" });
+      setMessage({ type: "error", text: err.message || t('userManagement.failedToResetMfa') });
     } finally {
       setLoading(false);
     }
@@ -338,10 +339,9 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
   const handleSendPasswordReset = async (userId: number) => {
     setConfirmModal({
       show: true,
-      title: "Send Password Reset",
-      message:
-        "This will send a password reset email to this user. They will have 1 hour to use the link. Continue?",
-      confirmText: "Send Reset Email",
+      title: t('userManagement.sendPasswordReset'),
+      message: t('userManagement.sendPasswordResetConfirm'),
+      confirmText: t('userManagement.sendPasswordReset'),
       isDangerous: false,
       onConfirm: () => {
         setConfirmModal({ ...confirmModal, show: false });
@@ -363,7 +363,7 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
 
       if (!res.ok) {
         const data = await res.json();
-        throw new Error(data.error || "Failed to send password reset email");
+        throw new Error(data.error || t('userManagement.failedToSendPasswordReset'));
       }
 
       const data = await res.json();
@@ -376,12 +376,12 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
       
       setMessage({
         type: "success",
-        text: data.message || "Password reset email sent successfully",
+        text: data.message || t('userManagement.passwordResetSent'),
       });
     } catch (err: any) {
       setMessage({
         type: "error",
-        text: err.message || "Failed to send password reset email",
+        text: err.message || t('userManagement.failedToSendPasswordReset'),
       });
     } finally {
       setLoading(false);
@@ -391,16 +391,15 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
   const handleDeleteUser = async (userId: number) => {
     // Prevent deleting yourself
     if (currentUser && userId === currentUser.id) {
-      setMessage({ type: "error", text: "Cannot delete your own account" });
+      setMessage({ type: "error", text: t('userManagement.cannotDeleteOwnAccount') });
       return;
     }
 
     setConfirmModal({
       show: true,
-      title: "Delete User",
-      message:
-        "Are you sure you want to permanently delete this user? This action cannot be undone.",
-      confirmText: "Delete User",
+      title: t('userManagement.deleteUser'),
+      message: t('userManagement.deleteUserConfirm'),
+      confirmText: t('userManagement.deleteUser'),
       isDangerous: true,
       onConfirm: () => {
         setConfirmModal({ ...confirmModal, show: false });
@@ -417,7 +416,7 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
         credentials: "include",
       });
 
-      if (!res.ok) throw new Error("Failed to delete user");
+      if (!res.ok) throw new Error(t('userManagement.failedToDelete'));
 
       // Track user deleted
       const user = users.find(u => u.id === userId);
@@ -427,11 +426,11 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
 
       setMessage({
         type: "success",
-        text: "User deleted successfully",
+        text: t('userManagement.userDeleted'),
       });
       loadUsers();
     } catch (err) {
-      setMessage({ type: "error", text: "Failed to delete user" });
+      setMessage({ type: "error", text: t('userManagement.failedToDelete') });
     } finally {
       setLoading(false);
     }
@@ -446,7 +445,7 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
         credentials: "include",
       });
 
-      if (!res.ok) throw new Error("Failed to start MFA setup");
+      if (!res.ok) throw new Error(t('userManagement.failedToStartMfaSetup'));
 
       const data = await res.json();
       setMfaSetup({
@@ -457,7 +456,7 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
         setupToken: data.setupToken,
       });
     } catch (err) {
-      setMessage({ type: "error", text: "Failed to start MFA setup" });
+      setMessage({ type: "error", text: t('userManagement.failedToStartMfaSetup') });
     } finally {
       setLoading(false);
     }
@@ -465,7 +464,7 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
 
   const handleCompleteMFASetup = async () => {
     if (!mfaSetup || mfaToken.length !== 6) {
-      setMessage({ type: "error", text: "Please enter a valid 6-digit code" });
+      setMessage({ type: "error", text: t('userManagement.invalidMfaCode') });
       return;
     }
 
@@ -482,9 +481,9 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
         }),
       });
 
-      if (!res.ok) throw new Error("Invalid verification code");
+      if (!res.ok) throw new Error(t('userManagement.invalidVerificationCode'));
 
-      setMessage({ type: "success", text: "MFA enabled successfully" });
+      setMessage({ type: "success", text: t('userManagement.mfaEnabledSuccessfully') });
       setMfaSetup(null);
       setMfaToken("");
       loadUsers();
@@ -498,10 +497,9 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
   const handleDisableMFA = async (_userId: number): Promise<void> => {
     setConfirmModal({
       show: true,
-      title: "Disable MFA",
-      message:
-        "Are you sure you want to disable MFA? This will make the account less secure.",
-      confirmText: "Disable MFA",
+      title: t('userManagement.disableMfa'),
+      message: t('userManagement.disableMfaConfirm'),
+      confirmText: t('userManagement.disableMfa'),
       isDangerous: true,
       requirePassword: true,
       onConfirm: (password) => {
@@ -523,9 +521,9 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
         body: JSON.stringify({ password }),
       });
 
-      if (!res.ok) throw new Error("Failed to disable MFA");
+      if (!res.ok) throw new Error(t('userManagement.failedToDisableMfa'));
 
-      setMessage({ type: "success", text: "MFA disabled successfully" });
+      setMessage({ type: "success", text: t('userManagement.mfaDisabledSuccessfully') });
       loadUsers();
     } catch (err: any) {
       setMessage({ type: "error", text: err.message });
@@ -542,13 +540,13 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
         credentials: "include",
       });
 
-      if (!res.ok) throw new Error("Failed to load passkeys");
+      if (!res.ok) throw new Error(t('userManagement.failedToLoadPasskeys'));
 
       const data = await res.json();
       setPasskeys(data.passkeys || []);
       setShowPasskeys(userId);
     } catch (err) {
-      setMessage({ type: "error", text: "Failed to load passkeys" });
+      setMessage({ type: "error", text: t('userManagement.failedToLoadPasskeys') });
     } finally {
       setLoading(false);
     }
@@ -558,7 +556,7 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
     if (!passkeyName.trim()) {
       setMessage({
         type: "error",
-        text: "Please enter a name for this passkey",
+        text: t('userManagement.passkeyNameRequired'),
       });
       return;
     }
@@ -574,7 +572,7 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
         }
       );
 
-      if (!optionsRes.ok) throw new Error("Failed to get registration options");
+      if (!optionsRes.ok) throw new Error(t('userManagement.failedToGetRegistrationOptions'));
 
       const options = await optionsRes.json();
 
@@ -593,18 +591,18 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
         }
       );
 
-      if (!verifyRes.ok) throw new Error("Passkey registration failed");
+      if (!verifyRes.ok) throw new Error(t('userManagement.passkeyRegistrationFailed'));
 
-      setMessage({ type: "success", text: "Passkey registered successfully" });
+      setMessage({ type: "success", text: t('userManagement.passkeyRegisteredSuccessfully') });
       setPasskeyName("");
       handleLoadPasskeys(userId);
     } catch (err: any) {
       if (err.name === "NotAllowedError") {
-        setMessage({ type: "error", text: "Passkey registration cancelled" });
+        setMessage({ type: "error", text: t('userManagement.passkeyRegistrationCancelled') });
       } else {
         setMessage({
           type: "error",
-          text: err.message || "Passkey registration failed",
+          text: err.message || t('userManagement.passkeyRegistrationFailed'),
         });
       }
     } finally {
@@ -615,9 +613,9 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
   const handleRemovePasskey = async (passkeyId: string) => {
     setConfirmModal({
       show: true,
-      title: "Remove Passkey",
-      message: "Are you sure you want to remove this passkey?",
-      confirmText: "Remove",
+      title: t('userManagement.removePasskey'),
+      message: t('userManagement.removePasskeyConfirm'),
+      confirmText: t('userManagement.remove'),
       isDangerous: true,
       onConfirm: () => {
         setConfirmModal({ ...confirmModal, show: false });
@@ -637,14 +635,14 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
         }
       );
 
-      if (!res.ok) throw new Error("Failed to remove passkey");
+      if (!res.ok) throw new Error(t('userManagement.failedToRemovePasskey'));
 
-      setMessage({ type: "success", text: "Passkey removed successfully" });
+      setMessage({ type: "success", text: t('userManagement.passkeyRemovedSuccessfully') });
       if (showPasskeys) {
         handleLoadPasskeys(showPasskeys);
       }
     } catch (err) {
-      setMessage({ type: "error", text: "Failed to remove passkey" });
+      setMessage({ type: "error", text: t('userManagement.failedToRemovePasskey') });
     } finally {
       setLoading(false);
     }
@@ -653,14 +651,14 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
   // Password Change
   const handleChangePassword = async (_userId: number): Promise<void> => {
     if (passwordChange.newPassword !== passwordChange.confirmPassword) {
-      setMessage({ type: "error", text: "Passwords do not match" });
+      setMessage({ type: "error", text: t('userManagement.passwordsDoNotMatch') });
       return;
     }
 
     if (passwordChange.newPassword.length < 8) {
       setMessage({
         type: "error",
-        text: "Password must be at least 8 characters",
+        text: t('userManagement.passwordMinLength'),
       });
       return;
     }
@@ -679,10 +677,10 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
 
       if (!res.ok) {
         const data = await res.json();
-        throw new Error(data.error || "Failed to change password");
+        throw new Error(data.error || t('userManagement.failedToChangePassword'));
       }
 
-      setMessage({ type: "success", text: "Password changed successfully" });
+      setMessage({ type: "success", text: t('userManagement.passwordChangedSuccessfully') });
       setShowPasswordChange(undefined);
       setPasswordChange({
         currentPassword: "",
@@ -710,7 +708,7 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
         trackUserRoleChanged(user.email, userId, oldRole, role);
       }
       
-      setMessage({ type: "success", text: `User role updated to ${role}` });
+      setMessage({ type: "success", text: t('userManagement.userRoleUpdated', { role }) });
       loadUsers();
     } catch (err: any) {
       setMessage({ type: "error", text: err.message });
@@ -722,8 +720,8 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
   return (
     <div className="config-group full-width" data-section="user-management">
       <SectionHeader
-        title="Users"
-        description="Manage user accounts and security settings"
+        title={t('userManagement.title')}
+        description={t('userManagement.description')}
         isExpanded={showSection}
         onToggle={() => setShowSection(!showSection)}
       />
@@ -773,7 +771,7 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
                     color: "#888",
                   }}
                 >
-                  Loading users...
+                  {t('userManagement.loadingUsers')}
                 </div>
               ) : users.length === 0 ? (
                 <div
@@ -783,7 +781,7 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
                     color: "#888",
                   }}
                 >
-                  No users found
+                  {t('userManagement.noUsersFound')}
                 </div>
               ) : (
                 <div

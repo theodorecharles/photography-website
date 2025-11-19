@@ -4,6 +4,7 @@
  */
 
 import { useEffect, useState, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { API_URL } from '../../../config';
 import { fetchWithRateLimitCheck } from '../../../utils/fetchWrapper';
 import { formatNumber } from '../../../utils/formatters';
@@ -23,6 +24,7 @@ import type { Stats, TimeSeriesData, HourlyPageviewData, VisitorLocation } from 
 import { error as logError } from '../../../utils/logger';
 
 export default function Metrics() {
+  const { t } = useTranslation();
   // Get the secondary color from CSS custom property
   const secondaryColor = getComputedStyle(document.documentElement)
     .getPropertyValue('--secondary-color')
@@ -48,14 +50,14 @@ export default function Metrics() {
       const res = await fetchWithRateLimitCheck(`${API_URL}/api/metrics/stats?days=${timeRange}`);
 
       if (!res.ok) {
-        throw new Error('Failed to load metrics');
+        throw new Error(t('metrics.failedToLoad'));
       }
 
       const data = await res.json();
       setStats(data);
     } catch (err) {
       logError('Failed to load metrics:', err);
-      setError(err instanceof Error ? err.message : 'Failed to load metrics');
+      setError(err instanceof Error ? err.message : t('metrics.failedToLoad'));
     } finally {
       setLoading(false);
     }
@@ -71,7 +73,7 @@ export default function Metrics() {
       const res = await fetchWithRateLimitCheck(`${API_URL}/api/metrics/visitors-over-time?days=${timeRange}&timezoneOffset=${offsetHours}`);
 
       if (!res.ok) {
-        throw new Error('Failed to load time series data');
+        throw new Error(t('metrics.failedToLoadTimeSeries'));
       }
 
       const data = await res.json();
@@ -117,7 +119,7 @@ export default function Metrics() {
       const res = await fetchWithRateLimitCheck(`${API_URL}/api/metrics/pageviews-by-hour?days=${timeRange}&timezoneOffset=${offsetHours}`);
 
       if (!res.ok) {
-        throw new Error('Failed to load hourly pageviews');
+        throw new Error(t('metrics.failedToLoadHourlyPageviews'));
       }
 
       const data = await res.json();
@@ -165,7 +167,7 @@ export default function Metrics() {
       const res = await fetchWithRateLimitCheck(`${API_URL}/api/metrics/visitor-locations?days=${timeRange}`);
 
       if (!res.ok) {
-        throw new Error('Failed to load location data');
+        throw new Error(t('metrics.failedToLoadLocations'));
       }
 
       const data = await res.json();
@@ -238,7 +240,7 @@ export default function Metrics() {
       <div className="metrics-container">
         <div className="loading-container">
           <div className="loading-spinner"></div>
-          <p>Loading metrics...</p>
+          <p>{t('metrics.loading')}</p>
         </div>
       </div>
     );
@@ -250,7 +252,7 @@ export default function Metrics() {
         <div className="error-message">
           <p>{error}</p>
           <button onClick={loadStats} className="btn-primary">
-            Retry
+            {t('common.retry')}
           </button>
         </div>
       </div>
@@ -261,18 +263,18 @@ export default function Metrics() {
     <section className="admin-section">
       <div className="metrics-header-wrapper">
         <div className="metrics-header-content">
-          <h2>Metrics</h2>
-          <p className="section-description">View analytics and visitor data for your photography website</p>
+          <h2>{t('metrics.title')}</h2>
+          <p className="section-description">{t('metrics.description')}</p>
         </div>
         <div className="metrics-time-range">
-          <label style={{ marginRight: '0.5rem' }}>Time Range:</label>
+          <label style={{ marginRight: '0.5rem' }}>{t('metrics.timeRange')}:</label>
           <CustomDropdown
             value={String(timeRange)}
             options={[
-              { value: '7', label: 'Last 7 days', emoji: '📅' },
-              { value: '30', label: 'Last 30 days', emoji: '📆' },
-              { value: '90', label: 'Last 90 days', emoji: '🗓️' },
-              { value: '365', label: 'Last year', emoji: '📊' },
+              { value: '7', label: t('metrics.last7Days'), emoji: '📅' },
+              { value: '30', label: t('metrics.last30Days'), emoji: '📆' },
+              { value: '90', label: t('metrics.last90Days'), emoji: '🗓️' },
+              { value: '365', label: t('metrics.lastYear'), emoji: '📊' },
             ]}
             onChange={(value) => setTimeRange(Number(value))}
             style={{ minWidth: '200px' }}
@@ -288,7 +290,7 @@ export default function Metrics() {
               <div className="metric-icon">👥</div>
               <div className="metric-content">
                 <div className="metric-value">{formatNumber(stats.uniqueVisitors)}</div>
-                <div className="metric-label">Unique Visitors</div>
+                <div className="metric-label">{t('metrics.uniqueVisitors')}</div>
               </div>
             </div>
 
@@ -296,7 +298,7 @@ export default function Metrics() {
               <div className="metric-icon">📄</div>
               <div className="metric-content">
                 <div className="metric-value">{formatNumber(stats.pageViews)}</div>
-                <div className="metric-label">Page Views</div>
+                <div className="metric-label">{t('metrics.pageViews')}</div>
               </div>
             </div>
 
@@ -304,16 +306,16 @@ export default function Metrics() {
               <div className="metric-icon">⏱️</div>
               <div className="metric-content">
                 <div className="metric-value">{formatDurationDetailed(stats.totalViewDuration || 0)}</div>
-                <div className="metric-label">Total Time Viewing</div>
+                <div className="metric-label">{t('metrics.totalTimeViewing')}</div>
               </div>
             </div>
           </div>
 
           {/* Visitor Locations Map */}
           <div className="metrics-section">
-            <h3>Visitor Locations</h3>
+            <h3>{t('metrics.visitorLocations')}</h3>
             <p style={{ color: '#9ca3af', fontSize: '0.85rem', marginBottom: '0.75rem' }}>
-              Geographic distribution of visitors based on their IP addresses
+              {t('metrics.visitorLocationsDescription')}
             </p>
             <VisitorMap locations={visitorLocations} loading={loadingLocations} />
           </div>
@@ -321,9 +323,9 @@ export default function Metrics() {
           {/* Charts Grid - Side by Side on Desktop */}
           <div className="metrics-grid">
             <div className="metrics-section">
-              <h3>Unique Visitors Over Time</h3>
+              <h3>{t('metrics.uniqueVisitorsOverTime')}</h3>
               <p style={{ color: '#9ca3af', fontSize: '0.85rem', marginBottom: '0.75rem' }}>
-                Daily breakdown of unique visitors
+                {t('metrics.uniqueVisitorsOverTimeDescription')}
               </p>
               <VisitorsChart 
                 data={visitorsOverTime} 
@@ -333,9 +335,9 @@ export default function Metrics() {
             </div>
 
             <div className="metrics-section">
-              <h3>Pageviews per Hour</h3>
+              <h3>{t('metrics.pageviewsPerHour')}</h3>
               <p style={{ color: '#9ca3af', fontSize: '0.85rem', marginBottom: '0.75rem' }}>
-                Hourly breakdown of page views
+                {t('metrics.pageviewsPerHourDescription')}
               </p>
               <PageviewsChart 
                 data={pageviewsByHour} 
@@ -348,9 +350,9 @@ export default function Metrics() {
           {/* Tables Grid - Most Engaging Pictures and Top Pages */}
           <div className="metrics-grid">
             <div className="metrics-section">
-              <h3>Most Engaging Pictures</h3>
+              <h3>{t('metrics.mostEngagingPictures')}</h3>
               <p style={{ color: '#9ca3af', fontSize: '0.85rem', marginBottom: '0.75rem' }}>
-                Pictures ranked by total time spent viewing
+                {t('metrics.mostEngagingPicturesDescription')}
               </p>
               <PicturesTable
                 pictures={stats.topPicturesByDuration || []}
@@ -362,9 +364,9 @@ export default function Metrics() {
             </div>
 
             <div className="metrics-section">
-              <h3>Top Pages</h3>
+              <h3>{t('metrics.topPages')}</h3>
               <p style={{ color: '#9ca3af', fontSize: '0.85rem', marginBottom: '0.75rem' }}>
-                Pages ranked by total views
+                {t('metrics.topPagesDescription')}
               </p>
               <PagesTable
                 pages={stats.topPages || []}
@@ -380,7 +382,7 @@ export default function Metrics() {
           {/* Tables Grid - Top Referrers and Event Types */}
           <div className="metrics-grid">
             <div className="metrics-section">
-              <h3>Top Referrers</h3>
+              <h3>{t('metrics.topReferrers')}</h3>
               <ReferrersTable
                 referrers={stats.topReferrers || []}
                 expandedRows={expandedRows['referrers'] || new Set()}
@@ -391,7 +393,7 @@ export default function Metrics() {
             </div>
 
             <div className="metrics-section">
-              <h3>Event Types</h3>
+              <h3>{t('metrics.eventTypes')}</h3>
               <EventTypesTable
                 events={stats.eventTypes || []}
                 expandedRows={expandedRows['events'] || new Set()}
@@ -405,7 +407,7 @@ export default function Metrics() {
           {/* Footer Info */}
           <div className="metrics-footer">
             <p>
-              Data from {formatDateFromMicroseconds(stats.timeRange.start)} to {formatDateFromMicroseconds(stats.timeRange.end)}
+              {t('metrics.dataFrom', { start: formatDateFromMicroseconds(stats.timeRange.start), end: formatDateFromMicroseconds(stats.timeRange.end) })}
             </p>
           </div>
         </>

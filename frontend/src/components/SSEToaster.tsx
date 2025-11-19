@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useSSEToaster } from '../contexts/SSEToasterContext';
 import './AdminPortal/ConfigManager.css'; // Reuse the CSS
 import { StopIcon, FullscreenIcon } from './icons/';
@@ -10,6 +11,7 @@ import { info } from '../utils/logger';
  * Features drag-and-drop positioning, collapse/expand, maximize/minimize.
  */
 export default function SSEToaster() {
+  const { t } = useTranslation();
   const toasterRef = useRef<HTMLDivElement>(null);
   const {
     generatingTitles,
@@ -237,7 +239,7 @@ export default function SSEToaster() {
         <div className="sse-toaster-title">
           <span className="sse-toaster-icon">{isUploading ? "📤" : "⚙️"}</span>
           <span className="sse-toaster-label">
-            {isUploading ? `Uploading to ${uploadAlbum}` : (generatingTitles ? "Title Generation" : "Image Optimization")}
+            {isUploading ? t('sse.uploadingTo', { album: uploadAlbum }) : (generatingTitles ? t('sse.titleGeneration') : t('sse.imageOptimization'))}
           </span>
           <span className="sse-toaster-progress">
             {isUploading ? `${uploadCompleted}/${uploadTotal}` : `${generatingTitles ? titlesProgress : optimizationProgress}%`}
@@ -268,7 +270,7 @@ export default function SSEToaster() {
                   stopOptimizationHandler();
                 }
               }}
-              title={optimizationComplete && !isOptimizationRunning ? "Close" : "Stop"}
+              title={optimizationComplete && !isOptimizationRunning ? t('common.close') : t('advancedSettings.regenerationControls.stop')}
             >
               {optimizationComplete && !isOptimizationRunning ? "✕" : <StopIcon width="14" height="14" />}
             </button>
@@ -276,14 +278,14 @@ export default function SSEToaster() {
           <button
             className="sse-toaster-maximize-btn"
             onClick={handleMaximizeClick}
-            title={isToasterMaximized ? "Restore" : "Maximize"}
+            title={isToasterMaximized ? t('common.restore') : t('common.maximize')}
           >
             <FullscreenIcon width="16" height="16" isExit={isToasterMaximized} />
           </button>
           <button
             className="sse-toaster-collapse-btn"
             onClick={handleCollapseClick}
-            title={isToasterCollapsed ? "Expand" : "Collapse"}
+            title={isToasterCollapsed ? t('common.expand') : t('common.collapse')}
             disabled={isToasterMaximized}
           >
             {isToasterCollapsed ? "▼" : "▲"}

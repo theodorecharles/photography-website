@@ -3,24 +3,24 @@
  * Contains backend, frontend, security, auth, analytics settings, and regeneration operations
  */
 
-import React, { useState, useEffect, useRef } from 'react';
-import { API_URL } from '../../../../config';
-import { ConfigData } from '../types';
-import { trackConfigSettingsSaved } from '../../../../utils/analytics';
-import SectionHeader from '../components/SectionHeader';
-import RegenerationControls from '../components/RegenerationControls';
-import AuthSettings from '../components/AuthSettings';
-import SMTPSettings from '../components/SMTPSettings';
-import AnalyticsSettings from '../components/AnalyticsSettings';
-import CustomDropdown from '../components/CustomDropdown';
+import React, { useState, useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
+import { API_URL } from "../../../../config";
+import { ConfigData } from "../types";
+import { trackConfigSettingsSaved } from "../../../../utils/analytics";
+import SectionHeader from "../components/SectionHeader";
+import RegenerationControls from "../components/RegenerationControls";
+import AuthSettings from "../components/AuthSettings";
+import SMTPSettings from "../components/SMTPSettings";
+import AnalyticsSettings from "../components/AnalyticsSettings";
+import CustomDropdown from "../components/CustomDropdown";
 import {
   updateConfig as updateConfigHelper,
   updateArrayItem as updateArrayItemHelper,
   addArrayItem as addArrayItemHelper,
   removeArrayItem as removeArrayItemHelper,
-} from '../utils/configHelpers';
-import { error } from '../../../../utils/logger';
-
+} from "../utils/configHelpers";
+import { error } from "../../../../utils/logger";
 
 interface AdvancedSettingsSectionProps {
   config: ConfigData | null;
@@ -73,6 +73,7 @@ const AdvancedSettingsSection: React.FC<AdvancedSettingsSectionProps> = ({
   setScrollToSmtp,
   sectionRef,
 }) => {
+  const { t } = useTranslation();
   const [showAdvanced, setShowAdvanced] = useState(false);
   const smtpSectionRef = useRef<HTMLDivElement>(null);
 
@@ -84,8 +85,9 @@ const AdvancedSettingsSection: React.FC<AdvancedSettingsSectionProps> = ({
         if (smtpSectionRef.current) {
           const yOffset = -100; // Offset to account for header
           const element = smtpSectionRef.current;
-          const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
-          window.scrollTo({ top: y, behavior: 'smooth' });
+          const y =
+            element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+          window.scrollTo({ top: y, behavior: "smooth" });
         }
         // Reset the trigger
         if (setScrollToSmtp) {
@@ -133,8 +135,11 @@ const AdvancedSettingsSection: React.FC<AdvancedSettingsSectionProps> = ({
       if (res.ok) {
         // Track config settings save
         trackConfigSettingsSaved(sectionName);
-        
-        setMessage({ type: "success", text: `${sectionName} settings saved!` });
+
+        setMessage({
+          type: "success",
+          text: t("settings.saved", { section: sectionName }),
+        });
         // Update original config after successful save
         setOriginalConfig(structuredClone(config));
       } else {
@@ -143,12 +148,12 @@ const AdvancedSettingsSection: React.FC<AdvancedSettingsSectionProps> = ({
           .catch(() => ({ error: "Unknown error" }));
         setMessage({
           type: "error",
-          text: errorData.error || "Failed to save configuration",
+          text: errorData.error || t("settings.failedToSave"),
         });
       }
     } catch (err) {
       const errorMessage =
-        err instanceof Error ? err.message : "Error saving configuration";
+        err instanceof Error ? err.message : t("settings.errorSaving");
       setMessage({ type: "error", text: errorMessage });
       error("Failed to save config:", err);
     } finally {
@@ -202,14 +207,14 @@ const AdvancedSettingsSection: React.FC<AdvancedSettingsSectionProps> = ({
 
   // Auto-save log level changes with toast notification
   const handleLogLevelChange = async (newLevel: string) => {
-    updateConfig(['environment', 'logging', 'level'], newLevel);
-    
+    updateConfig(["environment", "logging", "level"], newLevel);
+
     // Auto-save immediately
     try {
       const response = await fetch(`${API_URL}/api/config`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({
           ...config,
           environment: {
@@ -223,7 +228,7 @@ const AdvancedSettingsSection: React.FC<AdvancedSettingsSectionProps> = ({
       });
 
       if (!response.ok) {
-        throw new Error('Failed to save log level');
+        throw new Error(t("advancedSettings.failedToSaveLogLevel"));
       }
 
       // Update original config to match
@@ -240,16 +245,16 @@ const AdvancedSettingsSection: React.FC<AdvancedSettingsSectionProps> = ({
         });
       }
 
-      setMessage({ 
-        type: 'success', 
-        text: `Log level changed to ${newLevel}` 
+      setMessage({
+        type: "success",
+        text: t("advancedSettings.logLevelChanged", { level: newLevel }),
       });
-      trackConfigSettingsSaved('Logging');
+      trackConfigSettingsSaved("Logging");
     } catch (err) {
-      error('[AdvancedSettings] Failed to save log level:', err);
-      setMessage({ 
-        type: 'error', 
-        text: 'Failed to save log level' 
+      error("[AdvancedSettings] Failed to save log level:", err);
+      setMessage({
+        type: "error",
+        text: t("advancedSettings.failedToSaveLogLevel"),
       });
     }
   };
@@ -259,14 +264,16 @@ const AdvancedSettingsSection: React.FC<AdvancedSettingsSectionProps> = ({
   return (
     <div className="config-group full-width" ref={sectionRef}>
       <SectionHeader
-        title="Advanced Settings"
-        description="System controls and developer options"
+        title={t("advancedSettings.title")}
+        description={t("advancedSettings.description")}
         isExpanded={showAdvanced}
         onToggle={() => setShowAdvanced(!showAdvanced)}
       />
 
       <div
-        className={`collapsible-content ${showAdvanced ? "expanded" : "collapsed"}`}
+        className={`collapsible-content ${
+          showAdvanced ? "expanded" : "collapsed"
+        }`}
         style={{
           maxHeight: showAdvanced ? "10000px" : "0",
         }}
@@ -296,10 +303,10 @@ const AdvancedSettingsSection: React.FC<AdvancedSettingsSectionProps> = ({
                 marginBottom: "0.25rem",
               }}
             >
-              [ DANGER ZONE ]
+              {t("advancedSettings.dangerZone")}
             </div>
             <div style={{ color: "#fecaca", fontSize: "0.9rem" }}>
-              Make sure you know what you're doing!
+              {t("advancedSettings.dangerZoneWarning")}
             </div>
           </div>
         </div>
@@ -363,66 +370,109 @@ const AdvancedSettingsSection: React.FC<AdvancedSettingsSectionProps> = ({
         />
 
         {/* Logging Settings */}
-        <div style={{ marginTop: '2rem' }}>
-          <h3 style={{ 
-            fontSize: '1.1rem', 
-            fontWeight: 600, 
-            marginBottom: '1rem',
-            color: '#e0e0e0'
-          }}>
-            Logging
+        <div style={{ marginTop: "2rem" }}>
+          <h3
+            style={{
+              fontSize: "1.1rem",
+              fontWeight: 600,
+              marginBottom: "1rem",
+              color: "#e0e0e0",
+            }}
+          >
+            {t("advancedSettings.logging")}
           </h3>
-          
-          <div style={{ 
-            display: 'grid', 
-            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-            gap: '1.5rem',
-            marginBottom: '1rem'
-          }}>
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+              gap: "1.5rem",
+              marginBottom: "1rem",
+            }}
+          >
             <div>
-              <label className="branding-label" style={{ display: 'block', marginBottom: '0.5rem' }}>
-                Log Level
+              <label
+                className="branding-label"
+                style={{ display: "block", marginBottom: "0.5rem" }}
+              >
+                {t("advancedSettings.logLevel")}
               </label>
               <CustomDropdown
-                value={config?.environment?.logging?.level || 'error'}
+                value={config?.environment?.logging?.level || "error"}
                 options={[
-                  { value: 'silent', label: 'Silent (No logging)', emoji: '🔇' },
-                  { value: 'error', label: 'Error (Default - Critical errors only)', emoji: '❌' },
-                  { value: 'warn', label: 'Warning (Warnings and above)', emoji: '⚠️' },
-                  { value: 'info', label: 'Info (Important info)', emoji: 'ℹ️' },
-                  { value: 'debug', label: 'Debug (Detailed debugging)', emoji: '🐛' },
-                  { value: 'verbose', label: 'Verbose (Business logic)', emoji: '📝' },
-                  { value: 'trace', label: 'Trace (Everything incl. CORS/CSRF)', emoji: '🔍' },
+                  {
+                    value: "silent",
+                    label: t("advancedSettings.logLevelSilent"),
+                    emoji: "🔇",
+                  },
+                  {
+                    value: "error",
+                    label: t("advancedSettings.logLevelError"),
+                    emoji: "❌",
+                  },
+                  {
+                    value: "warn",
+                    label: t("advancedSettings.logLevelWarn"),
+                    emoji: "⚠️",
+                  },
+                  {
+                    value: "info",
+                    label: t("advancedSettings.logLevelInfo"),
+                    emoji: "ℹ️",
+                  },
+                  {
+                    value: "debug",
+                    label: t("advancedSettings.logLevelDebug"),
+                    emoji: "🐛",
+                  },
+                  {
+                    value: "verbose",
+                    label: t("advancedSettings.logLevelVerbose"),
+                    emoji: "📝",
+                  },
+                  {
+                    value: "trace",
+                    label: t("advancedSettings.logLevelTrace"),
+                    emoji: "🔍",
+                  },
                 ]}
                 onChange={handleLogLevelChange}
+                openUpward={true}
               />
-              <p style={{ 
-                fontSize: '0.85rem', 
-                color: '#888', 
-                marginTop: '0.5rem',
-                lineHeight: '1.4'
-              }}>
-                Controls the verbosity of application logs. Changes save automatically and take effect immediately.
+              <p
+                style={{
+                  fontSize: "0.85rem",
+                  color: "#888",
+                  marginTop: "0.5rem",
+                  lineHeight: "1.4",
+                }}
+              >
+                {t("advancedSettings.logLevelDescription")}
               </p>
             </div>
 
             <div>
-              <label className="branding-label" style={{ display: 'block', marginBottom: '0.5rem', opacity: 0, pointerEvents: 'none' }}>
-                Spacer
-              </label>
               <button
                 className="btn-secondary"
-                onClick={() => window.open('/logs', 'LogViewer', 'width=1200,height=800,menubar=no,toolbar=no,location=no,status=no')}
-                style={{ 
-                  width: '100%',
-                  padding: '0.75rem 1.5rem',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '0.5rem'
+                onClick={() =>
+                  window.open(
+                    "/logs",
+                    "LogViewer",
+                    "width=1200,height=800,menubar=no,toolbar=no,location=no,status=no"
+                  )
+                }
+                style={{
+                  width: "100%",
+                  padding: "0.5rem 0.75rem",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "0.5rem",
+                  height: "auto",
+                  marginTop: "1.8rem",
                 }}
               >
-                📋 View Live Logs
+                📋 {t("advancedSettings.viewLiveLogs")}
               </button>
             </div>
           </div>

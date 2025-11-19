@@ -5,6 +5,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import PhotosPanelHeader from './PhotosPanelHeader';
 import PhotosPanelGrid from './PhotosPanelGrid';
 import { Photo, UploadingImage } from '../types';
@@ -90,6 +91,7 @@ const PhotosPanel: React.FC<PhotosPanelProps> = ({
   shuffleButtonRef,
   canEdit,
 }) => {
+  const { t } = useTranslation();
   // Initialize viewMode from localStorage, default to 'grid'
   const [viewMode, setViewMode] = useState<ViewMode>(() => {
     const saved = localStorage.getItem('photosViewMode');
@@ -213,12 +215,12 @@ const PhotosPanel: React.FC<PhotosPanelProps> = ({
                 onTouchCancel={onShuffleEnd}
                 className={`photos-btn btn-shuffle-order ${isShuffling ? 'shuffling-active' : ''}`}
                 disabled={savingOrder}
-                title="Click to shuffle once, hold to shuffle continuously"
+                title={t('albumsManager.shufflePhotosTooltip')}
               >
                 <ShuffleIcon width="16" height="16" />
-                <span>Shuffle</span>
+                <span>{t('albumsManager.shuffle')}</span>
               </button>
-              <span className="reorder-hint reorder-hint-desktop">Drag to reorder • Changes not saved</span>
+              <span className="reorder-hint reorder-hint-desktop">{t('albumsManager.dragToReorder')}</span>
             </div>
             <div className="photos-reorder-right">
               <button 
@@ -226,17 +228,17 @@ const PhotosPanel: React.FC<PhotosPanelProps> = ({
                 className="photos-btn photos-btn-ghost" 
                 disabled={savingOrder}
               >
-                Cancel
+                {t('common.cancel')}
               </button>
               <button 
                 onClick={onSavePhotoOrder} 
                 className="photos-btn photos-btn-success" 
                 disabled={savingOrder}
               >
-                {savingOrder ? 'Saving...' : 'Save Order'}
+                {savingOrder ? t('albumsManager.savingOrder') : t('albumsManager.saveOrder')}
               </button>
             </div>
-            <span className="reorder-hint reorder-hint-mobile">Drag to reorder • Changes not saved</span>
+            <span className="reorder-hint reorder-hint-mobile">{t('albumsManager.dragToReorder')}</span>
           </div>
         )}
       </div>

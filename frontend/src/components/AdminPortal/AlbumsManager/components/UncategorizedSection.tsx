@@ -4,6 +4,7 @@
  */
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { SortableContext, rectSortingStrategy } from '@dnd-kit/sortable';
 import { useDroppable } from '@dnd-kit/core';
 import SortableAlbumCard from './SortableAlbumCard';
@@ -22,6 +23,7 @@ const GhostTileDroppable: React.FC<{
   onGhostTileFileSelect: (e: React.ChangeEvent<HTMLInputElement>) => void;
   ghostTileFileInputRef: React.RefObject<HTMLInputElement | null>;
 }> = ({ id, isGhostAlbumDragOver, uploadingImages, onGhostTileClick, onGhostTileDragOver, onGhostTileDragLeave, onGhostTileDrop, onGhostTileFileSelect, ghostTileFileInputRef }) => {
+  const { t } = useTranslation();
   const { setNodeRef, isOver } = useDroppable({ id });
   
   return (
@@ -36,7 +38,7 @@ const GhostTileDroppable: React.FC<{
       <div className="ghost-tile-content">
         {uploadingImages.length > 0 ? (
           <span style={{ fontSize: '0.875rem', color: '#94a3b8', textAlign: 'center' }}>
-            Upload in progress
+            {t('sse.uploadInProgress')}
           </span>
         ) : isGhostAlbumDragOver ? (
           <UploadIcon width="48" height="48" />
@@ -110,6 +112,7 @@ const UncategorizedSection: React.FC<UncategorizedSectionProps> = ({
   hasFolders,
   canEdit,
 }) => {
+  const { t } = useTranslation();
   const uncategorizedAlbums = localAlbums.filter(album => !album.folder_id);
   
   // Make the uncategorized grid droppable
@@ -127,10 +130,10 @@ const UncategorizedSection: React.FC<UncategorizedSectionProps> = ({
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
             <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 600, color: '#fff' }}>
-              Uncategorized
+              {t('albumsManager.uncategorized')}
             </h3>
             <span style={{ fontSize: '0.9rem', color: '#888' }}>
-              {uncategorizedAlbums.length} {uncategorizedAlbums.length === 1 ? 'album' : 'albums'}
+              {uncategorizedAlbums.length} {uncategorizedAlbums.length === 1 ? t('common.album') : t('common.albums')}
             </span>
           </div>
           <SortableContext 

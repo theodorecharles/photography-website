@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useEffect } from "react";
+import { useTranslation } from 'react-i18next';
 import { API_URL } from '../../config';
 
 
@@ -23,6 +24,7 @@ const SecuritySetupPrompt: React.FC<SecuritySetupPromptProps> = ({
   onComplete,
   onDismiss,
 }) => {
+  const { t } = useTranslation();
   const [dontAskAgain, setDontAskAgain] = useState(false);
   const [mfaSetup, setMfaSetup] = useState<MFASetupData | null>(null);
   const [mfaToken, setMfaToken] = useState("");
@@ -125,8 +127,8 @@ const SecuritySetupPrompt: React.FC<SecuritySetupPromptProps> = ({
         <div className="share-modal-header">
           <h2>
             {mfaSetup
-              ? "Enable Two-Factor Authentication"
-              : "🔐 Secure Your Account"}
+              ? t('securitySetup.enableMfaTitle')
+              : t('securitySetup.title')}
           </h2>
           <button
             className="close-button"
@@ -165,9 +167,7 @@ const SecuritySetupPrompt: React.FC<SecuritySetupPromptProps> = ({
             // Intro Screen
             <>
               <p className="share-description" style={{ marginBottom: "1rem" }}>
-                Your account is currently protected only by a password. We
-                strongly recommend setting up additional security measures to
-                protect your account.
+                {t('securitySetup.description')}
               </p>
 
               <div
@@ -187,18 +187,18 @@ const SecuritySetupPrompt: React.FC<SecuritySetupPromptProps> = ({
                     fontWeight: 600,
                   }}
                 >
-                  ✓ Multi-Factor Authentication (MFA)
+                  {t('securitySetup.mfaTitle')}
                 </h3>
                 <ul
                   style={{ margin: 0, paddingLeft: "1.25rem", color: "#e5e7eb", fontSize: "0.875rem" }}
                 >
                   <li style={{ marginBottom: "0.25rem" }}>
-                    Adds an extra layer of security with time-based codes
+                    {t('securitySetup.mfaBenefit1')}
                   </li>
                   <li style={{ marginBottom: "0.25rem" }}>
-                    Works with apps like Google Authenticator or Authy
+                    {t('securitySetup.mfaBenefit2')}
                   </li>
-                  <li>Get backup codes for account recovery</li>
+                  <li>{t('securitySetup.mfaBenefit3')}</li>
                 </ul>
               </div>
 
@@ -219,18 +219,18 @@ const SecuritySetupPrompt: React.FC<SecuritySetupPromptProps> = ({
                     fontWeight: 600,
                   }}
                 >
-                  🔑 Passkeys (Optional)
+                  {t('securitySetup.passkeysTitle')}
                 </h3>
                 <ul
                   style={{ margin: 0, paddingLeft: "1.5rem", color: "#e5e7eb" }}
                 >
                   <li style={{ marginBottom: "0.5rem" }}>
-                    Use biometrics or device PIN for quick, secure login
+                    {t('securitySetup.passkeysBenefit1')}
                   </li>
                   <li style={{ marginBottom: "0.5rem" }}>
-                    No passwords needed - just your fingerprint or face
+                    {t('securitySetup.passkeysBenefit2')}
                   </li>
-                  <li>Can be set up after enabling MFA</li>
+                  <li>{t('securitySetup.passkeysBenefit3')}</li>
                 </ul>
               </div>
 
@@ -261,7 +261,7 @@ const SecuritySetupPrompt: React.FC<SecuritySetupPromptProps> = ({
                     userSelect: "none",
                   }}
                 >
-                  Don't ask me again
+                  {t('securitySetup.dontAskAgain')}
                 </label>
               </div>
 
@@ -280,7 +280,7 @@ const SecuritySetupPrompt: React.FC<SecuritySetupPromptProps> = ({
                   className="btn-secondary"
                   disabled={loading}
                 >
-                  Maybe Later
+                  {t('securitySetup.maybeLater')}
                 </button>
                 <button
                   type="button"
@@ -288,7 +288,7 @@ const SecuritySetupPrompt: React.FC<SecuritySetupPromptProps> = ({
                   className="btn-primary"
                   disabled={loading}
                 >
-                  {loading ? "Starting..." : "Set Up MFA Now"}
+                  {loading ? t('securitySetup.starting') : t('securitySetup.setUpMfaNow')}
                 </button>
               </div>
             </>
@@ -297,8 +297,7 @@ const SecuritySetupPrompt: React.FC<SecuritySetupPromptProps> = ({
             <>
               <div style={{ marginBottom: "0.75rem" }}>
                 <p className="share-description" style={{ marginBottom: "0.625rem" }}>
-                  Scan this QR code with your authenticator app (Google
-                  Authenticator, Authy, 1Password, etc.)
+                  {t('securitySetup.scanQrCode')}
                 </p>
                 <div style={{ textAlign: "center", marginBottom: "0.625rem" }}>
                   <img
@@ -334,7 +333,7 @@ const SecuritySetupPrompt: React.FC<SecuritySetupPromptProps> = ({
 
               <div style={{ marginBottom: "0.75rem" }}>
                 <label className="branding-label">
-                  Enter verification code from your app
+                  {t('securitySetup.enterVerificationCode')}
                 </label>
                 <div style={{ display: "flex", justifyContent: "center" }}>
                   <input
@@ -379,7 +378,7 @@ const SecuritySetupPrompt: React.FC<SecuritySetupPromptProps> = ({
                   className="btn-secondary"
                   disabled={loading}
                 >
-                  Back
+                  {t('securitySetup.back')}
                 </button>
                 <button
                   type="button"
@@ -387,7 +386,7 @@ const SecuritySetupPrompt: React.FC<SecuritySetupPromptProps> = ({
                   className="btn-primary"
                   disabled={loading || mfaToken.length !== 6}
                 >
-                  {loading ? "Verifying..." : "Enable MFA"}
+                  {loading ? t('securitySetup.verifying') : t('securitySetup.enableMfa')}
                 </button>
               </div>
             </>

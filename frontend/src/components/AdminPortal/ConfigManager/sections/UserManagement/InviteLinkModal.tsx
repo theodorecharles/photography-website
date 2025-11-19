@@ -4,6 +4,7 @@
  */
 
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { error } from '../../../../../utils/logger';
 
 interface InviteLinkModalProps {
@@ -17,6 +18,7 @@ export const InviteLinkModal: React.FC<InviteLinkModalProps> = ({
   userEmail,
   onClose,
 }) => {
+  const { t } = useTranslation();
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
@@ -37,8 +39,8 @@ export const InviteLinkModal: React.FC<InviteLinkModalProps> = ({
         style={{ maxWidth: '600px' }}
       >
         <div className="share-modal-header">
-          <h2>📧 Invitation Link</h2>
-          <button className="close-button" onClick={onClose} aria-label="Close">
+          <h2>📧 {t('userManagement.invitationLink')}</h2>
+          <button className="close-button" onClick={onClose} aria-label={t('common.close')}>
             ×
           </button>
         </div>
@@ -54,15 +56,15 @@ export const InviteLinkModal: React.FC<InviteLinkModalProps> = ({
             }}
           >
             <p style={{ margin: 0, fontSize: '0.9rem', color: '#ffc800', lineHeight: 1.6 }}>
-              <strong>⚠️ Email Service Not Configured</strong>
+              <strong>{t('userManagement.emailServiceNotConfigured')}</strong>
               <br />
-              The invitation email could not be sent automatically. Please copy the link below and send it to the user manually.
+              {t('userManagement.emailServiceNotConfiguredDescription')}
             </p>
           </div>
 
           <div style={{ marginBottom: '1.5rem' }}>
             <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', color: '#d1d5db' }}>
-              User Email:
+              {t('userManagement.userEmail')}:
             </label>
             <div
               style={{
@@ -80,7 +82,7 @@ export const InviteLinkModal: React.FC<InviteLinkModalProps> = ({
 
           <div style={{ marginBottom: '1.5rem' }}>
             <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', color: '#d1d5db' }}>
-              Invitation Link:
+              {t('userManagement.invitationLink')}:
             </label>
             <div style={{ position: 'relative' }}>
               <div
@@ -116,7 +118,7 @@ export const InviteLinkModal: React.FC<InviteLinkModalProps> = ({
                   fontWeight: 600,
                 }}
               >
-                {copied ? '✓ Copied' : 'Copy'}
+                {copied ? t('photo.copied') : t('userManagement.copy')}
               </button>
             </div>
           </div>
@@ -131,16 +133,16 @@ export const InviteLinkModal: React.FC<InviteLinkModalProps> = ({
             }}
           >
             <p style={{ margin: 0, fontSize: '0.85rem', color: '#93c5fd', lineHeight: 1.6 }}>
-              <strong>💡 Tip:</strong> This invitation link will expire in 7 days. The user can use it to create their account and set up their credentials.
+              <strong>{t('userManagement.tip')}:</strong> {t('userManagement.invitationLinkExpiry')}
             </p>
           </div>
 
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
             <button onClick={handleCopy} className="btn-primary">
-              {copied ? '✓ Copied to Clipboard' : 'Copy Link'}
+              {copied ? t('userManagement.copiedToClipboard') : t('userManagement.copyLink')}
             </button>
             <button onClick={onClose} className="btn-secondary">
-              Close
+              {t('common.close')}
             </button>
           </div>
         </div>

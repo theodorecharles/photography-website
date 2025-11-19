@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from 'react-i18next';
 import { PasswordInput } from "../../../PasswordInput";
 import type { PasswordChangeState } from "./types";
 
@@ -17,6 +18,7 @@ export const PasswordChangeModal: React.FC<PasswordChangeModalProps> = ({
   onPasswordChangeUpdate,
   onChangePassword,
 }) => {
+  const { t } = useTranslation();
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div
@@ -25,8 +27,8 @@ export const PasswordChangeModal: React.FC<PasswordChangeModalProps> = ({
         style={{ maxWidth: "500px" }}
       >
         <div className="share-modal-header">
-          <h2>🔑 Change Password</h2>
-          <button className="close-button" onClick={onClose} aria-label="Close">
+          <h2>🔑 {t('userManagement.changePassword')}</h2>
+          <button className="close-button" onClick={onClose} aria-label={t('common.close')}>
             ×
           </button>
         </div>
@@ -40,11 +42,11 @@ export const PasswordChangeModal: React.FC<PasswordChangeModalProps> = ({
           className="share-modal-content"
         >
           <p className="share-description" style={{ marginBottom: "1.5rem" }}>
-            Enter your current password and choose a new password.
+            {t('userManagement.changePasswordDescription')}
           </p>
 
           <div style={{ marginBottom: "1rem" }}>
-            <label className="branding-label">Current Password</label>
+            <label className="branding-label">{t('userManagement.currentPassword')}</label>
             <PasswordInput
               value={passwordChange.currentPassword}
               onChange={(e) =>
@@ -53,13 +55,13 @@ export const PasswordChangeModal: React.FC<PasswordChangeModalProps> = ({
                   currentPassword: e.target.value,
                 })
               }
-              placeholder="Enter current password"
+              placeholder={t('userManagement.enterCurrentPassword')}
               required
             />
           </div>
 
           <div style={{ marginBottom: "1rem" }}>
-            <label className="branding-label">New Password</label>
+            <label className="branding-label">{t('userManagement.newPassword')}</label>
             <PasswordInput
               value={passwordChange.newPassword}
               onChange={(e) =>
@@ -68,13 +70,13 @@ export const PasswordChangeModal: React.FC<PasswordChangeModalProps> = ({
                   newPassword: e.target.value,
                 })
               }
-              placeholder="Enter new password (min 8 characters)"
+              placeholder={t('userManagement.enterNewPassword')}
               required
             />
           </div>
 
           <div style={{ marginBottom: "1.5rem" }}>
-            <label className="branding-label">Confirm New Password</label>
+            <label className="branding-label">{t('userManagement.confirmNewPassword')}</label>
             <PasswordInput
               value={passwordChange.confirmPassword}
               onChange={(e) =>
@@ -83,7 +85,7 @@ export const PasswordChangeModal: React.FC<PasswordChangeModalProps> = ({
                   confirmPassword: e.target.value,
                 })
               }
-              placeholder="Confirm new password"
+              placeholder={t('userManagement.confirmNewPasswordPlaceholder')}
               required
             />
           </div>
@@ -103,7 +105,7 @@ export const PasswordChangeModal: React.FC<PasswordChangeModalProps> = ({
               className="btn-secondary"
               disabled={loading}
             >
-              Cancel
+              {t('common.cancel')}
             </button>
             <button
               type="button"
@@ -116,7 +118,7 @@ export const PasswordChangeModal: React.FC<PasswordChangeModalProps> = ({
                 !passwordChange.confirmPassword
               }
             >
-              {loading ? "Changing..." : "Change Password"}
+              {loading ? t('userManagement.changing') : t('userManagement.changePassword')}
             </button>
           </div>
         </form>

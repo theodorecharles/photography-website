@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { TrashIcon } from '../../../../icons';
 import type { Passkey } from './types';
 
@@ -21,6 +22,7 @@ export const PasskeysList: React.FC<PasskeysListProps> = ({
   onRegister,
   onRemove,
 }) => {
+  const { t } = useTranslation();
   return (
     <div
       style={{
@@ -39,7 +41,7 @@ export const PasskeysList: React.FC<PasskeysListProps> = ({
           marginBottom: '0.75rem',
         }}
       >
-        <h5 style={{ margin: 0 }}>Registered Passkeys</h5>
+        <h5 style={{ margin: 0 }}>{t('userManagement.registeredPasskeys')}</h5>
         <button
           onClick={onClose}
           style={{
@@ -62,7 +64,7 @@ export const PasskeysList: React.FC<PasskeysListProps> = ({
             margin: '0.5rem 0',
           }}
         >
-          No passkeys registered yet
+          {t('userManagement.noPasskeysRegistered')}
         </p>
       ) : (
         <div
@@ -102,7 +104,7 @@ export const PasskeysList: React.FC<PasskeysListProps> = ({
                     color: '#9ca3af',
                   }}
                 >
-                  Added {new Date(passkey.created_at).toLocaleDateString()}
+                  {t('userManagement.added')} {new Date(passkey.created_at).toLocaleDateString()}
                 </div>
               </div>
               <button
@@ -134,28 +136,28 @@ export const PasskeysList: React.FC<PasskeysListProps> = ({
             type="text"
             value={passkeyName}
             onChange={(e) => onNameChange(e.target.value)}
-            placeholder="Passkey name (e.g., MacBook Touch ID)"
-            className="branding-input"
-            style={{ flex: 1 }}
-          />
-          <button
-            onClick={onRegister}
-            className="btn-primary"
-            style={{ padding: '0.5rem 1rem' }}
-            disabled={loading || !passkeyName.trim()}
-          >
-            {loading ? 'Registering...' : '+ Register'}
-          </button>
-        </div>
-        <p
-          style={{
-            fontSize: '0.75rem',
-            color: '#9ca3af',
-            margin: '0.5rem 0 0 0',
-          }}
-        >
-          Note: Passkeys require HTTPS (or localhost) and a compatible device
-        </p>
+            placeholder={t('userManagement.passkeyNamePlaceholder')}
+                className="branding-input"
+                style={{ flex: 1 }}
+              />
+              <button
+                onClick={onRegister}
+                className="btn-primary"
+                style={{ padding: '0.5rem 1rem' }}
+                disabled={loading || !passkeyName.trim()}
+              >
+                {loading ? t('userManagement.registering') : t('userManagement.register')}
+              </button>
+            </div>
+            <p
+              style={{
+                fontSize: '0.75rem',
+                color: '#9ca3af',
+                margin: '0.5rem 0 0 0',
+              }}
+            >
+              {t('userManagement.passkeysNote')}
+            </p>
       </div>
     </div>
   );

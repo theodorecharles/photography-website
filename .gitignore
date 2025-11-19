@@ -13,6 +13,16 @@ node_modules/
 # Generated albums data (dynamically created by frontend)
 frontend/public/albums-data/
 
+# Translation backup files (created by fix-translations.js)
+frontend/src/i18n/locales/*.backup
+
+# Generated favicons and icons (dynamically created from avatar upload)
+frontend/public/favicon.ico
+frontend/public/favicon.png
+frontend/public/icon-192.png
+frontend/public/icon-512.png
+frontend/public/apple-touch-icon.png
+
 # Misc
 .DS_Store
 .env
@@ -44,6 +54,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 data/logs/*.log
+restart.log
 
 # IDE
 .idea/

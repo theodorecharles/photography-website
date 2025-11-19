@@ -8,6 +8,7 @@
  */
 
 import { useState, useEffect, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import "./Header.css";
 import { API_URL } from "../config";
@@ -67,6 +68,7 @@ function Navigation({
   externalLinks: ExternalLink[];
   currentAlbum?: string;
 }) {
+  const { t } = useTranslation();
   // State for managing dropdown visibility
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isExternalOpen, setIsExternalOpen] = useState(false);
@@ -253,8 +255,8 @@ function Navigation({
               onClick={() => {
                 navigate(`/admin/albums?album=${encodeURIComponent(currentAlbum)}`);
               }}
-              className="edit-album-btn"
-              title="Edit this album"
+                              className="edit-album-btn"
+              title={t('header.editAlbum')}
             >
               <EditIcon width="16" height="16" />
             </button>
@@ -270,7 +272,7 @@ function Navigation({
             onMouseEnter={handleAlbumsHover}
           >
             <button className="nav-link" onClick={handleAlbumsClick}>
-              Albums
+              {t('header.albums')}
               <DropdownArrowIcon 
                 className={`dropdown-arrow ${isDropdownOpen ? "open" : ""}`}
                 width="16"
@@ -356,7 +358,7 @@ function Navigation({
                               })
                             ) : (
                               <div className="nav-link submenu-link" style={{ opacity: 0.5, fontStyle: 'italic' }}>
-                                No albums in this folder
+                                {t('header.noAlbumsInFolder')}
                               </div>
                             )}
                           </div>
@@ -437,7 +439,7 @@ function Navigation({
             onMouseEnter={handleLinksHover}
           >
             <button className="nav-link" onClick={handleLinksClick}>
-              Links
+              {t('header.links')}
               <DropdownArrowIcon 
                 className={`dropdown-arrow ${isExternalOpen ? "open" : ""}`}
                 width="16"
@@ -467,7 +469,7 @@ function Navigation({
             <Link
               to="/admin/settings?section=links"
               className="edit-album-btn"
-              title="Edit links"
+              title={t('header.editLinks')}
             >
               <EditIcon width="16" height="16" />
             </Link>
@@ -491,6 +493,7 @@ export default function Header({
   avatarPath,
   avatarCacheBust,
 }: HeaderProps) {
+  const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -544,7 +547,7 @@ export default function Header({
           <button
             onClick={handleLogout}
             className="logout-btn"
-            title="Logout"
+            title={t('header.logout')}
           >
             <LogoutIcon width="20" height="20" />
           </button>

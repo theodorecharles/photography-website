@@ -1,11 +1,12 @@
 {
   "name": "galleria",
-  "version": "1.0.5",
+  "version": "1.0.7",
   "type": "module",
   "scripts": {
     "dev": "concurrently --kill-others --names \"BACKEND,FRONTEND\" --prefix-colors \"blue,green\" \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\"",
     "build": "node build.js",
-    "generate-static-json": "node scripts/generate-static-json.js"
+    "generate-static-json": "node scripts/generate-static-json.js",
+    "generate-favicons": "node scripts/generate-favicons.js"
   },
   "devDependencies": {
     "@types/node": "^22.15.2",
@@ -14,6 +15,7 @@
   "dependencies": {
     "better-sqlite3": "^12.4.1",
     "cli-progress": "^3.12.0",
+    "dotenv": "^17.2.3",
     "openai": "^6.8.1",
     "p-limit": "^7.2.0",
     "sharp": "^0.34.5"

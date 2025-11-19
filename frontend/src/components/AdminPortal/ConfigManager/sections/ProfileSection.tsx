@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useEffect } from "react";
+import { useTranslation } from 'react-i18next';
 import { API_URL } from '../../../../config';
 import { MFASetupModal } from "./UserManagement/MFASetupModal";
 import { ConfirmationModal } from "./UserManagement/ConfirmationModal";
@@ -28,6 +29,7 @@ interface ProfileSectionProps {
 export const ProfileSection: React.FC<ProfileSectionProps> = ({
   setMessage,
 }) => {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [showPasswordChange, setShowPasswordChange] = useState<
@@ -101,7 +103,7 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({
         credentials: "include",
       });
 
-      if (!res.ok) throw new Error("Failed to start MFA setup");
+      if (!res.ok) throw new Error(t('profile.failedToStartMfaSetup'));
 
       const data = await res.json();
       setMfaSetup(data);
@@ -128,9 +130,9 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({
         }),
       });
 
-      if (!res.ok) throw new Error("Failed to verify MFA setup");
+      if (!res.ok) throw new Error(t('profile.failedToVerifyMfaSetup'));
 
-      setMessage({ type: "success", text: "MFA enabled successfully" });
+      setMessage({ type: "success", text: t('userManagement.mfaEnabledSuccessfully') });
       setMfaSetup(null);
       setMfaToken("");
       loadCurrentUser();
@@ -144,10 +146,9 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({
   const handleDisableMFA = async (): Promise<void> => {
     setConfirmModal({
       show: true,
-      title: "Disable MFA",
-      message:
-        "Are you sure you want to disable MFA? This will make your account less secure.",
-      confirmText: "Disable MFA",
+      title: t('profile.disableMfa'),
+      message: t('userManagement.disableMfaConfirm'),
+      confirmText: t('userManagement.disableMfa'),
       isDangerous: true,
       requirePassword: true,
       onConfirm: (password) => {
@@ -169,9 +170,9 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({
         body: JSON.stringify({ password }),
       });
 
-      if (!res.ok) throw new Error("Failed to disable MFA");
+      if (!res.ok) throw new Error(t('profile.failedToDisableMfa'));
 
-      setMessage({ type: "success", text: "MFA disabled successfully" });
+      setMessage({ type: "success", text: t('userManagement.mfaDisabledSuccessfully') });
       loadCurrentUser();
     } catch (err: any) {
       setMessage({ type: "error", text: err.message });
@@ -187,13 +188,13 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({
         credentials: "include",
       });
 
-      if (!res.ok) throw new Error("Failed to load passkeys");
+      if (!res.ok) throw new Error(t('userManagement.failedToLoadPasskeys'));
 
       const data = await res.json();
       setPasskeys(data.passkeys || []);
       setShowPasskeys(currentUser?.id);
     } catch (err) {
-      setMessage({ type: "error", text: "Failed to load passkeys" });
+      setMessage({ type: "error", text: t('userManagement.failedToLoadPasskeys') });
     } finally {
       setLoading(false);
     }
@@ -201,7 +202,7 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({
 
   const handleRegisterPasskey = async (): Promise<void> => {
     if (!passkeyName.trim()) {
-      setMessage({ type: "error", text: "Please enter a passkey name" });
+      setMessage({ type: "error", text: t('userManagement.passkeyNameRequired') });
       return;
     }
 
@@ -215,7 +216,7 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({
         }
       );
 
-      if (!optionsRes.ok) throw new Error("Failed to get passkey options");
+      if (!optionsRes.ok) throw new Error(t('userManagement.failedToGetRegistrationOptions'));
 
       const options = await optionsRes.json();
 
@@ -236,20 +237,20 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({
         }
       );
 
-      if (!verifyRes.ok) throw new Error("Failed to register passkey");
+      if (!verifyRes.ok) throw new Error(t('userManagement.passkeyRegistrationFailed'));
 
-      setMessage({ type: "success", text: "Passkey registered successfully" });
+      setMessage({ type: "success", text: t('userManagement.passkeyRegisteredSuccessfully') });
       setPasskeyName("");
       if (showPasskeys !== undefined) {
         handleLoadPasskeys();
       }
     } catch (err: any) {
       if (err.name === "NotAllowedError") {
-        setMessage({ type: "error", text: "Passkey registration cancelled" });
+        setMessage({ type: "error", text: t('userManagement.passkeyRegistrationCancelled') });
       } else {
         setMessage({
           type: "error",
-          text: err.message || "Passkey registration failed",
+          text: err.message || t('userManagement.passkeyRegistrationFailed'),
         });
       }
     } finally {
@@ -268,14 +269,14 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({
         }
       );
 
-      if (!res.ok) throw new Error("Failed to remove passkey");
+      if (!res.ok) throw new Error(t('userManagement.failedToRemovePasskey'));
 
-      setMessage({ type: "success", text: "Passkey removed successfully" });
+      setMessage({ type: "success", text: t('userManagement.passkeyRemovedSuccessfully') });
       if (showPasskeys !== undefined) {
         handleLoadPasskeys();
       }
     } catch (err) {
-      setMessage({ type: "error", text: "Failed to remove passkey" });
+      setMessage({ type: "error", text: t('userManagement.failedToRemovePasskey') });
     } finally {
       setLoading(false);
     }
@@ -283,14 +284,14 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({
 
   const handleChangePassword = async (): Promise<void> => {
     if (passwordChange.newPassword !== passwordChange.confirmPassword) {
-      setMessage({ type: "error", text: "Passwords do not match" });
+      setMessage({ type: "error", text: t('userManagement.passwordsDoNotMatch') });
       return;
     }
 
     if (passwordChange.newPassword.length < 8) {
       setMessage({
         type: "error",
-        text: "Password must be at least 8 characters",
+        text: t('userManagement.passwordMinLength'),
       });
       return;
     }
@@ -309,10 +310,10 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({
 
       if (!res.ok) {
         const data = await res.json();
-        throw new Error(data.error || "Failed to change password");
+        throw new Error(data.error || t('userManagement.failedToChangePassword'));
       }
 
-      setMessage({ type: "success", text: "Password changed successfully" });
+      setMessage({ type: "success", text: t('userManagement.passwordChangedSuccessfully') });
       setShowPasswordChange(undefined);
       setPasswordChange({
         currentPassword: "",
@@ -329,7 +330,7 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({
   if (!currentUser) {
     return (
       <div style={{ padding: "2rem", textAlign: "center", color: "#888" }}>
-        Loading...
+        {t('common.loading')}
       </div>
     );
   }

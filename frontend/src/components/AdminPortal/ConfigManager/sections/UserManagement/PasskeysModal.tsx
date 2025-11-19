@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { useTranslation } from 'react-i18next';
 import { TrashIcon } from "../../../../icons";
 import type { Passkey } from "./types";
 
@@ -21,6 +22,7 @@ export const PasskeysModal: React.FC<PasskeysModalProps> = ({
   onRegister,
   onRemove,
 }) => {
+  const { t } = useTranslation();
   // Disable body scroll when modal is open (iOS-compatible)
   useEffect(() => {
     const scrollY = window.scrollY;
@@ -46,15 +48,14 @@ export const PasskeysModal: React.FC<PasskeysModalProps> = ({
         style={{ maxWidth: "600px" }}
       >
         <div className="share-modal-header">
-          <h2>🔑 Manage Passkeys</h2>
-          <button className="close-button" onClick={onClose} aria-label="Close">
+          <h2>🔑 {t('userManagement.managePasskeys')}</h2>
+          <button className="close-button" onClick={onClose} aria-label={t('common.close')}>
             ×
           </button>
         </div>
         <div className="share-modal-content">
           <p className="share-description" style={{ marginBottom: "1rem" }}>
-            Passkeys provide secure, passwordless authentication using
-            biometrics or device security.
+            {t('userManagement.passkeysDescription')}
           </p>
 
           {passkeys.length === 0 ? (
@@ -74,7 +75,7 @@ export const PasskeysModal: React.FC<PasskeysModalProps> = ({
                   margin: 0,
                 }}
               >
-                No passkeys registered yet
+                {t('userManagement.noPasskeysRegistered')}
               </p>
             </div>
           ) : (
@@ -115,7 +116,7 @@ export const PasskeysModal: React.FC<PasskeysModalProps> = ({
                         color: "#9ca3af",
                       }}
                     >
-                      Added {new Date(passkey.created_at).toLocaleDateString()}
+                      {t('userManagement.added')} {new Date(passkey.created_at).toLocaleDateString()}
                     </div>
                   </div>
                   <button
@@ -131,7 +132,7 @@ export const PasskeysModal: React.FC<PasskeysModalProps> = ({
                     disabled={loading}
                   >
                     <TrashIcon width={14} height={14} />
-                    Remove
+                    {t('userManagement.remove')}
                   </button>
                 </div>
               ))}
@@ -149,14 +150,14 @@ export const PasskeysModal: React.FC<PasskeysModalProps> = ({
               className="branding-label"
               style={{ marginBottom: "0.5rem" }}
             >
-              Register New Passkey
+              {t('userManagement.registerNewPasskey')}
             </label>
             <div style={{ display: "flex", gap: "0.5rem" }}>
               <input
                 type="text"
                 value={passkeyName}
                 onChange={(e) => onNameChange(e.target.value)}
-                placeholder="Passkey name (e.g., MacBook Touch ID)"
+                placeholder={t('userManagement.passkeyNamePlaceholder')}
                 className="branding-input"
                 style={{ flex: 1 }}
               />
@@ -166,7 +167,7 @@ export const PasskeysModal: React.FC<PasskeysModalProps> = ({
                 style={{ padding: "0.5rem 1rem", whiteSpace: "nowrap" }}
                 disabled={loading || !passkeyName.trim()}
               >
-                {loading ? "Registering..." : "+ Register"}
+                {loading ? t('userManagement.registering') : t('userManagement.register')}
               </button>
             </div>
           </div>

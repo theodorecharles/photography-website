@@ -4,6 +4,7 @@
  */
 
 import { useState, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { API_URL } from '../../../../config';
 import { ConfirmModalConfig } from '../types';
 import { fetchWithRateLimitCheck } from '../../../../utils/fetchWrapper';
@@ -21,6 +22,7 @@ export const useFolderManagement = ({
   loadAlbums,
   showConfirmation,
 }: UseFolderManagementProps) => {
+  const { t } = useTranslation();
   const [newFolderName, setNewFolderName] = useState('');
   const [isCreatingFolder, setIsCreatingFolder] = useState(false);
 
@@ -48,7 +50,7 @@ export const useFolderManagement = ({
 
       trackFolderCreated(sanitizedName);
       await loadAlbums();
-      setMessage({ type: 'success', text: `Folder "${sanitizedName}" created!` });
+      setMessage({ type: 'success', text: t('albumsManager.folderCreated', { folderName: sanitizedName }) });
       setNewFolderName('');
       return true;
     } catch (err) {

@@ -69,6 +69,28 @@ if [ -d "frontend/public/albums-data" ]; then
     rm -rf frontend/public/albums-data
 fi
 
+# Remove icon files (will be regenerated from defaults in config/icons/)
+if [ -f "frontend/public/icon-192.png" ]; then
+    echo "  ✓ Removing frontend/public/icon-192.png"
+    rm frontend/public/icon-192.png
+fi
+if [ -f "frontend/public/icon-512.png" ]; then
+    echo "  ✓ Removing frontend/public/icon-512.png"
+    rm frontend/public/icon-512.png
+fi
+if [ -f "frontend/public/apple-touch-icon.png" ]; then
+    echo "  ✓ Removing frontend/public/apple-touch-icon.png"
+    rm frontend/public/apple-touch-icon.png
+fi
+if [ -f "frontend/public/favicon.ico" ]; then
+    echo "  ✓ Removing frontend/public/favicon.ico"
+    rm frontend/public/favicon.ico
+fi
+if [ -f "frontend/public/favicon.png" ]; then
+    echo "  ✓ Removing frontend/public/favicon.png"
+    rm frontend/public/favicon.png
+fi
+
 # Stop any running PM2 processes
 echo "  🛑 Stopping PM2 processes..."
 pm2 stop all 2>/dev/null || true

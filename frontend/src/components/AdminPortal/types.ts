@@ -33,6 +33,7 @@ export interface BrandingConfig {
   faviconPath: string;
   shuffleHomepage?: boolean;
   photoLicense?: string;
+  language?: string;
 }
 
 export interface ImageOptimizationSettings {

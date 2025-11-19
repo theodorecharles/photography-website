@@ -4,6 +4,7 @@
  */
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Photo } from './types';
 import { InfoIcon, CheckmarkIcon, LinkIcon, DownloadIcon, FullscreenIcon, CloseIcon } from '../icons/';
 
@@ -34,6 +35,8 @@ const ModalControls: React.FC<ModalControlsProps> = ({
   selectedPhoto,
   style,
 }) => {
+  const { t } = useTranslation();
+  
   return (
     <div
       className="modal-controls-top"
@@ -44,7 +47,7 @@ const ModalControls: React.FC<ModalControlsProps> = ({
         <button
           onClick={onToggleInfo}
           className={showInfo ? 'active' : ''}
-          title="Photo information"
+          title={t('photo.photoInformation')}
         >
           <InfoIcon width="20" height="20" />
         </button>
@@ -55,7 +58,7 @@ const ModalControls: React.FC<ModalControlsProps> = ({
             e.stopPropagation();
             onCopyLink(selectedPhoto);
           }}
-          title={copiedLink ? "Copied!" : "Copy link"}
+          title={copiedLink ? t('photo.copied') : t('photo.copyLink')}
           className={copiedLink ? "copied" : ""}
         >
           {copiedLink ? (
@@ -71,7 +74,7 @@ const ModalControls: React.FC<ModalControlsProps> = ({
             e.stopPropagation();
             onDownload(selectedPhoto);
           }}
-          title="Download photo"
+          title={t('photo.downloadPhoto')}
         >
           <DownloadIcon width="20" height="20" />
         </button>
@@ -85,7 +88,7 @@ const ModalControls: React.FC<ModalControlsProps> = ({
             e.stopPropagation();
             onToggleFullscreen();
           }}
-          title={isFullscreen ? "Exit fullscreen" : "Fullscreen"}
+          title={isFullscreen ? t('photo.exitFullscreen') : t('photo.fullscreen')}
         >
           <FullscreenIcon width="24" height="24" isExit={isFullscreen} />
         </button>
@@ -96,7 +99,7 @@ const ModalControls: React.FC<ModalControlsProps> = ({
             e.stopPropagation();
             onClose();
           }}
-          title="Close"
+          title={t('photo.close')}
         >
           <CloseIcon width="24" height="24" />
         </button>
