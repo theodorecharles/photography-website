@@ -687,12 +687,12 @@ const BrandingSection: React.FC<BrandingSectionProps> = ({
               onChange={async (newValue) => {
                 handleBrandingChange("language", newValue);
                 
-                // Change i18n language immediately
-                i18n.changeLanguage(newValue);
-                
                 // Auto-save immediately
                 setSavingBrandingSection('Language');
                 try {
+                  // Change i18n language and wait for it to load
+                  await i18n.changeLanguage(newValue);
+                  
                   const updatedBranding = {
                     ...branding,
                     language: newValue
@@ -708,6 +708,7 @@ const BrandingSection: React.FC<BrandingSectionProps> = ({
                   });
 
                   if (res.ok) {
+                    // Get the message in the NEW language (already changed above)
                     setMessage({ type: 'success', text: t('branding.languageUpdated') });
                     trackBrandingUpdate(['language']);
                     setOriginalBranding(updatedBranding);
@@ -717,14 +718,14 @@ const BrandingSection: React.FC<BrandingSectionProps> = ({
                     setMessage({ type: 'error', text: errorData.error || t('branding.failedToSaveLanguage') });
                     // Revert on error
                     setBranding(branding);
-                    i18n.changeLanguage(branding.language || 'en');
+                    await i18n.changeLanguage(branding.language || 'en');
                   }
                 } catch (err) {
                   const errorMessage = err instanceof Error ? err.message : t('branding.errorSavingLanguage');
                   setMessage({ type: 'error', text: errorMessage });
                   // Revert on error
                   setBranding(branding);
-                  i18n.changeLanguage(branding.language || 'en');
+                  await i18n.changeLanguage(branding.language || 'en');
                 } finally {
                   setSavingBrandingSection(null);
                 }

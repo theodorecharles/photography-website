@@ -25,10 +25,11 @@ export default function CustomDropdown({
 }: CustomDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   const selectedOption = options.find((opt) => opt.value === value);
 
-  // Close dropdown when clicking outside or scrolling
+  // Close dropdown when clicking outside or scrolling (but not when scrolling inside the dropdown)
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -36,7 +37,11 @@ export default function CustomDropdown({
       }
     };
 
-    const handleScroll = () => {
+    const handleScroll = (event: Event) => {
+      // Don't close if scrolling within the dropdown menu itself
+      if (menuRef.current && menuRef.current.contains(event.target as Node)) {
+        return;
+      }
       setIsOpen(false);
     };
 
@@ -118,6 +123,7 @@ export default function CustomDropdown({
       {/* Dropdown Menu */}
       {isOpen && !disabled && (
         <div
+          ref={menuRef}
           style={{
             position: 'fixed',
             ...(() => {
