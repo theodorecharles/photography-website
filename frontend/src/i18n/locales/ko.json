@@ -322,7 +322,8 @@
     "moveDown": "아래로 이동",
     "cannotPublishEmptyFolder": "빈 폴더를 게시할 수 없습니다",
     "deleteFolderTitle": "폴더 삭제",
-    "album": "앨범"
+    "album": "앨범",
+    "albums": "앨범"
   },
   "settings": {
     "saved": "{{section}} 설정이 저장되었습니다!",

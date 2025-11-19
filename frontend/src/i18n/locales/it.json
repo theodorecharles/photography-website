@@ -322,7 +322,8 @@
     "moveDown": "Sposta giù",
     "cannotPublishEmptyFolder": "Impossibile pubblicare una cartella vuota",
     "deleteFolderTitle": "Elimina cartella",
-    "album": "album"
+    "album": "album",
+    "albums": "album"
   },
   "settings": {
     "saved": "Impostazioni di {{section}} salvate!",

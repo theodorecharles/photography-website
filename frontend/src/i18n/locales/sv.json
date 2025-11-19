@@ -322,7 +322,8 @@
     "moveDown": "Flytta ner",
     "cannotPublishEmptyFolder": "Kan inte publicera tom mapp",
     "deleteFolderTitle": "Ta bort mapp",
-    "album": "album"
+    "album": "album",
+    "albums": "album"
   },
   "settings": {
     "saved": "{{section}} inställningar sparade!",

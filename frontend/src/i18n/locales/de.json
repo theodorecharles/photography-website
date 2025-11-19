@@ -322,7 +322,8 @@
     "moveDown": "Nach unten verschieben",
     "cannotPublishEmptyFolder": "Leere Ordner können nicht veröffentlicht werden",
     "deleteFolderTitle": "Ordner löschen",
-    "album": "Album"
+    "album": "Album",
+    "albums": "Alben"
   },
   "settings": {
     "saved": "{{section}} Einstellungen gespeichert!",

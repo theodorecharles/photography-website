@@ -50,7 +50,8 @@ async function generateAITitleForImageAsync(
   album: string,
   filename: string,
   projectRoot: string,
-  jobId: string
+  jobId: string,
+  language: string = 'en'
 ): Promise<void> {
   try {
     const openai = new OpenAI({ apiKey });
@@ -67,6 +68,32 @@ async function generateAITitleForImageAsync(
     const extension = path.extname(filename).toLowerCase().substring(1);
     const mimeType = extension === 'jpg' || extension === 'jpeg' ? 'image/jpeg' : `image/${extension}`;
 
+    // Language names for prompt
+    const languageNames: Record<string, string> = {
+      en: 'English',
+      ja: 'Japanese',
+      es: 'Spanish',
+      fr: 'French',
+      de: 'German',
+      it: 'Italian',
+      pt: 'Portuguese',
+      ru: 'Russian',
+      zh: 'Chinese',
+      ko: 'Korean',
+      nl: 'Dutch',
+      pl: 'Polish',
+      tr: 'Turkish',
+      sv: 'Swedish',
+      no: 'Norwegian',
+      ro: 'Romanian',
+      vi: 'Vietnamese',
+      id: 'Indonesian',
+      tl: 'Tagalog'
+    };
+    
+    const languageName = languageNames[language] || 'English';
+    const promptText = `Generate a concise, descriptive title for this image in ${languageName}. The title should be 3-8 words and capture the essence of the image. Output ONLY the title in ${languageName}, nothing else.`;
+
     const response = await openai.chat.completions.create({
       model: "gpt-4o-mini",
       messages: [
@@ -75,7 +102,7 @@ async function generateAITitleForImageAsync(
           content: [
             {
               type: "text",
-              text: "Generate a concise, descriptive title for this image. The title should be 3-8 words and capture the essence of the image. Output ONLY the title, nothing else."
+              text: promptText
             },
             {
               type: "image_url",
@@ -449,6 +476,7 @@ router.delete("/:album/photos/:photo", requireManager, async (req: Request, res:
 router.post("/:album/upload", requireManager, upload.single('photo'), async (req: Request, res: Response): Promise<void> => {
   try {
     const { album } = req.params;
+    const { language = 'en' } = req.body;
     
     const sanitizedAlbum = sanitizeName(album);
     if (!sanitizedAlbum) {
@@ -568,7 +596,8 @@ router.post("/:album/upload", requireManager, upload.single('photo'), async (req
                 sanitizedAlbum,
                 sanitizedFilename,
                 projectRoot,
-                jobId
+                jobId,
+                language
               );
             }
           } catch (err) {

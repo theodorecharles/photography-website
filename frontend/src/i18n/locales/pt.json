@@ -322,7 +322,8 @@
     "moveDown": "Mover para baixo",
     "cannotPublishEmptyFolder": "Não é possível publicar pasta vazia",
     "deleteFolderTitle": "Excluir pasta",
-    "album": "álbum"
+    "album": "álbum",
+    "albums": "álbuns"
   },
   "settings": {
     "saved": "Configurações de {{section}} salvas!",

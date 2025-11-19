@@ -322,7 +322,8 @@
     "moveDown": "Omlaag verplaatsen",
     "cannotPublishEmptyFolder": "Kan lege map niet publiceren",
     "deleteFolderTitle": "Verwijder map",
-    "album": "album"
+    "album": "album",
+    "albums": "albums"
   },
   "settings": {
     "saved": "{{section}} instellingen opgeslagen!",

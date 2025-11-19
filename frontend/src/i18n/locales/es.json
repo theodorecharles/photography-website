@@ -322,7 +322,8 @@
     "moveDown": "Mover hacia abajo",
     "cannotPublishEmptyFolder": "No se puede publicar una carpeta vacía",
     "deleteFolderTitle": "Eliminar carpeta",
-    "album": "álbum"
+    "album": "álbum",
+    "albums": "álbumes"
   },
   "settings": {
     "saved": "¡Configuración de {{section}} guardada!",

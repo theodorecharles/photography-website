@@ -322,7 +322,8 @@
     "moveDown": "Przenieś w dół",
     "cannotPublishEmptyFolder": "Nie można opublikować pustego folderu",
     "deleteFolderTitle": "Usuń folder",
-    "album": "album"
+    "album": "album",
+    "albums": "albumy"
   },
   "settings": {
     "saved": "Ustawienia {{section}} zapisane!",

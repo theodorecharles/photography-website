@@ -322,7 +322,8 @@
     "moveDown": "Aşağı taşı",
     "cannotPublishEmptyFolder": "Boş klasör yayımlanamaz",
     "deleteFolderTitle": "Klasörü sil",
-    "album": "albüm"
+    "album": "albüm",
+    "albums": "albümler"
   },
   "settings": {
     "saved": "{{section}} ayarları kaydedildi!",

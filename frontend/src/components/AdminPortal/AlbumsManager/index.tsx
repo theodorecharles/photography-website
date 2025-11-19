@@ -57,7 +57,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   setMessage,
   userRole,
 }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   // Check if user can edit (admin or manager)
   const canEdit = userRole === 'admin' || userRole === 'manager';
   const [searchParams, setSearchParams] = useSearchParams();
@@ -492,6 +492,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     selectAlbum,
     setMessage,
     loadAlbums,
+    language: i18n.language,
   });
 
   const albumHandlers = createAlbumHandlers({

@@ -322,7 +322,8 @@
     "moveDown": "Переместить вниз",
     "cannotPublishEmptyFolder": "Невозможно опубликовать пустую папку",
     "deleteFolderTitle": "Удалить папку",
-    "album": "альбом"
+    "album": "альбом",
+    "albums": "альбомы"
   },
   "settings": {
     "saved": "Настройки {{section}} сохранены!",

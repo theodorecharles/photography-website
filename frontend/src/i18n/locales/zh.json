@@ -322,7 +322,8 @@
     "moveDown": "向下移动",
     "cannotPublishEmptyFolder": "无法发布空文件夹",
     "deleteFolderTitle": "删除文件夹",
-    "album": "相册"
+    "album": "相册",
+    "albums": "相册"
   },
   "settings": {
     "saved": "{{section}} 设置已保存！",

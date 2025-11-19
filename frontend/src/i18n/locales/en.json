@@ -279,6 +279,7 @@
     "cannotPublishEmptyFolder": "Cannot publish empty folder",
     "deleteFolderTitle": "Delete folder",
     "album": "album",
+    "albums": "albums",
     "loadingPhotos": "Loading photos...",
     "savingOrder": "Saving order...",
     "saveOrder": "Save Order",

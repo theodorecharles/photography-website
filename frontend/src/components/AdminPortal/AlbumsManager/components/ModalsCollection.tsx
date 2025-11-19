@@ -206,7 +206,7 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
       const res = await fetch(`${API_URL}/api/ai-titles/generate-single`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ album, filename }),
+        body: JSON.stringify({ album, filename, language: i18n.language }),
         credentials: 'include',
       });
       

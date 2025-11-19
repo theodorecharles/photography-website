@@ -322,7 +322,8 @@
     "moveDown": "下に移動",
     "cannotPublishEmptyFolder": "空のフォルダーを公開できません",
     "deleteFolderTitle": "フォルダーを削除",
-    "album": "アルバム"
+    "album": "アルバム",
+    "albums": "アルバム"
   },
   "settings": {
     "saved": "{{section}}設定が保存されました！",
