@@ -475,7 +475,7 @@ export function deleteAlbumState(name: string): boolean {
 }
 
 /**
- * Rename an album (updates albums table and all image_metadata entries)
+ * Rename an album (updates albums table, image_metadata, and share_links)
  */
 export function renameAlbum(oldName: string, newName: string): boolean {
   const db = getDatabase();
@@ -483,21 +483,29 @@ export function renameAlbum(oldName: string, newName: string): boolean {
   try {
     // Use a transaction to ensure atomicity
     const transaction = db.transaction(() => {
-      // Update albums table
-      const albumStmt = db.prepare(`
-        UPDATE albums 
-        SET name = ? 
-        WHERE name = ?
+      // Update share_links first (due to foreign key constraint)
+      const shareLinksStmt = db.prepare(`
+        UPDATE share_links 
+        SET album = ? 
+        WHERE album = ?
       `);
-      albumStmt.run(newName, oldName);
+      shareLinksStmt.run(newName, oldName);
       
-      // Update all image_metadata entries
+      // Update image_metadata entries
       const metadataStmt = db.prepare(`
         UPDATE image_metadata 
         SET album = ? 
         WHERE album = ?
       `);
       metadataStmt.run(newName, oldName);
+      
+      // Update albums table last
+      const albumStmt = db.prepare(`
+        UPDATE albums 
+        SET name = ? 
+        WHERE name = ?
+      `);
+      albumStmt.run(newName, oldName);
     });
     
     transaction();
