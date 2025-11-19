@@ -481,6 +481,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     saveAlbumOrder: albumManagement.saveAlbumOrder,
     setShowFolderDeleteModal,
     setFolderToDelete,
+    t,
   });
 
   const uploadHandlers = createUploadHandlers({

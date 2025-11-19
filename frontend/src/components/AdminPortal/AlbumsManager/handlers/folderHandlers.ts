@@ -3,6 +3,7 @@
  * Handles folder deletion, toggling published status, and folder operations
  */
 
+import { TFunction } from 'i18next';
 import { Album, AlbumFolder } from '../types';
 import { API_URL } from '../../../../config';
 import { fetchWithRateLimitCheck } from '../../../../utils/fetchWrapper';
@@ -21,10 +22,11 @@ interface FolderHandlersProps {
   saveAlbumOrder: (albumsToSave?: Album[], silent?: boolean) => Promise<boolean>;
   setShowFolderDeleteModal: (show: boolean) => void;
   setFolderToDelete: (folder: { name: string; albumCount: number } | null) => void;
+  t: TFunction;
 }
 
 export const createFolderHandlers = (props: FolderHandlersProps) => {
-  const { localAlbums, localFolders, setMessage, loadAlbums, saveAlbumOrder, setShowFolderDeleteModal, setFolderToDelete } = props;
+  const { localAlbums, localFolders, setMessage, loadAlbums, saveAlbumOrder, setShowFolderDeleteModal, setFolderToDelete, t } = props;
 
   const handleDeleteEmptyFolder = async (folderName: string): Promise<boolean> => {
     try {
@@ -37,16 +39,16 @@ export const createFolderHandlers = (props: FolderHandlersProps) => {
       );
 
       if (res.ok) {
-        setMessage({ type: 'success', text: `Folder "${folderName}" deleted` });
+        setMessage({ type: 'success', text: t('albumsManager.folderDeleted', { folderName }) });
         await loadAlbums();
         return true;
       } else {
         const error = await res.json();
-        setMessage({ type: 'error', text: error.error || 'Failed to delete folder' });
+        setMessage({ type: 'error', text: error.error || t('albumsManager.failedToDeleteFolder') });
         return false;
       }
     } catch (err) {
-      setMessage({ type: 'error', text: 'Network error occurred' });
+      setMessage({ type: 'error', text: t('albumsManager.networkErrorOccurred') });
       return false;
     }
   };
@@ -60,7 +62,7 @@ export const createFolderHandlers = (props: FolderHandlersProps) => {
     // Save any unsaved changes before deleting (silently, no success message)
     const saveSuccess = await saveAlbumOrder(localAlbums, true);
     if (!saveSuccess) {
-      setMessage({ type: 'error', text: 'Failed to save changes before deleting folder' });
+      setMessage({ type: 'error', text: t('albumsManager.failedToSaveChangesBeforeDeletingFolder') });
       return;
     }
 
@@ -88,17 +90,17 @@ export const createFolderHandlers = (props: FolderHandlersProps) => {
         }).length;
         trackFolderDeleted(folderName, deleteAlbums, albumsInFolder);
         const action = deleteAlbums ? 'deleted with all albums' : 'deleted (albums moved to Uncategorized)';
-        setMessage({ type: 'success', text: `Folder "${folderName}" ${action}` });
+        setMessage({ type: 'success', text: t('albumsManager.folderActionCompleted', { folderName, action }) });
         await loadAlbums();
         
         // Notify other components
         window.dispatchEvent(new Event('albums-updated'));
       } else {
         const error = await res.json();
-        setMessage({ type: 'error', text: error.error || 'Failed to delete folder' });
+        setMessage({ type: 'error', text: error.error || t('albumsManager.failedToDeleteFolder') });
       }
     } catch (err) {
-      setMessage({ type: 'error', text: 'Network error occurred' });
+      setMessage({ type: 'error', text: t('albumsManager.networkErrorOccurred') });
     }
   };
 
@@ -133,10 +135,10 @@ export const createFolderHandlers = (props: FolderHandlersProps) => {
         info(`✓ Folder "${folderName}" published=${!currentPublished}, ${albumsUpdated} albums updated`);
       } else {
         const error = await res.json();
-        setMessage({ type: 'error', text: error.error || 'Failed to update folder' });
+        setMessage({ type: 'error', text: error.error || t('albumsManager.failedToUpdateFolder') });
       }
     } catch (err) {
-      setMessage({ type: 'error', text: 'Network error occurred' });
+      setMessage({ type: 'error', text: t('albumsManager.networkErrorOccurred') });
     }
   };
 

@@ -35,7 +35,7 @@ export const createPhotoHandlers = (props: PhotoHandlersProps) => {
   // Retry optimization for a photo
   const handleRetryOptimization = async (album: string, filename: string): Promise<void> => {
     try {
-      setMessage({ type: 'success', text: `Retrying optimization for ${filename}...` });
+      setMessage({ type: 'success', text: t('albumsManager.retryingOptimization', { filename }) });
       
       // Clear the error state immediately
       setAlbumPhotos((prev: Photo[]) =>
@@ -62,12 +62,12 @@ export const createPhotoHandlers = (props: PhotoHandlersProps) => {
       }
       
       trackPhotoRetryOptimization(album, `${album}/${filename}`);
-      setMessage({ type: 'success', text: `Optimization restarted for ${filename}` });
+      setMessage({ type: 'success', text: t('albumsManager.optimizationRestarted', { filename }) });
       
       // Reload photos to get the updated version
       await loadPhotos(album);
     } catch (err) {
-      setMessage({ type: 'error', text: 'Failed to retry optimization' });
+      setMessage({ type: 'error', text: t('albumsManager.failedToRetryOptimization') });
       // Restore error state
       setAlbumPhotos((prev: Photo[]) =>
         prev.map((photo: Photo) =>
@@ -82,7 +82,7 @@ export const createPhotoHandlers = (props: PhotoHandlersProps) => {
   // Retry AI title generation for a photo
   const handleRetryAI = async (album: string, filename: string): Promise<void> => {
     try {
-      setMessage({ type: 'success', text: `Retrying AI title generation for ${filename}...` });
+      setMessage({ type: 'success', text: t('albumsManager.retryingAIGeneration', { filename }) });
       
       // Clear the error state immediately
       setAlbumPhotos((prev: Photo[]) =>
@@ -109,12 +109,12 @@ export const createPhotoHandlers = (props: PhotoHandlersProps) => {
       }
       
       trackPhotoRetryAI(album, `${album}/${filename}`);
-      setMessage({ type: 'success', text: `AI title generation restarted for ${filename}` });
+      setMessage({ type: 'success', text: t('albumsManager.aiGenerationRestarted', { filename }) });
       
       // Reload photos to get the updated version
       await loadPhotos(album);
     } catch (err) {
-      setMessage({ type: 'error', text: 'Failed to retry AI title generation' });
+      setMessage({ type: 'error', text: t('albumsManager.failedToRetryAIGeneration') });
       // Restore error state
       setAlbumPhotos((prev: Photo[]) =>
         prev.map((photo: Photo) =>
@@ -159,7 +159,7 @@ export const createPhotoHandlers = (props: PhotoHandlersProps) => {
           );
 
           if (res.ok) {
-            setMessage({ type: 'success', text: 'Photo deleted' });
+            setMessage({ type: 'success', text: t('albumsManager.photoDeleted') });
             trackPhotoDeleted(album, filename, photoTitle || filename);
             
             // Remove photo from both local state AND original order
@@ -171,11 +171,11 @@ export const createPhotoHandlers = (props: PhotoHandlersProps) => {
             setDeletingPhotoId(null);
           } else {
             const error = await res.json();
-            setMessage({ type: 'error', text: error.error || 'Failed to delete photo' });
+            setMessage({ type: 'error', text: error.error || t('albumsManager.failedToDeletePhoto') });
             setDeletingPhotoId(null); // Clear deleting state on error
           }
         } catch (err) {
-          setMessage({ type: 'error', text: 'Network error occurred' });
+          setMessage({ type: 'error', text: t('albumsManager.networkErrorOccurred') });
           setDeletingPhotoId(null); // Clear deleting state on error
         }
       },

@@ -63,7 +63,7 @@ export const createAlbumHandlers = (props: AlbumHandlersProps) => {
     // Save any unsaved changes before deleting (silently, no success message)
     const saveSuccess = await saveAlbumOrder(localAlbums, true);
     if (!saveSuccess) {
-      setMessage({ type: 'error', text: 'Failed to save changes before deleting album' });
+      setMessage({ type: 'error', text: t('albumsManager.failedToSaveChangesBeforeDeletingAlbum') });
       return;
     }
 
@@ -82,7 +82,7 @@ export const createAlbumHandlers = (props: AlbumHandlersProps) => {
           );
 
           if (res.ok) {
-            setMessage({ type: 'success', text: `Album "${albumName}" deleted` });
+            setMessage({ type: 'success', text: t('albumsManager.albumDeleted', { albumName }) });
             trackAlbumDeleted(albumName);
             // If deleting the currently open album, trigger closing animation
             if (selectedAlbum === albumName) {
@@ -96,10 +96,10 @@ export const createAlbumHandlers = (props: AlbumHandlersProps) => {
             window.dispatchEvent(new Event('albums-updated'));
           } else {
             const error = await res.json();
-            setMessage({ type: 'error', text: error.error || 'Failed to delete album' });
+            setMessage({ type: 'error', text: error.error || t('albumsManager.failedToDeleteAlbum') });
           }
         } catch (err) {
-          setMessage({ type: 'error', text: 'Network error occurred' });
+          setMessage({ type: 'error', text: t('albumsManager.networkErrorOccurred') });
         }
       },
     });
@@ -137,7 +137,7 @@ export const createAlbumHandlers = (props: AlbumHandlersProps) => {
         window.dispatchEvent(new Event('albums-updated'));
       } else {
         const error = await res.json();
-        setMessage({ type: 'error', text: error.error || 'Failed to update album' });
+        setMessage({ type: 'error', text: error.error || t('albumsManager.failedToUpdateAlbum') });
       }
     } catch (err) {
       setMessage({ type: 'error', text: 'Network error occurred' });
@@ -175,7 +175,7 @@ export const createAlbumHandlers = (props: AlbumHandlersProps) => {
         await loadAlbums();
       } else {
         const error = await res.json();
-        setMessage({ type: 'error', text: error.error || 'Failed to update album' });
+        setMessage({ type: 'error', text: error.error || t('albumsManager.failedToUpdateAlbum') });
       }
     } catch (err) {
       setMessage({ type: 'error', text: 'Network error occurred' });
@@ -207,7 +207,7 @@ export const createAlbumHandlers = (props: AlbumHandlersProps) => {
     }
 
     if (localAlbums.some(a => a.name === sanitized)) {
-      setMessage({ type: 'error', text: `Album "${sanitized}" already exists` });
+      setMessage({ type: 'error', text: t('albumsManager.albumAlreadyExists', { albumName: sanitized }) });
       return;
     }
 
@@ -228,7 +228,7 @@ export const createAlbumHandlers = (props: AlbumHandlersProps) => {
       }
 
       trackAlbumRenamed(renamingAlbum, sanitized);
-      setMessage({ type: 'success', text: `Album renamed to "${sanitized}"` });
+      setMessage({ type: 'success', text: t('albumsManager.albumRenamed', { albumName: sanitized }) });
       setShowRenameModal(false);
       setRenamingAlbum(null);
       setNewAlbumName('');
@@ -244,7 +244,7 @@ export const createAlbumHandlers = (props: AlbumHandlersProps) => {
       window.dispatchEvent(new Event('albums-updated'));
     } catch (err) {
       error('Failed to rename album:', err);
-      setMessage({ type: 'error', text: 'Error renaming album' });
+      setMessage({ type: 'error', text: t('albumsManager.errorRenamingAlbum') });
     }
   };
 
@@ -285,10 +285,10 @@ export const createAlbumHandlers = (props: AlbumHandlersProps) => {
 
       const folderName = targetFolder?.name || null;
       trackAlbumMovedToFolder(albumName, folderName, folderId);
-      setMessage({ type: 'success', text: `Album moved to ${folderName || 'Uncategorized'}` });
+      setMessage({ type: 'success', text: t('albumsManager.albumMovedTo', { location: folderName || t('albumsManager.uncategorized') }) });
       await loadAlbums();
     } catch (err) {
-      setMessage({ type: 'error', text: 'Failed to move album' });
+      setMessage({ type: 'error', text: t('albumsManager.failedToMoveAlbum') });
       // Revert on error
       setLocalAlbums(localAlbums);
     }
