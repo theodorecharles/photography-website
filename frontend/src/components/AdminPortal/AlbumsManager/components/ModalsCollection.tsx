@@ -165,7 +165,7 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
   confirmConfig,
   setShowConfirmModal,
 }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   // Check if OpenAI is configured
   const [hasOpenAI, setHasOpenAI] = useState(false);
   const [generatingAITitle, setGeneratingAITitle] = useState(false);
