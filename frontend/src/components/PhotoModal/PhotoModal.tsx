@@ -49,7 +49,7 @@ const PhotoModal: React.FC<PhotoModalProps> = ({
     () => !localStorage.getItem('hideNavigationHint')
   );
   const [imageTitle, setImageTitle] = useState<string | null>(null);
-  const [siteName, setSiteName] = useState<string>('Photo');
+  const [siteName, setSiteName] = useState<string>('Galleria');
   
   const touchStartX = useRef<number | null>(null);
   const touchStartY = useRef<number | null>(null);
@@ -82,7 +82,7 @@ const PhotoModal: React.FC<PhotoModalProps> = ({
         const res = await fetchWithRateLimitCheck(`${API_URL}/api/branding`);
         if (res.ok) {
           const data = await res.json();
-          setSiteName(data.siteName || 'Photo');
+          setSiteName(data.siteName || 'Galleria');
         }
       } catch (err) {
         logError('Failed to fetch branding:', err);
@@ -222,13 +222,19 @@ const PhotoModal: React.FC<PhotoModalProps> = ({
       updateMetaTag('name', 'description', imageTitle);
       updateMetaTag('property', 'og:description', imageTitle);
       updateMetaTag('name', 'twitter:description', imageTitle);
+    } else if (selectedPhoto) {
+      // If no title yet, show a temporary title while loading
+      const tempTitle = `${siteName}`;
+      document.title = tempTitle;
     }
-    
-    // Cleanup: restore default title when unmounting
+  }, [imageTitle, selectedPhoto, siteName, getPhotoPermalink, updateMetaTag]);
+  
+  // Restore default title only when modal closes (component unmounts)
+  useEffect(() => {
     return () => {
       document.title = siteName;
     };
-  }, [imageTitle, selectedPhoto, siteName, getPhotoPermalink, updateMetaTag]);
+  }, [siteName]);
 
   // Handle copy link
   const handleCopyLink = useCallback(async (photo: Photo) => {
