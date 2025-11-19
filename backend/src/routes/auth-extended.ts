@@ -45,7 +45,7 @@ import {
 } from '../auth/passkeys.js';
 import crypto from 'crypto';
 import { sendInvitationEmail, sendPasswordResetEmail, isEmailServiceEnabled, generateInvitationUrl } from '../email.js';
-import { getCurrentConfig } from '../config.js';
+import { getCurrentConfig, reloadConfig } from '../config.js';
 
 const router = Router();
 
@@ -243,7 +243,8 @@ router.post('/invite', requireAdmin, async (req: Request, res: Response) => {
     let emailSent = false;
     
     if (emailEnabled) {
-      // Get site language from current config (reloaded to get latest value)
+      // Reload config from disk to get latest language setting
+      reloadConfig();
       const currentConfig = getCurrentConfig();
       const siteLanguage = (currentConfig as any).branding?.language || 'en';
       info(`[Invite] Using site language: ${siteLanguage}`);
@@ -322,7 +323,8 @@ router.post('/invite/resend/:userId', requireAdmin, async (req: Request, res: Re
     let emailSent = false;
     
     if (emailEnabled) {
-      // Get site language from current config (reloaded to get latest value)
+      // Reload config from disk to get latest language setting
+      reloadConfig();
       const currentConfig = getCurrentConfig();
       const siteLanguage = (currentConfig as any).branding?.language || 'en';
       
@@ -494,7 +496,8 @@ router.post('/password-reset/request', async (req: Request, res: Response) => {
     const expiresAt = new Date();
     expiresAt.setHours(expiresAt.getHours() + 1);
 
-    // Get site language from current config (reloaded to get latest value)
+    // Reload config from disk to get latest language setting
+    reloadConfig();
     const currentConfig = getCurrentConfig();
     const siteLanguage = (currentConfig as any).branding?.language || 'en';
 
@@ -647,7 +650,8 @@ router.post('/users/:userId/send-password-reset', requireAdmin, async (req: Requ
     const expiresAt = new Date();
     expiresAt.setHours(expiresAt.getHours() + 1);
 
-    // Get site language from current config (reloaded to get latest value)
+    // Reload config from disk to get latest language setting
+    reloadConfig();
     const currentConfig = getCurrentConfig();
     const siteLanguage = (currentConfig as any).branding?.language || 'en';
 
