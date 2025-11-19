@@ -7,12 +7,19 @@
  */
 
 import OpenAI from "openai";
-import { readFileSync, writeFileSync } from "fs";
+import { readFileSync, writeFileSync, existsSync } from "fs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
+import { config as loadEnv } from "dotenv";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+
+// Load .env file if it exists
+const envPath = join(__dirname, "../.env");
+if (existsSync(envPath)) {
+  loadEnv({ path: envPath });
+}
 
 const LOCALES_DIR = join(__dirname, "../frontend/src/i18n/locales");
 const CONFIG_PATH = join(__dirname, "../data/config.json");
@@ -182,14 +189,24 @@ async function main() {
   log("║     Auto-Translate Tool                          ║", "cyan");
   log("╚════════════════════════════════════════════════════╝\n", "cyan");
 
-  // Load OpenAI API key from config
-  const configData = readFileSync(CONFIG_PATH, "utf8");
-  const config = JSON.parse(configData);
-  const apiKey = config.openai?.apiKey;
+  // Load OpenAI API key from .env or config.json
+  let apiKey = process.env.OPENAI_API_KEY;
 
   if (!apiKey || apiKey.trim() === "") {
-    log("ERROR: OpenAI API key not configured in config.json", "yellow");
-    log("Please configure your OpenAI API key first.", "yellow");
+    // Fall back to config.json
+    if (existsSync(CONFIG_PATH)) {
+      const configData = readFileSync(CONFIG_PATH, "utf8");
+      const config = JSON.parse(configData);
+      apiKey = config.openai?.apiKey;
+    }
+  }
+
+  if (!apiKey || apiKey.trim() === "") {
+    log("ERROR: OpenAI API key not configured", "yellow");
+    log(
+      "Please set OPENAI_API_KEY in .env or configure it in data/config.json",
+      "yellow"
+    );
     process.exit(1);
   }
 

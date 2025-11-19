@@ -32,7 +32,15 @@ import config, {
 } from "./config.ts";
 import { validateProductionSecurity } from "./security.ts";
 import { initializeDatabase } from "./database.ts";
-import { initLogger, info, warn, error, debug, verbose, trace } from "./utils/logger.ts";
+import {
+  initLogger,
+  info,
+  warn,
+  error,
+  debug,
+  verbose,
+  trace,
+} from "./utils/logger.ts";
 
 // Initialize logger early with config or environment variable
 initLogger(getLogLevel());
@@ -70,7 +78,9 @@ import systemRouter from "./routes/system.ts";
 import shareLinksRouter from "./routes/share-links.ts";
 import optimizationStreamRouter from "./routes/optimization-stream.ts";
 import previewGridRouter from "./routes/preview-grid.ts";
-import staticJsonRouter, { generateStaticJSONFiles } from "./routes/static-json.ts";
+import staticJsonRouter, {
+  generateStaticJSONFiles,
+} from "./routes/static-json.ts";
 import setupRouter from "./routes/setup.ts";
 
 // Get the current directory path for ES modules
@@ -81,7 +91,9 @@ const __dirname = path.dirname(__filename);
 if (getConfigExists()) {
   validateProductionSecurity();
 } else {
-  info('[Server] Setup mode detected - skipping production security validation');
+  info(
+    "[Server] Setup mode detected - skipping production security validation"
+  );
 }
 
 // Initialize database lazily (on first use) to avoid ESM/CommonJS issues
@@ -97,13 +109,16 @@ app.set("trust proxy", 1);
 // Request logging middleware (verbose level)
 app.use((req, res, next) => {
   // Skip logging for static assets (photos, optimized, fonts, etc.)
-  const isStaticAsset = req.path.startsWith('/photos/') || 
-                        req.path.startsWith('/optimized/') || 
-                        req.path.startsWith('/fonts/') ||
-                        req.path.startsWith('/favicon.ico');
-  
+  const isStaticAsset =
+    req.path.startsWith("/photos/") ||
+    req.path.startsWith("/optimized/") ||
+    req.path.startsWith("/fonts/") ||
+    req.path.startsWith("/favicon.ico");
+
   if (!isStaticAsset) {
-    verbose(`[HTTP] ${req.method} ${req.path} - ${req.ip || req.socket.remoteAddress}`);
+    verbose(
+      `[HTTP] ${req.method} ${req.path} - ${req.ip || req.socket.remoteAddress}`
+    );
   }
   next();
 });
@@ -113,11 +128,12 @@ const isProduction = config.frontend.apiUrl.startsWith("https://");
 if (isProduction) {
   app.use((req, res, next) => {
     // Skip HTTPS redirect for IP addresses (e.g., direct Docker access) and localhost
-    const host = req.headers.host || '';
+    const host = req.headers.host || "";
     const ipPattern = /^\d+\.\d+\.\d+\.\d+(:\d+)?$/;
     const isIpAddress = ipPattern.test(host);
-    const isLocalhost = host.startsWith('localhost') || host.startsWith('127.0.0.1');
-    
+    const isLocalhost =
+      host.startsWith("localhost") || host.startsWith("127.0.0.1");
+
     // Check if request is already HTTPS
     const isSecure = req.secure || req.headers["x-forwarded-proto"] === "https";
 
@@ -141,22 +157,22 @@ try {
   photosDir = fs.realpathSync(photosDir);
   debug("[Server] Photos directory (real path):", photosDir);
 } catch (err) {
-    warn("[Server] Could not resolve photos directory:", photosDir);
+  warn("[Server] Could not resolve photos directory:", photosDir);
 }
 
 try {
   optimizedDir = fs.realpathSync(optimizedDir);
   debug("[Server] Optimized directory (real path):", optimizedDir);
 } catch (err) {
-    warn("[Server] Could not resolve optimized directory:", optimizedDir);
+  warn("[Server] Could not resolve optimized directory:", optimizedDir);
 }
 
 // Verify directory paths exist
 if (!fs.existsSync(photosDir)) {
-    warn("[Server] Photos directory does not exist:", photosDir);
+  warn("[Server] Photos directory does not exist:", photosDir);
 }
 if (!fs.existsSync(optimizedDir)) {
-    warn("[Server] Optimized directory does not exist:", optimizedDir);
+  warn("[Server] Optimized directory does not exist:", optimizedDir);
 }
 
 // Configure security middleware
@@ -186,13 +202,13 @@ app.use(
       // Get current state (dynamic, updates after config changes)
       const configExists = getConfigExists();
       const allowedOrigins = getAllowedOrigins();
-      
+
       // During OOBE (setup mode), allow any HTTPS origin to enable setup from any domain
-      if (!configExists && origin.startsWith('https://')) {
+      if (!configExists && origin.startsWith("https://")) {
         trace(`[OOBE] Allowing CORS from: ${origin}`);
         return callback(null, true);
       }
-      
+
       // Check exact matches first
       if (allowedOrigins.indexOf(origin) !== -1) {
         callback(null, true);
@@ -202,7 +218,7 @@ app.use(
       // Allow localhost on any port (for development)
       try {
         const url = new URL(origin);
-        if (url.hostname === 'localhost' || url.hostname === '127.0.0.1') {
+        if (url.hostname === "localhost" || url.hostname === "127.0.0.1") {
           callback(null, true);
           return;
         }
@@ -214,13 +230,17 @@ app.use(
       // Pattern: http://<any-ip>:3000 or http://<any-ip>:3001
       try {
         const url = new URL(origin);
-        const port = url.port ? parseInt(url.port) : (url.protocol === 'https:' ? 443 : 80);
-        
+        const port = url.port
+          ? parseInt(url.port)
+          : url.protocol === "https:"
+          ? 443
+          : 80;
+
         // Check if hostname is an IP address (IPv4 pattern)
         const hostname = url.hostname;
         const ipPattern = /^\d+\.\d+\.\d+\.\d+$/;
         const isIpAddress = ipPattern.test(hostname);
-        
+
         if (isIpAddress && (port === 3000 || port === 3001)) {
           trace(`[CORS] Allowing IP-based access: ${origin}`);
           callback(null, true);
@@ -260,22 +280,25 @@ const limiter = rateLimit({
   skip: (req) => {
     const path = req.path;
     // Don't rate limit public GET requests to these endpoints
-    if (req.method === 'GET') {
-      return path === '/api/branding' ||
-             path === '/api/albums' ||
-             path.startsWith('/api/albums/') ||
-             path === '/api/random-photos' ||
-             path === '/api/health';
+    if (req.method === "GET") {
+      return (
+        path === "/api/branding" ||
+        path === "/api/albums" ||
+        path.startsWith("/api/albums/") ||
+        path === "/api/random-photos" ||
+        path === "/api/health"
+      );
     }
     return false;
-  }
+  },
 });
 
 // Stricter rate limiting for authentication endpoints to prevent brute force attacks
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 10, // Limit each IP to 10 requests per windowMs
-  message: "Too many authentication attempts from this IP, please try again after 15 minutes.",
+  message:
+    "Too many authentication attempts from this IP, please try again after 15 minutes.",
   standardHeaders: true,
   legacyHeaders: false,
   skipSuccessfulRequests: true, // Don't count successful logins
@@ -294,12 +317,14 @@ app.use(express.json({ limit: "1mb" }));
 const sessionSecret = config.auth?.sessionSecret;
 if (!sessionSecret) {
   if (getConfigExists()) {
-    error('[Server] CRITICAL ERROR: SESSION_SECRET is not configured!');
-    error('[Server] Please set auth.sessionSecret in config.json or SESSION_SECRET environment variable.');
-    error('[Server] Generate a secure secret with: openssl rand -hex 32');
+    error("[Server] CRITICAL ERROR: SESSION_SECRET is not configured!");
+    error(
+      "[Server] Please set auth.sessionSecret in config.json or SESSION_SECRET environment variable."
+    );
+    error("[Server] Generate a secure secret with: openssl rand -hex 32");
     process.exit(1);
   } else {
-    info('[Server] Using temporary session secret for setup mode');
+    info("[Server] Using temporary session secret for setup mode");
   }
 }
 
@@ -318,7 +343,9 @@ try {
     // For local development or IP addresses, leave domain undefined
     // Setting explicit domain on IPs causes cookie rejection
     cookieDomain = undefined;
-    debug(`Cookie domain: undefined (${isIpAddress ? 'IP address' : 'localhost'})`);
+    debug(
+      `Cookie domain: undefined (${isIpAddress ? "IP address" : "localhost"})`
+    );
   } else {
     // For production domains, extract base domain (e.g., 'example.com' from 'api.example.com')
     // Set to '.domain.com' to share across subdomains
@@ -330,9 +357,7 @@ try {
     }
   }
 } catch (err) {
-  warn(
-    "Could not parse backend URL for cookie domain, using undefined"
-  );
+  warn("Could not parse backend URL for cookie domain, using undefined");
 }
 
 // Use the isProduction variable already defined above (line 56)
@@ -510,7 +535,7 @@ app.set("appRoot", path.resolve(__dirname, "../../"));
 
 // Register route handlers
 // Note: CSRF protection is applied inside individual routers that need it
-app.use('/api/setup', setupRouter);
+app.use("/api/setup", setupRouter);
 // Mount authentication routes
 // Legacy Passport-based routes (Google OAuth, status, logout)
 app.use("/api/auth", authRouter);
@@ -568,25 +593,29 @@ const server = app.listen(PORT, bindHost, () => {
   info(`Server is running on ${bindHost}:${PORT}`);
   info(`API URL: ${config.frontend.apiUrl}`);
   debug(`Photos directory: ${photosDir}`);
-  
+
   // Signal PM2 that app is ready (for zero-downtime reloads)
   if (process.send) {
-    process.send('ready');
+    process.send("ready");
   }
-  
+
   // Regenerate static JSON files on startup (non-blocking)
   if (getConfigExists()) {
-    info('[Startup] Regenerating static JSON files...');
+    info("[Startup] Regenerating static JSON files...");
     const appRoot = path.resolve(__dirname, "../../");
-    generateStaticJSONFiles(appRoot).then((result) => {
-      if (result.success) {
-        info(`[Startup] ✓ Static JSON files updated (${result.albumCount} albums)`);
-      } else {
-        error('[Startup] ✗ Failed to generate static JSON:', result.error);
-      }
-    }).catch((error) => {
-      error('[Startup] ✗ Failed to generate static JSON:', error);
-    });
+    generateStaticJSONFiles(appRoot)
+      .then((result) => {
+        if (result.success) {
+          info(
+            `[Startup] ✓ Static JSON files updated (${result.albumCount} albums)`
+          );
+        } else {
+          error("[Startup] ✗ Failed to generate static JSON:", result.error);
+        }
+      })
+      .catch((error) => {
+        error("[Startup] ✗ Failed to generate static JSON:", error);
+      });
   }
 });
 

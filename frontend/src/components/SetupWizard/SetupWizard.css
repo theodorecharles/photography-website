@@ -9,8 +9,61 @@
   align-items: center;
   justify-content: center;
   padding: 2rem;
-  background: #1e1e1e;
+  background: linear-gradient(-45deg, #1a1a2e, #16213e, #0f3460, #1a1a2e);
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Animated gradient background */
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Subtle bokeh/lens effect circles */
+.setup-wizard::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -10%;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(74, 222, 128, 0.08) 0%, transparent 70%);
+  border-radius: 50%;
+  animation: float 20s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.setup-wizard::after {
+  content: '';
+  position: absolute;
+  bottom: -30%;
+  left: -5%;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(34, 197, 94, 0.06) 0%, transparent 70%);
+  border-radius: 50%;
+  animation: float 15s ease-in-out infinite reverse;
+  pointer-events: none;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(30px, -30px) scale(1.1);
+  }
 }
 
 .setup-container {
@@ -22,6 +75,10 @@
   width: 100%;
   padding: 3rem;
   animation: slideUp 0.4s ease-out;
+  position: relative;
+  z-index: 1;
+  backdrop-filter: blur(10px);
+  background: rgba(42, 42, 42, 0.95);
 }
 
 @keyframes slideUp {
