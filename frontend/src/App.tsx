@@ -45,7 +45,7 @@ const PasswordResetComplete = lazy(() => import("./components/Misc/PasswordReset
 const LogViewer = lazy(() => import("./components/LogViewer/LogViewer"));
 
 // LicenseWrapper component to show footer when license page loads
-function LicenseWrapper({ setShowFooter }: { setShowFooter: (show: boolean) => void }) {
+function LicenseWrapper({ setShowFooter, siteName }: { setShowFooter: (show: boolean) => void; siteName: string }) {
   useEffect(() => {
     setShowFooter(true);
   }, [setShowFooter]);
@@ -53,8 +53,8 @@ function LicenseWrapper({ setShowFooter }: { setShowFooter: (show: boolean) => v
   return (
     <>
       <SEO 
-        title="License - Ted Charles Photography"
-        description="License information for Ted Charles' photography. All photos are licensed under Creative Commons Attribution 4.0 International License."
+        title={`License - ${siteName}`}
+        description={`License information for ${siteName} photography.`}
         url={`${SITE_URL}/license`}
       />
       <License />
@@ -63,7 +63,7 @@ function LicenseWrapper({ setShowFooter }: { setShowFooter: (show: boolean) => v
 }
 
 // AlbumRoute component handles the routing for individual album pages
-function AlbumRoute({ onAlbumNotFound, onLoadComplete }: { onAlbumNotFound: () => void; onLoadComplete: () => void }) {
+function AlbumRoute({ onAlbumNotFound, onLoadComplete, siteName }: { onAlbumNotFound: () => void; onLoadComplete: () => void; siteName: string }) {
   const { album } = useParams();
   // Decode URI-encoded album name
   const decodedAlbum = album ? decodeURIComponent(album) : "";
@@ -71,8 +71,8 @@ function AlbumRoute({ onAlbumNotFound, onLoadComplete }: { onAlbumNotFound: () =
   return (
     <>
       <SEO 
-        title={`${decodedAlbum} - Ted Charles Photography`}
-        description={`View ${decodedAlbum} photos from Ted Charles' photography portfolio. Professional ${decodedAlbum} photography.`}
+        title={`${decodedAlbum} - ${siteName}`}
+        description={`View ${decodedAlbum} photos from ${siteName} photography portfolio.`}
         url={`${SITE_URL}/album/${album}`}
         image={`${SITE_URL}/photos/avatar.png`}
       />
@@ -151,7 +151,7 @@ function App() {
   const [albums, setAlbums] = useState<string[] | Array<{name: string; folder_id?: number | null}>>([]);
   const [folders, setFolders] = useState<Array<{id: number; name: string; published: boolean}>>([]);
   const [externalLinks, setExternalLinks] = useState<ExternalLink[]>([]);
-  const [siteName, setSiteName] = useState('Ted Charles');
+  const [siteName, setSiteName] = useState('Galleria');
   const [avatarPath, setAvatarPath] = useState('/photos/avatar.png');
   const [avatarCacheBust, setAvatarCacheBust] = useState(Date.now());
   const [primaryColor, setPrimaryColor] = useState('#4ade80');
@@ -301,7 +301,7 @@ function App() {
         setFolders([]);
       }
       setExternalLinks(externalLinksData.externalLinks);
-      setSiteName(brandingData.siteName || 'Ted Charles');
+      setSiteName(brandingData.siteName || 'Galleria');
       setAvatarPath(brandingData.avatarPath || '/photos/avatar.png');
       setPrimaryColor(brandingData.primaryColor || '#4ade80');
       setSecondaryColor(brandingData.secondaryColor || '#3b82f6');
@@ -325,7 +325,7 @@ function App() {
       setAlbums([]);
       setFolders([]);
       setExternalLinks([]);
-      setSiteName('Ted Charles');
+      setSiteName('Galleria');
       setAvatarPath('/photos/avatar.png');
       trackError(errorMessage, 'app_initialization');
     } finally {
@@ -505,7 +505,7 @@ function App() {
             {currentAlbum}
           </h1>
         )}
-        <StructuredData />
+        <StructuredData siteName={siteName} />
         <Suspense fallback={
           <div className="photo-grid-loading">
             <div className="loading-spinner"></div>
@@ -525,9 +525,9 @@ function App() {
                 />
               </>
             } />
-            <Route path="/album/:album" element={<AlbumRoute onAlbumNotFound={() => setHideAlbumTitle(true)} onLoadComplete={() => setShowFooter(true)} />} />
+            <Route path="/album/:album" element={<AlbumRoute onAlbumNotFound={() => setHideAlbumTitle(true)} onLoadComplete={() => setShowFooter(true)} siteName={siteName} />} />
             <Route path="/license" element={
-              <LicenseWrapper setShowFooter={setShowFooter} />
+              <LicenseWrapper setShowFooter={setShowFooter} siteName={siteName} />
             } />
             <Route path="/admin" element={<AdminPortal />} />
             <Route path="/admin/login" element={<AdminPortal />} />
@@ -541,7 +541,7 @@ function App() {
             <Route path="/auth/error" element={
               <>
                 <SEO 
-                  title="Authentication Error - Ted Charles Photography"
+                  title={`Authentication Error - ${siteName}`}
                   description="Login error"
                   url={`${SITE_URL}/auth/error`}
                 />
@@ -551,7 +551,7 @@ function App() {
             <Route path="/invite/:token" element={
               <>
                 <SEO 
-                  title="Complete Registration - Ted Charles Photography"
+                  title={`Complete Registration - ${siteName}`}
                   description="Complete your account registration"
                   url={`${SITE_URL}/invite`}
                 />
@@ -561,7 +561,7 @@ function App() {
             <Route path="/reset-password" element={
               <>
                 <SEO 
-                  title="Reset Password - Ted Charles Photography"
+                  title={`Reset Password - ${siteName}`}
                   description="Reset your account password"
                   url={`${SITE_URL}/reset-password`}
                 />
@@ -571,7 +571,7 @@ function App() {
             <Route path="/reset-password/:token" element={
               <>
                 <SEO 
-                  title="Set New Password - Ted Charles Photography"
+                  title={`Set New Password - ${siteName}`}
                   description="Set a new password for your account"
                   url={`${SITE_URL}/reset-password`}
                 />
@@ -583,7 +583,7 @@ function App() {
             <Route path="/404" element={
               <>
                 <SEO 
-                  title="404 - Page Not Found - Ted Charles Photography"
+                  title={`404 - Page Not Found - ${siteName}`}
                   description="The page you're looking for doesn't exist."
                   url={`${SITE_URL}/404`}
                 />
@@ -593,7 +593,7 @@ function App() {
             <Route path="/429" element={
               <>
                 <SEO 
-                  title="429 - Too Many Requests - Ted Charles Photography"
+                  title={`429 - Too Many Requests - ${siteName}`}
                   description="Please slow down and try again."
                   url={`${SITE_URL}/429`}
                 />
@@ -603,7 +603,7 @@ function App() {
             <Route path="*" element={
               <>
                 <SEO 
-                  title="404 - Page Not Found - Ted Charles Photography"
+                  title={`404 - Page Not Found - ${siteName}`}
                   description="The page you're looking for doesn't exist."
                   url={`${SITE_URL}/404`}
                 />

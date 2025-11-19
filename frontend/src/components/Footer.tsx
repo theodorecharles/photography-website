@@ -66,7 +66,7 @@ function Footer({ albums: _albums = [], externalLinks: _externalLinks = [], curr
       <div className="footer-content">
         <div className="footer-bottom">
           <span>
-            &copy; {currentYear} {siteName || 'Ted Charles'}.{' '}
+            &copy; {currentYear} {siteName || 'Galleria'}.{' '}
             <span className="footer-separator">•</span>{' '}
             <Link to="/license" className="footer-link">
               {t('footer.license')}

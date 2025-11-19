@@ -3,9 +3,9 @@
  * Handles sending emails for user invitations and password resets
  */
 
-import nodemailer from 'nodemailer';
-import { getCurrentConfig } from './config.js';
-import { error, info } from './utils/logger.js';
+import nodemailer from "nodemailer";
+import { getCurrentConfig } from "./config.js";
+import { error, info } from "./utils/logger.js";
 
 export interface EmailConfig {
   enabled: boolean;
@@ -45,13 +45,16 @@ export function isEmailServiceEnabled(): boolean {
  */
 export function generateInvitationUrl(inviteToken: string): string {
   const config = getCurrentConfig();
-  
+
   // Get frontend URL - use allowedOrigins[0] as it's the actual frontend URL
-  let frontendUrl = 'http://localhost:3000';
-  if (config.backend?.allowedOrigins && config.backend.allowedOrigins.length > 0) {
+  let frontendUrl = "http://localhost:3000";
+  if (
+    config.backend?.allowedOrigins &&
+    config.backend.allowedOrigins.length > 0
+  ) {
     frontendUrl = config.backend.allowedOrigins[0];
   }
-  
+
   return `${frontendUrl}/invite/${inviteToken}`;
 }
 
@@ -60,11 +63,11 @@ export function generateInvitationUrl(inviteToken: string): string {
  */
 function createTransporter() {
   const emailConfig = getEmailConfig();
-  
+
   if (!emailConfig || !emailConfig.enabled) {
     return null;
   }
-  
+
   return nodemailer.createTransport({
     host: emailConfig.smtp.host,
     port: emailConfig.smtp.port,
@@ -86,27 +89,30 @@ export async function sendInvitationEmail(
 ): Promise<boolean> {
   const transporter = createTransporter();
   const emailConfig = getEmailConfig();
-  
+
   if (!transporter || !emailConfig) {
-    error('[Email] Email service not configured - cannot send invitation');
+    error("[Email] Email service not configured - cannot send invitation");
     return false;
   }
-  
+
   const config = getCurrentConfig();
-  const siteName = config.branding?.siteName || 'Photography Portfolio';
-  
+  const siteName = config.branding?.siteName || "Galleria";
+
   // Get frontend URL - use allowedOrigins[0] as it's the actual frontend URL
-  let frontendUrl = 'http://localhost:3000';
-  if (config.backend?.allowedOrigins && config.backend.allowedOrigins.length > 0) {
+  let frontendUrl = "http://localhost:3000";
+  if (
+    config.backend?.allowedOrigins &&
+    config.backend.allowedOrigins.length > 0
+  ) {
     frontendUrl = config.backend.allowedOrigins[0];
   }
-  
+
   const inviteUrl = `${frontendUrl}/invite/${inviteToken}`;
-  
+
   // Get avatar URL
-  const avatarPath = config.branding?.avatarPath || '/photos/avatar.png';
+  const avatarPath = config.branding?.avatarPath || "/photos/avatar.png";
   const avatarUrl = `${frontendUrl}${avatarPath}`;
-  
+
   const mailOptions = {
     from: `"${emailConfig.from.name}" <${emailConfig.from.address}>`,
     to: toEmail,
@@ -199,13 +205,13 @@ This invitation will expire in 7 days.
 If you didn't expect this invitation, you can safely ignore this email.
     `.trim(),
   };
-  
+
   try {
     await transporter.sendMail(mailOptions);
     info(`[Email] Invitation sent to ${toEmail}`);
     return true;
   } catch (err) {
-    error('[Email] Failed to send invitation:', err);
+    error("[Email] Failed to send invitation:", err);
     return false;
   }
 }
@@ -220,29 +226,32 @@ export async function sendPasswordResetEmail(
 ): Promise<boolean> {
   const transporter = createTransporter();
   const emailConfig = getEmailConfig();
-  
+
   if (!transporter || !emailConfig) {
-    error('[Email] Email service not configured - cannot send password reset');
+    error("[Email] Email service not configured - cannot send password reset");
     return false;
   }
-  
+
   const config = getCurrentConfig();
-  const siteName = config.branding?.siteName || 'Photography Portfolio';
-  
+  const siteName = config.branding?.siteName || "Galleria";
+
   // Get frontend URL - use allowedOrigins[0] as it's the actual frontend URL
-  let frontendUrl = 'http://localhost:3000';
-  if (config.backend?.allowedOrigins && config.backend.allowedOrigins.length > 0) {
+  let frontendUrl = "http://localhost:3000";
+  if (
+    config.backend?.allowedOrigins &&
+    config.backend.allowedOrigins.length > 0
+  ) {
     frontendUrl = config.backend.allowedOrigins[0];
   }
-  
+
   const resetUrl = `${frontendUrl}/reset-password/${resetToken}`;
-  
+
   // Get avatar URL
-  const avatarPath = config.branding?.avatarPath || '/photos/avatar.png';
+  const avatarPath = config.branding?.avatarPath || "/photos/avatar.png";
   const avatarUrl = `${frontendUrl}${avatarPath}`;
-  
-  const greeting = userName ? `Hi ${userName}` : 'Hi there';
-  
+
+  const greeting = userName ? `Hi ${userName}` : "Hi there";
+
   const mailOptions = {
     from: `"${emailConfig.from.name}" <${emailConfig.from.address}>`,
     to: toEmail,
@@ -353,13 +362,13 @@ ${resetUrl}
 This is an automated message, please do not reply to this email.
     `.trim(),
   };
-  
+
   try {
     await transporter.sendMail(mailOptions);
     info(`[Email] Password reset sent to ${toEmail}`);
     return true;
   } catch (err) {
-    error('[Email] Failed to send password reset:', err);
+    error("[Email] Failed to send password reset:", err);
     return false;
   }
 }
@@ -367,13 +376,16 @@ This is an automated message, please do not reply to this email.
 /**
  * Test email configuration
  */
-export async function testEmailConfig(): Promise<{ success: boolean; error?: string }> {
+export async function testEmailConfig(): Promise<{
+  success: boolean;
+  error?: string;
+}> {
   const transporter = createTransporter();
-  
+
   if (!transporter) {
-    return { success: false, error: 'Email service not configured' };
+    return { success: false, error: "Email service not configured" };
   }
-  
+
   try {
     await transporter.verify();
     return { success: true };
@@ -388,15 +400,15 @@ export async function testEmailConfig(): Promise<{ success: boolean; error?: str
 export async function sendTestEmail(toEmail: string): Promise<boolean> {
   const transporter = createTransporter();
   const emailConfig = getEmailConfig();
-  
+
   if (!transporter || !emailConfig) {
-    error('[Email] Email service not configured - cannot send test email');
+    error("[Email] Email service not configured - cannot send test email");
     return false;
   }
-  
+
   const config = getCurrentConfig();
-  const siteName = config.branding?.siteName || 'Photography Portfolio';
-  
+  const siteName = config.branding?.siteName || "Galleria";
+
   const mailOptions = {
     from: `"${emailConfig.from.name}" <${emailConfig.from.address}>`,
     to: toEmail,
@@ -462,14 +474,13 @@ This is a test message sent at ${new Date().toLocaleString()}.
 You can safely ignore or delete this email.
     `.trim(),
   };
-  
+
   try {
     await transporter.sendMail(mailOptions);
     info(`[Email] Test email sent to ${toEmail}`);
     return true;
   } catch (err) {
-    error('[Email] Failed to send test email:', err);
+    error("[Email] Failed to send test email:", err);
     return false;
   }
 }
-

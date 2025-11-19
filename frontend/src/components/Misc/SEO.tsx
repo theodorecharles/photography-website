@@ -16,8 +16,8 @@ interface SEOProps {
 }
 
 export function SEO({ 
-  title = "Ted Charles - Photography Portfolio",
-  description = "Professional photography portfolio by Ted Charles. View stunning landscape, portrait, and creative photography collections.",
+  title = "Galleria - Photography Portfolio",
+  description = "Professional photography portfolio. View stunning landscape, portrait, and creative photography collections.",
   image = `${SITE_URL}/photos/avatar.png`,
   url = SITE_URL,
   type = "website"
