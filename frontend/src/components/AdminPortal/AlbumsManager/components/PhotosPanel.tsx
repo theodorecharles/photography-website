@@ -30,6 +30,7 @@ interface PhotosPanelProps {
   setCloseHandler: (handler: () => void) => void;
   onUploadPhotos: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onDeleteAlbum: (albumName: string) => void;
+  onRenameAlbum: (oldName: string, newName: string) => Promise<void>;
   onShareAlbum: (albumName: string) => void;
   onTogglePublished: (albumName: string, currentPublished: boolean) => void;
   onToggleHomepage: (albumName: string, currentShowOnHomepage: boolean) => void;
@@ -69,6 +70,7 @@ const PhotosPanel: React.FC<PhotosPanelProps> = ({
   setCloseHandler,
   onUploadPhotos,
   onDeleteAlbum,
+  onRenameAlbum,
   onShareAlbum,
   onTogglePublished,
   onToggleHomepage,
@@ -172,6 +174,7 @@ const PhotosPanel: React.FC<PhotosPanelProps> = ({
           onClose={handleClose}
           onUploadPhotos={onUploadPhotos}
           onDeleteAlbum={onDeleteAlbum}
+          onRenameAlbum={onRenameAlbum}
           onShareAlbum={onShareAlbum}
           onTogglePublished={onTogglePublished}
           onToggleHomepage={onToggleHomepage}

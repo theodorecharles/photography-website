@@ -5,6 +5,7 @@
 
 import { showToast } from "./toast";
 import { info } from '../utils/logger';
+import i18n from '../i18n/config';
 
 export function registerServiceWorker() {
   // Disable service worker on localhost (development)
@@ -72,7 +73,7 @@ export function registerServiceWorker() {
 
                   if (!isProduction) {
                     showToast(
-                      "📦 New version available! Reloading...",
+                      i18n.t('serviceWorker.newVersionReloading'),
                       "info"
                     );
                   }

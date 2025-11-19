@@ -30,6 +30,7 @@ interface PhotosPanelHeaderProps {
   onToggleHomepage: (albumName: string, currentShowOnHomepage: boolean) => void;
   onPreviewAlbum: (albumName: string) => void;
   onViewModeChange: (mode: ViewMode) => void;
+  onRenameAlbum: (oldName: string, newName: string) => Promise<void>;
   canEdit: boolean;
 }
 
@@ -48,9 +49,15 @@ const PhotosPanelHeader: React.FC<PhotosPanelHeaderProps> = ({
   onToggleHomepage,
   onPreviewAlbum,
   onViewModeChange,
+  onRenameAlbum,
   canEdit,
 }) => {
   const { t } = useTranslation();
+  const [isEditingTitle, setIsEditingTitle] = React.useState(false);
+  const [editedTitle, setEditedTitle] = React.useState(selectedAlbum);
+  const [isSaving, setIsSaving] = React.useState(false);
+  const titleInputRef = React.useRef<HTMLInputElement>(null);
+  
   const currentAlbum = localAlbums.find(a => a.name === selectedAlbum);
   const isPublished = currentAlbum?.published !== false;
   const showOnHomepage = currentAlbum?.show_on_homepage !== false;
@@ -68,6 +75,72 @@ const PhotosPanelHeader: React.FC<PhotosPanelHeaderProps> = ({
   
   // Calculate upload progress percentage
   const uploadProgress = totalUploading > 0 ? Math.round((completedUploads / totalUploading) * 100) : 0;
+  
+  // Reset editing state when selected album changes
+  React.useEffect(() => {
+    setIsEditingTitle(false);
+    setEditedTitle(selectedAlbum);
+  }, [selectedAlbum]);
+  
+  // Focus input when editing starts
+  React.useEffect(() => {
+    if (isEditingTitle && titleInputRef.current) {
+      titleInputRef.current.focus();
+      titleInputRef.current.select();
+    }
+  }, [isEditingTitle]);
+  
+  const handleStartEdit = () => {
+    if (canEdit && !hasActiveUploads) {
+      setIsEditingTitle(true);
+      setEditedTitle(selectedAlbum);
+    }
+  };
+  
+  const handleCancelEdit = () => {
+    setIsEditingTitle(false);
+    setEditedTitle(selectedAlbum);
+  };
+  
+  const handleSaveEdit = async () => {
+    const trimmedTitle = editedTitle.trim();
+    
+    // Validation
+    if (!trimmedTitle) {
+      alert(t('albumsManager.albumNameRequired'));
+      return;
+    }
+    
+    if (trimmedTitle === selectedAlbum) {
+      setIsEditingTitle(false);
+      return;
+    }
+    
+    // Check if name already exists
+    if (localAlbums.some(a => a.name === trimmedTitle)) {
+      alert(t('albumsManager.albumAlreadyExists'));
+      return;
+    }
+    
+    setIsSaving(true);
+    try {
+      await onRenameAlbum(selectedAlbum, trimmedTitle);
+      setIsEditingTitle(false);
+    } catch (error) {
+      console.error('Failed to rename album:', error);
+      alert(t('albumsManager.renameAlbumFailed'));
+    } finally {
+      setIsSaving(false);
+    }
+  };
+  
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleSaveEdit();
+    } else if (e.key === 'Escape') {
+      handleCancelEdit();
+    }
+  };
 
   return (
     <div className="photos-modal-header">
@@ -75,21 +148,60 @@ const PhotosPanelHeader: React.FC<PhotosPanelHeaderProps> = ({
       <div className="photos-title-bar">
         {/* Left: Album title + photo count */}
         <div className="photos-title-left">
-          <h2 className="photos-modal-title">{selectedAlbum}</h2>
-          <span className="photos-count">
-            {photoCount} {photoCount === 1 ? t('albumsManager.photo') : t('albumsManager.photos')}
-            {hasActiveUploads && totalUploading > 0 && (
-              <span style={{ marginLeft: '0.5rem', color: '#4ade80' }}>
-                ({uploadProgress}% {t('albumsManager.complete')})
+          {isEditingTitle ? (
+            <div className="album-title-edit-container">
+              <input
+                ref={titleInputRef}
+                type="text"
+                className="album-title-input"
+                value={editedTitle}
+                onChange={(e) => setEditedTitle(e.target.value)}
+                onKeyDown={handleKeyDown}
+                disabled={isSaving}
+                maxLength={100}
+              />
+              <div className="album-title-edit-actions">
+                <button
+                  className="album-title-btn album-title-btn-save"
+                  onClick={handleSaveEdit}
+                  disabled={isSaving}
+                >
+                  {isSaving ? t('common.saving') : t('common.save')}
+                </button>
+                <button
+                  className="album-title-btn album-title-btn-cancel"
+                  onClick={handleCancelEdit}
+                  disabled={isSaving}
+                >
+                  {t('common.cancel')}
+                </button>
+              </div>
+            </div>
+          ) : (
+            <>
+              <h2 
+                className={`photos-modal-title ${canEdit && !hasActiveUploads ? 'editable' : ''}`}
+                onClick={handleStartEdit}
+                title={canEdit && !hasActiveUploads ? t('albumsManager.clickToRename') : undefined}
+              >
+                {selectedAlbum}
+              </h2>
+              <span className="photos-count">
+                {photoCount} {photoCount === 1 ? t('albumsManager.photo') : t('albumsManager.photos')}
+                {hasActiveUploads && totalUploading > 0 && (
+                  <span style={{ marginLeft: '0.5rem', color: '#4ade80' }}>
+                    ({uploadProgress}% {t('albumsManager.complete')})
+                  </span>
+                )}
               </span>
-            )}
-          </span>
+            </>
+          )}
         </div>
         
         {/* Right: Toggles + close button */}
         <div className="photos-title-right">
-          {/* Mobile Toggle Stack: Homepage toggle above Publish toggle */}
-          <div className="mobile-toggles-stack">
+          {/* Mobile Toggle Stack: Homepage toggle above Publish toggle (hidden when editing title) */}
+          <div className={`mobile-toggles-stack ${isEditingTitle ? 'hidden-mobile' : ''}`}>
             {/* Homepage Toggle (Mobile Only - vertical layout) */}
             {canEdit && isPublished && (
               <label className="toggle-switch-mobile-vertical homepage-toggle-mobile" onClick={(e) => e.stopPropagation()}>

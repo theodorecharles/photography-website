@@ -577,7 +577,7 @@ function App() {
           fallback={
             <div className="photo-grid-loading">
               <div className="loading-spinner"></div>
-              <p>Loading...</p>
+              <p>{t('common.loading')}</p>
             </div>
           }
         >

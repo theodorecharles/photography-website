@@ -39,6 +39,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
   const [imageDimensions, setImageDimensions] = useState<
     Record<string, { width: number; height: number }>
   >({});
+  const [loadingImages, setLoadingImages] = useState<Set<string>>(new Set());
   const renderIndexRef = useRef<number>(100);
   const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const isRenderingRef = useRef<boolean>(false);
@@ -312,7 +313,18 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
         height: img.naturalHeight,
       },
     }));
+    // Remove from loading set
+    setLoadingImages((prev) => {
+      const newSet = new Set(prev);
+      newSet.delete(photoId);
+      return newSet;
+    });
   };
+
+  // Mark all visible photos as loading when they first render
+  useEffect(() => {
+    setLoadingImages(new Set(photos.map(photo => photo.id)));
+  }, [photos]);
 
   // getNumColumns function moved to utils/photoHelpers.ts
 
@@ -495,7 +507,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
             {column.map((photo) => (
               <div
                 key={photo.id}
-                className="photo-item"
+                className={`photo-item ${loadingImages.has(photo.id) ? 'loading' : ''}`}
                 style={{
                   aspectRatio: imageDimensions[photo.id]
                     ? `${imageDimensions[photo.id].width} / ${
@@ -507,6 +519,11 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
                   handlePhotoClick(photo);
                 }}
               >
+                {loadingImages.has(photo.id) && (
+                  <div className="photo-loading-overlay">
+                    <div className="photo-loading-spinner"></div>
+                  </div>
+                )}
                 <img
                   src={`${API_URL}${photo.thumbnail}${imageQueryString}`}
                   alt={`${photo.album} - ${photo.title}`}
