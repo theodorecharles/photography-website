@@ -45,7 +45,7 @@ import {
 } from '../auth/passkeys.js';
 import crypto from 'crypto';
 import { sendInvitationEmail, sendPasswordResetEmail, isEmailServiceEnabled, generateInvitationUrl } from '../email.js';
-import config from '../config.js';
+import { getCurrentConfig } from '../config.js';
 
 const router = Router();
 
@@ -243,8 +243,9 @@ router.post('/invite', requireAdmin, async (req: Request, res: Response) => {
     let emailSent = false;
     
     if (emailEnabled) {
-      // Get site language from config (e.g., 'en', 'ja', 'es')
-      const siteLanguage = (config as any).branding?.language || 'en';
+      // Get site language from current config (reloaded to get latest value)
+      const currentConfig = getCurrentConfig();
+      const siteLanguage = (currentConfig as any).branding?.language || 'en';
       info(`[Invite] Using site language: ${siteLanguage}`);
       
       // Try to send invitation email FIRST
@@ -321,8 +322,9 @@ router.post('/invite/resend/:userId', requireAdmin, async (req: Request, res: Re
     let emailSent = false;
     
     if (emailEnabled) {
-      // Get site language from config (e.g., 'en', 'ja', 'es')
-      const siteLanguage = (config as any).branding?.language || 'en';
+      // Get site language from current config (reloaded to get latest value)
+      const currentConfig = getCurrentConfig();
+      const siteLanguage = (currentConfig as any).branding?.language || 'en';
       
       // Try to send invitation email FIRST
       emailSent = await sendInvitationEmail(user.email, inviteToken, inviterName, siteLanguage);
@@ -492,8 +494,9 @@ router.post('/password-reset/request', async (req: Request, res: Response) => {
     const expiresAt = new Date();
     expiresAt.setHours(expiresAt.getHours() + 1);
 
-    // Get site language from config (e.g., 'en', 'ja', 'es')
-    const siteLanguage = (config as any).branding?.language || 'en';
+    // Get site language from current config (reloaded to get latest value)
+    const currentConfig = getCurrentConfig();
+    const siteLanguage = (currentConfig as any).branding?.language || 'en';
 
     // Try to send password reset email FIRST
     const emailSent = await sendPasswordResetEmail(user.email, resetToken, user.name, siteLanguage);
@@ -644,8 +647,9 @@ router.post('/users/:userId/send-password-reset', requireAdmin, async (req: Requ
     const expiresAt = new Date();
     expiresAt.setHours(expiresAt.getHours() + 1);
 
-    // Get site language from config (e.g., 'en', 'ja', 'es')
-    const siteLanguage = (config as any).branding?.language || 'en';
+    // Get site language from current config (reloaded to get latest value)
+    const currentConfig = getCurrentConfig();
+    const siteLanguage = (currentConfig as any).branding?.language || 'en';
 
     // Try to send password reset email FIRST
     const emailSent = await sendPasswordResetEmail(user.email, resetToken, user.name, siteLanguage);
