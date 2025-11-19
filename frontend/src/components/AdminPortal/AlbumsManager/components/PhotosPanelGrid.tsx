@@ -66,6 +66,26 @@ const PhotosPanelGrid: React.FC<PhotosPanelGridProps> = ({
     console.log('[PhotosPanelGrid] activeId changed to:', activeId, 'is-dragging class:', activeId ? 'ADDED' : 'REMOVED');
   }, [activeId]);
   
+  // Lock/unlock scrolling based on drag state
+  React.useEffect(() => {
+    const container = document.getElementById('photos-scroll-container');
+    if (!container) return;
+    
+    if (activeId) {
+      // Drag started - prevent scrolling
+      console.log('[PhotosPanelGrid] LOCKING scroll');
+      const preventScroll = (e: TouchEvent) => {
+        e.preventDefault();
+      };
+      container.addEventListener('touchmove', preventScroll, { passive: false });
+      
+      return () => {
+        console.log('[PhotosPanelGrid] UNLOCKING scroll');
+        container.removeEventListener('touchmove', preventScroll);
+      };
+    }
+  }, [activeId]);
+  
   // FLIP animation for smooth reflow on delete
   const gridRef = useRef<HTMLDivElement>(null);
   const firstPositionsRef = useRef<Map<string, DOMRect>>(new Map());
@@ -139,14 +159,14 @@ const PhotosPanelGrid: React.FC<PhotosPanelGridProps> = ({
   }, [albumPhotos, deletingPhotoId]);
   
   // Configure dnd-kit sensors for photos
-  // Desktop: minimal delay for instant drag
-  // Mobile Grid: 100px tolerance to allow scrolling
-  // Mobile List: 150px tolerance to allow easy scrolling (since items fill screen)
+  // Mobile: Hold for 300ms with < 10px movement to activate drag
+  // Once drag activates, JavaScript locks scrolling
+  // Desktop: 5px movement to start drag
   const photoSensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: isTouchDevice ? {
         delay: 300, // Mobile: require 300ms hold before drag starts
-        tolerance: viewMode === 'list' ? 150 : 100, // Grid: 100px, List: 150px tolerance for scrolling
+        tolerance: 10, // Allow 10px "wiggle room" - drag cancels if moved more
       } : {
         distance: 5, // Desktop: require 5px movement to start drag
       },

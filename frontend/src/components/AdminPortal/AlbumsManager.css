@@ -963,10 +963,14 @@
   background: #161616;
   transition: background 0.15s ease;
   cursor: grab;
-  /* Allow vertical scrolling - drag requires holding still (150px tolerance) */
+  /* Allow scrolling - JavaScript will lock it when drag activates */
   touch-action: pan-y;
   -webkit-user-select: none;
   user-select: none;
+}
+
+.list-item:active {
+  cursor: grabbing;
 }
 
 .list-item:hover {
