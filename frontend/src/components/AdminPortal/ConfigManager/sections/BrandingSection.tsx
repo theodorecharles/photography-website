@@ -90,7 +90,7 @@ const BrandingSection: React.FC<BrandingSectionProps> = ({
       i18n.changeLanguage(branding.language);
     } else {
       // If no language in branding, use current i18n language
-      const currentLang = i18n.language.split('-')[0];
+      const currentLang = i18n.language;
       if (currentLang !== 'en') {
         // Only change if it's not already English (default)
         i18n.changeLanguage(currentLang);
@@ -678,7 +678,7 @@ const BrandingSection: React.FC<BrandingSectionProps> = ({
               {t('branding.languageDescription')}
             </p>
             <CustomDropdown
-              value={branding.language || i18n.language.split('-')[0] || 'en'}
+              value={branding.language || i18n.language || 'en'}
               options={SUPPORTED_LANGUAGES.map((lang) => ({
                 value: lang.code,
                 label: lang.name,
