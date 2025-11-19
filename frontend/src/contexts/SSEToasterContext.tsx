@@ -43,12 +43,18 @@ interface SSEToasterContextType {
   setIsToasterMaximized: (value: boolean) => void;
   toasterPosition: 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left';
   setToasterPosition: (value: 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left') => void;
+  toasterSize: { width: number; height: number };
+  setToasterSize: (value: { width: number; height: number }) => void;
   isDragging: boolean;
   setIsDragging: (value: boolean) => void;
   dragStart: { x: number; y: number } | null;
   setDragStart: (value: { x: number; y: number } | null) => void;
   dragOffset: { x: number; y: number };
   setDragOffset: (value: { x: number; y: number }) => void;
+  isResizing: boolean;
+  setIsResizing: (value: boolean) => void;
+  resizeStart: { width: number; height: number; x: number; y: number } | null;
+  setResizeStart: (value: { width: number; height: number; x: number; y: number } | null) => void;
   hasToasterAnimated: boolean;
   setHasToasterAnimated: (value: boolean) => void;
   isScrollLocked: boolean;
@@ -99,9 +105,12 @@ export function SSEToasterProvider({ children }: { children: ReactNode }) {
   const [isToasterCollapsed, setIsToasterCollapsed] = useState(false);
   const [isToasterMaximized, setIsToasterMaximized] = useState(false);
   const [toasterPosition, setToasterPosition] = useState<'top-right' | 'top-left' | 'bottom-right' | 'bottom-left'>('bottom-left');
+  const [toasterSize, setToasterSize] = useState({ width: 550, height: 400 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState<{ x: number; y: number } | null>(null);
   const [dragOffset, setDragOffset] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const [isResizing, setIsResizing] = useState(false);
+  const [resizeStart, setResizeStart] = useState<{ width: number; height: number; x: number; y: number } | null>(null);
   const [hasToasterAnimated, setHasToasterAnimated] = useState(false);
   const [isScrollLocked, setIsScrollLocked] = useState(true); // Start locked by default
   
@@ -211,12 +220,18 @@ export function SSEToasterProvider({ children }: { children: ReactNode }) {
     setIsToasterMaximized,
     toasterPosition,
     setToasterPosition,
+    toasterSize,
+    setToasterSize,
     isDragging,
     setIsDragging,
     dragStart,
     setDragStart,
     dragOffset,
     setDragOffset,
+    isResizing,
+    setIsResizing,
+    resizeStart,
+    setResizeStart,
     hasToasterAnimated,
     setHasToasterAnimated,
     isScrollLocked,

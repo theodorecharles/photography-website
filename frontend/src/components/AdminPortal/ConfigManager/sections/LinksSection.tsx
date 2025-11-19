@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { API_URL } from '../../../../config';
 import { useSearchParams } from 'react-router-dom';
 import { ExternalLink } from '../../types';
@@ -25,6 +26,7 @@ const LinksSection: React.FC<LinksSectionProps> = ({
   setExternalLinks,
   setMessage,
 }) => {
+  const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const [showLinks, setShowLinks] = useState(false);
   const [originalExternalLinks, setOriginalExternalLinks] = useState<ExternalLink[]>([]);
@@ -100,7 +102,7 @@ const LinksSection: React.FC<LinksSectionProps> = ({
 
   const handleCancelLinks = () => {
     setExternalLinks(structuredClone(originalExternalLinks));
-    setMessage({ type: "success", text: "Changes cancelled" });
+    setMessage({ type: "success", text: t('links.changesCancelled') });
   };
 
   const handleSaveLinks = async () => {
@@ -121,7 +123,7 @@ const LinksSection: React.FC<LinksSectionProps> = ({
         setOriginalExternalLinks(structuredClone(externalLinks));
         setMessage({
           type: "success",
-          text: "External links saved successfully!",
+          text: t('links.savedSuccessfully'),
         });
         trackExternalLinksUpdate(externalLinks.length);
         window.dispatchEvent(new Event("external-links-updated"));
@@ -129,11 +131,11 @@ const LinksSection: React.FC<LinksSectionProps> = ({
         const errorData = await res.json();
         setMessage({
           type: "error",
-          text: errorData.error || "Failed to save external links",
+          text: errorData.error || t('links.failedToSave'),
         });
       }
     } catch (error) {
-      setMessage({ type: "error", text: "Network error occurred" });
+      setMessage({ type: "error", text: t('common.networkError') });
     } finally {
       setSavingLinks(false);
     }
@@ -148,8 +150,8 @@ const LinksSection: React.FC<LinksSectionProps> = ({
   return (
     <div className="config-group full-width" ref={linksSectionRef}>
       <SectionHeader
-        title="Links"
-        description="Manage external links and contact information"
+        title={t('links.title')}
+        description={t('links.description')}
         isExpanded={showLinks}
         onToggle={() => setShowLinks(!showLinks)}
       />
@@ -167,7 +169,7 @@ const LinksSection: React.FC<LinksSectionProps> = ({
                 <div className="link-fields">
                   <input
                     type="text"
-                    placeholder="Title"
+                    placeholder={t('links.titlePlaceholder')}
                     value={link.title}
                     onChange={(e) =>
                       handleLinkChange(index, "title", e.target.value)
@@ -176,7 +178,7 @@ const LinksSection: React.FC<LinksSectionProps> = ({
                   />
                   <input
                     type="text"
-                    placeholder="URL"
+                    placeholder={t('links.urlPlaceholder')}
                     value={link.url}
                     onChange={(e) =>
                       handleLinkChange(index, "url", e.target.value)
@@ -189,7 +191,7 @@ const LinksSection: React.FC<LinksSectionProps> = ({
                     <button
                       onClick={() => handleMoveUp(index)}
                       className="btn-reorder"
-                      title="Move up"
+                      title={t('links.moveUp')}
                       disabled={index === 0}
                     >
                       <ChevronUpIcon width="20" height="20" />
@@ -197,7 +199,7 @@ const LinksSection: React.FC<LinksSectionProps> = ({
                     <button
                       onClick={() => handleMoveDown(index)}
                       className="btn-reorder"
-                      title="Move down"
+                      title={t('links.moveDown')}
                       disabled={index === externalLinks.length - 1}
                     >
                       <ChevronDownIcon width="20" height="20" />
@@ -206,9 +208,9 @@ const LinksSection: React.FC<LinksSectionProps> = ({
                   <button
                     onClick={() => handleDeleteLink(index)}
                     className="btn-delete-link"
-                    title="Delete link"
+                    title={t('links.deleteLink')}
                   >
-                    Delete
+                    {t('common.delete')}
                   </button>
                 </div>
               </div>
@@ -218,7 +220,7 @@ const LinksSection: React.FC<LinksSectionProps> = ({
 
         <div className="section-actions">
           <button onClick={handleAddLink} className="btn-secondary">
-            + Add Link
+            + {t('links.addLink')}
           </button>
           {hasUnsavedLinksChanges() && (
             <>
@@ -227,14 +229,14 @@ const LinksSection: React.FC<LinksSectionProps> = ({
                 className="btn-secondary"
                 disabled={savingLinks}
               >
-                Cancel
+                {t('common.cancel')}
               </button>
               <button
                 onClick={handleSaveLinks}
                 className="btn-primary"
                 disabled={savingLinks}
               >
-                {savingLinks ? "Saving..." : "Save Changes"}
+                {savingLinks ? t('common.saving') : t('links.saveChanges')}
               </button>
             </>
           )}

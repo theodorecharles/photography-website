@@ -113,6 +113,7 @@ router.post(
         primaryColor,
         secondaryColor,
         metaDescription,
+        language,
       } = req.body;
 
       // Validate required fields
@@ -280,6 +281,7 @@ router.post(
             metaDescription: "",
             metaKeywords: "",
             faviconPath: "/favicon.ico",
+            language: "en",
           },
           analytics: {
             scriptPath: "",
@@ -313,6 +315,7 @@ router.post(
       config.branding.metaDescription =
         metaDescription || `Photography portfolio by ${siteName}`;
       config.branding.metaKeywords = `photography, portfolio, ${siteName.toLowerCase()}`;
+      config.branding.language = language || "en";
 
       config.environment.auth.sessionSecret = sessionSecret;
       config.environment.auth.authorizedEmails = [authorizedEmail];
@@ -556,6 +559,32 @@ router.post(
           .png()
           .toFile(avatarPath);
 
+        // Update icon files so they stay in sync with avatar
+        const icon192Path = path.join(frontendPublicDir, 'icon-192.png');
+        const icon512Path = path.join(frontendPublicDir, 'icon-512.png');
+        const appleTouchIconPath = path.join(frontendPublicDir, 'apple-touch-icon.png');
+
+        // Generate icon-192.png (192x192)
+        await sharp(file.buffer)
+          .rotate()
+          .resize(192, 192, { fit: 'cover' })
+          .png()
+          .toFile(icon192Path);
+
+        // Generate icon-512.png (512x512)
+        await sharp(file.buffer)
+          .rotate()
+          .resize(512, 512, { fit: 'cover' })
+          .png()
+          .toFile(icon512Path);
+
+        // Generate apple-touch-icon.png (192x192)
+        await sharp(file.buffer)
+          .rotate()
+          .resize(192, 192, { fit: 'cover' })
+          .png()
+          .toFile(appleTouchIconPath);
+
         // Create favicon.png (same as avatar)
         await sharp(file.buffer)
           .rotate() // Auto-rotate based on EXIF orientation
@@ -570,7 +599,7 @@ router.post(
           .toFormat('png')
           .toFile(faviconIcoPath);
 
-        info('[Setup] Generated avatar.png and favicon files');
+        info('[Setup] Generated avatar.png, icon files, and favicons');
 
         // Also copy to dist directory so it's immediately served
         if (fs.existsSync(frontendDistDir)) {

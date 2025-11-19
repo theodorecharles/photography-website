@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface SMTPWarningBannerProps {
   smtpConfigured: boolean | null;
@@ -13,6 +14,7 @@ export const SMTPWarningBanner: React.FC<SMTPWarningBannerProps> = ({
   onSetupSmtp,
   onToggleNewUserForm,
 }) => {
+  const { t } = useTranslation();
   // Don't render anything while checking SMTP config
   if (smtpConfigured === null) {
     return null;
@@ -51,10 +53,10 @@ export const SMTPWarningBanner: React.FC<SMTPWarningBannerProps> = ({
                 marginBottom: '0.25rem',
               }}
             >
-              ⚠️ Email Not Configured
+              {t('userManagement.emailNotConfigured')}
             </strong>
             <p style={{ fontSize: '0.85rem', color: '#ccc', margin: 0 }}>
-              Set up SMTP to send user invitation and password reset emails.
+              {t('userManagement.setupSmtpDescription')}
             </p>
           </div>
           <button
@@ -62,7 +64,7 @@ export const SMTPWarningBanner: React.FC<SMTPWarningBannerProps> = ({
             className="btn-primary"
             style={{ padding: '0.5rem 1rem', whiteSpace: 'nowrap', flexShrink: 0 }}
           >
-            Set up SMTP
+            {t('userManagement.setupSmtp')}
           </button>
         </div>
       ) : (
@@ -72,7 +74,7 @@ export const SMTPWarningBanner: React.FC<SMTPWarningBannerProps> = ({
           className="btn-primary"
           style={{ padding: '0.5rem 1rem', whiteSpace: 'nowrap' }}
         >
-          {showNewUserForm ? 'Cancel' : '+ Invite User'}
+          {showNewUserForm ? t('common.cancel') : t('userManagement.inviteUser')}
         </button>
       )}
     </div>

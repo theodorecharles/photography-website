@@ -3,6 +3,7 @@
  */
 
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { API_URL } from '../../../../config';
 import { ConfigData } from '../types';
 import { PasswordInput } from '../../PasswordInput';
@@ -40,6 +41,7 @@ const SMTPSettings: React.FC<SMTPSettingsProps> = ({
   setMessage,
   sectionRef,
 }) => {
+  const { t } = useTranslation();
   const [showTestModal, setShowTestModal] = useState(false);
   const [showProvidersModal, setShowProvidersModal] = useState(false);
   const [editingField, setEditingField] = useState<FieldKey | null>(null);
@@ -119,7 +121,7 @@ const SMTPSettings: React.FC<SMTPSettingsProps> = ({
         setEditingField(null);
         setMessage({
           type: 'success',
-          text: 'Setting saved successfully',
+          text: t('smtpSettings.settingSavedSuccessfully'),
         });
         // Notify other components that SMTP config has been updated
         window.dispatchEvent(new Event('smtp-config-updated'));
@@ -127,11 +129,11 @@ const SMTPSettings: React.FC<SMTPSettingsProps> = ({
         const error = await res.json();
         setMessage({
           type: 'error',
-          text: error.error || 'Failed to save setting',
+          text: error.error || t('smtpSettings.failedToSaveSetting'),
         });
       }
     } catch (err) {
-      setMessage({ type: 'error', text: 'Network error occurred' });
+      setMessage({ type: 'error', text: t('smtpSettings.networkError') });
     } finally {
       setSavingField(null);
     }
@@ -191,7 +193,7 @@ const SMTPSettings: React.FC<SMTPSettingsProps> = ({
         setOriginalConfig(structuredClone(newConfig));
         setMessage({
           type: 'success',
-          text: `Email service ${newValue ? 'enabled' : 'disabled'}`,
+          text: newValue ? t('smtpSettings.emailServiceEnabled') : t('smtpSettings.emailServiceDisabled'),
         });
         // Notify other components that SMTP config has been updated
         window.dispatchEvent(new Event('smtp-config-updated'));
@@ -243,7 +245,7 @@ const SMTPSettings: React.FC<SMTPSettingsProps> = ({
         setOriginalConfig(structuredClone(newConfig));
         setMessage({
           type: 'success',
-          text: `SSL/TLS ${newValue ? 'enabled' : 'disabled'}`,
+          text: newValue ? t('smtpSettings.sslTlsEnabled') : t('smtpSettings.sslTlsDisabled'),
         });
         // Notify other components that SMTP config has been updated
         window.dispatchEvent(new Event('smtp-config-updated'));
@@ -288,7 +290,7 @@ const SMTPSettings: React.FC<SMTPSettingsProps> = ({
                   fontSize: '0.75rem',
                 }}
               >
-                Cancel
+                {t('smtpSettings.cancel')}
               </button>
               <button
                 type="button"
@@ -300,7 +302,7 @@ const SMTPSettings: React.FC<SMTPSettingsProps> = ({
                   fontSize: '0.75rem',
                 }}
               >
-                {isSaving ? 'Saving...' : 'Save'}
+                {isSaving ? t('smtpSettings.saving') : t('smtpSettings.save')}
               </button>
             </div>
           )}
@@ -321,7 +323,7 @@ const SMTPSettings: React.FC<SMTPSettingsProps> = ({
         }}
       >
         <label className="openai-section-label">
-          EMAIL (SMTP)
+          {t('smtpSettings.title')}
           {isConfigured && (
             <span
               style={{
@@ -331,7 +333,7 @@ const SMTPSettings: React.FC<SMTPSettingsProps> = ({
                 fontWeight: 'normal',
               }}
             >
-              ✓ Configured
+              {t('smtpSettings.configured')}
             </span>
           )}
         </label>
@@ -350,7 +352,7 @@ const SMTPSettings: React.FC<SMTPSettingsProps> = ({
                   fontSize: '0.85rem',
                 }}
               >
-                Setup Instructions
+                {t('smtpSettings.setupInstructions')}
               </button>
               <button
                 type="button"
@@ -364,7 +366,7 @@ const SMTPSettings: React.FC<SMTPSettingsProps> = ({
                   fontSize: '0.85rem',
                 }}
               >
-                Test Email
+                {t('smtpSettings.testEmail')}
               </button>
             </>
           )}
@@ -378,7 +380,7 @@ const SMTPSettings: React.FC<SMTPSettingsProps> = ({
           marginBottom: '1rem',
         }}
       >
-        Configure SMTP settings for sending user invitation and password reset emails
+        {t('smtpSettings.description')}
       </p>
       
       <div className="config-grid-inner">
@@ -387,7 +389,7 @@ const SMTPSettings: React.FC<SMTPSettingsProps> = ({
           <Toggle
             checked={emailConfig.enabled}
             onChange={handleToggleEnabled}
-            label="Enable Email Service"
+            label={t('smtpSettings.enableEmailService')}
           />
         </div>
 
@@ -396,7 +398,7 @@ const SMTPSettings: React.FC<SMTPSettingsProps> = ({
           <Toggle
             checked={emailConfig.smtp.secure}
             onChange={handleToggleSecure}
-            label="Use SSL/TLS (port 465 only)"
+            label={t('smtpSettings.useSslTls')}
             disabled={!emailConfig.enabled}
           />
           <p
@@ -417,7 +419,7 @@ const SMTPSettings: React.FC<SMTPSettingsProps> = ({
             {/* SMTP Host */}
             {renderFieldWithActions(
               'host',
-              'SMTP Host',
+              t('smtpSettings.smtpHost'),
               <input
                 type="text"
                 value={emailConfig.smtp.host}
@@ -425,7 +427,7 @@ const SMTPSettings: React.FC<SMTPSettingsProps> = ({
                   updateConfig(['email', 'smtp', 'host'], e.target.value);
                   if (!editingField) setEditingField('host');
                 }}
-                placeholder="smtp.gmail.com"
+                placeholder={t('smtpSettings.hostPlaceholder')}
                 className="branding-input"
               />
             )}
@@ -433,7 +435,7 @@ const SMTPSettings: React.FC<SMTPSettingsProps> = ({
             {/* SMTP Port */}
             {renderFieldWithActions(
               'port',
-              'SMTP Port',
+              t('smtpSettings.smtpPort'),
               <input
                 type="number"
                 value={emailConfig.smtp.port}
@@ -448,7 +450,7 @@ const SMTPSettings: React.FC<SMTPSettingsProps> = ({
             {/* SMTP Username */}
             {renderFieldWithActions(
               'username',
-              'SMTP Username',
+              t('smtpSettings.smtpUsername'),
               <input
                 type="text"
                 value={emailConfig.smtp.auth.user}
@@ -456,7 +458,7 @@ const SMTPSettings: React.FC<SMTPSettingsProps> = ({
                   updateConfig(['email', 'smtp', 'auth', 'user'], e.target.value);
                   if (!editingField) setEditingField('username');
                 }}
-                placeholder="your-email@gmail.com"
+                placeholder={t('smtpSettings.usernamePlaceholder')}
                 className="branding-input"
               />
             )}
@@ -464,21 +466,21 @@ const SMTPSettings: React.FC<SMTPSettingsProps> = ({
             {/* SMTP Password */}
             {renderFieldWithActions(
               'password',
-              'SMTP Password',
+              t('smtpSettings.smtpPassword'),
               <PasswordInput
                 value={emailConfig.smtp.auth.pass}
                 onChange={(e) => {
                   updateConfig(['email', 'smtp', 'auth', 'pass'], e.target.value);
                   if (!editingField) setEditingField('password');
                 }}
-                placeholder="App password or SMTP password"
+                placeholder={t('smtpSettings.passwordPlaceholder')}
               />
             )}
 
             {/* From Name */}
             {renderFieldWithActions(
               'fromName',
-              'From Name',
+              t('smtpSettings.fromName'),
               <input
                 type="text"
                 value={emailConfig.from.name}
@@ -486,7 +488,7 @@ const SMTPSettings: React.FC<SMTPSettingsProps> = ({
                   updateConfig(['email', 'from', 'name'], e.target.value);
                   if (!editingField) setEditingField('fromName');
                 }}
-                placeholder="Photography Site"
+                placeholder={t('smtpSettings.fromNamePlaceholder')}
                 className="branding-input"
               />
             )}
@@ -494,7 +496,7 @@ const SMTPSettings: React.FC<SMTPSettingsProps> = ({
             {/* From Email Address */}
             {renderFieldWithActions(
               'fromAddress',
-              'From Email Address',
+              t('smtpSettings.fromEmailAddress'),
               <input
                 type="email"
                 value={emailConfig.from.address}
@@ -502,7 +504,7 @@ const SMTPSettings: React.FC<SMTPSettingsProps> = ({
                   updateConfig(['email', 'from', 'address'], e.target.value);
                   if (!editingField) setEditingField('fromAddress');
                 }}
-                placeholder="noreply@yoursite.com"
+                placeholder={t('smtpSettings.fromAddressPlaceholder')}
                 className="branding-input"
               />
             )}

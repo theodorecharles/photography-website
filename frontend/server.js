@@ -33,7 +33,7 @@ function loadConfig() {
     if (envApiUrl) {
       config.frontend.apiUrl = envApiUrl;
     }
-    
+
     info("[Frontend] Configuration reloaded");
   }
 }
@@ -64,7 +64,7 @@ if (fs.existsSync(configPath)) {
 // Watch config file for changes and reload automatically
 if (!isSetupMode) {
   fs.watch(configPath, (eventType) => {
-    if (eventType === 'change') {
+    if (eventType === "change") {
       // Debounce: wait a bit for write to complete
       setTimeout(() => {
         try {
@@ -105,7 +105,7 @@ app.use((req, res, next) => {
 const allowedHosts = [...config.security.allowedHosts];
 
 // Add FRONTEND_DOMAIN from environment if set
-if (process.env.FRONTEND_DOMAIN && process.env.FRONTEND_DOMAIN !== '-') {
+if (process.env.FRONTEND_DOMAIN && process.env.FRONTEND_DOMAIN !== "-") {
   try {
     const frontendUrl = new URL(process.env.FRONTEND_DOMAIN);
     const frontendHost = frontendUrl.host; // includes port if present
@@ -114,7 +114,9 @@ if (process.env.FRONTEND_DOMAIN && process.env.FRONTEND_DOMAIN !== '-') {
       info(`[Security] Added FRONTEND_DOMAIN to allowedHosts: ${frontendHost}`);
     }
   } catch (e) {
-    warn(`[Security] Invalid FRONTEND_DOMAIN URL: ${process.env.FRONTEND_DOMAIN}`);
+    warn(
+      `[Security] Invalid FRONTEND_DOMAIN URL: ${process.env.FRONTEND_DOMAIN}`
+    );
   }
 }
 
@@ -128,11 +130,12 @@ app.use((req, res, next) => {
     // Allow IP addresses for direct container access (e.g., Unraid WebUI)
     const ipPattern = /^\d+\.\d+\.\d+\.\d+(:\d+)?$/;
     const isIpAddress = ipPattern.test(host);
-    const isLocalhost = host && (host.startsWith('localhost') || host.startsWith('127.0.0.1'));
+    const isLocalhost =
+      host && (host.startsWith("localhost") || host.startsWith("127.0.0.1"));
 
     if (!allowedHosts.includes(host) && !isIpAddress && !isLocalhost) {
       warn(`[Security] Invalid host header: ${host}`);
-      warn(`[Security] Allowed hosts: ${allowedHosts.join(', ')}`);
+      warn(`[Security] Allowed hosts: ${allowedHosts.join(", ")}`);
       return res.status(400).send("Invalid host header");
     }
   }
@@ -197,9 +200,9 @@ app.get("/health", (req, res) => {
 
 // Serve dynamic manifest.json with branding values
 app.get("/manifest.json", (req, res) => {
-  const siteName = configFile.branding?.siteName || "Photography Portfolio";
+  const siteName = configFile.branding?.siteName || "Galleria";
   const avatarPath = configFile.branding?.avatarPath || "/photos/avatar.png";
-  
+
   // Derive site URL from API URL
   const apiUrl = config.frontend.apiUrl;
   let siteUrl;
@@ -208,10 +211,10 @@ app.get("/manifest.json", (req, res) => {
   } else {
     siteUrl = apiUrl.replace(/api(-dev)?\./, "www$1.");
   }
-  
+
   // Build full avatar URL
   const avatarUrl = `${apiUrl}${avatarPath}`;
-  
+
   const manifest = {
     name: siteName,
     short_name: siteName,
@@ -226,23 +229,23 @@ app.get("/manifest.json", (req, res) => {
         src: avatarUrl,
         sizes: "192x192",
         type: "image/png",
-        purpose: "any"
+        purpose: "any",
       },
       {
         src: avatarUrl,
         sizes: "512x512",
         type: "image/png",
-        purpose: "any"
+        purpose: "any",
       },
       {
         src: avatarUrl,
         sizes: "512x512",
         type: "image/png",
-        purpose: "maskable"
-      }
-    ]
+        purpose: "maskable",
+      },
+    ],
   };
-  
+
   res.setHeader("Content-Type", "application/json");
   res.setHeader("Cache-Control", "no-cache"); // Don't cache - always fresh
   res.json(manifest);
@@ -253,7 +256,7 @@ app.get("/apple-touch-icon.png", (req, res) => {
   const apiUrl = config.frontend.apiUrl;
   const avatarPath = configFile.branding?.avatarPath || "/photos/avatar.png";
   const avatarUrl = `${apiUrl}${avatarPath}`;
-  
+
   // Redirect to the avatar image
   res.redirect(307, avatarUrl);
 });
@@ -282,11 +285,11 @@ function escapeHtml(str) {
  * Replace runtime placeholders with current config values
  */
 function replaceRuntimePlaceholders(html, apiUrl) {
-  const siteName = configFile.branding?.siteName || "Photography Portfolio";
+  const siteName = configFile.branding?.siteName || "Galleria";
   const avatarPath = configFile.branding?.avatarPath || "/photos/avatar.png";
-  const runtimeSiteUrl = apiUrl.includes('localhost')
-    ? apiUrl.replace(':3001', ':3000')
-    : apiUrl.replace(/api(-dev)?\./, 'www$1.');
+  const runtimeSiteUrl = apiUrl.includes("localhost")
+    ? apiUrl.replace(":3001", ":3000")
+    : apiUrl.replace(/api(-dev)?\./, "www$1.");
 
   return html
     .replace(/__RUNTIME_SITE_NAME__/g, escapeHtml(siteName))
@@ -357,15 +360,20 @@ app.get("*", async (req, res) => {
           debug(`  Preview Image: ${gridUrl}`);
           debug(`  Page URL: ${pageUrl}`);
 
+          // Get site name from branding
+          const siteName = configFile.branding?.siteName || "Galleria";
+          const safeSiteName = escapeHtml(siteName);
+
           // Read and modify index.html
           const html = fs.readFileSync(indexPath, "utf8");
           const modifiedHtml = html
+            .replace(/<title>.*?<\/title>/, `<title>${safeSiteName}</title>`)
             .replace(
               /<meta property="og:image" content=".*?" \/>/,
               `<meta property="og:image" content="${gridUrl}" />\n    <meta property="og:image:secure_url" content="${gridUrl.replace(
                 "http://",
                 "https://"
-              )}" />\n    <meta property="og:image:alt" content="Photography by Ted Charles" />\n    <meta property="og:image:type" content="image/jpeg" />\n    <meta property="og:image:width" content="1200" />\n    <meta property="og:image:height" content="630" />`
+              )}" />\n    <meta property="og:image:alt" content="Photography by ${safeSiteName}" />\n    <meta property="og:image:width" content="1200" />\n    <meta property="og:image:height" content="630" />`
             )
             .replace(
               /<meta property="twitter:image" content=".*?" \/>/,
@@ -376,7 +384,10 @@ app.get("*", async (req, res) => {
           setCSPHeader(res, apiUrl, configFile);
 
           // Replace runtime placeholders
-          let htmlWithPlaceholders = replaceRuntimePlaceholders(modifiedHtml, apiUrl);
+          let htmlWithPlaceholders = replaceRuntimePlaceholders(
+            modifiedHtml,
+            apiUrl
+          );
 
           // Inject runtime config
           const modifiedHtmlWithRuntime = htmlWithPlaceholders.replace(
@@ -435,12 +446,16 @@ app.get("*", async (req, res) => {
           debug(`  Preview Image: ${gridUrl}`);
           debug(`  Page URL: ${pageUrl}`);
 
+          // Get site name from branding
+          const siteName = configFile.branding?.siteName || "Galleria";
+          const safeSiteName = escapeHtml(siteName);
+
           // Read and modify index.html
           const html = fs.readFileSync(indexPath, "utf8");
           const modifiedHtml = html
             .replace(
               /<title>.*?<\/title>/,
-              `<title>${safeAlbumName} - Shared Album - Ted Charles Photography</title>`
+              `<title>${safeAlbumName} - Shared Album - ${safeSiteName}</title>`
             )
             .replace(
               /<meta name="title" content=".*?" \/>/,
@@ -448,7 +463,7 @@ app.get("*", async (req, res) => {
             )
             .replace(
               /<meta name="description" content=".*?" \/>/,
-              `<meta name="description" content="View the ${safeAlbumName} album shared by Ted Charles. ${
+              `<meta name="description" content="View the ${safeAlbumName} album shared. ${
                 photos.length
               } photo${photos.length !== 1 ? "s" : ""} available." />`
             )
@@ -470,7 +485,7 @@ app.get("*", async (req, res) => {
             )
             .replace(
               /<meta property="og:description" content=".*?" \/>/,
-              `<meta property="og:description" content="View the ${albumTitleCase} album shared by Ted Charles. ${
+              `<meta property="og:description" content="View the ${albumTitleCase} album shared by. ${
                 photos.length
               } photo${photos.length !== 1 ? "s" : ""} available." />`
             )
@@ -479,7 +494,7 @@ app.get("*", async (req, res) => {
               `<meta property="og:image" content="${gridUrl}" />\n    <meta property="og:image:secure_url" content="${gridUrl.replace(
                 "http://",
                 "https://"
-              )}" />\n    <meta property="og:image:alt" content="${safeAlbumName} - Photography by Ted Charles" />\n    <meta property="og:image:type" content="image/jpeg" />\n    <meta property="og:image:width" content="1200" />\n    <meta property="og:image:height" content="630" />`
+              )}" />\n    <meta property="og:image:alt" content="${safeAlbumName} - Galleria" />\n    <meta property="og:image:type" content="image/jpeg" />\n    <meta property="og:image:width" content="1200" />\n    <meta property="og:image:height" content="630" />`
             )
             .replace(
               /<meta property="twitter:url" content=".*?" \/>/,
@@ -491,7 +506,7 @@ app.get("*", async (req, res) => {
             )
             .replace(
               /<meta property="twitter:description" content=".*?" \/>/,
-              `<meta property="twitter:description" content="View the ${albumTitleCase} album shared by Ted Charles. ${photos.length} photos available." />`
+              `<meta property="twitter:description" content="View the ${albumTitleCase} album shared. ${photos.length} photos available." />`
             )
             .replace(
               /<meta property="twitter:image" content=".*?" \/>/,
@@ -499,15 +514,15 @@ app.get("*", async (req, res) => {
             );
 
           // Replace runtime placeholders
-          const htmlWithPlaceholders = replaceRuntimePlaceholders(modifiedHtml, apiUrl);
+          const htmlWithPlaceholders = replaceRuntimePlaceholders(
+            modifiedHtml,
+            apiUrl
+          );
           return res.send(htmlWithPlaceholders);
         }
       }
     } catch (error) {
-      error(
-        "[MetaInjection] Failed to fetch shared album data:",
-        error
-      );
+      error("[MetaInjection] Failed to fetch shared album data:", error);
       // Fall through to default index.html
     }
   }
@@ -552,12 +567,16 @@ app.get("*", async (req, res) => {
 
           const safeAlbumName = escapeHtml(albumTitleCase);
 
+          // Get site name from branding
+          const siteName = configFile.branding?.siteName || "Galleria";
+          const safeSiteName = escapeHtml(siteName);
+
           // Read and modify HTML
           const html = fs.readFileSync(indexPath, "utf8");
           const modifiedHtml = html
             .replace(
               /<title>.*?<\/title>/,
-              `<title>${safeAlbumName} - Ted Charles Photography</title>`
+              `<title>${safeAlbumName} - ${safeSiteName}</title>`
             )
             .replace(
               /<meta name="title" content=".*?" \/>/,
@@ -569,7 +588,7 @@ app.get("*", async (req, res) => {
                 photos.length
               } photo${
                 photos.length !== 1 ? "s" : ""
-              } from the ${safeAlbumName} album by Ted Charles." />`
+              } from the ${safeAlbumName} album." />`
             )
             .replace(
               /<link rel="canonical" href=".*?" \/>/,
@@ -600,7 +619,7 @@ app.get("*", async (req, res) => {
               `<meta property="og:image" content="${gridUrl}" />\n    <meta property="og:image:secure_url" content="${gridUrl.replace(
                 "http://",
                 "https://"
-              )}" />\n    <meta property="og:image:alt" content="${safeAlbumName} - Photography by Ted Charles" />\n    <meta property="og:image:type" content="image/jpeg" />\n    <meta property="og:image:width" content="1200" />\n    <meta property="og:image:height" content="630" />`
+              )}" />\n    <meta property="og:image:alt" content="${safeAlbumName} - Galleria" />\n    <meta property="og:image:type" content="image/jpeg" />\n    <meta property="og:image:width" content="1200" />\n    <meta property="og:image:height" content="630" />`
             )
             .replace(
               /<meta property="twitter:url" content=".*?" \/>/,
@@ -624,7 +643,10 @@ app.get("*", async (req, res) => {
             );
 
           // Replace runtime placeholders
-          const htmlWithPlaceholders = replaceRuntimePlaceholders(modifiedHtml, apiUrl);
+          const htmlWithPlaceholders = replaceRuntimePlaceholders(
+            modifiedHtml,
+            apiUrl
+          );
           return res.send(htmlWithPlaceholders);
         }
       }
@@ -693,6 +715,10 @@ app.get("*", async (req, res) => {
           );
           debug(`  Page URL: ${pageUrl}`);
 
+          // Get site name from branding
+          const siteName = configFile.branding?.siteName || "Galleria";
+          const safeSiteName = escapeHtml(siteName);
+
           // Read the index.html file
           const html = fs.readFileSync(indexPath, "utf8");
 
@@ -701,12 +727,12 @@ app.get("*", async (req, res) => {
             // Update page title
             .replace(
               /<title>.*?<\/title>/,
-              `<title>${safePhotoTitle} - ${albumTitleCase} - Ted Charles Photography</title>`
+              `<title>${safePhotoTitle} - ${albumTitleCase} - ${safeSiteName}</title>`
             )
             // Update meta title
             .replace(
               /<meta name="title" content=".*?" \/>/,
-              `<meta name="title" content="${safePhotoTitle} - ${albumTitleCase} - Ted Charles Photography" />`
+              `<meta name="title" content="${safePhotoTitle} - ${albumTitleCase} - ${safeSiteName}" />`
             )
             // Update meta description
             .replace(
@@ -744,7 +770,7 @@ app.get("*", async (req, res) => {
               `<meta property="og:image" content="${thumbnailUrl}" />\n    <meta property="og:image:secure_url" content="${thumbnailUrl.replace(
                 "http://",
                 "https://"
-              )}" />\n    <meta property="og:image:alt" content="${safePhotoTitle} - Photography by Ted Charles" />\n    <meta property="og:image:type" content="image/jpeg" />`
+              )}" />\n    <meta property="og:image:alt" content="${safePhotoTitle} - Galleria" />\n    <meta property="og:image:type" content="image/jpeg" />`
             )
             // Update twitter:url
             .replace(
@@ -768,7 +794,10 @@ app.get("*", async (req, res) => {
             );
 
           // Replace runtime placeholders
-          const htmlWithPlaceholders = replaceRuntimePlaceholders(modifiedHtml, apiUrl);
+          const htmlWithPlaceholders = replaceRuntimePlaceholders(
+            modifiedHtml,
+            apiUrl
+          );
           return res.send(htmlWithPlaceholders);
         }
       }
@@ -830,8 +859,23 @@ app.get("*", async (req, res) => {
     // Set Content Security Policy with runtime API URL
     setCSPHeader(res, runtimeApiUrl, configFile);
 
+    // Prevent caching of index.html to ensure placeholders are always fresh
+    res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+    res.setHeader("Pragma", "no-cache");
+    res.setHeader("Expires", "0");
+
+    // Get site name from branding and update title
+    const siteName = configFile.branding?.siteName || "Galleria";
+    const safeSiteName = escapeHtml(siteName);
+
+    // Replace title tag with site name
+    let modifiedHtml = html.replace(
+      /<title>.*?<\/title>/,
+      `<title>${safeSiteName}</title>`
+    );
+
     // Replace runtime placeholders with current config values
-    let modifiedHtml = replaceRuntimePlaceholders(html, runtimeApiUrl);
+    modifiedHtml = replaceRuntimePlaceholders(modifiedHtml, runtimeApiUrl);
 
     // Inject runtime config before other scripts
     modifiedHtml = modifiedHtml.replace(
@@ -851,9 +895,9 @@ const bindHost = process.env.HOST || (isLocalhost ? "127.0.0.1" : "0.0.0.0");
 app.listen(port, bindHost, () => {
   info(`[Frontend] Server running on ${bindHost}:${port}`);
   info(`[Frontend] API URL: ${config.frontend.apiUrl}`);
-  
+
   // Signal PM2 that app is ready (for zero-downtime reloads)
   if (process.send) {
-    process.send('ready');
+    process.send("ready");
   }
 });

@@ -4,6 +4,7 @@
  */
 
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { API_URL } from '../../config';
 import './RestartModal.css';
 
@@ -15,8 +16,9 @@ interface RestartModalProps {
 type RestartStatus = 'restarting' | 'polling' | 'success' | 'error';
 
 export default function RestartModal({ onClose, message }: RestartModalProps) {
+  const { t } = useTranslation();
   const [status, setStatus] = useState<RestartStatus>('restarting');
-  const [statusMessage, setStatusMessage] = useState('Restarting server...');
+  const [statusMessage, setStatusMessage] = useState(t('restartModal.restartingServer'));
   const [backendUp, setBackendUp] = useState(false);
   const [frontendUp, setFrontendUp] = useState(false);
   
@@ -62,13 +64,13 @@ export default function RestartModal({ onClose, message }: RestartModalProps) {
         // This gives the server time to actually restart
         setTimeout(() => {
           setStatus('polling');
-          setStatusMessage('Waiting for server to come back online...');
+          setStatusMessage(t('restartModal.waitingForServer'));
         }, 5000);
       } catch (error) {
         // Expected - connection will be lost during restart
         setTimeout(() => {
           setStatus('polling');
-          setStatusMessage('Waiting for server to come back online...');
+          setStatusMessage(t('restartModal.waitingForServer'));
         }, 5000);
       }
     };
@@ -110,11 +112,11 @@ export default function RestartModal({ onClose, message }: RestartModalProps) {
 
       // Update status message based on what's up
       if (backend && !frontend) {
-        setStatusMessage('Backend is online, waiting for frontend...');
+        setStatusMessage(t('restartModal.backendOnlineWaitingFrontend'));
       } else if (!backend && frontend) {
-        setStatusMessage('Frontend is online, waiting for backend...');
+        setStatusMessage(t('restartModal.frontendOnlineWaitingBackend'));
       } else {
-        setStatusMessage('Waiting for servers to come back online...');
+        setStatusMessage(t('restartModal.waitingForServers'));
       }
     };
 
@@ -128,7 +130,7 @@ export default function RestartModal({ onClose, message }: RestartModalProps) {
 
     const timeout = setTimeout(() => {
       setStatus('error');
-      setStatusMessage('Server restart timed out. Please check the server logs.');
+      setStatusMessage(t('restartModal.timeout'));
     }, MAX_WAIT_TIME * 1000);
 
     return () => clearTimeout(timeout);
@@ -139,10 +141,10 @@ export default function RestartModal({ onClose, message }: RestartModalProps) {
       <div className="restart-modal">
         <div className="restart-modal-header">
           <h2>
-            {status === 'restarting' && '🔄 Restarting Server'}
-            {status === 'polling' && '⏳ Server Restarting'}
-            {status === 'success' && '✅ Restart Complete'}
-            {status === 'error' && '❌ Restart Failed'}
+            {status === 'restarting' && `🔄 ${t('restartModal.restartingServer')}`}
+            {status === 'polling' && `⏳ ${t('restartModal.serverRestarting')}`}
+            {status === 'success' && `✅ ${t('restartModal.restartComplete')}`}
+            {status === 'error' && `❌ ${t('restartModal.restartFailed')}`}
           </h2>
         </div>
 
@@ -162,16 +164,16 @@ export default function RestartModal({ onClose, message }: RestartModalProps) {
               <div className="restart-checks">
                 <div className={`restart-check ${backendUp ? 'up' : 'polling'}`}>
                   <span className={`restart-status-light ${backendUp ? 'green' : 'yellow'}`}></span>
-                  <span className="restart-check-label">Backend Server</span>
+                  <span className="restart-check-label">{t('restartModal.backendServer')}</span>
                   <span className="restart-check-status">
-                    {backendUp ? 'Online' : 'Restarting...'}
+                    {backendUp ? t('restartModal.online') : t('restartModal.restarting')}
                   </span>
                 </div>
                 <div className={`restart-check ${frontendUp ? 'up' : 'polling'}`}>
                   <span className={`restart-status-light ${frontendUp ? 'green' : 'yellow'}`}></span>
-                  <span className="restart-check-label">Frontend Server</span>
+                  <span className="restart-check-label">{t('restartModal.frontendServer')}</span>
                   <span className="restart-check-status">
-                    {frontendUp ? 'Online' : 'Restarting...'}
+                    {frontendUp ? t('restartModal.online') : t('restartModal.restarting')}
                   </span>
                 </div>
               </div>
@@ -189,22 +191,21 @@ export default function RestartModal({ onClose, message }: RestartModalProps) {
               <div className="restart-checks">
                 <div className="restart-check error">
                   <span className="restart-status-light red"></span>
-                  <span className="restart-check-label">Backend Server</span>
-                  <span className="restart-check-status">Timeout</span>
+                  <span className="restart-check-label">{t('restartModal.backendServer')}</span>
+                  <span className="restart-check-status">{t('restartModal.timeout')}</span>
                 </div>
                 <div className="restart-check error">
                   <span className="restart-status-light red"></span>
-                  <span className="restart-check-label">Frontend Server</span>
-                  <span className="restart-check-status">Timeout</span>
+                  <span className="restart-check-label">{t('restartModal.frontendServer')}</span>
+                  <span className="restart-check-status">{t('restartModal.timeout')}</span>
                 </div>
               </div>
               
               <p className="restart-error-details">
-                The server did not respond within {MAX_WAIT_TIME} seconds.
-                Please check the server logs for errors.
+                {t('restartModal.timeoutDetails', { seconds: MAX_WAIT_TIME })}
               </p>
               <button onClick={onClose} className="btn-primary">
-                Close
+                {t('common.close')}
               </button>
             </>
           )}

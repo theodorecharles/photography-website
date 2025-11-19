@@ -29,6 +29,13 @@ mkdir -p data/optimized/modal
 mkdir -p data/optimized/download
 log "Data directory structure verified"
 
+# Validate translations before deployment
+log "Validating translations..."
+if ! node scripts/validate-translations.js; then
+    handle_error "Translation validation failed! Run 'node scripts/fix-translations.js' to auto-fix missing keys."
+fi
+log "✓ All translations validated successfully"
+
 # Install root dependencies (for optimization and AI scripts)
 log "Installing root dependencies..."
 if ! npm install; then
@@ -70,7 +77,15 @@ if ! npm install; then
     handle_error "Frontend npm install failed"
 fi
 
+# Generate favicons from icon-192.png (before frontend build)
+cd ..
+log "Generating favicons and setting up icons..."
+if ! node scripts/generate-favicons.js; then
+    handle_error "Favicon generation failed"
+fi
+
 log "Building frontend..."
+cd frontend || handle_error "Failed to cd into frontend directory"
 if ! npm run build; then
     handle_error "Frontend build failed"
 fi

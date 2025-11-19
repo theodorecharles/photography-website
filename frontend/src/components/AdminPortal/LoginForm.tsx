@@ -4,6 +4,7 @@
  */
 
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { API_URL } from '../../config';
 import { AuthMethod } from './types';
@@ -23,6 +24,7 @@ interface LoginFormProps {
 }
 
 export default function LoginForm({ availableAuthMethods, onLoginSuccess }: LoginFormProps) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const [activeAuthTab, setActiveAuthTab] = useState<AuthMethod>(null);
@@ -93,7 +95,7 @@ export default function LoginForm({ availableAuthMethods, onLoginSuccess }: Logi
           setRequiresMFA(true);
           setLoginError(null);
         } else {
-          setLoginError(data.error || 'Login failed');
+          setLoginError(data.error || t('login.loginFailed'));
         }
         setLoginLoading(false);
         return;
@@ -103,7 +105,7 @@ export default function LoginForm({ availableAuthMethods, onLoginSuccess }: Logi
       setLoginLoading(false);
       onLoginSuccess();
     } catch (err) {
-      setLoginError('Network error. Please try again.');
+      setLoginError(t('login.networkError'));
       setLoginLoading(false);
     }
   };
@@ -122,7 +124,7 @@ export default function LoginForm({ availableAuthMethods, onLoginSuccess }: Logi
       });
 
       if (!optionsRes.ok) {
-        throw new Error('Failed to get authentication options');
+        throw new Error(t('login.failedToGetAuthOptions'));
       }
 
       const { sessionId, ...options } = await optionsRes.json();
@@ -142,7 +144,7 @@ export default function LoginForm({ availableAuthMethods, onLoginSuccess }: Logi
       const data = await verifyRes.json();
 
       if (!verifyRes.ok) {
-        setLoginError(data.error || 'Passkey authentication failed');
+        setLoginError(data.error || t('login.passkeyAuthFailed'));
         setLoginLoading(false);
         return;
       }
@@ -157,9 +159,9 @@ export default function LoginForm({ availableAuthMethods, onLoginSuccess }: Logi
       onLoginSuccess();
     } catch (err: any) {
       if (err.name === 'NotAllowedError') {
-        setLoginError('Authentication cancelled');
+        setLoginError(t('login.authCancelled'));
       } else {
-        setLoginError(err.message || 'Passkey authentication failed');
+        setLoginError(err.message || t('login.passkeyAuthFailed'));
       }
       setLoginLoading(false);
     }
@@ -172,9 +174,9 @@ export default function LoginForm({ availableAuthMethods, onLoginSuccess }: Logi
           <LockIcon width="48" height="48" />
         </div>
         
-        <h2>Sign in to Galleria</h2>
+        <h2>{t('login.signInToGalleria')}</h2>
         <p className="auth-description">
-          Choose your authentication method to access Galleria.
+          {t('login.chooseAuthMethod')}
         </p>
 
         {loginError && (
@@ -192,7 +194,7 @@ export default function LoginForm({ availableAuthMethods, onLoginSuccess }: Logi
                 className="btn-login btn-login-google"
               >
                 <GoogleLogoIcon width="20" height="20" style={{ marginRight: '12px' }} />
-                Sign in with Google
+                {t('login.signInWithGoogle')}
               </a>
             )}
             
@@ -202,7 +204,7 @@ export default function LoginForm({ availableAuthMethods, onLoginSuccess }: Logi
                 className="btn-login btn-login-passkey"
               >
                 <span style={{ fontSize: '1.2rem', marginRight: '12px' }}>🔑</span>
-                Sign in with Passkey
+                {t('login.signInWithPasskey')}
               </button>
             )}
             
@@ -212,7 +214,7 @@ export default function LoginForm({ availableAuthMethods, onLoginSuccess }: Logi
                 className="btn-login btn-login-password"
               >
                 <LockIcon width="20" height="20" style={{ marginRight: '12px' }} />
-                Sign in with Password
+                {t('login.signInWithPassword')}
               </button>
             )}
           </div>
@@ -223,7 +225,7 @@ export default function LoginForm({ availableAuthMethods, onLoginSuccess }: Logi
           <div className="auth-actions">
             <a href={`${API_URL}/api/auth/google`} className="btn-login">
               <GoogleLogoIcon width="20" height="20" style={{ marginRight: '12px' }} />
-              Sign in with Google
+              {t('login.signInWithGoogle')}
             </a>
           </div>
         )}
@@ -235,7 +237,7 @@ export default function LoginForm({ availableAuthMethods, onLoginSuccess }: Logi
               <form onSubmit={handleCredentialsLogin} className="auth-form-full">
                 <div className="auth-input-group">
                   <label className="auth-input-label">
-                    Email
+                    {t('login.email')}
                   </label>
                   <input
                     type="email"
@@ -245,13 +247,13 @@ export default function LoginForm({ availableAuthMethods, onLoginSuccess }: Logi
                     required
                     autoComplete="email"
                     disabled={loginLoading}
-                    placeholder="Enter your email"
+                    placeholder={t('login.enterEmail')}
                     autoFocus
                   />
                 </div>
                 <div className="auth-input-group auth-input-group-spaced">
                   <label className="auth-input-label">
-                    Password
+                    {t('login.password')}
                   </label>
                   <input
                     type="password"
@@ -261,7 +263,7 @@ export default function LoginForm({ availableAuthMethods, onLoginSuccess }: Logi
                     required
                     autoComplete="current-password"
                     disabled={loginLoading}
-                    placeholder="Enter your password"
+                    placeholder={t('login.enterPassword')}
                   />
                 </div>
                 <button
@@ -269,17 +271,17 @@ export default function LoginForm({ availableAuthMethods, onLoginSuccess }: Logi
                   className="btn-login btn-login-full"
                   disabled={loginLoading}
                 >
-                  {loginLoading ? 'Signing in...' : 'Sign In'}
+                  {loginLoading ? t('login.signingIn') : t('login.signIn')}
                 </button>
               </form>
             ) : (
               <form onSubmit={handleCredentialsLogin} className="auth-form-full">
                 <div className="mfa-info-box">
                   <p className="mfa-info-box-title">
-                    Two-Factor Authentication Required
+                    {t('login.mfaRequired')}
                   </p>
                   <p className="mfa-info-box-text">
-                    Enter the 6-digit code from your authenticator app for:
+                    {t('login.mfaEnterCode')}
                   </p>
                   <p className="mfa-info-box-email">
                     {username}
@@ -298,7 +300,7 @@ export default function LoginForm({ availableAuthMethods, onLoginSuccess }: Logi
                 />
                 <div className="auth-input-group">
                   <label className="auth-input-label">
-                    Authentication Code
+                    {t('login.authenticationCode')}
                   </label>
                   <input
                     type="text"
@@ -320,7 +322,7 @@ export default function LoginForm({ availableAuthMethods, onLoginSuccess }: Logi
                   disabled={loginLoading || mfaToken.length !== 6}
                   style={{ marginBottom: '0.5rem' }}
                 >
-                  {loginLoading ? 'Verifying...' : 'Verify & Sign In'}
+                  {loginLoading ? t('login.verifying') : t('login.verifyAndSignIn')}
                 </button>
                 <button
                   type="button"
@@ -333,7 +335,7 @@ export default function LoginForm({ availableAuthMethods, onLoginSuccess }: Logi
                   disabled={loginLoading}
                   className="btn-back"
                 >
-                  Back
+                  {t('common.back')}
                 </button>
               </form>
             )}
@@ -346,7 +348,7 @@ export default function LoginForm({ availableAuthMethods, onLoginSuccess }: Logi
             <form onSubmit={(e) => { e.preventDefault(); handlePasskeyLogin(); }} className="auth-form-full">
               <div className="auth-input-group">
                 <label className="auth-input-label">
-                  Email
+                  {t('login.email')}
                 </label>
                 <input
                   type="email"
@@ -356,7 +358,7 @@ export default function LoginForm({ availableAuthMethods, onLoginSuccess }: Logi
                   required
                   autoComplete="email webauthn"
                   disabled={loginLoading}
-                  placeholder="Enter your email"
+                  placeholder={t('login.enterEmail')}
                   autoFocus
                 />
               </div>
@@ -366,7 +368,7 @@ export default function LoginForm({ availableAuthMethods, onLoginSuccess }: Logi
                 disabled={loginLoading || !username}
                 style={{ marginBottom: '0.5rem' }}
               >
-                {loginLoading ? 'Authenticating...' : '🔑 Sign in with Passkey'}
+                {loginLoading ? t('login.authenticating') : t('login.signInWithPasskey')}
               </button>
               <button
                 type="button"
@@ -378,7 +380,7 @@ export default function LoginForm({ availableAuthMethods, onLoginSuccess }: Logi
                 disabled={loginLoading}
                 className="btn-back"
               >
-                Back
+                {t('common.back')}
               </button>
             </form>
           </div>
@@ -388,7 +390,7 @@ export default function LoginForm({ availableAuthMethods, onLoginSuccess }: Logi
         <div className="auth-return-link">
           <a href="/" className="btn-home">
             <HomeIcon width="18" height="18" style={{ marginRight: '8px' }} />
-            Return to Gallery
+            {t('login.returnToGallery')}
           </a>
         </div>
       </div>

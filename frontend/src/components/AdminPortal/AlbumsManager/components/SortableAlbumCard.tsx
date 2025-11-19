@@ -4,6 +4,7 @@
  */
 
 import { useRef, useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Album } from '../types';
@@ -48,6 +49,7 @@ const SortableAlbumCard: React.FC<SortableAlbumCardProps> = ({
   hasFolders = false,
   canEdit,
 }) => {
+  const { t } = useTranslation();
   // Detect if we're on mobile
   const [isMobile, setIsMobile] = useState(false);
   
@@ -140,7 +142,7 @@ const SortableAlbumCard: React.FC<SortableAlbumCardProps> = ({
             e.stopPropagation();
             onRemoveFromFolder(album.name);
           }}
-          title="Remove from folder"
+                      title={t('albumsManager.removeFromFolder')}
         >
           <FolderMinusIcon width="16" height="16" />
         </button>
@@ -154,7 +156,7 @@ const SortableAlbumCard: React.FC<SortableAlbumCardProps> = ({
             e.stopPropagation();
             onMoveToFolder(album.name);
           }}
-          title="Move to folder"
+                      title={t('albumsManager.moveToFolder')}
         >
           <FolderArrowIcon width="16" height="16" />
         </button>
@@ -175,7 +177,7 @@ const SortableAlbumCard: React.FC<SortableAlbumCardProps> = ({
                 e.preventDefault();
                 onMoveUp(album.name);
               }}
-              title="Move up"
+                      title={t('albumsManager.moveUp')}
             >
               <ChevronUpIcon width="16" height="16" />
             </button>
@@ -192,7 +194,7 @@ const SortableAlbumCard: React.FC<SortableAlbumCardProps> = ({
                 e.preventDefault();
                 onMoveDown(album.name);
               }}
-              title="Move down"
+                      title={t('albumsManager.moveDown')}
             >
               <ChevronDownIcon width="16" height="16" />
             </button>
@@ -209,7 +211,7 @@ const SortableAlbumCard: React.FC<SortableAlbumCardProps> = ({
                 e.preventDefault();
                 onMoveToFolder(album.name);
               }}
-              title="Move to folder"
+                      title={t('albumsManager.moveToFolder')}
             >
               <FolderArrowIcon width="16" height="16" />
             </button>
@@ -229,7 +231,7 @@ const SortableAlbumCard: React.FC<SortableAlbumCardProps> = ({
       {uploadProgress && uploadProgress.total > 0 ? (
         <div className="album-upload-progress">
           <div className="upload-progress-text">
-            Uploading: {uploadProgress.completed}/{uploadProgress.total}
+            {t('sse.uploadingLabel')}: {uploadProgress.completed}/{uploadProgress.total}
           </div>
           <div className="upload-progress-bar-container">
             <div 

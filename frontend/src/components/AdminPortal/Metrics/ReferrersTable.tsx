@@ -3,6 +3,7 @@
  */
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { formatNumber } from '../../../utils/formatters';
 
 interface Referrer {
@@ -25,8 +26,9 @@ const ReferrersTable: React.FC<ReferrersTableProps> = ({
   onToggleRow,
   onToggleTable,
 }) => {
+  const { t } = useTranslation();
   if (!referrers || referrers.length === 0) {
-    return <div className="no-data">No referrer data available</div>;
+    return <div className="no-data">{t('metrics.referrersTable.noData')}</div>;
   }
 
   const totalReferrers = referrers.reduce((sum, r) => sum + r.count, 0);
@@ -38,9 +40,9 @@ const ReferrersTable: React.FC<ReferrersTableProps> = ({
           <table>
             <thead>
               <tr>
-                <th>Referrer</th>
-                <th className="text-right" style={{ width: '80px' }}>Visits</th>
-                <th className="text-right" style={{ width: '80px' }}>% of Total</th>
+                <th>{t('metrics.referrersTable.referrer')}</th>
+                <th className="text-right" style={{ width: '80px' }}>{t('metrics.referrersTable.visits')}</th>
+                <th className="text-right" style={{ width: '80px' }}>{t('metrics.referrersTable.percentOfTotal')}</th>
               </tr>
             </thead>
             <tbody>
@@ -67,16 +69,16 @@ const ReferrersTable: React.FC<ReferrersTableProps> = ({
                         <td colSpan={3}>
                           <div className="expanded-content">
                             <div className="expanded-detail">
-                              <strong>Full Referrer URL:</strong>
+                              <strong>{t('metrics.referrersTable.fullReferrerUrl')}:</strong>
                               <div style={{ wordBreak: 'break-all', marginTop: '0.5rem' }}>
                                 {referrer.referrer}
                               </div>
                             </div>
                             <div className="expanded-detail">
-                              <strong>Total Visits:</strong> {formatNumber(referrer.count)}
+                              <strong>{t('metrics.referrersTable.totalVisits')}:</strong> {formatNumber(referrer.count)}
                             </div>
                             <div className="expanded-detail">
-                              <strong>Percentage:</strong> {percentage}% of all referrers
+                              <strong>{t('metrics.referrersTable.percentage')}:</strong> {t('metrics.referrersTable.percentageText', { percentage })}
                             </div>
                           </div>
                         </td>
@@ -93,7 +95,7 @@ const ReferrersTable: React.FC<ReferrersTableProps> = ({
         className="view-more-btn" 
         onClick={onToggleTable}
       >
-        {isExpanded ? 'View Less ▲' : 'View More ▼'}
+        {isExpanded ? t('metrics.viewLess') : t('metrics.viewMore')}
       </button>
     </>
   );

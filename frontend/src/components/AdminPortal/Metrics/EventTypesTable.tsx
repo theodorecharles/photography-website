@@ -3,6 +3,7 @@
  */
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { formatNumber } from '../../../utils/formatters';
 
 interface EventType {
@@ -25,8 +26,9 @@ const EventTypesTable: React.FC<EventTypesTableProps> = ({
   onToggleRow,
   onToggleTable,
 }) => {
+  const { t } = useTranslation();
   if (!events || events.length === 0) {
-    return <div className="no-data">No event data available</div>;
+    return <div className="no-data">{t('metrics.eventTypesTable.noData')}</div>;
   }
 
   const totalEvents = events.reduce((sum, e) => sum + e.count, 0);
@@ -38,9 +40,9 @@ const EventTypesTable: React.FC<EventTypesTableProps> = ({
           <table>
             <thead>
               <tr>
-                <th>Event Type</th>
-                <th className="text-right">Count</th>
-                <th className="text-right">% of Total</th>
+                <th>{t('metrics.eventTypesTable.eventType')}</th>
+                <th className="text-right">{t('metrics.eventTypesTable.count')}</th>
+                <th className="text-right">{t('metrics.eventTypesTable.percentOfTotal')}</th>
               </tr>
             </thead>
             <tbody>
@@ -65,13 +67,13 @@ const EventTypesTable: React.FC<EventTypesTableProps> = ({
                         <td colSpan={3}>
                           <div className="expanded-content">
                             <div className="expanded-detail">
-                              <strong>Event Type:</strong> {event.event_type}
+                              <strong>{t('metrics.eventTypesTable.eventType')}:</strong> {event.event_type}
                             </div>
                             <div className="expanded-detail">
-                              <strong>Total Count:</strong> {formatNumber(event.count)}
+                              <strong>{t('metrics.eventTypesTable.totalCount')}:</strong> {formatNumber(event.count)}
                             </div>
                             <div className="expanded-detail">
-                              <strong>Percentage:</strong> {percentage}% of all events
+                              <strong>{t('metrics.eventTypesTable.percentage')}:</strong> {t('metrics.eventTypesTable.percentageText', { percentage })}
                             </div>
                           </div>
                         </td>
@@ -88,7 +90,7 @@ const EventTypesTable: React.FC<EventTypesTableProps> = ({
         className="view-more-btn" 
         onClick={onToggleTable}
       >
-        {isExpanded ? 'View Less ▲' : 'View More ▼'}
+        {isExpanded ? t('metrics.viewLess') : t('metrics.viewMore')}
       </button>
     </>
   );

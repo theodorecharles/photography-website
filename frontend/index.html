@@ -5,8 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     
     <!-- Primary Meta Tags -->
-    <title>__RUNTIME_SITE_NAME__ - Galleria</title>
+    <title>Galleria</title>
     <meta name="title" content="__RUNTIME_SITE_NAME__ - Galleria" />
+    <script>
+      // Set title immediately to avoid flash of placeholder text
+      if (document.title === 'Galleria') {
+        // Title will be updated by runtime config injection
+      }
+    </script>
     <meta name="description" content="Photography portfolio by __RUNTIME_SITE_NAME__." />
     <meta name="keywords" content="__RUNTIME_SITE_NAME__, photography, portfolio, photographer, landscape photography, portrait photography" />
     <meta name="author" content="__RUNTIME_SITE_NAME__" />

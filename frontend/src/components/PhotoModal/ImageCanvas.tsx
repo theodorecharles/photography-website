@@ -40,7 +40,7 @@ const ImageCanvas: React.FC<ImageCanvasProps> = ({
         ref={thumbnailRef}
         onLoad={onThumbnailLoad}
         src={`${apiUrl}${photo.thumbnail}${imageQueryString}`}
-        alt={`${photo.album} photography by Ted Charles - ${photo.title}`}
+        alt={`${photo.album} - ${photo.title}`}
         title={photo.title}
         style={{
           width: '100%',
@@ -53,7 +53,7 @@ const ImageCanvas: React.FC<ImageCanvasProps> = ({
       {showModalImage && (
         <img
           src={`${apiUrl}${photo.modal}${imageQueryString}`}
-          alt={`${photo.album} photography by Ted Charles - ${photo.title}`}
+          alt={`${photo.album} - ${photo.title}`}
           title={photo.title}
           style={{
             position: 'absolute',

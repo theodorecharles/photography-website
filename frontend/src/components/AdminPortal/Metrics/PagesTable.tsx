@@ -3,6 +3,7 @@
  */
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { formatNumber } from '../../../utils/formatters';
 
 interface Page {
@@ -27,8 +28,9 @@ const PagesTable: React.FC<PagesTableProps> = ({
   onToggleRow,
   onToggleTable,
 }) => {
+  const { t } = useTranslation();
   if (!pages || pages.length === 0) {
-    return <div className="no-data">No page view data available</div>;
+    return <div className="no-data">{t('metrics.pagesTable.noData')}</div>;
   }
 
   return (
@@ -38,9 +40,9 @@ const PagesTable: React.FC<PagesTableProps> = ({
           <table>
             <thead>
               <tr>
-                <th>Page Path</th>
-                <th className="text-right">Views</th>
-                <th className="text-right">% of Total</th>
+                <th>{t('metrics.pagesTable.pagePath')}</th>
+                <th className="text-right">{t('metrics.pagesTable.views')}</th>
+                <th className="text-right">{t('metrics.pagesTable.percentOfTotal')}</th>
               </tr>
             </thead>
             <tbody>
@@ -65,13 +67,13 @@ const PagesTable: React.FC<PagesTableProps> = ({
                         <td colSpan={3}>
                           <div className="expanded-content">
                             <div className="expanded-detail">
-                              <strong>Full Path:</strong> {page.page_path}
+                              <strong>{t('metrics.pagesTable.fullPath')}:</strong> {page.page_path}
                             </div>
                             <div className="expanded-detail">
-                              <strong>Total Views:</strong> {formatNumber(page.views)}
+                              <strong>{t('metrics.pagesTable.totalViews')}:</strong> {formatNumber(page.views)}
                             </div>
                             <div className="expanded-detail">
-                              <strong>Percentage of Total:</strong> {percentage}% of all page views
+                              <strong>{t('metrics.pagesTable.percentageOfTotal')}:</strong> {t('metrics.pagesTable.percentageOfTotalText', { percentage })}
                             </div>
                           </div>
                         </td>
@@ -88,7 +90,7 @@ const PagesTable: React.FC<PagesTableProps> = ({
         className="view-more-btn" 
         onClick={onToggleTable}
       >
-        {isExpanded ? 'View Less ▲' : 'View More ▼'}
+        {isExpanded ? t('metrics.viewLess') : t('metrics.viewMore')}
       </button>
     </>
   );
