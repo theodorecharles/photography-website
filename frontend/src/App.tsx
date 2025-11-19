@@ -179,12 +179,22 @@ function App() {
     Array<{ id: number; name: string; published: boolean }>
   >([]);
   const [externalLinks, setExternalLinks] = useState<ExternalLink[]>([]);
-  const [siteName, setSiteName] = useState("Galleria");
-  const [avatarPath, setAvatarPath] = useState("/photos/avatar.png");
+  
+  // Read branding from injected runtime config (server-rendered) for instant load
+  const runtimeBranding = (window as any).__RUNTIME_BRANDING__;
+  const [siteName, setSiteName] = useState(runtimeBranding?.siteName || "Galleria");
+  const [avatarPath, setAvatarPath] = useState(runtimeBranding?.avatarPath || "/photos/avatar.png");
   const [avatarCacheBust, setAvatarCacheBust] = useState(Date.now());
-  const [primaryColor, setPrimaryColor] = useState("#4ade80");
-  const [secondaryColor, setSecondaryColor] = useState("#3b82f6");
+  const [primaryColor, setPrimaryColor] = useState(runtimeBranding?.primaryColor || "#4ade80");
+  const [secondaryColor, setSecondaryColor] = useState(runtimeBranding?.secondaryColor || "#3b82f6");
   const [errorState, setErrorState] = useState<string | null>(null);
+
+  // Set language immediately if provided in runtime branding
+  useEffect(() => {
+    if (runtimeBranding?.language && i18n.language !== runtimeBranding.language) {
+      i18n.changeLanguage(runtimeBranding.language);
+    }
+  }, [runtimeBranding]);
   const [currentAlbum, setCurrentAlbum] = useState<string | undefined>(
     undefined
   );
