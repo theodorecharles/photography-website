@@ -1,6 +1,8 @@
 {
   "common": {
     "loading": "Laddar...",
+    "checkingSetupStatus": "Kontrollerar installationsstatus...",
+    "loadingSharedAlbum": "Laddar delat album...",
     "error": "Fel",
     "save": "Spara",
     "cancel": "Avbryt",
@@ -121,7 +123,7 @@
     "invalidCredentials": "Ogiltiga inloggningsuppgifter"
   },
   "sse": {
-    "uploading": "Laddar upp",
+    "uploading": "Laddar upp...",
     "uploadingTo": "Laddar upp till {{album}}",
     "uploadingProgress": "Laddar upp {{completed}} av {{total}} foton...",
     "uploadingLabel": "Laddar upp",
@@ -258,6 +260,7 @@
     "uncategorized": "Okategoriserade",
     "noPhotosInAlbum": "Inga foton i detta album",
     "loadingPhotos": "Laddar foton...",
+    "uploadingEllipsis": "Laddar upp...",
     "savingOrder": "Sparar ordning...",
     "saveOrder": "Spara Ordning",
     "shuffle": "Blanda",

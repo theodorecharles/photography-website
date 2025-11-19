@@ -255,7 +255,7 @@ export default function SetupWizard() {
         <div className="setup-container">
           <div className="setup-loading">
             <div className="loading-spinner"></div>
-            <p>{ready ? 'Checking setup status...' : 'Loading...'}</p>
+            <p>{ready ? t('common.checkingSetupStatus') : t('common.loading')}</p>
           </div>
         </div>
       </div>

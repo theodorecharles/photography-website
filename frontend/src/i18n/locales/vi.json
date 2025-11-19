@@ -1,6 +1,8 @@
 {
   "common": {
     "loading": "Đang tải...",
+    "checkingSetupStatus": "Đang kiểm tra trạng thái thiết lập...",
+    "loadingSharedAlbum": "Đang tải album chia sẻ...",
     "error": "Lỗi",
     "save": "Lưu",
     "cancel": "Hủy",
@@ -121,7 +123,7 @@
     "inviteSignup": "Hoàn tất đăng ký"
   },
   "sse": {
-    "uploading": "Đang tải lên",
+    "uploading": "Đang tải lên...",
     "uploadingTo": "Đang tải lên {{album}}",
     "uploadingProgress": "Đang tải lên {{completed}} trong tổng số {{total}} ảnh...",
     "uploadingLabel": "Đang tải lên",
@@ -267,6 +269,7 @@
     "album": "album",
     "albums": "album",
     "loadingPhotos": "Đang tải ảnh...",
+    "uploadingEllipsis": "Đang tải lên...",
     "savingOrder": "Đang lưu thứ tự...",
     "saveOrder": "Lưu thứ tự",
     "shuffle": "Xáo trộn",

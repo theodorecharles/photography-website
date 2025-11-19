@@ -1,6 +1,8 @@
 {
   "common": {
     "loading": "Chargement...",
+    "checkingSetupStatus": "Vérification de l'état de la configuration...",
+    "loadingSharedAlbum": "Chargement de l'album partagé...",
     "error": "Erreur",
     "save": "Enregistrer",
     "cancel": "Annuler",
@@ -121,7 +123,7 @@
     "invalidCredentials": "Identifiants invalides"
   },
   "sse": {
-    "uploading": "Téléchargement",
+    "uploading": "Téléversement...",
     "uploadingTo": "Téléchargement vers {{album}}",
     "uploadingProgress": "Téléchargement de {{completed}} sur {{total}} photos...",
     "uploadingLabel": "Téléchargement",
@@ -316,6 +318,7 @@
     "uncategorized": "Non classé",
     "noPhotosInAlbum": "Aucune photo dans cet album",
     "loadingPhotos": "Chargement des photos...",
+    "uploadingEllipsis": "Téléversement...",
     "savingOrder": "Enregistrement de l'ordre...",
     "saveOrder": "Enregistrer l'ordre",
     "orderSaved": "Commande enregistrée !",

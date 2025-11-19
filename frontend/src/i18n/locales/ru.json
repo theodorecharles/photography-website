@@ -1,6 +1,8 @@
 {
   "common": {
     "loading": "Загрузка...",
+    "checkingSetupStatus": "Проверка статуса настройки...",
+    "loadingSharedAlbum": "Загрузка общего альбома...",
     "error": "Ошибка",
     "save": "Сохранить",
     "cancel": "Отмена",
@@ -121,7 +123,7 @@
     "invalidCredentials": "Неверные учетные данные"
   },
   "sse": {
-    "uploading": "Загрузка",
+    "uploading": "Загрузка...",
     "uploadingTo": "Загрузка в {{album}}",
     "uploadingProgress": "Загружено {{completed}} из {{total}} фотографий...",
     "uploadingLabel": "Загрузка",
@@ -258,6 +260,7 @@
     "uncategorized": "Без категории",
     "noPhotosInAlbum": "В этом альбоме нет фотографий",
     "loadingPhotos": "Загрузка фотографий...",
+    "uploadingEllipsis": "Загрузка...",
     "savingOrder": "Сохранение порядка...",
     "saveOrder": "Сохранить порядок",
     "shuffle": "Перемешать",

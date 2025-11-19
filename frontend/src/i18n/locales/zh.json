@@ -1,6 +1,8 @@
 {
   "common": {
     "loading": "加载中...",
+    "checkingSetupStatus": "检查设置状态...",
+    "loadingSharedAlbum": "加载共享相册...",
     "error": "错误",
     "save": "保存",
     "cancel": "取消",
@@ -121,7 +123,7 @@
     "invalidCredentials": "凭证无效"
   },
   "sse": {
-    "uploading": "上传中",
+    "uploading": "正在上传...",
     "uploadingTo": "上传到{{album}}",
     "uploadingProgress": "正在上传 {{completed}} 张，共 {{total}} 张照片...",
     "uploadingLabel": "上传中",
@@ -258,6 +260,7 @@
     "uncategorized": "未分类",
     "noPhotosInAlbum": "此相册中没有照片",
     "loadingPhotos": "正在加载照片...",
+    "uploadingEllipsis": "正在上传...",
     "savingOrder": "正在保存顺序...",
     "saveOrder": "保存顺序",
     "shuffle": "随机播放",

@@ -1,6 +1,8 @@
 {
   "common": {
     "loading": "Laden...",
+    "checkingSetupStatus": "Controleer de status van de installatie...",
+    "loadingSharedAlbum": "De gedeelde album wordt geladen...",
     "error": "Fout",
     "save": "Opslaan",
     "cancel": "Annuleren",
@@ -121,7 +123,7 @@
     "invalidCredentials": "Ongeldige inloggegevens"
   },
   "sse": {
-    "uploading": "Uploaden",
+    "uploading": "Uploaden...",
     "uploadingTo": "Uploaden naar {{album}}",
     "uploadingProgress": "{{completed}} van {{total}} foto's uploaden...",
     "uploadingLabel": "Uploaden",
@@ -258,6 +260,7 @@
     "uncategorized": "Ongesorteerd",
     "noPhotosInAlbum": "Geen foto's in dit album",
     "loadingPhotos": "Foto's laden...",
+    "uploadingEllipsis": "Uploaden...",
     "savingOrder": "Volgorde opslaan...",
     "saveOrder": "Volgorde opslaan",
     "shuffle": "Willekeurig",

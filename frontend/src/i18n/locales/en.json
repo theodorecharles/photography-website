@@ -1,6 +1,8 @@
 {
   "common": {
     "loading": "Loading...",
+    "checkingSetupStatus": "Checking setup status...",
+    "loadingSharedAlbum": "Loading shared album...",
     "error": "Error",
     "save": "Save",
     "cancel": "Cancel",
@@ -141,10 +143,10 @@
     "inviteSignup": "Complete Registration"
   },
   "sse": {
-    "uploading": "Uploading",
     "uploadingTo": "Uploading to {{album}}",
     "uploadingProgress": "Uploading {{completed}} of {{total}} photos...",
     "uploadingLabel": "Uploading",
+    "uploading": "Uploading...",
     "queued": "Queued",
     "queuedWithEllipsis": "Queued...",
     "optimizing": "Optimizing",
@@ -289,6 +291,7 @@
     "album": "album",
     "albums": "albums",
     "loadingPhotos": "Loading photos...",
+    "uploadingEllipsis": "Uploading...",
     "savingOrder": "Saving order...",
     "saveOrder": "Save Order",
     "shuffle": "Shuffle",

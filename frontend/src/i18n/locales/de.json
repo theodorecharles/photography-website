@@ -1,6 +1,8 @@
 {
   "common": {
     "loading": "Lädt...",
+    "checkingSetupStatus": "Überprüfe den Einrichtungsstatus...",
+    "loadingSharedAlbum": "Lade freigegebenes Album...",
     "error": "Fehler",
     "save": "Speichern",
     "cancel": "Abbrechen",
@@ -121,7 +123,7 @@
     "invalidCredentials": "Ungültige Anmeldeinformationen"
   },
   "sse": {
-    "uploading": "Lädt hoch",
+    "uploading": "Hochladen...",
     "uploadingTo": "Lädt hoch nach {{album}}",
     "uploadingProgress": "Lädt {{completed}} von {{total}} Fotos hoch...",
     "uploadingLabel": "Lädt hoch",
@@ -258,6 +260,7 @@
     "uncategorized": "Nicht kategorisiert",
     "noPhotosInAlbum": "Keine Fotos in diesem Album",
     "loadingPhotos": "Lade Fotos...",
+    "uploadingEllipsis": "Hochladen...",
     "savingOrder": "Speichere Reihenfolge...",
     "saveOrder": "Reihenfolge speichern",
     "shuffle": "Mischen",

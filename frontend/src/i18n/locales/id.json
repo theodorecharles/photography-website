@@ -1,6 +1,8 @@
 {
   "common": {
     "loading": "Memuat...",
+    "checkingSetupStatus": "Memeriksa status pengaturan...",
+    "loadingSharedAlbum": "Memuat album bersama...",
     "error": "Kesalahan",
     "save": "Simpan",
     "cancel": "Batal",
@@ -121,7 +123,7 @@
     "inviteSignup": "Selesaikan Pendaftaran"
   },
   "sse": {
-    "uploading": "Mengunggah",
+    "uploading": "Mengunggah...",
     "uploadingTo": "Mengunggah ke {{album}}",
     "uploadingProgress": "Mengunggah {{completed}} dari {{total}} foto...",
     "uploadingLabel": "Mengunggah",
@@ -267,6 +269,7 @@
     "album": "album",
     "albums": "album",
     "loadingPhotos": "Memuat foto...",
+    "uploadingEllipsis": "Mengunggah...",
     "savingOrder": "Menyimpan urutan...",
     "saveOrder": "Simpan Urutan",
     "shuffle": "Acak",

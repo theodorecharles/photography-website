@@ -1,6 +1,8 @@
 {
   "common": {
     "loading": "Laster...",
+    "checkingSetupStatus": "Sjekker oppsettstatus...",
+    "loadingSharedAlbum": "Laster inn delt album...",
     "error": "Feil",
     "save": "Lagre",
     "cancel": "Avbryt",
@@ -121,7 +123,7 @@
     "invalidCredentials": "Ugyldige legitimasjonsopplysninger"
   },
   "sse": {
-    "uploading": "Laster opp",
+    "uploading": "Laster opp...",
     "uploadingTo": "Laster opp til {{album}}",
     "uploadingProgress": "Laster opp {{completed}} av {{total}} bilder...",
     "uploadingLabel": "Laster opp",
@@ -258,6 +260,7 @@
     "uncategorized": "Ukategorisert",
     "noPhotosInAlbum": "Ingen bilder i dette albumet",
     "loadingPhotos": "Laster bilder...",
+    "uploadingEllipsis": "Laster opp...",
     "savingOrder": "Lagrer rekkefølge...",
     "saveOrder": "Lagre rekkefølge",
     "shuffle": "Bland",

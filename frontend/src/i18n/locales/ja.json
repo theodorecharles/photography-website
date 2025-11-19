@@ -1,6 +1,8 @@
 {
   "common": {
     "loading": "読み込み中...",
+    "checkingSetupStatus": "セットアップ状況を確認中...",
+    "loadingSharedAlbum": "共有アルバムを読み込み中...",
     "error": "エラー",
     "save": "保存",
     "cancel": "キャンセル",
@@ -121,7 +123,7 @@
     "invalidCredentials": "無効な資格情報"
   },
   "sse": {
-    "uploading": "アップロード中",
+    "uploading": "アップロード中...",
     "uploadingTo": "{{album}}にアップロード中",
     "uploadingProgress": "{{total}}枚中{{completed}}枚をアップロード中...",
     "uploadingLabel": "アップロード中",
@@ -258,6 +260,7 @@
     "uncategorized": "未分類",
     "noPhotosInAlbum": "このアルバムに写真がありません",
     "loadingPhotos": "写真を読み込み中...",
+    "uploadingEllipsis": "アップロード中...",
     "savingOrder": "順序を保存中...",
     "saveOrder": "順序を保存",
     "shuffle": "シャッフル",

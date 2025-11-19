@@ -1,6 +1,8 @@
 {
   "common": {
     "loading": "Încărcare...",
+    "checkingSetupStatus": "Verificarea stării configurației...",
+    "loadingSharedAlbum": "Încărcarea albumului partajat...",
     "error": "Eroare",
     "save": "Salvează",
     "cancel": "Anulează",
@@ -121,7 +123,7 @@
     "inviteSignup": "Finalizează înregistrarea"
   },
   "sse": {
-    "uploading": "Se încarcă",
+    "uploading": "Încărcare...",
     "uploadingTo": "Se încarcă în {{album}}",
     "uploadingProgress": "Se încarcă {{completed}} din {{total}} fotografii...",
     "uploadingLabel": "Se încarcă",
@@ -267,6 +269,7 @@
     "album": "album",
     "albums": "albume",
     "loadingPhotos": "Se încarcă fotografiile...",
+    "uploadingEllipsis": "Încărcare...",
     "savingOrder": "Se salvează ordinea...",
     "saveOrder": "Salvează ordinea",
     "shuffle": "Amestecă",

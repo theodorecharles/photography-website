@@ -5,6 +5,7 @@
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import PhotoGrid from './PhotoGrid';
 import { API_URL } from '../config';
 import { trackSharedAlbumView } from '../utils/analytics';
@@ -39,6 +40,7 @@ interface ToastMessage {
 }
 
 export default function SharedAlbum() {
+  const { t } = useTranslation();
   const { secretKey } = useParams();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -239,7 +241,7 @@ export default function SharedAlbum() {
   }, [expiresAt]);
 
   if (loading) {
-    return <div className="loading">Loading shared album...</div>;
+    return <div className="loading">{t('common.loadingSharedAlbum')}</div>;
   }
 
   if (expired) {

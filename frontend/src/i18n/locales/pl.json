@@ -1,6 +1,8 @@
 {
   "common": {
     "loading": "Ładowanie...",
+    "checkingSetupStatus": "Sprawdzanie statusu konfiguracji...",
+    "loadingSharedAlbum": "Ładowanie udostępnionego albumu...",
     "error": "Błąd",
     "save": "Zapisz",
     "cancel": "Anuluj",
@@ -121,7 +123,7 @@
     "invalidCredentials": "Nieprawidłowe dane logowania"
   },
   "sse": {
-    "uploading": "Przesyłanie",
+    "uploading": "Przesyłanie...",
     "uploadingTo": "Przesyłanie do {{album}}",
     "uploadingProgress": "Przesyłanie {{completed}} z {{total}} zdjęć...",
     "uploadingLabel": "Przesyłanie",
@@ -258,6 +260,7 @@
     "uncategorized": "Nieskategoryzowane",
     "noPhotosInAlbum": "Brak zdjęć w tym albumie",
     "loadingPhotos": "Ładowanie zdjęć...",
+    "uploadingEllipsis": "Przesyłanie...",
     "savingOrder": "Zapisywanie kolejności...",
     "saveOrder": "Zapisz kolejność",
     "shuffle": "Przetasuj",

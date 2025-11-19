@@ -1,6 +1,8 @@
 {
   "common": {
     "loading": "Caricamento...",
+    "checkingSetupStatus": "Controllo stato configurazione...",
+    "loadingSharedAlbum": "Caricamento album condiviso...",
     "error": "Errore",
     "save": "Salva",
     "cancel": "Annulla",
@@ -121,7 +123,7 @@
     "invalidCredentials": "Credenziali non valide"
   },
   "sse": {
-    "uploading": "Caricamento",
+    "uploading": "Caricamento...",
     "uploadingTo": "Caricamento su {{album}}",
     "uploadingProgress": "Caricamento di {{completed}} su {{total}} foto...",
     "uploadingLabel": "Caricamento",
@@ -258,6 +260,7 @@
     "uncategorized": "Non categorizzati",
     "noPhotosInAlbum": "Nessuna foto in questo album",
     "loadingPhotos": "Caricamento foto...",
+    "uploadingEllipsis": "Caricamento...",
     "savingOrder": "Salvataggio ordine...",
     "saveOrder": "Salva Ordine",
     "shuffle": "Mescola",

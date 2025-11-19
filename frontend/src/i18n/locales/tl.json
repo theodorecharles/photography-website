@@ -1,6 +1,8 @@
 {
   "common": {
     "loading": "Naglo-load...",
+    "checkingSetupStatus": "Nire-review ang katayuan ng setup...",
+    "loadingSharedAlbum": "Naglo-load ng shared album...",
     "error": "Error",
     "save": "I-save",
     "cancel": "Kanselahin",
@@ -121,7 +123,7 @@
     "inviteSignup": "Kumpletuhin ang Rehistrasyon"
   },
   "sse": {
-    "uploading": "Naglilipat",
+    "uploading": "Nag-u-upload...",
     "uploadingTo": "Naglilipat sa {{album}}",
     "uploadingProgress": "Naglilipat ng {{completed}} mula sa {{total}} na mga larawan...",
     "uploadingLabel": "Naglilipat",
@@ -267,6 +269,7 @@
     "album": "album",
     "albums": "mga album",
     "loadingPhotos": "Nagloload ng mga larawan...",
+    "uploadingEllipsis": "Nag-u-upload...",
     "savingOrder": "Nagsasave ng kaayusan...",
     "saveOrder": "I-save ang Kaayusan",
     "shuffle": "I-shuffle",

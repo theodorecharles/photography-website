@@ -1,6 +1,8 @@
 {
   "common": {
     "loading": "Yükleniyor...",
+    "checkingSetupStatus": "Kurulum durumunu kontrol ediliyor...",
+    "loadingSharedAlbum": "Paylaşılan albüm yükleniyor...",
     "error": "Hata",
     "save": "Kaydet",
     "cancel": "İptal",
@@ -121,7 +123,7 @@
     "invalidCredentials": "Geçersiz kimlik bilgileri"
   },
   "sse": {
-    "uploading": "Yükleniyor",
+    "uploading": "Yükleniyor...",
     "uploadingTo": "{{album}} albümüne yükleniyor",
     "uploadingProgress": "{{total}} fotoğraftan {{completed}} tanesi yükleniyor...",
     "uploadingLabel": "Yükleniyor",
@@ -258,6 +260,7 @@
     "uncategorized": "Kategorize Edilmemiş",
     "noPhotosInAlbum": "Bu albümde fotoğraf yok",
     "loadingPhotos": "Fotoğraflar yükleniyor...",
+    "uploadingEllipsis": "Yükleniyor...",
     "savingOrder": "Sıra kaydediliyor...",
     "saveOrder": "Sıralamayı Kaydet",
     "shuffle": "Karıştır",
