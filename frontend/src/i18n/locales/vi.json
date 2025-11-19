@@ -49,6 +49,9 @@
     "rateLimitAction": "Hãy chờ một chút và thử lại.",
     "headBackHome": "Quay về Trang Chủ"
   },
+  "photoModal": {
+    "navigationHint": "← nhấn phím mũi tên để điều hướng →"
+  },
   "header": {
     "albums": "Album",
     "links": "Liên kết",

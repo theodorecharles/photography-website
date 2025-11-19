@@ -49,6 +49,9 @@
     "rateLimitAction": "Biraz bekleyin ve tekrar deneyin.",
     "headBackHome": "Eve Geri Dön"
   },
+  "photoModal": {
+    "navigationHint": "← gezinmek için ok tuşlarına basın →"
+  },
   "header": {
     "albums": "Albümler",
     "links": "Bağlantılar",

@@ -4,6 +4,7 @@
  */
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { ChevronLeftIcon, ChevronRightIcon } from '../icons/';
 
 interface ModalNavigationProps {
@@ -19,11 +20,13 @@ const ModalNavigation: React.FC<ModalNavigationProps> = ({
   onNext,
   style,
 }) => {
+  const { t } = useTranslation();
+  
   return (
     <>
       {showHint && (
         <div className="modal-navigation-hint">
-          ← press arrow keys to navigate →
+          {t('photoModal.navigationHint')}
         </div>
       )}
       

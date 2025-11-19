@@ -49,6 +49,9 @@
     "rateLimitAction": "Give it a moment and try again.",
     "headBackHome": "Head Back Home"
   },
+  "photoModal": {
+    "navigationHint": "← press arrow keys to navigate →"
+  },
   "seo": {
     "homepageTitle": "{{siteName}} - Galleria",
     "homepageDescription": "Photography portfolio by {{siteName}}. View stunning landscape, portrait, and creative photography collections.",

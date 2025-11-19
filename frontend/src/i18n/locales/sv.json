@@ -49,6 +49,9 @@
     "rateLimitAction": "Vänta en stund och försök igen.",
     "headBackHome": "Gå tillbaka hem"
   },
+  "photoModal": {
+    "navigationHint": "← tryck på piltangenterna för att navigera →"
+  },
   "header": {
     "albums": "Album",
     "links": "Länkar",

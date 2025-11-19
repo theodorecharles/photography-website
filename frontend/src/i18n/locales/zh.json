@@ -49,6 +49,9 @@
     "rateLimitAction": "稍等片刻再试。",
     "headBackHome": "返回主页"
   },
+  "photoModal": {
+    "navigationHint": "← 按箭头键进行导航 →"
+  },
   "header": {
     "albums": "相册",
     "links": "链接",

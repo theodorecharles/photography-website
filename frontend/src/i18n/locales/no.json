@@ -49,6 +49,9 @@
     "rateLimitAction": "Vent litt og prøv igjen.",
     "headBackHome": "Gå tilbake hjem"
   },
+  "photoModal": {
+    "navigationHint": "← trykk piltastene for å navigere →"
+  },
   "header": {
     "albums": "Album",
     "links": "Lenker",

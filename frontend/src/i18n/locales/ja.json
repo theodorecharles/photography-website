@@ -49,6 +49,9 @@
     "rateLimitAction": "少し待ってからもう一度お試しください。",
     "headBackHome": "ホームに戻る"
   },
+  "photoModal": {
+    "navigationHint": "← 矢印キーを押して移動 →"
+  },
   "header": {
     "albums": "アルバム",
     "links": "リンク",

@@ -49,6 +49,9 @@
     "rateLimitAction": "Maghintay ng sandali at subukan muli.",
     "headBackHome": "Bumalik sa Tahanan"
   },
+  "photoModal": {
+    "navigationHint": "← pindutin ang mga arrow key upang mag-navigate →"
+  },
   "header": {
     "albums": "Mga Album",
     "links": "Mga Link",

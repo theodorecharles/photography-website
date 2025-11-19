@@ -49,6 +49,9 @@
     "rateLimitAction": "Berikan sedikit waktu dan coba lagi.",
     "headBackHome": "Kembali ke Beranda"
   },
+  "photoModal": {
+    "navigationHint": "← tekan tombol panah untuk menavigasi →"
+  },
   "header": {
     "albums": "Album",
     "links": "Tautan",

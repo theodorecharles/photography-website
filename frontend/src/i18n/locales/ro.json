@@ -49,6 +49,9 @@
     "rateLimitAction": "Acordă-ți un moment și încearcă din nou.",
     "headBackHome": "Întoarce-te acasă"
   },
+  "photoModal": {
+    "navigationHint": "← apasă tastele săgeată pentru a naviga →"
+  },
   "header": {
     "albums": "Albume",
     "links": "Linkuri",

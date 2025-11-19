@@ -49,6 +49,9 @@
     "rateLimitAction": "Wacht even en probeer het opnieuw.",
     "headBackHome": "Ga terug naar huis"
   },
+  "photoModal": {
+    "navigationHint": "← druk op de pijltoetsen om te navigeren →"
+  },
   "header": {
     "albums": "Albums",
     "links": "Links",

@@ -49,6 +49,9 @@
     "rateLimitAction": "Подождите немного и попробуйте снова.",
     "headBackHome": "Вернуться домой"
   },
+  "photoModal": {
+    "navigationHint": "← нажмите стрелки для навигации →"
+  },
   "header": {
     "albums": "Альбомы",
     "links": "Ссылки",

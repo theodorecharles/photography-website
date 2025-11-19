@@ -49,6 +49,9 @@
     "rateLimitAction": "Aspetta un momento e riprova.",
     "headBackHome": "Torna a casa"
   },
+  "photoModal": {
+    "navigationHint": "← premi i tasti freccia per navigare →"
+  },
   "header": {
     "albums": "Album",
     "links": "Link",
