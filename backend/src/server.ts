@@ -247,7 +247,7 @@ app.use(
 );
 
 // Rate limiting to prevent abuse
-// Allow up to 50 requests per second per IP - normal users won't hit this
+// Allow up to configured requests per window - normal users won't hit this
 const limiter = rateLimit({
   windowMs: RATE_LIMIT_WINDOW_MS,
   max: RATE_LIMIT_MAX_REQUESTS,
@@ -256,6 +256,19 @@ const limiter = rateLimit({
   legacyHeaders: false,
   // Skip failed requests (don't count them)
   skipFailedRequests: true,
+  // Skip public read-only endpoints that are called frequently
+  skip: (req) => {
+    const path = req.path;
+    // Don't rate limit public GET requests to these endpoints
+    if (req.method === 'GET') {
+      return path === '/api/branding' ||
+             path === '/api/albums' ||
+             path.startsWith('/api/albums/') ||
+             path === '/api/random-photos' ||
+             path === '/api/health';
+    }
+    return false;
+  }
 });
 
 // Stricter rate limiting for authentication endpoints to prevent brute force attacks

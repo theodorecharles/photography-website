@@ -28,7 +28,12 @@
     "creating": "생성 중...",
     "generating": "생성 중...",
     "album": "앨범",
-    "albums": "앨범들"
+    "albums": "앨범들",
+    "confirmAction": "작업 확인  ",
+    "maximize": "최대화  ",
+    "restore": "복원  ",
+    "expand": "확장  ",
+    "collapse": "축소  "
   },
   "app": {
     "loadingAlbums": "앨범을 불러오는 중...",
@@ -84,7 +89,10 @@
     "aperture": "조리개",
     "shutter": "셔터",
     "iso": "ISO",
-    "dateTaken": "촬영 날짜"
+    "dateTaken": "촬영 날짜",
+    "noPhotosYet": "사진이 아직 없습니다  ",
+    "albumEmpty": "이 앨범은 비어 있습니다. 멋진 사진을 추가할 시간입니다!  ",
+    "goToAdminPanel": "관리자 패널로 이동  "
   },
   "admin": {
     "title": "관리자 포털",
@@ -109,7 +117,8 @@
     "resetPassword": "비밀번호 재설정",
     "passwordResetRequest": "비밀번호 재설정 요청",
     "passwordResetComplete": "새 비밀번호 설정",
-    "inviteSignup": "등록 완료"
+    "inviteSignup": "등록 완료",
+    "invalidCredentials": "잘못된 자격 증명  "
   },
   "sse": {
     "uploading": "업로드 중",
@@ -127,7 +136,8 @@
     "titleGeneration": "제목 생성",
     "imageOptimization": "이미지 최적화",
     "progress": "{{progress}}%",
-    "uploadInProgress": "업로드 진행 중"
+    "uploadInProgress": "업로드 진행 중",
+    "jobStoppedByUser": "사용자에 의해 작업이 중지되었습니다"
   },
   "branding": {
     "title": "브랜딩",
@@ -172,7 +182,25 @@
     "attributionExample": "{{siteName}}의 사진 - {{licenseName}}하에 라이선스됨{{url}}",
     "permissions": "권한",
     "permissionsText": "이 웹사이트의 사진을 사용하고자 할 경우, 사진작가에게 연락하여 허가를 요청해 주세요.",
-    "photographyPortfolio": "사진 포트폴리오"
+    "photographyPortfolio": "사진 포트폴리오",
+    "allRightsReservedDesc": "전통적인 저작권 - 방문자는 허가 없이 이 사진을 사용할 수 없습니다  ",
+    "ccByDesc": "방문자는 이 사진을 사용하고 공유하며 수정할 수 있으며, 상업적으로도 사용할 수 있지만 출처를 밝혀야 합니다  ",
+    "ccBySaDesc": "방문자는 이 사진을 사용하고 수정할 수 있지만, 파생 작품은 동일한 라이선스를 사용해야 합니다  ",
+    "ccByNdDesc": "방문자는 이 사진을 공유할 수 있지만 수정할 수는 없습니다  ",
+    "ccByNcDesc": "방문자는 비상업적 목적으로만 이 사진을 사용하고 수정할 수 있습니다  ",
+    "ccByNcSaDesc": "비상업적 사용만 가능하며, 파생 작품은 동일한 라이선스를 사용해야 합니다",
+    "ccByNcNdDesc": "가장 제한적인 크리에이티브 커먼즈 라이선스 - 비상업적 공유만 가능, 수정 불가  ",
+    "cc0Desc": "모든 권리 포기 - 방문자는 출처 표시 없이 이 사진을 어떤 목적으로든 사용할 수 있습니다  ",
+    "publicDomainDesc": "이 사진들은 퍼블릭 도메인에 있으며 - 누구나 제한 없이 자유롭게 사용할 수 있습니다  ",
+    "allRightsReservedFullText": "모든 권리가 보호됩니다. 이 사진의 어떤 부분도 저작권 소유자의 명시적인 서면 허가 없이 복제, 배포 또는 어떤 형태로든 사용할 수 없습니다. 이 사진을 사용하고 싶으시면 허가를 요청하기 위해 저에게 연락해 주세요.  ",
+    "ccByFullText": "이 사진은 크리에이티브 커먼즈 저작자 표시 4.0 국제 라이선스에 따라 라이선스가 부여되었습니다. 적절한 저작자 표시를 하고, 라이선스 링크를 제공하며, 변경 사항이 있는 경우 이를 표시하는 한, 상업적으로도 포함하여 어떤 목적으로든 이 사진을 공유(복사 및 재배포)하고 수정(리믹스, 변형 및 기반 작업)할 수 있습니다.  ",
+    "ccBySaFullText": "이 사진은 크리에이티브 커먼즈 저작자 표시-동일조건변경허락 4.0 국제 라이선스에 따라 라이선스가 부여되었습니다. 적절한 저작자 표시를 하고 파생 작업을 동일한 라이선스 하에 배포하는 한, 상업적으로도 포함하여 이 사진을 공유하고 수정할 수 있습니다.  ",
+    "ccByNdFullText": "이 사진은 크리에이티브 커먼즈 저작자 표시-변경금지 4.0 국제 라이선스에 따라 라이선스가 부여되었습니다. 적절한 저작자 표시를 하고 어떤 수정도 하지 않는 한, 상업적으로도 포함하여 이 사진을 어떤 목적으로든 공유할 수 있습니다.  ",
+    "ccByNcFullText": "이 사진은 크리에이티브 커먼즈 저작자 표시-비상업적 4.0 국제 라이선스에 따라 라이선스가 부여되었습니다. 적절한 저작자 표시를 하는 한, 비상업적 목적으로만 이 사진을 공유하고 수정할 수 있습니다.  ",
+    "ccByNcSaFullText": "이 사진은 크리에이티브 커먼즈 저작자 표시-비상업적-동일조건변경허락 4.0 국제 라이선스에 따라 라이선스가 부여되었습니다. 적절한 저작자 표시를 하는 한, 비상업적 목적으로만 이 사진을 공유하고 수정할 수 있으며, 파생 작업을 동일한 라이선스 하에 배포할 수 있습니다.  ",
+    "ccByNcNdFullText": "이 사진은 크리에이티브 커먼즈 저작자 표시-비상업적-변경금지 4.0 국제 라이선스에 따라 라이선스가 부여되었습니다. 적절한 저작자 표시를 하는 한, 비상업적 목적으로만 이 사진을 공유할 수 있으며, 어떤 수정도 하지 않아야 합니다.  ",
+    "cc0FullText": "이 사진은 크리에이티브 커먼즈 CC0 1.0 전 세계 공공 도메인 헌납에 따라 공공 도메인으로 헌납되었습니다. 법이 허용하는 한, 이 사진에 대한 모든 저작권 및 관련 권리를 포기했습니다. 허가 없이도 이 작업을 복사, 수정, 배포 및 공연할 수 있습니다.  ",
+    "publicDomainFullText": "이 사진은 공공 도메인에 있습니다. 누구나 제한 없이 어떤 목적으로든 사용, 수정 및 배포할 수 있습니다."
   },
   "albumsManager": {
     "uploadComplete": "✓ 업로드 완료! {{count}} {{photo}}가 \"{{album}}\"에 추가되었습니다",
@@ -286,7 +314,15 @@
     "albumWillBePublished": "✓ 앨범이 즉시 게시됩니다",
     "albumsInPublishedFolders": "게시된 폴더의 앨범은 항상 게시됩니다",
     "albumWillBePrivate": "🔒 앨범은 비공개입니다",
-    "albumsInUnpublishedFolders": "게시되지 않은 폴더의 앨범은 항상 비공개입니다"
+    "albumsInUnpublishedFolders": "게시되지 않은 폴더의 앨범은 항상 비공개입니다",
+    "title": "앨범  ",
+    "description": "사진 앨범을 관리하고 새 이미지를 업로드하세요.",
+    "uploadInProgress": "업로드 진행 중  ",
+    "moveUp": "위로 이동  ",
+    "moveDown": "아래로 이동  ",
+    "cannotPublishEmptyFolder": "빈 폴더를 게시할 수 없습니다  ",
+    "deleteFolderTitle": "폴더 삭제  ",
+    "album": "앨범  "
   },
   "settings": {
     "saved": "{{section}} 설정이 저장되었습니다!",
@@ -311,7 +347,18 @@
     "spacer": "간격",
     "viewLiveLogs": "실시간 로그 보기",
     "failedToSaveLogLevel": "로그 레벨 저장 실패",
-    "logLevelChanged": "로그 레벨이 {{level}}로 변경되었습니다"
+    "logLevelChanged": "로그 레벨이 {{level}}로 변경되었습니다",
+    "regenerationControls": {
+      "titleGeneration": "제목 생성",
+      "setUpOpenAI": "OpenAI 설정하기",
+      "backfillMissingTitles": "누락된 제목 채우기",
+      "forceRegenerateAll": "모두 강제로 재생성",
+      "stop": "중지",
+      "optimizedImages": "최적화된 이미지",
+      "forceRegenerateAllConfirm": "⚠️ 이 작업은 모든 이미지 제목을 재생성하고 설정한 사용자 지정 제목을 덮어씁니다. 이 작업은 실행 취소할 수 없습니다.\n\n계속하시겠습니까?",
+      "forceRegenerateImagesConfirm": "모든 이미지를 강제로 다시 생성하시겠습니까? 시간이 좀 걸립니다.  ",
+      "runOptimizationConfirm": "모든 사진에 대해 이미지 최적화를 실행하시겠습니까?"
+    }
   },
   "userManagement": {
     "title": "사용자 관리",
@@ -692,5 +739,110 @@
     "online": "온라인",
     "restarting": "재시작 중...",
     "timeoutDetails": "서버가 {{seconds}}초 이내에 응답하지 않았습니다. 오류에 대한 서버 로그를 확인하세요."
+  },
+  "adminPortal": {
+    "logout": "로그아웃",
+    "albums": "앨범",
+    "metrics": "메트릭스",
+    "settings": "설정  ",
+    "profile": "프로필  ",
+    "settingsDescription": "브랜딩, 링크 및 시스템 구성을 관리합니다  ",
+    "failedToLoadConfig": "구성을 로드하지 못했습니다  "
+  },
+  "securitySetup": {
+    "title": "🔐 계정을 보호하세요  ",
+    "enableMfaTitle": "이중 인증 활성화  ",
+    "description": "귀하의 계정은 현재 비밀번호로만 보호되고 있습니다. 계정을 보호하기 위해 추가 보안 조치를 설정하는 것을 강력히 권장합니다.  ",
+    "mfaTitle": "✓ 다중 인증 (MFA)  ",
+    "mfaBenefit1": "시간 기반 코드로 추가 보안 계층을 추가합니다  ",
+    "mfaBenefit2": "Google Authenticator 또는 Authy와 같은 앱과 함께 작동합니다",
+    "mfaBenefit3": "계정 복구를 위한 백업 코드 받기  ",
+    "passkeysTitle": "🔑 패스키 (선택 사항)  ",
+    "passkeysBenefit1": "빠르고 안전한 로그인을 위해 생체 인식 또는 기기 PIN 사용  ",
+    "passkeysBenefit2": "비밀번호가 필요 없습니다 - 지문 또는 얼굴만 있으면 됩니다  ",
+    "passkeysBenefit3": "MFA를 활성화한 후 설정할 수 있습니다  ",
+    "dontAskAgain": "다시 묻지 마세요  ",
+    "maybeLater": "나중에 할게요  ",
+    "setUpMfaNow": "지금 MFA 설정하기  ",
+    "starting": "시작 중...  ",
+    "scanQrCode": "이 QR 코드를 인증 앱(구글 인증기, Authy, 1Password 등)으로 스캔하세요",
+    "enterVerificationCode": "앱에서 인증 코드를 입력하세요  ",
+    "back": "뒤로  ",
+    "verifying": "검증 중...  ",
+    "enableMfa": "MFA 활성화  "
+  },
+  "authSettings": {
+    "title": "구글 로그인  ",
+    "description": "관리자 로그인용 구글 OAuth 자격 증명  ",
+    "enableGoogleSignIn": "구글 로그인 활성화  ",
+    "enabledDescription": "사용자는 로그인 페이지에서 '구글로 로그인' 버튼을 볼 수 있습니다  ",
+    "disabledDescription": "로그인 페이지에서 구글 로그인이 숨겨집니다  ",
+    "googleClientId": "구글 클라이언트 ID",
+    "googleClientSecret": "구글 클라이언트 비밀",
+    "sessionSecret": "세션 비밀",
+    "authorizedEmails": "허가된 이메일",
+    "addEmail": "+ 이메일 추가",
+    "cancel": "취소",
+    "save": "저장",
+    "saving": "저장 중...",
+    "sectionName": "인증"
+  },
+  "smtpSettings": {
+    "title": "이메일 (SMTP)",
+    "configured": "✓ 구성됨",
+    "description": "사용자 초대 및 비밀번호 재설정 이메일 전송을 위한 SMTP 설정 구성  ",
+    "setupInstructions": "설정 지침  ",
+    "testEmail": "테스트 이메일  ",
+    "enableEmailService": "이메일 서비스 활성화  ",
+    "useSslTls": "SSL/TLS 사용 (포트 465 전용)  ",
+    "smtpHost": "SMTP 호스트  ",
+    "smtpPort": "SMTP 포트  ",
+    "smtpUsername": "SMTP 사용자 이름  ",
+    "smtpPassword": "SMTP 비밀번호  ",
+    "fromName": "보내는 사람 이름",
+    "fromEmailAddress": "이메일 주소",
+    "emailServiceEnabled": "이메일 서비스 활성화됨",
+    "emailServiceDisabled": "이메일 서비스 비활성화됨",
+    "sslTlsEnabled": "SSL/TLS 활성화됨",
+    "sslTlsDisabled": "SSL/TLS 비활성화됨",
+    "settingSavedSuccessfully": "설정이 성공적으로 저장되었습니다",
+    "failedToSaveSetting": "설정 저장에 실패했습니다",
+    "networkError": "네트워크 오류가 발생했습니다",
+    "cancel": "취소",
+    "save": "저장",
+    "saving": "저장 중...",
+    "hostPlaceholder": "smtp.gmail.com",
+    "usernamePlaceholder": "your-email@gmail.com",
+    "passwordPlaceholder": "앱 비밀번호 또는 SMTP 비밀번호",
+    "fromNamePlaceholder": "사진 사이트",
+    "fromAddressPlaceholder": "noreply@yoursite.com"
+  },
+  "analyticsSettings": {
+    "title": "분석",
+    "description": "OpenObserve 통합을 포함한 분석 추적 구성",
+    "enableOpenObserve": "OpenObserve 통합 활성화",
+    "enabled": "활성화됨",
+    "disabled": "비활성화됨  ",
+    "scriptPath": "스크립트 경로  ",
+    "openObserveEndpoint": "OpenObserve 엔드포인트  ",
+    "organization": "조직  ",
+    "username": "사용자 이름  ",
+    "password": "비밀번호  ",
+    "stream": "스트림  ",
+    "cancel": "취소  ",
+    "save": "저장  ",
+    "saving": "저장 중...",
+    "sectionName": "분석",
+    "settingsSaved": "분석 설정이 저장되었습니다!",
+    "failedToUpdate": "설정 업데이트에 실패했습니다",
+    "networkError": "네트워크 오류가 발생했습니다",
+    "scriptPathPlaceholder": "/analytics.js",
+    "endpointPlaceholder": "https://api.openobserve.ai"
+  },
+  "userCard": {
+    "password": "🔑 비밀번호",
+    "changePassword": "비밀번호 변경",
+    "enableMfa": "MFA 활성화",
+    "disableMfa": "MFA 비활성화"
   }
 }

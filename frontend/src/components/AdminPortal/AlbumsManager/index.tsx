@@ -698,8 +698,8 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     <>
       <section className="admin-section">
         <div>
-          <h2>Albums</h2>
-          <p className="section-description">Manage your photo albums and upload new images.</p>
+          <h2>{t('albumsManager.title')}</h2>
+          <p className="section-description">{t('albumsManager.description')}</p>
         </div>
         
         {/* Unified Drag-and-Drop Context for Folders and Albums */}

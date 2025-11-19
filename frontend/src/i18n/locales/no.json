@@ -28,7 +28,12 @@
     "creating": "Oppretter...",
     "generating": "Genererer...",
     "album": "album",
-    "albums": "album"
+    "albums": "album",
+    "confirmAction": "Bekreft handling  ",
+    "maximize": "Maksimer  ",
+    "restore": "Gjenopprett  ",
+    "expand": "Utvid  ",
+    "collapse": "Kollaps  "
   },
   "app": {
     "loadingAlbums": "Laster inn album...",
@@ -84,7 +89,10 @@
     "aperture": "Blenderåpning",
     "shutter": "Lukker",
     "iso": "ISO",
-    "dateTaken": "Dato tatt"
+    "dateTaken": "Dato tatt",
+    "noPhotosYet": "Ingen bilder ennå  ",
+    "albumEmpty": "Dette albumet er tomt. Tid for å legge til noen fantastiske bilder!  ",
+    "goToAdminPanel": "Gå til administrasjonspanelet  "
   },
   "admin": {
     "title": "Admin Portal",
@@ -109,7 +117,8 @@
     "resetPassword": "Tilbakestill passord",
     "passwordResetRequest": "Be om tilbakestilling av passord",
     "passwordResetComplete": "Sett nytt passord",
-    "inviteSignup": "Fullfør registrering"
+    "inviteSignup": "Fullfør registrering",
+    "invalidCredentials": "Ugyldige legitimasjonsopplysninger  "
   },
   "sse": {
     "uploading": "Laster opp",
@@ -127,7 +136,8 @@
     "titleGeneration": "Tittelgenerering",
     "imageOptimization": "Bildeoptimalisering",
     "progress": "{{progress}}%",
-    "uploadInProgress": "Opplasting pågår"
+    "uploadInProgress": "Opplasting pågår",
+    "jobStoppedByUser": "Jobb stoppet av bruker"
   },
   "branding": {
     "title": "Merkevarebygging",
@@ -172,7 +182,25 @@
     "attributionExample": "Foto av {{siteName}} - Lisensiert under {{licenseName}}{{url}}",
     "permissions": "Tillatelser",
     "permissionsText": "Hvis du ønsker å bruke noen fotografier fra dette nettstedet, vennligst kontakt fotografen for å be om tillatelse.",
-    "photographyPortfolio": "Fotografiportefølje"
+    "photographyPortfolio": "Fotografiportefølje",
+    "allRightsReservedDesc": "Tradisjonell opphavsrett - besøkende kan ikke bruke disse bildene uten tillatelse  ",
+    "ccByDesc": "Besøkende kan bruke, dele og endre disse bildene, selv kommersielt, så lenge de gir kreditering  ",
+    "ccBySaDesc": "Besøkende kan bruke og endre disse bildene, men avledede verk må bruke samme lisens  ",
+    "ccByNdDesc": "Besøkende kan dele disse bildene, men kan ikke endre dem  ",
+    "ccByNcDesc": "Besøkende kan bruke og endre disse bildene kun til ikke-kommersielle formål  ",
+    "ccByNcSaDesc": "Kun ikke-kommersielt bruk, og avledede verk må bruke samme lisens",
+    "ccByNcNdDesc": "Den mest restriktive Creative Commons-lisensen - kun ikke-kommersielt deling, ingen modifikasjoner tillatt  ",
+    "cc0Desc": "Alle rettigheter frafalt - besøkende kan bruke disse bildene til ethvert formål uten attribusjon  ",
+    "publicDomainDesc": "Disse fotografiene er i det offentlige domene - gratis for alle å bruke uten restriksjoner  ",
+    "allRightsReservedFullText": "Alle rettigheter forbeholdt. Ingen del av disse fotografiene kan reproduseres, distribueres eller brukes i noen form uten uttrykkelig skriftlig tillatelse fra rettighetshaveren. Hvis du ønsker å bruke noen av disse fotografiene, vennligst kontakt meg for å be om tillatelse.  ",
+    "ccByFullText": "Disse fotografiene er lisensiert under en Creative Commons Attribution 4.0 International License. Du har rett til å dele (kopiere og redistribuere) og tilpasse (remikse, transformere og bygge videre på) disse fotografiene for ethvert formål, selv kommersielt, så lenge du gir passende kreditering, gir en lenke til lisensen, og indikerer om det er gjort endringer.  ",
+    "ccBySaFullText": "Disse fotografiene er lisensiert under en Creative Commons Attribution-ShareAlike 4.0 International License. Du har rett til å dele og tilpasse disse fotografiene, selv kommersielt, så lenge du gir passende kreditering og distribuerer avledede verk under samme lisens.  ",
+    "ccByNdFullText": "Disse fotografiene er lisensiert under en Creative Commons Attribution-NoDerivatives 4.0 International License. Du har rett til å dele disse fotografiene for ethvert formål, selv kommersielt, så lenge du gir passende kreditering og ikke gjør noen endringer.  ",
+    "ccByNcFullText": "Disse fotografiene er lisensiert under en Creative Commons Attribution-NonCommercial 4.0 International License. Du har rett til å dele og tilpasse disse fotografiene kun for ikke-kommersielle formål, så lenge du gir passende kreditering.  ",
+    "ccByNcSaFullText": "Disse fotografiene er lisensiert under en Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License. Du har rett til å dele og tilpasse disse fotografiene kun for ikke-kommersielle formål, så lenge du gir passende kreditering og distribuerer avledede verk under samme lisens.  ",
+    "ccByNcNdFullText": "Disse fotografiene er lisensiert under en Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License. Du har rett til å dele disse fotografiene kun for ikke-kommersielle formål, så lenge du gir passende kreditering og ikke gjør noen endringer.  ",
+    "cc0FullText": "Disse fotografiene er dedikert til offentlig domene under Creative Commons CC0 1.0 Universal Public Domain Dedication. I den grad det er mulig under lov, har jeg frafalt alle opphavsrettigheter og relaterte rettigheter til disse fotografiene. Du kan kopiere, endre, distribuere og fremføre verket, selv for kommersielle formål, alt uten å be om tillatelse.  ",
+    "publicDomainFullText": "Disse fotografiene er i offentlig domene. De er gratis for alle å bruke, endre og distribuere for ethvert formål uten restriksjoner."
   },
   "albumsManager": {
     "uploadComplete": "✓ Opplasting fullført! {{count}} {{photo}} lagt til \"{{album}}\"",
@@ -286,7 +314,15 @@
     "albumWillBePublished": "✓ Albumet vil bli publisert med en gang",
     "albumsInPublishedFolders": "Album i publiserte mapper er alltid publisert",
     "albumWillBePrivate": "🔒 Albumet vil være privat",
-    "albumsInUnpublishedFolders": "Album i upubliserte mapper er alltid private"
+    "albumsInUnpublishedFolders": "Album i upubliserte mapper er alltid private",
+    "title": "Album  ",
+    "description": "Administrer fotoalbumene dine og last opp nye bilder.",
+    "uploadInProgress": "Opplasting pågår  ",
+    "moveUp": "Flytt opp  ",
+    "moveDown": "Flytt ned  ",
+    "cannotPublishEmptyFolder": "Kan ikke publisere tom mappe  ",
+    "deleteFolderTitle": "Slett mappe  ",
+    "album": "album  "
   },
   "settings": {
     "saved": "{{section}} innstillinger lagret!",
@@ -311,7 +347,18 @@
     "spacer": "Mellomrom",
     "viewLiveLogs": "Vis Live-logger",
     "failedToSaveLogLevel": "Kunne ikke lagre loggnivå",
-    "logLevelChanged": "Loggnivå endret til {{level}}"
+    "logLevelChanged": "Loggnivå endret til {{level}}",
+    "regenerationControls": {
+      "titleGeneration": "TITTELGENERERING",
+      "setUpOpenAI": "Sett opp OpenAI",
+      "backfillMissingTitles": "Fyll inn manglende titler",
+      "forceRegenerateAll": "Tving gjenoppretting av alt",
+      "stop": "Stopp",
+      "optimizedImages": "OPTIMERTE BILDER",
+      "forceRegenerateAllConfirm": "⚠️ Dette vil regenerere ALLE bildetitler og overskrive eventuelle tilpassede titler du har satt. Denne handlingen kan ikke angres.\n\nEr du sikker på at du vil fortsette?",
+      "forceRegenerateImagesConfirm": "Tving regenerering av ALLE bilder? Dette vil ta litt tid.  ",
+      "runOptimizationConfirm": "Kjør bildeoptimalisering på alle bilder?"
+    }
   },
   "userManagement": {
     "title": "Brukeradministrasjon",
@@ -633,8 +680,8 @@
   "imageOptimization": {
     "title": "Bildeoptimalisering",
     "description": "Optimaliser og administrer bildebehandling",
-    "thumbnail": "MINIATYR",
-    "modal": "MODAL",
+    "thumbnail": "Miniatyrbild",
+    "modal": "Modal",
     "download": "LAST NED",
     "concurrency": "KONKURRANSE",
     "quality": "Kvalitet",
@@ -692,5 +739,110 @@
     "online": "Online",
     "restarting": "Starter på nytt...",
     "timeoutDetails": "Serveren svarte ikke innen {{seconds}} sekunder. Vennligst sjekk serverloggene for feil."
+  },
+  "adminPortal": {
+    "logout": "Logg ut",
+    "albums": "Albumer",
+    "metrics": "Metrikker",
+    "settings": "Innstillinger  ",
+    "profile": "Profil  ",
+    "settingsDescription": "Administrer merkevare, lenker og systemkonfigurasjon  ",
+    "failedToLoadConfig": "Kunne ikke laste konfigurasjon  "
+  },
+  "securitySetup": {
+    "title": "🔐 Sikre kontoen din  ",
+    "enableMfaTitle": "Aktiver to-faktor autentisering  ",
+    "description": "Kontoen din er for øyeblikket beskyttet kun av et passord. Vi anbefaler sterkt å sette opp ekstra sikkerhetstiltak for å beskytte kontoen din.  ",
+    "mfaTitle": "✓ Multi-Faktor Autentisering (MFA)  ",
+    "mfaBenefit1": "Legger til et ekstra lag med sikkerhet med tidsbaserte koder  ",
+    "mfaBenefit2": "Fungerer med apper som Google Authenticator eller Authy",
+    "mfaBenefit3": "Få sikkerhetskopieringskoder for kontogjenoppretting  ",
+    "passkeysTitle": "🔑 Passordnøkler (Valgfritt)  ",
+    "passkeysBenefit1": "Bruk biometrikk eller enhets-PIN for rask, sikker pålogging  ",
+    "passkeysBenefit2": "Ingen passord nødvendig - bare fingeravtrykket ditt eller ansiktet ditt  ",
+    "passkeysBenefit3": "Kan settes opp etter at MFA er aktivert  ",
+    "dontAskAgain": "Ikke spør meg igjen  ",
+    "maybeLater": "Kanskje senere  ",
+    "setUpMfaNow": "Sett opp MFA nå  ",
+    "starting": "Starter...  ",
+    "scanQrCode": "Skann denne QR-koden med autentiseringsappen din (Google Authenticator, Authy, 1Password, osv.)",
+    "enterVerificationCode": "Skriv inn bekreftelseskoden fra appen din  ",
+    "back": "Tilbake  ",
+    "verifying": "Verifiserer...  ",
+    "enableMfa": "Aktiver MFA  "
+  },
+  "authSettings": {
+    "title": "GOOGLE PÅLOGGING  ",
+    "description": "Google OAuth-legitimasjon for admin-pålogging  ",
+    "enableGoogleSignIn": "Aktiver Google-pålogging  ",
+    "enabledDescription": "Brukere vil se knappen 'Logg inn med Google' på påloggingssiden  ",
+    "disabledDescription": "Google-pålogging vil bli skjult fra påloggingssiden  ",
+    "googleClientId": "Google-klient-ID",
+    "googleClientSecret": "Google klienthemmelighet  ",
+    "sessionSecret": "Sesjonshemmelighet  ",
+    "authorizedEmails": "Autoriserte e-poster  ",
+    "addEmail": "+ Legg til e-post  ",
+    "cancel": "Avbryt  ",
+    "save": "Lagre  ",
+    "saving": "Lagrer...  ",
+    "sectionName": "Autentisering  "
+  },
+  "smtpSettings": {
+    "title": "E-post (SMTP)",
+    "configured": "✓ Konfigurert",
+    "description": "Konfigurer SMTP-innstillinger for sending av brukerinvitasjoner og tilbakestilling av passord-e-poster  ",
+    "setupInstructions": "Instuksjoner for oppsett  ",
+    "testEmail": "Test-e-post  ",
+    "enableEmailService": "Aktiver e-posttjeneste  ",
+    "useSslTls": "Bruk SSL/TLS (kun port 465)  ",
+    "smtpHost": "SMTP-vert  ",
+    "smtpPort": "SMTP-port  ",
+    "smtpUsername": "SMTP-brukernavn  ",
+    "smtpPassword": "SMTP-passord  ",
+    "fromName": "Fra navn",
+    "fromEmailAddress": "Fra e-postadresse  ",
+    "emailServiceEnabled": "E-posttjeneste aktivert  ",
+    "emailServiceDisabled": "E-posttjeneste deaktivert  ",
+    "sslTlsEnabled": "SSL/TLS aktivert  ",
+    "sslTlsDisabled": "SSL/TLS deaktivert  ",
+    "settingSavedSuccessfully": "Innstilling lagret vellykket  ",
+    "failedToSaveSetting": "Feil ved lagring av innstilling  ",
+    "networkError": "Nettverksfeil oppstod  ",
+    "cancel": "Avbryt  ",
+    "save": "Lagre",
+    "saving": "Lagrer...",
+    "hostPlaceholder": "smtp.gmail.com",
+    "usernamePlaceholder": "din-e-post@gmail.com",
+    "passwordPlaceholder": "App-passord eller SMTP-passord",
+    "fromNamePlaceholder": "Fotografi-nettsted",
+    "fromAddressPlaceholder": "noreply@yoursite.com"
+  },
+  "analyticsSettings": {
+    "title": "ANALYSE",
+    "description": "Konfigurasjon av analyse-sporing inkludert OpenObserve-integrasjon",
+    "enableOpenObserve": "Aktiver OpenObserve-integrasjon",
+    "enabled": "Aktivert",
+    "disabled": "Deaktivert  ",
+    "scriptPath": "Skriptbane  ",
+    "openObserveEndpoint": "OpenObserve-endepunkt  ",
+    "organization": "Organisasjon  ",
+    "username": "Brukernavn  ",
+    "password": "Passord  ",
+    "stream": "Strøm  ",
+    "cancel": "Avbryt  ",
+    "save": "Lagre  ",
+    "saving": "Lagrer...",
+    "sectionName": "Analyse  ",
+    "settingsSaved": "Innstillinger for analyse lagret!  ",
+    "failedToUpdate": "Feil ved oppdatering av innstilling  ",
+    "networkError": "Nettverksfeil oppstod  ",
+    "scriptPathPlaceholder": "/analytics.js  ",
+    "endpointPlaceholder": "https://api.openobserve.ai  "
+  },
+  "userCard": {
+    "password": "🔑 Passord  ",
+    "changePassword": "Endre passord  ",
+    "enableMfa": "Aktiver MFA  ",
+    "disableMfa": "Deaktiver MFA"
   }
 }

@@ -7,6 +7,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useSortable, SortableContext } from '@dnd-kit/sortable';
 import { PlusCircleIcon, UploadIcon, DragHandleIcon, ChevronUpIcon, ChevronDownIcon } from '../../../icons';
 import { useDroppable } from '@dnd-kit/core';
@@ -27,6 +28,7 @@ const FolderGhostTileDroppable: React.FC<{
   onGhostTileFileSelect: (e: React.ChangeEvent<HTMLInputElement>, folderId: number) => void;
   folderGhostTileRef: React.RefObject<HTMLInputElement>;
 }> = ({ folderId, isGhostTileDragOver, uploadingImages, onGhostTileClick, onGhostTileDragOver, onGhostTileDragLeave, onGhostTileDrop, onGhostTileFileSelect, folderGhostTileRef }) => {
+  const { t } = useTranslation();
   const { setNodeRef, isOver } = useDroppable({ id: `ghost-folder-${folderId}` });
   
   return (
@@ -44,7 +46,7 @@ const FolderGhostTileDroppable: React.FC<{
       <div className="ghost-tile-content">
         {uploadingImages.length > 0 ? (
           <span style={{ fontSize: '0.875rem', color: '#94a3b8', textAlign: 'center' }}>
-            Upload in progress
+            {t('albumsManager.uploadInProgress')}
           </span>
         ) : isGhostTileDragOver ? (
           <UploadIcon width="48" height="48" />
@@ -132,6 +134,7 @@ const SortableFolderCard: React.FC<SortableFolderCardProps> = ({
   hasFolders,
   canEdit,
 }) => {
+  const { t } = useTranslation();
   // Detect if we're on mobile
   const [isMobile, setIsMobile] = useState(false);
   
@@ -218,7 +221,7 @@ const SortableFolderCard: React.FC<SortableFolderCardProps> = ({
                   e.stopPropagation();
                   onMoveUp(folder.id);
                 }}
-                title="Move up"
+                title={t('albumsManager.moveUp')}
               >
                 <ChevronUpIcon width="16" height="16" />
               </button>
@@ -230,7 +233,7 @@ const SortableFolderCard: React.FC<SortableFolderCardProps> = ({
                   e.stopPropagation();
                   onMoveDown(folder.id);
                 }}
-                title="Move down"
+                title={t('albumsManager.moveDown')}
               >
                 <ChevronDownIcon width="16" height="16" />
               </button>
@@ -245,7 +248,7 @@ const SortableFolderCard: React.FC<SortableFolderCardProps> = ({
             {folder.published ? '📁' : '🔒'} {folder.name}
           </h4>
           <div className="folder-count">
-            {albumCount} {albumCount === 1 ? 'album' : 'albums'}
+            {albumCount} {albumCount === 1 ? t('albumsManager.album') : t('albumsManager.albums')}
           </div>
         </div>
         {canEdit && (
@@ -258,9 +261,9 @@ const SortableFolderCard: React.FC<SortableFolderCardProps> = ({
                 flexDirection: 'row-reverse'
               }} 
               onClick={(e) => e.stopPropagation()}
-              title={albumCount === 0 ? 'Cannot publish empty folder' : ''}
+              title={albumCount === 0 ? t('albumsManager.cannotPublishEmptyFolder') : ''}
             >
-              <span className="toggle-label">{folder.published ? 'Published' : 'Unpublished'}</span>
+              <span className="toggle-label">{folder.published ? t('albumsManager.published') : t('albumsManager.unpublished')}</span>
               <input
                 type="checkbox"
                 checked={albumCount > 0 && folder.published}
@@ -275,9 +278,9 @@ const SortableFolderCard: React.FC<SortableFolderCardProps> = ({
                 onDelete(folder.name);
               }}
               className="folder-delete-btn-text"
-              title="Delete folder"
+              title={t('albumsManager.deleteFolderTitle')}
             >
-              Delete
+              {t('common.delete')}
             </button>
           </div>
         )}

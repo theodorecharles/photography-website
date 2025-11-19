@@ -6,6 +6,7 @@
 
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import "./PhotoGrid.css";
 import { API_URL, cacheBustValue } from "../config";
 import { trackPhotoClick, trackError } from "../utils/analytics";
@@ -26,6 +27,7 @@ interface PhotoGridProps {
 import type { Photo } from '../types/photo';
 
 const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPhotos, onLoadComplete }) => {
+  const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
   const [photos, setPhotos] = useState<Photo[]>([]);
@@ -469,10 +471,10 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
     return (
       <div className="empty-state">
         <div className="empty-icon">📸</div>
-        <h2>No Photos Yet</h2>
-        <p>This album is empty. Time to add some amazing photos!</p>
+        <h2>{t('photo.noPhotosYet')}</h2>
+        <p>{t('photo.albumEmpty')}</p>
         <a href="/admin" className="empty-state-button">
-          Go to Admin Panel
+          {t('photo.goToAdminPanel')}
         </a>
       </div>
     );

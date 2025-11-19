@@ -598,8 +598,8 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
   const handleRunOptimization = async (force: boolean = false) => {
     const confirmed = await showConfirmation(
       force
-        ? "Force regenerate ALL images? This will take a while."
-        : "Run image optimization on all photos?"
+        ? t('advancedSettings.regenerationControls.forceRegenerateImagesConfirm')
+        : t('advancedSettings.regenerationControls.runOptimizationConfirm')
     );
     if (!confirmed) return;
 
@@ -817,8 +817,8 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
         <div className="modal-overlay" onClick={handleModalCancel}>
           <div className="share-modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '500px' }}>
             <div className="share-modal-header">
-              <h2>Confirm Action</h2>
-              <button className="close-button" onClick={handleModalCancel} aria-label="Close">
+              <h2>{t('common.confirmAction')}</h2>
+              <button className="close-button" onClick={handleModalCancel} aria-label={t('common.close')}>
                 ×
               </button>
             </div>
@@ -834,10 +834,10 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
                 }}
               >
                 <button onClick={handleModalCancel} className="btn-secondary">
-                  Cancel
+                  {t('common.cancel')}
                 </button>
                 <button onClick={confirmConfig.onConfirm} className="btn-primary">
-                  Confirm
+                  {t('common.confirm')}
                 </button>
               </div>
             </div>

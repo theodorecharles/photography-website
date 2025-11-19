@@ -9,8 +9,13 @@
     "create": "Create",
     "close": "Close",
     "confirm": "Confirm",
+    "confirmAction": "Confirm Action",
     "yes": "Yes",
     "no": "No",
+    "maximize": "Maximize",
+    "restore": "Restore",
+    "expand": "Expand",
+    "collapse": "Collapse",
     "back": "Back",
     "next": "Next",
     "previous": "Previous",
@@ -62,6 +67,9 @@
   },
   "photo": {
     "title": "Photo",
+    "noPhotosYet": "No Photos Yet",
+    "albumEmpty": "This album is empty. Time to add some amazing photos!",
+    "goToAdminPanel": "Go to Admin Panel",
     "download": "Download",
     "share": "Share",
     "fullscreen": "Fullscreen",
@@ -104,6 +112,7 @@
   "auth": {
     "login": "Login",
     "logout": "Logout",
+    "invalidCredentials": "Invalid credentials",
     "signup": "Sign Up",
     "forgotPassword": "Forgot Password",
     "resetPassword": "Reset Password",
@@ -127,7 +136,8 @@
     "titleGeneration": "Title Generation",
     "imageOptimization": "Image Optimization",
     "progress": "{{progress}}%",
-    "uploadInProgress": "Upload in progress"
+    "uploadInProgress": "Upload in progress",
+    "jobStoppedByUser": "Job stopped by user"
   },
   "branding": {
     "title": "Branding",
@@ -166,6 +176,24 @@
     "summary": "Summary",
     "fullLicenseText": "Full License Text",
     "copyright": "Copyright",
+    "allRightsReservedDesc": "Traditional copyright - visitors cannot use these photos without permission",
+    "ccByDesc": "Visitors can use, share, and modify these photos, even commercially, as long as they provide attribution",
+    "ccBySaDesc": "Visitors can use and modify these photos, but derivative works must use the same license",
+    "ccByNdDesc": "Visitors can share these photos but cannot modify them",
+    "ccByNcDesc": "Visitors can use and modify these photos for non-commercial purposes only",
+    "ccByNcSaDesc": "Non-commercial use only, and derivative works must use the same license",
+    "ccByNcNdDesc": "Most restrictive Creative Commons license - non-commercial sharing only, no modifications allowed",
+    "cc0Desc": "All rights waived - visitors can use these photos for any purpose without attribution",
+    "publicDomainDesc": "These photographs are in the public domain - free for anyone to use without restrictions",
+    "allRightsReservedFullText": "All rights reserved. No part of these photographs may be reproduced, distributed, or used in any form without express written permission from the copyright holder. If you would like to use any of these photographs, please contact me to request permission.",
+    "ccByFullText": "These photographs are licensed under a Creative Commons Attribution 4.0 International License. You are free to share (copy and redistribute) and adapt (remix, transform, and build upon) these photographs for any purpose, even commercially, as long as you give appropriate credit, provide a link to the license, and indicate if changes were made.",
+    "ccBySaFullText": "These photographs are licensed under a Creative Commons Attribution-ShareAlike 4.0 International License. You are free to share and adapt these photographs, even commercially, as long as you give appropriate credit and distribute derivative works under the same license.",
+    "ccByNdFullText": "These photographs are licensed under a Creative Commons Attribution-NoDerivatives 4.0 International License. You are free to share these photographs for any purpose, even commercially, as long as you give appropriate credit and do not make any modifications.",
+    "ccByNcFullText": "These photographs are licensed under a Creative Commons Attribution-NonCommercial 4.0 International License. You are free to share and adapt these photographs for non-commercial purposes only, as long as you give appropriate credit.",
+    "ccByNcSaFullText": "These photographs are licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License. You are free to share and adapt these photographs for non-commercial purposes only, as long as you give appropriate credit and distribute derivative works under the same license.",
+    "ccByNcNdFullText": "These photographs are licensed under a Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License. You are free to share these photographs for non-commercial purposes only, as long as you give appropriate credit and do not make any modifications.",
+    "cc0FullText": "These photographs have been dedicated to the public domain under the Creative Commons CC0 1.0 Universal Public Domain Dedication. To the extent possible under law, I have waived all copyright and related rights to these photographs. You can copy, modify, distribute and perform the work, even for commercial purposes, all without asking permission.",
+    "publicDomainFullText": "These photographs are in the public domain. They are free for anyone to use, modify, and distribute for any purpose without restriction.",
     "copyrightText": "© {{year}} {{siteName}}. All photographs on this website are protected by copyright law.",
     "howToAttribute": "How to Attribute",
     "attributionText": "If you use these photographs under this license, please provide attribution as follows:",
@@ -175,6 +203,8 @@
     "photographyPortfolio": "Photography Portfolio"
   },
   "albumsManager": {
+    "title": "Albums",
+    "description": "Manage your photo albums and upload new images.",
     "uploadComplete": "✓ Upload complete! {{count}} {{photo}} added to \"{{album}}\"",
     "photo": "photo",
     "photos": "photos",
@@ -223,6 +253,12 @@
     "renameFolder": "Rename Folder",
     "uncategorized": "Uncategorized",
     "noPhotosInAlbum": "No photos in this album",
+    "uploadInProgress": "Upload in progress",
+    "moveUp": "Move up",
+    "moveDown": "Move down",
+    "cannotPublishEmptyFolder": "Cannot publish empty folder",
+    "deleteFolderTitle": "Delete folder",
+    "album": "album",
     "loadingPhotos": "Loading photos...",
     "savingOrder": "Saving order...",
     "saveOrder": "Save Order",
@@ -636,10 +672,10 @@
   "imageOptimization": {
     "title": "Image Optimization",
     "description": "Optimize and manage image processing",
-    "thumbnail": "THUMBNAIL",
-    "modal": "MODAL",
-    "download": "DOWNLOAD",
-    "concurrency": "CONCURRENCY",
+    "thumbnail": "Thumbnail",
+    "modal": "Modal",
+    "download": "Download",
+    "concurrency": "Concurrency",
     "quality": "Quality",
     "maxDimension": "Max Dimension",
     "concurrencyDescription1": "Maximum number of images to process simultaneously. Higher values speed up batch processing but use more CPU and memory.",
@@ -728,7 +764,7 @@
     "enableMfa": "Enable MFA"
   },
   "authSettings": {
-    "title": "GOOGLE SIGN ON",
+    "title": "Google Sign On",
     "description": "Google OAuth credentials for admin sign-in",
     "enableGoogleSignIn": "Enable Google Sign-In",
     "enabledDescription": "Users will see the 'Sign in with Google' button on the login page",
@@ -744,7 +780,7 @@
     "sectionName": "Authentication"
   },
   "smtpSettings": {
-    "title": "EMAIL (SMTP)",
+    "title": "Email (SMTP)",
     "configured": "✓ Configured",
     "description": "Configure SMTP settings for sending user invitation and password reset emails",
     "setupInstructions": "Setup Instructions",
@@ -774,7 +810,7 @@
     "fromAddressPlaceholder": "noreply@yoursite.com"
   },
   "analyticsSettings": {
-    "title": "ANALYTICS",
+    "title": "Analytics",
     "description": "Analytics tracking configuration including OpenObserve integration",
     "enableOpenObserve": "Enable OpenObserve Integration",
     "enabled": "Enabled",
@@ -802,7 +838,7 @@
     "disableMfa": "Disable MFA"
   },
   "advancedSettings": {
-    "title": "ADVANCED SETTINGS",
+    "title": "Advanced Settings",
     "description": "System configuration, operations, and advanced features",
     "dangerZone": "DANGER ZONE",
     "dangerZoneWarning": "These settings can affect system stability and data integrity. Use with caution.",
@@ -821,13 +857,15 @@
     "logLevelChanged": "Log level changed to {{level}}",
     "spacer": "",
     "regenerationControls": {
-      "titleGeneration": "TITLE GENERATION",
+      "titleGeneration": "Title Generation",
       "setUpOpenAI": "Set Up OpenAI",
       "backfillMissingTitles": "Backfill Missing Titles",
       "forceRegenerateAll": "Force Regenerate All",
       "stop": "Stop",
-      "optimizedImages": "OPTIMIZED IMAGES",
-      "forceRegenerateAllConfirm": "⚠️ This will regenerate ALL image titles and overwrite any custom titles you have set. This action cannot be undone.\n\nAre you sure you want to continue?"
+      "optimizedImages": "Optimized Images",
+      "forceRegenerateAllConfirm": "⚠️ This will regenerate ALL image titles and overwrite any custom titles you have set. This action cannot be undone.\n\nAre you sure you want to continue?",
+      "forceRegenerateImagesConfirm": "Force regenerate ALL images? This will take a while.",
+      "runOptimizationConfirm": "Run image optimization on all photos?"
     }
   }
 }

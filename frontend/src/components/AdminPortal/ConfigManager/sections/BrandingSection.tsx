@@ -63,6 +63,23 @@ const BrandingSection: React.FC<BrandingSectionProps> = ({
     });
   };
   
+  // Get translated license description
+  const getLicenseDescription = (licenseId: string): string => {
+    const descMap: Record<string, string> = {
+      'all-rights-reserved': t('license.allRightsReservedDesc'),
+      'cc-by': t('license.ccByDesc'),
+      'cc-by-sa': t('license.ccBySaDesc'),
+      'cc-by-nd': t('license.ccByNdDesc'),
+      'cc-by-nc': t('license.ccByNcDesc'),
+      'cc-by-nc-sa': t('license.ccByNcSaDesc'),
+      'cc-by-nc-nd': t('license.ccByNcNdDesc'),
+      'cc0': t('license.cc0Desc'),
+      'public-domain': t('license.publicDomainDesc'),
+    };
+    const license = getLicenseById(licenseId);
+    return descMap[licenseId] || license?.description || '';
+  };
+  
   // Initialize language from branding config or use current i18n language
   useEffect(() => {
     if (branding.language) {
@@ -425,7 +442,7 @@ const BrandingSection: React.FC<BrandingSectionProps> = ({
             />
             {branding.photoLicense && (
               <p className="branding-description" style={{ marginTop: '0.5rem', fontSize: '0.875rem', color: 'rgba(255, 255, 255, 0.7)' }}>
-                {getLicenseById(branding.photoLicense)?.description}
+                {getLicenseDescription(branding.photoLicense)}
               </p>
             )}
           </div>

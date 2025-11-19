@@ -28,7 +28,12 @@
     "creating": "Aanmaken...",
     "generating": "Genereren...",
     "album": "album",
-    "albums": "albums"
+    "albums": "albums",
+    "confirmAction": "Bevestig actie  ",
+    "maximize": "Maximaliseren  ",
+    "restore": "Herstellen  ",
+    "expand": "Uitbreiden  ",
+    "collapse": "Inklappen  "
   },
   "app": {
     "loadingAlbums": "Albums laden...",
@@ -84,7 +89,10 @@
     "aperture": "Diafragma",
     "shutter": "Sluiter",
     "iso": "ISO",
-    "dateTaken": "Datum genomen"
+    "dateTaken": "Datum genomen",
+    "noPhotosYet": "Nog geen foto's",
+    "albumEmpty": "Dit album is leeg. Tijd om enkele geweldige foto's toe te voegen!",
+    "goToAdminPanel": "Ga naar het Admin Paneel"
   },
   "admin": {
     "title": "Beheerportaal",
@@ -109,7 +117,8 @@
     "resetPassword": "Wachtwoord Resetten",
     "passwordResetRequest": "Wachtwoord Reset Aanvragen",
     "passwordResetComplete": "Nieuw Wachtwoord Instellen",
-    "inviteSignup": "Registratie Voltooien"
+    "inviteSignup": "Registratie Voltooien",
+    "invalidCredentials": "Ongeldige inloggegevens"
   },
   "sse": {
     "uploading": "Uploaden",
@@ -127,7 +136,8 @@
     "titleGeneration": "Titelgeneratie",
     "imageOptimization": "Afbeeldingsoptimalisatie",
     "progress": "{{progress}}%",
-    "uploadInProgress": "Upload bezig"
+    "uploadInProgress": "Upload bezig",
+    "jobStoppedByUser": "Taak gestopt door gebruiker"
   },
   "branding": {
     "title": "Branding",
@@ -172,7 +182,25 @@
     "attributionExample": "Foto door {{siteName}} - Gelicentieerd onder {{licenseName}}{{url}}",
     "permissions": "Toestemmingen",
     "permissionsText": "Als u foto's van deze website wilt gebruiken, neem dan contact op met de fotograaf om toestemming te vragen.",
-    "photographyPortfolio": "Fotografieportfolio"
+    "photographyPortfolio": "Fotografieportfolio",
+    "allRightsReservedDesc": "Traditioneel copyright - bezoekers kunnen deze foto's niet gebruiken zonder toestemming",
+    "ccByDesc": "Bezoekers kunnen deze foto's gebruiken, delen en wijzigen, zelfs commercieel, zolang ze attributie geven",
+    "ccBySaDesc": "Bezoekers kunnen deze foto's gebruiken en wijzigen, maar afgeleide werken moeten dezelfde licentie gebruiken",
+    "ccByNdDesc": "Bezoekers kunnen deze foto's delen maar kunnen ze niet wijzigen",
+    "ccByNcDesc": "Bezoekers kunnen deze foto's alleen voor niet-commerciële doeleinden gebruiken en wijzigen",
+    "ccByNcSaDesc": "Alleen niet-commercieel gebruik, en afgeleide werken moeten dezelfde licentie gebruiken",
+    "ccByNcNdDesc": "Meest restrictieve Creative Commons-licentie - alleen niet-commerciële delen, geen wijzigingen toegestaan  ",
+    "cc0Desc": "Alle rechten opgegeven - bezoekers kunnen deze foto's voor elk doel gebruiken zonder naamsvermelding  ",
+    "publicDomainDesc": "Deze foto's zijn in het publieke domein - vrij voor iedereen om zonder beperkingen te gebruiken  ",
+    "allRightsReservedFullText": "Alle rechten voorbehouden. Geen enkel deel van deze foto's mag worden gereproduceerd, verspreid of op enige wijze worden gebruikt zonder uitdrukkelijke schriftelijke toestemming van de auteursrechthebbende. Als u een van deze foto's wilt gebruiken, neem dan contact met mij op om toestemming te vragen.  ",
+    "ccByFullText": "Deze foto's zijn gelicentieerd onder een Creative Commons Attribution 4.0 International License. U bent vrij om deze foto's te delen (kopiëren en herdistribueren) en aan te passen (remixen, transformeren en verder bouwen) voor elk doel, zelfs commercieel, zolang u de juiste erkenning geeft, een link naar de licentie verstrekt en aangeeft of er wijzigingen zijn aangebracht.  ",
+    "ccBySaFullText": "Deze foto's zijn gelicentieerd onder een Creative Commons Attribution-ShareAlike 4.0 International License. U bent vrij om deze foto's te delen en aan te passen, zelfs commercieel, zolang u de juiste erkenning geeft en afgeleide werken onder dezelfde licentie verspreidt.  ",
+    "ccByNdFullText": "Deze foto's zijn gelicentieerd onder een Creative Commons Attribution-NoDerivatives 4.0 International License. U bent vrij om deze foto's te delen voor elk doel, zelfs commercieel, zolang u de juiste erkenning geeft en geen wijzigingen aanbrengt.  ",
+    "ccByNcFullText": "Deze foto's zijn gelicentieerd onder een Creative Commons Attribution-NonCommercial 4.0 International License. U bent vrij om deze foto's te delen en aan te passen voor niet-commerciële doeleinden, zolang u de juiste erkenning geeft.  ",
+    "ccByNcSaFullText": "Deze foto's zijn gelicentieerd onder een Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License. U bent vrij om deze foto's te delen en aan te passen voor niet-commerciële doeleinden, zolang u de juiste erkenning geeft en afgeleide werken onder dezelfde licentie verspreidt.  ",
+    "ccByNcNdFullText": "Deze foto's zijn gelicentieerd onder een Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License. U bent vrij om deze foto's te delen voor niet-commerciële doeleinden, zolang u de juiste erkenning geeft en geen wijzigingen aanbrengt.  ",
+    "cc0FullText": "Deze foto's zijn gewijd aan het publieke domein onder de Creative Commons CC0 1.0 Universele Public Domain Dedication. Voor zover mogelijk volgens de wet, heb ik alle auteursrechten en gerelateerde rechten op deze foto's opgegeven. U kunt het werk kopiëren, wijzigen, verspreiden en uitvoeren, zelfs voor commerciële doeleinden, alles zonder toestemming te vragen.  ",
+    "publicDomainFullText": "Deze foto's zijn in het publieke domein. Ze zijn vrij voor iedereen om te gebruiken, te wijzigen en te verspreiden voor elk doel zonder beperkingen."
   },
   "albumsManager": {
     "uploadComplete": "✓ Upload voltooid! {{count}} {{photo}} toegevoegd aan \"{{album}}\"",
@@ -286,7 +314,15 @@
     "albumWillBePublished": "✓ Album wordt direct gepubliceerd",
     "albumsInPublishedFolders": "Albums in gepubliceerde mappen zijn altijd gepubliceerd",
     "albumWillBePrivate": "🔒 Album zal privé zijn",
-    "albumsInUnpublishedFolders": "Albums in niet-gepubliceerde mappen zijn altijd privé"
+    "albumsInUnpublishedFolders": "Albums in niet-gepubliceerde mappen zijn altijd privé",
+    "title": "Albums  ",
+    "description": "Beheer je fotoalbums en upload nieuwe afbeeldingen.",
+    "uploadInProgress": "Uploaden in uitvoering  ",
+    "moveUp": "Omhoog verplaatsen  ",
+    "moveDown": "Omlaag verplaatsen  ",
+    "cannotPublishEmptyFolder": "Kan lege map niet publiceren  ",
+    "deleteFolderTitle": "Verwijder map  ",
+    "album": "album  "
   },
   "settings": {
     "saved": "{{section}} instellingen opgeslagen!",
@@ -311,7 +347,18 @@
     "spacer": "Spatie",
     "viewLiveLogs": "Bekijk Live Logboeken",
     "failedToSaveLogLevel": "Opslaan van logniveau mislukt",
-    "logLevelChanged": "Logniveau gewijzigd naar {{level}}"
+    "logLevelChanged": "Logniveau gewijzigd naar {{level}}",
+    "regenerationControls": {
+      "titleGeneration": "Titelgeneratie",
+      "setUpOpenAI": "OpenAI Instellen",
+      "backfillMissingTitles": "Vul Ontbrekende Titels Aan",
+      "forceRegenerateAll": "Dwing opnieuw genereren van alles af",
+      "stop": "Stoppen",
+      "optimizedImages": "Geoptimaliseerde afbeeldingen",
+      "forceRegenerateAllConfirm": "⚠️ Dit zal ALLE afbeeldingtitels regenereren en eventuele aangepaste titels die je hebt ingesteld overschrijven. Deze actie kan niet ongedaan gemaakt worden.\n\nWeet je zeker dat je wilt doorgaan?",
+      "forceRegenerateImagesConfirm": "Alle afbeeldingen opnieuw genereren? Dit kan even duren.  ",
+      "runOptimizationConfirm": "Afbeeldingsoptimalisatie uitvoeren op alle foto's?"
+    }
   },
   "userManagement": {
     "title": "Gebruikersbeheer",
@@ -633,8 +680,8 @@
   "imageOptimization": {
     "title": "Afbeeldingsoptimalisatie",
     "description": "Optimaliseer en beheer beeldverwerking",
-    "thumbnail": "THUMBNAIL",
-    "modal": "MODAL",
+    "thumbnail": "Thumbnail",
+    "modal": "Modal",
     "download": "DOWNLOAD",
     "concurrency": "CONCURRENTIE",
     "quality": "Kwaliteit",
@@ -692,5 +739,110 @@
     "online": "Online",
     "restarting": "Opnieuw opstarten...",
     "timeoutDetails": "De server reageerde niet binnen {{seconds}} seconden. Controleer de serverlogboeken op fouten."
+  },
+  "adminPortal": {
+    "logout": "Uitloggen",
+    "albums": "Albums",
+    "metrics": "Statistieken",
+    "settings": "Instellingen  ",
+    "profile": "Profiel  ",
+    "settingsDescription": "Beheer branding, links en systeemconfiguratie  ",
+    "failedToLoadConfig": "Configuratie kon niet worden geladen  "
+  },
+  "securitySetup": {
+    "title": "🔐 Beveilig uw account  ",
+    "enableMfaTitle": "Schakel Twee-Factor Authenticatie in  ",
+    "description": "Uw account is momenteel alleen beschermd door een wachtwoord. We raden sterk aan om extra beveiligingsmaatregelen in te stellen om uw account te beschermen.  ",
+    "mfaTitle": "✓ Multi-Factor Authenticatie (MFA)  ",
+    "mfaBenefit1": "Voegt een extra beveiligingslaag toe met tijdgebaseerde codes  ",
+    "mfaBenefit2": "Werkt met apps zoals Google Authenticator of Authy",
+    "mfaBenefit3": "Krijg back-upcodes voor accountherstel  ",
+    "passkeysTitle": "🔑 Toegangssleutels (Optioneel)  ",
+    "passkeysBenefit1": "Gebruik biometrie of apparaat-PIN voor snelle, veilige aanmelding  ",
+    "passkeysBenefit2": "Geen wachtwoorden nodig - alleen je vingerafdruk of gezicht  ",
+    "passkeysBenefit3": "Kan worden ingesteld na het inschakelen van MFA  ",
+    "dontAskAgain": "Vraag het me niet opnieuw  ",
+    "maybeLater": "Misschien later  ",
+    "setUpMfaNow": "Stel MFA nu in  ",
+    "starting": "Bezig met starten...  ",
+    "scanQrCode": "Scan deze QR-code met je authenticator-app (Google Authenticator, Authy, 1Password, enz.)",
+    "enterVerificationCode": "Voer de verificatiecode in van uw app  ",
+    "back": "Terug  ",
+    "verifying": "Verifiëren...  ",
+    "enableMfa": "MFA inschakelen  "
+  },
+  "authSettings": {
+    "title": "GOOGLE AANMELDING  ",
+    "description": "Google OAuth-gegevens voor admin-aanmelding  ",
+    "enableGoogleSignIn": "Google Aanmelden inschakelen  ",
+    "enabledDescription": "Gebruikers zien de knop 'Aanmelden met Google' op de inlogpagina  ",
+    "disabledDescription": "Google-aanmelding zal verborgen zijn op de inlogpagina  ",
+    "googleClientId": "Google Client-ID",
+    "googleClientSecret": "Google Client Secret  ",
+    "sessionSecret": "Sessie Secret  ",
+    "authorizedEmails": "Geautoriseerde E-mails  ",
+    "addEmail": "+ E-mail Toevoegen  ",
+    "cancel": "Annuleren  ",
+    "save": "Opslaan  ",
+    "saving": "Opslaan...  ",
+    "sectionName": "Authenticatie  "
+  },
+  "smtpSettings": {
+    "title": "E-mail (SMTP)",
+    "configured": "✓ Geconfigureerd",
+    "description": "Configureer SMTP-instellingen voor het verzenden van gebruikersuitnodigingen en wachtwoordreset-e-mails  ",
+    "setupInstructions": "Installatie-instructies  ",
+    "testEmail": "Test e-mail  ",
+    "enableEmailService": "Schakel e-mailservice in  ",
+    "useSslTls": "Gebruik SSL/TLS (alleen poort 465)  ",
+    "smtpHost": "SMTP-host  ",
+    "smtpPort": "SMTP-poort  ",
+    "smtpUsername": "SMTP-gebruikersnaam  ",
+    "smtpPassword": "SMTP-wachtwoord  ",
+    "fromName": "Van naam",
+    "fromEmailAddress": "Van E-mailadres  ",
+    "emailServiceEnabled": "E-mailservice ingeschakeld  ",
+    "emailServiceDisabled": "E-mailservice uitgeschakeld  ",
+    "sslTlsEnabled": "SSL/TLS ingeschakeld  ",
+    "sslTlsDisabled": "SSL/TLS uitgeschakeld  ",
+    "settingSavedSuccessfully": "Instelling succesvol opgeslagen  ",
+    "failedToSaveSetting": "Opslaan van instelling mislukt  ",
+    "networkError": "Netwerkfout opgetreden  ",
+    "cancel": "Annuleren  ",
+    "save": "Opslaan",
+    "saving": "Opslaan...",
+    "hostPlaceholder": "smtp.gmail.com",
+    "usernamePlaceholder": "jouw-email@gmail.com",
+    "passwordPlaceholder": "App-wachtwoord of SMTP-wachtwoord",
+    "fromNamePlaceholder": "Fotografie Site",
+    "fromAddressPlaceholder": "noreply@yoursite.com"
+  },
+  "analyticsSettings": {
+    "title": "Analytics",
+    "description": "Configuratie van analytics-tracking inclusief OpenObserve-integratie",
+    "enableOpenObserve": "OpenObserve-integratie inschakelen",
+    "enabled": "Ingeschakeld",
+    "disabled": "Uitgeschakeld  ",
+    "scriptPath": "Script Pad  ",
+    "openObserveEndpoint": "OpenObserve Eindpunt  ",
+    "organization": "Organisatie  ",
+    "username": "Gebruikersnaam  ",
+    "password": "Wachtwoord  ",
+    "stream": "Stroom  ",
+    "cancel": "Annuleren  ",
+    "save": "Opslaan  ",
+    "saving": "Opslaan...",
+    "sectionName": "Analyse  ",
+    "settingsSaved": "Analyse-instellingen opgeslagen!  ",
+    "failedToUpdate": "Instelling bijwerken mislukt  ",
+    "networkError": "Netwerkfout opgetreden  ",
+    "scriptPathPlaceholder": "/analytics.js  ",
+    "endpointPlaceholder": "https://api.openobserve.ai  "
+  },
+  "userCard": {
+    "password": "🔑 Wachtwoord  ",
+    "changePassword": "Wachtwoord wijzigen  ",
+    "enableMfa": "MFA inschakelen  ",
+    "disableMfa": "MFA uitschakelen"
   }
 }

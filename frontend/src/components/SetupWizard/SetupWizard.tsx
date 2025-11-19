@@ -4,6 +4,7 @@
  */
 
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { API_URL } from '../../config';
 import RestartModal from '../RestartModal';
 import './SetupWizard.css';
@@ -11,6 +12,7 @@ import type { SetupStatus } from './types';
 import { error as logError, warn } from '../../utils/logger';
 
 export default function SetupWizard() {
+  const { i18n } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [setupStatus, setSetupStatus] = useState<SetupStatus | null>(null);
   const [currentStep, setCurrentStep] = useState(1);
@@ -245,12 +247,66 @@ export default function SetupWizard() {
     );
   }
 
+  const languages = [
+    { code: 'en', name: 'English', flag: '🇺🇸' },
+    { code: 'es', name: 'Español', flag: '🇪🇸' },
+    { code: 'fr', name: 'Français', flag: '🇫🇷' },
+    { code: 'de', name: 'Deutsch', flag: '🇩🇪' },
+    { code: 'ja', name: '日本語', flag: '🇯🇵' },
+    { code: 'zh-CN', name: '中文', flag: '🇨🇳' },
+    { code: 'ko', name: '한국어', flag: '🇰🇷' },
+    { code: 'it', name: 'Italiano', flag: '🇮🇹' },
+    { code: 'pt', name: 'Português', flag: '🇵🇹' },
+    { code: 'ru', name: 'Русский', flag: '🇷🇺' },
+    { code: 'nl', name: 'Nederlands', flag: '🇳🇱' },
+    { code: 'pl', name: 'Polski', flag: '🇵🇱' },
+    { code: 'tr', name: 'Türkçe', flag: '🇹🇷' },
+    { code: 'sv', name: 'Svenska', flag: '🇸🇪' },
+    { code: 'no', name: 'Norsk', flag: '🇳🇴' },
+  ];
+
   return (
     <div className="setup-wizard">
       <div className="setup-container">
         <div className="setup-header">
           <h1>📸 Setup Galleria</h1>
           <p>Let's get your portfolio set up in just a few steps</p>
+          
+          {/* Language Selector */}
+          <div style={{ 
+            marginTop: '1rem',
+            display: 'flex',
+            justifyContent: 'center',
+            gap: '0.5rem'
+          }}>
+            <label style={{ 
+              color: '#9ca3af',
+              fontSize: '0.875rem',
+              alignSelf: 'center'
+            }}>
+              🌐 Language:
+            </label>
+            <select
+              value={i18n.language}
+              onChange={(e) => i18n.changeLanguage(e.target.value)}
+              style={{
+                background: 'rgba(255, 255, 255, 0.05)',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                borderRadius: '6px',
+                padding: '0.375rem 0.625rem',
+                color: '#e5e7eb',
+                fontSize: '0.875rem',
+                cursor: 'pointer',
+                outline: 'none',
+              }}
+            >
+              {languages.map((lang) => (
+                <option key={lang.code} value={lang.code} style={{ background: '#1a1a1a' }}>
+                  {lang.flag} {lang.name}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
 
         <div className="setup-progress">

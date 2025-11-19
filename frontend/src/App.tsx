@@ -32,10 +32,8 @@ import { AuthProvider } from "./contexts/AuthContext";
 import SSEToaster from "./components/SSEToaster";
 import { filterAlbums, filterFolders } from "./utils/albumFilters";
 
-// Import AdminPortal - CSS is handled within the component for dev mode compatibility
-import AdminPortal from "./components/AdminPortal";
-
-// Lazy load other components that aren't needed on initial page load
+// Lazy load components that aren't needed on initial page load
+const AdminPortal = lazy(() => import("./components/AdminPortal"));
 const License = lazy(() => import("./components/Misc/License"));
 const AuthError = lazy(() => import("./components/Misc/AuthError"));
 import NotFound from "./components/Misc/NotFound";
@@ -517,7 +515,10 @@ function App() {
           <Routes>
             <Route path="/" element={
               <>
-                <SEO />
+                <SEO 
+                  title={`${siteName} - Photography Portfolio`}
+                  description={`Professional photography portfolio by ${siteName}. View stunning landscape, portrait, and creative photography collections.`}
+                />
                 <PhotoGrid 
                   album="homepage"
                   onLoadComplete={() => setShowFooter(true)}

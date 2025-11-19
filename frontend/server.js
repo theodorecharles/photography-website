@@ -830,6 +830,11 @@ app.get("*", async (req, res) => {
     // Set Content Security Policy with runtime API URL
     setCSPHeader(res, runtimeApiUrl, configFile);
 
+    // Prevent caching of index.html to ensure placeholders are always fresh
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+
     // Replace runtime placeholders with current config values
     let modifiedHtml = replaceRuntimePlaceholders(html, runtimeApiUrl);
 

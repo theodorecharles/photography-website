@@ -61,6 +61,38 @@ function License() {
 
   const license = getLicenseById(photoLicense) || getDefaultLicense();
 
+  // Get translated license description
+  const getLicenseDescription = (licenseId: string): string => {
+    const descMap: Record<string, string> = {
+      'all-rights-reserved': t('license.allRightsReservedDesc'),
+      'cc-by': t('license.ccByDesc'),
+      'cc-by-sa': t('license.ccBySaDesc'),
+      'cc-by-nd': t('license.ccByNdDesc'),
+      'cc-by-nc': t('license.ccByNcDesc'),
+      'cc-by-nc-sa': t('license.ccByNcSaDesc'),
+      'cc-by-nc-nd': t('license.ccByNcNdDesc'),
+      'cc0': t('license.cc0Desc'),
+      'public-domain': t('license.publicDomainDesc'),
+    };
+    return descMap[licenseId] || license.description;
+  };
+
+  // Get translated license full text
+  const getLicenseFullText = (licenseId: string): string => {
+    const fullTextMap: Record<string, string> = {
+      'all-rights-reserved': t('license.allRightsReservedFullText'),
+      'cc-by': t('license.ccByFullText'),
+      'cc-by-sa': t('license.ccBySaFullText'),
+      'cc-by-nd': t('license.ccByNdFullText'),
+      'cc-by-nc': t('license.ccByNcFullText'),
+      'cc-by-nc-sa': t('license.ccByNcSaFullText'),
+      'cc-by-nc-nd': t('license.ccByNcNdFullText'),
+      'cc0': t('license.cc0FullText'),
+      'public-domain': t('license.publicDomainFullText'),
+    };
+    return fullTextMap[licenseId] || license.fullText;
+  };
+
   if (loading) {
     return (
       <div className="license-page">
@@ -89,12 +121,12 @@ function License() {
 
           <div className="license-section">
             <h3>{t('license.summary')}</h3>
-            <p>{license.description}</p>
+            <p>{getLicenseDescription(license.id)}</p>
           </div>
 
           <div className="license-section">
             <h3>{t('license.fullLicenseText')}</h3>
-            <p className="license-full-text">{license.fullText}</p>
+            <p className="license-full-text">{getLicenseFullText(license.id)}</p>
           </div>
 
           <div className="license-section">

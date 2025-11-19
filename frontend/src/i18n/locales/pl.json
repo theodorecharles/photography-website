@@ -28,7 +28,12 @@
     "creating": "Tworzenie...",
     "generating": "Generowanie...",
     "album": "album",
-    "albums": "albumy"
+    "albums": "albumy",
+    "confirmAction": "Potwierdź akcję  ",
+    "maximize": "Maksymalizuj  ",
+    "restore": "Przywróć  ",
+    "expand": "Rozwiń  ",
+    "collapse": "Zwiń  "
   },
   "app": {
     "loadingAlbums": "Ładowanie albumów...",
@@ -84,7 +89,10 @@
     "aperture": "Przysłona",
     "shutter": "Migawka",
     "iso": "ISO",
-    "dateTaken": "Data wykonania"
+    "dateTaken": "Data wykonania",
+    "noPhotosYet": "Brak zdjęć",
+    "albumEmpty": "Ten album jest pusty. Czas dodać niesamowite zdjęcia!",
+    "goToAdminPanel": "Przejdź do panelu administracyjnego"
   },
   "admin": {
     "title": "Portal administracyjny",
@@ -109,7 +117,8 @@
     "resetPassword": "Zresetuj hasło",
     "passwordResetRequest": "Poproś o zresetowanie hasła",
     "passwordResetComplete": "Ustaw nowe hasło",
-    "inviteSignup": "Zakończ rejestrację"
+    "inviteSignup": "Zakończ rejestrację",
+    "invalidCredentials": "Nieprawidłowe dane logowania"
   },
   "sse": {
     "uploading": "Przesyłanie",
@@ -127,7 +136,8 @@
     "titleGeneration": "Generowanie tytułu",
     "imageOptimization": "Optymalizacja obrazu",
     "progress": "{{progress}}%",
-    "uploadInProgress": "Przesyłanie w toku"
+    "uploadInProgress": "Przesyłanie w toku",
+    "jobStoppedByUser": "Zatrzymano zadanie przez użytkownika"
   },
   "branding": {
     "title": "Branding",
@@ -172,7 +182,25 @@
     "attributionExample": "Zdjęcie autorstwa {{siteName}} - Licencjonowane na podstawie {{licenseName}}{{url}}",
     "permissions": "Zezwolenia",
     "permissionsText": "Jeśli chcesz użyć jakichkolwiek zdjęć z tej strony, skontaktuj się z fotografem, aby uzyskać zgodę.",
-    "photographyPortfolio": "Portfolio fotograficzne"
+    "photographyPortfolio": "Portfolio fotograficzne",
+    "allRightsReservedDesc": "Tradycyjna licencja - odwiedzający nie mogą używać tych zdjęć bez zgody",
+    "ccByDesc": "Odwiedzający mogą używać, udostępniać i modyfikować te zdjęcia, nawet komercyjnie, pod warunkiem podania autorstwa",
+    "ccBySaDesc": "Odwiedzający mogą używać i modyfikować te zdjęcia, ale prace pochodne muszą używać tej samej licencji",
+    "ccByNdDesc": "Odwiedzający mogą udostępniać te zdjęcia, ale nie mogą ich modyfikować",
+    "ccByNcDesc": "Odwiedzający mogą używać i modyfikować te zdjęcia tylko do celów niekomercyjnych",
+    "ccByNcSaDesc": "Tylko użycie niekomercyjne, a prace pochodne muszą używać tej samej licencji",
+    "ccByNcNdDesc": "Najbardziej restrykcyjna licencja Creative Commons - tylko udostępnianie niekomercyjne, bez dozwolonych modyfikacji  ",
+    "cc0Desc": "Wszystkie prawa zrezygnowane - odwiedzający mogą używać tych zdjęć do dowolnych celów bez przypisania autorstwa  ",
+    "publicDomainDesc": "Te fotografie są w domenie publicznej - wolne do użycia przez każdego bez ograniczeń  ",
+    "allRightsReservedFullText": "Wszelkie prawa zastrzeżone. Żaden fragment tych fotografii nie może być reprodukowany, dystrybuowany ani wykorzystywany w jakiejkolwiek formie bez wyraźnej pisemnej zgody właściciela praw autorskich. Jeśli chcesz użyć którejkolwiek z tych fotografii, skontaktuj się ze mną, aby poprosić o zgodę.  ",
+    "ccByFullText": "Te fotografie są licencjonowane na mocy licencji Creative Commons Uznanie autorstwa 4.0 Międzynarodowej. Możesz je swobodnie udostępniać (kopiować i redystrybuować) oraz dostosowywać (remiksować, przekształcać i rozwijać) te fotografie w dowolnym celu, nawet komercyjnie, pod warunkiem, że odpowiednio podasz autorstwo, zamieścisz link do licencji i wskażesz, czy dokonano zmian.  ",
+    "ccBySaFullText": "Te fotografie są licencjonowane na mocy licencji Creative Commons Uznanie autorstwa-Na tych samych warunkach 4.0 Międzynarodowej. Możesz swobodnie udostępniać i dostosowywać te fotografie, nawet komercyjnie, pod warunkiem, że odpowiednio podasz autorstwo i rozprowadzisz utwory pochodne na tych samych warunkach.  ",
+    "ccByNdFullText": "Te fotografie są licencjonowane na mocy licencji Creative Commons Uznanie autorstwa-Bez utworów pochodnych 4.0 Międzynarodowej. Możesz swobodnie udostępniać te fotografie w dowolnym celu, nawet komercyjnie, pod warunkiem, że odpowiednio podasz autorstwo i nie dokonasz żadnych modyfikacji.  ",
+    "ccByNcFullText": "Te fotografie są licencjonowane na mocy licencji Creative Commons Uznanie autorstwa-Niekomercyjne 4.0 Międzynarodowej. Możesz swobodnie udostępniać i dostosowywać te fotografie tylko do celów niekomercyjnych, pod warunkiem, że odpowiednio podasz autorstwo.  ",
+    "ccByNcSaFullText": "Te fotografie są licencjonowane na mocy licencji Creative Commons Uznanie autorstwa-Niekomercyjne-Na tych samych warunkach 4.0 Międzynarodowej. Możesz swobodnie udostępniać i dostosowywać te fotografie tylko do celów niekomercyjnych, pod warunkiem, że odpowiednio podasz autorstwo i rozprowadzisz utwory pochodne na tych samych warunkach.  ",
+    "ccByNcNdFullText": "Te fotografie są licencjonowane na mocy licencji Creative Commons Uznanie autorstwa-Niekomercyjne-Bez utworów pochodnych 4.0 Międzynarodowej. Możesz swobodnie udostępniać te fotografie tylko do celów niekomercyjnych, pod warunkiem, że odpowiednio podasz autorstwo i nie dokonasz żadnych modyfikacji.  ",
+    "cc0FullText": "Te fotografie zostały przekazane do domeny publicznej na mocy Creative Commons CC0 1.0 Uniwersalnej Deklaracji Domena Publicznego. W zakresie dozwolonym przez prawo, zrezygnowałem ze wszystkich praw autorskich i pokrewnych do tych fotografii. Możesz kopiować, modyfikować, dystrybuować i wykonywać dzieło, nawet w celach komercyjnych, wszystko bez pytania o zgodę.  ",
+    "publicDomainFullText": "Te fotografie są w domenie publicznej. Są dostępne dla każdego do użycia, modyfikacji i dystrybucji w dowolnym celu bez ograniczeń."
   },
   "albumsManager": {
     "uploadComplete": "✓ Przesyłanie zakończone! Dodano {{count}} {{photo}} do \"{{album}}\"",
@@ -286,7 +314,15 @@
     "albumWillBePublished": "✓ Album zostanie opublikowany od razu",
     "albumsInPublishedFolders": "Albumy w opublikowanych folderach są zawsze opublikowane",
     "albumWillBePrivate": "🔒 Album będzie prywatny",
-    "albumsInUnpublishedFolders": "Albumy w nieopublikowanych folderach są zawsze prywatne"
+    "albumsInUnpublishedFolders": "Albumy w nieopublikowanych folderach są zawsze prywatne",
+    "title": "Albumy  ",
+    "description": "Zarządzaj swoimi albumami zdjęć i przesyłaj nowe obrazy.",
+    "uploadInProgress": "Przesyłanie w toku  ",
+    "moveUp": "Przenieś w górę  ",
+    "moveDown": "Przenieś w dół  ",
+    "cannotPublishEmptyFolder": "Nie można opublikować pustego folderu  ",
+    "deleteFolderTitle": "Usuń folder  ",
+    "album": "album  "
   },
   "settings": {
     "saved": "Ustawienia {{section}} zapisane!",
@@ -311,7 +347,18 @@
     "spacer": "Separator",
     "viewLiveLogs": "Pokaż logi na żywo",
     "failedToSaveLogLevel": "Nie udało się zapisać poziomu logowania",
-    "logLevelChanged": "Poziom logowania zmieniony na {{level}}"
+    "logLevelChanged": "Poziom logowania zmieniony na {{level}}",
+    "regenerationControls": {
+      "titleGeneration": "GENEROWANIE TYTUŁU",
+      "setUpOpenAI": "Skonfiguruj OpenAI",
+      "backfillMissingTitles": "Uzupełnij brakujące tytuły",
+      "forceRegenerateAll": "Wymuś ponowne wygenerowanie wszystkiego",
+      "stop": "Zatrzymaj",
+      "optimizedImages": "OPTYMALIZOWANE OBRAZY",
+      "forceRegenerateAllConfirm": "⚠️ To spowoduje regenerację WSZYSTKICH tytułów obrazów i nadpisze wszelkie niestandardowe tytuły, które ustawiłeś. Ta akcja nie może być cofnięta.\n\nCzy na pewno chcesz kontynuować?",
+      "forceRegenerateImagesConfirm": "Wymusić ponowne wygenerowanie WSZYSTKICH obrazów? To zajmie chwilę.  ",
+      "runOptimizationConfirm": "Uruchomić optymalizację obrazów dla wszystkich zdjęć?"
+    }
   },
   "userManagement": {
     "title": "Zarządzanie użytkownikami",
@@ -633,9 +680,9 @@
   "imageOptimization": {
     "title": "Optymalizacja obrazów",
     "description": "Optymalizuj i zarządzaj przetwarzaniem obrazów",
-    "thumbnail": "MINIATURA",
+    "thumbnail": "Miniatura",
     "modal": "MODALNE",
-    "download": "POBIERZ",
+    "download": "Pobierz",
     "concurrency": "RÓWNOCZESNOŚĆ",
     "quality": "Jakość",
     "maxDimension": "Maksymalny wymiar",
@@ -692,5 +739,110 @@
     "online": "Online",
     "restarting": "Ponowne uruchamianie...",
     "timeoutDetails": "Serwer nie odpowiedział w ciągu {{seconds}} sekund. Proszę sprawdzić logi serwera pod kątem błędów."
+  },
+  "adminPortal": {
+    "logout": "Wyloguj się",
+    "albums": "Albumy",
+    "metrics": "Metryki",
+    "settings": "Ustawienia  ",
+    "profile": "Profil  ",
+    "settingsDescription": "Zarządzaj marką, linkami i konfiguracją systemu  ",
+    "failedToLoadConfig": "Nie udało się załadować konfiguracji  "
+  },
+  "securitySetup": {
+    "title": "🔐 Zabezpiecz swoje konto  ",
+    "enableMfaTitle": "Włącz uwierzytelnianie dwuskładnikowe  ",
+    "description": "Twoje konto jest obecnie chronione tylko hasłem. Zdecydowanie zalecamy skonfigurowanie dodatkowych środków bezpieczeństwa, aby chronić swoje konto.  ",
+    "mfaTitle": "✓ Uwierzytelnianie wieloskładnikowe (MFA)  ",
+    "mfaBenefit1": "Dodaje dodatkową warstwę zabezpieczeń za pomocą kodów czasowych  ",
+    "mfaBenefit2": "Działa z aplikacjami takimi jak Google Authenticator lub Authy",
+    "mfaBenefit3": "Uzyskaj kody zapasowe do odzyskiwania konta  ",
+    "passkeysTitle": "🔑 Klucze dostępu (Opcjonalnie)  ",
+    "passkeysBenefit1": "Użyj biometrii lub PIN-u urządzenia do szybkiego, bezpiecznego logowania  ",
+    "passkeysBenefit2": "Nie potrzebujesz haseł - wystarczy twój odcisk palca lub twarz  ",
+    "passkeysBenefit3": "Można skonfigurować po włączeniu MFA  ",
+    "dontAskAgain": "Nie pytaj mnie więcej  ",
+    "maybeLater": "Może później  ",
+    "setUpMfaNow": "Skonfiguruj MFA teraz  ",
+    "starting": "Rozpoczynanie...  ",
+    "scanQrCode": "Skanuj ten kod QR za pomocą aplikacji uwierzytelniającej (Google Authenticator, Authy, 1Password itp.)",
+    "enterVerificationCode": "Wprowadź kod weryfikacyjny z aplikacji",
+    "back": "Powrót",
+    "verifying": "Weryfikacja...",
+    "enableMfa": "Włącz MFA"
+  },
+  "authSettings": {
+    "title": "LOGOWANIE GOOGLE",
+    "description": "Dane uwierzytelniające Google OAuth do logowania administratora",
+    "enableGoogleSignIn": "Włącz logowanie przez Google",
+    "enabledDescription": "Użytkownicy zobaczą przycisk 'Zaloguj się przez Google' na stronie logowania",
+    "disabledDescription": "Logowanie przez Google będzie ukryte na stronie logowania",
+    "googleClientId": "Identyfikator klienta Google",
+    "googleClientSecret": "Sekret klienta Google  ",
+    "sessionSecret": "Sekret sesji  ",
+    "authorizedEmails": "Autoryzowane e-maile  ",
+    "addEmail": "+ Dodaj e-mail  ",
+    "cancel": "Anuluj  ",
+    "save": "Zapisz  ",
+    "saving": "Zapisywanie...  ",
+    "sectionName": "Uwierzytelnianie  "
+  },
+  "smtpSettings": {
+    "title": "Email (SMTP)",
+    "configured": "✓ Skonfigurowano",
+    "description": "Skonfiguruj ustawienia SMTP do wysyłania zaproszeń dla użytkowników i e-maili do resetowania hasła  ",
+    "setupInstructions": "Instrukcje konfiguracyjne  ",
+    "testEmail": "Testowy e-mail  ",
+    "enableEmailService": "Włącz usługę e-mail  ",
+    "useSslTls": "Użyj SSL/TLS (tylko port 465)  ",
+    "smtpHost": "Host SMTP  ",
+    "smtpPort": "Port SMTP  ",
+    "smtpUsername": "Nazwa użytkownika SMTP  ",
+    "smtpPassword": "Hasło SMTP  ",
+    "fromName": "Nazwa nadawcy",
+    "fromEmailAddress": "Z adresu e-mailowego  ",
+    "emailServiceEnabled": "Usługa e-mail włączona  ",
+    "emailServiceDisabled": "Usługa e-mail wyłączona  ",
+    "sslTlsEnabled": "SSL/TLS włączone  ",
+    "sslTlsDisabled": "SSL/TLS wyłączone  ",
+    "settingSavedSuccessfully": "Ustawienie zapisane pomyślnie  ",
+    "failedToSaveSetting": "Nie udało się zapisać ustawienia  ",
+    "networkError": "Wystąpił błąd sieci  ",
+    "cancel": "Anuluj  ",
+    "save": "Zapisz",
+    "saving": "Zapisywanie...",
+    "hostPlaceholder": "smtp.gmail.com",
+    "usernamePlaceholder": "twoj-email@gmail.com",
+    "passwordPlaceholder": "Hasło aplikacji lub hasło SMTP",
+    "fromNamePlaceholder": "Strona fotograficzna",
+    "fromAddressPlaceholder": "noreply@twojastrona.com"
+  },
+  "analyticsSettings": {
+    "title": "Analityka",
+    "description": "Konfiguracja śledzenia analityki, w tym integracja z OpenObserve",
+    "enableOpenObserve": "Włącz integrację OpenObserve",
+    "enabled": "Włączone",
+    "disabled": "Wyłączone  ",
+    "scriptPath": "Ścieżka skryptu  ",
+    "openObserveEndpoint": "Endpoint OpenObserve  ",
+    "organization": "Organizacja  ",
+    "username": "Nazwa użytkownika  ",
+    "password": "Hasło  ",
+    "stream": "Strumień  ",
+    "cancel": "Anuluj  ",
+    "save": "Zapisz  ",
+    "saving": "Zapisywanie...",
+    "sectionName": "Analiza  ",
+    "settingsSaved": "Ustawienia analizy zostały zapisane!  ",
+    "failedToUpdate": "Nie udało się zaktualizować ustawienia  ",
+    "networkError": "Wystąpił błąd sieci  ",
+    "scriptPathPlaceholder": "/analytics.js  ",
+    "endpointPlaceholder": "https://api.openobserve.ai  "
+  },
+  "userCard": {
+    "password": "🔑 Hasło  ",
+    "changePassword": "Zmień hasło  ",
+    "enableMfa": "Włącz MFA  ",
+    "disableMfa": "Wyłącz MFA"
   }
 }

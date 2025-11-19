@@ -11,6 +11,7 @@ import crypto from 'crypto';
 import multer from 'multer';
 import os from 'os';
 import sharp from 'sharp';
+import { spawn } from 'child_process';
 import { requireManager } from '../auth/middleware.js';
 import { csrfProtection } from '../security.js';
 import { error, warn, info, debug, verbose } from '../utils/logger.js';
@@ -164,6 +165,12 @@ router.put('/', requireManager, (req: Request, res: Response) => {
     // Write back to file
     fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
     
+    // Reload frontend if siteName, avatarPath, or metaDescription changed (affects HTML placeholders)
+    const needsFrontendReload = updates.siteName || updates.avatarPath || updates.metaDescription;
+    if (needsFrontendReload) {
+      reloadFrontend();
+    }
+    
     res.json({ 
       success: true, 
       message: 'Branding configuration updated successfully',
@@ -174,6 +181,41 @@ router.put('/', requireManager, (req: Request, res: Response) => {
     res.status(500).json({ error: 'Failed to update branding configuration' });
   }
 });
+
+/**
+ * Reload frontend PM2 process to pick up config changes
+ */
+function reloadFrontend() {
+  try {
+    // Check if PM2 is available
+    const pm2Available = require('child_process').spawnSync('which', ['pm2']).status === 0;
+    
+    if (pm2Available) {
+      info('[Branding] Reloading frontend to apply branding changes...');
+      
+      const reload = spawn('pm2', ['reload', 'frontend'], {
+        detached: true,
+        stdio: 'ignore',
+      });
+      
+      reload.on('error', (err) => {
+        error('[Branding] Failed to reload frontend:', err);
+      });
+      
+      reload.on('exit', (code) => {
+        if (code === 0) {
+          info('[Branding] ✓ Frontend reloaded successfully');
+        } else {
+          warn(`[Branding] Frontend reload exited with code ${code}`);
+        }
+      });
+      
+      reload.unref();
+    }
+  } catch (err) {
+    error('[Branding] Error reloading frontend:', err);
+  }
+}
 
 // Upload avatar
 router.post('/upload-avatar', requireManager, upload.single('avatar'), async (req: Request, res: Response): Promise<void> => {
