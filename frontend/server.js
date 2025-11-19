@@ -443,12 +443,16 @@ app.get("*", async (req, res) => {
           debug(`  Preview Image: ${gridUrl}`);
           debug(`  Page URL: ${pageUrl}`);
 
+          // Get site name from branding
+          const siteName = configFile.branding?.siteName || "Photography Portfolio";
+          const safeSiteName = escapeHtml(siteName);
+
           // Read and modify index.html
           const html = fs.readFileSync(indexPath, "utf8");
           const modifiedHtml = html
             .replace(
               /<title>.*?<\/title>/,
-              `<title>${safeAlbumName} - Shared Album - Ted Charles Photography</title>`
+              `<title>${safeAlbumName} - Shared Album - ${safeSiteName}</title>`
             )
             .replace(
               /<meta name="title" content=".*?" \/>/,
@@ -559,13 +563,17 @@ app.get("*", async (req, res) => {
           debug(`  Page URL: ${pageUrl}`);
 
           const safeAlbumName = escapeHtml(albumTitleCase);
+          
+          // Get site name from branding
+          const siteName = configFile.branding?.siteName || "Photography Portfolio";
+          const safeSiteName = escapeHtml(siteName);
 
           // Read and modify HTML
           const html = fs.readFileSync(indexPath, "utf8");
           const modifiedHtml = html
             .replace(
               /<title>.*?<\/title>/,
-              `<title>${safeAlbumName} - Ted Charles Photography</title>`
+              `<title>${safeAlbumName} - ${safeSiteName}</title>`
             )
             .replace(
               /<meta name="title" content=".*?" \/>/,
@@ -701,6 +709,10 @@ app.get("*", async (req, res) => {
           );
           debug(`  Page URL: ${pageUrl}`);
 
+          // Get site name from branding
+          const siteName = configFile.branding?.siteName || "Photography Portfolio";
+          const safeSiteName = escapeHtml(siteName);
+
           // Read the index.html file
           const html = fs.readFileSync(indexPath, "utf8");
 
@@ -709,12 +721,12 @@ app.get("*", async (req, res) => {
             // Update page title
             .replace(
               /<title>.*?<\/title>/,
-              `<title>${safePhotoTitle} - ${albumTitleCase} - Ted Charles Photography</title>`
+              `<title>${safePhotoTitle} - ${albumTitleCase} - ${safeSiteName}</title>`
             )
             // Update meta title
             .replace(
               /<meta name="title" content=".*?" \/>/,
-              `<meta name="title" content="${safePhotoTitle} - ${albumTitleCase} - Ted Charles Photography" />`
+              `<meta name="title" content="${safePhotoTitle} - ${albumTitleCase} - ${safeSiteName}" />`
             )
             // Update meta description
             .replace(
