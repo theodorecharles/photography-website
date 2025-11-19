@@ -970,7 +970,7 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
                 className="btn-secondary"
                 style={{ flex: 1 }}
               >
-                Cancel
+                {t('common.cancel')}
               </button>
               <button
                 onClick={() => {
@@ -980,7 +980,7 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
                 className={confirmConfig.isDanger ? 'btn-danger' : 'btn-primary'}
                 style={{ flex: 1 }}
               >
-                {confirmConfig.confirmText || 'Confirm'}
+                {confirmConfig.confirmText || t('albumsManager.confirmAction')}
               </button>
             </div>
           </div>
