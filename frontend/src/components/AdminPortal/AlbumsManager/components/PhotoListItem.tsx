@@ -1,3 +1,4 @@
+import React from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Photo, UploadingImage } from '../types';
@@ -54,6 +55,11 @@ export const PhotoListItem: React.FC<PhotoListItemProps> = ({
     id: photoId,
     disabled: !canEdit,
   });
+  
+  // Debug: log isDragging changes
+  React.useEffect(() => {
+    console.log('[PhotoListItem] isDragging changed for', photoId, ':', isDragging);
+  }, [isDragging, photoId]);
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -82,12 +88,24 @@ export const PhotoListItem: React.FC<PhotoListItemProps> = ({
   };
 
   const statusText = getStatusText();
+  
+  // Debug: log touch start
+  const handleTouchStart = (e: React.TouchEvent) => {
+    const element = e.currentTarget as HTMLElement;
+    const computedStyle = window.getComputedStyle(element);
+    console.log('[PhotoListItem] TOUCH START on', photoId,
+      '- touch-action:', computedStyle.touchAction,
+      '- canEdit:', canEdit,
+      '- isDragging:', isDragging,
+      '- classList:', element.classList.toString());
+  };
 
   return (
     <div
       ref={setNodeRef}
       style={style}
       className={`list-item ${isDragging ? 'dragging' : ''} ${isDeleting ? 'deleting' : ''} ${isUploading ? 'uploading' : ''}`}
+      onTouchStart={handleTouchStart}
       {...attributes}
       {...listeners}
     >

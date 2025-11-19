@@ -140,13 +140,13 @@ const PhotosPanelGrid: React.FC<PhotosPanelGridProps> = ({
   
   // Configure dnd-kit sensors for photos
   // Desktop: minimal delay for instant drag
-  // Mobile Grid: 50px tolerance to allow some scrolling
+  // Mobile Grid: 100px tolerance to allow scrolling
   // Mobile List: 150px tolerance to allow easy scrolling (since items fill screen)
   const photoSensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: isTouchDevice ? {
         delay: 300, // Mobile: require 300ms hold before drag starts
-        tolerance: viewMode === 'list' ? 150 : 50, // List: higher tolerance for scrolling
+        tolerance: viewMode === 'list' ? 150 : 100, // Grid: 100px, List: 150px tolerance for scrolling
       } : {
         distance: 5, // Desktop: require 5px movement to start drag
       },

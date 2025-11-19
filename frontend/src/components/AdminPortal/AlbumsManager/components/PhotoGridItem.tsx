@@ -193,9 +193,9 @@ const PhotoGridItem: React.FC<PhotoGridItemProps> = ({
     const computedStyle = window.getComputedStyle(element);
     console.log('[PhotoGridItem] TOUCH START on', itemId, 
       '- touch-action:', computedStyle.touchAction,
-      '- has .editable:', element.classList.contains('editable'),
       '- canEdit:', canEdit,
-      '- isDragging:', isDragging);
+      '- isDragging:', isDragging,
+      '- classList:', element.classList.toString());
     
     // Custom touch handler logic (only for viewers)
     if (useCustomTouchHandlers && !isUploading && !isDragging) {
@@ -210,7 +210,7 @@ const PhotoGridItem: React.FC<PhotoGridItemProps> = ({
       ref={setNodeRef}
       style={style}
       data-photo-id={itemId}
-      className={`admin-photo-item ${canEdit ? 'editable' : ''} ${isDragging ? 'dragging' : ''} ${showOverlay ? 'show-overlay' : ''} ${isUploading ? 'uploading' : ''} ${isDeleting ? 'crt-delete' : ''}`}
+      className={`admin-photo-item ${isDragging ? 'dragging' : ''} ${showOverlay ? 'show-overlay' : ''} ${isUploading ? 'uploading' : ''} ${isDeleting ? 'crt-delete' : ''}`}
       onTouchStart={handleTouchStartWithDebug}
       {...(useCustomTouchHandlers ? {
         onTouchMove: handleTouchMove,
