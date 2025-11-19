@@ -184,7 +184,6 @@ function App() {
   const [avatarCacheBust, setAvatarCacheBust] = useState(Date.now());
   const [primaryColor, setPrimaryColor] = useState("#4ade80");
   const [secondaryColor, setSecondaryColor] = useState("#3b82f6");
-  const [loading, setLoading] = useState(true);
   const [errorState, setErrorState] = useState<string | null>(null);
   const [currentAlbum, setCurrentAlbum] = useState<string | undefined>(
     undefined
@@ -203,10 +202,7 @@ function App() {
         const data = await response.json();
         setSetupComplete(data.setupComplete);
 
-        // Only proceed with normal loading if setup is complete
-        if (!data.setupComplete) {
-          setLoading(false);
-        }
+        // Setup status checked
       } catch (err) {
         error("Setup check failed:", err);
         // Assume setup is complete if check fails (backward compatibility)
@@ -221,7 +217,6 @@ function App() {
   useEffect(() => {
     (window as any).handleRateLimit = () => {
       setErrorState("RATE_LIMIT");
-      setLoading(false);
     };
 
     return () => {
@@ -280,7 +275,6 @@ function App() {
   // Fetch albums, external links, and branding data
   const fetchData = async () => {
     try {
-      setLoading(true);
       const [albumsResponse, externalLinksResponse, brandingResponse] =
         await Promise.all([
           fetchWithRateLimitCheck(`${API_URL}/api/albums`),
@@ -381,8 +375,6 @@ function App() {
       setSiteName("Galleria");
       setAvatarPath("/photos/avatar.png");
       trackError(errorMessage, "app_initialization");
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -482,15 +474,8 @@ function App() {
   }
 
   // Loading and error states
-  // Skip loading state for admin routes - they handle their own loading
-  if (loading && !location.pathname.startsWith("/admin")) {
-    return (
-      <div className="photo-grid-loading">
-        <div className="loading-spinner"></div>
-        <p>{t("app.loadingAlbums")}</p>
-      </div>
-    );
-  }
+  // Skip loading state - let individual components (PhotoGrid, AdminPortal) handle their own loading
+  // The header and footer can load asynchronously without blocking the page
 
   if (errorState) {
     if (errorState === "RATE_LIMIT") {
