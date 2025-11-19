@@ -88,16 +88,19 @@ const PhotoGridItem: React.FC<PhotoGridItemProps> = ({
       setShowOverlay(false);
     }
   }, [activeOverlayId, itemId, showOverlay]);
+  
+  // Clear touch tracking when drag starts
+  useEffect(() => {
+    if (isDragging) {
+      touchStartPos.current = null;
+      hasMoved.current = false;
+      setShowOverlay(false);
+    }
+  }, [isDragging]);
 
-  const handleTouchStart = (e: React.TouchEvent) => {
-    if (isUploading) return;
-    const touch = e.touches[0];
-    touchStartPos.current = { x: touch.clientX, y: touch.clientY };
-    hasMoved.current = false;
-  };
 
   const handleTouchMove = (e: React.TouchEvent) => {
-    if (isUploading || !touchStartPos.current) return;
+    if (isUploading || isDragging || !touchStartPos.current) return; // Don't interfere with dragging
     
     const touch = e.touches[0];
     const deltaX = Math.abs(touch.clientX - touchStartPos.current.x);
@@ -110,7 +113,7 @@ const PhotoGridItem: React.FC<PhotoGridItemProps> = ({
   };
 
   const handleTouchEnd = (e: React.TouchEvent) => {
-    if (isUploading) return;
+    if (isUploading || isDragging) return; // Don't interfere with dragging
     
     if (touchStartPos.current && !hasMoved.current) {
       e.preventDefault();
@@ -133,6 +136,7 @@ const PhotoGridItem: React.FC<PhotoGridItemProps> = ({
   };
 
   const handleTouchCancel = () => {
+    if (isDragging) return; // Don't interfere with dragging
     touchStartPos.current = null;
     hasMoved.current = false;
     setShowOverlay(false);
@@ -162,16 +166,29 @@ const PhotoGridItem: React.FC<PhotoGridItemProps> = ({
     ? `${API_URL}${photoData.thumbnail}?i=${cacheBustValue}`
     : uploadingImage?.thumbnailUrl;
 
+  // Only use custom touch handlers on touch devices when NOT in drag mode
+  const isTouchDevice = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+  const useCustomTouchHandlers = isTouchDevice && !canEdit;
+  
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (isUploading || isDragging) return;
+    const touch = e.touches[0];
+    touchStartPos.current = { x: touch.clientX, y: touch.clientY };
+    hasMoved.current = false;
+  };
+
   return (
     <div
       ref={setNodeRef}
       style={style}
       data-photo-id={itemId}
       className={`admin-photo-item ${isDragging ? 'dragging' : ''} ${showOverlay ? 'show-overlay' : ''} ${isUploading ? 'uploading' : ''} ${isDeleting ? 'crt-delete' : ''}`}
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
-      onTouchCancel={handleTouchCancel}
+      {...(useCustomTouchHandlers ? {
+        onTouchStart: handleTouchStart,
+        onTouchMove: handleTouchMove,
+        onTouchEnd: handleTouchEnd,
+        onTouchCancel: handleTouchCancel,
+      } : {})}
       {...(canEdit && !isUploading ? attributes : {})}
       {...(canEdit && !isUploading ? listeners : {})}
     >

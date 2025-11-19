@@ -250,32 +250,20 @@ export const usePhotoManagement = ({ setMessage, showConfirmation }: UsePhotoMan
     if (setActiveId) {
       setActiveId(event.active.id as string);
     }
-    // Prevent scrolling during drag on mobile
-    const modalContent = document.querySelector('.photos-modal-content') as HTMLElement;
-    if (modalContent) {
-      modalContent.style.overflow = 'hidden';
-      modalContent.style.touchAction = 'none';
-    }
-    document.body.style.overflow = 'hidden';
-    document.body.style.touchAction = 'none';
+    // Note: touch-action is handled by CSS based on .dragging class
+    // No need to manually manipulate styles here
   }, []);
 
   const handlePhotoDragEnd = useCallback((event: DragEndEvent, setActiveId?: (id: string | null) => void) => {
     const { active, over } = event;
 
-    // Clear the active ID
+    // Clear the active ID immediately
     if (setActiveId) {
       setActiveId(null);
     }
 
-    // Restore scrolling
-    const modalContent = document.querySelector('.photos-modal-content') as HTMLElement;
-    if (modalContent) {
-      modalContent.style.overflow = '';
-      modalContent.style.touchAction = '';
-    }
-    document.body.style.overflow = '';
-    document.body.style.touchAction = '';
+    // Note: touch-action is handled by CSS based on .dragging class
+    // The .dragging class will be removed automatically by dnd-kit
 
     if (over && active.id !== over.id) {
       setAlbumPhotos((photos) => {
