@@ -366,7 +366,7 @@ app.get("*", async (req, res) => {
           const modifiedHtml = html
             .replace(
               /<title>.*?<\/title>/,
-              `<title>${safeSiteName} - Photography Portfolio</title>`
+              `<title>${safeSiteName}</title>`
             )
             .replace(
               /<meta property="og:image" content=".*?" \/>/,
@@ -850,7 +850,7 @@ app.get("*", async (req, res) => {
     // Replace title tag with site name
     let modifiedHtml = html.replace(
       /<title>.*?<\/title>/,
-      `<title>${safeSiteName} - Photography Portfolio</title>`
+      `<title>${safeSiteName}</title>`
     );
     
     // Replace runtime placeholders with current config values
