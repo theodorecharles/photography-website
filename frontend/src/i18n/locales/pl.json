@@ -844,5 +844,25 @@
     "changePassword": "Zmień hasło",
     "enableMfa": "Włącz MFA",
     "disableMfa": "Wyłącz MFA"
+  },
+  "seo": {
+    "homepageTitle": "{{siteName}} - Galleria  ",
+    "homepageDescription": "Portfolio fotograficzne autorstwa {{siteName}}. Zobacz oszałamiające kolekcje fotografii krajobrazowej, portretowej i kreatywnej.  ",
+    "albumTitle": "{{albumName}} - {{siteName}}  ",
+    "albumDescription": "Zobacz zdjęcia {{albumName}} z portfolio fotograficznego {{siteName}}.  ",
+    "licenseTitle": "Licencja - {{siteName}}  ",
+    "licenseDescription": "Informacje o licencji dla fotografii {{siteName}}.  ",
+    "authErrorTitle": "Błąd uwierzytelnienia - {{siteName}}  ",
+    "authErrorDescription": "Błąd logowania  ",
+    "inviteTitle": "Ukończ rejestrację - {{siteName}}  ",
+    "inviteDescription": "Ukończ rejestrację swojego konta",
+    "passwordResetTitle": "Zresetuj hasło - {{siteName}}  ",
+    "passwordResetDescription": "Zresetuj hasło do swojego konta  ",
+    "passwordResetCompleteTitle": "Ustaw nowe hasło - {{siteName}}  ",
+    "passwordResetCompleteDescription": "Ustaw nowe hasło dla swojego konta  ",
+    "notFoundTitle": "404 - Strona nie znaleziona - {{siteName}}  ",
+    "notFoundDescription": "Strona, której szukasz, nie istnieje.  ",
+    "rateLimitTitle": "429 - Zbyt wiele żądań - {{siteName}}  ",
+    "rateLimitDescription": "Proszę zwolnić tempo i spróbować ponownie."
   }
 }

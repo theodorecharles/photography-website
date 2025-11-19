@@ -844,5 +844,25 @@
     "networkError": "Netzwerkfehler aufgetreten",
     "scriptPathPlaceholder": "/analytics.js",
     "endpointPlaceholder": "https://api.openobserve.ai"
+  },
+  "seo": {
+    "homepageTitle": "{{siteName}} - Galleria  ",
+    "homepageDescription": "Fotografie-Portfolio von {{siteName}}. Sehen Sie sich beeindruckende Landschafts-, Porträt- und kreative Fotografie-Kollektionen an.  ",
+    "albumTitle": "{{albumName}} - {{siteName}}  ",
+    "albumDescription": "Sehen Sie sich die {{albumName}}-Fotos aus dem Fotografie-Portfolio von {{siteName}} an.  ",
+    "licenseTitle": "Lizenz - {{siteName}}  ",
+    "licenseDescription": "Lizenzinformationen für die Fotografie von {{siteName}}.  ",
+    "authErrorTitle": "Authentifizierungsfehler - {{siteName}}  ",
+    "authErrorDescription": "Anmeldefehler  ",
+    "inviteTitle": "Registrierung abschließen - {{siteName}}  ",
+    "inviteDescription": "Vervollständigen Sie Ihre Kontoregistrierung",
+    "passwordResetTitle": "Passwort zurücksetzen - {{siteName}}  ",
+    "passwordResetDescription": "Setzen Sie Ihr Kontopasswort zurück  ",
+    "passwordResetCompleteTitle": "Neues Passwort festlegen - {{siteName}}  ",
+    "passwordResetCompleteDescription": "Legen Sie ein neues Passwort für Ihr Konto fest  ",
+    "notFoundTitle": "404 - Seite nicht gefunden - {{siteName}}  ",
+    "notFoundDescription": "Die von Ihnen gesuchte Seite existiert nicht.  ",
+    "rateLimitTitle": "429 - Zu viele Anfragen - {{siteName}}  ",
+    "rateLimitDescription": "Bitte verlangsamen Sie sich und versuchen Sie es erneut."
   }
 }

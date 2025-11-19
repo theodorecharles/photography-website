@@ -844,5 +844,25 @@
     "changePassword": "Ändra lösenord",
     "enableMfa": "Aktivera MFA",
     "disableMfa": "Avaktivera MFA"
+  },
+  "seo": {
+    "homepageTitle": "{{siteName}} - Galleri  ",
+    "homepageDescription": "Fotografportfölj av {{siteName}}. Se fantastiska samlingar av landskaps-, porträtt- och kreativ fotografi.  ",
+    "albumTitle": "{{albumName}} - {{siteName}}  ",
+    "albumDescription": "Se {{albumName}}-bilder från {{siteName}} fotografportfölj.  ",
+    "licenseTitle": "Licens - {{siteName}}  ",
+    "licenseDescription": "Licensinformation för {{siteName}} fotografi.  ",
+    "authErrorTitle": "Autentisering Fel - {{siteName}}  ",
+    "authErrorDescription": "Inloggningsfel  ",
+    "inviteTitle": "Slutför Registrering - {{siteName}}  ",
+    "inviteDescription": "Slutför din kontoregistrering",
+    "passwordResetTitle": "Återställ lösenord - {{siteName}}  ",
+    "passwordResetDescription": "Återställ ditt kontolösenord  ",
+    "passwordResetCompleteTitle": "Ange nytt lösenord - {{siteName}}  ",
+    "passwordResetCompleteDescription": "Ange ett nytt lösenord för ditt konto  ",
+    "notFoundTitle": "404 - Sidan hittades inte - {{siteName}}  ",
+    "notFoundDescription": "Sidan du letar efter finns inte.  ",
+    "rateLimitTitle": "429 - För många förfrågningar - {{siteName}}  ",
+    "rateLimitDescription": "Vänligen sänk hastigheten och försök igen."
   }
 }

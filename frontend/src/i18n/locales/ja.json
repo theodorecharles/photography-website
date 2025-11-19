@@ -844,5 +844,25 @@
     "networkError": "ネットワークエラーが発生しました",
     "scriptPathPlaceholder": "/analytics.js",
     "endpointPlaceholder": "https://api.openobserve.ai"
+  },
+  "seo": {
+    "homepageTitle": "{{siteName}} - ギャラリー  ",
+    "homepageDescription": "{{siteName}}による写真ポートフォリオ。素晴らしい風景、ポートレート、クリエイティブな写真コレクションを閲覧してください。  ",
+    "albumTitle": "{{albumName}} - {{siteName}}  ",
+    "albumDescription": "{{siteName}}の写真ポートフォリオから{{albumName}}の写真を閲覧してください。  ",
+    "licenseTitle": "ライセンス - {{siteName}}  ",
+    "licenseDescription": "{{siteName}}の写真に関するライセンス情報。  ",
+    "authErrorTitle": "認証エラー - {{siteName}}  ",
+    "authErrorDescription": "ログインエラー  ",
+    "inviteTitle": "登録完了 - {{siteName}}  ",
+    "inviteDescription": "アカウント登録を完了してください。",
+    "passwordResetTitle": "パスワードをリセット - {{siteName}}  ",
+    "passwordResetDescription": "アカウントのパスワードをリセットします  ",
+    "passwordResetCompleteTitle": "新しいパスワードを設定 - {{siteName}}  ",
+    "passwordResetCompleteDescription": "アカウントの新しいパスワードを設定します  ",
+    "notFoundTitle": "404 - ページが見つかりません - {{siteName}}  ",
+    "notFoundDescription": "お探しのページは存在しません。  ",
+    "rateLimitTitle": "429 - リクエストが多すぎます - {{siteName}}  ",
+    "rateLimitDescription": "少し待ってから再試行してください。"
   }
 }

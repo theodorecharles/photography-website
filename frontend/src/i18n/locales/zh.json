@@ -844,5 +844,25 @@
     "changePassword": "更改密码",
     "enableMfa": "启用 MFA",
     "disableMfa": "禁用 MFA"
+  },
+  "seo": {
+    "homepageTitle": "{{siteName}} - 画廊  ",
+    "homepageDescription": "由 {{siteName}} 提供的摄影作品集。查看令人惊叹的风景、肖像和创意摄影作品集。  ",
+    "albumTitle": "{{albumName}} - {{siteName}}  ",
+    "albumDescription": "查看来自 {{siteName}} 摄影作品集的 {{albumName}} 照片。  ",
+    "licenseTitle": "许可证 - {{siteName}}  ",
+    "licenseDescription": "关于 {{siteName}} 摄影的许可证信息。  ",
+    "authErrorTitle": "认证错误 - {{siteName}}  ",
+    "authErrorDescription": "登录错误  ",
+    "inviteTitle": "完成注册 - {{siteName}}  ",
+    "inviteDescription": "完成您的账户注册",
+    "passwordResetTitle": "重置密码 - {{siteName}}  ",
+    "passwordResetDescription": "重置您的账户密码  ",
+    "passwordResetCompleteTitle": "设置新密码 - {{siteName}}  ",
+    "passwordResetCompleteDescription": "为您的账户设置新密码  ",
+    "notFoundTitle": "404 - 页面未找到 - {{siteName}}  ",
+    "notFoundDescription": "您要找的页面不存在。  ",
+    "rateLimitTitle": "429 - 请求过多 - {{siteName}}  ",
+    "rateLimitDescription": "请放慢速度并重试。"
   }
 }

@@ -844,5 +844,25 @@
     "changePassword": "Wachtwoord wijzigen",
     "enableMfa": "MFA inschakelen",
     "disableMfa": "MFA uitschakelen"
+  },
+  "seo": {
+    "homepageTitle": "{{siteName}} - Galleria  ",
+    "homepageDescription": "Fotografie portfolio van {{siteName}}. Bekijk prachtige landschaps-, portret- en creatieve fotografiecollecties.  ",
+    "albumTitle": "{{albumName}} - {{siteName}}  ",
+    "albumDescription": "Bekijk {{albumName}} foto's van het {{siteName}} fotografieportfolio.  ",
+    "licenseTitle": "Licentie - {{siteName}}  ",
+    "licenseDescription": "Licentie-informatie voor {{siteName}} fotografie.  ",
+    "authErrorTitle": "Authenticatie Fout - {{siteName}}  ",
+    "authErrorDescription": "Inlogfout  ",
+    "inviteTitle": "Voltooi Registratie - {{siteName}}  ",
+    "inviteDescription": "Voltooi je accountregistratie",
+    "passwordResetTitle": "Wachtwoord opnieuw instellen - {{siteName}}  ",
+    "passwordResetDescription": "Stel uw accountwachtwoord opnieuw in  ",
+    "passwordResetCompleteTitle": "Nieuw wachtwoord instellen - {{siteName}}  ",
+    "passwordResetCompleteDescription": "Stel een nieuw wachtwoord in voor uw account  ",
+    "notFoundTitle": "404 - Pagina Niet Gevonden - {{siteName}}  ",
+    "notFoundDescription": "De pagina die u zoekt bestaat niet.  ",
+    "rateLimitTitle": "429 - Te Veel Verzoeken - {{siteName}}  ",
+    "rateLimitDescription": "Gelieve langzamer te doen en het opnieuw te proberen."
   }
 }

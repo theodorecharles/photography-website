@@ -844,5 +844,25 @@
     "networkError": "Une erreur réseau est survenue",
     "scriptPathPlaceholder": "/analytics.js",
     "endpointPlaceholder": "https://api.openobserve.ai"
+  },
+  "seo": {
+    "homepageTitle": "{{siteName}} - Galleria  ",
+    "homepageDescription": "Portfolio de photographie par {{siteName}}. Découvrez des collections de photographies de paysages, de portraits et créatives.  ",
+    "albumTitle": "{{albumName}} - {{siteName}}  ",
+    "albumDescription": "Voir les photos de {{albumName}} du portfolio de photographie de {{siteName}}.  ",
+    "licenseTitle": "Licence - {{siteName}}  ",
+    "licenseDescription": "Informations sur la licence pour la photographie de {{siteName}}.  ",
+    "authErrorTitle": "Erreur d'authentification - {{siteName}}  ",
+    "authErrorDescription": "Erreur de connexion  ",
+    "inviteTitle": "Compléter l'enregistrement - {{siteName}}  ",
+    "inviteDescription": "Complétez votre enregistrement de compte",
+    "passwordResetTitle": "Réinitialiser le mot de passe - {{siteName}}  ",
+    "passwordResetDescription": "Réinitialisez le mot de passe de votre compte  ",
+    "passwordResetCompleteTitle": "Définir un nouveau mot de passe - {{siteName}}  ",
+    "passwordResetCompleteDescription": "Définissez un nouveau mot de passe pour votre compte  ",
+    "notFoundTitle": "404 - Page non trouvée - {{siteName}}  ",
+    "notFoundDescription": "La page que vous recherchez n'existe pas.  ",
+    "rateLimitTitle": "429 - Trop de demandes - {{siteName}}  ",
+    "rateLimitDescription": "Veuillez ralentir et réessayer."
   }
 }

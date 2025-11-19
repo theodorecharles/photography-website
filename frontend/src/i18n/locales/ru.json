@@ -844,5 +844,25 @@
     "changePassword": "Сменить пароль",
     "enableMfa": "Включить MFA",
     "disableMfa": "Отключить MFA"
+  },
+  "seo": {
+    "homepageTitle": "{{siteName}} - Галерея  ",
+    "homepageDescription": "Фотографическое портфолио от {{siteName}}. Посмотрите потрясающие коллекции пейзажной, портретной и креативной фотографии.  ",
+    "albumTitle": "{{albumName}} - {{siteName}}  ",
+    "albumDescription": "Посмотрите фотографии {{albumName}} из портфолио фотографии {{siteName}}.  ",
+    "licenseTitle": "Лицензия - {{siteName}}  ",
+    "licenseDescription": "Информация о лицензии для фотографии {{siteName}}.  ",
+    "authErrorTitle": "Ошибка аутентификации - {{siteName}}  ",
+    "authErrorDescription": "Ошибка входа  ",
+    "inviteTitle": "Завершите регистрацию - {{siteName}}  ",
+    "inviteDescription": "Завершите регистрацию вашей учетной записи",
+    "passwordResetTitle": "Сброс пароля - {{siteName}}  ",
+    "passwordResetDescription": "Сбросьте пароль вашей учетной записи  ",
+    "passwordResetCompleteTitle": "Установить новый пароль - {{siteName}}  ",
+    "passwordResetCompleteDescription": "Установите новый пароль для вашей учетной записи  ",
+    "notFoundTitle": "404 - Страница не найдена - {{siteName}}  ",
+    "notFoundDescription": "Страница, которую вы ищете, не существует.  ",
+    "rateLimitTitle": "429 - Слишком много запросов - {{siteName}}  ",
+    "rateLimitDescription": "Пожалуйста, замедлитесь и попробуйте снова."
   }
 }

@@ -844,5 +844,25 @@
     "networkError": "Ocurrió un error de red",
     "scriptPathPlaceholder": "/analytics.js",
     "endpointPlaceholder": "https://api.openobserve.ai"
+  },
+  "seo": {
+    "homepageTitle": "{{siteName}} - Galería  ",
+    "homepageDescription": "Portafolio de fotografía de {{siteName}}. Ve colecciones impresionantes de paisajes, retratos y fotografía creativa.  ",
+    "albumTitle": "{{albumName}} - {{siteName}}  ",
+    "albumDescription": "Ve las fotos de {{albumName}} del portafolio de fotografía de {{siteName}}.  ",
+    "licenseTitle": "Licencia - {{siteName}}  ",
+    "licenseDescription": "Información de licencia para la fotografía de {{siteName}}.  ",
+    "authErrorTitle": "Error de Autenticación - {{siteName}}  ",
+    "authErrorDescription": "Error de inicio de sesión  ",
+    "inviteTitle": "Completar Registro - {{siteName}}  ",
+    "inviteDescription": "Completa el registro de tu cuenta",
+    "passwordResetTitle": "Restablecer contraseña - {{siteName}}  ",
+    "passwordResetDescription": "Restablece la contraseña de tu cuenta  ",
+    "passwordResetCompleteTitle": "Establecer nueva contraseña - {{siteName}}  ",
+    "passwordResetCompleteDescription": "Establece una nueva contraseña para tu cuenta  ",
+    "notFoundTitle": "404 - Página no encontrada - {{siteName}}  ",
+    "notFoundDescription": "La página que buscas no existe.  ",
+    "rateLimitTitle": "429 - Demasiadas solicitudes - {{siteName}}  ",
+    "rateLimitDescription": "Por favor, reduce la velocidad y vuelve a intentarlo."
   }
 }

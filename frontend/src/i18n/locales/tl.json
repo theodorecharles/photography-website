@@ -844,5 +844,25 @@
     "changePassword": "Palitan ang Password",
     "enableMfa": "I-enable ang MFA",
     "disableMfa": "I-disable ang MFA"
+  },
+  "seo": {
+    "homepageTitle": "{{siteName}} - Galleria  ",
+    "homepageDescription": "Photography portfolio ni {{siteName}}. Tingnan ang mga kamangha-manghang koleksyon ng tanawin, portrait, at malikhaing potograpiya.  ",
+    "albumTitle": "{{albumName}} - {{siteName}}  ",
+    "albumDescription": "Tingnan ang mga larawan ng {{albumName}} mula sa photography portfolio ni {{siteName}}.  ",
+    "licenseTitle": "Lisensya - {{siteName}}  ",
+    "licenseDescription": "Impormasyon ng lisensya para sa photography ni {{siteName}}.  ",
+    "authErrorTitle": "Error sa Pagpapatotoo - {{siteName}}  ",
+    "authErrorDescription": "Error sa pag-login  ",
+    "inviteTitle": "Kumpletuhin ang Rehistrasyon - {{siteName}}  ",
+    "inviteDescription": "Kumpletuhin ang iyong rehistrasyon ng account",
+    "passwordResetTitle": "I-reset ang Password - {{siteName}}  ",
+    "passwordResetDescription": "I-reset ang password ng iyong account  ",
+    "passwordResetCompleteTitle": "Itakda ang Bagong Password - {{siteName}}  ",
+    "passwordResetCompleteDescription": "Itakda ang bagong password para sa iyong account  ",
+    "notFoundTitle": "404 - Hindi Natagpuan ang Pahina - {{siteName}}  ",
+    "notFoundDescription": "Walang umiiral na pahina na hinahanap mo.  ",
+    "rateLimitTitle": "429 - Sobrang Dami ng Kahilingan - {{siteName}}  ",
+    "rateLimitDescription": "Pakiusap, magpabagal at subukang muli."
   }
 }

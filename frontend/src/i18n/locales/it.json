@@ -844,5 +844,25 @@
     "changePassword": "Cambia password",
     "enableMfa": "Abilita MFA",
     "disableMfa": "Disabilita MFA"
+  },
+  "seo": {
+    "homepageTitle": "{{siteName}} - Galleria  ",
+    "homepageDescription": "Portfolio fotografico di {{siteName}}. Visualizza collezioni di fotografia paesaggistica, ritrattistica e creativa.  ",
+    "albumTitle": "{{albumName}} - {{siteName}}  ",
+    "albumDescription": "Visualizza le foto di {{albumName}} dal portfolio fotografico di {{siteName}}.  ",
+    "licenseTitle": "Licenza - {{siteName}}  ",
+    "licenseDescription": "Informazioni sulla licenza per la fotografia di {{siteName}}.  ",
+    "authErrorTitle": "Errore di autenticazione - {{siteName}}  ",
+    "authErrorDescription": "Errore di accesso  ",
+    "inviteTitle": "Completa registrazione - {{siteName}}  ",
+    "inviteDescription": "Completa la registrazione del tuo account",
+    "passwordResetTitle": "Reimposta la password - {{siteName}}  ",
+    "passwordResetDescription": "Reimposta la password del tuo account  ",
+    "passwordResetCompleteTitle": "Imposta una nuova password - {{siteName}}  ",
+    "passwordResetCompleteDescription": "Imposta una nuova password per il tuo account  ",
+    "notFoundTitle": "404 - Pagina non trovata - {{siteName}}  ",
+    "notFoundDescription": "La pagina che stai cercando non esiste.  ",
+    "rateLimitTitle": "429 - Troppe richieste - {{siteName}}  ",
+    "rateLimitDescription": "Per favore rallenta e riprova."
   }
 }

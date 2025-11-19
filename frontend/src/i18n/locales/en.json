@@ -46,6 +46,26 @@
     "rateLimitAction": "Give it a moment and try again.",
     "headBackHome": "Head Back Home"
   },
+  "seo": {
+    "homepageTitle": "{{siteName}} - Galleria",
+    "homepageDescription": "Photography portfolio by {{siteName}}. View stunning landscape, portrait, and creative photography collections.",
+    "albumTitle": "{{albumName}} - {{siteName}}",
+    "albumDescription": "View {{albumName}} photos from {{siteName}} photography portfolio.",
+    "licenseTitle": "License - {{siteName}}",
+    "licenseDescription": "License information for {{siteName}} photography.",
+    "authErrorTitle": "Authentication Error - {{siteName}}",
+    "authErrorDescription": "Login error",
+    "inviteTitle": "Complete Registration - {{siteName}}",
+    "inviteDescription": "Complete your account registration",
+    "passwordResetTitle": "Reset Password - {{siteName}}",
+    "passwordResetDescription": "Reset your account password",
+    "passwordResetCompleteTitle": "Set New Password - {{siteName}}",
+    "passwordResetCompleteDescription": "Set a new password for your account",
+    "notFoundTitle": "404 - Page Not Found - {{siteName}}",
+    "notFoundDescription": "The page you're looking for doesn't exist.",
+    "rateLimitTitle": "429 - Too Many Requests - {{siteName}}",
+    "rateLimitDescription": "Please slow down and try again."
+  },
   "header": {
     "albums": "Albums",
     "links": "Links",

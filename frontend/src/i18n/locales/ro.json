@@ -844,5 +844,25 @@
     "changePassword": "Schimbă parola",
     "enableMfa": "Activează MFA",
     "disableMfa": "Dezactivează MFA"
+  },
+  "seo": {
+    "homepageTitle": "{{siteName}} - Galleria  ",
+    "homepageDescription": "Portofoliu de fotografie de la {{siteName}}. Vizualizați colecții uimitoare de peisaje, portrete și fotografie creativă.  ",
+    "albumTitle": "{{albumName}} - {{siteName}}  ",
+    "albumDescription": "Vizualizați fotografiile din {{albumName}} din portofoliul de fotografie {{siteName}}.  ",
+    "licenseTitle": "Licență - {{siteName}}  ",
+    "licenseDescription": "Informații despre licență pentru fotografia {{siteName}}.  ",
+    "authErrorTitle": "Eroare de autentificare - {{siteName}}  ",
+    "authErrorDescription": "Eroare la autentificare  ",
+    "inviteTitle": "Finalizați înregistrarea - {{siteName}}  ",
+    "inviteDescription": "Finalizați înregistrarea contului dumneavoastră",
+    "passwordResetTitle": "Resetare parolă - {{siteName}}  ",
+    "passwordResetDescription": "Resetează parola contului tău  ",
+    "passwordResetCompleteTitle": "Setează o nouă parolă - {{siteName}}  ",
+    "passwordResetCompleteDescription": "Setează o nouă parolă pentru contul tău  ",
+    "notFoundTitle": "404 - Pagina nu a fost găsită - {{siteName}}  ",
+    "notFoundDescription": "Pagina pe care o cauți nu există.  ",
+    "rateLimitTitle": "429 - Prea multe cereri - {{siteName}}  ",
+    "rateLimitDescription": "Te rugăm să încetinești și să încerci din nou."
   }
 }

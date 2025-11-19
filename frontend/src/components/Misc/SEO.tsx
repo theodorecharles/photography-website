@@ -3,9 +3,9 @@
  * Updates document title and meta tags for each page
  */
 
-import { useEffect } from 'react';
-import { SITE_URL } from '../../config';
-import { updateMetaTag, updateCanonicalLink } from '../../utils/seoHelpers';
+import { useEffect } from "react";
+import { SITE_URL } from "../../config";
+import { updateMetaTag, updateCanonicalLink } from "../../utils/seoHelpers";
 
 interface SEOProps {
   title?: string;
@@ -15,32 +15,31 @@ interface SEOProps {
   type?: string;
 }
 
-export function SEO({ 
+export function SEO({
   title = "Galleria - Photography Portfolio",
-  description = "Professional photography portfolio. View stunning landscape, portrait, and creative photography collections.",
+  description = "Photography portfolio. View stunning landscape, portrait, and creative photography collections.",
   image = `${SITE_URL}/photos/avatar.png`,
   url = SITE_URL,
-  type = "website"
+  type = "website",
 }: SEOProps) {
   useEffect(() => {
     // Update document title
     document.title = title;
-    
+
     // Update meta tags
-    updateMetaTag('name', 'description', description);
-    updateMetaTag('property', 'og:title', title);
-    updateMetaTag('property', 'og:description', description);
-    updateMetaTag('property', 'og:image', image);
-    updateMetaTag('property', 'og:url', url);
-    updateMetaTag('property', 'og:type', type);
-    updateMetaTag('property', 'twitter:title', title);
-    updateMetaTag('property', 'twitter:description', description);
-    updateMetaTag('property', 'twitter:image', image);
-    
+    updateMetaTag("name", "description", description);
+    updateMetaTag("property", "og:title", title);
+    updateMetaTag("property", "og:description", description);
+    updateMetaTag("property", "og:image", image);
+    updateMetaTag("property", "og:url", url);
+    updateMetaTag("property", "og:type", type);
+    updateMetaTag("property", "twitter:title", title);
+    updateMetaTag("property", "twitter:description", description);
+    updateMetaTag("property", "twitter:image", image);
+
     // Update canonical link
     updateCanonicalLink(url);
   }, [title, description, image, url, type]);
-  
+
   return null;
 }
-

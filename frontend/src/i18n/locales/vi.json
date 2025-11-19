@@ -844,5 +844,25 @@
     "changePassword": "Đổi mật khẩu",
     "enableMfa": "Bật MFA",
     "disableMfa": "Tắt MFA"
+  },
+  "seo": {
+    "homepageTitle": "{{siteName}} - Galleria  ",
+    "homepageDescription": "Danh mục nhiếp ảnh của {{siteName}}. Xem các bộ sưu tập nhiếp ảnh phong cảnh, chân dung và sáng tạo tuyệt đẹp.  ",
+    "albumTitle": "{{albumName}} - {{siteName}}  ",
+    "albumDescription": "Xem ảnh {{albumName}} từ danh mục nhiếp ảnh của {{siteName}}.  ",
+    "licenseTitle": "Giấy phép - {{siteName}}  ",
+    "licenseDescription": "Thông tin giấy phép cho nhiếp ảnh của {{siteName}}.  ",
+    "authErrorTitle": "Lỗi xác thực - {{siteName}}  ",
+    "authErrorDescription": "Lỗi đăng nhập  ",
+    "inviteTitle": "Hoàn tất Đăng ký - {{siteName}}  ",
+    "inviteDescription": "Hoàn tất đăng ký tài khoản của bạn",
+    "passwordResetTitle": "Đặt lại Mật khẩu - {{siteName}}  ",
+    "passwordResetDescription": "Đặt lại mật khẩu tài khoản của bạn  ",
+    "passwordResetCompleteTitle": "Đặt Mật khẩu Mới - {{siteName}}  ",
+    "passwordResetCompleteDescription": "Đặt mật khẩu mới cho tài khoản của bạn  ",
+    "notFoundTitle": "404 - Trang Không Tìm Thấy - {{siteName}}  ",
+    "notFoundDescription": "Trang bạn đang tìm kiếm không tồn tại.  ",
+    "rateLimitTitle": "429 - Quá Nhiều Yêu Cầu - {{siteName}}  ",
+    "rateLimitDescription": "Vui lòng chậm lại và thử lại."
   }
 }

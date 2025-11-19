@@ -844,5 +844,25 @@
     "changePassword": "Şifre Değiştir",
     "enableMfa": "MFA'yı Etkinleştir",
     "disableMfa": "MFA'yı Devre Dışı Bırak"
+  },
+  "seo": {
+    "homepageTitle": "{{siteName}} - Galeri  ",
+    "homepageDescription": "{{siteName}} tarafından fotoğraf portföyü. Muhteşem manzara, portre ve yaratıcı fotoğraf koleksiyonlarını görüntüleyin.  ",
+    "albumTitle": "{{albumName}} - {{siteName}}  ",
+    "albumDescription": "{{siteName}} fotoğraf portföyünden {{albumName}} fotoğraflarını görüntüleyin.  ",
+    "licenseTitle": "Lisans - {{siteName}}  ",
+    "licenseDescription": "{{siteName}} fotoğrafı için lisans bilgileri.  ",
+    "authErrorTitle": "Kimlik Doğrulama Hatası - {{siteName}}  ",
+    "authErrorDescription": "Giriş hatası  ",
+    "inviteTitle": "Kaydı Tamamla - {{siteName}}  ",
+    "inviteDescription": "Hesap kaydınızı tamamlayın",
+    "passwordResetTitle": "Şifreyi Sıfırla - {{siteName}}  ",
+    "passwordResetDescription": "Hesap şifrenizi sıfırlayın  ",
+    "passwordResetCompleteTitle": "Yeni Şifre Belirle - {{siteName}}  ",
+    "passwordResetCompleteDescription": "Hesabınız için yeni bir şifre belirleyin  ",
+    "notFoundTitle": "404 - Sayfa Bulunamadı - {{siteName}}  ",
+    "notFoundDescription": "Aradığınız sayfa mevcut değil.  ",
+    "rateLimitTitle": "429 - Çok Fazla İstek - {{siteName}}  ",
+    "rateLimitDescription": "Lütfen yavaşlayın ve tekrar deneyin."
   }
 }

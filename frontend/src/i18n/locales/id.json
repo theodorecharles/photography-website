@@ -844,5 +844,25 @@
     "changePassword": "Ubah Kata Sandi",
     "enableMfa": "Aktifkan MFA",
     "disableMfa": "Nonaktifkan MFA"
+  },
+  "seo": {
+    "homepageTitle": "{{siteName}} - Galleria  ",
+    "homepageDescription": "Portofolio fotografi oleh {{siteName}}. Lihat koleksi fotografi lanskap, potret, dan kreatif yang menakjubkan.  ",
+    "albumTitle": "{{albumName}} - {{siteName}}  ",
+    "albumDescription": "Lihat foto {{albumName}} dari portofolio fotografi {{siteName}}.  ",
+    "licenseTitle": "Lisensi - {{siteName}}  ",
+    "licenseDescription": "Informasi lisensi untuk fotografi {{siteName}}.  ",
+    "authErrorTitle": "Kesalahan Autentikasi - {{siteName}}  ",
+    "authErrorDescription": "Kesalahan login  ",
+    "inviteTitle": "Selesaikan Pendaftaran - {{siteName}}  ",
+    "inviteDescription": "Selesaikan pendaftaran akun Anda",
+    "passwordResetTitle": "Atur Ulang Kata Sandi - {{siteName}}  ",
+    "passwordResetDescription": "Atur ulang kata sandi akun Anda  ",
+    "passwordResetCompleteTitle": "Atur Kata Sandi Baru - {{siteName}}  ",
+    "passwordResetCompleteDescription": "Atur kata sandi baru untuk akun Anda  ",
+    "notFoundTitle": "404 - Halaman Tidak Ditemukan - {{siteName}}  ",
+    "notFoundDescription": "Halaman yang Anda cari tidak ada.  ",
+    "rateLimitTitle": "429 - Terlalu Banyak Permintaan - {{siteName}}  ",
+    "rateLimitDescription": "Silakan perlambat dan coba lagi."
   }
 }

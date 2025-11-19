@@ -844,5 +844,25 @@
     "changePassword": "Endre passord",
     "enableMfa": "Aktiver MFA",
     "disableMfa": "Deaktiver MFA"
+  },
+  "seo": {
+    "homepageTitle": "{{siteName}} - Galleria  ",
+    "homepageDescription": "Fotografportefølje av {{siteName}}. Se fantastiske samlinger av landskaps-, portrett- og kreativ fotografering.  ",
+    "albumTitle": "{{albumName}} - {{siteName}}  ",
+    "albumDescription": "Se {{albumName}} bilder fra {{siteName}} fotografportefølje.  ",
+    "licenseTitle": "Lisens - {{siteName}}  ",
+    "licenseDescription": "Lisensinformasjon for {{siteName}} fotografering.  ",
+    "authErrorTitle": "Autentiseringsfeil - {{siteName}}  ",
+    "authErrorDescription": "Innloggingsfeil  ",
+    "inviteTitle": "Fullfør registrering - {{siteName}}  ",
+    "inviteDescription": "Fullfør registreringen av kontoen din",
+    "passwordResetTitle": "Tilbakestill passord - {{siteName}}  ",
+    "passwordResetDescription": "Tilbakestill passordet ditt  ",
+    "passwordResetCompleteTitle": "Sett nytt passord - {{siteName}}  ",
+    "passwordResetCompleteDescription": "Sett et nytt passord for kontoen din  ",
+    "notFoundTitle": "404 - Siden ble ikke funnet - {{siteName}}  ",
+    "notFoundDescription": "Siden du leter etter eksisterer ikke.  ",
+    "rateLimitTitle": "429 - For mange forespørseler - {{siteName}}  ",
+    "rateLimitDescription": "Vennligst senk hastigheten og prøv igjen."
   }
 }
