@@ -101,6 +101,8 @@
 
 .photos-grid {
   padding: 1.5rem;
+  /* Add extra bottom padding for mobile Safari to prevent buttons from being hidden */
+  padding-bottom: calc(1.5rem + env(safe-area-inset-bottom, 0px) + 80px);
 }
 
 /* ============================================
@@ -496,6 +498,15 @@ label.photos-btn {
   .photos-modal-title {
     font-size: 1.25rem;
   }
+
+  /* Add safe area padding for mobile devices */
+  .photos-grid {
+    padding-bottom: calc(1.5rem + env(safe-area-inset-bottom, 0px) + 100px);
+  }
+
+  .photos-reorder-bar {
+    padding-bottom: calc(0.75rem + env(safe-area-inset-bottom, 0px));
+  }
 }
 
 /* Hide photo count on very narrow screens */
@@ -589,6 +600,8 @@ label.photos-btn {
     flex-wrap: wrap;
     gap: 0.75rem;
     align-items: stretch;
+    /* Add bottom padding for Safari mobile to prevent buttons from being hidden by browser UI */
+    padding-bottom: calc(0.75rem + env(safe-area-inset-bottom, 0px));
   }
   
   /* Show text for reorder bar buttons (shuffle, save, cancel) */
