@@ -206,13 +206,12 @@ router.post(
 
       info(`[Test Email] Sending test email to ${email}...`);
 
-      // Get user's language from Accept-Language header (e.g., 'en', 'ja', 'es')
-      const acceptLanguage = req.headers['accept-language'];
-      const userLanguage = acceptLanguage?.split(',')[0]?.split('-')[0] || 'en';
-      info(`[Test Email] Accept-Language header: ${acceptLanguage}`);
-      info(`[Test Email] Parsed language: ${userLanguage}`);
+      // Get site language from config (e.g., 'en', 'ja', 'es')
+      const config = await import('../config.js').then(m => m.default);
+      const siteLanguage = (config as any).branding?.language || 'en';
+      info(`[Test Email] Using site language: ${siteLanguage}`);
 
-      const success = await sendTestEmail(email, userLanguage);
+      const success = await sendTestEmail(email, siteLanguage);
 
       if (success) {
         res.json({

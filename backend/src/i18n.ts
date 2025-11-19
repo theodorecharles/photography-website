@@ -37,7 +37,14 @@ const initPromise = i18next
 // Wait for initialization and log result
 initPromise
   .then(() => {
-    info('[i18n] Initialized successfully with 18 languages');
+    // Log what languages are actually available after initialization
+    const availableLanguages = i18next.languages || [];
+    info(`[i18n] Initialized successfully with ${availableLanguages.length} languages`);
+    info(`[i18n] Available languages: ${availableLanguages.join(', ')}`);
+    
+    // Verify translation files are loaded
+    const testTranslation = i18next.t('email.test.subject', { lng: 'ja', siteName: 'Test' });
+    info(`[i18n] Test Japanese translation: ${testTranslation}`);
   })
   .catch((err) => {
     logError('[i18n] Failed to initialize:', err);
