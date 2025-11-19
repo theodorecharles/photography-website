@@ -206,7 +206,10 @@ router.post(
 
       info(`[Test Email] Sending test email to ${email}...`);
 
-      const success = await sendTestEmail(email);
+      // Get user's language from Accept-Language header (e.g., 'en', 'ja', 'es')
+      const userLanguage = req.headers['accept-language']?.split(',')[0]?.split('-')[0] || 'en';
+
+      const success = await sendTestEmail(email, userLanguage);
 
       if (success) {
         res.json({

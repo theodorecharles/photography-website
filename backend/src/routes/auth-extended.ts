@@ -242,8 +242,11 @@ router.post('/invite', requireAdmin, async (req: Request, res: Response) => {
     let emailSent = false;
     
     if (emailEnabled) {
+      // Get user's language from Accept-Language header (e.g., 'en', 'ja', 'es')
+      const userLanguage = req.headers['accept-language']?.split(',')[0]?.split('-')[0] || 'en';
+      
       // Try to send invitation email FIRST
-      emailSent = await sendInvitationEmail(email, inviteToken, inviterName);
+      emailSent = await sendInvitationEmail(email, inviteToken, inviterName, userLanguage);
 
       if (!emailSent) {
         // If email fails, don't create the user
@@ -316,8 +319,11 @@ router.post('/invite/resend/:userId', requireAdmin, async (req: Request, res: Re
     let emailSent = false;
     
     if (emailEnabled) {
+      // Get user's language from Accept-Language header (e.g., 'en', 'ja', 'es')
+      const userLanguage = req.headers['accept-language']?.split(',')[0]?.split('-')[0] || 'en';
+      
       // Try to send invitation email FIRST
-      emailSent = await sendInvitationEmail(user.email, inviteToken, inviterName);
+      emailSent = await sendInvitationEmail(user.email, inviteToken, inviterName, userLanguage);
 
       if (!emailSent) {
         // If email fails, don't update the token
@@ -484,8 +490,11 @@ router.post('/password-reset/request', async (req: Request, res: Response) => {
     const expiresAt = new Date();
     expiresAt.setHours(expiresAt.getHours() + 1);
 
+    // Get user's language from Accept-Language header (e.g., 'en', 'ja', 'es')
+    const userLanguage = req.headers['accept-language']?.split(',')[0]?.split('-')[0] || 'en';
+
     // Try to send password reset email FIRST
-    const emailSent = await sendPasswordResetEmail(user.email, resetToken, user.name);
+    const emailSent = await sendPasswordResetEmail(user.email, resetToken, user.name, userLanguage);
 
     if (!emailSent) {
       error('[Password Reset] Failed to send email');
@@ -633,13 +642,16 @@ router.post('/users/:userId/send-password-reset', requireAdmin, async (req: Requ
     const expiresAt = new Date();
     expiresAt.setHours(expiresAt.getHours() + 1);
 
+    // Get admin's language from Accept-Language header (e.g., 'en', 'ja', 'es')
+    const userLanguage = req.headers['accept-language']?.split(',')[0]?.split('-')[0] || 'en';
+
     // Try to send password reset email FIRST
-    const emailSent = await sendPasswordResetEmail(user.email, resetToken, user.name);
+    const emailSent = await sendPasswordResetEmail(user.email, resetToken, user.name, userLanguage);
 
     if (!emailSent) {
       error('[Admin] Failed to send password reset email');
       return res.status(500).json({ 
-        error: 'Failed to send password reset email. Please check your SMTP configuration.' 
+        error: 'Failed to send password reset email. Please check your SMTP configuration.'
       });
     }
 
