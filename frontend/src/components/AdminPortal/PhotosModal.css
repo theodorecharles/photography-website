@@ -498,6 +498,16 @@ label.photos-btn {
   .photos-modal-title {
     font-size: 1.25rem;
   }
+
+  /* Add bottom padding to modal content to ensure reorder bar is visible above Safari UI */
+  .photos-modal-content {
+    padding-bottom: 120px; /* Space for reorder bar + Safari toolbar */
+  }
+
+  /* Position reorder bar with extra safe area for Safari */
+  .photos-reorder-bar {
+    padding-bottom: max(0.75rem, calc(0.75rem + env(safe-area-inset-bottom, 0px) + 20px));
+  }
 }
 
 /* Hide photo count on very narrow screens */
