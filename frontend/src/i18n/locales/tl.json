@@ -1001,5 +1001,44 @@
     "errorPasswordTooShort": "Dapat ay hindi bababa sa 8 karakter ang password  ",
     "errorRequiredField": "Kailangan ang larangang ito",
     "setupCompleteWaitingRestart": "Kumpleto na ang setup! Naghihintay para sa pag-restart ng server..."
+  },
+  "email": {
+    "invitation": {
+      "subject": "Naimbitahan ka sa {{siteName}}  ",
+      "title": "Sumali sa Galleria ng {{siteName}}  ",
+      "greeting": "Kamusta,  ",
+      "body": "Naimbitahan ka ni {{inviterName}} na sumali sa <strong>Galleria ng {{siteName}}</strong>.  ",
+      "instructions": "Upang tanggapin ang paanyayang ito at i-set up ang iyong account, i-click ang button sa ibaba:  ",
+      "button": "Tanggapin ang Paanyaya  ",
+      "orCopyLink": "O kopyahin at i-paste ang link na ito sa iyong browser:  ",
+      "expiry": "Magtatapos ang paanyayang ito sa loob ng 7 araw.  ",
+      "footerIgnore": "Kung hindi mo inaasahan ang paanyayang ito, maaari mo itong ligtas na balewalain.  ",
+      "footerAutomatic": "Ito ay isang awtomatikong mensahe, mangyaring huwag tumugon sa email na ito."
+    },
+    "passwordReset": {
+      "subject": "Hiling sa Pag-reset ng Password - {{siteName}}  ",
+      "title": "Hiling sa Pag-reset ng Password  ",
+      "greeting": "Kamusta {{userName}},  ",
+      "greetingFallback": "Kamusta,  ",
+      "body": "Nakatanggap kami ng hiling upang i-reset ang iyong password para sa <strong>{{siteName}}'s Galleria</strong>.  ",
+      "instructions": "Upang i-reset ang iyong password, i-click ang button sa ibaba:  ",
+      "button": "I-reset ang Password  ",
+      "orCopyLink": "O kopyahin at i-paste ang link na ito sa iyong browser:  ",
+      "warningTitle": "⚠️ Mahalaga:  ",
+      "warningExpiry": "Mawawalan ng bisa ang link na ito sa loob ng 1 oras",
+      "warningIgnore": "Kung hindi mo ito hiniling, mangyaring balewalain ang email na ito  ",
+      "warningNoChange": "Ang iyong password ay hindi magbabago hanggang lumikha ka ng bago  ",
+      "footerAutomatic": "Ito ay isang automated na mensahe, mangyaring huwag tumugon sa email na ito.  ",
+      "footerContact": "Kung kailangan mo ng tulong, mangyaring makipag-ugnayan sa iyong administrator.  "
+    },
+    "test": {
+      "subject": "Test Email mula sa {{siteName}}  ",
+      "title": "Pagsubok sa Konpigurasyon ng Email  ",
+      "success": "✓  ",
+      "body1": "Binabati kita! Ang iyong SMTP na konpigurasyon ay gumagana nang tama.  ",
+      "body2": "Ang test email na ito ay ipinadala mula sa <strong>{{siteName}}</strong> upang tiyakin na ang iyong serbisyo sa email ay maayos na nakakonpigur at makapaghatid ng mga mensahe.  ",
+      "footerTimestamp": "Ito ay isang test na mensahe na ipinadala sa {{timestamp}}.",
+      "footerIgnore": "Maaari mong ligtas na balewalain o tanggalin ang email na ito."
+    }
   }
 }

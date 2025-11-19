@@ -1001,5 +1001,44 @@
     "errorPasswordTooShort": "Parola trebuie să aibă cel puțin 8 caractere  ",
     "errorRequiredField": "Acest câmp este obligatoriu",
     "setupCompleteWaitingRestart": "Configurare completă! Așteptând repornirea serverului..."
+  },
+  "email": {
+    "invitation": {
+      "subject": "Ai fost invitat la {{siteName}}  ",
+      "title": "Alătură-te Galleria {{siteName}}  ",
+      "greeting": "Bună,  ",
+      "body": "{{inviterName}} te-a invitat să te alături <strong>Galleria {{siteName}}</strong>.  ",
+      "instructions": "Pentru a accepta această invitație și a-ți configura contul, dă clic pe butonul de mai jos:  ",
+      "button": "Acceptă invitația  ",
+      "orCopyLink": "Sau copiază și lipește acest link în browserul tău:  ",
+      "expiry": "Această invitație va expira în 7 zile.  ",
+      "footerIgnore": "Dacă nu te așteptai la această invitație, o poți ignora în siguranță.  ",
+      "footerAutomatic": "Acesta este un mesaj automat, te rugăm să nu răspunzi la acest email."
+    },
+    "passwordReset": {
+      "subject": "Cerere de resetare a parolei - {{siteName}}  ",
+      "title": "Cerere de resetare a parolei  ",
+      "greeting": "Bună {{userName}},  ",
+      "greetingFallback": "Salut,  ",
+      "body": "Am primit o cerere pentru a-ți reseta parola pentru <strong>Galleria {{siteName}}</strong>.  ",
+      "instructions": "Pentru a-ți reseta parola, fă clic pe butonul de mai jos:  ",
+      "button": "Resetează parola  ",
+      "orCopyLink": "Sau copiază și lipește acest link în browserul tău:  ",
+      "warningTitle": "⚠️ Important:  ",
+      "warningExpiry": "Acest link va expira în 1 oră",
+      "warningIgnore": "Dacă nu ați solicitat acest lucru, vă rugăm să ignorați acest email  ",
+      "warningNoChange": "Parola dumneavoastră nu se va schimba până când nu creați una nouă  ",
+      "footerAutomatic": "Acesta este un mesaj automat, vă rugăm să nu răspundeți la acest email.  ",
+      "footerContact": "Dacă aveți nevoie de asistență, vă rugăm să contactați administratorul dumneavoastră.  "
+    },
+    "test": {
+      "subject": "Email de test de la {{siteName}}  ",
+      "title": "Test de configurare a emailului  ",
+      "success": "✓  ",
+      "body1": "Felicitări! Configurarea dumneavoastră SMTP funcționează corect.  ",
+      "body2": "Acest email de test a fost trimis de la <strong>{{siteName}}</strong> pentru a verifica dacă serviciul dumneavoastră de email este configurat corect și poate livra mesaje.  ",
+      "footerTimestamp": "Acesta este un mesaj de test trimis la {{timestamp}}.",
+      "footerIgnore": "Puteți ignora sau șterge în siguranță acest email."
+    }
   }
 }

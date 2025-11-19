@@ -1001,5 +1001,44 @@
     "errorPasswordTooShort": "Şifre en az 8 karakter olmalıdır  ",
     "errorRequiredField": "Bu alan gereklidir",
     "setupCompleteWaitingRestart": "Kurulum tamamlandı! Sunucunun yeniden başlamasını bekliyoruz..."
+  },
+  "email": {
+    "invitation": {
+      "subject": "{{siteName}}'ye davet edildiniz  ",
+      "title": "{{siteName}}'in Galleria'sına katılın  ",
+      "greeting": "Merhaba,  ",
+      "body": "{{inviterName}} sizi <strong>{{siteName}}'in Galleria'sına</strong> katılmaya davet etti.  ",
+      "instructions": "Bu daveti kabul etmek ve hesabınızı oluşturmak için aşağıdaki düğmeye tıklayın:  ",
+      "button": "Davetiyeyi Kabul Et  ",
+      "orCopyLink": "Ya da bu bağlantıyı tarayıcınıza kopyalayıp yapıştırın:  ",
+      "expiry": "Bu davetiye 7 gün içinde süresi dolacaktır.  ",
+      "footerIgnore": "Bu davetiyeyi beklemiyorsanız, bu e-postayı güvenle göz ardı edebilirsiniz.  ",
+      "footerAutomatic": "Bu otomatik bir mesajdır, lütfen bu e-postaya yanıt vermeyin."
+    },
+    "passwordReset": {
+      "subject": "Şifre Sıfırlama Talebi - {{siteName}}  ",
+      "title": "Şifre Sıfırlama Talebi  ",
+      "greeting": "Merhaba {{userName}},  ",
+      "greetingFallback": "Merhaba,  ",
+      "body": "<strong>{{siteName}}'s Galleria</strong> için şifrenizi sıfırlama talebi aldık.  ",
+      "instructions": "Şifrenizi sıfırlamak için aşağıdaki butona tıklayın:  ",
+      "button": "Şifreyi Sıfırla  ",
+      "orCopyLink": "Ya da bu bağlantıyı tarayıcınıza kopyalayıp yapıştırın:  ",
+      "warningTitle": "⚠️ Önemli:  ",
+      "warningExpiry": "Bu bağlantı 1 saat içinde süresi dolacaktır.",
+      "warningIgnore": "Eğer bunu talep etmediyseniz, lütfen bu e-postayı dikkate almayın  ",
+      "warningNoChange": "Şifreniz yeni bir tane oluşturana kadar değişmeyecek  ",
+      "footerAutomatic": "Bu otomatik bir mesajdır, lütfen bu e-postaya yanıt vermeyin.  ",
+      "footerContact": "Yardım gerekiyorsa, lütfen yöneticinizle iletişime geçin.  "
+    },
+    "test": {
+      "subject": "{{siteName}}'den Test E-postası  ",
+      "title": "E-posta Yapılandırma Testi  ",
+      "success": "✓  ",
+      "body1": "Tebrikler! SMTP yapılandırmanız doğru çalışıyor.  ",
+      "body2": "Bu test e-postası, e-posta hizmetinizin doğru yapılandırıldığını ve mesajları iletebildiğini doğrulamak için <strong>{{siteName}}</strong>'den gönderilmiştir.  ",
+      "footerTimestamp": "Bu, {{timestamp}}'de gönderilen bir test mesajıdır.",
+      "footerIgnore": "Bu e-postayı güvenle göz ardı edebilir veya silebilirsiniz."
+    }
   }
 }

@@ -37,6 +37,8 @@
     "express-rate-limit": "^8.1.0",
     "express-session": "^1.18.2",
     "helmet": "^8.1.0",
+    "i18next": "^25.6.3",
+    "i18next-fs-backend": "^2.6.1",
     "multer": "^2.0.2",
     "nodemailer": "^7.0.10",
     "openai": "^4.78.0",

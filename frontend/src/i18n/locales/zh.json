@@ -1001,5 +1001,44 @@
     "errorPasswordTooShort": "密码必须至少为8个字符  ",
     "errorRequiredField": "此字段为必填项",
     "setupCompleteWaitingRestart": "设置完成！等待服务器重启…"
+  },
+  "email": {
+    "invitation": {
+      "subject": "您已被邀请加入{{siteName}}  ",
+      "title": "加入{{siteName}}的画廊  ",
+      "greeting": "您好，  ",
+      "body": "{{inviterName}}邀请您加入<strong>{{siteName}}的画廊</strong>。  ",
+      "instructions": "要接受此邀请并设置您的帐户，请点击下面的按钮：  ",
+      "button": "接受邀请  ",
+      "orCopyLink": "或将此链接复制并粘贴到您的浏览器中：  ",
+      "expiry": "此邀请将在7天内过期。  ",
+      "footerIgnore": "如果您没有预期此邀请，可以安全地忽略此电子邮件。  ",
+      "footerAutomatic": "这是自动生成的消息，请勿回复此电子邮件。"
+    },
+    "passwordReset": {
+      "subject": "密码重置请求 - {{siteName}}  ",
+      "title": "密码重置请求  ",
+      "greeting": "嗨 {{userName}}，  ",
+      "greetingFallback": "你好，  ",
+      "body": "我们收到了重置您在 <strong>{{siteName}} 的 Galleria</strong> 的密码的请求。  ",
+      "instructions": "要重置您的密码，请点击下面的按钮：  ",
+      "button": "重置密码  ",
+      "orCopyLink": "或者将此链接复制并粘贴到您的浏览器中：  ",
+      "warningTitle": "⚠️ 重要：  ",
+      "warningExpiry": "此链接将在 1 小时内过期",
+      "warningIgnore": "如果您没有请求此操作，请忽略此电子邮件  ",
+      "warningNoChange": "您的密码在您创建新密码之前不会更改  ",
+      "footerAutomatic": "这是自动生成的消息，请不要回复此电子邮件。  ",
+      "footerContact": "如果您需要帮助，请联系您的管理员。  "
+    },
+    "test": {
+      "subject": "来自 {{siteName}} 的测试电子邮件  ",
+      "title": "电子邮件配置测试  ",
+      "success": "✓  ",
+      "body1": "恭喜！您的 SMTP 配置正常工作。  ",
+      "body2": "此测试电子邮件是从 <strong>{{siteName}}</strong> 发送的，以验证您的电子邮件服务已正确配置并能够发送消息。  ",
+      "footerTimestamp": "这是在 {{timestamp}} 发送的测试消息。",
+      "footerIgnore": "您可以安全地忽略或删除此电子邮件。"
+    }
   }
 }

@@ -1001,5 +1001,44 @@
     "errorPasswordTooShort": "Lösenordet måste vara minst 8 tecken  ",
     "errorRequiredField": "Detta fält är obligatoriskt",
     "setupCompleteWaitingRestart": "Installation klar! Väntar på att servern ska starta om..."
+  },
+  "email": {
+    "invitation": {
+      "subject": "Du har blivit inbjuden till {{siteName}}  ",
+      "title": "Gå med i <strong>{{siteName}}'s Galleria</strong>  ",
+      "greeting": "Hej,  ",
+      "body": "{{inviterName}} har bjudit in dig att gå med i <strong>{{siteName}}'s Galleria</strong>.  ",
+      "instructions": "För att acceptera denna inbjudan och skapa ditt konto, klicka på knappen nedan:  ",
+      "button": "Acceptera inbjudan  ",
+      "orCopyLink": "Eller kopiera och klistra in denna länk i din webbläsare:  ",
+      "expiry": "Denna inbjudan kommer att gå ut om 7 dagar.  ",
+      "footerIgnore": "Om du inte förväntade dig denna inbjudan kan du säkert ignorera detta e-postmeddelande.  ",
+      "footerAutomatic": "Detta är ett automatiskt meddelande, vänligen svara inte på detta e-postmeddelande."
+    },
+    "passwordReset": {
+      "subject": "Återställningsbegäran av lösenord - {{siteName}}  ",
+      "title": "Återställningsbegäran av lösenord  ",
+      "greeting": "Hej {{userName}},  ",
+      "greetingFallback": "Hej där,  ",
+      "body": "Vi har mottagit en begäran om att återställa ditt lösenord för <strong>{{siteName}}'s Galleria</strong>.  ",
+      "instructions": "För att återställa ditt lösenord, klicka på knappen nedan:  ",
+      "button": "Återställ lösenord  ",
+      "orCopyLink": "Eller kopiera och klistra in denna länk i din webbläsare:  ",
+      "warningTitle": "⚠️ Viktigt:  ",
+      "warningExpiry": "Denna länk kommer att gå ut om 1 timme",
+      "warningIgnore": "Om du inte begärde detta, vänligen ignorera detta e-postmeddelande  ",
+      "warningNoChange": "Ditt lösenord kommer inte att ändras förrän du skapar ett nytt  ",
+      "footerAutomatic": "Detta är ett automatiserat meddelande, vänligen svara inte på detta e-postmeddelande.  ",
+      "footerContact": "Om du behöver hjälp, vänligen kontakta din administratör.  "
+    },
+    "test": {
+      "subject": "Test-e-post från {{siteName}}  ",
+      "title": "E-postkonfigurationstest  ",
+      "success": "✓  ",
+      "body1": "Grattis! Din SMTP-konfiguration fungerar korrekt.  ",
+      "body2": "Detta test-e-postmeddelande skickades från <strong>{{siteName}}</strong> för att verifiera att din e-posttjänst är korrekt konfigurerad och kan leverera meddelanden.  ",
+      "footerTimestamp": "Detta är ett testmeddelande skickat vid {{timestamp}}.",
+      "footerIgnore": "Du kan säkert ignorera eller radera detta e-postmeddelande."
+    }
   }
 }

@@ -6,6 +6,7 @@
 import nodemailer from "nodemailer";
 import { getCurrentConfig } from "./config.js";
 import { error, info } from "./utils/logger.js";
+import i18next from "./i18n.js";
 
 export interface EmailConfig {
   enabled: boolean;
@@ -85,7 +86,8 @@ function createTransporter() {
 export async function sendInvitationEmail(
   toEmail: string,
   inviteToken: string,
-  inviterName: string
+  inviterName: string,
+  language: string = 'en'
 ): Promise<boolean> {
   const transporter = createTransporter();
   const emailConfig = getEmailConfig();
@@ -113,17 +115,20 @@ export async function sendInvitationEmail(
   const avatarPath = config.branding?.avatarPath || "/photos/avatar.png";
   const avatarUrl = `${frontendUrl}${avatarPath}`;
 
+  // Get translations for the specified language
+  const t = i18next.getFixedT(language);
+
   const mailOptions = {
     from: `"${emailConfig.from.name}" <${emailConfig.from.address}>`,
     to: toEmail,
-    subject: `You've been invited to ${siteName}`,
+    subject: t('email.invitation.subject', { siteName }),
     html: `
       <!DOCTYPE html>
       <html>
       <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Invitation to ${siteName}</title>
+        <title>${t('email.invitation.title', { siteName })}</title>
         <style>
           body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
@@ -176,33 +181,33 @@ export async function sendInvitationEmail(
       <body>
         <div class="container">
           <img src="${avatarUrl}" alt="${siteName}" class="avatar" />
-          <h1>Join ${siteName}'s Galleria</h1>
-          <p>Hi there,</p>
-          <p>${inviterName} has invited you to join <strong>${siteName}'s Galleria</strong>.</p>
-          <p>To accept this invitation and set up your account, click the button below:</p>
-          <a href="${inviteUrl}" class="button">Accept Invitation</a>
-          <p>Or copy and paste this link into your browser:</p>
+          <h1>${t('email.invitation.title', { siteName })}</h1>
+          <p>${t('email.invitation.greeting')}</p>
+          <p>${t('email.invitation.body', { inviterName, siteName })}</p>
+          <p>${t('email.invitation.instructions')}</p>
+          <a href="${inviteUrl}" class="button">${t('email.invitation.button')}</a>
+          <p>${t('email.invitation.orCopyLink')}</p>
           <div class="code">${inviteUrl}</div>
-          <p><strong>This invitation will expire in 7 days.</strong></p>
+          <p><strong>${t('email.invitation.expiry')}</strong></p>
           <div class="footer">
-            <p>If you didn't expect this invitation, you can safely ignore this email.</p>
-            <p>This is an automated message, please do not reply to this email.</p>
+            <p>${t('email.invitation.footerIgnore')}</p>
+            <p>${t('email.invitation.footerAutomatic')}</p>
           </div>
         </div>
       </body>
       </html>
     `,
     text: `
-Join ${siteName}'s Galleria
+${t('email.invitation.title', { siteName })}
 
-${inviterName} has invited you to join ${siteName}'s Galleria.
+${t('email.invitation.body', { inviterName, siteName }).replace(/<\/?strong>/g, '')}
 
-To accept this invitation and set up your account, visit:
+${t('email.invitation.instructions')}
 ${inviteUrl}
 
-This invitation will expire in 7 days.
+${t('email.invitation.expiry')}
 
-If you didn't expect this invitation, you can safely ignore this email.
+${t('email.invitation.footerIgnore')}
     `.trim(),
   };
 
@@ -222,7 +227,8 @@ If you didn't expect this invitation, you can safely ignore this email.
 export async function sendPasswordResetEmail(
   toEmail: string,
   resetToken: string,
-  userName: string | null
+  userName: string | null,
+  language: string = 'en'
 ): Promise<boolean> {
   const transporter = createTransporter();
   const emailConfig = getEmailConfig();
@@ -250,19 +256,24 @@ export async function sendPasswordResetEmail(
   const avatarPath = config.branding?.avatarPath || "/photos/avatar.png";
   const avatarUrl = `${frontendUrl}${avatarPath}`;
 
-  const greeting = userName ? `Hi ${userName}` : "Hi there";
+  // Get translations for the specified language
+  const t = i18next.getFixedT(language);
+  
+  const greeting = userName 
+    ? t('email.passwordReset.greeting', { userName })
+    : t('email.passwordReset.greetingFallback');
 
   const mailOptions = {
     from: `"${emailConfig.from.name}" <${emailConfig.from.address}>`,
     to: toEmail,
-    subject: `Password Reset Request - ${siteName}`,
+    subject: t('email.passwordReset.subject', { siteName }),
     html: `
       <!DOCTYPE html>
       <html>
       <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Password Reset - ${siteName}</title>
+        <title>${t('email.passwordReset.title')} - ${siteName}</title>
         <style>
           body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
@@ -321,45 +332,45 @@ export async function sendPasswordResetEmail(
       <body>
         <div class="container">
           <img src="${avatarUrl}" alt="${siteName}" class="avatar" />
-          <h1>Password Reset Request</h1>
-          <p>${greeting},</p>
-          <p>We received a request to reset your password for <strong>${siteName}'s Galleria</strong>.</p>
-          <p>To reset your password, click the button below:</p>
-          <a href="${resetUrl}" class="button">Reset Password</a>
-          <p>Or copy and paste this link into your browser:</p>
+          <h1>${t('email.passwordReset.title')}</h1>
+          <p>${greeting}</p>
+          <p>${t('email.passwordReset.body', { siteName })}</p>
+          <p>${t('email.passwordReset.instructions')}</p>
+          <a href="${resetUrl}" class="button">${t('email.passwordReset.button')}</a>
+          <p>${t('email.passwordReset.orCopyLink')}</p>
           <div class="code">${resetUrl}</div>
           <div class="warning">
-            <strong>⚠️ Important:</strong>
+            <strong>${t('email.passwordReset.warningTitle')}</strong>
             <ul>
-              <li>This link will expire in 1 hour</li>
-              <li>If you didn't request this, please ignore this email</li>
-              <li>Your password will not change until you create a new one</li>
+              <li>${t('email.passwordReset.warningExpiry')}</li>
+              <li>${t('email.passwordReset.warningIgnore')}</li>
+              <li>${t('email.passwordReset.warningNoChange')}</li>
             </ul>
           </div>
           <div class="footer">
-            <p>This is an automated message, please do not reply to this email.</p>
-            <p>If you need assistance, please contact your administrator.</p>
+            <p>${t('email.passwordReset.footerAutomatic')}</p>
+            <p>${t('email.passwordReset.footerContact')}</p>
           </div>
         </div>
       </body>
       </html>
     `,
     text: `
-Password Reset Request - ${siteName}
+${t('email.passwordReset.subject', { siteName })}
 
-${greeting},
+${greeting}
 
-We received a request to reset your password for ${siteName}.
+${t('email.passwordReset.body', { siteName }).replace(/<\/?strong>/g, '')}
 
-To reset your password, visit:
+${t('email.passwordReset.instructions')}
 ${resetUrl}
 
-⚠️ Important:
-- This link will expire in 1 hour
-- If you didn't request this, please ignore this email
-- Your password will not change until you create a new one
+${t('email.passwordReset.warningTitle')}
+- ${t('email.passwordReset.warningExpiry')}
+- ${t('email.passwordReset.warningIgnore')}
+- ${t('email.passwordReset.warningNoChange')}
 
-This is an automated message, please do not reply to this email.
+${t('email.passwordReset.footerAutomatic')}
     `.trim(),
   };
 
@@ -397,7 +408,7 @@ export async function testEmailConfig(): Promise<{
 /**
  * Send a test email to verify SMTP configuration
  */
-export async function sendTestEmail(toEmail: string): Promise<boolean> {
+export async function sendTestEmail(toEmail: string, language: string = 'en'): Promise<boolean> {
   const transporter = createTransporter();
   const emailConfig = getEmailConfig();
 
@@ -409,10 +420,14 @@ export async function sendTestEmail(toEmail: string): Promise<boolean> {
   const config = getCurrentConfig();
   const siteName = config.branding?.siteName || "Galleria";
 
+  // Get translations for the specified language
+  const t = i18next.getFixedT(language);
+  const timestamp = new Date().toLocaleString();
+
   const mailOptions = {
     from: `"${emailConfig.from.name}" <${emailConfig.from.address}>`,
     to: toEmail,
-    subject: `Test Email from ${siteName}`,
+    subject: t('email.test.subject', { siteName }),
     html: `
       <!DOCTYPE html>
       <html>
@@ -451,27 +466,27 @@ export async function sendTestEmail(toEmail: string): Promise<boolean> {
       </head>
       <body>
         <div class="container">
-          <div class="success">✓</div>
-          <h1>Email Configuration Test</h1>
-          <p>Congratulations! Your SMTP configuration is working correctly.</p>
-          <p>This test email was sent from <strong>${siteName}</strong> to verify that your email service is properly configured and can deliver messages.</p>
+          <div class="success">${t('email.test.success')}</div>
+          <h1>${t('email.test.title')}</h1>
+          <p>${t('email.test.body1')}</p>
+          <p>${t('email.test.body2', { siteName })}</p>
           <div class="footer">
-            <p>This is a test message sent at ${new Date().toLocaleString()}.</p>
-            <p>You can safely ignore or delete this email.</p>
+            <p>${t('email.test.footerTimestamp', { timestamp })}</p>
+            <p>${t('email.test.footerIgnore')}</p>
           </div>
         </div>
       </body>
       </html>
     `,
     text: `
-Email Configuration Test
+${t('email.test.title')}
 
-✓ Congratulations! Your SMTP configuration is working correctly.
+${t('email.test.success')} ${t('email.test.body1')}
 
-This test email was sent from ${siteName} to verify that your email service is properly configured and can deliver messages.
+${t('email.test.body2', { siteName }).replace(/<\/?strong>/g, '')}
 
-This is a test message sent at ${new Date().toLocaleString()}.
-You can safely ignore or delete this email.
+${t('email.test.footerTimestamp', { timestamp })}
+${t('email.test.footerIgnore')}
     `.trim(),
   };
 

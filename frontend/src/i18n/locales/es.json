@@ -1001,5 +1001,44 @@
     "errorPasswordTooShort": "La contraseña debe tener al menos 8 caracteres  ",
     "errorRequiredField": "Este campo es obligatorio",
     "setupCompleteWaitingRestart": "¡Configuración completa! Esperando a que el servidor se reinicie..."
+  },
+  "email": {
+    "invitation": {
+      "subject": "Has sido invitado a {{siteName}}",
+      "title": "Únete a la Galería de {{siteName}}",
+      "greeting": "Hola,",
+      "body": "{{inviterName}} te ha invitado a unirte a <strong>la Galería de {{siteName}}</strong>.",
+      "instructions": "Para aceptar esta invitación y configurar tu cuenta, haz clic en el botón de abajo:",
+      "button": "Aceptar invitación",
+      "orCopyLink": "O copia y pega este enlace en tu navegador:",
+      "expiry": "Esta invitación expirará en 7 días.",
+      "footerIgnore": "Si no esperabas esta invitación, puedes ignorar este correo electrónico de forma segura.",
+      "footerAutomatic": "Este es un mensaje automatizado, por favor no respondas a este correo electrónico."
+    },
+    "passwordReset": {
+      "subject": "Solicitud de restablecimiento de contraseña - {{siteName}}  ",
+      "title": "Solicitud de restablecimiento de contraseña  ",
+      "greeting": "Hola {{userName}},  ",
+      "greetingFallback": "Hola,  ",
+      "body": "Recibimos una solicitud para restablecer tu contraseña para <strong>la Galleria de {{siteName}}</strong>.  ",
+      "instructions": "Para restablecer tu contraseña, haz clic en el botón de abajo:  ",
+      "button": "Restablecer contraseña  ",
+      "orCopyLink": "O copia y pega este enlace en tu navegador:  ",
+      "warningTitle": "⚠️ Importante:  ",
+      "warningExpiry": "Este enlace expirará en 1 hora",
+      "warningIgnore": "Si no solicitaste esto, por favor ignora este correo electrónico  ",
+      "warningNoChange": "Tu contraseña no cambiará hasta que crees una nueva  ",
+      "footerAutomatic": "Este es un mensaje automatizado, por favor no respondas a este correo electrónico.  ",
+      "footerContact": "Si necesitas asistencia, por favor contacta a tu administrador.  "
+    },
+    "test": {
+      "subject": "Correo de prueba de {{siteName}}  ",
+      "title": "Prueba de configuración de correo electrónico  ",
+      "success": "✓  ",
+      "body1": "¡Felicidades! Tu configuración SMTP está funcionando correctamente.  ",
+      "body2": "Este correo de prueba fue enviado desde <strong>{{siteName}}</strong> para verificar que tu servicio de correo electrónico esté correctamente configurado y pueda entregar mensajes.  ",
+      "footerTimestamp": "Este es un mensaje de prueba enviado en {{timestamp}}.",
+      "footerIgnore": "Puedes ignorar o eliminar este correo electrónico de forma segura."
+    }
   }
 }

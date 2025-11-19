@@ -1001,5 +1001,44 @@
     "errorPasswordTooShort": "Kata sandi harus terdiri dari setidaknya 8 karakter  ",
     "errorRequiredField": "Kolom ini wajib diisi",
     "setupCompleteWaitingRestart": "Pengaturan selesai! Menunggu server untuk restart..."
+  },
+  "email": {
+    "invitation": {
+      "subject": "Anda telah diundang ke {{siteName}}  ",
+      "title": "Bergabunglah dengan Galleria {{siteName}}  ",
+      "greeting": "Halo,  ",
+      "body": "{{inviterName}} telah mengundang Anda untuk bergabung dengan <strong>Galleria {{siteName}}</strong>.  ",
+      "instructions": "Untuk menerima undangan ini dan mengatur akun Anda, klik tombol di bawah ini:  ",
+      "button": "Terima Undangan  ",
+      "orCopyLink": "Atau salin dan tempel tautan ini ke browser Anda:  ",
+      "expiry": "Undangan ini akan kedaluwarsa dalam 7 hari.  ",
+      "footerIgnore": "Jika Anda tidak mengharapkan undangan ini, Anda dapat dengan aman mengabaikan email ini.  ",
+      "footerAutomatic": "Ini adalah pesan otomatis, mohon jangan balas email ini."
+    },
+    "passwordReset": {
+      "subject": "Permintaan Reset Kata Sandi - {{siteName}}  ",
+      "title": "Permintaan Reset Kata Sandi  ",
+      "greeting": "Hai {{userName}},  ",
+      "greetingFallback": "Halo,  ",
+      "body": "Kami menerima permintaan untuk mereset kata sandi Anda untuk <strong>Galleria {{siteName}}</strong>.  ",
+      "instructions": "Untuk mereset kata sandi Anda, klik tombol di bawah ini:  ",
+      "button": "Reset Kata Sandi  ",
+      "orCopyLink": "Atau salin dan tempel tautan ini ke browser Anda:  ",
+      "warningTitle": "⚠️ Penting:  ",
+      "warningExpiry": "Tautan ini akan kedaluwarsa dalam 1 jam",
+      "warningIgnore": "Jika Anda tidak meminta ini, silakan abaikan email ini  ",
+      "warningNoChange": "Kata sandi Anda tidak akan berubah sampai Anda membuat yang baru  ",
+      "footerAutomatic": "Ini adalah pesan otomatis, silakan jangan balas email ini.  ",
+      "footerContact": "Jika Anda memerlukan bantuan, silakan hubungi administrator Anda.  "
+    },
+    "test": {
+      "subject": "Email Uji dari {{siteName}}  ",
+      "title": "Uji Konfigurasi Email  ",
+      "success": "✓  ",
+      "body1": "Selamat! Konfigurasi SMTP Anda berfungsi dengan baik.  ",
+      "body2": "Email uji ini dikirim dari <strong>{{siteName}}</strong> untuk memverifikasi bahwa layanan email Anda telah dikonfigurasi dengan benar dan dapat mengirimkan pesan.  ",
+      "footerTimestamp": "Ini adalah pesan uji yang dikirim pada {{timestamp}}.",
+      "footerIgnore": "Anda dapat dengan aman mengabaikan atau menghapus email ini."
+    }
   }
 }

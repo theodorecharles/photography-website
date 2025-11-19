@@ -1001,5 +1001,44 @@
     "errorPasswordTooShort": "Le mot de passe doit comporter au moins 8 caractères  ",
     "errorRequiredField": "Ce champ est requis",
     "setupCompleteWaitingRestart": "Configuration terminée ! En attente du redémarrage du serveur..."
+  },
+  "email": {
+    "invitation": {
+      "subject": "Vous avez été invité à {{siteName}}  ",
+      "title": "Rejoignez la Galleria de {{siteName}}  ",
+      "greeting": "Bonjour,  ",
+      "body": "{{inviterName}} vous a invité à rejoindre <strong>la Galleria de {{siteName}}</strong>.  ",
+      "instructions": "Pour accepter cette invitation et configurer votre compte, cliquez sur le bouton ci-dessous :  ",
+      "button": "Accepter l'invitation  ",
+      "orCopyLink": "Ou copiez et collez ce lien dans votre navigateur :  ",
+      "expiry": "Cette invitation expirera dans 7 jours.  ",
+      "footerIgnore": "Si vous ne vous attendiez pas à cette invitation, vous pouvez ignorer cet e-mail en toute sécurité.  ",
+      "footerAutomatic": "Ceci est un message automatisé, veuillez ne pas répondre à cet e-mail."
+    },
+    "passwordReset": {
+      "subject": "Demande de réinitialisation de mot de passe - {{siteName}}  ",
+      "title": "Demande de réinitialisation de mot de passe  ",
+      "greeting": "Bonjour {{userName}},  ",
+      "greetingFallback": "Bonjour,  ",
+      "body": "Nous avons reçu une demande pour réinitialiser votre mot de passe pour <strong>{{siteName}}'s Galleria</strong>.  ",
+      "instructions": "Pour réinitialiser votre mot de passe, cliquez sur le bouton ci-dessous :  ",
+      "button": "Réinitialiser le mot de passe  ",
+      "orCopyLink": "Ou copiez et collez ce lien dans votre navigateur :  ",
+      "warningTitle": "⚠️ Important :  ",
+      "warningExpiry": "Ce lien expirera dans 1 heure",
+      "warningIgnore": "Si vous n'avez pas demandé cela, veuillez ignorer cet e-mail  ",
+      "warningNoChange": "Votre mot de passe ne changera pas tant que vous n'en créerez pas un nouveau  ",
+      "footerAutomatic": "Ceci est un message automatisé, veuillez ne pas répondre à cet e-mail.  ",
+      "footerContact": "Si vous avez besoin d'aide, veuillez contacter votre administrateur.  "
+    },
+    "test": {
+      "subject": "E-mail de test de {{siteName}}  ",
+      "title": "Test de configuration de l'e-mail  ",
+      "success": "✓  ",
+      "body1": "Félicitations ! Votre configuration SMTP fonctionne correctement.  ",
+      "body2": "Cet e-mail de test a été envoyé depuis <strong>{{siteName}}</strong> pour vérifier que votre service de messagerie est correctement configuré et peut envoyer des messages.  ",
+      "footerTimestamp": "Ceci est un message de test envoyé à {{timestamp}}.",
+      "footerIgnore": "Vous pouvez ignorer ou supprimer cet email en toute sécurité."
+    }
   }
 }

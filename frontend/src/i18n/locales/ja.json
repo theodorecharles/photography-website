@@ -1001,5 +1001,44 @@
     "errorPasswordTooShort": "パスワードは8文字以上でなければなりません  ",
     "errorRequiredField": "このフィールドは必須です",
     "setupCompleteWaitingRestart": "セットアップが完了しました！サーバーの再起動を待っています..."
+  },
+  "email": {
+    "invitation": {
+      "subject": "{{siteName}}に招待されました  ",
+      "title": "{{siteName}}のギャレリアに参加する  ",
+      "greeting": "こんにちは、  ",
+      "body": "{{inviterName}}が<strong>{{siteName}}のギャレリア</strong>に参加するよう招待しています。  ",
+      "instructions": "この招待を受け入れてアカウントを設定するには、下のボタンをクリックしてください：  ",
+      "button": "招待を受け入れる  ",
+      "orCopyLink": "または、このリンクをブラウザにコピー＆ペーストしてください：  ",
+      "expiry": "この招待は7日後に期限切れになります。  ",
+      "footerIgnore": "この招待を予期していなかった場合は、このメールを無視しても安全です。  ",
+      "footerAutomatic": "これは自動生成されたメッセージですので、このメールに返信しないでください。"
+    },
+    "passwordReset": {
+      "subject": "パスワードリセットリクエスト - {{siteName}}  ",
+      "title": "パスワードリセットリクエスト  ",
+      "greeting": "こんにちは {{userName}}、  ",
+      "greetingFallback": "こんにちは、  ",
+      "body": "<strong>{{siteName}}のギャラリア</strong>のパスワードをリセットするリクエストを受け取りました。  ",
+      "instructions": "パスワードをリセットするには、以下のボタンをクリックしてください：  ",
+      "button": "パスワードをリセット  ",
+      "orCopyLink": "または、このリンクをブラウザにコピー＆ペーストしてください：  ",
+      "warningTitle": "⚠️ 重要：  ",
+      "warningExpiry": "このリンクは1時間で期限切れになります",
+      "warningIgnore": "このメールをリクエストしていない場合は、このメールを無視してください  ",
+      "warningNoChange": "あなたのパスワードは新しいものを作成するまで変更されません  ",
+      "footerAutomatic": "これは自動送信されたメッセージです。このメールに返信しないでください。  ",
+      "footerContact": "サポートが必要な場合は、管理者にご連絡ください。  "
+    },
+    "test": {
+      "subject": "{{siteName}}からのテストメール  ",
+      "title": "メール設定テスト  ",
+      "success": "✓  ",
+      "body1": "おめでとうございます！あなたのSMTP設定は正しく機能しています。  ",
+      "body2": "このテストメールは、あなたのメールサービスが正しく設定され、メッセージを配信できることを確認するために、<strong>{{siteName}}</strong>から送信されました。  ",
+      "footerTimestamp": "これは{{timestamp}}に送信されたテストメッセージです。",
+      "footerIgnore": "このメールは安全に無視するか削除できます。"
+    }
   }
 }
