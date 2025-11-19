@@ -4,13 +4,14 @@
  * All other resources (JS, CSS, JSON) are handled by the browser
  */
 
-const CACHE_VERSION = 'v7';
+const CACHE_VERSION = 'v8';
 const CACHE_NAME = `photo-site-${CACHE_VERSION}`;
 
 // Resources to cache immediately on install
 const PRECACHE_URLS = [
   '/',
   '/manifest.json',
+  '/photos/avatar.png', // User avatar - cache aggressively
 ];
 
 // Cache strategy: Only cache optimized images
@@ -65,8 +66,13 @@ self.addEventListener('activate', (event) => {
 function getCacheStrategy(url) {
   const urlObj = new URL(url);
   
-  // Optimized images (thumbnail, modal, download) - ONLY thing we cache
+  // Optimized images (thumbnail, modal, download) - cache aggressively
   if (urlObj.pathname.startsWith('/optimized/')) {
+    return CACHE_STRATEGIES.images;
+  }
+  
+  // User avatar - cache aggressively
+  if (urlObj.pathname === '/photos/avatar.png') {
     return CACHE_STRATEGIES.images;
   }
   
