@@ -33,6 +33,10 @@ const languages = {
   tr: "Turkish",
   sv: "Swedish",
   no: "Norwegian",
+  ro: "Romanian",
+  tl: "Filipino (Tagalog)",
+  vi: "Vietnamese",
+  id: "Indonesian",
 };
 
 // Colors for terminal output

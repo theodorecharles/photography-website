@@ -263,6 +263,10 @@ export default function SetupWizard() {
     { code: 'tr', name: 'Türkçe', flag: '🇹🇷' },
     { code: 'sv', name: 'Svenska', flag: '🇸🇪' },
     { code: 'no', name: 'Norsk', flag: '🇳🇴' },
+    { code: 'ro', name: 'Română', flag: '🇷🇴' },
+    { code: 'tl', name: 'Filipino', flag: '🇵🇭' },
+    { code: 'vi', name: 'Tiếng Việt', flag: '🇻🇳' },
+    { code: 'id', name: 'Bahasa Indonesia', flag: '🇮🇩' },
   ];
 
   return (
