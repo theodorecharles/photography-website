@@ -13,7 +13,7 @@ import type { SetupStatus } from './types';
 import { error as logError, warn } from '../../utils/logger';
 
 export default function SetupWizard() {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [setupStatus, setSetupStatus] = useState<SetupStatus | null>(null);
   const [currentStep, setCurrentStep] = useState(1);
@@ -238,10 +238,10 @@ export default function SetupWizard() {
       <div className="setup-wizard">
         <div className="setup-container">
           <div className="setup-error">
-            <h2>⚠️ Setup Error</h2>
+            <h2>⚠️ {t('oobe.setupError')}</h2>
             <p>{error || 'Failed to load setup status'}</p>
             <button onClick={checkSetupStatus} className="retry-button">
-              Try Again
+              {t('oobe.tryAgain')}
             </button>
           </div>
         </div>
@@ -280,14 +280,14 @@ export default function SetupWizard() {
     <div className="setup-wizard">
       <div className="setup-container">
         <div className="setup-header">
-          <h1>📸 Setup Galleria</h1>
-          <p>Let's get your portfolio set up in just a few steps</p>
+          <h1>📸 {t('oobe.title')}</h1>
+          <p>{t('oobe.subtitle')}</p>
           
           {/* Language Selector */}
           <div style={{ 
             marginTop: '1rem',
             display: 'flex',
-            justifyContent: 'center',
+            justifyContent: 'flex-start',
             alignItems: 'center',
             gap: '0.5rem'
           }}>
@@ -295,14 +295,14 @@ export default function SetupWizard() {
               color: '#9ca3af',
               fontSize: '0.875rem',
             }}>
-              🌐 Language:
+              🌐 {t('oobe.language')}:
             </label>
             <div style={{ width: '200px' }}>
               <CustomDropdown
                 value={currentLanguage}
                 options={languages}
                 onChange={handleLanguageChange}
-                placeholder="Select language"
+                placeholder={t('oobe.selectLanguage')}
               />
             </div>
           </div>
@@ -311,22 +311,22 @@ export default function SetupWizard() {
         <div className="setup-progress">
           <div className={`progress-step ${currentStep >= 1 ? 'active' : ''} ${currentStep > 1 ? 'complete' : ''}`}>
             <div className="step-number">1</div>
-            <div className="step-label">Basic Info</div>
+            <div className="step-label">{t('oobe.step1Title')}</div>
           </div>
           <div className="progress-line"></div>
           <div className={`progress-step ${currentStep >= 2 ? 'active' : ''} ${currentStep > 2 ? 'complete' : ''}`}>
             <div className="step-number">2</div>
-            <div className="step-label">Account</div>
+            <div className="step-label">{t('oobe.step2Title')}</div>
           </div>
           <div className="progress-line"></div>
           <div className={`progress-step ${currentStep >= 3 ? 'active' : ''} ${currentStep > 3 ? 'complete' : ''}`}>
             <div className="step-number">3</div>
-            <div className="step-label">Customize</div>
+            <div className="step-label">{t('oobe.step3Title')}</div>
           </div>
           <div className="progress-line"></div>
           <div className={`progress-step ${currentStep >= 4 ? 'active' : ''}`}>
             <div className="step-number">4</div>
-            <div className="step-label">Complete</div>
+            <div className="step-label">{t('oobe.step4Title')}</div>
           </div>
         </div>
 
@@ -347,15 +347,15 @@ export default function SetupWizard() {
         <form onSubmit={handleSubmit} className="setup-form">
           {currentStep === 1 && (
             <div className="setup-step">
-              <h2>Basic Information</h2>
+              <h2>{t('oobe.basicInfoHeading')}</h2>
               <p className="step-description">
-                Tell us a bit about yourself and your site
+                {t('oobe.basicInfoDescription')}
               </p>
 
               <div className="form-group">
                 <label htmlFor="siteName">
-                  Site Name / Your Name *
-                  <span className="field-hint">This will appear in the header and page titles</span>
+                  {t('oobe.siteNameLabel')} *
+                  <span className="field-hint">{t('oobe.siteNameHint')}</span>
                 </label>
                 <input
                   type="text"
@@ -368,7 +368,7 @@ export default function SetupWizard() {
                       setCurrentStep(2);
                     }
                   }}
-                  placeholder="John Doe Photography"
+                  placeholder={t('oobe.siteNamePlaceholder')}
                   required
                   autoFocus
                 />
@@ -376,14 +376,14 @@ export default function SetupWizard() {
 
               <div className="form-group">
                 <label htmlFor="metaDescription">
-                  Site Description
-                  <span className="field-hint">Brief description for search engines (optional)</span>
+                  {t('oobe.siteDescriptionLabel')}
+                  <span className="field-hint">{t('oobe.siteDescriptionHint')}</span>
                 </label>
                 <textarea
                   id="metaDescription"
                   value={metaDescription}
                   onChange={(e) => setMetaDescription(e.target.value)}
-                  placeholder={`Photography portfolio by ${siteName || 'your name'}`}
+                  placeholder={siteName ? t('oobe.siteDescriptionPlaceholder', { siteName }) : t('oobe.siteDescriptionDefaultPlaceholder')}
                   rows={3}
                 />
               </div>
@@ -395,7 +395,7 @@ export default function SetupWizard() {
                   className="button button-primary"
                   disabled={!siteName.trim()}
                 >
-                  Next: Create Account →
+                  {t('oobe.nextCreateAccount')}
                 </button>
               </div>
             </div>
@@ -403,22 +403,22 @@ export default function SetupWizard() {
 
           {currentStep === 2 && (
             <div className="setup-step">
-              <h2>Create Your Admin Account</h2>
+              <h2>{t('oobe.accountHeading')}</h2>
               <p className="step-description">
-                Set up your account to access the admin panel
+                {t('oobe.accountDescription')}
               </p>
 
               <div className="form-group">
                 <label htmlFor="authorizedEmail">
-                  Your Email Address *
-                  <span className="field-hint">This will be your login email</span>
+                  {t('oobe.emailLabel')} *
+                  <span className="field-hint">{t('oobe.emailHint')}</span>
                 </label>
                 <input
                   type="email"
                   id="authorizedEmail"
                   value={authorizedEmail}
                   onChange={(e) => setAuthorizedEmail(e.target.value)}
-                  placeholder="john@example.com"
+                  placeholder={t('oobe.emailPlaceholder')}
                   required
                   autoFocus
                 />
@@ -426,8 +426,8 @@ export default function SetupWizard() {
 
               <div className="form-group">
                 <label>
-                  Choose Authentication Method *
-                  <span className="field-hint">How would you like to sign in?</span>
+                  {t('oobe.authMethodLabel')} *
+                  <span className="field-hint">{t('oobe.authMethodHint')}</span>
                 </label>
                 <div className="auth-method-choice">
                   <label className="auth-method-option">
@@ -439,8 +439,8 @@ export default function SetupWizard() {
                       onChange={(e) => setAuthMethod(e.target.value as 'password' | 'google')}
                     />
                     <div className="auth-method-label">
-                      <strong>🔑 Password</strong>
-                      <span>Sign in with email and password</span>
+                      <strong>🔑 {t('oobe.authMethodPassword')}</strong>
+                      <span>{t('oobe.authMethodPasswordDescription')}</span>
                     </div>
                   </label>
                   <label className="auth-method-option">
@@ -452,8 +452,8 @@ export default function SetupWizard() {
                       onChange={(e) => setAuthMethod(e.target.value as 'password' | 'google')}
                     />
                     <div className="auth-method-label">
-                      <strong>🔐 Google OAuth</strong>
-                      <span>Sign in with your Google account</span>
+                      <strong>🔐 {t('oobe.authMethodGoogle')}</strong>
+                      <span>{t('oobe.authMethodGoogleDescription')}</span>
                     </div>
                   </label>
                 </div>
@@ -463,30 +463,30 @@ export default function SetupWizard() {
                 <>
                   <div className="form-group">
                     <label htmlFor="adminName">
-                      Your Full Name *
-                      <span className="field-hint">This will be displayed in your profile</span>
+                      {t('oobe.fullNameLabel')} *
+                      <span className="field-hint">{t('oobe.fullNameHint')}</span>
                     </label>
                     <input
                       type="text"
                       id="adminName"
                       value={adminName}
                       onChange={(e) => setAdminName(e.target.value)}
-                      placeholder="John Doe"
+                      placeholder={t('oobe.fullNamePlaceholder')}
                       required
                     />
                   </div>
 
                   <div className="form-group">
                     <label htmlFor="adminPassword">
-                      Password *
-                      <span className="field-hint">Minimum 8 characters</span>
+                      {t('oobe.passwordLabel')} *
+                      <span className="field-hint">{t('oobe.passwordHint')}</span>
                     </label>
                     <input
                       type="password"
                       id="adminPassword"
                       value={adminPassword}
                       onChange={(e) => setAdminPassword(e.target.value)}
-                      placeholder="••••••••"
+                      placeholder={t('oobe.passwordPlaceholder')}
                       minLength={8}
                       required
                     />
@@ -494,14 +494,14 @@ export default function SetupWizard() {
 
                   <div className="form-group">
                     <label htmlFor="adminPasswordConfirm">
-                      Confirm Password *
+                      {t('oobe.confirmPasswordLabel')} *
                     </label>
                     <input
                       type="password"
                       id="adminPasswordConfirm"
                       value={adminPasswordConfirm}
                       onChange={(e) => setAdminPasswordConfirm(e.target.value)}
-                      placeholder="••••••••"
+                      placeholder={t('oobe.confirmPasswordPlaceholder')}
                       minLength={8}
                       required
                     />
@@ -513,42 +513,42 @@ export default function SetupWizard() {
                 <>
                   <div className="info-box">
                     <p>
-                      <strong>How to get Google OAuth credentials:</strong>
+                      <strong>{t('oobe.googleInstructions')}</strong>
                     </p>
                     <ol>
-                      <li>Go to <a href="https://console.cloud.google.com" target="_blank" rel="noopener noreferrer">Google Cloud Console</a></li>
-                      <li>Create a new project or select an existing one</li>
-                      <li>Enable the Google+ API</li>
-                      <li>Create OAuth 2.0 credentials</li>
-                      <li>Add redirect URI: <code>{window.location.origin.replace(':3000', ':3001')}/api/auth/google/callback</code></li>
-                      <li>Copy the Client ID and Client Secret below</li>
+                      <li>{t('oobe.googleStep1')} <a href="https://console.cloud.google.com" target="_blank" rel="noopener noreferrer">{t('oobe.googleCloudConsole')}</a></li>
+                      <li>{t('oobe.googleStep2')}</li>
+                      <li>{t('oobe.googleStep3')}</li>
+                      <li>{t('oobe.googleStep4')}</li>
+                      <li>{t('oobe.googleStep5')} <code>{window.location.origin.replace(':3000', ':3001')}/api/auth/google/callback</code></li>
+                      <li>{t('oobe.googleStep6')}</li>
                     </ol>
                   </div>
 
                   <div className="form-group">
                     <label htmlFor="googleClientId">
-                      Google Client ID *
+                      {t('oobe.googleClientIdLabel')} *
                     </label>
                     <input
                       type="text"
                       id="googleClientId"
                       value={googleClientId}
                       onChange={(e) => setGoogleClientId(e.target.value)}
-                      placeholder="xxxxx.apps.googleusercontent.com"
+                      placeholder={t('oobe.googleClientIdPlaceholder')}
                       required
                     />
                   </div>
 
                   <div className="form-group">
                     <label htmlFor="googleClientSecret">
-                      Google Client Secret *
+                      {t('oobe.googleClientSecretLabel')} *
                     </label>
                     <input
                       type="password"
                       id="googleClientSecret"
                       value={googleClientSecret}
                       onChange={(e) => setGoogleClientSecret(e.target.value)}
-                      placeholder="GOCSPX-xxxxx"
+                      placeholder={t('oobe.googleClientSecretPlaceholder')}
                       required
                     />
                   </div>
@@ -561,38 +561,38 @@ export default function SetupWizard() {
                   onClick={() => setCurrentStep(1)}
                   className="button button-secondary"
                 >
-                  ← Back
+                  {t('oobe.backToBasicInfo')}
                 </button>
                 <button 
                   type="button" 
                   onClick={() => {
                     // Validation
                     if (!authorizedEmail.trim()) {
-                      setError('Email is required');
+                      setError(t('oobe.errorRequiredField'));
                       return;
                     }
                     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                     if (!emailRegex.test(authorizedEmail)) {
-                      setError('Please enter a valid email address');
+                      setError(t('oobe.errorInvalidEmail'));
                       return;
                     }
                     
                     if (authMethod === 'password') {
                       if (!adminName.trim()) {
-                        setError('Name is required');
+                        setError(t('oobe.errorRequiredField'));
                         return;
                       }
                       if (adminPassword.length < 8) {
-                        setError('Password must be at least 8 characters');
+                        setError(t('oobe.errorPasswordTooShort'));
                         return;
                       }
                       if (adminPassword !== adminPasswordConfirm) {
-                        setError('Passwords do not match');
+                        setError(t('oobe.errorPasswordMismatch'));
                         return;
                       }
                     } else {
                       if (!googleClientId.trim() || !googleClientSecret.trim()) {
-                        setError('Both Google Client ID and Secret are required');
+                        setError(t('oobe.errorRequiredField'));
                         return;
                       }
                     }
@@ -602,7 +602,7 @@ export default function SetupWizard() {
                   }}
                   className="button button-primary"
                 >
-                  Next: Customize →
+                  {t('oobe.nextCustomize')}
                 </button>
               </div>
             </div>
@@ -610,19 +610,19 @@ export default function SetupWizard() {
 
           {currentStep === 3 && (
             <div className="setup-step">
-              <h2>Customize Your Site</h2>
+              <h2>{t('oobe.customizeHeading')}</h2>
               <p className="step-description">
-                Choose colors and upload your profile picture
+                {t('oobe.customizeDescription')}
               </p>
 
               <div className="form-group">
                 <label>
-                  Brand Colors
-                  <span className="field-hint">Choose your primary and secondary colors</span>
+                  {t('oobe.colorsLabel')}
+                  <span className="field-hint">{t('oobe.colorsHint')}</span>
                 </label>
                 <div className="color-inputs">
                   <div className="color-input-group">
-                    <label htmlFor="primaryColor">Primary</label>
+                    <label htmlFor="primaryColor">{t('oobe.primaryColorLabel')}</label>
                     <input
                       type="color"
                       id="primaryColor"
@@ -632,7 +632,7 @@ export default function SetupWizard() {
                     <span className="color-value">{primaryColor}</span>
                   </div>
                   <div className="color-input-group">
-                    <label htmlFor="secondaryColor">Secondary</label>
+                    <label htmlFor="secondaryColor">{t('oobe.secondaryColorLabel')}</label>
                     <input
                       type="color"
                       id="secondaryColor"
@@ -646,8 +646,8 @@ export default function SetupWizard() {
 
               <div className="form-group">
                 <label htmlFor="avatar">
-                  Avatar Image (Optional)
-                  <span className="field-hint">Upload your profile picture (max 5MB)</span>
+                  {t('oobe.avatarOptional')}
+                  <span className="field-hint">{t('oobe.avatarHint')}</span>
                 </label>
                 <div className="avatar-upload">
                   {avatarPreview && (
@@ -663,7 +663,7 @@ export default function SetupWizard() {
                     className="file-input"
                   />
                   <label htmlFor="avatar" className="file-label">
-                    {avatarFile ? '✓ Image selected' : 'Choose Image'}
+                    {avatarFile ? t('oobe.imageSelected') : t('oobe.chooseImage')}
                   </label>
                   {avatarFile && (
                     <button
@@ -674,7 +674,7 @@ export default function SetupWizard() {
                       }}
                       className="button-text"
                     >
-                      Remove
+                      {t('oobe.remove')}
                     </button>
                   )}
                 </div>
@@ -686,14 +686,14 @@ export default function SetupWizard() {
                   onClick={() => setCurrentStep(2)}
                   className="button button-secondary"
                 >
-                  ← Back
+                  {t('oobe.backToAccount')}
                 </button>
                 <button 
                   type="submit"
                   className="button button-primary"
                   disabled={submitting}
                 >
-                  {submitting ? 'Setting up...' : 'Complete Setup ✓'}
+                  {submitting ? t('oobe.settingUp') : t('oobe.completeSetup')}
                 </button>
               </div>
             </div>
@@ -702,20 +702,20 @@ export default function SetupWizard() {
           {currentStep === 4 && (
             <div className="setup-step setup-complete">
               <div className="complete-icon">✓</div>
-              <h2>Setup Complete!</h2>
-              <p>Your configuration has been saved successfully.</p>
-              <p className="complete-subtext">Redirecting to login page...</p>
+              <h2>{t('oobe.completeHeading')}</h2>
+              <p>{t('oobe.completeDescription')}</p>
+              <p className="complete-subtext">{t('oobe.completeSubtext')}</p>
               
               <div className="next-steps">
-                <h3>What We Set Up:</h3>
+                <h3>{t('oobe.whatWeSetUp')}</h3>
                 <ul>
-                  <li>✅ Site configuration saved</li>
-                  <li>✅ Admin account created</li>
-                  <li>✅ Database initialized</li>
-                  <li>✅ Directories created</li>
-                  <li>✅ Authentication configured</li>
-                  <li>🔐 You'll be redirected to sign in</li>
-                  <li>📸 Then you can upload your first album!</li>
+                  <li>✅ {t('oobe.siteConfigSaved')}</li>
+                  <li>✅ {t('oobe.adminAccountCreated')}</li>
+                  <li>✅ {t('oobe.databaseInitialized')}</li>
+                  <li>✅ {t('oobe.directoriesCreated')}</li>
+                  <li>✅ {t('oobe.authenticationConfigured')}</li>
+                  <li>🔐 {t('oobe.redirectToSignIn')}</li>
+                  <li>📸 {t('oobe.uploadFirstAlbum')}</li>
                 </ul>
               </div>
             </div>
