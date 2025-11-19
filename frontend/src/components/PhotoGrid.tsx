@@ -445,9 +445,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
     return (
       <div className="photo-grid-loading">
         <div className="loading-spinner"></div>
-        <div style={{ marginTop: '1rem', color: '#666', fontSize: '0.9rem' }}>
-          {t('app.loadingAlbum')}
-        </div>
+        <p>{t('app.loadingAlbum')}</p>
       </div>
     );
   }

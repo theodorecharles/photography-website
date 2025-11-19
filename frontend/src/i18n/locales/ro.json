@@ -39,7 +39,7 @@
   },
   "app": {
     "loadingAlbums": "Se încarcă albumele...",
-    "loadingAlbum": "[EN] Loading album...",
+    "loadingAlbum": "Se încarcă albumul...",
     "loadingSetup": "Se încarcă configurarea...",
     "backendError": "Eroare de backend",
     "unableToConnect": "Imposibil de conectat la server",

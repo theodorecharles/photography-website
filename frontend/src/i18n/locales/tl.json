@@ -39,7 +39,7 @@
   },
   "app": {
     "loadingAlbums": "Nagloload ng mga album...",
-    "loadingAlbum": "[EN] Loading album...",
+    "loadingAlbum": "Naglo-load ng album...",
     "loadingSetup": "Nagloload ng setup...",
     "backendError": "Error sa Backend",
     "unableToConnect": "Hindi makakonekta sa server",

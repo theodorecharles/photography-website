@@ -39,7 +39,7 @@
   },
   "app": {
     "loadingAlbums": "正在加载相册...",
-    "loadingAlbum": "[EN] Loading album...",
+    "loadingAlbum": "加载相册中...",
     "loadingSetup": "正在加载设置...",
     "backendError": "后端错误",
     "unableToConnect": "无法连接到服务器",

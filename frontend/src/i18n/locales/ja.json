@@ -39,7 +39,7 @@
   },
   "app": {
     "loadingAlbums": "アルバムを読み込み中...",
-    "loadingAlbum": "[EN] Loading album...",
+    "loadingAlbum": "アルバムを読み込み中...",
     "loadingSetup": "設定を読み込み中...",
     "backendError": "バックエンドエラー",
     "unableToConnect": "サーバーに接続できません",

@@ -39,7 +39,7 @@
   },
   "app": {
     "loadingAlbums": "Laster inn album...",
-    "loadingAlbum": "[EN] Loading album...",
+    "loadingAlbum": "Laster album...",
     "loadingSetup": "Laster inn oppsett...",
     "backendError": "Backend-feil",
     "unableToConnect": "Kan ikke koble til serveren",
