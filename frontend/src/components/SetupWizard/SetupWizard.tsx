@@ -7,6 +7,7 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { API_URL } from '../../config';
 import RestartModal from '../RestartModal';
+import CustomDropdown from '../AdminPortal/ConfigManager/components/CustomDropdown';
 import './SetupWizard.css';
 import type { SetupStatus } from './types';
 import { error as logError, warn } from '../../utils/logger';
@@ -18,6 +19,7 @@ export default function SetupWizard() {
   const [currentStep, setCurrentStep] = useState(1);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [currentLanguage, setCurrentLanguage] = useState(i18n.language);
   
   // Form data
   const [siteName, setSiteName] = useState('');
@@ -248,26 +250,31 @@ export default function SetupWizard() {
   }
 
   const languages = [
-    { code: 'en', name: 'English', flag: '🇺🇸' },
-    { code: 'es', name: 'Español', flag: '🇪🇸' },
-    { code: 'fr', name: 'Français', flag: '🇫🇷' },
-    { code: 'de', name: 'Deutsch', flag: '🇩🇪' },
-    { code: 'ja', name: '日本語', flag: '🇯🇵' },
-    { code: 'zh', name: '中文', flag: '🇨🇳' },
-    { code: 'ko', name: '한국어', flag: '🇰🇷' },
-    { code: 'it', name: 'Italiano', flag: '🇮🇹' },
-    { code: 'pt', name: 'Português', flag: '🇵🇹' },
-    { code: 'ru', name: 'Русский', flag: '🇷🇺' },
-    { code: 'nl', name: 'Nederlands', flag: '🇳🇱' },
-    { code: 'pl', name: 'Polski', flag: '🇵🇱' },
-    { code: 'tr', name: 'Türkçe', flag: '🇹🇷' },
-    { code: 'sv', name: 'Svenska', flag: '🇸🇪' },
-    { code: 'no', name: 'Norsk', flag: '🇳🇴' },
-    { code: 'ro', name: 'Română', flag: '🇷🇴' },
-    { code: 'tl', name: 'Filipino', flag: '🇵🇭' },
-    { code: 'vi', name: 'Tiếng Việt', flag: '🇻🇳' },
-    { code: 'id', name: 'Bahasa Indonesia', flag: '🇮🇩' },
+    { value: 'en', label: 'English', emoji: '🇺🇸' },
+    { value: 'es', label: 'Español', emoji: '🇪🇸' },
+    { value: 'fr', label: 'Français', emoji: '🇫🇷' },
+    { value: 'de', label: 'Deutsch', emoji: '🇩🇪' },
+    { value: 'ja', label: '日本語', emoji: '🇯🇵' },
+    { value: 'zh', label: '中文', emoji: '🇨🇳' },
+    { value: 'ko', label: '한국어', emoji: '🇰🇷' },
+    { value: 'it', label: 'Italiano', emoji: '🇮🇹' },
+    { value: 'pt', label: 'Português', emoji: '🇵🇹' },
+    { value: 'ru', label: 'Русский', emoji: '🇷🇺' },
+    { value: 'nl', label: 'Nederlands', emoji: '🇳🇱' },
+    { value: 'pl', label: 'Polski', emoji: '🇵🇱' },
+    { value: 'tr', label: 'Türkçe', emoji: '🇹🇷' },
+    { value: 'sv', label: 'Svenska', emoji: '🇸🇪' },
+    { value: 'no', label: 'Norsk', emoji: '🇳🇴' },
+    { value: 'ro', label: 'Română', emoji: '🇷🇴' },
+    { value: 'tl', label: 'Filipino', emoji: '🇵🇭' },
+    { value: 'vi', label: 'Tiếng Việt', emoji: '🇻🇳' },
+    { value: 'id', label: 'Bahasa Indonesia', emoji: '🇮🇩' },
   ];
+
+  const handleLanguageChange = async (languageCode: string) => {
+    await i18n.changeLanguage(languageCode);
+    setCurrentLanguage(languageCode);
+  };
 
   return (
     <div className="setup-wizard">
@@ -281,35 +288,23 @@ export default function SetupWizard() {
             marginTop: '1rem',
             display: 'flex',
             justifyContent: 'center',
+            alignItems: 'center',
             gap: '0.5rem'
           }}>
             <label style={{ 
               color: '#9ca3af',
               fontSize: '0.875rem',
-              alignSelf: 'center'
             }}>
               🌐 Language:
             </label>
-            <select
-              value={i18n.language}
-              onChange={(e) => i18n.changeLanguage(e.target.value)}
-              style={{
-                background: 'rgba(255, 255, 255, 0.05)',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
-                borderRadius: '6px',
-                padding: '0.375rem 0.625rem',
-                color: '#e5e7eb',
-                fontSize: '0.875rem',
-                cursor: 'pointer',
-                outline: 'none',
-              }}
-            >
-              {languages.map((lang) => (
-                <option key={lang.code} value={lang.code} style={{ background: '#1a1a1a' }}>
-                  {lang.flag} {lang.name}
-                </option>
-              ))}
-            </select>
+            <div style={{ width: '200px' }}>
+              <CustomDropdown
+                value={currentLanguage}
+                options={languages}
+                onChange={handleLanguageChange}
+                placeholder="Select language"
+              />
+            </div>
           </div>
         </div>
 
