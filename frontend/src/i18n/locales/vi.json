@@ -324,9 +324,9 @@
     "albumsInPublishedFolders": "Các album trong thư mục đã xuất bản luôn được xuất bản",
     "albumWillBePrivate": "🔒 Album sẽ là riêng tư",
     "albumsInUnpublishedFolders": "Các album trong thư mục chưa xuất bản luôn là riêng tư",
-    "moveToFolderTitle": "[EN] Move \"{{albumName}}\" to Folder",
-    "moveToFolderHint": "[EN] Select a destination folder or choose Uncategorized to remove from any folder.",
-    "currentFolder": "[EN] Current"
+    "moveToFolderTitle": "Di chuyển \"{{albumName}}\" đến Thư mục  ",
+    "moveToFolderHint": "Chọn một thư mục đích hoặc chọn Chưa phân loại để xóa khỏi bất kỳ thư mục nào.  ",
+    "currentFolder": "Hiện tại  "
   },
   "settings": {
     "saved": "Cài đặt {{section}} đã được lưu!",
@@ -681,21 +681,21 @@
       "percentageText": "{{percentage}}% của tất cả các sự kiện"
     },
     "map": {
-      "loadingMapData": "[EN] Loading map data...",
-      "noLocationData": "[EN] No visitor location data available for this time range",
-      "visitorActivity": "[EN] Visitor Activity",
-      "low": "[EN] Low",
-      "medium": "[EN] Medium",
-      "high": "[EN] High",
-      "totalVisits": "[EN] Total Visits",
-      "uniqueVisitors": "[EN] Unique Visitors"
+      "loadingMapData": "Đang tải dữ liệu bản đồ...  ",
+      "noLocationData": "Không có dữ liệu vị trí khách truy cập nào cho khoảng thời gian này  ",
+      "visitorActivity": "Hoạt động của khách truy cập  ",
+      "low": "Thấp  ",
+      "medium": "Trung bình  ",
+      "high": "Cao  ",
+      "totalVisits": "Tổng số lượt truy cập",
+      "uniqueVisitors": "Lượt truy cập độc nhất  "
     },
     "charts": {
-      "loadingChartData": "[EN] Loading chart data...",
-      "noVisitorData": "[EN] No visitor data available for this time range",
-      "noPageviewData": "[EN] No hourly pageview data available for this time range",
-      "visitors": "[EN] Visitors",
-      "pageviews": "[EN] Pageviews"
+      "loadingChartData": "Đang tải dữ liệu biểu đồ...  ",
+      "noVisitorData": "Không có dữ liệu khách truy cập cho khoảng thời gian này  ",
+      "noPageviewData": "Không có dữ liệu lượt xem trang theo giờ cho khoảng thời gian này  ",
+      "visitors": "Khách truy cập  ",
+      "pageviews": "Lượt xem trang"
     }
   },
   "imageOptimization": {

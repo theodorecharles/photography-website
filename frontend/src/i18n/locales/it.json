@@ -324,9 +324,9 @@
     "deleteFolderTitle": "Elimina cartella",
     "album": "album",
     "albums": "album",
-    "moveToFolderTitle": "[EN] Move \"{{albumName}}\" to Folder",
-    "moveToFolderHint": "[EN] Select a destination folder or choose Uncategorized to remove from any folder.",
-    "currentFolder": "[EN] Current"
+    "moveToFolderTitle": "Sposta \"{{albumName}}\" nella cartella  ",
+    "moveToFolderHint": "Seleziona una cartella di destinazione o scegli Non classificato per rimuovere da qualsiasi cartella.  ",
+    "currentFolder": "Attuale  "
   },
   "settings": {
     "saved": "Impostazioni di {{section}} salvate!",
@@ -681,21 +681,21 @@
       "percentageText": "{{percentage}}% di tutti gli eventi"
     },
     "map": {
-      "loadingMapData": "[EN] Loading map data...",
-      "noLocationData": "[EN] No visitor location data available for this time range",
-      "visitorActivity": "[EN] Visitor Activity",
-      "low": "[EN] Low",
-      "medium": "[EN] Medium",
-      "high": "[EN] High",
-      "totalVisits": "[EN] Total Visits",
-      "uniqueVisitors": "[EN] Unique Visitors"
+      "loadingMapData": "Caricamento dati della mappa...  ",
+      "noLocationData": "Nessun dato sulla posizione dei visitatori disponibile per questo intervallo di tempo  ",
+      "visitorActivity": "Attività dei visitatori  ",
+      "low": "Basso  ",
+      "medium": "Medio  ",
+      "high": "Alto  ",
+      "totalVisits": "Visite totali",
+      "uniqueVisitors": "Visitatori unici  "
     },
     "charts": {
-      "loadingChartData": "[EN] Loading chart data...",
-      "noVisitorData": "[EN] No visitor data available for this time range",
-      "noPageviewData": "[EN] No hourly pageview data available for this time range",
-      "visitors": "[EN] Visitors",
-      "pageviews": "[EN] Pageviews"
+      "loadingChartData": "Caricamento dati del grafico...  ",
+      "noVisitorData": "Nessun dato sui visitatori disponibile per questo intervallo di tempo  ",
+      "noPageviewData": "Nessun dato sulle visualizzazioni di pagina orarie disponibile per questo intervallo di tempo  ",
+      "visitors": "Visitatori  ",
+      "pageviews": "Visualizzazioni di pagina"
     }
   },
   "imageOptimization": {

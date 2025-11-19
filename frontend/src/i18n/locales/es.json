@@ -324,9 +324,9 @@
     "deleteFolderTitle": "Eliminar carpeta",
     "album": "álbum",
     "albums": "álbumes",
-    "moveToFolderTitle": "[EN] Move \"{{albumName}}\" to Folder",
-    "moveToFolderHint": "[EN] Select a destination folder or choose Uncategorized to remove from any folder.",
-    "currentFolder": "[EN] Current"
+    "moveToFolderTitle": "Mover \"{{albumName}}\" a la carpeta  ",
+    "moveToFolderHint": "Seleccione una carpeta de destino o elija Sin clasificar para eliminar de cualquier carpeta.  ",
+    "currentFolder": "Actual  "
   },
   "settings": {
     "saved": "¡Configuración de {{section}} guardada!",
@@ -681,21 +681,21 @@
       "percentageText": "{{percentage}}% de todos los eventos"
     },
     "map": {
-      "loadingMapData": "[EN] Loading map data...",
-      "noLocationData": "[EN] No visitor location data available for this time range",
-      "visitorActivity": "[EN] Visitor Activity",
-      "low": "[EN] Low",
-      "medium": "[EN] Medium",
-      "high": "[EN] High",
-      "totalVisits": "[EN] Total Visits",
-      "uniqueVisitors": "[EN] Unique Visitors"
+      "loadingMapData": "Cargando datos del mapa...  ",
+      "noLocationData": "No hay datos de ubicación de visitantes disponibles para este rango de tiempo  ",
+      "visitorActivity": "Actividad del visitante  ",
+      "low": "Bajo  ",
+      "medium": "Medio  ",
+      "high": "Alto  ",
+      "totalVisits": "Visitas totales",
+      "uniqueVisitors": "Visitantes únicos  "
     },
     "charts": {
-      "loadingChartData": "[EN] Loading chart data...",
-      "noVisitorData": "[EN] No visitor data available for this time range",
-      "noPageviewData": "[EN] No hourly pageview data available for this time range",
-      "visitors": "[EN] Visitors",
-      "pageviews": "[EN] Pageviews"
+      "loadingChartData": "Cargando datos del gráfico...  ",
+      "noVisitorData": "No hay datos de visitantes disponibles para este rango de tiempo  ",
+      "noPageviewData": "No hay datos de vistas de página por hora disponibles para este rango de tiempo  ",
+      "visitors": "Visitantes  ",
+      "pageviews": "Vistas de página"
     }
   },
   "imageOptimization": {

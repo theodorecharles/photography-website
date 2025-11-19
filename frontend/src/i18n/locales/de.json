@@ -324,9 +324,9 @@
     "deleteFolderTitle": "Ordner löschen",
     "album": "Album",
     "albums": "Alben",
-    "moveToFolderTitle": "[EN] Move \"{{albumName}}\" to Folder",
-    "moveToFolderHint": "[EN] Select a destination folder or choose Uncategorized to remove from any folder.",
-    "currentFolder": "[EN] Current"
+    "moveToFolderTitle": "Verschieben von \"{{albumName}}\" in den Ordner  ",
+    "moveToFolderHint": "Wählen Sie einen Zielordner oder wählen Sie Unkategorisiert, um aus einem Ordner zu entfernen.  ",
+    "currentFolder": "Aktuell  "
   },
   "settings": {
     "saved": "{{section}} Einstellungen gespeichert!",
@@ -681,21 +681,21 @@
       "percentageText": "{{percentage}}% aller Ereignisse"
     },
     "map": {
-      "loadingMapData": "[EN] Loading map data...",
-      "noLocationData": "[EN] No visitor location data available for this time range",
-      "visitorActivity": "[EN] Visitor Activity",
-      "low": "[EN] Low",
-      "medium": "[EN] Medium",
-      "high": "[EN] High",
-      "totalVisits": "[EN] Total Visits",
-      "uniqueVisitors": "[EN] Unique Visitors"
+      "loadingMapData": "Lade Kartendaten...  ",
+      "noLocationData": "Keine Besucherdaten für diesen Zeitraum verfügbar  ",
+      "visitorActivity": "Besucheraktivität  ",
+      "low": "Niedrig  ",
+      "medium": "Mittel  ",
+      "high": "Hoch  ",
+      "totalVisits": "Gesamtbesuche",
+      "uniqueVisitors": "Eindeutige Besucher  "
     },
     "charts": {
-      "loadingChartData": "[EN] Loading chart data...",
-      "noVisitorData": "[EN] No visitor data available for this time range",
-      "noPageviewData": "[EN] No hourly pageview data available for this time range",
-      "visitors": "[EN] Visitors",
-      "pageviews": "[EN] Pageviews"
+      "loadingChartData": "Lade Diagrammdaten...  ",
+      "noVisitorData": "Keine Besucherdaten für diesen Zeitraum verfügbar  ",
+      "noPageviewData": "Keine stündlichen Seitenaufrufdaten für diesen Zeitraum verfügbar  ",
+      "visitors": "Besucher  ",
+      "pageviews": "Seitenaufrufe"
     }
   },
   "imageOptimization": {

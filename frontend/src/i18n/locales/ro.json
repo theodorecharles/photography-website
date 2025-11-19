@@ -324,9 +324,9 @@
     "albumsInPublishedFolders": "Albumele din folderele publicate sunt întotdeauna publicate",
     "albumWillBePrivate": "🔒 Albumul va fi privat",
     "albumsInUnpublishedFolders": "Albumele din folderele nepublicate sunt întotdeauna private",
-    "moveToFolderTitle": "[EN] Move \"{{albumName}}\" to Folder",
-    "moveToFolderHint": "[EN] Select a destination folder or choose Uncategorized to remove from any folder.",
-    "currentFolder": "[EN] Current"
+    "moveToFolderTitle": "Mută \"{{albumName}}\" în folder  ",
+    "moveToFolderHint": "Selectați un folder de destinație sau alegeți Fără categorie pentru a elimina din orice folder.  ",
+    "currentFolder": "Curent  "
   },
   "settings": {
     "saved": "Setările {{section}} au fost salvate!",
@@ -681,21 +681,21 @@
       "percentageText": "{{percentage}}% din toate evenimentele"
     },
     "map": {
-      "loadingMapData": "[EN] Loading map data...",
-      "noLocationData": "[EN] No visitor location data available for this time range",
-      "visitorActivity": "[EN] Visitor Activity",
-      "low": "[EN] Low",
-      "medium": "[EN] Medium",
-      "high": "[EN] High",
-      "totalVisits": "[EN] Total Visits",
-      "uniqueVisitors": "[EN] Unique Visitors"
+      "loadingMapData": "Se încarcă datele hărții...  ",
+      "noLocationData": "Nu sunt disponibile date despre locația vizitatorilor pentru această perioadă de timp  ",
+      "visitorActivity": "Activitate vizitatori  ",
+      "low": "Scăzut  ",
+      "medium": "Medie  ",
+      "high": "Ridicat  ",
+      "totalVisits": "Vizite totale",
+      "uniqueVisitors": "Vizitatori unici  "
     },
     "charts": {
-      "loadingChartData": "[EN] Loading chart data...",
-      "noVisitorData": "[EN] No visitor data available for this time range",
-      "noPageviewData": "[EN] No hourly pageview data available for this time range",
-      "visitors": "[EN] Visitors",
-      "pageviews": "[EN] Pageviews"
+      "loadingChartData": "Încărcare date grafic...  ",
+      "noVisitorData": "Nu sunt disponibile date despre vizitatori pentru această perioadă  ",
+      "noPageviewData": "Nu sunt disponibile date despre vizualizările pe oră pentru această perioadă  ",
+      "visitors": "Vizitatori  ",
+      "pageviews": "Vizualizări de pagină"
     }
   },
   "imageOptimization": {

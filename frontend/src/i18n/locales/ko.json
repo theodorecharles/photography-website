@@ -324,9 +324,9 @@
     "deleteFolderTitle": "폴더 삭제",
     "album": "앨범",
     "albums": "앨범",
-    "moveToFolderTitle": "[EN] Move \"{{albumName}}\" to Folder",
-    "moveToFolderHint": "[EN] Select a destination folder or choose Uncategorized to remove from any folder.",
-    "currentFolder": "[EN] Current"
+    "moveToFolderTitle": "\"{{albumName}}\"을 폴더로 이동",
+    "moveToFolderHint": "대상 폴더를 선택하거나 분류되지 않음을 선택하여 어떤 폴더에서도 제거합니다.",
+    "currentFolder": "현재"
   },
   "settings": {
     "saved": "{{section}} 설정이 저장되었습니다!",
@@ -681,21 +681,21 @@
       "percentageText": "전체 이벤트의 {{percentage}}%"
     },
     "map": {
-      "loadingMapData": "[EN] Loading map data...",
-      "noLocationData": "[EN] No visitor location data available for this time range",
-      "visitorActivity": "[EN] Visitor Activity",
-      "low": "[EN] Low",
-      "medium": "[EN] Medium",
-      "high": "[EN] High",
-      "totalVisits": "[EN] Total Visits",
-      "uniqueVisitors": "[EN] Unique Visitors"
+      "loadingMapData": "지도 데이터 로딩 중...",
+      "noLocationData": "이 시간 범위에 대한 방문자 위치 데이터가 없습니다.",
+      "visitorActivity": "방문자 활동",
+      "low": "낮음",
+      "medium": "보통",
+      "high": "높음",
+      "totalVisits": "총 방문 횟수",
+      "uniqueVisitors": "고유 방문자  "
     },
     "charts": {
-      "loadingChartData": "[EN] Loading chart data...",
-      "noVisitorData": "[EN] No visitor data available for this time range",
-      "noPageviewData": "[EN] No hourly pageview data available for this time range",
-      "visitors": "[EN] Visitors",
-      "pageviews": "[EN] Pageviews"
+      "loadingChartData": "차트 데이터 로딩 중...  ",
+      "noVisitorData": "이 시간 범위에 대한 방문자 데이터가 없습니다  ",
+      "noPageviewData": "이 시간 범위에 대한 시간별 페이지뷰 데이터가 없습니다  ",
+      "visitors": "방문자  ",
+      "pageviews": "페이지뷰"
     }
   },
   "imageOptimization": {

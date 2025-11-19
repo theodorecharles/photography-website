@@ -324,9 +324,9 @@
     "deleteFolderTitle": "Excluir pasta",
     "album": "álbum",
     "albums": "álbuns",
-    "moveToFolderTitle": "[EN] Move \"{{albumName}}\" to Folder",
-    "moveToFolderHint": "[EN] Select a destination folder or choose Uncategorized to remove from any folder.",
-    "currentFolder": "[EN] Current"
+    "moveToFolderTitle": "Mover \"{{albumName}}\" para a Pasta  ",
+    "moveToFolderHint": "Selecione uma pasta de destino ou escolha Não Classificado para remover de qualquer pasta.  ",
+    "currentFolder": "Atual  "
   },
   "settings": {
     "saved": "Configurações de {{section}} salvas!",
@@ -681,21 +681,21 @@
       "percentageText": "{{percentage}}% de todos os eventos"
     },
     "map": {
-      "loadingMapData": "[EN] Loading map data...",
-      "noLocationData": "[EN] No visitor location data available for this time range",
-      "visitorActivity": "[EN] Visitor Activity",
-      "low": "[EN] Low",
-      "medium": "[EN] Medium",
-      "high": "[EN] High",
-      "totalVisits": "[EN] Total Visits",
-      "uniqueVisitors": "[EN] Unique Visitors"
+      "loadingMapData": "Carregando dados do mapa...  ",
+      "noLocationData": "Nenhum dado de localização do visitante disponível para este intervalo de tempo  ",
+      "visitorActivity": "Atividade do Visitante  ",
+      "low": "Baixo  ",
+      "medium": "Médio  ",
+      "high": "Alto  ",
+      "totalVisits": "Total de Visitas",
+      "uniqueVisitors": "Visitantes Únicos  "
     },
     "charts": {
-      "loadingChartData": "[EN] Loading chart data...",
-      "noVisitorData": "[EN] No visitor data available for this time range",
-      "noPageviewData": "[EN] No hourly pageview data available for this time range",
-      "visitors": "[EN] Visitors",
-      "pageviews": "[EN] Pageviews"
+      "loadingChartData": "Carregando dados do gráfico...  ",
+      "noVisitorData": "Nenhum dado de visitante disponível para este intervalo de tempo  ",
+      "noPageviewData": "Nenhum dado de visualização de página por hora disponível para este intervalo de tempo  ",
+      "visitors": "Visitantes  ",
+      "pageviews": "Visualizações de Página"
     }
   },
   "imageOptimization": {

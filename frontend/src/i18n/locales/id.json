@@ -324,9 +324,9 @@
     "albumsInPublishedFolders": "Album di folder yang diterbitkan selalu diterbitkan",
     "albumWillBePrivate": "🔒 Album akan bersifat pribadi",
     "albumsInUnpublishedFolders": "Album di folder yang belum diterbitkan selalu bersifat pribadi",
-    "moveToFolderTitle": "[EN] Move \"{{albumName}}\" to Folder",
-    "moveToFolderHint": "[EN] Select a destination folder or choose Uncategorized to remove from any folder.",
-    "currentFolder": "[EN] Current"
+    "moveToFolderTitle": "Pindahkan \"{{albumName}}\" ke Folder  ",
+    "moveToFolderHint": "Pilih folder tujuan atau pilih Tanpa Kategori untuk menghapus dari folder mana pun.  ",
+    "currentFolder": "Saat ini  "
   },
   "settings": {
     "saved": "Pengaturan {{section}} disimpan!",
@@ -681,21 +681,21 @@
       "percentageText": "{{percentage}}% dari semua acara"
     },
     "map": {
-      "loadingMapData": "[EN] Loading map data...",
-      "noLocationData": "[EN] No visitor location data available for this time range",
-      "visitorActivity": "[EN] Visitor Activity",
-      "low": "[EN] Low",
-      "medium": "[EN] Medium",
-      "high": "[EN] High",
-      "totalVisits": "[EN] Total Visits",
-      "uniqueVisitors": "[EN] Unique Visitors"
+      "loadingMapData": "Memuat data peta...  ",
+      "noLocationData": "Tidak ada data lokasi pengunjung yang tersedia untuk rentang waktu ini  ",
+      "visitorActivity": "Aktivitas Pengunjung  ",
+      "low": "Rendah  ",
+      "medium": "Sedang  ",
+      "high": "Tinggi  ",
+      "totalVisits": "Total Kunjungan",
+      "uniqueVisitors": "Pengunjung Unik  "
     },
     "charts": {
-      "loadingChartData": "[EN] Loading chart data...",
-      "noVisitorData": "[EN] No visitor data available for this time range",
-      "noPageviewData": "[EN] No hourly pageview data available for this time range",
-      "visitors": "[EN] Visitors",
-      "pageviews": "[EN] Pageviews"
+      "loadingChartData": "Memuat data grafik...  ",
+      "noVisitorData": "Tidak ada data pengunjung tersedia untuk rentang waktu ini  ",
+      "noPageviewData": "Tidak ada data tampilan halaman per jam tersedia untuk rentang waktu ini  ",
+      "visitors": "Pengunjung  ",
+      "pageviews": "Tampilan Halaman"
     }
   },
   "imageOptimization": {

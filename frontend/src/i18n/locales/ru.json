@@ -324,9 +324,9 @@
     "deleteFolderTitle": "Удалить папку",
     "album": "альбом",
     "albums": "альбомы",
-    "moveToFolderTitle": "[EN] Move \"{{albumName}}\" to Folder",
-    "moveToFolderHint": "[EN] Select a destination folder or choose Uncategorized to remove from any folder.",
-    "currentFolder": "[EN] Current"
+    "moveToFolderTitle": "Переместить \"{{albumName}}\" в папку  ",
+    "moveToFolderHint": "Выберите папку назначения или выберите Без категории, чтобы удалить из любой папки.  ",
+    "currentFolder": "Текущий  "
   },
   "settings": {
     "saved": "Настройки {{section}} сохранены!",
@@ -681,21 +681,21 @@
       "percentageText": "{{percentage}}% от всех событий"
     },
     "map": {
-      "loadingMapData": "[EN] Loading map data...",
-      "noLocationData": "[EN] No visitor location data available for this time range",
-      "visitorActivity": "[EN] Visitor Activity",
-      "low": "[EN] Low",
-      "medium": "[EN] Medium",
-      "high": "[EN] High",
-      "totalVisits": "[EN] Total Visits",
-      "uniqueVisitors": "[EN] Unique Visitors"
+      "loadingMapData": "Загрузка данных карты...  ",
+      "noLocationData": "Нет данных о местоположении посетителей за этот период  ",
+      "visitorActivity": "Активность посетителей  ",
+      "low": "Низкий  ",
+      "medium": "Средний  ",
+      "high": "Высокий  ",
+      "totalVisits": "Всего посещений",
+      "uniqueVisitors": "Уникальные посетители  "
     },
     "charts": {
-      "loadingChartData": "[EN] Loading chart data...",
-      "noVisitorData": "[EN] No visitor data available for this time range",
-      "noPageviewData": "[EN] No hourly pageview data available for this time range",
-      "visitors": "[EN] Visitors",
-      "pageviews": "[EN] Pageviews"
+      "loadingChartData": "Загрузка данных графика...  ",
+      "noVisitorData": "Нет данных о посетителях за этот период времени  ",
+      "noPageviewData": "Нет данных о просмотрах страниц за этот период времени  ",
+      "visitors": "Посетители  ",
+      "pageviews": "Просмотры страниц"
     }
   },
   "imageOptimization": {

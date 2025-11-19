@@ -324,9 +324,9 @@
     "deleteFolderTitle": "Klasörü sil",
     "album": "albüm",
     "albums": "albümler",
-    "moveToFolderTitle": "[EN] Move \"{{albumName}}\" to Folder",
-    "moveToFolderHint": "[EN] Select a destination folder or choose Uncategorized to remove from any folder.",
-    "currentFolder": "[EN] Current"
+    "moveToFolderTitle": "\"{{albumName}}\" Klasöre Taşı",
+    "moveToFolderHint": "Bir hedef klasör seçin veya herhangi bir klasörden çıkarmak için Sınıflandırılmamış'ı seçin.",
+    "currentFolder": "Mevcut"
   },
   "settings": {
     "saved": "{{section}} ayarları kaydedildi!",
@@ -681,21 +681,21 @@
       "percentageText": "Tüm etkinliklerin {{percentage}}%'si"
     },
     "map": {
-      "loadingMapData": "[EN] Loading map data...",
-      "noLocationData": "[EN] No visitor location data available for this time range",
-      "visitorActivity": "[EN] Visitor Activity",
-      "low": "[EN] Low",
-      "medium": "[EN] Medium",
-      "high": "[EN] High",
-      "totalVisits": "[EN] Total Visits",
-      "uniqueVisitors": "[EN] Unique Visitors"
+      "loadingMapData": "Harita verileri yükleniyor...",
+      "noLocationData": "Bu zaman aralığı için ziyaretçi konum verisi mevcut değil",
+      "visitorActivity": "Ziyaretçi Aktivitesi",
+      "low": "Düşük",
+      "medium": "Orta",
+      "high": "Yüksek",
+      "totalVisits": "Toplam Ziyaretler",
+      "uniqueVisitors": "Benzersiz Ziyaretçiler  "
     },
     "charts": {
-      "loadingChartData": "[EN] Loading chart data...",
-      "noVisitorData": "[EN] No visitor data available for this time range",
-      "noPageviewData": "[EN] No hourly pageview data available for this time range",
-      "visitors": "[EN] Visitors",
-      "pageviews": "[EN] Pageviews"
+      "loadingChartData": "Grafik verileri yükleniyor...  ",
+      "noVisitorData": "Bu zaman dilimi için ziyaretçi verisi mevcut değil  ",
+      "noPageviewData": "Bu zaman dilimi için saatlik sayfa görüntüleme verisi mevcut değil  ",
+      "visitors": "Ziyaretçiler  ",
+      "pageviews": "Sayfa Görüntülemeleri"
     }
   },
   "imageOptimization": {

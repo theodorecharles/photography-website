@@ -324,9 +324,9 @@
     "deleteFolderTitle": "Ta bort mapp",
     "album": "album",
     "albums": "album",
-    "moveToFolderTitle": "[EN] Move \"{{albumName}}\" to Folder",
-    "moveToFolderHint": "[EN] Select a destination folder or choose Uncategorized to remove from any folder.",
-    "currentFolder": "[EN] Current"
+    "moveToFolderTitle": "Flytta \"{{albumName}}\" till mapp  ",
+    "moveToFolderHint": "Välj en destinationsmapp eller välj Oklassificerad för att ta bort från någon mapp.  ",
+    "currentFolder": "Aktuell  "
   },
   "settings": {
     "saved": "{{section}} inställningar sparade!",
@@ -681,21 +681,21 @@
       "percentageText": "{{percentage}}% av alla händelser"
     },
     "map": {
-      "loadingMapData": "[EN] Loading map data...",
-      "noLocationData": "[EN] No visitor location data available for this time range",
-      "visitorActivity": "[EN] Visitor Activity",
-      "low": "[EN] Low",
-      "medium": "[EN] Medium",
-      "high": "[EN] High",
-      "totalVisits": "[EN] Total Visits",
-      "uniqueVisitors": "[EN] Unique Visitors"
+      "loadingMapData": "Laddar kartdata...  ",
+      "noLocationData": "Ingen besökarplatsdata tillgänglig för detta tidsintervall  ",
+      "visitorActivity": "Besökaraktivitet  ",
+      "low": "Låg  ",
+      "medium": "Medel  ",
+      "high": "Hög  ",
+      "totalVisits": "Totala besök",
+      "uniqueVisitors": "Unika besökare  "
     },
     "charts": {
-      "loadingChartData": "[EN] Loading chart data...",
-      "noVisitorData": "[EN] No visitor data available for this time range",
-      "noPageviewData": "[EN] No hourly pageview data available for this time range",
-      "visitors": "[EN] Visitors",
-      "pageviews": "[EN] Pageviews"
+      "loadingChartData": "Laddar diagramdata...  ",
+      "noVisitorData": "Ingen besöksdata tillgänglig för detta tidsintervall  ",
+      "noPageviewData": "Ingen timvis sidvisningsdata tillgänglig för detta tidsintervall  ",
+      "visitors": "Besökare  ",
+      "pageviews": "Sidvisningar"
     }
   },
   "imageOptimization": {

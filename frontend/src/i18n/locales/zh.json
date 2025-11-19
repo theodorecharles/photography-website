@@ -324,9 +324,9 @@
     "deleteFolderTitle": "删除文件夹",
     "album": "相册",
     "albums": "相册",
-    "moveToFolderTitle": "[EN] Move \"{{albumName}}\" to Folder",
-    "moveToFolderHint": "[EN] Select a destination folder or choose Uncategorized to remove from any folder.",
-    "currentFolder": "[EN] Current"
+    "moveToFolderTitle": "将 \"{{albumName}}\" 移动到文件夹  ",
+    "moveToFolderHint": "选择目标文件夹或选择“未分类”以从任何文件夹中移除。  ",
+    "currentFolder": "当前  "
   },
   "settings": {
     "saved": "{{section}} 设置已保存！",
@@ -681,21 +681,21 @@
       "percentageText": "占所有事件的 {{percentage}}%"
     },
     "map": {
-      "loadingMapData": "[EN] Loading map data...",
-      "noLocationData": "[EN] No visitor location data available for this time range",
-      "visitorActivity": "[EN] Visitor Activity",
-      "low": "[EN] Low",
-      "medium": "[EN] Medium",
-      "high": "[EN] High",
-      "totalVisits": "[EN] Total Visits",
-      "uniqueVisitors": "[EN] Unique Visitors"
+      "loadingMapData": "正在加载地图数据...  ",
+      "noLocationData": "此时间范围内没有访客位置数据可用  ",
+      "visitorActivity": "访客活动  ",
+      "low": "低  ",
+      "medium": "中  ",
+      "high": "高  ",
+      "totalVisits": "总访问次数",
+      "uniqueVisitors": "独立访客  "
     },
     "charts": {
-      "loadingChartData": "[EN] Loading chart data...",
-      "noVisitorData": "[EN] No visitor data available for this time range",
-      "noPageviewData": "[EN] No hourly pageview data available for this time range",
-      "visitors": "[EN] Visitors",
-      "pageviews": "[EN] Pageviews"
+      "loadingChartData": "加载图表数据...  ",
+      "noVisitorData": "此时间范围内没有访客数据可用  ",
+      "noPageviewData": "此时间范围内没有每小时页面浏览数据可用  ",
+      "visitors": "访客  ",
+      "pageviews": "页面浏览量"
     }
   },
   "imageOptimization": {

@@ -324,9 +324,9 @@
     "deleteFolderTitle": "Verwijder map",
     "album": "album",
     "albums": "albums",
-    "moveToFolderTitle": "[EN] Move \"{{albumName}}\" to Folder",
-    "moveToFolderHint": "[EN] Select a destination folder or choose Uncategorized to remove from any folder.",
-    "currentFolder": "[EN] Current"
+    "moveToFolderTitle": "Verplaats \"{{albumName}}\" naar map  ",
+    "moveToFolderHint": "Selecteer een bestemmingsmap of kies Ongesorteerd om uit elke map te verwijderen.  ",
+    "currentFolder": "Huidig  "
   },
   "settings": {
     "saved": "{{section}} instellingen opgeslagen!",
@@ -681,21 +681,21 @@
       "percentageText": "{{percentage}}% van alle gebeurtenissen"
     },
     "map": {
-      "loadingMapData": "[EN] Loading map data...",
-      "noLocationData": "[EN] No visitor location data available for this time range",
-      "visitorActivity": "[EN] Visitor Activity",
-      "low": "[EN] Low",
-      "medium": "[EN] Medium",
-      "high": "[EN] High",
-      "totalVisits": "[EN] Total Visits",
-      "uniqueVisitors": "[EN] Unique Visitors"
+      "loadingMapData": "Laad kaartgegevens...  ",
+      "noLocationData": "Geen bezoekerslocatiegegevens beschikbaar voor deze tijdsperiode  ",
+      "visitorActivity": "Bezoekersactiviteit  ",
+      "low": "Laag  ",
+      "medium": "Gemiddeld  ",
+      "high": "Hoog  ",
+      "totalVisits": "Totaal aantal bezoeken",
+      "uniqueVisitors": "Unieke bezoekers  "
     },
     "charts": {
-      "loadingChartData": "[EN] Loading chart data...",
-      "noVisitorData": "[EN] No visitor data available for this time range",
-      "noPageviewData": "[EN] No hourly pageview data available for this time range",
-      "visitors": "[EN] Visitors",
-      "pageviews": "[EN] Pageviews"
+      "loadingChartData": "Grafiekgegevens laden...  ",
+      "noVisitorData": "Geen bezoekersgegevens beschikbaar voor deze tijdsperiode  ",
+      "noPageviewData": "Geen uurlijkse paginaweergavegegevens beschikbaar voor deze tijdsperiode  ",
+      "visitors": "Bezoekers  ",
+      "pageviews": "Paginaweergaven"
     }
   },
   "imageOptimization": {
