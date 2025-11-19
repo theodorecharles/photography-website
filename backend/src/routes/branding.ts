@@ -217,6 +217,32 @@ router.post('/upload-avatar', requireManager, upload.single('avatar'), async (re
         .png()
         .toFile(avatarPath);
       
+      // Update icon files so they stay in sync with avatar
+      const icon192Path = path.join(frontendPublicDir, 'icon-192.png');
+      const icon512Path = path.join(frontendPublicDir, 'icon-512.png');
+      const appleTouchIconPath = path.join(frontendPublicDir, 'apple-touch-icon.png');
+
+      // Generate icon-192.png (192x192)
+      await sharp(file.path)
+        .rotate()
+        .resize(192, 192, { fit: 'cover' })
+        .png()
+        .toFile(icon192Path);
+
+      // Generate icon-512.png (512x512)
+      await sharp(file.path)
+        .rotate()
+        .resize(512, 512, { fit: 'cover' })
+        .png()
+        .toFile(icon512Path);
+
+      // Generate apple-touch-icon.png (192x192)
+      await sharp(file.path)
+        .rotate()
+        .resize(192, 192, { fit: 'cover' })
+        .png()
+        .toFile(appleTouchIconPath);
+      
       // Create favicon.png (same as avatar)
       await sharp(file.path)
         .rotate() // Auto-rotate based on EXIF orientation
@@ -231,7 +257,7 @@ router.post('/upload-avatar', requireManager, upload.single('avatar'), async (re
         .toFormat('png')
         .toFile(faviconIcoPath);
       
-      info('[Avatar Upload] Generated avatar.png and favicon files using Sharp');
+      info('[Avatar Upload] Generated avatar.png, icon files, and favicons using Sharp');
       
       // Also copy to dist directory so it's immediately served by nginx
       if (fs.existsSync(frontendDistDir)) {
