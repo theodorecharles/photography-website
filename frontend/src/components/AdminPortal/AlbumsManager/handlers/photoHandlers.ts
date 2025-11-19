@@ -182,6 +182,12 @@ export const createPhotoHandlers = (props: PhotoHandlersProps) => {
 
   // Shuffle handlers
   const handleShuffleClick = (): void => {
+    // Hide any visible overlays when shuffle happens
+    const photoElements = document.querySelectorAll('.admin-photo-item');
+    photoElements.forEach((el) => {
+      el.classList.remove('show-overlay');
+    });
+    
     shufflePhotos(); // Full shuffle on single click
   };
 
@@ -206,6 +212,8 @@ export const createPhotoHandlers = (props: PhotoHandlersProps) => {
       
       photoElements.forEach((el) => {
         el.classList.add('shuffling-active');
+        // Hide any visible overlays when shuffle starts
+        el.classList.remove('show-overlay');
       });
       
       // Get album size for calculations

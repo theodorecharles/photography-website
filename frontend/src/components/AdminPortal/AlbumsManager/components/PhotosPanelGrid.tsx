@@ -61,6 +61,29 @@ const PhotosPanelGrid: React.FC<PhotosPanelGridProps> = ({
   // Track which photo has its overlay visible (only one at a time)
   const [activeOverlayId, setActiveOverlayId] = React.useState<string | null>(null);
   
+  // Clear overlay when shuffle starts
+  React.useEffect(() => {
+    const handleShuffleStart = () => {
+      setActiveOverlayId(null);
+    };
+    
+    // Watch for shuffle button clicks
+    const shuffleButton = document.querySelector('.btn-shuffle-order');
+    if (shuffleButton) {
+      shuffleButton.addEventListener('click', handleShuffleStart);
+      shuffleButton.addEventListener('mousedown', handleShuffleStart);
+      shuffleButton.addEventListener('touchstart', handleShuffleStart);
+    }
+    
+    return () => {
+      if (shuffleButton) {
+        shuffleButton.removeEventListener('click', handleShuffleStart);
+        shuffleButton.removeEventListener('mousedown', handleShuffleStart);
+        shuffleButton.removeEventListener('touchstart', handleShuffleStart);
+      }
+    };
+  }, []);
+  
   // Lock/unlock scrolling based on drag state
   React.useEffect(() => {
     const container = document.getElementById('photos-scroll-container');
