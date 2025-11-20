@@ -241,8 +241,23 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
       display: 'flex', 
       alignItems: 'center', 
       justifyContent: 'center',
-      backgroundColor: '#000'
+      backgroundColor: '#000',
+      flexDirection: 'column',
+      gap: '10px'
     }}>
+      {error && (
+        <div style={{
+          color: '#ff6b6b',
+          padding: '10px',
+          textAlign: 'center',
+          fontSize: '0.9rem',
+          backgroundColor: 'rgba(255, 107, 107, 0.1)',
+          borderRadius: '4px',
+          maxWidth: '90%'
+        }}>
+          {error}
+        </div>
+      )}
       <video
         ref={videoRef}
         controls
