@@ -123,8 +123,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
           console.log('[VideoPlayer] Attempting autoplay');
           video.play().catch(err => {
             console.error('[VideoPlayer] Autoplay failed:', err);
-            // On mobile, autoplay often fails - user must manually start
-            setError('Tap to play video');
+            // On mobile, autoplay often fails - user must manually start (silently fail)
           });
         }
       });
@@ -170,7 +169,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
           console.log('[VideoPlayer] Attempting native autoplay');
           video.play().catch(err => {
             console.error('[VideoPlayer] Native autoplay failed:', err);
-            setError('Tap to play video');
+            // On mobile, autoplay often fails - user must manually start (silently fail)
           });
         }
       });
@@ -239,6 +238,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         controls
         playsInline
         preload="metadata"
+        data-video-id={`${album}/${filename}`}
         style={{
           display: 'block',
           width: '100%',

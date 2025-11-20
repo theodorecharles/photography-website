@@ -3,7 +3,7 @@
  * Shows videos in a single-column list format with titles, descriptions, and share links
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { SITE_URL, API_URL } from '../config';
 import { Photo } from '../types/photo';
@@ -19,6 +19,39 @@ interface VideoListViewProps {
 const VideoListView: React.FC<VideoListViewProps> = ({ videos, album }) => {
   const { t } = useTranslation();
   const [copiedVideoId, setCopiedVideoId] = useState<string | null>(null);
+  const [playingVideoId, setPlayingVideoId] = useState<string | null>(null);
+  const videoRefs = useRef<Map<string, HTMLVideoElement>>(new Map());
+
+  // Pause all other videos when one starts playing
+  useEffect(() => {
+    const handlePlay = (e: Event) => {
+      const playingVideo = e.target as HTMLVideoElement;
+      const videoId = playingVideo.dataset.videoId;
+      
+      if (videoId) {
+        setPlayingVideoId(videoId);
+        
+        // Pause all other videos
+        videoRefs.current.forEach((video, id) => {
+          if (id !== videoId && !video.paused) {
+            video.pause();
+          }
+        });
+      }
+    };
+
+    // Add play event listeners to all videos
+    const videos = document.querySelectorAll('.video-list-item video');
+    videos.forEach((video) => {
+      video.addEventListener('play', handlePlay);
+    });
+
+    return () => {
+      videos.forEach((video) => {
+        video.removeEventListener('play', handlePlay);
+      });
+    };
+  }, [videos.length]); // Re-run when video list changes
 
   const handleShareClick = async (video: Photo) => {
     const filename = video.id.split('/').pop() || video.id;
@@ -51,17 +84,25 @@ const VideoListView: React.FC<VideoListViewProps> = ({ videos, album }) => {
         return (
           <div key={video.id} className="video-list-item">
             <div className="video-player-wrapper">
-              {/* Show thumbnail image as poster */}
-              <img 
-                src={`${API_URL}${video.thumbnail}`} 
-                alt={video.title}
-                className="video-thumbnail-poster"
-              />
-              <VideoPlayer
-                album={video.album}
-                filename={filename}
-                autoplay={false}
-              />
+              {/* Show thumbnail image as poster - hide when video is playing */}
+              {playingVideoId !== video.id && (
+                <img 
+                  src={`${API_URL}${video.thumbnail}`} 
+                  alt={video.title}
+                  className="video-thumbnail-poster"
+                />
+              )}
+              <div 
+                className="video-player-container"
+                data-video-id={video.id}
+                onClick={() => setPlayingVideoId(video.id)}
+              >
+                <VideoPlayer
+                  album={video.album}
+                  filename={filename}
+                  autoplay={false}
+                />
+              </div>
             </div>
             
             <div className="video-info">
