@@ -808,7 +808,9 @@
     "settings": "Configurações",
     "profile": "Perfil",
     "settingsDescription": "Gerenciar branding, links e configuração do sistema",
-    "failedToLoadConfig": "Falha ao carregar a configuração"
+    "failedToLoadConfig": "Falha ao carregar a configuração",
+    "loadingStyles": "Carregando estilos...  ",
+    "loadingSettings": "Carregando configurações..."
   },
   "securitySetup": {
     "title": "🔐 Proteja Sua Conta",

@@ -808,7 +808,9 @@
     "settings": "Ayarlar",
     "profile": "Profil",
     "settingsDescription": "Markalaşma, bağlantılar ve sistem yapılandırmasını yönet",
-    "failedToLoadConfig": "Yapılandırma yüklenemedi"
+    "failedToLoadConfig": "Yapılandırma yüklenemedi",
+    "loadingStyles": "Stil yükleniyor...",
+    "loadingSettings": "Ayarlar yükleniyor..."
   },
   "securitySetup": {
     "title": "🔐 Hesabınızı Güvence Altına Alın",

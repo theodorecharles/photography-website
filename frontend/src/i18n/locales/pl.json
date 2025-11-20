@@ -808,7 +808,9 @@
     "settings": "Ustawienia",
     "profile": "Profil",
     "settingsDescription": "Zarządzaj marką, linkami i konfiguracją systemu",
-    "failedToLoadConfig": "Nie udało się załadować konfiguracji"
+    "failedToLoadConfig": "Nie udało się załadować konfiguracji",
+    "loadingStyles": "Ładowanie stylów...",
+    "loadingSettings": "Ładowanie ustawień..."
   },
   "securitySetup": {
     "title": "🔐 Zabezpiecz swoje konto",

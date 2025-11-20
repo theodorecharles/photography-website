@@ -808,7 +808,9 @@
     "settings": "설정",
     "profile": "프로필",
     "settingsDescription": "브랜딩, 링크 및 시스템 구성을 관리합니다",
-    "failedToLoadConfig": "구성을 로드하지 못했습니다"
+    "failedToLoadConfig": "구성을 로드하지 못했습니다",
+    "loadingStyles": "스타일 로딩 중...",
+    "loadingSettings": "설정 로딩 중..."
   },
   "securitySetup": {
     "title": "🔐 계정을 보호하세요",

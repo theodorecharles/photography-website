@@ -814,7 +814,9 @@
     "settings": "Paramètres",
     "profile": "Profil",
     "settingsDescription": "Gérer la marque, les liens et la configuration du système",
-    "failedToLoadConfig": "Échec du chargement de la configuration"
+    "failedToLoadConfig": "Échec du chargement de la configuration",
+    "loadingStyles": "Chargement des styles...",
+    "loadingSettings": "Chargement des paramètres..."
   },
   "securitySetup": {
     "title": "🔐 Sécurisez votre compte",

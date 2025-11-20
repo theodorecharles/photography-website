@@ -808,7 +808,9 @@
     "settings": "Mga Setting",
     "profile": "Profile",
     "settingsDescription": "Pamahalaan ang branding, mga link, at configuration ng sistema",
-    "failedToLoadConfig": "Nabigong i-load ang configuration"
+    "failedToLoadConfig": "Nabigong i-load ang configuration",
+    "loadingStyles": "Nagloload ng mga estilo...  ",
+    "loadingSettings": "Nagloload ng mga setting..."
   },
   "securitySetup": {
     "title": "🔐 I-secure ang Iyong Account",

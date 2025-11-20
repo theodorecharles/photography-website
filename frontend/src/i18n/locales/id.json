@@ -808,7 +808,9 @@
     "settings": "Pengaturan",
     "profile": "Profil",
     "settingsDescription": "Kelola merek, tautan, dan konfigurasi sistem",
-    "failedToLoadConfig": "Gagal memuat konfigurasi"
+    "failedToLoadConfig": "Gagal memuat konfigurasi",
+    "loadingStyles": "Memuat gaya...",
+    "loadingSettings": "Memuat pengaturan..."
   },
   "securitySetup": {
     "title": "🔐 Amankan Akun Anda",

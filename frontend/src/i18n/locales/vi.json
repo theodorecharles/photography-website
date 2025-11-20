@@ -808,7 +808,9 @@
     "settings": "Cài đặt",
     "profile": "Hồ sơ",
     "settingsDescription": "Quản lý thương hiệu, liên kết và cấu hình hệ thống",
-    "failedToLoadConfig": "Không thể tải cấu hình"
+    "failedToLoadConfig": "Không thể tải cấu hình",
+    "loadingStyles": "Đang tải kiểu dáng...",
+    "loadingSettings": "Đang tải cài đặt..."
   },
   "securitySetup": {
     "title": "🔐 Bảo mật tài khoản của bạn",

@@ -808,7 +808,9 @@
     "settings": "设置",
     "profile": "个人资料",
     "settingsDescription": "管理品牌、链接和系统配置",
-    "failedToLoadConfig": "加载配置失败"
+    "failedToLoadConfig": "加载配置失败",
+    "loadingStyles": "加载样式中...",
+    "loadingSettings": "加载设置中..."
   },
   "securitySetup": {
     "title": "🔐 保护您的账户",

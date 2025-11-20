@@ -808,7 +808,9 @@
     "settings": "Innstillinger",
     "profile": "Profil",
     "settingsDescription": "Administrer merkevare, lenker og systemkonfigurasjon",
-    "failedToLoadConfig": "Kunne ikke laste konfigurasjon"
+    "failedToLoadConfig": "Kunne ikke laste konfigurasjon",
+    "loadingStyles": "Laster inn stiler...",
+    "loadingSettings": "Laster inn innstillinger..."
   },
   "securitySetup": {
     "title": "🔐 Sikre kontoen din",

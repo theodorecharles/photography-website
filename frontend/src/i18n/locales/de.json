@@ -814,7 +814,9 @@
     "settings": "Einstellungen",
     "profile": "Profil",
     "settingsDescription": "Verwalten Sie Branding, Links und Systemkonfiguration",
-    "failedToLoadConfig": "Konfiguration konnte nicht geladen werden"
+    "failedToLoadConfig": "Konfiguration konnte nicht geladen werden",
+    "loadingStyles": "Stile werden geladen...  ",
+    "loadingSettings": "Einstellungen werden geladen..."
   },
   "securitySetup": {
     "title": "🔐 Sichern Sie Ihr Konto",

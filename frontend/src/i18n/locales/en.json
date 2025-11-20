@@ -828,7 +828,9 @@
     "settings": "Settings",
     "profile": "Profile",
     "settingsDescription": "Manage branding, links, and system configuration",
-    "failedToLoadConfig": "Failed to load configuration"
+    "failedToLoadConfig": "Failed to load configuration",
+    "loadingStyles": "Loading styles...",
+    "loadingSettings": "Loading settings..."
   },
   "testEmailModal": {
     "title": "Send Test Email",

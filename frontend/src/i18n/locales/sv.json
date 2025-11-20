@@ -808,7 +808,9 @@
     "settings": "Inställningar",
     "profile": "Profil",
     "settingsDescription": "Hantera varumärke, länkar och systemkonfiguration",
-    "failedToLoadConfig": "Misslyckades med att ladda konfiguration"
+    "failedToLoadConfig": "Misslyckades med att ladda konfiguration",
+    "loadingStyles": "Laddar stilar...",
+    "loadingSettings": "Laddar inställningar..."
   },
   "securitySetup": {
     "title": "🔐 Säkra ditt konto",

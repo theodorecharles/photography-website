@@ -808,7 +808,9 @@
     "settings": "Setări",
     "profile": "Profil",
     "settingsDescription": "Gestionați brandingul, linkurile și configurația sistemului",
-    "failedToLoadConfig": "Încărcarea configurației a eșuat"
+    "failedToLoadConfig": "Încărcarea configurației a eșuat",
+    "loadingStyles": "Încărcare stiluri...",
+    "loadingSettings": "Încărcare setări..."
   },
   "securitySetup": {
     "title": "🔐 Securizați-vă contul",

@@ -808,7 +808,9 @@
     "settings": "Instellingen",
     "profile": "Profiel",
     "settingsDescription": "Beheer branding, links en systeemconfiguratie",
-    "failedToLoadConfig": "Configuratie kon niet worden geladen"
+    "failedToLoadConfig": "Configuratie kon niet worden geladen",
+    "loadingStyles": "Stijlen laden...",
+    "loadingSettings": "Instellingen laden..."
   },
   "securitySetup": {
     "title": "🔐 Beveilig uw account",
