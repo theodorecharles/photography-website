@@ -207,11 +207,14 @@ const BrandingSection: React.FC<BrandingSectionProps> = ({
                     setMessage({ type: 'success', text: t(`branding.${sectionKey}`) });
         trackBrandingUpdate(fields.map(f => String(f)));
         
-        // Update original branding to reflect the saved state
-        setOriginalBranding(updatedBranding);
-        
         // Reload branding to get fresh data
         await loadBranding();
+        
+        // Update original branding to match the reloaded data (after loadBranding completes)
+        // Use a small delay to ensure parent state has updated
+        setTimeout(() => {
+          setOriginalBranding(branding);
+        }, 100);
         
         // Notify main app to refresh branding (site name or avatar)
         if (fields.includes('siteName') || fields.includes('avatarPath')) {
