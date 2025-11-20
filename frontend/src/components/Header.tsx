@@ -497,6 +497,12 @@ export default function Header({
   const location = useLocation();
   const navigate = useNavigate();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [avatarLoaded, setAvatarLoaded] = useState(false);
+
+  // Reset avatar loaded state when avatar path changes
+  useEffect(() => {
+    setAvatarLoaded(false);
+  }, [avatarPath, avatarCacheBust]);
 
   // Check if user is authenticated
   useEffect(() => {
@@ -552,11 +558,13 @@ export default function Header({
             <LogoutIcon width="20" height="20" />
           </button>
         )}
-        <Link to="/">
+        <Link to="/" style={{ visibility: avatarLoaded ? 'visible' : 'hidden' }}>
           <img
             src={`${API_URL}${avatarPath}?v=${avatarCacheBust}`}
             alt={siteName}
             className="avatar"
+            onLoad={() => setAvatarLoaded(true)}
+            onError={() => setAvatarLoaded(true)} // Show even on error to avoid permanent blank
           />
           <h1 className="header-title">{siteName}</h1>
         </Link>
