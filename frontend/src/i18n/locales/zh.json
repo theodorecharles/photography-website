@@ -182,7 +182,8 @@
     "primaryColorSaved": "主色保存成功！",
     "secondaryColorSaved": "副色保存成功！",
     "metaDescriptionSaved": "元描述保存成功！",
-    "metaKeywordsSaved": "元关键词保存成功！"
+    "metaKeywordsSaved": "元关键词保存成功！",
+    "LogoSaved": "徽标保存成功！"
   },
   "license": {
     "title": "照片许可",

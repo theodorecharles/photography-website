@@ -182,7 +182,8 @@
     "primaryColorSaved": "Cor Primária salva com sucesso!  ",
     "secondaryColorSaved": "Cor Secundária salva com sucesso!  ",
     "metaDescriptionSaved": "Descrição Meta salva com sucesso!  ",
-    "metaKeywordsSaved": "Palavras-chave Meta salvas com sucesso!"
+    "metaKeywordsSaved": "Palavras-chave Meta salvas com sucesso!",
+    "LogoSaved": "Logo salvo com sucesso!"
   },
   "license": {
     "title": "Licença de Foto",

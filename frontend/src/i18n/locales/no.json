@@ -182,7 +182,8 @@
     "primaryColorSaved": "Primærfarge lagret vellykket!  ",
     "secondaryColorSaved": "Sekundærfarge lagret vellykket!  ",
     "metaDescriptionSaved": "Meta-beskrivelse lagret vellykket!  ",
-    "metaKeywordsSaved": "Meta-nøkkelord lagret vellykket!"
+    "metaKeywordsSaved": "Meta-nøkkelord lagret vellykket!",
+    "LogoSaved": "Logoen ble lagret med suksess!"
   },
   "license": {
     "title": "Fotolisens",

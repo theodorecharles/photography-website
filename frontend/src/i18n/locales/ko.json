@@ -182,7 +182,8 @@
     "primaryColorSaved": "기본 색상이 성공적으로 저장되었습니다!",
     "secondaryColorSaved": "보조 색상이 성공적으로 저장되었습니다!",
     "metaDescriptionSaved": "메타 설명이 성공적으로 저장되었습니다!",
-    "metaKeywordsSaved": "메타 키워드가 성공적으로 저장되었습니다!"
+    "metaKeywordsSaved": "메타 키워드가 성공적으로 저장되었습니다!",
+    "LogoSaved": "로고가 성공적으로 저장되었습니다!"
   },
   "license": {
     "title": "사진 라이선스",

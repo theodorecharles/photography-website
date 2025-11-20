@@ -341,9 +341,20 @@ router.post(
           "[Avatar Upload] Generated avatar.png, icon files, and favicons using Sharp"
         );
 
-        // Also copy to dist directory so it's immediately served by nginx
+        // Also copy all icons and favicons to dist directory so they're immediately served
         if (fs.existsSync(frontendDistDir)) {
+          const faviconPngPathDist = path.join(frontendDistDir, "favicon.png");
+          const icon192PathDist = path.join(frontendDistDir, "icon-192.png");
+          const icon512PathDist = path.join(frontendDistDir, "icon-512.png");
+          const appleTouchIconPathDist = path.join(frontendDistDir, "apple-touch-icon.png");
+          
           fs.copyFileSync(faviconIcoPath, faviconIcoPathDist);
+          fs.copyFileSync(faviconPngPath, faviconPngPathDist);
+          fs.copyFileSync(icon192Path, icon192PathDist);
+          fs.copyFileSync(icon512Path, icon512PathDist);
+          fs.copyFileSync(appleTouchIconPath, appleTouchIconPathDist);
+          
+          info("[Avatar Upload] Copied all icons and favicons to dist directory");
         }
       } catch (err: any) {
         error("[Avatar Upload] Failed to process avatar with Sharp:", err);

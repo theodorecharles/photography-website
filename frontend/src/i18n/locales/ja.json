@@ -182,7 +182,8 @@
     "primaryColorSaved": "プライマリカラーが正常に保存されました！",
     "secondaryColorSaved": "セカンダリカラーが正常に保存されました！",
     "metaDescriptionSaved": "メタディスクリプションが正常に保存されました！",
-    "metaKeywordsSaved": "メタキーワードが正常に保存されました！"
+    "metaKeywordsSaved": "メタキーワードが正常に保存されました！",
+    "LogoSaved": "ロゴが正常に保存されました！"
   },
   "license": {
     "title": "写真ライセンス",
