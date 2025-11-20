@@ -230,6 +230,8 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         playsInline
         preload="metadata"
         style={{
+          width: '100%',
+          height: '100%',
           maxWidth: 'calc(100vw - 20px)',
           maxHeight: 'calc(100vh - 100px)',
           objectFit: 'contain'
