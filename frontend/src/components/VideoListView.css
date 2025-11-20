@@ -37,30 +37,14 @@
   border-radius: 4px;
   overflow: hidden;
   background: #000;
-  position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-.video-thumbnail-poster {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 100%;
-  max-height: 80vh;
-  height: auto;
-  object-fit: contain;
-  z-index: 0;
-  pointer-events: none;
-}
-
 .video-player-container {
-  position: relative;
   width: 100%;
   max-width: 100%;
-  z-index: 1;
   display: flex;
   justify-content: center;
 }

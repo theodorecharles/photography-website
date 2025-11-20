@@ -13,6 +13,7 @@ interface VideoPlayerProps {
   filename: string;
   videoTitle?: string;
   autoplay?: boolean;
+  posterUrl?: string; // Thumbnail to show before video plays
   onLoadStart?: () => void;
   onLoaded?: () => void;
 }
@@ -22,6 +23,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   filename,
   videoTitle = '',
   autoplay = false,
+  posterUrl,
   onLoadStart,
   onLoaded
 }) => {
@@ -341,6 +343,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         controls
         playsInline
         preload="metadata"
+        poster={posterUrl}
         data-video-id={`${album}/${filename}`}
         style={{
           display: 'block',

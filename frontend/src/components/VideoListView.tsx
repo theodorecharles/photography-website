@@ -20,7 +20,6 @@ interface VideoListViewProps {
 const VideoListView: React.FC<VideoListViewProps> = ({ videos, album }) => {
   const { t } = useTranslation();
   const [copiedVideoId, setCopiedVideoId] = useState<string | null>(null);
-  const [playingVideoId, setPlayingVideoId] = useState<string | null>(null);
 
   // Pause all other videos when one starts playing
   useEffect(() => {
@@ -29,8 +28,6 @@ const VideoListView: React.FC<VideoListViewProps> = ({ videos, album }) => {
       const videoId = playingVideo.dataset.videoId;
       
       if (videoId) {
-        setPlayingVideoId(videoId);
-        
         // Pause all other videos
         const allVideos = document.querySelectorAll('.video-list-item video');
         allVideos.forEach((video) => {
@@ -87,22 +84,15 @@ const VideoListView: React.FC<VideoListViewProps> = ({ videos, album }) => {
         return (
           <div key={video.id} className="video-list-item">
             <div className="video-player-wrapper">
-              {/* Show thumbnail image as poster - hide when video is playing */}
-              {playingVideoId !== video.id && (
-                <img 
-                  src={`${API_URL}${video.thumbnail}`} 
-                  alt={video.title}
-                  className="video-thumbnail-poster"
-                />
-              )}
               <div 
                 className="video-player-container"
                 data-video-id={video.id}
-                onClick={() => setPlayingVideoId(video.id)}
               >
                 <VideoPlayer
                   album={video.album}
                   filename={filename}
+                  videoTitle={video.title}
+                  posterUrl={`${API_URL}${video.thumbnail}`}
                   autoplay={false}
                 />
               </div>
