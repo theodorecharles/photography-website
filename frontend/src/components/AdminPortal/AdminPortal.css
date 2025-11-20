@@ -9,6 +9,46 @@
   position: relative;
 }
 
+/* Login page background - matches setup wizard */
+.admin-portal:has(.auth-section) {
+  min-height: 100vh;
+  background: #1a1a1a;
+  overflow: hidden;
+}
+
+/* Rotating gradient overlay for login page */
+.admin-portal:has(.auth-section)::before {
+  content: '';
+  position: absolute;
+  inset: -50%;
+  background: conic-gradient(
+    from 0deg at 50% 50%,
+    #0a1820 0deg,
+    #0d2825 45deg,
+    #1f280a 90deg,
+    #281a0a 135deg,
+    #0a1f28 180deg,
+    #152820 225deg,
+    #201a15 270deg,
+    #0d2825 315deg,
+    #0a1820 360deg
+  );
+  animation: rotateGradient 20s linear infinite;
+  opacity: 0.7;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Rotating gradient animation */
+@keyframes rotateGradient {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
 /* Toast Notification Container */
 .toast-container {
   position: fixed;
