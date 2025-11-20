@@ -99,9 +99,15 @@
     "shutter": "Obturador",
     "iso": "ISO",
     "dateTaken": "Data da Captura",
+    "resolution": "Resolução  ",
+    "duration": "Duração",
     "noPhotosYet": "Sem Fotos Ainda",
     "albumEmpty": "Este álbum está vazio. É hora de adicionar algumas fotos incríveis!",
     "goToAdminPanel": "Ir para o Painel de Administração"
+  },
+  "video": {
+    "resolution": "Resolução  ",
+    "duration": "Duração"
   },
   "admin": {
     "title": "Portal de Administração",

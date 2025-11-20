@@ -27,24 +27,48 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    console.log('[VideoPlayer] Component mounted/updated:', { album, filename, autoplay });
+    
     const video = videoRef.current;
     if (!video) {
       console.error('[VideoPlayer] Video ref is null');
+      setError('Video element not initialized');
       return;
     }
+
+    console.log('[VideoPlayer] Video element found:', video);
 
     if (onLoadStart) onLoadStart();
 
     // Load master playlist for adaptive streaming
     const masterPlaylistUrl = `${API_URL}/api/video/${encodeURIComponent(album)}/${encodeURIComponent(filename)}/master.m3u8`;
-    console.log('[VideoPlayer] Loading video:', { 
+    console.log('[VideoPlayer] Constructed URL:', { 
       album, 
       filename, 
       encodedAlbum: encodeURIComponent(album),
       encodedFilename: encodeURIComponent(filename),
-      url: masterPlaylistUrl,
+      fullUrl: masterPlaylistUrl,
       API_URL
     });
+    
+    // Test URL accessibility
+    fetch(masterPlaylistUrl, { credentials: 'include' })
+      .then(res => {
+        console.log('[VideoPlayer] Playlist fetch test:', res.status, res.statusText);
+        if (!res.ok) {
+          return res.text().then(text => {
+            console.error('[VideoPlayer] Playlist not accessible:', text);
+            setError(`Playlist error: ${res.status} ${res.statusText}`);
+          });
+        }
+        return res.text().then(text => {
+          console.log('[VideoPlayer] Playlist content:', text.substring(0, 200));
+        });
+      })
+      .catch(err => {
+        console.error('[VideoPlayer] Playlist fetch failed:', err);
+        setError(`Network error: ${err.message}`);
+      });
 
     if (Hls.isSupported()) {
       console.log('[VideoPlayer] Using HLS.js for playback');

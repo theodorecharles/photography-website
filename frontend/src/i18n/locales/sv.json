@@ -99,9 +99,15 @@
     "shutter": "Slutare",
     "iso": "ISO",
     "dateTaken": "Datum tagen",
+    "resolution": "Upplösning  ",
+    "duration": "Varaktighet",
     "noPhotosYet": "Inga foton ännu",
     "albumEmpty": "Detta album är tomt. Dags att lägga till några fantastiska foton!",
     "goToAdminPanel": "Gå till administrationspanelen"
+  },
+  "video": {
+    "resolution": "Upplösning  ",
+    "duration": "Varaktighet"
   },
   "admin": {
     "title": "Adminportal",

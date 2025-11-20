@@ -99,9 +99,15 @@
     "shutter": "Lukker",
     "iso": "ISO",
     "dateTaken": "Dato tatt",
+    "resolution": "Oppløsning  ",
+    "duration": "Varighet",
     "noPhotosYet": "Ingen bilder ennå",
     "albumEmpty": "Dette albumet er tomt. Tid for å legge til noen fantastiske bilder!",
     "goToAdminPanel": "Gå til administrasjonspanelet"
+  },
+  "video": {
+    "resolution": "Oppløsning  ",
+    "duration": "Varighet"
   },
   "admin": {
     "title": "Admin Portal",

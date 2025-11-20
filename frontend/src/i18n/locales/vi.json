@@ -101,7 +101,13 @@
     "aperture": "Khẩu độ",
     "shutter": "Cửa chớp",
     "iso": "ISO",
-    "dateTaken": "Ngày chụp"
+    "dateTaken": "Ngày chụp",
+    "resolution": "Độ phân giải  ",
+    "duration": "Thời gian  "
+  },
+  "video": {
+    "resolution": "Độ phân giải  ",
+    "duration": "Thời gian"
   },
   "admin": {
     "title": "Cổng quản trị",

@@ -99,9 +99,15 @@
     "shutter": "Enstantane",
     "iso": "ISO",
     "dateTaken": "Çekim Tarihi",
+    "resolution": "Çözünürlük  ",
+    "duration": "Süre",
     "noPhotosYet": "Henüz Fotoğraf Yok",
     "albumEmpty": "Bu albüm boş. Harika fotoğraflar ekleme zamanı!",
     "goToAdminPanel": "Yönetici Paneline Git"
+  },
+  "video": {
+    "resolution": "Çözünürlük  ",
+    "duration": "Süre"
   },
   "admin": {
     "title": "Yönetici Portalı",

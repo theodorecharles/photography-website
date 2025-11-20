@@ -99,9 +99,15 @@
     "shutter": "Migawka",
     "iso": "ISO",
     "dateTaken": "Data wykonania",
+    "resolution": "Rozdzielczość  ",
+    "duration": "Czas trwania",
     "noPhotosYet": "Brak zdjęć",
     "albumEmpty": "Ten album jest pusty. Czas dodać niesamowite zdjęcia!",
     "goToAdminPanel": "Przejdź do panelu administracyjnego"
+  },
+  "video": {
+    "resolution": "Rozdzielczość  ",
+    "duration": "Czas trwania"
   },
   "admin": {
     "title": "Portal administracyjny",

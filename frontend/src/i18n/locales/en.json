@@ -119,7 +119,13 @@
     "aperture": "Aperture",
     "shutter": "Shutter",
     "iso": "ISO",
-    "dateTaken": "Date Taken"
+    "dateTaken": "Date Taken",
+    "resolution": "Resolution",
+    "duration": "Duration"
+  },
+  "video": {
+    "resolution": "Resolution",
+    "duration": "Duration"
   },
   "admin": {
     "title": "Admin Portal",

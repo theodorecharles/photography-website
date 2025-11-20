@@ -101,7 +101,13 @@
     "aperture": "Aperture",
     "shutter": "Shutter",
     "iso": "ISO",
-    "dateTaken": "Petsa ng Kinuha"
+    "dateTaken": "Petsa ng Kinuha",
+    "resolution": "Resolusyon  ",
+    "duration": "Tagal  "
+  },
+  "video": {
+    "resolution": "Resolusyon  ",
+    "duration": "Tagal"
   },
   "admin": {
     "title": "Admin Portal",

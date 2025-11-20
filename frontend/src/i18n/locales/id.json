@@ -101,7 +101,13 @@
     "aperture": "Bukaan",
     "shutter": "Shutter",
     "iso": "ISO",
-    "dateTaken": "Tanggal Diambil"
+    "dateTaken": "Tanggal Diambil",
+    "resolution": "Resolusi  ",
+    "duration": "Durasi  "
+  },
+  "video": {
+    "resolution": "Resolusi  ",
+    "duration": "Durasi"
   },
   "admin": {
     "title": "Portal Admin",

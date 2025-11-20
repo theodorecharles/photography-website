@@ -99,9 +99,15 @@
     "shutter": "快门",
     "iso": "ISO",
     "dateTaken": "拍摄日期",
+    "resolution": "分辨率  ",
+    "duration": "持续时间",
     "noPhotosYet": "还没有照片",
     "albumEmpty": "这个相册是空的。是时候添加一些精彩的照片了！",
     "goToAdminPanel": "前往管理面板"
+  },
+  "video": {
+    "resolution": "分辨率  ",
+    "duration": "持续时间"
   },
   "admin": {
     "title": "管理门户",

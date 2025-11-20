@@ -99,9 +99,15 @@
     "shutter": "셔터",
     "iso": "ISO",
     "dateTaken": "촬영 날짜",
+    "resolution": "해상도  ",
+    "duration": "지속 시간",
     "noPhotosYet": "사진이 아직 없습니다",
     "albumEmpty": "이 앨범은 비어 있습니다. 멋진 사진을 추가할 시간입니다!",
     "goToAdminPanel": "관리자 패널로 이동"
+  },
+  "video": {
+    "resolution": "해상도  ",
+    "duration": "지속 시간"
   },
   "admin": {
     "title": "관리자 포털",

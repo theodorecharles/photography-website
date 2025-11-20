@@ -99,9 +99,15 @@
     "shutter": "Sluiter",
     "iso": "ISO",
     "dateTaken": "Datum genomen",
+    "resolution": "Resolutie  ",
+    "duration": "Duur",
     "noPhotosYet": "Nog geen foto's",
     "albumEmpty": "Dit album is leeg. Tijd om enkele geweldige foto's toe te voegen!",
     "goToAdminPanel": "Ga naar het Admin Paneel"
+  },
+  "video": {
+    "resolution": "Resolutie  ",
+    "duration": "Duur"
   },
   "admin": {
     "title": "Beheerportaal",

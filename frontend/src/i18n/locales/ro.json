@@ -101,7 +101,13 @@
     "aperture": "Diafragmă",
     "shutter": "Obturator",
     "iso": "ISO",
-    "dateTaken": "Data capturării"
+    "dateTaken": "Data capturării",
+    "resolution": "Rezoluție  ",
+    "duration": "Durată  "
+  },
+  "video": {
+    "resolution": "Rezoluție  ",
+    "duration": "Durată"
   },
   "admin": {
     "title": "Portal Admin",

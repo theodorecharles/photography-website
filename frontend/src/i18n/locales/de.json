@@ -99,9 +99,15 @@
     "shutter": "Verschlusszeit",
     "iso": "ISO",
     "dateTaken": "Aufnahmedatum",
+    "resolution": "Auflösung  ",
+    "duration": "Dauer",
     "noPhotosYet": "Noch keine Fotos",
     "albumEmpty": "Dieses Album ist leer. Zeit, einige tolle Fotos hinzuzufügen!",
     "goToAdminPanel": "Gehe zum Admin-Panel"
+  },
+  "video": {
+    "resolution": "Auflösung  ",
+    "duration": "Dauer"
   },
   "admin": {
     "title": "Admin-Portal",

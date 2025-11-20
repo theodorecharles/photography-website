@@ -99,9 +99,15 @@
     "shutter": "シャッター速度",
     "iso": "ISO",
     "dateTaken": "撮影日",
+    "resolution": "解像度  ",
+    "duration": "期間",
     "noPhotosYet": "まだ写真がありません",
     "albumEmpty": "このアルバムは空です。素晴らしい写真を追加する時間です！",
     "goToAdminPanel": "管理パネルに移動"
+  },
+  "video": {
+    "resolution": "解像度  ",
+    "duration": "期間"
   },
   "admin": {
     "title": "管理ポータル",

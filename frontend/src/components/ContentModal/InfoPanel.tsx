@@ -126,12 +126,12 @@ const InfoPanel: React.FC<InfoPanelProps> = ({
       {isVideo && videoMetadata && (
         <>
           <div className="info-item">
-            <span className="info-label">{t('photo.resolution')}:</span>
+            <span className="info-label">{t('video.resolution')}:</span>
             <span className="info-value">{videoMetadata.width}x{videoMetadata.height}</span>
           </div>
           
           <div className="info-item">
-            <span className="info-label">{t('photo.duration')}:</span>
+            <span className="info-label">{t('video.duration')}:</span>
             <span className="info-value">{formatDuration(videoMetadata.duration)}</span>
           </div>
         </>
