@@ -7,19 +7,15 @@
 
 .admin-portal {
   position: relative;
-}
-
-/* Login page background - matches setup wizard */
-.admin-portal:has(.auth-section) {
   min-height: 100vh;
   background: #1a1a1a;
   overflow: hidden;
 }
 
-/* Rotating gradient overlay for login page */
-.admin-portal:has(.auth-section)::before {
+/* Rotating gradient overlay for entire admin portal */
+.admin-portal::before {
   content: '';
-  position: absolute;
+  position: fixed;
   inset: -50%;
   background: conic-gradient(
     from 0deg at 50% 50%,
@@ -46,6 +42,106 @@
   }
   100% {
     transform: rotate(360deg);
+  }
+}
+
+/* Vibrant bokeh/lens effect circles matching setup wizard */
+.admin-portal::after {
+  content: '';
+  position: fixed;
+  top: -30%;
+  right: -10%;
+  width: 700px;
+  height: 700px;
+  background: radial-gradient(circle, rgba(255, 193, 7, 0.15) 0%, rgba(255, 152, 0, 0.08) 40%, transparent 70%);
+  border-radius: 50%;
+  animation: float 18s ease-in-out infinite, pulse 6s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.bokeh-circle-1 {
+  position: fixed;
+  bottom: -20%;
+  left: -5%;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(0, 188, 212, 0.15) 0%, rgba(0, 150, 136, 0.08) 40%, transparent 70%);
+  border-radius: 50%;
+  animation: floatReverse 22s ease-in-out infinite, pulseReverse 8s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.bokeh-circle-2 {
+  position: fixed;
+  top: 40%;
+  left: 50%;
+  width: 550px;
+  height: 550px;
+  background: radial-gradient(circle, rgba(74, 222, 128, 0.12) 0%, rgba(34, 197, 94, 0.06) 40%, transparent 70%);
+  border-radius: 50%;
+  animation: floatCenter 25s ease-in-out infinite, pulse 10s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Float animation */
+@keyframes float {
+  0%, 100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  33% {
+    transform: translate(30px, -30px) rotate(5deg);
+  }
+  66% {
+    transform: translate(-20px, 20px) rotate(-5deg);
+  }
+}
+
+/* Float animation (reverse) for bokeh-circle-1 */
+@keyframes floatReverse {
+  0%, 100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  33% {
+    transform: translate(-30px, 30px) rotate(-5deg);
+  }
+  66% {
+    transform: translate(20px, -20px) rotate(5deg);
+  }
+}
+
+/* Float animation for centered bokeh-circle-2 */
+@keyframes floatCenter {
+  0%, 100% {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  33% {
+    transform: translate(calc(-50% + 30px), calc(-50% - 30px)) rotate(5deg);
+  }
+  66% {
+    transform: translate(calc(-50% - 20px), calc(-50% + 20px)) rotate(-5deg);
+  }
+}
+
+/* Pulse animation */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+/* Pulse animation (reverse timing) */
+@keyframes pulseReverse {
+  0%, 100% {
+    opacity: 0.8;
+  }
+  50% {
+    opacity: 1;
   }
 }
 
