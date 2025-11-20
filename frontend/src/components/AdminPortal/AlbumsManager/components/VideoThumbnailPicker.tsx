@@ -4,6 +4,7 @@
  */
 
 import React, { useRef, useState, useEffect } from 'react';
+import Hls from 'hls.js';
 import { API_URL } from '../../../../config';
 
 interface VideoThumbnailPickerProps {
@@ -18,40 +19,94 @@ const VideoThumbnailPicker: React.FC<VideoThumbnailPickerProps> = ({
   onThumbnailUpdated
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const hlsRef = useRef<Hls | null>(null);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [isUpdating, setIsUpdating] = useState(false);
   const [updateStatus, setUpdateStatus] = useState<string>('');
   const [videoError, setVideoError] = useState(false);
 
-  // Load video metadata
+  // Load video with HLS.js
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
 
-    const handleLoadedMetadata = () => {
-      setDuration(video.duration);
-      setVideoError(false);
-    };
+    const masterPlaylistUrl = `${API_URL}/api/video/${encodeURIComponent(album)}/${encodeURIComponent(filename)}/master.m3u8`;
 
     const handleTimeUpdate = () => {
       setCurrentTime(video.currentTime);
     };
 
-    const handleError = () => {
-      setVideoError(true);
-    };
-
-    video.addEventListener('loadedmetadata', handleLoadedMetadata);
     video.addEventListener('timeupdate', handleTimeUpdate);
-    video.addEventListener('error', handleError);
 
-    return () => {
-      video.removeEventListener('loadedmetadata', handleLoadedMetadata);
-      video.removeEventListener('timeupdate', handleTimeUpdate);
-      video.removeEventListener('error', handleError);
-    };
-  }, []);
+    if (Hls.isSupported()) {
+      const hls = new Hls({
+        enableWorker: true,
+        lowLatencyMode: false,
+        backBufferLength: 90,
+        debug: false,
+        xhrSetup: (xhr: XMLHttpRequest) => {
+          xhr.withCredentials = true;
+        },
+      });
+
+      hlsRef.current = hls;
+      hls.loadSource(masterPlaylistUrl);
+      hls.attachMedia(video);
+
+      hls.on(Hls.Events.MANIFEST_PARSED, () => {
+        setDuration(video.duration || 0);
+        setVideoError(false);
+      });
+
+      hls.on(Hls.Events.ERROR, (_event, data) => {
+        if (data.fatal) {
+          console.error('[VideoThumbnailPicker] HLS error:', data);
+          setVideoError(true);
+        }
+      });
+
+      // Handle metadata loaded
+      const handleLoadedMetadata = () => {
+        setDuration(video.duration);
+        setVideoError(false);
+      };
+      video.addEventListener('loadedmetadata', handleLoadedMetadata);
+
+      return () => {
+        video.removeEventListener('timeupdate', handleTimeUpdate);
+        video.removeEventListener('loadedmetadata', handleLoadedMetadata);
+        hls.destroy();
+        hlsRef.current = null;
+      };
+    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+      // Native HLS support (Safari)
+      video.src = masterPlaylistUrl;
+      
+      const handleLoadedMetadata = () => {
+        setDuration(video.duration);
+        setVideoError(false);
+      };
+      
+      const handleError = () => {
+        setVideoError(true);
+      };
+
+      video.addEventListener('loadedmetadata', handleLoadedMetadata);
+      video.addEventListener('error', handleError);
+
+      return () => {
+        video.removeEventListener('timeupdate', handleTimeUpdate);
+        video.removeEventListener('loadedmetadata', handleLoadedMetadata);
+        video.removeEventListener('error', handleError);
+      };
+    } else {
+      setVideoError(true);
+      return () => {
+        video.removeEventListener('timeupdate', handleTimeUpdate);
+      };
+    }
+  }, [album, filename]);
 
   const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
     const video = videoRef.current;
@@ -105,9 +160,6 @@ const VideoThumbnailPicker: React.FC<VideoThumbnailPickerProps> = ({
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  // Use rotated MP4 for scrubbing (better frame-by-frame control than HLS)
-  const videoUrl = `${API_URL}/api/video/${encodeURIComponent(album)}/${encodeURIComponent(filename)}/rotated.mp4`;
-
   if (videoError) {
     return (
       <div style={{
@@ -151,7 +203,6 @@ const VideoThumbnailPicker: React.FC<VideoThumbnailPickerProps> = ({
       }}>
         <video
           ref={videoRef}
-          src={videoUrl}
           style={{
             width: '100%',
             height: 'auto',
@@ -159,7 +210,6 @@ const VideoThumbnailPicker: React.FC<VideoThumbnailPickerProps> = ({
           }}
           preload="metadata"
           playsInline
-          crossOrigin="use-credentials"
         />
       </div>
 
