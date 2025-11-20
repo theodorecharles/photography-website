@@ -95,8 +95,8 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         abrMaxWithRealBitrate: false, // Use bandwidth estimate, not max bitrate
         debug: true, // Set to true for verbose logging
         xhrSetup: (xhr: XMLHttpRequest) => {
-          // Don't send credentials with video requests (CORS with wildcard origin)
-          xhr.withCredentials = false;
+          // Send credentials (cookies) with video requests for authentication
+          xhr.withCredentials = true;
         },
       });
 

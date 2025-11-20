@@ -81,7 +81,13 @@ router.get("/:album/:filename/master.m3u8", async (req: Request, res: Response):
     // Set appropriate headers for HLS
     res.setHeader('Content-Type', 'application/vnd.apple.mpegurl');
     res.setHeader('Cache-Control', 'public, max-age=3600');
-    res.setHeader('Access-Control-Allow-Origin', '*');
+    
+    // Set CORS headers to allow credentials
+    const origin = req.headers.origin;
+    if (origin) {
+      res.setHeader('Access-Control-Allow-Origin', origin);
+      res.setHeader('Access-Control-Allow-Credentials', 'true');
+    }
 
     // Send the master playlist file
     res.sendFile(masterPlaylistPath);
@@ -149,7 +155,13 @@ router.get("/:album/:filename/:resolution/playlist.m3u8", async (req: Request, r
     // Set appropriate headers for HLS
     res.setHeader('Content-Type', 'application/vnd.apple.mpegurl');
     res.setHeader('Cache-Control', 'public, max-age=3600');
-    res.setHeader('Access-Control-Allow-Origin', '*');
+    
+    // Set CORS headers to allow credentials
+    const origin = req.headers.origin;
+    if (origin) {
+      res.setHeader('Access-Control-Allow-Origin', origin);
+      res.setHeader('Access-Control-Allow-Credentials', 'true');
+    }
 
     // Send the playlist file
     res.sendFile(playlistPath);
@@ -224,7 +236,13 @@ router.get("/:album/:filename/:resolution/:segment", async (req: Request, res: R
     // Set appropriate headers for MPEG-TS segments
     res.setHeader('Content-Type', 'video/mp2t');
     res.setHeader('Cache-Control', 'public, max-age=31536000'); // Cache segments for 1 year
-    res.setHeader('Access-Control-Allow-Origin', '*');
+    
+    // Set CORS headers to allow credentials
+    const origin = req.headers.origin;
+    if (origin) {
+      res.setHeader('Access-Control-Allow-Origin', origin);
+      res.setHeader('Access-Control-Allow-Credentials', 'true');
+    }
 
     // Send the segment file
     res.sendFile(segmentPath);
