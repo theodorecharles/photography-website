@@ -35,7 +35,8 @@
     "maximize": "Maximaliseren",
     "restore": "Herstellen",
     "expand": "Uitbreiden",
-    "collapse": "Inklappen"
+    "collapse": "Inklappen",
+    "note": "Opmerking"
   },
   "app": {
     "loadingAlbums": "Albums laden...",
@@ -754,8 +755,8 @@
     }
   },
   "imageOptimization": {
-    "title": "Afbeeldingsoptimalisatie",
-    "description": "Optimaliseer en beheer beeldverwerking",
+    "title": "Afbeeldingskwaliteit  ",
+    "description": "Configureer afbeeldingskwaliteit en verwerkingsinstellingen  ",
     "thumbnail": "Thumbnail  ",
     "modal": "Modal  ",
     "download": "DOWNLOAD",
@@ -1083,7 +1084,7 @@
     "errorMessageDetail": "Het verzenden van de test-e-mail is mislukt. Controleer uw configuratie."
   },
   "videoOptimization": {
-    "title": "Video-optimalisatie",
+    "title": "Videokwaliteit",
     "description": "Configureer video kwaliteit, streaming en HLS-instellingen",
     "hlsStreaming": "HLS STREAMING",
     "hlsStreamingSection": "HLS-instellingen",

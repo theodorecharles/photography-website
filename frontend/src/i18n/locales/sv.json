@@ -35,7 +35,8 @@
     "maximize": "Maximera",
     "restore": "Återställ",
     "expand": "Expandera",
-    "collapse": "Kollapsa"
+    "collapse": "Kollapsa",
+    "note": "Notis"
   },
   "app": {
     "loadingAlbums": "Laddar album...",
@@ -415,8 +416,8 @@
       "forceRegenerateAllConfirm": "⚠️ Detta kommer att regenerera ALLA bildtitlar och skriva över eventuella anpassade titlar du har ställt in. Denna åtgärd kan inte ångras.\n\nÄr du säker på att du vill fortsätta?",
       "forceRegenerateImagesConfirm": "Tvinga att återskapa ALLA bilder? Detta kommer att ta en stund.",
       "runOptimizationConfirm": "Kör bildoptimering på alla foton?",
-      "optimizedVideos": "[EN] Optimized Videos",
-      "forceRegenerateVideosConfirm": "[EN] ⚠️ This will re-encode ALL videos with current quality settings. This is a time-consuming operation and will temporarily increase CPU usage.\n\nExisting video files will be replaced. Are you sure you want to continue?"
+      "optimizedVideos": "Optimerade videor",
+      "forceRegenerateVideosConfirm": "⚠️ Detta kommer att omkoda ALLA videor med nuvarande kvalitetsinställningar. Detta är en tidskrävande operation och kommer tillfälligt att öka CPU-användningen.\n\nBefintliga videofiler kommer att ersättas. Är du säker på att du vill fortsätta?"
     }
   },
   "userManagement": {
@@ -754,8 +755,8 @@
     }
   },
   "imageOptimization": {
-    "title": "Bildoptimering",
-    "description": "Optimera och hantera bildbehandling",
+    "title": "Bildkvalitet  ",
+    "description": "Konfigurera bildkvalitet och bearbetningsinställningar  ",
     "thumbnail": "Miniatyrbild",
     "modal": "Modal  ",
     "download": "Ladda ner",
@@ -1083,23 +1084,23 @@
     "errorMessageDetail": "Misslyckades med att skicka test-e-post. Kontrollera din konfiguration."
   },
   "videoOptimization": {
-    "title": "[EN] Video Optimization",
-    "description": "[EN] Configure video quality, streaming, and HLS settings",
-    "hlsStreaming": "[EN] HLS STREAMING",
-    "hlsStreamingSection": "[EN] HLS Settings",
-    "hlsDescription": "[EN] Configure HTTP Live Streaming (HLS) settings for adaptive video delivery",
-    "segmentDuration": "[EN] Segment Duration (seconds)",
-    "segmentDurationHelp": "[EN] Length of each video segment. Longer segments (4-6s) reduce server requests.",
-    "videoResolutions": "[EN] VIDEO RESOLUTIONS",
-    "videoResolutionsSection": "[EN] Video Resolutions",
-    "resolutionsDescription": "[EN] Enable resolutions and configure their quality settings. Higher bitrates improve quality but increase file size.",
-    "videoBitrate": "[EN] Video Bitrate",
-    "audioBitrate": "[EN] Audio Bitrate",
-    "videoBitrateExample": "[EN] e.g., 400k, 2500k, 5000k",
-    "audioBitrateExample": "[EN] e.g., 64k, 96k, 128k, 192k",
-    "on": "[EN] On",
-    "off": "[EN] Off",
-    "warningNote": "[EN] Changes to video settings only apply to newly uploaded videos. Existing videos will keep their current quality settings unless you use",
-    "forceRegenerate": "[EN] Force Regenerate All"
+    "title": "Videokvalitet",
+    "description": "Konfigurera videokvalitet, strömning och HLS-inställningar",
+    "hlsStreaming": "HLS STREAMING",
+    "hlsStreamingSection": "HLS-inställningar",
+    "hlsDescription": "Konfigurera HTTP Live Streaming (HLS) inställningar för adaptiv videoleverans",
+    "segmentDuration": "Segmentets varaktighet (sekunder)",
+    "segmentDurationHelp": "Längd på varje videosegment. Längre segment (4-6s) minskar serverförfrågningar.",
+    "videoResolutions": "VIDEOUPPLÖSNINGAR",
+    "videoResolutionsSection": "Videoupplösningar  ",
+    "resolutionsDescription": "Aktivera upplösningar och konfigurera deras kvalitetsinställningar. Högre bithastigheter förbättrar kvaliteten men ökar filstorleken.  ",
+    "videoBitrate": "Videobithastighet  ",
+    "audioBitrate": "Ljudbithastighet  ",
+    "videoBitrateExample": "t.ex. 400k, 2500k, 5000k  ",
+    "audioBitrateExample": "t.ex. 64k, 96k, 128k, 192k  ",
+    "on": "På  ",
+    "off": "Av  ",
+    "warningNote": "Ändringar i videoinställningar gäller endast för nyligen uppladdade videor. Befintliga videor behåller sina nuvarande kvalitetsinställningar om du inte använder  ",
+    "forceRegenerate": "Tvinga att återskapa alla"
   }
 }

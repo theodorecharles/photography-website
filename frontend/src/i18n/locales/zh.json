@@ -35,7 +35,8 @@
     "maximize": "最大化",
     "restore": "还原",
     "expand": "展开",
-    "collapse": "折叠"
+    "collapse": "折叠",
+    "note": "注意"
   },
   "app": {
     "loadingAlbums": "正在加载相册...",
@@ -415,8 +416,8 @@
       "forceRegenerateAllConfirm": "⚠️ 这将重新生成所有图像标题并覆盖您设置的任何自定义标题。此操作无法撤销。\n\n您确定要继续吗？",
       "forceRegenerateImagesConfirm": "强制重新生成所有图像？这将需要一些时间。",
       "runOptimizationConfirm": "对所有照片运行图像优化？",
-      "optimizedVideos": "[EN] Optimized Videos",
-      "forceRegenerateVideosConfirm": "[EN] ⚠️ This will re-encode ALL videos with current quality settings. This is a time-consuming operation and will temporarily increase CPU usage.\n\nExisting video files will be replaced. Are you sure you want to continue?"
+      "optimizedVideos": "优化视频",
+      "forceRegenerateVideosConfirm": "⚠️ 这将重新编码所有视频，使用当前的质量设置。这是一个耗时的操作，并且会暂时增加 CPU 使用率。\n\n现有的视频文件将被替换。您确定要继续吗？"
     }
   },
   "userManagement": {
@@ -754,8 +755,8 @@
     }
   },
   "imageOptimization": {
-    "title": "图像优化",
-    "description": "优化和管理图像处理",
+    "title": "图像质量  ",
+    "description": "配置图像质量和处理设置  ",
     "thumbnail": "缩略图",
     "modal": "模态",
     "download": "下载",
@@ -1083,23 +1084,23 @@
     "errorMessageDetail": "发送测试邮件失败。请检查您的配置。"
   },
   "videoOptimization": {
-    "title": "[EN] Video Optimization",
-    "description": "[EN] Configure video quality, streaming, and HLS settings",
-    "hlsStreaming": "[EN] HLS STREAMING",
-    "hlsStreamingSection": "[EN] HLS Settings",
-    "hlsDescription": "[EN] Configure HTTP Live Streaming (HLS) settings for adaptive video delivery",
-    "segmentDuration": "[EN] Segment Duration (seconds)",
-    "segmentDurationHelp": "[EN] Length of each video segment. Longer segments (4-6s) reduce server requests.",
-    "videoResolutions": "[EN] VIDEO RESOLUTIONS",
-    "videoResolutionsSection": "[EN] Video Resolutions",
-    "resolutionsDescription": "[EN] Enable resolutions and configure their quality settings. Higher bitrates improve quality but increase file size.",
-    "videoBitrate": "[EN] Video Bitrate",
-    "audioBitrate": "[EN] Audio Bitrate",
-    "videoBitrateExample": "[EN] e.g., 400k, 2500k, 5000k",
-    "audioBitrateExample": "[EN] e.g., 64k, 96k, 128k, 192k",
-    "on": "[EN] On",
-    "off": "[EN] Off",
-    "warningNote": "[EN] Changes to video settings only apply to newly uploaded videos. Existing videos will keep their current quality settings unless you use",
-    "forceRegenerate": "[EN] Force Regenerate All"
+    "title": "视频质量",
+    "description": "配置视频质量、流媒体和HLS设置",
+    "hlsStreaming": "HLS 流媒体",
+    "hlsStreamingSection": "HLS 设置",
+    "hlsDescription": "配置自适应视频传输的 HTTP 实时流 (HLS) 设置",
+    "segmentDuration": "片段持续时间（秒）",
+    "segmentDurationHelp": "每个视频片段的长度。较长的片段（4-6秒）可以减少服务器请求。",
+    "videoResolutions": "视频分辨率",
+    "videoResolutionsSection": "视频分辨率  ",
+    "resolutionsDescription": "启用分辨率并配置其质量设置。更高的比特率提高质量但增加文件大小。  ",
+    "videoBitrate": "视频比特率  ",
+    "audioBitrate": "音频比特率  ",
+    "videoBitrateExample": "例如，400k，2500k，5000k  ",
+    "audioBitrateExample": "例如，64k，96k，128k，192k  ",
+    "on": "开启  ",
+    "off": "关闭  ",
+    "warningNote": "对视频设置的更改仅适用于新上传的视频。现有视频将保持其当前质量设置，除非您使用  ",
+    "forceRegenerate": "强制重新生成所有"
   }
 }

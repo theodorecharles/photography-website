@@ -35,7 +35,8 @@
     "maximize": "Maksimize et",
     "restore": "Geri yükle",
     "expand": "Genişlet",
-    "collapse": "Daralt"
+    "collapse": "Daralt",
+    "note": "Not"
   },
   "app": {
     "loadingAlbums": "Albümler yükleniyor...",
@@ -415,8 +416,8 @@
       "forceRegenerateAllConfirm": "⚠️ Bu, TÜM resim başlıklarını yeniden oluşturacak ve ayarladığınız özel başlıkları üzerine yazacaktır. Bu işlem geri alınamaz.\n\nDevam etmek istediğinizden emin misiniz?",
       "forceRegenerateImagesConfirm": "TÜM resimleri yeniden oluşturmak istiyor musunuz? Bu biraz zaman alacak.",
       "runOptimizationConfirm": "Tüm fotoğraflarda resim optimizasyonu yapilsin mı?",
-      "optimizedVideos": "[EN] Optimized Videos",
-      "forceRegenerateVideosConfirm": "[EN] ⚠️ This will re-encode ALL videos with current quality settings. This is a time-consuming operation and will temporarily increase CPU usage.\n\nExisting video files will be replaced. Are you sure you want to continue?"
+      "optimizedVideos": "Optimize Edilmiş Videolar",
+      "forceRegenerateVideosConfirm": "⚠️ Bu, mevcut kalite ayarlarıyla TÜM videoları yeniden kodlayacaktır. Bu zaman alıcı bir işlemdir ve geçici olarak CPU kullanımını artıracaktır.\n\nMevcut video dosyaları değiştirilecektir. Devam etmek istediğinizden emin misiniz?"
     }
   },
   "userManagement": {
@@ -754,8 +755,8 @@
     }
   },
   "imageOptimization": {
-    "title": "Görüntü Optimizasyonu",
-    "description": "Görüntü işleme optimizasyonu ve yönetimi",
+    "title": "Görüntü Kalitesi  ",
+    "description": "Görüntü kalitesi ve işleme ayarlarını yapılandırın  ",
     "thumbnail": "Küçük Resim",
     "modal": "Modal  ",
     "download": "İndir",
@@ -1083,23 +1084,23 @@
     "errorMessageDetail": "Test e-postası gönderilemedi. Lütfen yapılandırmanızı kontrol edin."
   },
   "videoOptimization": {
-    "title": "[EN] Video Optimization",
-    "description": "[EN] Configure video quality, streaming, and HLS settings",
-    "hlsStreaming": "[EN] HLS STREAMING",
-    "hlsStreamingSection": "[EN] HLS Settings",
-    "hlsDescription": "[EN] Configure HTTP Live Streaming (HLS) settings for adaptive video delivery",
-    "segmentDuration": "[EN] Segment Duration (seconds)",
-    "segmentDurationHelp": "[EN] Length of each video segment. Longer segments (4-6s) reduce server requests.",
-    "videoResolutions": "[EN] VIDEO RESOLUTIONS",
-    "videoResolutionsSection": "[EN] Video Resolutions",
-    "resolutionsDescription": "[EN] Enable resolutions and configure their quality settings. Higher bitrates improve quality but increase file size.",
-    "videoBitrate": "[EN] Video Bitrate",
-    "audioBitrate": "[EN] Audio Bitrate",
-    "videoBitrateExample": "[EN] e.g., 400k, 2500k, 5000k",
-    "audioBitrateExample": "[EN] e.g., 64k, 96k, 128k, 192k",
-    "on": "[EN] On",
-    "off": "[EN] Off",
-    "warningNote": "[EN] Changes to video settings only apply to newly uploaded videos. Existing videos will keep their current quality settings unless you use",
-    "forceRegenerate": "[EN] Force Regenerate All"
+    "title": "Video Kalitesi",
+    "description": "Video kalitesini, akışı ve HLS ayarlarını yapılandırın",
+    "hlsStreaming": "HLS AKIŞI",
+    "hlsStreamingSection": "HLS Ayarları",
+    "hlsDescription": "Uyarlanabilir video iletimi için HTTP Live Streaming (HLS) ayarlarını yapılandırın",
+    "segmentDuration": "Segment Süresi (saniye)",
+    "segmentDurationHelp": "Her video segmentinin uzunluğu. Daha uzun segmentler (4-6sn) sunucu isteklerini azaltır.",
+    "videoResolutions": "GÖRÜNTÜ ÇÖZÜMLERİ",
+    "videoResolutionsSection": "Video Çözünürlükleri  ",
+    "resolutionsDescription": "Çözünürlükleri etkinleştir ve kalite ayarlarını yapılandır. Daha yüksek bit hızları kaliteyi artırır ancak dosya boyutunu da artırır.  ",
+    "videoBitrate": "Video Bit Hızı  ",
+    "audioBitrate": "Ses Bit Hızı  ",
+    "videoBitrateExample": "örn., 400k, 2500k, 5000k  ",
+    "audioBitrateExample": "örn., 64k, 96k, 128k, 192k  ",
+    "on": "Açık  ",
+    "off": "Kapalı  ",
+    "warningNote": "Video ayarlarındaki değişiklikler yalnızca yeni yüklenen videolara uygulanır. Mevcut videolar, mevcut kalite ayarlarını koruyacaktır, aksi takdirde  ",
+    "forceRegenerate": "Tümünü Zorla Yenile"
   }
 }

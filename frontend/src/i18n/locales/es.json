@@ -35,7 +35,8 @@
     "maximize": "Maximizar",
     "restore": "Restaurar",
     "expand": "Expandir",
-    "collapse": "Colapsar"
+    "collapse": "Colapsar",
+    "note": "Nota"
   },
   "app": {
     "loadingAlbums": "Cargando álbumes...",
@@ -754,8 +755,8 @@
     }
   },
   "imageOptimization": {
-    "title": "Optimización de Imágenes",
-    "description": "Optimiza y gestiona el procesamiento de imágenes",
+    "title": "Calidad de imagen  ",
+    "description": "Configurar la calidad de imagen y los ajustes de procesamiento  ",
     "thumbnail": "Miniatura",
     "modal": "Modal  ",
     "download": "DESCARGAR",
@@ -1083,7 +1084,7 @@
     "errorMessageDetail": "Error al enviar el correo electrónico de prueba. Por favor, verifica tu configuración."
   },
   "videoOptimization": {
-    "title": "Optimización de Video",
+    "title": "Calidad de video",
     "description": "Configurar la calidad de video, transmisión y ajustes de HLS",
     "hlsStreaming": "TRANSMISIÓN HLS",
     "hlsStreamingSection": "Configuración de HLS",

@@ -776,8 +776,8 @@
     }
   },
   "imageOptimization": {
-    "title": "Image Optimization",
-    "description": "Optimize and manage image processing",
+    "title": "Image Quality",
+    "description": "Configure image quality and processing settings",
     "thumbnail": "Thumbnail",
     "modal": "Modal",
     "download": "Download",
@@ -792,7 +792,7 @@
     "warningNoteLocation": "in Advanced Settings → Optimized Images."
   },
   "videoOptimization": {
-    "title": "Video Optimization",
+    "title": "Video Quality",
     "description": "Configure video quality, streaming, and HLS settings",
     "hlsStreaming": "HLS STREAMING",
     "hlsStreamingSection": "HLS Settings",

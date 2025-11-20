@@ -35,7 +35,8 @@
     "creating": "Đang tạo...",
     "generating": "Đang tạo...",
     "album": "album  ",
-    "albums": "các album"
+    "albums": "các album",
+    "note": "Ghi chú"
   },
   "app": {
     "loadingAlbums": "Đang tải các album...",
@@ -415,8 +416,8 @@
       "forceRegenerateAllConfirm": "⚠️ Điều này sẽ tạo lại TẤT CẢ tiêu đề hình ảnh và ghi đè lên bất kỳ tiêu đề tùy chỉnh nào bạn đã đặt. Hành động này không thể hoàn tác.\n\nBạn có chắc chắn muốn tiếp tục không?",
       "forceRegenerateImagesConfirm": "Buộc tái tạo TẤT CẢ hình ảnh? Điều này sẽ mất một thời gian.",
       "runOptimizationConfirm": "Chạy tối ưu hóa hình ảnh cho tất cả các bức ảnh?",
-      "optimizedVideos": "[EN] Optimized Videos",
-      "forceRegenerateVideosConfirm": "[EN] ⚠️ This will re-encode ALL videos with current quality settings. This is a time-consuming operation and will temporarily increase CPU usage.\n\nExisting video files will be replaced. Are you sure you want to continue?"
+      "optimizedVideos": "Video đã tối ưu hóa",
+      "forceRegenerateVideosConfirm": "⚠️ Điều này sẽ mã hóa lại TẤT CẢ video với cài đặt chất lượng hiện tại. Đây là một thao tác tốn thời gian và sẽ tạm thời tăng mức sử dụng CPU.\n\nCác tệp video hiện có sẽ bị thay thế. Bạn có chắc chắn muốn tiếp tục không?"
     }
   },
   "userManagement": {
@@ -754,8 +755,8 @@
     }
   },
   "imageOptimization": {
-    "title": "Tối ưu hóa hình ảnh",
-    "description": "Tối ưu hóa và quản lý xử lý hình ảnh",
+    "title": "Chất lượng hình ảnh  ",
+    "description": "Cấu hình chất lượng hình ảnh và cài đặt xử lý  ",
     "thumbnail": "Hình thu nhỏ",
     "modal": "Hộp thoại",
     "download": "Tải xuống",
@@ -1083,23 +1084,23 @@
     "errorMessageDetail": "Gửi email thử nghiệm không thành công. Vui lòng kiểm tra cấu hình của bạn."
   },
   "videoOptimization": {
-    "title": "[EN] Video Optimization",
-    "description": "[EN] Configure video quality, streaming, and HLS settings",
-    "hlsStreaming": "[EN] HLS STREAMING",
-    "hlsStreamingSection": "[EN] HLS Settings",
-    "hlsDescription": "[EN] Configure HTTP Live Streaming (HLS) settings for adaptive video delivery",
-    "segmentDuration": "[EN] Segment Duration (seconds)",
-    "segmentDurationHelp": "[EN] Length of each video segment. Longer segments (4-6s) reduce server requests.",
-    "videoResolutions": "[EN] VIDEO RESOLUTIONS",
-    "videoResolutionsSection": "[EN] Video Resolutions",
-    "resolutionsDescription": "[EN] Enable resolutions and configure their quality settings. Higher bitrates improve quality but increase file size.",
-    "videoBitrate": "[EN] Video Bitrate",
-    "audioBitrate": "[EN] Audio Bitrate",
-    "videoBitrateExample": "[EN] e.g., 400k, 2500k, 5000k",
-    "audioBitrateExample": "[EN] e.g., 64k, 96k, 128k, 192k",
-    "on": "[EN] On",
-    "off": "[EN] Off",
-    "warningNote": "[EN] Changes to video settings only apply to newly uploaded videos. Existing videos will keep their current quality settings unless you use",
-    "forceRegenerate": "[EN] Force Regenerate All"
+    "title": "Chất lượng video",
+    "description": "Cấu hình chất lượng video, phát trực tuyến và cài đặt HLS",
+    "hlsStreaming": "PHÁT STREAMING HLS",
+    "hlsStreamingSection": "Cài đặt HLS",
+    "hlsDescription": "Cấu hình các thiết lập HTTP Live Streaming (HLS) cho việc phân phối video thích ứng",
+    "segmentDuration": "Thời gian phân đoạn (giây)",
+    "segmentDurationHelp": "Độ dài của mỗi đoạn video. Các đoạn dài hơn (4-6 giây) sẽ giảm yêu cầu từ máy chủ.",
+    "videoResolutions": "ĐỘ PHÂN GIẢI VIDEO",
+    "videoResolutionsSection": "Độ phân giải video  ",
+    "resolutionsDescription": "Bật độ phân giải và cấu hình cài đặt chất lượng của chúng. Bitrate cao hơn cải thiện chất lượng nhưng làm tăng kích thước tệp.  ",
+    "videoBitrate": "Bitrate video  ",
+    "audioBitrate": "Bitrate âm thanh  ",
+    "videoBitrateExample": "vd: 400k, 2500k, 5000k  ",
+    "audioBitrateExample": "vd: 64k, 96k, 128k, 192k  ",
+    "on": "Bật  ",
+    "off": "Tắt  ",
+    "warningNote": "Các thay đổi đối với cài đặt video chỉ áp dụng cho video mới được tải lên. Các video hiện có sẽ giữ nguyên cài đặt chất lượng hiện tại trừ khi bạn sử dụng  ",
+    "forceRegenerate": "Buộc tái tạo tất cả"
   }
 }

@@ -35,7 +35,8 @@
     "maximize": "최대화",
     "restore": "복원",
     "expand": "확장",
-    "collapse": "축소"
+    "collapse": "축소",
+    "note": "노트"
   },
   "app": {
     "loadingAlbums": "앨범을 불러오는 중...",
@@ -415,8 +416,8 @@
       "forceRegenerateAllConfirm": "⚠️ 이 작업은 모든 이미지 제목을 재생성하고 설정한 사용자 지정 제목을 덮어씁니다. 이 작업은 실행 취소할 수 없습니다.\n\n계속하시겠습니까?",
       "forceRegenerateImagesConfirm": "모든 이미지를 강제로 다시 생성하시겠습니까? 시간이 좀 걸립니다.",
       "runOptimizationConfirm": "모든 사진에 대해 이미지 최적화를 실행하시겠습니까?",
-      "optimizedVideos": "[EN] Optimized Videos",
-      "forceRegenerateVideosConfirm": "[EN] ⚠️ This will re-encode ALL videos with current quality settings. This is a time-consuming operation and will temporarily increase CPU usage.\n\nExisting video files will be replaced. Are you sure you want to continue?"
+      "optimizedVideos": "최적화된 비디오",
+      "forceRegenerateVideosConfirm": "⚠️ 이 작업은 현재 품질 설정으로 모든 비디오를 다시 인코딩합니다. 이는 시간이 많이 소요되는 작업이며 일시적으로 CPU 사용량이 증가합니다.\n\n기존 비디오 파일은 대체됩니다. 계속 진행하시겠습니까?"
     }
   },
   "userManagement": {
@@ -754,8 +755,8 @@
     }
   },
   "imageOptimization": {
-    "title": "이미지 최적화",
-    "description": "이미지 처리 최적화 및 관리",
+    "title": "이미지 품질  ",
+    "description": "이미지 품질 및 처리 설정 구성  ",
     "thumbnail": "썸네일",
     "modal": "모달",
     "download": "다운로드",
@@ -1083,23 +1084,23 @@
     "errorMessageDetail": "테스트 이메일 전송에 실패했습니다. 설정을 확인해 주세요."
   },
   "videoOptimization": {
-    "title": "[EN] Video Optimization",
-    "description": "[EN] Configure video quality, streaming, and HLS settings",
-    "hlsStreaming": "[EN] HLS STREAMING",
-    "hlsStreamingSection": "[EN] HLS Settings",
-    "hlsDescription": "[EN] Configure HTTP Live Streaming (HLS) settings for adaptive video delivery",
-    "segmentDuration": "[EN] Segment Duration (seconds)",
-    "segmentDurationHelp": "[EN] Length of each video segment. Longer segments (4-6s) reduce server requests.",
-    "videoResolutions": "[EN] VIDEO RESOLUTIONS",
-    "videoResolutionsSection": "[EN] Video Resolutions",
-    "resolutionsDescription": "[EN] Enable resolutions and configure their quality settings. Higher bitrates improve quality but increase file size.",
-    "videoBitrate": "[EN] Video Bitrate",
-    "audioBitrate": "[EN] Audio Bitrate",
-    "videoBitrateExample": "[EN] e.g., 400k, 2500k, 5000k",
-    "audioBitrateExample": "[EN] e.g., 64k, 96k, 128k, 192k",
-    "on": "[EN] On",
-    "off": "[EN] Off",
-    "warningNote": "[EN] Changes to video settings only apply to newly uploaded videos. Existing videos will keep their current quality settings unless you use",
-    "forceRegenerate": "[EN] Force Regenerate All"
+    "title": "비디오 품질",
+    "description": "비디오 품질, 스트리밍 및 HLS 설정 구성",
+    "hlsStreaming": "HLS 스트리밍",
+    "hlsStreamingSection": "HLS 설정",
+    "hlsDescription": "적응형 비디오 전송을 위한 HTTP 라이브 스트리밍 (HLS) 설정 구성",
+    "segmentDuration": "세그먼트 지속 시간 (초)",
+    "segmentDurationHelp": "각 비디오 세그먼트의 길이. 긴 세그먼트(4-6초)는 서버 요청을 줄입니다.",
+    "videoResolutions": "비디오 해상도",
+    "videoResolutionsSection": "비디오 해상도  ",
+    "resolutionsDescription": "해상도를 활성화하고 품질 설정을 구성합니다. 더 높은 비트 전송률은 품질을 향상시키지만 파일 크기를 증가시킵니다.  ",
+    "videoBitrate": "비디오 비트 전송률  ",
+    "audioBitrate": "오디오 비트 전송률  ",
+    "videoBitrateExample": "예: 400k, 2500k, 5000k  ",
+    "audioBitrateExample": "예: 64k, 96k, 128k, 192k  ",
+    "on": "켜기  ",
+    "off": "끄기  ",
+    "warningNote": "비디오 설정에 대한 변경 사항은 새로 업로드된 비디오에만 적용됩니다. 기존 비디오는 현재 품질 설정을 유지하며,  ",
+    "forceRegenerate": "모두 강제로 재생성 사용 시 변경됩니다."
   }
 }

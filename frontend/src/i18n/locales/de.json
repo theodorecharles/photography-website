@@ -35,7 +35,8 @@
     "maximize": "Maximieren",
     "restore": "Wiederherstellen",
     "expand": "Erweitern",
-    "collapse": "Einklappen"
+    "collapse": "Einklappen",
+    "note": "Hinweis"
   },
   "app": {
     "loadingAlbums": "Lade Alben...",
@@ -754,8 +755,8 @@
     }
   },
   "imageOptimization": {
-    "title": "Bildoptimierung",
-    "description": "Bildverarbeitung optimieren und verwalten",
+    "title": "Bildqualität  ",
+    "description": "Konfigurieren Sie die Bildqualität und Verarbeitungseinstellungen  ",
     "thumbnail": "MINIATURANSICHT",
     "modal": "Modal  ",
     "download": "HERUNTERLADEN",
@@ -1083,7 +1084,7 @@
     "errorMessageDetail": "Fehler beim Senden der Test-E-Mail. Bitte überprüfen Sie Ihre Konfiguration."
   },
   "videoOptimization": {
-    "title": "Video-Optimierung",
+    "title": "Videoqualität",
     "description": "Konfigurieren Sie die Videoqualität, das Streaming und die HLS-Einstellungen",
     "hlsStreaming": "HLS-STREAMING",
     "hlsStreamingSection": "HLS-Einstellungen",

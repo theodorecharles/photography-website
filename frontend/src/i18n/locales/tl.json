@@ -35,7 +35,8 @@
     "creating": "Naglilikha...",
     "generating": "Nabuo...",
     "album": "album  ",
-    "albums": "mga album"
+    "albums": "mga album",
+    "note": "Tala"
   },
   "app": {
     "loadingAlbums": "Nagloload ng mga album...",
@@ -415,8 +416,8 @@
       "forceRegenerateAllConfirm": "⚠️ Ito ay muling bubuo ng LAHAT ng pamagat ng larawan at papalitan ang anumang mga pasadyang pamagat na iyong itinakda. Ang aksyong ito ay hindi maibabalik.\n\nSigurado ka bang nais mong magpatuloy?",
       "forceRegenerateImagesConfirm": "Puwersahin ang muling pagbuo ng LAHAT ng mga larawan? Magtatagal ito ng kaunti.",
       "runOptimizationConfirm": "Ipatupad ang pag-optimize ng larawan sa lahat ng mga larawan?",
-      "optimizedVideos": "[EN] Optimized Videos",
-      "forceRegenerateVideosConfirm": "[EN] ⚠️ This will re-encode ALL videos with current quality settings. This is a time-consuming operation and will temporarily increase CPU usage.\n\nExisting video files will be replaced. Are you sure you want to continue?"
+      "optimizedVideos": "Na-optimize na Mga Video",
+      "forceRegenerateVideosConfirm": "⚠️ Ito ay muling i-encode ang LAHAT ng mga video gamit ang kasalukuyang mga setting ng kalidad. Ito ay isang operasyon na kumukuha ng oras at pansamantalang magpapataas ng paggamit ng CPU.\n\nAng mga umiiral na file ng video ay mapapalitan. Sigurado ka bang nais mong ipagpatuloy?"
     }
   },
   "userManagement": {
@@ -754,8 +755,8 @@
     }
   },
   "imageOptimization": {
-    "title": "Pag-optimize ng Imahe",
-    "description": "I-optimize at pamahalaan ang pagproseso ng imahe",
+    "title": "Kalidad ng Imahe  ",
+    "description": "I-configure ang kalidad ng imahe at mga setting ng pagproseso  ",
     "thumbnail": "Miniature",
     "modal": "Modal  ",
     "download": "I-download",
@@ -1083,23 +1084,23 @@
     "errorMessageDetail": "Nabigong magpadala ng test email. Pakisuri ang iyong configuration."
   },
   "videoOptimization": {
-    "title": "[EN] Video Optimization",
-    "description": "[EN] Configure video quality, streaming, and HLS settings",
-    "hlsStreaming": "[EN] HLS STREAMING",
-    "hlsStreamingSection": "[EN] HLS Settings",
-    "hlsDescription": "[EN] Configure HTTP Live Streaming (HLS) settings for adaptive video delivery",
-    "segmentDuration": "[EN] Segment Duration (seconds)",
-    "segmentDurationHelp": "[EN] Length of each video segment. Longer segments (4-6s) reduce server requests.",
-    "videoResolutions": "[EN] VIDEO RESOLUTIONS",
-    "videoResolutionsSection": "[EN] Video Resolutions",
-    "resolutionsDescription": "[EN] Enable resolutions and configure their quality settings. Higher bitrates improve quality but increase file size.",
-    "videoBitrate": "[EN] Video Bitrate",
-    "audioBitrate": "[EN] Audio Bitrate",
-    "videoBitrateExample": "[EN] e.g., 400k, 2500k, 5000k",
-    "audioBitrateExample": "[EN] e.g., 64k, 96k, 128k, 192k",
-    "on": "[EN] On",
-    "off": "[EN] Off",
-    "warningNote": "[EN] Changes to video settings only apply to newly uploaded videos. Existing videos will keep their current quality settings unless you use",
-    "forceRegenerate": "[EN] Force Regenerate All"
+    "title": "Kalidad ng Video",
+    "description": "I-configure ang kalidad ng video, streaming, at mga setting ng HLS",
+    "hlsStreaming": "HLS PAGBIBIGAY STREAMING",
+    "hlsStreamingSection": "Mga Setting ng HLS",
+    "hlsDescription": "I-configure ang mga setting ng HTTP Live Streaming (HLS) para sa adaptive na paghahatid ng video",
+    "segmentDuration": "Tagal ng Segment (segundo)",
+    "segmentDurationHelp": "Haba ng bawat segment ng video. Ang mas mahahabang segment (4-6s) ay nagpapababa ng mga kahilingan sa server.",
+    "videoResolutions": "MGA RESOLUSYON NG VIDEO",
+    "videoResolutionsSection": "Mga Resolusyon ng Video  ",
+    "resolutionsDescription": "I-enable ang mga resolusyon at i-configure ang kanilang mga setting ng kalidad. Ang mas mataas na bitrate ay nagpapabuti sa kalidad ngunit nagpapalaki ng sukat ng file.  ",
+    "videoBitrate": "Bitrate ng Video  ",
+    "audioBitrate": "Bitrate ng Audio  ",
+    "videoBitrateExample": "hal. 400k, 2500k, 5000k  ",
+    "audioBitrateExample": "hal. 64k, 96k, 128k, 192k  ",
+    "on": "Naka-on  ",
+    "off": "Naka-off  ",
+    "warningNote": "Ang mga pagbabago sa mga setting ng video ay nalalapat lamang sa mga bagong na-upload na video. Ang mga umiiral na video ay mananatili sa kanilang kasalukuyang mga setting ng kalidad maliban kung gagamitin mo ang  ",
+    "forceRegenerate": "Puwersang I-regenerate Lahat"
   }
 }

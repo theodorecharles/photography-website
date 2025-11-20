@@ -35,7 +35,8 @@
     "creating": "Membuat...",
     "generating": "Menghasilkan...",
     "album": "album  ",
-    "albums": "album"
+    "albums": "album",
+    "note": "Catatan"
   },
   "app": {
     "loadingAlbums": "Memuat album...",
@@ -415,8 +416,8 @@
       "forceRegenerateAllConfirm": "⚠️ Ini akan menghasilkan kembali SEMUA judul gambar dan menimpa judul kustom yang telah Anda atur. Tindakan ini tidak dapat dibatalkan.\n\nApakah Anda yakin ingin melanjutkan?",
       "forceRegenerateImagesConfirm": "Apakah Anda yakin ingin memaksa regenerasi SEMUA gambar? Ini akan memakan waktu.",
       "runOptimizationConfirm": "Jalankan optimasi gambar pada semua foto?",
-      "optimizedVideos": "[EN] Optimized Videos",
-      "forceRegenerateVideosConfirm": "[EN] ⚠️ This will re-encode ALL videos with current quality settings. This is a time-consuming operation and will temporarily increase CPU usage.\n\nExisting video files will be replaced. Are you sure you want to continue?"
+      "optimizedVideos": "Video yang Dioptimalkan",
+      "forceRegenerateVideosConfirm": "⚠️ Ini akan mengkode ulang SEMUA video dengan pengaturan kualitas saat ini. Ini adalah operasi yang memakan waktu dan akan sementara meningkatkan penggunaan CPU.\n\nFile video yang ada akan diganti. Apakah Anda yakin ingin melanjutkan?"
     }
   },
   "userManagement": {
@@ -754,8 +755,8 @@
     }
   },
   "imageOptimization": {
-    "title": "Optimasi Gambar",
-    "description": "Optimalkan dan kelola pemrosesan gambar",
+    "title": "Kualitas Gambar  ",
+    "description": "Konfigurasi kualitas gambar dan pengaturan pemrosesan  ",
     "thumbnail": "Gambar Mini",
     "modal": "Dialog",
     "download": "Unduh",
@@ -1083,23 +1084,23 @@
     "errorMessageDetail": "Gagal mengirim email uji. Silakan periksa konfigurasi Anda."
   },
   "videoOptimization": {
-    "title": "[EN] Video Optimization",
-    "description": "[EN] Configure video quality, streaming, and HLS settings",
-    "hlsStreaming": "[EN] HLS STREAMING",
-    "hlsStreamingSection": "[EN] HLS Settings",
-    "hlsDescription": "[EN] Configure HTTP Live Streaming (HLS) settings for adaptive video delivery",
-    "segmentDuration": "[EN] Segment Duration (seconds)",
-    "segmentDurationHelp": "[EN] Length of each video segment. Longer segments (4-6s) reduce server requests.",
-    "videoResolutions": "[EN] VIDEO RESOLUTIONS",
-    "videoResolutionsSection": "[EN] Video Resolutions",
-    "resolutionsDescription": "[EN] Enable resolutions and configure their quality settings. Higher bitrates improve quality but increase file size.",
-    "videoBitrate": "[EN] Video Bitrate",
-    "audioBitrate": "[EN] Audio Bitrate",
-    "videoBitrateExample": "[EN] e.g., 400k, 2500k, 5000k",
-    "audioBitrateExample": "[EN] e.g., 64k, 96k, 128k, 192k",
-    "on": "[EN] On",
-    "off": "[EN] Off",
-    "warningNote": "[EN] Changes to video settings only apply to newly uploaded videos. Existing videos will keep their current quality settings unless you use",
-    "forceRegenerate": "[EN] Force Regenerate All"
+    "title": "Kualitas Video",
+    "description": "Konfigurasi kualitas video, streaming, dan pengaturan HLS",
+    "hlsStreaming": "PENYIARAN HLS",
+    "hlsStreamingSection": "Pengaturan HLS",
+    "hlsDescription": "Konfigurasi pengaturan HTTP Live Streaming (HLS) untuk pengiriman video adaptif",
+    "segmentDuration": "Durasi Segmen (detik)",
+    "segmentDurationHelp": "Panjang setiap segmen video. Segmen yang lebih panjang (4-6 detik) mengurangi permintaan server.",
+    "videoResolutions": "RESOLUSI VIDEO",
+    "videoResolutionsSection": "Resolusi Video  ",
+    "resolutionsDescription": "Aktifkan resolusi dan atur pengaturan kualitasnya. Bitrate yang lebih tinggi meningkatkan kualitas tetapi meningkatkan ukuran file.  ",
+    "videoBitrate": "Bitrate Video  ",
+    "audioBitrate": "Bitrate Audio  ",
+    "videoBitrateExample": "mis., 400k, 2500k, 5000k  ",
+    "audioBitrateExample": "mis., 64k, 96k, 128k, 192k  ",
+    "on": "Hidup  ",
+    "off": "Matikan  ",
+    "warningNote": "Perubahan pada pengaturan video hanya berlaku untuk video yang baru diunggah. Video yang sudah ada akan mempertahankan pengaturan kualitas saat ini kecuali Anda menggunakan  ",
+    "forceRegenerate": "Paksa Regenerasi Semua"
   }
 }

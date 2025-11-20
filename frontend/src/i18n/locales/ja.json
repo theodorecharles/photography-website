@@ -35,7 +35,8 @@
     "maximize": "最大化",
     "restore": "復元",
     "expand": "展開",
-    "collapse": "折りたたむ"
+    "collapse": "折りたたむ",
+    "note": "ノート"
   },
   "app": {
     "loadingAlbums": "アルバムを読み込み中...",
@@ -754,8 +755,8 @@
     }
   },
   "imageOptimization": {
-    "title": "画像最適化",
-    "description": "画像処理を最適化および管理",
+    "title": "画像品質  ",
+    "description": "画像品質と処理設定を構成する  ",
     "thumbnail": "サムネイル",
     "modal": "モーダル",
     "download": "ダウンロード",
@@ -1083,7 +1084,7 @@
     "errorMessageDetail": "テストメールの送信に失敗しました。設定を確認してください。"
   },
   "videoOptimization": {
-    "title": "動画最適化",
+    "title": "動画品質",
     "description": "ビデオ品質、ストリーミング、およびHLS設定を構成する",
     "hlsStreaming": "HLSストリーミング",
     "hlsStreamingSection": "HLS設定",
