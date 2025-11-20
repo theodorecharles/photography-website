@@ -8,6 +8,7 @@ import fs from "fs";
 import path from "path";
 import { error, info } from '../utils/logger.js';
 import { getAlbumState } from '../database.js';
+import { requireAuth } from '../auth/middleware.js';
 
 const router = Router();
 
@@ -318,6 +319,89 @@ router.get("/:album/:filename/resolutions", async (req: Request, res: Response):
   } catch (err) {
     error('[Video] Failed to get resolutions:', err);
     res.status(500).json({ error: 'Failed to get resolutions' });
+  }
+});
+
+/**
+ * Serve rotated video file for admin thumbnail scrubbing
+ * GET /api/video/:album/:filename/rotated.mp4
+ * Requires authentication - for admin panel use only
+ */
+router.get("/:album/:filename/rotated.mp4", requireAuth, async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { album, filename } = req.params;
+    info(`[Video] Rotated video request: album=${album}, filename=${filename}`);
+
+    // Sanitize inputs
+    const sanitizedAlbum = sanitizePath(album);
+    const sanitizedFilename = sanitizePath(filename);
+
+    if (!sanitizedAlbum || !sanitizedFilename) {
+      error(`[Video] Sanitization failed: album=${album}, filename=${filename}`);
+      res.status(400).json({ error: 'Invalid path parameters' });
+      return;
+    }
+
+    const videoDir = req.app.get("videoDir");
+    if (!videoDir) {
+      error('[Video] videoDir not configured');
+      res.status(500).json({ error: 'Video directory not configured' });
+      return;
+    }
+
+    const rotatedVideoPath = path.join(
+      videoDir,
+      sanitizedAlbum,
+      sanitizedFilename,
+      'rotated.mp4'
+    );
+    info(`[Video] Looking for rotated video at: ${rotatedVideoPath}`);
+
+    // Check if rotated video exists
+    if (!fs.existsSync(rotatedVideoPath)) {
+      error(`[Video] Rotated video not found: ${rotatedVideoPath}`);
+      res.status(404).json({ error: 'Video not found' });
+      return;
+    }
+
+    // Get file stats for range request support
+    const stat = fs.statSync(rotatedVideoPath);
+    const fileSize = stat.size;
+    const range = req.headers.range;
+
+    if (range) {
+      // Handle range request (for seeking)
+      const parts = range.replace(/bytes=/, "").split("-");
+      const start = parseInt(parts[0], 10);
+      const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
+      const chunksize = (end - start) + 1;
+      const file = fs.createReadStream(rotatedVideoPath, { start, end });
+
+      res.writeHead(206, {
+        'Content-Range': `bytes ${start}-${end}/${fileSize}`,
+        'Accept-Ranges': 'bytes',
+        'Content-Length': chunksize,
+        'Content-Type': 'video/mp4',
+        'Access-Control-Allow-Origin': req.headers.origin || '*',
+        'Access-Control-Allow-Credentials': 'true',
+      });
+
+      file.pipe(res);
+    } else {
+      // Send entire file
+      res.writeHead(200, {
+        'Content-Length': fileSize,
+        'Content-Type': 'video/mp4',
+        'Accept-Ranges': 'bytes',
+        'Access-Control-Allow-Origin': req.headers.origin || '*',
+        'Access-Control-Allow-Credentials': 'true',
+      });
+
+      fs.createReadStream(rotatedVideoPath).pipe(res);
+    }
+  } catch (err) {
+    error('[Video] Failed to serve rotated video:', err);
+    res.status(500).json({ error: 'Failed to serve video' });
   }
 });
 

@@ -105,8 +105,8 @@ const VideoThumbnailPicker: React.FC<VideoThumbnailPickerProps> = ({
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  // Generate master playlist URL
-  const videoUrl = `${API_URL}/api/video/${encodeURIComponent(album)}/${encodeURIComponent(filename)}/master.m3u8`;
+  // Use rotated MP4 for scrubbing (better frame-by-frame control than HLS)
+  const videoUrl = `${API_URL}/api/video/${encodeURIComponent(album)}/${encodeURIComponent(filename)}/rotated.mp4`;
 
   if (videoError) {
     return (
@@ -159,6 +159,7 @@ const VideoThumbnailPicker: React.FC<VideoThumbnailPickerProps> = ({
           }}
           preload="metadata"
           playsInline
+          crossOrigin="use-credentials"
         />
       </div>
 
