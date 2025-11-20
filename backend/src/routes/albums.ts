@@ -371,7 +371,11 @@ router.get("/api/albums/:album/photos", (req: Request, res): void => {
   if (cached && (now - cached.timestamp) < CACHE_TTL) {
     const duration = Date.now() - startTime;
     debug(`[Albums] Cache hit for album: ${sanitizedAlbum} (${cached.photos.length} photos, ${duration}ms)`);
-    res.json(cached.photos);
+    // Return cached photos with published state
+    res.json({
+      photos: cached.photos,
+      published: albumState.published
+    });
     return;
   }
 
@@ -389,7 +393,12 @@ router.get("/api/albums/:album/photos", (req: Request, res): void => {
   
   const totalDuration = Date.now() - startTime;
   debug(`[Albums] Fetched ${photos.length} photos in ${fetchDuration}ms, total request: ${totalDuration}ms`);
-  res.json(photos);
+  
+  // Return photos with published state
+  res.json({
+    photos,
+    published: albumState.published
+  });
 });
 
 // Get all photos from albums configured for homepage in random order

@@ -9,6 +9,7 @@ import { SITE_URL, API_URL } from '../config';
 import { Photo } from '../types/photo';
 import VideoPlayer from './ContentModal/VideoPlayer';
 import { ShareIcon } from './icons';
+import LinkifiedText from './LinkifiedText';
 import './VideoListView.css';
 
 interface VideoListViewProps {
@@ -123,7 +124,9 @@ const VideoListView: React.FC<VideoListViewProps> = ({ videos, album }) => {
               </div>
               
               {video.description && (
-                <p className="video-description">{video.description}</p>
+                <p className="video-description">
+                  <LinkifiedText text={video.description} />
+                </p>
               )}
             </div>
           </div>

@@ -7,6 +7,7 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useAuth } from "../contexts/AuthContext";
 import "./ContentGrid.css";
 import { API_URL, cacheBustValue } from "../config";
 import { trackPhotoClick, trackError } from "../utils/analytics";
@@ -32,12 +33,14 @@ const ContentGrid: React.FC<ContentGridProps> = ({ album, onAlbumNotFound, initi
   const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [allPhotos, setAllPhotos] = useState<Photo[]>([]);
   const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState<number>(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [albumPublished, setAlbumPublished] = useState<boolean>(true);
   const [imageDimensions, setImageDimensions] = useState<
     Record<string, { width: number; height: number }>
   >({});
@@ -288,6 +291,10 @@ const ContentGrid: React.FC<ContentGridProps> = ({ album, onAlbumNotFound, initi
           const data = await response.json();
           const photosArray = Array.isArray(data) ? data : (data.photos || []);
           
+          // Check if album is published (from API response)
+          const published = typeof data === 'object' && 'published' in data ? data.published : true;
+          setAlbumPublished(published);
+          
           // Sort photos by creation date
           const sortedPhotos = photosArray.sort((a: Photo, b: Photo) => {
             if (!a.metadata || !b.metadata) return 0;
@@ -524,6 +531,17 @@ const ContentGrid: React.FC<ContentGridProps> = ({ album, onAlbumNotFound, initi
 
   // Video-only album - use list view instead of grid
   if (isVideoOnlyAlbum) {
+    // Check if user has access to unpublished video albums
+    if (!albumPublished && !isAuthenticated) {
+      // Show 404 for unpublished video albums when not authenticated
+      if (location.pathname !== '/404') {
+        navigate('/404', { replace: true });
+      }
+      if (onAlbumNotFound) {
+        onAlbumNotFound();
+      }
+      return <NotFound />;
+    }
     return <VideoListView videos={allPhotos} album={album} />;
   }
 

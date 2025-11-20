@@ -516,9 +516,39 @@ const cacheImageMiddleware = (
   });
 };
 
+// Middleware to check album published state for optimized images
+const checkAlbumPublishedMiddleware = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  // Extract album from path: /optimized/{size}/{album}/{filename}
+  const pathParts = req.path.split('/').filter(p => p);
+  
+  if (pathParts.length >= 2) {
+    const album = pathParts[1]; // Second part is the album name
+    
+    // Check if user is authenticated
+    const isAuthenticated = (req.isAuthenticated && req.isAuthenticated()) || !!(req.session as any)?.userId;
+    
+    // Check album published state
+    const { getAlbumState } = require('./database.js');
+    const albumState = getAlbumState(album);
+    
+    // Deny access if album is unpublished and user is not authenticated
+    if (albumState && !albumState.published && !isAuthenticated) {
+      res.status(404).json({ error: "Image not found" });
+      return;
+    }
+  }
+  
+  next();
+};
+
 // Serve optimized photos with caching and CORS headers
 app.use(
   "/optimized",
+  checkAlbumPublishedMiddleware,
   cacheImageMiddleware,
   express.static(optimizedDir, {
     maxAge: "1y",

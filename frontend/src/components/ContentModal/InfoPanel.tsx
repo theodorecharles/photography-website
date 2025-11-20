@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { Photo, ExifData } from './types';
 import { formatFileSize } from '../../utils/formatters';
 import { API_URL } from '../../config';
+import LinkifiedText from '../LinkifiedText';
 
 interface VideoMetadata {
   width: number;
@@ -90,7 +91,9 @@ const InfoPanel: React.FC<InfoPanelProps> = ({
       
       {photo.description && (
         <div className="info-item" style={{ fontSize: '0.95rem', marginBottom: '1rem', opacity: 0.9 }}>
-          <span className="info-value">{photo.description}</span>
+          <span className="info-value">
+            <LinkifiedText text={photo.description} />
+          </span>
         </div>
       )}
       

@@ -17,6 +17,7 @@
   flex-direction: column;
   gap: 16px;
   background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 8px;
   padding: 20px;
   transition: background 0.2s ease;
@@ -40,7 +41,6 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 300px;
 }
 
 .video-thumbnail-poster {
@@ -171,6 +171,13 @@
   
   .video-player-wrapper {
     border-radius: 2px;
+  }
+}
+
+/* Extra small mobile styles */
+@media (max-width: 600px) {
+  .video-list-view {
+    padding-top: 0px;
   }
 }
 

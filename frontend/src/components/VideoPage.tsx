@@ -6,6 +6,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../contexts/AuthContext';
 import { API_URL } from '../config';
 import { Photo } from '../types/photo';
 import VideoPlayer from './ContentModal/VideoPlayer';
@@ -17,12 +18,20 @@ const VideoPage: React.FC = () => {
   const { t } = useTranslation();
   const { album, filename } = useParams<{ album: string; filename: string }>();
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const [video, setVideo] = useState<Photo | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchVideo = async () => {
+      // Require authentication for direct video links
+      if (!isAuthenticated) {
+        setError('NOT_AUTHENTICATED');
+        setLoading(false);
+        return;
+      }
+
       if (!album || !filename) {
         setError(t('videoPage.invalidUrl'));
         setLoading(false);
@@ -73,7 +82,7 @@ const VideoPage: React.FC = () => {
     };
 
     fetchVideo();
-  }, [album, filename, t]);
+  }, [album, filename, t, isAuthenticated, navigate]);
 
   const handleBackToAlbum = () => {
     if (album) {
@@ -93,17 +102,9 @@ const VideoPage: React.FC = () => {
   }
 
   if (error || !video) {
-    return (
-      <div className="video-page-error">
-        <div className="error-icon">❌</div>
-        <h2>{t('videoPage.errorTitle')}</h2>
-        <p>{error || t('videoPage.videoNotFound')}</p>
-        <button onClick={handleBackToAlbum} className="back-button">
-          <ArrowLeftIcon width={20} height={20} />
-          {t('videoPage.backToAlbum')}
-        </button>
-      </div>
-    );
+    // Redirect to 404 for any error
+    navigate('/404', { replace: true });
+    return null;
   }
 
   return (
