@@ -318,16 +318,55 @@ const sanitizeName = (name: string): string | null => {
 };
 
 /**
- * Sanitize photo/video filename (allows dots for extensions)
+ * Sanitize photo/video filename by removing/replacing invalid characters
+ * Converts to Title Case for consistency
  */
 const sanitizePhotoName = (name: string): string | null => {
-  if (!name || name.includes("..") || name.includes("/") || name.includes("\\")) {
+  if (!name) {
     return null;
   }
-  if (!/^[a-zA-Z0-9_\-. ]+\.(jpg|jpeg|png|gif|mp4|mov|avi|mkv|webm)$/i.test(name)) {
+  
+  // Block path traversal attempts
+  if (name.includes("..") || name.includes("/") || name.includes("\\")) {
     return null;
   }
-  return name;
+  
+  // Extract extension
+  const lastDotIndex = name.lastIndexOf('.');
+  if (lastDotIndex === -1) {
+    return null; // No extension
+  }
+  
+  const extension = name.substring(lastDotIndex + 1).toLowerCase();
+  const validExtensions = ['jpg', 'jpeg', 'png', 'gif', 'mp4', 'mov', 'avi', 'mkv', 'webm'];
+  
+  if (!validExtensions.includes(extension)) {
+    return null; // Invalid extension
+  }
+  
+  let baseName = name.substring(0, lastDotIndex);
+  
+  // Replace special characters with spaces or remove them
+  baseName = baseName
+    .replace(/[&,]/g, ' and ') // & and , become "and"
+    .replace(/[@#$%]/g, '') // Remove symbols
+    .replace(/[()[\]]/g, '') // Remove brackets
+    .replace(/[_-]/g, ' ') // Underscores and hyphens become spaces
+    .replace(/[^a-zA-Z0-9 ]/g, '') // Remove any other special chars
+    .replace(/\s+/g, ' ') // Collapse multiple spaces
+    .trim();
+  
+  if (!baseName) {
+    return null; // Nothing left after sanitization
+  }
+  
+  // Convert to Title Case
+  baseName = baseName
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(' ');
+  
+  return `${baseName}.${extension}`;
 };
 
 /**
