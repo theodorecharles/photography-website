@@ -37,7 +37,14 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
 
     // Load master playlist for adaptive streaming
     const masterPlaylistUrl = `${API_URL}/api/video/${encodeURIComponent(album)}/${encodeURIComponent(filename)}/master.m3u8`;
-    console.log('[VideoPlayer] Loading video:', { album, filename, url: masterPlaylistUrl });
+    console.log('[VideoPlayer] Loading video:', { 
+      album, 
+      filename, 
+      encodedAlbum: encodeURIComponent(album),
+      encodedFilename: encodeURIComponent(filename),
+      url: masterPlaylistUrl,
+      API_URL
+    });
 
     if (Hls.isSupported()) {
       console.log('[VideoPlayer] Using HLS.js for playback');
