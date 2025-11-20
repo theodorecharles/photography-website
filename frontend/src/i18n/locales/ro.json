@@ -366,7 +366,10 @@
     "invalidAlbumName": "Nume de album invalid  ",
     "nameUnchanged": "Numele albumului nu s-a schimbat  ",
     "albumNotFound": "Albumul nu a fost găsit  ",
-    "databaseUpdateFailed": "Nu s-a reușit actualizarea bazei de date"
+    "databaseUpdateFailed": "Nu s-a reușit actualizarea bazei de date",
+    "deleteVideo": "Șterge videoclipul  ",
+    "deleteVideoQuestion": "Ștergi videoclipul?  ",
+    "deleteVideoConfirm": "Ești sigur că vrei să ștergi acest videoclip?"
   },
   "settings": {
     "saved": "Setările {{section}} au fost salvate!",

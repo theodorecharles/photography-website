@@ -366,7 +366,10 @@
     "invalidAlbumName": "Tên album không hợp lệ  ",
     "nameUnchanged": "Tên album không thay đổi  ",
     "albumNotFound": "Không tìm thấy album  ",
-    "databaseUpdateFailed": "Không thể cập nhật cơ sở dữ liệu"
+    "databaseUpdateFailed": "Không thể cập nhật cơ sở dữ liệu",
+    "deleteVideo": "Xóa Video  ",
+    "deleteVideoQuestion": "Xóa Video?  ",
+    "deleteVideoConfirm": "Bạn có chắc chắn muốn xóa video này không?"
   },
   "settings": {
     "saved": "Cài đặt {{section}} đã được lưu!",

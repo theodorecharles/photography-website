@@ -366,7 +366,10 @@
     "invalidAlbumName": "Ugyldig albumnavn  ",
     "nameUnchanged": "Albumnavnet er uendret  ",
     "albumNotFound": "Album ikke funnet  ",
-    "databaseUpdateFailed": "Feil ved oppdatering av databasen"
+    "databaseUpdateFailed": "Feil ved oppdatering av databasen",
+    "deleteVideo": "Slett video  ",
+    "deleteVideoQuestion": "Slette video?  ",
+    "deleteVideoConfirm": "Er du sikker på at du vil slette denne videoen?"
   },
   "settings": {
     "saved": "{{section}} innstillinger lagret!",

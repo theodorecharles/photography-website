@@ -7,7 +7,7 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import "./PhotoGrid.css";
+import "./ContentGrid.css";
 import { API_URL, cacheBustValue } from "../config";
 import { trackPhotoClick, trackError } from "../utils/analytics";
 import { fetchWithRateLimitCheck } from "../utils/fetchWrapper";
@@ -15,8 +15,9 @@ import ContentModal from "./ContentModal";
 import NotFound from "./Misc/NotFound";
 import { reconstructPhoto, getNumColumns, distributePhotos } from "../utils/photoHelpers";
 import { info } from '../utils/logger';
+import { VideoIcon, PlayIcon } from './icons';
 
-interface PhotoGridProps {
+interface ContentGridProps {
   album: string;
   onAlbumNotFound?: () => void;
   initialPhotos?: Photo[];
@@ -26,7 +27,7 @@ interface PhotoGridProps {
 // Import Photo from canonical location
 import type { Photo } from '../types/photo';
 
-const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPhotos, onLoadComplete }) => {
+const ContentGrid: React.FC<ContentGridProps> = ({ album, onAlbumNotFound, initialPhotos, onLoadComplete }) => {
   const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
@@ -68,11 +69,20 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
   // ETags and Last-Modified headers handle cache validation
   const imageQueryString = ``;
 
+  const [clickedVideoId, setClickedVideoId] = useState<string | null>(null);
+
   const handlePhotoClick = (photo: Photo) => {
     setSelectedPhoto(photo);
     const index = photoIndexMap.get(photo.id) ?? 0;
     setSelectedPhotoIndex(index);
     trackPhotoClick(photo.id, photo.album, photo.title);
+    
+    // Track if user clicked a video
+    if (photo.media_type === 'video') {
+      setClickedVideoId(photo.id);
+    } else {
+      setClickedVideoId(null);
+    }
   };
 
   const handleNavigatePrev = useCallback(() => {
@@ -213,20 +223,20 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
               // New homepage format with metadata
               shouldShuffle = staticData.shuffle ?? true;
               staticPhotos = staticData.photos.map((data: string[]) => reconstructPhoto(data, album));
-              info(`✨ Loaded ${staticPhotos.length} photos from homepage JSON (shuffle: ${shouldShuffle})`);
+              info(`? Loaded ${staticPhotos.length} photos from homepage JSON (shuffle: ${shouldShuffle})`);
               
               // Shuffle homepage photos for random display order each time (if enabled)
               if (shouldShuffle) {
                 staticPhotos = [...staticPhotos].sort(() => Math.random() - 0.5);
-                info(`🔀 Shuffled ${staticPhotos.length} homepage photos`);
+                info(`?? Shuffled ${staticPhotos.length} homepage photos`);
               } else {
-                info(`📌 Homepage shuffle disabled - displaying in order`);
+                info(`?? Homepage shuffle disabled - displaying in order`);
               }
             } else {
               // Regular album format or legacy homepage format (array of photos)
               const photoArray = Array.isArray(staticData) ? staticData : (staticData.photos || []);
               staticPhotos = photoArray.map((data: string[]) => reconstructPhoto(data, album));
-              info(`✨ Loaded ${staticPhotos.length} photos from optimized static JSON (${album})`);
+              info(`? Loaded ${staticPhotos.length} photos from optimized static JSON (${album})`);
             }
             
             // Show first 100 immediately
@@ -240,7 +250,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
           }
         } catch (staticError) {
           // Static JSON not available or failed, fall back to API
-          info(`⚠️  Static JSON unavailable for ${album}, falling back to API`);
+          info(`??  Static JSON unavailable for ${album}, falling back to API`);
         }
 
         // Fallback to API if static JSON is not available
@@ -493,7 +503,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
   if (photos.length === 0) {
     return (
       <div className="empty-state">
-        <div className="empty-icon">📸</div>
+        <div className="empty-icon">??</div>
         <h2>{t('photo.noPhotosYet')}</h2>
         <p>{t('photo.albumEmpty')}</p>
         <a href="/admin" className="empty-state-button">
@@ -520,7 +530,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
             {column.map((photo) => (
               <div
                 key={photo.id}
-                className={`photo-item ${loadingImages.has(photo.id) ? 'loading' : ''}`}
+                className={`photo-item ${loadingImages.has(photo.id) ? 'loading' : ''} ${photo.media_type === 'video' ? 'video-item' : ''}`}
                 style={{
                   aspectRatio: imageDimensions[photo.id]
                     ? `${imageDimensions[photo.id].width} / ${
@@ -543,6 +553,16 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
                   title={photo.title}
                   onLoad={(e) => handleImageLoad(e, photo.id)}
                 />
+                {photo.media_type === 'video' && (
+                  <>
+                    <div className="video-icon-overlay">
+                      <VideoIcon width="20" height="20" />
+                    </div>
+                    <div className="video-play-overlay">
+                      <PlayIcon width="48" height="48" />
+                    </div>
+                  </>
+                )}
               </div>
             ))}
           </div>
@@ -558,10 +578,11 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
           onNavigatePrev={handleNavigatePrev}
           onNavigateNext={handleNavigateNext}
           onClose={handleCloseModal}
+          clickedVideo={clickedVideoId === selectedPhoto.id}
         />
       )}
     </>
   );
 };
 
-export default PhotoGrid;
+export default ContentGrid;

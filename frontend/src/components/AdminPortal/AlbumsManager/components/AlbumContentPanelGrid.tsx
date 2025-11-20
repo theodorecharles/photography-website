@@ -12,7 +12,7 @@ import { API_URL } from '../../../../config';
 import { DndContext, DragOverlay, closestCenter, PointerSensor, KeyboardSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { SortableContext, sortableKeyboardCoordinates, rectSortingStrategy } from '@dnd-kit/sortable';
 import AlbumGridItem from './AlbumGridItem';
-import { PhotoListItem } from './PhotoListItem';
+import { AlbumListItem } from './AlbumListItem';
 import { Photo, UploadingImage } from '../types';
 import { cacheBustValue } from '../../../../config';
 
@@ -30,7 +30,7 @@ interface AlbumContentPanelGridProps {
   onPhotoDragStart: (event: any, setActiveId?: (id: string | null) => void) => void;
   onPhotoDragEnd: (event: any, setActiveId?: (id: string | null) => void) => void;
   onOpenEditModal: (photo: Photo) => void;
-  onDeletePhoto: (album: string, filename: string, photoTitle?: string, thumbnail?: string) => void;
+  onDeletePhoto: (album: string, filename: string, photoTitle?: string, thumbnail?: string, mediaType?: 'photo' | 'video') => void;
   onRetryOptimization?: (album: string, filename: string) => void;
   onRetryAI?: (album: string, filename: string) => void;
   onRetryUpload?: (filename: string, albumName: string) => void;
@@ -282,7 +282,7 @@ const AlbumContentPanelGrid: React.FC<AlbumContentPanelGridProps> = ({
             <SortableContext items={allItemIds} strategy={rectSortingStrategy}>
               {/* Uploading images (includes those transitioning to complete) */}
               {uploadingImages.map((img, index) => (
-                <PhotoListItem
+                <AlbumListItem
                   key={img.photo?.id || `uploading-${index}`}
                   uploadingImage={img}
                   uploadingIndex={index}
@@ -295,7 +295,7 @@ const AlbumContentPanelGrid: React.FC<AlbumContentPanelGridProps> = ({
               
               {/* Existing album photos (already in album before upload) */}
               {albumPhotos.filter(photo => photo && photo.id).map((photo) => (
-                <PhotoListItem
+                <AlbumListItem
                   key={photo.id}
                   photo={photo}
                   onEdit={onOpenEditModal}

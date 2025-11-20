@@ -366,7 +366,10 @@
     "invalidAlbumName": "Hindi wastong pangalan ng album  ",
     "nameUnchanged": "Walang pagbabago sa pangalan ng album  ",
     "albumNotFound": "Hindi natagpuan ang album  ",
-    "databaseUpdateFailed": "Nabigong i-update ang database"
+    "databaseUpdateFailed": "Nabigong i-update ang database",
+    "deleteVideo": "Tanggalin ang Video  ",
+    "deleteVideoQuestion": "Tanggalin ang Video?  ",
+    "deleteVideoConfirm": "Sigurado ka bang nais mong tanggalin ang video na ito?"
   },
   "settings": {
     "saved": "{{section}} mga setting ay na-save!",

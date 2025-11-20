@@ -366,7 +366,10 @@
     "invalidAlbumName": "Nome dell'album non valido  ",
     "nameUnchanged": "Il nome dell'album non è cambiato  ",
     "albumNotFound": "Album non trovato  ",
-    "databaseUpdateFailed": "Impossibile aggiornare il database"
+    "databaseUpdateFailed": "Impossibile aggiornare il database",
+    "deleteVideo": "Elimina Video  ",
+    "deleteVideoQuestion": "Eliminare Video?  ",
+    "deleteVideoConfirm": "Sei sicuro di voler eliminare questo video?"
   },
   "settings": {
     "saved": "Impostazioni di {{section}} salvate!",

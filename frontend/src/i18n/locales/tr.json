@@ -366,7 +366,10 @@
     "invalidAlbumName": "Geçersiz albüm adı  ",
     "nameUnchanged": "Albüm adı değişmedi  ",
     "albumNotFound": "Albüm bulunamadı  ",
-    "databaseUpdateFailed": "Veritabanı güncellenemedi"
+    "databaseUpdateFailed": "Veritabanı güncellenemedi",
+    "deleteVideo": "Videoyu Sil  ",
+    "deleteVideoQuestion": "Videoyu sil?  ",
+    "deleteVideoConfirm": "Bu videoyu silmek istediğinizden emin misiniz?"
   },
   "settings": {
     "saved": "{{section}} ayarları kaydedildi!",

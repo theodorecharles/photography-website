@@ -366,7 +366,10 @@
     "invalidAlbumName": "Ongeldige albumnaam  ",
     "nameUnchanged": "Albumnaam is onveranderd  ",
     "albumNotFound": "Album niet gevonden  ",
-    "databaseUpdateFailed": "Bijwerken van de database mislukt"
+    "databaseUpdateFailed": "Bijwerken van de database mislukt",
+    "deleteVideo": "Video verwijderen  ",
+    "deleteVideoQuestion": "Video verwijderen?  ",
+    "deleteVideoConfirm": "Weet je zeker dat je deze video wilt verwijderen?"
   },
   "settings": {
     "saved": "{{section}} instellingen opgeslagen!",

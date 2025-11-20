@@ -120,14 +120,19 @@ const getPhotosInAlbum = (photosDir: string, album: string) => {
         .replace(/\.[^/.]+$/, '') // Remove extension
         .replace(/[-_]/g, ' '); // Replace hyphens and underscores with spaces
 
+      // For videos, thumbnails are stored as JPG
+      const isVideo = img.media_type === 'video';
+      const thumbnailFilename = isVideo ? img.filename.replace(/\.[^.]+$/, '.jpg') : img.filename;
+
       return {
         id: `${album}/${img.filename}`,
         title: img.title || defaultTitle,
         album: album,
-        thumbnail: `/optimized/thumbnail/${album}/${img.filename}`,
-        modal: `/optimized/modal/${album}/${img.filename}`,
-        download: `/optimized/download/${album}/${img.filename}`,
+        thumbnail: `/optimized/thumbnail/${album}/${thumbnailFilename}`,
+        modal: `/optimized/modal/${album}/${thumbnailFilename}`,
+        download: isVideo ? '' : `/optimized/download/${album}/${img.filename}`,
         sort_order: img.sort_order ?? null,
+        media_type: img.media_type || 'photo',
       };
     });
     

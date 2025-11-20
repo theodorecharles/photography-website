@@ -366,7 +366,10 @@
     "invalidAlbumName": "Недопустимое имя альбома  ",
     "nameUnchanged": "Имя альбома не изменено  ",
     "albumNotFound": "Альбом не найден  ",
-    "databaseUpdateFailed": "Не удалось обновить базу данных"
+    "databaseUpdateFailed": "Не удалось обновить базу данных",
+    "deleteVideo": "Удалить видео  ",
+    "deleteVideoQuestion": "Удалить видео?  ",
+    "deleteVideoConfirm": "Вы уверены, что хотите удалить это видео?"
   },
   "settings": {
     "saved": "Настройки {{section}} сохранены!",

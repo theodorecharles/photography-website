@@ -366,7 +366,10 @@
     "invalidAlbumName": "Ogiltigt albumnamn  ",
     "nameUnchanged": "Albumnamnet har inte ändrats  ",
     "albumNotFound": "Albumet hittades inte  ",
-    "databaseUpdateFailed": "Misslyckades med att uppdatera databasen"
+    "databaseUpdateFailed": "Misslyckades med att uppdatera databasen",
+    "deleteVideo": "Ta bort video  ",
+    "deleteVideoQuestion": "Ta bort video?  ",
+    "deleteVideoConfirm": "Är du säker på att du vill ta bort den här videon?"
   },
   "settings": {
     "saved": "{{section}} inställningar sparade!",

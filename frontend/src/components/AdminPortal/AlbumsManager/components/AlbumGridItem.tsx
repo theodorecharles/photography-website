@@ -25,7 +25,7 @@ interface AlbumGridItemProps {
   
   // Actions
   onEdit?: (photo: Photo) => void;
-  onDelete?: (album: string, filename: string, title: string, thumbnail: string) => void;
+  onDelete?: (album: string, filename: string, title: string, thumbnail: string, mediaType?: 'photo' | 'video') => void;
   onRetryOptimization?: (album: string, filename: string) => void;
   onRetryAI?: (album: string, filename: string) => void;
   onRetryUpload?: (filename: string, albumName: string) => void;
@@ -402,7 +402,7 @@ const AlbumGridItem: React.FC<AlbumGridItemProps> = ({
                 const parts = photoData.id.split('/');
                 const filename = parts.length > 1 ? parts[parts.length - 1] : parts[0];
                 info('Delete photo:', { album: photoData.album, filename, id: photoData.id });
-                if (onDelete) onDelete(photoData.album, decodeURIComponent(filename), photoData.title, photoData.thumbnail);
+                if (onDelete) onDelete(photoData.album, decodeURIComponent(filename), photoData.title, photoData.thumbnail, photoData.media_type);
               }}
               onTouchEnd={(e) => {
                 e.stopPropagation();
@@ -411,7 +411,7 @@ const AlbumGridItem: React.FC<AlbumGridItemProps> = ({
                 const parts = photoData.id.split('/');
                 const filename = parts.length > 1 ? parts[parts.length - 1] : parts[0];
                 info('Delete photo:', { album: photoData.album, filename, id: photoData.id });
-                if (onDelete) onDelete(photoData.album, decodeURIComponent(filename), photoData.title, photoData.thumbnail);
+                if (onDelete) onDelete(photoData.album, decodeURIComponent(filename), photoData.title, photoData.thumbnail, photoData.media_type);
               }}
               className="btn-delete-photo"
               title="Delete photo"

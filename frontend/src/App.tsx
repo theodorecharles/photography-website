@@ -17,7 +17,7 @@ import {
   Link,
 } from "react-router-dom";
 import "./App.css";
-import PhotoGrid from "./components/PhotoGrid";
+import ContentGrid from "./components/ContentGrid";
 import Header, { ExternalLink } from "./components/Header";
 import Footer from "./components/Footer";
 import ScrollToTop from "./components/Misc/ScrollToTop";
@@ -100,7 +100,7 @@ function AlbumRoute({
         url={`${SITE_URL}/album/${album}`}
         image={`${SITE_URL}/photos/avatar.png`}
       />
-      <PhotoGrid
+      <ContentGrid
         album={decodedAlbum}
         onAlbumNotFound={onAlbumNotFound}
         onLoadComplete={onLoadComplete}
@@ -600,7 +600,7 @@ function App() {
                     title={t("seo.homepageTitle", { siteName })}
                     description={t("seo.homepageDescription", { siteName })}
                   />
-                  <PhotoGrid
+                  <ContentGrid
                     album="homepage"
                     onLoadComplete={() => setShowFooter(true)}
                   />

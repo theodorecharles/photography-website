@@ -366,7 +366,10 @@
     "invalidAlbumName": "无效的相册名称  ",
     "nameUnchanged": "相册名称未更改  ",
     "albumNotFound": "未找到相册  ",
-    "databaseUpdateFailed": "更新数据库失败"
+    "databaseUpdateFailed": "更新数据库失败",
+    "deleteVideo": "删除视频  ",
+    "deleteVideoQuestion": "删除视频？  ",
+    "deleteVideoConfirm": "您确定要删除此视频吗？"
   },
   "settings": {
     "saved": "{{section}} 设置已保存！",

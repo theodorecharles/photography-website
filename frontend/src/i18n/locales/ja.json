@@ -366,7 +366,10 @@
     "invalidAlbumName": "無効なアルバム名  ",
     "nameUnchanged": "アルバム名は変更されていません  ",
     "albumNotFound": "アルバムが見つかりません  ",
-    "databaseUpdateFailed": "データベースの更新に失敗しました"
+    "databaseUpdateFailed": "データベースの更新に失敗しました",
+    "deleteVideo": "ビデオを削除  ",
+    "deleteVideoQuestion": "ビデオを削除しますか？  ",
+    "deleteVideoConfirm": "このビデオを削除してもよろしいですか？"
   },
   "settings": {
     "saved": "{{section}}設定が保存されました！",

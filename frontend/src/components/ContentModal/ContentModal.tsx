@@ -13,6 +13,7 @@ import { Photo, ExifData } from './types';
 import ModalControls from './ModalControls';
 import InfoPanel from './InfoPanel';
 import ImageCanvas from './ImageCanvas';
+import VideoPlayer from './VideoPlayer';
 import ModalNavigation from './ModalNavigation';
 import './PhotoModal.css';
 import { error as logError } from '../../utils/logger';
@@ -26,6 +27,7 @@ interface ContentModalProps {
   onNavigatePrev: () => void;
   onNavigateNext: () => void;
   onClose: () => void;
+  clickedVideo?: boolean; // Whether user clicked a video (vs navigated to it)
 }
 
 const ContentModal: React.FC<ContentModalProps> = ({
@@ -36,6 +38,7 @@ const ContentModal: React.FC<ContentModalProps> = ({
   onNavigatePrev,
   onNavigateNext,
   onClose,
+  clickedVideo = false,
 }) => {
   // Modal-specific state
   const [modalImageLoaded, setModalImageLoaded] = useState(false);
@@ -50,6 +53,17 @@ const ContentModal: React.FC<ContentModalProps> = ({
     () => !localStorage.getItem('hideNavigationHint')
   );
   const [siteName, setSiteName] = useState<string>('Galleria');
+  const [shouldAutoplay, setShouldAutoplay] = useState(clickedVideo);
+  const previousPhotoRef = useRef<string | null>(null);
+
+  // Track photo changes to determine if user navigated
+  useEffect(() => {
+    if (previousPhotoRef.current && previousPhotoRef.current !== selectedPhoto.id) {
+      // User navigated to a different photo/video, don't autoplay
+      setShouldAutoplay(false);
+    }
+    previousPhotoRef.current = selectedPhoto.id;
+  }, [selectedPhoto.id]);
   
   const touchStartX = useRef<number | null>(null);
   const touchStartY = useRef<number | null>(null);
@@ -565,14 +579,38 @@ const ContentModal: React.FC<ContentModalProps> = ({
             style={imageBounds ? { left: `${imageBounds.left}px` } : {}}
           />
 
-          <ImageCanvas
-            photo={selectedPhoto}
-            apiUrl={API_URL}
-            imageQueryString={imageQueryString}
-            modalImageLoaded={modalImageLoaded}
-            showModalImage={showModalImage}
-            onThumbnailLoad={handleThumbnailLoad}
-          />
+          {selectedPhoto.media_type === 'video' ? (
+            shouldAutoplay ? (
+              <VideoPlayer
+                album={selectedPhoto.album}
+                filename={selectedPhoto.id.split('/')[1]}
+                autoplay={true}
+                onLoadStart={() => setThumbnailLoaded(false)}
+                onLoaded={() => {
+                  setThumbnailLoaded(true);
+                  setModalImageLoaded(true);
+                }}
+              />
+            ) : (
+              <ImageCanvas
+                photo={selectedPhoto}
+                apiUrl={API_URL}
+                imageQueryString={imageQueryString}
+                modalImageLoaded={modalImageLoaded}
+                showModalImage={showModalImage}
+                onThumbnailLoad={handleThumbnailLoad}
+              />
+            )
+          ) : (
+            <ImageCanvas
+              photo={selectedPhoto}
+              apiUrl={API_URL}
+              imageQueryString={imageQueryString}
+              modalImageLoaded={modalImageLoaded}
+              showModalImage={showModalImage}
+              onThumbnailLoad={handleThumbnailLoad}
+            />
+          )}
 
           <ModalNavigation
             showHint={showNavigationHint}

@@ -366,7 +366,10 @@
     "invalidAlbumName": "Ungültiger Albumname  ",
     "nameUnchanged": "Albumname wurde nicht geändert  ",
     "albumNotFound": "Album nicht gefunden  ",
-    "databaseUpdateFailed": "Datenbankaktualisierung fehlgeschlagen"
+    "databaseUpdateFailed": "Datenbankaktualisierung fehlgeschlagen",
+    "deleteVideo": "Video löschen  ",
+    "deleteVideoQuestion": "Video löschen?  ",
+    "deleteVideoConfirm": "Sind Sie sicher, dass Sie dieses Video löschen möchten?"
   },
   "settings": {
     "saved": "{{section}} Einstellungen gespeichert!",

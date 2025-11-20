@@ -6,7 +6,7 @@ import { Photo, UploadingImage } from '../types';
 import { API_URL } from '../../../../config';
 import { EditIcon, TrashIcon } from '../../../icons';
 
-interface PhotoListItemProps {
+interface AlbumListItemProps {
   // Either an existing photo or an uploading image
   photo?: Photo;
   uploadingImage?: UploadingImage;
@@ -14,14 +14,14 @@ interface PhotoListItemProps {
   
   // Handlers
   onEdit: (photo: Photo) => void;
-  onDelete: (album: string, filename: string, photoTitle: string, thumbnail: string) => void;
+  onDelete: (album: string, filename: string, photoTitle: string, thumbnail: string, mediaType?: 'photo' | 'video') => void;
   
   // State
   deletingPhotoId: string | null;
   canEdit: boolean;
 }
 
-export const PhotoListItem: React.FC<PhotoListItemProps> = ({
+export const AlbumListItem: React.FC<AlbumListItemProps> = ({
   photo,
   uploadingImage,
   uploadingIndex,
@@ -74,6 +74,10 @@ export const PhotoListItem: React.FC<PhotoListItemProps> = ({
       case 'uploading':
         return t('sse.uploadingWithProgress', { progress: uploadingImage.progress });
       case 'optimizing':
+        // Show video stage if available
+        if (uploadingImage.videoStage) {
+          return `${uploadingImage.videoStage} (${uploadingImage.optimizeProgress}%)`;
+        }
         return t('sse.optimizingWithProgress', { progress: uploadingImage.optimizeProgress });
       case 'generating-title':
         return t('sse.generatingTitleLowercase');
@@ -138,7 +142,7 @@ export const PhotoListItem: React.FC<PhotoListItemProps> = ({
           <button
             onClick={(e) => {
               e.stopPropagation();
-              onDelete(album, filename, title, thumbnailUrl);
+              onDelete(album, filename, title, thumbnailUrl, photoData?.media_type);
             }}
             className="list-action-btn delete"
             title="Delete photo"

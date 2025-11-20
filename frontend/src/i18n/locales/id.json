@@ -366,7 +366,10 @@
     "invalidAlbumName": "Nama album tidak valid  ",
     "nameUnchanged": "Nama album tidak berubah  ",
     "albumNotFound": "Album tidak ditemukan  ",
-    "databaseUpdateFailed": "Gagal memperbarui basis data"
+    "databaseUpdateFailed": "Gagal memperbarui basis data",
+    "deleteVideo": "Hapus Video  ",
+    "deleteVideoQuestion": "Hapus Video?  ",
+    "deleteVideoConfirm": "Apakah Anda yakin ingin menghapus video ini?"
   },
   "settings": {
     "saved": "Pengaturan {{section}} disimpan!",
