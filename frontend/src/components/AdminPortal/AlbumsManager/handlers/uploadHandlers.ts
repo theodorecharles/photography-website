@@ -19,6 +19,7 @@ interface UploadHandlersProps {
   setMessage: (message: { type: 'success' | 'error'; text: string }) => void;
   loadAlbums: () => Promise<void>;
   language: string;
+  t: (key: string) => string;
 }
 
 export const createUploadHandlers = (props: UploadHandlersProps) => {
@@ -32,6 +33,7 @@ export const createUploadHandlers = (props: UploadHandlersProps) => {
     loadAlbums,
     // setAlbumPhotos, // no longer used - photos stay in uploadingImages until complete
     language,
+    t,
   } = props;
 
   // Upload single image (returns immediately, optimization tracked via SSE stream)

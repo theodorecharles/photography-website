@@ -494,6 +494,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     setMessage,
     loadAlbums,
     language: i18n.language,
+    t,
   });
 
   const albumHandlers = createAlbumHandlers({
@@ -527,6 +528,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     setTargetFolderId,
     ghostTileFileInputRef,
     folderGhostTileRefs,
+    t,
     setMessage,
     saveAlbumOrder: albumManagement.saveAlbumOrder,
     uploadingImages,
