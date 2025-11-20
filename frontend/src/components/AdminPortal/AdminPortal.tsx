@@ -403,7 +403,8 @@ export default function AdminPortal() {
         metaKeywords: data.metaKeywords || '',
         faviconPath: data.faviconPath || '',
         shuffleHomepage: data.shuffleHomepage ?? true,
-        photoLicense: data.photoLicense || 'cc-by'
+        photoLicense: data.photoLicense || 'cc-by',
+        enableAnimatedBackground: data.enableAnimatedBackground ?? true
       };
       info('[AdminPortal] Setting branding state to:', brandingData);
       setBranding(brandingData);
@@ -449,9 +450,7 @@ export default function AdminPortal() {
 
   if (loading || !cssLoaded) {
     return (
-      <div className="admin-portal">
-        <div className="bokeh-circle-1"></div>
-        <div className="bokeh-circle-2"></div>
+      <div className={`admin-portal ${branding.enableAnimatedBackground !== false ? 'animated-bg' : ''}`}>
         <div className="admin-container">
           <div className="loading-container loading-container-full">
             <div className="loading-spinner"></div>
@@ -464,9 +463,7 @@ export default function AdminPortal() {
 
   if (!authStatus?.authenticated) {
     return (
-      <div className="admin-portal">
-        <div className="bokeh-circle-1"></div>
-        <div className="bokeh-circle-2"></div>
+      <div className={`admin-portal ${branding.enableAnimatedBackground !== false ? 'animated-bg' : ''}`}>
         <div className="admin-container">
           <LoginForm 
             availableAuthMethods={availableAuthMethods}
@@ -478,9 +475,7 @@ export default function AdminPortal() {
   }
 
   return (
-    <div className="admin-portal">
-      <div className="bokeh-circle-1"></div>
-      <div className="bokeh-circle-2"></div>
+    <div className={`admin-portal ${branding.enableAnimatedBackground !== false ? 'animated-bg' : ''}`}>
       <div className="admin-container">
         <div className="admin-header">
           <button

@@ -12,8 +12,8 @@
   overflow: hidden;
 }
 
-/* Rotating gradient overlay for entire admin portal */
-.admin-portal::before {
+/* Rotating gradient overlay for entire admin portal - only when animated-bg class is present */
+.admin-portal.animated-bg::before {
   content: '';
   position: fixed;
   inset: -50%;
@@ -47,8 +47,8 @@
   }
 }
 
-/* Vibrant bokeh/lens effect circles matching setup wizard */
-.admin-portal::after {
+/* Vibrant bokeh/lens effect circles matching setup wizard - only when animated-bg class is present */
+.admin-portal.animated-bg::after {
   content: '';
   position: fixed;
   top: -30%;
