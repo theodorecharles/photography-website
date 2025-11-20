@@ -1329,5 +1329,125 @@ router.put('/:albumName/move', requireManager, async (req: Request, res: Respons
   }
 });
 
+/**
+ * POST /api/albums/:albumName/video/:filename/update-thumbnail
+ * Update video thumbnail by extracting a frame at a specific timestamp
+ */
+router.post('/:albumName/video/:filename/update-thumbnail', requireManager, async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { albumName, filename } = req.params;
+    const { timestamp } = req.body; // timestamp in seconds
+    
+    if (!albumName || !filename) {
+      res.status(400).json({ error: 'Album name and filename are required' });
+      return;
+    }
+    
+    if (typeof timestamp !== 'number' || timestamp < 0) {
+      res.status(400).json({ error: 'Valid timestamp is required' });
+      return;
+    }
+    
+    const appRoot = req.app.get('appRoot');
+    const dataDir = process.env.DATA_DIR || path.join(appRoot, 'data');
+    const videoDir = path.join(dataDir, 'video', albumName, filename);
+    const optimizedDir = path.join(dataDir, 'optimized');
+    const rotatedVideoPath = path.join(videoDir, 'rotated.mp4');
+    
+    // Check if rotated video exists
+    if (!fs.existsSync(rotatedVideoPath)) {
+      res.status(404).json({ error: 'Video not found or not yet processed' });
+      return;
+    }
+    
+    // Format timestamp as HH:MM:SS
+    const hours = Math.floor(timestamp / 3600);
+    const minutes = Math.floor((timestamp % 3600) / 60);
+    const seconds = Math.floor(timestamp % 60);
+    const timeString = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    
+    info(`[VideoThumbnail] Extracting frame at ${timeString} for ${albumName}/${filename}`);
+    
+    // Extract thumbnail (512px for thumbnail view)
+    const thumbnailPath = path.join(optimizedDir, 'thumbnail', albumName, filename.replace(/\.[^.]+$/, '.jpg'));
+    await new Promise<void>((resolve, reject) => {
+      const args = [
+        '-ss', timeString, // Seek to timestamp
+        '-i', rotatedVideoPath,
+        '-vframes', '1', // Extract 1 frame
+        '-vf', 'scale=512:-2', // Scale to 512px width, maintain aspect ratio
+        '-y', // Overwrite existing file
+        thumbnailPath
+      ];
+      
+      const ffmpeg = spawn('ffmpeg', args);
+      let stderr = '';
+      
+      ffmpeg.stderr.on('data', (data) => {
+        stderr += data.toString();
+      });
+      
+      ffmpeg.on('close', (code) => {
+        if (code !== 0) {
+          error('[VideoThumbnail] Thumbnail extraction failed:', stderr);
+          reject(new Error(`Thumbnail extraction failed: ${stderr}`));
+        } else {
+          info('[VideoThumbnail] Thumbnail extracted successfully');
+          resolve();
+        }
+      });
+      
+      ffmpeg.on('error', (err) => {
+        reject(err);
+      });
+    });
+    
+    // Extract modal preview (2048px for modal view)
+    const modalPath = path.join(optimizedDir, 'modal', albumName, filename.replace(/\.[^.]+$/, '.jpg'));
+    await new Promise<void>((resolve, reject) => {
+      const args = [
+        '-ss', timeString,
+        '-i', rotatedVideoPath,
+        '-vframes', '1',
+        '-vf', 'scale=2048:-2',
+        '-y',
+        modalPath
+      ];
+      
+      const ffmpeg = spawn('ffmpeg', args);
+      let stderr = '';
+      
+      ffmpeg.stderr.on('data', (data) => {
+        stderr += data.toString();
+      });
+      
+      ffmpeg.on('close', (code) => {
+        if (code !== 0) {
+          error('[VideoThumbnail] Modal preview extraction failed:', stderr);
+          reject(new Error(`Modal preview extraction failed: ${stderr}`));
+        } else {
+          info('[VideoThumbnail] Modal preview extracted successfully');
+          resolve();
+        }
+      });
+      
+      ffmpeg.on('error', (err) => {
+        reject(err);
+      });
+    });
+    
+    info(`[VideoThumbnail] Updated thumbnails for ${albumName}/${filename} at ${timeString}`);
+    
+    res.json({ 
+      success: true,
+      message: 'Thumbnail updated successfully',
+      timestamp: timeString
+    });
+  } catch (err) {
+    error('[VideoThumbnail] Failed to update video thumbnail:', err);
+    res.status(500).json({ error: 'Failed to update video thumbnail' });
+  }
+});
+
 export default router;
 

@@ -4,7 +4,7 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Photo, UploadingImage } from '../types';
 import { API_URL } from '../../../../config';
-import { EditIcon, TrashIcon } from '../../../icons';
+import { EditIcon, TrashIcon, VideoIcon } from '../../../icons';
 
 interface AlbumListItemProps {
   // Either an existing photo or an uploading image
@@ -101,10 +101,17 @@ export const AlbumListItem: React.FC<AlbumListItemProps> = ({
       {/* Thumbnail */}
       <div className="list-item-thumbnail">
         {thumbnailUrl ? (
-          <img
-            src={`${API_URL}${thumbnailUrl}?t=${Date.now()}`}
-            alt={title}
-          />
+          <>
+            <img
+              src={`${API_URL}${thumbnailUrl}?t=${Date.now()}`}
+              alt={title}
+            />
+            {photoData?.media_type === 'video' && (
+              <div className="video-icon-overlay">
+                <VideoIcon width="20" height="20" />
+              </div>
+            )}
+          </>
         ) : isUploading ? (
           <div className="thumbnail-placeholder" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', width: '100%' }}>
             <div className="loading-spinner" style={{ width: '24px', height: '24px', marginTop: '12px' }} />

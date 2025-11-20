@@ -11,7 +11,7 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Photo, UploadingImage } from '../types';
 import { cacheBustValue } from '../../../../config';
-import { EditDocumentIcon, TrashIcon, HourglassIcon } from '../../../icons';
+import { EditDocumentIcon, TrashIcon, HourglassIcon, VideoIcon } from '../../../icons';
 import { info } from '../../../../utils/logger';
 
 
@@ -203,6 +203,13 @@ const AlbumGridItem: React.FC<AlbumGridItemProps> = ({
           alt=""
           className="admin-photo-thumbnail"
         />
+      )}
+
+      {/* Video indicator icon */}
+      {!isUploading && photoData?.media_type === 'video' && (
+        <div className="video-icon-overlay">
+          <VideoIcon width="20" height="20" />
+        </div>
       )}
 
       {/* Uploading States */}
