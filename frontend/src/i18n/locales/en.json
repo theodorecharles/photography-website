@@ -35,7 +35,8 @@
     "creating": "Creating...",
     "generating": "Generating...",
     "album": "album",
-    "albums": "albums"
+    "albums": "albums",
+    "note": "Note"
   },
   "app": {
     "loadingAlbums": "Loading albums...",
