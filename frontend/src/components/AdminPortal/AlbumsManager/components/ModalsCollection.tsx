@@ -280,7 +280,7 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
               )}
               
               <div className="edit-modal-info" style={{ marginTop: '1rem' }}>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', opacity: 0.8 }}>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: 600, color: 'rgba(255, 255, 255, 0.9)' }}>
                   {t('albumsManager.titleLabel')}
                 </label>
                 <div style={{ position: 'relative', marginBottom: '1rem' }}>
@@ -349,7 +349,7 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
                   </p>
                 )}
                 
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', opacity: 0.8 }}>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: 600, color: 'rgba(255, 255, 255, 0.9)' }}>
                   {t('albumsManager.descriptionLabel')}
                 </label>
                 <textarea
