@@ -420,6 +420,7 @@ const ContentModal: React.FC<ContentModalProps> = ({
     
     // Check if clicking on interactive elements that should NOT close the modal
     const isDirectlyOnImage = target.tagName === 'IMG';
+    const isDirectlyOnVideo = target.tagName === 'VIDEO';
     const isOnButton = target.closest('button') || target.closest('.modal-navigation-button');
     const isOnInfoPanel = target.closest('.modal-info-panel');
     const isOnControls = target.closest('.modal-controls-top');
@@ -431,11 +432,11 @@ const ContentModal: React.FC<ContentModalProps> = ({
       return;
     }
     
-    // If clicking directly on the image, don't close modal
-    if (isDirectlyOnImage) {
+    // If clicking directly on the image or video, don't close modal
+    if (isDirectlyOnImage || isDirectlyOnVideo) {
       e.stopPropagation();
       
-      // Close info panel if clicking on image while it's open
+      // Close info panel if clicking on image/video while it's open
       if (showInfo) {
         setShowInfo(false);
       }
@@ -610,7 +611,7 @@ const ContentModal: React.FC<ContentModalProps> = ({
             showVideoPlayer ? (
               <VideoPlayer
                 album={selectedPhoto.album}
-                filename={selectedPhoto.id.split('/')[1]}
+                filename={selectedPhoto.id.includes('/') ? selectedPhoto.id.split('/').pop() || selectedPhoto.id : selectedPhoto.id}
                 autoplay={shouldAutoplay}
                 onLoadStart={() => setThumbnailLoaded(false)}
                 onLoaded={() => {

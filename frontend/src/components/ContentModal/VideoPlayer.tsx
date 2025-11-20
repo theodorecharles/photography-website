@@ -83,7 +83,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     
     // Test URL accessibility
     setError('Testing playlist URL...');
-    fetch(masterPlaylistUrl, { credentials: 'include' })
+    fetch(masterPlaylistUrl)
       .then(res => {
         console.log('[VideoPlayer] Playlist fetch test:', res.status, res.statusText);
         if (!res.ok) {
@@ -128,7 +128,11 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         abrEwmaSlowVoD: 3, // Weight for slow EMA (VOD)
         abrEwmaFastVoD: 3, // Weight for fast EMA (VOD)
         abrMaxWithRealBitrate: false, // Use bandwidth estimate, not max bitrate
-        debug: false, // Set to true for verbose logging
+        debug: true, // Set to true for verbose logging
+        xhrSetup: (xhr: XMLHttpRequest) => {
+          // Don't send credentials with video requests (CORS with wildcard origin)
+          xhr.withCredentials = false;
+        },
       });
 
       hlsRef.current = hls;

@@ -105,7 +105,8 @@ async function translateSingle(openai, text, targetLanguage) {
 2. Preserve HTML tags like <strong></strong>
 3. Preserve special characters and emojis (✓, ❌, 🔒, etc.)
 4. Keep the tone appropriate for UI elements
-5. Return ONLY the translation, no quotes, explanations, or extra text`,
+5. DO NOT translate brand names and technical acronyms: Google, OpenObserve, OpenAI, Galleria, MFA, SMTP
+6. Return ONLY the translation, no quotes, explanations, or extra text`,
       },
       {
         role: "user",
@@ -142,8 +143,9 @@ async function translateBatch(openai, batch, targetLanguage) {
 2. Preserve HTML tags like <strong></strong>
 3. Preserve special characters and emojis (✓, ❌, 🔒, etc.)
 4. Keep the tone appropriate for UI elements
-5. Return ONLY the translations, one per line, in the same order as the input
-6. Do not add quotes, explanations, or extra text`,
+5. DO NOT translate brand names and technical acronyms: Google, OpenObserve, OpenAI, Galleria, MFA, SMTP
+6. Return ONLY the translations, one per line, in the same order as the input
+7. Do not add quotes, explanations, or extra text`,
         },
         {
           role: "user",

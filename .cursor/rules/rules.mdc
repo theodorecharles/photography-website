@@ -425,9 +425,13 @@ Photography portfolio website with React 19, TypeScript, Express 5, and SQLite.
 ### Public Endpoints
 
 - `GET /api/albums` - List albums (filtered by published state)
-- `GET /api/albums/:album/photos` - Get photos in album
+- `GET /api/albums/:album/photos` - Get photos in album (filtered by published state)
 - `GET /api/random-photos` - Shuffled photos from published albums
 - `GET /api/photos/:album/:filename/exif` - EXIF data
+- `GET /api/video/:album/:filename/master.m3u8` - HLS master playlist (filtered by published state)
+- `GET /api/video/:album/:filename/:resolution/playlist.m3u8` - HLS resolution playlist (filtered by published state)
+- `GET /api/video/:album/:filename/:resolution/:segment` - HLS video segment (filtered by published state)
+- `GET /api/video/:album/:filename/resolutions` - Available video resolutions (filtered by published state)
 - `GET /api/shared/:secretKey` - View shared album (public access)
 - `GET /api/preview-grid/shared/:secretKey` - 2x2 preview for shared album
 - `GET /sitemap.xml` - SEO sitemap
@@ -469,6 +473,10 @@ Photography portfolio website with React 19, TypeScript, Express 5, and SQLite.
 - CSRF tokens required for all state-changing operations
 - Email whitelist for Google OAuth (`authorizedEmails` in config)
 - Rate limiting on upload endpoints
+- **Published State Filtering**: All public media endpoints (photos, videos, albums) check authentication AND published state:
+  - If user is authenticated: serve content from any album
+  - If user is NOT authenticated: only serve content from published albums
+  - Returns 404 for unpublished content to prevent information leakage
 
 ## Testing
 

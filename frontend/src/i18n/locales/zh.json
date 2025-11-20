@@ -87,8 +87,6 @@
     "exitFullscreen": "退出全屏",
     "file": "文件",
     "titleLabel": "标题",
-    "descriptionLabel": "描述  ",
-    "enterDescription": "输入描述...",
     "albumLabel": "相册",
     "size": "大小",
     "loadingExif": "加载EXIF数据...",
@@ -185,7 +183,6 @@
     "errorSavingLicense": "保存许可时出错",
     "errorSavingLanguage": "保存语言时出错",
     "errorSavingSetting": "保存设置时出错",
-    "logoSaved": "徽标保存成功！",
     "siteNameSaved": "网站名称保存成功！",
     "primaryColorSaved": "主色保存成功！",
     "secondaryColorSaved": "副色保存成功！",
@@ -379,7 +376,10 @@
     "databaseUpdateFailed": "更新数据库失败",
     "deleteVideo": "删除视频  ",
     "deleteVideoQuestion": "删除视频？  ",
-    "deleteVideoConfirm": "您确定要删除此视频吗？"
+    "deleteVideoConfirm": "您确定要删除此视频吗？",
+    "titleLabel": "标题  ",
+    "descriptionLabel": "描述  ",
+    "enterDescription": "输入描述..."
   },
   "settings": {
     "saved": "{{section}} 设置已保存！",

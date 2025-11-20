@@ -7,6 +7,7 @@ import { Router, Request, Response } from "express";
 import fs from "fs";
 import path from "path";
 import { error, info } from '../utils/logger.js';
+import { getAlbumState } from '../database.js';
 
 const router = Router();
 
@@ -39,6 +40,17 @@ router.get("/:album/:filename/master.m3u8", async (req: Request, res: Response):
     if (!sanitizedAlbum || !sanitizedFilename) {
       error(`[Video] Sanitization failed: album=${album}, filename=${filename}`);
       res.status(400).json({ error: 'Invalid path parameters' });
+      return;
+    }
+
+    // Check authentication and album published state
+    const isAuthenticated = (req.isAuthenticated && req.isAuthenticated()) || !!(req.session as any)?.userId;
+    const albumState = getAlbumState(sanitizedAlbum);
+    
+    // Deny access if album is unpublished and user is not authenticated
+    if (!albumState || (!albumState.published && !isAuthenticated)) {
+      error(`[Video] Access denied: album=${sanitizedAlbum}, authenticated=${isAuthenticated}, published=${albumState?.published}`);
+      res.status(404).json({ error: 'Video not found' });
       return;
     }
 
@@ -94,6 +106,16 @@ router.get("/:album/:filename/:resolution/playlist.m3u8", async (req: Request, r
 
     if (!sanitizedAlbum || !sanitizedFilename || !sanitizedResolution) {
       res.status(400).json({ error: 'Invalid path parameters' });
+      return;
+    }
+
+    // Check authentication and album published state
+    const isAuthenticated = (req.isAuthenticated && req.isAuthenticated()) || !!(req.session as any)?.userId;
+    const albumState = getAlbumState(sanitizedAlbum);
+    
+    // Deny access if album is unpublished and user is not authenticated
+    if (!albumState || (!albumState.published && !isAuthenticated)) {
+      res.status(404).json({ error: 'Video not found' });
       return;
     }
 
@@ -153,6 +175,16 @@ router.get("/:album/:filename/:resolution/:segment", async (req: Request, res: R
 
     if (!sanitizedAlbum || !sanitizedFilename || !sanitizedResolution || !sanitizedSegment) {
       res.status(400).json({ error: 'Invalid path parameters' });
+      return;
+    }
+
+    // Check authentication and album published state
+    const isAuthenticated = (req.isAuthenticated && req.isAuthenticated()) || !!(req.session as any)?.userId;
+    const albumState = getAlbumState(sanitizedAlbum);
+    
+    // Deny access if album is unpublished and user is not authenticated
+    if (!albumState || (!albumState.published && !isAuthenticated)) {
+      res.status(404).json({ error: 'Video not found' });
       return;
     }
 
@@ -216,6 +248,16 @@ router.get("/:album/:filename/resolutions", async (req: Request, res: Response):
 
     if (!sanitizedAlbum || !sanitizedFilename) {
       res.status(400).json({ error: 'Invalid path parameters' });
+      return;
+    }
+
+    // Check authentication and album published state
+    const isAuthenticated = (req.isAuthenticated && req.isAuthenticated()) || !!(req.session as any)?.userId;
+    const albumState = getAlbumState(sanitizedAlbum);
+    
+    // Deny access if album is unpublished and user is not authenticated
+    if (!albumState || (!albumState.published && !isAuthenticated)) {
+      res.status(404).json({ error: 'Video not found' });
       return;
     }
 

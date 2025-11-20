@@ -99,35 +99,21 @@ function compareKeys(referenceKeys, targetKeys) {
  * Words that are legitimately the same across languages
  */
 const UNIVERSAL_WORDS = new Set([
-  "iso",
-  "url",
-  "sms",
-  "mfa",
-  "qr",
-  "api",
-  "smtp",
-  "ssl",
-  "tls",
-  "email",
-  "ok",
   "galleria",
   "openai",
+  "google",
+  "openobserve",
+  "mfa",
+  "smtp",
   "modal",
-  "photo",
-  "album",
-  "error",
-  "logo",
-  "file",
-  "lens",
-  "status",
-  "filter",
-  "links",
-  "dashboard",
-  "branding",
-  "upload",
+  "email",
+  "url",
+  "iso",
+  "passkey",
+  "online",
   "min",
-  "albums",
-  "photos",
+  "frontend",
+  "server",
 ]);
 
 /**
@@ -139,6 +125,12 @@ function isUniversalWord(str) {
 
   // Check exact matches
   if (UNIVERSAL_WORDS.has(lower)) return true;
+
+  // Check if string contains any universal word (for multi-word phrases like "Google Cloud Console")
+  const words = lower.split(/\s+/);
+  for (const word of words) {
+    if (UNIVERSAL_WORDS.has(word)) return true;
+  }
 
   // Check if it's mostly template variables
   if (
@@ -166,6 +158,9 @@ function isUniversalWord(str) {
 
   // Technical paths and filenames
   if (str.match(/^[a-z-]+\.[a-z]+$/)) return true; // file.ext pattern
+
+  // Technical placeholders (e.g., "GOCSPX-xxxxx", "xxx-xxx-xxx")
+  if (str.match(/xxxxx|xxx-|placeholder/i)) return true;
 
   return false;
 }
