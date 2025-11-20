@@ -231,10 +231,11 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         preload="metadata"
         style={{
           display: 'block',
-          maxWidth: '100%',
-          maxHeight: '100%',
-          width: 'auto',
-          height: 'auto'
+          maxWidth: 'calc(100vw - 20px)',
+          maxHeight: 'calc(100vh - 100px)',
+          width: '100vw',
+          height: '100vh',
+          objectFit: 'contain'
         }}
       />
     </>

@@ -74,7 +74,7 @@
 /* Image container - nearly full screen with gaps for controls */
 .modal-image-container {
   position: relative;
-  width: calc(100vw - 20px);
+  max-width: calc(100vw - 20px);
   max-height: calc(100vh - 100px);
   display: flex;
   align-items: center;
