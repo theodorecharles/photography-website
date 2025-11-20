@@ -240,6 +240,7 @@
     "deleteAlbum": "Tanggalin ang Album",
     "deleteAlbumConfirm": "Sigurado ka bang nais mong tanggalin ang album na \"{{albumName}}\"?\n\nPermanenteng matatanggal ang lahat ng mga larawan sa album na ito.\n\nAng aksyong ito ay hindi maibabalik.",
     "renameAlbum": "Pangalanan muli ang Album",
+    "clickToRename": "I-click upang palitan ang pangalan ng album",
     "newName": "Bagong Pangalan",
     "newNamePlaceholder": "Ilagay ang bagong pangalan",
     "currentName": "Kasalukuyang Pangalan",

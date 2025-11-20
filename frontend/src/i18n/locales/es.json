@@ -297,6 +297,7 @@
     "deleteAlbum": "Eliminar álbum",
     "deleteAlbumConfirm": "¿Estás seguro de que deseas eliminar el álbum \"{{albumName}}\"?\n\nEsto eliminará permanentemente todas las fotos en este álbum.\n\nEsta acción no se puede deshacer.",
     "renameAlbum": "Renombrar Álbum",
+    "clickToRename": "Haz clic para renombrar el álbum",
     "newName": "Nuevo Nombre",
     "newNamePlaceholder": "Ingresa un nuevo nombre",
     "currentName": "Nombre Actual",

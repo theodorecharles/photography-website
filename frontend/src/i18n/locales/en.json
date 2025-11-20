@@ -260,6 +260,7 @@
     "deleteAlbum": "Delete Album",
     "deleteAlbumConfirm": "Are you sure you want to delete the album \"{{albumName}}\"?\n\nThis will permanently delete all photos in this album.\n\nThis action cannot be undone.",
     "renameAlbum": "Rename Album",
+    "clickToRename": "Click to rename album",
     "newName": "New Name",
     "newNamePlaceholder": "Enter new name",
     "currentName": "Current Name",

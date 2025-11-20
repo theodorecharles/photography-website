@@ -238,6 +238,7 @@
     "deleteAlbum": "删除相册",
     "deleteAlbumConfirm": "您确定要删除相册 \"{{albumName}}\" 吗？\n\n这将永久删除该相册中的所有照片。\n\n此操作无法撤销。",
     "renameAlbum": "重命名相册",
+    "clickToRename": "点击重命名相册",
     "newName": "新名称",
     "newNamePlaceholder": "输入新名称",
     "currentName": "当前名称",

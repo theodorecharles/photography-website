@@ -240,6 +240,7 @@
     "deleteAlbum": "Xóa Album",
     "deleteAlbumConfirm": "Bạn có chắc chắn muốn xóa album \"{{albumName}}\" không?\n\nĐiều này sẽ xóa vĩnh viễn tất cả ảnh trong album này.\n\nHành động này không thể hoàn tác.",
     "renameAlbum": "Đổi tên Album",
+    "clickToRename": "Nhấp để đổi tên album",
     "newName": "Tên Mới",
     "newNamePlaceholder": "Nhập tên mới",
     "currentName": "Tên Hiện Tại",

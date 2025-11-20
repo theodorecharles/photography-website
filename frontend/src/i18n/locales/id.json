@@ -240,6 +240,7 @@
     "deleteAlbum": "Hapus Album",
     "deleteAlbumConfirm": "Apakah Anda yakin ingin menghapus album \"{{albumName}}\"?\n\nIni akan menghapus semua foto di album ini secara permanen.\n\nTindakan ini tidak dapat dibatalkan.",
     "renameAlbum": "Ganti Nama Album",
+    "clickToRename": "Klik untuk mengganti nama album",
     "newName": "Nama Baru",
     "newNamePlaceholder": "Masukkan nama baru",
     "currentName": "Nama Saat Ini",

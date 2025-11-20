@@ -238,6 +238,7 @@
     "deleteAlbum": "Slett album",
     "deleteAlbumConfirm": "Er du sikker på at du vil slette albumet \"{{albumName}}\"?\n\nDette vil permanent slette alle bilder i dette albumet.\n\nDenne handlingen kan ikke angres.",
     "renameAlbum": "Gi nytt navn til album",
+    "clickToRename": "Klikk for å gi nytt navn til albumet",
     "newName": "Nytt navn",
     "newNamePlaceholder": "Skriv inn nytt navn",
     "currentName": "Nåværende navn",

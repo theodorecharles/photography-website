@@ -238,6 +238,7 @@
     "deleteAlbum": "Album löschen",
     "deleteAlbumConfirm": "Sind Sie sicher, dass Sie das Album \"{{albumName}}\" löschen möchten?\n\nDadurch werden alle Fotos in diesem Album dauerhaft gelöscht.\n\nDiese Aktion kann nicht rückgängig gemacht werden.",
     "renameAlbum": "Album umbenennen",
+    "clickToRename": "Klicken Sie, um das Album umzubenennen",
     "newName": "Neuer Name",
     "newNamePlaceholder": "Neuen Namen eingeben",
     "currentName": "Aktueller Name",

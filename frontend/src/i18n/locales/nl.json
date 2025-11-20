@@ -238,6 +238,7 @@
     "deleteAlbum": "Album verwijderen",
     "deleteAlbumConfirm": "Weet je zeker dat je het album \"{{albumName}}\" wilt verwijderen?\n\nDit zal alle foto's in dit album permanent verwijderen.\n\nDeze actie kan niet ongedaan gemaakt worden.",
     "renameAlbum": "Album hernoemen",
+    "clickToRename": "Klik om album te hernoemen",
     "newName": "Nieuwe naam",
     "newNamePlaceholder": "Voer nieuwe naam in",
     "currentName": "Huidige naam",

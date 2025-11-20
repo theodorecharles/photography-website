@@ -238,6 +238,7 @@
     "deleteAlbum": "アルバムを削除",
     "deleteAlbumConfirm": "アルバム「{{albumName}}」を削除してもよろしいですか？\n\nこの操作により、このアルバム内のすべての写真が永久に削除されます。\n\nこの操作は元に戻すことができません。",
     "renameAlbum": "アルバムの名前を変更",
+    "clickToRename": "アルバムの名前を変更するにはクリックしてください",
     "newName": "新しい名前",
     "newNamePlaceholder": "新しい名前を入力",
     "currentName": "現在の名前",

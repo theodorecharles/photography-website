@@ -238,6 +238,7 @@
     "deleteAlbum": "Ta bort Album",
     "deleteAlbumConfirm": "Är du säker på att du vill radera albumet \"{{albumName}}\"?\n\nDetta kommer permanent att radera alla foton i detta album.\n\nDenna åtgärd kan inte ångras.",
     "renameAlbum": "Byt namn på Album",
+    "clickToRename": "Klicka för att döpa om albumet",
     "newName": "Nytt Namn",
     "newNamePlaceholder": "Ange nytt namn",
     "currentName": "Nuvarande Namn",
