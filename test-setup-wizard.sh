@@ -33,6 +33,12 @@ if [ -f "data/config.json" ]; then
     rm data/config.json
 fi
 
+# Remove ecosystem config (generated during setup)
+if [ -f "ecosystem.config.cjs" ]; then
+    echo "  ✓ Removing ecosystem.config.cjs"
+    rm ecosystem.config.cjs
+fi
+
 # Remove database and SQLite WAL files
 if [ -f "data/gallery.db" ]; then
     echo "  ✓ Removing data/gallery.db"
