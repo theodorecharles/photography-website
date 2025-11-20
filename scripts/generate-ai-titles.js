@@ -30,6 +30,34 @@ let errorCount = 0;
 // Check if we're running in a TTY or piped/SSE
 const isTTY = process.stdout.isTTY;
 
+/**
+ * Convert text to title case
+ * Capitalizes first letter of each word, except for common small words (unless first/last)
+ */
+function toTitleCase(str) {
+  const smallWords = new Set([
+    'a', 'an', 'and', 'as', 'at', 'but', 'by', 'for', 'in', 'of', 'on', 'or', 'the', 'to', 'with'
+  ]);
+  
+  const words = str.split(' ');
+  
+  return words.map((word, index) => {
+    // Always capitalize first and last word
+    if (index === 0 || index === words.length - 1) {
+      return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+    }
+    
+    // Keep small words lowercase
+    const lowerWord = word.toLowerCase();
+    if (smallWords.has(lowerWord)) {
+      return lowerWord;
+    }
+    
+    // Capitalize other words
+    return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+  }).join(' ');
+}
+
 function initDatabase() {
   const db = new Database(DB_PATH);
 
@@ -103,9 +131,10 @@ async function generateImageTitle(
       return null;
     }
 
-    // Remove surrounding quotes if present
+    // Clean the title: remove quotes and convert to title case
     title = title.replace(/^["']|["']$/g, "");
     title = title.trim(); // Trim again after removing quotes
+    title = toTitleCase(title);
 
     // Save to database
     const stmt = db.prepare(`

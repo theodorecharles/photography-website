@@ -45,6 +45,34 @@ const execFileAsync = promisify(execFile);
 router.use(csrfProtection);
 
 /**
+ * Convert text to title case
+ * Capitalizes first letter of each word, except for common small words (unless first/last)
+ */
+function toTitleCase(str: string): string {
+  const smallWords = new Set([
+    'a', 'an', 'and', 'as', 'at', 'but', 'by', 'for', 'in', 'of', 'on', 'or', 'the', 'to', 'with'
+  ]);
+  
+  const words = str.split(' ');
+  
+  return words.map((word, index) => {
+    // Always capitalize first and last word
+    if (index === 0 || index === words.length - 1) {
+      return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+    }
+    
+    // Keep small words lowercase
+    const lowerWord = word.toLowerCase();
+    if (smallWords.has(lowerWord)) {
+      return lowerWord;
+    }
+    
+    // Capitalize other words
+    return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+  }).join(' ');
+}
+
+/**
  * Generate AI title for a single image (async, broadcasts to optimization stream)
  */
 async function generateAITitleForImageAsync(
@@ -119,7 +147,12 @@ async function generateAITitleForImageAsync(
       max_tokens: 50
     });
 
-    const title = response.choices[0]?.message?.content?.trim() || '';
+    let title = response.choices[0]?.message?.content?.trim() || '';
+
+    // Clean the title: remove quotes and convert to title case
+    title = title.replace(/^["']|["']$/g, '');
+    title = title.trim();
+    title = toTitleCase(title);
 
     // Update database
     saveImageMetadata(album, filename, title, null);

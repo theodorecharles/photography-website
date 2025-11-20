@@ -22,6 +22,34 @@ const router = express.Router();
 // Apply CSRF protection to all routes
 router.use(csrfProtection);
 
+/**
+ * Convert text to title case
+ * Capitalizes first letter of each word, except for common small words (unless first/last)
+ */
+function toTitleCase(str: string): string {
+  const smallWords = new Set([
+    'a', 'an', 'and', 'as', 'at', 'but', 'by', 'for', 'in', 'of', 'on', 'or', 'the', 'to', 'with'
+  ]);
+  
+  const words = str.split(' ');
+  
+  return words.map((word, index) => {
+    // Always capitalize first and last word
+    if (index === 0 || index === words.length - 1) {
+      return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+    }
+    
+    // Keep small words lowercase
+    const lowerWord = word.toLowerCase();
+    if (smallWords.has(lowerWord)) {
+      return lowerWord;
+    }
+    
+    // Capitalize other words
+    return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+  }).join(' ');
+}
+
 // Track running jobs
 interface RunningJob {
   process: any;
@@ -252,9 +280,10 @@ router.post('/generate-single', requireManager, async (req: any, res: any) => {
       return res.status(500).json({ error: 'Failed to generate title (empty response)' });
     }
     
-    // Remove surrounding quotes if present
+    // Clean the title: remove quotes and convert to title case
     title = title.replace(/^["']|["']$/g, '');
     title = title.trim();
+    title = toTitleCase(title);
     
     // Save to database
     const db = getDatabase();

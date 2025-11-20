@@ -89,11 +89,11 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         lowLatencyMode: false,
         backBufferLength: 90,
         // Enable automatic quality switching based on bandwidth
-        abrEwmaDefaultEstimate: 500000, // Start with conservative estimate (500 Kbps)
+        abrEwmaDefaultEstimate: 5000000, // Start with higher estimate (5 Mbps) for better initial quality
         abrEwmaSlowVoD: 3, // Weight for slow EMA (VOD)
         abrEwmaFastVoD: 3, // Weight for fast EMA (VOD)
         abrMaxWithRealBitrate: false, // Use bandwidth estimate, not max bitrate
-        debug: true, // Set to true for verbose logging
+        debug: false, // Disable verbose logging in production
         xhrSetup: (xhr: XMLHttpRequest) => {
           // Send credentials (cookies) with video requests for authentication
           xhr.withCredentials = true;
