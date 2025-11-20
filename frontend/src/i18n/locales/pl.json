@@ -1102,6 +1102,22 @@
     "errorMessage": "Nie udało się wysłać wiadomości testowej",
     "errorMessageDetail": "Nie udało się wysłać testowego e-maila. Proszę sprawdzić swoją konfigurację."
   },
+  "videoList": {
+    "noVideosYet": "Brak jeszcze filmów  ",
+    "albumEmpty": "Ten album jest pusty. Prześlij kilka filmów, aby zacząć!  ",
+    "copyShareLink": "Kopiuj link do udostępnienia  ",
+    "linkCopied": "Link skopiowany!  ",
+    "share": "Udostępnij  "
+  },
+  "videoPage": {
+    "invalidUrl": "Nieprawidłowy adres URL filmu  ",
+    "albumNotFound": "Album nie został znaleziony  ",
+    "failedToLoad": "Nie udało się załadować filmu  ",
+    "videoNotFound": "Film nie został znaleziony  ",
+    "unknownError": "Wystąpił nieznany błąd",
+    "errorTitle": "Nie znaleziono wideo  ",
+    "backToAlbum": "Powrót do albumu"
+  },
   "videoOptimization": {
     "title": "Jakość wideo",
     "description": "Skonfiguruj jakość wideo, ustawienia strumieniowania i HLS",

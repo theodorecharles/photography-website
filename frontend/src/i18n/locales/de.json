@@ -1102,6 +1102,22 @@
     "errorMessage": "Fehler beim Senden der Test-E-Mail",
     "errorMessageDetail": "Fehler beim Senden der Test-E-Mail. Bitte überprüfen Sie Ihre Konfiguration."
   },
+  "videoList": {
+    "noVideosYet": "Noch keine Videos  ",
+    "albumEmpty": "Dieses Album ist leer. Lade einige Videos hoch, um zu beginnen!  ",
+    "copyShareLink": "Teile Link kopieren  ",
+    "linkCopied": "Link kopiert!  ",
+    "share": "Teilen  "
+  },
+  "videoPage": {
+    "invalidUrl": "Ungültige Video-URL  ",
+    "albumNotFound": "Album nicht gefunden  ",
+    "failedToLoad": "Video konnte nicht geladen werden  ",
+    "videoNotFound": "Video nicht gefunden  ",
+    "unknownError": "Ein unbekannter Fehler ist aufgetreten",
+    "errorTitle": "Video nicht gefunden  ",
+    "backToAlbum": "Zurück zum Album"
+  },
   "videoOptimization": {
     "title": "Videoqualität",
     "description": "Konfigurieren Sie die Videoqualität, das Streaming und die HLS-Einstellungen",

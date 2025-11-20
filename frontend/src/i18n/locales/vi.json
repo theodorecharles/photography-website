@@ -1102,6 +1102,22 @@
     "errorMessage": "Gửi email kiểm tra không thành công",
     "errorMessageDetail": "Gửi email thử nghiệm không thành công. Vui lòng kiểm tra cấu hình của bạn."
   },
+  "videoList": {
+    "noVideosYet": "Chưa có video nào  ",
+    "albumEmpty": "Album này trống. Tải lên một số video để bắt đầu!  ",
+    "copyShareLink": "Sao chép liên kết chia sẻ  ",
+    "linkCopied": "Đã sao chép liên kết!  ",
+    "share": "Chia sẻ  "
+  },
+  "videoPage": {
+    "invalidUrl": "URL video không hợp lệ  ",
+    "albumNotFound": "Không tìm thấy album  ",
+    "failedToLoad": "Không thể tải video  ",
+    "videoNotFound": "Không tìm thấy video  ",
+    "unknownError": "Đã xảy ra lỗi không xác định",
+    "errorTitle": "Không tìm thấy video  ",
+    "backToAlbum": "Quay lại album"
+  },
   "videoOptimization": {
     "title": "Chất lượng video",
     "description": "Cấu hình chất lượng video, phát trực tuyến và cài đặt HLS",

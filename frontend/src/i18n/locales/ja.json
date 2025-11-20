@@ -1102,6 +1102,22 @@
     "errorMessage": "テストメールの送信に失敗しました",
     "errorMessageDetail": "テストメールの送信に失敗しました。設定を確認してください。"
   },
+  "videoList": {
+    "noVideosYet": "まだ動画はありません  ",
+    "albumEmpty": "このアルバムは空です。動画をアップロードして始めましょう！  ",
+    "copyShareLink": "共有リンクをコピー  ",
+    "linkCopied": "リンクがコピーされました！  ",
+    "share": "共有  "
+  },
+  "videoPage": {
+    "invalidUrl": "無効な動画URL  ",
+    "albumNotFound": "アルバムが見つかりません  ",
+    "failedToLoad": "動画の読み込みに失敗しました  ",
+    "videoNotFound": "動画が見つかりません  ",
+    "unknownError": "不明なエラーが発生しました",
+    "errorTitle": "ビデオが見つかりません",
+    "backToAlbum": "アルバムに戻る"
+  },
   "videoOptimization": {
     "title": "動画品質",
     "description": "ビデオ品質、ストリーミング、およびHLS設定を構成する",
@@ -1116,7 +1132,7 @@
     "videoBitrate": "ビデオビットレート",
     "audioBitrate": "オーディオビットレート",
     "videoBitrateExample": "例：400k、2500k、5000k",
-    "audioBitrateExample": "e.g., 64k, 96k, 128k, 192k",
+    "audioBitrateExample": "例: 64k, 96k, 128k, 192k",
     "on": "オン",
     "off": "オフ",
     "warningNote": "動画設定の変更は、新しくアップロードされた動画にのみ適用されます。既存の動画は、使用しない限り現在の品質設定を維持します。",

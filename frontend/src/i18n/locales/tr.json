@@ -1102,6 +1102,22 @@
     "errorMessage": "Test e-postası gönderilemedi",
     "errorMessageDetail": "Test e-postası gönderilemedi. Lütfen yapılandırmanızı kontrol edin."
   },
+  "videoList": {
+    "noVideosYet": "Henüz video yok  ",
+    "albumEmpty": "Bu albüm boş. Başlamak için bazı videolar yükleyin!  ",
+    "copyShareLink": "Paylaşım bağlantısını kopyala  ",
+    "linkCopied": "Bağlantı kopyalandı!  ",
+    "share": "Paylaş  "
+  },
+  "videoPage": {
+    "invalidUrl": "Geçersiz video URL'si  ",
+    "albumNotFound": "Albüm bulunamadı  ",
+    "failedToLoad": "Videoyu yükleme başarısız oldu  ",
+    "videoNotFound": "Video bulunamadı  ",
+    "unknownError": "Bilinmeyen bir hata oluştu",
+    "errorTitle": "Video Bulunamadı  ",
+    "backToAlbum": "Albuma Geri Dön"
+  },
   "videoOptimization": {
     "title": "Video Kalitesi",
     "description": "Video kalitesini, akışı ve HLS ayarlarını yapılandırın",

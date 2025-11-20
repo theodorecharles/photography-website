@@ -1102,6 +1102,22 @@
     "errorMessage": "Échec de l'envoi de l'e-mail de test",
     "errorMessageDetail": "Échec de l'envoi de l'e-mail de test. Veuillez vérifier votre configuration."
   },
+  "videoList": {
+    "noVideosYet": "Pas encore de vidéos  ",
+    "albumEmpty": "Cet album est vide. Téléchargez quelques vidéos pour commencer !  ",
+    "copyShareLink": "Copier le lien de partage  ",
+    "linkCopied": "Lien copié !  ",
+    "share": "Partager  "
+  },
+  "videoPage": {
+    "invalidUrl": "URL de vidéo invalide  ",
+    "albumNotFound": "Album introuvable  ",
+    "failedToLoad": "Échec du chargement de la vidéo  ",
+    "videoNotFound": "Vidéo introuvable  ",
+    "unknownError": "Une erreur inconnue s'est produite",
+    "errorTitle": "Vidéo non trouvée  ",
+    "backToAlbum": "Retour à l'album"
+  },
   "videoOptimization": {
     "title": "Qualité vidéo",
     "description": "Configurer la qualité vidéo, le streaming et les paramètres HLS",

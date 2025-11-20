@@ -1102,6 +1102,22 @@
     "errorMessage": "A eșuat trimiterea emailului de test",
     "errorMessageDetail": "Trimiterea emailului de test a eșuat. Vă rugăm să verificați configurația dvs."
   },
+  "videoList": {
+    "noVideosYet": "Nu sunt încă videoclipuri  ",
+    "albumEmpty": "Acest album este gol. Încărcați câteva videoclipuri pentru a începe!  ",
+    "copyShareLink": "Copiază linkul de partajare  ",
+    "linkCopied": "Link copiat!  ",
+    "share": "Partajează  "
+  },
+  "videoPage": {
+    "invalidUrl": "URL-ul videoclipului este invalid  ",
+    "albumNotFound": "Albumul nu a fost găsit  ",
+    "failedToLoad": "Încărcarea videoclipului a eșuat  ",
+    "videoNotFound": "Videoclipul nu a fost găsit  ",
+    "unknownError": "A apărut o eroare necunoscută",
+    "errorTitle": "Video nu a fost găsit  ",
+    "backToAlbum": "Înapoi la Album"
+  },
   "videoOptimization": {
     "title": "Calitatea video",
     "description": "Configurează calitatea video, streamingul și setările HLS",

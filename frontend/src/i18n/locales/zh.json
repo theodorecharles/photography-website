@@ -1102,6 +1102,22 @@
     "errorMessage": "发送测试邮件失败",
     "errorMessageDetail": "发送测试邮件失败。请检查您的配置。"
   },
+  "videoList": {
+    "noVideosYet": "还没有视频  ",
+    "albumEmpty": "此相册为空。上传一些视频以开始！  ",
+    "copyShareLink": "复制分享链接  ",
+    "linkCopied": "链接已复制！  ",
+    "share": "分享  "
+  },
+  "videoPage": {
+    "invalidUrl": "无效的视频网址  ",
+    "albumNotFound": "未找到相册  ",
+    "failedToLoad": "加载视频失败  ",
+    "videoNotFound": "未找到视频  ",
+    "unknownError": "发生未知错误",
+    "errorTitle": "视频未找到  ",
+    "backToAlbum": "返回相册"
+  },
   "videoOptimization": {
     "title": "视频质量",
     "description": "配置视频质量、流媒体和HLS设置",

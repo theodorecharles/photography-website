@@ -1102,6 +1102,22 @@
     "errorMessage": "Gagal mengirim email uji",
     "errorMessageDetail": "Gagal mengirim email uji. Silakan periksa konfigurasi Anda."
   },
+  "videoList": {
+    "noVideosYet": "Belum ada video  ",
+    "albumEmpty": "Album ini kosong. Unggah beberapa video untuk memulai!  ",
+    "copyShareLink": "Salin tautan berbagi  ",
+    "linkCopied": "Tautan disalin!  ",
+    "share": "Bagikan  "
+  },
+  "videoPage": {
+    "invalidUrl": "URL video tidak valid  ",
+    "albumNotFound": "Album tidak ditemukan  ",
+    "failedToLoad": "Gagal memuat video  ",
+    "videoNotFound": "Video tidak ditemukan  ",
+    "unknownError": "Terjadi kesalahan yang tidak diketahui",
+    "errorTitle": "Video Tidak Ditemukan  ",
+    "backToAlbum": "Kembali ke Album"
+  },
   "videoOptimization": {
     "title": "Kualitas Video",
     "description": "Konfigurasi kualitas video, streaming, dan pengaturan HLS",

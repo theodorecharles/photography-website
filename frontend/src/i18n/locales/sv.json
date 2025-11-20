@@ -1102,10 +1102,26 @@
     "errorMessage": "Misslyckades med att skicka test-e-post",
     "errorMessageDetail": "Misslyckades med att skicka test-e-post. Kontrollera din konfiguration."
   },
+  "videoList": {
+    "noVideosYet": "Inga videor ännu  ",
+    "albumEmpty": "Detta album är tomt. Ladda upp några videor för att komma igång!  ",
+    "copyShareLink": "Kopiera delningslänk  ",
+    "linkCopied": "Länk kopierad!  ",
+    "share": "Dela  "
+  },
+  "videoPage": {
+    "invalidUrl": "Ogiltig videolänk  ",
+    "albumNotFound": "Albumet hittades inte  ",
+    "failedToLoad": "Misslyckades med att ladda videon  ",
+    "videoNotFound": "Videon hittades inte  ",
+    "unknownError": "Ett okänt fel inträffade",
+    "errorTitle": "Video hittades inte  ",
+    "backToAlbum": "Tillbaka till album"
+  },
   "videoOptimization": {
     "title": "Videokvalitet",
     "description": "Konfigurera videokvalitet, strömning och HLS-inställningar",
-    "hlsStreaming": "HLS STREAMING",
+    "hlsStreaming": "HLS STRÖMNING",
     "hlsStreamingSection": "HLS-inställningar",
     "hlsDescription": "Konfigurera HTTP Live Streaming (HLS) inställningar för adaptiv videoleverans",
     "segmentDuration": "Segmentets varaktighet (sekunder)",

@@ -1102,6 +1102,22 @@
     "errorMessage": "Nabigong magpadala ng test email",
     "errorMessageDetail": "Nabigong magpadala ng test email. Pakisuri ang iyong configuration."
   },
+  "videoList": {
+    "noVideosYet": "Walang mga video pa  ",
+    "albumEmpty": "Ang album na ito ay walang laman. Mag-upload ng ilang mga video upang makapagsimula!  ",
+    "copyShareLink": "Kopyahin ang link ng pagbabahagi  ",
+    "linkCopied": "Nakopya ang link!  ",
+    "share": "Ibahagi  "
+  },
+  "videoPage": {
+    "invalidUrl": "Di-wasto ang URL ng video  ",
+    "albumNotFound": "Hindi natagpuan ang album  ",
+    "failedToLoad": "Nabigong mag-load ng video  ",
+    "videoNotFound": "Hindi natagpuan ang video  ",
+    "unknownError": "Isang hindi kilalang error ang nangyari",
+    "errorTitle": "Video Hindi Natagpuan  ",
+    "backToAlbum": "Bumalik sa Album"
+  },
   "videoOptimization": {
     "title": "Kalidad ng Video",
     "description": "I-configure ang kalidad ng video, streaming, at mga setting ng HLS",

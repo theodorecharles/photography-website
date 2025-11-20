@@ -1102,10 +1102,26 @@
     "errorMessage": "Verzenden van test-e-mail mislukt",
     "errorMessageDetail": "Het verzenden van de test-e-mail is mislukt. Controleer uw configuratie."
   },
+  "videoList": {
+    "noVideosYet": "Nog geen video's  ",
+    "albumEmpty": "Dit album is leeg. Upload wat video's om te beginnen!  ",
+    "copyShareLink": "Kopieer deel link  ",
+    "linkCopied": "Link gekopieerd!  ",
+    "share": "Delen  "
+  },
+  "videoPage": {
+    "invalidUrl": "Ongeldige video-URL  ",
+    "albumNotFound": "Album niet gevonden  ",
+    "failedToLoad": "Laden van video mislukt  ",
+    "videoNotFound": "Video niet gevonden  ",
+    "unknownError": "Er is een onbekende fout opgetreden",
+    "errorTitle": "Video Niet Gevonden  ",
+    "backToAlbum": "Terug naar Album"
+  },
   "videoOptimization": {
     "title": "Videokwaliteit",
     "description": "Configureer video kwaliteit, streaming en HLS-instellingen",
-    "hlsStreaming": "HLS STREAMING",
+    "hlsStreaming": "HLS STREAMEN",
     "hlsStreamingSection": "HLS-instellingen",
     "hlsDescription": "Configureer HTTP Live Streaming (HLS) instellingen voor adaptieve videolevering",
     "segmentDuration": "Segmentduur (seconden)",

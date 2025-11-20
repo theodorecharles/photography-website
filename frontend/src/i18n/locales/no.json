@@ -1102,6 +1102,22 @@
     "errorMessage": "Kunne ikke sende test-e-posten",
     "errorMessageDetail": "Sending av test-e-post mislyktes. Vennligst sjekk konfigurasjonen din."
   },
+  "videoList": {
+    "noVideosYet": "Ingen videoer ennå  ",
+    "albumEmpty": "Dette albumet er tomt. Last opp noen videoer for å komme i gang!  ",
+    "copyShareLink": "Kopier delingslenke  ",
+    "linkCopied": "Lenke kopiert!  ",
+    "share": "Del  "
+  },
+  "videoPage": {
+    "invalidUrl": "Ugyldig video-URL  ",
+    "albumNotFound": "Album ikke funnet  ",
+    "failedToLoad": "Kunne ikke laste inn video  ",
+    "videoNotFound": "Video ikke funnet  ",
+    "unknownError": "En ukjent feil oppstod",
+    "errorTitle": "Video ikke funnet  ",
+    "backToAlbum": "Tilbake til album"
+  },
   "videoOptimization": {
     "title": "Videokvalitet",
     "description": "Konfigurer videokvalitet, streaming og HLS-innstillinger",
