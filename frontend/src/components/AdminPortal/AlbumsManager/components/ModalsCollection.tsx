@@ -229,7 +229,7 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
   
   return (
     <>
-      {/* Edit Photo Title Modal */}
+      {/* Edit Photo/Video Title Modal */}
       {showEditModal && editingPhoto && createPortal(
         <div 
           className="edit-title-modal" 
@@ -237,7 +237,11 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
         >
           <div className="edit-modal" onClick={(e) => e.stopPropagation()}>
             <div className="edit-modal-header">
-              <h3>{t('albumsManager.editPhotoTitle')}</h3>
+              <h3>
+                {editingPhoto.media_type === 'video' 
+                  ? t('albumsManager.editVideoTitle') 
+                  : t('albumsManager.editPhotoTitle')}
+              </h3>
               <button 
                 className="modal-close-btn"
                 onClick={handleCloseEditModal}

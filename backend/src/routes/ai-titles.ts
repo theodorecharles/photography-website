@@ -163,8 +163,12 @@ router.post('/generate-single', requireManager, async (req: any, res: any) => {
     const dataDir = process.env.DATA_DIR || path.join(projectRoot, 'data');
     const optimizedDir = path.join(dataDir, 'optimized');
     
+    // For videos, use the .jpg thumbnail; for photos, use the original filename
+    const isVideo = filename.toLowerCase().match(/\.(mp4|mov|avi|mkv|webm)$/);
+    const thumbnailFilename = isVideo ? filename.replace(/\.[^.]+$/, '.jpg') : filename;
+    
     // Try thumbnail first, fall back to original if not found
-    let imagePath = path.join(optimizedDir, 'thumbnail', album, filename);
+    let imagePath = path.join(optimizedDir, 'thumbnail', album, thumbnailFilename);
     if (!fs.existsSync(imagePath)) {
       info('[AITitles] Thumbnail not found, falling back to original');
       const photosDir = path.join(dataDir, 'photos');
@@ -174,6 +178,10 @@ router.post('/generate-single', requireManager, async (req: any, res: any) => {
         error('[AITitles] Image not found:', imagePath);
         return res.status(404).json({ error: 'Image not found' });
       }
+    }
+    
+    if (isVideo) {
+      info('[AITitles] Processing video - using extracted thumbnail for AI analysis');
     }
     
     // Initialize OpenAI
