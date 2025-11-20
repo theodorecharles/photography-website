@@ -45,10 +45,9 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  max-width: 100%;
+  width: 100%;
   max-height: 80vh;
   height: auto;
-  width: auto;
   object-fit: contain;
   z-index: 0;
   pointer-events: none;
@@ -64,10 +63,10 @@
 }
 
 .video-player-container video {
-  max-width: 100%;
+  width: 100%;
   max-height: 80vh;
   height: auto;
-  width: auto;
+  object-fit: contain;
 }
 
 .video-info {
