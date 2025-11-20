@@ -165,8 +165,8 @@
     "photoLicenseDescription": "Diğerlerinin fotoğraflarınızı nasıl kullanabileceğini seçin",
     "shuffleHomepage": "Ana Sayfa Fotoğraflarını Karıştır",
     "shuffleHomepageDescription": "Sayfa her yüklendiğinde ana sayfadaki fotoğrafların sırasını rastgele yap",
-    "animatedBackground": "[EN] Animated Background",
-    "animatedBackgroundDescription": "[EN] Enable colorful animated background on admin panel and login page",
+    "animatedBackground": "Animasyonlu Arka Plan  ",
+    "animatedBackgroundDescription": "Yönetici panelinde ve giriş sayfasında renkli animasyonlu arka planı etkinleştir  ",
     "primaryColor": "Ana Renk",
     "secondaryColor": "İkincil Renk",
     "metaDescription": "Meta Açıklama",
@@ -179,7 +179,7 @@
     "photoLicenseUpdated": "Fotoğraf lisansı güncellendi!",
     "languageUpdated": "Dil güncellendi!",
     "homepageShuffleSaved": "Ana sayfa karıştırma ayarı kaydedildi!",
-    "animatedBackgroundSaved": "[EN] Animated background setting saved!",
+    "animatedBackgroundSaved": "Animasyonlu arka plan ayarı kaydedildi!  ",
     "failedToSave": "{{section}} kaydedilemedi",
     "failedToSaveLicense": "Lisans kaydedilemedi",
     "failedToSaveLanguage": "Dil kaydedilemedi",
@@ -769,9 +769,9 @@
     "concurrencyDescription1": "Aynı anda işlenecek maksimum görüntü sayısı. Daha yüksek değerler toplu işlemeyi hızlandırır ancak daha fazla CPU ve bellek kullanır.",
     "concurrencyDescription2": "Kural: Mantıksal CPU çekirdeklerinizin ~4× katı. Önerilen: Tipik sistemler için 8-16, yüksek performanslı sunucular için 32-64.",
     "maxParallelJobs": "Maksimum Paralel İş",
-    "warningNote": "Görüntü kalitesi ayarlarındaki değişiklikler yalnızca yeni yüklenen fotoğraflara uygulanır. Mevcut görüntüler mevcut ayarlarını koruyacaktır, aksi takdirde ",
-    "forceRegenerate": "Tümünü Zorla Yenile",
-    "warningNoteLocation": "Gelişmiş Ayarlar → Optimize Edilmiş Görüntüler bölümünde kullanılmalıdır."
+    "warningNote": "Görüntü kalitesi ayarındaki değişiklikler yalnızca yeni yüklenen fotoğraflara uygulanır. Mevcut görüntüler,  ",
+    "forceRegenerate": "Tümünü Yeniden Üret  ",
+    "warningNoteLocation": "seçeneğini kullanmadığınız sürece mevcut ayarlarını koruyacaktır."
   },
   "links": {
     "title": "Bağlantılar",

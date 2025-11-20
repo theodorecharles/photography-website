@@ -165,8 +165,8 @@
     "photoLicenseDescription": "Chọn cách người khác có thể sử dụng những bức ảnh của bạn",
     "shuffleHomepage": "Xáo trộn ảnh trên trang chủ",
     "shuffleHomepageDescription": "Ngẫu nhiên hóa thứ tự của các bức ảnh trên trang chính mỗi khi trang được tải",
-    "animatedBackground": "[EN] Animated Background",
-    "animatedBackgroundDescription": "[EN] Enable colorful animated background on admin panel and login page",
+    "animatedBackground": "Nền hoạt hình  ",
+    "animatedBackgroundDescription": "Bật nền hoạt hình đầy màu sắc trên bảng điều khiển quản trị và trang đăng nhập  ",
     "primaryColor": "Màu chính",
     "secondaryColor": "Màu phụ",
     "metaDescription": "Mô tả Meta",
@@ -179,7 +179,7 @@
     "photoLicenseUpdated": "Giấy phép ảnh đã được cập nhật!",
     "languageUpdated": "Ngôn ngữ đã được cập nhật!",
     "homepageShuffleSaved": "Cài đặt xáo trộn trang chính đã được lưu!",
-    "animatedBackgroundSaved": "[EN] Animated background setting saved!",
+    "animatedBackgroundSaved": "Cài đặt nền hoạt hình đã được lưu!  ",
     "failedToSave": "Lưu {{section}} không thành công",
     "failedToSaveLicense": "Lưu giấy phép không thành công",
     "failedToSaveLanguage": "Lưu ngôn ngữ không thành công",
@@ -769,9 +769,9 @@
     "concurrencyDescription1": "Số lượng hình ảnh tối đa để xử lý đồng thời. Giá trị cao hơn sẽ tăng tốc độ xử lý hàng loạt nhưng sử dụng nhiều CPU và bộ nhớ hơn.",
     "concurrencyDescription2": "Nguyên tắc chung: ~4× số lõi CPU logic của bạn. Đề xuất: 8-16 cho các hệ thống thông thường, 32-64 cho các máy chủ hiệu suất cao.",
     "maxParallelJobs": "Công việc song song tối đa",
-    "warningNote": "Các thay đổi về cài đặt chất lượng hình ảnh chỉ áp dụng cho các bức ảnh mới được tải lên. Các hình ảnh hiện có sẽ giữ nguyên cài đặt hiện tại trừ khi bạn sử dụng  ",
-    "forceRegenerate": "Force Regenerate All  ",
-    "warningNoteLocation": "trong Cài đặt Nâng cao → Hình ảnh Tối ưu hóa."
+    "warningNote": "Thay đổi cài đặt chất lượng hình ảnh chỉ áp dụng cho những bức ảnh mới được tải lên. Các hình ảnh hiện có sẽ giữ nguyên cài đặt hiện tại trừ khi bạn sử dụng  ",
+    "forceRegenerate": "Buộc Tái Tạo Tất Cả  ",
+    "warningNoteLocation": "trong Cài Đặt Nâng Cao → Hình Ảnh Tối Ưu."
   },
   "links": {
     "title": "Liên kết",

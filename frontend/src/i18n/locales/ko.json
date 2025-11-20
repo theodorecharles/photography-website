@@ -165,8 +165,8 @@
     "photoLicenseDescription": "다른 사람들이 귀하의 사진을 어떻게 사용할 수 있는지 선택하세요",
     "shuffleHomepage": "홈페이지 사진 섞기",
     "shuffleHomepageDescription": "페이지가 로드될 때마다 홈페이지의 사진 순서를 무작위로 설정합니다",
-    "animatedBackground": "[EN] Animated Background",
-    "animatedBackgroundDescription": "[EN] Enable colorful animated background on admin panel and login page",
+    "animatedBackground": "애니메이션 배경  ",
+    "animatedBackgroundDescription": "관리 패널 및 로그인 페이지에서 다채로운 애니메이션 배경 활성화  ",
     "primaryColor": "기본 색상",
     "secondaryColor": "보조 색상",
     "metaDescription": "메타 설명",
@@ -179,7 +179,7 @@
     "photoLicenseUpdated": "사진 라이선스가 업데이트되었습니다!",
     "languageUpdated": "언어가 업데이트되었습니다!",
     "homepageShuffleSaved": "홈페이지 섞기 설정이 저장되었습니다!",
-    "animatedBackgroundSaved": "[EN] Animated background setting saved!",
+    "animatedBackgroundSaved": "애니메이션 배경 설정이 저장되었습니다!  ",
     "failedToSave": "{{section}}을(를) 저장하지 못했습니다",
     "failedToSaveLicense": "라이선스를 저장하지 못했습니다",
     "failedToSaveLanguage": "언어를 저장하지 못했습니다",
@@ -769,9 +769,9 @@
     "concurrencyDescription1": "동시에 처리할 최대 이미지 수입니다. 값이 높을수록 일괄 처리 속도가 빨라지지만 CPU와 메모리를 더 많이 사용합니다.",
     "concurrencyDescription2": "일반적인 규칙: 논리적 CPU 코어의 약 4배. 권장: 일반 시스템의 경우 8-16, 고성능 서버의 경우 32-64.",
     "maxParallelJobs": "최대 병렬 작업",
-    "warningNote": "이미지 품질 설정에 대한 변경 사항은 새로 업로드된 사진에만 적용됩니다. 기존 이미지는 현재 설정을 유지하며, 사용하지 않는 한 그대로입니다.",
-    "forceRegenerate": "모두 강제로 재생성",
-    "warningNoteLocation": "고급 설정 → 최적화된 이미지."
+    "warningNote": "이미지 품질 설정에 대한 변경 사항은 새로 업로드된 사진에만 적용됩니다. 기존 이미지는 현재 설정을 유지하며, 사용하지 않는 한  ",
+    "forceRegenerate": "모두 강제 재생성  ",
+    "warningNoteLocation": "고급 설정 → 최적화된 이미지에서."
   },
   "links": {
     "title": "링크",

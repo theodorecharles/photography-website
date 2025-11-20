@@ -165,8 +165,8 @@
     "photoLicenseDescription": "选择他人如何使用您的照片",
     "shuffleHomepage": "随机首页照片",
     "shuffleHomepageDescription": "每次页面加载时随机排列首页照片的顺序",
-    "animatedBackground": "[EN] Animated Background",
-    "animatedBackgroundDescription": "[EN] Enable colorful animated background on admin panel and login page",
+    "animatedBackground": "动画背景  ",
+    "animatedBackgroundDescription": "在管理面板和登录页面启用多彩动画背景  ",
     "primaryColor": "主色",
     "secondaryColor": "次色",
     "metaDescription": "元描述",
@@ -179,7 +179,7 @@
     "photoLicenseUpdated": "照片许可已更新！",
     "languageUpdated": "语言已更新！",
     "homepageShuffleSaved": "首页随机设置已保存！",
-    "animatedBackgroundSaved": "[EN] Animated background setting saved!",
+    "animatedBackgroundSaved": "动画背景设置已保存！  ",
     "failedToSave": "保存 {{section}} 失败",
     "failedToSaveLicense": "保存许可失败",
     "failedToSaveLanguage": "保存语言失败",
@@ -769,9 +769,9 @@
     "concurrencyDescription1": "同时处理的最大图像数量。较高的值加快批处理速度，但会使用更多的CPU和内存。",
     "concurrencyDescription2": "经验法则：约为逻辑CPU核心数的4倍。推荐：典型系统为8-16，高性能服务器为32-64。",
     "maxParallelJobs": "最大并行作业",
-    "warningNote": "对图像质量设置的更改仅适用于新上传的照片。现有图像将保持其当前设置，除非您使用",
-    "forceRegenerate": "强制重新生成所有",
-    "warningNoteLocation": "在高级设置 → 优化图像。"
+    "warningNote": "图像质量设置的更改仅适用于新上传的照片。现有图像将保持其当前设置，除非您使用  ",
+    "forceRegenerate": "强制重新生成所有  ",
+    "warningNoteLocation": "在高级设置 → 优化图像中。"
   },
   "links": {
     "title": "链接",
