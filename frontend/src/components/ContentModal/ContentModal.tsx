@@ -84,7 +84,6 @@ const ContentModal: React.FC<ContentModalProps> = ({
   const touchStartY = useRef<number | null>(null);
   const modalOpenTimeRef = useRef<number | null>(Date.now());
   const imageContainerRef = useRef<HTMLDivElement>(null);
-  const [imageBounds, setImageBounds] = useState<{width: number; left: number} | null>(null);
 
   // For image URLs, don't include query strings to improve caching (especially on iOS)
   const imageQueryString = ``;
@@ -141,70 +140,10 @@ const ContentModal: React.FC<ContentModalProps> = ({
   }, [selectedPhoto.id, updateURLWithPhoto]);
 
 
-  // Calculate actual image/video bounds for aligning controls
-  const updateImageBounds = useCallback(() => {
-    if (!imageContainerRef.current) return;
-    
-    // Get the image container element
-    const imageContainer = imageContainerRef.current.querySelector('.modal-image-container');
-    if (!imageContainer) return;
-    
-    // Check for image or video element
-    const img = imageContainerRef.current.querySelector('img');
-    const video = imageContainerRef.current.querySelector('video');
-    
-    let mediaAspect: number;
-    
-    if (img && img.complete && img.naturalWidth) {
-      // Image element
-      mediaAspect = img.naturalWidth / img.naturalHeight;
-    } else if (video && video.videoWidth && video.videoHeight) {
-      // Video element
-      mediaAspect = video.videoWidth / video.videoHeight;
-    } else {
-      // Neither image nor video ready yet
-      return;
-    }
-    
-    // Get actual rendered dimensions of the media (accounting for objectFit: contain)
-    const containerRect = imageContainer.getBoundingClientRect();
-    const containerAspect = containerRect.width / containerRect.height;
-    
-    let renderedWidth, renderedLeft;
-    
-    if (mediaAspect > containerAspect) {
-      // Media is wider - constrained by width
-      renderedWidth = containerRect.width;
-      renderedLeft = 0;
-    } else {
-      // Media is taller - constrained by height
-      renderedWidth = containerRect.height * mediaAspect;
-      renderedLeft = (containerRect.width - renderedWidth) / 2;
-    }
-    
-    setImageBounds({
-      width: renderedWidth,
-      left: renderedLeft
-    });
-  }, []);
-
-  // Update bounds when thumbnail loads
+  // Handle thumbnail load
   const handleThumbnailLoad = useCallback(() => {
     setThumbnailLoaded(true);
-    updateImageBounds();
-  }, [updateImageBounds]);
-
-  // Update bounds on window resize
-  useEffect(() => {
-    updateImageBounds();
-    window.addEventListener('resize', updateImageBounds);
-    return () => window.removeEventListener('resize', updateImageBounds);
-  }, [updateImageBounds]);
-
-  // Update bounds when photo changes
-  useEffect(() => {
-    updateImageBounds();
-  }, [selectedPhoto.id, updateImageBounds]);
+  }, []);
 
   // Helper function to update meta tags
   const updateMetaTag = useCallback((attribute: string, key: string, content: string) => {
@@ -597,46 +536,73 @@ const ContentModal: React.FC<ContentModalProps> = ({
         onTouchEnd={handleTouchEnd}
       >
         <div className="modal-container" ref={imageContainerRef}>
-          <ModalControls
-            show={thumbnailLoaded}
-            showInfo={showInfo}
-            copiedLink={copiedLink}
-            isFullscreen={isFullscreen}
-            onToggleInfo={handleToggleInfo}
-            onCopyLink={handleCopyLink}
-            onDownload={handleDownload}
-            onToggleFullscreen={toggleFullscreen}
-            onClose={handleClose}
-            selectedPhoto={selectedPhoto}
-            isVideo={selectedPhoto.media_type === 'video'}
-            style={selectedPhoto.media_type === 'video' ? {} : (imageBounds ? { width: `${imageBounds.width}px`, left: `${imageBounds.left}px` } : {})}
-          />
+          <div className="modal-media-container">
+            <ModalControls
+              show={thumbnailLoaded}
+              showInfo={showInfo}
+              copiedLink={copiedLink}
+              isFullscreen={isFullscreen}
+              onToggleInfo={handleToggleInfo}
+              onCopyLink={handleCopyLink}
+              onDownload={handleDownload}
+              onToggleFullscreen={toggleFullscreen}
+              onClose={handleClose}
+              selectedPhoto={selectedPhoto}
+              isVideo={selectedPhoto.media_type === 'video'}
+              style={{}}
+            />
 
-          <InfoPanel
-            show={showInfo}
-            photo={selectedPhoto}
-            exifData={exifData}
-            loadingExif={loadingExif}
-            imageTitle={selectedPhoto.title}
-            style={selectedPhoto.media_type === 'video' ? {} : (imageBounds ? { left: `${imageBounds.left}px` } : {})}
-          />
+            <InfoPanel
+              show={showInfo}
+              photo={selectedPhoto}
+              exifData={exifData}
+              loadingExif={loadingExif}
+              imageTitle={selectedPhoto.title}
+              style={{}}
+            />
 
-          {selectedPhoto.media_type === 'video' ? (
-            showVideoPlayer ? (
-              <div className="modal-image-container">
-                <VideoPlayer
-                  album={selectedPhoto.album}
-                  filename={selectedPhoto.id.includes('/') ? selectedPhoto.id.split('/').pop() || selectedPhoto.id : selectedPhoto.id}
-                  autoplay={shouldAutoplay}
-                  onLoadStart={() => setThumbnailLoaded(false)}
-                  onLoaded={() => {
-                    setThumbnailLoaded(true);
-                    setModalImageLoaded(true);
-                  }}
-                />
-              </div>
+            {selectedPhoto.media_type === 'video' ? (
+              showVideoPlayer ? (
+                <div className="modal-video-container">
+                  <VideoPlayer
+                    album={selectedPhoto.album}
+                    filename={selectedPhoto.id.includes('/') ? selectedPhoto.id.split('/').pop() || selectedPhoto.id : selectedPhoto.id}
+                    autoplay={shouldAutoplay}
+                    onLoadStart={() => setThumbnailLoaded(false)}
+                    onLoaded={() => {
+                      setThumbnailLoaded(true);
+                      setModalImageLoaded(true);
+                    }}
+                  />
+                </div>
+              ) : (
+                <div className="modal-photo-container">
+                  <ImageCanvas
+                    photo={selectedPhoto}
+                    apiUrl={API_URL}
+                    imageQueryString={imageQueryString}
+                    modalImageLoaded={modalImageLoaded}
+                    showModalImage={showModalImage}
+                    onThumbnailLoad={handleThumbnailLoad}
+                  />
+                  {thumbnailLoaded && (
+                    <button
+                      onClick={handlePlayClick}
+                      onTouchEnd={(e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        handlePlayClick(e);
+                      }}
+                      className="video-play-button-overlay"
+                      aria-label="Play video"
+                    >
+                      <PlayIcon width={80} height={80} />
+                    </button>
+                  )}
+                </div>
+              )
             ) : (
-              <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+              <div className="modal-photo-container">
                 <ImageCanvas
                   photo={selectedPhoto}
                   apiUrl={API_URL}
@@ -645,46 +611,23 @@ const ContentModal: React.FC<ContentModalProps> = ({
                   showModalImage={showModalImage}
                   onThumbnailLoad={handleThumbnailLoad}
                 />
-                {thumbnailLoaded && (
-                  <button
-                    onClick={handlePlayClick}
-                    onTouchEnd={(e) => {
-                      e.stopPropagation();
-                      e.preventDefault();
-                      handlePlayClick(e);
-                    }}
-                    className="video-play-button-overlay"
-                    aria-label="Play video"
-                  >
-                    <PlayIcon width={80} height={80} />
-                  </button>
-                )}
               </div>
-            )
-          ) : (
-            <ImageCanvas
-              photo={selectedPhoto}
-              apiUrl={API_URL}
-              imageQueryString={imageQueryString}
-              modalImageLoaded={modalImageLoaded}
-              showModalImage={showModalImage}
-              onThumbnailLoad={handleThumbnailLoad}
+            )}
+
+            <ModalNavigation
+              showHint={showNavigationHint}
+              onPrevious={handleNavigatePrev}
+              onNext={handleNavigateNext}
+              style={{}}
             />
-          )}
 
-          <ModalNavigation
-            showHint={showNavigationHint}
-            onPrevious={handleNavigatePrev}
-            onNext={handleNavigateNext}
-            style={selectedPhoto.media_type === 'video' ? {} : (imageBounds ? { right: `${imageBounds.left}px` } : {})}
-          />
-
-          {/* Image Title */}
-          {selectedPhoto.title && thumbnailLoaded && (
-            <div className="modal-image-title">
-              {selectedPhoto.title}
-            </div>
-          )}
+            {/* Image Title */}
+            {selectedPhoto.title && thumbnailLoaded && (
+              <div className="modal-image-title">
+                {selectedPhoto.title}
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>
