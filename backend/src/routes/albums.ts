@@ -378,7 +378,7 @@ router.get("/api/albums/:album/photos", (req: Request, res): void => {
   // Cache miss or expired - fetch from filesystem
   debug(`[Albums] Cache miss for album: ${sanitizedAlbum}`);
   const fetchStart = Date.now();
-  const photos = getPhotosInAlbum(photosDir, sanitizedAlbum);
+  const photos = getContentInAlbum(photosDir, sanitizedAlbum);
   const fetchDuration = Date.now() - fetchStart;
   
   // Store in cache
