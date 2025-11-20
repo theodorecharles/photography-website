@@ -324,6 +324,33 @@
   .mobile-toggles-stack.hidden-mobile {
     display: none;
   }
+  
+  /* Hide close button when editing title */
+  .photos-close-btn.hidden-when-editing {
+    display: none !important;
+  }
+  
+  /* Make input and buttons fit on mobile */
+  .album-title-edit-container {
+    gap: 0.5rem;
+  }
+  
+  .album-title-input {
+    font-size: 1rem;
+    padding: 0.4rem 0.6rem;
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+  
+  .album-title-edit-actions {
+    gap: 0.4rem;
+    flex-shrink: 0;
+  }
+  
+  .album-title-btn {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.8125rem;
+  }
 }
 
 .photos-close-btn {
@@ -604,6 +631,21 @@ label.photos-btn {
 @media (max-width: 500px) {
   .photos-count {
     display: none;
+  }
+  
+  /* Even more compact editing on very small screens */
+  .album-title-edit-container {
+    gap: 0.4rem;
+  }
+  
+  .album-title-input {
+    font-size: 0.9375rem;
+    padding: 0.375rem 0.5rem;
+  }
+  
+  .album-title-btn {
+    padding: 0.375rem 0.625rem;
+    font-size: 0.75rem;
   }
 }
 

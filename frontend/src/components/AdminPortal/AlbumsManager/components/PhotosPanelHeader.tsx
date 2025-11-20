@@ -247,7 +247,11 @@ const PhotosPanelHeader: React.FC<PhotosPanelHeaderProps> = ({
             )}
           </div>
           
-          <button onClick={onClose} className="photos-close-btn" title={t('common.close')}>
+          <button 
+            onClick={onClose} 
+            className={`photos-close-btn ${isEditingTitle ? 'hidden-when-editing' : ''}`}
+            title={t('common.close')}
+          >
             <CloseIcon width="20" height="20" />
           </button>
         </div>
