@@ -17,18 +17,20 @@
   content: '';
   position: fixed;
   inset: -50%;
-  background: conic-gradient(
-    from 0deg at 50% 50%,
-    #0a1820 0deg,
-    #0d2825 45deg,
-    #1f280a 90deg,
-    #281a0a 135deg,
-    #0a1f28 180deg,
-    #152820 225deg,
-    #201a15 270deg,
-    #0d2825 315deg,
-    #0a1820 360deg
-  );
+  background: 
+    radial-gradient(circle at 50% 50%, #1a1a1a 0%, transparent 30%),
+    conic-gradient(
+      from 0deg at 50% 50%,
+      #0a1820 0deg,
+      #0d2825 45deg,
+      #1f280a 90deg,
+      #281a0a 135deg,
+      #0a1f28 180deg,
+      #152820 225deg,
+      #201a15 270deg,
+      #0d2825 315deg,
+      #0a1820 360deg
+    );
   animation: rotateGradient 20s linear infinite;
   opacity: 0.7;
   pointer-events: none;
