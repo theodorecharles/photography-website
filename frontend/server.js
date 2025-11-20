@@ -323,6 +323,7 @@ function setCSPHeader(res, apiUrl, configFile) {
       "style-src 'self' 'unsafe-inline'; " +
       "worker-src 'self'; " +
       `img-src 'self' ${apiDomainHttps} ${apiUrl} data: blob: https://*.basemaps.cartocdn.com https://www.gravatar.com; ` +
+      `media-src 'self' ${apiDomainHttps} ${apiUrl} blob:; ` +
       `connect-src 'self' ${apiDomainHttps} ${apiUrl}; ` +
       "font-src 'self'; " +
       "object-src 'none'; " +
