@@ -40,6 +40,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
     Record<string, { width: number; height: number }>
   >({});
   const [loadingImages, setLoadingImages] = useState<Set<string>>(new Set());
+  const loadedImagesRef = useRef<Set<string>>(new Set()); // Track which images have loaded
   const renderIndexRef = useRef<number>(100);
   const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const isRenderingRef = useRef<boolean>(false);
@@ -97,6 +98,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
     setSelectedPhoto(null);
     setColumnTransforms([]);
     renderIndexRef.current = 100;
+    loadedImagesRef.current.clear(); // Reset loaded images tracking
   }, [album]);
 
   // Update column count when photos change
@@ -313,6 +315,8 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
         height: img.naturalHeight,
       },
     }));
+    // Mark as loaded
+    loadedImagesRef.current.add(photoId);
     // Remove from loading set
     setLoadingImages((prev) => {
       const newSet = new Set(prev);
@@ -321,9 +325,18 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
     });
   };
 
-  // Mark all visible photos as loading when they first render
+  // Mark only NEW photos as loading (don't reset already-loaded ones)
   useEffect(() => {
-    setLoadingImages(new Set(photos.map(photo => photo.id)));
+    setLoadingImages((prev) => {
+      const newSet = new Set(prev);
+      photos.forEach(photo => {
+        // Only add if not already loaded
+        if (!loadedImagesRef.current.has(photo.id)) {
+          newSet.add(photo.id);
+        }
+      });
+      return newSet;
+    });
   }, [photos]);
 
   // getNumColumns function moved to utils/photoHelpers.ts
