@@ -48,11 +48,13 @@ try {
   // Optimized format: [filename, title, media_type] arrays
   // Frontend will reconstruct full photo objects
   // media_type: 0 = photo, 1 = video (kept as number to minimize JSON size)
+  // Format: [filename, title, media_type, description]
   function transformImageToOptimized(image) {
     return [
       image.filename,
       image.title || image.filename,
-      image.media_type === 'video' ? 1 : 0
+      image.media_type === 'video' ? 1 : 0,
+      image.description || null
     ];
   }
 
@@ -97,13 +99,14 @@ try {
         ORDER BY a.sort_order, a.name, im.sort_order, im.filename
       `).all(...homepageAlbumNames);
       
-      // Homepage format: [filename, title, album, media_type] (need album for multi-album homepage)
+      // Homepage format: [filename, title, album, media_type, description] (need album for multi-album homepage)
       // media_type: 0 = photo, 1 = video
       const photos = images.map(img => [
         img.filename,
         img.title || img.filename,
         img.album,
-        img.media_type === 'video' ? 1 : 0
+        img.media_type === 'video' ? 1 : 0,
+        img.description || null
       ]);
       
       // Include shuffle setting in homepage JSON

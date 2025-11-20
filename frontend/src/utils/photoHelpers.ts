@@ -6,8 +6,8 @@ import { Photo, ImageDimensions } from '../types/photo';
 
 /**
  * Reconstruct full photo/video object from optimized array format
- * Album format: [filename, title, media_type]
- * Homepage format: [filename, title, album, media_type]
+ * Album format: [filename, title, media_type, description]
+ * Homepage format: [filename, title, album, media_type, description]
  * media_type: 0 = photo, 1 = video
  */
 export const reconstructPhoto = (data: any[], albumName: string): Photo => {
@@ -15,7 +15,9 @@ export const reconstructPhoto = (data: any[], albumName: string): Photo => {
   const title = data[1];
   const albumFromData = typeof data[2] === 'string' ? data[2] : null;
   const mediaTypeIndex = albumFromData ? 3 : 2; // If we have album name, media_type is at index 3, otherwise index 2
+  const descriptionIndex = albumFromData ? 4 : 3; // Description is after media_type
   const mediaType = data[mediaTypeIndex] === 1 ? 'video' : 'photo';
+  const description = data[descriptionIndex] || undefined;
   
   const photoAlbum = albumFromData || albumName;
   
@@ -30,6 +32,7 @@ export const reconstructPhoto = (data: any[], albumName: string): Photo => {
     modal: `/optimized/modal/${photoAlbum}/${actualFilename}`,
     download: mediaType === 'video' ? '' : `/optimized/download/${photoAlbum}/${filename}`,
     title: title,
+    description,
     album: photoAlbum,
     media_type: mediaType
   };

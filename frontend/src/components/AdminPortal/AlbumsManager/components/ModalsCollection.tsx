@@ -241,11 +241,7 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
         >
           <div className="edit-modal" onClick={(e) => e.stopPropagation()}>
             <div className="edit-modal-header">
-              <h3>
-                {editingPhoto.media_type === 'video' 
-                  ? t('albumsManager.editVideoTitle') 
-                  : t('albumsManager.editPhotoTitle')}
-              </h3>
+                  <h3>{t('albumsManager.editMetadata')}</h3>
               <button 
                 className="modal-close-btn"
                 onClick={handleCloseEditModal}
