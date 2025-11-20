@@ -1,5 +1,5 @@
 /**
- * PhotosPanelGrid Component
+ * AlbumContentPanelGrid Component
  * Displays the photo grid with:
  * - Uploading photos with progress states
  * - Sortable photos with drag-and-drop
@@ -19,7 +19,7 @@ import { cacheBustValue } from '../../../../config';
 
 type ViewMode = 'grid' | 'list';
 
-interface PhotosPanelGridProps {
+interface AlbumContentPanelGridProps {
   albumPhotos: Photo[];
   uploadingImages: UploadingImage[];
   loadingPhotos: boolean;
@@ -38,7 +38,7 @@ interface PhotosPanelGridProps {
   canEdit: boolean;
 }
 
-const PhotosPanelGrid: React.FC<PhotosPanelGridProps> = ({
+const AlbumContentPanelGrid: React.FC<AlbumContentPanelGridProps> = ({
   albumPhotos,
   uploadingImages,
   loadingPhotos,
@@ -399,5 +399,5 @@ const PhotosPanelGrid: React.FC<PhotosPanelGridProps> = ({
   );
 };
 
-export default PhotosPanelGrid;
+export default AlbumContentPanelGrid;
 

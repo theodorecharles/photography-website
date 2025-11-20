@@ -83,6 +83,7 @@ import staticJsonRouter, {
   generateStaticJSONFiles,
 } from "./routes/static-json.ts";
 import setupRouter from "./routes/setup.ts";
+import videoRouter from "./routes/video.ts";
 
 // Get the current directory path for ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -152,6 +153,7 @@ if (isProduction) {
 // PHOTOS_DIR should be relative to where you run the backend (typically backend/ directory)
 let photosDir = path.resolve(__dirname, "../../", PHOTOS_DIR);
 let optimizedDir = path.resolve(__dirname, "../../", OPTIMIZED_DIR);
+let videoDir = path.resolve(__dirname, "../../data/video");
 
 // Resolve symlinks to get the real path (important for macOS TCC permissions)
 try {
@@ -168,12 +170,23 @@ try {
   warn("[Server] Could not resolve optimized directory:", optimizedDir);
 }
 
+try {
+  videoDir = fs.realpathSync(videoDir);
+  debug("[Server] Video directory (real path):", videoDir);
+} catch (err) {
+  // Video dir might not exist yet, that's okay
+  debug("[Server] Video directory not resolved (may not exist yet):", videoDir);
+}
+
 // Verify directory paths exist
 if (!fs.existsSync(photosDir)) {
   warn("[Server] Photos directory does not exist:", photosDir);
 }
 if (!fs.existsSync(optimizedDir)) {
   warn("[Server] Optimized directory does not exist:", optimizedDir);
+}
+if (!fs.existsSync(videoDir)) {
+  debug("[Server] Video directory does not exist (will be created on first video upload):", videoDir);
 }
 
 // Configure security middleware
@@ -532,6 +545,7 @@ app.get("/logs", requireAdmin, (req, res) => {
 // Store directory paths in app for use in routes
 app.set("photosDir", photosDir);
 app.set("optimizedDir", optimizedDir);
+app.set("videoDir", videoDir);
 app.set("appRoot", path.resolve(__dirname, "../../"));
 
 // Register route handlers
@@ -554,6 +568,7 @@ app.use("/api/share-links", shareLinksRouter);
 app.use("/api/optimization-stream", optimizationStreamRouter);
 app.use("/api/preview-grid", previewGridRouter);
 app.use("/api/static-json", staticJsonRouter);
+app.use("/api/video", videoRouter);
 app.use(albumsRouter);
 app.use("/api/albums", albumManagementRouter);
 app.use("/api/folders", folderManagementRouter);

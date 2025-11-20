@@ -1,5 +1,5 @@
 /**
- * PhotosPanelHeader Component
+ * AlbumContentPanelHeader Component
  * Header controls for the photos panel including:
  * - Album title and close button
  * - Publish/unpublish toggle
@@ -16,7 +16,7 @@ import { showToast } from '../../../../utils/toast';
 
 type ViewMode = 'grid' | 'list';
 
-interface PhotosPanelHeaderProps {
+interface AlbumContentPanelHeaderProps {
   selectedAlbum: string;
   localAlbums: any[];
   localFolders: any[];
@@ -35,7 +35,7 @@ interface PhotosPanelHeaderProps {
   canEdit: boolean;
 }
 
-const PhotosPanelHeader: React.FC<PhotosPanelHeaderProps> = ({
+const AlbumContentPanelHeader: React.FC<AlbumContentPanelHeaderProps> = ({
   selectedAlbum,
   localAlbums,
   localFolders: _localFolders,
@@ -291,7 +291,7 @@ const PhotosPanelHeader: React.FC<PhotosPanelHeaderProps> = ({
                 <input
                   type="file"
                   multiple
-                  accept="image/*"
+                  accept="image/*,video/*"
                   onChange={onUploadPhotos}
                   disabled={hasActiveUploads}
                   style={{ display: 'none' }}
@@ -381,5 +381,5 @@ const PhotosPanelHeader: React.FC<PhotosPanelHeaderProps> = ({
   );
 };
 
-export default PhotosPanelHeader;
+export default AlbumContentPanelHeader;
 

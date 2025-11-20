@@ -1,20 +1,20 @@
 /**
- * PhotosPanel Component
- * Modal container for managing photos in a selected album
- * Orchestrates header controls and photo grid/list view
+ * AlbumContentPanel Component
+ * Modal container for managing photos and videos in a selected album
+ * Orchestrates header controls and photo/video grid/list view
  */
 
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import PhotosPanelHeader from './PhotosPanelHeader';
-import PhotosPanelGrid from './PhotosPanelGrid';
+import AlbumContentPanelHeader from './AlbumContentPanelHeader';
+import AlbumContentPanelGrid from './AlbumContentPanelGrid';
 import { Photo, UploadingImage } from '../types';
 import { ShuffleIcon } from '../../../icons';
 import '../../PhotosModal.css';
 
 type ViewMode = 'grid' | 'list';
 
-interface PhotosPanelProps {
+interface AlbumContentPanelProps {
   selectedAlbum: string;
   albumPhotos: Photo[];
   uploadingImages: UploadingImage[];
@@ -54,7 +54,7 @@ interface PhotosPanelProps {
   canEdit: boolean;
 }
 
-const PhotosPanel: React.FC<PhotosPanelProps> = ({
+const AlbumContentPanel: React.FC<AlbumContentPanelProps> = ({
   selectedAlbum,
   albumPhotos,
   uploadingImages,
@@ -116,7 +116,7 @@ const PhotosPanel: React.FC<PhotosPanelProps> = ({
     }, 300); // Match the flipDown animation duration
   };
 
-  // Lock body scrolling when PhotosPanel is open and register close handler
+  // Lock body scrolling when AlbumContentPanel is open and register close handler
   useEffect(() => {
     // Save current overflow states
     const originalBodyOverflow = document.body.style.overflow;
@@ -164,7 +164,7 @@ const PhotosPanel: React.FC<PhotosPanelProps> = ({
         onDragLeave={uploadingImages.length > 0 ? undefined : onDragLeave}
         onDrop={uploadingImages.length > 0 ? undefined : onDrop}
       >
-          <PhotosPanelHeader
+          <AlbumContentPanelHeader
           selectedAlbum={selectedAlbum}
           localAlbums={localAlbums}
           localFolders={localFolders}
@@ -183,7 +183,7 @@ const PhotosPanel: React.FC<PhotosPanelProps> = ({
           canEdit={canEdit}
         />
 
-        <PhotosPanelGrid
+        <AlbumContentPanelGrid
           key={viewMode}
           albumPhotos={albumPhotos}
           uploadingImages={uploadingImages}
@@ -249,5 +249,5 @@ const PhotosPanel: React.FC<PhotosPanelProps> = ({
   );
 };
 
-export default PhotosPanel;
+export default AlbumContentPanel;
 

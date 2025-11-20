@@ -13,6 +13,7 @@ export interface Photo {
   download: string;
   title: string;
   album: string;
+  media_type?: 'photo' | 'video';
   metadata?: {
     created: string;
     modified: string;

@@ -31,6 +31,7 @@ import {
   setFolderPublished,
   renameAlbum
 } from "../database.js";
+import { processVideo, VideoProcessingProgress } from "../utils/video-processor.js";
 import { invalidateAlbumCache } from "./albums.js";
 import { generateStaticJSONFiles } from "./static-json.js";
 import { broadcastOptimizationUpdate, queueOptimizationJob } from "./optimization-stream.js";
@@ -251,16 +252,16 @@ const upload = multer({
     }
   }),
   limits: {
-    fileSize: 100 * 1024 * 1024, // 100MB per file
+    fileSize: 500 * 1024 * 1024, // 500MB per file (videos are larger)
     fieldSize: 10 * 1024, // 10KB for field values (form data)
     fields: 10 // Maximum 10 non-file fields
   },
   fileFilter: (req, file, cb) => {
-    // Only allow image files
-    if (file.mimetype.match(/^image\/(jpeg|jpg|png|gif)$/)) {
+    // Allow image and video files
+    if (file.mimetype.match(/^image\/(jpeg|jpg|png|gif)$/) || file.mimetype.match(/^video\/(mp4|quicktime|x-msvideo|x-matroska|webm)$/)) {
       cb(null, true);
     } else {
-      cb(new Error('Only image files are allowed'));
+      cb(new Error('Only image and video files are allowed'));
     }
   }
 });
@@ -284,16 +285,23 @@ const sanitizeName = (name: string): string | null => {
 };
 
 /**
- * Sanitize photo filename (allows dots for extensions)
+ * Sanitize photo/video filename (allows dots for extensions)
  */
 const sanitizePhotoName = (name: string): string | null => {
   if (!name || name.includes("..") || name.includes("/") || name.includes("\\")) {
     return null;
   }
-  if (!/^[a-zA-Z0-9_\-. ]+\.(jpg|jpeg|png|gif)$/i.test(name)) {
+  if (!/^[a-zA-Z0-9_\-. ]+\.(jpg|jpeg|png|gif|mp4|mov|avi|mkv|webm)$/i.test(name)) {
     return null;
   }
   return name;
+};
+
+/**
+ * Check if a file is a video based on extension
+ */
+const isVideoFile = (filename: string): boolean => {
+  return /\.(mp4|mov|avi|mkv|webm)$/i.test(filename);
 };
 
 /**
@@ -566,7 +574,7 @@ router.delete("/:album/photos/:photo", requireManager, async (req: Request, res:
 });
 
 /**
- * Upload a single photo to an album with SSE progress updates
+ * Upload a single photo or video to an album with SSE progress updates
  */
 router.post("/:album/upload", requireManager, upload.single('photo'), async (req: Request, res: Response): Promise<void> => {
   try {
@@ -588,7 +596,7 @@ router.post("/:album/upload", requireManager, upload.single('photo'), async (req
     // SECURITY: Sanitize filename to prevent path traversal attacks
     const sanitizedFilename = sanitizePhotoName(file.originalname);
     if (!sanitizedFilename) {
-      res.status(400).json({ error: 'Invalid filename. Use only alphanumeric characters, spaces, hyphens, underscores, and valid image extensions.' });
+      res.status(400).json({ error: 'Invalid filename. Use only alphanumeric characters, spaces, hyphens, underscores, and valid image/video extensions.' });
       return;
     }
 
@@ -601,106 +609,90 @@ router.post("/:album/upload", requireManager, upload.single('photo'), async (req
     }
 
     const destPath = path.join(albumPath, sanitizedFilename);
+    const isVideo = isVideoFile(sanitizedFilename);
+    const mediaType = isVideo ? 'video' : 'photo';
     
-        try {
-          // Use sharp to auto-rotate based on EXIF orientation (fixes iPhone photos)
-          // This physically rotates the pixels and removes the EXIF orientation tag
-          // Set a timeout to prevent hanging on corrupt images
-          const sharpTimeout = new Promise((_, reject) => 
-            setTimeout(() => reject(new Error('Sharp processing timeout')), 120000) // 2 minute timeout
-          );
-          
-          await Promise.race([
-            sharp(file.path)
-              .rotate() // Auto-rotate based on EXIF
-              .toFile(destPath),
-            sharpTimeout
-          ]);
-      
-      // Clean up temp file
-      fs.unlinkSync(file.path);
-    } catch (err: any) {
-      error(`[Upload] Failed to process ${file.originalname}:`, err.message);
-      // Clean up temp file if processing failed
+    if (isVideo) {
+      // For videos, just move the file to the photos directory
       try {
-        fs.unlinkSync(file.path);
-      } catch (cleanupErr) {
-        // Ignore cleanup errors
+        await fs.promises.rename(file.path, destPath);
+      } catch (err: any) {
+        error(`[Upload] Failed to move video ${file.originalname}:`, err.message);
+        try {
+          fs.unlinkSync(file.path);
+        } catch (cleanupErr) {
+          // Ignore cleanup errors
+        }
+        res.status(500).json({ error: `Failed to save video: ${err.message}` });
+        return;
       }
-      res.status(500).json({ error: `Failed to save file: ${err.message}` });
-      return;
+    } else {
+      // For images, use sharp to auto-rotate based on EXIF orientation
+      try {
+        const sharpTimeout = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Sharp processing timeout')), 120000) // 2 minute timeout
+        );
+        
+        await Promise.race([
+          sharp(file.path)
+            .rotate() // Auto-rotate based on EXIF
+            .toFile(destPath),
+          sharpTimeout
+        ]);
+    
+        // Clean up temp file
+        fs.unlinkSync(file.path);
+      } catch (err: any) {
+        error(`[Upload] Failed to process ${file.originalname}:`, err.message);
+        try {
+          fs.unlinkSync(file.path);
+        } catch (cleanupErr) {
+          // Ignore cleanup errors
+        }
+        res.status(500).json({ error: `Failed to save file: ${err.message}` });
+        return;
+      }
     }
 
     // Send success response immediately (don't keep connection open)
-    res.json({ success: true, filename: sanitizedFilename });
+    res.json({ success: true, filename: sanitizedFilename, mediaType });
 
-    // Queue optimization job (will process sequentially)
     const projectRoot = path.resolve(__dirname, '../../../');
-    const scriptPath = path.join(projectRoot, 'scripts', 'optimize_new_image.js');
     const jobId = `${sanitizedAlbum}/${sanitizedFilename}`;
 
-    if (fs.existsSync(scriptPath)) {
-      queueOptimizationJob(
-        jobId,
-        sanitizedAlbum,
-        sanitizedFilename,
-        scriptPath,
-        projectRoot,
-        // onProgress callback
-        (progress: number) => {
-          broadcastOptimizationUpdate(jobId, {
-            album: sanitizedAlbum,
-            filename: sanitizedFilename,
-            progress,
-            state: 'optimizing'
-          });
-        },
-        // onComplete callback
-        async () => {
-          // Add image to database (with null title initially)
-          saveImageMetadata(sanitizedAlbum, sanitizedFilename, null, null);
+    if (isVideo) {
+      // Process video: rotation, HLS encoding, thumbnails
+      (async () => {
+        try {
+          const dataDir = process.env.DATA_DIR || path.join(projectRoot, 'data');
           
-          // Note: We don't invalidate cache here to avoid spam during batch uploads
-          // Cache will be invalidated once at the end via static JSON regeneration
-          
+          await processVideo(
+            destPath,
+            sanitizedAlbum,
+            sanitizedFilename,
+            dataDir,
+            (update: VideoProcessingProgress) => {
+              broadcastOptimizationUpdate(jobId, {
+                album: sanitizedAlbum,
+                filename: sanitizedFilename,
+                progress: update.progress,
+                state: update.stage,
+                message: update.message
+              });
+            }
+          );
+
+          // Add video to database
+          saveImageMetadata(sanitizedAlbum, sanitizedFilename, null, null, 'video');
+
           broadcastOptimizationUpdate(jobId, {
             album: sanitizedAlbum,
             filename: sanitizedFilename,
             progress: 100,
             state: 'complete'
           });
-          
-          // Check if auto-generate AI titles is enabled
-          try {
-            const dataDir = process.env.DATA_DIR || path.join(projectRoot, 'data');
-            const configPath = path.join(dataDir, 'config.json');
-            const configData = fs.readFileSync(configPath, 'utf8');
-            const config = JSON.parse(configData);
-            
-            if (config.ai?.autoGenerateTitlesOnUpload && config.openai?.apiKey) {
-              broadcastOptimizationUpdate(jobId, {
-                album: sanitizedAlbum,
-                filename: sanitizedFilename,
-                progress: 100,
-                state: 'generating-title'
-              });
-              
-              // Generate AI title (without SSE streaming to this response)
-              await generateAITitleForImageAsync(
-                config.openai.apiKey,
-                sanitizedAlbum,
-                sanitizedFilename,
-                projectRoot,
-                jobId,
-                language
-              );
-            }
-          } catch (err) {
-            error('[AlbumManagement] Failed to with AI title generation:', err);
-          }
-          
-          // Check if this album is a homepage album - if so, regenerate static JSON
-          // This ensures new photos appear on homepage immediately after upload completes
+
+          // Regenerate static JSON if needed
           try {
             const albumState = getAlbumState(sanitizedAlbum);
             if (albumState?.published && albumState?.show_on_homepage) {
@@ -712,30 +704,114 @@ router.post("/:album/upload", requireManager, upload.single('photo'), async (req
           } catch (err) {
             error('[AlbumManagement] Failed to check/regenerate static JSON for homepage album:', err);
           }
-        },
-        // onError callback
-        (error: string) => {
+        } catch (err: any) {
+          error('[AlbumManagement] Video processing failed:', err);
           broadcastOptimizationUpdate(jobId, {
             album: sanitizedAlbum,
             filename: sanitizedFilename,
             progress: 0,
             state: 'error',
-            error
+            error: err.message || 'Video processing failed'
           });
         }
-      );
+      })();
     } else {
-      broadcastOptimizationUpdate(jobId, {
-        album: sanitizedAlbum,
-        filename: sanitizedFilename,
-        progress: 0,
-        state: 'error',
-        error: 'Optimization script not found'
-      });
+      // Queue image optimization job (will process sequentially)
+      const scriptPath = path.join(projectRoot, 'scripts', 'optimize_new_image.js');
+
+      if (fs.existsSync(scriptPath)) {
+        queueOptimizationJob(
+          jobId,
+          sanitizedAlbum,
+          sanitizedFilename,
+          scriptPath,
+          projectRoot,
+          // onProgress callback
+          (progress: number) => {
+            broadcastOptimizationUpdate(jobId, {
+              album: sanitizedAlbum,
+              filename: sanitizedFilename,
+              progress,
+              state: 'optimizing'
+            });
+          },
+          // onComplete callback
+          async () => {
+            // Add image to database (with null title initially)
+            saveImageMetadata(sanitizedAlbum, sanitizedFilename, null, null, 'photo');
+            
+            broadcastOptimizationUpdate(jobId, {
+              album: sanitizedAlbum,
+              filename: sanitizedFilename,
+              progress: 100,
+              state: 'complete'
+            });
+            
+            // Check if auto-generate AI titles is enabled (only for photos)
+            try {
+              const dataDir = process.env.DATA_DIR || path.join(projectRoot, 'data');
+              const configPath = path.join(dataDir, 'config.json');
+              const configData = fs.readFileSync(configPath, 'utf8');
+              const config = JSON.parse(configData);
+              
+              if (config.ai?.autoGenerateTitlesOnUpload && config.openai?.apiKey) {
+                broadcastOptimizationUpdate(jobId, {
+                  album: sanitizedAlbum,
+                  filename: sanitizedFilename,
+                  progress: 100,
+                  state: 'generating-title'
+                });
+                
+                await generateAITitleForImageAsync(
+                  config.openai.apiKey,
+                  sanitizedAlbum,
+                  sanitizedFilename,
+                  projectRoot,
+                  jobId,
+                  language
+                );
+              }
+            } catch (err) {
+              error('[AlbumManagement] Failed with AI title generation:', err);
+            }
+            
+            // Check if this album is a homepage album - if so, regenerate static JSON
+            try {
+              const albumState = getAlbumState(sanitizedAlbum);
+              if (albumState?.published && albumState?.show_on_homepage) {
+                info(`[AlbumManagement] Homepage album "${sanitizedAlbum}" updated - regenerating static JSON`);
+                const appRoot = req.app.get('appRoot');
+                generateStaticJSONFiles(appRoot);
+                invalidateAlbumCache();
+              }
+            } catch (err) {
+              error('[AlbumManagement] Failed to check/regenerate static JSON for homepage album:', err);
+            }
+          },
+          // onError callback
+          (error: string) => {
+            broadcastOptimizationUpdate(jobId, {
+              album: sanitizedAlbum,
+              filename: sanitizedFilename,
+              progress: 0,
+              state: 'error',
+              error
+            });
+          }
+        );
+      } else {
+        broadcastOptimizationUpdate(jobId, {
+          album: sanitizedAlbum,
+          filename: sanitizedFilename,
+          progress: 0,
+          state: 'error',
+          error: 'Optimization script not found'
+        });
+      }
     }
   } catch (err) {
-    error('[AlbumManagement] Failed to upload photo:', err);
-    res.status(500).json({ error: 'Failed to upload photo' });
+    error('[AlbumManagement] Failed to upload file:', err);
+    res.status(500).json({ error: 'Failed to upload file' });
   }
 });
 

@@ -1,6 +1,7 @@
 /**
- * Photo Modal Component
- * Main modal orchestrator that combines all sub-components
+ * Content Modal Component
+ * Main modal orchestrator for displaying photos and videos
+ * Combines all sub-components
  */
 
 import React, { useRef, useState, useEffect, useCallback } from 'react';
@@ -17,7 +18,7 @@ import './PhotoModal.css';
 import { error as logError } from '../../utils/logger';
 
 
-interface PhotoModalProps {
+interface ContentModalProps {
   selectedPhoto: Photo;
   album: string;
   currentIndex: number;
@@ -27,7 +28,7 @@ interface PhotoModalProps {
   onClose: () => void;
 }
 
-const PhotoModal: React.FC<PhotoModalProps> = ({
+const ContentModal: React.FC<ContentModalProps> = ({
   selectedPhoto,
   album,
   currentIndex: _currentIndex, // Unused but kept for future UI features
@@ -592,4 +593,4 @@ const PhotoModal: React.FC<PhotoModalProps> = ({
   );
 };
 
-export default PhotoModal;
+export default ContentModal;

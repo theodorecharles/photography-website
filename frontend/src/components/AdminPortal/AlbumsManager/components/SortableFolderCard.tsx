@@ -58,7 +58,7 @@ const FolderGhostTileDroppable: React.FC<{
         ref={folderGhostTileRef}
         type="file"
         multiple
-        accept="image/*"
+        accept="image/*,video/*"
         onChange={(e) => onGhostTileFileSelect(e, folderId)}
         disabled={uploadingImages.length > 0}
         style={{ display: 'none' }}

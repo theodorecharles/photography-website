@@ -11,7 +11,7 @@ import "./PhotoGrid.css";
 import { API_URL, cacheBustValue } from "../config";
 import { trackPhotoClick, trackError } from "../utils/analytics";
 import { fetchWithRateLimitCheck } from "../utils/fetchWrapper";
-import PhotoModal from "./PhotoModal";
+import ContentModal from "./ContentModal";
 import NotFound from "./Misc/NotFound";
 import { reconstructPhoto, getNumColumns, distributePhotos } from "../utils/photoHelpers";
 import { info } from '../utils/logger';
@@ -550,7 +550,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
       </div>
 
       {selectedPhoto && (
-        <PhotoModal
+          <ContentModal
           selectedPhoto={selectedPhoto}
           album={album}
           currentIndex={selectedPhotoIndex}

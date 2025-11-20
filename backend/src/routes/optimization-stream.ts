@@ -16,9 +16,10 @@ interface OptimizationJob {
   album: string;
   filename: string;
   progress: number;
-  state: 'queued' | 'optimizing' | 'generating-title' | 'complete' | 'error';
+  state: 'queued' | 'optimizing' | 'generating-title' | 'complete' | 'error' | 'rotation' | '240p' | '360p' | '720p' | '1080p' | 'thumbnail' | 'modal-preview';
   error?: string;
   title?: string;
+  message?: string;
   startTime: number;
 }
 
