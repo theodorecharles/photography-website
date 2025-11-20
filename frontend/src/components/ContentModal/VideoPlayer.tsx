@@ -31,12 +31,13 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     
     const video = videoRef.current;
     if (!video) {
-      console.error('[VideoPlayer] Video ref is null');
-      setError('Video element not initialized');
+      console.warn('[VideoPlayer] Video ref not yet attached, waiting...');
+      // Don't error - React will attach the ref on next render
       return;
     }
 
     console.log('[VideoPlayer] Video element found:', video);
+    setError(null); // Clear any previous errors
 
     if (onLoadStart) onLoadStart();
 
