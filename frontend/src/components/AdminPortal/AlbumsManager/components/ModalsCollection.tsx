@@ -13,6 +13,7 @@ import { Photo, Folder } from '../types';
 import { cacheBustValue } from '../../../../config';
 import { MagicWandIcon } from '../../../icons';
 import { error } from '../../../../utils/logger';
+import VideoThumbnailPicker from './VideoThumbnailPicker';
 
 
 interface ConfirmModalConfig {
@@ -347,6 +348,22 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
                     }
                   }}
                 />
+                
+                {/* Video Thumbnail Picker - only show for videos */}
+                {editingPhoto.media_type === 'video' && (
+                  <VideoThumbnailPicker
+                    album={editingPhoto.album}
+                    filename={editingPhoto.id.split('/').pop() || editingPhoto.id}
+                    onThumbnailUpdated={() => {
+                      // Force thumbnail reload by updating timestamp
+                      const img = document.querySelector('.edit-modal-photo img') as HTMLImageElement;
+                      if (img) {
+                        const src = img.src.split('?')[0];
+                        img.src = `${src}?t=${Date.now()}`;
+                      }
+                    }}
+                  />
+                )}
               </div>
             </div>
             
