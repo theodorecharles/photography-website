@@ -477,8 +477,9 @@ export async function processVideo(
       }
     });
 
-    // Clean up rotated file
-    await unlink(rotatedPath);
+    // Keep rotated file for thumbnail extraction
+    // Don't delete rotatedPath - it's needed for thumbnail updates via the admin panel
+    info(`[VideoProcessor] Keeping rotated.mp4 for thumbnail extraction`);
 
     info(`[VideoProcessor] Video processing complete: ${album}/${filename}`);
   } catch (err) {
