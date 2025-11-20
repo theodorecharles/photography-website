@@ -1,7 +1,7 @@
 /**
- * Unified Photo Grid Item Component
- * Handles all photo states: queued, uploading, optimizing, generating-title, complete, error
- * Supports both uploading images and completed photos with drag-and-drop
+ * Unified Album Grid Item Component
+ * Handles all photo/video states: queued, uploading, optimizing, generating-title, complete, error
+ * Supports both uploading images/videos and completed photos/videos with drag-and-drop
  */
 
 import { useState, useRef, useEffect } from 'react';
@@ -15,7 +15,7 @@ import { EditDocumentIcon, TrashIcon, HourglassIcon } from '../../../icons';
 import { info } from '../../../../utils/logger';
 
 
-interface PhotoGridItemProps {
+interface AlbumGridItemProps {
   // For uploading images
   uploadingImage?: UploadingImage;
   uploadingIndex?: number;
@@ -40,7 +40,7 @@ interface PhotoGridItemProps {
   canEdit: boolean;
 }
 
-const PhotoGridItem: React.FC<PhotoGridItemProps> = ({
+const AlbumGridItem: React.FC<AlbumGridItemProps> = ({
   uploadingImage,
   uploadingIndex,
   photo,
@@ -263,7 +263,11 @@ const PhotoGridItem: React.FC<PhotoGridItemProps> = ({
                   <div className="progress-percentage">{uploadingImage.optimizeProgress}%</div>
                 </div>
               )}
-              <span className="state-text">{t('sse.optimizing')}</span>
+              <span className="state-text">
+                {uploadingImage.videoStage 
+                  ? `${uploadingImage.videoStage} (${uploadingImage.optimizeProgress}%)`
+                  : t('sse.optimizing')}
+              </span>
             </div>
           )}
           {uploadingImage.state === 'generating-title' && (
@@ -422,5 +426,5 @@ const PhotoGridItem: React.FC<PhotoGridItemProps> = ({
   );
 };
 
-export default PhotoGridItem;
+export default AlbumGridItem;
 

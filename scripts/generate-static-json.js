@@ -45,12 +45,14 @@ try {
     console.log(`   ✅ Generated: ${filename} (${Array.isArray(data) ? data.length : 'N/A'} items, ${size} KB)`);
   }
 
-  // Optimized format: just [filename, title] arrays
+  // Optimized format: [filename, title, media_type] arrays
   // Frontend will reconstruct full photo objects
+  // media_type: 0 = photo, 1 = video (kept as number to minimize JSON size)
   function transformImageToOptimized(image) {
     return [
       image.filename,
-      image.title || image.filename
+      image.title || image.filename,
+      image.media_type === 'video' ? 1 : 0
     ];
   }
 
@@ -65,7 +67,7 @@ try {
     const album = albumRow.name;
     try {
       const images = db.prepare(`
-        SELECT filename, title, description 
+        SELECT filename, title, description, media_type 
         FROM image_metadata 
         WHERE album = ? 
         ORDER BY sort_order, filename
@@ -88,18 +90,20 @@ try {
     if (homepageAlbumNames.length > 0) {
       const placeholders = homepageAlbumNames.map(() => '?').join(',');
       const images = db.prepare(`
-        SELECT im.filename, im.title, im.description, im.album, im.sort_order, a.sort_order as album_sort_order
+        SELECT im.filename, im.title, im.description, im.album, im.media_type, im.sort_order, a.sort_order as album_sort_order
         FROM image_metadata im
         INNER JOIN albums a ON im.album = a.name
         WHERE im.album IN (${placeholders})
         ORDER BY a.sort_order, a.name, im.sort_order, im.filename
       `).all(...homepageAlbumNames);
       
-      // Homepage format: [filename, title, album] (need album for multi-album homepage)
+      // Homepage format: [filename, title, album, media_type] (need album for multi-album homepage)
+      // media_type: 0 = photo, 1 = video
       const photos = images.map(img => [
         img.filename,
         img.title || img.filename,
-        img.album
+        img.album,
+        img.media_type === 'video' ? 1 : 0
       ]);
       
       // Include shuffle setting in homepage JSON

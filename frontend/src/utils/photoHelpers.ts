@@ -5,19 +5,33 @@
 import { Photo, ImageDimensions } from '../types/photo';
 
 /**
- * Reconstruct full photo object from optimized array format
- * Format: [filename, title] for albums, [filename, title, album] for homepage
+ * Reconstruct full photo/video object from optimized array format
+ * Album format: [filename, title, media_type]
+ * Homepage format: [filename, title, album, media_type]
+ * media_type: 0 = photo, 1 = video
  */
-export const reconstructPhoto = (data: string[], albumName: string): Photo => {
-  const [filename, title, albumFromData] = data;
+export const reconstructPhoto = (data: any[], albumName: string): Photo => {
+  const filename = data[0];
+  const title = data[1];
+  const albumFromData = typeof data[2] === 'string' ? data[2] : null;
+  const mediaTypeIndex = albumFromData ? 3 : 2; // If we have album name, media_type is at index 3, otherwise index 2
+  const mediaType = data[mediaTypeIndex] === 1 ? 'video' : 'photo';
+  
   const photoAlbum = albumFromData || albumName;
+  
+  // For videos, thumbnail and modal preview are stored in optimized folder as JPG
+  // The actual video is served via /api/video endpoints
+  const baseFilename = filename.replace(/\.[^.]+$/, '.jpg'); // Replace extension with .jpg for video thumbnails
+  const actualFilename = mediaType === 'video' ? baseFilename : filename;
+  
   return {
     id: `${photoAlbum}/${filename}`,
-    thumbnail: `/optimized/thumbnail/${photoAlbum}/${filename}`,
-    modal: `/optimized/modal/${photoAlbum}/${filename}`,
-    download: `/optimized/download/${photoAlbum}/${filename}`,
+    thumbnail: `/optimized/thumbnail/${photoAlbum}/${actualFilename}`,
+    modal: `/optimized/modal/${photoAlbum}/${actualFilename}`,
+    download: mediaType === 'video' ? '' : `/optimized/download/${photoAlbum}/${filename}`,
     title: title,
-    album: photoAlbum
+    album: photoAlbum,
+    media_type: mediaType
   };
 };
 

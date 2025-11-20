@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { API_URL } from '../../../../config';
 import { DndContext, DragOverlay, closestCenter, PointerSensor, KeyboardSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { SortableContext, sortableKeyboardCoordinates, rectSortingStrategy } from '@dnd-kit/sortable';
-import PhotoGridItem from './PhotoGridItem';
+import AlbumGridItem from './AlbumGridItem';
 import { PhotoListItem } from './PhotoListItem';
 import { Photo, UploadingImage } from '../types';
 import { cacheBustValue } from '../../../../config';
@@ -243,7 +243,7 @@ const AlbumContentPanelGrid: React.FC<AlbumContentPanelGridProps> = ({
             <SortableContext items={allItemIds} strategy={rectSortingStrategy}>
               {/* Uploading images (includes those transitioning to complete) */}
               {uploadingImages.map((img, index) => (
-                <PhotoGridItem
+                <AlbumGridItem
                   key={img.photo?.id || `uploading-${index}`}
                   uploadingImage={img}
                   uploadingIndex={index}
@@ -262,7 +262,7 @@ const AlbumContentPanelGrid: React.FC<AlbumContentPanelGridProps> = ({
               
               {/* Existing album photos (already in album before upload) */}
               {albumPhotos.filter(photo => photo && photo.id).map((photo) => (
-                <PhotoGridItem
+                <AlbumGridItem
                   key={photo.id}
                   photo={photo}
                   onEdit={onOpenEditModal}
