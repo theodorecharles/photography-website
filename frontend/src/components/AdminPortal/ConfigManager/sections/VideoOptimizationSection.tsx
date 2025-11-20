@@ -21,6 +21,7 @@ interface VideoOptimizationSectionProps {
   savingSection: string | null;
   setSavingSection: (section: string | null) => void;
   setMessage: (message: { type: "success" | "error"; text: string }) => void;
+  onNavigateToAdvanced: () => void;
 }
 
 const VideoOptimizationSection: React.FC<VideoOptimizationSectionProps> = ({
@@ -31,6 +32,7 @@ const VideoOptimizationSection: React.FC<VideoOptimizationSectionProps> = ({
   savingSection,
   setSavingSection,
   setMessage,
+  onNavigateToAdvanced,
 }) => {
   const { t } = useTranslation();
   const [showVideoOptimization, setShowVideoOptimization] = useState(false);
@@ -225,7 +227,23 @@ const VideoOptimizationSection: React.FC<VideoOptimizationSectionProps> = ({
               color: 'rgba(255, 193, 7, 0.9)',
               height: 'fit-content',
             }}>
-              <strong>⚠️ {t('common.note')}:</strong> {t('videoOptimization.warningNote')} <strong>{t('videoOptimization.forceRegenerate')}</strong> {t('videoOptimization.warningNoteLocation')}
+              <div style={{ marginBottom: '0.75rem' }}>
+                <strong>⚠️ {t('common.note')}:</strong> {t('videoOptimization.warningNote')}
+              </div>
+              <button
+                onClick={onNavigateToAdvanced}
+                className="btn-secondary"
+                style={{
+                  fontSize: '0.85rem',
+                  padding: '0.5rem 0.75rem',
+                  width: '100%',
+                  background: 'rgba(255, 193, 7, 0.15)',
+                  border: '1px solid rgba(255, 193, 7, 0.5)',
+                  color: 'rgba(255, 193, 7, 1)',
+                }}
+              >
+                🎯 {t('videoOptimization.forceRegenerate')}
+              </button>
             </div>
           </div>
 

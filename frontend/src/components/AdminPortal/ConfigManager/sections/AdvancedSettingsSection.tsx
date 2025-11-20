@@ -49,6 +49,9 @@ interface AdvancedSettingsSectionProps {
   // SMTP navigation
   scrollToSmtp?: boolean;
   setScrollToSmtp?: (value: boolean) => void;
+  // Advanced section navigation
+  scrollToAdvanced?: boolean;
+  setScrollToAdvanced?: (value: boolean) => void;
   sectionRef?: React.RefObject<HTMLDivElement | null>;
   // Restart modal callback
   onOpenObserveSave?: () => void;
@@ -79,6 +82,8 @@ const AdvancedSettingsSection: React.FC<AdvancedSettingsSectionProps> = ({
   showConfirmation,
   scrollToSmtp,
   setScrollToSmtp,
+  scrollToAdvanced,
+  setScrollToAdvanced,
   sectionRef,
 }) => {
   const { t } = useTranslation();
@@ -104,6 +109,26 @@ const AdvancedSettingsSection: React.FC<AdvancedSettingsSectionProps> = ({
       }, 400); // Wait for expansion animation
     }
   }, [scrollToSmtp, setScrollToSmtp]);
+
+  // Handle scrollToAdvanced trigger from parent (for navigation from optimization sections)
+  useEffect(() => {
+    if (scrollToAdvanced) {
+      setShowAdvanced(true);
+      setTimeout(() => {
+        if (sectionRef?.current) {
+          const yOffset = -100; // Offset to account for header
+          const element = sectionRef.current;
+          const y =
+            element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+          window.scrollTo({ top: y, behavior: "smooth" });
+        }
+        // Reset the trigger
+        if (setScrollToAdvanced) {
+          setScrollToAdvanced(false);
+        }
+      }, 400); // Wait for expansion animation
+    }
+  }, [scrollToAdvanced, setScrollToAdvanced, sectionRef]);
 
   const updateConfig = (path: string[], value: any) => {
     if (!config) return;

@@ -75,6 +75,9 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
   const [scrollToOpenAI, setScrollToOpenAI] = useState(false);
   const openAISectionRef = useRef<HTMLDivElement>(null);
 
+  // Navigation state for Advanced Settings (from optimization sections)
+  const [scrollToAdvanced, setScrollToAdvanced] = useState(false);
+
   // Confirmation modal state
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [confirmConfig, setConfirmConfig] = useState<{
@@ -113,6 +116,11 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
   // Handler to navigate to OpenAI settings  
   const handleSetupOpenAI = () => {
     setScrollToOpenAI(true);
+  };
+
+  // Handler to navigate to Advanced Settings
+  const handleNavigateToAdvanced = () => {
+    setScrollToAdvanced(true);
   };
 
   const handleModalCancel = () => {
@@ -918,6 +926,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
           savingSection={savingSection}
           setSavingSection={setSavingSection}
           setMessage={setMessage}
+          onNavigateToAdvanced={handleNavigateToAdvanced}
         />
 
         <VideoOptimizationSection
@@ -928,6 +937,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
           savingSection={savingSection}
           setSavingSection={setSavingSection}
           setMessage={setMessage}
+          onNavigateToAdvanced={handleNavigateToAdvanced}
         />
 
         <AdvancedSettingsSection
@@ -954,6 +964,8 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
           showConfirmation={showConfirmation}
           scrollToSmtp={scrollToSmtp}
           setScrollToSmtp={setScrollToSmtp}
+          scrollToAdvanced={scrollToAdvanced}
+          setScrollToAdvanced={setScrollToAdvanced}
           sectionRef={advancedSectionRef}
           onOpenObserveSave={handleOpenObserveSave}
         />

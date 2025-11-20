@@ -20,6 +20,7 @@ interface ImageOptimizationSectionProps {
   savingSection: string | null;
   setSavingSection: (section: string | null) => void;
   setMessage: (message: { type: "success" | "error"; text: string }) => void;
+  onNavigateToAdvanced: () => void;
 }
 
 const ImageOptimizationSection: React.FC<ImageOptimizationSectionProps> = ({
@@ -27,6 +28,7 @@ const ImageOptimizationSection: React.FC<ImageOptimizationSectionProps> = ({
   originalConfig,
   setConfig,
   setOriginalConfig,
+  onNavigateToAdvanced,
   savingSection,
   setSavingSection,
   setMessage,
@@ -152,7 +154,23 @@ const ImageOptimizationSection: React.FC<ImageOptimizationSectionProps> = ({
           fontSize: '0.875rem',
           color: 'rgba(255, 193, 7, 0.9)',
         }}>
-          <strong>⚠️ {t('common.note')}:</strong> {t('imageOptimization.warningNote')} <strong>{t('imageOptimization.forceRegenerate')}</strong> {t('imageOptimization.warningNoteLocation')}
+          <div style={{ marginBottom: '0.75rem' }}>
+            <strong>⚠️ {t('common.note')}:</strong> {t('imageOptimization.warningNote')}
+          </div>
+          <button
+            onClick={onNavigateToAdvanced}
+            className="btn-secondary"
+            style={{
+              fontSize: '0.85rem',
+              padding: '0.5rem 0.75rem',
+              width: '100%',
+              background: 'rgba(255, 193, 7, 0.15)',
+              border: '1px solid rgba(255, 193, 7, 0.5)',
+              color: 'rgba(255, 193, 7, 1)',
+            }}
+          >
+            🎯 {t('imageOptimization.forceRegenerate')}
+          </button>
         </div>
 
         {/* Grid of optimization subsections */}
