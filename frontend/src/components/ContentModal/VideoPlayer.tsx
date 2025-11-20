@@ -27,6 +27,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   const [error, setError] = useState<string | null>(null);
   const initializingRef = useRef(false); // Prevent multiple initializations
   const [videoWidth, setVideoWidth] = useState<number | null>(null);
+  const [videoHeight, setVideoHeight] = useState<number | null>(null);
 
   useEffect(() => {
     const debugInfo = {
@@ -205,37 +206,48 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     );
   }
 
-  // Calculate video width based on aspect ratio
+  // Calculate video width and height based on aspect ratio
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
 
-    const updateVideoWidth = () => {
+    const updateVideoDimensions = () => {
       if (video.videoWidth && video.videoHeight) {
         const aspectRatio = video.videoWidth / video.videoHeight;
         const container = video.parentElement;
         if (container) {
+          const containerWidth = container.clientWidth;
           const containerHeight = container.clientHeight;
-          const calculatedWidth = containerHeight * aspectRatio;
-          const maxWidth = container.clientWidth;
           
-          // Use the smaller of calculated width or max width
-          setVideoWidth(Math.min(calculatedWidth, maxWidth));
+          // Calculate dimensions based on aspect ratio
+          const widthBasedHeight = containerWidth / aspectRatio;
+          const heightBasedWidth = containerHeight * aspectRatio;
+          
+          // Determine which constraint is hit first
+          if (heightBasedWidth <= containerWidth) {
+            // Height is the limiting factor
+            setVideoHeight(containerHeight);
+            setVideoWidth(heightBasedWidth);
+          } else {
+            // Width is the limiting factor
+            setVideoWidth(containerWidth);
+            setVideoHeight(widthBasedHeight);
+          }
         }
       }
     };
 
-    video.addEventListener('loadedmetadata', updateVideoWidth);
-    video.addEventListener('resize', updateVideoWidth);
-    window.addEventListener('resize', updateVideoWidth);
+    video.addEventListener('loadedmetadata', updateVideoDimensions);
+    video.addEventListener('resize', updateVideoDimensions);
+    window.addEventListener('resize', updateVideoDimensions);
 
     // Initial calculation
-    updateVideoWidth();
+    updateVideoDimensions();
 
     return () => {
-      video.removeEventListener('loadedmetadata', updateVideoWidth);
-      video.removeEventListener('resize', updateVideoWidth);
-      window.removeEventListener('resize', updateVideoWidth);
+      video.removeEventListener('loadedmetadata', updateVideoDimensions);
+      video.removeEventListener('resize', updateVideoDimensions);
+      window.removeEventListener('resize', updateVideoDimensions);
     };
   }, []);
 
@@ -267,7 +279,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         style={{
           display: 'block',
           width: videoWidth ? `${videoWidth}px` : '100%',
-          height: '100%',
+          height: videoHeight ? `${videoHeight}px` : '100%',
           maxWidth: '100%',
           maxHeight: '100%',
           objectFit: 'contain'
