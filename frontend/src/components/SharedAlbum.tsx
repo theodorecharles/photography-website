@@ -6,7 +6,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import PhotoGrid from './PhotoGrid';
+import ContentGrid from './ContentGrid';
 import { API_URL } from '../config';
 import { trackSharedAlbumView } from '../utils/analytics';
 import ExpiredLink from './Misc/ExpiredLink';
@@ -274,7 +274,7 @@ export default function SharedAlbum() {
             {albumName}
           </h1>
         )}
-        <PhotoGrid album={albumName} initialPhotos={photos} />
+        <ContentGrid album={albumName} initialPhotos={photos} />
       </main>
       
       {/* Countdown timer at bottom */}

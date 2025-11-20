@@ -67,7 +67,7 @@ const FrontendSettings: React.FC<FrontendSettingsProps> = ({
   };
 
   return (
-    <div className="openai-section" style={{ marginBottom: "2rem" }}>
+    <div className="settings-section" style={{ marginBottom: "2rem" }}>
       <div
         style={{
           display: "flex",
@@ -76,7 +76,7 @@ const FrontendSettings: React.FC<FrontendSettingsProps> = ({
           marginBottom: "0.75rem",
         }}
       >
-        <label className="openai-section-label">FRONTEND</label>
+        <label className="settings-section-label">FRONTEND</label>
         {hasUnsavedChanges && (
           <div style={{ display: "flex", gap: "0.5rem" }}>
             <button

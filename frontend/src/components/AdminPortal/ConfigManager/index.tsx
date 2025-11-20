@@ -19,6 +19,7 @@ import LinksSection from './sections/LinksSection';
 import UserManagementSection from './sections/UserManagementSection';
 import OpenAISection from './sections/OpenAISection';
 import ImageOptimizationSection from './sections/ImageOptimizationSection';
+import VideoOptimizationSection from './sections/VideoOptimizationSection';
 import AdvancedSettingsSection from './sections/AdvancedSettingsSection';
 import RestartModal from '../../RestartModal';
 import '../ConfigManager.css';
@@ -46,14 +47,25 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
     info('[ConfigManager] Received externalLinks prop:', externalLinks);
   }, [externalLinks]);
   
-  const [config, setConfig] = useState<ConfigData | null>(null);
+  const [config, setConfigInternal] = useState<ConfigData | null>(null);
   const [originalConfig, setOriginalConfig] = useState<ConfigData | null>(null);
+
+  // Wrap setConfig with logging
+  const setConfig = (newConfig: ConfigData | null) => {
+    console.log('[ConfigManager] setConfig called:', {
+      videoConfig: newConfig?.environment?.optimization?.video,
+      stackTrace: new Error().stack
+    });
+    setConfigInternal(newConfig);
+  };
   const [loading, setLoading] = useState(true);
   const [savingSection, setSavingSection] = useState<string | null>(null);
   
   // Local state (not related to SSE jobs)
   const [hasMissingTitles, setHasMissingTitles] = useState(false);
   const [optimizationComplete, setOptimizationComplete] = useState(false);
+  const [videoOptimizationComplete, setVideoOptimizationComplete] = useState(false);
+  const [isVideoOptimizationRunning, setIsVideoOptimizationRunning] = useState(false);
   
   // Navigation state for SMTP settings
   const [scrollToSmtp, setScrollToSmtp] = useState(false);
@@ -62,6 +74,9 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
   // Navigation state for OpenAI settings
   const [scrollToOpenAI, setScrollToOpenAI] = useState(false);
   const openAISectionRef = useRef<HTMLDivElement>(null);
+
+  // Navigation state for Advanced Settings (from optimization sections)
+  const [scrollToAdvanced, setScrollToAdvanced] = useState(false);
 
   // Confirmation modal state
   const [showConfirmModal, setShowConfirmModal] = useState(false);
@@ -101,6 +116,11 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
   // Handler to navigate to OpenAI settings  
   const handleSetupOpenAI = () => {
     setScrollToOpenAI(true);
+  };
+
+  // Handler to navigate to Advanced Settings
+  const handleNavigateToAdvanced = () => {
+    setScrollToAdvanced(true);
   };
 
   const handleModalCancel = () => {
@@ -711,6 +731,127 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
     }
   };
 
+  const handleRunVideoOptimization = async () => {
+    // Initialize global context state to show toaster
+    sseToaster.setIsOptimizationRunning(true);
+    sseToaster.setOptimizationComplete(false);
+    sseToaster.setOptimizationLogs([]);
+    sseToaster.setOptimizationProgress(0);
+    setIsVideoOptimizationRunning(true);
+    setVideoOptimizationComplete(false);
+    
+    // Reset toaster to default state
+    sseToaster.resetToasterState();
+    
+    try {
+      const abortController = new AbortController();
+      sseToaster.optimizationAbortController.current = abortController;
+
+      const response = await fetch(`${API_URL}/api/video-optimization/reprocess`, {
+        method: "POST",
+        credentials: "include",
+        signal: abortController.signal,
+      });
+
+      if (!response.ok) {
+        setMessage({ type: "error", text: "Failed to start video reprocessing" });
+        setIsVideoOptimizationRunning(false);
+        sseToaster.setIsOptimizationRunning(false);
+        sseToaster.optimizationAbortController.current = null;
+        return;
+      }
+
+      // Read the SSE stream
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
+
+      if (!reader) {
+        setMessage({ type: "error", text: "Failed to read response stream" });
+        setIsVideoOptimizationRunning(false);
+        sseToaster.setIsOptimizationRunning(false);
+        sseToaster.optimizationAbortController.current = null;
+        return;
+      }
+
+      let buffer = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+
+        if (done) {
+          setIsVideoOptimizationRunning(false);
+          sseToaster.setIsOptimizationRunning(false);
+          sseToaster.optimizationAbortController.current = null;
+          break;
+        }
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split("\n");
+        buffer = lines.pop() || "";
+
+        for (const line of lines) {
+          if (line.startsWith("data: ")) {
+            try {
+              const data = JSON.parse(line.slice(6));
+
+              if (data.type === "stdout" || data.type === "stderr") {
+                sseToaster.setOptimizationLogs((prev) => [...prev, data.message]);
+              } else if (data.type === "complete") {
+                setVideoOptimizationComplete(true);
+                setIsVideoOptimizationRunning(false);
+                sseToaster.setIsOptimizationRunning(false);
+                sseToaster.setOptimizationComplete(true);
+                sseToaster.setOptimizationLogs((prev) => [...prev, data.message]);
+                sseToaster.optimizationAbortController.current = null;
+                setMessage({
+                  type: data.exitCode === 0 ? "success" : "error",
+                  text: data.message
+                });
+              } else if (data.type === "error") {
+                setMessage({ type: "error", text: data.message });
+                setIsVideoOptimizationRunning(false);
+                sseToaster.setIsOptimizationRunning(false);
+                sseToaster.optimizationAbortController.current = null;
+              }
+            } catch (e) {
+              // Ignore parsing errors
+            }
+          }
+        }
+      }
+    } catch (err) {
+      if (err instanceof Error && err.name === "AbortError") {
+        return;
+      }
+      error("Failed to start video reprocessing:", err);
+      setMessage({ type: "error", text: "Failed to start video reprocessing" });
+      setIsVideoOptimizationRunning(false);
+      sseToaster.setIsOptimizationRunning(false);
+      sseToaster.optimizationAbortController.current = null;
+    }
+  };
+
+  const handleStopVideoOptimization = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/video-optimization/stop`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      
+      if (response.ok) {
+        setMessage({ type: "success", text: "Video playlist regeneration stopped" });
+        setVideoOptimizationComplete(false);
+        setIsVideoOptimizationRunning(false);
+      }
+    } catch (err) {
+      error("Failed to stop video optimization:", err);
+      setIsVideoOptimizationRunning(false);
+    }
+  };
+
   if (loading) {
     return (
       <div
@@ -785,6 +926,18 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
           savingSection={savingSection}
           setSavingSection={setSavingSection}
           setMessage={setMessage}
+          onNavigateToAdvanced={handleNavigateToAdvanced}
+        />
+
+        <VideoOptimizationSection
+          config={config}
+          originalConfig={originalConfig}
+          setConfig={setConfig}
+          setOriginalConfig={setOriginalConfig}
+          savingSection={savingSection}
+          setSavingSection={setSavingSection}
+          setMessage={setMessage}
+          onNavigateToAdvanced={handleNavigateToAdvanced}
         />
 
         <AdvancedSettingsSection
@@ -797,16 +950,22 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
           setMessage={setMessage}
           hasMissingTitles={hasMissingTitles}
           optimizationComplete={optimizationComplete}
+          videoOptimizationComplete={videoOptimizationComplete}
           generatingTitles={sseToaster.generatingTitles}
           isOptimizationRunning={sseToaster.isOptimizationRunning}
+          isVideoOptimizationRunning={isVideoOptimizationRunning}
           onGenerateTitles={handleGenerateTitles}
           onStopTitles={handleStopTitles}
           onRunOptimization={handleRunOptimization}
           onStopOptimization={handleStopOptimization}
+          onRunVideoOptimization={handleRunVideoOptimization}
+          onStopVideoOptimization={handleStopVideoOptimization}
           onSetupOpenAI={handleSetupOpenAI}
           showConfirmation={showConfirmation}
           scrollToSmtp={scrollToSmtp}
           setScrollToSmtp={setScrollToSmtp}
+          scrollToAdvanced={scrollToAdvanced}
+          setScrollToAdvanced={setScrollToAdvanced}
           sectionRef={advancedSectionRef}
           onOpenObserveSave={handleOpenObserveSave}
         />

@@ -7,6 +7,144 @@
 
 .admin-portal {
   position: relative;
+  min-height: 100vh;
+  background: #1a1a1a;
+  overflow: hidden;
+}
+
+/* Rotating gradient overlay for entire admin portal - only when animated-bg class is present */
+.admin-portal.animated-bg::before {
+  content: '';
+  position: fixed;
+  inset: -50%;
+  background: 
+    radial-gradient(circle at 50% 50%, #1a1a1a 0%, transparent 30%),
+    conic-gradient(
+      from 0deg at 50% 50%,
+      #0a1820 0deg,
+      #0d2825 45deg,
+      #1f280a 90deg,
+      #281a0a 135deg,
+      #0a1f28 180deg,
+      #152820 225deg,
+      #201a15 270deg,
+      #0d2825 315deg,
+      #0a1820 360deg
+    );
+  animation: rotateGradient 20s linear infinite;
+  opacity: 0.7;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Rotating gradient animation */
+@keyframes rotateGradient {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Vibrant bokeh/lens effect circles matching setup wizard - only when animated-bg class is present */
+.admin-portal.animated-bg::after {
+  content: '';
+  position: fixed;
+  top: -30%;
+  right: -10%;
+  width: 700px;
+  height: 700px;
+  background: radial-gradient(circle, rgba(255, 193, 7, 0.15) 0%, rgba(255, 152, 0, 0.08) 40%, transparent 70%);
+  border-radius: 50%;
+  animation: float 18s ease-in-out infinite, pulse 6s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.bokeh-circle-1 {
+  position: fixed;
+  bottom: -20%;
+  left: -5%;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(0, 188, 212, 0.15) 0%, rgba(0, 150, 136, 0.08) 40%, transparent 70%);
+  border-radius: 50%;
+  animation: floatReverse 22s ease-in-out infinite, pulseReverse 8s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.bokeh-circle-2 {
+  position: fixed;
+  top: 40%;
+  left: 50%;
+  width: 550px;
+  height: 550px;
+  background: radial-gradient(circle, rgba(74, 222, 128, 0.12) 0%, rgba(34, 197, 94, 0.06) 40%, transparent 70%);
+  border-radius: 50%;
+  animation: floatCenter 25s ease-in-out infinite, pulse 10s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Float animation */
+@keyframes float {
+  0%, 100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  33% {
+    transform: translate(30px, -30px) rotate(5deg);
+  }
+  66% {
+    transform: translate(-20px, 20px) rotate(-5deg);
+  }
+}
+
+/* Float animation (reverse) for bokeh-circle-1 */
+@keyframes floatReverse {
+  0%, 100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  33% {
+    transform: translate(-30px, 30px) rotate(-5deg);
+  }
+  66% {
+    transform: translate(20px, -20px) rotate(5deg);
+  }
+}
+
+/* Float animation for centered bokeh-circle-2 */
+@keyframes floatCenter {
+  0%, 100% {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  33% {
+    transform: translate(calc(-50% + 30px), calc(-50% - 30px)) rotate(5deg);
+  }
+  66% {
+    transform: translate(calc(-50% - 20px), calc(-50% + 20px)) rotate(-5deg);
+  }
+}
+
+/* Pulse animation */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+/* Pulse animation (reverse timing) */
+@keyframes pulseReverse {
+  0%, 100% {
+    opacity: 0.8;
+  }
+  50% {
+    opacity: 1;
+  }
 }
 
 /* Toast Notification Container */

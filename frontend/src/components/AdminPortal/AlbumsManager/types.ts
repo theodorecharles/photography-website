@@ -20,6 +20,8 @@ export interface UploadingImage {
   uploadIndex?: number; // Track original position in upload batch for maintaining order
   photo?: Photo; // When state='complete', this contains the complete photo data
   retryCount?: number; // Number of retry attempts (max 5)
+  videoStage?: string; // Track specific video processing stage (rotation, 240p, 360p, etc.)
+  message?: string; // Additional message from processing
 }
 
 export interface AlbumsManagerProps {

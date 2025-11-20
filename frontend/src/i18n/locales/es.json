@@ -3,7 +3,7 @@
     "loading": "Cargando...",
     "checkingSetupStatus": "Verificando el estado de la configuración...",
     "loadingSharedAlbum": "Cargando álbum compartido...",
-    "error": "Error",
+    "error": "Error  ",
     "save": "Guardar",
     "cancel": "Cancelar",
     "delete": "Eliminar",
@@ -35,7 +35,8 @@
     "maximize": "Maximizar",
     "restore": "Restaurar",
     "expand": "Expandir",
-    "collapse": "Colapsar"
+    "collapse": "Colapsar",
+    "note": "Nota"
   },
   "app": {
     "loadingAlbums": "Cargando álbumes...",
@@ -95,11 +96,17 @@
     "focalLength": "Distancia Focal",
     "aperture": "Apertura",
     "shutter": "Obturador",
-    "iso": "ISO",
+    "iso": "ISO  ",
     "dateTaken": "Fecha de Captura",
+    "resolution": "Resolución",
+    "duration": "Duración",
     "noPhotosYet": "No hay fotos aún",
     "albumEmpty": "Este álbum está vacío. ¡Es hora de agregar algunas fotos increíbles!",
     "goToAdminPanel": "Ir al Panel de Administración"
+  },
+  "video": {
+    "resolution": "Resolución  ",
+    "duration": "Duración"
   },
   "admin": {
     "title": "Portal de Administración",
@@ -149,7 +156,7 @@
   "branding": {
     "title": "Marca",
     "description": "Personaliza el nombre, subtítulo y avatar de tu sitio",
-    "logo": "Logo",
+    "logo": "Logo  ",
     "clickOrDrag": "Haz clic o arrastra una imagen aquí",
     "currentAvatar": "Avatar actual",
     "siteName": "Nombre del Sitio",
@@ -158,6 +165,8 @@
     "photoLicenseDescription": "Elige cómo otros pueden usar tus fotografías",
     "shuffleHomepage": "Mezclar Fotos de la Página Principal",
     "shuffleHomepageDescription": "Aleatorizar el orden de las fotos en la página principal cada vez que se carga la página",
+    "animatedBackground": "Fondo Animado  ",
+    "animatedBackgroundDescription": "Habilitar fondo animado colorido en el panel de administración y en la página de inicio de sesión  ",
     "primaryColor": "Color Primario",
     "secondaryColor": "Color Secundario",
     "metaDescription": "Meta Descripción",
@@ -170,6 +179,7 @@
     "photoLicenseUpdated": "¡Licencia de foto actualizada!",
     "languageUpdated": "¡Idioma actualizado!",
     "homepageShuffleSaved": "¡Configuración de mezcla de página principal guardada!",
+    "animatedBackgroundSaved": "¡Configuración de fondo animado guardada!  ",
     "failedToSave": "Error al guardar {{section}}",
     "failedToSaveLicense": "Error al guardar la licencia",
     "failedToSaveLanguage": "Error al guardar el idioma",
@@ -177,7 +187,6 @@
     "errorSavingLicense": "Error al guardar la licencia",
     "errorSavingLanguage": "Error al guardar el idioma",
     "errorSavingSetting": "Error al guardar la configuración",
-    "logoSaved": "¡Logo guardado con éxito!  ",
     "siteNameSaved": "¡Nombre del sitio guardado con éxito!  ",
     "primaryColorSaved": "¡Color primario guardado con éxito!  ",
     "secondaryColorSaved": "¡Color secundario guardado con éxito!  ",
@@ -288,6 +297,7 @@
     "deleteAlbum": "Eliminar álbum",
     "deleteAlbumConfirm": "¿Estás seguro de que deseas eliminar el álbum \"{{albumName}}\"?\n\nEsto eliminará permanentemente todas las fotos en este álbum.\n\nEsta acción no se puede deshacer.",
     "renameAlbum": "Renombrar Álbum",
+    "clickToRename": "Haz clic para renombrar el álbum",
     "newName": "Nuevo Nombre",
     "newNamePlaceholder": "Ingresa un nuevo nombre",
     "currentName": "Nombre Actual",
@@ -302,6 +312,8 @@
     "selectPhotos": "Seleccionar fotos",
     "editPhoto": "Editar foto",
     "editPhotoTitle": "Editar título de la foto",
+    "editVideoTitle": "Editar el título del video",
+    "editMetadata": "Editar Metadatos",
     "photoTitle": "Título de la foto",
     "photoDescription": "Descripción de la foto",
     "enterTitle": "Ingresa un título...",
@@ -361,12 +373,31 @@
     "maxRetryAttemptsReached": "Se alcanzó el número máximo de intentos de reintento ({{maxRetries}}) para {{filename}}",
     "successfullyUploaded": "{{filename}} subido con éxito",
     "retryFailed": "El reintento falló para {{filename}}",
-    "noValidImageFiles": "No se encontraron archivos de imagen válidos. Por favor, seleccione imágenes en formato JPEG, PNG, GIF o WebP.",
+    "noValidImageFiles": "No se encontraron archivos válidos. Por favor, seleccione imágenes (JPEG, PNG, GIF, WebP) o videos (MP4, MOV, AVI, MKV, WebM).",
     "renameAlbumFailed": "Error al renombrar el álbum  ",
     "invalidAlbumName": "Nombre de álbum inválido  ",
     "nameUnchanged": "El nombre del álbum no ha cambiado  ",
     "albumNotFound": "Álbum no encontrado  ",
-    "databaseUpdateFailed": "Error al actualizar la base de datos"
+    "databaseUpdateFailed": "Error al actualizar la base de datos",
+    "deleteVideo": "Eliminar video",
+    "deleteVideoQuestion": "¿Eliminar video?",
+    "deleteVideoConfirm": "¿Estás seguro de que deseas eliminar este video?",
+    "titleLabel": "Título  ",
+    "descriptionLabel": "Descripción  ",
+    "enterDescription": "Ingresa la descripción...",
+    "updateThumbnail": "Actualizar miniatura  ",
+    "useCurrentFrame": "Usar fotograma actual  ",
+    "updating": "Actualizando...  ",
+    "uploading": "Subiendo...  ",
+    "updatingThumbnail": "Actualizando miniatura...  ",
+    "thumbnailUpdated": "✓ ¡Miniatura actualizada!  ",
+    "failedToUpdateThumbnail": "✗ Falló al actualizar la miniatura  ",
+    "uploadingThumbnail": "Subiendo miniatura...  ",
+    "thumbnailUploaded": "✓ ¡Miniatura subida!",
+    "failedToUploadThumbnail": "✗ Error al subir la miniatura  ",
+    "pleaseSelectImageFile": "✗ Por favor, selecciona un archivo de imagen  ",
+    "unableToLoadVideo": "No se puede cargar el video para la selección de miniatura. El video puede estar aún en procesamiento.",
+    "uploadThumbnail": "Subir miniatura"
   },
   "settings": {
     "saved": "¡Configuración de {{section}} guardada!",
@@ -506,7 +537,7 @@
     "logging": "Registro",
     "logLevel": "Nivel de Registro",
     "logLevelSilent": "Silencioso",
-    "logLevelError": "Error",
+    "logLevelError": "Error  ",
     "logLevelWarn": "Advertencia",
     "logLevelInfo": "Información",
     "logLevelDebug": "Depuración",
@@ -526,7 +557,9 @@
       "optimizedImages": "Imágenes optimizadas",
       "forceRegenerateAllConfirm": "⚠️ Esto regenerará TODOS los títulos de imágenes y sobrescribirá cualquier título personalizado que haya establecido. Esta acción no se puede deshacer.\n\n¿Está seguro de que desea continuar?",
       "forceRegenerateImagesConfirm": "¿Forzar la regeneración de TODAS las imágenes? Esto tomará un tiempo.",
-      "runOptimizationConfirm": "¿Ejecutar la optimización de imágenes en todas las fotos?"
+      "runOptimizationConfirm": "¿Ejecutar la optimización de imágenes en todas las fotos?",
+      "optimizedVideos": "Videos optimizados",
+      "forceRegenerateVideosConfirm": "⚠️ Esto volverá a codificar TODOS los videos con la configuración de calidad actual. Esta es una operación que consume tiempo y aumentará temporalmente el uso de la CPU.\n\nLos archivos de video existentes serán reemplazados. ¿Estás seguro de que deseas continuar?"
     }
   },
   "expiredLink": {
@@ -639,7 +672,7 @@
     "expirationForever": "Para siempre",
     "expirationCustom": "Personalizado...",
     "customMinutes": "Minutos personalizados",
-    "min": "min",
+    "min": "mín  ",
     "enterMinutes": "Ingresa minutos",
     "apply": "Aplicar",
     "failedToCreate": "Error al crear enlace de compartir",
@@ -739,23 +772,26 @@
     }
   },
   "imageOptimization": {
-    "title": "Optimización de Imágenes",
-    "description": "Optimiza y gestiona el procesamiento de imágenes",
+    "title": "Calidad de imagen  ",
+    "description": "Configurar la calidad de imagen y los ajustes de procesamiento  ",
     "thumbnail": "Miniatura",
-    "modal": "Modal",
+    "modal": "Modal  ",
     "download": "DESCARGAR",
     "concurrency": "CONCURRENCIA",
     "quality": "Calidad",
     "maxDimension": "Dimensión Máxima",
     "concurrencyDescription1": "Número máximo de imágenes a procesar simultáneamente. Valores más altos aceleran el procesamiento por lotes pero usan más CPU y memoria.",
     "concurrencyDescription2": "Regla general: ~4× tus núcleos lógicos de CPU. Recomendado: 8-16 para sistemas típicos, 32-64 para servidores de alto rendimiento.",
-    "maxParallelJobs": "Trabajos Paralelos Máximos"
+    "maxParallelJobs": "Trabajos Paralelos Máximos",
+    "warningNote": "Los cambios en la configuración de calidad de imagen solo se aplican a las fotos recién subidas. Las imágenes existentes mantendrán su configuración actual a menos que uses  ",
+    "forceRegenerate": "Forzar Regenerar Todo  ",
+    "warningNoteLocation": "en Configuración Avanzada → Imágenes Optimizadas."
   },
   "links": {
     "title": "Enlaces",
     "description": "Gestiona enlaces externos e información de contacto",
     "titlePlaceholder": "Título",
-    "urlPlaceholder": "URL",
+    "urlPlaceholder": "URL  ",
     "moveUp": "Mover arriba",
     "moveDown": "Mover abajo",
     "deleteLink": "Eliminar enlace",
@@ -814,7 +850,9 @@
     "settings": "Configuraciones",
     "profile": "Perfil",
     "settingsDescription": "Gestionar la marca, enlaces y configuración del sistema",
-    "failedToLoadConfig": "Error al cargar la configuración"
+    "failedToLoadConfig": "Error al cargar la configuración",
+    "loadingStyles": "Cargando estilos...  ",
+    "loadingSettings": "Cargando configuraciones..."
   },
   "securitySetup": {
     "title": "🔐 Asegura tu cuenta",
@@ -1064,5 +1102,41 @@
     "successMessage": "¡Correo electrónico de prueba enviado con éxito! Revisa tu bandeja de entrada.  ",
     "errorMessage": "Error al enviar el correo electrónico de prueba",
     "errorMessageDetail": "Error al enviar el correo electrónico de prueba. Por favor, verifica tu configuración."
+  },
+  "videoList": {
+    "noVideosYet": "No hay videos aún  ",
+    "albumEmpty": "Este álbum está vacío. ¡Sube algunos videos para empezar!  ",
+    "copyShareLink": "Copiar enlace para compartir  ",
+    "linkCopied": "¡Enlace copiado!  ",
+    "share": "Compartir  "
+  },
+  "videoPage": {
+    "invalidUrl": "URL de video no válida  ",
+    "albumNotFound": "Álbum no encontrado  ",
+    "failedToLoad": "Error al cargar el video  ",
+    "videoNotFound": "Video no encontrado  ",
+    "unknownError": "Ocurrió un error desconocido",
+    "errorTitle": "Video no encontrado  ",
+    "backToAlbum": "Volver al álbum"
+  },
+  "videoOptimization": {
+    "title": "Calidad de video",
+    "description": "Configurar la calidad de video, transmisión y ajustes de HLS",
+    "hlsStreaming": "TRANSMISIÓN HLS",
+    "hlsStreamingSection": "Configuración de HLS",
+    "hlsDescription": "Configurar los ajustes de HTTP Live Streaming (HLS) para la entrega de video adaptativa",
+    "segmentDuration": "Duración del segmento (segundos)",
+    "segmentDurationHelp": "Duración de cada segmento de video. Los segmentos más largos (4-6s) reducen las solicitudes al servidor.",
+    "videoResolutions": "RESOLUCIONES DE VIDEO",
+    "videoResolutionsSection": "Resoluciones de Video  ",
+    "resolutionsDescription": "Habilitar resoluciones y configurar sus ajustes de calidad. Bitrates más altos mejoran la calidad pero aumentan el tamaño del archivo.  ",
+    "videoBitrate": "Bitrate de Video  ",
+    "audioBitrate": "Bitrate de Audio  ",
+    "videoBitrateExample": "p. ej., 400k, 2500k, 5000k  ",
+    "audioBitrateExample": "p. ej., 64k, 96k, 128k, 192k  ",
+    "on": "Activado  ",
+    "off": "Desactivado  ",
+    "warningNote": "Los cambios en la configuración de video solo se aplican a los videos subidos recientemente. Los videos existentes mantendrán sus ajustes de calidad actuales a menos que uses  ",
+    "forceRegenerate": "Forzar Regenerar Todo"
   }
 }

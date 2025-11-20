@@ -1,7 +1,12 @@
 {
   "name": "galleria",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "type": "module",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
   "scripts": {
     "dev": "concurrently --kill-others --names \"BACKEND,FRONTEND\" --prefix-colors \"blue,green\" \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\"",
     "build": "node build.js",
@@ -10,7 +15,7 @@
     "validate-translations": "node scripts/validate-translation-schema.js"
   },
   "devDependencies": {
-    "@types/node": "^22.15.2",
+    "@types/node": "^24.9.1",
     "concurrently": "^9.1.2"
   },
   "dependencies": {
@@ -20,5 +25,13 @@
     "openai": "^6.8.1",
     "p-limit": "^7.2.0",
     "sharp": "^0.34.5"
+  },
+  "comments": {
+    "sharedDeps": "These dependencies are shared across frontend/backend via npm workspaces:",
+    "better-sqlite3": "Used by backend routes and root scripts (generate-static-json.js)",
+    "sharp": "Used by backend routes (avatar/favicon generation) and root scripts (generate-favicons.js)",
+    "openai": "Used by backend routes (AI titles) and root scripts (auto-translate.js)",
+    "dotenv": "Used by backend and root scripts for .env file loading",
+    "@types/node": "Shared TypeScript types for Node.js across all packages"
   }
 }

@@ -20,6 +20,7 @@ interface ImageOptimizationSectionProps {
   savingSection: string | null;
   setSavingSection: (section: string | null) => void;
   setMessage: (message: { type: "success" | "error"; text: string }) => void;
+  onNavigateToAdvanced: () => void;
 }
 
 const ImageOptimizationSection: React.FC<ImageOptimizationSectionProps> = ({
@@ -27,6 +28,7 @@ const ImageOptimizationSection: React.FC<ImageOptimizationSectionProps> = ({
   originalConfig,
   setConfig,
   setOriginalConfig,
+  onNavigateToAdvanced,
   savingSection,
   setSavingSection,
   setMessage,
@@ -37,11 +39,15 @@ const ImageOptimizationSection: React.FC<ImageOptimizationSectionProps> = ({
   const updateConfig = (path: string[], value: any) => {
     if (!config) return;
 
-    const newConfig = { ...config };
+    // Deep clone the config to avoid mutation issues
+    const newConfig = JSON.parse(JSON.stringify(config));
     let current: any = newConfig;
 
     for (let i = 0; i < path.length - 1; i++) {
-      current[path[i]] = { ...current[path[i]] };
+      // Ensure the path exists
+      if (!current[path[i]]) {
+        current[path[i]] = {};
+      }
       current = current[path[i]];
     }
 
@@ -138,10 +144,39 @@ const ImageOptimizationSection: React.FC<ImageOptimizationSectionProps> = ({
           maxHeight: showImageOptimization ? "10000px" : "0",
         }}
       >
+        {/* Warning Note */}
+        <div style={{
+          marginBottom: '1.5rem',
+          padding: '1rem',
+          background: 'rgba(255, 193, 7, 0.1)',
+          border: '1px solid rgba(255, 193, 7, 0.3)',
+          borderRadius: '8px',
+          fontSize: '0.875rem',
+          color: 'rgba(255, 193, 7, 0.9)',
+        }}>
+          <div style={{ marginBottom: '0.75rem' }}>
+            <strong>⚠️ {t('common.note')}:</strong> {t('imageOptimization.warningNote')}
+          </div>
+          <button
+            onClick={onNavigateToAdvanced}
+            className="btn-secondary"
+            style={{
+              fontSize: '0.85rem',
+              padding: '0.5rem 0.75rem',
+              width: '100%',
+              background: 'rgba(255, 193, 7, 0.15)',
+              border: '1px solid rgba(255, 193, 7, 0.5)',
+              color: 'rgba(255, 193, 7, 1)',
+            }}
+          >
+            🎯 {t('imageOptimization.forceRegenerate')}
+          </button>
+        </div>
+
         {/* Grid of optimization subsections */}
         <div className="config-grid-inner">
           {/* Thumbnail Settings */}
-          <div className="openai-section">
+          <div className="settings-section">
             <div
               style={{
                 display: "flex",
@@ -150,7 +185,7 @@ const ImageOptimizationSection: React.FC<ImageOptimizationSectionProps> = ({
                 marginBottom: "0.75rem",
               }}
             >
-              <label className="openai-section-label">{t('imageOptimization.thumbnail')}</label>
+              <label className="settings-section-label">{t('imageOptimization.thumbnail')}</label>
               {hasUnsavedChanges("Thumbnail") && (
                 <div style={{ display: "flex", gap: "0.5rem" }}>
                   <button
@@ -232,7 +267,7 @@ const ImageOptimizationSection: React.FC<ImageOptimizationSectionProps> = ({
           </div>
 
           {/* Modal Settings */}
-          <div className="openai-section">
+          <div className="settings-section">
             <div
               style={{
                 display: "flex",
@@ -241,7 +276,7 @@ const ImageOptimizationSection: React.FC<ImageOptimizationSectionProps> = ({
                 marginBottom: "0.75rem",
               }}
             >
-              <label className="openai-section-label">{t('imageOptimization.modal')}</label>
+              <label className="settings-section-label">{t('imageOptimization.modal')}</label>
               {hasUnsavedChanges("Modal") && (
                 <div style={{ display: "flex", gap: "0.5rem" }}>
                   <button
@@ -320,7 +355,7 @@ const ImageOptimizationSection: React.FC<ImageOptimizationSectionProps> = ({
           </div>
 
           {/* Download Settings */}
-          <div className="openai-section">
+          <div className="settings-section">
             <div
               style={{
                 display: "flex",
@@ -329,7 +364,7 @@ const ImageOptimizationSection: React.FC<ImageOptimizationSectionProps> = ({
                 marginBottom: "0.75rem",
               }}
             >
-              <label className="openai-section-label">{t('imageOptimization.download')}</label>
+              <label className="settings-section-label">{t('imageOptimization.download')}</label>
               {hasUnsavedChanges("Download") && (
                 <div style={{ display: "flex", gap: "0.5rem" }}>
                   <button
@@ -411,7 +446,7 @@ const ImageOptimizationSection: React.FC<ImageOptimizationSectionProps> = ({
           </div>
 
           {/* Concurrency Settings */}
-          <div className="openai-section">
+          <div className="settings-section">
             <div
               style={{
                 display: "flex",
@@ -420,7 +455,7 @@ const ImageOptimizationSection: React.FC<ImageOptimizationSectionProps> = ({
                 marginBottom: "0.75rem",
               }}
             >
-              <label className="openai-section-label">{t('imageOptimization.concurrency')}</label>
+              <label className="settings-section-label">{t('imageOptimization.concurrency')}</label>
               {hasUnsavedChanges("Concurrency") && (
                 <div style={{ display: "flex", gap: "0.5rem" }}>
                   <button

@@ -108,7 +108,7 @@ const getAlbums = (photosDir: string) => {
  * @param album - Name of the album to get photos from
  * @returns Array of photo objects with their paths
  */
-const getPhotosInAlbum = (photosDir: string, album: string) => {
+const getContentInAlbum = (photosDir: string, album: string) => {
   try {
     // Get images from database
     const images = getImagesInAlbum(album);
@@ -120,14 +120,20 @@ const getPhotosInAlbum = (photosDir: string, album: string) => {
         .replace(/\.[^/.]+$/, '') // Remove extension
         .replace(/[-_]/g, ' '); // Replace hyphens and underscores with spaces
 
+      // For videos, thumbnails are stored as JPG
+      const isVideo = img.media_type === 'video';
+      const thumbnailFilename = isVideo ? img.filename.replace(/\.[^.]+$/, '.jpg') : img.filename;
+
       return {
         id: `${album}/${img.filename}`,
         title: img.title || defaultTitle,
+        description: img.description || undefined,
         album: album,
-        thumbnail: `/optimized/thumbnail/${album}/${img.filename}`,
-        modal: `/optimized/modal/${album}/${img.filename}`,
-        download: `/optimized/download/${album}/${img.filename}`,
+        thumbnail: `/optimized/thumbnail/${album}/${thumbnailFilename}`,
+        modal: `/optimized/modal/${album}/${thumbnailFilename}`,
+        download: isVideo ? '' : `/optimized/download/${album}/${img.filename}`,
         sort_order: img.sort_order ?? null,
+        media_type: img.media_type || 'photo',
       };
     });
     
@@ -184,6 +190,7 @@ const getAllPhotos = (photosDir: string, includeUnpublished: boolean = false) =>
       return {
         id: `${img.album}/${img.filename}`,
         title: img.title || defaultTitle,
+        description: img.description || undefined,
         album: img.album,
         thumbnail: `/optimized/thumbnail/${img.album}/${img.filename}`,
         modal: `/optimized/modal/${img.album}/${img.filename}`,
@@ -364,14 +371,18 @@ router.get("/api/albums/:album/photos", (req: Request, res): void => {
   if (cached && (now - cached.timestamp) < CACHE_TTL) {
     const duration = Date.now() - startTime;
     debug(`[Albums] Cache hit for album: ${sanitizedAlbum} (${cached.photos.length} photos, ${duration}ms)`);
-    res.json(cached.photos);
+    // Return cached photos with published state
+    res.json({
+      photos: cached.photos,
+      published: albumState.published
+    });
     return;
   }
 
   // Cache miss or expired - fetch from filesystem
   debug(`[Albums] Cache miss for album: ${sanitizedAlbum}`);
   const fetchStart = Date.now();
-  const photos = getPhotosInAlbum(photosDir, sanitizedAlbum);
+  const photos = getContentInAlbum(photosDir, sanitizedAlbum);
   const fetchDuration = Date.now() - fetchStart;
   
   // Store in cache
@@ -382,7 +393,12 @@ router.get("/api/albums/:album/photos", (req: Request, res): void => {
   
   const totalDuration = Date.now() - startTime;
   debug(`[Albums] Fetched ${photos.length} photos in ${fetchDuration}ms, total request: ${totalDuration}ms`);
-  res.json(photos);
+  
+  // Return photos with published state
+  res.json({
+    photos,
+    published: albumState.published
+  });
 });
 
 // Get all photos from albums configured for homepage in random order
@@ -399,6 +415,7 @@ router.get("/api/random-photos", (req: Request, res) => {
     return {
       id: `${img.album}/${img.filename}`,
       title: img.title || defaultTitle,
+      description: img.description || undefined,
       album: img.album,
       thumbnail: `/optimized/thumbnail/${img.album}/${img.filename}`,
       modal: `/optimized/modal/${img.album}/${img.filename}`,
@@ -450,7 +467,7 @@ router.get("/api/shared/:secretKey", async (req: Request, res): Promise<void> =>
   }
 
   // Return album info and photos (bypass published check)
-  const photos = getPhotosInAlbum(photosDir, album);
+    const photos = getContentInAlbum(photosDir, album);
   
   res.json({
     album,
@@ -481,7 +498,7 @@ router.get("/api/photos/:album/:filename/exif", async (req, res): Promise<void> 
   try {
     const photosDir = req.app.get("photosDir");
     const filePath = path.join(photosDir, sanitizedAlbum, sanitizedFilename);
-
+    
     // Check if file exists
     if (!fs.existsSync(filePath)) {
       res.status(404).json({ error: "Image not found" });
@@ -500,6 +517,51 @@ router.get("/api/photos/:album/:filename/exif", async (req, res): Promise<void> 
   } catch (err) {
     error(`[Albums] Failed to read EXIF for ${album}/${filename}:`, err);
     res.status(500).json({ error: "Failed to read EXIF data" });
+  }
+});
+
+// Get video metadata for a specific video using ffprobe
+router.get("/api/videos/:album/:filename/metadata", async (req, res): Promise<void> => {
+  const { album, filename } = req.params;
+
+  // Sanitize inputs to prevent path traversal
+  const sanitizedAlbum = sanitizePath(album);
+  const sanitizedFilename = filename.replace(/[^a-zA-Z0-9_. -]/g, '');
+  
+  if (!sanitizedAlbum || !sanitizedFilename) {
+    res.status(400).json({ error: "Invalid album or filename" });
+    return;
+  }
+
+  // Ensure the filename has a video extension
+  if (!/\.(mp4|mov|avi|mkv|webm)$/i.test(sanitizedFilename)) {
+    res.status(400).json({ error: "Invalid video file" });
+    return;
+  }
+
+  try {
+    const photosDir = req.app.get("photosDir");
+    const filePath = path.join(photosDir, sanitizedAlbum, sanitizedFilename);
+    
+    // Check if file exists
+    if (!fs.existsSync(filePath)) {
+      res.status(404).json({ error: "Video not found" });
+      return;
+    }
+
+    // Use ffprobe to get video metadata
+    const { getVideoMetadata } = await import('../utils/video-processor.js');
+    const metadata = await getVideoMetadata(filePath);
+    
+    if (!metadata) {
+      res.json({ message: "No video metadata found" });
+      return;
+    }
+
+    res.json(metadata);
+  } catch (err) {
+    error(`[Albums] Failed to read video metadata for ${album}/${filename}:`, err);
+    res.status(500).json({ error: "Failed to read video metadata" });
   }
 });
 

@@ -11,12 +11,16 @@ interface RegenerationControlsProps {
   config: ConfigData | null;
   hasMissingTitles: boolean;
   optimizationComplete: boolean;
+  videoOptimizationComplete: boolean;
   generatingTitles: boolean;
   isOptimizationRunning: boolean;
+  isVideoOptimizationRunning: boolean;
   onGenerateTitles: (forceRegenerate: boolean) => void;
   onStopTitles: () => void;
   onRunOptimization: (force: boolean) => void;
   onStopOptimization: () => void;
+  onRunVideoOptimization: () => void;
+  onStopVideoOptimization: () => void;
   onSetupOpenAI: () => void;
   showConfirmation: (message: string) => Promise<boolean>;
 }
@@ -25,17 +29,21 @@ const RegenerationControls: React.FC<RegenerationControlsProps> = ({
   config,
   hasMissingTitles,
   optimizationComplete,
+  videoOptimizationComplete,
   generatingTitles,
   isOptimizationRunning,
+  isVideoOptimizationRunning,
   onGenerateTitles,
   onStopTitles,
   onRunOptimization,
   onStopOptimization,
+  onRunVideoOptimization,
+  onStopVideoOptimization,
   onSetupOpenAI,
   showConfirmation,
 }) => {
   const { t } = useTranslation();
-  const isAnyJobRunning = generatingTitles || isOptimizationRunning;
+  const isAnyJobRunning = generatingTitles || isOptimizationRunning || isVideoOptimizationRunning;
 
   if (!config) return null;
 
@@ -50,9 +58,9 @@ const RegenerationControls: React.FC<RegenerationControlsProps> = ({
       className="regenerate-sections-grid"
     >
       {/* Force Regenerate All Titles */}
-      <div className="openai-section" style={{ marginBottom: "0" }}>
+      <div className="settings-section" style={{ marginBottom: "0" }}>
         <label
-          className="openai-section-label"
+          className="settings-section-label"
           style={{ display: "block", marginBottom: "0.75rem" }}
         >
           {t('advancedSettings.regenerationControls.titleGeneration')}
@@ -127,9 +135,9 @@ const RegenerationControls: React.FC<RegenerationControlsProps> = ({
       </div>
 
       {/* Optimized Images */}
-      <div className="openai-section" style={{ marginBottom: "0" }}>
+      <div className="settings-section" style={{ marginBottom: "0" }}>
         <label
-          className="openai-section-label"
+          className="settings-section-label"
           style={{ display: "block", marginBottom: "0.75rem" }}
         >
           {t('advancedSettings.regenerationControls.optimizedImages')}
@@ -149,7 +157,7 @@ const RegenerationControls: React.FC<RegenerationControlsProps> = ({
               onClick={() => onRunOptimization(true)}
               className="btn-force-regenerate"
               style={{ flex: "1 1 auto", minWidth: "200px" }}
-              disabled={generatingTitles}
+              disabled={generatingTitles || isVideoOptimizationRunning}
             >
               {t('advancedSettings.regenerationControls.forceRegenerateAll')}
             </button>
@@ -169,6 +177,68 @@ const RegenerationControls: React.FC<RegenerationControlsProps> = ({
             </button>
           )}
           {optimizationComplete && !isOptimizationRunning && (
+            <span
+              style={{
+                color: "var(--primary-color)",
+                fontSize: "1.5rem",
+              }}
+            >
+              ✓
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* Optimized Videos */}
+      <div className="settings-section" style={{ marginBottom: "0" }}>
+        <label
+          className="settings-section-label"
+          style={{ display: "block", marginBottom: "0.75rem" }}
+        >
+          {t('advancedSettings.regenerationControls.optimizedVideos')}
+        </label>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "1rem",
+            flexWrap: "wrap",
+            marginBottom: "0.75rem",
+          }}
+        >
+          {!isVideoOptimizationRunning ? (
+            <button
+              type="button"
+              onClick={async () => {
+                const confirmed = await showConfirmation(
+                  t('advancedSettings.regenerationControls.forceRegenerateVideosConfirm')
+                );
+                if (confirmed) {
+                  onRunVideoOptimization();
+                }
+              }}
+              className="btn-force-regenerate"
+              style={{ flex: "1 1 auto", minWidth: "200px" }}
+              disabled={generatingTitles || isOptimizationRunning}
+            >
+              {t('advancedSettings.regenerationControls.forceRegenerateAll')}
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={onStopVideoOptimization}
+              className="btn-force-regenerate"
+              style={{
+                backgroundColor: "#dc2626",
+                borderColor: "#dc2626",
+                flex: "1 1 auto",
+                minWidth: "200px",
+              }}
+            >
+              {t('advancedSettings.regenerationControls.stop')}
+            </button>
+          )}
+          {videoOptimizationComplete && !isVideoOptimizationRunning && (
             <span
               style={{
                 color: "var(--primary-color)",

@@ -35,7 +35,8 @@
     "maximize": "Maksimize et",
     "restore": "Geri yükle",
     "expand": "Genişlet",
-    "collapse": "Daralt"
+    "collapse": "Daralt",
+    "note": "Not"
   },
   "app": {
     "loadingAlbums": "Albümler yükleniyor...",
@@ -91,15 +92,21 @@
     "size": "Boyut",
     "loadingExif": "EXIF verileri yükleniyor...",
     "camera": "Kamera",
-    "lens": "Lens",
+    "lens": "Lens  ",
     "focalLength": "Odak Uzaklığı",
     "aperture": "Diyafram",
     "shutter": "Enstantane",
-    "iso": "ISO",
+    "iso": "ISO  ",
     "dateTaken": "Çekim Tarihi",
+    "resolution": "Çözünürlük  ",
+    "duration": "Süre",
     "noPhotosYet": "Henüz Fotoğraf Yok",
     "albumEmpty": "Bu albüm boş. Harika fotoğraflar ekleme zamanı!",
     "goToAdminPanel": "Yönetici Paneline Git"
+  },
+  "video": {
+    "resolution": "Çözünürlük  ",
+    "duration": "Süre"
   },
   "admin": {
     "title": "Yönetici Portalı",
@@ -149,7 +156,7 @@
   "branding": {
     "title": "Marka Oluşturma",
     "description": "Sitenizin adını, alt başlığını ve avatarını özelleştirin",
-    "logo": "Logo",
+    "logo": "Logo  ",
     "clickOrDrag": "Resmi buraya tıklayın veya sürükleyin",
     "currentAvatar": "Mevcut avatar",
     "siteName": "Site Adı",
@@ -158,6 +165,8 @@
     "photoLicenseDescription": "Diğerlerinin fotoğraflarınızı nasıl kullanabileceğini seçin",
     "shuffleHomepage": "Ana Sayfa Fotoğraflarını Karıştır",
     "shuffleHomepageDescription": "Sayfa her yüklendiğinde ana sayfadaki fotoğrafların sırasını rastgele yap",
+    "animatedBackground": "Animasyonlu Arka Plan  ",
+    "animatedBackgroundDescription": "Yönetici panelinde ve giriş sayfasında renkli animasyonlu arka planı etkinleştir  ",
     "primaryColor": "Ana Renk",
     "secondaryColor": "İkincil Renk",
     "metaDescription": "Meta Açıklama",
@@ -170,6 +179,7 @@
     "photoLicenseUpdated": "Fotoğraf lisansı güncellendi!",
     "languageUpdated": "Dil güncellendi!",
     "homepageShuffleSaved": "Ana sayfa karıştırma ayarı kaydedildi!",
+    "animatedBackgroundSaved": "Animasyonlu arka plan ayarı kaydedildi!  ",
     "failedToSave": "{{section}} kaydedilemedi",
     "failedToSaveLicense": "Lisans kaydedilemedi",
     "failedToSaveLanguage": "Dil kaydedilemedi",
@@ -177,7 +187,6 @@
     "errorSavingLicense": "Lisans kaydedilirken hata oluştu",
     "errorSavingLanguage": "Dil kaydedilirken hata oluştu",
     "errorSavingSetting": "Ayar kaydedilirken hata oluştu",
-    "logoSaved": "Logo başarıyla kaydedildi!",
     "siteNameSaved": "Site Adı başarıyla kaydedildi!",
     "primaryColorSaved": "Ana Renk başarıyla kaydedildi!",
     "secondaryColorSaved": "İkincil Renk başarıyla kaydedildi!",
@@ -229,6 +238,7 @@
     "deleteAlbum": "Albümü Sil",
     "deleteAlbumConfirm": "\"{{albumName}}\" albümünü silmek istediğinize emin misiniz?\n\nBu, bu albümdeki tüm fotoğrafları kalıcı olarak silecektir.\n\nBu işlem geri alınamaz.",
     "renameAlbum": "Albümü Yeniden Adlandır",
+    "clickToRename": "Albümü yeniden adlandırmak için tıklayın",
     "newName": "Yeni Ad",
     "newNamePlaceholder": "Yeni adı girin",
     "currentName": "Mevcut Ad",
@@ -243,6 +253,8 @@
     "selectPhotos": "Fotoğrafları Seç",
     "editPhoto": "Fotoğrafı Düzenle",
     "editPhotoTitle": "Fotoğraf Başlığını Düzenle",
+    "editVideoTitle": "Video Başlığını Düzenle",
+    "editMetadata": "Meta Verileri Düzenle",
     "photoTitle": "Fotoğraf Başlığı",
     "photoDescription": "Fotoğraf Açıklaması",
     "enterTitle": "Başlık girin...",
@@ -361,12 +373,31 @@
     "maxRetryAttemptsReached": "{{filename}} için maksimum tekrar deneme sayısına ({{maxRetries}}) ulaşıldı",
     "successfullyUploaded": "{{filename}} başarıyla yüklendi",
     "retryFailed": "{{filename}} için tekrar deneme başarısız oldu",
-    "noValidImageFiles": "Geçerli resim dosyası bulunamadı. Lütfen JPEG, PNG, GIF veya WebP resimlerini seçin.",
+    "noValidImageFiles": "Geçerli dosya bulunamadı. Lütfen resim (JPEG, PNG, GIF, WebP) veya video (MP4, MOV, AVI, MKV, WebM) dosyaları seçin.",
     "renameAlbumFailed": "Albüm adı değiştirilemedi  ",
     "invalidAlbumName": "Geçersiz albüm adı  ",
     "nameUnchanged": "Albüm adı değişmedi  ",
     "albumNotFound": "Albüm bulunamadı  ",
-    "databaseUpdateFailed": "Veritabanı güncellenemedi"
+    "databaseUpdateFailed": "Veritabanı güncellenemedi",
+    "deleteVideo": "Videoyu Sil  ",
+    "deleteVideoQuestion": "Videoyu sil?  ",
+    "deleteVideoConfirm": "Bu videoyu silmek istediğinizden emin misiniz?",
+    "titleLabel": "Başlık  ",
+    "descriptionLabel": "Açıklama  ",
+    "enterDescription": "Açıklama girin...",
+    "updateThumbnail": "Küçük Resmi Güncelle  ",
+    "useCurrentFrame": "Mevcut Kareyi Kullan  ",
+    "updating": "Güncelleniyor...  ",
+    "uploading": "Yükleniyor...  ",
+    "updatingThumbnail": "Küçük resmi güncelleniyor...  ",
+    "thumbnailUpdated": "✓ Küçük resim güncellendi!  ",
+    "failedToUpdateThumbnail": "✗ Küçük resmi güncellemeyi başaramadı  ",
+    "uploadingThumbnail": "Küçük resmi yüklüyor...  ",
+    "thumbnailUploaded": "✓ Küçük resim yüklendi!",
+    "failedToUploadThumbnail": "✗ Küçük resmi yükleme başarısız oldu  ",
+    "pleaseSelectImageFile": "✗ Lütfen bir resim dosyası seçin  ",
+    "unableToLoadVideo": "Küçük resim seçimi için video yüklenemedi. Video hala işleniyor olabilir.",
+    "uploadThumbnail": "Küçük Resim Yükle"
   },
   "settings": {
     "saved": "{{section}} ayarları kaydedildi!",
@@ -401,7 +432,9 @@
       "optimizedImages": "Optimize edilmiş görseller",
       "forceRegenerateAllConfirm": "⚠️ Bu, TÜM resim başlıklarını yeniden oluşturacak ve ayarladığınız özel başlıkları üzerine yazacaktır. Bu işlem geri alınamaz.\n\nDevam etmek istediğinizden emin misiniz?",
       "forceRegenerateImagesConfirm": "TÜM resimleri yeniden oluşturmak istiyor musunuz? Bu biraz zaman alacak.",
-      "runOptimizationConfirm": "Tüm fotoğraflarda resim optimizasyonu yapilsin mı?"
+      "runOptimizationConfirm": "Tüm fotoğraflarda resim optimizasyonu yapilsin mı?",
+      "optimizedVideos": "Optimize Edilmiş Videolar",
+      "forceRegenerateVideosConfirm": "⚠️ Bu, mevcut kalite ayarlarıyla TÜM videoları yeniden kodlayacaktır. Bu zaman alıcı bir işlemdir ve geçici olarak CPU kullanımını artıracaktır.\n\nMevcut video dosyaları değiştirilecektir. Devam etmek istediğinizden emin misiniz?"
     }
   },
   "userManagement": {
@@ -739,23 +772,26 @@
     }
   },
   "imageOptimization": {
-    "title": "Görüntü Optimizasyonu",
-    "description": "Görüntü işleme optimizasyonu ve yönetimi",
+    "title": "Görüntü Kalitesi  ",
+    "description": "Görüntü kalitesi ve işleme ayarlarını yapılandırın  ",
     "thumbnail": "Küçük Resim",
-    "modal": "Modal",
+    "modal": "Modal  ",
     "download": "İndir",
     "concurrency": "Eşzamanlılık",
     "quality": "Kalite",
     "maxDimension": "Maksimum Boyut",
     "concurrencyDescription1": "Aynı anda işlenecek maksimum görüntü sayısı. Daha yüksek değerler toplu işlemeyi hızlandırır ancak daha fazla CPU ve bellek kullanır.",
     "concurrencyDescription2": "Kural: Mantıksal CPU çekirdeklerinizin ~4× katı. Önerilen: Tipik sistemler için 8-16, yüksek performanslı sunucular için 32-64.",
-    "maxParallelJobs": "Maksimum Paralel İş"
+    "maxParallelJobs": "Maksimum Paralel İş",
+    "warningNote": "Görüntü kalitesi ayarındaki değişiklikler yalnızca yeni yüklenen fotoğraflara uygulanır. Mevcut görüntüler,  ",
+    "forceRegenerate": "Tümünü Yeniden Üret  ",
+    "warningNoteLocation": "seçeneğini kullanmadığınız sürece mevcut ayarlarını koruyacaktır."
   },
   "links": {
     "title": "Bağlantılar",
     "description": "Harici bağlantıları ve iletişim bilgilerini yönetin",
     "titlePlaceholder": "Başlık",
-    "urlPlaceholder": "URL",
+    "urlPlaceholder": "URL  ",
     "moveUp": "Yukarı taşı",
     "moveDown": "Aşağı taşı",
     "deleteLink": "Bağlantıyı sil",
@@ -808,7 +844,9 @@
     "settings": "Ayarlar",
     "profile": "Profil",
     "settingsDescription": "Markalaşma, bağlantılar ve sistem yapılandırmasını yönet",
-    "failedToLoadConfig": "Yapılandırma yüklenemedi"
+    "failedToLoadConfig": "Yapılandırma yüklenemedi",
+    "loadingStyles": "Stil yükleniyor...",
+    "loadingSettings": "Ayarlar yükleniyor..."
   },
   "securitySetup": {
     "title": "🔐 Hesabınızı Güvence Altına Alın",
@@ -1064,5 +1102,41 @@
     "successMessage": "Test e-postası başarıyla gönderildi! Gelen kutunuzu kontrol edin.  ",
     "errorMessage": "Test e-postası gönderilemedi",
     "errorMessageDetail": "Test e-postası gönderilemedi. Lütfen yapılandırmanızı kontrol edin."
+  },
+  "videoList": {
+    "noVideosYet": "Henüz video yok  ",
+    "albumEmpty": "Bu albüm boş. Başlamak için bazı videolar yükleyin!  ",
+    "copyShareLink": "Paylaşım bağlantısını kopyala  ",
+    "linkCopied": "Bağlantı kopyalandı!  ",
+    "share": "Paylaş  "
+  },
+  "videoPage": {
+    "invalidUrl": "Geçersiz video URL'si  ",
+    "albumNotFound": "Albüm bulunamadı  ",
+    "failedToLoad": "Videoyu yükleme başarısız oldu  ",
+    "videoNotFound": "Video bulunamadı  ",
+    "unknownError": "Bilinmeyen bir hata oluştu",
+    "errorTitle": "Video Bulunamadı  ",
+    "backToAlbum": "Albuma Geri Dön"
+  },
+  "videoOptimization": {
+    "title": "Video Kalitesi",
+    "description": "Video kalitesini, akışı ve HLS ayarlarını yapılandırın",
+    "hlsStreaming": "HLS AKIŞI",
+    "hlsStreamingSection": "HLS Ayarları",
+    "hlsDescription": "Uyarlanabilir video iletimi için HTTP Live Streaming (HLS) ayarlarını yapılandırın",
+    "segmentDuration": "Segment Süresi (saniye)",
+    "segmentDurationHelp": "Her video segmentinin uzunluğu. Daha uzun segmentler (4-6sn) sunucu isteklerini azaltır.",
+    "videoResolutions": "GÖRÜNTÜ ÇÖZÜMLERİ",
+    "videoResolutionsSection": "Video Çözünürlükleri  ",
+    "resolutionsDescription": "Çözünürlükleri etkinleştir ve kalite ayarlarını yapılandır. Daha yüksek bit hızları kaliteyi artırır ancak dosya boyutunu da artırır.  ",
+    "videoBitrate": "Video Bit Hızı  ",
+    "audioBitrate": "Ses Bit Hızı  ",
+    "videoBitrateExample": "örn., 400k, 2500k, 5000k  ",
+    "audioBitrateExample": "örn., 64k, 96k, 128k, 192k  ",
+    "on": "Açık  ",
+    "off": "Kapalı  ",
+    "warningNote": "Video ayarlarındaki değişiklikler yalnızca yeni yüklenen videolara uygulanır. Mevcut videolar, mevcut kalite ayarlarını koruyacaktır, aksi takdirde  ",
+    "forceRegenerate": "Tümünü Zorla Yenile"
   }
 }

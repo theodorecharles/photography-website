@@ -21,6 +21,17 @@ export interface EnvironmentConfig {
       modal: { quality: number; maxDimension: number };
       download: { quality: number; maxDimension: number };
     };
+    video?: {
+      segmentDuration?: number;
+      resolutions?: {
+        [key: string]: {
+          enabled: boolean;
+          height: number;
+          videoBitrate: string;
+          audioBitrate: string;
+        };
+      };
+    };
   };
   security: {
     allowedHosts: string[];

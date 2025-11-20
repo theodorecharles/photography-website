@@ -1,0 +1,361 @@
+/**
+ * Photo Modal component styles
+ */
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal.fullscreen {
+  background-color: #000;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.modal-content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  /* Removed pointer-events: none to allow clicks to be handled by JS */
+}
+
+.modal-container {
+  position: relative;
+  max-width: calc(100vw - 20px);
+  max-height: calc(100vh - 100px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Properly sized media container - all controls position relative to this */
+.modal-media-container {
+  position: relative;
+  width: calc(100vw - 20px);
+  height: calc(100vh - 100px);
+  max-width: calc(100vw - 20px);
+  max-height: calc(100vh - 100px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Photo container - holds ImageCanvas and its overlays */
+.modal-photo-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Video container - holds VideoPlayer */
+.modal-video-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Video overlay - positioned on top of thumbnail background */
+.modal-video-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5; /* Above thumbnail, below controls */
+  background: rgba(0, 0, 0, 0.3); /* Slight darkening while loading */
+}
+
+/* Video play button overlay for navigated videos */
+.video-play-button-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.7);
+  border: none;
+  border-radius: 50%;
+  width: 100px;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 10;
+  color: white;
+}
+
+.video-play-button-overlay:hover {
+  background: rgba(0, 0, 0, 0.85);
+  transform: translate(-50%, -50%) scale(1.1);
+}
+
+.video-play-button-overlay:active {
+  transform: translate(-50%, -50%) scale(0.95);
+}
+
+/* Top controls (info, copy, download, fullscreen, close) */
+.modal-controls-top {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  z-index: 1001;
+  transform: translate(0, -100%);
+  padding: 0.25rem;
+  box-sizing: border-box;
+}
+
+.modal-controls-left,
+.modal-controls-right {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.modal-controls-top button {
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(51, 51, 51, 0.5);
+  color: white;
+  padding: 0.5rem;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  outline: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
+  min-height: 38px;
+}
+
+.modal-controls-top button.active {
+  background: rgba(0, 0, 0, 0.8);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.modal-controls-top button svg {
+  width: 20px;
+  height: 20px;
+}
+
+.modal-controls-top button:hover {
+  background: rgba(0, 0, 0, 0.8);
+  border-color: rgba(51, 51, 51, 0.8);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Info panel */
+.modal-info-panel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  padding: 1.25rem;
+  width: 320px;
+  height: 320px;
+  overflow-y: auto;
+  z-index: 1003;
+  margin: 0.5rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+  color: white;
+  animation: fadeIn 0.2s ease-out;
+}
+
+@media (max-width: 768px) {
+  .modal-info-panel {
+    width: 280px;
+    height: 280px;
+  }
+}
+
+@media (max-width: 600px) {
+  .fullscreen-toggle {
+    display: none !important;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal-info-panel h3 {
+  margin: 0 0 1rem 0;
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #fff;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  padding-bottom: 0.75rem;
+  letter-spacing: 0.025em;
+}
+
+.info-item {
+  display: flex;
+  margin-bottom: 0.75rem;
+  gap: 0.75rem;
+}
+
+.info-item:last-child {
+  margin-bottom: 0;
+}
+
+.info-label {
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.7);
+  min-width: 85px;
+  flex-shrink: 0;
+  font-size: 0.9rem;
+}
+
+.info-value {
+  color: #fff;
+  word-break: break-word;
+  font-size: 0.9rem;
+}
+
+/* Navigation hint */
+.modal-navigation-hint {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.875rem;
+  padding: 0.5rem;
+  transform: translate(0, 100%);
+  z-index: 1001;
+  user-select: none;
+  pointer-events: none;
+  display: flex;
+  justify-content: flex-start;
+}
+
+@media (max-width: 768px), (hover: none) {
+  .modal-navigation-hint {
+    display: none;
+  }
+}
+
+/* Navigation buttons */
+.modal-navigation {
+  position: absolute;
+  bottom: 0;
+  left: auto;
+  right: 0;
+  display: flex;
+  gap: 0.5rem;
+  transform: translate(0, 100%);
+  z-index: 1001;
+  padding: 0.25rem;
+  justify-content: flex-end;
+}
+
+.modal-navigation button {
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(51, 51, 51, 0.5);
+  color: white;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  outline: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  min-width: 38px;
+  min-height: 38px;
+  font-size: 1.1rem;
+  pointer-events: auto;
+}
+
+.modal-navigation button:hover {
+  background: rgba(0, 0, 0, 0.8);
+  border-color: rgba(51, 51, 51, 0.8);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.modal-navigation button svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* Image Title */
+.modal-image-title {
+  position: absolute;
+  top: 0;
+  left: 180px; /* Space for left buttons (info + copy + download) */
+  right: 130px; /* Space for right buttons (fullscreen + close) */
+  transform: translateY(calc(-100% - 0.5rem));
+  color: white;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-align: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease-out;
+  line-height: 1.2;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  pointer-events: none; /* Don't block button clicks */
+}
+
+/* On narrow screens, show title centered above buttons - halfway to header */
+@media (max-width: 650px) {
+  .modal-image-title {
+    left: 0;
+    right: 0;
+    text-align: center;
+    top: auto;
+    bottom: 100%; /* Start at top of image */
+    transform: translateY(-3rem); /* Move up to midpoint between buttons and header */
+    padding: 0 1rem; /* Add padding for narrow screens */
+  }
+}
+
+/* Mobile-specific adjustments */
+@media (max-width: 599px) {
+  .modal-image-container {
+    max-width: calc(100vw - 20px); /* 20px gap on each side on mobile */
+    max-height: calc(100vh - 80px); /* 60px gap top/bottom on mobile */
+  }
+}

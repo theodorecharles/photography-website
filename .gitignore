@@ -36,6 +36,9 @@ data/
 data-backup-*/
 config/config.local.json
 
+# Video files (HLS playlists and segments)
+video/
+
 # PM2 config (generated at runtime from ecosystem.local.cjs or ecosystem.docker.cjs)
 ecosystem.config.cjs
 

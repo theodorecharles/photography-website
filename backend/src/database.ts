@@ -64,6 +64,7 @@ export function initializeDatabase(): any {
       filename TEXT NOT NULL,
       title TEXT,
       description TEXT,
+      media_type TEXT NOT NULL DEFAULT 'photo',
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       UNIQUE(album, filename)
@@ -171,21 +172,23 @@ export function saveImageMetadata(
   album: string,
   filename: string,
   title: string | null,
-  description: string | null
+  description: string | null,
+  mediaType: 'photo' | 'video' = 'photo'
 ): void {
   const db = getDatabase();
   
   const stmt = db.prepare(`
-    INSERT INTO image_metadata (album, filename, title, description)
-    VALUES (?, ?, ?, ?)
+    INSERT INTO image_metadata (album, filename, title, description, media_type)
+    VALUES (?, ?, ?, ?, ?)
     ON CONFLICT(album, filename) 
     DO UPDATE SET 
       title = excluded.title,
       description = excluded.description,
+      media_type = excluded.media_type,
       updated_at = CURRENT_TIMESTAMP
   `);
   
-  stmt.run(album, filename, title, description);
+  stmt.run(album, filename, title, description, mediaType);
 }
 
 /**
@@ -197,6 +200,7 @@ export function getImageMetadata(album: string, filename: string): {
   filename: string;
   title: string | null;
   description: string | null;
+  media_type: 'photo' | 'video';
   created_at: string;
   updated_at: string;
 } | undefined {
@@ -219,6 +223,7 @@ export function getAlbumMetadata(album: string): Array<{
   filename: string;
   title: string | null;
   description: string | null;
+  media_type: 'photo' | 'video';
   sort_order: number | null;
   created_at: string;
   updated_at: string;
@@ -246,6 +251,7 @@ export function getAllMetadata(): Array<{
   filename: string;
   title: string | null;
   description: string | null;
+  media_type: 'photo' | 'video';
   created_at: string;
   updated_at: string;
 }> {
@@ -563,6 +569,7 @@ export function getImagesInAlbum(album: string): Array<{
   filename: string;
   title: string | null;
   description: string | null;
+  media_type: 'photo' | 'video';
   sort_order: number | null;
   created_at: string;
   updated_at: string;
@@ -590,6 +597,7 @@ export function getImagesFromPublishedAlbums(): Array<{
   filename: string;
   title: string | null;
   description: string | null;
+  media_type: 'photo' | 'video';
   sort_order: number | null;
   created_at: string;
   updated_at: string;
@@ -615,6 +623,7 @@ export function getImagesForHomepage(): Array<{
   filename: string;
   title: string | null;
   description: string | null;
+  media_type: 'photo' | 'video';
   sort_order: number | null;
   created_at: string;
   updated_at: string;

@@ -58,8 +58,8 @@ export const createOptimizationStreamHandlers = (props: OptimizationStreamHandle
           info(`[Optimization Stream] Received ${data.jobs?.length || 0} active jobs`);
           // TODO: Could sync with existing uploadingImages if needed
         } else if (data.type === 'optimization-update') {
-          // Update for a specific photo
-          const { jobId, album, filename, progress, state, error, title } = data;
+          // Update for a specific photo/video
+          const { jobId, album, filename, progress, state, error, title, message } = data;
 
           info(`[Optimization Stream] Update received: ${jobId} - ${state} (${progress}%) - Album: "${album}" vs Uploading: "${uploadingAlbumRef.current}"`);
 
@@ -78,7 +78,18 @@ export const createOptimizationStreamHandlers = (props: OptimizationStreamHandle
             return prev.map((img: UploadingImage) => {
               if (img.filename !== filename) return img;
 
-              // Update progress
+              // Map video processing states to 'optimizing'
+              if (state === 'rotation' || state === '240p' || state === '360p' || state === '720p' || state === '1080p' || state === 'thumbnail' || state === 'modal-preview') {
+                return {
+                  ...img,
+                  state: 'optimizing',
+                  optimizeProgress: progress,
+                  videoStage: state, // Track the specific video stage
+                  message
+                };
+              }
+
+              // Update progress for regular photo optimization
               if (state === 'optimizing') {
                 return {
                   ...img,
@@ -98,13 +109,22 @@ export const createOptimizationStreamHandlers = (props: OptimizationStreamHandle
               // Complete
               if (state === 'complete') {
                 info(`[Optimization Stream] ✅ Marking ${filename} as complete`);
+                
+                // Determine if this is a video based on extension
+                const isVideo = /\.(mp4|mov|avi|mkv|webm)$/i.test(filename);
+                const mediaType = isVideo ? 'video' : 'photo';
+                
+                // For videos, thumbnails are JPG files
+                const thumbnailFilename = isVideo ? filename.replace(/\.[^.]+$/, '.jpg') : filename;
+                
                 const completedPhoto: Photo = {
                   id: `${album}/${filename}`,
-                  thumbnail: `/optimized/thumbnail/${encodeURIComponent(album)}/${encodeURIComponent(filename)}`,
-                  modal: `/optimized/modal/${encodeURIComponent(album)}/${encodeURIComponent(filename)}`,
-                  download: `/optimized/download/${encodeURIComponent(album)}/${encodeURIComponent(filename)}`,
+                  thumbnail: `/optimized/thumbnail/${encodeURIComponent(album)}/${encodeURIComponent(thumbnailFilename)}`,
+                  modal: `/optimized/modal/${encodeURIComponent(album)}/${encodeURIComponent(thumbnailFilename)}`,
+                  download: isVideo ? '' : `/optimized/download/${encodeURIComponent(album)}/${encodeURIComponent(filename)}`,
                   title: title || '',
                   album: album,
+                  media_type: mediaType
                 };
 
                 trackPhotoUploaded(album, 1, [filename]);

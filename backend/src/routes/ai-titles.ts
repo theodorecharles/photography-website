@@ -22,6 +22,34 @@ const router = express.Router();
 // Apply CSRF protection to all routes
 router.use(csrfProtection);
 
+/**
+ * Convert text to title case
+ * Capitalizes first letter of each word, except for common small words (unless first/last)
+ */
+function toTitleCase(str: string): string {
+  const smallWords = new Set([
+    'a', 'an', 'and', 'as', 'at', 'but', 'by', 'for', 'in', 'of', 'on', 'or', 'the', 'to', 'with'
+  ]);
+  
+  const words = str.split(' ');
+  
+  return words.map((word, index) => {
+    // Always capitalize first and last word
+    if (index === 0 || index === words.length - 1) {
+      return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+    }
+    
+    // Keep small words lowercase
+    const lowerWord = word.toLowerCase();
+    if (smallWords.has(lowerWord)) {
+      return lowerWord;
+    }
+    
+    // Capitalize other words
+    return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+  }).join(' ');
+}
+
 // Track running jobs
 interface RunningJob {
   process: any;
@@ -163,8 +191,12 @@ router.post('/generate-single', requireManager, async (req: any, res: any) => {
     const dataDir = process.env.DATA_DIR || path.join(projectRoot, 'data');
     const optimizedDir = path.join(dataDir, 'optimized');
     
+    // For videos, use the .jpg thumbnail; for photos, use the original filename
+    const isVideo = filename.toLowerCase().match(/\.(mp4|mov|avi|mkv|webm)$/);
+    const thumbnailFilename = isVideo ? filename.replace(/\.[^.]+$/, '.jpg') : filename;
+    
     // Try thumbnail first, fall back to original if not found
-    let imagePath = path.join(optimizedDir, 'thumbnail', album, filename);
+    let imagePath = path.join(optimizedDir, 'thumbnail', album, thumbnailFilename);
     if (!fs.existsSync(imagePath)) {
       info('[AITitles] Thumbnail not found, falling back to original');
       const photosDir = path.join(dataDir, 'photos');
@@ -174,6 +206,10 @@ router.post('/generate-single', requireManager, async (req: any, res: any) => {
         error('[AITitles] Image not found:', imagePath);
         return res.status(404).json({ error: 'Image not found' });
       }
+    }
+    
+    if (isVideo) {
+      info('[AITitles] Processing video - using extracted thumbnail for AI analysis');
     }
     
     // Initialize OpenAI
@@ -244,9 +280,10 @@ router.post('/generate-single', requireManager, async (req: any, res: any) => {
       return res.status(500).json({ error: 'Failed to generate title (empty response)' });
     }
     
-    // Remove surrounding quotes if present
+    // Clean the title: remove quotes and convert to title case
     title = title.replace(/^["']|["']$/g, '');
     title = title.trim();
+    title = toTitleCase(title);
     
     // Save to database
     const db = getDatabase();

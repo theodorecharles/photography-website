@@ -142,8 +142,8 @@ export default defineConfig({
         },
       },
     },
-    // Increase chunk size warning limit slightly since we're optimizing
-    chunkSizeWarningLimit: 600,
+    // Increase chunk size warning limit for AdminPortal (lazy-loaded, 259 KB gzipped)
+    chunkSizeWarningLimit: 900,
   },
   css: {
     devSourcemap: true,

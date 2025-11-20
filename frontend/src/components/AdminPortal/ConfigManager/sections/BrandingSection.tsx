@@ -459,72 +459,71 @@ const BrandingSection: React.FC<BrandingSectionProps> = ({
           </div>
 
           <div className="branding-group">
-            <label className="branding-label">{t('branding.shuffleHomepage')}</label>
+            <label className="branding-label" style={{ display: 'block', marginBottom: '0.5rem' }}>
+              {t('branding.language')}
+            </label>
             <p className="branding-description">
-              {t('branding.shuffleHomepageDescription')}
+              {t('branding.languageDescription')}
             </p>
-            <label className="toggle-switch">
-              <input
-                type="checkbox"
-                checked={branding.shuffleHomepage ?? true}
-                onChange={async (e) => {
-                  const newValue = e.target.checked;
-                  // Update state immediately with new value
+            <CustomDropdown
+              value={branding.language || i18n.language || 'en'}
+              options={SUPPORTED_LANGUAGES.map((lang) => ({
+                value: lang.code,
+                label: lang.name,
+                emoji: lang.flag
+              }))}
+              openUpward={true}
+              onChange={async (newValue) => {
+                handleBrandingChange("language", newValue);
+                
+                // Auto-save immediately
+                setSavingBrandingSection('Language');
+                try {
+                  // Change i18n language and wait for it to load
+                  await i18n.changeLanguage(newValue);
+                  
+                  // Give React a moment to re-render with the new language
+                  await new Promise(resolve => setTimeout(resolve, 50));
+                  
                   const updatedBranding = {
                     ...branding,
-                    shuffleHomepage: newValue
+                    language: newValue
                   };
-                  setBranding(updatedBranding);
                   
-                  // Save to backend
-                  setSavingBrandingSection('Homepage Settings');
-                  try {
-                    const res = await fetch(`${API_URL}/api/branding`, {
-                      method: 'PUT',
-                      headers: {
-                        'Content-Type': 'application/json',
-                      },
-                      credentials: 'include',
-                      body: JSON.stringify(updatedBranding),
-                    });
+                  const res = await fetch(`${API_URL}/api/branding`, {
+                    method: 'PUT',
+                    headers: {
+                      'Content-Type': 'application/json',
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify(updatedBranding),
+                  });
 
-                    if (res.ok) {
-                      // Regenerate static JSON to include new shuffle setting
-                      try {
-                        await fetch(`${API_URL}/api/static-json/generate`, {
-                          method: 'POST',
-                          credentials: 'include',
-                        });
-                        info('Static JSON regenerated with new shuffle setting');
-                      } catch (err) {
-                        error('Failed to regenerate static JSON:', err);
-                      }
-                      
-                      setMessage({ type: 'success', text: t('branding.homepageShuffleSaved') });
-                      setOriginalBranding(updatedBranding);
-                      // Don't reload - we already have the correct state
-                    } else {
-                      const errorData = await res.json().catch(() => ({ error: t('common.unknownError') }));
-                      setMessage({ type: 'error', text: errorData.error || t('branding.failedToSaveSetting') });
-                      // Revert on error
-                      setBranding(branding);
-                    }
-                  } catch (err) {
-                    const errorMessage = err instanceof Error ? err.message : t('branding.errorSavingSetting');
-                    setMessage({ type: 'error', text: errorMessage });
+                  if (res.ok) {
+                    // Get the message in the NEW language using i18n.t() directly
+                    setMessage({ type: 'success', text: i18n.t('branding.languageUpdated') });
+                    trackBrandingUpdate(['language']);
+                    setOriginalBranding(updatedBranding);
+                    await loadBranding();
+                  } else {
+                    const errorData = await res.json().catch(() => ({ error: t('common.unknownError') }));
+                    setMessage({ type: 'error', text: errorData.error || t('branding.failedToSaveLanguage') });
                     // Revert on error
                     setBranding(branding);
-                  } finally {
-                    setSavingBrandingSection(null);
+                    await i18n.changeLanguage(branding.language || 'en');
                   }
-                }}
-                disabled={savingBrandingSection === 'Homepage Settings'}
-              />
-              <span className="toggle-slider"></span>
-              <span className="toggle-label">
-                {branding.shuffleHomepage ?? true ? t('common.enabled') : t('common.disabled')}
-              </span>
-            </label>
+                } catch (err) {
+                  const errorMessage = err instanceof Error ? err.message : t('branding.errorSavingLanguage');
+                  setMessage({ type: 'error', text: errorMessage });
+                  // Revert on error
+                  setBranding(branding);
+                  await i18n.changeLanguage(branding.language || 'en');
+                } finally {
+                  setSavingBrandingSection(null);
+                }
+              }}
+              disabled={savingBrandingSection === 'Language'}
+            />
           </div>
 
           <div className="branding-group">
@@ -678,71 +677,131 @@ const BrandingSection: React.FC<BrandingSectionProps> = ({
           </div>
 
           <div className="branding-group">
-            <label className="branding-label" style={{ display: 'block', marginBottom: '0.5rem' }}>
-              {t('branding.language')}
-            </label>
+            <label className="branding-label">{t('branding.shuffleHomepage')}</label>
             <p className="branding-description">
-              {t('branding.languageDescription')}
+              {t('branding.shuffleHomepageDescription')}
             </p>
-            <CustomDropdown
-              value={branding.language || i18n.language || 'en'}
-              options={SUPPORTED_LANGUAGES.map((lang) => ({
-                value: lang.code,
-                label: lang.name,
-                emoji: lang.flag
-              }))}
-              openUpward={true}
-              onChange={async (newValue) => {
-                handleBrandingChange("language", newValue);
-                
-                // Auto-save immediately
-                setSavingBrandingSection('Language');
-                try {
-                  // Change i18n language and wait for it to load
-                  await i18n.changeLanguage(newValue);
-                  
-                  // Give React a moment to re-render with the new language
-                  await new Promise(resolve => setTimeout(resolve, 50));
-                  
+            <label className="toggle-switch">
+              <input
+                type="checkbox"
+                checked={branding.shuffleHomepage ?? true}
+                onChange={async (e) => {
+                  const newValue = e.target.checked;
+                  // Update state immediately with new value
                   const updatedBranding = {
                     ...branding,
-                    language: newValue
+                    shuffleHomepage: newValue
                   };
+                  setBranding(updatedBranding);
                   
-                  const res = await fetch(`${API_URL}/api/branding`, {
-                    method: 'PUT',
-                    headers: {
-                      'Content-Type': 'application/json',
-                    },
-                    credentials: 'include',
-                    body: JSON.stringify(updatedBranding),
-                  });
+                  // Save to backend
+                  setSavingBrandingSection('Homepage Settings');
+                  try {
+                    const res = await fetch(`${API_URL}/api/branding`, {
+                      method: 'PUT',
+                      headers: {
+                        'Content-Type': 'application/json',
+                      },
+                      credentials: 'include',
+                      body: JSON.stringify(updatedBranding),
+                    });
 
-                  if (res.ok) {
-                    // Get the message in the NEW language using i18n.t() directly
-                    setMessage({ type: 'success', text: i18n.t('branding.languageUpdated') });
-                    trackBrandingUpdate(['language']);
-                    setOriginalBranding(updatedBranding);
-                    await loadBranding();
-                  } else {
-                    const errorData = await res.json().catch(() => ({ error: t('common.unknownError') }));
-                    setMessage({ type: 'error', text: errorData.error || t('branding.failedToSaveLanguage') });
+                    if (res.ok) {
+                      // Regenerate static JSON to include new shuffle setting
+                      try {
+                        await fetch(`${API_URL}/api/static-json/generate`, {
+                          method: 'POST',
+                          credentials: 'include',
+                        });
+                        info('Static JSON regenerated with new shuffle setting');
+                      } catch (err) {
+                        error('Failed to regenerate static JSON:', err);
+                      }
+                      
+                      setMessage({ type: 'success', text: t('branding.homepageShuffleSaved') });
+                      setOriginalBranding(updatedBranding);
+                      // Don't reload - we already have the correct state
+                    } else {
+                      const errorData = await res.json().catch(() => ({ error: t('common.unknownError') }));
+                      setMessage({ type: 'error', text: errorData.error || t('branding.failedToSaveSetting') });
+                      // Revert on error
+                      setBranding(branding);
+                    }
+                  } catch (err) {
+                    const errorMessage = err instanceof Error ? err.message : t('branding.errorSavingSetting');
+                    setMessage({ type: 'error', text: errorMessage });
                     // Revert on error
                     setBranding(branding);
-                    await i18n.changeLanguage(branding.language || 'en');
+                  } finally {
+                    setSavingBrandingSection(null);
                   }
-                } catch (err) {
-                  const errorMessage = err instanceof Error ? err.message : t('branding.errorSavingLanguage');
-                  setMessage({ type: 'error', text: errorMessage });
-                  // Revert on error
-                  setBranding(branding);
-                  await i18n.changeLanguage(branding.language || 'en');
-                } finally {
-                  setSavingBrandingSection(null);
-                }
-              }}
-              disabled={savingBrandingSection === 'Language'}
-            />
+                }}
+                disabled={savingBrandingSection === 'Homepage Settings'}
+              />
+              <span className="toggle-slider"></span>
+              <span className="toggle-label">
+                {branding.shuffleHomepage ?? true ? t('common.enabled') : t('common.disabled')}
+              </span>
+            </label>
+          </div>
+
+          <div className="branding-group">
+            <label className="branding-label">{t('branding.animatedBackground')}</label>
+            <p className="branding-description">
+              {t('branding.animatedBackgroundDescription')}
+            </p>
+            <label className="toggle-switch">
+              <input
+                type="checkbox"
+                checked={branding.enableAnimatedBackground ?? true}
+                onChange={async (e) => {
+                  const newValue = e.target.checked;
+                  // Update state immediately with new value
+                  const updatedBranding = {
+                    ...branding,
+                    enableAnimatedBackground: newValue
+                  };
+                  setBranding(updatedBranding);
+                  
+                  // Save to backend
+                  setSavingBrandingSection('Animated Background');
+                  try {
+                    const res = await fetch(`${API_URL}/api/branding`, {
+                      method: 'PUT',
+                      headers: {
+                        'Content-Type': 'application/json',
+                      },
+                      credentials: 'include',
+                      body: JSON.stringify(updatedBranding),
+                    });
+
+                    if (res.ok) {
+                      setMessage({ type: 'success', text: t('branding.animatedBackgroundSaved') });
+                      setOriginalBranding(updatedBranding);
+                      // Reload to apply background changes
+                      await loadBranding();
+                    } else {
+                      const errorData = await res.json().catch(() => ({ error: t('common.unknownError') }));
+                      setMessage({ type: 'error', text: errorData.error || t('branding.failedToSaveSetting') });
+                      // Revert on error
+                      setBranding(branding);
+                    }
+                  } catch (err) {
+                    const errorMessage = err instanceof Error ? err.message : t('branding.errorSavingSetting');
+                    setMessage({ type: 'error', text: errorMessage });
+                    // Revert on error
+                    setBranding(branding);
+                  } finally {
+                    setSavingBrandingSection(null);
+                  }
+                }}
+                disabled={savingBrandingSection === 'Animated Background'}
+              />
+              <span className="toggle-slider"></span>
+              <span className="toggle-label">
+                {branding.enableAnimatedBackground ?? true ? t('common.enabled') : t('common.disabled')}
+              </span>
+            </label>
           </div>
         </div>
       </div>

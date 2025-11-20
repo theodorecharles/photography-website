@@ -34,8 +34,9 @@
     "actionCannotBeUndone": "Hành động này không thể hoàn tác",
     "creating": "Đang tạo...",
     "generating": "Đang tạo...",
-    "album": "album",
-    "albums": "các album"
+    "album": "album  ",
+    "albums": "các album",
+    "note": "Ghi chú"
   },
   "app": {
     "loadingAlbums": "Đang tải các album...",
@@ -67,7 +68,7 @@
     "signIn": "Đăng Nhập"
   },
   "album": {
-    "title": "Album",
+    "title": "Album  ",
     "photos": "Ảnh",
     "viewAlbum": "Xem {{albumName}}",
     "albumNotFound": "Không tìm thấy album"
@@ -90,7 +91,7 @@
     "exitFullscreen": "Thoát chế độ toàn màn hình",
     "file": "Tệp",
     "titleLabel": "Tiêu đề",
-    "albumLabel": "Album",
+    "albumLabel": "Album  ",
     "size": "Kích thước",
     "loadingExif": "Đang tải dữ liệu EXIF...",
     "camera": "Máy ảnh",
@@ -98,8 +99,14 @@
     "focalLength": "Chiều dài tiêu cự",
     "aperture": "Khẩu độ",
     "shutter": "Cửa chớp",
-    "iso": "ISO",
-    "dateTaken": "Ngày chụp"
+    "iso": "ISO  ",
+    "dateTaken": "Ngày chụp",
+    "resolution": "Độ phân giải  ",
+    "duration": "Thời gian  "
+  },
+  "video": {
+    "resolution": "Độ phân giải  ",
+    "duration": "Thời gian"
   },
   "admin": {
     "title": "Cổng quản trị",
@@ -149,7 +156,7 @@
   "branding": {
     "title": "Thương hiệu",
     "description": "Tùy chỉnh tên trang web, phụ đề và hình đại diện của bạn",
-    "logo": "Logo",
+    "logo": "Logo  ",
     "clickOrDrag": "Nhấp hoặc kéo hình ảnh vào đây",
     "currentAvatar": "Hình đại diện hiện tại",
     "siteName": "Tên trang web",
@@ -158,6 +165,8 @@
     "photoLicenseDescription": "Chọn cách người khác có thể sử dụng những bức ảnh của bạn",
     "shuffleHomepage": "Xáo trộn ảnh trên trang chủ",
     "shuffleHomepageDescription": "Ngẫu nhiên hóa thứ tự của các bức ảnh trên trang chính mỗi khi trang được tải",
+    "animatedBackground": "Nền hoạt hình  ",
+    "animatedBackgroundDescription": "Bật nền hoạt hình đầy màu sắc trên bảng điều khiển quản trị và trang đăng nhập  ",
     "primaryColor": "Màu chính",
     "secondaryColor": "Màu phụ",
     "metaDescription": "Mô tả Meta",
@@ -170,6 +179,7 @@
     "photoLicenseUpdated": "Giấy phép ảnh đã được cập nhật!",
     "languageUpdated": "Ngôn ngữ đã được cập nhật!",
     "homepageShuffleSaved": "Cài đặt xáo trộn trang chính đã được lưu!",
+    "animatedBackgroundSaved": "Cài đặt nền hoạt hình đã được lưu!  ",
     "failedToSave": "Lưu {{section}} không thành công",
     "failedToSaveLicense": "Lưu giấy phép không thành công",
     "failedToSaveLanguage": "Lưu ngôn ngữ không thành công",
@@ -177,7 +187,6 @@
     "errorSavingLicense": "Lỗi khi lưu giấy phép",
     "errorSavingLanguage": "Lỗi khi lưu ngôn ngữ",
     "errorSavingSetting": "Lỗi khi lưu cài đặt",
-    "logoSaved": "Logo đã được lưu thành công!",
     "siteNameSaved": "Tên trang đã được lưu thành công!",
     "primaryColorSaved": "Màu chính đã được lưu thành công!",
     "secondaryColorSaved": "Màu phụ đã được lưu thành công!",
@@ -231,6 +240,7 @@
     "deleteAlbum": "Xóa Album",
     "deleteAlbumConfirm": "Bạn có chắc chắn muốn xóa album \"{{albumName}}\" không?\n\nĐiều này sẽ xóa vĩnh viễn tất cả ảnh trong album này.\n\nHành động này không thể hoàn tác.",
     "renameAlbum": "Đổi tên Album",
+    "clickToRename": "Nhấp để đổi tên album",
     "newName": "Tên Mới",
     "newNamePlaceholder": "Nhập tên mới",
     "currentName": "Tên Hiện Tại",
@@ -245,6 +255,8 @@
     "selectPhotos": "Chọn ảnh",
     "editPhoto": "Chỉnh sửa ảnh",
     "editPhotoTitle": "Chỉnh sửa tiêu đề ảnh",
+    "editVideoTitle": "Chỉnh sửa tiêu đề video",
+    "editMetadata": "Chỉnh sửa Siêu dữ liệu",
     "photoTitle": "Tiêu đề ảnh",
     "photoDescription": "Mô tả ảnh",
     "enterTitle": "Nhập tiêu đề...",
@@ -272,7 +284,7 @@
     "moveDown": "Di chuyển xuống",
     "cannotPublishEmptyFolder": "Không thể xuất bản thư mục trống",
     "deleteFolderTitle": "Xóa thư mục",
-    "album": "album",
+    "album": "album  ",
     "albums": "album",
     "loadingPhotos": "Đang tải ảnh...",
     "uploadingEllipsis": "Đang tải lên...",
@@ -361,12 +373,31 @@
     "maxRetryAttemptsReached": "Đã đạt số lần thử tối đa ({{maxRetries}}) cho {{filename}}",
     "successfullyUploaded": "Tải lên {{filename}} thành công",
     "retryFailed": "Thử lại không thành công cho {{filename}}",
-    "noValidImageFiles": "Không tìm thấy tệp hình ảnh hợp lệ. Vui lòng chọn hình ảnh JPEG, PNG, GIF hoặc WebP.",
+    "noValidImageFiles": "Không tìm thấy tệp hợp lệ. Vui lòng chọn hình ảnh (JPEG, PNG, GIF, WebP) hoặc video (MP4, MOV, AVI, MKV, WebM).",
     "renameAlbumFailed": "Không thể đổi tên album  ",
     "invalidAlbumName": "Tên album không hợp lệ  ",
     "nameUnchanged": "Tên album không thay đổi  ",
     "albumNotFound": "Không tìm thấy album  ",
-    "databaseUpdateFailed": "Không thể cập nhật cơ sở dữ liệu"
+    "databaseUpdateFailed": "Không thể cập nhật cơ sở dữ liệu",
+    "deleteVideo": "Xóa Video  ",
+    "deleteVideoQuestion": "Xóa Video?  ",
+    "deleteVideoConfirm": "Bạn có chắc chắn muốn xóa video này không?",
+    "titleLabel": "Tiêu đề  ",
+    "descriptionLabel": "Mô tả  ",
+    "enterDescription": "Nhập mô tả...",
+    "updateThumbnail": "Cập nhật Hình thu nhỏ  ",
+    "useCurrentFrame": "Sử dụng Khung Hiện tại  ",
+    "updating": "Đang cập nhật...  ",
+    "uploading": "Đang tải lên...  ",
+    "updatingThumbnail": "Đang cập nhật hình thu nhỏ...  ",
+    "thumbnailUpdated": "✓ Hình thu nhỏ đã được cập nhật!  ",
+    "failedToUpdateThumbnail": "✗ Không thể cập nhật hình thu nhỏ  ",
+    "uploadingThumbnail": "Đang tải lên hình thu nhỏ...  ",
+    "thumbnailUploaded": "✓ Hình thu nhỏ đã được tải lên!",
+    "failedToUploadThumbnail": "✗ Tải lên hình thu nhỏ không thành công  ",
+    "pleaseSelectImageFile": "✗ Vui lòng chọn một tệp hình ảnh  ",
+    "unableToLoadVideo": "Không thể tải video để chọn hình thu nhỏ. Video có thể vẫn đang được xử lý.",
+    "uploadThumbnail": "Tải lên Hình thu nhỏ"
   },
   "settings": {
     "saved": "Cài đặt {{section}} đã được lưu!",
@@ -383,10 +414,10 @@
     "logLevelSilent": "Im lặng",
     "logLevelError": "Lỗi",
     "logLevelWarn": "Cảnh báo",
-    "logLevelInfo": "Info",
-    "logLevelDebug": "Debug",
-    "logLevelVerbose": "Verbose",
-    "logLevelTrace": "Trace",
+    "logLevelInfo": "Thông tin  ",
+    "logLevelDebug": "Gỡ lỗi  ",
+    "logLevelVerbose": "Chi tiết  ",
+    "logLevelTrace": "Theo dõi",
     "logLevelDescription": "Kiểm soát mức độ chi tiết của nhật ký máy chủ. Mức cao hơn bao gồm nhiều chi tiết hơn nhưng có thể ảnh hưởng đến hiệu suất.",
     "viewLiveLogs": "Xem nhật ký trực tiếp",
     "failedToSaveLogLevel": "Không thể lưu mức nhật ký",
@@ -401,7 +432,9 @@
       "optimizedImages": "Hình ảnh tối ưu hóa",
       "forceRegenerateAllConfirm": "⚠️ Điều này sẽ tạo lại TẤT CẢ tiêu đề hình ảnh và ghi đè lên bất kỳ tiêu đề tùy chỉnh nào bạn đã đặt. Hành động này không thể hoàn tác.\n\nBạn có chắc chắn muốn tiếp tục không?",
       "forceRegenerateImagesConfirm": "Buộc tái tạo TẤT CẢ hình ảnh? Điều này sẽ mất một thời gian.",
-      "runOptimizationConfirm": "Chạy tối ưu hóa hình ảnh cho tất cả các bức ảnh?"
+      "runOptimizationConfirm": "Chạy tối ưu hóa hình ảnh cho tất cả các bức ảnh?",
+      "optimizedVideos": "Video đã tối ưu hóa",
+      "forceRegenerateVideosConfirm": "⚠️ Điều này sẽ mã hóa lại TẤT CẢ video với cài đặt chất lượng hiện tại. Đây là một thao tác tốn thời gian và sẽ tạm thời tăng mức sử dụng CPU.\n\nCác tệp video hiện có sẽ bị thay thế. Bạn có chắc chắn muốn tiếp tục không?"
     }
   },
   "userManagement": {
@@ -409,7 +442,7 @@
     "description": "Quản lý tài khoản người dùng, vai trò và xác thực",
     "inviteUser": "+ Mời người dùng",
     "setupSmtp": "Cấu hình SMTP",
-    "email": "Email",
+    "email": "Email  ",
     "role": "Vai trò",
     "status": "Trạng thái",
     "actions": "Hành động",
@@ -484,8 +517,8 @@
     "managePasskeys": "Quản lý Passkeys",
     "disableMfaForUser": "Vô hiệu hóa MFA cho người dùng này",
     "sendPasswordResetForUser": "Gửi email đặt lại mật khẩu cho người dùng này",
-    "passkey": "Passkey",
-    "passkeys": "Passkeys",
+    "passkey": "Mã khóa  ",
+    "passkeys": "Mã khóa  ",
     "enableMfa": "Bật MFA",
     "invitationEmailDescription": "Một email mời sẽ được gửi đến địa chỉ này. Người dùng sẽ thiết lập tên, mật khẩu và MFA của họ.",
     "invitationSent": "✓ Đã Gửi Lời Mời",
@@ -612,7 +645,7 @@
     "signInWithGoogle": "Đăng nhập bằng Google",
     "signInWithPasskey": "Đăng nhập bằng Passkey",
     "signInWithPassword": "Đăng nhập bằng Mật khẩu",
-    "email": "Email",
+    "email": "Email  ",
     "enterEmail": "Nhập email của bạn",
     "password": "Mật khẩu",
     "enterPassword": "Nhập mật khẩu của bạn",
@@ -687,7 +720,7 @@
       "avgTime": "Thời gian trung bình",
       "views": "Lượt xem",
       "photoId": "ID ảnh",
-      "album": "Album",
+      "album": "Album  ",
       "fileName": "Tên tệp",
       "viewPhoto": "Xem ảnh"
     },
@@ -739,8 +772,8 @@
     }
   },
   "imageOptimization": {
-    "title": "Tối ưu hóa hình ảnh",
-    "description": "Tối ưu hóa và quản lý xử lý hình ảnh",
+    "title": "Chất lượng hình ảnh  ",
+    "description": "Cấu hình chất lượng hình ảnh và cài đặt xử lý  ",
     "thumbnail": "Hình thu nhỏ",
     "modal": "Hộp thoại",
     "download": "Tải xuống",
@@ -749,13 +782,16 @@
     "maxDimension": "Kích thước tối đa",
     "concurrencyDescription1": "Số lượng hình ảnh tối đa để xử lý đồng thời. Giá trị cao hơn sẽ tăng tốc độ xử lý hàng loạt nhưng sử dụng nhiều CPU và bộ nhớ hơn.",
     "concurrencyDescription2": "Nguyên tắc chung: ~4× số lõi CPU logic của bạn. Đề xuất: 8-16 cho các hệ thống thông thường, 32-64 cho các máy chủ hiệu suất cao.",
-    "maxParallelJobs": "Công việc song song tối đa"
+    "maxParallelJobs": "Công việc song song tối đa",
+    "warningNote": "Thay đổi cài đặt chất lượng hình ảnh chỉ áp dụng cho những bức ảnh mới được tải lên. Các hình ảnh hiện có sẽ giữ nguyên cài đặt hiện tại trừ khi bạn sử dụng  ",
+    "forceRegenerate": "Buộc Tái Tạo Tất Cả  ",
+    "warningNoteLocation": "trong Cài Đặt Nâng Cao → Hình Ảnh Tối Ưu."
   },
   "links": {
     "title": "Liên kết",
     "description": "Quản lý liên kết bên ngoài và thông tin liên lạc",
     "titlePlaceholder": "Tiêu đề",
-    "urlPlaceholder": "URL",
+    "urlPlaceholder": "URL  ",
     "moveUp": "Di chuyển lên",
     "moveDown": "Di chuyển xuống",
     "deleteLink": "Xóa liên kết",
@@ -808,7 +844,9 @@
     "settings": "Cài đặt",
     "profile": "Hồ sơ",
     "settingsDescription": "Quản lý thương hiệu, liên kết và cấu hình hệ thống",
-    "failedToLoadConfig": "Không thể tải cấu hình"
+    "failedToLoadConfig": "Không thể tải cấu hình",
+    "loadingStyles": "Đang tải kiểu dáng...",
+    "loadingSettings": "Đang tải cài đặt..."
   },
   "securitySetup": {
     "title": "🔐 Bảo mật tài khoản của bạn",
@@ -849,7 +887,7 @@
     "sectionName": "Xác thực"
   },
   "smtpSettings": {
-    "title": "Email (SMTP)",
+    "title": "Email (SMTP)  ",
     "configured": "✓ Đã cấu hình",
     "description": "Cấu hình cài đặt SMTP để gửi email mời người dùng và email đặt lại mật khẩu",
     "setupInstructions": "Hướng dẫn thiết lập",
@@ -885,7 +923,7 @@
     "enabled": "Đã bật",
     "disabled": "Đã tắt",
     "scriptPath": "Đường dẫn script",
-    "openObserveEndpoint": "OpenObserve Endpoint",
+    "openObserveEndpoint": "Điểm cuối OpenObserve  ",
     "organization": "Tổ chức",
     "username": "Tên người dùng",
     "password": "Mật khẩu",
@@ -1064,5 +1102,41 @@
     "successMessage": "Email kiểm tra đã được gửi thành công! Kiểm tra hộp thư đến của bạn.  ",
     "errorMessage": "Gửi email kiểm tra không thành công",
     "errorMessageDetail": "Gửi email thử nghiệm không thành công. Vui lòng kiểm tra cấu hình của bạn."
+  },
+  "videoList": {
+    "noVideosYet": "Chưa có video nào  ",
+    "albumEmpty": "Album này trống. Tải lên một số video để bắt đầu!  ",
+    "copyShareLink": "Sao chép liên kết chia sẻ  ",
+    "linkCopied": "Đã sao chép liên kết!  ",
+    "share": "Chia sẻ  "
+  },
+  "videoPage": {
+    "invalidUrl": "URL video không hợp lệ  ",
+    "albumNotFound": "Không tìm thấy album  ",
+    "failedToLoad": "Không thể tải video  ",
+    "videoNotFound": "Không tìm thấy video  ",
+    "unknownError": "Đã xảy ra lỗi không xác định",
+    "errorTitle": "Không tìm thấy video  ",
+    "backToAlbum": "Quay lại album"
+  },
+  "videoOptimization": {
+    "title": "Chất lượng video",
+    "description": "Cấu hình chất lượng video, phát trực tuyến và cài đặt HLS",
+    "hlsStreaming": "PHÁT STREAMING HLS",
+    "hlsStreamingSection": "Cài đặt HLS",
+    "hlsDescription": "Cấu hình các thiết lập HTTP Live Streaming (HLS) cho việc phân phối video thích ứng",
+    "segmentDuration": "Thời gian phân đoạn (giây)",
+    "segmentDurationHelp": "Độ dài của mỗi đoạn video. Các đoạn dài hơn (4-6 giây) sẽ giảm yêu cầu từ máy chủ.",
+    "videoResolutions": "ĐỘ PHÂN GIẢI VIDEO",
+    "videoResolutionsSection": "Độ phân giải video  ",
+    "resolutionsDescription": "Bật độ phân giải và cấu hình cài đặt chất lượng của chúng. Bitrate cao hơn cải thiện chất lượng nhưng làm tăng kích thước tệp.  ",
+    "videoBitrate": "Bitrate video  ",
+    "audioBitrate": "Bitrate âm thanh  ",
+    "videoBitrateExample": "vd: 400k, 2500k, 5000k  ",
+    "audioBitrateExample": "vd: 64k, 96k, 128k, 192k  ",
+    "on": "Bật  ",
+    "off": "Tắt  ",
+    "warningNote": "Các thay đổi đối với cài đặt video chỉ áp dụng cho video mới được tải lên. Các video hiện có sẽ giữ nguyên cài đặt chất lượng hiện tại trừ khi bạn sử dụng  ",
+    "forceRegenerate": "Buộc tái tạo tất cả"
   }
 }

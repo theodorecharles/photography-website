@@ -35,7 +35,8 @@
     "maximize": "最大化",
     "restore": "还原",
     "expand": "展开",
-    "collapse": "折叠"
+    "collapse": "折叠",
+    "note": "注意"
   },
   "app": {
     "loadingAlbums": "正在加载相册...",
@@ -97,9 +98,15 @@
     "shutter": "快门",
     "iso": "ISO",
     "dateTaken": "拍摄日期",
+    "resolution": "分辨率  ",
+    "duration": "持续时间",
     "noPhotosYet": "还没有照片",
     "albumEmpty": "这个相册是空的。是时候添加一些精彩的照片了！",
     "goToAdminPanel": "前往管理面板"
+  },
+  "video": {
+    "resolution": "分辨率  ",
+    "duration": "持续时间"
   },
   "admin": {
     "title": "管理门户",
@@ -158,6 +165,8 @@
     "photoLicenseDescription": "选择他人如何使用您的照片",
     "shuffleHomepage": "随机首页照片",
     "shuffleHomepageDescription": "每次页面加载时随机排列首页照片的顺序",
+    "animatedBackground": "动画背景  ",
+    "animatedBackgroundDescription": "在管理面板和登录页面启用多彩动画背景  ",
     "primaryColor": "主色",
     "secondaryColor": "次色",
     "metaDescription": "元描述",
@@ -170,6 +179,7 @@
     "photoLicenseUpdated": "照片许可已更新！",
     "languageUpdated": "语言已更新！",
     "homepageShuffleSaved": "首页随机设置已保存！",
+    "animatedBackgroundSaved": "动画背景设置已保存！  ",
     "failedToSave": "保存 {{section}} 失败",
     "failedToSaveLicense": "保存许可失败",
     "failedToSaveLanguage": "保存语言失败",
@@ -177,7 +187,6 @@
     "errorSavingLicense": "保存许可时出错",
     "errorSavingLanguage": "保存语言时出错",
     "errorSavingSetting": "保存设置时出错",
-    "logoSaved": "徽标保存成功！",
     "siteNameSaved": "网站名称保存成功！",
     "primaryColorSaved": "主色保存成功！",
     "secondaryColorSaved": "副色保存成功！",
@@ -229,6 +238,7 @@
     "deleteAlbum": "删除相册",
     "deleteAlbumConfirm": "您确定要删除相册 \"{{albumName}}\" 吗？\n\n这将永久删除该相册中的所有照片。\n\n此操作无法撤销。",
     "renameAlbum": "重命名相册",
+    "clickToRename": "点击重命名相册",
     "newName": "新名称",
     "newNamePlaceholder": "输入新名称",
     "currentName": "当前名称",
@@ -243,6 +253,8 @@
     "selectPhotos": "选择照片",
     "editPhoto": "编辑照片",
     "editPhotoTitle": "编辑照片标题",
+    "editVideoTitle": "编辑视频标题",
+    "editMetadata": "编辑元数据",
     "photoTitle": "照片标题",
     "photoDescription": "照片描述",
     "enterTitle": "输入标题...",
@@ -366,7 +378,26 @@
     "invalidAlbumName": "无效的相册名称  ",
     "nameUnchanged": "相册名称未更改  ",
     "albumNotFound": "未找到相册  ",
-    "databaseUpdateFailed": "更新数据库失败"
+    "databaseUpdateFailed": "更新数据库失败",
+    "deleteVideo": "删除视频  ",
+    "deleteVideoQuestion": "删除视频？  ",
+    "deleteVideoConfirm": "您确定要删除此视频吗？",
+    "titleLabel": "标题  ",
+    "descriptionLabel": "描述  ",
+    "enterDescription": "输入描述...",
+    "updateThumbnail": "更新缩略图  ",
+    "useCurrentFrame": "使用当前帧  ",
+    "updating": "正在更新...  ",
+    "uploading": "正在上传...  ",
+    "updatingThumbnail": "正在更新缩略图...  ",
+    "thumbnailUpdated": "✓ 缩略图已更新！  ",
+    "failedToUpdateThumbnail": "✗ 更新缩略图失败  ",
+    "uploadingThumbnail": "正在上传缩略图...  ",
+    "thumbnailUploaded": "✓ 缩略图已上传！",
+    "failedToUploadThumbnail": "✗ 无法上传缩略图  ",
+    "pleaseSelectImageFile": "✗ 请选择一个图像文件  ",
+    "unableToLoadVideo": "无法加载视频以进行缩略图选择。视频可能仍在处理中。",
+    "uploadThumbnail": "上传缩略图"
   },
   "settings": {
     "saved": "{{section}} 设置已保存！",
@@ -401,7 +432,9 @@
       "optimizedImages": "优化的图像",
       "forceRegenerateAllConfirm": "⚠️ 这将重新生成所有图像标题并覆盖您设置的任何自定义标题。此操作无法撤销。\n\n您确定要继续吗？",
       "forceRegenerateImagesConfirm": "强制重新生成所有图像？这将需要一些时间。",
-      "runOptimizationConfirm": "对所有照片运行图像优化？"
+      "runOptimizationConfirm": "对所有照片运行图像优化？",
+      "optimizedVideos": "优化视频",
+      "forceRegenerateVideosConfirm": "⚠️ 这将重新编码所有视频，使用当前的质量设置。这是一个耗时的操作，并且会暂时增加 CPU 使用率。\n\n现有的视频文件将被替换。您确定要继续吗？"
     }
   },
   "userManagement": {
@@ -739,8 +772,8 @@
     }
   },
   "imageOptimization": {
-    "title": "图像优化",
-    "description": "优化和管理图像处理",
+    "title": "图像质量  ",
+    "description": "配置图像质量和处理设置  ",
     "thumbnail": "缩略图",
     "modal": "模态",
     "download": "下载",
@@ -749,7 +782,10 @@
     "maxDimension": "最大尺寸",
     "concurrencyDescription1": "同时处理的最大图像数量。较高的值加快批处理速度，但会使用更多的CPU和内存。",
     "concurrencyDescription2": "经验法则：约为逻辑CPU核心数的4倍。推荐：典型系统为8-16，高性能服务器为32-64。",
-    "maxParallelJobs": "最大并行作业"
+    "maxParallelJobs": "最大并行作业",
+    "warningNote": "图像质量设置的更改仅适用于新上传的照片。现有图像将保持其当前设置，除非您使用  ",
+    "forceRegenerate": "强制重新生成所有  ",
+    "warningNoteLocation": "在高级设置 → 优化图像中。"
   },
   "links": {
     "title": "链接",
@@ -808,7 +844,9 @@
     "settings": "设置",
     "profile": "个人资料",
     "settingsDescription": "管理品牌、链接和系统配置",
-    "failedToLoadConfig": "加载配置失败"
+    "failedToLoadConfig": "加载配置失败",
+    "loadingStyles": "加载样式中...",
+    "loadingSettings": "加载设置中..."
   },
   "securitySetup": {
     "title": "🔐 保护您的账户",
@@ -1064,5 +1102,41 @@
     "successMessage": "测试邮件发送成功！请检查您的收件箱。  ",
     "errorMessage": "发送测试邮件失败",
     "errorMessageDetail": "发送测试邮件失败。请检查您的配置。"
+  },
+  "videoList": {
+    "noVideosYet": "还没有视频  ",
+    "albumEmpty": "此相册为空。上传一些视频以开始！  ",
+    "copyShareLink": "复制分享链接  ",
+    "linkCopied": "链接已复制！  ",
+    "share": "分享  "
+  },
+  "videoPage": {
+    "invalidUrl": "无效的视频网址  ",
+    "albumNotFound": "未找到相册  ",
+    "failedToLoad": "加载视频失败  ",
+    "videoNotFound": "未找到视频  ",
+    "unknownError": "发生未知错误",
+    "errorTitle": "视频未找到  ",
+    "backToAlbum": "返回相册"
+  },
+  "videoOptimization": {
+    "title": "视频质量",
+    "description": "配置视频质量、流媒体和HLS设置",
+    "hlsStreaming": "HLS 流媒体",
+    "hlsStreamingSection": "HLS 设置",
+    "hlsDescription": "配置自适应视频传输的 HTTP 实时流 (HLS) 设置",
+    "segmentDuration": "片段持续时间（秒）",
+    "segmentDurationHelp": "每个视频片段的长度。较长的片段（4-6秒）可以减少服务器请求。",
+    "videoResolutions": "视频分辨率",
+    "videoResolutionsSection": "视频分辨率  ",
+    "resolutionsDescription": "启用分辨率并配置其质量设置。更高的比特率提高质量但增加文件大小。  ",
+    "videoBitrate": "视频比特率  ",
+    "audioBitrate": "音频比特率  ",
+    "videoBitrateExample": "例如，400k，2500k，5000k  ",
+    "audioBitrateExample": "例如，64k，96k，128k，192k  ",
+    "on": "开启  ",
+    "off": "关闭  ",
+    "warningNote": "对视频设置的更改仅适用于新上传的视频。现有视频将保持其当前质量设置，除非您使用  ",
+    "forceRegenerate": "强制重新生成所有"
   }
 }

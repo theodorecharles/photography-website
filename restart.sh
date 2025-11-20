@@ -27,6 +27,7 @@ mkdir -p data/photos
 mkdir -p data/optimized/thumbnail
 mkdir -p data/optimized/modal
 mkdir -p data/optimized/download
+mkdir -p data/video
 log "Data directory structure verified"
 
 # Validate translations before deployment
@@ -46,7 +47,10 @@ fi
 if [ -f "data/gallery.db" ]; then
     log "Running database migrations..."
     if ! node migrate-share-links-cascade.js; then
-        handle_error "Database migration failed"
+        handle_error "Database migration (share links) failed"
+    fi
+    if ! node migrate-add-video-support.js; then
+        handle_error "Database migration (video support) failed"
     fi
     log "✓ Database migrations completed"
 else

@@ -35,7 +35,7 @@ const AuthSettings: React.FC<AuthSettingsProps> = ({
   const isEnabled = config.environment.auth.google.enabled;
 
   return (
-    <div className="openai-section" style={{ marginBottom: "2rem" }}>
+    <div className="settings-section" style={{ marginBottom: "2rem" }}>
       <div
         style={{
           display: "flex",
@@ -44,7 +44,7 @@ const AuthSettings: React.FC<AuthSettingsProps> = ({
           marginBottom: "0.75rem",
         }}
       >
-        <label className="openai-section-label">{t('authSettings.title')}</label>
+        <label className="settings-section-label">{t('authSettings.title')}</label>
         {hasUnsavedChanges && (
           <div style={{ display: "flex", gap: "0.5rem" }}>
             <button

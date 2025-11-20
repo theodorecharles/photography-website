@@ -35,7 +35,8 @@
     "maximize": "最大化",
     "restore": "復元",
     "expand": "展開",
-    "collapse": "折りたたむ"
+    "collapse": "折りたたむ",
+    "note": "ノート"
   },
   "app": {
     "loadingAlbums": "アルバムを読み込み中...",
@@ -95,11 +96,17 @@
     "focalLength": "焦点距離",
     "aperture": "絞り",
     "shutter": "シャッター速度",
-    "iso": "ISO",
+    "iso": "ISO  ",
     "dateTaken": "撮影日",
+    "resolution": "解像度  ",
+    "duration": "期間",
     "noPhotosYet": "まだ写真がありません",
     "albumEmpty": "このアルバムは空です。素晴らしい写真を追加する時間です！",
     "goToAdminPanel": "管理パネルに移動"
+  },
+  "video": {
+    "resolution": "解像度  ",
+    "duration": "期間"
   },
   "admin": {
     "title": "管理ポータル",
@@ -158,6 +165,8 @@
     "photoLicenseDescription": "他の人があなたの写真をどのように使用できるかを選択",
     "shuffleHomepage": "ホームページの写真をシャッフル",
     "shuffleHomepageDescription": "ページが読み込まれるたびにホームページの写真の順序をランダム化",
+    "animatedBackground": "アニメーション背景  ",
+    "animatedBackgroundDescription": "管理パネルとログインページでカラフルなアニメーション背景を有効にする  ",
     "primaryColor": "プライマリカラー",
     "secondaryColor": "セカンダリカラー",
     "metaDescription": "メタ説明",
@@ -170,6 +179,7 @@
     "photoLicenseUpdated": "写真ライセンスが更新されました！",
     "languageUpdated": "言語が更新されました！",
     "homepageShuffleSaved": "ホームページシャッフル設定が保存されました！",
+    "animatedBackgroundSaved": "アニメーション背景設定が保存されました！  ",
     "failedToSave": "{{section}}の保存に失敗しました",
     "failedToSaveLicense": "ライセンスの保存に失敗しました",
     "failedToSaveLanguage": "言語の保存に失敗しました",
@@ -177,7 +187,6 @@
     "errorSavingLicense": "ライセンスの保存中にエラーが発生しました",
     "errorSavingLanguage": "言語の保存中にエラーが発生しました",
     "errorSavingSetting": "設定の保存中にエラーが発生しました",
-    "logoSaved": "ロゴが正常に保存されました！",
     "siteNameSaved": "サイト名が正常に保存されました！",
     "primaryColorSaved": "プライマリカラーが正常に保存されました！",
     "secondaryColorSaved": "セカンダリカラーが正常に保存されました！",
@@ -229,6 +238,7 @@
     "deleteAlbum": "アルバムを削除",
     "deleteAlbumConfirm": "アルバム「{{albumName}}」を削除してもよろしいですか？\n\nこの操作により、このアルバム内のすべての写真が永久に削除されます。\n\nこの操作は元に戻すことができません。",
     "renameAlbum": "アルバムの名前を変更",
+    "clickToRename": "アルバムの名前を変更するにはクリックしてください",
     "newName": "新しい名前",
     "newNamePlaceholder": "新しい名前を入力",
     "currentName": "現在の名前",
@@ -243,6 +253,8 @@
     "selectPhotos": "写真を選択",
     "editPhoto": "写真を編集",
     "editPhotoTitle": "写真のタイトルを編集",
+    "editVideoTitle": "ビデオタイトルを編集",
+    "editMetadata": "メタデータを編集",
     "photoTitle": "写真のタイトル",
     "photoDescription": "写真の説明",
     "enterTitle": "タイトルを入力...",
@@ -366,7 +378,26 @@
     "invalidAlbumName": "無効なアルバム名  ",
     "nameUnchanged": "アルバム名は変更されていません  ",
     "albumNotFound": "アルバムが見つかりません  ",
-    "databaseUpdateFailed": "データベースの更新に失敗しました"
+    "databaseUpdateFailed": "データベースの更新に失敗しました",
+    "deleteVideo": "ビデオを削除  ",
+    "deleteVideoQuestion": "ビデオを削除しますか？  ",
+    "deleteVideoConfirm": "このビデオを削除してもよろしいですか？",
+    "titleLabel": "タイトル  ",
+    "descriptionLabel": "説明  ",
+    "enterDescription": "説明を入力...",
+    "updateThumbnail": "サムネイルを更新",
+    "useCurrentFrame": "現在のフレームを使用",
+    "updating": "更新中...",
+    "uploading": "アップロード中...",
+    "updatingThumbnail": "サムネイルを更新中...",
+    "thumbnailUpdated": "✓ サムネイルが更新されました！",
+    "failedToUpdateThumbnail": "✗ サムネイルの更新に失敗しました",
+    "uploadingThumbnail": "サムネイルをアップロード中...",
+    "thumbnailUploaded": "✓ サムネイルがアップロードされました！",
+    "failedToUploadThumbnail": "✗ サムネイルのアップロードに失敗しました  ",
+    "pleaseSelectImageFile": "✗ 画像ファイルを選択してください  ",
+    "unableToLoadVideo": "サムネイル選択のためのビデオを読み込めません。ビデオはまだ処理中かもしれません。",
+    "uploadThumbnail": "サムネイルをアップロード"
   },
   "settings": {
     "saved": "{{section}}設定が保存されました！",
@@ -401,7 +432,9 @@
       "optimizedImages": "最適化された画像",
       "forceRegenerateAllConfirm": "⚠️ これにより、すべての画像タイトルが再生成され、設定したカスタムタイトルが上書きされます。この操作は元に戻せません。\n\n続行してもよろしいですか？",
       "forceRegenerateImagesConfirm": "すべての画像を強制的に再生成しますか？しばらく時間がかかります。",
-      "runOptimizationConfirm": "すべての写真に画像最適化を実行しますか？"
+      "runOptimizationConfirm": "すべての写真に画像最適化を実行しますか？",
+      "optimizedVideos": "最適化された動画",
+      "forceRegenerateVideosConfirm": "⚠️ これにより、現在の品質設定で全ての動画が再エンコードされます。これは時間のかかる操作で、一時的にCPU使用率が増加します。\n\n既存の動画ファイルは置き換えられます。続行してもよろしいですか？"
     }
   },
   "userManagement": {
@@ -739,8 +772,8 @@
     }
   },
   "imageOptimization": {
-    "title": "画像最適化",
-    "description": "画像処理を最適化および管理",
+    "title": "画像品質  ",
+    "description": "画像品質と処理設定を構成する  ",
     "thumbnail": "サムネイル",
     "modal": "モーダル",
     "download": "ダウンロード",
@@ -749,13 +782,16 @@
     "maxDimension": "最大サイズ",
     "concurrencyDescription1": "同時に処理する画像の最大数。値を大きくするとバッチ処理が高速化しますが、CPUとメモリをより多く使用します。",
     "concurrencyDescription2": "目安：論理CPUコア数の約4倍。推奨：一般的なシステムでは8-16、高性能サーバーでは32-64。",
-    "maxParallelJobs": "最大並列ジョブ数"
+    "maxParallelJobs": "最大並列ジョブ数",
+    "warningNote": "画像品質設定の変更は、新しくアップロードされた写真にのみ適用されます。既存の画像は、使用しない限り現在の設定を保持します  ",
+    "forceRegenerate": "すべて強制再生成  ",
+    "warningNoteLocation": "詳細設定 → 最適化された画像。"
   },
   "links": {
     "title": "リンク",
     "description": "外部リンクと連絡先情報を管理",
     "titlePlaceholder": "タイトル",
-    "urlPlaceholder": "URL",
+    "urlPlaceholder": "URL  ",
     "moveUp": "上に移動",
     "moveDown": "下に移動",
     "deleteLink": "リンクを削除",
@@ -814,7 +850,9 @@
     "settings": "設定",
     "profile": "プロフィール",
     "settingsDescription": "ブランディング、リンク、システム設定を管理",
-    "failedToLoadConfig": "設定の読み込みに失敗しました"
+    "failedToLoadConfig": "設定の読み込みに失敗しました",
+    "loadingStyles": "スタイルを読み込み中...",
+    "loadingSettings": "設定を読み込み中..."
   },
   "securitySetup": {
     "title": "🔐 アカウントを保護する",
@@ -1064,5 +1102,41 @@
     "successMessage": "テストメールが正常に送信されました！受信トレイを確認してください。  ",
     "errorMessage": "テストメールの送信に失敗しました",
     "errorMessageDetail": "テストメールの送信に失敗しました。設定を確認してください。"
+  },
+  "videoList": {
+    "noVideosYet": "まだ動画はありません  ",
+    "albumEmpty": "このアルバムは空です。動画をアップロードして始めましょう！  ",
+    "copyShareLink": "共有リンクをコピー  ",
+    "linkCopied": "リンクがコピーされました！  ",
+    "share": "共有  "
+  },
+  "videoPage": {
+    "invalidUrl": "無効な動画URL  ",
+    "albumNotFound": "アルバムが見つかりません  ",
+    "failedToLoad": "動画の読み込みに失敗しました  ",
+    "videoNotFound": "動画が見つかりません  ",
+    "unknownError": "不明なエラーが発生しました",
+    "errorTitle": "ビデオが見つかりません",
+    "backToAlbum": "アルバムに戻る"
+  },
+  "videoOptimization": {
+    "title": "動画品質",
+    "description": "ビデオ品質、ストリーミング、およびHLS設定を構成する",
+    "hlsStreaming": "HLSストリーミング",
+    "hlsStreamingSection": "HLS設定",
+    "hlsDescription": "適応型ビデオ配信のためのHTTPライブストリーミング（HLS）設定を構成する",
+    "segmentDuration": "セグメントの長さ（秒）",
+    "segmentDurationHelp": "各ビデオセグメントの長さ。長いセグメント（4-6秒）はサーバーリクエストを減少させます。",
+    "videoResolutions": "ビデオ解像度",
+    "videoResolutionsSection": "ビデオ解像度",
+    "resolutionsDescription": "解像度を有効にし、その品質設定を構成します。ビットレートが高いほど品質が向上しますが、ファイルサイズも増加します。",
+    "videoBitrate": "ビデオビットレート",
+    "audioBitrate": "オーディオビットレート",
+    "videoBitrateExample": "例：400k、2500k、5000k",
+    "audioBitrateExample": "例: 64k, 96k, 128k, 192k",
+    "on": "オン",
+    "off": "オフ",
+    "warningNote": "動画設定の変更は、新しくアップロードされた動画にのみ適用されます。既存の動画は、使用しない限り現在の品質設定を維持します。",
+    "forceRegenerate": "すべてを強制再生成"
   }
 }

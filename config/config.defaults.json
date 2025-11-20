@@ -23,6 +23,35 @@
           "quality": 100,
           "maxDimension": 4096
         }
+      },
+      "video": {
+        "segmentDuration": 4,
+        "resolutions": {
+          "240p": {
+            "enabled": true,
+            "height": 240,
+            "videoBitrate": "400k",
+            "audioBitrate": "128k"
+          },
+          "360p": {
+            "enabled": true,
+            "height": 360,
+            "videoBitrate": "800k",
+            "audioBitrate": "128k"
+          },
+          "720p": {
+            "enabled": true,
+            "height": 720,
+            "videoBitrate": "2500k",
+            "audioBitrate": "192k"
+          },
+          "1080p": {
+            "enabled": true,
+            "height": 1080,
+            "videoBitrate": "5000k",
+            "audioBitrate": "192k"
+          }
+        }
       }
     },
     "security": {

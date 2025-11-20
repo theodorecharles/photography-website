@@ -33,6 +33,7 @@ export { default as ListViewIcon } from './ListViewIcon';
 export { default as LockIcon } from './LockIcon';
 export { default as MagicWandIcon } from './MagicWandIcon';
 export { default as LogoutIcon } from './LogoutIcon';
+export { default as PlayIcon } from './PlayIcon';
 export { default as PlusCircleIcon } from './PlusCircleIcon';
 export { default as SettingsIcon } from './SettingsIcon';
 export { default as ShuffleIcon } from './ShuffleIcon';
@@ -40,4 +41,7 @@ export { default as StopIcon } from './StopIcon';
 export { default as TrashIcon } from './TrashIcon';
 export { default as UploadIcon } from './UploadIcon';
 export { UserIcon } from './UserIcon';
+export { default as VideoIcon } from './VideoIcon';
+export { default as ShareIcon } from './ShareIcon';
+export { default as ArrowLeftIcon } from './ArrowLeftIcon';
 

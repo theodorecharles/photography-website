@@ -32,19 +32,26 @@ interface AdvancedSettingsSectionProps {
   setMessage: (message: { type: "success" | "error"; text: string }) => void;
   hasMissingTitles: boolean;
   optimizationComplete: boolean;
+  videoOptimizationComplete: boolean;
   // SSE state
   generatingTitles: boolean;
   isOptimizationRunning: boolean;
+  isVideoOptimizationRunning: boolean;
   // Actions
   onGenerateTitles: (forceRegenerate: boolean) => void;
   onStopTitles: () => void;
   onRunOptimization: (force: boolean) => void;
   onStopOptimization: () => void;
+  onRunVideoOptimization: () => void;
+  onStopVideoOptimization: () => void;
   onSetupOpenAI: () => void;
   showConfirmation: (message: string) => Promise<boolean>;
   // SMTP navigation
   scrollToSmtp?: boolean;
   setScrollToSmtp?: (value: boolean) => void;
+  // Advanced section navigation
+  scrollToAdvanced?: boolean;
+  setScrollToAdvanced?: (value: boolean) => void;
   sectionRef?: React.RefObject<HTMLDivElement | null>;
   // Restart modal callback
   onOpenObserveSave?: () => void;
@@ -60,17 +67,23 @@ const AdvancedSettingsSection: React.FC<AdvancedSettingsSectionProps> = ({
   setMessage,
   hasMissingTitles,
   optimizationComplete,
+  videoOptimizationComplete,
   generatingTitles,
   isOptimizationRunning,
+  isVideoOptimizationRunning,
   onGenerateTitles,
   onOpenObserveSave,
   onStopTitles,
   onRunOptimization,
   onStopOptimization,
+  onRunVideoOptimization,
+  onStopVideoOptimization,
   onSetupOpenAI,
   showConfirmation,
   scrollToSmtp,
   setScrollToSmtp,
+  scrollToAdvanced,
+  setScrollToAdvanced,
   sectionRef,
 }) => {
   const { t } = useTranslation();
@@ -96,6 +109,26 @@ const AdvancedSettingsSection: React.FC<AdvancedSettingsSectionProps> = ({
       }, 400); // Wait for expansion animation
     }
   }, [scrollToSmtp, setScrollToSmtp]);
+
+  // Handle scrollToAdvanced trigger from parent (for navigation from optimization sections)
+  useEffect(() => {
+    if (scrollToAdvanced) {
+      setShowAdvanced(true);
+      setTimeout(() => {
+        if (sectionRef?.current) {
+          const yOffset = -100; // Offset to account for header
+          const element = sectionRef.current;
+          const y =
+            element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+          window.scrollTo({ top: y, behavior: "smooth" });
+        }
+        // Reset the trigger
+        if (setScrollToAdvanced) {
+          setScrollToAdvanced(false);
+        }
+      }, 400); // Wait for expansion animation
+    }
+  }, [scrollToAdvanced, setScrollToAdvanced, sectionRef]);
 
   const updateConfig = (path: string[], value: any) => {
     if (!config) return;
@@ -316,12 +349,16 @@ const AdvancedSettingsSection: React.FC<AdvancedSettingsSectionProps> = ({
           config={config}
           hasMissingTitles={hasMissingTitles}
           optimizationComplete={optimizationComplete}
+          videoOptimizationComplete={videoOptimizationComplete}
           generatingTitles={generatingTitles}
           isOptimizationRunning={isOptimizationRunning}
+          isVideoOptimizationRunning={isVideoOptimizationRunning}
           onGenerateTitles={onGenerateTitles}
           onStopTitles={onStopTitles}
           onRunOptimization={onRunOptimization}
           onStopOptimization={onStopOptimization}
+          onRunVideoOptimization={onRunVideoOptimization}
+          onStopVideoOptimization={onStopVideoOptimization}
           onSetupOpenAI={onSetupOpenAI}
           showConfirmation={showConfirmation}
         />

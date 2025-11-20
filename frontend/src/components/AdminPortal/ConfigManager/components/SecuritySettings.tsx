@@ -29,7 +29,7 @@ const SecuritySettings: React.FC<SecuritySettingsProps> = ({
   savingSection,
 }) => {
   return (
-    <div className="openai-section" style={{ marginBottom: "2rem" }}>
+    <div className="settings-section" style={{ marginBottom: "2rem" }}>
       <div
         style={{
           display: "flex",
@@ -38,7 +38,7 @@ const SecuritySettings: React.FC<SecuritySettingsProps> = ({
           marginBottom: "0.75rem",
         }}
       >
-        <label className="openai-section-label">SECURITY</label>
+        <label className="settings-section-label">SECURITY</label>
         {hasUnsavedChanges && (
           <div style={{ display: "flex", gap: "0.5rem" }}>
             <button

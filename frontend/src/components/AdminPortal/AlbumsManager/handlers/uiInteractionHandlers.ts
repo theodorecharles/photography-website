@@ -46,6 +46,7 @@ interface UIInteractionHandlersProps {
   setMessage: (message: { type: 'success' | 'error'; text: string }) => void;
   saveAlbumOrder: (albumsToSave?: Album[], silent?: boolean) => Promise<boolean>;
   uploadingImages: any[];
+  t: (key: string) => string;
 }
 
 export const createUIInteractionHandlers = (props: UIInteractionHandlersProps) => {
@@ -54,6 +55,7 @@ export const createUIInteractionHandlers = (props: UIInteractionHandlersProps) =
     loadAlbums,
     setShowNewAlbumModal,
     setNewAlbumFiles,
+    t,
     setNewAlbumModalName,
     setIsGhostAlbumDragOver,
     setDragOverFolderGhostTile,
@@ -127,7 +129,7 @@ export const createUIInteractionHandlers = (props: UIInteractionHandlersProps) =
 
     // Only show error if NO valid images were found
     if (validation.valid.length === 0) {
-      setMessage({ type: 'error', text: 'No valid image files found. Please select JPEG, PNG, GIF, or WebP images.' });
+      setMessage({ type: 'error', text: t('albumsManager.noValidImageFiles') });
       return;
     }
 
@@ -210,7 +212,7 @@ export const createUIInteractionHandlers = (props: UIInteractionHandlersProps) =
 
     // Only show error if NO valid images were found
     if (validation.valid.length === 0) {
-      setMessage({ type: 'error', text: 'No valid image files found. Please select JPEG, PNG, GIF, or WebP images.' });
+      setMessage({ type: 'error', text: t('albumsManager.noValidImageFiles') });
       return;
     }
 
@@ -312,7 +314,7 @@ export const createUIInteractionHandlers = (props: UIInteractionHandlersProps) =
 
     // Only show error if NO valid images were found
     if (validation.valid.length === 0) {
-      setMessage({ type: 'error', text: 'No valid image files found. Please select JPEG, PNG, GIF, or WebP images.' });
+      setMessage({ type: 'error', text: t('albumsManager.noValidImageFiles') });
       return;
     }
 
@@ -348,7 +350,7 @@ export const createUIInteractionHandlers = (props: UIInteractionHandlersProps) =
 
     // Only show error if NO valid images were found
     if (validation.valid.length === 0) {
-      setMessage({ type: 'error', text: 'No valid image files found. Please select JPEG, PNG, GIF, or WebP images.' });
+      setMessage({ type: 'error', text: t('albumsManager.noValidImageFiles') });
       return;
     }
 

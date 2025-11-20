@@ -686,3 +686,112 @@ export function trackSharedAlbumView(albumName: string, secretKeyHash: string) {
   });
 }
 
+/**
+ * Track video play (when play starts)
+ */
+export function trackVideoPlay(videoId: string, album: string, videoTitle: string, currentTime: number, duration: number) {
+  sendEvent({
+    event_type: 'video_play',
+    video_id: videoId,
+    album: album,
+    video_title: videoTitle,
+    current_time_seconds: Math.round(currentTime),
+    duration_seconds: Math.round(duration),
+    watch_percentage: Math.round((currentTime / duration) * 100),
+  });
+}
+
+/**
+ * Track video pause
+ */
+export function trackVideoPause(videoId: string, album: string, videoTitle: string, currentTime: number, duration: number) {
+  sendEvent({
+    event_type: 'video_pause',
+    video_id: videoId,
+    album: album,
+    video_title: videoTitle,
+    current_time_seconds: Math.round(currentTime),
+    duration_seconds: Math.round(duration),
+    watch_percentage: Math.round((currentTime / duration) * 100),
+  });
+}
+
+/**
+ * Track video ended (completed watching)
+ */
+export function trackVideoEnd(videoId: string, album: string, videoTitle: string, duration: number, totalWatchTime: number) {
+  sendEvent({
+    event_type: 'video_ended',
+    video_id: videoId,
+    album: album,
+    video_title: videoTitle,
+    duration_seconds: Math.round(duration),
+    total_watch_time_seconds: Math.round(totalWatchTime),
+    completion_percentage: 100,
+  });
+}
+
+/**
+ * Track video progress milestones (25%, 50%, 75%, 100%)
+ */
+export function trackVideoProgress(videoId: string, album: string, videoTitle: string, currentTime: number, duration: number, milestone: number) {
+  sendEvent({
+    event_type: 'video_progress',
+    video_id: videoId,
+    album: album,
+    video_title: videoTitle,
+    current_time_seconds: Math.round(currentTime),
+    duration_seconds: Math.round(duration),
+    milestone_percentage: milestone,
+  });
+}
+
+/**
+ * Track video seek (user jumps to different time)
+ */
+export function trackVideoSeek(videoId: string, album: string, videoTitle: string, fromTime: number, toTime: number, duration: number) {
+  sendEvent({
+    event_type: 'video_seek',
+    video_id: videoId,
+    album: album,
+    video_title: videoTitle,
+    from_time_seconds: Math.round(fromTime),
+    to_time_seconds: Math.round(toTime),
+    duration_seconds: Math.round(duration),
+    seek_distance_seconds: Math.round(Math.abs(toTime - fromTime)),
+  });
+}
+
+/**
+ * Track video quality change
+ */
+export function trackVideoQualityChange(videoId: string, album: string, videoTitle: string, quality: string, isAutomatic: boolean) {
+  sendEvent({
+    event_type: 'video_quality_change',
+    video_id: videoId,
+    album: album,
+    video_title: videoTitle,
+    quality: quality,
+    automatic: isAutomatic,
+  });
+}
+
+/**
+ * Track video session summary (when modal closes or video changes)
+ */
+export function trackVideoSession(videoId: string, album: string, videoTitle: string, duration: number, totalWatchTime: number, maxPercentageReached: number, playCount: number, pauseCount: number, seekCount: number) {
+  sendEvent({
+    event_type: 'video_session_summary',
+    video_id: videoId,
+    album: album,
+    video_title: videoTitle,
+    duration_seconds: Math.round(duration),
+    total_watch_time_seconds: Math.round(totalWatchTime),
+    max_percentage_reached: maxPercentageReached,
+    play_count: playCount,
+    pause_count: pauseCount,
+    seek_count: seekCount,
+    engagement_rate: totalWatchTime > 0 ? Math.round((totalWatchTime / duration) * 100) : 0,
+  });
+}
+

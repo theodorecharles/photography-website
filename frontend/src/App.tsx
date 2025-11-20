@@ -17,7 +17,7 @@ import {
   Link,
 } from "react-router-dom";
 import "./App.css";
-import PhotoGrid from "./components/PhotoGrid";
+import ContentGrid from "./components/ContentGrid";
 import Header, { ExternalLink } from "./components/Header";
 import Footer from "./components/Footer";
 import ScrollToTop from "./components/Misc/ScrollToTop";
@@ -47,6 +47,7 @@ const PasswordResetComplete = lazy(
   () => import("./components/Misc/PasswordResetComplete")
 );
 const LogViewer = lazy(() => import("./components/LogViewer/LogViewer"));
+const VideoPage = lazy(() => import("./components/VideoPage"));
 
 // LicenseWrapper component to show footer when license page loads
 function LicenseWrapper({
@@ -100,7 +101,7 @@ function AlbumRoute({
         url={`${SITE_URL}/album/${album}`}
         image={`${SITE_URL}/photos/avatar.png`}
       />
-      <PhotoGrid
+      <ContentGrid
         album={decodedAlbum}
         onAlbumNotFound={onAlbumNotFound}
         onLoadComplete={onLoadComplete}
@@ -358,10 +359,16 @@ function App() {
       }
       setExternalLinks(externalLinksData.externalLinks);
       setSiteName(brandingData.siteName || "Galleria");
-      setAvatarPath(brandingData.avatarPath || "/photos/avatar.png");
+      
+      // Only update avatar cache bust if the avatar path actually changed
+      const newAvatarPath = brandingData.avatarPath || "/photos/avatar.png";
+      if (newAvatarPath !== avatarPath) {
+        setAvatarPath(newAvatarPath);
+        setAvatarCacheBust(Date.now());
+      }
+      
       setPrimaryColor(brandingData.primaryColor || "#4ade80");
       setSecondaryColor(brandingData.secondaryColor || "#3b82f6");
-      setAvatarCacheBust(Date.now()); // Update cache bust when branding refreshes
 
       // Update language from branding config if available
       if (brandingData.language && i18n.language !== brandingData.language) {
@@ -538,7 +545,8 @@ function App() {
   const isStandalonePage =
     location.pathname.startsWith("/shared/") ||
     location.pathname.startsWith("/setup") ||
-    location.pathname.startsWith("/logs");
+    location.pathname.startsWith("/logs") ||
+    location.pathname.startsWith("/video/");
 
   // Standalone pages render without the main layout
   if (isStandalonePage) {
@@ -556,6 +564,7 @@ function App() {
             <Route path="/shared/:secretKey" element={<SharedAlbum />} />
             <Route path="/setup" element={<SetupWizard />} />
             <Route path="/logs" element={<LogViewer />} />
+            <Route path="/video/:album/:filename" element={<VideoPage />} />
           </Routes>
         </Suspense>
       </div>
@@ -600,7 +609,7 @@ function App() {
                     title={t("seo.homepageTitle", { siteName })}
                     description={t("seo.homepageDescription", { siteName })}
                   />
-                  <PhotoGrid
+                  <ContentGrid
                     album="homepage"
                     onLoadComplete={() => setShowFooter(true)}
                   />

@@ -36,6 +36,7 @@ export const usePhotoManagement = ({ setMessage, showConfirmation }: UsePhotoMan
   // Photo editing
   const [editingPhoto, setEditingPhoto] = useState<Photo | null>(null);
   const [editTitleValue, setEditTitleValue] = useState('');
+  const [editDescriptionValue, setEditDescriptionValue] = useState('');
   const [showEditModal, setShowEditModal] = useState(false);
 
   const loadPhotos = useCallback(async (albumName: string) => {
@@ -51,8 +52,10 @@ export const usePhotoManagement = ({ setMessage, showConfirmation }: UsePhotoMan
       }
 
       const data = await res.json();
-      setAlbumPhotos(data);
-      setOriginalPhotoOrder(data);
+      // API returns { photos: [...], published: boolean }
+      const photos = Array.isArray(data) ? data : (data.photos || []);
+      setAlbumPhotos(photos);
+      setOriginalPhotoOrder(photos);
       setHasEverDragged(false);
     } catch (err) {
       setMessage({ type: 'error', text: 'Failed to load photos' });
@@ -173,8 +176,8 @@ export const usePhotoManagement = ({ setMessage, showConfirmation }: UsePhotoMan
     setHasEverDragged(true);
   }, []);
 
-  const updatePhotoTitle = useCallback(
-    async (filename: string, newTitle: string): Promise<boolean> => {
+  const updatePhotoMetadata = useCallback(
+    async (filename: string, newTitle: string, newDescription: string): Promise<boolean> => {
       if (!selectedAlbum) return false;
       
       try {
@@ -183,13 +186,13 @@ export const usePhotoManagement = ({ setMessage, showConfirmation }: UsePhotoMan
           {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ title: newTitle }),
+            body: JSON.stringify({ title: newTitle, description: newDescription }),
             credentials: 'include',
           }
         );
 
         if (!res.ok) {
-          throw new Error('Failed to update title');
+          throw new Error('Failed to update metadata');
         }
 
         // Find the photo to get old title
@@ -204,19 +207,23 @@ export const usePhotoManagement = ({ setMessage, showConfirmation }: UsePhotoMan
         // Update local state
         setAlbumPhotos((prev) =>
           prev.map((p) =>
-            (p.id.split('/').pop() || p.id) === filename ? { ...p, title: newTitle } : p
+            (p.id.split('/').pop() || p.id) === filename 
+              ? { ...p, title: newTitle, description: newDescription } 
+              : p
           )
         );
         setOriginalPhotoOrder((prev) =>
           prev.map((p) =>
-            (p.id.split('/').pop() || p.id) === filename ? { ...p, title: newTitle } : p
+            (p.id.split('/').pop() || p.id) === filename 
+              ? { ...p, title: newTitle, description: newDescription } 
+              : p
           )
         );
         
-        setMessage({ type: 'success', text: 'Photo title updated!' });
+        setMessage({ type: 'success', text: 'Metadata updated!' });
         return true;
       } catch (err) {
-        setMessage({ type: 'error', text: 'Failed to update title' });
+        setMessage({ type: 'error', text: 'Failed to update metadata' });
         return false;
       }
     },
@@ -226,6 +233,7 @@ export const usePhotoManagement = ({ setMessage, showConfirmation }: UsePhotoMan
   const openEditModal = useCallback((photo: Photo) => {
     setEditingPhoto(photo);
     setEditTitleValue(photo.title || '');
+    setEditDescriptionValue(photo.description || '');
     setShowEditModal(true);
   }, []);
 
@@ -233,17 +241,18 @@ export const usePhotoManagement = ({ setMessage, showConfirmation }: UsePhotoMan
     setShowEditModal(false);
     setEditingPhoto(null);
     setEditTitleValue('');
+    setEditDescriptionValue('');
   }, []);
 
   const handleEditSave = useCallback(async () => {
     if (!editingPhoto) return;
     
     const filename = editingPhoto.id.split('/').pop() || '';
-    const success = await updatePhotoTitle(filename, editTitleValue);
+    const success = await updatePhotoMetadata(filename, editTitleValue, editDescriptionValue);
     if (success) {
       closeEditModal();
     }
-  }, [editingPhoto, editTitleValue, updatePhotoTitle, closeEditModal]);
+  }, [editingPhoto, editTitleValue, editDescriptionValue, updatePhotoMetadata, closeEditModal]);
 
   // Photo drag handlers
   const handlePhotoDragStart = useCallback((event: DragEndEvent, setActiveId?: (id: string | null) => void) => {
@@ -305,13 +314,15 @@ export const usePhotoManagement = ({ setMessage, showConfirmation }: UsePhotoMan
     savePhotoOrder,
     cancelPhotoReorder,
     shufflePhotos,
-    updatePhotoTitle,
+    updatePhotoMetadata,
     handlePhotoDragStart,
     handlePhotoDragEnd,
     // Edit modal
     editingPhoto,
     editTitleValue,
     setEditTitleValue,
+    editDescriptionValue,
+    setEditDescriptionValue,
     showEditModal,
     openEditModal,
     closeEditModal,

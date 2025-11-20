@@ -34,6 +34,7 @@ export interface BrandingConfig {
   shuffleHomepage?: boolean;
   photoLicense?: string;
   language?: string;
+  enableAnimatedBackground?: boolean;
 }
 
 export interface ImageOptimizationSettings {

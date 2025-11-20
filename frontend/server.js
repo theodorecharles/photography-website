@@ -177,8 +177,14 @@ app.use(
 );
 
 // Serve albums-data JSON files with no caching (must always be fresh)
-app.get("/albums-data/*.json", (req, res, next) => {
-  const jsonPath = path.join(__dirname, "dist", req.path);
+// Express 5 changed wildcard syntax - use parameter instead
+app.get("/albums-data/:filename", (req, res, next) => {
+  // Only allow .json files
+  if (!req.params.filename.endsWith('.json')) {
+    return next();
+  }
+  
+  const jsonPath = path.join(__dirname, "dist", "albums-data", req.params.filename);
 
   // Always read fresh from disk (no caching)
   fs.readFile(jsonPath, "utf8", (err, data) => {
@@ -317,6 +323,7 @@ function setCSPHeader(res, apiUrl, configFile) {
       "style-src 'self' 'unsafe-inline'; " +
       "worker-src 'self'; " +
       `img-src 'self' ${apiDomainHttps} ${apiUrl} data: blob: https://*.basemaps.cartocdn.com https://www.gravatar.com; ` +
+      `media-src 'self' ${apiDomainHttps} ${apiUrl} blob:; ` +
       `connect-src 'self' ${apiDomainHttps} ${apiUrl}; ` +
       "font-src 'self'; " +
       "object-src 'none'; " +
@@ -328,7 +335,8 @@ function setCSPHeader(res, apiUrl, configFile) {
 
 // Handle client-side routing (catch-all for React routes)
 // This must come AFTER all other routes
-app.get("*", async (req, res) => {
+// Express 5: use regex for catch-all routes
+app.get(/^\/.*/, async (req, res) => {
   const indexPath = path.join(__dirname, "dist", "index.html");
 
   // Check if this is the homepage (root path)

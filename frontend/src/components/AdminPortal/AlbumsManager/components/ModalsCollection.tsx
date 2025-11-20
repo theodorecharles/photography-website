@@ -13,6 +13,7 @@ import { Photo, Folder } from '../types';
 import { cacheBustValue } from '../../../../config';
 import { MagicWandIcon } from '../../../icons';
 import { error } from '../../../../utils/logger';
+import VideoThumbnailPicker from './VideoThumbnailPicker';
 
 
 interface ConfirmModalConfig {
@@ -33,6 +34,8 @@ interface ModalsCollectionProps {
   editingPhoto: Photo | null;
   editTitleValue: string;
   setEditTitleValue: (value: string) => void;
+  editDescriptionValue: string;
+  setEditDescriptionValue: (value: string) => void;
   handleCloseEditModal: () => void;
   handleSaveTitle: () => void;
   
@@ -105,6 +108,8 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
   editingPhoto,
   editTitleValue,
   setEditTitleValue,
+  editDescriptionValue,
+  setEditDescriptionValue,
   handleCloseEditModal,
   handleSaveTitle,
   
@@ -229,7 +234,7 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
   
   return (
     <>
-      {/* Edit Photo Title Modal */}
+      {/* Edit Photo/Video Title Modal */}
       {showEditModal && editingPhoto && createPortal(
         <div 
           className="edit-title-modal" 
@@ -237,7 +242,7 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
         >
           <div className="edit-modal" onClick={(e) => e.stopPropagation()}>
             <div className="edit-modal-header">
-              <h3>{t('albumsManager.editPhotoTitle')}</h3>
+                  <h3>{t('albumsManager.editMetadata')}</h3>
               <button 
                 className="modal-close-btn"
                 onClick={handleCloseEditModal}
@@ -248,15 +253,48 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
             </div>
             
             <div className="edit-modal-body">
-              <div className="edit-modal-photo">
-                <img 
-                  src={`${API_URL}${editingPhoto.thumbnail}?i=${cacheBustValue}`}
-                  alt=""
+              {/* Only show thumbnail preview for photos, not videos */}
+              {editingPhoto.media_type !== 'video' && (
+                <div className="edit-modal-photo">
+                  <img 
+                    src={`${API_URL}${editingPhoto.thumbnail}?i=${cacheBustValue}`}
+                    alt=""
+                  />
+                </div>
+              )}
+              
+              {/* Video Thumbnail Picker - show first for videos */}
+              {editingPhoto.media_type === 'video' && (
+                <VideoThumbnailPicker
+                  album={editingPhoto.album}
+                  filename={editingPhoto.id.split('/').pop() || editingPhoto.id}
+                  onThumbnailUpdated={() => {
+                    // Force thumbnail reload everywhere by updating timestamp
+                    const timestamp = Date.now();
+                    
+                    // Update modal thumbnail
+                    const modalImg = document.querySelector('.edit-modal-photo img') as HTMLImageElement;
+                    if (modalImg) {
+                      const src = modalImg.src.split('?')[0];
+                      modalImg.src = `${src}?t=${timestamp}`;
+                    }
+                    
+                    // Update grid/list thumbnails for this video
+                    const gridImages = document.querySelectorAll(`img[src*="${editingPhoto.thumbnail}"]`);
+                    gridImages.forEach((img) => {
+                      const htmlImg = img as HTMLImageElement;
+                      const src = htmlImg.src.split('?')[0];
+                      htmlImg.src = `${src}?i=${timestamp}`;
+                    });
+                  }}
                 />
-              </div>
+              )}
               
               <div className="edit-modal-info" style={{ marginTop: '1rem' }}>
-                <div style={{ position: 'relative' }}>
+                <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 600, color: 'rgba(255, 255, 255, 0.9)' }}>
+                  {t('albumsManager.titleLabel')}
+                </label>
+                <div style={{ position: 'relative', marginBottom: '1rem' }}>
                   <input
                     type="text"
                     value={editTitleValue}
@@ -265,7 +303,8 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
                     placeholder={t('albumsManager.enterTitle')}
                     style={{ paddingRight: hasOpenAI ? '3rem' : undefined }}
                     onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
+                      if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
                         handleSaveTitle();
                       } else if (e.key === 'Escape') {
                         handleCloseEditModal();
@@ -314,12 +353,31 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
                   <p style={{ 
                     color: '#ff4444', 
                     fontSize: '0.875rem', 
-                    marginTop: '0.5rem',
-                    marginBottom: 0
+                    marginTop: '-0.5rem',
+                    marginBottom: '1rem'
                   }}>
                     {aiTitleError}
                   </p>
                 )}
+                
+                <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 600, color: 'rgba(255, 255, 255, 0.9)' }}>
+                  {t('albumsManager.descriptionLabel')}
+                </label>
+                <textarea
+                  value={editDescriptionValue}
+                  onChange={(e) => setEditDescriptionValue(e.target.value)}
+                  className="edit-modal-input"
+                  placeholder={t('albumsManager.enterDescription')}
+                  rows={3}
+                  style={{ resize: 'vertical', minHeight: '80px' }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && e.ctrlKey) {
+                      handleSaveTitle();
+                    } else if (e.key === 'Escape') {
+                      handleCloseEditModal();
+                    }
+                  }}
+                />
               </div>
             </div>
             
@@ -933,7 +991,11 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
         >
           <div className="edit-modal confirm-modal" onClick={(e) => e.stopPropagation()}>
             <div className="edit-modal-header">
-              <h3>{confirmConfig.photo ? t('albumsManager.deletePhotoQuestion') : t('albumsManager.confirmAction')}</h3>
+              <h3>{confirmConfig.photo 
+                ? (confirmConfig.confirmText?.includes('video') || confirmConfig.confirmText?.includes('Video') 
+                    ? t('albumsManager.deleteVideoQuestion') 
+                    : t('albumsManager.deletePhotoQuestion'))
+                : t('albumsManager.confirmAction')}</h3>
               <button 
                 className="modal-close-btn"
                 onClick={() => setShowConfirmModal(false)}

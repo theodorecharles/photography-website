@@ -14,7 +14,7 @@ import { useSearchParams } from 'react-router-dom';
 import { UploadingImage, AlbumsManagerProps, ConfirmModalConfig, Photo } from './types';
 import { trackAlbumCreated } from '../../../utils/analytics';
 import { useSSEToaster } from '../../../contexts/SSEToasterContext';
-import PhotosPanel from './components/PhotosPanel';
+import AlbumContentPanel from './components/AlbumContentPanel';
 import AlbumToolbar from './components/AlbumToolbar';
 import FoldersSection from './components/FoldersSection';
 import UncategorizedSection from './components/UncategorizedSection';
@@ -69,8 +69,8 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
   // Track which photo is being deleted for animation
   const [deletingPhotoId, setDeletingPhotoId] = useState<string | null>(null);
   
-  // Store reference to PhotosPanel close handler for album deletion
-  const [photosPanelCloseHandler, setPhotosPanelCloseHandler] = useState<(() => void) | null>(null);
+  // Store reference to AlbumContentPanel close handler for album deletion
+  const [albumContentPanelCloseHandler, setAlbumContentPanelCloseHandler] = useState<(() => void) | null>(null);
   
   // Helper function to show confirmation dialog
   const showConfirmation = useCallback((config: ConfirmModalConfig) => {
@@ -110,6 +110,8 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     editingPhoto,
     editTitleValue,
     setEditTitleValue,
+    editDescriptionValue,
+    setEditDescriptionValue,
     showEditModal,
     openEditModal,
     closeEditModal,
@@ -275,7 +277,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     uploadingAlbumRef.current = uploadingAlbum;
   }, [uploadingAlbum]);
 
-  // Connect to optimization stream when PhotosPanel is open (memoize to prevent recreating on every render)
+  // Connect to optimization stream when AlbumContentPanel is open (memoize to prevent recreating on every render)
   const optimizationStreamHandlers = React.useMemo(
     () => createOptimizationStreamHandlers({
       setUploadingImages,
@@ -494,6 +496,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     setMessage,
     loadAlbums,
     language: i18n.language,
+    t,
   });
 
   const albumHandlers = createAlbumHandlers({
@@ -512,7 +515,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     renamingAlbum,
     newAlbumName,
     showConfirmation,
-    closePhotosPanel: photosPanelCloseHandler || undefined,
+    closePhotosPanel: albumContentPanelCloseHandler || undefined,
     t,
   });
 
@@ -527,6 +530,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     setTargetFolderId,
     ghostTileFileInputRef,
     folderGhostTileRefs,
+    t,
     setMessage,
     saveAlbumOrder: albumManagement.saveAlbumOrder,
     uploadingImages,
@@ -832,7 +836,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
         </DndContext>
 
           {selectedAlbum && (
-            <PhotosPanel
+            <AlbumContentPanel
               selectedAlbum={selectedAlbum}
               albumPhotos={albumPhotos}
               uploadingImages={uploadingAlbum === selectedAlbum ? uploadingImages : []}
@@ -845,7 +849,7 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
               localFolders={localFolders}
               deletingPhotoId={deletingPhotoId}
               onClose={deselectAlbum}
-              setCloseHandler={setPhotosPanelCloseHandler}
+              setCloseHandler={setAlbumContentPanelCloseHandler}
               onUploadPhotos={uploadHandlers.handleUploadPhotos}
               onDeleteAlbum={albumHandlers.handleDeleteAlbum}
               onRenameAlbum={albumHandlers.handleInlineRenameAlbum}
@@ -884,6 +888,8 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
         editingPhoto={editingPhoto}
         editTitleValue={editTitleValue}
         setEditTitleValue={setEditTitleValue}
+        editDescriptionValue={editDescriptionValue}
+        setEditDescriptionValue={setEditDescriptionValue}
         handleCloseEditModal={closeEditModal}
         handleSaveTitle={handleEditSave}
         showRenameModal={showRenameModal}

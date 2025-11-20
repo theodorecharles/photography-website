@@ -994,6 +994,7 @@
 }
 
 .list-item-thumbnail {
+  position: relative;
   flex-shrink: 0;
   width: 60px;
   height: 60px;
@@ -1196,6 +1197,22 @@
 .admin-photo-item img {
   opacity: 1 !important;
   object-fit: cover;
+}
+
+/* Video indicator overlay */
+.video-icon-overlay {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  background: rgba(0, 0, 0, 0.7);
+  border-radius: 4px;
+  padding: 4px 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  z-index: 2;
+  pointer-events: none;
 }
 
 .photo-overlay {
@@ -1841,7 +1858,6 @@
 .edit-modal-info {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
 }
 
 .edit-modal-label {

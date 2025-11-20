@@ -35,7 +35,8 @@
     "maximize": "Maximizar",
     "restore": "Restaurar",
     "expand": "Expandir",
-    "collapse": "Colapsar"
+    "collapse": "Colapsar",
+    "note": "Nota"
   },
   "app": {
     "loadingAlbums": "Carregando álbuns...",
@@ -54,7 +55,7 @@
   },
   "header": {
     "albums": "Álbuns",
-    "links": "Links",
+    "links": "Links  ",
     "editAlbum": "Editar este álbum",
     "editLinks": "Editar links",
     "logout": "Sair",
@@ -95,11 +96,17 @@
     "focalLength": "Distância Focal",
     "aperture": "Abertura",
     "shutter": "Obturador",
-    "iso": "ISO",
+    "iso": "ISO  ",
     "dateTaken": "Data da Captura",
+    "resolution": "Resolução  ",
+    "duration": "Duração",
     "noPhotosYet": "Sem Fotos Ainda",
     "albumEmpty": "Este álbum está vazio. É hora de adicionar algumas fotos incríveis!",
     "goToAdminPanel": "Ir para o Painel de Administração"
+  },
+  "video": {
+    "resolution": "Resolução  ",
+    "duration": "Duração"
   },
   "admin": {
     "title": "Portal de Administração",
@@ -158,6 +165,8 @@
     "photoLicenseDescription": "Escolha como outros podem usar suas fotografias",
     "shuffleHomepage": "Embaralhar Fotos da Página Inicial",
     "shuffleHomepageDescription": "Aleatorize a ordem das fotos na página inicial cada vez que a página for carregada",
+    "animatedBackground": "Fundo Animado  ",
+    "animatedBackgroundDescription": "Ativar fundo animado colorido no painel de administração e na página de login  ",
     "primaryColor": "Cor Primária",
     "secondaryColor": "Cor Secundária",
     "metaDescription": "Meta Descrição",
@@ -170,6 +179,7 @@
     "photoLicenseUpdated": "Licença de foto atualizada!",
     "languageUpdated": "Idioma atualizado!",
     "homepageShuffleSaved": "Configuração de embaralhamento da página inicial salva!",
+    "animatedBackgroundSaved": "Configuração de fundo animado salva!  ",
     "failedToSave": "Falha ao salvar {{section}}",
     "failedToSaveLicense": "Falha ao salvar licença",
     "failedToSaveLanguage": "Falha ao salvar idioma",
@@ -177,7 +187,6 @@
     "errorSavingLicense": "Erro ao salvar licença",
     "errorSavingLanguage": "Erro ao salvar idioma",
     "errorSavingSetting": "Erro ao salvar configuração",
-    "logoSaved": "Logotipo salvo com sucesso!  ",
     "siteNameSaved": "Nome do Site salvo com sucesso!  ",
     "primaryColorSaved": "Cor Primária salva com sucesso!  ",
     "secondaryColorSaved": "Cor Secundária salva com sucesso!  ",
@@ -229,6 +238,7 @@
     "deleteAlbum": "Excluir Álbum",
     "deleteAlbumConfirm": "Você tem certeza de que deseja excluir o álbum \"{{albumName}}\"?\n\nIsso excluirá permanentemente todas as fotos deste álbum.\n\nEsta ação não pode ser desfeita.",
     "renameAlbum": "Renomear Álbum",
+    "clickToRename": "Clique para renomear o álbum",
     "newName": "Novo Nome",
     "newNamePlaceholder": "Digite o novo nome",
     "currentName": "Nome Atual",
@@ -243,6 +253,8 @@
     "selectPhotos": "Selecionar Fotos",
     "editPhoto": "Editar Foto",
     "editPhotoTitle": "Editar Título da Foto",
+    "editVideoTitle": "Editar Título do Vídeo",
+    "editMetadata": "Editar Metadados",
     "photoTitle": "Título da Foto",
     "photoDescription": "Descrição da Foto",
     "enterTitle": "Digite o título...",
@@ -278,7 +290,7 @@
     "homepage": "Página Inicial",
     "onHomepage": "Na Página Inicial",
     "notOnHomepage": "Não na Página Inicial",
-    "upload": "Upload",
+    "upload": "Fazer upload  ",
     "preview": "Pré-visualização",
     "previewAlbum": "Pré-visualizar álbum",
     "generateShareableLink": "Gerar link compartilhável",
@@ -361,12 +373,31 @@
     "maxRetryAttemptsReached": "Número máximo de tentativas de repetição ({{maxRetries}}) alcançado para {{filename}}",
     "successfullyUploaded": "{{filename}} enviado com sucesso",
     "retryFailed": "Falha na repetição para {{filename}}",
-    "noValidImageFiles": "Nenhum arquivo de imagem válido encontrado. Por favor, selecione imagens JPEG, PNG, GIF ou WebP.",
+    "noValidImageFiles": "Nenhum arquivo válido encontrado. Por favor, selecione imagens (JPEG, PNG, GIF, WebP) ou vídeos (MP4, MOV, AVI, MKV, WebM).",
     "renameAlbumFailed": "Falha ao renomear álbum  ",
     "invalidAlbumName": "Nome do álbum inválido  ",
     "nameUnchanged": "Nome do álbum não foi alterado  ",
     "albumNotFound": "Álbum não encontrado  ",
-    "databaseUpdateFailed": "Falha ao atualizar o banco de dados"
+    "databaseUpdateFailed": "Falha ao atualizar o banco de dados",
+    "deleteVideo": "Excluir Vídeo  ",
+    "deleteVideoQuestion": "Excluir Vídeo?  ",
+    "deleteVideoConfirm": "Você tem certeza de que deseja excluir este vídeo?",
+    "titleLabel": "Título  ",
+    "descriptionLabel": "Descrição  ",
+    "enterDescription": "Digite a descrição...",
+    "updateThumbnail": "Atualizar Miniatura  ",
+    "useCurrentFrame": "Usar Quadro Atual  ",
+    "updating": "Atualizando...  ",
+    "uploading": "Enviando...  ",
+    "updatingThumbnail": "Atualizando miniatura...  ",
+    "thumbnailUpdated": "✓ Miniatura atualizada!  ",
+    "failedToUpdateThumbnail": "✗ Falha ao atualizar miniatura  ",
+    "uploadingThumbnail": "Enviando miniatura...  ",
+    "thumbnailUploaded": "✓ Miniatura enviada!",
+    "failedToUploadThumbnail": "✗ Falha ao enviar a miniatura  ",
+    "pleaseSelectImageFile": "✗ Por favor, selecione um arquivo de imagem  ",
+    "unableToLoadVideo": "Não foi possível carregar o vídeo para seleção da miniatura. O vídeo pode ainda estar sendo processado.",
+    "uploadThumbnail": "Carregar Miniatura"
   },
   "settings": {
     "saved": "Configurações de {{section}} salvas!",
@@ -401,7 +432,9 @@
       "optimizedImages": "Imagens otimizadas",
       "forceRegenerateAllConfirm": "⚠️ Isso irá regenerar TODOS os títulos das imagens e substituirá quaisquer títulos personalizados que você tenha definido. Esta ação não pode ser desfeita.\n\nVocê tem certeza de que deseja continuar?",
       "forceRegenerateImagesConfirm": "Forçar regenerar TODAS as imagens? Isso levará um tempo.",
-      "runOptimizationConfirm": "Executar otimização de imagem em todas as fotos?"
+      "runOptimizationConfirm": "Executar otimização de imagem em todas as fotos?",
+      "optimizedVideos": "Vídeos Otimizados",
+      "forceRegenerateVideosConfirm": "⚠️ Isso irá re-encodar TODOS os vídeos com as configurações de qualidade atuais. Esta é uma operação demorada e aumentará temporariamente o uso da CPU.\n\nOs arquivos de vídeo existentes serão substituídos. Você tem certeza de que deseja continuar?"
     }
   },
   "userManagement": {
@@ -409,9 +442,9 @@
     "description": "Gerencie contas de usuários, funções e autenticação",
     "inviteUser": "+ Convidar Usuário",
     "setupSmtp": "Configurar SMTP",
-    "email": "Email",
+    "email": "Email  ",
     "role": "Função",
-    "status": "Status",
+    "status": "Status  ",
     "actions": "Ações",
     "viewer": "Visualizador",
     "manager": "Gerente",
@@ -612,7 +645,7 @@
     "signInWithGoogle": "Entrar com Google",
     "signInWithPasskey": "Entrar com Chave de Acesso",
     "signInWithPassword": "Entrar com Senha",
-    "email": "Email",
+    "email": "Email  ",
     "enterEmail": "Digite seu email",
     "password": "Senha",
     "enterPassword": "Digite sua senha",
@@ -639,7 +672,7 @@
     "expirationForever": "Para sempre",
     "expirationCustom": "Personalizado...",
     "customMinutes": "Minutos personalizados",
-    "min": "min",
+    "min": "min  ",
     "enterMinutes": "Insira minutos",
     "apply": "Aplicar",
     "failedToCreate": "Falha ao criar link de compartilhamento",
@@ -739,20 +772,23 @@
     }
   },
   "imageOptimization": {
-    "title": "Otimização de Imagem",
-    "description": "Otimizar e gerenciar o processamento de imagens",
+    "title": "Qualidade da Imagem  ",
+    "description": "Configure as configurações de qualidade e processamento da imagem  ",
     "thumbnail": "Miniatura",
-    "modal": "Modal",
+    "modal": "Modal  ",
     "download": "DOWNLOAD",
     "concurrency": "Concorrência",
     "quality": "Qualidade",
     "maxDimension": "Dimensão Máxima",
     "concurrencyDescription1": "Número máximo de imagens para processar simultaneamente. Valores mais altos aceleram o processamento em lote, mas usam mais CPU e memória.",
     "concurrencyDescription2": "Regra geral: ~4× o número de núcleos lógicos da CPU. Recomendado: 8-16 para sistemas típicos, 32-64 para servidores de alto desempenho.",
-    "maxParallelJobs": "Máximo de Trabalhos Paralelos"
+    "maxParallelJobs": "Máximo de Trabalhos Paralelos",
+    "warningNote": "As alterações nas configurações de qualidade da imagem se aplicam apenas às fotos recém-carregadas. As imagens existentes manterão suas configurações atuais, a menos que você use  ",
+    "forceRegenerate": "Forçar Regenerar Tudo  ",
+    "warningNoteLocation": "em Configurações Avançadas → Imagens Otimizadas."
   },
   "links": {
-    "title": "Links",
+    "title": "Links  ",
     "description": "Gerenciar links externos e informações de contato",
     "titlePlaceholder": "Título",
     "urlPlaceholder": "URL",
@@ -797,7 +833,7 @@
     "timeout": "Tempo de reinício do servidor esgotado. Por favor, verifique os logs do servidor.",
     "backendServer": "Servidor Backend",
     "frontendServer": "Servidor Frontend",
-    "online": "Online",
+    "online": "Online  ",
     "restarting": "Reiniciando...",
     "timeoutDetails": "O servidor não respondeu dentro de {{seconds}} segundos. Por favor, verifique os logs do servidor para erros."
   },
@@ -808,7 +844,9 @@
     "settings": "Configurações",
     "profile": "Perfil",
     "settingsDescription": "Gerenciar branding, links e configuração do sistema",
-    "failedToLoadConfig": "Falha ao carregar a configuração"
+    "failedToLoadConfig": "Falha ao carregar a configuração",
+    "loadingStyles": "Carregando estilos...  ",
+    "loadingSettings": "Carregando configurações..."
   },
   "securitySetup": {
     "title": "🔐 Proteja Sua Conta",
@@ -849,7 +887,7 @@
     "sectionName": "Autenticação"
   },
   "smtpSettings": {
-    "title": "Email (SMTP)",
+    "title": "Email (SMTP)  ",
     "configured": "✓ Configurado",
     "description": "Configurar as configurações SMTP para enviar convites de usuário e e-mails de redefinição de senha",
     "setupInstructions": "Instruções de Configuração",
@@ -1064,5 +1102,41 @@
     "successMessage": "Email de teste enviado com sucesso! Verifique sua caixa de entrada.  ",
     "errorMessage": "Falha ao enviar email de teste",
     "errorMessageDetail": "Falha ao enviar o e-mail de teste. Verifique sua configuração."
+  },
+  "videoList": {
+    "noVideosYet": "Nenhum vídeo ainda  ",
+    "albumEmpty": "Este álbum está vazio. Faça o upload de alguns vídeos para começar!  ",
+    "copyShareLink": "Copiar link de compartilhamento  ",
+    "linkCopied": "Link copiado!  ",
+    "share": "Compartilhar  "
+  },
+  "videoPage": {
+    "invalidUrl": "URL de vídeo inválido  ",
+    "albumNotFound": "Álbum não encontrado  ",
+    "failedToLoad": "Falha ao carregar vídeo  ",
+    "videoNotFound": "Vídeo não encontrado  ",
+    "unknownError": "Ocorreu um erro desconhecido",
+    "errorTitle": "Vídeo Não Encontrado  ",
+    "backToAlbum": "Voltar para o Álbum"
+  },
+  "videoOptimization": {
+    "title": "Qualidade do Vídeo",
+    "description": "Configurar qualidade de vídeo, streaming e configurações de HLS",
+    "hlsStreaming": "STREAMING HLS",
+    "hlsStreamingSection": "Configurações HLS",
+    "hlsDescription": "Configure as configurações de Streaming ao Vivo HTTP (HLS) para entrega de vídeo adaptativa",
+    "segmentDuration": "Duração do Segmento (segundos)",
+    "segmentDurationHelp": "Duração de cada segmento de vídeo. Segmentos mais longos (4-6s) reduzem as solicitações ao servidor.",
+    "videoResolutions": "RESOLUÇÕES DE VÍDEO",
+    "videoResolutionsSection": "Resoluções de Vídeo  ",
+    "resolutionsDescription": "Ative as resoluções e configure suas configurações de qualidade. Bitrates mais altos melhoram a qualidade, mas aumentam o tamanho do arquivo.  ",
+    "videoBitrate": "Bitrate de Vídeo  ",
+    "audioBitrate": "Bitrate de Áudio  ",
+    "videoBitrateExample": "ex: 400k, 2500k, 5000k  ",
+    "audioBitrateExample": "ex: 64k, 96k, 128k, 192k  ",
+    "on": "Ativado  ",
+    "off": "Desativado  ",
+    "warningNote": "As alterações nas configurações de vídeo se aplicam apenas a vídeos recém-carregados. Vídeos existentes manterão suas configurações de qualidade atuais, a menos que você use  ",
+    "forceRegenerate": "Forçar Regenerar Todos"
   }
 }

@@ -130,11 +130,13 @@ export const createPhotoHandlers = (props: PhotoHandlersProps) => {
     album: string,
     filename: string,
     photoTitle: string = '',
-    thumbnail: string = ''
+    thumbnail: string = '',
+    mediaType: 'photo' | 'video' = 'photo'
   ): Promise<void> => {
+    const isVideo = mediaType === 'video';
     showConfirmation({
       message: '', // Not used when photo is provided
-      confirmText: t('albumsManager.deletePhoto'),
+      confirmText: isVideo ? t('albumsManager.deleteVideo') : t('albumsManager.deletePhoto'),
       isDanger: true,
       photo: thumbnail ? {
         thumbnail,

@@ -35,7 +35,8 @@
     "maximize": "Maximieren",
     "restore": "Wiederherstellen",
     "expand": "Erweitern",
-    "collapse": "Einklappen"
+    "collapse": "Einklappen",
+    "note": "Hinweis"
   },
   "app": {
     "loadingAlbums": "Lade Alben...",
@@ -54,7 +55,7 @@
   },
   "header": {
     "albums": "Alben",
-    "links": "Links",
+    "links": "Links  ",
     "editAlbum": "Dieses Album bearbeiten",
     "editLinks": "Links bearbeiten",
     "logout": "Abmelden",
@@ -67,7 +68,7 @@
     "signIn": "Anmelden"
   },
   "album": {
-    "title": "Album",
+    "title": "Album  ",
     "photos": "Fotos",
     "viewAlbum": "{{albumName}} ansehen",
     "albumNotFound": "Album nicht gefunden"
@@ -87,7 +88,7 @@
     "exitFullscreen": "Vollbild verlassen",
     "file": "Datei",
     "titleLabel": "Titel",
-    "albumLabel": "Album",
+    "albumLabel": "Album  ",
     "size": "Größe",
     "loadingExif": "Lade EXIF-Daten...",
     "camera": "Kamera",
@@ -95,15 +96,21 @@
     "focalLength": "Brennweite",
     "aperture": "Blende",
     "shutter": "Verschlusszeit",
-    "iso": "ISO",
+    "iso": "ISO  ",
     "dateTaken": "Aufnahmedatum",
+    "resolution": "Auflösung  ",
+    "duration": "Dauer",
     "noPhotosYet": "Noch keine Fotos",
     "albumEmpty": "Dieses Album ist leer. Zeit, einige tolle Fotos hinzuzufügen!",
     "goToAdminPanel": "Gehe zum Admin-Panel"
   },
+  "video": {
+    "resolution": "Auflösung  ",
+    "duration": "Dauer"
+  },
   "admin": {
     "title": "Admin-Portal",
-    "dashboard": "Dashboard",
+    "dashboard": "Dashboard  ",
     "albums": "Alben",
     "settings": "Einstellungen",
     "metrics": "Metriken",
@@ -149,7 +156,7 @@
   "branding": {
     "title": "Markenidentität",
     "description": "Passen Sie den Namen, Untertitel und Avatar Ihrer Website an",
-    "logo": "Logo",
+    "logo": "Logo  ",
     "clickOrDrag": "Klicken Sie hier oder ziehen Sie ein Bild hinein",
     "currentAvatar": "Aktueller Avatar",
     "siteName": "Seitenname",
@@ -158,6 +165,8 @@
     "photoLicenseDescription": "Wählen Sie, wie andere Ihre Fotos verwenden können",
     "shuffleHomepage": "Startseiten-Fotos mischen",
     "shuffleHomepageDescription": "Die Reihenfolge der Fotos auf der Startseite bei jedem Laden zufällig anordnen",
+    "animatedBackground": "Animierter Hintergrund  ",
+    "animatedBackgroundDescription": "Aktivieren Sie den bunten animierten Hintergrund im Admin-Panel und auf der Anmeldeseite  ",
     "primaryColor": "Primärfarbe",
     "secondaryColor": "Sekundärfarbe",
     "metaDescription": "Meta-Beschreibung",
@@ -170,6 +179,7 @@
     "photoLicenseUpdated": "Foto-Lizenz aktualisiert!",
     "languageUpdated": "Sprache aktualisiert!",
     "homepageShuffleSaved": "Startseiten-Mischungseinstellung gespeichert!",
+    "animatedBackgroundSaved": "Einstellungen für den animierten Hintergrund gespeichert!  ",
     "failedToSave": "Fehler beim Speichern von {{section}}",
     "failedToSaveLicense": "Fehler beim Speichern der Lizenz",
     "failedToSaveLanguage": "Fehler beim Speichern der Sprache",
@@ -177,7 +187,6 @@
     "errorSavingLicense": "Fehler beim Speichern der Lizenz",
     "errorSavingLanguage": "Fehler beim Speichern der Sprache",
     "errorSavingSetting": "Fehler beim Speichern der Einstellung",
-    "logoSaved": "Logo erfolgreich gespeichert!  ",
     "siteNameSaved": "Site-Name erfolgreich gespeichert!  ",
     "primaryColorSaved": "Primärfarbe erfolgreich gespeichert!  ",
     "secondaryColorSaved": "Sekundärfarbe erfolgreich gespeichert!  ",
@@ -229,6 +238,7 @@
     "deleteAlbum": "Album löschen",
     "deleteAlbumConfirm": "Sind Sie sicher, dass Sie das Album \"{{albumName}}\" löschen möchten?\n\nDadurch werden alle Fotos in diesem Album dauerhaft gelöscht.\n\nDiese Aktion kann nicht rückgängig gemacht werden.",
     "renameAlbum": "Album umbenennen",
+    "clickToRename": "Klicken Sie, um das Album umzubenennen",
     "newName": "Neuer Name",
     "newNamePlaceholder": "Neuen Namen eingeben",
     "currentName": "Aktueller Name",
@@ -243,6 +253,8 @@
     "selectPhotos": "Fotos auswählen",
     "editPhoto": "Foto bearbeiten",
     "editPhotoTitle": "Foto-Titel bearbeiten",
+    "editVideoTitle": "Video-Titel bearbeiten",
+    "editMetadata": "Metadaten bearbeiten",
     "photoTitle": "Foto-Titel",
     "photoDescription": "Foto-Beschreibung",
     "enterTitle": "Titel eingeben...",
@@ -366,7 +378,26 @@
     "invalidAlbumName": "Ungültiger Albumname  ",
     "nameUnchanged": "Albumname wurde nicht geändert  ",
     "albumNotFound": "Album nicht gefunden  ",
-    "databaseUpdateFailed": "Datenbankaktualisierung fehlgeschlagen"
+    "databaseUpdateFailed": "Datenbankaktualisierung fehlgeschlagen",
+    "deleteVideo": "Video löschen  ",
+    "deleteVideoQuestion": "Video löschen?  ",
+    "deleteVideoConfirm": "Sind Sie sicher, dass Sie dieses Video löschen möchten?",
+    "titleLabel": "Titel  ",
+    "descriptionLabel": "Beschreibung  ",
+    "enterDescription": "Beschreibung eingeben...",
+    "updateThumbnail": "Thumbnail aktualisieren  ",
+    "useCurrentFrame": "Aktuellen Frame verwenden  ",
+    "updating": "Aktualisiere...  ",
+    "uploading": "Lade hoch...  ",
+    "updatingThumbnail": "Thumbnail wird aktualisiert...  ",
+    "thumbnailUpdated": "✓ Thumbnail aktualisiert!  ",
+    "failedToUpdateThumbnail": "✗ Aktualisierung des Thumbnails fehlgeschlagen  ",
+    "uploadingThumbnail": "Thumbnail wird hochgeladen...  ",
+    "thumbnailUploaded": "✓ Thumbnail hochgeladen!",
+    "failedToUploadThumbnail": "✗ Fehler beim Hochladen des Thumbnails  ",
+    "pleaseSelectImageFile": "✗ Bitte wählen Sie eine Bilddatei aus  ",
+    "unableToLoadVideo": "Video kann für die Thumbnail-Auswahl nicht geladen werden. Das Video wird möglicherweise noch verarbeitet.",
+    "uploadThumbnail": "Thumbnail hochladen"
   },
   "settings": {
     "saved": "{{section}} Einstellungen gespeichert!",
@@ -384,7 +415,7 @@
     "logLevelError": "Fehler",
     "logLevelWarn": "Warnung",
     "logLevelInfo": "Information",
-    "logLevelDebug": "Debug",
+    "logLevelDebug": "Debug  ",
     "logLevelVerbose": "Ausführlich",
     "logLevelTrace": "Verfolgung",
     "logLevelDescription": "Steuert die Ausführlichkeit der Serverprotokolle. Höhere Stufen enthalten mehr Details, können aber die Leistung beeinträchtigen.",
@@ -401,7 +432,9 @@
       "optimizedImages": "Optimierte Bilder",
       "forceRegenerateAllConfirm": "⚠️ Dies wird ALLE Bildtitel regenerieren und alle benutzerdefinierten Titel überschreiben, die Sie festgelegt haben. Diese Aktion kann nicht rückgängig gemacht werden.\n\nSind Sie sicher, dass Sie fortfahren möchten?",
       "forceRegenerateImagesConfirm": "Alle Bilder zwangsgenerieren? Das wird eine Weile dauern.",
-      "runOptimizationConfirm": "Bildoptimierung für alle Fotos durchführen?"
+      "runOptimizationConfirm": "Bildoptimierung für alle Fotos durchführen?",
+      "optimizedVideos": "Optimierte Videos",
+      "forceRegenerateVideosConfirm": "⚠️ Dies wird ALLE Videos mit den aktuellen Qualitätseinstellungen neu kodieren. Dies ist ein zeitaufwändiger Vorgang und wird die CPU-Auslastung vorübergehend erhöhen.\n\nVorhandene Videodateien werden ersetzt. Sind Sie sicher, dass Sie fortfahren möchten?"
     }
   },
   "userManagement": {
@@ -411,10 +444,10 @@
     "setupSmtp": "SMTP einrichten",
     "email": "E-Mail",
     "role": "Rolle",
-    "status": "Status",
+    "status": "Status  ",
     "actions": "Aktionen",
     "viewer": "Betrachter",
-    "manager": "Manager",
+    "manager": "Manager  ",
     "admin": "Administrator",
     "invited": "Eingeladen",
     "inviteExpired": "Einladung abgelaufen",
@@ -485,7 +518,7 @@
     "disableMfaForUser": "MFA für diesen Benutzer deaktivieren",
     "sendPasswordResetForUser": "Passwort-Reset-E-Mail an diesen Benutzer senden",
     "passkey": "Passkey",
-    "passkeys": "Passkeys",
+    "passkeys": "Passkeys  ",
     "enableMfa": "MFA aktivieren",
     "invitationEmailDescription": "Eine Einladungs-E-Mail wird an diese Adresse gesendet. Der Benutzer richtet seinen Namen, sein Passwort und MFA ein.",
     "invitationSent": "✓ Einladung gesendet",
@@ -687,7 +720,7 @@
       "avgTime": "Durchschnittszeit",
       "views": "Aufrufe",
       "photoId": "Foto-ID",
-      "album": "Album",
+      "album": "Album  ",
       "fileName": "Dateiname",
       "viewPhoto": "Foto ansehen"
     },
@@ -739,23 +772,26 @@
     }
   },
   "imageOptimization": {
-    "title": "Bildoptimierung",
-    "description": "Bildverarbeitung optimieren und verwalten",
+    "title": "Bildqualität  ",
+    "description": "Konfigurieren Sie die Bildqualität und Verarbeitungseinstellungen  ",
     "thumbnail": "MINIATURANSICHT",
-    "modal": "Modal",
+    "modal": "Modal  ",
     "download": "HERUNTERLADEN",
     "concurrency": "PARALLELITÄT",
     "quality": "Qualität",
     "maxDimension": "Maximale Dimension",
     "concurrencyDescription1": "Maximale Anzahl gleichzeitig zu verarbeitender Bilder. Höhere Werte beschleunigen die Stapelverarbeitung, verwenden aber mehr CPU und Speicher.",
     "concurrencyDescription2": "Faustregel: ~4× Ihre logischen CPU-Kerne. Empfohlen: 8-16 für typische Systeme, 32-64 für Hochleistungsserver.",
-    "maxParallelJobs": "Maximale parallele Jobs"
+    "maxParallelJobs": "Maximale parallele Jobs",
+    "warningNote": "Änderungen an den Bildqualitätseinstellungen gelten nur für neu hochgeladene Fotos. Bestehende Bilder behalten ihre aktuellen Einstellungen, es sei denn, Sie verwenden  ",
+    "forceRegenerate": "Alle neu generieren erzwingen  ",
+    "warningNoteLocation": "in den erweiterten Einstellungen → Optimierte Bilder."
   },
   "links": {
-    "title": "Links",
+    "title": "Links  ",
     "description": "Externe Links und Kontaktinformationen verwalten",
     "titlePlaceholder": "Titel",
-    "urlPlaceholder": "URL",
+    "urlPlaceholder": "URL  ",
     "moveUp": "Nach oben verschieben",
     "moveDown": "Nach unten verschieben",
     "deleteLink": "Link löschen",
@@ -797,7 +833,7 @@
     "timeout": "Server-Neustart-Zeitüberschreitung. Bitte überprüfen Sie die Server-Protokolle.",
     "backendServer": "Backend-Server",
     "frontendServer": "Frontend-Server",
-    "online": "Online",
+    "online": "Online  ",
     "restarting": "Wird neu gestartet...",
     "timeoutDetails": "Der Server hat nicht innerhalb von {{seconds}} Sekunden geantwortet. Bitte überprüfen Sie die Server-Protokolle auf Fehler."
   },
@@ -814,7 +850,9 @@
     "settings": "Einstellungen",
     "profile": "Profil",
     "settingsDescription": "Verwalten Sie Branding, Links und Systemkonfiguration",
-    "failedToLoadConfig": "Konfiguration konnte nicht geladen werden"
+    "failedToLoadConfig": "Konfiguration konnte nicht geladen werden",
+    "loadingStyles": "Stile werden geladen...  ",
+    "loadingSettings": "Einstellungen werden geladen..."
   },
   "securitySetup": {
     "title": "🔐 Sichern Sie Ihr Konto",
@@ -824,7 +862,7 @@
     "mfaBenefit1": "Fügt eine zusätzliche Sicherheitsebene mit zeitbasierten Codes hinzu",
     "mfaBenefit2": "Funktioniert mit Apps wie Google Authenticator oder Authy",
     "mfaBenefit3": "Erhalte Sicherungscodes zur Kontowiederherstellung",
-    "passkeysTitle": "🔑 Passkeys (Optional)",
+    "passkeysTitle": "🔑 Passkeys (Optional)  ",
     "passkeysBenefit1": "Verwende Biometrie oder Geräte-PIN für eine schnelle, sichere Anmeldung",
     "passkeysBenefit2": "Keine Passwörter erforderlich - nur dein Fingerabdruck oder Gesicht",
     "passkeysBenefit3": "Kann nach der Aktivierung von MFA eingerichtet werden",
@@ -895,7 +933,7 @@
     "organization": "Organisation",
     "username": "Benutzername",
     "password": "Passwort",
-    "stream": "Stream",
+    "stream": "Stream  ",
     "cancel": "Abbrechen",
     "save": "Speichern",
     "saving": "Speichern...",
@@ -1064,5 +1102,41 @@
     "successMessage": "Test-E-Mail erfolgreich gesendet! Überprüfen Sie Ihren Posteingang.  ",
     "errorMessage": "Fehler beim Senden der Test-E-Mail",
     "errorMessageDetail": "Fehler beim Senden der Test-E-Mail. Bitte überprüfen Sie Ihre Konfiguration."
+  },
+  "videoList": {
+    "noVideosYet": "Noch keine Videos  ",
+    "albumEmpty": "Dieses Album ist leer. Lade einige Videos hoch, um zu beginnen!  ",
+    "copyShareLink": "Teile Link kopieren  ",
+    "linkCopied": "Link kopiert!  ",
+    "share": "Teilen  "
+  },
+  "videoPage": {
+    "invalidUrl": "Ungültige Video-URL  ",
+    "albumNotFound": "Album nicht gefunden  ",
+    "failedToLoad": "Video konnte nicht geladen werden  ",
+    "videoNotFound": "Video nicht gefunden  ",
+    "unknownError": "Ein unbekannter Fehler ist aufgetreten",
+    "errorTitle": "Video nicht gefunden  ",
+    "backToAlbum": "Zurück zum Album"
+  },
+  "videoOptimization": {
+    "title": "Videoqualität",
+    "description": "Konfigurieren Sie die Videoqualität, das Streaming und die HLS-Einstellungen",
+    "hlsStreaming": "HLS-STREAMING",
+    "hlsStreamingSection": "HLS-Einstellungen",
+    "hlsDescription": "Konfigurieren Sie die HTTP Live Streaming (HLS) Einstellungen für adaptive Videoübertragung",
+    "segmentDuration": "Segmentdauer (Sekunden)",
+    "segmentDurationHelp": "Länge jedes Videosegments. Längere Segmente (4-6s) reduzieren Serveranfragen.",
+    "videoResolutions": "VIDEOAUFLÖSUNGEN",
+    "videoResolutionsSection": "Videoauflösungen  ",
+    "resolutionsDescription": "Aktivieren Sie Auflösungen und konfigurieren Sie deren Qualitätseinstellungen. Höhere Bitraten verbessern die Qualität, erhöhen jedoch die Dateigröße.  ",
+    "videoBitrate": "Video-Bitrate  ",
+    "audioBitrate": "Audio-Bitrate  ",
+    "videoBitrateExample": "z.B. 400k, 2500k, 5000k  ",
+    "audioBitrateExample": "z.B. 64k, 96k, 128k, 192k  ",
+    "on": "Ein  ",
+    "off": "Aus  ",
+    "warningNote": "Änderungen an den Videoeinstellungen gelten nur für neu hochgeladene Videos. Bestehende Videos behalten ihre aktuellen Qualitätseinstellungen, es sei denn, Sie verwenden  ",
+    "forceRegenerate": "Alle neu generieren erzwingen"
   }
 }

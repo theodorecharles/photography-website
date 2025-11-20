@@ -313,7 +313,7 @@ const SMTPSettings: React.FC<SMTPSettingsProps> = ({
   };
 
   return (
-    <div className="openai-section" style={{ marginBottom: '2rem' }} ref={sectionRef}>
+    <div className="settings-section" style={{ marginBottom: '2rem' }} ref={sectionRef}>
       <div
         style={{
           display: 'flex',
@@ -322,7 +322,7 @@ const SMTPSettings: React.FC<SMTPSettingsProps> = ({
           marginBottom: '0.75rem',
         }}
       >
-        <label className="openai-section-label">
+        <label className="settings-section-label">
           {t('smtpSettings.title')}
           {isConfigured && (
             <span
