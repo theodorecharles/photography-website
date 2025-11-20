@@ -810,7 +810,7 @@
     "timeout": "Repornirea serverului a expirat. Vă rugăm să verificați jurnalele serverului.",
     "backendServer": "Server Backend",
     "frontendServer": "Server Frontend",
-    "online": "Online",
+    "online": "Conectat",
     "restarting": "Repornire...",
     "timeoutDetails": "Serverul nu a răspuns în {{seconds}} secunde. Vă rugăm să verificați jurnalele serverului pentru erori."
   },

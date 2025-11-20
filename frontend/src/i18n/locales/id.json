@@ -755,7 +755,7 @@
     "title": "Optimasi Gambar",
     "description": "Optimalkan dan kelola pemrosesan gambar",
     "thumbnail": "Gambar Mini",
-    "modal": "Modal",
+    "modal": "Dialog",
     "download": "Unduh",
     "concurrency": "Konkruensi",
     "quality": "Kualitas",

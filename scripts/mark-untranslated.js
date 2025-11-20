@@ -25,15 +25,11 @@ const UNIVERSAL_WORDS = new Set([
   "openobserve",
   "mfa",
   "smtp",
-  "modal",
   "email",
   "url",
   "iso",
   "passkey",
-  "online",
   "min",
-  "frontend",
-  "server",
 ]);
 
 // Colors for terminal output

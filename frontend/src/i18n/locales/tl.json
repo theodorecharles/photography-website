@@ -809,7 +809,7 @@
     "waitingForServers": "Naghihintay para bumalik ang mga server online...",
     "timeout": "Nagtakbo ang oras ng server restart. Pakisuri ang mga log ng server.",
     "backendServer": "Backend Server  ",
-    "frontendServer": "Frontend Server",
+    "frontendServer": "Server ng Frontend",
     "online": "Online  ",
     "restarting": "Nag-rerestart...",
     "timeoutDetails": "Hindi tumugon ang server sa loob ng {{seconds}} segundo. Pakisuri ang mga log ng server para sa mga error."

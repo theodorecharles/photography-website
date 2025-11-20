@@ -106,7 +106,8 @@ async function translateSingle(openai, text, targetLanguage) {
 3. Preserve special characters and emojis (✓, ❌, 🔒, etc.)
 4. Keep the tone appropriate for UI elements
 5. DO NOT translate brand names and technical acronyms: Google, OpenObserve, OpenAI, Galleria, MFA, SMTP
-6. Return ONLY the translation, no quotes, explanations, or extra text`,
+6. DO translate common UI terms like "Modal" (referring to a popup dialog) - translate it appropriately for ${targetLanguage}
+7. Return ONLY the translation, no quotes, explanations, or extra text`,
       },
       {
         role: "user",
@@ -144,8 +145,9 @@ async function translateBatch(openai, batch, targetLanguage) {
 3. Preserve special characters and emojis (✓, ❌, 🔒, etc.)
 4. Keep the tone appropriate for UI elements
 5. DO NOT translate brand names and technical acronyms: Google, OpenObserve, OpenAI, Galleria, MFA, SMTP
-6. Return ONLY the translations, one per line, in the same order as the input
-7. Do not add quotes, explanations, or extra text`,
+6. DO translate common UI terms like "Modal" (referring to a popup dialog) - translate it appropriately for ${targetLanguage}
+7. Return ONLY the translations, one per line, in the same order as the input
+8. Do not add quotes, explanations, or extra text`,
         },
         {
           role: "user",
