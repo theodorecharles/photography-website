@@ -71,18 +71,23 @@ const ContentGrid: React.FC<ContentGridProps> = ({ album, onAlbumNotFound, initi
 
   const [clickedVideoId, setClickedVideoId] = useState<string | null>(null);
 
-  const handlePhotoClick = (photo: Photo) => {
+  const handlePhotoClick = (photo: Photo, shouldAutoplay: boolean = false) => {
     setSelectedPhoto(photo);
     const index = photoIndexMap.get(photo.id) ?? 0;
     setSelectedPhotoIndex(index);
     trackPhotoClick(photo.id, photo.album, photo.title);
     
-    // Track if user clicked a video
-    if (photo.media_type === 'video') {
+    // Track if user clicked a video AND should autoplay (play button clicked)
+    if (photo.media_type === 'video' && shouldAutoplay) {
       setClickedVideoId(photo.id);
     } else {
       setClickedVideoId(null);
     }
+  };
+
+  const handlePlayButtonClick = (e: React.MouseEvent, photo: Photo) => {
+    e.stopPropagation(); // Prevent thumbnail click handler
+    handlePhotoClick(photo, true); // Open with autoplay
   };
 
   const handleNavigatePrev = useCallback(() => {
@@ -558,7 +563,10 @@ const ContentGrid: React.FC<ContentGridProps> = ({ album, onAlbumNotFound, initi
                     <div className="video-icon-overlay">
                       <VideoIcon width="20" height="20" />
                     </div>
-                    <div className="video-play-overlay">
+                    <div 
+                      className="video-play-overlay"
+                      onClick={(e) => handlePlayButtonClick(e, photo)}
+                    >
                       <PlayIcon width="48" height="48" />
                     </div>
                   </>
