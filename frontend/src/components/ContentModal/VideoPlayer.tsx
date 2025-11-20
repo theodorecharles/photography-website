@@ -28,14 +28,19 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
 
   useEffect(() => {
     const video = videoRef.current;
-    if (!video) return;
+    if (!video) {
+      console.error('[VideoPlayer] Video ref is null');
+      return;
+    }
 
     if (onLoadStart) onLoadStart();
 
     // Load master playlist for adaptive streaming
     const masterPlaylistUrl = `${API_URL}/api/video/${encodeURIComponent(album)}/${encodeURIComponent(filename)}/master.m3u8`;
+    console.log('[VideoPlayer] Loading video:', { album, filename, url: masterPlaylistUrl });
 
     if (Hls.isSupported()) {
+      console.log('[VideoPlayer] Using HLS.js for playback');
       // Use HLS.js for adaptive streaming
       const hls = new Hls({
         enableWorker: true,
@@ -46,6 +51,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         abrEwmaSlowVoD: 3, // Weight for slow EMA (VOD)
         abrEwmaFastVoD: 3, // Weight for fast EMA (VOD)
         abrMaxWithRealBitrate: false, // Use bandwidth estimate, not max bitrate
+        debug: false, // Set to true for verbose logging
       });
 
       hlsRef.current = hls;
@@ -57,8 +63,11 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         console.log('[VideoPlayer] Master playlist loaded, available qualities:', hls.levels.map(l => l.height + 'p'));
         if (onLoaded) onLoaded();
         if (autoplay) {
+          console.log('[VideoPlayer] Attempting autoplay');
           video.play().catch(err => {
-            console.error('Autoplay failed:', err);
+            console.error('[VideoPlayer] Autoplay failed:', err);
+            // On mobile, autoplay often fails - user must manually start
+            setError('Tap to play video');
           });
         }
       });
@@ -70,37 +79,51 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
       });
 
       hls.on(Hls.Events.ERROR, (_event, data) => {
+        console.error('[VideoPlayer] HLS error:', data);
         if (data.fatal) {
           switch (data.type) {
             case Hls.ErrorTypes.NETWORK_ERROR:
               console.error('[VideoPlayer] Network error, attempting recovery');
+              setError('Network error, retrying...');
               hls.startLoad();
               break;
             case Hls.ErrorTypes.MEDIA_ERROR:
               console.error('[VideoPlayer] Media error, attempting recovery');
+              setError('Media error, retrying...');
               hls.recoverMediaError();
               break;
             default:
               console.error('[VideoPlayer] Fatal error:', data);
-              setError('Failed to load video');
+              setError(`Failed to load video: ${data.details || 'Unknown error'}`);
               hls.destroy();
               break;
           }
         }
       });
     } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-      // Native HLS support (Safari)
+      // Native HLS support (Safari/iOS)
+      console.log('[VideoPlayer] Using native HLS support');
       video.src = masterPlaylistUrl;
+      
       video.addEventListener('loadedmetadata', () => {
+        console.log('[VideoPlayer] Native HLS loaded');
         if (onLoaded) onLoaded();
         if (autoplay) {
+          console.log('[VideoPlayer] Attempting native autoplay');
           video.play().catch(err => {
-            console.error('Autoplay failed:', err);
+            console.error('[VideoPlayer] Native autoplay failed:', err);
+            setError('Tap to play video');
           });
         }
       });
+
+      video.addEventListener('error', (e) => {
+        console.error('[VideoPlayer] Native video error:', e, video.error);
+        setError(`Video error: ${video.error?.message || 'Unknown error'}`);
+      });
     } else {
-      setError('HLS not supported in this browser');
+      console.error('[VideoPlayer] HLS not supported');
+      setError('HLS video playback not supported in this browser');
     }
 
     return () => {
@@ -110,7 +133,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     };
   }, [album, filename, autoplay, onLoadStart, onLoaded]);
 
-  if (error) {
+  if (error && !error.includes('Tap to play')) {
     return (
       <div style={{
         width: '100%',
@@ -121,9 +144,10 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         color: 'white',
         background: 'rgba(0,0,0,0.8)'
       }}>
-        <div>
+        <div style={{ textAlign: 'center', padding: '20px' }}>
           <p>{error}</p>
-          <p style={{ fontSize: '0.9rem', opacity: 0.7 }}>Video: {filename}</p>
+          <p style={{ fontSize: '0.9rem', opacity: 0.7, marginTop: '10px' }}>Video: {filename}</p>
+          <p style={{ fontSize: '0.85rem', opacity: 0.5, marginTop: '10px' }}>Album: {album}</p>
         </div>
       </div>
     );
@@ -142,6 +166,8 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
       <video
         ref={videoRef}
         controls
+        playsInline
+        preload="metadata"
         style={{
           maxWidth: '100%',
           maxHeight: '100%',

@@ -72,7 +72,9 @@ const ContentModal: React.FC<ContentModalProps> = ({
   }, [selectedPhoto.id, clickedVideo]);
 
   // Handle play button click on video preview
-  const handlePlayClick = useCallback(() => {
+  const handlePlayClick = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
     setShowVideoPlayer(true);
     setShouldAutoplay(true);
   }, []);
