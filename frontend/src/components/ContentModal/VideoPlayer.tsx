@@ -26,6 +26,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   const hlsRef = useRef<Hls | null>(null);
   const [error, setError] = useState<string | null>(null);
   const initializingRef = useRef(false); // Prevent multiple initializations
+  const [videoWidth, setVideoWidth] = useState<number | null>(null);
 
   useEffect(() => {
     const debugInfo = {
@@ -204,6 +205,40 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     );
   }
 
+  // Calculate video width based on aspect ratio
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    const updateVideoWidth = () => {
+      if (video.videoWidth && video.videoHeight) {
+        const aspectRatio = video.videoWidth / video.videoHeight;
+        const container = video.parentElement;
+        if (container) {
+          const containerHeight = container.clientHeight;
+          const calculatedWidth = containerHeight * aspectRatio;
+          const maxWidth = container.clientWidth;
+          
+          // Use the smaller of calculated width or max width
+          setVideoWidth(Math.min(calculatedWidth, maxWidth));
+        }
+      }
+    };
+
+    video.addEventListener('loadedmetadata', updateVideoWidth);
+    video.addEventListener('resize', updateVideoWidth);
+    window.addEventListener('resize', updateVideoWidth);
+
+    // Initial calculation
+    updateVideoWidth();
+
+    return () => {
+      video.removeEventListener('loadedmetadata', updateVideoWidth);
+      video.removeEventListener('resize', updateVideoWidth);
+      window.removeEventListener('resize', updateVideoWidth);
+    };
+  }, []);
+
   return (
     <>
       {error && (
@@ -231,8 +266,11 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         preload="metadata"
         style={{
           display: 'block',
+          width: videoWidth ? `${videoWidth}px` : '100%',
+          height: '100%',
           maxWidth: '100%',
-          maxHeight: '100%'
+          maxHeight: '100%',
+          objectFit: 'contain'
         }}
       />
     </>
