@@ -269,12 +269,23 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
                   album={editingPhoto.album}
                   filename={editingPhoto.id.split('/').pop() || editingPhoto.id}
                   onThumbnailUpdated={() => {
-                    // Force thumbnail reload by updating timestamp
-                    const img = document.querySelector('.edit-modal-photo img') as HTMLImageElement;
-                    if (img) {
-                      const src = img.src.split('?')[0];
-                      img.src = `${src}?t=${Date.now()}`;
+                    // Force thumbnail reload everywhere by updating timestamp
+                    const timestamp = Date.now();
+                    
+                    // Update modal thumbnail
+                    const modalImg = document.querySelector('.edit-modal-photo img') as HTMLImageElement;
+                    if (modalImg) {
+                      const src = modalImg.src.split('?')[0];
+                      modalImg.src = `${src}?t=${timestamp}`;
                     }
+                    
+                    // Update grid/list thumbnails for this video
+                    const gridImages = document.querySelectorAll(`img[src*="${editingPhoto.thumbnail}"]`);
+                    gridImages.forEach((img) => {
+                      const htmlImg = img as HTMLImageElement;
+                      const src = htmlImg.src.split('?')[0];
+                      htmlImg.src = `${src}?i=${timestamp}`;
+                    });
                   }}
                 />
               )}

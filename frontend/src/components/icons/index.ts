@@ -42,4 +42,6 @@ export { default as TrashIcon } from './TrashIcon';
 export { default as UploadIcon } from './UploadIcon';
 export { UserIcon } from './UserIcon';
 export { default as VideoIcon } from './VideoIcon';
+export { default as ShareIcon } from './ShareIcon';
+export { default as ArrowLeftIcon } from './ArrowLeftIcon';
 

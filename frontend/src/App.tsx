@@ -47,6 +47,7 @@ const PasswordResetComplete = lazy(
   () => import("./components/Misc/PasswordResetComplete")
 );
 const LogViewer = lazy(() => import("./components/LogViewer/LogViewer"));
+const VideoPage = lazy(() => import("./components/VideoPage"));
 
 // LicenseWrapper component to show footer when license page loads
 function LicenseWrapper({
@@ -544,7 +545,8 @@ function App() {
   const isStandalonePage =
     location.pathname.startsWith("/shared/") ||
     location.pathname.startsWith("/setup") ||
-    location.pathname.startsWith("/logs");
+    location.pathname.startsWith("/logs") ||
+    location.pathname.startsWith("/video/");
 
   // Standalone pages render without the main layout
   if (isStandalonePage) {
@@ -562,6 +564,7 @@ function App() {
             <Route path="/shared/:secretKey" element={<SharedAlbum />} />
             <Route path="/setup" element={<SetupWizard />} />
             <Route path="/logs" element={<LogViewer />} />
+            <Route path="/video/:album/:filename" element={<VideoPage />} />
           </Routes>
         </Suspense>
       </div>

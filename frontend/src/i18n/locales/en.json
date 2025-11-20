@@ -807,6 +807,22 @@
     "forceRegenerate": "Force Regenerate All",
     "warningNoteLocation": "in Advanced Settings → Optimized Images."
   },
+  "videoList": {
+    "noVideosYet": "No videos yet",
+    "albumEmpty": "This album is empty. Upload some videos to get started!",
+    "copyShareLink": "Copy share link",
+    "linkCopied": "Link copied!",
+    "share": "Share"
+  },
+  "videoPage": {
+    "invalidUrl": "Invalid video URL",
+    "albumNotFound": "Album not found",
+    "failedToLoad": "Failed to load video",
+    "videoNotFound": "Video not found",
+    "unknownError": "An unknown error occurred",
+    "errorTitle": "Video Not Found",
+    "backToAlbum": "Back to Album"
+  },
   "videoOptimization": {
     "title": "Video Quality",
     "description": "Configure video quality, streaming, and HLS settings",

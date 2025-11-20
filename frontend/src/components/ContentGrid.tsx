@@ -13,6 +13,7 @@ import { trackPhotoClick, trackError } from "../utils/analytics";
 import { fetchWithRateLimitCheck } from "../utils/fetchWrapper";
 import ContentModal from "./ContentModal";
 import NotFound from "./Misc/NotFound";
+import VideoListView from "./VideoListView";
 import { reconstructPhoto, getNumColumns, distributePhotos } from "../utils/photoHelpers";
 import { info } from '../utils/logger';
 import { VideoIcon, PlayIcon } from './icons';
@@ -45,6 +46,9 @@ const ContentGrid: React.FC<ContentGridProps> = ({ album, onAlbumNotFound, initi
   const renderIndexRef = useRef<number>(100);
   const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const isRenderingRef = useRef<boolean>(false);
+  
+  // Check if album contains only videos
+  const isVideoOnlyAlbum = allPhotos.length > 0 && allPhotos.every(photo => photo.media_type === 'video');
 
   // Create index map for O(1) lookups (use allPhotos for navigation)
   const photoIndexMap = useMemo(() => {
@@ -516,6 +520,11 @@ const ContentGrid: React.FC<ContentGridProps> = ({ album, onAlbumNotFound, initi
         </a>
       </div>
     );
+  }
+
+  // Video-only album - use list view instead of grid
+  if (isVideoOnlyAlbum) {
+    return <VideoListView videos={allPhotos} album={album} />;
   }
 
   return (

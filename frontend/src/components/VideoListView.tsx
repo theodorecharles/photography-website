@@ -5,7 +5,7 @@
 
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { API_URL, SITE_URL } from '../config';
+import { SITE_URL } from '../config';
 import { Photo } from '../types/photo';
 import VideoPlayer from './ContentModal/VideoPlayer';
 import { ShareIcon } from './icons';

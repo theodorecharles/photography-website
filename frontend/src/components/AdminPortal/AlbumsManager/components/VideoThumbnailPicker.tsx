@@ -123,7 +123,7 @@ const VideoThumbnailPicker: React.FC<VideoThumbnailPickerProps> = ({
 
   const handleSetThumbnail = async () => {
     setIsUpdating(true);
-    setUpdateStatus(t('albumsManager.updatingThumbnail'));
+    setUpdateStatus(''); // Don't show status during update - button shows "Updating..."
 
     try {
       const response = await fetch(
@@ -144,11 +144,8 @@ const VideoThumbnailPicker: React.FC<VideoThumbnailPickerProps> = ({
         throw new Error('Failed to update thumbnail');
       }
 
-      setUpdateStatus(t('albumsManager.thumbnailUpdated'));
-      setTimeout(() => {
-        setUpdateStatus('');
-        onThumbnailUpdated();
-      }, 2000);
+      // Success - close modal and trigger refresh
+      onThumbnailUpdated();
     } catch (err) {
       console.error('Failed to update thumbnail:', err);
       setUpdateStatus(t('albumsManager.failedToUpdateThumbnail'));
@@ -170,7 +167,7 @@ const VideoThumbnailPicker: React.FC<VideoThumbnailPickerProps> = ({
     }
 
     setIsUploading(true);
-    setUpdateStatus(t('albumsManager.uploadingThumbnail'));
+    setUpdateStatus(''); // Don't show status during upload - button shows "Uploading..."
 
     try {
       const formData = new FormData();
@@ -189,11 +186,8 @@ const VideoThumbnailPicker: React.FC<VideoThumbnailPickerProps> = ({
         throw new Error('Failed to upload thumbnail');
       }
 
-      setUpdateStatus(t('albumsManager.thumbnailUploaded'));
-      setTimeout(() => {
-        setUpdateStatus('');
-        onThumbnailUpdated();
-      }, 2000);
+      // Success - close modal and trigger refresh
+      onThumbnailUpdated();
     } catch (err) {
       console.error('Failed to upload thumbnail:', err);
       setUpdateStatus(t('albumsManager.failedToUploadThumbnail'));
