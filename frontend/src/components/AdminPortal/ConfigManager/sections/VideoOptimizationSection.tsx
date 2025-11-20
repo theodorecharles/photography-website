@@ -45,6 +45,17 @@ const VideoOptimizationSection: React.FC<VideoOptimizationSectionProps> = ({
 
     // Deep clone the config to avoid mutation issues
     const newConfig = JSON.parse(JSON.stringify(config));
+    
+    // Special handling: if we're updating resolutions but they don't exist yet,
+    // initialize them with defaultResolutions first
+    if (path.includes('resolutions') && !newConfig.environment?.optimization?.video?.resolutions) {
+      console.log('[VideoOptimization] Initializing resolutions with defaults before update');
+      if (!newConfig.environment) newConfig.environment = {};
+      if (!newConfig.environment.optimization) newConfig.environment.optimization = {};
+      if (!newConfig.environment.optimization.video) newConfig.environment.optimization.video = {};
+      newConfig.environment.optimization.video.resolutions = JSON.parse(JSON.stringify(defaultResolutions));
+    }
+    
     let current: any = newConfig;
 
     for (let i = 0; i < path.length - 1; i++) {

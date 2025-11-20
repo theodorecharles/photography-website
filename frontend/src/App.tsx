@@ -358,10 +358,16 @@ function App() {
       }
       setExternalLinks(externalLinksData.externalLinks);
       setSiteName(brandingData.siteName || "Galleria");
-      setAvatarPath(brandingData.avatarPath || "/photos/avatar.png");
+      
+      // Only update avatar cache bust if the avatar path actually changed
+      const newAvatarPath = brandingData.avatarPath || "/photos/avatar.png";
+      if (newAvatarPath !== avatarPath) {
+        setAvatarPath(newAvatarPath);
+        setAvatarCacheBust(Date.now());
+      }
+      
       setPrimaryColor(brandingData.primaryColor || "#4ade80");
       setSecondaryColor(brandingData.secondaryColor || "#3b82f6");
-      setAvatarCacheBust(Date.now()); // Update cache bust when branding refreshes
 
       // Update language from branding config if available
       if (brandingData.language && i18n.language !== brandingData.language) {
