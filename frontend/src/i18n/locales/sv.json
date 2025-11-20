@@ -765,7 +765,10 @@
     "maxDimension": "Maxdimension",
     "concurrencyDescription1": "Maximalt antal bilder att bearbeta samtidigt. Högre värden påskyndar batchbearbetning men använder mer CPU och minne.",
     "concurrencyDescription2": "Tumregel: ~4× dina logiska CPU-kärnor. Rekommenderat: 8-16 för typiska system, 32-64 för högpresterande servrar.",
-    "maxParallelJobs": "Max parallella jobb"
+    "maxParallelJobs": "Max parallella jobb",
+    "warningNote": "Ändringar av bildkvalitetsinställningar gäller endast för nyuppladdade foton. Befintliga bilder kommer att behålla sina nuvarande inställningar om du inte använder",
+    "forceRegenerate": "Tvinga Återgenerera Alla",
+    "warningNoteLocation": "i Avancerade Inställningar → Optimerade Bilder."
   },
   "links": {
     "title": "Länkar",

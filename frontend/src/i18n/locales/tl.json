@@ -765,7 +765,10 @@
     "maxDimension": "Max na Sukat",
     "concurrencyDescription1": "Maximum na bilang ng mga larawan na iproseso nang sabay-sabay. Ang mas mataas na halaga ay nagpapabilis sa batch processing ngunit gumagamit ng mas maraming CPU at memorya.",
     "concurrencyDescription2": "Batas ng hinlalaki: ~4× ng iyong lohikal na mga CPU core. Inirerekomenda: 8-16 para sa karaniwang mga sistema, 32-64 para sa mga high-performance na server.",
-    "maxParallelJobs": "Max Parallel Jobs  "
+    "maxParallelJobs": "Max Parallel Jobs  ",
+    "warningNote": "Ang mga pagbabago sa mga setting ng kalidad ng larawan ay nalalapat lamang sa mga bagong na-upload na mga larawan. Ang mga umiiral na larawan ay mananatili sa kanilang kasalukuyang mga setting maliban kung gagamitin mo ang",
+    "forceRegenerate": "Force Regenerate All",
+    "warningNoteLocation": "sa Advanced Settings → Optimized Images."
   },
   "links": {
     "title": "Mga Link",

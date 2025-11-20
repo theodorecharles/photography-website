@@ -765,7 +765,10 @@
     "maxDimension": "Kích thước tối đa",
     "concurrencyDescription1": "Số lượng hình ảnh tối đa để xử lý đồng thời. Giá trị cao hơn sẽ tăng tốc độ xử lý hàng loạt nhưng sử dụng nhiều CPU và bộ nhớ hơn.",
     "concurrencyDescription2": "Nguyên tắc chung: ~4× số lõi CPU logic của bạn. Đề xuất: 8-16 cho các hệ thống thông thường, 32-64 cho các máy chủ hiệu suất cao.",
-    "maxParallelJobs": "Công việc song song tối đa"
+    "maxParallelJobs": "Công việc song song tối đa",
+    "warningNote": "Các thay đổi về cài đặt chất lượng hình ảnh chỉ áp dụng cho các bức ảnh mới được tải lên. Các hình ảnh hiện có sẽ giữ nguyên cài đặt hiện tại trừ khi bạn sử dụng  ",
+    "forceRegenerate": "Force Regenerate All  ",
+    "warningNoteLocation": "trong Cài đặt Nâng cao → Hình ảnh Tối ưu hóa."
   },
   "links": {
     "title": "Liên kết",

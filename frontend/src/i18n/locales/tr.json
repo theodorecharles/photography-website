@@ -765,7 +765,10 @@
     "maxDimension": "Maksimum Boyut",
     "concurrencyDescription1": "Aynı anda işlenecek maksimum görüntü sayısı. Daha yüksek değerler toplu işlemeyi hızlandırır ancak daha fazla CPU ve bellek kullanır.",
     "concurrencyDescription2": "Kural: Mantıksal CPU çekirdeklerinizin ~4× katı. Önerilen: Tipik sistemler için 8-16, yüksek performanslı sunucular için 32-64.",
-    "maxParallelJobs": "Maksimum Paralel İş"
+    "maxParallelJobs": "Maksimum Paralel İş",
+    "warningNote": "Görüntü kalitesi ayarlarındaki değişiklikler yalnızca yeni yüklenen fotoğraflara uygulanır. Mevcut görüntüler mevcut ayarlarını koruyacaktır, aksi takdirde ",
+    "forceRegenerate": "Tümünü Zorla Yenile",
+    "warningNoteLocation": "Gelişmiş Ayarlar → Optimize Edilmiş Görüntüler bölümünde kullanılmalıdır."
   },
   "links": {
     "title": "Bağlantılar",

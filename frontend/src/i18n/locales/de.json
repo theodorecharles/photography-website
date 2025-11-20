@@ -765,7 +765,10 @@
     "maxDimension": "Maximale Dimension",
     "concurrencyDescription1": "Maximale Anzahl gleichzeitig zu verarbeitender Bilder. Höhere Werte beschleunigen die Stapelverarbeitung, verwenden aber mehr CPU und Speicher.",
     "concurrencyDescription2": "Faustregel: ~4× Ihre logischen CPU-Kerne. Empfohlen: 8-16 für typische Systeme, 32-64 für Hochleistungsserver.",
-    "maxParallelJobs": "Maximale parallele Jobs"
+    "maxParallelJobs": "Maximale parallele Jobs",
+    "warningNote": "Änderungen an den Bildqualitätseinstellungen gelten nur für neu hochgeladene Fotos. Bestehende Bilder behalten ihre aktuellen Einstellungen, es sei denn, Sie verwenden",
+    "forceRegenerate": "Alle neu generieren erzwingen",
+    "warningNoteLocation": "in den erweiterten Einstellungen → Optimierte Bilder."
   },
   "links": {
     "title": "Links  ",

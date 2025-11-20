@@ -765,7 +765,10 @@
     "maxDimension": "Dimensione Massima",
     "concurrencyDescription1": "Numero massimo di immagini da elaborare contemporaneamente. Valori più alti accelerano l'elaborazione in batch ma utilizzano più CPU e memoria.",
     "concurrencyDescription2": "Regola empirica: ~4× i tuoi core logici della CPU. Consigliato: 8-16 per sistemi tipici, 32-64 per server ad alte prestazioni.",
-    "maxParallelJobs": "Lavori Paralleli Massimi"
+    "maxParallelJobs": "Lavori Paralleli Massimi",
+    "warningNote": "Le modifiche alle impostazioni di qualità dell'immagine si applicano solo alle foto caricate di recente. Le immagini esistenti manterranno le loro impostazioni attuali a meno che tu non utilizzi  ",
+    "forceRegenerate": "Forza Rigenera Tutto  ",
+    "warningNoteLocation": "in Impostazioni Avanzate → Immagini Ottimizzate."
   },
   "links": {
     "title": "Link",

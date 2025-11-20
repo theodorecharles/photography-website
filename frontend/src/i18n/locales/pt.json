@@ -765,7 +765,10 @@
     "maxDimension": "Dimensão Máxima",
     "concurrencyDescription1": "Número máximo de imagens para processar simultaneamente. Valores mais altos aceleram o processamento em lote, mas usam mais CPU e memória.",
     "concurrencyDescription2": "Regra geral: ~4× o número de núcleos lógicos da CPU. Recomendado: 8-16 para sistemas típicos, 32-64 para servidores de alto desempenho.",
-    "maxParallelJobs": "Máximo de Trabalhos Paralelos"
+    "maxParallelJobs": "Máximo de Trabalhos Paralelos",
+    "warningNote": "As alterações nas configurações de qualidade da imagem se aplicam apenas às fotos recém-carregadas. As imagens existentes manterão suas configurações atuais, a menos que você use",
+    "forceRegenerate": "Forçar Regenerar Tudo",
+    "warningNoteLocation": "em Configurações Avançadas → Imagens Otimizadas."
   },
   "links": {
     "title": "Links  ",

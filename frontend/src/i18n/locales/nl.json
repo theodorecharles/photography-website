@@ -765,7 +765,10 @@
     "maxDimension": "Maximale Afmeting",
     "concurrencyDescription1": "Maximaal aantal afbeeldingen om gelijktijdig te verwerken. Hogere waarden versnellen batchverwerking maar gebruiken meer CPU en geheugen.",
     "concurrencyDescription2": "Vuistregel: ~4× je logische CPU-kernen. Aanbevolen: 8-16 voor typische systemen, 32-64 voor high-performance servers.",
-    "maxParallelJobs": "Max Parallelle Taken"
+    "maxParallelJobs": "Max Parallelle Taken",
+    "warningNote": "Wijzigingen in de afbeeldingskwaliteitsinstellingen zijn alleen van toepassing op nieuw geüploade foto's. Bestaande afbeeldingen behouden hun huidige instellingen, tenzij je ",
+    "forceRegenerate": "Force Regenerate All ",
+    "warningNoteLocation": "gebruikt in Geavanceerde Instellingen → Geoptimaliseerde Afbeeldingen."
   },
   "links": {
     "title": "Links  ",

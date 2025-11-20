@@ -765,7 +765,10 @@
     "maxDimension": "Maksimal dimensjon",
     "concurrencyDescription1": "Maksimalt antall bilder som skal behandles samtidig. Høyere verdier øker hastigheten på batchbehandling, men bruker mer CPU og minne.",
     "concurrencyDescription2": "Tommelregel: ~4× dine logiske CPU-kjerner. Anbefalt: 8-16 for typiske systemer, 32-64 for høyytelses-servere.",
-    "maxParallelJobs": "Maks parallelle jobber"
+    "maxParallelJobs": "Maks parallelle jobber",
+    "warningNote": "Endringer i bildekvalitetsinnstillinger gjelder kun for nylig opplastede bilder. Eksisterende bilder vil beholde sine nåværende innstillinger med mindre du bruker",
+    "forceRegenerate": "Tving Regenerer Alt",
+    "warningNoteLocation": "i Avanserte Innstillinger → Optimaliserte Bilder."
   },
   "links": {
     "title": "Lenker",

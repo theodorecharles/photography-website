@@ -765,7 +765,10 @@
     "maxDimension": "Dimensiune maximă",
     "concurrencyDescription1": "Numărul maxim de imagini care pot fi procesate simultan. Valorile mai mari accelerează procesarea în lot, dar folosesc mai mult CPU și memorie.",
     "concurrencyDescription2": "Regulă generală: ~4× nucleele logice ale CPU-ului tău. Recomandat: 8-16 pentru sisteme tipice, 32-64 pentru servere de înaltă performanță.",
-    "maxParallelJobs": "Maxim Sarcini Paralele"
+    "maxParallelJobs": "Maxim Sarcini Paralele",
+    "warningNote": "Modificările setărilor de calitate a imaginii se aplică doar fotografiilor încărcate recent. Imaginile existente vor păstra setările actuale, cu excepția cazului în care folosești",
+    "forceRegenerate": "Forțează Regenerarea Tuturor",
+    "warningNoteLocation": "în Setări Avansate → Imagini Optimizate."
   },
   "links": {
     "title": "Linkuri",

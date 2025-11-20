@@ -765,7 +765,10 @@
     "maxDimension": "최대 차원",
     "concurrencyDescription1": "동시에 처리할 최대 이미지 수입니다. 값이 높을수록 일괄 처리 속도가 빨라지지만 CPU와 메모리를 더 많이 사용합니다.",
     "concurrencyDescription2": "일반적인 규칙: 논리적 CPU 코어의 약 4배. 권장: 일반 시스템의 경우 8-16, 고성능 서버의 경우 32-64.",
-    "maxParallelJobs": "최대 병렬 작업"
+    "maxParallelJobs": "최대 병렬 작업",
+    "warningNote": "이미지 품질 설정에 대한 변경 사항은 새로 업로드된 사진에만 적용됩니다. 기존 이미지는 현재 설정을 유지하며, 사용하지 않는 한 그대로입니다.",
+    "forceRegenerate": "모두 강제로 재생성",
+    "warningNoteLocation": "고급 설정 → 최적화된 이미지."
   },
   "links": {
     "title": "링크",

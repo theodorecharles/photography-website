@@ -765,7 +765,10 @@
     "maxDimension": "最大サイズ",
     "concurrencyDescription1": "同時に処理する画像の最大数。値を大きくするとバッチ処理が高速化しますが、CPUとメモリをより多く使用します。",
     "concurrencyDescription2": "目安：論理CPUコア数の約4倍。推奨：一般的なシステムでは8-16、高性能サーバーでは32-64。",
-    "maxParallelJobs": "最大並列ジョブ数"
+    "maxParallelJobs": "最大並列ジョブ数",
+    "warningNote": "画像品質設定の変更は、新しくアップロードされた写真にのみ適用されます。既存の画像は現在の設定を維持しますが、Advanced Settings → Optimized Imagesで",
+    "forceRegenerate": "Force Regenerate All",
+    "warningNoteLocation": "を使用する場合を除きます。"
   },
   "links": {
     "title": "リンク",
