@@ -640,45 +640,49 @@ const ContentModal: React.FC<ContentModalProps> = ({
             />
 
             {selectedPhoto.media_type === 'video' ? (
-              showVideoPlayer ? (
-                <div className="modal-video-container">
-                  <VideoPlayer
-                    album={selectedPhoto.album}
-                    filename={selectedPhoto.id.includes('/') ? selectedPhoto.id.split('/').pop() || selectedPhoto.id : selectedPhoto.id}
-                    autoplay={shouldAutoplay}
-                    onLoadStart={() => setThumbnailLoaded(false)}
-                    onLoaded={() => {
-                      setThumbnailLoaded(true);
-                      setModalImageLoaded(true);
+              <div className="modal-photo-container">
+                {/* Always show thumbnail as background for videos */}
+                <ImageCanvas
+                  photo={selectedPhoto}
+                  apiUrl={API_URL}
+                  imageQueryString={imageQueryString}
+                  modalImageLoaded={modalImageLoaded}
+                  showModalImage={showModalImage}
+                  onThumbnailLoad={handleThumbnailLoad}
+                />
+                
+                {/* Play button overlay (hidden when video player is active) */}
+                {thumbnailLoaded && !showVideoPlayer && (
+                  <button
+                    onClick={handlePlayClick}
+                    onTouchEnd={(e) => {
+                      e.stopPropagation();
+                      e.preventDefault();
+                      handlePlayClick(e);
                     }}
-                  />
-                </div>
-              ) : (
-                <div className="modal-photo-container">
-                  <ImageCanvas
-                    photo={selectedPhoto}
-                    apiUrl={API_URL}
-                    imageQueryString={imageQueryString}
-                    modalImageLoaded={modalImageLoaded}
-                    showModalImage={showModalImage}
-                    onThumbnailLoad={handleThumbnailLoad}
-                  />
-                  {thumbnailLoaded && (
-                    <button
-                      onClick={handlePlayClick}
-                      onTouchEnd={(e) => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        handlePlayClick(e);
+                    className="video-play-button-overlay"
+                    aria-label="Play video"
+                  >
+                    <PlayIcon width={80} height={80} />
+                  </button>
+                )}
+                
+                {/* Video player overlay (on top of thumbnail) */}
+                {showVideoPlayer && (
+                  <div className="modal-video-overlay">
+                    <VideoPlayer
+                      album={selectedPhoto.album}
+                      filename={selectedPhoto.id.includes('/') ? selectedPhoto.id.split('/').pop() || selectedPhoto.id : selectedPhoto.id}
+                      autoplay={shouldAutoplay}
+                      onLoadStart={() => setThumbnailLoaded(false)}
+                      onLoaded={() => {
+                        setThumbnailLoaded(true);
+                        setModalImageLoaded(true);
                       }}
-                      className="video-play-button-overlay"
-                      aria-label="Play video"
-                    >
-                      <PlayIcon width={80} height={80} />
-                    </button>
-                  )}
-                </div>
-              )
+                    />
+                  </div>
+                )}
+              </div>
             ) : (
               <div className="modal-photo-container">
                 <ImageCanvas
