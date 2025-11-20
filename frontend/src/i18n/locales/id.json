@@ -383,7 +383,20 @@
     "deleteVideoConfirm": "Apakah Anda yakin ingin menghapus video ini?",
     "titleLabel": "Judul  ",
     "descriptionLabel": "Deskripsi  ",
-    "enterDescription": "Masukkan deskripsi..."
+    "enterDescription": "Masukkan deskripsi...",
+    "updateThumbnail": "Perbarui Thumbnail  ",
+    "useCurrentFrame": "Gunakan Frame Saat Ini  ",
+    "uploadImage": "Unggah Gambar  ",
+    "updating": "Memperbarui...  ",
+    "uploading": "Mengunggah...  ",
+    "updatingThumbnail": "Memperbarui thumbnail...  ",
+    "thumbnailUpdated": "✓ Thumbnail diperbarui!  ",
+    "failedToUpdateThumbnail": "✗ Gagal memperbarui thumbnail  ",
+    "uploadingThumbnail": "Mengunggah thumbnail...  ",
+    "thumbnailUploaded": "✓ Thumbnail diunggah!",
+    "failedToUploadThumbnail": "✗ Gagal mengunggah thumbnail  ",
+    "pleaseSelectImageFile": "✗ Silakan pilih file gambar  ",
+    "unableToLoadVideo": "Tidak dapat memuat video untuk pemilihan thumbnail. Video mungkin masih dalam proses."
   },
   "settings": {
     "saved": "Pengaturan {{section}} disimpan!",

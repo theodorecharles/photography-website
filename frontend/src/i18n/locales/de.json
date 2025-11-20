@@ -383,7 +383,20 @@
     "deleteVideoConfirm": "Sind Sie sicher, dass Sie dieses Video löschen möchten?",
     "titleLabel": "Titel  ",
     "descriptionLabel": "Beschreibung  ",
-    "enterDescription": "Beschreibung eingeben..."
+    "enterDescription": "Beschreibung eingeben...",
+    "updateThumbnail": "Thumbnail aktualisieren  ",
+    "useCurrentFrame": "Aktuellen Frame verwenden  ",
+    "uploadImage": "Bild hochladen  ",
+    "updating": "Aktualisiere...  ",
+    "uploading": "Lade hoch...  ",
+    "updatingThumbnail": "Thumbnail wird aktualisiert...  ",
+    "thumbnailUpdated": "✓ Thumbnail aktualisiert!  ",
+    "failedToUpdateThumbnail": "✗ Aktualisierung des Thumbnails fehlgeschlagen  ",
+    "uploadingThumbnail": "Thumbnail wird hochgeladen...  ",
+    "thumbnailUploaded": "✓ Thumbnail hochgeladen!",
+    "failedToUploadThumbnail": "✗ Fehler beim Hochladen des Thumbnails  ",
+    "pleaseSelectImageFile": "✗ Bitte wählen Sie eine Bilddatei aus  ",
+    "unableToLoadVideo": "Video kann für die Thumbnail-Auswahl nicht geladen werden. Das Video wird möglicherweise noch verarbeitet."
   },
   "settings": {
     "saved": "{{section}} Einstellungen gespeichert!",

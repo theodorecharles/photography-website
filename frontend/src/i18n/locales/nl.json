@@ -383,7 +383,20 @@
     "deleteVideoConfirm": "Weet je zeker dat je deze video wilt verwijderen?",
     "titleLabel": "Titel  ",
     "descriptionLabel": "Beschrijving  ",
-    "enterDescription": "Voer beschrijving in..."
+    "enterDescription": "Voer beschrijving in...",
+    "updateThumbnail": "Miniatuur bijwerken  ",
+    "useCurrentFrame": "Huidig frame gebruiken  ",
+    "uploadImage": "Afbeelding uploaden  ",
+    "updating": "Bijwerken...  ",
+    "uploading": "Uploaden...  ",
+    "updatingThumbnail": "Miniatuur bijwerken...  ",
+    "thumbnailUpdated": "✓ Miniatuur bijgewerkt!  ",
+    "failedToUpdateThumbnail": "✗ Het bijwerken van de miniatuur is mislukt  ",
+    "uploadingThumbnail": "Miniatuur uploaden...  ",
+    "thumbnailUploaded": "✓ Miniatuur geüpload!",
+    "failedToUploadThumbnail": "✗ Uploaden van miniatuur mislukt  ",
+    "pleaseSelectImageFile": "✗ Selecteer alstublieft een afbeeldingsbestand  ",
+    "unableToLoadVideo": "Kan video niet laden voor miniatuurselectie. De video is mogelijk nog aan het verwerken."
   },
   "settings": {
     "saved": "{{section}} instellingen opgeslagen!",

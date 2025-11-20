@@ -383,7 +383,20 @@
     "deleteVideoConfirm": "Bạn có chắc chắn muốn xóa video này không?",
     "titleLabel": "Tiêu đề  ",
     "descriptionLabel": "Mô tả  ",
-    "enterDescription": "Nhập mô tả..."
+    "enterDescription": "Nhập mô tả...",
+    "updateThumbnail": "Cập nhật Hình thu nhỏ  ",
+    "useCurrentFrame": "Sử dụng Khung Hiện tại  ",
+    "uploadImage": "Tải lên Hình ảnh  ",
+    "updating": "Đang cập nhật...  ",
+    "uploading": "Đang tải lên...  ",
+    "updatingThumbnail": "Đang cập nhật hình thu nhỏ...  ",
+    "thumbnailUpdated": "✓ Hình thu nhỏ đã được cập nhật!  ",
+    "failedToUpdateThumbnail": "✗ Không thể cập nhật hình thu nhỏ  ",
+    "uploadingThumbnail": "Đang tải lên hình thu nhỏ...  ",
+    "thumbnailUploaded": "✓ Hình thu nhỏ đã được tải lên!",
+    "failedToUploadThumbnail": "✗ Tải lên hình thu nhỏ không thành công  ",
+    "pleaseSelectImageFile": "✗ Vui lòng chọn một tệp hình ảnh  ",
+    "unableToLoadVideo": "Không thể tải video để chọn hình thu nhỏ. Video có thể vẫn đang được xử lý."
   },
   "settings": {
     "saved": "Cài đặt {{section}} đã được lưu!",

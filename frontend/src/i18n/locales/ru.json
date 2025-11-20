@@ -383,7 +383,20 @@
     "deleteVideoConfirm": "Вы уверены, что хотите удалить это видео?",
     "titleLabel": "Заголовок  ",
     "descriptionLabel": "Описание  ",
-    "enterDescription": "Введите описание..."
+    "enterDescription": "Введите описание...",
+    "updateThumbnail": "Обновить миниатюру  ",
+    "useCurrentFrame": "Использовать текущий кадр  ",
+    "uploadImage": "Загрузить изображение  ",
+    "updating": "Обновление...  ",
+    "uploading": "Загрузка...  ",
+    "updatingThumbnail": "Обновление миниатюры...  ",
+    "thumbnailUpdated": "✓ Миниатюра обновлена!  ",
+    "failedToUpdateThumbnail": "✗ Не удалось обновить миниатюру  ",
+    "uploadingThumbnail": "Загрузка миниатюры...  ",
+    "thumbnailUploaded": "✓ Миниатюра загружена!",
+    "failedToUploadThumbnail": "✗ Не удалось загрузить миниатюру  ",
+    "pleaseSelectImageFile": "✗ Пожалуйста, выберите файл изображения  ",
+    "unableToLoadVideo": "Не удалось загрузить видео для выбора миниатюры. Видео может все еще обрабатываться."
   },
   "settings": {
     "saved": "Настройки {{section}} сохранены!",

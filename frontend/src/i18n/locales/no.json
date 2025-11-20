@@ -383,7 +383,20 @@
     "deleteVideoConfirm": "Er du sikker på at du vil slette denne videoen?",
     "titleLabel": "Tittel  ",
     "descriptionLabel": "Beskrivelse  ",
-    "enterDescription": "Skriv inn beskrivelse..."
+    "enterDescription": "Skriv inn beskrivelse...",
+    "updateThumbnail": "Oppdater miniatyrbilde  ",
+    "useCurrentFrame": "Bruk nåværende ramme  ",
+    "uploadImage": "Last opp bilde  ",
+    "updating": "Oppdaterer...  ",
+    "uploading": "Laster opp...  ",
+    "updatingThumbnail": "Oppdaterer miniatyrbilde...  ",
+    "thumbnailUpdated": "✓ Miniatyrbilde oppdatert!  ",
+    "failedToUpdateThumbnail": "✗ Mislyktes i å oppdatere miniatyrbilde  ",
+    "uploadingThumbnail": "Laster opp miniatyrbilde...  ",
+    "thumbnailUploaded": "✓ Miniatyrbilde lastet opp!",
+    "failedToUploadThumbnail": "✗ Mislyktes i å laste opp miniatyrbilde  ",
+    "pleaseSelectImageFile": "✗ Vennligst velg en bildefil  ",
+    "unableToLoadVideo": "Kan ikke laste inn video for valg av miniatyrbilde. Videoen kan fortsatt være under behandling."
   },
   "settings": {
     "saved": "{{section}} innstillinger lagret!",

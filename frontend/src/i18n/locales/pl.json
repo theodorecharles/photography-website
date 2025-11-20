@@ -383,7 +383,20 @@
     "deleteVideoConfirm": "Czy na pewno chcesz usunąć to wideo?",
     "titleLabel": "Tytuł  ",
     "descriptionLabel": "Opis  ",
-    "enterDescription": "Wprowadź opis..."
+    "enterDescription": "Wprowadź opis...",
+    "updateThumbnail": "Zaktualizuj miniaturę  ",
+    "useCurrentFrame": "Użyj bieżącej klatki  ",
+    "uploadImage": "Prześlij obraz  ",
+    "updating": "Aktualizowanie...  ",
+    "uploading": "Przesyłanie...  ",
+    "updatingThumbnail": "Aktualizowanie miniatury...  ",
+    "thumbnailUpdated": "✓ Miniatura zaktualizowana!  ",
+    "failedToUpdateThumbnail": "✗ Nie udało się zaktualizować miniatury  ",
+    "uploadingThumbnail": "Przesyłanie miniatury...  ",
+    "thumbnailUploaded": "✓ Miniatura przesłana!",
+    "failedToUploadThumbnail": "✗ Nie udało się przesłać miniatury  ",
+    "pleaseSelectImageFile": "✗ Proszę wybrać plik obrazu  ",
+    "unableToLoadVideo": "Nie można załadować wideo do wyboru miniatury. Wideo może być wciąż przetwarzane."
   },
   "settings": {
     "saved": "Ustawienia {{section}} zapisane!",

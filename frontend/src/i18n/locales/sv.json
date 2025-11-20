@@ -383,7 +383,20 @@
     "deleteVideoConfirm": "Är du säker på att du vill ta bort den här videon?",
     "titleLabel": "Titel  ",
     "descriptionLabel": "Beskrivning  ",
-    "enterDescription": "Ange beskrivning..."
+    "enterDescription": "Ange beskrivning...",
+    "updateThumbnail": "Uppdatera miniatyrbild  ",
+    "useCurrentFrame": "Använd nuvarande bildruta  ",
+    "uploadImage": "Ladda upp bild  ",
+    "updating": "Uppdaterar...  ",
+    "uploading": "Laddar upp...  ",
+    "updatingThumbnail": "Uppdaterar miniatyrbild...  ",
+    "thumbnailUpdated": "✓ Miniatyrbild uppdaterad!  ",
+    "failedToUpdateThumbnail": "✗ Misslyckades med att uppdatera miniatyrbild  ",
+    "uploadingThumbnail": "Laddar upp miniatyrbild...  ",
+    "thumbnailUploaded": "✓ Miniatyrbild uppladdad!",
+    "failedToUploadThumbnail": "✗ Misslyckades med att ladda upp miniatyrbild  ",
+    "pleaseSelectImageFile": "✗ Vänligen välj en bildfil  ",
+    "unableToLoadVideo": "Kunde inte ladda videon för miniatyrval. Videon kan fortfarande bearbetas."
   },
   "settings": {
     "saved": "{{section}} inställningar sparade!",

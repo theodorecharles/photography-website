@@ -4,6 +4,7 @@
  */
 
 import React, { useRef, useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import Hls from 'hls.js';
 import { API_URL } from '../../../../config';
 
@@ -18,6 +19,7 @@ const VideoThumbnailPicker: React.FC<VideoThumbnailPickerProps> = ({
   filename,
   onThumbnailUpdated
 }) => {
+  const { t } = useTranslation();
   const videoRef = useRef<HTMLVideoElement>(null);
   const hlsRef = useRef<Hls | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -121,7 +123,7 @@ const VideoThumbnailPicker: React.FC<VideoThumbnailPickerProps> = ({
 
   const handleSetThumbnail = async () => {
     setIsUpdating(true);
-    setUpdateStatus('Updating thumbnail...');
+    setUpdateStatus(t('albumsManager.updatingThumbnail'));
 
     try {
       const response = await fetch(
@@ -142,14 +144,14 @@ const VideoThumbnailPicker: React.FC<VideoThumbnailPickerProps> = ({
         throw new Error('Failed to update thumbnail');
       }
 
-      setUpdateStatus('✓ Thumbnail updated!');
+      setUpdateStatus(t('albumsManager.thumbnailUpdated'));
       setTimeout(() => {
         setUpdateStatus('');
         onThumbnailUpdated();
       }, 2000);
     } catch (err) {
       console.error('Failed to update thumbnail:', err);
-      setUpdateStatus('✗ Failed to update thumbnail');
+      setUpdateStatus(t('albumsManager.failedToUpdateThumbnail'));
       setTimeout(() => setUpdateStatus(''), 3000);
     } finally {
       setIsUpdating(false);
@@ -162,13 +164,13 @@ const VideoThumbnailPicker: React.FC<VideoThumbnailPickerProps> = ({
 
     // Validate file type
     if (!file.type.startsWith('image/')) {
-      setUpdateStatus('✗ Please select an image file');
+      setUpdateStatus(t('albumsManager.pleaseSelectImageFile'));
       setTimeout(() => setUpdateStatus(''), 3000);
       return;
     }
 
     setIsUploading(true);
-    setUpdateStatus('Uploading thumbnail...');
+    setUpdateStatus(t('albumsManager.uploadingThumbnail'));
 
     try {
       const formData = new FormData();
@@ -187,14 +189,14 @@ const VideoThumbnailPicker: React.FC<VideoThumbnailPickerProps> = ({
         throw new Error('Failed to upload thumbnail');
       }
 
-      setUpdateStatus('✓ Thumbnail uploaded!');
+      setUpdateStatus(t('albumsManager.thumbnailUploaded'));
       setTimeout(() => {
         setUpdateStatus('');
         onThumbnailUpdated();
       }, 2000);
     } catch (err) {
       console.error('Failed to upload thumbnail:', err);
-      setUpdateStatus('✗ Failed to upload thumbnail');
+      setUpdateStatus(t('albumsManager.failedToUploadThumbnail'));
       setTimeout(() => setUpdateStatus(''), 3000);
     } finally {
       setIsUploading(false);
@@ -221,26 +223,20 @@ const VideoThumbnailPicker: React.FC<VideoThumbnailPickerProps> = ({
         color: '#ff4444',
         fontSize: '0.875rem'
       }}>
-        Unable to load video for thumbnail selection. The video may still be processing.
+        {t('albumsManager.unableToLoadVideo')}
       </div>
     );
   }
 
   return (
-    <div style={{
-      marginTop: '1rem',
-      padding: '1rem',
-      background: 'rgba(255, 255, 255, 0.03)',
-      border: '1px solid rgba(255, 255, 255, 0.1)',
-      borderRadius: '8px'
-    }}>
+    <>
       <div style={{
         fontSize: '0.875rem',
         marginBottom: '0.75rem',
         fontWeight: 600,
         color: 'rgba(255, 255, 255, 0.9)'
       }}>
-        Update Thumbnail
+        {t('albumsManager.updateThumbnail')}
       </div>
 
       {/* Video Preview */}
@@ -311,7 +307,7 @@ const VideoThumbnailPicker: React.FC<VideoThumbnailPickerProps> = ({
             transition: 'all 0.2s ease'
           }}
         >
-          {isUpdating ? 'Updating...' : 'Use Current Frame'}
+          {isUpdating ? t('albumsManager.updating') : t('albumsManager.useCurrentFrame')}
         </button>
         
         <button
@@ -331,7 +327,7 @@ const VideoThumbnailPicker: React.FC<VideoThumbnailPickerProps> = ({
             transition: 'all 0.2s ease'
           }}
         >
-          {isUploading ? 'Uploading...' : 'Upload Image'}
+          {isUploading ? t('albumsManager.uploading') : t('albumsManager.uploadImage')}
         </button>
         
         <input
@@ -355,13 +351,7 @@ const VideoThumbnailPicker: React.FC<VideoThumbnailPickerProps> = ({
         </div>
       )}
 
-      <div style={{
-        fontSize: '0.75rem',
-        color: 'rgba(255, 255, 255, 0.5)',
-      }}>
-        Scrub to select a frame from the video, or upload a custom image
-      </div>
-    </div>
+    </>
   );
 };
 

@@ -383,7 +383,20 @@
     "deleteVideoConfirm": "Bu videoyu silmek istediğinizden emin misiniz?",
     "titleLabel": "Başlık  ",
     "descriptionLabel": "Açıklama  ",
-    "enterDescription": "Açıklama girin..."
+    "enterDescription": "Açıklama girin...",
+    "updateThumbnail": "Küçük Resmi Güncelle  ",
+    "useCurrentFrame": "Mevcut Kareyi Kullan  ",
+    "uploadImage": "Görüntü Yükle  ",
+    "updating": "Güncelleniyor...  ",
+    "uploading": "Yükleniyor...  ",
+    "updatingThumbnail": "Küçük resmi güncelleniyor...  ",
+    "thumbnailUpdated": "✓ Küçük resim güncellendi!  ",
+    "failedToUpdateThumbnail": "✗ Küçük resmi güncellemeyi başaramadı  ",
+    "uploadingThumbnail": "Küçük resmi yüklüyor...  ",
+    "thumbnailUploaded": "✓ Küçük resim yüklendi!",
+    "failedToUploadThumbnail": "✗ Küçük resmi yükleme başarısız oldu  ",
+    "pleaseSelectImageFile": "✗ Lütfen bir resim dosyası seçin  ",
+    "unableToLoadVideo": "Küçük resim seçimi için video yüklenemedi. Video hala işleniyor olabilir."
   },
   "settings": {
     "saved": "{{section}} ayarları kaydedildi!",

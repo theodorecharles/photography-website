@@ -383,7 +383,20 @@
     "deleteVideoConfirm": "このビデオを削除してもよろしいですか？",
     "titleLabel": "タイトル  ",
     "descriptionLabel": "説明  ",
-    "enterDescription": "説明を入力..."
+    "enterDescription": "説明を入力...",
+    "updateThumbnail": "サムネイルを更新",
+    "useCurrentFrame": "現在のフレームを使用",
+    "uploadImage": "画像をアップロード",
+    "updating": "更新中...",
+    "uploading": "アップロード中...",
+    "updatingThumbnail": "サムネイルを更新中...",
+    "thumbnailUpdated": "✓ サムネイルが更新されました！",
+    "failedToUpdateThumbnail": "✗ サムネイルの更新に失敗しました",
+    "uploadingThumbnail": "サムネイルをアップロード中...",
+    "thumbnailUploaded": "✓ サムネイルがアップロードされました！",
+    "failedToUploadThumbnail": "✗ サムネイルのアップロードに失敗しました  ",
+    "pleaseSelectImageFile": "✗ 画像ファイルを選択してください  ",
+    "unableToLoadVideo": "サムネイル選択のためのビデオを読み込めません。ビデオはまだ処理中かもしれません。"
   },
   "settings": {
     "saved": "{{section}}設定が保存されました！",

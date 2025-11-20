@@ -383,7 +383,20 @@
     "deleteVideoConfirm": "Sigurado ka bang nais mong tanggalin ang video na ito?",
     "titleLabel": "Pamagat  ",
     "descriptionLabel": "Paglalarawan  ",
-    "enterDescription": "Ilagay ang paglalarawan..."
+    "enterDescription": "Ilagay ang paglalarawan...",
+    "updateThumbnail": "I-update ang Thumbnail  ",
+    "useCurrentFrame": "Gamitin ang Kasalukuyang Frame  ",
+    "uploadImage": "Mag-upload ng Imahe  ",
+    "updating": "Nina-update...  ",
+    "uploading": "Nag-upload...  ",
+    "updatingThumbnail": "Nina-update ang thumbnail...  ",
+    "thumbnailUpdated": "✓ Na-update ang thumbnail!  ",
+    "failedToUpdateThumbnail": "✗ Nabigong i-update ang thumbnail  ",
+    "uploadingThumbnail": "Nag-upload ng thumbnail...  ",
+    "thumbnailUploaded": "✓ Na-upload ang thumbnail!",
+    "failedToUploadThumbnail": "❌ Nabigong i-upload ang thumbnail  ",
+    "pleaseSelectImageFile": "❌ Pakisuyong pumili ng isang file ng larawan  ",
+    "unableToLoadVideo": "Hindi ma-load ang video para sa pagpili ng thumbnail. Maaaring nasa proseso pa ang video."
   },
   "settings": {
     "saved": "{{section}} mga setting ay na-save!",
