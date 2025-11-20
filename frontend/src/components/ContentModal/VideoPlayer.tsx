@@ -25,6 +25,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   const videoRef = useRef<HTMLVideoElement>(null);
   const hlsRef = useRef<Hls | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const initializingRef = useRef(false); // Prevent multiple initializations
 
   useEffect(() => {
     const debugInfo = {
@@ -33,7 +34,8 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
       filename,
       autoplay,
       API_URL,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      initializing: initializingRef.current
     };
     console.log('[VideoPlayer] Component mounted/updated:', debugInfo);
     
@@ -49,6 +51,13 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
       // Don't error - React will attach the ref on next render
       return;
     }
+
+    // Prevent duplicate initialization
+    if (initializingRef.current) {
+      console.log('[VideoPlayer] Already initializing, skipping...');
+      return;
+    }
+    initializingRef.current = true;
 
     console.log('[VideoPlayer] Video element found:', video);
     setError(null); // Clear any previous errors
@@ -195,8 +204,11 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     }
 
     return () => {
+      console.log('[VideoPlayer] Cleanup: destroying HLS instance');
+      initializingRef.current = false; // Reset on cleanup
       if (hlsRef.current) {
         hlsRef.current.destroy();
+        hlsRef.current = null;
       }
     };
   }, [album, filename, autoplay, onLoadStart, onLoaded]);
