@@ -22,6 +22,7 @@ export interface UploadingImage {
   retryCount?: number; // Number of retry attempts (max 5)
   videoStage?: string; // Track specific video processing stage (rotation, 240p, 360p, etc.)
   message?: string; // Additional message from processing
+  isRetryable?: boolean; // Whether this error can be retried (defaults to true)
 }
 
 export interface AlbumsManagerProps {

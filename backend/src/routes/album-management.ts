@@ -3,7 +3,7 @@
  * Authenticated routes for creating, deleting albums and managing photos
  */
 
-import { Router, Request, Response } from "express";
+import { Router, Request, Response, NextFunction } from "express";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -285,7 +285,7 @@ const upload = multer({
     }
   }),
   limits: {
-    fileSize: 500 * 1024 * 1024, // 500MB per file (videos are larger)
+    // No file size limit - allow uploads of any size
     fieldSize: 10 * 1024, // 10KB for field values (form data)
     fields: 10 // Maximum 10 non-file fields
   },
@@ -609,7 +609,36 @@ router.delete("/:album/photos/:photo", requireManager, async (req: Request, res:
 /**
  * Upload a single photo or video to an album with SSE progress updates
  */
-router.post("/:album/upload", requireManager, upload.single('photo'), async (req: Request, res: Response): Promise<void> => {
+router.post("/:album/upload", requireManager, (req: Request, res: Response, next: NextFunction) => {
+  // Handle Multer errors before the upload middleware
+  upload.single('photo')(req, res, (err: any) => {
+    if (err) {
+      // Multer errors are client errors (400), not server errors (500)
+      if (err.code === 'LIMIT_FILE_SIZE') {
+        // This should never happen since we removed the file size limit
+        error(`[Upload] File too large (unexpected): ${req.file?.originalname || 'unknown'}`);
+        return res.status(400).json({ 
+          error: `File upload error: ${err.message}`,
+          code: 'LIMIT_FILE_SIZE'
+        });
+      }
+      if (err.code === 'LIMIT_FIELD_COUNT' || err.code === 'LIMIT_FIELD_VALUE' || err.code === 'LIMIT_FIELD_KEY') {
+        error(`[Upload] Form field error: ${err.message}`);
+        return res.status(400).json({ 
+          error: 'Invalid form data',
+          code: err.code
+        });
+      }
+      // Other Multer errors
+      error(`[Upload] Multer error: ${err.message}`);
+      return res.status(400).json({ 
+        error: err.message || 'File upload error',
+        code: err.code
+      });
+    }
+    next();
+  });
+}, async (req: Request, res: Response): Promise<void> => {
   try {
     const { album } = req.params;
     const { language = 'en' } = req.body;
@@ -1412,6 +1441,20 @@ router.post('/:albumName/video/:filename/update-thumbnail', requireManager, asyn
       return;
     }
     
+    // Sanitize inputs to prevent shell injection and directory traversal
+    const sanitizedAlbumName = sanitizeName(albumName);
+    const sanitizedFilename = sanitizePhotoName(filename);
+    
+    if (!sanitizedAlbumName) {
+      res.status(400).json({ error: 'Invalid album name' });
+      return;
+    }
+    
+    if (!sanitizedFilename) {
+      res.status(400).json({ error: 'Invalid filename' });
+      return;
+    }
+    
     if (typeof timestamp !== 'number' || timestamp < 0) {
       res.status(400).json({ error: 'Valid timestamp is required' });
       return;
@@ -1419,7 +1462,7 @@ router.post('/:albumName/video/:filename/update-thumbnail', requireManager, asyn
     
     const appRoot = req.app.get('appRoot');
     const dataDir = process.env.DATA_DIR || path.join(appRoot, 'data');
-    const videoDir = path.join(dataDir, 'video', albumName, filename);
+    const videoDir = path.join(dataDir, 'video', sanitizedAlbumName, sanitizedFilename);
     const optimizedDir = path.join(dataDir, 'optimized');
     const rotatedVideoPath = path.join(videoDir, 'rotated.mp4');
     
@@ -1428,7 +1471,7 @@ router.post('/:albumName/video/:filename/update-thumbnail', requireManager, asyn
     // Check if rotated video exists
     if (!fs.existsSync(rotatedVideoPath)) {
       // Log what files DO exist in the directory
-      const parentDir = path.join(dataDir, 'video', albumName);
+      const parentDir = path.join(dataDir, 'video', sanitizedAlbumName);
       info(`[VideoThumbnail] Rotated video not found. Checking parent dir: ${parentDir}`);
       try {
         if (fs.existsSync(parentDir)) {
@@ -1450,11 +1493,11 @@ router.post('/:albumName/video/:filename/update-thumbnail', requireManager, asyn
     const seconds = Math.floor(timestamp % 60);
     const timeString = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
     
-    info(`[VideoThumbnail] ✓ Rotated video found! Extracting frame at ${timeString} for ${albumName}/${filename}`);
+    info(`[VideoThumbnail] ✓ Rotated video found! Extracting frame at ${timeString} for ${sanitizedAlbumName}/${sanitizedFilename}`);
     
     // Ensure output directories exist
-    const thumbnailDir = path.join(optimizedDir, 'thumbnail', albumName);
-    const modalDir = path.join(optimizedDir, 'modal', albumName);
+    const thumbnailDir = path.join(optimizedDir, 'thumbnail', sanitizedAlbumName);
+    const modalDir = path.join(optimizedDir, 'modal', sanitizedAlbumName);
     
     if (!fs.existsSync(thumbnailDir)) {
       info(`[VideoThumbnail] Creating thumbnail directory: ${thumbnailDir}`);
@@ -1466,7 +1509,7 @@ router.post('/:albumName/video/:filename/update-thumbnail', requireManager, asyn
     }
     
     // Extract thumbnail (512px for thumbnail view)
-    const thumbnailPath = path.join(optimizedDir, 'thumbnail', albumName, filename.replace(/\.[^.]+$/, '.jpg'));
+    const thumbnailPath = path.join(optimizedDir, 'thumbnail', sanitizedAlbumName, sanitizedFilename.replace(/\.[^.]+$/, '.jpg'));
     info(`[VideoThumbnail] Starting ffmpeg extraction - output: ${thumbnailPath}`);
     info(`[VideoThumbnail] ffmpeg args: -ss ${timeString} -i ${rotatedVideoPath} -vframes 1 -vf scale=512:-2 -y ${thumbnailPath}`);
     
@@ -1505,7 +1548,7 @@ router.post('/:albumName/video/:filename/update-thumbnail', requireManager, asyn
     });
     
     // Extract modal preview (2048px for modal view)
-    const modalPath = path.join(optimizedDir, 'modal', albumName, filename.replace(/\.[^.]+$/, '.jpg'));
+    const modalPath = path.join(optimizedDir, 'modal', sanitizedAlbumName, sanitizedFilename.replace(/\.[^.]+$/, '.jpg'));
     info(`[VideoThumbnail] Modal preview output path: ${modalPath}`);
     await new Promise<void>((resolve, reject) => {
       const args = [
@@ -1539,13 +1582,13 @@ router.post('/:albumName/video/:filename/update-thumbnail', requireManager, asyn
       });
     });
     
-    info(`[VideoThumbnail] Updated thumbnails for ${albumName}/${filename} at ${timeString}`);
+    info(`[VideoThumbnail] Updated thumbnails for ${sanitizedAlbumName}/${sanitizedFilename} at ${timeString}`);
     
     // Regenerate static JSON to reflect thumbnail update
     try {
       info(`[VideoThumbnail] Regenerating static JSON after thumbnail update`);
       generateStaticJSONFiles(appRoot);
-      invalidateAlbumCache(albumName);
+      invalidateAlbumCache(sanitizedAlbumName);
     } catch (err) {
       error('[VideoThumbnail] Failed to regenerate static JSON:', err);
     }
