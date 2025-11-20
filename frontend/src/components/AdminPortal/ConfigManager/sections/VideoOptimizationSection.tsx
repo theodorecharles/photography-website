@@ -89,9 +89,25 @@ const VideoOptimizationSection: React.FC<VideoOptimizationSectionProps> = ({
     }
   };
 
+  // Initialize video config with defaults if not present
+  const defaultResolutions = {
+    '240p': { enabled: true, height: 240, videoBitrate: '400k', audioBitrate: '64k' },
+    '360p': { enabled: true, height: 360, videoBitrate: '800k', audioBitrate: '96k' },
+    '720p': { enabled: true, height: 720, videoBitrate: '2500k', audioBitrate: '128k' },
+    '1080p': { enabled: true, height: 1080, videoBitrate: '5000k', audioBitrate: '192k' }
+  };
+
   const videoConfig = config?.environment?.optimization?.video;
   const segmentDuration = videoConfig?.segmentDuration || 4;
-  const resolutions = videoConfig?.resolutions || {};
+  const resolutions = videoConfig?.resolutions || defaultResolutions;
+
+  // Initialize video config if it doesn't exist
+  if (config && !config.environment?.optimization?.video) {
+    updateConfig(['environment', 'optimization', 'video'], {
+      segmentDuration: 4,
+      resolutions: defaultResolutions
+    });
+  }
 
   const hasVideoChanges = JSON.stringify(config?.environment?.optimization?.video) !== 
                           JSON.stringify(originalConfig?.environment?.optimization?.video);

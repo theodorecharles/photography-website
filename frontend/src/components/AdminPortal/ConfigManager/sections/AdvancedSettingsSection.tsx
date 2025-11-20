@@ -32,14 +32,18 @@ interface AdvancedSettingsSectionProps {
   setMessage: (message: { type: "success" | "error"; text: string }) => void;
   hasMissingTitles: boolean;
   optimizationComplete: boolean;
+  videoOptimizationComplete: boolean;
   // SSE state
   generatingTitles: boolean;
   isOptimizationRunning: boolean;
+  isVideoOptimizationRunning: boolean;
   // Actions
   onGenerateTitles: (forceRegenerate: boolean) => void;
   onStopTitles: () => void;
   onRunOptimization: (force: boolean) => void;
   onStopOptimization: () => void;
+  onRunVideoOptimization: () => void;
+  onStopVideoOptimization: () => void;
   onSetupOpenAI: () => void;
   showConfirmation: (message: string) => Promise<boolean>;
   // SMTP navigation
@@ -60,13 +64,17 @@ const AdvancedSettingsSection: React.FC<AdvancedSettingsSectionProps> = ({
   setMessage,
   hasMissingTitles,
   optimizationComplete,
+  videoOptimizationComplete,
   generatingTitles,
   isOptimizationRunning,
+  isVideoOptimizationRunning,
   onGenerateTitles,
   onOpenObserveSave,
   onStopTitles,
   onRunOptimization,
   onStopOptimization,
+  onRunVideoOptimization,
+  onStopVideoOptimization,
   onSetupOpenAI,
   showConfirmation,
   scrollToSmtp,
@@ -316,12 +324,16 @@ const AdvancedSettingsSection: React.FC<AdvancedSettingsSectionProps> = ({
           config={config}
           hasMissingTitles={hasMissingTitles}
           optimizationComplete={optimizationComplete}
+          videoOptimizationComplete={videoOptimizationComplete}
           generatingTitles={generatingTitles}
           isOptimizationRunning={isOptimizationRunning}
+          isVideoOptimizationRunning={isVideoOptimizationRunning}
           onGenerateTitles={onGenerateTitles}
           onStopTitles={onStopTitles}
           onRunOptimization={onRunOptimization}
           onStopOptimization={onStopOptimization}
+          onRunVideoOptimization={onRunVideoOptimization}
+          onStopVideoOptimization={onStopVideoOptimization}
           onSetupOpenAI={onSetupOpenAI}
           showConfirmation={showConfirmation}
         />

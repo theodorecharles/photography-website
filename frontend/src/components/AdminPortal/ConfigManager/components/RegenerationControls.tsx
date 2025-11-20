@@ -11,12 +11,16 @@ interface RegenerationControlsProps {
   config: ConfigData | null;
   hasMissingTitles: boolean;
   optimizationComplete: boolean;
+  videoOptimizationComplete: boolean;
   generatingTitles: boolean;
   isOptimizationRunning: boolean;
+  isVideoOptimizationRunning: boolean;
   onGenerateTitles: (forceRegenerate: boolean) => void;
   onStopTitles: () => void;
   onRunOptimization: (force: boolean) => void;
   onStopOptimization: () => void;
+  onRunVideoOptimization: () => void;
+  onStopVideoOptimization: () => void;
   onSetupOpenAI: () => void;
   showConfirmation: (message: string) => Promise<boolean>;
 }
@@ -25,17 +29,21 @@ const RegenerationControls: React.FC<RegenerationControlsProps> = ({
   config,
   hasMissingTitles,
   optimizationComplete,
+  videoOptimizationComplete,
   generatingTitles,
   isOptimizationRunning,
+  isVideoOptimizationRunning,
   onGenerateTitles,
   onStopTitles,
   onRunOptimization,
   onStopOptimization,
+  onRunVideoOptimization,
+  onStopVideoOptimization,
   onSetupOpenAI,
   showConfirmation,
 }) => {
   const { t } = useTranslation();
-  const isAnyJobRunning = generatingTitles || isOptimizationRunning;
+  const isAnyJobRunning = generatingTitles || isOptimizationRunning || isVideoOptimizationRunning;
 
   if (!config) return null;
 
@@ -149,7 +157,7 @@ const RegenerationControls: React.FC<RegenerationControlsProps> = ({
               onClick={() => onRunOptimization(true)}
               className="btn-force-regenerate"
               style={{ flex: "1 1 auto", minWidth: "200px" }}
-              disabled={generatingTitles}
+              disabled={generatingTitles || isVideoOptimizationRunning}
             >
               {t('advancedSettings.regenerationControls.forceRegenerateAll')}
             </button>
@@ -179,6 +187,75 @@ const RegenerationControls: React.FC<RegenerationControlsProps> = ({
             </span>
           )}
         </div>
+      </div>
+
+      {/* Optimized Videos */}
+      <div className="openai-section" style={{ marginBottom: "0" }}>
+        <label
+          className="openai-section-label"
+          style={{ display: "block", marginBottom: "0.75rem" }}
+        >
+          Video Playlists
+        </label>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "1rem",
+            flexWrap: "wrap",
+            marginBottom: "0.75rem",
+          }}
+        >
+          {!isVideoOptimizationRunning ? (
+            <button
+              type="button"
+              onClick={async () => {
+                const confirmed = await showConfirmation(
+                  'Regenerate master playlists for all videos with current settings? This will update available resolutions but will not re-encode videos.'
+                );
+                if (confirmed) {
+                  onRunVideoOptimization();
+                }
+              }}
+              className="btn-force-regenerate"
+              style={{ flex: "1 1 auto", minWidth: "200px" }}
+              disabled={generatingTitles || isOptimizationRunning}
+            >
+              Regenerate Playlists
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={onStopVideoOptimization}
+              className="btn-force-regenerate"
+              style={{
+                backgroundColor: "#dc2626",
+                borderColor: "#dc2626",
+                flex: "1 1 auto",
+                minWidth: "200px",
+              }}
+            >
+              {t('advancedSettings.regenerationControls.stop')}
+            </button>
+          )}
+          {videoOptimizationComplete && !isVideoOptimizationRunning && (
+            <span
+              style={{
+                color: "var(--primary-color)",
+                fontSize: "1.5rem",
+              }}
+            >
+              ✓
+            </span>
+          )}
+        </div>
+        <p style={{
+          fontSize: '0.875rem',
+          color: 'rgba(255, 255, 255, 0.6)',
+          marginTop: '0.5rem',
+        }}>
+          Regenerates HLS master playlists for existing videos. Does not re-encode videos.
+        </p>
       </div>
     </div>
   );

@@ -55,6 +55,8 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
   // Local state (not related to SSE jobs)
   const [hasMissingTitles, setHasMissingTitles] = useState(false);
   const [optimizationComplete, setOptimizationComplete] = useState(false);
+  const [videoOptimizationComplete, setVideoOptimizationComplete] = useState(false);
+  const [isVideoOptimizationRunning, setIsVideoOptimizationRunning] = useState(false);
   
   // Navigation state for SMTP settings
   const [scrollToSmtp, setScrollToSmtp] = useState(false);
@@ -712,6 +714,96 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
     }
   };
 
+  const handleRunVideoOptimization = async () => {
+    setIsVideoOptimizationRunning(true);
+    setVideoOptimizationComplete(false);
+    
+    try {
+      const response = await fetch(`${API_URL}/api/video-optimization/regenerate`, {
+        method: "POST",
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        setMessage({ type: "error", text: "Failed to start video playlist regeneration" });
+        setIsVideoOptimizationRunning(false);
+        return;
+      }
+
+      // Read the SSE stream
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
+
+      if (!reader) {
+        setMessage({ type: "error", text: "Failed to read response stream" });
+        setIsVideoOptimizationRunning(false);
+        return;
+      }
+
+      let buffer = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+
+        if (done) {
+          setIsVideoOptimizationRunning(false);
+          break;
+        }
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split("\n");
+        buffer = lines.pop() || "";
+
+        for (const line of lines) {
+          if (line.startsWith("data: ")) {
+            try {
+              const data = JSON.parse(line.slice(6));
+
+              if (data.type === "complete") {
+                setVideoOptimizationComplete(true);
+                setIsVideoOptimizationRunning(false);
+                setMessage({
+                  type: data.exitCode === 0 ? "success" : "error",
+                  text: data.message
+                });
+              } else if (data.type === "error") {
+                setMessage({ type: "error", text: data.message });
+                setIsVideoOptimizationRunning(false);
+              }
+            } catch (e) {
+              // Ignore parsing errors
+            }
+          }
+        }
+      }
+    } catch (err) {
+      error("Failed to start video optimization:", err);
+      setMessage({ type: "error", text: "Failed to start video playlist regeneration" });
+      setIsVideoOptimizationRunning(false);
+    }
+  };
+
+  const handleStopVideoOptimization = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/video-optimization/stop`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      
+      if (response.ok) {
+        setMessage({ type: "success", text: "Video playlist regeneration stopped" });
+        setVideoOptimizationComplete(false);
+        setIsVideoOptimizationRunning(false);
+      }
+    } catch (err) {
+      error("Failed to stop video optimization:", err);
+      setIsVideoOptimizationRunning(false);
+    }
+  };
+
   if (loading) {
     return (
       <div
@@ -808,12 +900,16 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
           setMessage={setMessage}
           hasMissingTitles={hasMissingTitles}
           optimizationComplete={optimizationComplete}
+          videoOptimizationComplete={videoOptimizationComplete}
           generatingTitles={sseToaster.generatingTitles}
           isOptimizationRunning={sseToaster.isOptimizationRunning}
+          isVideoOptimizationRunning={isVideoOptimizationRunning}
           onGenerateTitles={handleGenerateTitles}
           onStopTitles={handleStopTitles}
           onRunOptimization={handleRunOptimization}
           onStopOptimization={handleStopOptimization}
+          onRunVideoOptimization={handleRunVideoOptimization}
+          onStopVideoOptimization={handleStopVideoOptimization}
           onSetupOpenAI={handleSetupOpenAI}
           showConfirmation={showConfirmation}
           scrollToSmtp={scrollToSmtp}
