@@ -237,12 +237,14 @@ router.post('/reprocess', requireManager, (req, res) => {
 
   info('[VideoReprocessing] Starting video reprocessing with current settings');
 
-  const scriptPath = path.resolve(__dirname, '../../../scripts/reprocess_all_videos.js');
+  const projectRoot = path.resolve(__dirname, '../../../');
+  const scriptPath = path.join(projectRoot, 'scripts/reprocess_all_videos.js');
+  const tsNodeLoader = path.join(projectRoot, 'node_modules/ts-node/esm.mjs');
   
-  // Spawn the script
-  const child = spawn('node', [scriptPath], {
-    cwd: path.resolve(__dirname, '../../../'),
-    env: { ...process.env, TERM: 'dumb' } // Disable terminal colors/animations
+  // Spawn the script with ts-node loader to handle TypeScript imports
+  const child = spawn('node', ['--no-warnings', '--loader', tsNodeLoader, scriptPath], {
+    cwd: projectRoot,
+    env: { ...process.env, TERM: 'dumb', TS_NODE_PROJECT: path.join(projectRoot, 'backend/tsconfig.json') }
   });
   
   runningVideoOptimizationJob.process = child;
