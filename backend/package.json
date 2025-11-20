@@ -17,7 +17,7 @@
     "@auth/core": "^0.41.1",
     "@auth/express": "^0.12.1",
     "@simplewebauthn/server": "^9.0.3",
-    "@simplewebauthn/types": "^12.0.0",
+    "@simplewebauthn/types": "^9.0.1",
     "@types/better-sqlite3": "^7.6.13",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.1",

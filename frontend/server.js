@@ -334,8 +334,8 @@ function setCSPHeader(res, apiUrl, configFile) {
 
 // Handle client-side routing (catch-all for React routes)
 // This must come AFTER all other routes
-// Express 5: use "/*" instead of "*" for catch-all routes
-app.get("/*", async (req, res) => {
+// Express 5: use regex for catch-all routes
+app.get(/^\/.*/, async (req, res) => {
   const indexPath = path.join(__dirname, "dist", "index.html");
 
   // Check if this is the homepage (root path)
