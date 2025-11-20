@@ -294,10 +294,12 @@ router.post('/reprocess', requireManager, (req, res) => {
   // Handle process completion
   child.on('close', (code: number) => {
     const duration = Date.now() - (runningVideoOptimizationJob?.startTime || Date.now());
+    const durationSec = Math.round(duration / 1000);
     const durationMin = (duration / 1000 / 60).toFixed(1);
+    const timeDisplay = durationSec < 60 ? `${durationSec}s` : `${durationMin}m`;
     
     const message = code === 0 
-      ? `✓ Video reprocessing complete (${durationMin}m)`
+      ? `✓ Video reprocessing complete (${timeDisplay})`
       : `✗ Video reprocessing failed with code ${code}`;
     
     info(`[VideoReprocessing] ${message}`);
@@ -322,7 +324,8 @@ router.post('/reprocess', requireManager, (req, res) => {
 
   child.on('error', (err: Error) => {
     error('[VideoReprocessing] Failed to start script:', err);
-    const message = `✗ Failed to start video reprocessing: ${err.message}`;
+    const errorMessage = err?.message || err?.toString() || 'Unknown error';
+    const message = `✗ Failed to start video reprocessing: ${errorMessage}`;
     
     if (runningVideoOptimizationJob) {
       const errorOutput = JSON.stringify({

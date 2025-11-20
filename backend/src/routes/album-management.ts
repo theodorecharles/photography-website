@@ -1396,6 +1396,8 @@ router.post('/:albumName/video/:filename/update-thumbnail', requireManager, asyn
     const { albumName, filename } = req.params;
     const { timestamp } = req.body; // timestamp in seconds
     
+    info(`[VideoThumbnail] Request received - album: "${albumName}", filename: "${filename}", timestamp: ${timestamp}`);
+    
     if (!albumName || !filename) {
       res.status(400).json({ error: 'Album name and filename are required' });
       return;
@@ -1412,9 +1414,24 @@ router.post('/:albumName/video/:filename/update-thumbnail', requireManager, asyn
     const optimizedDir = path.join(dataDir, 'optimized');
     const rotatedVideoPath = path.join(videoDir, 'rotated.mp4');
     
+    info(`[VideoThumbnail] Looking for rotated video at: ${rotatedVideoPath}`);
+    
     // Check if rotated video exists
     if (!fs.existsSync(rotatedVideoPath)) {
-      res.status(404).json({ error: 'Video not found or not yet processed' });
+      // Log what files DO exist in the directory
+      const parentDir = path.join(dataDir, 'video', albumName);
+      info(`[VideoThumbnail] Rotated video not found. Checking parent dir: ${parentDir}`);
+      try {
+        if (fs.existsSync(parentDir)) {
+          const files = fs.readdirSync(parentDir);
+          info(`[VideoThumbnail] Files in parent directory: ${JSON.stringify(files)}`);
+        } else {
+          info(`[VideoThumbnail] Parent directory does not exist`);
+        }
+      } catch (err) {
+        error(`[VideoThumbnail] Error checking directory:`, err);
+      }
+      res.status(404).json({ error: 'Video not found or not yet processed', path: rotatedVideoPath });
       return;
     }
     
@@ -1426,8 +1443,22 @@ router.post('/:albumName/video/:filename/update-thumbnail', requireManager, asyn
     
     info(`[VideoThumbnail] Extracting frame at ${timeString} for ${albumName}/${filename}`);
     
+    // Ensure output directories exist
+    const thumbnailDir = path.join(optimizedDir, 'thumbnail', albumName);
+    const modalDir = path.join(optimizedDir, 'modal', albumName);
+    
+    if (!fs.existsSync(thumbnailDir)) {
+      info(`[VideoThumbnail] Creating thumbnail directory: ${thumbnailDir}`);
+      fs.mkdirSync(thumbnailDir, { recursive: true });
+    }
+    if (!fs.existsSync(modalDir)) {
+      info(`[VideoThumbnail] Creating modal directory: ${modalDir}`);
+      fs.mkdirSync(modalDir, { recursive: true });
+    }
+    
     // Extract thumbnail (512px for thumbnail view)
     const thumbnailPath = path.join(optimizedDir, 'thumbnail', albumName, filename.replace(/\.[^.]+$/, '.jpg'));
+    info(`[VideoThumbnail] Thumbnail output path: ${thumbnailPath}`);
     await new Promise<void>((resolve, reject) => {
       const args = [
         '-ss', timeString, // Seek to timestamp
@@ -1462,6 +1493,7 @@ router.post('/:albumName/video/:filename/update-thumbnail', requireManager, asyn
     
     // Extract modal preview (2048px for modal view)
     const modalPath = path.join(optimizedDir, 'modal', albumName, filename.replace(/\.[^.]+$/, '.jpg'));
+    info(`[VideoThumbnail] Modal preview output path: ${modalPath}`);
     await new Promise<void>((resolve, reject) => {
       const args = [
         '-ss', timeString,

@@ -124,10 +124,7 @@ export const AlbumListItem: React.FC<AlbumListItemProps> = ({
       {/* Title */}
       <div className="list-item-title">
         {statusText ? (
-          <>
-            <div className="title-text">{title}</div>
-            <div className="status-text">{statusText}</div>
-          </>
+          <div className="status-text">{statusText}</div>
         ) : (
           <div className="title-text">{title}</div>
         )}
