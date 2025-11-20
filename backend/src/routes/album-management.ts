@@ -1377,6 +1377,15 @@ router.post('/:albumName/video/:filename/upload-thumbnail', requireManager, uplo
     
     info(`[VideoThumbnail] Uploaded custom thumbnail for ${albumName}/${filename}`);
     
+    // Regenerate static JSON to reflect thumbnail update
+    try {
+      info(`[VideoThumbnail] Regenerating static JSON after thumbnail upload`);
+      generateStaticJSONFiles(appRoot);
+      invalidateAlbumCache(albumName);
+    } catch (err) {
+      error('[VideoThumbnail] Failed to regenerate static JSON:', err);
+    }
+    
     res.json({ 
       success: true,
       message: 'Custom thumbnail uploaded successfully'
@@ -1531,6 +1540,15 @@ router.post('/:albumName/video/:filename/update-thumbnail', requireManager, asyn
     });
     
     info(`[VideoThumbnail] Updated thumbnails for ${albumName}/${filename} at ${timeString}`);
+    
+    // Regenerate static JSON to reflect thumbnail update
+    try {
+      info(`[VideoThumbnail] Regenerating static JSON after thumbnail update`);
+      generateStaticJSONFiles(appRoot);
+      invalidateAlbumCache(albumName);
+    } catch (err) {
+      error('[VideoThumbnail] Failed to regenerate static JSON:', err);
+    }
     
     res.json({ 
       success: true,
