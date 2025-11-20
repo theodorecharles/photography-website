@@ -337,20 +337,44 @@ export async function processVideo(
     });
 
     // Step 3: Generate HLS playlists for different resolutions
-    const resolutions: VideoResolution[] = [
-      { name: '240p', height: 240, videoBitrate: '400k', audioBitrate: '64k' },
-      { name: '360p', height: 360, videoBitrate: '800k', audioBitrate: '96k' },
-      { name: '720p', height: 720, videoBitrate: '2500k', audioBitrate: '128k' }
-    ];
+    // Load resolution settings from config
+    const configPath = path.join(dataDir, 'config.json');
+    let videoConfig: any = {};
+    try {
+      const configData = await fs.promises.readFile(configPath, 'utf-8');
+      const config = JSON.parse(configData);
+      videoConfig = config.environment?.optimization?.video || {};
+    } catch (err) {
+      warn('[VideoProcessor] Could not load video config, using defaults');
+    }
 
-    // Add 1080p if source is high enough resolution
-    if (metadata.height >= 1080) {
-      resolutions.push({
-        name: '1080p',
-        height: 1080,
-        videoBitrate: '5000k',
-        audioBitrate: '192k'
-      });
+    // Build resolutions array from config (only enabled resolutions)
+    const resolutionConfig = videoConfig.resolutions || {
+      '240p': { enabled: true, height: 240, videoBitrate: '400k', audioBitrate: '64k' },
+      '360p': { enabled: true, height: 360, videoBitrate: '800k', audioBitrate: '96k' },
+      '720p': { enabled: true, height: 720, videoBitrate: '2500k', audioBitrate: '128k' },
+      '1080p': { enabled: true, height: 1080, videoBitrate: '5000k', audioBitrate: '192k' }
+    };
+
+    const resolutions: VideoResolution[] = [];
+    for (const [name, config] of Object.entries(resolutionConfig)) {
+      const resConfig = config as any;
+      // Only include enabled resolutions that are <= source resolution
+      if (resConfig.enabled && resConfig.height <= metadata.height) {
+        resolutions.push({
+          name,
+          height: resConfig.height,
+          videoBitrate: resConfig.videoBitrate,
+          audioBitrate: resConfig.audioBitrate
+        });
+      }
+    }
+
+    // Sort by height ascending
+    resolutions.sort((a, b) => a.height - b.height);
+
+    if (resolutions.length === 0) {
+      throw new Error('No video resolutions enabled in configuration');
     }
 
     for (const resolution of resolutions) {

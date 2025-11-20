@@ -14,14 +14,49 @@ const __dirname = path.dirname(__filename);
 
 const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, '..', 'data');
 const VIDEO_DIR = path.join(DATA_DIR, 'video');
+const CONFIG_PATH = path.join(DATA_DIR, 'config.json');
 
-// Resolution configurations matching video-processor.ts
-const RESOLUTIONS = [
-  { name: '240p', height: 240, videoBitrate: '400k', audioBitrate: '64k' },
-  { name: '360p', height: 360, videoBitrate: '800k', audioBitrate: '96k' },
-  { name: '720p', height: 720, videoBitrate: '2500k', audioBitrate: '128k' },
-  { name: '1080p', height: 1080, videoBitrate: '5000k', audioBitrate: '192k' }
-];
+// Load resolution configurations from config.json
+function loadVideoResolutions() {
+  try {
+    const configData = fs.readFileSync(CONFIG_PATH, 'utf-8');
+    const config = JSON.parse(configData);
+    const resolutionConfig = config.environment?.optimization?.video?.resolutions || {};
+    
+    // Convert config format to array, only including enabled resolutions
+    const resolutions = [];
+    for (const [name, cfg] of Object.entries(resolutionConfig)) {
+      if (cfg.enabled) {
+        resolutions.push({
+          name,
+          height: cfg.height,
+          videoBitrate: cfg.videoBitrate,
+          audioBitrate: cfg.audioBitrate
+        });
+      }
+    }
+    
+    // Sort by height ascending
+    resolutions.sort((a, b) => a.height - b.height);
+    
+    return resolutions.length > 0 ? resolutions : getDefaultResolutions();
+  } catch (err) {
+    console.log('⚠️  Could not load video config, using defaults');
+    return getDefaultResolutions();
+  }
+}
+
+function getDefaultResolutions() {
+  return [
+    { name: '240p', height: 240, videoBitrate: '400k', audioBitrate: '64k' },
+    { name: '360p', height: 360, videoBitrate: '800k', audioBitrate: '96k' },
+    { name: '720p', height: 720, videoBitrate: '2500k', audioBitrate: '128k' },
+    { name: '1080p', height: 1080, videoBitrate: '5000k', audioBitrate: '192k' }
+  ];
+}
+
+const RESOLUTIONS = loadVideoResolutions();
+console.log(`📹 Using ${RESOLUTIONS.length} video resolutions: ${RESOLUTIONS.map(r => r.name).join(', ')}\n`);
 
 function generateMasterPlaylist(videoPath, availableResolutions) {
   const masterPlaylistPath = path.join(videoPath, 'master.m3u8');

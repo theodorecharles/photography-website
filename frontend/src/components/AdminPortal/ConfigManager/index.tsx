@@ -19,6 +19,7 @@ import LinksSection from './sections/LinksSection';
 import UserManagementSection from './sections/UserManagementSection';
 import OpenAISection from './sections/OpenAISection';
 import ImageOptimizationSection from './sections/ImageOptimizationSection';
+import VideoOptimizationSection from './sections/VideoOptimizationSection';
 import AdvancedSettingsSection from './sections/AdvancedSettingsSection';
 import RestartModal from '../../RestartModal';
 import '../ConfigManager.css';
@@ -778,6 +779,16 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
         />
 
         <ImageOptimizationSection
+          config={config}
+          originalConfig={originalConfig}
+          setConfig={setConfig}
+          setOriginalConfig={setOriginalConfig}
+          savingSection={savingSection}
+          setSavingSection={setSavingSection}
+          setMessage={setMessage}
+        />
+
+        <VideoOptimizationSection
           config={config}
           originalConfig={originalConfig}
           setConfig={setConfig}
