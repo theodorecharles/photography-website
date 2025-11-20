@@ -10,6 +10,7 @@ import { ConfigData } from '../types';
 import { trackConfigSettingsSaved } from '../../../../utils/analytics';
 import SectionHeader from '../components/SectionHeader';
 import { error } from '../../../../utils/logger';
+import '../../AlbumsManager.css'; // For toggle switch styles
 
 
 interface VideoOptimizationSectionProps {
@@ -152,7 +153,7 @@ const VideoOptimizationSection: React.FC<VideoOptimizationSectionProps> = ({
                           JSON.stringify(originalConfig?.environment?.optimization?.video);
 
   return (
-    <>
+    <div className="config-group full-width">
       <SectionHeader
         title="Video Optimization"
         description="Configure video quality, streaming, and HLS settings"
@@ -166,7 +167,7 @@ const VideoOptimizationSection: React.FC<VideoOptimizationSectionProps> = ({
           {/* Segment Duration */}
           <div style={{ marginBottom: '2rem' }}>
             <label className="branding-label">
-              HLS Segment Duration (seconds)
+              HLS Segment Duration
             </label>
             <p style={{
               fontSize: '0.875rem',
@@ -174,7 +175,7 @@ const VideoOptimizationSection: React.FC<VideoOptimizationSectionProps> = ({
               marginBottom: '0.75rem',
               marginTop: '0.25rem',
             }}>
-              Length of each video segment. Longer segments (4-6s) reduce server requests and improve streaming performance.
+              Length of each video segment in seconds. Longer segments (4-6s) reduce server requests and improve streaming performance.
             </p>
             <input
               type="number"
@@ -184,8 +185,13 @@ const VideoOptimizationSection: React.FC<VideoOptimizationSectionProps> = ({
               value={segmentDuration}
               onChange={(e) => updateConfig(['environment', 'optimization', 'video', 'segmentDuration'], parseInt(e.target.value))}
               className="branding-input"
-              style={{ width: '100px' }}
+              style={{ width: '120px' }}
             />
+            <span style={{ 
+              marginLeft: '0.5rem', 
+              fontSize: '0.875rem', 
+              color: 'rgba(255, 255, 255, 0.5)' 
+            }}>seconds</span>
           </div>
 
           {/* Resolution Settings */}
@@ -194,37 +200,54 @@ const VideoOptimizationSection: React.FC<VideoOptimizationSectionProps> = ({
               fontSize: '1rem',
               fontWeight: 600,
               color: '#fff',
-              marginBottom: '0.75rem',
+              marginBottom: '0.5rem',
             }}>
               Video Resolutions
             </h4>
             <p style={{
               fontSize: '0.875rem',
               color: 'rgba(255, 255, 255, 0.6)',
-              marginBottom: '1rem',
+              marginBottom: '1.25rem',
             }}>
-              Configure which resolutions to generate and their quality settings. Higher bitrates improve quality but increase file size.
+              Enable resolutions and configure their quality settings. Higher bitrates improve quality but increase file size.
             </p>
 
             {Object.entries(resolutions).map(([name, res]: [string, any]) => {
               console.log(`[VideoOptimization] Rendering ${name}:`, res);
               return (
               <div key={name} style={{
-                background: 'rgba(255, 255, 255, 0.03)',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
+                background: res.enabled ? 'rgba(74, 222, 128, 0.05)' : 'rgba(255, 255, 255, 0.02)',
+                border: `1px solid ${res.enabled ? 'rgba(74, 222, 128, 0.2)' : 'rgba(255, 255, 255, 0.1)'}`,
                 borderRadius: '8px',
-                padding: '1rem',
+                padding: '1.25rem',
                 marginBottom: '1rem',
+                transition: 'all 0.3s ease',
               }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
-                  <label style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.5rem',
-                    cursor: 'pointer',
-                    fontSize: '0.95rem',
-                    fontWeight: 600,
-                  }}>
+                <div style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'space-between',
+                  marginBottom: res.enabled ? '1.25rem' : '0'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                    <span style={{
+                      fontSize: '0.95rem',
+                      fontWeight: 600,
+                      color: res.enabled ? '#fff' : 'rgba(255, 255, 255, 0.5)',
+                      transition: 'color 0.3s ease',
+                    }}>
+                      {name}
+                    </span>
+                    <span style={{
+                      fontSize: '0.8rem',
+                      color: 'rgba(255, 255, 255, 0.4)',
+                      fontWeight: 400,
+                    }}>
+                      ({res.height}p)
+                    </span>
+                  </div>
+                  
+                  <label className="toggle-switch">
                     <input
                       type="checkbox"
                       checked={res.enabled}
@@ -232,9 +255,9 @@ const VideoOptimizationSection: React.FC<VideoOptimizationSectionProps> = ({
                         ['environment', 'optimization', 'video', 'resolutions', name, 'enabled'],
                         e.target.checked
                       )}
-                      style={{ width: '18px', height: '18px', cursor: 'pointer' }}
                     />
-                    {name} ({res.height}p)
+                    <span className="toggle-slider"></span>
+                    <span className="toggle-label">{res.enabled ? 'Enabled' : 'Disabled'}</span>
                   </label>
                 </div>
 
@@ -243,9 +266,13 @@ const VideoOptimizationSection: React.FC<VideoOptimizationSectionProps> = ({
                     display: 'grid',
                     gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
                     gap: '1rem',
+                    paddingTop: '0.5rem',
                   }}>
                     <div>
-                      <label className="branding-label" style={{ fontSize: '0.85rem' }}>
+                      <label className="branding-label" style={{ 
+                        fontSize: '0.85rem',
+                        color: 'rgba(255, 255, 255, 0.9)',
+                      }}>
                         Video Bitrate
                       </label>
                       <input
@@ -260,11 +287,22 @@ const VideoOptimizationSection: React.FC<VideoOptimizationSectionProps> = ({
                         }}
                         className="branding-input"
                         placeholder="2500k"
+                        style={{ marginTop: '0.25rem' }}
                       />
+                      <div style={{
+                        fontSize: '0.75rem',
+                        color: 'rgba(255, 255, 255, 0.4)',
+                        marginTop: '0.25rem',
+                      }}>
+                        e.g., 400k, 2500k, 5000k
+                      </div>
                     </div>
 
                     <div>
-                      <label className="branding-label" style={{ fontSize: '0.85rem' }}>
+                      <label className="branding-label" style={{ 
+                        fontSize: '0.85rem',
+                        color: 'rgba(255, 255, 255, 0.9)',
+                      }}>
                         Audio Bitrate
                       </label>
                       <input
@@ -279,7 +317,15 @@ const VideoOptimizationSection: React.FC<VideoOptimizationSectionProps> = ({
                         }}
                         className="branding-input"
                         placeholder="128k"
+                        style={{ marginTop: '0.25rem' }}
                       />
+                      <div style={{
+                        fontSize: '0.75rem',
+                        color: 'rgba(255, 255, 255, 0.4)',
+                        marginTop: '0.25rem',
+                      }}>
+                        e.g., 64k, 96k, 128k, 192k
+                      </div>
                     </div>
                   </div>
                 )}
@@ -318,7 +364,7 @@ const VideoOptimizationSection: React.FC<VideoOptimizationSectionProps> = ({
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 };
 
