@@ -422,6 +422,28 @@ router.post('/generate', requireManager, (req, res) => {
       runningJobs.aiTitles.output.push(completeMsg);
       runningJobs.aiTitles.isComplete = true;
       
+      // If successful, regenerate static JSON since titles changed
+      if (code === 0) {
+        info('[AITitles] Regenerating static JSON after title generation...');
+        const staticJsonScript = path.join(projectRoot, 'scripts', 'generate-static-json.js');
+        const staticJsonProcess = spawn('node', [staticJsonScript], {
+          cwd: projectRoot,
+          env: { ...process.env }
+        });
+        
+        staticJsonProcess.on('close', (jsonCode) => {
+          if (jsonCode === 0) {
+            info('[AITitles] Static JSON regenerated successfully');
+          } else {
+            warn('[AITitles] Static JSON regeneration failed with code', jsonCode);
+          }
+        });
+        
+        staticJsonProcess.on('error', (err) => {
+          error('[AITitles] Failed to regenerate static JSON:', err);
+        });
+      }
+      
       // Broadcast to all clients and close connections
       broadcastToClients(runningJobs.aiTitles, completeMsg);
       runningJobs.aiTitles.clients.forEach(client => {
