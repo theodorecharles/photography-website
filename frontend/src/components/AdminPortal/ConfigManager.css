@@ -709,10 +709,10 @@
   padding-bottom: 1rem;
 }
 
-/* Regenerate Sections Grid - Side by Side on Desktop */
+/* Regenerate Sections Grid - Three Columns on Desktop */
 @media (min-width: 769px) {
   .regenerate-sections-grid {
-    grid-template-columns: 1fr 1fr !important;
+    grid-template-columns: 1fr 1fr 1fr !important;
   }
 }
 

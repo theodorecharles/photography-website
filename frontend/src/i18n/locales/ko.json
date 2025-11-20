@@ -414,7 +414,9 @@
       "optimizedImages": "최적화된 이미지",
       "forceRegenerateAllConfirm": "⚠️ 이 작업은 모든 이미지 제목을 재생성하고 설정한 사용자 지정 제목을 덮어씁니다. 이 작업은 실행 취소할 수 없습니다.\n\n계속하시겠습니까?",
       "forceRegenerateImagesConfirm": "모든 이미지를 강제로 다시 생성하시겠습니까? 시간이 좀 걸립니다.",
-      "runOptimizationConfirm": "모든 사진에 대해 이미지 최적화를 실행하시겠습니까?"
+      "runOptimizationConfirm": "모든 사진에 대해 이미지 최적화를 실행하시겠습니까?",
+      "optimizedVideos": "[EN] Optimized Videos",
+      "forceRegenerateVideosConfirm": "[EN] ⚠️ This will re-encode ALL videos with current quality settings. This is a time-consuming operation and will temporarily increase CPU usage.\n\nExisting video files will be replaced. Are you sure you want to continue?"
     }
   },
   "userManagement": {

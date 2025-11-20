@@ -414,7 +414,9 @@
       "optimizedImages": "优化的图像",
       "forceRegenerateAllConfirm": "⚠️ 这将重新生成所有图像标题并覆盖您设置的任何自定义标题。此操作无法撤销。\n\n您确定要继续吗？",
       "forceRegenerateImagesConfirm": "强制重新生成所有图像？这将需要一些时间。",
-      "runOptimizationConfirm": "对所有照片运行图像优化？"
+      "runOptimizationConfirm": "对所有照片运行图像优化？",
+      "optimizedVideos": "[EN] Optimized Videos",
+      "forceRegenerateVideosConfirm": "[EN] ⚠️ This will re-encode ALL videos with current quality settings. This is a time-consuming operation and will temporarily increase CPU usage.\n\nExisting video files will be replaced. Are you sure you want to continue?"
     }
   },
   "userManagement": {

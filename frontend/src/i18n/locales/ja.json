@@ -414,7 +414,9 @@
       "optimizedImages": "最適化された画像",
       "forceRegenerateAllConfirm": "⚠️ これにより、すべての画像タイトルが再生成され、設定したカスタムタイトルが上書きされます。この操作は元に戻せません。\n\n続行してもよろしいですか？",
       "forceRegenerateImagesConfirm": "すべての画像を強制的に再生成しますか？しばらく時間がかかります。",
-      "runOptimizationConfirm": "すべての写真に画像最適化を実行しますか？"
+      "runOptimizationConfirm": "すべての写真に画像最適化を実行しますか？",
+      "optimizedVideos": "[EN] Optimized Videos",
+      "forceRegenerateVideosConfirm": "[EN] ⚠️ This will re-encode ALL videos with current quality settings. This is a time-consuming operation and will temporarily increase CPU usage.\n\nExisting video files will be replaced. Are you sure you want to continue?"
     }
   },
   "userManagement": {

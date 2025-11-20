@@ -414,7 +414,9 @@
       "optimizedImages": "Optimize edilmiş görseller",
       "forceRegenerateAllConfirm": "⚠️ Bu, TÜM resim başlıklarını yeniden oluşturacak ve ayarladığınız özel başlıkları üzerine yazacaktır. Bu işlem geri alınamaz.\n\nDevam etmek istediğinizden emin misiniz?",
       "forceRegenerateImagesConfirm": "TÜM resimleri yeniden oluşturmak istiyor musunuz? Bu biraz zaman alacak.",
-      "runOptimizationConfirm": "Tüm fotoğraflarda resim optimizasyonu yapilsin mı?"
+      "runOptimizationConfirm": "Tüm fotoğraflarda resim optimizasyonu yapilsin mı?",
+      "optimizedVideos": "[EN] Optimized Videos",
+      "forceRegenerateVideosConfirm": "[EN] ⚠️ This will re-encode ALL videos with current quality settings. This is a time-consuming operation and will temporarily increase CPU usage.\n\nExisting video files will be replaced. Are you sure you want to continue?"
     }
   },
   "userManagement": {

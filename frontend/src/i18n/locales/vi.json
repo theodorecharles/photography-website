@@ -414,7 +414,9 @@
       "optimizedImages": "Hình ảnh tối ưu hóa",
       "forceRegenerateAllConfirm": "⚠️ Điều này sẽ tạo lại TẤT CẢ tiêu đề hình ảnh và ghi đè lên bất kỳ tiêu đề tùy chỉnh nào bạn đã đặt. Hành động này không thể hoàn tác.\n\nBạn có chắc chắn muốn tiếp tục không?",
       "forceRegenerateImagesConfirm": "Buộc tái tạo TẤT CẢ hình ảnh? Điều này sẽ mất một thời gian.",
-      "runOptimizationConfirm": "Chạy tối ưu hóa hình ảnh cho tất cả các bức ảnh?"
+      "runOptimizationConfirm": "Chạy tối ưu hóa hình ảnh cho tất cả các bức ảnh?",
+      "optimizedVideos": "[EN] Optimized Videos",
+      "forceRegenerateVideosConfirm": "[EN] ⚠️ This will re-encode ALL videos with current quality settings. This is a time-consuming operation and will temporarily increase CPU usage.\n\nExisting video files will be replaced. Are you sure you want to continue?"
     }
   },
   "userManagement": {

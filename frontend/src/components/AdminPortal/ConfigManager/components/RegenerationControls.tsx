@@ -195,7 +195,7 @@ const RegenerationControls: React.FC<RegenerationControlsProps> = ({
           className="openai-section-label"
           style={{ display: "block", marginBottom: "0.75rem" }}
         >
-          Video Playlists
+          {t('advancedSettings.regenerationControls.optimizedVideos')}
         </label>
         <div
           style={{
@@ -211,7 +211,7 @@ const RegenerationControls: React.FC<RegenerationControlsProps> = ({
               type="button"
               onClick={async () => {
                 const confirmed = await showConfirmation(
-                  'Regenerate master playlists for all videos with current settings? This will update available resolutions but will not re-encode videos.'
+                  t('advancedSettings.regenerationControls.forceRegenerateVideosConfirm')
                 );
                 if (confirmed) {
                   onRunVideoOptimization();
@@ -221,7 +221,7 @@ const RegenerationControls: React.FC<RegenerationControlsProps> = ({
               style={{ flex: "1 1 auto", minWidth: "200px" }}
               disabled={generatingTitles || isOptimizationRunning}
             >
-              Regenerate Playlists
+              {t('advancedSettings.regenerationControls.forceRegenerateAll')}
             </button>
           ) : (
             <button
@@ -249,13 +249,6 @@ const RegenerationControls: React.FC<RegenerationControlsProps> = ({
             </span>
           )}
         </div>
-        <p style={{
-          fontSize: '0.875rem',
-          color: 'rgba(255, 255, 255, 0.6)',
-          marginTop: '0.5rem',
-        }}>
-          Regenerates HLS master playlists for existing videos. Does not re-encode videos.
-        </p>
       </div>
     </div>
   );

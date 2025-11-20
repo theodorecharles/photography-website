@@ -414,7 +414,9 @@
       "optimizedImages": "Immagini ottimizzate",
       "forceRegenerateAllConfirm": "⚠️ Questo rigenererà TUTTI i titoli delle immagini e sovrascriverà eventuali titoli personalizzati che hai impostato. Questa azione non può essere annullata.\n\nSei sicuro di voler continuare?",
       "forceRegenerateImagesConfirm": "Forzare la rigenerazione di TUTTE le immagini? Questo richiederà del tempo.",
-      "runOptimizationConfirm": "Eseguire l'ottimizzazione delle immagini su tutte le foto?"
+      "runOptimizationConfirm": "Eseguire l'ottimizzazione delle immagini su tutte le foto?",
+      "optimizedVideos": "[EN] Optimized Videos",
+      "forceRegenerateVideosConfirm": "[EN] ⚠️ This will re-encode ALL videos with current quality settings. This is a time-consuming operation and will temporarily increase CPU usage.\n\nExisting video files will be replaced. Are you sure you want to continue?"
     }
   },
   "userManagement": {

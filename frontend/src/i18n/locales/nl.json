@@ -414,7 +414,9 @@
       "optimizedImages": "Geoptimaliseerde afbeeldingen",
       "forceRegenerateAllConfirm": "⚠️ Dit zal ALLE afbeeldingtitels regenereren en eventuele aangepaste titels die je hebt ingesteld overschrijven. Deze actie kan niet ongedaan gemaakt worden.\n\nWeet je zeker dat je wilt doorgaan?",
       "forceRegenerateImagesConfirm": "Alle afbeeldingen opnieuw genereren? Dit kan even duren.",
-      "runOptimizationConfirm": "Afbeeldingsoptimalisatie uitvoeren op alle foto's?"
+      "runOptimizationConfirm": "Afbeeldingsoptimalisatie uitvoeren op alle foto's?",
+      "optimizedVideos": "[EN] Optimized Videos",
+      "forceRegenerateVideosConfirm": "[EN] ⚠️ This will re-encode ALL videos with current quality settings. This is a time-consuming operation and will temporarily increase CPU usage.\n\nExisting video files will be replaced. Are you sure you want to continue?"
     }
   },
   "userManagement": {

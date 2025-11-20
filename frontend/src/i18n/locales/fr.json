@@ -539,7 +539,9 @@
       "optimizedImages": "Images optimisées",
       "forceRegenerateAllConfirm": "⚠️ Cela régénérera TOUS les titres d'images et écrasera tous les titres personnalisés que vous avez définis. Cette action ne peut pas être annulée.\n\nÊtes-vous sûr de vouloir continuer ?",
       "forceRegenerateImagesConfirm": "Forcer la régénération de TOUTES les images ? Cela prendra un certain temps.",
-      "runOptimizationConfirm": "Exécuter l'optimisation des images sur toutes les photos ?"
+      "runOptimizationConfirm": "Exécuter l'optimisation des images sur toutes les photos ?",
+      "optimizedVideos": "[EN] Optimized Videos",
+      "forceRegenerateVideosConfirm": "[EN] ⚠️ This will re-encode ALL videos with current quality settings. This is a time-consuming operation and will temporarily increase CPU usage.\n\nExisting video files will be replaced. Are you sure you want to continue?"
     }
   },
   "expiredLink": {

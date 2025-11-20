@@ -189,6 +189,152 @@ router.post('/regenerate', requireManager, (req, res) => {
 });
 
 /**
+ * POST /api/video-optimization/reprocess
+ * Re-encode all videos with current quality settings
+ * Streams progress via SSE
+ */
+router.post('/reprocess', requireManager, (req, res) => {
+  // Set up SSE headers FIRST
+  res.writeHead(200, {
+    'Content-Type': 'text/event-stream',
+    'Cache-Control': 'no-cache, no-transform',
+    'Connection': 'keep-alive',
+    'X-Accel-Buffering': 'no' // Disable nginx buffering
+  });
+  res.setTimeout(0); // Disable timeout for long-running operation
+
+  // Check if a job is already running
+  if (runningVideoOptimizationJob && !runningVideoOptimizationJob.isComplete) {
+    info('[VideoReprocessing] Client connecting to existing job');
+    
+    // Send existing output history to new client
+    runningVideoOptimizationJob.output.forEach(line => {
+      res.write(`data: ${line}\n\n`);
+    });
+    
+    // Add this client to the set
+    runningVideoOptimizationJob.clients.add(res);
+    
+    // Remove client when they disconnect
+    req.on('close', () => {
+      if (runningVideoOptimizationJob) {
+        runningVideoOptimizationJob.clients.delete(res);
+        info(`[VideoReprocessing] Client disconnected, ${runningVideoOptimizationJob.clients.size} remaining`);
+      }
+    });
+    
+    return;
+  }
+
+  // Create new job tracking object IMMEDIATELY
+  runningVideoOptimizationJob = {
+    process: null,
+    output: [],
+    clients: new Set([res]),
+    startTime: Date.now(),
+    isComplete: false
+  };
+
+  info('[VideoReprocessing] Starting video reprocessing with current settings');
+
+  const scriptPath = path.resolve(__dirname, '../../../scripts/reprocess_all_videos.js');
+  
+  // Spawn the script
+  const child = spawn('node', [scriptPath], {
+    cwd: path.resolve(__dirname, '../../../'),
+    env: { ...process.env, TERM: 'dumb' } // Disable terminal colors/animations
+  });
+  
+  runningVideoOptimizationJob.process = child;
+  
+  // Remove client when they disconnect
+  req.on('close', () => {
+    if (runningVideoOptimizationJob) {
+      runningVideoOptimizationJob.clients.delete(res);
+      info(`[VideoReprocessing] Client disconnected, ${runningVideoOptimizationJob.clients.size} remaining`);
+    }
+  });
+
+  // Capture stdout
+  child.stdout.on('data', (data: Buffer) => {
+    const lines = data.toString().split('\n');
+    lines.forEach((line: string) => {
+      if (line.trim()) {
+        const output = JSON.stringify({ type: 'stdout', message: line });
+        info(`[VideoReprocessing] ${line}`);
+        
+        // Store output and broadcast to all clients
+        if (runningVideoOptimizationJob) {
+          runningVideoOptimizationJob.output.push(output);
+          broadcastToClients(runningVideoOptimizationJob, output);
+        }
+      }
+    });
+  });
+
+  // Capture stderr
+  child.stderr.on('data', (data: Buffer) => {
+    const lines = data.toString().split('\n');
+    lines.forEach((line: string) => {
+      if (line.trim()) {
+        const errorOutput = JSON.stringify({ type: 'stderr', message: line });
+        warn(`[VideoReprocessing] ${line}`);
+        
+        // Store output and broadcast to all clients
+        if (runningVideoOptimizationJob) {
+          runningVideoOptimizationJob.output.push(errorOutput);
+          broadcastToClients(runningVideoOptimizationJob, errorOutput);
+        }
+      }
+    });
+  });
+
+  // Handle process completion
+  child.on('close', (code: number) => {
+    const duration = Date.now() - (runningVideoOptimizationJob?.startTime || Date.now());
+    const durationMin = (duration / 1000 / 60).toFixed(1);
+    
+    const message = code === 0 
+      ? `✓ Video reprocessing complete (${durationMin}m)`
+      : `✗ Video reprocessing failed with code ${code}`;
+    
+    info(`[VideoReprocessing] ${message}`);
+    
+    if (runningVideoOptimizationJob) {
+      const completeOutput = JSON.stringify({
+        type: 'complete',
+        exitCode: code,
+        message
+      });
+      runningVideoOptimizationJob.output.push(completeOutput);
+      broadcastToClients(runningVideoOptimizationJob, completeOutput);
+      runningVideoOptimizationJob.isComplete = true;
+      
+      // Clean up after 5 minutes
+      setTimeout(() => {
+        info('[VideoReprocessing] Cleaning up completed job');
+        runningVideoOptimizationJob = null;
+      }, 5 * 60 * 1000);
+    }
+  });
+
+  child.on('error', (err: Error) => {
+    error('[VideoReprocessing] Failed to start script:', err);
+    const message = `✗ Failed to start video reprocessing: ${err.message}`;
+    
+    if (runningVideoOptimizationJob) {
+      const errorOutput = JSON.stringify({
+        type: 'error',
+        message
+      });
+      runningVideoOptimizationJob.output.push(errorOutput);
+      broadcastToClients(runningVideoOptimizationJob, errorOutput);
+      runningVideoOptimizationJob.isComplete = true;
+    }
+  });
+});
+
+/**
  * POST /api/video-optimization/stop
  * Stop the running video optimization job
  */
@@ -201,7 +347,7 @@ router.post('/stop', requireManager, (req, res) => {
   try {
     runningVideoOptimizationJob.process.kill('SIGTERM');
     
-    const message = '⏹ Video playlist regeneration stopped by user';
+    const message = '⏹ Video reprocessing stopped by user';
     runningVideoOptimizationJob.output.push(message);
     broadcastToClients(runningVideoOptimizationJob, message);
     runningVideoOptimizationJob.isComplete = true;

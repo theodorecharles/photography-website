@@ -414,7 +414,9 @@
       "optimizedImages": "Оптимизированные изображения",
       "forceRegenerateAllConfirm": "⚠️ Это приведет к регенерации ВСЕХ заголовков изображений и перезапишет любые пользовательские заголовки, которые вы установили. Это действие нельзя отменить.\n\nВы уверены, что хотите продолжить?",
       "forceRegenerateImagesConfirm": "Принудительно регенерировать ВСЕ изображения? Это займет некоторое время.",
-      "runOptimizationConfirm": "Запустить оптимизацию изображений для всех фотографий?"
+      "runOptimizationConfirm": "Запустить оптимизацию изображений для всех фотографий?",
+      "optimizedVideos": "[EN] Optimized Videos",
+      "forceRegenerateVideosConfirm": "[EN] ⚠️ This will re-encode ALL videos with current quality settings. This is a time-consuming operation and will temporarily increase CPU usage.\n\nExisting video files will be replaced. Are you sure you want to continue?"
     }
   },
   "userManagement": {

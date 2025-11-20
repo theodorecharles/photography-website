@@ -433,8 +433,10 @@
       "forceRegenerateAll": "Force Regenerate All",
       "stop": "Stop",
       "optimizedImages": "Optimized Images",
+      "optimizedVideos": "Optimized Videos",
       "forceRegenerateAllConfirm": "⚠️ This will regenerate ALL image titles and overwrite any custom titles you have set. This action cannot be undone.\n\nAre you sure you want to continue?",
       "forceRegenerateImagesConfirm": "Force regenerate ALL images? This will take a while.",
+      "forceRegenerateVideosConfirm": "⚠️ This will re-encode ALL videos with current quality settings. This is a time-consuming operation and will temporarily increase CPU usage.\n\nExisting video files will be replaced. Are you sure you want to continue?",
       "runOptimizationConfirm": "Run image optimization on all photos?"
     }
   },

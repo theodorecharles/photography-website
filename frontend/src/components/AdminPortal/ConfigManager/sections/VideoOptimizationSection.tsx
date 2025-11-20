@@ -37,6 +37,12 @@ const VideoOptimizationSection: React.FC<VideoOptimizationSectionProps> = ({
   const updateConfig = (path: string[], value: any) => {
     if (!config) return;
 
+    console.log('[VideoOptimization] updateConfig called:', {
+      path,
+      value,
+      currentConfig: config.environment?.optimization?.video
+    });
+
     // Deep clone the config to avoid mutation issues
     const newConfig = JSON.parse(JSON.stringify(config));
     let current: any = newConfig;
@@ -50,6 +56,13 @@ const VideoOptimizationSection: React.FC<VideoOptimizationSectionProps> = ({
     }
 
     current[path[path.length - 1]] = value;
+    
+    console.log('[VideoOptimization] After update:', {
+      newVideoConfig: newConfig.environment?.optimization?.video,
+      updatedPath: path.join('.'),
+      updatedValue: value
+    });
+
     setConfig(newConfig);
   };
 
@@ -105,9 +118,17 @@ const VideoOptimizationSection: React.FC<VideoOptimizationSectionProps> = ({
   const segmentDuration = videoConfig?.segmentDuration || 4;
   const resolutions = videoConfig?.resolutions || defaultResolutions;
 
+  console.log('[VideoOptimization] Render - Current state:', {
+    hasVideoConfig: !!videoConfig,
+    hasResolutions: !!videoConfig?.resolutions,
+    resolutions: resolutions,
+    segmentDuration
+  });
+
   // Initialize video config if it doesn't exist (only once on mount)
   useEffect(() => {
     if (config && !config.environment?.optimization?.video) {
+      console.log('[VideoOptimization] Initializing video config with defaults');
       updateConfig(['environment', 'optimization', 'video'], {
         segmentDuration: 4,
         resolutions: defaultResolutions
@@ -174,7 +195,9 @@ const VideoOptimizationSection: React.FC<VideoOptimizationSectionProps> = ({
               Configure which resolutions to generate and their quality settings. Higher bitrates improve quality but increase file size.
             </p>
 
-            {Object.entries(resolutions).map(([name, res]: [string, any]) => (
+            {Object.entries(resolutions).map(([name, res]: [string, any]) => {
+              console.log(`[VideoOptimization] Rendering ${name}:`, res);
+              return (
               <div key={name} style={{
                 background: 'rgba(255, 255, 255, 0.03)',
                 border: '1px solid rgba(255, 255, 255, 0.1)',
@@ -216,11 +239,14 @@ const VideoOptimizationSection: React.FC<VideoOptimizationSectionProps> = ({
                       </label>
                       <input
                         type="text"
-                        value={res.videoBitrate}
-                        onChange={(e) => updateConfig(
-                          ['environment', 'optimization', 'video', 'resolutions', name, 'videoBitrate'],
-                          e.target.value
-                        )}
+                        value={res.videoBitrate || ''}
+                        onChange={(e) => {
+                          console.log(`[VideoOptimization] Video bitrate change for ${name}:`, e.target.value);
+                          updateConfig(
+                            ['environment', 'optimization', 'video', 'resolutions', name, 'videoBitrate'],
+                            e.target.value
+                          );
+                        }}
                         className="branding-input"
                         placeholder="2500k"
                       />
@@ -232,11 +258,14 @@ const VideoOptimizationSection: React.FC<VideoOptimizationSectionProps> = ({
                       </label>
                       <input
                         type="text"
-                        value={res.audioBitrate}
-                        onChange={(e) => updateConfig(
-                          ['environment', 'optimization', 'video', 'resolutions', name, 'audioBitrate'],
-                          e.target.value
-                        )}
+                        value={res.audioBitrate || ''}
+                        onChange={(e) => {
+                          console.log(`[VideoOptimization] Audio bitrate change for ${name}:`, e.target.value);
+                          updateConfig(
+                            ['environment', 'optimization', 'video', 'resolutions', name, 'audioBitrate'],
+                            e.target.value
+                          );
+                        }}
                         className="branding-input"
                         placeholder="128k"
                       />
@@ -244,7 +273,8 @@ const VideoOptimizationSection: React.FC<VideoOptimizationSectionProps> = ({
                   </div>
                 )}
               </div>
-            ))}
+            )}
+            )}
           </div>
 
           {/* Save Button */}
@@ -272,8 +302,8 @@ const VideoOptimizationSection: React.FC<VideoOptimizationSectionProps> = ({
             color: 'rgba(255, 193, 7, 0.9)',
           }}>
             <strong>⚠️ Note:</strong> Changes to video settings only apply to newly uploaded videos. 
-            Existing videos will keep their current quality settings. To regenerate existing videos with new settings, 
-            you'll need to re-upload them or run a video reprocessing script.
+            Existing videos will keep their current quality settings unless you use <strong>Force Regenerate All</strong> in 
+            Advanced Settings → Optimized Videos.
           </div>
         </div>
       )}

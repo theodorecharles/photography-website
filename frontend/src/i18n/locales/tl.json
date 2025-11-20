@@ -414,7 +414,9 @@
       "optimizedImages": "Na-optimize na mga Imahe",
       "forceRegenerateAllConfirm": "⚠️ Ito ay muling bubuo ng LAHAT ng pamagat ng larawan at papalitan ang anumang mga pasadyang pamagat na iyong itinakda. Ang aksyong ito ay hindi maibabalik.\n\nSigurado ka bang nais mong magpatuloy?",
       "forceRegenerateImagesConfirm": "Puwersahin ang muling pagbuo ng LAHAT ng mga larawan? Magtatagal ito ng kaunti.",
-      "runOptimizationConfirm": "Ipatupad ang pag-optimize ng larawan sa lahat ng mga larawan?"
+      "runOptimizationConfirm": "Ipatupad ang pag-optimize ng larawan sa lahat ng mga larawan?",
+      "optimizedVideos": "[EN] Optimized Videos",
+      "forceRegenerateVideosConfirm": "[EN] ⚠️ This will re-encode ALL videos with current quality settings. This is a time-consuming operation and will temporarily increase CPU usage.\n\nExisting video files will be replaced. Are you sure you want to continue?"
     }
   },
   "userManagement": {

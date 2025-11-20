@@ -177,6 +177,7 @@ export async function generateHLS(
   inputPath: string,
   outputDir: string,
   resolution: VideoResolution,
+  segmentDuration: number = 4,
   onProgress?: (progress: number) => void
 ): Promise<void> {
   // Create output directory
@@ -199,7 +200,7 @@ export async function generateHLS(
       '-b:a', resolution.audioBitrate,
       '-ac', '2',
       '-f', 'hls',
-      '-hls_time', '4',  // 4-second segments (better for streaming performance)
+      '-hls_time', segmentDuration.toString(),
       '-hls_list_size', '0',
       '-hls_segment_filename', segmentPattern,
       '-y',
@@ -337,14 +338,16 @@ export async function processVideo(
     });
 
     // Step 3: Generate HLS playlists for different resolutions
-    // Load resolution settings from config
+    // Load resolution settings and segment duration from config
     const configPath = path.join(dataDir, 'config.json');
     let resolutionConfig: any = null;
+    let segmentDuration = 4; // Default
     
     try {
       const configData = await fs.promises.readFile(configPath, 'utf-8');
       const config = JSON.parse(configData);
       resolutionConfig = config.environment?.optimization?.video?.resolutions;
+      segmentDuration = config.environment?.optimization?.video?.segmentDuration || 4;
     } catch (err) {
       warn('[VideoProcessor] Could not load video config from config.json, trying defaults');
     }
@@ -356,6 +359,7 @@ export async function processVideo(
         const defaultsData = await fs.promises.readFile(defaultsPath, 'utf-8');
         const defaults = JSON.parse(defaultsData);
         resolutionConfig = defaults.environment?.optimization?.video?.resolutions;
+        segmentDuration = defaults.environment?.optimization?.video?.segmentDuration || 4;
         info('[VideoProcessor] Using default video config from config.defaults.json');
       } catch (err) {
         error('[VideoProcessor] Failed to load video config from defaults:', err);
@@ -401,7 +405,7 @@ export async function processVideo(
         });
       }
 
-      await generateHLS(rotatedPath, resolutionDir, resolution, (progress) => {
+      await generateHLS(rotatedPath, resolutionDir, resolution, segmentDuration, (progress) => {
         if (onProgress) {
           onProgress({
             stage,

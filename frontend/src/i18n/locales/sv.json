@@ -414,7 +414,9 @@
       "optimizedImages": "Optimerade bilder",
       "forceRegenerateAllConfirm": "⚠️ Detta kommer att regenerera ALLA bildtitlar och skriva över eventuella anpassade titlar du har ställt in. Denna åtgärd kan inte ångras.\n\nÄr du säker på att du vill fortsätta?",
       "forceRegenerateImagesConfirm": "Tvinga att återskapa ALLA bilder? Detta kommer att ta en stund.",
-      "runOptimizationConfirm": "Kör bildoptimering på alla foton?"
+      "runOptimizationConfirm": "Kör bildoptimering på alla foton?",
+      "optimizedVideos": "[EN] Optimized Videos",
+      "forceRegenerateVideosConfirm": "[EN] ⚠️ This will re-encode ALL videos with current quality settings. This is a time-consuming operation and will temporarily increase CPU usage.\n\nExisting video files will be replaced. Are you sure you want to continue?"
     }
   },
   "userManagement": {

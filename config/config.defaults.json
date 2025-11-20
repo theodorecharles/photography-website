@@ -25,7 +25,7 @@
         }
       },
       "video": {
-        "segmentDuration": 1,
+        "segmentDuration": 4,
         "resolutions": {
           "240p": {
             "enabled": true,

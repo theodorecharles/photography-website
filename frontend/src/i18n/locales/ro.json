@@ -414,7 +414,9 @@
       "optimizedImages": "Imagini optimizate",
       "forceRegenerateAllConfirm": "⚠️ Aceasta va regenera TOATE titlurile imaginilor și va suprascrie orice titluri personalizate pe care le-ați setat. Această acțiune nu poate fi anulată.\n\nEști sigur că vrei să continui?",
       "forceRegenerateImagesConfirm": "Forțează regenerarea TUTUROR imaginilor? Acest lucru va dura ceva timp.",
-      "runOptimizationConfirm": "Rulați optimizarea imaginilor pe toate fotografiile?"
+      "runOptimizationConfirm": "Rulați optimizarea imaginilor pe toate fotografiile?",
+      "optimizedVideos": "[EN] Optimized Videos",
+      "forceRegenerateVideosConfirm": "[EN] ⚠️ This will re-encode ALL videos with current quality settings. This is a time-consuming operation and will temporarily increase CPU usage.\n\nExisting video files will be replaced. Are you sure you want to continue?"
     }
   },
   "userManagement": {

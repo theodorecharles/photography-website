@@ -47,8 +47,17 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
     info('[ConfigManager] Received externalLinks prop:', externalLinks);
   }, [externalLinks]);
   
-  const [config, setConfig] = useState<ConfigData | null>(null);
+  const [config, setConfigInternal] = useState<ConfigData | null>(null);
   const [originalConfig, setOriginalConfig] = useState<ConfigData | null>(null);
+
+  // Wrap setConfig with logging
+  const setConfig = (newConfig: ConfigData | null) => {
+    console.log('[ConfigManager] setConfig called:', {
+      videoConfig: newConfig?.environment?.optimization?.video,
+      stackTrace: new Error().stack
+    });
+    setConfigInternal(newConfig);
+  };
   const [loading, setLoading] = useState(true);
   const [savingSection, setSavingSection] = useState<string | null>(null);
   
@@ -715,18 +724,32 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
   };
 
   const handleRunVideoOptimization = async () => {
+    // Initialize global context state to show toaster
+    sseToaster.setIsOptimizationRunning(true);
+    sseToaster.setOptimizationComplete(false);
+    sseToaster.setOptimizationLogs([]);
+    sseToaster.setOptimizationProgress(0);
     setIsVideoOptimizationRunning(true);
     setVideoOptimizationComplete(false);
     
+    // Reset toaster to default state
+    sseToaster.resetToasterState();
+    
     try {
-      const response = await fetch(`${API_URL}/api/video-optimization/regenerate`, {
+      const abortController = new AbortController();
+      sseToaster.optimizationAbortController.current = abortController;
+
+      const response = await fetch(`${API_URL}/api/video-optimization/reprocess`, {
         method: "POST",
         credentials: "include",
+        signal: abortController.signal,
       });
 
       if (!response.ok) {
-        setMessage({ type: "error", text: "Failed to start video playlist regeneration" });
+        setMessage({ type: "error", text: "Failed to start video reprocessing" });
         setIsVideoOptimizationRunning(false);
+        sseToaster.setIsOptimizationRunning(false);
+        sseToaster.optimizationAbortController.current = null;
         return;
       }
 
@@ -737,6 +760,8 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
       if (!reader) {
         setMessage({ type: "error", text: "Failed to read response stream" });
         setIsVideoOptimizationRunning(false);
+        sseToaster.setIsOptimizationRunning(false);
+        sseToaster.optimizationAbortController.current = null;
         return;
       }
 
@@ -747,6 +772,8 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
 
         if (done) {
           setIsVideoOptimizationRunning(false);
+          sseToaster.setIsOptimizationRunning(false);
+          sseToaster.optimizationAbortController.current = null;
           break;
         }
 
@@ -759,9 +786,15 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
             try {
               const data = JSON.parse(line.slice(6));
 
-              if (data.type === "complete") {
+              if (data.type === "stdout" || data.type === "stderr") {
+                sseToaster.setOptimizationLogs((prev) => [...prev, data.message]);
+              } else if (data.type === "complete") {
                 setVideoOptimizationComplete(true);
                 setIsVideoOptimizationRunning(false);
+                sseToaster.setIsOptimizationRunning(false);
+                sseToaster.setOptimizationComplete(true);
+                sseToaster.setOptimizationLogs((prev) => [...prev, data.message]);
+                sseToaster.optimizationAbortController.current = null;
                 setMessage({
                   type: data.exitCode === 0 ? "success" : "error",
                   text: data.message
@@ -769,6 +802,8 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
               } else if (data.type === "error") {
                 setMessage({ type: "error", text: data.message });
                 setIsVideoOptimizationRunning(false);
+                sseToaster.setIsOptimizationRunning(false);
+                sseToaster.optimizationAbortController.current = null;
               }
             } catch (e) {
               // Ignore parsing errors
@@ -777,9 +812,14 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({
         }
       }
     } catch (err) {
-      error("Failed to start video optimization:", err);
-      setMessage({ type: "error", text: "Failed to start video playlist regeneration" });
+      if (err instanceof Error && err.name === "AbortError") {
+        return;
+      }
+      error("Failed to start video reprocessing:", err);
+      setMessage({ type: "error", text: "Failed to start video reprocessing" });
       setIsVideoOptimizationRunning(false);
+      sseToaster.setIsOptimizationRunning(false);
+      sseToaster.optimizationAbortController.current = null;
     }
   };
 

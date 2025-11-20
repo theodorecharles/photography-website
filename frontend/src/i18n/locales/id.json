@@ -414,7 +414,9 @@
       "optimizedImages": "Gambar yang Dioptimalkan",
       "forceRegenerateAllConfirm": "⚠️ Ini akan menghasilkan kembali SEMUA judul gambar dan menimpa judul kustom yang telah Anda atur. Tindakan ini tidak dapat dibatalkan.\n\nApakah Anda yakin ingin melanjutkan?",
       "forceRegenerateImagesConfirm": "Apakah Anda yakin ingin memaksa regenerasi SEMUA gambar? Ini akan memakan waktu.",
-      "runOptimizationConfirm": "Jalankan optimasi gambar pada semua foto?"
+      "runOptimizationConfirm": "Jalankan optimasi gambar pada semua foto?",
+      "optimizedVideos": "[EN] Optimized Videos",
+      "forceRegenerateVideosConfirm": "[EN] ⚠️ This will re-encode ALL videos with current quality settings. This is a time-consuming operation and will temporarily increase CPU usage.\n\nExisting video files will be replaced. Are you sure you want to continue?"
     }
   },
   "userManagement": {
