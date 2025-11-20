@@ -241,11 +241,10 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         data-video-id={`${album}/${filename}`}
         style={{
           display: 'block',
-          width: '100%',
-          height: '100%',
           maxWidth: '100%',
-          maxHeight: '100%',
-          objectFit: 'contain'
+          maxHeight: '80vh',
+          height: 'auto',
+          width: 'auto'
         }}
       />
     </>

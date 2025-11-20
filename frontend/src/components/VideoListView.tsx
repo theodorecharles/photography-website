@@ -3,7 +3,7 @@
  * Shows videos in a single-column list format with titles, descriptions, and share links
  */
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { SITE_URL, API_URL } from '../config';
 import { Photo } from '../types/photo';
@@ -20,7 +20,6 @@ const VideoListView: React.FC<VideoListViewProps> = ({ videos, album }) => {
   const { t } = useTranslation();
   const [copiedVideoId, setCopiedVideoId] = useState<string | null>(null);
   const [playingVideoId, setPlayingVideoId] = useState<string | null>(null);
-  const videoRefs = useRef<Map<string, HTMLVideoElement>>(new Map());
 
   // Pause all other videos when one starts playing
   useEffect(() => {
@@ -32,22 +31,25 @@ const VideoListView: React.FC<VideoListViewProps> = ({ videos, album }) => {
         setPlayingVideoId(videoId);
         
         // Pause all other videos
-        videoRefs.current.forEach((video, id) => {
-          if (id !== videoId && !video.paused) {
-            video.pause();
+        const allVideos = document.querySelectorAll('.video-list-item video');
+        allVideos.forEach((video) => {
+          const vid = video as HTMLVideoElement;
+          const vidId = vid.dataset.videoId;
+          if (vidId !== videoId && !vid.paused) {
+            vid.pause();
           }
         });
       }
     };
 
     // Add play event listeners to all videos
-    const videos = document.querySelectorAll('.video-list-item video');
-    videos.forEach((video) => {
+    const allVideos = document.querySelectorAll('.video-list-item video');
+    allVideos.forEach((video) => {
       video.addEventListener('play', handlePlay);
     });
 
     return () => {
-      videos.forEach((video) => {
+      allVideos.forEach((video) => {
         video.removeEventListener('play', handlePlay);
       });
     };
