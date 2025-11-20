@@ -20,6 +20,9 @@
   border-radius: 8px;
   padding: 20px;
   transition: background 0.2s ease;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 auto;
 }
 
 .video-list-item:hover {
