@@ -84,6 +84,9 @@ const ContentModal: React.FC<ContentModalProps> = ({
   const touchStartY = useRef<number | null>(null);
   const modalOpenTimeRef = useRef<number | null>(Date.now());
   const imageContainerRef = useRef<HTMLDivElement>(null);
+  const mediaContainerRef = useRef<HTMLDivElement>(null);
+  const [containerWidth, setContainerWidth] = useState<number | null>(null);
+  const [containerHeight, setContainerHeight] = useState<number | null>(null);
 
   // For image URLs, don't include query strings to improve caching (especially on iOS)
   const imageQueryString = ``;
@@ -144,6 +147,74 @@ const ContentModal: React.FC<ContentModalProps> = ({
   const handleThumbnailLoad = useCallback(() => {
     setThumbnailLoaded(true);
   }, []);
+
+  // Calculate container dimensions based on media aspect ratio
+  useEffect(() => {
+    const updateContainerDimensions = () => {
+      const container = mediaContainerRef.current;
+      if (!container) return;
+
+      // Get media element (img or video)
+      const img = container.querySelector('img');
+      const video = container.querySelector('video');
+
+      let aspectRatio: number | null = null;
+
+      if (img && img.naturalWidth && img.naturalHeight) {
+        aspectRatio = img.naturalWidth / img.naturalHeight;
+      } else if (video && video.videoWidth && video.videoHeight) {
+        aspectRatio = video.videoWidth / video.videoHeight;
+      }
+
+      if (!aspectRatio) return;
+
+      // Get max available space
+      const maxWidth = window.innerWidth - 20;
+      const maxHeight = window.innerHeight - 100;
+
+      // Calculate dimensions based on aspect ratio
+      const widthBasedHeight = maxWidth / aspectRatio;
+      const heightBasedWidth = maxHeight * aspectRatio;
+
+      // Determine which constraint is hit first
+      if (heightBasedWidth <= maxWidth) {
+        // Height is the limiting factor
+        setContainerHeight(maxHeight);
+        setContainerWidth(heightBasedWidth);
+      } else {
+        // Width is the limiting factor
+        setContainerWidth(maxWidth);
+        setContainerHeight(widthBasedHeight);
+      }
+    };
+
+    // Set up listeners
+    const img = mediaContainerRef.current?.querySelector('img');
+    const video = mediaContainerRef.current?.querySelector('video');
+
+    if (img) {
+      img.addEventListener('load', updateContainerDimensions);
+    }
+    if (video) {
+      video.addEventListener('loadedmetadata', updateContainerDimensions);
+      video.addEventListener('resize', updateContainerDimensions);
+    }
+    window.addEventListener('resize', updateContainerDimensions);
+
+    // Initial calculation
+    updateContainerDimensions();
+
+    return () => {
+      if (img) {
+        img.removeEventListener('load', updateContainerDimensions);
+      }
+      if (video) {
+        video.removeEventListener('loadedmetadata', updateContainerDimensions);
+        video.removeEventListener('resize', updateContainerDimensions);
+      }
+      window.removeEventListener('resize', updateContainerDimensions);
+    };
+  }, [selectedPhoto.id, thumbnailLoaded]);
 
   // Helper function to update meta tags
   const updateMetaTag = useCallback((attribute: string, key: string, content: string) => {
@@ -536,7 +607,14 @@ const ContentModal: React.FC<ContentModalProps> = ({
         onTouchEnd={handleTouchEnd}
       >
         <div className="modal-container" ref={imageContainerRef}>
-          <div className="modal-media-container">
+          <div 
+            className="modal-media-container"
+            ref={mediaContainerRef}
+            style={{
+              width: containerWidth ? `${containerWidth}px` : undefined,
+              height: containerHeight ? `${containerHeight}px` : undefined
+            }}
+          >
             <ModalControls
               show={thumbnailLoaded}
               showInfo={showInfo}

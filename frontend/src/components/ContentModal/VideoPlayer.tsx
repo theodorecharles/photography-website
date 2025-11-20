@@ -26,8 +26,6 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   const hlsRef = useRef<Hls | null>(null);
   const [error, setError] = useState<string | null>(null);
   const initializingRef = useRef(false); // Prevent multiple initializations
-  const [videoWidth, setVideoWidth] = useState<number | null>(null);
-  const [videoHeight, setVideoHeight] = useState<number | null>(null);
 
   useEffect(() => {
     const debugInfo = {
@@ -206,51 +204,6 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     );
   }
 
-  // Calculate video width and height based on aspect ratio
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    const updateVideoDimensions = () => {
-      if (video.videoWidth && video.videoHeight) {
-        const aspectRatio = video.videoWidth / video.videoHeight;
-        const container = video.parentElement;
-        if (container) {
-          const containerWidth = container.clientWidth;
-          const containerHeight = container.clientHeight;
-          
-          // Calculate dimensions based on aspect ratio
-          const widthBasedHeight = containerWidth / aspectRatio;
-          const heightBasedWidth = containerHeight * aspectRatio;
-          
-          // Determine which constraint is hit first
-          if (heightBasedWidth <= containerWidth) {
-            // Height is the limiting factor
-            setVideoHeight(containerHeight);
-            setVideoWidth(heightBasedWidth);
-          } else {
-            // Width is the limiting factor
-            setVideoWidth(containerWidth);
-            setVideoHeight(widthBasedHeight);
-          }
-        }
-      }
-    };
-
-    video.addEventListener('loadedmetadata', updateVideoDimensions);
-    video.addEventListener('resize', updateVideoDimensions);
-    window.addEventListener('resize', updateVideoDimensions);
-
-    // Initial calculation
-    updateVideoDimensions();
-
-    return () => {
-      video.removeEventListener('loadedmetadata', updateVideoDimensions);
-      video.removeEventListener('resize', updateVideoDimensions);
-      window.removeEventListener('resize', updateVideoDimensions);
-    };
-  }, []);
-
   return (
     <>
       {error && (
@@ -278,8 +231,8 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         preload="metadata"
         style={{
           display: 'block',
-          width: videoWidth ? `${videoWidth}px` : '100%',
-          height: videoHeight ? `${videoHeight}px` : '100%',
+          width: '100%',
+          height: '100%',
           maxWidth: '100%',
           maxHeight: '100%',
           objectFit: 'contain'
