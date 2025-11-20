@@ -992,7 +992,7 @@
     "googleClientIdLabel": "Google Klient-ID",
     "googleClientIdPlaceholder": "xxxxx.apps.googleusercontent.com",
     "googleClientSecretLabel": "Google Klienthemmelighet",
-    "googleClientSecretPlaceholder": "GOCSPX-xxxxx",
+    "googleClientSecretPlaceholder": "[EN] GOCSPX-xxxxx",
     "backToBasicInfo": "← Tilbake til Grunnleggende informasjon",
     "nextCustomize": "Neste: Tilpass →",
     "customizeHeading": "Tilpass nettstedet ditt",

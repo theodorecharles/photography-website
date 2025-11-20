@@ -785,7 +785,29 @@
     "maxDimension": "Max Dimension",
     "concurrencyDescription1": "Maximum number of images to process simultaneously. Higher values speed up batch processing but use more CPU and memory.",
     "concurrencyDescription2": "Rule of thumb: ~4× your logical CPU cores. Recommended: 8-16 for typical systems, 32-64 for high-performance servers.",
-    "maxParallelJobs": "Max Parallel Jobs"
+    "maxParallelJobs": "Max Parallel Jobs",
+    "warningNote": "Changes to image optimization settings only apply to newly uploaded photos. Existing images will keep their current optimization settings unless you use",
+    "forceRegenerate": "Force Regenerate All",
+    "warningNoteLocation": "in Advanced Settings → Optimized Images."
+  },
+  "videoOptimization": {
+    "title": "Video Optimization",
+    "description": "Configure video quality, streaming, and HLS settings",
+    "hlsStreaming": "HLS STREAMING",
+    "hlsDescription": "Configure HTTP Live Streaming (HLS) settings for adaptive video delivery",
+    "segmentDuration": "Segment Duration (seconds)",
+    "segmentDurationHelp": "Length of each video segment. Longer segments (4-6s) reduce server requests.",
+    "videoResolutions": "VIDEO RESOLUTIONS",
+    "resolutionsDescription": "Enable resolutions and configure their quality settings. Higher bitrates improve quality but increase file size.",
+    "videoBitrate": "Video Bitrate",
+    "audioBitrate": "Audio Bitrate",
+    "videoBitrateExample": "e.g., 400k, 2500k, 5000k",
+    "audioBitrateExample": "e.g., 64k, 96k, 128k, 192k",
+    "on": "On",
+    "off": "Off",
+    "warningNote": "Changes to video settings only apply to newly uploaded videos. Existing videos will keep their current quality settings unless you use",
+    "forceRegenerate": "Force Regenerate All",
+    "warningNoteLocation": "in Advanced Settings → Optimized Videos."
   },
   "links": {
     "title": "Links",

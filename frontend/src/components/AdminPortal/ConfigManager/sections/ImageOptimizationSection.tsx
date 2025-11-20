@@ -504,9 +504,7 @@ const ImageOptimizationSection: React.FC<ImageOptimizationSectionProps> = ({
             fontSize: '0.875rem',
             color: 'rgba(255, 193, 7, 0.9)',
           }}>
-            <strong>⚠️ Note:</strong> Changes to image optimization settings only apply to newly uploaded photos. 
-            Existing images will keep their current optimization settings unless you use <strong>Force Regenerate All</strong> in 
-            Advanced Settings → Optimized Images.
+            <strong>⚠️ {t('common.note')}:</strong> {t('imageOptimization.warningNote')} <strong>{t('imageOptimization.forceRegenerate')}</strong> {t('imageOptimization.warningNoteLocation')}
           </div>
         </div>
       </div>

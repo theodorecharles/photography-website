@@ -155,8 +155,8 @@ const VideoOptimizationSection: React.FC<VideoOptimizationSectionProps> = ({
   return (
     <div className="config-group full-width">
       <SectionHeader
-        title="Video Optimization"
-        description="Configure video quality, streaming, and HLS settings"
+        title={t('videoOptimization.title')}
+        description={t('videoOptimization.description')}
         isExpanded={showVideoOptimization}
         onToggle={() => setShowVideoOptimization(!showVideoOptimization)}
       />
@@ -182,7 +182,7 @@ const VideoOptimizationSection: React.FC<VideoOptimizationSectionProps> = ({
                 marginBottom: "0.75rem",
               }}
             >
-              <label className="openai-section-label">HLS STREAMING</label>
+              <label className="openai-section-label">{t('videoOptimization.hlsStreaming')}</label>
             </div>
             <p style={{
               fontSize: '0.85rem',
@@ -190,10 +190,10 @@ const VideoOptimizationSection: React.FC<VideoOptimizationSectionProps> = ({
               marginTop: '0',
               marginBottom: '1rem',
             }}>
-              Configure HTTP Live Streaming (HLS) settings for adaptive video delivery
+              {t('videoOptimization.hlsDescription')}
             </p>
             <div className="branding-group">
-              <label className="branding-label">Segment Duration (seconds)</label>
+              <label className="branding-label">{t('videoOptimization.segmentDuration')}</label>
               <input
                 type="number"
                 min="1"
@@ -209,7 +209,7 @@ const VideoOptimizationSection: React.FC<VideoOptimizationSectionProps> = ({
                 marginTop: '0.5rem',
                 marginBottom: '0',
               }}>
-                Length of each video segment. Longer segments (4-6s) reduce server requests.
+                {t('videoOptimization.segmentDurationHelp')}
               </p>
             </div>
           </div>
@@ -224,7 +224,7 @@ const VideoOptimizationSection: React.FC<VideoOptimizationSectionProps> = ({
                 marginBottom: "0.75rem",
               }}
             >
-              <label className="openai-section-label">VIDEO RESOLUTIONS</label>
+              <label className="openai-section-label">{t('videoOptimization.videoResolutions')}</label>
             </div>
             <p style={{
               fontSize: '0.85rem',
@@ -232,7 +232,7 @@ const VideoOptimizationSection: React.FC<VideoOptimizationSectionProps> = ({
               marginTop: '0',
               marginBottom: '1.25rem',
             }}>
-              Enable resolutions and configure their quality settings. Higher bitrates improve quality but increase file size.
+              {t('videoOptimization.resolutionsDescription')}
             </p>
 
             <div style={{
@@ -286,14 +286,14 @@ const VideoOptimizationSection: React.FC<VideoOptimizationSectionProps> = ({
                       )}
                     />
                     <span className="toggle-slider"></span>
-                    <span className="toggle-label" style={{ minWidth: '60px' }}>{res.enabled ? 'On' : 'Off'}</span>
+                    <span className="toggle-label" style={{ minWidth: '60px' }}>{res.enabled ? t('videoOptimization.on') : t('videoOptimization.off')}</span>
                   </label>
                 </div>
 
                 {res.enabled && (
                   <>
                     <div className="branding-group">
-                      <label className="branding-label">Video Bitrate</label>
+                      <label className="branding-label">{t('videoOptimization.videoBitrate')}</label>
                       <input
                         type="text"
                         value={res.videoBitrate || ''}
@@ -313,12 +313,12 @@ const VideoOptimizationSection: React.FC<VideoOptimizationSectionProps> = ({
                         marginTop: '0.25rem',
                         marginBottom: '0',
                       }}>
-                        e.g., 400k, 2500k, 5000k
+                        {t('videoOptimization.videoBitrateExample')}
                       </p>
                     </div>
 
                     <div className="branding-group">
-                      <label className="branding-label">Audio Bitrate</label>
+                      <label className="branding-label">{t('videoOptimization.audioBitrate')}</label>
                       <input
                         type="text"
                         value={res.audioBitrate || ''}
@@ -338,7 +338,7 @@ const VideoOptimizationSection: React.FC<VideoOptimizationSectionProps> = ({
                         marginTop: '0.25rem',
                         marginBottom: '0',
                       }}>
-                        e.g., 64k, 96k, 128k, 192k
+                        {t('videoOptimization.audioBitrateExample')}
                       </p>
                     </div>
                   </>
@@ -348,20 +348,18 @@ const VideoOptimizationSection: React.FC<VideoOptimizationSectionProps> = ({
             )}
             </div>
 
-            {/* Save Button */}
-            <div style={{ display: 'flex', justifyContent: 'flex-end', paddingTop: '1rem', marginTop: '1rem', borderTop: '1px solid rgba(255, 255, 255, 0.1)' }}>
-              <button
-                onClick={() => handleSaveSection('Video Optimization')}
-                disabled={!hasVideoChanges || savingSection === 'Video Optimization'}
-                className="btn-primary"
-                style={{
-                  opacity: !hasVideoChanges || savingSection === 'Video Optimization' ? 0.5 : 1,
-                  cursor: !hasVideoChanges || savingSection === 'Video Optimization' ? 'not-allowed' : 'pointer',
-                }}
-              >
-                {savingSection === 'Video Optimization' ? t('common.saving') : t('common.saveChanges')}
-              </button>
-            </div>
+            {/* Save Button - Only show when there are changes */}
+            {hasVideoChanges && (
+              <div style={{ display: 'flex', justifyContent: 'flex-end', paddingTop: '1rem', marginTop: '1rem', borderTop: '1px solid rgba(255, 255, 255, 0.1)' }}>
+                <button
+                  onClick={() => handleSaveSection('Video Optimization')}
+                  disabled={savingSection === 'Video Optimization'}
+                  className="btn-primary"
+                >
+                  {savingSection === 'Video Optimization' ? t('common.saving') : t('common.save')}
+                </button>
+              </div>
+            )}
 
             {/* Warning Note */}
             <div style={{
@@ -373,9 +371,7 @@ const VideoOptimizationSection: React.FC<VideoOptimizationSectionProps> = ({
               fontSize: '0.875rem',
               color: 'rgba(255, 193, 7, 0.9)',
             }}>
-              <strong>⚠️ Note:</strong> Changes to video settings only apply to newly uploaded videos. 
-              Existing videos will keep their current quality settings unless you use <strong>Force Regenerate All</strong> in 
-              Advanced Settings → Optimized Videos.
+              <strong>⚠️ {t('common.note')}:</strong> {t('videoOptimization.warningNote')} <strong>{t('videoOptimization.forceRegenerate')}</strong> {t('videoOptimization.warningNoteLocation')}
             </div>
           </div>
         </div>
