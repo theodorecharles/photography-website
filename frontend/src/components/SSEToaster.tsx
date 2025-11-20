@@ -217,6 +217,22 @@ export default function SSEToaster() {
     }
   };
 
+  // Reset maximized state when jobs complete to unlock body scroll
+  useEffect(() => {
+    if (!isAnyJobRunning && isToasterMaximized) {
+      info('[SSEToaster] Jobs complete - resetting maximized state to unlock scroll');
+      setIsToasterMaximized(false);
+    }
+  }, [isAnyJobRunning, isToasterMaximized, setIsToasterMaximized]);
+
+  // Safety: Always ensure body overflow is reset on unmount
+  useEffect(() => {
+    return () => {
+      document.body.style.overflow = '';
+      info('[SSEToaster] Unmounting - ensuring body overflow is reset');
+    };
+  }, []);
+
   // Don't render if no job is running
   if (!isAnyJobRunning) {
     return null;
