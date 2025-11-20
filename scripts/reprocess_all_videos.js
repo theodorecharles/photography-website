@@ -90,6 +90,10 @@ for (const video of videos) {
     
     console.log(`   🔄 Re-encoding with current settings...`);
     
+    // Track which stages we've already logged
+    let lastStage = '';
+    let lastReportedProgress = 0;
+    
     // Process video with current settings
     await processVideo(
       sourcePath,
@@ -97,23 +101,33 @@ for (const video of videos) {
       filename,
       DATA_DIR,
       (progress) => {
-        const stageEmoji = {
-          'rotation': '🔄',
-          '240p': '📺',
-          '360p': '📺',
-          '720p': '📺',
-          '1080p': '📺',
-          'thumbnail': '🖼️',
-          'modal-preview': '🖼️'
-        };
+        // Only log when starting a new stage or every 25% within a stage
+        const progressRounded = Math.floor(progress.progress / 25) * 25;
         
-        const emoji = stageEmoji[progress.stage] || '⚙️';
-        const percent = progress.progress.toFixed(0).padStart(3, ' ');
-        process.stdout.write(`\r   ${emoji} ${progress.stage.padEnd(14)} ${percent}%`);
+        if (progress.stage !== lastStage) {
+          // New stage started
+          const stageEmoji = {
+            'rotation': '🔄',
+            '240p': '📺',
+            '360p': '📺',
+            '720p': '📺',
+            '1080p': '📺',
+            'thumbnail': '🖼️',
+            'modal-preview': '🖼️'
+          };
+          const emoji = stageEmoji[progress.stage] || '⚙️';
+          console.log(`   ${emoji} ${progress.stage}...`);
+          lastStage = progress.stage;
+          lastReportedProgress = 0;
+        } else if (progressRounded > lastReportedProgress && progressRounded < 100) {
+          // Report significant progress within stage (25%, 50%, 75%)
+          console.log(`      ${progressRounded}%`);
+          lastReportedProgress = progressRounded;
+        }
       }
     );
     
-    console.log(`\r   ✅ Complete                    `);
+    console.log(`   ✅ Complete`);
     processed++;
     
   } catch (err) {
