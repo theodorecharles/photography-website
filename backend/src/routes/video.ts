@@ -30,12 +30,14 @@ const sanitizePath = (name: string): string | null => {
 router.get("/:album/:filename/master.m3u8", async (req: Request, res: Response): Promise<void> => {
   try {
     const { album, filename } = req.params;
+    info(`[Video] Master playlist request: album=${album}, filename=${filename}`);
 
     // Sanitize inputs
     const sanitizedAlbum = sanitizePath(album);
     const sanitizedFilename = sanitizePath(filename);
 
     if (!sanitizedAlbum || !sanitizedFilename) {
+      error(`[Video] Sanitization failed: album=${album}, filename=${filename}`);
       res.status(400).json({ error: 'Invalid path parameters' });
       return;
     }
@@ -53,12 +55,16 @@ router.get("/:album/:filename/master.m3u8", async (req: Request, res: Response):
       sanitizedFilename,
       'master.m3u8'
     );
+    info(`[Video] Looking for master playlist at: ${masterPlaylistPath}`);
 
     // Check if master playlist exists
     if (!fs.existsSync(masterPlaylistPath)) {
+      error(`[Video] Master playlist not found: ${masterPlaylistPath}`);
       res.status(404).json({ error: 'Master playlist not found' });
       return;
     }
+    
+    info('[Video] Master playlist found, sending file');
 
     // Set appropriate headers for HLS
     res.setHeader('Content-Type', 'application/vnd.apple.mpegurl');
