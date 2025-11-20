@@ -58,9 +58,9 @@ const RegenerationControls: React.FC<RegenerationControlsProps> = ({
       className="regenerate-sections-grid"
     >
       {/* Force Regenerate All Titles */}
-      <div className="openai-section" style={{ marginBottom: "0" }}>
+      <div className="settings-section" style={{ marginBottom: "0" }}>
         <label
-          className="openai-section-label"
+          className="settings-section-label"
           style={{ display: "block", marginBottom: "0.75rem" }}
         >
           {t('advancedSettings.regenerationControls.titleGeneration')}
@@ -135,9 +135,9 @@ const RegenerationControls: React.FC<RegenerationControlsProps> = ({
       </div>
 
       {/* Optimized Images */}
-      <div className="openai-section" style={{ marginBottom: "0" }}>
+      <div className="settings-section" style={{ marginBottom: "0" }}>
         <label
-          className="openai-section-label"
+          className="settings-section-label"
           style={{ display: "block", marginBottom: "0.75rem" }}
         >
           {t('advancedSettings.regenerationControls.optimizedImages')}
@@ -190,9 +190,9 @@ const RegenerationControls: React.FC<RegenerationControlsProps> = ({
       </div>
 
       {/* Optimized Videos */}
-      <div className="openai-section" style={{ marginBottom: "0" }}>
+      <div className="settings-section" style={{ marginBottom: "0" }}>
         <label
-          className="openai-section-label"
+          className="settings-section-label"
           style={{ display: "block", marginBottom: "0.75rem" }}
         >
           {t('advancedSettings.regenerationControls.optimizedVideos')}

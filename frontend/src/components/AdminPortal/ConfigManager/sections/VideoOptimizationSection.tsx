@@ -183,7 +183,7 @@ const VideoOptimizationSection: React.FC<VideoOptimizationSectionProps> = ({
         <div className="config-grid-inner">
           
           {/* Warning Note */}
-          <div className="openai-section" style={{ gridColumn: '1 / -1' }}>
+          <div style={{ gridColumn: '1 / -1' }}>
             <div style={{
               padding: '1rem',
               background: 'rgba(255, 193, 7, 0.1)',
@@ -214,7 +214,7 @@ const VideoOptimizationSection: React.FC<VideoOptimizationSectionProps> = ({
           </div>
 
           {/* HLS Settings */}
-          <div className="openai-section" style={{ gridColumn: '1 / -1' }}>
+          <div className="settings-section" style={{ gridColumn: '1 / -1' }}>
             <div
               style={{
                 display: "flex",
@@ -223,7 +223,7 @@ const VideoOptimizationSection: React.FC<VideoOptimizationSectionProps> = ({
                 marginBottom: "0.75rem",
               }}
             >
-              <label className="openai-section-label">{t('videoOptimization.hlsStreaming')}</label>
+              <label className="settings-section-label">{t('videoOptimization.hlsStreaming')}</label>
               {hasHLSChanges && (
                 <div style={{ display: "flex", gap: "0.5rem" }}>
                   <button
@@ -288,7 +288,7 @@ const VideoOptimizationSection: React.FC<VideoOptimizationSectionProps> = ({
           </div>
 
           {/* Video Resolutions */}
-          <div className="openai-section" style={{ gridColumn: '1 / -1' }}>
+          <div className="settings-section" style={{ gridColumn: '1 / -1' }}>
             <div
               style={{
                 display: "flex",
@@ -297,7 +297,7 @@ const VideoOptimizationSection: React.FC<VideoOptimizationSectionProps> = ({
                 marginBottom: "0.75rem",
               }}
             >
-              <label className="openai-section-label">{t('videoOptimization.videoResolutions')}</label>
+              <label className="settings-section-label">{t('videoOptimization.videoResolutions')}</label>
               {hasResolutionChanges && (
                 <div style={{ display: "flex", gap: "0.5rem" }}>
                   <button

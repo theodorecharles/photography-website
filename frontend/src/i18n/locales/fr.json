@@ -540,8 +540,8 @@
       "forceRegenerateAllConfirm": "⚠️ Cela régénérera TOUS les titres d'images et écrasera tous les titres personnalisés que vous avez définis. Cette action ne peut pas être annulée.\n\nÊtes-vous sûr de vouloir continuer ?",
       "forceRegenerateImagesConfirm": "Forcer la régénération de TOUTES les images ? Cela prendra un certain temps.",
       "runOptimizationConfirm": "Exécuter l'optimisation des images sur toutes les photos ?",
-      "optimizedVideos": "[EN] Optimized Videos",
-      "forceRegenerateVideosConfirm": "[EN] ⚠️ This will re-encode ALL videos with current quality settings. This is a time-consuming operation and will temporarily increase CPU usage.\n\nExisting video files will be replaced. Are you sure you want to continue?"
+      "optimizedVideos": "Vidéos optimisées",
+      "forceRegenerateVideosConfirm": "⚠️ Cela va réencoder TOUS les vidéos avec les paramètres de qualité actuels. C'est une opération qui prend du temps et augmentera temporairement l'utilisation du CPU.\n\nLes fichiers vidéo existants seront remplacés. Êtes-vous sûr de vouloir continuer ?"
     }
   },
   "expiredLink": {
@@ -1083,23 +1083,23 @@
     "errorMessageDetail": "Échec de l'envoi de l'e-mail de test. Veuillez vérifier votre configuration."
   },
   "videoOptimization": {
-    "title": "[EN] Video Optimization",
-    "description": "[EN] Configure video quality, streaming, and HLS settings",
-    "hlsStreaming": "[EN] HLS STREAMING",
-    "hlsStreamingSection": "[EN] HLS Settings",
-    "hlsDescription": "[EN] Configure HTTP Live Streaming (HLS) settings for adaptive video delivery",
-    "segmentDuration": "[EN] Segment Duration (seconds)",
-    "segmentDurationHelp": "[EN] Length of each video segment. Longer segments (4-6s) reduce server requests.",
-    "videoResolutions": "[EN] VIDEO RESOLUTIONS",
-    "videoResolutionsSection": "[EN] Video Resolutions",
-    "resolutionsDescription": "[EN] Enable resolutions and configure their quality settings. Higher bitrates improve quality but increase file size.",
-    "videoBitrate": "[EN] Video Bitrate",
-    "audioBitrate": "[EN] Audio Bitrate",
-    "videoBitrateExample": "[EN] e.g., 400k, 2500k, 5000k",
-    "audioBitrateExample": "[EN] e.g., 64k, 96k, 128k, 192k",
-    "on": "[EN] On",
-    "off": "[EN] Off",
-    "warningNote": "[EN] Changes to video settings only apply to newly uploaded videos. Existing videos will keep their current quality settings unless you use",
-    "forceRegenerate": "[EN] Force Regenerate All"
+    "title": "Optimisation vidéo",
+    "description": "Configurer la qualité vidéo, le streaming et les paramètres HLS",
+    "hlsStreaming": "STREAMING HLS",
+    "hlsStreamingSection": "Paramètres HLS",
+    "hlsDescription": "Configurer les paramètres de diffusion en continu HTTP Live Streaming (HLS) pour la livraison vidéo adaptative",
+    "segmentDuration": "Durée du segment (secondes)",
+    "segmentDurationHelp": "Durée de chaque segment vidéo. Des segments plus longs (4-6s) réduisent les requêtes serveur.",
+    "videoResolutions": "RÉSOLUTIONS VIDÉO",
+    "videoResolutionsSection": "Résolutions vidéo  ",
+    "resolutionsDescription": "Activez les résolutions et configurez leurs paramètres de qualité. Des débits plus élevés améliorent la qualité mais augmentent la taille du fichier.  ",
+    "videoBitrate": "Débit vidéo  ",
+    "audioBitrate": "Débit audio  ",
+    "videoBitrateExample": "par ex., 400k, 2500k, 5000k  ",
+    "audioBitrateExample": "par ex., 64k, 96k, 128k, 192k  ",
+    "on": "Activé  ",
+    "off": "Désactivé  ",
+    "warningNote": "Les modifications des paramètres vidéo ne s'appliquent qu'aux vidéos nouvellement téléchargées. Les vidéos existantes conserveront leurs paramètres de qualité actuels, sauf si vous utilisez  ",
+    "forceRegenerate": "Forcer la régénération de tout"
   }
 }

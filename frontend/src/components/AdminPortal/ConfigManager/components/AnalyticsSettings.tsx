@@ -79,7 +79,7 @@ const AnalyticsSettings: React.FC<AnalyticsSettingsProps> = ({
   };
 
   return (
-    <div className="openai-section" style={{ marginBottom: "2rem" }}>
+    <div className="settings-section" style={{ marginBottom: "2rem" }}>
       <div
         style={{
           display: "flex",
@@ -88,7 +88,7 @@ const AnalyticsSettings: React.FC<AnalyticsSettingsProps> = ({
           marginBottom: "0.75rem",
         }}
       >
-        <label className="openai-section-label">{t('analyticsSettings.title')}</label>
+        <label className="settings-section-label">{t('analyticsSettings.title')}</label>
         {hasUnsavedChanges && (
           <div style={{ display: "flex", gap: "0.5rem" }}>
             <button

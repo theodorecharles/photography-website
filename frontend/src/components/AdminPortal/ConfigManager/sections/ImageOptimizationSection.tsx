@@ -176,7 +176,7 @@ const ImageOptimizationSection: React.FC<ImageOptimizationSectionProps> = ({
         {/* Grid of optimization subsections */}
         <div className="config-grid-inner">
           {/* Thumbnail Settings */}
-          <div className="openai-section">
+          <div className="settings-section">
             <div
               style={{
                 display: "flex",
@@ -185,7 +185,7 @@ const ImageOptimizationSection: React.FC<ImageOptimizationSectionProps> = ({
                 marginBottom: "0.75rem",
               }}
             >
-              <label className="openai-section-label">{t('imageOptimization.thumbnail')}</label>
+              <label className="settings-section-label">{t('imageOptimization.thumbnail')}</label>
               {hasUnsavedChanges("Thumbnail") && (
                 <div style={{ display: "flex", gap: "0.5rem" }}>
                   <button
@@ -267,7 +267,7 @@ const ImageOptimizationSection: React.FC<ImageOptimizationSectionProps> = ({
           </div>
 
           {/* Modal Settings */}
-          <div className="openai-section">
+          <div className="settings-section">
             <div
               style={{
                 display: "flex",
@@ -276,7 +276,7 @@ const ImageOptimizationSection: React.FC<ImageOptimizationSectionProps> = ({
                 marginBottom: "0.75rem",
               }}
             >
-              <label className="openai-section-label">{t('imageOptimization.modal')}</label>
+              <label className="settings-section-label">{t('imageOptimization.modal')}</label>
               {hasUnsavedChanges("Modal") && (
                 <div style={{ display: "flex", gap: "0.5rem" }}>
                   <button
@@ -355,7 +355,7 @@ const ImageOptimizationSection: React.FC<ImageOptimizationSectionProps> = ({
           </div>
 
           {/* Download Settings */}
-          <div className="openai-section">
+          <div className="settings-section">
             <div
               style={{
                 display: "flex",
@@ -364,7 +364,7 @@ const ImageOptimizationSection: React.FC<ImageOptimizationSectionProps> = ({
                 marginBottom: "0.75rem",
               }}
             >
-              <label className="openai-section-label">{t('imageOptimization.download')}</label>
+              <label className="settings-section-label">{t('imageOptimization.download')}</label>
               {hasUnsavedChanges("Download") && (
                 <div style={{ display: "flex", gap: "0.5rem" }}>
                   <button
@@ -446,7 +446,7 @@ const ImageOptimizationSection: React.FC<ImageOptimizationSectionProps> = ({
           </div>
 
           {/* Concurrency Settings */}
-          <div className="openai-section">
+          <div className="settings-section">
             <div
               style={{
                 display: "flex",
@@ -455,7 +455,7 @@ const ImageOptimizationSection: React.FC<ImageOptimizationSectionProps> = ({
                 marginBottom: "0.75rem",
               }}
             >
-              <label className="openai-section-label">{t('imageOptimization.concurrency')}</label>
+              <label className="settings-section-label">{t('imageOptimization.concurrency')}</label>
               {hasUnsavedChanges("Concurrency") && (
                 <div style={{ display: "flex", gap: "0.5rem" }}>
                   <button

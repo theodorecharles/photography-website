@@ -415,8 +415,8 @@
       "forceRegenerateAllConfirm": "⚠️ これにより、すべての画像タイトルが再生成され、設定したカスタムタイトルが上書きされます。この操作は元に戻せません。\n\n続行してもよろしいですか？",
       "forceRegenerateImagesConfirm": "すべての画像を強制的に再生成しますか？しばらく時間がかかります。",
       "runOptimizationConfirm": "すべての写真に画像最適化を実行しますか？",
-      "optimizedVideos": "[EN] Optimized Videos",
-      "forceRegenerateVideosConfirm": "[EN] ⚠️ This will re-encode ALL videos with current quality settings. This is a time-consuming operation and will temporarily increase CPU usage.\n\nExisting video files will be replaced. Are you sure you want to continue?"
+      "optimizedVideos": "最適化された動画",
+      "forceRegenerateVideosConfirm": "⚠️ これにより、現在の品質設定で全ての動画が再エンコードされます。これは時間のかかる操作で、一時的にCPU使用率が増加します。\n\n既存の動画ファイルは置き換えられます。続行してもよろしいですか？"
     }
   },
   "userManagement": {
@@ -1083,23 +1083,23 @@
     "errorMessageDetail": "テストメールの送信に失敗しました。設定を確認してください。"
   },
   "videoOptimization": {
-    "title": "[EN] Video Optimization",
-    "description": "[EN] Configure video quality, streaming, and HLS settings",
-    "hlsStreaming": "[EN] HLS STREAMING",
-    "hlsStreamingSection": "[EN] HLS Settings",
-    "hlsDescription": "[EN] Configure HTTP Live Streaming (HLS) settings for adaptive video delivery",
-    "segmentDuration": "[EN] Segment Duration (seconds)",
-    "segmentDurationHelp": "[EN] Length of each video segment. Longer segments (4-6s) reduce server requests.",
-    "videoResolutions": "[EN] VIDEO RESOLUTIONS",
-    "videoResolutionsSection": "[EN] Video Resolutions",
-    "resolutionsDescription": "[EN] Enable resolutions and configure their quality settings. Higher bitrates improve quality but increase file size.",
-    "videoBitrate": "[EN] Video Bitrate",
-    "audioBitrate": "[EN] Audio Bitrate",
-    "videoBitrateExample": "[EN] e.g., 400k, 2500k, 5000k",
-    "audioBitrateExample": "[EN] e.g., 64k, 96k, 128k, 192k",
-    "on": "[EN] On",
-    "off": "[EN] Off",
-    "warningNote": "[EN] Changes to video settings only apply to newly uploaded videos. Existing videos will keep their current quality settings unless you use",
-    "forceRegenerate": "[EN] Force Regenerate All"
+    "title": "動画最適化",
+    "description": "ビデオ品質、ストリーミング、およびHLS設定を構成する",
+    "hlsStreaming": "HLSストリーミング",
+    "hlsStreamingSection": "HLS設定",
+    "hlsDescription": "適応型ビデオ配信のためのHTTPライブストリーミング（HLS）設定を構成する",
+    "segmentDuration": "セグメントの長さ（秒）",
+    "segmentDurationHelp": "各ビデオセグメントの長さ。長いセグメント（4-6秒）はサーバーリクエストを減少させます。",
+    "videoResolutions": "ビデオ解像度",
+    "videoResolutionsSection": "ビデオ解像度",
+    "resolutionsDescription": "解像度を有効にし、その品質設定を構成します。ビットレートが高いほど品質が向上しますが、ファイルサイズも増加します。",
+    "videoBitrate": "ビデオビットレート",
+    "audioBitrate": "オーディオビットレート",
+    "videoBitrateExample": "例：400k、2500k、5000k",
+    "audioBitrateExample": "e.g., 64k, 96k, 128k, 192k",
+    "on": "オン",
+    "off": "オフ",
+    "warningNote": "動画設定の変更は、新しくアップロードされた動画にのみ適用されます。既存の動画は、使用しない限り現在の品質設定を維持します。",
+    "forceRegenerate": "すべてを強制再生成"
   }
 }
