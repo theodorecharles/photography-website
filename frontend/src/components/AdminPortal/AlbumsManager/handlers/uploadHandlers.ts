@@ -101,16 +101,38 @@ export const createUploadHandlers = (props: UploadHandlersProps) => {
             reject(new Error('Invalid server response'));
           }
         } else {
-          const errorMsg = `Upload failed: ${xhr.status}`;
-          info(`[Upload] ${filename}: ${errorMsg}`);
+          // Parse error response to check for non-retryable errors
+          let errorMsg = `Upload failed: ${xhr.status}`;
+          let isRetryable = true;
+          
+          try {
+            const errorResponse = JSON.parse(xhr.responseText);
+            if (errorResponse.error) {
+              errorMsg = errorResponse.error;
+            }
+            // File size errors and validation errors are not retryable
+            if (errorResponse.code === 'LIMIT_FILE_SIZE' || 
+                errorResponse.code === 'LIMIT_FIELD_COUNT' ||
+                errorResponse.code === 'LIMIT_FIELD_VALUE' ||
+                errorResponse.code === 'LIMIT_FIELD_KEY') {
+              isRetryable = false;
+            }
+          } catch (e) {
+            // If we can't parse the error, assume it's retryable
+          }
+          
+          info(`[Upload] ${filename}: ${errorMsg} (retryable: ${isRetryable})`);
           setUploadingImages((prev: UploadingImage[]): UploadingImage[] =>
             prev.map((img: UploadingImage): UploadingImage =>
               img.filename === filename
-                ? { ...img, state: 'error', error: errorMsg, retryCount }
+                ? { ...img, state: 'error', error: errorMsg, retryCount, isRetryable }
                 : img
             )
           );
-          reject(new Error(errorMsg));
+          
+          const error = new Error(errorMsg) as Error & { isRetryable?: boolean };
+          error.isRetryable = isRetryable;
+          reject(error);
         }
       };
       
@@ -172,6 +194,7 @@ export const createUploadHandlers = (props: UploadHandlersProps) => {
     setUploadingAlbum(albumName); // Track which album is uploading
 
     let successCount = 0;
+    let remainingFailures = 0;
     const failedUploads: Array<{ img: UploadingImage; retryCount: number }> = [];
 
     // Upload images with concurrency pool (4 at a time)
@@ -187,9 +210,15 @@ export const createUploadHandlers = (props: UploadHandlersProps) => {
         try {
           await uploadSingleImage(img.file, img.filename, albumName, 0);
           successCount++;
-        } catch (err) {
+        } catch (err: any) {
           error(`[Upload] Error:`, err);
-          failedUploads.push({ img, retryCount: 0 });
+          // Only add to retry list if error is retryable (default to true for backwards compatibility)
+          if (err.isRetryable !== false) {
+            failedUploads.push({ img, retryCount: 0 });
+          } else {
+            info(`[Upload] Skipping retry for ${img.filename} - non-retryable error: ${err.message}`);
+            remainingFailures++;
+          }
         }
       }
     };
@@ -204,14 +233,20 @@ export const createUploadHandlers = (props: UploadHandlersProps) => {
 
     info(`[Upload] Batch complete: ${successCount} succeeded, ${failedUploads.length} failed`);
 
-    // Auto-retry failed uploads (up to 5 attempts)
+    // Auto-retry failed uploads (up to 5 attempts) - only for retryable errors
     const MAX_RETRIES = 5;
-    let remainingFailures = failedUploads.length;
     
     if (failedUploads.length > 0) {
       info(`[Upload] 🔄 Auto-retrying ${failedUploads.length} failed uploads...`);
       
       for (const failed of failedUploads) {
+        // Check if this upload is marked as non-retryable
+        const currentImg = newUploadingImages.find(img => img.filename === failed.img.filename);
+        if (currentImg?.isRetryable === false) {
+          info(`[Upload] Skipping retry for ${failed.img.filename} - non-retryable error`);
+          continue;
+        }
+        
         let uploaded = false;
         let currentRetry = 1;
         
@@ -225,10 +260,17 @@ export const createUploadHandlers = (props: UploadHandlersProps) => {
             remainingFailures--;
             uploaded = true;
             info(`[Upload] ✓ Retry ${currentRetry}/${MAX_RETRIES} succeeded for ${failed.img.filename}`);
-          } catch (err) {
+          } catch (err: any) {
+            // Check if error became non-retryable during retry
+            if (err.isRetryable === false) {
+              info(`[Upload] ✗ Retry stopped for ${failed.img.filename} - non-retryable error: ${err.message}`);
+              remainingFailures++;
+              break;
+            }
             info(`[Upload] ✗ Retry ${currentRetry}/${MAX_RETRIES} failed for ${failed.img.filename}`);
             if (currentRetry === MAX_RETRIES) {
               error(`[Upload] ✗ All ${MAX_RETRIES} retries exhausted for ${failed.img.filename}`);
+              remainingFailures++;
             }
             currentRetry++;
           }
