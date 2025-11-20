@@ -699,10 +699,19 @@ router.post("/:album/upload", requireManager, upload.single('photo'), async (req
             error('[AlbumManagement] Failed to with AI title generation:', err);
           }
           
-          // Don't regenerate static JSON after every single image - too expensive!
-          // It will be regenerated once when the upload batch finishes
-          // const appRoot = req.app.get('appRoot');
-          // generateStaticJSONFiles(appRoot);
+          // Check if this album is a homepage album - if so, regenerate static JSON
+          // This ensures new photos appear on homepage immediately after upload completes
+          try {
+            const albumState = getAlbumState(sanitizedAlbum);
+            if (albumState?.published && albumState?.show_on_homepage) {
+              info(`[AlbumManagement] Homepage album "${sanitizedAlbum}" updated - regenerating static JSON`);
+              const appRoot = req.app.get('appRoot');
+              generateStaticJSONFiles(appRoot);
+              invalidateAlbumCache();
+            }
+          } catch (err) {
+            error('[AlbumManagement] Failed to check/regenerate static JSON for homepage album:', err);
+          }
         },
         // onError callback
         (error: string) => {
