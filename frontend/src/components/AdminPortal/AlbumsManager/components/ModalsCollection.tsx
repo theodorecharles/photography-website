@@ -253,12 +253,31 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
             </div>
             
             <div className="edit-modal-body">
-              <div className="edit-modal-photo">
-                <img 
-                  src={`${API_URL}${editingPhoto.thumbnail}?i=${cacheBustValue}`}
-                  alt=""
+              {/* Only show thumbnail preview for photos, not videos */}
+              {editingPhoto.media_type !== 'video' && (
+                <div className="edit-modal-photo">
+                  <img 
+                    src={`${API_URL}${editingPhoto.thumbnail}?i=${cacheBustValue}`}
+                    alt=""
+                  />
+                </div>
+              )}
+              
+              {/* Video Thumbnail Picker - show first for videos */}
+              {editingPhoto.media_type === 'video' && (
+                <VideoThumbnailPicker
+                  album={editingPhoto.album}
+                  filename={editingPhoto.id.split('/').pop() || editingPhoto.id}
+                  onThumbnailUpdated={() => {
+                    // Force thumbnail reload by updating timestamp
+                    const img = document.querySelector('.edit-modal-photo img') as HTMLImageElement;
+                    if (img) {
+                      const src = img.src.split('?')[0];
+                      img.src = `${src}?t=${Date.now()}`;
+                    }
+                  }}
                 />
-              </div>
+              )}
               
               <div className="edit-modal-info" style={{ marginTop: '1rem' }}>
                 <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', opacity: 0.8 }}>
@@ -348,22 +367,6 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
                     }
                   }}
                 />
-                
-                {/* Video Thumbnail Picker - only show for videos */}
-                {editingPhoto.media_type === 'video' && (
-                  <VideoThumbnailPicker
-                    album={editingPhoto.album}
-                    filename={editingPhoto.id.split('/').pop() || editingPhoto.id}
-                    onThumbnailUpdated={() => {
-                      // Force thumbnail reload by updating timestamp
-                      const img = document.querySelector('.edit-modal-photo img') as HTMLImageElement;
-                      if (img) {
-                        const src = img.src.split('?')[0];
-                        img.src = `${src}?t=${Date.now()}`;
-                      }
-                    }}
-                  />
-                )}
               </div>
             </div>
             

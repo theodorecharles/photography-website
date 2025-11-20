@@ -1330,6 +1330,64 @@ router.put('/:albumName/move', requireManager, async (req: Request, res: Respons
 });
 
 /**
+ * POST /api/albums/:albumName/video/:filename/upload-thumbnail
+ * Upload a custom thumbnail image for a video
+ */
+router.post('/:albumName/video/:filename/upload-thumbnail', requireManager, upload.single('thumbnail'), async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { albumName, filename } = req.params;
+    
+    if (!albumName || !filename) {
+      res.status(400).json({ error: 'Album name and filename are required' });
+      return;
+    }
+    
+    // Check if file was uploaded
+    if (!req.file) {
+      res.status(400).json({ error: 'No thumbnail file uploaded' });
+      return;
+    }
+    
+    const appRoot = req.app.get('appRoot');
+    const dataDir = process.env.DATA_DIR || path.join(appRoot, 'data');
+    const optimizedDir = path.join(dataDir, 'optimized');
+    
+    // Generate thumbnail (512px)
+    const thumbnailPath = path.join(optimizedDir, 'thumbnail', albumName, filename.replace(/\.[^.]+$/, '.jpg'));
+    await sharp(req.file.path)
+      .resize(512, 512, { 
+        fit: 'inside',
+        withoutEnlargement: true 
+      })
+      .jpeg({ quality: 80 })
+      .toFile(thumbnailPath);
+    
+    // Generate modal preview (2048px)
+    const modalPath = path.join(optimizedDir, 'modal', albumName, filename.replace(/\.[^.]+$/, '.jpg'));
+    await sharp(req.file.path)
+      .resize(2048, 2048, { 
+        fit: 'inside',
+        withoutEnlargement: true 
+      })
+      .jpeg({ quality: 90 })
+      .toFile(modalPath);
+    
+    // Clean up temporary file
+    fs.unlinkSync(req.file.path);
+    
+    info(`[VideoThumbnail] Uploaded custom thumbnail for ${albumName}/${filename}`);
+    
+    res.json({ 
+      success: true,
+      message: 'Custom thumbnail uploaded successfully'
+    });
+  } catch (err) {
+    error('[VideoThumbnail] Failed to upload custom thumbnail:', err);
+    res.status(500).json({ error: 'Failed to upload custom thumbnail' });
+  }
+});
+
+/**
  * POST /api/albums/:albumName/video/:filename/update-thumbnail
  * Update video thumbnail by extracting a frame at a specific timestamp
  */
