@@ -52,8 +52,10 @@ export const usePhotoManagement = ({ setMessage, showConfirmation }: UsePhotoMan
       }
 
       const data = await res.json();
-      setAlbumPhotos(data);
-      setOriginalPhotoOrder(data);
+      // API returns { photos: [...], published: boolean }
+      const photos = Array.isArray(data) ? data : (data.photos || []);
+      setAlbumPhotos(photos);
+      setOriginalPhotoOrder(photos);
       setHasEverDragged(false);
     } catch (err) {
       setMessage({ type: 'error', text: 'Failed to load photos' });
