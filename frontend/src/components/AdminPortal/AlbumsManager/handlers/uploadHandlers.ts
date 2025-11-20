@@ -74,8 +74,8 @@ export const createUploadHandlers = (props: UploadHandlersProps) => {
         }
       });
       
-      // Set a longer timeout for upload requests (10 minutes)
-      xhr.timeout = 600000; // 10 minutes per file
+      // Set a very long timeout for upload requests (2 hours for large videos)
+      xhr.timeout = 7200000; // 2 hours per file
       
       xhr.withCredentials = true; // Include cookies
       
@@ -103,22 +103,17 @@ export const createUploadHandlers = (props: UploadHandlersProps) => {
         } else {
           // Parse error response to check for non-retryable errors
           let errorMsg = `Upload failed: ${xhr.status}`;
-          let isRetryable = true;
+          // 400 = client error (validation, bad request) - NEVER retryable
+          // 500 = server error - might be transient, can retry
+          let isRetryable = xhr.status >= 500; // Only retry server errors
           
           try {
             const errorResponse = JSON.parse(xhr.responseText);
             if (errorResponse.error) {
               errorMsg = errorResponse.error;
             }
-            // File size errors and validation errors are not retryable
-            if (errorResponse.code === 'LIMIT_FILE_SIZE' || 
-                errorResponse.code === 'LIMIT_FIELD_COUNT' ||
-                errorResponse.code === 'LIMIT_FIELD_VALUE' ||
-                errorResponse.code === 'LIMIT_FIELD_KEY') {
-              isRetryable = false;
-            }
           } catch (e) {
-            // If we can't parse the error, assume it's retryable
+            // If we can't parse the error, keep default retryable logic
           }
           
           info(`[Upload] ${filename}: ${errorMsg} (retryable: ${isRetryable})`);

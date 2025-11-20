@@ -669,11 +669,11 @@ i18nInitPromise.then(() => {
   }
   });
 
-  // Set server timeout to 10 minutes for long-running SSE connections
-  // (image optimization can take a while for large images)
-  server.timeout = 600000; // 10 minutes
-  server.keepAliveTimeout = 610000; // Slightly longer than timeout
-  server.headersTimeout = 620000; // Slightly longer than keepAliveTimeout
+  // Set server timeout to 2 hours for large file uploads and long-running SSE connections
+  // This allows uploading very large videos without timing out
+  server.timeout = 7200000; // 2 hours
+  server.keepAliveTimeout = 7210000; // Slightly longer than timeout
+  server.headersTimeout = 7220000; // Slightly longer than keepAliveTimeout
 
   // Handle server errors
   server.on("error", (err: NodeJS.ErrnoException) => {
