@@ -31,31 +31,36 @@ try {
     }
   }
 
-  // Generate favicons from icon-192.png
+  // Generate favicons from icon-192.png ONLY if they don't exist
   const sourcePath = path.join(publicDir, 'icon-192.png');
   const faviconPngPath = path.join(publicDir, 'favicon.png');
   const faviconIcoPath = path.join(publicDir, 'favicon.ico');
 
-  if (!fs.existsSync(sourcePath)) {
-    console.error('❌ icon-192.png not found! Cannot generate favicons.');
-    process.exit(1);
+  // Check if favicons already exist (don't overwrite custom avatars)
+  if (fs.existsSync(faviconPngPath) && fs.existsSync(faviconIcoPath)) {
+    console.log('✓ Favicons already exist, skipping generation (preserving custom favicon)');
+  } else {
+    if (!fs.existsSync(sourcePath)) {
+      console.error('❌ icon-192.png not found! Cannot generate favicons.');
+      process.exit(1);
+    }
+
+    console.log('🔄 Generating favicons from icon-192.png...');
+
+    // Generate 512x512 PNG favicon
+    await sharp(sourcePath)
+      .resize(512, 512, { fit: 'cover' })
+      .png()
+      .toFile(faviconPngPath);
+    console.log(`✓ Generated favicon.png (512x512)`);
+
+    // Generate 32x32 ICO favicon
+    await sharp(sourcePath)
+      .resize(32, 32, { fit: 'cover' })
+      .toFormat('png')
+      .toFile(faviconIcoPath);
+    console.log(`✓ Generated favicon.ico (32x32)`);
   }
-
-  console.log('🔄 Generating favicons from icon-192.png...');
-
-  // Generate 512x512 PNG favicon
-  await sharp(sourcePath)
-    .resize(512, 512, { fit: 'cover' })
-    .png()
-    .toFile(faviconPngPath);
-  console.log(`✓ Generated favicon.png (512x512)`);
-
-  // Generate 32x32 ICO favicon
-  await sharp(sourcePath)
-    .resize(32, 32, { fit: 'cover' })
-    .toFormat('png')
-    .toFile(faviconIcoPath);
-  console.log(`✓ Generated favicon.ico (32x32)`);
 
   console.log('✨ Icon setup and favicon generation complete!');
 } catch (error) {
