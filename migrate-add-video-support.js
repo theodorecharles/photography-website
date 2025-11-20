@@ -10,17 +10,18 @@
  */
 
 import { fileURLToPath } from 'url';
-import { dirname } from 'path';
+import { dirname, join } from 'path';
 import { createRequire } from 'module';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const require = createRequire(import.meta.url);
 
-// Import DB_PATH from config
-import { DB_PATH } from './backend/src/config.js';
-
 const Database = require('better-sqlite3');
+
+// Determine database path
+const DATA_DIR = process.env.DATA_DIR || join(__dirname, 'data');
+const DB_PATH = join(DATA_DIR, 'gallery.db');
 
 function runMigration() {
   console.log('Starting video support migration...');
