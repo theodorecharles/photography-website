@@ -72,7 +72,8 @@ const ContentModal: React.FC<ContentModalProps> = ({
   }, [selectedPhoto.id, clickedVideo]);
 
   // Handle play button click on video preview
-  const handlePlayClick = useCallback((e: React.MouseEvent) => {
+  const handlePlayClick = useCallback((e: React.MouseEvent | React.TouchEvent) => {
+    console.log('[ContentModal] Play button clicked');
     e.stopPropagation();
     e.preventDefault();
     setShowVideoPlayer(true);
@@ -561,7 +562,19 @@ const ContentModal: React.FC<ContentModalProps> = ({
   }, [handleClose, handleNavigatePrev, handleNavigateNext, showNavigationHint]);
 
   return (
-    <div className={`modal ${isFullscreen ? 'fullscreen' : ''}`} onClick={handleClose}>
+    <div 
+      className={`modal ${isFullscreen ? 'fullscreen' : ''}`} 
+      onClick={handleClose}
+      onTouchEnd={(e) => {
+        // Prevent modal close if touching interactive elements
+        const target = e.target as HTMLElement;
+        if (target.closest('button, .video-play-button-overlay')) {
+          console.log('[ContentModal] Blocked modal close - interactive element touched');
+          e.stopPropagation();
+          return;
+        }
+      }}
+    >
       <div
         key={selectedPhoto.id}
         className="modal-content"
@@ -618,6 +631,11 @@ const ContentModal: React.FC<ContentModalProps> = ({
                 {thumbnailLoaded && (
                   <button
                     onClick={handlePlayClick}
+                    onTouchEnd={(e) => {
+                      e.stopPropagation();
+                      e.preventDefault();
+                      handlePlayClick(e);
+                    }}
                     className="video-play-button-overlay"
                     aria-label="Play video"
                   >
