@@ -3,7 +3,7 @@
  * Manages video quality and streaming settings
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { API_URL } from '../../../../config';
 import { ConfigData } from '../types';
@@ -41,7 +41,12 @@ const VideoOptimizationSection: React.FC<VideoOptimizationSectionProps> = ({
     let current: any = newConfig;
 
     for (let i = 0; i < path.length - 1; i++) {
-      current[path[i]] = { ...current[path[i]] };
+      // Ensure the path exists and is properly copied
+      if (!current[path[i]]) {
+        current[path[i]] = {};
+      } else {
+        current[path[i]] = { ...current[path[i]] };
+      }
       current = current[path[i]];
     }
 
@@ -101,13 +106,16 @@ const VideoOptimizationSection: React.FC<VideoOptimizationSectionProps> = ({
   const segmentDuration = videoConfig?.segmentDuration || 4;
   const resolutions = videoConfig?.resolutions || defaultResolutions;
 
-  // Initialize video config if it doesn't exist
-  if (config && !config.environment?.optimization?.video) {
-    updateConfig(['environment', 'optimization', 'video'], {
-      segmentDuration: 4,
-      resolutions: defaultResolutions
-    });
-  }
+  // Initialize video config if it doesn't exist (only once on mount)
+  useEffect(() => {
+    if (config && !config.environment?.optimization?.video) {
+      updateConfig(['environment', 'optimization', 'video'], {
+        segmentDuration: 4,
+        resolutions: defaultResolutions
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const hasVideoChanges = JSON.stringify(config?.environment?.optimization?.video) !== 
                           JSON.stringify(originalConfig?.environment?.optimization?.video);
