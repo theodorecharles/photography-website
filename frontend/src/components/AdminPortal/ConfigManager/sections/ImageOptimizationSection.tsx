@@ -493,6 +493,21 @@ const ImageOptimizationSection: React.FC<ImageOptimizationSectionProps> = ({
               />
             </div>
           </div>
+
+          {/* Warning Note */}
+          <div style={{
+            marginTop: '1rem',
+            padding: '1rem',
+            background: 'rgba(255, 193, 7, 0.1)',
+            border: '1px solid rgba(255, 193, 7, 0.3)',
+            borderRadius: '8px',
+            fontSize: '0.875rem',
+            color: 'rgba(255, 193, 7, 0.9)',
+          }}>
+            <strong>⚠️ Note:</strong> Changes to image optimization settings only apply to newly uploaded photos. 
+            Existing images will keep their current optimization settings unless you use <strong>Force Regenerate All</strong> in 
+            Advanced Settings → Optimized Images.
+          </div>
         </div>
       </div>
     </div>
