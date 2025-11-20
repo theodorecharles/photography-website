@@ -386,7 +386,6 @@
     "enterDescription": "Introduceți descrierea...",
     "updateThumbnail": "Actualizează Miniatura  ",
     "useCurrentFrame": "Folosește Cadru Curent  ",
-    "uploadImage": "Încarcă Imagine  ",
     "updating": "Se actualizează...  ",
     "uploading": "Se încarcă...  ",
     "updatingThumbnail": "Se actualizează miniatura...  ",
@@ -396,7 +395,8 @@
     "thumbnailUploaded": "✓ Miniatura încărcată!",
     "failedToUploadThumbnail": "✗ Încărcarea miniaturii a eșuat  ",
     "pleaseSelectImageFile": "✗ Te rugăm să selectezi un fișier imagine  ",
-    "unableToLoadVideo": "Imposibil de încărcat video pentru selecția miniaturii. Video-ul poate fi încă în procesare."
+    "unableToLoadVideo": "Imposibil de încărcat video pentru selecția miniaturii. Video-ul poate fi încă în procesare.",
+    "uploadThumbnail": "Încărcați miniatura"
   },
   "settings": {
     "saved": "Setările {{section}} au fost salvate!",

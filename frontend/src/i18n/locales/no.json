@@ -386,7 +386,6 @@
     "enterDescription": "Skriv inn beskrivelse...",
     "updateThumbnail": "Oppdater miniatyrbilde  ",
     "useCurrentFrame": "Bruk nåværende ramme  ",
-    "uploadImage": "Last opp bilde  ",
     "updating": "Oppdaterer...  ",
     "uploading": "Laster opp...  ",
     "updatingThumbnail": "Oppdaterer miniatyrbilde...  ",
@@ -396,7 +395,8 @@
     "thumbnailUploaded": "✓ Miniatyrbilde lastet opp!",
     "failedToUploadThumbnail": "✗ Mislyktes i å laste opp miniatyrbilde  ",
     "pleaseSelectImageFile": "✗ Vennligst velg en bildefil  ",
-    "unableToLoadVideo": "Kan ikke laste inn video for valg av miniatyrbilde. Videoen kan fortsatt være under behandling."
+    "unableToLoadVideo": "Kan ikke laste inn video for valg av miniatyrbilde. Videoen kan fortsatt være under behandling.",
+    "uploadThumbnail": "Last opp miniatyrbilde"
   },
   "settings": {
     "saved": "{{section}} innstillinger lagret!",

@@ -386,7 +386,6 @@
     "enterDescription": "Masukkan deskripsi...",
     "updateThumbnail": "Perbarui Thumbnail  ",
     "useCurrentFrame": "Gunakan Frame Saat Ini  ",
-    "uploadImage": "Unggah Gambar  ",
     "updating": "Memperbarui...  ",
     "uploading": "Mengunggah...  ",
     "updatingThumbnail": "Memperbarui thumbnail...  ",
@@ -396,7 +395,8 @@
     "thumbnailUploaded": "✓ Thumbnail diunggah!",
     "failedToUploadThumbnail": "✗ Gagal mengunggah thumbnail  ",
     "pleaseSelectImageFile": "✗ Silakan pilih file gambar  ",
-    "unableToLoadVideo": "Tidak dapat memuat video untuk pemilihan thumbnail. Video mungkin masih dalam proses."
+    "unableToLoadVideo": "Tidak dapat memuat video untuk pemilihan thumbnail. Video mungkin masih dalam proses.",
+    "uploadThumbnail": "Unggah Thumbnail"
   },
   "settings": {
     "saved": "Pengaturan {{section}} disimpan!",

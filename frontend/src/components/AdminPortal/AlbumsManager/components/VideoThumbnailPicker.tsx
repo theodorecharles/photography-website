@@ -230,15 +230,6 @@ const VideoThumbnailPicker: React.FC<VideoThumbnailPickerProps> = ({
 
   return (
     <>
-      <div style={{
-        fontSize: '0.875rem',
-        marginBottom: '0.75rem',
-        fontWeight: 600,
-        color: 'rgba(255, 255, 255, 0.9)'
-      }}>
-        {t('albumsManager.updateThumbnail')}
-      </div>
-
       {/* Video Preview */}
       <div style={{
         position: 'relative',
@@ -327,7 +318,7 @@ const VideoThumbnailPicker: React.FC<VideoThumbnailPickerProps> = ({
             transition: 'all 0.2s ease'
           }}
         >
-          {isUploading ? t('albumsManager.uploading') : t('albumsManager.uploadImage')}
+          {isUploading ? t('albumsManager.uploading') : t('albumsManager.uploadThumbnail')}
         </button>
         
         <input

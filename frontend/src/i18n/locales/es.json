@@ -386,7 +386,6 @@
     "enterDescription": "Ingresa la descripción...",
     "updateThumbnail": "Actualizar miniatura  ",
     "useCurrentFrame": "Usar fotograma actual  ",
-    "uploadImage": "Subir imagen  ",
     "updating": "Actualizando...  ",
     "uploading": "Subiendo...  ",
     "updatingThumbnail": "Actualizando miniatura...  ",
@@ -396,7 +395,8 @@
     "thumbnailUploaded": "✓ ¡Miniatura subida!",
     "failedToUploadThumbnail": "✗ Error al subir la miniatura  ",
     "pleaseSelectImageFile": "✗ Por favor, selecciona un archivo de imagen  ",
-    "unableToLoadVideo": "No se puede cargar el video para la selección de miniatura. El video puede estar aún en procesamiento."
+    "unableToLoadVideo": "No se puede cargar el video para la selección de miniatura. El video puede estar aún en procesamiento.",
+    "uploadThumbnail": "Subir miniatura"
   },
   "settings": {
     "saved": "¡Configuración de {{section}} guardada!",

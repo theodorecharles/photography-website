@@ -386,7 +386,6 @@
     "enterDescription": "Digite a descrição...",
     "updateThumbnail": "Atualizar Miniatura  ",
     "useCurrentFrame": "Usar Quadro Atual  ",
-    "uploadImage": "Enviar Imagem  ",
     "updating": "Atualizando...  ",
     "uploading": "Enviando...  ",
     "updatingThumbnail": "Atualizando miniatura...  ",
@@ -396,7 +395,8 @@
     "thumbnailUploaded": "✓ Miniatura enviada!",
     "failedToUploadThumbnail": "✗ Falha ao enviar a miniatura  ",
     "pleaseSelectImageFile": "✗ Por favor, selecione um arquivo de imagem  ",
-    "unableToLoadVideo": "Não foi possível carregar o vídeo para seleção da miniatura. O vídeo pode ainda estar sendo processado."
+    "unableToLoadVideo": "Não foi possível carregar o vídeo para seleção da miniatura. O vídeo pode ainda estar sendo processado.",
+    "uploadThumbnail": "Carregar Miniatura"
   },
   "settings": {
     "saved": "Configurações de {{section}} salvas!",

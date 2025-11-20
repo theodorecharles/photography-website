@@ -386,7 +386,6 @@
     "enterDescription": "输入描述...",
     "updateThumbnail": "更新缩略图  ",
     "useCurrentFrame": "使用当前帧  ",
-    "uploadImage": "上传图片  ",
     "updating": "正在更新...  ",
     "uploading": "正在上传...  ",
     "updatingThumbnail": "正在更新缩略图...  ",
@@ -396,7 +395,8 @@
     "thumbnailUploaded": "✓ 缩略图已上传！",
     "failedToUploadThumbnail": "✗ 无法上传缩略图  ",
     "pleaseSelectImageFile": "✗ 请选择一个图像文件  ",
-    "unableToLoadVideo": "无法加载视频以进行缩略图选择。视频可能仍在处理中。"
+    "unableToLoadVideo": "无法加载视频以进行缩略图选择。视频可能仍在处理中。",
+    "uploadThumbnail": "上传缩略图"
   },
   "settings": {
     "saved": "{{section}} 设置已保存！",

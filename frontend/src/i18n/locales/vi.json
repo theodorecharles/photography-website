@@ -386,7 +386,6 @@
     "enterDescription": "Nhập mô tả...",
     "updateThumbnail": "Cập nhật Hình thu nhỏ  ",
     "useCurrentFrame": "Sử dụng Khung Hiện tại  ",
-    "uploadImage": "Tải lên Hình ảnh  ",
     "updating": "Đang cập nhật...  ",
     "uploading": "Đang tải lên...  ",
     "updatingThumbnail": "Đang cập nhật hình thu nhỏ...  ",
@@ -396,7 +395,8 @@
     "thumbnailUploaded": "✓ Hình thu nhỏ đã được tải lên!",
     "failedToUploadThumbnail": "✗ Tải lên hình thu nhỏ không thành công  ",
     "pleaseSelectImageFile": "✗ Vui lòng chọn một tệp hình ảnh  ",
-    "unableToLoadVideo": "Không thể tải video để chọn hình thu nhỏ. Video có thể vẫn đang được xử lý."
+    "unableToLoadVideo": "Không thể tải video để chọn hình thu nhỏ. Video có thể vẫn đang được xử lý.",
+    "uploadThumbnail": "Tải lên Hình thu nhỏ"
   },
   "settings": {
     "saved": "Cài đặt {{section}} đã được lưu!",

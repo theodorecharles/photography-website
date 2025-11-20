@@ -386,7 +386,6 @@
     "enterDescription": "Wprowadź opis...",
     "updateThumbnail": "Zaktualizuj miniaturę  ",
     "useCurrentFrame": "Użyj bieżącej klatki  ",
-    "uploadImage": "Prześlij obraz  ",
     "updating": "Aktualizowanie...  ",
     "uploading": "Przesyłanie...  ",
     "updatingThumbnail": "Aktualizowanie miniatury...  ",
@@ -396,7 +395,8 @@
     "thumbnailUploaded": "✓ Miniatura przesłana!",
     "failedToUploadThumbnail": "✗ Nie udało się przesłać miniatury  ",
     "pleaseSelectImageFile": "✗ Proszę wybrać plik obrazu  ",
-    "unableToLoadVideo": "Nie można załadować wideo do wyboru miniatury. Wideo może być wciąż przetwarzane."
+    "unableToLoadVideo": "Nie można załadować wideo do wyboru miniatury. Wideo może być wciąż przetwarzane.",
+    "uploadThumbnail": "Prześlij miniaturę"
   },
   "settings": {
     "saved": "Ustawienia {{section}} zapisane!",

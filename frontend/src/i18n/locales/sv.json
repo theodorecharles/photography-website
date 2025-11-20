@@ -386,7 +386,6 @@
     "enterDescription": "Ange beskrivning...",
     "updateThumbnail": "Uppdatera miniatyrbild  ",
     "useCurrentFrame": "Använd nuvarande bildruta  ",
-    "uploadImage": "Ladda upp bild  ",
     "updating": "Uppdaterar...  ",
     "uploading": "Laddar upp...  ",
     "updatingThumbnail": "Uppdaterar miniatyrbild...  ",
@@ -396,7 +395,8 @@
     "thumbnailUploaded": "✓ Miniatyrbild uppladdad!",
     "failedToUploadThumbnail": "✗ Misslyckades med att ladda upp miniatyrbild  ",
     "pleaseSelectImageFile": "✗ Vänligen välj en bildfil  ",
-    "unableToLoadVideo": "Kunde inte ladda videon för miniatyrval. Videon kan fortfarande bearbetas."
+    "unableToLoadVideo": "Kunde inte ladda videon för miniatyrval. Videon kan fortfarande bearbetas.",
+    "uploadThumbnail": "Ladda upp miniatyrbild"
   },
   "settings": {
     "saved": "{{section}} inställningar sparade!",

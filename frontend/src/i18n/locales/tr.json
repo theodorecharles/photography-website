@@ -386,7 +386,6 @@
     "enterDescription": "Açıklama girin...",
     "updateThumbnail": "Küçük Resmi Güncelle  ",
     "useCurrentFrame": "Mevcut Kareyi Kullan  ",
-    "uploadImage": "Görüntü Yükle  ",
     "updating": "Güncelleniyor...  ",
     "uploading": "Yükleniyor...  ",
     "updatingThumbnail": "Küçük resmi güncelleniyor...  ",
@@ -396,7 +395,8 @@
     "thumbnailUploaded": "✓ Küçük resim yüklendi!",
     "failedToUploadThumbnail": "✗ Küçük resmi yükleme başarısız oldu  ",
     "pleaseSelectImageFile": "✗ Lütfen bir resim dosyası seçin  ",
-    "unableToLoadVideo": "Küçük resim seçimi için video yüklenemedi. Video hala işleniyor olabilir."
+    "unableToLoadVideo": "Küçük resim seçimi için video yüklenemedi. Video hala işleniyor olabilir.",
+    "uploadThumbnail": "Küçük Resim Yükle"
   },
   "settings": {
     "saved": "{{section}} ayarları kaydedildi!",

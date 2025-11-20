@@ -386,7 +386,6 @@
     "enterDescription": "설명을 입력하세요...",
     "updateThumbnail": "썸네일 업데이트  ",
     "useCurrentFrame": "현재 프레임 사용  ",
-    "uploadImage": "이미지 업로드  ",
     "updating": "업데이트 중...  ",
     "uploading": "업로드 중...  ",
     "updatingThumbnail": "썸네일 업데이트 중...  ",
@@ -396,7 +395,8 @@
     "thumbnailUploaded": "✓ 썸네일이 업로드되었습니다!",
     "failedToUploadThumbnail": "✗ 썸네일 업로드에 실패했습니다  ",
     "pleaseSelectImageFile": "✗ 이미지 파일을 선택해 주세요  ",
-    "unableToLoadVideo": "썸네일 선택을 위한 비디오를 로드할 수 없습니다. 비디오가 아직 처리 중일 수 있습니다."
+    "unableToLoadVideo": "썸네일 선택을 위한 비디오를 로드할 수 없습니다. 비디오가 아직 처리 중일 수 있습니다.",
+    "uploadThumbnail": "썸네일 업로드"
   },
   "settings": {
     "saved": "{{section}} 설정이 저장되었습니다!",

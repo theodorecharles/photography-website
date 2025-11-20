@@ -386,7 +386,6 @@
     "enterDescription": "Beschreibung eingeben...",
     "updateThumbnail": "Thumbnail aktualisieren  ",
     "useCurrentFrame": "Aktuellen Frame verwenden  ",
-    "uploadImage": "Bild hochladen  ",
     "updating": "Aktualisiere...  ",
     "uploading": "Lade hoch...  ",
     "updatingThumbnail": "Thumbnail wird aktualisiert...  ",
@@ -396,7 +395,8 @@
     "thumbnailUploaded": "✓ Thumbnail hochgeladen!",
     "failedToUploadThumbnail": "✗ Fehler beim Hochladen des Thumbnails  ",
     "pleaseSelectImageFile": "✗ Bitte wählen Sie eine Bilddatei aus  ",
-    "unableToLoadVideo": "Video kann für die Thumbnail-Auswahl nicht geladen werden. Das Video wird möglicherweise noch verarbeitet."
+    "unableToLoadVideo": "Video kann für die Thumbnail-Auswahl nicht geladen werden. Das Video wird möglicherweise noch verarbeitet.",
+    "uploadThumbnail": "Thumbnail hochladen"
   },
   "settings": {
     "saved": "{{section}} Einstellungen gespeichert!",

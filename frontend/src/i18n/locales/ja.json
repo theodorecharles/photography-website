@@ -386,7 +386,6 @@
     "enterDescription": "説明を入力...",
     "updateThumbnail": "サムネイルを更新",
     "useCurrentFrame": "現在のフレームを使用",
-    "uploadImage": "画像をアップロード",
     "updating": "更新中...",
     "uploading": "アップロード中...",
     "updatingThumbnail": "サムネイルを更新中...",
@@ -396,7 +395,8 @@
     "thumbnailUploaded": "✓ サムネイルがアップロードされました！",
     "failedToUploadThumbnail": "✗ サムネイルのアップロードに失敗しました  ",
     "pleaseSelectImageFile": "✗ 画像ファイルを選択してください  ",
-    "unableToLoadVideo": "サムネイル選択のためのビデオを読み込めません。ビデオはまだ処理中かもしれません。"
+    "unableToLoadVideo": "サムネイル選択のためのビデオを読み込めません。ビデオはまだ処理中かもしれません。",
+    "uploadThumbnail": "サムネイルをアップロード"
   },
   "settings": {
     "saved": "{{section}}設定が保存されました！",
