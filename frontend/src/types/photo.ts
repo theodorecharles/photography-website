@@ -12,6 +12,7 @@ export interface Photo {
   modal: string;
   download: string;
   title: string;
+  description?: string;
   album: string;
   media_type?: 'photo' | 'video';
   metadata?: {

@@ -1,12 +1,20 @@
 /**
  * Info Panel Component
- * Displays photo metadata and EXIF data
+ * Displays photo/video metadata and EXIF/video data
  */
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Photo, ExifData } from './types';
 import { formatFileSize } from '../../utils/formatters';
+import { API_URL } from '../../config';
+
+interface VideoMetadata {
+  width: number;
+  height: number;
+  duration: number;
+  rotation: number;
+}
 
 interface InfoPanelProps {
   show: boolean;
@@ -28,6 +36,47 @@ const InfoPanel: React.FC<InfoPanelProps> = ({
   style,
 }) => {
   const { t, i18n } = useTranslation();
+  const [videoMetadata, setVideoMetadata] = useState<VideoMetadata | null>(null);
+  const [loadingVideo, setLoadingVideo] = useState(false);
+  const isVideo = photo.media_type === 'video';
+  
+  // Fetch video metadata when showing info panel for a video
+  useEffect(() => {
+    if (show && isVideo) {
+      const fetchVideoMetadata = async () => {
+        setLoadingVideo(true);
+        try {
+          const filename = photo.id.split('/').pop();
+          const res = await fetch(`${API_URL}/api/videos/${photo.album}/${filename}/metadata`, {
+            credentials: 'include'
+          });
+          
+          if (res.ok) {
+            const data = await res.json();
+            setVideoMetadata(data);
+          }
+        } catch (err) {
+          console.error('Failed to fetch video metadata:', err);
+        } finally {
+          setLoadingVideo(false);
+        }
+      };
+      
+      fetchVideoMetadata();
+    }
+  }, [show, isVideo, photo.album, photo.id]);
+  
+  // Format duration from seconds to MM:SS or HH:MM:SS
+  const formatDuration = (seconds: number): string => {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = Math.floor(seconds % 60);
+    
+    if (hours > 0) {
+      return `${hours}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+    return `${minutes}:${secs.toString().padStart(2, '0')}`;
+  };
   
   if (!show) return null;
 
@@ -36,6 +85,12 @@ const InfoPanel: React.FC<InfoPanelProps> = ({
       {imageTitle && (
         <div className="info-item" style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: '0.5rem' }}>
           <span className="info-value">{imageTitle}</span>
+        </div>
+      )}
+      
+      {photo.description && (
+        <div className="info-item" style={{ fontSize: '0.95rem', marginBottom: '1rem', opacity: 0.9 }}>
+          <span className="info-value">{photo.description}</span>
         </div>
       )}
       
@@ -61,13 +116,35 @@ const InfoPanel: React.FC<InfoPanelProps> = ({
         </div>
       )}
       
-      {loadingExif && (
+      {/* Video metadata section */}
+      {isVideo && loadingVideo && (
         <div className="info-item">
           <span className="info-value">{t('photo.loadingExif')}</span>
         </div>
       )}
       
-      {exifData && !exifData.error && (
+      {isVideo && videoMetadata && (
+        <>
+          <div className="info-item">
+            <span className="info-label">{t('photo.resolution')}:</span>
+            <span className="info-value">{videoMetadata.width}x{videoMetadata.height}</span>
+          </div>
+          
+          <div className="info-item">
+            <span className="info-label">{t('photo.duration')}:</span>
+            <span className="info-value">{formatDuration(videoMetadata.duration)}</span>
+          </div>
+        </>
+      )}
+      
+      {/* Photo EXIF section */}
+      {!isVideo && loadingExif && (
+        <div className="info-item">
+          <span className="info-value">{t('photo.loadingExif')}</span>
+        </div>
+      )}
+      
+      {!isVideo && exifData && !exifData.error && (
         <>
           {exifData.Make && (
             <div className="info-item">

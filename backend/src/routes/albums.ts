@@ -486,7 +486,7 @@ router.get("/api/photos/:album/:filename/exif", async (req, res): Promise<void> 
   try {
     const photosDir = req.app.get("photosDir");
     const filePath = path.join(photosDir, sanitizedAlbum, sanitizedFilename);
-
+    
     // Check if file exists
     if (!fs.existsSync(filePath)) {
       res.status(404).json({ error: "Image not found" });
@@ -505,6 +505,51 @@ router.get("/api/photos/:album/:filename/exif", async (req, res): Promise<void> 
   } catch (err) {
     error(`[Albums] Failed to read EXIF for ${album}/${filename}:`, err);
     res.status(500).json({ error: "Failed to read EXIF data" });
+  }
+});
+
+// Get video metadata for a specific video using ffprobe
+router.get("/api/videos/:album/:filename/metadata", async (req, res): Promise<void> => {
+  const { album, filename } = req.params;
+
+  // Sanitize inputs to prevent path traversal
+  const sanitizedAlbum = sanitizePath(album);
+  const sanitizedFilename = filename.replace(/[^a-zA-Z0-9_. -]/g, '');
+  
+  if (!sanitizedAlbum || !sanitizedFilename) {
+    res.status(400).json({ error: "Invalid album or filename" });
+    return;
+  }
+
+  // Ensure the filename has a video extension
+  if (!/\.(mp4|mov|avi|mkv|webm)$/i.test(sanitizedFilename)) {
+    res.status(400).json({ error: "Invalid video file" });
+    return;
+  }
+
+  try {
+    const photosDir = req.app.get("photosDir");
+    const filePath = path.join(photosDir, sanitizedAlbum, sanitizedFilename);
+    
+    // Check if file exists
+    if (!fs.existsSync(filePath)) {
+      res.status(404).json({ error: "Video not found" });
+      return;
+    }
+
+    // Use ffprobe to get video metadata
+    const { getVideoMetadata } = await import('../utils/video-processor.js');
+    const metadata = await getVideoMetadata(filePath);
+    
+    if (!metadata) {
+      res.json({ message: "No video metadata found" });
+      return;
+    }
+
+    res.json(metadata);
+  } catch (err) {
+    error(`[Albums] Failed to read video metadata for ${album}/${filename}:`, err);
+    res.status(500).json({ error: "Failed to read video metadata" });
   }
 });
 

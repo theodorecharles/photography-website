@@ -33,6 +33,8 @@ interface ModalsCollectionProps {
   editingPhoto: Photo | null;
   editTitleValue: string;
   setEditTitleValue: (value: string) => void;
+  editDescriptionValue: string;
+  setEditDescriptionValue: (value: string) => void;
   handleCloseEditModal: () => void;
   handleSaveTitle: () => void;
   
@@ -105,6 +107,8 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
   editingPhoto,
   editTitleValue,
   setEditTitleValue,
+  editDescriptionValue,
+  setEditDescriptionValue,
   handleCloseEditModal,
   handleSaveTitle,
   
@@ -260,7 +264,10 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
               </div>
               
               <div className="edit-modal-info" style={{ marginTop: '1rem' }}>
-                <div style={{ position: 'relative' }}>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', opacity: 0.8 }}>
+                  {t('albumsManager.titleLabel')}
+                </label>
+                <div style={{ position: 'relative', marginBottom: '1rem' }}>
                   <input
                     type="text"
                     value={editTitleValue}
@@ -269,7 +276,8 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
                     placeholder={t('albumsManager.enterTitle')}
                     style={{ paddingRight: hasOpenAI ? '3rem' : undefined }}
                     onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
+                      if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
                         handleSaveTitle();
                       } else if (e.key === 'Escape') {
                         handleCloseEditModal();
@@ -318,12 +326,31 @@ const ModalsCollection: React.FC<ModalsCollectionProps> = ({
                   <p style={{ 
                     color: '#ff4444', 
                     fontSize: '0.875rem', 
-                    marginTop: '0.5rem',
-                    marginBottom: 0
+                    marginTop: '-0.5rem',
+                    marginBottom: '1rem'
                   }}>
                     {aiTitleError}
                   </p>
                 )}
+                
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', opacity: 0.8 }}>
+                  {t('albumsManager.descriptionLabel')}
+                </label>
+                <textarea
+                  value={editDescriptionValue}
+                  onChange={(e) => setEditDescriptionValue(e.target.value)}
+                  className="edit-modal-input"
+                  placeholder={t('albumsManager.enterDescription')}
+                  rows={3}
+                  style={{ resize: 'vertical', minHeight: '80px' }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && e.ctrlKey) {
+                      handleSaveTitle();
+                    } else if (e.key === 'Escape') {
+                      handleCloseEditModal();
+                    }
+                  }}
+                />
               </div>
             </div>
             

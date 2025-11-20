@@ -110,6 +110,8 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
     editingPhoto,
     editTitleValue,
     setEditTitleValue,
+    editDescriptionValue,
+    setEditDescriptionValue,
     showEditModal,
     openEditModal,
     closeEditModal,
@@ -886,6 +888,8 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
         editingPhoto={editingPhoto}
         editTitleValue={editTitleValue}
         setEditTitleValue={setEditTitleValue}
+        editDescriptionValue={editDescriptionValue}
+        setEditDescriptionValue={setEditDescriptionValue}
         handleCloseEditModal={closeEditModal}
         handleSaveTitle={handleEditSave}
         showRenameModal={showRenameModal}
