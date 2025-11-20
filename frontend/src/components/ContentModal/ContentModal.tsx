@@ -595,6 +595,7 @@ const ContentModal: React.FC<ContentModalProps> = ({
             onToggleFullscreen={toggleFullscreen}
             onClose={handleClose}
             selectedPhoto={selectedPhoto}
+            isVideo={selectedPhoto.media_type === 'video'}
             style={imageBounds ? { width: `${imageBounds.width}px`, left: `${imageBounds.left}px` } : {}}
           />
 
@@ -609,16 +610,18 @@ const ContentModal: React.FC<ContentModalProps> = ({
 
           {selectedPhoto.media_type === 'video' ? (
             showVideoPlayer ? (
-              <VideoPlayer
-                album={selectedPhoto.album}
-                filename={selectedPhoto.id.includes('/') ? selectedPhoto.id.split('/').pop() || selectedPhoto.id : selectedPhoto.id}
-                autoplay={shouldAutoplay}
-                onLoadStart={() => setThumbnailLoaded(false)}
-                onLoaded={() => {
-                  setThumbnailLoaded(true);
-                  setModalImageLoaded(true);
-                }}
-              />
+              <div className="modal-image-container">
+                <VideoPlayer
+                  album={selectedPhoto.album}
+                  filename={selectedPhoto.id.includes('/') ? selectedPhoto.id.split('/').pop() || selectedPhoto.id : selectedPhoto.id}
+                  autoplay={shouldAutoplay}
+                  onLoadStart={() => setThumbnailLoaded(false)}
+                  onLoaded={() => {
+                    setThumbnailLoaded(true);
+                    setModalImageLoaded(true);
+                  }}
+                />
+              </div>
             ) : (
               <div style={{ position: 'relative', width: '100%', height: '100%' }}>
                 <ImageCanvas

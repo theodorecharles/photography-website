@@ -205,26 +205,21 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   }
 
   return (
-    <div style={{ 
-      position: 'relative', 
-      width: '100%', 
-      height: '100%', 
-      display: 'flex', 
-      alignItems: 'center', 
-      justifyContent: 'center',
-      backgroundColor: '#000',
-      flexDirection: 'column',
-      gap: '10px'
-    }}>
+    <>
       {error && (
         <div style={{
+          position: 'absolute',
+          top: '10px',
+          left: '50%',
+          transform: 'translateX(-50%)',
           color: '#ff6b6b',
           padding: '10px',
           textAlign: 'center',
           fontSize: '0.9rem',
           backgroundColor: 'rgba(255, 107, 107, 0.1)',
           borderRadius: '4px',
-          maxWidth: '90%'
+          maxWidth: '90%',
+          zIndex: 10
         }}>
           {error}
         </div>
@@ -236,12 +231,11 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         preload="metadata"
         style={{
           width: '100%',
-          height: '100%',
           maxHeight: 'calc(100vh - 100px)',
           objectFit: 'contain'
         }}
       />
-    </div>
+    </>
   );
 };
 

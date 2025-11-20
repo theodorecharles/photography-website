@@ -19,6 +19,7 @@ interface ModalControlsProps {
   onToggleFullscreen: () => void;
   onClose: () => void;
   selectedPhoto: Photo;
+  isVideo?: boolean;
   style?: React.CSSProperties;
 }
 
@@ -33,6 +34,7 @@ const ModalControls: React.FC<ModalControlsProps> = ({
   onToggleFullscreen,
   onClose,
   selectedPhoto,
+  isVideo = false,
   style,
 }) => {
   const { t } = useTranslation();
@@ -68,16 +70,18 @@ const ModalControls: React.FC<ModalControlsProps> = ({
           )}
         </button>
 
-        {/* Download button */}
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onDownload(selectedPhoto);
-          }}
-          title={t('photo.downloadPhoto')}
-        >
-          <DownloadIcon width="20" height="20" />
-        </button>
+        {/* Download button - hidden for videos */}
+        {!isVideo && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onDownload(selectedPhoto);
+            }}
+            title={t('photo.downloadPhoto')}
+          >
+            <DownloadIcon width="20" height="20" />
+          </button>
+        )}
       </div>
 
       <div className="modal-controls-right">
