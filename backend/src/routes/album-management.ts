@@ -692,17 +692,14 @@ router.post("/:album/upload", requireManager, upload.single('photo'), async (req
             state: 'complete'
           });
 
-          // Regenerate static JSON if needed
+          // Regenerate static JSON
           try {
-            const albumState = getAlbumState(sanitizedAlbum);
-            if (albumState?.published && albumState?.show_on_homepage) {
-              info(`[AlbumManagement] Homepage album "${sanitizedAlbum}" updated - regenerating static JSON`);
-              const appRoot = req.app.get('appRoot');
-              generateStaticJSONFiles(appRoot);
-              invalidateAlbumCache();
-            }
+            info(`[AlbumManagement] Video uploaded to album "${sanitizedAlbum}" - regenerating static JSON`);
+            const appRoot = req.app.get('appRoot');
+            generateStaticJSONFiles(appRoot);
+            invalidateAlbumCache();
           } catch (err) {
-            error('[AlbumManagement] Failed to check/regenerate static JSON for homepage album:', err);
+            error('[AlbumManagement] Failed to regenerate static JSON after video upload:', err);
           }
         } catch (err: any) {
           error('[AlbumManagement] Video processing failed:', err);
@@ -775,17 +772,14 @@ router.post("/:album/upload", requireManager, upload.single('photo'), async (req
               error('[AlbumManagement] Failed with AI title generation:', err);
             }
             
-            // Check if this album is a homepage album - if so, regenerate static JSON
+            // Regenerate static JSON
             try {
-              const albumState = getAlbumState(sanitizedAlbum);
-              if (albumState?.published && albumState?.show_on_homepage) {
-                info(`[AlbumManagement] Homepage album "${sanitizedAlbum}" updated - regenerating static JSON`);
-                const appRoot = req.app.get('appRoot');
-                generateStaticJSONFiles(appRoot);
-                invalidateAlbumCache();
-              }
+              info(`[AlbumManagement] Photo uploaded to album "${sanitizedAlbum}" - regenerating static JSON`);
+              const appRoot = req.app.get('appRoot');
+              generateStaticJSONFiles(appRoot);
+              invalidateAlbumCache();
             } catch (err) {
-              error('[AlbumManagement] Failed to check/regenerate static JSON for homepage album:', err);
+              error('[AlbumManagement] Failed to regenerate static JSON after photo upload:', err);
             }
           },
           // onError callback
