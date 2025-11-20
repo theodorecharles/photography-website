@@ -108,7 +108,7 @@ const getAlbums = (photosDir: string) => {
  * @param album - Name of the album to get photos from
  * @returns Array of photo objects with their paths
  */
-const getPhotosInAlbum = (photosDir: string, album: string) => {
+const getContentInAlbum = (photosDir: string, album: string) => {
   try {
     // Get images from database
     const images = getImagesInAlbum(album);
@@ -127,6 +127,7 @@ const getPhotosInAlbum = (photosDir: string, album: string) => {
       return {
         id: `${album}/${img.filename}`,
         title: img.title || defaultTitle,
+        description: img.description || undefined,
         album: album,
         thumbnail: `/optimized/thumbnail/${album}/${thumbnailFilename}`,
         modal: `/optimized/modal/${album}/${thumbnailFilename}`,
@@ -189,6 +190,7 @@ const getAllPhotos = (photosDir: string, includeUnpublished: boolean = false) =>
       return {
         id: `${img.album}/${img.filename}`,
         title: img.title || defaultTitle,
+        description: img.description || undefined,
         album: img.album,
         thumbnail: `/optimized/thumbnail/${img.album}/${img.filename}`,
         modal: `/optimized/modal/${img.album}/${img.filename}`,
@@ -404,6 +406,7 @@ router.get("/api/random-photos", (req: Request, res) => {
     return {
       id: `${img.album}/${img.filename}`,
       title: img.title || defaultTitle,
+      description: img.description || undefined,
       album: img.album,
       thumbnail: `/optimized/thumbnail/${img.album}/${img.filename}`,
       modal: `/optimized/modal/${img.album}/${img.filename}`,
@@ -455,7 +458,7 @@ router.get("/api/shared/:secretKey", async (req: Request, res): Promise<void> =>
   }
 
   // Return album info and photos (bypass published check)
-  const photos = getPhotosInAlbum(photosDir, album);
+    const photos = getContentInAlbum(photosDir, album);
   
   res.json({
     album,
