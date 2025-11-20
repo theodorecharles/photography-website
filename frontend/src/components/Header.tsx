@@ -546,7 +546,7 @@ export default function Header({
   };
 
   return (
-    <header className="header">
+    <header className={`header ${avatarLoaded ? 'header-visible' : ''}`}>
       <div className="header-left">
         {/* Logout button - only shown when authenticated and NOT in admin panel */}
         {isAuthenticated && !isInAdminPanel && (
@@ -558,7 +558,7 @@ export default function Header({
             <LogoutIcon width="20" height="20" />
           </button>
         )}
-        <Link to="/" style={{ visibility: avatarLoaded ? 'visible' : 'hidden' }}>
+        <Link to="/">
           <img
             src={`${API_URL}${avatarPath}?v=${avatarCacheBust}`}
             alt={siteName}
