@@ -321,12 +321,14 @@ const AlbumGridItem: React.FC<AlbumGridItemProps> = ({
         </>
       )}
 
-      {/* Photo info section (shown in list view) */}
-      <div className="photo-info">
-        <div className="photo-title">
-          {isComplete && photoData?.title ? photoData.title : filename}
+      {/* Photo info section (shown in list view, hidden during upload) */}
+      {isComplete && (
+        <div className="photo-info">
+          <div className="photo-title">
+            {photoData?.title || filename}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Error badges for completed photos */}
       {isComplete && photoData?.optimizationError && (
