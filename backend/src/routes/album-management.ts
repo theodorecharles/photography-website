@@ -1441,7 +1441,7 @@ router.post('/:albumName/video/:filename/update-thumbnail', requireManager, asyn
     const seconds = Math.floor(timestamp % 60);
     const timeString = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
     
-    info(`[VideoThumbnail] Extracting frame at ${timeString} for ${albumName}/${filename}`);
+    info(`[VideoThumbnail] ✓ Rotated video found! Extracting frame at ${timeString} for ${albumName}/${filename}`);
     
     // Ensure output directories exist
     const thumbnailDir = path.join(optimizedDir, 'thumbnail', albumName);
@@ -1458,7 +1458,9 @@ router.post('/:albumName/video/:filename/update-thumbnail', requireManager, asyn
     
     // Extract thumbnail (512px for thumbnail view)
     const thumbnailPath = path.join(optimizedDir, 'thumbnail', albumName, filename.replace(/\.[^.]+$/, '.jpg'));
-    info(`[VideoThumbnail] Thumbnail output path: ${thumbnailPath}`);
+    info(`[VideoThumbnail] Starting ffmpeg extraction - output: ${thumbnailPath}`);
+    info(`[VideoThumbnail] ffmpeg args: -ss ${timeString} -i ${rotatedVideoPath} -vframes 1 -vf scale=512:-2 -y ${thumbnailPath}`);
+    
     await new Promise<void>((resolve, reject) => {
       const args = [
         '-ss', timeString, // Seek to timestamp
@@ -1478,15 +1480,17 @@ router.post('/:albumName/video/:filename/update-thumbnail', requireManager, asyn
       
       ffmpeg.on('close', (code) => {
         if (code !== 0) {
-          error('[VideoThumbnail] Thumbnail extraction failed:', stderr);
+          error('[VideoThumbnail] Thumbnail extraction FAILED with code', code);
+          error('[VideoThumbnail] ffmpeg stderr:', stderr);
           reject(new Error(`Thumbnail extraction failed: ${stderr}`));
         } else {
-          info('[VideoThumbnail] Thumbnail extracted successfully');
+          info('[VideoThumbnail] ✓ Thumbnail extracted successfully (512px)');
           resolve();
         }
       });
       
       ffmpeg.on('error', (err) => {
+        error('[VideoThumbnail] ffmpeg process error:', err);
         reject(err);
       });
     });
