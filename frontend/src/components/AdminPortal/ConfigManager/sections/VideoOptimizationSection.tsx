@@ -154,6 +154,14 @@ const VideoOptimizationSection: React.FC<VideoOptimizationSectionProps> = ({
   const hasVideoChanges = JSON.stringify(config?.environment?.optimization?.video) !== 
                           JSON.stringify(originalConfig?.environment?.optimization?.video);
 
+  // Check for changes in HLS settings only
+  const hasHLSChanges = config?.environment?.optimization?.video?.segmentDuration !==
+                        originalConfig?.environment?.optimization?.video?.segmentDuration;
+
+  // Check for changes in resolutions only
+  const hasResolutionChanges = JSON.stringify(config?.environment?.optimization?.video?.resolutions) !==
+                               JSON.stringify(originalConfig?.environment?.optimization?.video?.resolutions);
+
   return (
     <div className="config-group full-width">
       <SectionHeader
@@ -174,8 +182,39 @@ const VideoOptimizationSection: React.FC<VideoOptimizationSectionProps> = ({
         {/* Grid of optimization subsections */}
         <div className="config-grid-inner">
           
+          {/* Warning Note */}
+          <div className="openai-section" style={{ gridColumn: '1 / -1' }}>
+            <div style={{
+              padding: '1rem',
+              background: 'rgba(255, 193, 7, 0.1)',
+              border: '1px solid rgba(255, 193, 7, 0.3)',
+              borderRadius: '8px',
+              fontSize: '0.875rem',
+              color: 'rgba(255, 193, 7, 0.9)',
+              height: 'fit-content',
+            }}>
+              <div style={{ marginBottom: '0.75rem' }}>
+                <strong>⚠️ {t('common.note')}:</strong> {t('videoOptimization.warningNote')}
+              </div>
+              <button
+                onClick={onNavigateToAdvanced}
+                className="btn-secondary"
+                style={{
+                  fontSize: '0.85rem',
+                  padding: '0.5rem 0.75rem',
+                  width: '100%',
+                  background: 'rgba(255, 193, 7, 0.15)',
+                  border: '1px solid rgba(255, 193, 7, 0.5)',
+                  color: 'rgba(255, 193, 7, 1)',
+                }}
+              >
+                🎯 {t('videoOptimization.forceRegenerate')}
+              </button>
+            </div>
+          </div>
+
           {/* HLS Settings */}
-          <div className="openai-section">
+          <div className="openai-section" style={{ gridColumn: '1 / -1' }}>
             <div
               style={{
                 display: "flex",
@@ -185,6 +224,38 @@ const VideoOptimizationSection: React.FC<VideoOptimizationSectionProps> = ({
               }}
             >
               <label className="openai-section-label">{t('videoOptimization.hlsStreaming')}</label>
+              {hasHLSChanges && (
+                <div style={{ display: "flex", gap: "0.5rem" }}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (originalConfig) {
+                        setConfig(structuredClone(originalConfig));
+                      }
+                    }}
+                    disabled={savingSection !== null}
+                    className="btn-secondary"
+                    style={{
+                      padding: "0.4rem 0.8rem",
+                      fontSize: "0.85rem",
+                    }}
+                  >
+                    {t('common.cancel')}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleSaveSection(t('videoOptimization.hlsStreamingSection'))}
+                    disabled={savingSection !== null}
+                    className="btn-primary"
+                    style={{
+                      padding: "0.4rem 0.8rem",
+                      fontSize: "0.85rem",
+                    }}
+                  >
+                    {savingSection === t('videoOptimization.hlsStreamingSection') ? t('common.saving') : t('common.save')}
+                  </button>
+                </div>
+              )}
             </div>
             <p style={{
               fontSize: '0.85rem',
@@ -216,37 +287,6 @@ const VideoOptimizationSection: React.FC<VideoOptimizationSectionProps> = ({
             </div>
           </div>
 
-          {/* Warning Note */}
-          <div className="openai-section">
-            <div style={{
-              padding: '1rem',
-              background: 'rgba(255, 193, 7, 0.1)',
-              border: '1px solid rgba(255, 193, 7, 0.3)',
-              borderRadius: '8px',
-              fontSize: '0.875rem',
-              color: 'rgba(255, 193, 7, 0.9)',
-              height: 'fit-content',
-            }}>
-              <div style={{ marginBottom: '0.75rem' }}>
-                <strong>⚠️ {t('common.note')}:</strong> {t('videoOptimization.warningNote')}
-              </div>
-              <button
-                onClick={onNavigateToAdvanced}
-                className="btn-secondary"
-                style={{
-                  fontSize: '0.85rem',
-                  padding: '0.5rem 0.75rem',
-                  width: '100%',
-                  background: 'rgba(255, 193, 7, 0.15)',
-                  border: '1px solid rgba(255, 193, 7, 0.5)',
-                  color: 'rgba(255, 193, 7, 1)',
-                }}
-              >
-                🎯 {t('videoOptimization.forceRegenerate')}
-              </button>
-            </div>
-          </div>
-
           {/* Video Resolutions */}
           <div className="openai-section" style={{ gridColumn: '1 / -1' }}>
             <div
@@ -258,6 +298,38 @@ const VideoOptimizationSection: React.FC<VideoOptimizationSectionProps> = ({
               }}
             >
               <label className="openai-section-label">{t('videoOptimization.videoResolutions')}</label>
+              {hasResolutionChanges && (
+                <div style={{ display: "flex", gap: "0.5rem" }}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (originalConfig) {
+                        setConfig(structuredClone(originalConfig));
+                      }
+                    }}
+                    disabled={savingSection !== null}
+                    className="btn-secondary"
+                    style={{
+                      padding: "0.4rem 0.8rem",
+                      fontSize: "0.85rem",
+                    }}
+                  >
+                    {t('common.cancel')}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleSaveSection(t('videoOptimization.videoResolutionsSection'))}
+                    disabled={savingSection !== null}
+                    className="btn-primary"
+                    style={{
+                      padding: "0.4rem 0.8rem",
+                      fontSize: "0.85rem",
+                    }}
+                  >
+                    {savingSection === t('videoOptimization.videoResolutionsSection') ? t('common.saving') : t('common.save')}
+                  </button>
+                </div>
+              )}
             </div>
             <p style={{
               fontSize: '0.85rem',

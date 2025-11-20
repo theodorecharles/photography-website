@@ -795,10 +795,12 @@
     "title": "Video Optimization",
     "description": "Configure video quality, streaming, and HLS settings",
     "hlsStreaming": "HLS STREAMING",
+    "hlsStreamingSection": "HLS Settings",
     "hlsDescription": "Configure HTTP Live Streaming (HLS) settings for adaptive video delivery",
     "segmentDuration": "Segment Duration (seconds)",
     "segmentDurationHelp": "Length of each video segment. Longer segments (4-6s) reduce server requests.",
     "videoResolutions": "VIDEO RESOLUTIONS",
+    "videoResolutionsSection": "Video Resolutions",
     "resolutionsDescription": "Enable resolutions and configure their quality settings. Higher bitrates improve quality but increase file size.",
     "videoBitrate": "Video Bitrate",
     "audioBitrate": "Audio Bitrate",
@@ -807,8 +809,7 @@
     "on": "On",
     "off": "Off",
     "warningNote": "Changes to video settings only apply to newly uploaded videos. Existing videos will keep their current quality settings unless you use",
-    "forceRegenerate": "Force Regenerate All",
-    "warningNoteLocation": "in Advanced Settings → Optimized Videos."
+    "forceRegenerate": "Force Regenerate All"
   },
   "links": {
     "title": "Links",
