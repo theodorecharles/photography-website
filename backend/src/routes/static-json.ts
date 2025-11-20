@@ -41,8 +41,8 @@ async function writeJSON(outputDir: string, filename: string, data: any): Promis
 
 /**
  * Transform database image to optimized array format
- * Album format: [filename, title, media_type]
- * Homepage format: [filename, title, album, media_type]
+ * Album format: [filename, title, media_type, description]
+ * Homepage format: [filename, title, album, media_type, description]
  * media_type: 0 = photo, 1 = video
  */
 function transformImageToArray(img: any, album: string, includeAlbum: boolean = false) {
@@ -52,11 +52,12 @@ function transformImageToArray(img: any, album: string, includeAlbum: boolean = 
 
   const title = img.title || defaultTitle;
   const mediaType = img.media_type === 'video' ? 1 : 0;
+  const description = img.description || null;
   
   if (includeAlbum) {
-    return [img.filename, title, album, mediaType];
+    return [img.filename, title, album, mediaType, description];
   }
-  return [img.filename, title, mediaType];
+  return [img.filename, title, mediaType, description];
 }
 
 /**
