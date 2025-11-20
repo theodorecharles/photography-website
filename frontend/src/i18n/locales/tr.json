@@ -87,6 +87,8 @@
     "exitFullscreen": "Tam ekrandan çık",
     "file": "Dosya",
     "titleLabel": "Başlık",
+    "descriptionLabel": "Açıklama  ",
+    "enterDescription": "Açıklama girin...",
     "albumLabel": "Albüm",
     "size": "Boyut",
     "loadingExif": "EXIF verileri yükleniyor...",

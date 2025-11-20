@@ -87,6 +87,8 @@
     "exitFullscreen": "Avslutt fullskjerm",
     "file": "Fil",
     "titleLabel": "Tittel",
+    "descriptionLabel": "Beskrivelse  ",
+    "enterDescription": "Skriv inn beskrivelse...",
     "albumLabel": "Album",
     "size": "Størrelse",
     "loadingExif": "Laster EXIF-data...",

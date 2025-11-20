@@ -87,6 +87,8 @@
     "exitFullscreen": "전체 화면 종료",
     "file": "파일",
     "titleLabel": "제목",
+    "descriptionLabel": "설명  ",
+    "enterDescription": "설명을 입력하세요...",
     "albumLabel": "앨범",
     "size": "크기",
     "loadingExif": "EXIF 데이터 로딩 중...",

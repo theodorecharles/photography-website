@@ -90,6 +90,8 @@
     "exitFullscreen": "Lumabas sa fullscreen",
     "file": "File",
     "titleLabel": "Pamagat",
+    "descriptionLabel": "Paglalarawan  ",
+    "enterDescription": "Ilagay ang paglalarawan...",
     "albumLabel": "Album",
     "size": "Sukat",
     "loadingExif": "Nagloload ng EXIF na data...",

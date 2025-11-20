@@ -90,6 +90,8 @@
     "exitFullscreen": "Keluar dari layar penuh",
     "file": "Berkas",
     "titleLabel": "Judul",
+    "descriptionLabel": "Deskripsi  ",
+    "enterDescription": "Masukkan deskripsi...",
     "albumLabel": "Album",
     "size": "Ukuran",
     "loadingExif": "Memuat data EXIF...",

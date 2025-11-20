@@ -87,6 +87,8 @@
     "exitFullscreen": "フルスクリーンを終了",
     "file": "ファイル",
     "titleLabel": "タイトル",
+    "descriptionLabel": "説明  ",
+    "enterDescription": "説明を入力してください...",
     "albumLabel": "アルバム",
     "size": "サイズ",
     "loadingExif": "EXIFデータを読み込み中...",

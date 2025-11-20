@@ -87,6 +87,8 @@
     "exitFullscreen": "Sair da tela cheia",
     "file": "Arquivo",
     "titleLabel": "Título",
+    "descriptionLabel": "Descrição  ",
+    "enterDescription": "Digite a descrição...",
     "albumLabel": "Álbum",
     "size": "Tamanho",
     "loadingExif": "Carregando dados EXIF...",

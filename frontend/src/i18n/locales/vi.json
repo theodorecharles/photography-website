@@ -90,6 +90,8 @@
     "exitFullscreen": "Thoát chế độ toàn màn hình",
     "file": "Tệp",
     "titleLabel": "Tiêu đề",
+    "descriptionLabel": "Mô tả  ",
+    "enterDescription": "Nhập mô tả...",
     "albumLabel": "Album",
     "size": "Kích thước",
     "loadingExif": "Đang tải dữ liệu EXIF...",

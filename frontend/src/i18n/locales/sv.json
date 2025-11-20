@@ -87,6 +87,8 @@
     "exitFullscreen": "Avsluta helskärm",
     "file": "Fil",
     "titleLabel": "Titel",
+    "descriptionLabel": "Beskrivning  ",
+    "enterDescription": "Ange beskrivning...",
     "albumLabel": "Album",
     "size": "Storlek",
     "loadingExif": "Laddar EXIF-data...",

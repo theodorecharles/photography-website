@@ -87,6 +87,8 @@
     "exitFullscreen": "Volledig scherm afsluiten",
     "file": "Bestand",
     "titleLabel": "Titel",
+    "descriptionLabel": "Beschrijving  ",
+    "enterDescription": "Voer beschrijving in...",
     "albumLabel": "Album",
     "size": "Grootte",
     "loadingExif": "EXIF-gegevens laden...",

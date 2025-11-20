@@ -90,6 +90,8 @@
     "exitFullscreen": "Ieși din modul pe întreaga ecran",
     "file": "Fișier",
     "titleLabel": "Titlu",
+    "descriptionLabel": "Descriere  ",
+    "enterDescription": "Introduceți descrierea...",
     "albumLabel": "Album",
     "size": "Dimensiune",
     "loadingExif": "Se încarcă datele EXIF...",

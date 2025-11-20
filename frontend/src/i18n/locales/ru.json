@@ -87,6 +87,8 @@
     "exitFullscreen": "Выйти из полноэкранного режима",
     "file": "Файл",
     "titleLabel": "Название",
+    "descriptionLabel": "Описание  ",
+    "enterDescription": "Введите описание...",
     "albumLabel": "Альбом",
     "size": "Размер",
     "loadingExif": "Загрузка данных EXIF...",

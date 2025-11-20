@@ -87,6 +87,8 @@
     "exitFullscreen": "Esci da schermo intero",
     "file": "File",
     "titleLabel": "Titolo",
+    "descriptionLabel": "Descrizione  ",
+    "enterDescription": "Inserisci la descrizione...",
     "albumLabel": "Album",
     "size": "Dimensione",
     "loadingExif": "Caricamento dati EXIF...",
