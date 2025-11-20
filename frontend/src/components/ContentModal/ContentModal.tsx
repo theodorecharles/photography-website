@@ -141,31 +141,44 @@ const ContentModal: React.FC<ContentModalProps> = ({
   }, [selectedPhoto.id, updateURLWithPhoto]);
 
 
-  // Calculate actual image bounds for aligning controls
+  // Calculate actual image/video bounds for aligning controls
   const updateImageBounds = useCallback(() => {
     if (!imageContainerRef.current) return;
-    
-    const img = imageContainerRef.current.querySelector('img');
-    if (!img || !img.complete || !img.naturalWidth) return;
     
     // Get the image container element
     const imageContainer = imageContainerRef.current.querySelector('.modal-image-container');
     if (!imageContainer) return;
     
-    // Get actual rendered dimensions of the image (accounting for objectFit: contain)
+    // Check for image or video element
+    const img = imageContainerRef.current.querySelector('img');
+    const video = imageContainerRef.current.querySelector('video');
+    
+    let mediaAspect: number;
+    
+    if (img && img.complete && img.naturalWidth) {
+      // Image element
+      mediaAspect = img.naturalWidth / img.naturalHeight;
+    } else if (video && video.videoWidth && video.videoHeight) {
+      // Video element
+      mediaAspect = video.videoWidth / video.videoHeight;
+    } else {
+      // Neither image nor video ready yet
+      return;
+    }
+    
+    // Get actual rendered dimensions of the media (accounting for objectFit: contain)
     const containerRect = imageContainer.getBoundingClientRect();
-    const imgAspect = img.naturalWidth / img.naturalHeight;
     const containerAspect = containerRect.width / containerRect.height;
     
     let renderedWidth, renderedLeft;
     
-    if (imgAspect > containerAspect) {
-      // Image is wider - constrained by width
+    if (mediaAspect > containerAspect) {
+      // Media is wider - constrained by width
       renderedWidth = containerRect.width;
       renderedLeft = 0;
     } else {
-      // Image is taller - constrained by height
-      renderedWidth = containerRect.height * imgAspect;
+      // Media is taller - constrained by height
+      renderedWidth = containerRect.height * mediaAspect;
       renderedLeft = (containerRect.width - renderedWidth) / 2;
     }
     
@@ -619,6 +632,8 @@ const ContentModal: React.FC<ContentModalProps> = ({
                   onLoaded={() => {
                     setThumbnailLoaded(true);
                     setModalImageLoaded(true);
+                    // Need slight delay for video dimensions to be available
+                    setTimeout(updateImageBounds, 100);
                   }}
                 />
               </div>
