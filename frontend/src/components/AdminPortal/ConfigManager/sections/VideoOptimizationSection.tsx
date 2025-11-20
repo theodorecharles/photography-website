@@ -214,6 +214,21 @@ const VideoOptimizationSection: React.FC<VideoOptimizationSectionProps> = ({
             </div>
           </div>
 
+          {/* Warning Note */}
+          <div className="openai-section">
+            <div style={{
+              padding: '1rem',
+              background: 'rgba(255, 193, 7, 0.1)',
+              border: '1px solid rgba(255, 193, 7, 0.3)',
+              borderRadius: '8px',
+              fontSize: '0.875rem',
+              color: 'rgba(255, 193, 7, 0.9)',
+              height: 'fit-content',
+            }}>
+              <strong>⚠️ {t('common.note')}:</strong> {t('videoOptimization.warningNote')} <strong>{t('videoOptimization.forceRegenerate')}</strong> {t('videoOptimization.warningNoteLocation')}
+            </div>
+          </div>
+
           {/* Video Resolutions */}
           <div className="openai-section" style={{ gridColumn: '1 / -1' }}>
             <div
@@ -348,9 +363,20 @@ const VideoOptimizationSection: React.FC<VideoOptimizationSectionProps> = ({
             )}
             </div>
 
-            {/* Save Button - Only show when there are changes */}
+            {/* Save and Cancel Buttons - Only show when there are changes */}
             {hasVideoChanges && (
-              <div style={{ display: 'flex', justifyContent: 'flex-end', paddingTop: '1rem', marginTop: '1rem', borderTop: '1px solid rgba(255, 255, 255, 0.1)' }}>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', paddingTop: '1rem', marginTop: '1rem', borderTop: '1px solid rgba(255, 255, 255, 0.1)' }}>
+                <button
+                  onClick={() => {
+                    if (originalConfig) {
+                      setConfig(structuredClone(originalConfig));
+                    }
+                  }}
+                  disabled={savingSection === 'Video Optimization'}
+                  className="btn-secondary"
+                >
+                  {t('common.cancel')}
+                </button>
                 <button
                   onClick={() => handleSaveSection('Video Optimization')}
                   disabled={savingSection === 'Video Optimization'}
@@ -360,19 +386,6 @@ const VideoOptimizationSection: React.FC<VideoOptimizationSectionProps> = ({
                 </button>
               </div>
             )}
-
-            {/* Warning Note */}
-            <div style={{
-              marginTop: '1rem',
-              padding: '1rem',
-              background: 'rgba(255, 193, 7, 0.1)',
-              border: '1px solid rgba(255, 193, 7, 0.3)',
-              borderRadius: '8px',
-              fontSize: '0.875rem',
-              color: 'rgba(255, 193, 7, 0.9)',
-            }}>
-              <strong>⚠️ {t('common.note')}:</strong> {t('videoOptimization.warningNote')} <strong>{t('videoOptimization.forceRegenerate')}</strong> {t('videoOptimization.warningNoteLocation')}
-            </div>
           </div>
         </div>
       </div>

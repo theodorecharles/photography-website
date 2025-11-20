@@ -142,6 +142,19 @@ const ImageOptimizationSection: React.FC<ImageOptimizationSectionProps> = ({
           maxHeight: showImageOptimization ? "10000px" : "0",
         }}
       >
+        {/* Warning Note */}
+        <div style={{
+          marginBottom: '1.5rem',
+          padding: '1rem',
+          background: 'rgba(255, 193, 7, 0.1)',
+          border: '1px solid rgba(255, 193, 7, 0.3)',
+          borderRadius: '8px',
+          fontSize: '0.875rem',
+          color: 'rgba(255, 193, 7, 0.9)',
+        }}>
+          <strong>⚠️ {t('common.note')}:</strong> {t('imageOptimization.warningNote')} <strong>{t('imageOptimization.forceRegenerate')}</strong> {t('imageOptimization.warningNoteLocation')}
+        </div>
+
         {/* Grid of optimization subsections */}
         <div className="config-grid-inner">
           {/* Thumbnail Settings */}
@@ -492,19 +505,6 @@ const ImageOptimizationSection: React.FC<ImageOptimizationSectionProps> = ({
                 max="256"
               />
             </div>
-          </div>
-
-          {/* Warning Note */}
-          <div style={{
-            marginTop: '1rem',
-            padding: '1rem',
-            background: 'rgba(255, 193, 7, 0.1)',
-            border: '1px solid rgba(255, 193, 7, 0.3)',
-            borderRadius: '8px',
-            fontSize: '0.875rem',
-            color: 'rgba(255, 193, 7, 0.9)',
-          }}>
-            <strong>⚠️ {t('common.note')}:</strong> {t('imageOptimization.warningNote')} <strong>{t('imageOptimization.forceRegenerate')}</strong> {t('imageOptimization.warningNoteLocation')}
           </div>
         </div>
       </div>
