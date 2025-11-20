@@ -207,14 +207,15 @@ const BrandingSection: React.FC<BrandingSectionProps> = ({
                     setMessage({ type: 'success', text: t(`branding.${sectionKey}`) });
         trackBrandingUpdate(fields.map(f => String(f)));
         
-        // Reload branding to get fresh data
-        await loadBranding();
+        // Update original branding to reflect the saved state
+        setOriginalBranding(updatedBranding);
         
-        // Update original branding to match the reloaded data (after loadBranding completes)
-        // Use a small delay to ensure parent state has updated
-        setTimeout(() => {
-          setOriginalBranding(branding);
-        }, 100);
+        // Clear pending avatar state
+        setPendingAvatarFile(null);
+        setAvatarPreviewUrl(null);
+        
+        // Reload branding to get fresh data from server
+        await loadBranding();
         
         // Notify main app to refresh branding (site name or avatar)
         if (fields.includes('siteName') || fields.includes('avatarPath')) {
@@ -349,7 +350,7 @@ const BrandingSection: React.FC<BrandingSectionProps> = ({
                 <button 
                   onClick={(e) => {
                     e.stopPropagation();
-                    saveBrandingSection('logo', ['avatarPath']);
+                    saveBrandingSection('Logo', ['avatarPath']);
                   }}
                   className="btn-primary btn-small"
                   disabled={savingBrandingSection === 'Logo'}
