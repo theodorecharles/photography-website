@@ -27,8 +27,9 @@
 }
 
 .video-player-wrapper {
-  width: 100%;
+  width: fit-content;
   max-width: 100%;
+  margin: 0 auto;
   border-radius: 4px;
   overflow: hidden;
   background: #000;

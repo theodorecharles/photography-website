@@ -673,6 +673,7 @@ const ContentModal: React.FC<ContentModalProps> = ({
                     <VideoPlayer
                       album={selectedPhoto.album}
                       filename={selectedPhoto.id.includes('/') ? selectedPhoto.id.split('/').pop() || selectedPhoto.id : selectedPhoto.id}
+                      videoTitle={selectedPhoto.title || selectedPhoto.id}
                       autoplay={shouldAutoplay}
                       onLoadStart={() => setThumbnailLoaded(false)}
                       onLoaded={() => {
