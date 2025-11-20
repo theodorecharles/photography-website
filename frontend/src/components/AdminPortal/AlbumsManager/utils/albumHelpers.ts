@@ -97,12 +97,23 @@ export const formatFileSize = (bytes: number): string => {
  * Validates if a file is an acceptable image type
  */
 export const isValidImageFile = (file: File): boolean => {
-  const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+  const validTypes = [
+    'image/jpeg', 
+    'image/jpg', 
+    'image/png', 
+    'image/gif', 
+    'image/webp',
+    'video/mp4',
+    'video/quicktime', // .mov files
+    'video/x-msvideo', // .avi files
+    'video/x-matroska', // .mkv files
+    'video/webm'
+  ];
   return validTypes.includes(file.type.toLowerCase());
 };
 
 /**
- * Validates multiple image files and returns validation result
+ * Validates multiple image/video files and returns validation result
  */
 export const validateImageFiles = (
   files: File[]

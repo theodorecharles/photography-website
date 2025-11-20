@@ -361,7 +361,7 @@
     "maxRetryAttemptsReached": "Đã đạt số lần thử tối đa ({{maxRetries}}) cho {{filename}}",
     "successfullyUploaded": "Tải lên {{filename}} thành công",
     "retryFailed": "Thử lại không thành công cho {{filename}}",
-    "noValidImageFiles": "Không tìm thấy tệp hình ảnh hợp lệ. Vui lòng chọn hình ảnh JPEG, PNG, GIF hoặc WebP.",
+    "noValidImageFiles": "Không tìm thấy tệp hợp lệ. Vui lòng chọn hình ảnh (JPEG, PNG, GIF, WebP) hoặc video (MP4, MOV, AVI, MKV, WebM).",
     "renameAlbumFailed": "Không thể đổi tên album  ",
     "invalidAlbumName": "Tên album không hợp lệ  ",
     "nameUnchanged": "Tên album không thay đổi  ",

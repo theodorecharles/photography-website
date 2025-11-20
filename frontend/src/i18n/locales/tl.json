@@ -361,7 +361,7 @@
     "maxRetryAttemptsReached": "Naabot na ang maximum na bilang ng mga pagsubok na muli ({{maxRetries}}) para sa {{filename}}  ",
     "successfullyUploaded": "Matagumpay na na-upload ang {{filename}}  ",
     "retryFailed": "Nabigong muling subukan para sa {{filename}}  ",
-    "noValidImageFiles": "Walang natagpuang wastong mga file ng imahe. Mangyaring pumili ng mga JPEG, PNG, GIF, o WebP na mga imahe.",
+    "noValidImageFiles": "Walang natagpuang wastong mga file. Mangyaring pumili ng mga imahe (JPEG, PNG, GIF, WebP) o mga video (MP4, MOV, AVI, MKV, WebM).",
     "renameAlbumFailed": "Nabigong palitan ang pangalan ng album  ",
     "invalidAlbumName": "Hindi wastong pangalan ng album  ",
     "nameUnchanged": "Walang pagbabago sa pangalan ng album  ",

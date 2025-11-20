@@ -293,7 +293,7 @@ export const createUploadHandlers = (props: UploadHandlersProps) => {
     const validation = validateImageFiles(files);
     
     if (validation.valid.length === 0) {
-      setMessage({ type: 'error', text: 'No valid image files found' });
+      setMessage({ type: 'error', text: t('albumsManager.noValidImageFiles') });
       return;
     }
     

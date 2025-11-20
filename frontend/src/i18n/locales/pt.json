@@ -361,7 +361,7 @@
     "maxRetryAttemptsReached": "Número máximo de tentativas de repetição ({{maxRetries}}) alcançado para {{filename}}",
     "successfullyUploaded": "{{filename}} enviado com sucesso",
     "retryFailed": "Falha na repetição para {{filename}}",
-    "noValidImageFiles": "Nenhum arquivo de imagem válido encontrado. Por favor, selecione imagens JPEG, PNG, GIF ou WebP.",
+    "noValidImageFiles": "Nenhum arquivo válido encontrado. Por favor, selecione imagens (JPEG, PNG, GIF, WebP) ou vídeos (MP4, MOV, AVI, MKV, WebM).",
     "renameAlbumFailed": "Falha ao renomear álbum  ",
     "invalidAlbumName": "Nome do álbum inválido  ",
     "nameUnchanged": "Nome do álbum não foi alterado  ",

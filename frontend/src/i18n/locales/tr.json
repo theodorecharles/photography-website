@@ -361,7 +361,7 @@
     "maxRetryAttemptsReached": "{{filename}} için maksimum tekrar deneme sayısına ({{maxRetries}}) ulaşıldı",
     "successfullyUploaded": "{{filename}} başarıyla yüklendi",
     "retryFailed": "{{filename}} için tekrar deneme başarısız oldu",
-    "noValidImageFiles": "Geçerli resim dosyası bulunamadı. Lütfen JPEG, PNG, GIF veya WebP resimlerini seçin.",
+    "noValidImageFiles": "Geçerli dosya bulunamadı. Lütfen resim (JPEG, PNG, GIF, WebP) veya video (MP4, MOV, AVI, MKV, WebM) dosyaları seçin.",
     "renameAlbumFailed": "Albüm adı değiştirilemedi  ",
     "invalidAlbumName": "Geçersiz albüm adı  ",
     "nameUnchanged": "Albüm adı değişmedi  ",

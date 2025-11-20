@@ -361,7 +361,7 @@
     "maxRetryAttemptsReached": "Maksimale antall forsøk ({{maxRetries}}) nådd for {{filename}}",
     "successfullyUploaded": "Lastet opp {{filename}} med suksess",
     "retryFailed": "Forsøk på nytt mislyktes for {{filename}}",
-    "noValidImageFiles": "Ingen gyldige bildefiler funnet. Vennligst velg JPEG, PNG, GIF eller WebP-bilder.",
+    "noValidImageFiles": "Ingen gyldige filer funnet. Vennligst velg bilder (JPEG, PNG, GIF, WebP) eller videoer (MP4, MOV, AVI, MKV, WebM).",
     "renameAlbumFailed": "Feil ved omdøping av album  ",
     "invalidAlbumName": "Ugyldig albumnavn  ",
     "nameUnchanged": "Albumnavnet er uendret  ",

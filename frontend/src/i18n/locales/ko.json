@@ -361,7 +361,7 @@
     "maxRetryAttemptsReached": "{{filename}}에 대한 최대 재시도 횟수 ({{maxRetries}})에 도달했습니다.",
     "successfullyUploaded": "{{filename}}가 성공적으로 업로드되었습니다.",
     "retryFailed": "{{filename}}에 대한 재시도가 실패했습니다.",
-    "noValidImageFiles": "유효한 이미지 파일을 찾을 수 없습니다. JPEG, PNG, GIF 또는 WebP 이미지를 선택해 주세요.",
+    "noValidImageFiles": "유효한 파일을 찾을 수 없습니다. 이미지(JPEG, PNG, GIF, WebP) 또는 비디오(MP4, MOV, AVI, MKV, WebM)를 선택해 주세요.",
     "renameAlbumFailed": "앨범 이름 변경 실패  ",
     "invalidAlbumName": "유효하지 않은 앨범 이름  ",
     "nameUnchanged": "앨범 이름이 변경되지 않았습니다  ",
