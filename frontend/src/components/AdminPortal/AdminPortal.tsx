@@ -92,7 +92,10 @@ export default function AdminPortal() {
     metaDescription: '',
     metaKeywords: '',
     faviconPath: '',
-    shuffleHomepage: true
+    shuffleHomepage: true,
+    photoLicense: 'cc-by',
+    language: 'en',
+    enableAnimatedBackground: true
   });
   const [albums, setAlbums] = useState<Album[]>([]);
   const [folders, setFolders] = useState<AlbumFolder[]>([]);
@@ -404,6 +407,7 @@ export default function AdminPortal() {
         faviconPath: data.faviconPath || '',
         shuffleHomepage: data.shuffleHomepage ?? true,
         photoLicense: data.photoLicense || 'cc-by',
+        language: data.language || 'en',
         enableAnimatedBackground: data.enableAnimatedBackground ?? true
       };
       info('[AdminPortal] Setting branding state to:', brandingData);

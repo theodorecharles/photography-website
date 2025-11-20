@@ -87,6 +87,7 @@ router.get("/", (req: Request, res: Response) => {
       shuffleHomepage: branding.shuffleHomepage ?? true,
       photoLicense: branding.photoLicense || "cc-by",
       language: branding.language || "en",
+      enableAnimatedBackground: branding.enableAnimatedBackground ?? true,
     };
 
     res.json(brandingConfig);
