@@ -47,9 +47,11 @@
 /* Properly sized media container - all controls position relative to this */
 .modal-media-container {
   position: relative;
-  max-width: 100%;
-  max-height: 100%;
-  display: inline-flex;
+  width: calc(100vw - 20px);
+  height: calc(100vh - 100px);
+  max-width: calc(100vw - 20px);
+  max-height: calc(100vh - 100px);
+  display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
@@ -58,8 +60,8 @@
 /* Photo container - holds ImageCanvas and its overlays */
 .modal-photo-container {
   position: relative;
-  max-width: calc(100vw - 20px);
-  max-height: calc(100vh - 100px);
+  width: 100%;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -68,8 +70,8 @@
 /* Video container - holds VideoPlayer */
 .modal-video-container {
   position: relative;
-  max-width: calc(100vw - 20px);
-  max-height: calc(100vh - 100px);
+  width: 100%;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;

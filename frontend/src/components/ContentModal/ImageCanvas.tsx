@@ -34,7 +34,7 @@ const ImageCanvas: React.FC<ImageCanvasProps> = ({
   }, [photo.id, onThumbnailLoad]);
 
   return (
-    <div className="modal-image-container">
+    <>
       {/* Thumbnail - shows first */}
       <img
         ref={thumbnailRef}
@@ -44,7 +44,9 @@ const ImageCanvas: React.FC<ImageCanvasProps> = ({
         title={photo.title}
         style={{
           width: '100%',
-          maxHeight: 'calc(100vh - 100px)',
+          height: '100%',
+          maxWidth: '100%',
+          maxHeight: '100%',
           objectFit: 'contain',
         }}
       />
@@ -61,7 +63,9 @@ const ImageCanvas: React.FC<ImageCanvasProps> = ({
             left: '50%',
             transform: 'translate(-50%, -50%)',
             width: '100%',
-            maxHeight: 'calc(100vh - 100px)',
+            height: '100%',
+            maxWidth: '100%',
+            maxHeight: '100%',
             objectFit: 'contain',
             opacity: modalImageLoaded ? 1 : 0,
             pointerEvents: modalImageLoaded ? 'auto' : 'none',
@@ -69,7 +73,7 @@ const ImageCanvas: React.FC<ImageCanvasProps> = ({
           }}
         />
       )}
-    </div>
+    </>
   );
 };
 
