@@ -182,7 +182,8 @@
     "primaryColorSaved": "Primärfarbe erfolgreich gespeichert!  ",
     "secondaryColorSaved": "Sekundärfarbe erfolgreich gespeichert!  ",
     "metaDescriptionSaved": "Meta-Beschreibung erfolgreich gespeichert!  ",
-    "metaKeywordsSaved": "Meta-Keywords erfolgreich gespeichert!"
+    "metaKeywordsSaved": "Meta-Keywords erfolgreich gespeichert!",
+    "LogoSaved": "Logo erfolgreich gespeichert!"
   },
   "license": {
     "title": "Foto-Lizenz",

@@ -187,7 +187,7 @@
     "language": "Language",
     "languageDescription": "Choose the default language for your site",
     "savedSuccessfully": "{{section}} saved successfully!",
-    "logoSaved": "Logo saved successfully!",
+    "LogoSaved": "Logo saved successfully!",
     "siteNameSaved": "Site Name saved successfully!",
     "primaryColorSaved": "Primary Color saved successfully!",
     "secondaryColorSaved": "Secondary Color saved successfully!",
