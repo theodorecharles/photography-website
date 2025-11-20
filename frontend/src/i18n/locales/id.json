@@ -63,7 +63,8 @@
   "footer": {
     "license": "Lisensi",
     "poweredBy": "Ditenagai oleh",
-    "galleria": "Galleria"
+    "galleria": "Galleria",
+    "signIn": "Masuk"
   },
   "album": {
     "title": "Album",

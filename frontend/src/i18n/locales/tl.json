@@ -63,7 +63,8 @@
   "footer": {
     "license": "Lisensya",
     "poweredBy": "Pinapagana ng",
-    "galleria": "Galleria"
+    "galleria": "Galleria",
+    "signIn": "Mag-sign In"
   },
   "album": {
     "title": "Album",

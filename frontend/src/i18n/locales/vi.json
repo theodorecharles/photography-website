@@ -63,7 +63,8 @@
   "footer": {
     "license": "Giấy phép",
     "poweredBy": "Được cung cấp bởi",
-    "galleria": "Galleria"
+    "galleria": "Galleria",
+    "signIn": "Đăng Nhập"
   },
   "album": {
     "title": "Album",

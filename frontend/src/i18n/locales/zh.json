@@ -63,7 +63,8 @@
   "footer": {
     "license": "许可证",
     "poweredBy": "技术支持",
-    "galleria": "画廊"
+    "galleria": "画廊",
+    "signIn": "登录"
   },
   "album": {
     "title": "相册",

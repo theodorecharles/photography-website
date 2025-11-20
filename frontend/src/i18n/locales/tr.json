@@ -63,7 +63,8 @@
   "footer": {
     "license": "Lisans",
     "poweredBy": "Tarafından desteklenmektedir",
-    "galleria": "Galeri"
+    "galleria": "Galeri",
+    "signIn": "Giriş Yap"
   },
   "album": {
     "title": "Albüm",

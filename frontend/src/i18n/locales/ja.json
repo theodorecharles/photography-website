@@ -63,7 +63,8 @@
   "footer": {
     "license": "ライセンス",
     "poweredBy": "提供",
-    "galleria": "Galleria"
+    "galleria": "Galleria",
+    "signIn": "サインイン"
   },
   "album": {
     "title": "アルバム",

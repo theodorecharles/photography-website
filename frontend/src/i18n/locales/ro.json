@@ -63,7 +63,8 @@
   "footer": {
     "license": "Licență",
     "poweredBy": "Împins de",
-    "galleria": "Galleria"
+    "galleria": "Galleria",
+    "signIn": "Conectare"
   },
   "album": {
     "title": "Album",

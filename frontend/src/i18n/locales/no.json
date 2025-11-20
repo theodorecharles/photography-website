@@ -63,7 +63,8 @@
   "footer": {
     "license": "Lisens",
     "poweredBy": "Drevet av",
-    "galleria": "Galleria"
+    "galleria": "Galleria",
+    "signIn": "Logg inn"
   },
   "album": {
     "title": "Album",

@@ -63,7 +63,8 @@
   "footer": {
     "license": "Lizenz",
     "poweredBy": "Betrieben von",
-    "galleria": "Galleria"
+    "galleria": "Galleria",
+    "signIn": "Anmelden"
   },
   "album": {
     "title": "Album",

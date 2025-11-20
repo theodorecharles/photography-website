@@ -63,7 +63,8 @@
   "footer": {
     "license": "Лицензия",
     "poweredBy": "Работает на",
-    "galleria": "Галерея"
+    "galleria": "Галерея",
+    "signIn": "Войти"
   },
   "album": {
     "title": "Альбом",

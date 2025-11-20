@@ -63,7 +63,8 @@
   "footer": {
     "license": "Licens",
     "poweredBy": "Drivs av",
-    "galleria": "Galleria"
+    "galleria": "Galleria",
+    "signIn": "Logga in"
   },
   "album": {
     "title": "Album",

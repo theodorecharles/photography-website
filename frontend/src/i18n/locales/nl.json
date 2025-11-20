@@ -63,7 +63,8 @@
   "footer": {
     "license": "Licentie",
     "poweredBy": "Aangedreven door",
-    "galleria": "Galleria"
+    "galleria": "Galleria",
+    "signIn": "Aanmelden"
   },
   "album": {
     "title": "Album",

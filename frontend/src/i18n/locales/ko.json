@@ -63,7 +63,8 @@
   "footer": {
     "license": "라이센스",
     "poweredBy": "제공",
-    "galleria": "갤러리아"
+    "galleria": "갤러리아",
+    "signIn": "로그인"
   },
   "album": {
     "title": "앨범",
