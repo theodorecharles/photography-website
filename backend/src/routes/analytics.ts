@@ -12,8 +12,12 @@ import { error, warn, info, debug, verbose } from '../utils/logger.js';
 
 const router = Router();
 
+// Explicit OPTIONS handler for CORS preflight
+router.options('/track', (req, res) => {
+  res.status(204).send();
+});
+
 // POST endpoint to receive analytics events from frontend
-// Note: OPTIONS preflight is handled by global CORS middleware in server.ts
 router.post('/track', async (req, res): Promise<void> => {
   try {
     // Get analytics configuration

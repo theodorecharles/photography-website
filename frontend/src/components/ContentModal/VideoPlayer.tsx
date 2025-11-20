@@ -142,6 +142,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
 
       hls.on(Hls.Events.MANIFEST_PARSED, () => {
         console.log('[VideoPlayer] Master playlist loaded, available qualities:', hls.levels.map(l => l.height + 'p'));
+        setError(null); // Clear loading status
         if (onLoaded) onLoaded();
         if (autoplay) {
           console.log('[VideoPlayer] Attempting autoplay');
@@ -188,6 +189,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
       
       video.addEventListener('loadedmetadata', () => {
         console.log('[VideoPlayer] Native HLS loaded');
+        setError(null); // Clear loading status
         if (onLoaded) onLoaded();
         if (autoplay) {
           console.log('[VideoPlayer] Attempting native autoplay');
