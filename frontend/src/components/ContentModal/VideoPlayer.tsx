@@ -27,11 +27,25 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    console.log('[VideoPlayer] Component mounted/updated:', { album, filename, autoplay });
+    const debugInfo = {
+      component: 'VideoPlayer',
+      album,
+      filename,
+      autoplay,
+      API_URL,
+      timestamp: new Date().toISOString()
+    };
+    console.log('[VideoPlayer] Component mounted/updated:', debugInfo);
+    
+    // Send debug to window object so it's visible in mobile debugging
+    if (typeof window !== 'undefined') {
+      (window as any).lastVideoDebug = debugInfo;
+    }
     
     const video = videoRef.current;
     if (!video) {
       console.warn('[VideoPlayer] Video ref not yet attached, waiting...');
+      setError('Waiting for video element...');
       // Don't error - React will attach the ref on next render
       return;
     }
@@ -43,32 +57,54 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
 
     // Load master playlist for adaptive streaming
     const masterPlaylistUrl = `${API_URL}/api/video/${encodeURIComponent(album)}/${encodeURIComponent(filename)}/master.m3u8`;
-    console.log('[VideoPlayer] Constructed URL:', { 
+    const urlDebug = { 
       album, 
       filename, 
       encodedAlbum: encodeURIComponent(album),
       encodedFilename: encodeURIComponent(filename),
       fullUrl: masterPlaylistUrl,
       API_URL
-    });
+    };
+    console.log('[VideoPlayer] Constructed URL:', urlDebug);
+    
+    // Store in window for mobile debugging
+    if (typeof window !== 'undefined') {
+      (window as any).lastVideoUrl = urlDebug;
+    }
     
     // Test URL accessibility
+    setError('Testing playlist URL...');
     fetch(masterPlaylistUrl, { credentials: 'include' })
       .then(res => {
         console.log('[VideoPlayer] Playlist fetch test:', res.status, res.statusText);
         if (!res.ok) {
           return res.text().then(text => {
             console.error('[VideoPlayer] Playlist not accessible:', text);
-            setError(`Playlist error: ${res.status} ${res.statusText}`);
+            const errorMsg = `Playlist error: ${res.status} ${res.statusText}`;
+            setError(errorMsg);
+            // Store error in window for debugging
+            if (typeof window !== 'undefined') {
+              (window as any).lastVideoError = { status: res.status, text };
+            }
           });
         }
         return res.text().then(text => {
           console.log('[VideoPlayer] Playlist content:', text.substring(0, 200));
+          setError('Playlist OK, loading video...');
+          // Store success in window
+          if (typeof window !== 'undefined') {
+            (window as any).lastVideoPlaylist = text.substring(0, 500);
+          }
         });
       })
       .catch(err => {
         console.error('[VideoPlayer] Playlist fetch failed:', err);
-        setError(`Network error: ${err.message}`);
+        const errorMsg = `Network error: ${err.message}`;
+        setError(errorMsg);
+        // Store error in window
+        if (typeof window !== 'undefined') {
+          (window as any).lastVideoError = { message: err.message, stack: err.stack };
+        }
       });
 
     if (Hls.isSupported()) {
