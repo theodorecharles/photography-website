@@ -5,7 +5,7 @@
 
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { SITE_URL } from '../config';
+import { SITE_URL, API_URL } from '../config';
 import { Photo } from '../types/photo';
 import VideoPlayer from './ContentModal/VideoPlayer';
 import { ShareIcon } from './icons';
@@ -51,6 +51,12 @@ const VideoListView: React.FC<VideoListViewProps> = ({ videos, album }) => {
         return (
           <div key={video.id} className="video-list-item">
             <div className="video-player-wrapper">
+              {/* Show thumbnail image as poster */}
+              <img 
+                src={`${API_URL}${video.thumbnail}`} 
+                alt={video.title}
+                className="video-thumbnail-poster"
+              />
               <VideoPlayer
                 album={video.album}
                 filename={filename}

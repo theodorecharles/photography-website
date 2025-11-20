@@ -76,7 +76,12 @@ export const AlbumListItem: React.FC<AlbumListItemProps> = ({
       case 'optimizing':
         // Show video stage if available
         if (uploadingImage.videoStage) {
-          return `${uploadingImage.videoStage} (${uploadingImage.optimizeProgress}%)`;
+          // For resolutions (240p, 720p, etc), show resolution + percentage
+          // For other stages (rotation, thumbnail), just show percentage
+          if (uploadingImage.videoStage.match(/^\d+p$/)) {
+            return `${uploadingImage.videoStage} (${uploadingImage.optimizeProgress}%)`;
+          }
+          return `${uploadingImage.optimizeProgress}%`;
         }
         return t('sse.optimizingWithProgress', { progress: uploadingImage.optimizeProgress });
       case 'generating-title':
