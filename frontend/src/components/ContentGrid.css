@@ -124,13 +124,20 @@
   justify-content: center;
   color: white;
   opacity: 0;
-  transition: opacity 0.2s ease;
+  transition: all 0.2s ease;
   z-index: 2;
   pointer-events: none;
+  cursor: pointer;
 }
 
 .photo-item.video-item:hover .video-play-overlay {
   opacity: 1;
+  pointer-events: auto;
+}
+
+.video-play-overlay:hover {
+  background: rgba(0, 0, 0, 0.8);
+  transform: translate(-50%, -50%) scale(1.1);
 }
 
 @media (max-width: 511px) {
