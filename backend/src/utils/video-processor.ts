@@ -199,7 +199,7 @@ export async function generateHLS(
       '-b:a', resolution.audioBitrate,
       '-ac', '2',
       '-f', 'hls',
-      '-hls_time', '1',
+      '-hls_time', '4',  // 4-second segments (better for streaming performance)
       '-hls_list_size', '0',
       '-hls_segment_filename', segmentPattern,
       '-y',

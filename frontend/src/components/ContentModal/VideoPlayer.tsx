@@ -107,6 +107,16 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
 
       hls.on(Hls.Events.MANIFEST_PARSED, () => {
         console.log('[VideoPlayer] Master playlist loaded, available qualities:', hls.levels.map(l => l.height + 'p'));
+        
+        // Start at highest quality (720p or 1080p), then let ABR adapt if needed
+        // Find the highest quality level by bitrate
+        const highestQualityLevel = hls.levels.reduce((highest, level, index) => {
+          return level.bitrate > hls.levels[highest].bitrate ? index : highest;
+        }, 0);
+        
+        console.log(`[VideoPlayer] Starting at highest quality: ${hls.levels[highestQualityLevel].height}p`);
+        hls.startLevel = highestQualityLevel;
+        
         setError(null); // Clear loading status
         if (onLoaded) onLoaded();
         if (autoplay) {
