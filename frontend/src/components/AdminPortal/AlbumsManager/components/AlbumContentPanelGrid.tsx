@@ -216,7 +216,7 @@ const AlbumContentPanelGrid: React.FC<AlbumContentPanelGridProps> = ({
   // Combine item IDs for sortable context
   const allItemIds = [
     ...uploadingImages.map((img) => img.photo?.id || `uploading-${uploadingImages.indexOf(img)}`),
-    ...albumPhotos.filter(p => p && p.id).map(p => p.id)
+    ...(Array.isArray(albumPhotos) ? albumPhotos.filter(p => p && p.id).map(p => p.id) : [])
   ];
 
   return (
@@ -261,7 +261,7 @@ const AlbumContentPanelGrid: React.FC<AlbumContentPanelGridProps> = ({
               ))}
               
               {/* Existing album photos (already in album before upload) */}
-              {albumPhotos.filter(photo => photo && photo.id).map((photo) => (
+              {Array.isArray(albumPhotos) && albumPhotos.filter(photo => photo && photo.id).map((photo) => (
                 <AlbumGridItem
                   key={photo.id}
                   photo={photo}
@@ -294,7 +294,7 @@ const AlbumContentPanelGrid: React.FC<AlbumContentPanelGridProps> = ({
               ))}
               
               {/* Existing album photos (already in album before upload) */}
-              {albumPhotos.filter(photo => photo && photo.id).map((photo) => (
+              {Array.isArray(albumPhotos) && albumPhotos.filter(photo => photo && photo.id).map((photo) => (
                 <AlbumListItem
                   key={photo.id}
                   photo={photo}
