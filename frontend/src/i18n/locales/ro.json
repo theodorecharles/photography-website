@@ -1081,5 +1081,25 @@
     "successMessage": "Emailul de test a fost trimis cu succes! Verificați-vă inboxul.  ",
     "errorMessage": "A eșuat trimiterea emailului de test",
     "errorMessageDetail": "Trimiterea emailului de test a eșuat. Vă rugăm să verificați configurația dvs."
+  },
+  "videoOptimization": {
+    "title": "[EN] Video Optimization",
+    "description": "[EN] Configure video quality, streaming, and HLS settings",
+    "hlsStreaming": "[EN] HLS STREAMING",
+    "hlsStreamingSection": "[EN] HLS Settings",
+    "hlsDescription": "[EN] Configure HTTP Live Streaming (HLS) settings for adaptive video delivery",
+    "segmentDuration": "[EN] Segment Duration (seconds)",
+    "segmentDurationHelp": "[EN] Length of each video segment. Longer segments (4-6s) reduce server requests.",
+    "videoResolutions": "[EN] VIDEO RESOLUTIONS",
+    "videoResolutionsSection": "[EN] Video Resolutions",
+    "resolutionsDescription": "[EN] Enable resolutions and configure their quality settings. Higher bitrates improve quality but increase file size.",
+    "videoBitrate": "[EN] Video Bitrate",
+    "audioBitrate": "[EN] Audio Bitrate",
+    "videoBitrateExample": "[EN] e.g., 400k, 2500k, 5000k",
+    "audioBitrateExample": "[EN] e.g., 64k, 96k, 128k, 192k",
+    "on": "[EN] On",
+    "off": "[EN] Off",
+    "warningNote": "[EN] Changes to video settings only apply to newly uploaded videos. Existing videos will keep their current quality settings unless you use",
+    "forceRegenerate": "[EN] Force Regenerate All"
   }
 }
