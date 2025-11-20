@@ -948,10 +948,10 @@ router.post('/passkey/register-verify', requireAuth, async (req: Request, res: R
 
     // Save passkey
     // Convert Uint8Array to base64url (URL-safe base64 without padding)
-    const credentialIDBase64 = Buffer.from(verification.registrationInfo.credentialID)
+    const credentialIDBase64 = Buffer.from(verification.registrationInfo.credential.id)
       .toString('base64url');
     
-    const credentialPublicKeyBase64 = Buffer.from(verification.registrationInfo.credentialPublicKey)
+    const credentialPublicKeyBase64 = Buffer.from(verification.registrationInfo.credential.publicKey)
       .toString('base64url');
     
     const passkey = {
@@ -959,7 +959,7 @@ router.post('/passkey/register-verify', requireAuth, async (req: Request, res: R
       name: name || `Passkey ${Date.now()}`,
       credentialID: credentialIDBase64,
       credentialPublicKey: credentialPublicKeyBase64,
-      counter: verification.registrationInfo.counter,
+      counter: verification.registrationInfo.credential.counter,
       transports: credential.response.transports,
     };
 
