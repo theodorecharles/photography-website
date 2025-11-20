@@ -24,7 +24,57 @@ const sanitizePath = (name: string): string | null => {
 };
 
 /**
- * Serve HLS playlist for a video
+ * Serve master HLS playlist for a video (adaptive streaming)
+ * GET /api/video/:album/:filename/master.m3u8
+ */
+router.get("/:album/:filename/master.m3u8", async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { album, filename } = req.params;
+
+    // Sanitize inputs
+    const sanitizedAlbum = sanitizePath(album);
+    const sanitizedFilename = sanitizePath(filename);
+
+    if (!sanitizedAlbum || !sanitizedFilename) {
+      res.status(400).json({ error: 'Invalid path parameters' });
+      return;
+    }
+
+    const videoDir = req.app.get("videoDir");
+    if (!videoDir) {
+      error('[Video] videoDir not configured');
+      res.status(500).json({ error: 'Video directory not configured' });
+      return;
+    }
+
+    const masterPlaylistPath = path.join(
+      videoDir,
+      sanitizedAlbum,
+      sanitizedFilename,
+      'master.m3u8'
+    );
+
+    // Check if master playlist exists
+    if (!fs.existsSync(masterPlaylistPath)) {
+      res.status(404).json({ error: 'Master playlist not found' });
+      return;
+    }
+
+    // Set appropriate headers for HLS
+    res.setHeader('Content-Type', 'application/vnd.apple.mpegurl');
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+
+    // Send the master playlist file
+    res.sendFile(masterPlaylistPath);
+  } catch (err) {
+    error('[Video] Failed to serve master playlist:', err);
+    res.status(500).json({ error: 'Failed to serve master playlist' });
+  }
+});
+
+/**
+ * Serve HLS playlist for a video (individual resolution)
  * GET /api/video/:album/:filename/:resolution/playlist.m3u8
  */
 router.get("/:album/:filename/:resolution/playlist.m3u8", async (req: Request, res: Response): Promise<void> => {
@@ -71,6 +121,7 @@ router.get("/:album/:filename/:resolution/playlist.m3u8", async (req: Request, r
     // Set appropriate headers for HLS
     res.setHeader('Content-Type', 'application/vnd.apple.mpegurl');
     res.setHeader('Cache-Control', 'public, max-age=3600');
+    res.setHeader('Access-Control-Allow-Origin', '*');
 
     // Send the playlist file
     res.sendFile(playlistPath);
@@ -135,6 +186,7 @@ router.get("/:album/:filename/:resolution/:segment", async (req: Request, res: R
     // Set appropriate headers for MPEG-TS segments
     res.setHeader('Content-Type', 'video/mp2t');
     res.setHeader('Cache-Control', 'public, max-age=31536000'); // Cache segments for 1 year
+    res.setHeader('Access-Control-Allow-Origin', '*');
 
     // Send the segment file
     res.sendFile(segmentPath);

@@ -15,6 +15,7 @@ import InfoPanel from './InfoPanel';
 import ImageCanvas from './ImageCanvas';
 import VideoPlayer from './VideoPlayer';
 import ModalNavigation from './ModalNavigation';
+import { PlayIcon } from '../icons';
 import './PhotoModal.css';
 import { error as logError } from '../../utils/logger';
 
@@ -54,16 +55,27 @@ const ContentModal: React.FC<ContentModalProps> = ({
   );
   const [siteName, setSiteName] = useState<string>('Galleria');
   const [shouldAutoplay, setShouldAutoplay] = useState(clickedVideo);
+  const [showVideoPlayer, setShowVideoPlayer] = useState(clickedVideo);
   const previousPhotoRef = useRef<string | null>(null);
 
   // Track photo changes to determine if user navigated
   useEffect(() => {
     if (previousPhotoRef.current && previousPhotoRef.current !== selectedPhoto.id) {
-      // User navigated to a different photo/video, don't autoplay
+      // User navigated to a different photo/video, don't autoplay and show preview
       setShouldAutoplay(false);
+      setShowVideoPlayer(false);
+    } else if (clickedVideo) {
+      // User directly clicked a video
+      setShowVideoPlayer(true);
     }
     previousPhotoRef.current = selectedPhoto.id;
-  }, [selectedPhoto.id]);
+  }, [selectedPhoto.id, clickedVideo]);
+
+  // Handle play button click on video preview
+  const handlePlayClick = useCallback(() => {
+    setShowVideoPlayer(true);
+    setShouldAutoplay(true);
+  }, []);
   
   const touchStartX = useRef<number | null>(null);
   const touchStartY = useRef<number | null>(null);
@@ -580,11 +592,11 @@ const ContentModal: React.FC<ContentModalProps> = ({
           />
 
           {selectedPhoto.media_type === 'video' ? (
-            shouldAutoplay ? (
+            showVideoPlayer ? (
               <VideoPlayer
                 album={selectedPhoto.album}
                 filename={selectedPhoto.id.split('/')[1]}
-                autoplay={true}
+                autoplay={shouldAutoplay}
                 onLoadStart={() => setThumbnailLoaded(false)}
                 onLoaded={() => {
                   setThumbnailLoaded(true);
@@ -592,14 +604,25 @@ const ContentModal: React.FC<ContentModalProps> = ({
                 }}
               />
             ) : (
-              <ImageCanvas
-                photo={selectedPhoto}
-                apiUrl={API_URL}
-                imageQueryString={imageQueryString}
-                modalImageLoaded={modalImageLoaded}
-                showModalImage={showModalImage}
-                onThumbnailLoad={handleThumbnailLoad}
-              />
+              <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+                <ImageCanvas
+                  photo={selectedPhoto}
+                  apiUrl={API_URL}
+                  imageQueryString={imageQueryString}
+                  modalImageLoaded={modalImageLoaded}
+                  showModalImage={showModalImage}
+                  onThumbnailLoad={handleThumbnailLoad}
+                />
+                {thumbnailLoaded && (
+                  <button
+                    onClick={handlePlayClick}
+                    className="video-play-button-overlay"
+                    aria-label="Play video"
+                  >
+                    <PlayIcon width={80} height={80} />
+                  </button>
+                )}
+              </div>
             )
           ) : (
             <ImageCanvas

@@ -1,6 +1,6 @@
 /**
  * Video Player Component
- * HLS video player with adaptive streaming support
+ * HLS video player with adaptive streaming (automatic quality selection)
  */
 
 import React, { useEffect, useRef, useState } from 'react';
@@ -25,71 +25,36 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   const videoRef = useRef<HTMLVideoElement>(null);
   const hlsRef = useRef<Hls | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [availableQualities, setAvailableQualities] = useState<string[]>([]);
-  const [currentQuality, setCurrentQuality] = useState<string>('auto');
 
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
 
-    // Fetch available resolutions
-    const fetchResolutions = async () => {
-      try {
-        const res = await fetch(
-          `${API_URL}/api/video/${encodeURIComponent(album)}/${encodeURIComponent(filename)}/resolutions`,
-          { credentials: 'include' }
-        );
-        const data = await res.json();
-        
-        if (data.resolutions && data.resolutions.length > 0) {
-          setAvailableQualities(data.resolutions);
-          
-          // Default to highest available quality
-          const defaultQuality = data.resolutions[data.resolutions.length - 1];
-          loadVideo(defaultQuality);
-        } else {
-          setError('No video resolutions available');
-        }
-      } catch (err) {
-        console.error('Failed to fetch video resolutions:', err);
-        setError('Failed to load video');
-      }
-    };
-
-    fetchResolutions();
-
-    return () => {
-      if (hlsRef.current) {
-        hlsRef.current.destroy();
-      }
-    };
-  }, [album, filename]);
-
-  const loadVideo = (quality: string) => {
-    const video = videoRef.current;
-    if (!video) return;
-
     if (onLoadStart) onLoadStart();
 
-    const playlistUrl = `${API_URL}/api/video/${encodeURIComponent(album)}/${encodeURIComponent(filename)}/${quality}/playlist.m3u8`;
+    // Load master playlist for adaptive streaming
+    const masterPlaylistUrl = `${API_URL}/api/video/${encodeURIComponent(album)}/${encodeURIComponent(filename)}/master.m3u8`;
 
     if (Hls.isSupported()) {
-      if (hlsRef.current) {
-        hlsRef.current.destroy();
-      }
-
+      // Use HLS.js for adaptive streaming
       const hls = new Hls({
         enableWorker: true,
         lowLatencyMode: false,
         backBufferLength: 90,
+        // Enable automatic quality switching based on bandwidth
+        abrEwmaDefaultEstimate: 500000, // Start with conservative estimate (500 Kbps)
+        abrEwmaSlowVoD: 3, // Weight for slow EMA (VOD)
+        abrEwmaFastVoD: 3, // Weight for fast EMA (VOD)
+        abrMaxWithRealBitrate: false, // Use bandwidth estimate, not max bitrate
       });
 
       hlsRef.current = hls;
 
-      hls.loadSource(playlistUrl);
+      hls.loadSource(masterPlaylistUrl);
       hls.attachMedia(video);
 
       hls.on(Hls.Events.MANIFEST_PARSED, () => {
+        console.log('[VideoPlayer] Master playlist loaded, available qualities:', hls.levels.map(l => l.height + 'p'));
         if (onLoaded) onLoaded();
         if (autoplay) {
           video.play().catch(err => {
@@ -98,19 +63,26 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         }
       });
 
+      // Log quality level changes for debugging
+      hls.on(Hls.Events.LEVEL_SWITCHED, (_event, data) => {
+        const level = hls.levels[data.level];
+        console.log(`[VideoPlayer] Quality switched to: ${level.height}p (${Math.round(level.bitrate / 1000)} Kbps)`);
+      });
+
       hls.on(Hls.Events.ERROR, (_event, data) => {
         if (data.fatal) {
           switch (data.type) {
             case Hls.ErrorTypes.NETWORK_ERROR:
-              console.error('Network error');
+              console.error('[VideoPlayer] Network error, attempting recovery');
               hls.startLoad();
               break;
             case Hls.ErrorTypes.MEDIA_ERROR:
-              console.error('Media error');
+              console.error('[VideoPlayer] Media error, attempting recovery');
               hls.recoverMediaError();
               break;
             default:
-              setError('Fatal error loading video');
+              console.error('[VideoPlayer] Fatal error:', data);
+              setError('Failed to load video');
               hls.destroy();
               break;
           }
@@ -118,7 +90,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
       });
     } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
       // Native HLS support (Safari)
-      video.src = playlistUrl;
+      video.src = masterPlaylistUrl;
       video.addEventListener('loadedmetadata', () => {
         if (onLoaded) onLoaded();
         if (autoplay) {
@@ -131,28 +103,12 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
       setError('HLS not supported in this browser');
     }
 
-    setCurrentQuality(quality);
-  };
-
-  const handleQualityChange = (quality: string) => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    const currentTime = video.currentTime;
-    const wasPlaying = !video.paused;
-
-    loadVideo(quality);
-
-    // Restore playback position
-    video.addEventListener('loadedmetadata', () => {
-      video.currentTime = currentTime;
-      if (wasPlaying) {
-        video.play().catch(err => {
-          console.error('Failed to resume playback:', err);
-        });
+    return () => {
+      if (hlsRef.current) {
+        hlsRef.current.destroy();
       }
-    }, { once: true });
-  };
+    };
+  }, [album, filename, autoplay, onLoadStart, onLoaded]);
 
   if (error) {
     return (
@@ -174,7 +130,15 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   }
 
   return (
-    <div style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    <div style={{ 
+      position: 'relative', 
+      width: '100%', 
+      height: '100%', 
+      display: 'flex', 
+      alignItems: 'center', 
+      justifyContent: 'center',
+      backgroundColor: '#000'
+    }}>
       <video
         ref={videoRef}
         controls
@@ -185,38 +149,6 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
           height: 'auto'
         }}
       />
-      
-      {availableQualities.length > 1 && (
-        <div style={{
-          position: 'absolute',
-          bottom: '60px',
-          right: '20px',
-          background: 'rgba(0,0,0,0.8)',
-          borderRadius: '4px',
-          padding: '8px',
-          display: 'flex',
-          gap: '8px',
-          zIndex: 10
-        }}>
-          {availableQualities.map(quality => (
-            <button
-              key={quality}
-              onClick={() => handleQualityChange(quality)}
-              style={{
-                background: currentQuality === quality ? 'var(--primary-color)' : 'rgba(255,255,255,0.2)',
-                border: 'none',
-                borderRadius: '4px',
-                padding: '4px 8px',
-                color: 'white',
-                cursor: 'pointer',
-                fontSize: '0.85rem'
-              }}
-            >
-              {quality}
-            </button>
-          ))}
-        </div>
-      )}
     </div>
   );
 };

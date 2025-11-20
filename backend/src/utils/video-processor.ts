@@ -12,6 +12,7 @@ import { info, error, warn } from './logger.js';
 const mkdir = promisify(fs.mkdir);
 const unlink = promisify(fs.unlink);
 const access = promisify(fs.access);
+const writeFile = promisify(fs.writeFile);
 
 export interface VideoResolution {
   name: string;
@@ -374,6 +375,27 @@ export async function processVideo(
         }
       });
     }
+
+    // Step 3.5: Generate master playlist for adaptive streaming
+    info('[VideoProcessor] Generating master HLS playlist');
+    const masterPlaylistPath = path.join(videoDir, 'master.m3u8');
+    let masterContent = '#EXTM3U\n#EXT-X-VERSION:3\n\n';
+    
+    for (const resolution of resolutions) {
+      // Calculate total bandwidth (video + audio bitrate in bps)
+      const videoBitrateKbps = parseInt(resolution.videoBitrate);
+      const audioBitrateKbps = parseInt(resolution.audioBitrate);
+      const totalBandwidth = (videoBitrateKbps + audioBitrateKbps) * 1000;
+      
+      // Calculate width based on 16:9 aspect ratio
+      const width = Math.round(resolution.height * (16 / 9));
+      
+      masterContent += `#EXT-X-STREAM-INF:BANDWIDTH=${totalBandwidth},RESOLUTION=${width}x${resolution.height}\n`;
+      masterContent += `${resolution.name}/playlist.m3u8\n\n`;
+    }
+    
+    await writeFile(masterPlaylistPath, masterContent, 'utf-8');
+    info(`[VideoProcessor] Master playlist created with ${resolutions.length} quality levels`);
 
     // Step 4: Extract thumbnails
     if (onProgress) {

@@ -42,6 +42,35 @@
   /* Removed pointer-events: auto - let clicks bubble naturally */
 }
 
+/* Video play button overlay for navigated videos */
+.video-play-button-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.7);
+  border: none;
+  border-radius: 50%;
+  width: 100px;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 10;
+  color: white;
+}
+
+.video-play-button-overlay:hover {
+  background: rgba(0, 0, 0, 0.85);
+  transform: translate(-50%, -50%) scale(1.1);
+}
+
+.video-play-button-overlay:active {
+  transform: translate(-50%, -50%) scale(0.95);
+}
+
 /* Image container - nearly full screen with gaps for controls */
 .modal-image-container {
   position: relative;
