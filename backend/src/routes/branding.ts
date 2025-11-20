@@ -119,6 +119,7 @@ router.put("/", requireManager, (req: Request, res: Response) => {
       "shuffleHomepage",
       "photoLicense",
       "language",
+      "enableAnimatedBackground",
     ];
     for (const [key, value] of Object.entries(updates)) {
       if (!validFields.includes(key)) {
@@ -126,8 +127,8 @@ router.put("/", requireManager, (req: Request, res: Response) => {
         return;
       }
 
-      // shuffleHomepage is a boolean, all others are strings
-      if (key === "shuffleHomepage") {
+      // shuffleHomepage and enableAnimatedBackground are booleans, all others are strings
+      if (key === "shuffleHomepage" || key === "enableAnimatedBackground") {
         if (typeof value !== "boolean") {
           res.status(400).json({ error: `Field ${key} must be a boolean` });
           return;
