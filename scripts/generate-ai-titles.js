@@ -274,6 +274,16 @@ async function scanAndGenerateTitles() {
   // First pass: identify all images that need titles
   const imagesToProcess = [];
 
+  // Get all videos from database to check if a JPG is a video thumbnail
+  const videoFiles = new Set();
+  const videoRows = db.prepare("SELECT album, filename FROM image_metadata WHERE media_type = 'video'").all();
+  for (const row of videoRows) {
+    // Video thumbnail has same name but with .jpg extension
+    const thumbnailName = row.filename.replace(/\.[^.]+$/, '.jpg');
+    videoFiles.add(`${row.album}:${thumbnailName}`);
+  }
+  console.log(`✓ Found ${videoFiles.size} video thumbnails to skip`);
+
   for (const album of albums) {
     const albumPath = path.join(thumbnailDir, album);
     const images = fs
@@ -282,6 +292,13 @@ async function scanAndGenerateTitles() {
 
     for (const filename of images) {
       const key = `${album}:${filename}`;
+      
+      // Skip if this is a video thumbnail (not a standalone photo)
+      if (videoFiles.has(key)) {
+        skippedCount++;
+        continue;
+      }
+      
       if (existingTitles.has(key)) {
         skippedCount++;
       } else {
