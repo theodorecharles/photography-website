@@ -80,41 +80,6 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     if (typeof window !== 'undefined') {
       (window as any).lastVideoUrl = urlDebug;
     }
-    
-    // Test URL accessibility
-    setError('Testing playlist URL...');
-    fetch(masterPlaylistUrl)
-      .then(res => {
-        console.log('[VideoPlayer] Playlist fetch test:', res.status, res.statusText);
-        if (!res.ok) {
-          return res.text().then(text => {
-            console.error('[VideoPlayer] Playlist not accessible:', text);
-            const errorMsg = `Playlist error: ${res.status} ${res.statusText}`;
-            setError(errorMsg);
-            // Store error in window for debugging
-            if (typeof window !== 'undefined') {
-              (window as any).lastVideoError = { status: res.status, text };
-            }
-          });
-        }
-        return res.text().then(text => {
-          console.log('[VideoPlayer] Playlist content:', text.substring(0, 200));
-          setError('Playlist OK, loading video...');
-          // Store success in window
-          if (typeof window !== 'undefined') {
-            (window as any).lastVideoPlaylist = text.substring(0, 500);
-          }
-        });
-      })
-      .catch(err => {
-        console.error('[VideoPlayer] Playlist fetch failed:', err);
-        const errorMsg = `Network error: ${err.message}`;
-        setError(errorMsg);
-        // Store error in window
-        if (typeof window !== 'undefined') {
-          (window as any).lastVideoError = { message: err.message, stack: err.stack };
-        }
-      });
 
     if (Hls.isSupported()) {
       console.log('[VideoPlayer] Using HLS.js for playback');
