@@ -136,6 +136,7 @@
 
   .footer-right {
     position: static;
+    padding-right: 0;
   }
 
   .footer-links {
