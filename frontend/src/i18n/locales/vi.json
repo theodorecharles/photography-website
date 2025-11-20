@@ -39,6 +39,7 @@
   },
   "app": {
     "loadingAlbums": "Đang tải các album...",
+    "loadingAlbum": "Đang tải album...",
     "loadingSetup": "Đang tải thiết lập...",
     "backendError": "Lỗi phía máy chủ",
     "unableToConnect": "Không thể kết nối với máy chủ",
@@ -47,6 +48,9 @@
     "rateLimitMessage": "Chậm lại nào, bạn ơi. Bạn đang nhấp nhanh hơn cả một bụi cỏ trong cơn lốc!",
     "rateLimitAction": "Hãy chờ một chút và thử lại.",
     "headBackHome": "Quay về Trang Chủ"
+  },
+  "photoModal": {
+    "navigationHint": "← nhấn phím mũi tên để điều hướng →"
   },
   "header": {
     "albums": "Album",
@@ -59,7 +63,8 @@
   "footer": {
     "license": "Giấy phép",
     "poweredBy": "Được cung cấp bởi",
-    "galleria": "Galleria"
+    "galleria": "Galleria",
+    "signIn": "Đăng Nhập"
   },
   "album": {
     "title": "Album",
@@ -355,7 +360,12 @@
     "maxRetryAttemptsReached": "Đã đạt số lần thử tối đa ({{maxRetries}}) cho {{filename}}",
     "successfullyUploaded": "Tải lên {{filename}} thành công",
     "retryFailed": "Thử lại không thành công cho {{filename}}",
-    "noValidImageFiles": "Không tìm thấy tệp hình ảnh hợp lệ. Vui lòng chọn hình ảnh JPEG, PNG, GIF hoặc WebP."
+    "noValidImageFiles": "Không tìm thấy tệp hình ảnh hợp lệ. Vui lòng chọn hình ảnh JPEG, PNG, GIF hoặc WebP.",
+    "renameAlbumFailed": "Không thể đổi tên album  ",
+    "invalidAlbumName": "Tên album không hợp lệ  ",
+    "nameUnchanged": "Tên album không thay đổi  ",
+    "albumNotFound": "Không tìm thấy album  ",
+    "databaseUpdateFailed": "Không thể cập nhật cơ sở dữ liệu"
   },
   "settings": {
     "saved": "Cài đặt {{section}} đã được lưu!",

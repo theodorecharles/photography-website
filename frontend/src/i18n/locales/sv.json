@@ -39,6 +39,7 @@
   },
   "app": {
     "loadingAlbums": "Laddar album...",
+    "loadingAlbum": "Laddar album...",
     "loadingSetup": "Laddar inställningar...",
     "backendError": "Backend-fel",
     "unableToConnect": "Kan inte ansluta till servern",
@@ -47,6 +48,9 @@
     "rateLimitMessage": "Ta det lugnt, kompis. Du klickar snabbare än ett dammkorn i en tornado!",
     "rateLimitAction": "Vänta en stund och försök igen.",
     "headBackHome": "Gå tillbaka hem"
+  },
+  "photoModal": {
+    "navigationHint": "← tryck på piltangenterna för att navigera →"
   },
   "header": {
     "albums": "Album",
@@ -59,7 +63,8 @@
   "footer": {
     "license": "Licens",
     "poweredBy": "Drivs av",
-    "galleria": "Galleria"
+    "galleria": "Galleria",
+    "signIn": "Logga in"
   },
   "album": {
     "title": "Album",
@@ -355,7 +360,12 @@
     "maxRetryAttemptsReached": "Maximala försök ({{maxRetries}}) nådda för {{filename}}",
     "successfullyUploaded": "Uppladdning av {{filename}} lyckades",
     "retryFailed": "Försök misslyckades för {{filename}}",
-    "noValidImageFiles": "Inga giltiga bildfiler hittades. Vänligen välj JPEG, PNG, GIF eller WebP-bilder."
+    "noValidImageFiles": "Inga giltiga bildfiler hittades. Vänligen välj JPEG, PNG, GIF eller WebP-bilder.",
+    "renameAlbumFailed": "Misslyckades med att byta namn på albumet  ",
+    "invalidAlbumName": "Ogiltigt albumnamn  ",
+    "nameUnchanged": "Albumnamnet har inte ändrats  ",
+    "albumNotFound": "Albumet hittades inte  ",
+    "databaseUpdateFailed": "Misslyckades med att uppdatera databasen"
   },
   "settings": {
     "saved": "{{section}} inställningar sparade!",

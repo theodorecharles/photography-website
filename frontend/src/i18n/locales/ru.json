@@ -39,6 +39,7 @@
   },
   "app": {
     "loadingAlbums": "Загрузка альбомов...",
+    "loadingAlbum": "Загрузка альбома...",
     "loadingSetup": "Загрузка настроек...",
     "backendError": "Ошибка сервера",
     "unableToConnect": "Не удается подключиться к серверу",
@@ -47,6 +48,9 @@
     "rateLimitMessage": "Притормози, приятель. Ты кликаешь быстрее, чем перекати-поле в торнадо!",
     "rateLimitAction": "Подождите немного и попробуйте снова.",
     "headBackHome": "Вернуться домой"
+  },
+  "photoModal": {
+    "navigationHint": "← нажмите стрелки для навигации →"
   },
   "header": {
     "albums": "Альбомы",
@@ -59,7 +63,8 @@
   "footer": {
     "license": "Лицензия",
     "poweredBy": "Работает на",
-    "galleria": "Галерея"
+    "galleria": "Галерея",
+    "signIn": "Войти"
   },
   "album": {
     "title": "Альбом",
@@ -355,7 +360,12 @@
     "maxRetryAttemptsReached": "Достигнуто максимальное количество попыток ({{maxRetries}}) для {{filename}}",
     "successfullyUploaded": "{{filename}} успешно загружен",
     "retryFailed": "Повторная попытка не удалась для {{filename}}",
-    "noValidImageFiles": "Не найдено действительных файлов изображений. Пожалуйста, выберите изображения в формате JPEG, PNG, GIF или WebP."
+    "noValidImageFiles": "Не найдено действительных файлов изображений. Пожалуйста, выберите изображения в формате JPEG, PNG, GIF или WebP.",
+    "renameAlbumFailed": "Не удалось переименовать альбом  ",
+    "invalidAlbumName": "Недопустимое имя альбома  ",
+    "nameUnchanged": "Имя альбома не изменено  ",
+    "albumNotFound": "Альбом не найден  ",
+    "databaseUpdateFailed": "Не удалось обновить базу данных"
   },
   "settings": {
     "saved": "Настройки {{section}} сохранены!",

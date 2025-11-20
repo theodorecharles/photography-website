@@ -7,7 +7,7 @@
  * - Current album title display
  */
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import "./Header.css";
@@ -497,6 +497,14 @@ export default function Header({
   const location = useLocation();
   const navigate = useNavigate();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [avatarLoaded, setAvatarLoaded] = useState(false);
+  const hasLoadedOnce = useRef(false);
+
+  // Track when avatar loads for the first time
+  const handleAvatarLoad = () => {
+    setAvatarLoaded(true);
+    hasLoadedOnce.current = true;
+  };
 
   // Check if user is authenticated
   useEffect(() => {
@@ -540,7 +548,7 @@ export default function Header({
   };
 
   return (
-    <header className="header">
+    <header className={`header ${hasLoadedOnce.current || avatarLoaded ? 'header-visible' : ''}`}>
       <div className="header-left">
         {/* Logout button - only shown when authenticated and NOT in admin panel */}
         {isAuthenticated && !isInAdminPanel && (
@@ -557,6 +565,8 @@ export default function Header({
             src={`${API_URL}${avatarPath}?v=${avatarCacheBust}`}
             alt={siteName}
             className="avatar"
+            onLoad={handleAvatarLoad}
+            onError={handleAvatarLoad} // Show even on error to avoid permanent blank
           />
           <h1 className="header-title">{siteName}</h1>
         </Link>

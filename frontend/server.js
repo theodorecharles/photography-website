@@ -389,10 +389,18 @@ app.get("*", async (req, res) => {
             apiUrl
           );
 
-          // Inject runtime config
+          // Inject runtime config and branding
+          const brandingData = {
+            siteName: configFile.branding?.siteName || "Galleria",
+            avatarPath: configFile.branding?.avatarPath || "/photos/avatar.png",
+            primaryColor: configFile.branding?.primaryColor || "#4ade80",
+            secondaryColor: configFile.branding?.secondaryColor || "#3b82f6",
+            language: configFile.branding?.language || "en"
+          };
+          
           const modifiedHtmlWithRuntime = htmlWithPlaceholders.replace(
             '<script type="module"',
-            `<script>window.__RUNTIME_API_URL__ = "${apiUrl}";</script>\n    <script type="module"`
+            `<script>window.__RUNTIME_API_URL__ = "${apiUrl}"; window.__RUNTIME_BRANDING__ = ${JSON.stringify(brandingData)};</script>\n    <script type="module"`
           );
 
           return res.send(modifiedHtmlWithRuntime);
@@ -518,7 +526,22 @@ app.get("*", async (req, res) => {
             modifiedHtml,
             apiUrl
           );
-          return res.send(htmlWithPlaceholders);
+          
+          // Inject runtime config and branding
+          const brandingData = {
+            siteName: configFile.branding?.siteName || "Galleria",
+            avatarPath: configFile.branding?.avatarPath || "/photos/avatar.png",
+            primaryColor: configFile.branding?.primaryColor || "#4ade80",
+            secondaryColor: configFile.branding?.secondaryColor || "#3b82f6",
+            language: configFile.branding?.language || "en"
+          };
+          
+          const htmlWithBranding = htmlWithPlaceholders.replace(
+            '<script type="module"',
+            `<script>window.__RUNTIME_API_URL__ = "${apiUrl}"; window.__RUNTIME_BRANDING__ = ${JSON.stringify(brandingData)};</script>\n    <script type="module"`
+          );
+          
+          return res.send(htmlWithBranding);
         }
       }
     } catch (error) {
@@ -647,7 +670,22 @@ app.get("*", async (req, res) => {
             modifiedHtml,
             apiUrl
           );
-          return res.send(htmlWithPlaceholders);
+          
+          // Inject runtime config and branding
+          const brandingData = {
+            siteName: configFile.branding?.siteName || "Galleria",
+            avatarPath: configFile.branding?.avatarPath || "/photos/avatar.png",
+            primaryColor: configFile.branding?.primaryColor || "#4ade80",
+            secondaryColor: configFile.branding?.secondaryColor || "#3b82f6",
+            language: configFile.branding?.language || "en"
+          };
+          
+          const htmlWithBranding = htmlWithPlaceholders.replace(
+            '<script type="module"',
+            `<script>window.__RUNTIME_API_URL__ = "${apiUrl}"; window.__RUNTIME_BRANDING__ = ${JSON.stringify(brandingData)};</script>\n    <script type="module"`
+          );
+          
+          return res.send(htmlWithBranding);
         }
       }
     } catch (error) {
@@ -798,7 +836,22 @@ app.get("*", async (req, res) => {
             modifiedHtml,
             apiUrl
           );
-          return res.send(htmlWithPlaceholders);
+          
+          // Inject runtime config and branding
+          const brandingData = {
+            siteName: configFile.branding?.siteName || "Galleria",
+            avatarPath: configFile.branding?.avatarPath || "/photos/avatar.png",
+            primaryColor: configFile.branding?.primaryColor || "#4ade80",
+            secondaryColor: configFile.branding?.secondaryColor || "#3b82f6",
+            language: configFile.branding?.language || "en"
+          };
+          
+          const htmlWithBranding = htmlWithPlaceholders.replace(
+            '<script type="module"',
+            `<script>window.__RUNTIME_API_URL__ = "${apiUrl}"; window.__RUNTIME_BRANDING__ = ${JSON.stringify(brandingData)};</script>\n    <script type="module"`
+          );
+          
+          return res.send(htmlWithBranding);
         }
       }
     } catch (error) {
@@ -877,10 +930,18 @@ app.get("*", async (req, res) => {
     // Replace runtime placeholders with current config values
     modifiedHtml = replaceRuntimePlaceholders(modifiedHtml, runtimeApiUrl);
 
-    // Inject runtime config before other scripts
+    // Inject runtime config and branding before other scripts
+    const brandingData = {
+      siteName: configFile.branding?.siteName || "Galleria",
+      avatarPath: configFile.branding?.avatarPath || "/photos/avatar.png",
+      primaryColor: configFile.branding?.primaryColor || "#4ade80",
+      secondaryColor: configFile.branding?.secondaryColor || "#3b82f6",
+      language: configFile.branding?.language || "en"
+    };
+    
     modifiedHtml = modifiedHtml.replace(
       '<script type="module"',
-      `<script>window.__RUNTIME_API_URL__ = "${runtimeApiUrl}";</script>\n    <script type="module"`
+      `<script>window.__RUNTIME_API_URL__ = "${runtimeApiUrl}"; window.__RUNTIME_BRANDING__ = ${JSON.stringify(brandingData)};</script>\n    <script type="module"`
     );
 
     res.send(modifiedHtml);

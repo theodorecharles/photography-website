@@ -39,6 +39,7 @@
   },
   "app": {
     "loadingAlbums": "Loading albums...",
+    "loadingAlbum": "Loading album...",
     "loadingSetup": "Loading setup...",
     "backendError": "Backend Error",
     "unableToConnect": "Unable to connect to the server",
@@ -47,6 +48,9 @@
     "rateLimitMessage": "Slow down there, feller. You're clicking faster than a tumbleweed in a tornado!",
     "rateLimitAction": "Give it a moment and try again.",
     "headBackHome": "Head Back Home"
+  },
+  "photoModal": {
+    "navigationHint": "← press arrow keys to navigate →"
   },
   "seo": {
     "homepageTitle": "{{siteName}} - Galleria",
@@ -79,7 +83,8 @@
   "footer": {
     "license": "License",
     "poweredBy": "Powered by",
-    "galleria": "Galleria"
+    "galleria": "Galleria",
+    "signIn": "Sign In"
   },
   "album": {
     "title": "Album",
@@ -321,6 +326,11 @@
     "failedToUpdateAlbum": "Failed to update album",
     "failedToRenameAlbum": "Failed to rename album",
     "errorRenamingAlbum": "Error renaming album",
+    "renameAlbumFailed": "Failed to rename album",
+    "invalidAlbumName": "Invalid album name",
+    "nameUnchanged": "Album name is unchanged",
+    "albumNotFound": "Album not found",
+    "databaseUpdateFailed": "Failed to update database",
     "failedToMoveAlbum": "Failed to move album",
     "failedToSaveChangesBeforeDeletingAlbum": "Failed to save changes before deleting album",
     "failedToSaveChangesBeforeDeletingFolder": "Failed to save changes before deleting folder",

@@ -11,7 +11,6 @@
 }
 
 .footer-content {
-  max-width: 800px;
   margin: 0 auto;
   padding: 0 1rem;
   display: flex;
@@ -23,10 +22,28 @@
 
 .footer-bottom {
   display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  gap: 2rem;
+  position: relative;
+}
+
+.footer-left {
+  display: flex;
   flex-direction: column;
   align-items: center;
-  width: 100%;
   gap: 0.5rem;
+  text-align: center;
+}
+
+.footer-right {
+  position: absolute;
+  right: 0;
+  display: flex;
+  align-items: center;
+  padding-right: 2rem;
 }
 
 .footer-links {
@@ -76,4 +93,52 @@
 
 .footer-galleria-link:visited {
   color: #4ade80;
+}
+
+.footer-signin-btn {
+  display: inline-block;
+  padding: 0.5rem 1.5rem;
+  background-color: #444;
+  color: #fff;
+  text-decoration: none;
+  border: 1px solid #555;
+  border-radius: 4px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.footer-signin-btn:hover {
+  background-color: #555;
+  border-color: #666;
+}
+
+.footer-signin-btn:visited {
+  color: #fff;
+}
+
+.footer-signin-btn:visited:hover {
+  color: #fff;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .footer-bottom {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 1rem;
+  }
+
+  .footer-left {
+    align-items: center;
+    text-align: center;
+  }
+
+  .footer-right {
+    position: static;
+  }
+
+  .footer-links {
+    justify-content: center;
+  }
 }

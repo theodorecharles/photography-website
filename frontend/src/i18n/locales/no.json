@@ -39,6 +39,7 @@
   },
   "app": {
     "loadingAlbums": "Laster inn album...",
+    "loadingAlbum": "Laster album...",
     "loadingSetup": "Laster inn oppsett...",
     "backendError": "Backend-feil",
     "unableToConnect": "Kan ikke koble til serveren",
@@ -47,6 +48,9 @@
     "rateLimitMessage": "Ta det med ro, kamerat. Du klikker raskere enn en tumbleweed i en tornado!",
     "rateLimitAction": "Vent litt og prøv igjen.",
     "headBackHome": "Gå tilbake hjem"
+  },
+  "photoModal": {
+    "navigationHint": "← trykk piltastene for å navigere →"
   },
   "header": {
     "albums": "Album",
@@ -59,7 +63,8 @@
   "footer": {
     "license": "Lisens",
     "poweredBy": "Drevet av",
-    "galleria": "Galleria"
+    "galleria": "Galleria",
+    "signIn": "Logg inn"
   },
   "album": {
     "title": "Album",
@@ -355,7 +360,12 @@
     "maxRetryAttemptsReached": "Maksimale antall forsøk ({{maxRetries}}) nådd for {{filename}}",
     "successfullyUploaded": "Lastet opp {{filename}} med suksess",
     "retryFailed": "Forsøk på nytt mislyktes for {{filename}}",
-    "noValidImageFiles": "Ingen gyldige bildefiler funnet. Vennligst velg JPEG, PNG, GIF eller WebP-bilder."
+    "noValidImageFiles": "Ingen gyldige bildefiler funnet. Vennligst velg JPEG, PNG, GIF eller WebP-bilder.",
+    "renameAlbumFailed": "Feil ved omdøping av album  ",
+    "invalidAlbumName": "Ugyldig albumnavn  ",
+    "nameUnchanged": "Albumnavnet er uendret  ",
+    "albumNotFound": "Album ikke funnet  ",
+    "databaseUpdateFailed": "Feil ved oppdatering av databasen"
   },
   "settings": {
     "saved": "{{section}} innstillinger lagret!",

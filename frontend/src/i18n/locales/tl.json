@@ -39,6 +39,7 @@
   },
   "app": {
     "loadingAlbums": "Nagloload ng mga album...",
+    "loadingAlbum": "Naglo-load ng album...",
     "loadingSetup": "Nagloload ng setup...",
     "backendError": "Error sa Backend",
     "unableToConnect": "Hindi makakonekta sa server",
@@ -47,6 +48,9 @@
     "rateLimitMessage": "Mabagal ka diyan, kaibigan. Mas mabilis ka pang mag-click kaysa sa tumbleweed sa isang tornado!",
     "rateLimitAction": "Maghintay ng sandali at subukan muli.",
     "headBackHome": "Bumalik sa Tahanan"
+  },
+  "photoModal": {
+    "navigationHint": "← pindutin ang mga arrow key upang mag-navigate →"
   },
   "header": {
     "albums": "Mga Album",
@@ -59,7 +63,8 @@
   "footer": {
     "license": "Lisensya",
     "poweredBy": "Pinapagana ng",
-    "galleria": "Galleria"
+    "galleria": "Galleria",
+    "signIn": "Mag-sign In"
   },
   "album": {
     "title": "Album",
@@ -355,7 +360,12 @@
     "maxRetryAttemptsReached": "Naabot na ang maximum na bilang ng mga pagsubok na muli ({{maxRetries}}) para sa {{filename}}  ",
     "successfullyUploaded": "Matagumpay na na-upload ang {{filename}}  ",
     "retryFailed": "Nabigong muling subukan para sa {{filename}}  ",
-    "noValidImageFiles": "Walang natagpuang wastong mga file ng imahe. Mangyaring pumili ng mga JPEG, PNG, GIF, o WebP na mga imahe."
+    "noValidImageFiles": "Walang natagpuang wastong mga file ng imahe. Mangyaring pumili ng mga JPEG, PNG, GIF, o WebP na mga imahe.",
+    "renameAlbumFailed": "Nabigong palitan ang pangalan ng album  ",
+    "invalidAlbumName": "Hindi wastong pangalan ng album  ",
+    "nameUnchanged": "Walang pagbabago sa pangalan ng album  ",
+    "albumNotFound": "Hindi natagpuan ang album  ",
+    "databaseUpdateFailed": "Nabigong i-update ang database"
   },
   "settings": {
     "saved": "{{section}} mga setting ay na-save!",

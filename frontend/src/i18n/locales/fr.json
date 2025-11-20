@@ -39,6 +39,7 @@
   },
   "app": {
     "loadingAlbums": "Chargement des albums...",
+    "loadingAlbum": "Chargement de l'album...",
     "loadingSetup": "Chargement de la configuration...",
     "backendError": "Erreur du Serveur",
     "unableToConnect": "Impossible de se connecter au serveur",
@@ -47,6 +48,9 @@
     "rateLimitMessage": "Ralentissez, cowboy ! Vous cliquez plus vite qu'une peluche dans une tornade.",
     "rateLimitAction": "Attendez un moment et réessayez.",
     "headBackHome": "Retour à l'Accueil"
+  },
+  "photoModal": {
+    "navigationHint": "← appuyez sur les flèches du clavier pour naviguer →"
   },
   "header": {
     "albums": "Albums",
@@ -59,7 +63,8 @@
   "footer": {
     "license": "Licence",
     "poweredBy": "Propulsé par",
-    "galleria": "Galleria"
+    "galleria": "Galleria",
+    "signIn": "Se connecter"
   },
   "album": {
     "title": "Album",
@@ -355,7 +360,12 @@
     "maxRetryAttemptsReached": "Nombre maximum de tentatives de réessai ({{maxRetries}}) atteint pour {{filename}}",
     "successfullyUploaded": "{{filename}} téléchargé avec succès",
     "retryFailed": "Échec de la nouvelle tentative pour {{filename}}",
-    "noValidImageFiles": "Aucun fichier image valide trouvé. Veuillez sélectionner des images JPEG, PNG, GIF ou WebP."
+    "noValidImageFiles": "Aucun fichier image valide trouvé. Veuillez sélectionner des images JPEG, PNG, GIF ou WebP.",
+    "renameAlbumFailed": "Échec du renommage de l'album  ",
+    "invalidAlbumName": "Nom d'album invalide  ",
+    "nameUnchanged": "Le nom de l'album n'a pas changé  ",
+    "albumNotFound": "Album introuvable  ",
+    "databaseUpdateFailed": "Échec de la mise à jour de la base de données"
   },
   "settings": {
     "saved": "Paramètres de {{section}} enregistrés !",

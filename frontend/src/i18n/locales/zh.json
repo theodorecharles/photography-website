@@ -39,6 +39,7 @@
   },
   "app": {
     "loadingAlbums": "正在加载相册...",
+    "loadingAlbum": "加载相册中...",
     "loadingSetup": "正在加载设置...",
     "backendError": "后端错误",
     "unableToConnect": "无法连接到服务器",
@@ -47,6 +48,9 @@
     "rateLimitMessage": "慢点，伙计。你点击得比龙卷风中的风滚草还快！",
     "rateLimitAction": "稍等片刻再试。",
     "headBackHome": "返回主页"
+  },
+  "photoModal": {
+    "navigationHint": "← 按箭头键进行导航 →"
   },
   "header": {
     "albums": "相册",
@@ -59,7 +63,8 @@
   "footer": {
     "license": "许可证",
     "poweredBy": "技术支持",
-    "galleria": "画廊"
+    "galleria": "画廊",
+    "signIn": "登录"
   },
   "album": {
     "title": "相册",
@@ -355,7 +360,12 @@
     "maxRetryAttemptsReached": "已达到最大重试次数 ({{maxRetries}}) 对于 {{filename}}",
     "successfullyUploaded": "成功上传 {{filename}}",
     "retryFailed": "重试失败 {{filename}}",
-    "noValidImageFiles": "未找到有效的图像文件。请选取 JPEG、PNG、GIF 或 WebP 格式的图像。"
+    "noValidImageFiles": "未找到有效的图像文件。请选取 JPEG、PNG、GIF 或 WebP 格式的图像。",
+    "renameAlbumFailed": "无法重命名相册  ",
+    "invalidAlbumName": "无效的相册名称  ",
+    "nameUnchanged": "相册名称未更改  ",
+    "albumNotFound": "未找到相册  ",
+    "databaseUpdateFailed": "更新数据库失败"
   },
   "settings": {
     "saved": "{{section}} 设置已保存！",

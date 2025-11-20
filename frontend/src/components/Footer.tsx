@@ -65,25 +65,32 @@ function Footer({ albums: _albums = [], externalLinks: _externalLinks = [], curr
     <footer className="footer">
       <div className="footer-content">
         <div className="footer-bottom">
-          <span>
-            &copy; {currentYear} {siteName || 'Galleria'}.{' '}
-            <span className="footer-separator">•</span>{' '}
-            <Link to="/license" className="footer-link">
-              {t('footer.license')}
-            </Link>
-          </span>
-          <div className="footer-links">
-            <span className="footer-powered-by">
-              {t('footer.poweredBy')}{' '}
-              <a 
-                href="https://github.com/theodorecharles/Galleria" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="footer-galleria-link"
-              >
-                {t('footer.galleria')}
-              </a>
+          <div className="footer-left">
+            <span>
+              &copy; {currentYear} {siteName || 'Galleria'}.{' '}
+              <span className="footer-separator">•</span>{' '}
+              <Link to="/license" className="footer-link">
+                {t('footer.license')}
+              </Link>
             </span>
+            <div className="footer-links">
+              <span className="footer-powered-by">
+                {t('footer.poweredBy')}{' '}
+                <a 
+                  href="https://github.com/theodorecharles/Galleria" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="footer-galleria-link"
+                >
+                  {t('footer.galleria')}
+                </a>
+              </span>
+            </div>
+          </div>
+          <div className="footer-right">
+            <Link to="/admin" className="footer-signin-btn">
+              {t('footer.signIn')}
+            </Link>
           </div>
         </div>
       </div>

@@ -248,6 +248,81 @@ export const createAlbumHandlers = (props: AlbumHandlersProps) => {
     }
   };
 
+  // Inline rename handler for PhotosPanel title editing
+  const handleInlineRenameAlbum = async (oldName: string, newName: string): Promise<void> => {
+    const sanitized = sanitizeAndTitleCase(newName);
+
+    if (!isValidAlbumName(sanitized)) {
+      throw new Error('Album name can only contain letters, numbers, spaces, hyphens, and underscores');
+    }
+
+    if (sanitized === oldName) {
+      return; // No change
+    }
+
+    if (localAlbums.some(a => a.name === sanitized)) {
+      throw new Error(t('albumsManager.albumAlreadyExists', { albumName: sanitized }));
+    }
+
+    const res = await fetchWithRateLimitCheck(
+      `${API_URL}/api/albums/${encodeURIComponent(oldName)}/rename`,
+      {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ newName: sanitized }),
+      }
+    );
+
+    if (!res.ok) {
+      const errorData = await res.json();
+      
+      // Map error codes to translated messages
+      const errorCode = errorData.errorCode;
+      let errorMessage: string;
+      
+      switch (errorCode) {
+        case 'INVALID_ALBUM_NAME':
+        case 'INVALID_NEW_NAME':
+          errorMessage = t('albumsManager.invalidAlbumName');
+          break;
+        case 'NAME_REQUIRED':
+          errorMessage = t('albumsManager.albumNameRequired');
+          break;
+        case 'NAME_UNCHANGED':
+          errorMessage = t('albumsManager.nameUnchanged');
+          break;
+        case 'ALBUM_NOT_FOUND':
+          errorMessage = t('albumsManager.albumNotFound');
+          break;
+        case 'ALBUM_EXISTS':
+          errorMessage = t('albumsManager.albumAlreadyExists', { albumName: sanitized });
+          break;
+        case 'DATABASE_UPDATE_FAILED':
+          errorMessage = t('albumsManager.databaseUpdateFailed');
+          break;
+        case 'RENAME_FAILED':
+          errorMessage = t('albumsManager.renameAlbumFailed');
+          break;
+        default:
+          errorMessage = errorData.error || t('albumsManager.renameAlbumFailed');
+      }
+      
+      throw new Error(errorMessage);
+    }
+
+    trackAlbumRenamed(oldName, sanitized);
+    setMessage({ type: 'success', text: t('albumsManager.albumRenamed', { albumName: sanitized }) });
+
+    // If the renamed album was selected, update the selection
+    if (selectedAlbum === oldName) {
+      selectAlbum(sanitized);
+    }
+
+    await loadAlbums();
+    window.dispatchEvent(new Event('albums-updated'));
+  };
+
   const handleMoveAlbumToFolder = async (
     albumName: string,
     folderId: number | null
@@ -300,6 +375,7 @@ export const createAlbumHandlers = (props: AlbumHandlersProps) => {
     handleToggleHomepage,
     handleOpenRenameModal,
     handleRenameAlbum,
+    handleInlineRenameAlbum,
     handleMoveAlbumToFolder,
   };
 };

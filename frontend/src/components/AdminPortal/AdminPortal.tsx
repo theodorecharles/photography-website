@@ -453,7 +453,7 @@ export default function AdminPortal() {
         <div className="admin-container">
           <div className="loading-container loading-container-full">
             <div className="loading-spinner"></div>
-            <p>{!cssLoaded ? 'Loading styles...' : 'Loading site settings...'}</p>
+            <p>{!cssLoaded ? t('adminPortal.loadingStyles') : t('adminPortal.loadingSettings')}</p>
           </div>
         </div>
       </div>

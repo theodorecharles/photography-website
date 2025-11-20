@@ -42,6 +42,17 @@ if ! npm install; then
     handle_error "Root npm install failed"
 fi
 
+# Run database migrations (if database exists)
+if [ -f "data/gallery.db" ]; then
+    log "Running database migrations..."
+    if ! node migrate-share-links-cascade.js; then
+        handle_error "Database migration failed"
+    fi
+    log "✓ Database migrations completed"
+else
+    log "Skipping database migrations (database not initialized yet)"
+fi
+
 # Run image optimization script (only if configured and albums exist)
 if [ -f "data/config.json" ]; then
     # Check if there are any albums (directories) to optimize

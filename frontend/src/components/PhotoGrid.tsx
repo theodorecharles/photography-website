@@ -39,6 +39,8 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
   const [imageDimensions, setImageDimensions] = useState<
     Record<string, { width: number; height: number }>
   >({});
+  const [loadingImages, setLoadingImages] = useState<Set<string>>(new Set());
+  const loadedImagesRef = useRef<Set<string>>(new Set()); // Track which images have loaded
   const renderIndexRef = useRef<number>(100);
   const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const isRenderingRef = useRef<boolean>(false);
@@ -96,6 +98,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
     setSelectedPhoto(null);
     setColumnTransforms([]);
     renderIndexRef.current = 100;
+    loadedImagesRef.current.clear(); // Reset loaded images tracking
   }, [album]);
 
   // Update column count when photos change
@@ -312,7 +315,29 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
         height: img.naturalHeight,
       },
     }));
+    // Mark as loaded
+    loadedImagesRef.current.add(photoId);
+    // Remove from loading set
+    setLoadingImages((prev) => {
+      const newSet = new Set(prev);
+      newSet.delete(photoId);
+      return newSet;
+    });
   };
+
+  // Mark only NEW photos as loading (don't reset already-loaded ones)
+  useEffect(() => {
+    setLoadingImages((prev) => {
+      const newSet = new Set(prev);
+      photos.forEach(photo => {
+        // Only add if not already loaded
+        if (!loadedImagesRef.current.has(photo.id)) {
+          newSet.add(photo.id);
+        }
+      });
+      return newSet;
+    });
+  }, [photos]);
 
   // getNumColumns function moved to utils/photoHelpers.ts
 
@@ -445,9 +470,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
     return (
       <div className="photo-grid-loading">
         <div className="loading-spinner"></div>
-        <div style={{ marginTop: '1rem', color: '#666', fontSize: '0.9rem' }}>
-          Loading album...
-        </div>
+        <p>{t('app.loadingAlbum')}</p>
       </div>
     );
   }
@@ -497,7 +520,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
             {column.map((photo) => (
               <div
                 key={photo.id}
-                className="photo-item"
+                className={`photo-item ${loadingImages.has(photo.id) ? 'loading' : ''}`}
                 style={{
                   aspectRatio: imageDimensions[photo.id]
                     ? `${imageDimensions[photo.id].width} / ${
@@ -509,6 +532,11 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ album, onAlbumNotFound, initialPh
                   handlePhotoClick(photo);
                 }}
               >
+                {loadingImages.has(photo.id) && (
+                  <div className="photo-loading-overlay">
+                    <div className="photo-loading-spinner"></div>
+                  </div>
+                )}
                 <img
                   src={`${API_URL}${photo.thumbnail}${imageQueryString}`}
                   alt={`${photo.album} - ${photo.title}`}

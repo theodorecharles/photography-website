@@ -132,7 +132,7 @@ export function initializeDatabase(): any {
       secret_key TEXT NOT NULL UNIQUE,
       expires_at DATETIME,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY (album) REFERENCES albums(name) ON DELETE CASCADE
+      FOREIGN KEY (album) REFERENCES albums(name) ON DELETE CASCADE ON UPDATE CASCADE
     )
   `);
   
@@ -472,6 +472,40 @@ export function deleteAlbumState(name: string): boolean {
   
   const result = stmt.run(name);
   return result.changes > 0;
+}
+
+/**
+ * Rename an album (updates albums table, image_metadata, and share_links via CASCADE)
+ */
+export function renameAlbum(oldName: string, newName: string): boolean {
+  const db = getDatabase();
+  
+  try {
+    // Use a transaction to ensure atomicity
+    const transaction = db.transaction(() => {
+      // Update image_metadata entries
+      const metadataStmt = db.prepare(`
+        UPDATE image_metadata 
+        SET album = ? 
+        WHERE album = ?
+      `);
+      metadataStmt.run(newName, oldName);
+      
+      // Update albums table (share_links will auto-update via ON UPDATE CASCADE)
+      const albumStmt = db.prepare(`
+        UPDATE albums 
+        SET name = ? 
+        WHERE name = ?
+      `);
+      albumStmt.run(newName, oldName);
+    });
+    
+    transaction();
+    return true;
+  } catch (err) {
+    error('[Database] Failed to rename album:', err);
+    return false;
+  }
 }
 
 /**

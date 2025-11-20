@@ -39,6 +39,7 @@
   },
   "app": {
     "loadingAlbums": "Memuat album...",
+    "loadingAlbum": "Memuat album...",
     "loadingSetup": "Memuat pengaturan...",
     "backendError": "Kesalahan Backend",
     "unableToConnect": "Tidak dapat terhubung ke server",
@@ -47,6 +48,9 @@
     "rateLimitMessage": "Pelan-pelan, kawan. Kamu mengklik lebih cepat daripada gulungan rumput di dalam tornado!",
     "rateLimitAction": "Berikan sedikit waktu dan coba lagi.",
     "headBackHome": "Kembali ke Beranda"
+  },
+  "photoModal": {
+    "navigationHint": "← tekan tombol panah untuk menavigasi →"
   },
   "header": {
     "albums": "Album",
@@ -59,7 +63,8 @@
   "footer": {
     "license": "Lisensi",
     "poweredBy": "Ditenagai oleh",
-    "galleria": "Galleria"
+    "galleria": "Galleria",
+    "signIn": "Masuk"
   },
   "album": {
     "title": "Album",
@@ -355,7 +360,12 @@
     "maxRetryAttemptsReached": "Jumlah percobaan ulang maksimum ({{maxRetries}}) tercapai untuk {{filename}}",
     "successfullyUploaded": "Berhasil mengunggah {{filename}}",
     "retryFailed": "Percobaan ulang gagal untuk {{filename}}",
-    "noValidImageFiles": "Tidak ada file gambar yang valid ditemukan. Silakan pilih gambar JPEG, PNG, GIF, atau WebP."
+    "noValidImageFiles": "Tidak ada file gambar yang valid ditemukan. Silakan pilih gambar JPEG, PNG, GIF, atau WebP.",
+    "renameAlbumFailed": "Gagal mengganti nama album  ",
+    "invalidAlbumName": "Nama album tidak valid  ",
+    "nameUnchanged": "Nama album tidak berubah  ",
+    "albumNotFound": "Album tidak ditemukan  ",
+    "databaseUpdateFailed": "Gagal memperbarui basis data"
   },
   "settings": {
     "saved": "Pengaturan {{section}} disimpan!",

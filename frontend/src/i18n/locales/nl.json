@@ -39,6 +39,7 @@
   },
   "app": {
     "loadingAlbums": "Albums laden...",
+    "loadingAlbum": "Album laden...",
     "loadingSetup": "Setup laden...",
     "backendError": "Backendfout",
     "unableToConnect": "Kan geen verbinding maken met de server",
@@ -47,6 +48,9 @@
     "rateLimitMessage": "Rustig aan, kerel. Je klikt sneller dan een tuimelkruid in een tornado!",
     "rateLimitAction": "Wacht even en probeer het opnieuw.",
     "headBackHome": "Ga terug naar huis"
+  },
+  "photoModal": {
+    "navigationHint": "← druk op de pijltoetsen om te navigeren →"
   },
   "header": {
     "albums": "Albums",
@@ -59,7 +63,8 @@
   "footer": {
     "license": "Licentie",
     "poweredBy": "Aangedreven door",
-    "galleria": "Galleria"
+    "galleria": "Galleria",
+    "signIn": "Aanmelden"
   },
   "album": {
     "title": "Album",
@@ -355,7 +360,12 @@
     "maxRetryAttemptsReached": "Maximale aantal pogingen ({{maxRetries}}) bereikt voor {{filename}}",
     "successfullyUploaded": "{{filename}} succesvol geüpload",
     "retryFailed": "Proberen mislukt voor {{filename}}",
-    "noValidImageFiles": "Geen geldige afbeeldingsbestanden gevonden. Selecteer alstublieft JPEG-, PNG-, GIF- of WebP-afbeeldingen."
+    "noValidImageFiles": "Geen geldige afbeeldingsbestanden gevonden. Selecteer alstublieft JPEG-, PNG-, GIF- of WebP-afbeeldingen.",
+    "renameAlbumFailed": "Album hernoemen mislukt  ",
+    "invalidAlbumName": "Ongeldige albumnaam  ",
+    "nameUnchanged": "Albumnaam is onveranderd  ",
+    "albumNotFound": "Album niet gevonden  ",
+    "databaseUpdateFailed": "Bijwerken van de database mislukt"
   },
   "settings": {
     "saved": "{{section}} instellingen opgeslagen!",
