@@ -609,7 +609,7 @@ const ContentModal: React.FC<ContentModalProps> = ({
             onClose={handleClose}
             selectedPhoto={selectedPhoto}
             isVideo={selectedPhoto.media_type === 'video'}
-            style={imageBounds ? { width: `${imageBounds.width}px`, left: `${imageBounds.left}px` } : {}}
+            style={selectedPhoto.media_type === 'video' ? {} : (imageBounds ? { width: `${imageBounds.width}px`, left: `${imageBounds.left}px` } : {})}
           />
 
           <InfoPanel
@@ -618,7 +618,7 @@ const ContentModal: React.FC<ContentModalProps> = ({
             exifData={exifData}
             loadingExif={loadingExif}
             imageTitle={selectedPhoto.title}
-            style={imageBounds ? { left: `${imageBounds.left}px` } : {}}
+            style={selectedPhoto.media_type === 'video' ? {} : (imageBounds ? { left: `${imageBounds.left}px` } : {})}
           />
 
           {selectedPhoto.media_type === 'video' ? (
@@ -632,8 +632,6 @@ const ContentModal: React.FC<ContentModalProps> = ({
                   onLoaded={() => {
                     setThumbnailLoaded(true);
                     setModalImageLoaded(true);
-                    // Need slight delay for video dimensions to be available
-                    setTimeout(updateImageBounds, 100);
                   }}
                 />
               </div>
@@ -678,7 +676,7 @@ const ContentModal: React.FC<ContentModalProps> = ({
             showHint={showNavigationHint}
             onPrevious={handleNavigatePrev}
             onNext={handleNavigateNext}
-            style={imageBounds ? { right: `${imageBounds.left}px` } : {}}
+            style={selectedPhoto.media_type === 'video' ? {} : (imageBounds ? { right: `${imageBounds.left}px` } : {})}
           />
 
           {/* Image Title */}
