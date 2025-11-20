@@ -37,11 +37,15 @@ const ImageOptimizationSection: React.FC<ImageOptimizationSectionProps> = ({
   const updateConfig = (path: string[], value: any) => {
     if (!config) return;
 
-    const newConfig = { ...config };
+    // Deep clone the config to avoid mutation issues
+    const newConfig = JSON.parse(JSON.stringify(config));
     let current: any = newConfig;
 
     for (let i = 0; i < path.length - 1; i++) {
-      current[path[i]] = { ...current[path[i]] };
+      // Ensure the path exists
+      if (!current[path[i]]) {
+        current[path[i]] = {};
+      }
       current = current[path[i]];
     }
 
