@@ -526,7 +526,7 @@ const checkAlbumPublishedMiddleware = (
   const pathParts = req.path.split('/').filter(p => p);
   
   if (pathParts.length >= 2) {
-    const album = pathParts[1]; // Second part is the album name
+    const album = decodeURIComponent(pathParts[1]); // Second part is the album name (URL decode it!)
     
     // Check if user is authenticated
     const isAuthenticated = (req.isAuthenticated && req.isAuthenticated()) || !!(req.session as any)?.userId;
