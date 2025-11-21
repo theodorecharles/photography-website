@@ -122,5 +122,11 @@
   },
   "ai": {
     "autoGenerateTitlesOnUpload": false
+  },
+  "pushNotifications": {
+    "enabled": false,
+    "vapidPublicKey": "",
+    "vapidPrivateKey": "",
+    "vapidSubject": "mailto:admin@example.com"
   }
 }

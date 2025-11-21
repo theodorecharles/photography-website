@@ -383,7 +383,7 @@
 .empty-icon {
   font-size: 5rem;
   margin-bottom: 1.5rem;
-  opacity: 0.5;
+  opacity: 1;
 }
 
 .empty-state h2 {

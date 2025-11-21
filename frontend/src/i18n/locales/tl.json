@@ -75,8 +75,9 @@
   },
   "photo": {
     "title": "Larawan",
-    "noPhotosYet": "Walang Mga Larawan Pa",
-    "albumEmpty": "Walang laman ang album na ito. Panahon na upang magdagdag ng mga kamangha-manghang larawan!",
+    "noContentYet": "[EN] No Content Yet",
+    "albumEmpty": "[EN] This album is empty. Please log in to add content.",
+    "homepageEmpty": "[EN] Add some albums or use the homepage toggle to add them to the homepage.",
     "goToAdminPanel": "Pumunta sa Admin Panel",
     "download": "I-download",
     "share": "Ibahagi",
@@ -1152,5 +1153,19 @@
     "off": "Naka-off",
     "warningNote": "Ang mga pagbabago sa mga setting ng video ay nalalapat lamang sa mga bagong na-upload na video. Ang mga umiiral na video ay mananatili sa kanilang kasalukuyang mga setting ng kalidad maliban kung gagamitin mo ang",
     "forceRegenerate": "Puwersang I-regenerate Lahat"
+  },
+  "notifications": {
+    "bannerTitle": "[EN] Get Notified When Processing Jobs Complete",
+    "bannerDescription": "[EN] Enable push notifications to receive alerts when your video processing and image optimization jobs finish. You can work on other tabs or applications while jobs run in the background.",
+    "enable": "[EN] Enable Notifications",
+    "dismiss": "[EN] Maybe Later",
+    "active": "[EN] Push notifications enabled",
+    "sendTest": "[EN] Send Test",
+    "disable": "[EN] Disable",
+    "permissionGranted": "[EN] Push notifications enabled successfully!",
+    "permissionDenied": "[EN] Push notifications permission denied",
+    "error": "[EN] Failed to manage push notifications",
+    "unsubscribed": "[EN] Push notifications disabled",
+    "testSent": "[EN] Test notification sent! Check your device."
   }
 }

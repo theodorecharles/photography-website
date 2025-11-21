@@ -779,3 +779,22 @@
     transform: translateY(0);
   }
 }
+
+/* Push Notifications Grid - Responsive 2x2 → 1 column on mobile */
+.push-notifications-grid {
+  width: 100%;
+}
+
+.push-notifications-grid .branding-group {
+  width: 100%;
+}
+
+.push-notifications-grid .branding-input {
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .push-notifications-grid {
+    grid-template-columns: 1fr !important;
+  }
+}

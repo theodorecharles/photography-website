@@ -187,14 +187,19 @@ const getAllPhotos = (photosDir: string, includeUnpublished: boolean = false) =>
         .replace(/\.[^/.]+$/, '') // Remove extension
         .replace(/[-_]/g, ' '); // Replace hyphens and underscores with spaces
 
+      // For videos, thumbnails are stored as JPG
+      const isVideo = img.media_type === 'video';
+      const thumbnailFilename = isVideo ? img.filename.replace(/\.[^.]+$/, '.jpg') : img.filename;
+
       return {
         id: `${img.album}/${img.filename}`,
         title: img.title || defaultTitle,
         description: img.description || undefined,
         album: img.album,
-        thumbnail: `/optimized/thumbnail/${img.album}/${img.filename}`,
-        modal: `/optimized/modal/${img.album}/${img.filename}`,
-        download: `/optimized/download/${img.album}/${img.filename}`,
+        thumbnail: `/optimized/thumbnail/${img.album}/${thumbnailFilename}`,
+        modal: `/optimized/modal/${img.album}/${thumbnailFilename}`,
+        download: isVideo ? '' : `/optimized/download/${img.album}/${img.filename}`,
+        media_type: img.media_type || 'photo',
       };
     });
 
@@ -427,14 +432,19 @@ router.get("/api/random-photos", (req: Request, res) => {
       .replace(/\.[^/.]+$/, '') // Remove extension
       .replace(/[-_]/g, ' '); // Replace hyphens and underscores with spaces
 
+    // For videos, thumbnails are stored as JPG
+    const isVideo = img.media_type === 'video';
+    const thumbnailFilename = isVideo ? img.filename.replace(/\.[^.]+$/, '.jpg') : img.filename;
+
     return {
       id: `${img.album}/${img.filename}`,
       title: img.title || defaultTitle,
       description: img.description || undefined,
       album: img.album,
-      thumbnail: `/optimized/thumbnail/${img.album}/${img.filename}`,
-      modal: `/optimized/modal/${img.album}/${img.filename}`,
-      download: `/optimized/download/${img.album}/${img.filename}`,
+      thumbnail: `/optimized/thumbnail/${img.album}/${thumbnailFilename}`,
+      modal: `/optimized/modal/${img.album}/${thumbnailFilename}`,
+      download: isVideo ? '' : `/optimized/download/${img.album}/${img.filename}`,
+      media_type: img.media_type || 'photo',
     };
   });
 

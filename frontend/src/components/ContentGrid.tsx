@@ -78,6 +78,9 @@ const ContentGrid: React.FC<ContentGridProps> = ({ album, onAlbumNotFound, initi
 
   const [clickedVideoId, setClickedVideoId] = useState<string | null>(null);
 
+  // Check if we're on the homepage
+  const isHomepage = album === 'homepage';
+
   const handlePhotoClick = (photo: Photo, shouldAutoplay: boolean = false) => {
     setSelectedPhoto(photo);
     const index = photoIndexMap.get(photo.id) ?? 0;
@@ -517,11 +520,12 @@ const ContentGrid: React.FC<ContentGridProps> = ({ album, onAlbumNotFound, initi
 
   // Empty state - no photos in the album
   if (photos.length === 0) {
+    const isHomepage = album === 'homepage';
     return (
       <div className="empty-state">
-        <div className="empty-icon">??</div>
-        <h2>{t('photo.noPhotosYet')}</h2>
-        <p>{t('photo.albumEmpty')}</p>
+        <div className="empty-icon">📸</div>
+        <h2>{t('photo.noContentYet')}</h2>
+        <p>{isHomepage ? t('photo.homepageEmpty') : t('photo.albumEmpty')}</p>
         <a href="/admin" className="empty-state-button">
           {t('photo.goToAdminPanel')}
         </a>
@@ -615,6 +619,7 @@ const ContentGrid: React.FC<ContentGridProps> = ({ album, onAlbumNotFound, initi
           onClose={handleCloseModal}
           clickedVideo={clickedVideoId === selectedPhoto.id}
           secretKey={secretKey}
+          isHomepage={isHomepage}
         />
       )}
     </>

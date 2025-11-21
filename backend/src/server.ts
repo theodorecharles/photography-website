@@ -33,6 +33,7 @@ import config, {
 import { validateProductionSecurity } from "./security.ts";
 import { initializeDatabase } from "./database.ts";
 import { initPromise as i18nInitPromise } from './i18n.js';
+import { initializePushNotifications } from './push-notifications.js';
 import {
   initLogger,
   info,
@@ -85,6 +86,7 @@ import staticJsonRouter, {
 } from "./routes/static-json.ts";
 import setupRouter from "./routes/setup.ts";
 import videoRouter from "./routes/video.ts";
+import pushNotificationsRouter from "./routes/push-notifications.ts";
 
 // Get the current directory path for ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -391,6 +393,9 @@ debug("[Server] Session cookie config:", {
 const db = initializeDatabase();
 const SqliteStore = SqliteStoreFactory(session);
 
+// Initialize push notifications after database is ready
+initializePushNotifications();
+
 app.use(
   session({
     store: new SqliteStore({
@@ -621,6 +626,7 @@ app.use("/api/optimization-stream", optimizationStreamRouter);
 app.use("/api/preview-grid", previewGridRouter);
 app.use("/api/static-json", staticJsonRouter);
 app.use("/api/video", videoRouter);
+app.use("/api/push-notifications", pushNotificationsRouter);
 app.use(albumsRouter);
 app.use("/api/albums", albumManagementRouter);
 app.use("/api/folders", folderManagementRouter);

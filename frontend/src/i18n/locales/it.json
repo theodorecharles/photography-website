@@ -100,8 +100,9 @@
     "dateTaken": "Data scatto",
     "resolution": "Risoluzione",
     "duration": "Durata",
-    "noPhotosYet": "Nessuna foto ancora",
-    "albumEmpty": "Questo album è vuoto. È tempo di aggiungere alcune foto fantastiche!",
+    "noContentYet": "[EN] No Content Yet",
+    "albumEmpty": "[EN] This album is empty. Please log in to add content.",
+    "homepageEmpty": "[EN] Add some albums or use the homepage toggle to add them to the homepage.",
     "goToAdminPanel": "Vai al Pannello di Amministrazione"
   },
   "video": {
@@ -1152,5 +1153,19 @@
     "off": "Disattivo",
     "warningNote": "Le modifiche alle impostazioni video si applicano solo ai video caricati di recente. I video esistenti manterranno le loro attuali impostazioni di qualità a meno che tu non utilizzi",
     "forceRegenerate": "Forza Rigenerazione Tutto"
+  },
+  "notifications": {
+    "bannerTitle": "[EN] Get Notified When Processing Jobs Complete",
+    "bannerDescription": "[EN] Enable push notifications to receive alerts when your video processing and image optimization jobs finish. You can work on other tabs or applications while jobs run in the background.",
+    "enable": "[EN] Enable Notifications",
+    "dismiss": "[EN] Maybe Later",
+    "active": "[EN] Push notifications enabled",
+    "sendTest": "[EN] Send Test",
+    "disable": "[EN] Disable",
+    "permissionGranted": "[EN] Push notifications enabled successfully!",
+    "permissionDenied": "[EN] Push notifications permission denied",
+    "error": "[EN] Failed to manage push notifications",
+    "unsubscribed": "[EN] Push notifications disabled",
+    "testSent": "[EN] Test notification sent! Check your device."
   }
 }

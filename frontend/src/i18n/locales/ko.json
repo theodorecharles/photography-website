@@ -100,8 +100,9 @@
     "dateTaken": "촬영 날짜",
     "resolution": "해상도",
     "duration": "지속 시간",
-    "noPhotosYet": "사진이 아직 없습니다",
-    "albumEmpty": "이 앨범은 비어 있습니다. 멋진 사진을 추가할 시간입니다!",
+    "noContentYet": "[EN] No Content Yet",
+    "albumEmpty": "[EN] This album is empty. Please log in to add content.",
+    "homepageEmpty": "[EN] Add some albums or use the homepage toggle to add them to the homepage.",
     "goToAdminPanel": "관리자 패널로 이동"
   },
   "video": {
@@ -1152,5 +1153,19 @@
     "off": "끄기",
     "warningNote": "비디오 설정에 대한 변경 사항은 새로 업로드된 비디오에만 적용됩니다. 기존 비디오는 현재 품질 설정을 유지하며,",
     "forceRegenerate": "모두 강제로 재생성 사용 시 변경됩니다."
+  },
+  "notifications": {
+    "bannerTitle": "[EN] Get Notified When Processing Jobs Complete",
+    "bannerDescription": "[EN] Enable push notifications to receive alerts when your video processing and image optimization jobs finish. You can work on other tabs or applications while jobs run in the background.",
+    "enable": "[EN] Enable Notifications",
+    "dismiss": "[EN] Maybe Later",
+    "active": "[EN] Push notifications enabled",
+    "sendTest": "[EN] Send Test",
+    "disable": "[EN] Disable",
+    "permissionGranted": "[EN] Push notifications enabled successfully!",
+    "permissionDenied": "[EN] Push notifications permission denied",
+    "error": "[EN] Failed to manage push notifications",
+    "unsubscribed": "[EN] Push notifications disabled",
+    "testSent": "[EN] Test notification sent! Check your device."
   }
 }

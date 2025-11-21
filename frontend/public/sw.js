@@ -292,5 +292,97 @@ self.addEventListener('message', (event) => {
   }
 });
 
+/**
+ * Push event - handle incoming push notifications
+ */
+self.addEventListener('push', (event) => {
+  console.log('[SW] Push notification received');
+  
+  let data = {
+    title: 'Notification',
+    body: 'You have a new notification',
+    icon: '/icon-192.png',
+    badge: '/icon-192.png'
+  };
+  
+  // Parse notification data if available
+  if (event.data) {
+    try {
+      data = event.data.json();
+    } catch (err) {
+      console.error('[SW] Failed to parse push data:', err);
+      data.body = event.data.text();
+    }
+  }
+  
+  // Show the notification
+  event.waitUntil(
+    self.registration.showNotification(data.title, {
+      body: data.body,
+      icon: data.icon || '/icon-192.png',
+      badge: data.badge || '/icon-192.png',
+      tag: data.tag || 'default',
+      requireInteraction: data.requireInteraction || false,
+      data: data.data || {},
+      vibrate: [200, 100, 200], // Vibration pattern for mobile
+      actions: data.actions || []
+    })
+  );
+});
+
+/**
+ * Notification click event - handle user clicking on notification
+ */
+self.addEventListener('notificationclick', (event) => {
+  console.log('[SW] Notification clicked:', event.notification.tag);
+  
+  event.notification.close();
+  
+  // Navigate to the app when notification is clicked
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
+      // If app is already open, focus it
+      for (const client of clientList) {
+        if (client.url.includes(self.location.origin) && 'focus' in client) {
+          return client.focus();
+        }
+      }
+      
+      // Otherwise, open a new window
+      if (clients.openWindow) {
+        return clients.openWindow('/admin');
+      }
+    })
+  );
+});
+
+/**
+ * Push subscription change event - handle subscription expiration/update
+ */
+self.addEventListener('pushsubscriptionchange', (event) => {
+  console.log('[SW] Push subscription changed');
+  
+  event.waitUntil(
+    // Resubscribe with new subscription
+    self.registration.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: event.oldSubscription?.options?.applicationServerKey
+    }).then((subscription) => {
+      console.log('[SW] Resubscribed to push notifications');
+      
+      // Send new subscription to server
+      return fetch('/api/push-notifications/subscribe', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ subscription })
+      });
+    }).catch((err) => {
+      console.error('[SW] Failed to resubscribe:', err);
+    })
+  );
+});
+
 console.log('[SW] Service worker script loaded');
 

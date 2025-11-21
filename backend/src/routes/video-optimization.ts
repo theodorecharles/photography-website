@@ -9,6 +9,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { error, warn, info } from '../utils/logger.js';
 import { requireManager } from '../auth/middleware.js';
+import { sendNotificationToUser } from '../push-notifications.js';
 
 const router = express.Router();
 
@@ -164,6 +165,20 @@ router.post('/regenerate', requireManager, (req, res) => {
       broadcastToClients(runningVideoOptimizationJob, completeOutput);
       runningVideoOptimizationJob.isComplete = true;
       
+      // Send push notification to user
+      if (req.user && 'id' in req.user) {
+        sendNotificationToUser((req.user as any).id, {
+          title: code === 0 ? 'Video Processing Complete' : 'Video Processing Failed',
+          body: message,
+          icon: '/icon-192.png',
+          badge: '/icon-192.png',
+          tag: 'video-optimization',
+          requireInteraction: false
+        }).catch(err => {
+          warn('[VideoOptimization] Failed to send push notification:', err);
+        });
+      }
+      
       // Clean up after 5 minutes
       setTimeout(() => {
         info('[VideoOptimization] Cleaning up completed job');
@@ -313,6 +328,20 @@ router.post('/reprocess', requireManager, (req, res) => {
       runningVideoOptimizationJob.output.push(completeOutput);
       broadcastToClients(runningVideoOptimizationJob, completeOutput);
       runningVideoOptimizationJob.isComplete = true;
+      
+      // Send push notification to user
+      if (req.user && 'id' in req.user) {
+        sendNotificationToUser((req.user as any).id, {
+          title: code === 0 ? 'Video Reprocessing Complete' : 'Video Reprocessing Failed',
+          body: message,
+          icon: '/icon-192.png',
+          badge: '/icon-192.png',
+          tag: 'video-reprocessing',
+          requireInteraction: false
+        }).catch(err => {
+          warn('[VideoReprocessing] Failed to send push notification:', err);
+        });
+      }
       
       // Clean up after 5 minutes
       setTimeout(() => {

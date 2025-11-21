@@ -9,8 +9,11 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { createRequire } from 'module';
-import { processVideo } from '../backend/src/utils/video-processor.js';
 import Database from 'better-sqlite3';
+
+// Import processVideo dynamically using tsx to run TypeScript
+// Note: We'll use tsx to run this script, so we can import .ts files
+const { processVideo } = await import('../backend/src/utils/video-processor.ts');
 
 const require = createRequire(import.meta.url);
 const __filename = fileURLToPath(import.meta.url);

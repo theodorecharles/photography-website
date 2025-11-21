@@ -52,6 +52,9 @@ if [ -f "data/gallery.db" ]; then
     if ! node scripts/migrate-add-video-support.js; then
         handle_error "Database migration (video support) failed"
     fi
+    if ! node scripts/migrate-push-notifications.js; then
+        handle_error "Database migration (push notifications) failed"
+    fi
     log "✓ Database migrations completed"
 else
     log "Skipping database migrations (database not initialized yet)"
