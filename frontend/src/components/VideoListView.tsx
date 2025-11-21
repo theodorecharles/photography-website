@@ -51,6 +51,9 @@ const VideoListView: React.FC<VideoListViewProps> = ({ videos, album, secretKey 
   const handleModalLoad = (videoId: string, img?: HTMLImageElement) => {
     if (!img) return;
     
+    // Mark modal image as loaded
+    setModalImageLoadedMap(prev => ({ ...prev, [videoId]: true }));
+    
     // Calculate appropriate width based on aspect ratio if height is constrained
     // Use modal image dimensions (2048px) not thumbnail (512px) for proper sizing
     const aspectRatio = img.naturalWidth / img.naturalHeight;

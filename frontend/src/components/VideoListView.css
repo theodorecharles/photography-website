@@ -47,7 +47,7 @@
 }
 
 .video-player-container.playing img {
-  opacity: 0;
+  opacity: 0 !important;
 }
 
 /* Video overlay - positioned on top of thumbnail background */
