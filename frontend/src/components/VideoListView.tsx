@@ -107,7 +107,7 @@ const VideoListView: React.FC<VideoListViewProps> = ({ videos, album, secretKey 
               }}
             >
               <div 
-                className="video-player-container"
+                className={`video-player-container ${isPlaying ? 'playing' : ''}`}
                 data-video-id={video.id}
                 style={{ position: 'relative' }}
               >

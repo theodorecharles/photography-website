@@ -46,6 +46,10 @@
   display: block;
 }
 
+.video-player-container.playing img {
+  opacity: 0;
+}
+
 /* Video overlay - positioned on top of thumbnail background */
 .modal-video-overlay {
   position: absolute;
