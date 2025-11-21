@@ -75,9 +75,9 @@
   },
   "photo": {
     "title": "Ảnh",
-    "noContentYet": "[EN] No Content Yet",
-    "albumEmpty": "[EN] This album is empty. Please log in to add content.",
-    "homepageEmpty": "[EN] Add some albums or use the homepage toggle to add them to the homepage.",
+    "noContentYet": "Chưa có nội dung",
+    "albumEmpty": "Album này còn trống. Vui lòng đăng nhập để thêm nội dung.",
+    "homepageEmpty": "Thêm một số album hoặc sử dụng công tắc trang chủ để thêm chúng vào trang chủ.",
     "goToAdminPanel": "Đi đến Bảng điều khiển Quản trị viên",
     "download": "Tải xuống",
     "share": "Chia sẻ",
@@ -1155,17 +1155,17 @@
     "forceRegenerate": "Buộc tái tạo tất cả"
   },
   "notifications": {
-    "bannerTitle": "[EN] Get Notified When Processing Jobs Complete",
-    "bannerDescription": "[EN] Enable push notifications to receive alerts when your video processing and image optimization jobs finish. You can work on other tabs or applications while jobs run in the background.",
-    "enable": "[EN] Enable Notifications",
-    "dismiss": "[EN] Maybe Later",
-    "active": "[EN] Push notifications enabled",
-    "sendTest": "[EN] Send Test",
-    "disable": "[EN] Disable",
-    "permissionGranted": "[EN] Push notifications enabled successfully!",
-    "permissionDenied": "[EN] Push notifications permission denied",
-    "error": "[EN] Failed to manage push notifications",
-    "unsubscribed": "[EN] Push notifications disabled",
-    "testSent": "[EN] Test notification sent! Check your device."
+    "bannerTitle": "Nhận thông báo khi các công việc xử lý hoàn tất",
+    "bannerDescription": "Bật thông báo đẩy để nhận cảnh báo khi các công việc xử lý video và tối ưu hóa hình ảnh của bạn hoàn tất. Bạn có thể làm việc trên các tab hoặc ứng dụng khác trong khi các công việc chạy ở nền.",
+    "enable": "Bật thông báo",
+    "dismiss": "Có thể sau",
+    "active": "Thông báo đẩy đã được bật",
+    "sendTest": "Gửi thử nghiệm",
+    "disable": "Vô hiệu hóa",
+    "permissionGranted": "Thông báo đẩy đã được kích hoạt thành công!",
+    "permissionDenied": "Quyền thông báo đẩy bị từ chối",
+    "error": "Quản lý thông báo đẩy không thành công",
+    "unsubscribed": "Thông báo đẩy đã bị tắt",
+    "testSent": "Thông báo thử nghiệm đã được gửi! Kiểm tra thiết bị của bạn."
   }
 }

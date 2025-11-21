@@ -75,9 +75,9 @@
   },
   "photo": {
     "title": "Foto",
-    "noContentYet": "[EN] No Content Yet",
-    "albumEmpty": "[EN] This album is empty. Please log in to add content.",
-    "homepageEmpty": "[EN] Add some albums or use the homepage toggle to add them to the homepage.",
+    "noContentYet": "Belum Ada Konten",
+    "albumEmpty": "Album ini kosong. Silakan masuk untuk menambahkan konten.",
+    "homepageEmpty": "Tambahkan beberapa album atau gunakan toggle beranda untuk menambahkannya ke beranda.",
     "goToAdminPanel": "Pergi ke Panel Admin",
     "download": "Unduh",
     "share": "Bagikan",
@@ -1155,17 +1155,17 @@
     "forceRegenerate": "Paksa Regenerasi Semua"
   },
   "notifications": {
-    "bannerTitle": "[EN] Get Notified When Processing Jobs Complete",
-    "bannerDescription": "[EN] Enable push notifications to receive alerts when your video processing and image optimization jobs finish. You can work on other tabs or applications while jobs run in the background.",
-    "enable": "[EN] Enable Notifications",
-    "dismiss": "[EN] Maybe Later",
-    "active": "[EN] Push notifications enabled",
-    "sendTest": "[EN] Send Test",
-    "disable": "[EN] Disable",
-    "permissionGranted": "[EN] Push notifications enabled successfully!",
-    "permissionDenied": "[EN] Push notifications permission denied",
-    "error": "[EN] Failed to manage push notifications",
-    "unsubscribed": "[EN] Push notifications disabled",
-    "testSent": "[EN] Test notification sent! Check your device."
+    "bannerTitle": "Dapatkan Notifikasi Ketika Pekerjaan Pemrosesan Selesai",
+    "bannerDescription": "Aktifkan notifikasi push untuk menerima pemberitahuan ketika pemrosesan video dan pekerjaan optimisasi gambar Anda selesai. Anda dapat bekerja di tab atau aplikasi lain sementara pekerjaan berjalan di latar belakang.",
+    "enable": "Aktifkan Notifikasi",
+    "dismiss": "Mungkin Nanti",
+    "active": "Notifikasi push diaktifkan",
+    "sendTest": "Kirim Uji Coba",
+    "disable": "Nonaktifkan",
+    "permissionGranted": "Notifikasi dorong berhasil diaktifkan!",
+    "permissionDenied": "Izin notifikasi dorong ditolak",
+    "error": "Gagal mengelola notifikasi dorong",
+    "unsubscribed": "Notifikasi dorong dinonaktifkan",
+    "testSent": "Notifikasi uji telah dikirim! Periksa perangkat Anda."
   }
 }

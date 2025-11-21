@@ -100,9 +100,9 @@
     "dateTaken": "Datum genomen",
     "resolution": "Resolutie",
     "duration": "Duur",
-    "noContentYet": "[EN] No Content Yet",
-    "albumEmpty": "[EN] This album is empty. Please log in to add content.",
-    "homepageEmpty": "[EN] Add some albums or use the homepage toggle to add them to the homepage.",
+    "noContentYet": "Geen inhoud nog",
+    "albumEmpty": "Dit album is leeg. Log in om inhoud toe te voegen.",
+    "homepageEmpty": "Voeg enkele albums toe of gebruik de homepage-schakelaar om ze aan de homepage toe te voegen.",
     "goToAdminPanel": "Ga naar het Admin Paneel"
   },
   "video": {
@@ -1155,17 +1155,17 @@
     "forceRegenerate": "Alle Dwingen Regenereren gebruikt"
   },
   "notifications": {
-    "bannerTitle": "[EN] Get Notified When Processing Jobs Complete",
-    "bannerDescription": "[EN] Enable push notifications to receive alerts when your video processing and image optimization jobs finish. You can work on other tabs or applications while jobs run in the background.",
-    "enable": "[EN] Enable Notifications",
-    "dismiss": "[EN] Maybe Later",
-    "active": "[EN] Push notifications enabled",
-    "sendTest": "[EN] Send Test",
-    "disable": "[EN] Disable",
-    "permissionGranted": "[EN] Push notifications enabled successfully!",
-    "permissionDenied": "[EN] Push notifications permission denied",
-    "error": "[EN] Failed to manage push notifications",
-    "unsubscribed": "[EN] Push notifications disabled",
-    "testSent": "[EN] Test notification sent! Check your device."
+    "bannerTitle": "Ontvang een melding wanneer verwerkingsjobs zijn voltooid",
+    "bannerDescription": "Schakel pushmeldingen in om meldingen te ontvangen wanneer je videoverwerking en afbeeldingsoptimalisatie zijn voltooid. Je kunt aan andere tabbladen of applicaties werken terwijl de taken op de achtergrond worden uitgevoerd.",
+    "enable": "Meldingen inschakelen",
+    "dismiss": "Misschien later",
+    "active": "Pushmeldingen ingeschakeld",
+    "sendTest": "Verstuur test",
+    "disable": "Uitschakelen",
+    "permissionGranted": "Pushmeldingen succesvol ingeschakeld!",
+    "permissionDenied": "Toestemming voor pushmeldingen geweigerd",
+    "error": "Mislukt om pushmeldingen te beheren",
+    "unsubscribed": "Pushmeldingen uitgeschakeld",
+    "testSent": "Testmelding verzonden! Controleer je apparaat."
   }
 }

@@ -14,6 +14,7 @@ import { requireAuth, requireAdmin, requireManager } from '../auth/middleware.js
 import { DATA_DIR } from '../config.js';
 import { error, warn, info, debug, verbose } from '../utils/logger.js';
 import { sendNotificationToUser } from '../push-notifications.js';
+import { translateNotificationForUser } from '../i18n-backend.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -451,7 +452,7 @@ router.post('/generate', requireManager, (req, res) => {
   });
 
   // Handle process completion
-  child.on('close', (code) => {
+  child.on('close', async (code) => {
     info(`[AITitles] Process exited with code ${code}`);
     
     const completeMsg = code === 0 ? '__COMPLETE__' : `__ERROR__ Process exited with code ${code}`;
@@ -495,14 +496,18 @@ router.post('/generate', requireManager, (req, res) => {
       
       // Send push notification to user
       if (req.user && 'id' in req.user) {
+        const userId = (req.user as any).id;
         const duration = Date.now() - runningJobs.aiTitles.startTime;
         const durationMin = (duration / 1000 / 60).toFixed(1);
         const message = code === 0 
           ? `✓ AI title generation complete (${durationMin}m)`
           : `✗ AI title generation failed with code ${code}`;
         
-        sendNotificationToUser((req.user as any).id, {
-          title: code === 0 ? 'AI Title Generation Complete' : 'AI Title Generation Failed',
+        const titleKey = code === 0 ? 'notifications.backend.aiTitlesComplete' : 'notifications.backend.aiTitlesFailed';
+        const title = await translateNotificationForUser(userId, titleKey);
+        
+        sendNotificationToUser(userId, {
+          title,
           body: message,
           icon: '/icon-192.png',
           badge: '/icon-192.png',

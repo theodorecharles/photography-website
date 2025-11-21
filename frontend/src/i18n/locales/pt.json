@@ -100,9 +100,9 @@
     "dateTaken": "Data da Captura",
     "resolution": "Resolução",
     "duration": "Duração",
-    "noContentYet": "[EN] No Content Yet",
-    "albumEmpty": "[EN] This album is empty. Please log in to add content.",
-    "homepageEmpty": "[EN] Add some albums or use the homepage toggle to add them to the homepage.",
+    "noContentYet": "Sem Conteúdo Ainda",
+    "albumEmpty": "Este álbum está vazio. Por favor, faça login para adicionar conteúdo.",
+    "homepageEmpty": "Adicione alguns álbuns ou use o botão da página inicial para adicioná-los à página inicial.",
     "goToAdminPanel": "Ir para o Painel de Administração"
   },
   "video": {
@@ -1155,17 +1155,17 @@
     "forceRegenerate": "Forçar Regenerar Todos"
   },
   "notifications": {
-    "bannerTitle": "[EN] Get Notified When Processing Jobs Complete",
-    "bannerDescription": "[EN] Enable push notifications to receive alerts when your video processing and image optimization jobs finish. You can work on other tabs or applications while jobs run in the background.",
-    "enable": "[EN] Enable Notifications",
-    "dismiss": "[EN] Maybe Later",
-    "active": "[EN] Push notifications enabled",
-    "sendTest": "[EN] Send Test",
-    "disable": "[EN] Disable",
-    "permissionGranted": "[EN] Push notifications enabled successfully!",
-    "permissionDenied": "[EN] Push notifications permission denied",
-    "error": "[EN] Failed to manage push notifications",
-    "unsubscribed": "[EN] Push notifications disabled",
-    "testSent": "[EN] Test notification sent! Check your device."
+    "bannerTitle": "Receber Notificações Quando os Trabalhos de Processamento Estiverem Concluídos",
+    "bannerDescription": "Ative as notificações push para receber alertas quando seus trabalhos de processamento de vídeo e otimização de imagem terminarem. Você pode trabalhar em outras abas ou aplicativos enquanto os trabalhos são executados em segundo plano.",
+    "enable": "Ativar Notificações",
+    "dismiss": "Talvez Mais Tarde",
+    "active": "Notificações push ativadas",
+    "sendTest": "Enviar Teste",
+    "disable": "Desativar",
+    "permissionGranted": "Notificações push ativadas com sucesso!",
+    "permissionDenied": "Permissão para notificações push negada",
+    "error": "Falha ao gerenciar notificações push",
+    "unsubscribed": "Notificações push desativadas",
+    "testSent": "Notificação de teste enviada! Verifique seu dispositivo."
   }
 }

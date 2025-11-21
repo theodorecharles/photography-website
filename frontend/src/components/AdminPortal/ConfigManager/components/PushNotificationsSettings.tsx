@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { PasswordInput } from '../../PasswordInput';
 import { Toggle } from './Toggle';
 import { API_URL } from '../../../../config';
@@ -24,6 +25,7 @@ const PushNotificationsSettings: React.FC<PushNotificationsSettingsProps> = ({
   savingSection,
   onSave,
 }) => {
+  const { t } = useTranslation();
   const [generating, setGenerating] = useState(false);
   const [userEmail, setUserEmail] = useState('');
   const [localKeys, setLocalKeys] = useState<{ publicKey: string; privateKey: string } | null>(null);
@@ -264,9 +266,9 @@ const PushNotificationsSettings: React.FC<PushNotificationsSettingsProps> = ({
         }}
       >
         <label className="settings-section-label">
-          PUSH NOTIFICATIONS
+          {t('notifications.settings.title')}
           {pushConfig.enabled && hasKeys && (
-            <span className="smtp-badge" style={{ marginLeft: '0.75rem' }}>✓ Configured</span>
+            <span className="smtp-badge" style={{ marginLeft: '0.75rem' }}>{t('notifications.settings.configured')}</span>
           )}
         </label>
         {hasManualChanges && (
@@ -284,7 +286,7 @@ const PushNotificationsSettings: React.FC<PushNotificationsSettingsProps> = ({
                 fontSize: '0.85rem',
               }}
             >
-              Cancel
+              {t('notifications.settings.cancel')}
             </button>
             <button
               type="button"
@@ -296,7 +298,7 @@ const PushNotificationsSettings: React.FC<PushNotificationsSettingsProps> = ({
               className="btn-primary"
               style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}
             >
-              {savingSection === 'pushNotifications' ? 'Saving...' : 'Save'}
+              {savingSection === 'pushNotifications' ? t('notifications.settings.saving') : t('notifications.settings.save')}
             </button>
           </div>
         )}
@@ -309,7 +311,7 @@ const PushNotificationsSettings: React.FC<PushNotificationsSettingsProps> = ({
           marginBottom: '1rem',
         }}
       >
-        Notify managers and admins when video processing and image optimization jobs complete
+        {t('notifications.settings.description')}
       </p>
 
       {/* Subscription Status and Controls */}
@@ -330,7 +332,7 @@ const PushNotificationsSettings: React.FC<PushNotificationsSettingsProps> = ({
             <Toggle
               checked={pushConfig.enabled || false}
               onChange={handleToggleEnable}
-              label="Enable Push Notifications"
+              label={t('notifications.settings.enableLabel')}
               disabled={generating}
             />
             <p
@@ -343,14 +345,14 @@ const PushNotificationsSettings: React.FC<PushNotificationsSettingsProps> = ({
               }}
             >
               {generating 
-                ? '⏳ Generating VAPID keys...' 
-                : 'When enabled, managers and admins will be prompted to allow browser notifications'}
+                ? t('notifications.settings.generatingKeys')
+                : t('notifications.settings.enabledDescription')}
             </p>
           </div>
 
           {/* Row 1, Col 2: VAPID Subject */}
           <div className="branding-group" style={{ margin: 0, display: (pushConfig.enabled || hasKeys) ? 'block' : 'none' }}>
-            <label className="branding-label">VAPID Subject</label>
+            <label className="branding-label">{t('notifications.settings.vapidSubject')}</label>
             <input
               type="text"
               className="branding-input"
@@ -360,13 +362,13 @@ const PushNotificationsSettings: React.FC<PushNotificationsSettingsProps> = ({
               disabled={generating}
             />
             <p style={{ fontSize: '0.8rem', color: '#666', marginTop: '0.5rem', marginBottom: 0 }}>
-              Contact email (mailto:) or website URL (https://) for the push service
+              {t('notifications.settings.vapidSubjectHint')}
             </p>
           </div>
 
           {/* Row 2, Col 1: VAPID Public Key */}
           <div className="branding-group" style={{ margin: 0, display: (pushConfig.enabled || hasKeys) ? 'block' : 'none' }}>
-            <label className="branding-label">VAPID Public Key</label>
+            <label className="branding-label">{t('notifications.settings.vapidPublicKey')}</label>
             <input
               type="text"
               className="branding-input"
@@ -380,13 +382,13 @@ const PushNotificationsSettings: React.FC<PushNotificationsSettingsProps> = ({
               readOnly
             />
             <p style={{ fontSize: '0.8rem', color: '#666', marginTop: '0.5rem', marginBottom: 0 }}>
-              Public key for browser subscription (safe to share)
+              {t('notifications.settings.vapidPublicKeyHint')}
             </p>
           </div>
 
           {/* Row 2, Col 2: VAPID Private Key */}
           <div className="branding-group" style={{ margin: 0, display: (pushConfig.enabled || hasKeys) ? 'block' : 'none' }}>
-            <label className="branding-label">VAPID Private Key</label>
+            <label className="branding-label">{t('notifications.settings.vapidPrivateKey')}</label>
             <PasswordInput
               value={displayPrivateKey}
               onChange={(e) => {
@@ -398,7 +400,7 @@ const PushNotificationsSettings: React.FC<PushNotificationsSettingsProps> = ({
               disabled={generating}
             />
             <p style={{ fontSize: '0.8rem', color: '#666', marginTop: '0.5rem', marginBottom: 0 }}>
-              Private key (keep secret!)
+              {t('notifications.settings.vapidPrivateKeyHint')}
             </p>
           </div>
         </div>
@@ -413,10 +415,10 @@ const PushNotificationsSettings: React.FC<PushNotificationsSettingsProps> = ({
               disabled={generating}
               style={{ fontSize: '0.875rem' }}
             >
-              {generating ? '⏳ Generating...' : '🔑 Generate New Keys'}
+              {generating ? t('notifications.settings.generating') : t('notifications.settings.generateNewKeys')}
             </button>
             <p style={{ fontSize: '0.8rem', color: '#f59e0b', marginTop: '0.5rem', marginBottom: 0 }}>
-              ⚠️ Warning: Generating new keys will invalidate all existing subscriptions
+              {t('notifications.settings.generateKeysWarning')}
             </p>
           </div>
         )}
@@ -426,15 +428,13 @@ const PushNotificationsSettings: React.FC<PushNotificationsSettingsProps> = ({
           <div className="modal-overlay" onClick={() => setShowConfirmModal(false)}>
             <div className="share-modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '500px' }}>
               <div className="share-modal-header">
-                <h2>Generate New Keys?</h2>
+                <h2>{t('notifications.settings.confirmTitle')}</h2>
                 <button className="close-button" onClick={() => setShowConfirmModal(false)} aria-label="Close">
                   ×
                 </button>
               </div>
               <div className="share-modal-content">
-                <p className="share-description">
-                  This will generate new VAPID keys and <strong>invalidate all existing push notification subscriptions</strong>. 
-                  All users will need to re-subscribe to receive notifications.
+                <p className="share-description" dangerouslySetInnerHTML={{ __html: t('notifications.settings.confirmMessage') }}>
                 </p>
                 <div
                   style={{
@@ -446,7 +446,7 @@ const PushNotificationsSettings: React.FC<PushNotificationsSettingsProps> = ({
                   }}
                 >
                   <button onClick={() => setShowConfirmModal(false)} className="btn-secondary">
-                    Cancel
+                    {t('notifications.settings.cancel')}
                   </button>
                   <button
                     onClick={() => {
@@ -460,7 +460,7 @@ const PushNotificationsSettings: React.FC<PushNotificationsSettingsProps> = ({
                       color: '#f59e0b',
                     }}
                   >
-                    Generate New Keys
+                    {t('notifications.settings.confirmGenerate')}
                   </button>
                 </div>
               </div>

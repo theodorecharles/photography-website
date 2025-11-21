@@ -100,9 +100,9 @@
     "dateTaken": "Çekim Tarihi",
     "resolution": "Çözünürlük",
     "duration": "Süre",
-    "noContentYet": "[EN] No Content Yet",
-    "albumEmpty": "[EN] This album is empty. Please log in to add content.",
-    "homepageEmpty": "[EN] Add some albums or use the homepage toggle to add them to the homepage.",
+    "noContentYet": "Henüz İçerik Yok",
+    "albumEmpty": "Bu albüm boş. Lütfen içerik eklemek için giriş yapın.",
+    "homepageEmpty": "Bazı albümler ekleyin veya bunları anasayfaya eklemek için anasayfa geçişini kullanın.",
     "goToAdminPanel": "Yönetici Paneline Git"
   },
   "video": {
@@ -1155,17 +1155,17 @@
     "forceRegenerate": "Tümünü Zorla Yenile"
   },
   "notifications": {
-    "bannerTitle": "[EN] Get Notified When Processing Jobs Complete",
-    "bannerDescription": "[EN] Enable push notifications to receive alerts when your video processing and image optimization jobs finish. You can work on other tabs or applications while jobs run in the background.",
-    "enable": "[EN] Enable Notifications",
-    "dismiss": "[EN] Maybe Later",
-    "active": "[EN] Push notifications enabled",
-    "sendTest": "[EN] Send Test",
-    "disable": "[EN] Disable",
-    "permissionGranted": "[EN] Push notifications enabled successfully!",
-    "permissionDenied": "[EN] Push notifications permission denied",
-    "error": "[EN] Failed to manage push notifications",
-    "unsubscribed": "[EN] Push notifications disabled",
-    "testSent": "[EN] Test notification sent! Check your device."
+    "bannerTitle": "İşlem Görevleri Tamamlandığında Bildirim Al",
+    "bannerDescription": "Video işleme ve görüntü optimizasyonu görevleriniz tamamlandığında bildirim almak için push bildirimlerini etkinleştirin. Görevler arka planda çalışırken diğer sekmelerde veya uygulamalarda çalışabilirsiniz.",
+    "enable": "Bildirimleri Etkinleştir",
+    "dismiss": "Belki Sonra",
+    "active": "Push bildirimleri etkinleştirildi",
+    "sendTest": "Test Gönder",
+    "disable": "Devre Dışı Bırak",
+    "permissionGranted": "Push bildirimleri başarıyla etkinleştirildi!",
+    "permissionDenied": "Push bildirimleri izni reddedildi",
+    "error": "Push bildirimlerini yönetmekte başarısız olundu",
+    "unsubscribed": "Push bildirimleri devre dışı bırakıldı",
+    "testSent": "Test bildirimi gönderildi! Cihazınızı kontrol edin."
   }
 }

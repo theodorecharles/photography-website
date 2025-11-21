@@ -100,9 +100,9 @@
     "dateTaken": "촬영 날짜",
     "resolution": "해상도",
     "duration": "지속 시간",
-    "noContentYet": "[EN] No Content Yet",
-    "albumEmpty": "[EN] This album is empty. Please log in to add content.",
-    "homepageEmpty": "[EN] Add some albums or use the homepage toggle to add them to the homepage.",
+    "noContentYet": "아직 콘텐츠가 없습니다",
+    "albumEmpty": "이 앨범은 비어 있습니다. 콘텐츠를 추가하려면 로그인하세요.",
+    "homepageEmpty": "앨범을 추가하거나 홈페이지 토글을 사용하여 홈페이지에 추가하세요.",
     "goToAdminPanel": "관리자 패널로 이동"
   },
   "video": {
@@ -1155,17 +1155,17 @@
     "forceRegenerate": "모두 강제로 재생성 사용 시 변경됩니다."
   },
   "notifications": {
-    "bannerTitle": "[EN] Get Notified When Processing Jobs Complete",
-    "bannerDescription": "[EN] Enable push notifications to receive alerts when your video processing and image optimization jobs finish. You can work on other tabs or applications while jobs run in the background.",
-    "enable": "[EN] Enable Notifications",
-    "dismiss": "[EN] Maybe Later",
-    "active": "[EN] Push notifications enabled",
-    "sendTest": "[EN] Send Test",
-    "disable": "[EN] Disable",
-    "permissionGranted": "[EN] Push notifications enabled successfully!",
-    "permissionDenied": "[EN] Push notifications permission denied",
-    "error": "[EN] Failed to manage push notifications",
-    "unsubscribed": "[EN] Push notifications disabled",
-    "testSent": "[EN] Test notification sent! Check your device."
+    "bannerTitle": "처리 작업이 완료되면 알림 받기",
+    "bannerDescription": "비디오 처리 및 이미지 최적화 작업이 완료되면 알림을 받기 위해 푸시 알림을 활성화하세요. 작업이 백그라운드에서 실행되는 동안 다른 탭이나 애플리케이션에서 작업할 수 있습니다.",
+    "enable": "알림 활성화",
+    "dismiss": "나중에",
+    "active": "푸시 알림이 활성화되었습니다",
+    "sendTest": "테스트 전송",
+    "disable": "비활성화",
+    "permissionGranted": "푸시 알림이 성공적으로 활성화되었습니다!",
+    "permissionDenied": "푸시 알림 권한이 거부되었습니다",
+    "error": "푸시 알림 관리에 실패했습니다",
+    "unsubscribed": "푸시 알림이 비활성화되었습니다",
+    "testSent": "테스트 알림이 전송되었습니다! 기기를 확인하세요."
   }
 }

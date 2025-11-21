@@ -24,6 +24,7 @@ import {
 import { reloadConfig } from '../config.js';
 import { getDatabase } from '../database.js';
 import { info, error, warn } from '../utils/logger.js';
+import { translateNotificationForUser } from '../i18n-backend.js';
 
 const router = express.Router();
 
@@ -230,9 +231,12 @@ router.post('/test', csrfProtection, requireManager, async (req, res) => {
   try {
     const userId = (req.user as any).id;
     
+    const title = await translateNotificationForUser(userId, 'notifications.backend.testNotificationTitle');
+    const body = await translateNotificationForUser(userId, 'notifications.backend.testNotificationBody');
+    
     await sendNotificationToUser(userId, {
-      title: 'Test Notification',
-      body: 'Push notifications are working! You\'ll receive alerts when your processing jobs complete.',
+      title,
+      body,
       icon: '/icon-192.png',
       badge: '/icon-192.png',
       tag: 'test-notification',

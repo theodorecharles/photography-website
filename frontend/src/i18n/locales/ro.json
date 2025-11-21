@@ -75,9 +75,9 @@
   },
   "photo": {
     "title": "Fotografie",
-    "noContentYet": "[EN] No Content Yet",
-    "albumEmpty": "[EN] This album is empty. Please log in to add content.",
-    "homepageEmpty": "[EN] Add some albums or use the homepage toggle to add them to the homepage.",
+    "noContentYet": "Nu există conținut încă",
+    "albumEmpty": "Acest album este gol. Te rugăm să te conectezi pentru a adăuga conținut.",
+    "homepageEmpty": "Adaugă câteva albume sau folosește comutatorul de pe pagina principală pentru a le adăuga pe pagina principală.",
     "goToAdminPanel": "Du-te la Panoul de Admin",
     "download": "Descarcă",
     "share": "Împărtășește",
@@ -1155,17 +1155,17 @@
     "forceRegenerate": "Forțează regenerarea tuturor"
   },
   "notifications": {
-    "bannerTitle": "[EN] Get Notified When Processing Jobs Complete",
-    "bannerDescription": "[EN] Enable push notifications to receive alerts when your video processing and image optimization jobs finish. You can work on other tabs or applications while jobs run in the background.",
-    "enable": "[EN] Enable Notifications",
-    "dismiss": "[EN] Maybe Later",
-    "active": "[EN] Push notifications enabled",
-    "sendTest": "[EN] Send Test",
-    "disable": "[EN] Disable",
-    "permissionGranted": "[EN] Push notifications enabled successfully!",
-    "permissionDenied": "[EN] Push notifications permission denied",
-    "error": "[EN] Failed to manage push notifications",
-    "unsubscribed": "[EN] Push notifications disabled",
-    "testSent": "[EN] Test notification sent! Check your device."
+    "bannerTitle": "Fii notificat când lucrările de procesare sunt complete",
+    "bannerDescription": "Activează notificările push pentru a primi alerte când lucrările tale de procesare video și optimizare a imaginilor se termină. Poți lucra pe alte tab-uri sau aplicații în timp ce lucrările rulează în fundal.",
+    "enable": "Activează notificările",
+    "dismiss": "Poate mai târziu",
+    "active": "Notificările push activate",
+    "sendTest": "Trimite test",
+    "disable": "Dezactivează",
+    "permissionGranted": "Notificările push activatează cu succes!",
+    "permissionDenied": "Permisiunea pentru notificările push a fost refuzată",
+    "error": "Gestionarea notificărilor push a eșuat",
+    "unsubscribed": "Notificările push dezactivate",
+    "testSent": "Notificare de test trimisă! Verifică dispozitivul tău."
   }
 }

@@ -10,6 +10,7 @@ import { fileURLToPath } from "url";
 import { error, warn, info } from '../utils/logger.js';
 import { requireManager } from '../auth/middleware.js';
 import { sendNotificationToUser } from '../push-notifications.js';
+import { translateNotificationForUser } from '../i18n-backend.js';
 
 const router = express.Router();
 
@@ -158,7 +159,7 @@ router.post('/regenerate', requireManager, (req, res) => {
   });
 
   // Handle process completion
-  child.on('close', (code: number) => {
+  child.on('close', async (code: number) => {
     const duration = Date.now() - (runningVideoOptimizationJob?.startTime || Date.now());
     const totalSeconds = Math.floor(duration / 1000);
     const minutes = Math.floor(totalSeconds / 60);
@@ -194,8 +195,12 @@ router.post('/regenerate', requireManager, (req, res) => {
       
       // Send push notification to user
       if (req.user && 'id' in req.user) {
-        sendNotificationToUser((req.user as any).id, {
-          title: code === 0 ? 'Video Processing Complete' : 'Video Processing Failed',
+        const userId = (req.user as any).id;
+        const titleKey = code === 0 ? 'notifications.backend.videoProcessingComplete' : 'notifications.backend.videoProcessingFailed';
+        const title = await translateNotificationForUser(userId, titleKey);
+        
+        sendNotificationToUser(userId, {
+          title,
           body: notificationBody,
           icon: '/icon-192.png',
           badge: '/icon-192.png',
@@ -334,7 +339,7 @@ router.post('/reprocess', requireManager, (req, res) => {
   });
 
   // Handle process completion
-  child.on('close', (code: number) => {
+  child.on('close', async (code: number) => {
     const duration = Date.now() - (runningVideoOptimizationJob?.startTime || Date.now());
     const totalSeconds = Math.floor(duration / 1000);
     const minutes = Math.floor(totalSeconds / 60);
@@ -365,8 +370,12 @@ router.post('/reprocess', requireManager, (req, res) => {
       
       // Send push notification to user
       if (req.user && 'id' in req.user) {
-        sendNotificationToUser((req.user as any).id, {
-          title: code === 0 ? 'Video Reprocessing Complete' : 'Video Reprocessing Failed',
+        const userId = (req.user as any).id;
+        const titleKey = code === 0 ? 'notifications.backend.videoReprocessingComplete' : 'notifications.backend.videoReprocessingFailed';
+        const title = await translateNotificationForUser(userId, titleKey);
+        
+        sendNotificationToUser(userId, {
+          title,
           body: notificationBody,
           icon: '/icon-192.png',
           badge: '/icon-192.png',

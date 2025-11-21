@@ -100,9 +100,9 @@
     "dateTaken": "Дата съемки",
     "resolution": "Разрешение",
     "duration": "Длительность",
-    "noContentYet": "[EN] No Content Yet",
-    "albumEmpty": "[EN] This album is empty. Please log in to add content.",
-    "homepageEmpty": "[EN] Add some albums or use the homepage toggle to add them to the homepage.",
+    "noContentYet": "Нет контента",
+    "albumEmpty": "Этот альбом пуст. Пожалуйста, войдите, чтобы добавить контент.",
+    "homepageEmpty": "Добавьте несколько альбомов или используйте переключатель на главной странице, чтобы добавить их на главную страницу.",
     "goToAdminPanel": "Перейти в панель администратора"
   },
   "video": {
@@ -1155,17 +1155,17 @@
     "forceRegenerate": "Принудительно регенерировать все"
   },
   "notifications": {
-    "bannerTitle": "[EN] Get Notified When Processing Jobs Complete",
-    "bannerDescription": "[EN] Enable push notifications to receive alerts when your video processing and image optimization jobs finish. You can work on other tabs or applications while jobs run in the background.",
-    "enable": "[EN] Enable Notifications",
-    "dismiss": "[EN] Maybe Later",
-    "active": "[EN] Push notifications enabled",
-    "sendTest": "[EN] Send Test",
-    "disable": "[EN] Disable",
-    "permissionGranted": "[EN] Push notifications enabled successfully!",
-    "permissionDenied": "[EN] Push notifications permission denied",
-    "error": "[EN] Failed to manage push notifications",
-    "unsubscribed": "[EN] Push notifications disabled",
-    "testSent": "[EN] Test notification sent! Check your device."
+    "bannerTitle": "Получать уведомления, когда задачи обработки завершены",
+    "bannerDescription": "Включите push-уведомления, чтобы получать оповещения, когда ваши задачи обработки видео и оптимизации изображений завершатся. Вы можете работать в других вкладках или приложениях, пока задачи выполняются в фоновом режиме.",
+    "enable": "Включить уведомления",
+    "dismiss": "Может быть позже",
+    "active": "Push-уведомления включены",
+    "sendTest": "Отправить тест",
+    "disable": "Отключить",
+    "permissionGranted": "Уведомления Push успешно включены!",
+    "permissionDenied": "Разрешение на уведомления Push отклонено",
+    "error": "Не удалось управлять уведомлениями Push",
+    "unsubscribed": "Уведомления Push отключены",
+    "testSent": "Тестовое уведомление отправлено! Проверьте ваше устройство."
   }
 }

@@ -100,9 +100,9 @@
     "dateTaken": "Datum tagen",
     "resolution": "Upplösning",
     "duration": "Varaktighet",
-    "noContentYet": "[EN] No Content Yet",
-    "albumEmpty": "[EN] This album is empty. Please log in to add content.",
-    "homepageEmpty": "[EN] Add some albums or use the homepage toggle to add them to the homepage.",
+    "noContentYet": "Ingen innehåll än",
+    "albumEmpty": "Detta album är tomt. Vänligen logga in för att lägga till innehåll.",
+    "homepageEmpty": "Lägg till några album eller använd hemsidans växlingsknapp för att lägga till dem på hemsidan.",
     "goToAdminPanel": "Gå till administrationspanelen"
   },
   "video": {
@@ -1155,17 +1155,17 @@
     "forceRegenerate": "Tvinga att återskapa alla"
   },
   "notifications": {
-    "bannerTitle": "[EN] Get Notified When Processing Jobs Complete",
-    "bannerDescription": "[EN] Enable push notifications to receive alerts when your video processing and image optimization jobs finish. You can work on other tabs or applications while jobs run in the background.",
-    "enable": "[EN] Enable Notifications",
-    "dismiss": "[EN] Maybe Later",
-    "active": "[EN] Push notifications enabled",
-    "sendTest": "[EN] Send Test",
-    "disable": "[EN] Disable",
-    "permissionGranted": "[EN] Push notifications enabled successfully!",
-    "permissionDenied": "[EN] Push notifications permission denied",
-    "error": "[EN] Failed to manage push notifications",
-    "unsubscribed": "[EN] Push notifications disabled",
-    "testSent": "[EN] Test notification sent! Check your device."
+    "bannerTitle": "Få meddelande när bearbetningsjobb är klara",
+    "bannerDescription": "Aktivera push-notiser för att få aviseringar när dina videobearbetningar och bildoptimeringsjobb är klara. Du kan arbeta med andra flikar eller applikationer medan jobben körs i bakgrunden.",
+    "enable": "Aktivera aviseringar",
+    "dismiss": "Kanske senare",
+    "active": "Push-notiser aktiverade",
+    "sendTest": "Skicka test",
+    "disable": "Inaktivera",
+    "permissionGranted": "Push-notiser aktiverade framgångsrikt!",
+    "permissionDenied": "Behörighet för push-notiser nekad",
+    "error": "Misslyckades med att hantera push-notiser",
+    "unsubscribed": "Push-notiser inaktiverade",
+    "testSent": "Testnotifikation skickad! Kontrollera din enhet."
   }
 }
