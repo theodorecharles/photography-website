@@ -6,7 +6,7 @@
   display: flex;
   flex-direction: column;
   gap: 48px;
-  max-width: 1920px;
+  max-width: 1024px;
   margin: 0 auto;
   padding: 20px;
   padding-top: 74px; /* Account for header (54px) + spacing (20px) */
