@@ -4,7 +4,7 @@
  * as well as helper functions for file system operations.
  */
 
-import { Router, Request } from "express";
+import { Router, Request, Response } from "express";
 import fs from "fs";
 import path from "path";
 import exifr from "exifr";
@@ -285,13 +285,8 @@ router.get("/api/albums", (req: Request, res) => {
   }
 });
 
-// Get photos in a specific album
-// Get static JSON for an album (authenticated endpoint)
-// Supports both /api/albums/:album/photos-json and /api/albums/:folder/:album/photos-json
-router.get("/api/albums/:albumOrFolder/:album?/photos-json", (req: Request, res): void => {
-  // Extract album name (last segment of path)
-  const albumName = req.params.album || req.params.albumOrFolder;
-
+// Shared handler for static JSON
+const serveAlbumJSON = (req: Request, res: Response, albumName: string): void => {
   // Sanitize album parameter to prevent path traversal
   const sanitizedAlbum = sanitizePath(albumName);
   if (!sanitizedAlbum) {
@@ -330,22 +325,20 @@ router.get("/api/albums/:albumOrFolder/:album?/photos-json", (req: Request, res)
   
   // Fallback: JSON doesn't exist, return 404
   res.status(404).json({ error: "Album JSON not found" });
+};
+
+// Get static JSON for an album - with folder
+router.get("/api/albums/:folder/:album/photos-json", (req: Request, res): void => {
+  serveAlbumJSON(req, res, req.params.album);
 });
 
-// Supports both /api/albums/:album/photos and /api/albums/:folder/:album/photos
-router.get("/api/albums/:albumOrFolder/:albumOrPhotos?/:photos?", (req: Request, res): void => {
-  // Handle both URL patterns:
-  // - /api/albums/:album/photos → albumOrFolder = album, albumOrPhotos = 'photos'
-  // - /api/albums/:folder/:album/photos → albumOrFolder = folder, albumOrPhotos = album, photos = 'photos'
-  const albumName = req.params.photos === 'photos' 
-    ? req.params.albumOrPhotos 
-    : (req.params.albumOrPhotos === 'photos' ? req.params.albumOrFolder : null);
-  
-  if (!albumName) {
-    res.status(400).json({ error: "Invalid album name" });
-    return;
-  }
-  
+// Get static JSON for an album - without folder
+router.get("/api/albums/:album/photos-json", (req: Request, res): void => {
+  serveAlbumJSON(req, res, req.params.album);
+});
+
+// Shared handler for album photos
+const serveAlbumPhotos = (req: Request, res: Response, albumName: string): void => {
   const startTime = Date.now();
 
   // Sanitize album parameter to prevent path traversal
@@ -413,6 +406,16 @@ router.get("/api/albums/:albumOrFolder/:albumOrPhotos?/:photos?", (req: Request,
     photos,
     published: albumState.published
   });
+};
+
+// Get album photos - with folder
+router.get("/api/albums/:folder/:album/photos", (req: Request, res): void => {
+  serveAlbumPhotos(req, res, req.params.album);
+});
+
+// Get album photos - without folder
+router.get("/api/albums/:album/photos", (req: Request, res): void => {
+  serveAlbumPhotos(req, res, req.params.album);
 });
 
 // Get all photos from albums configured for homepage in random order
@@ -490,24 +493,8 @@ router.get("/api/shared/:secretKey", async (req: Request, res): Promise<void> =>
   });
 });
 
-// Get EXIF data for a specific photo
-// Supports both /api/photos/:album/:filename/exif and /api/photos/:folder/:album/:filename/exif
-router.get("/api/photos/:folderOrAlbum/:albumOrFilename/:filenameOrExif?/:exif?", async (req, res): Promise<void> => {
-  // Handle both URL patterns:
-  // - /api/photos/:album/:filename/exif → folderOrAlbum = album, albumOrFilename = filename, filenameOrExif = 'exif'
-  // - /api/photos/:folder/:album/:filename/exif → folderOrAlbum = folder, albumOrFilename = album, filenameOrExif = filename, exif = 'exif'
-  const albumName = req.params.exif === 'exif' 
-    ? req.params.albumOrFilename 
-    : req.params.folderOrAlbum;
-  const filename = req.params.exif === 'exif' 
-    ? req.params.filenameOrExif 
-    : req.params.albumOrFilename;
-  
-  if (!albumName || !filename) {
-    res.status(400).json({ error: "Invalid album or filename" });
-    return;
-  }
-
+// Shared handler for EXIF data
+const servePhotoEXIF = async (req: Request, res: Response, albumName: string, filename: string): Promise<void> => {
   // Sanitize inputs to prevent path traversal
   const sanitizedAlbum = sanitizePath(albumName);
   const sanitizedFilename = filename.replace(/[^a-zA-Z0-9_. -]/g, '');
@@ -546,26 +533,20 @@ router.get("/api/photos/:folderOrAlbum/:albumOrFilename/:filenameOrExif?/:exif?"
     error(`[Albums] Failed to read EXIF for ${albumName}/${filename}:`, err);
     res.status(500).json({ error: "Failed to read EXIF data" });
   }
+};
+
+// Get EXIF data - with folder
+router.get("/api/photos/:folder/:album/:filename/exif", async (req, res): Promise<void> => {
+  await servePhotoEXIF(req, res, req.params.album, req.params.filename);
 });
 
-// Get video metadata for a specific video using ffprobe
-// Supports both /api/videos/:album/:filename/metadata and /api/videos/:folder/:album/:filename/metadata
-router.get("/api/videos/:folderOrAlbum/:albumOrFilename/:filenameOrMetadata?/:metadata?", async (req, res): Promise<void> => {
-  // Handle both URL patterns:
-  // - /api/videos/:album/:filename/metadata → folderOrAlbum = album, albumOrFilename = filename, filenameOrMetadata = 'metadata'
-  // - /api/videos/:folder/:album/:filename/metadata → folderOrAlbum = folder, albumOrFilename = album, filenameOrMetadata = filename, metadata = 'metadata'
-  const albumName = req.params.metadata === 'metadata' 
-    ? req.params.albumOrFilename 
-    : req.params.folderOrAlbum;
-  const filename = req.params.metadata === 'metadata' 
-    ? req.params.filenameOrMetadata 
-    : req.params.albumOrFilename;
-  
-  if (!albumName || !filename) {
-    res.status(400).json({ error: "Invalid album or filename" });
-    return;
-  }
+// Get EXIF data - without folder
+router.get("/api/photos/:album/:filename/exif", async (req, res): Promise<void> => {
+  await servePhotoEXIF(req, res, req.params.album, req.params.filename);
+});
 
+// Shared handler for video metadata
+const serveVideoMetadata = async (req: Request, res: Response, albumName: string, filename: string): Promise<void> => {
   // Sanitize inputs to prevent path traversal
   const sanitizedAlbum = sanitizePath(albumName);
   const sanitizedFilename = filename.replace(/[^a-zA-Z0-9_. -]/g, '');
@@ -605,6 +586,16 @@ router.get("/api/videos/:folderOrAlbum/:albumOrFilename/:filenameOrMetadata?/:me
     error(`[Albums] Failed to read video metadata for ${albumName}/${filename}:`, err);
     res.status(500).json({ error: "Failed to read video metadata" });
   }
+};
+
+// Get video metadata - with folder
+router.get("/api/videos/:folder/:album/:filename/metadata", async (req, res): Promise<void> => {
+  await serveVideoMetadata(req, res, req.params.album, req.params.filename);
+});
+
+// Get video metadata - without folder
+router.get("/api/videos/:album/:filename/metadata", async (req, res): Promise<void> => {
+  await serveVideoMetadata(req, res, req.params.album, req.params.filename);
 });
 
 export default router;
