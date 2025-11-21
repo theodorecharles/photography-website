@@ -286,7 +286,7 @@ const ContentGrid: React.FC<ContentGridProps> = ({ album, onAlbumNotFound, initi
             `${API_URL}/api/albums/${album}/photos${queryString}`
           );
           if (!response.ok) {
-            if (response.status === 404) {
+            if (response.status === 404 || response.status === 403) {
               throw new Error("ALBUM_NOT_FOUND");
             }
             throw new Error("Failed to fetch photos");
