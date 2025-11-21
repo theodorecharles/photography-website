@@ -111,21 +111,16 @@ const VideoListView: React.FC<VideoListViewProps> = ({ videos, album, secretKey 
                 data-video-id={video.id}
                 style={{ position: 'relative' }}
               >
-                {/* Thumbnail with opacity fade transition */}
-                <div style={{ 
-                  opacity: isPlaying ? 0 : 1,
-                  transition: 'opacity 300ms ease-out'
-                }}>
-                  <ImageCanvas
-                    photo={video}
-                    apiUrl={API_URL}
-                    imageQueryString={imageQueryString}
-                    modalImageLoaded={modalImageLoadedMap[video.id] || false}
-                    showModalImage={true}
-                    onThumbnailLoad={() => handleThumbnailLoad(video.id)}
-                    onModalLoad={(img) => handleModalLoad(video.id, img)}
-                  />
-                </div>
+                {/* Always show thumbnail and modal image */}
+                <ImageCanvas
+                  photo={video}
+                  apiUrl={API_URL}
+                  imageQueryString={imageQueryString}
+                  modalImageLoaded={modalImageLoadedMap[video.id] || false}
+                  showModalImage={true}
+                  onThumbnailLoad={() => handleThumbnailLoad(video.id)}
+                  onModalLoad={(img) => handleModalLoad(video.id, img)}
+                />
                 
                 {/* Play button overlay (hidden when video is playing) */}
                 {thumbnailLoaded && !isPlaying && (
