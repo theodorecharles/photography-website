@@ -5,7 +5,6 @@
 
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { API_URL } from '../config';
 import { Photo } from '../types/photo';
 import VideoPlayer from './ContentModal/VideoPlayer';
 import { ShareIcon } from './icons';
@@ -85,7 +84,7 @@ const VideoListView: React.FC<VideoListViewProps> = ({ videos, album, secretKey 
                   album={video.album}
                   filename={filename}
                   videoTitle={video.title}
-                  posterUrl={`${API_URL}${video.thumbnail}${secretKey ? `?key=${secretKey}` : ''}`}
+                  posterUrl={`${video.thumbnail}${secretKey ? `?key=${secretKey}` : ''}`}
                   autoplay={false}
                   secretKey={secretKey}
                 />
