@@ -701,7 +701,20 @@
     "invalidMinutes": "Please enter a valid number of minutes",
     "linkCopied": "✓ Link copied to clipboard!",
     "generating": "Generating...",
-    "copyLink": "Copy Link"
+    "copyLink": "Copy Link",
+    "oneHour": "1 hour",
+    "oneDay": "1 day",
+    "oneWeek": "1 week",
+    "oneMonth": "1 month",
+    "never": "Never",
+    "custom": "Custom...",
+    "generate": "Generate",
+    "invalidCustomTime": "Please enter a valid number of minutes",
+    "copied": "✓ Copied!"
+  },
+  "videoShare": {
+    "shareVideo": "Share Video",
+    "description": "Create a shareable link to give visitors access to this video. The link can be set to expire after a certain time."
   },
   "metrics": {
     "title": "Metrics",
@@ -813,7 +826,8 @@
     "albumEmpty": "This album is empty. Upload some videos to get started!",
     "copyShareLink": "Copy share link",
     "linkCopied": "Link copied!",
-    "share": "Share"
+    "share": "Share",
+    "shareVideo": "Share this video"
   },
   "videoPage": {
     "invalidUrl": "Invalid video URL",

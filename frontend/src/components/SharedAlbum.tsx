@@ -4,9 +4,10 @@
  */
 
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import ContentGrid from './ContentGrid';
+import VideoListView from './VideoListView';
 import { API_URL } from '../config';
 import { trackSharedAlbumView } from '../utils/analytics';
 import ExpiredLink from './Misc/ExpiredLink';
@@ -42,6 +43,8 @@ interface ToastMessage {
 export default function SharedAlbum() {
   const { t } = useTranslation();
   const { secretKey } = useParams();
+  const [searchParams] = useSearchParams();
+  const videoParam = searchParams.get('video'); // Get ?video=filename from URL
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [expired, setExpired] = useState(false);
@@ -258,6 +261,17 @@ export default function SharedAlbum() {
     externalLinks 
   });
 
+  // If videoParam is provided, filter to show only that video
+  const displayPhotos = videoParam 
+    ? photos.filter(photo => {
+        const filename = photo.id.split('/').pop();
+        return filename === decodeURIComponent(videoParam);
+      })
+    : photos;
+
+  // Check if showing only videos
+  const allVideos = displayPhotos.every(photo => photo.id.toLowerCase().match(/\.(mp4|mov|avi|mkv|webm)$/));
+
   return (
     <>
       <Header 
@@ -269,12 +283,23 @@ export default function SharedAlbum() {
         avatarCacheBust={avatarCacheBust}
       />
       <main className="main-content">
-        {albumName && (
+        {albumName && !videoParam && (
           <h1 className="main-content-title">
             {albumName}
           </h1>
         )}
-        <ContentGrid album={albumName} initialPhotos={photos} />
+        {allVideos && albumName ? (
+          <VideoListView videos={displayPhotos} album={albumName} />
+        ) : (
+          <>
+            {albumName && videoParam && (
+              <h1 className="main-content-title">
+                {displayPhotos[0]?.title || albumName}
+              </h1>
+            )}
+            <ContentGrid album={albumName} initialPhotos={displayPhotos} />
+          </>
+        )}
       </main>
       
       {/* Countdown timer at bottom */}

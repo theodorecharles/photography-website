@@ -5,11 +5,12 @@
 
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { SITE_URL, API_URL } from '../config';
+import { API_URL } from '../config';
 import { Photo } from '../types/photo';
 import VideoPlayer from './ContentModal/VideoPlayer';
 import { ShareIcon } from './icons';
 import LinkifiedText from './LinkifiedText';
+import VideoShareModal from './AdminPortal/VideoShareModal';
 import './VideoListView.css';
 
 interface VideoListViewProps {
@@ -19,7 +20,7 @@ interface VideoListViewProps {
 
 const VideoListView: React.FC<VideoListViewProps> = ({ videos, album }) => {
   const { t } = useTranslation();
-  const [copiedVideoId, setCopiedVideoId] = useState<string | null>(null);
+  const [shareModalVideo, setShareModalVideo] = useState<Photo | null>(null);
 
   // Pause all other videos when one starts playing
   useEffect(() => {
@@ -53,17 +54,8 @@ const VideoListView: React.FC<VideoListViewProps> = ({ videos, album }) => {
     };
   }, [videos.length]); // Re-run when video list changes
 
-  const handleShareClick = async (video: Photo) => {
-    const filename = video.id.split('/').pop() || video.id;
-    const shareUrl = `${SITE_URL}/video/${encodeURIComponent(album)}/${encodeURIComponent(filename)}`;
-    
-    try {
-      await navigator.clipboard.writeText(shareUrl);
-      setCopiedVideoId(video.id);
-      setTimeout(() => setCopiedVideoId(null), 2000);
-    } catch (err) {
-      console.error('Failed to copy link:', err);
-    }
+  const handleShareClick = (video: Photo) => {
+    setShareModalVideo(video);
   };
 
   if (videos.length === 0) {
@@ -104,11 +96,11 @@ const VideoListView: React.FC<VideoListViewProps> = ({ videos, album }) => {
                 <button
                   className="video-share-button"
                   onClick={() => handleShareClick(video)}
-                  title={t('videoList.copyShareLink')}
+                  title={t('videoList.shareVideo')}
                 >
                   <ShareIcon width={20} height={20} />
                   <span className="video-share-text">
-                    {copiedVideoId === video.id ? t('videoList.linkCopied') : t('videoList.share')}
+                    {t('videoList.share')}
                   </span>
                 </button>
               </div>
@@ -122,6 +114,15 @@ const VideoListView: React.FC<VideoListViewProps> = ({ videos, album }) => {
           </div>
         );
       })}
+
+      {shareModalVideo && (
+        <VideoShareModal
+          album={album}
+          filename={shareModalVideo.id.split('/').pop() || shareModalVideo.id}
+          videoTitle={shareModalVideo.title}
+          onClose={() => setShareModalVideo(null)}
+        />
+      )}
     </div>
   );
 };
