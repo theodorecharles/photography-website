@@ -28,10 +28,12 @@
 .notification-banner-content {
   max-width: 1200px;
   margin: 0 auto;
+  margin-top: 54px;
   padding: 1rem 2rem;
   display: flex;
   align-items: center;
   gap: 1.5rem;
+  border-bottom: 1px solid rgba(255,255,255,0.2);
 }
 
 .notification-banner-icon {
