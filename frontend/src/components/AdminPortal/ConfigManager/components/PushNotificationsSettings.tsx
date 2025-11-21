@@ -7,7 +7,6 @@ import React, { useState, useEffect } from 'react';
 import { PasswordInput } from '../../PasswordInput';
 import { Toggle } from './Toggle';
 import { API_URL } from '../../../../config';
-import PushNotificationStatus from './PushNotificationStatus';
 
 interface PushNotificationsSettingsProps {
   config: any;
