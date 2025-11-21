@@ -12,7 +12,7 @@ interface ImageCanvasProps {
   imageQueryString: string;
   modalImageLoaded: boolean;
   showModalImage: boolean;
-  onThumbnailLoad: () => void;
+  onThumbnailLoad: (img?: HTMLImageElement) => void;
 }
 
 const ImageCanvas: React.FC<ImageCanvasProps> = ({
@@ -29,16 +29,20 @@ const ImageCanvas: React.FC<ImageCanvasProps> = ({
   useEffect(() => {
     const img = thumbnailRef.current;
     if (img && img.complete && img.naturalHeight !== 0) {
-      onThumbnailLoad();
+      onThumbnailLoad(img);
     }
   }, [photo.id, onThumbnailLoad]);
+
+  const handleLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    onThumbnailLoad(e.currentTarget);
+  };
 
   return (
     <>
       {/* Thumbnail - shows first */}
       <img
         ref={thumbnailRef}
-        onLoad={onThumbnailLoad}
+        onLoad={handleLoad}
         src={`${apiUrl}${photo.thumbnail}${imageQueryString}`}
         alt={`${photo.album} - ${photo.title}`}
         title={photo.title}

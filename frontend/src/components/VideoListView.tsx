@@ -26,6 +26,7 @@ const VideoListView: React.FC<VideoListViewProps> = ({ videos, album, secretKey 
   const [playingVideoId, setPlayingVideoId] = useState<string | null>(null);
   const [thumbnailLoadedMap, setThumbnailLoadedMap] = useState<Record<string, boolean>>({});
   const [modalImageLoadedMap, setModalImageLoadedMap] = useState<Record<string, boolean>>({});
+  const [containerWidths, setContainerWidths] = useState<Record<string, number>>({});
 
   const imageQueryString = secretKey ? `?key=${secretKey}` : '';
 
@@ -43,8 +44,23 @@ const VideoListView: React.FC<VideoListViewProps> = ({ videos, album, secretKey 
     }
   };
 
-  const handleThumbnailLoad = (videoId: string) => {
+  const handleThumbnailLoad = (videoId: string, img?: HTMLImageElement) => {
     setThumbnailLoadedMap(prev => ({ ...prev, [videoId]: true }));
+    
+    if (!img) return;
+    
+    // Calculate appropriate width based on aspect ratio if height is constrained
+    const aspectRatio = img.naturalWidth / img.naturalHeight;
+    const maxHeight = window.innerHeight * 0.70; // 70vh
+    
+    if (img.naturalHeight > maxHeight) {
+      // Height is constrained, calculate width
+      const constrainedWidth = maxHeight * aspectRatio;
+      setContainerWidths(prev => ({ ...prev, [videoId]: constrainedWidth }));
+    } else {
+      // Not constrained, use full width
+      setContainerWidths(prev => ({ ...prev, [videoId]: img.naturalWidth }));
+    }
   };
 
   if (videos.length === 0) {
@@ -63,6 +79,7 @@ const VideoListView: React.FC<VideoListViewProps> = ({ videos, album, secretKey 
         const filename = video.id.split('/').pop() || video.id;
         const isPlaying = playingVideoId === video.id;
         const thumbnailLoaded = thumbnailLoadedMap[video.id] || false;
+        const containerWidth = containerWidths[video.id];
         
         return (
           <div key={video.id} className="video-list-item">
@@ -70,7 +87,12 @@ const VideoListView: React.FC<VideoListViewProps> = ({ videos, album, secretKey 
               <div 
                 className="video-player-container"
                 data-video-id={video.id}
-                style={{ position: 'relative', width: '100%' }}
+                style={{ 
+                  position: 'relative', 
+                  width: containerWidth ? `${containerWidth}px` : '100%',
+                  maxWidth: '100%',
+                  margin: '0 auto'
+                }}
               >
                 {/* Always show thumbnail and modal image */}
                 <ImageCanvas
@@ -79,7 +101,7 @@ const VideoListView: React.FC<VideoListViewProps> = ({ videos, album, secretKey 
                   imageQueryString={imageQueryString}
                   modalImageLoaded={modalImageLoadedMap[video.id] || false}
                   showModalImage={true}
-                  onThumbnailLoad={() => handleThumbnailLoad(video.id)}
+                  onThumbnailLoad={(img) => handleThumbnailLoad(video.id, img)}
                 />
                 
                 {/* Play button overlay (hidden when video is playing) */}
