@@ -123,19 +123,19 @@ const serveMasterPlaylist = async (req: Request, res: Response, album: string, f
 };
 
 /**
- * Serve master HLS playlist - with folder path
- * GET /api/video/:folder/:album/:filename/master.m3u8
+ * Serve master HLS playlist - without folder path (more specific, check first)
+ * GET /api/video/:album/:filename/master.m3u8
  */
-router.get("/:folder/:album/:filename/master.m3u8", async (req: Request, res: Response): Promise<void> => {
+router.get("/:album/:filename/master.m3u8", async (req: Request, res: Response): Promise<void> => {
   const { album, filename } = req.params;
   await serveMasterPlaylist(req, res, album, filename);
 });
 
 /**
- * Serve master HLS playlist - without folder path
- * GET /api/video/:album/:filename/master.m3u8
+ * Serve master HLS playlist - with folder path
+ * GET /api/video/:folder/:album/:filename/master.m3u8
  */
-router.get("/:album/:filename/master.m3u8", async (req: Request, res: Response): Promise<void> => {
+router.get("/:folder/:album/:filename/master.m3u8", async (req: Request, res: Response): Promise<void> => {
   const { album, filename } = req.params;
   await serveMasterPlaylist(req, res, album, filename);
 });
