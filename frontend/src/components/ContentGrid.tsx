@@ -73,9 +73,8 @@ const ContentGrid: React.FC<ContentGridProps> = ({ album, onAlbumNotFound, initi
     ? `?${queryParams.toString()}&i=${cacheBustValue}`
     : `?i=${cacheBustValue}`;
   
-  // For image URLs, don't include query strings to improve caching (especially on iOS)
-  // ETags and Last-Modified headers handle cache validation
-  const imageQueryString = ``;
+  // For share links, include the key parameter for accessing unpublished content
+  const imageQueryString = secretKey ? `?key=${secretKey}` : ``;
 
   const [clickedVideoId, setClickedVideoId] = useState<string | null>(null);
 
