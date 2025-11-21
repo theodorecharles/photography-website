@@ -111,8 +111,8 @@ const VideoListView: React.FC<VideoListViewProps> = ({ videos, album, secretKey 
                 data-video-id={video.id}
                 style={{ position: 'relative' }}
               >
-                {/* Show thumbnail when not playing */}
-                {!isPlaying && (
+                {/* Thumbnail - hidden when video is playing but still rendered for dimensions */}
+                <div style={{ visibility: isPlaying ? 'hidden' : 'visible' }}>
                   <ImageCanvas
                     photo={video}
                     apiUrl={API_URL}
@@ -122,7 +122,7 @@ const VideoListView: React.FC<VideoListViewProps> = ({ videos, album, secretKey 
                     onThumbnailLoad={() => handleThumbnailLoad(video.id)}
                     onModalLoad={(img) => handleModalLoad(video.id, img)}
                   />
-                )}
+                </div>
                 
                 {/* Play button overlay (hidden when video is playing) */}
                 {thumbnailLoaded && !isPlaying && (
