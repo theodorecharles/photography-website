@@ -7,6 +7,7 @@ import React, { useState, useEffect } from 'react';
 import { PasswordInput } from '../../PasswordInput';
 import { Toggle } from './Toggle';
 import { API_URL } from '../../../../config';
+import PushNotificationStatus from './PushNotificationStatus';
 
 interface PushNotificationsSettingsProps {
   config: any;
@@ -310,6 +311,9 @@ const PushNotificationsSettings: React.FC<PushNotificationsSettingsProps> = ({
       >
         Notify managers and admins when video processing and image optimization jobs complete
       </p>
+
+      {/* Subscription Status and Controls */}
+      <PushNotificationStatus isConfigured={pushConfig.enabled && hasKeys} />
 
       {/* 2x2 Grid Layout */}
       <div 
