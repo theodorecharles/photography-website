@@ -680,7 +680,20 @@
     "invalidMinutes": "Ange ett giltigt antal minuter",
     "linkCopied": "✓ Länk kopierad till urklipp!",
     "generating": "Genererar...",
-    "copyLink": "Kopiera länk"
+    "copyLink": "Kopiera länk",
+    "oneHour": "1 timme  ",
+    "oneDay": "1 dag  ",
+    "oneWeek": "1 vecka  ",
+    "oneMonth": "1 månad  ",
+    "never": "Aldrig  ",
+    "custom": "Anpassad...  ",
+    "generate": "Generera  ",
+    "invalidCustomTime": "Vänligen ange ett giltigt antal minuter  ",
+    "copied": "✓ Kopierad!  "
+  },
+  "videoShare": {
+    "shareVideo": "Dela video",
+    "description": "Skapa en delbar länk för att ge besökare åtkomst till denna video. Länken kan ställas in för att gå ut efter en viss tid."
   },
   "metrics": {
     "title": "Mätvärden",

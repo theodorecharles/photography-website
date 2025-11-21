@@ -680,7 +680,20 @@
     "invalidMinutes": "Pakisuyong ilagay ang wastong bilang ng mga minuto",
     "linkCopied": "✓ Nakopya ang link sa clipboard!",
     "generating": "Bumubuo...",
-    "copyLink": "Kopyahin ang Link"
+    "copyLink": "Kopyahin ang Link",
+    "oneHour": "1 oras  ",
+    "oneDay": "1 araw  ",
+    "oneWeek": "1 linggo  ",
+    "oneMonth": "1 buwan  ",
+    "never": "Hindi kailanman  ",
+    "custom": "Pasadya...  ",
+    "generate": "Bumuo  ",
+    "invalidCustomTime": "Pakisok ang wastong bilang ng mga minuto  ",
+    "copied": "✓ Nakopya!  "
+  },
+  "videoShare": {
+    "shareVideo": "Ibahagi ang Video",
+    "description": "Gumawa ng maibabahaging link upang bigyan ng access ang mga bisita sa video na ito. Ang link ay maaaring itakda na mag-expire pagkatapos ng tiyak na oras."
   },
   "metrics": {
     "title": "Mga Sukat",

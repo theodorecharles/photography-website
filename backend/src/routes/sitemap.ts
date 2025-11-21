@@ -4,7 +4,7 @@
  */
 
 import { Router } from 'express';
-import { getPublishedAlbums, getPublishedFolders } from '../database.js';
+import { getAllAlbums, getPublishedFolders } from '../database.js';
 import { isEnvSet } from '../config.js';
 import { error, warn, info, debug, verbose } from '../utils/logger.js';
 
@@ -15,8 +15,9 @@ const router = Router();
  */
 function getAlbumsWithFolders(): Array<{ name: string; folderId: number | null; folderName: string | null }> {
   try {
-    const albums = getPublishedAlbums()
-      .filter(a => a.name !== 'homepage');
+    // Get all albums and filter to published ones
+    const albums = getAllAlbums()
+      .filter(a => a.published && a.name !== 'homepage');
     
     // Get published folders to build folder map
     const folders = getPublishedFolders();

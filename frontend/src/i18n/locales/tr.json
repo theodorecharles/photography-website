@@ -680,7 +680,20 @@
     "invalidMinutes": "Lütfen geçerli bir dakika sayısı girin",
     "linkCopied": "✓ Bağlantı panoya kopyalandı!",
     "generating": "Oluşturuluyor...",
-    "copyLink": "Bağlantıyı Kopyala"
+    "copyLink": "Bağlantıyı Kopyala",
+    "oneHour": "1 saat  ",
+    "oneDay": "1 gün  ",
+    "oneWeek": "1 hafta  ",
+    "oneMonth": "1 ay  ",
+    "never": "Asla  ",
+    "custom": "Özel...  ",
+    "generate": "Oluştur  ",
+    "invalidCustomTime": "Lütfen geçerli bir dakika sayısı girin  ",
+    "copied": "✓ Kopyalandı!  "
+  },
+  "videoShare": {
+    "shareVideo": "Videoyu Paylaş",
+    "description": "Ziyaretçilere bu videoya erişim vermek için paylaşılabilir bir bağlantı oluşturun. Bağlantının belirli bir süre sonra sona ermesi ayarlanabilir."
   },
   "metrics": {
     "title": "Metrikler",

@@ -502,6 +502,11 @@ router.get("/api/photos/:folderOrAlbum/:albumOrFilename/:filenameOrExif?/:exif?"
   const filename = req.params.exif === 'exif' 
     ? req.params.filenameOrExif 
     : req.params.albumOrFilename;
+  
+  if (!albumName || !filename) {
+    res.status(400).json({ error: "Invalid album or filename" });
+    return;
+  }
 
   // Sanitize inputs to prevent path traversal
   const sanitizedAlbum = sanitizePath(albumName);
@@ -538,7 +543,7 @@ router.get("/api/photos/:folderOrAlbum/:albumOrFilename/:filenameOrExif?/:exif?"
 
     res.json(exif);
   } catch (err) {
-    error(`[Albums] Failed to read EXIF for ${album}/${filename}:`, err);
+    error(`[Albums] Failed to read EXIF for ${albumName}/${filename}:`, err);
     res.status(500).json({ error: "Failed to read EXIF data" });
   }
 });
@@ -555,6 +560,11 @@ router.get("/api/videos/:folderOrAlbum/:albumOrFilename/:filenameOrMetadata?/:me
   const filename = req.params.metadata === 'metadata' 
     ? req.params.filenameOrMetadata 
     : req.params.albumOrFilename;
+  
+  if (!albumName || !filename) {
+    res.status(400).json({ error: "Invalid album or filename" });
+    return;
+  }
 
   // Sanitize inputs to prevent path traversal
   const sanitizedAlbum = sanitizePath(albumName);
@@ -589,10 +599,10 @@ router.get("/api/videos/:folderOrAlbum/:albumOrFilename/:filenameOrMetadata?/:me
       res.json({ message: "No video metadata found" });
       return;
     }
-
+    
     res.json(metadata);
   } catch (err) {
-    error(`[Albums] Failed to read video metadata for ${album}/${filename}:`, err);
+    error(`[Albums] Failed to read video metadata for ${albumName}/${filename}:`, err);
     res.status(500).json({ error: "Failed to read video metadata" });
   }
 });

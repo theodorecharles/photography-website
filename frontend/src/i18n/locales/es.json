@@ -680,7 +680,20 @@
     "invalidMinutes": "Por favor ingresa un número válido de minutos",
     "linkCopied": "✓ ¡Enlace copiado al portapapeles!",
     "generating": "Generando...",
-    "copyLink": "Copiar Enlace"
+    "copyLink": "Copiar Enlace",
+    "oneHour": "1 hora  ",
+    "oneDay": "1 día  ",
+    "oneWeek": "1 semana  ",
+    "oneMonth": "1 mes  ",
+    "never": "Nunca  ",
+    "custom": "Personalizado...  ",
+    "generate": "Generar  ",
+    "invalidCustomTime": "Por favor, introduce un número válido de minutos  ",
+    "copied": "✓ ¡Copiado!  "
+  },
+  "videoShare": {
+    "shareVideo": "Compartir video",
+    "description": "Crea un enlace compartible para dar acceso a los visitantes a este video. El enlace se puede configurar para que expire después de un cierto tiempo."
   },
   "metrics": {
     "title": "Métricas",

@@ -680,7 +680,20 @@
     "invalidMinutes": "Vui lòng nhập số phút hợp lệ",
     "linkCopied": "✓ Đã sao chép liên kết vào clipboard!",
     "generating": "Đang tạo...",
-    "copyLink": "Sao chép liên kết"
+    "copyLink": "Sao chép liên kết",
+    "oneHour": "1 giờ  ",
+    "oneDay": "1 ngày  ",
+    "oneWeek": "1 tuần  ",
+    "oneMonth": "1 tháng  ",
+    "never": "Không bao giờ  ",
+    "custom": "Tùy chỉnh...  ",
+    "generate": "Tạo  ",
+    "invalidCustomTime": "Vui lòng nhập một số phút hợp lệ  ",
+    "copied": "✓ Đã sao chép!  "
+  },
+  "videoShare": {
+    "shareVideo": "Chia sẻ Video",
+    "description": "Tạo một liên kết chia sẻ để cung cấp quyền truy cập cho khách truy cập vào video này. Liên kết có thể được đặt để hết hạn sau một khoảng thời gian nhất định."
   },
   "metrics": {
     "title": "Chỉ số",
