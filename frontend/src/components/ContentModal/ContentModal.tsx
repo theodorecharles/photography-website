@@ -702,6 +702,7 @@ const ContentModal: React.FC<ContentModalProps> = ({
                 {showVideoPlayer && (
                   <div className="modal-video-overlay">
                     <VideoPlayer
+                      folder={currentFolder() || undefined}
                       album={selectedPhoto.album}
                       filename={selectedPhoto.id.includes('/') ? selectedPhoto.id.split('/').pop() || selectedPhoto.id : selectedPhoto.id}
                       videoTitle={selectedPhoto.title || selectedPhoto.id}

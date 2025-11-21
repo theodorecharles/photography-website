@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 import { API_URL } from '../config';
@@ -13,15 +13,20 @@ import VideoPlayer from './ContentModal/VideoPlayer';
 import { ArrowLeftIcon } from './icons';
 import './VideoPage.css';
 import { fetchWithRateLimitCheck } from '../utils/fetchWrapper';
+import { parseAlbumUrl } from '../utils/albumUrl';
 
 const VideoPage: React.FC = () => {
   const { t } = useTranslation();
   const { album, filename } = useParams<{ album: string; filename: string }>();
+  const location = useLocation();
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
   const [video, setVideo] = useState<Photo | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  // Extract folder from URL if present
+  const folderName = parseAlbumUrl(location.pathname).folderName;
 
   useEffect(() => {
     const fetchVideo = async () => {
@@ -119,6 +124,7 @@ const VideoPage: React.FC = () => {
       <div className="video-page-content">
         <div className="video-page-player">
           <VideoPlayer
+            folder={folderName || undefined}
             album={video.album}
             filename={filename || ''}
             autoplay={true}

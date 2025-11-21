@@ -5,12 +5,14 @@
 
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useLocation } from 'react-router-dom';
 import { API_URL } from '../config';
 import { Photo } from '../types/photo';
 import VideoPlayer from './ContentModal/VideoPlayer';
 import { ShareIcon } from './icons';
 import LinkifiedText from './LinkifiedText';
 import VideoShareModal from './AdminPortal/VideoShareModal';
+import { parseAlbumUrl } from '../utils/albumUrl';
 import './VideoListView.css';
 
 interface VideoListViewProps {
@@ -21,7 +23,11 @@ interface VideoListViewProps {
 
 const VideoListView: React.FC<VideoListViewProps> = ({ videos, album, secretKey }) => {
   const { t } = useTranslation();
+  const location = useLocation();
   const [shareModalVideo, setShareModalVideo] = useState<Photo | null>(null);
+  
+  // Extract folder from URL if present
+  const folderName = secretKey ? null : parseAlbumUrl(location.pathname).folderName;
 
   // Pause all other videos when one starts playing
   useEffect(() => {
@@ -82,6 +88,7 @@ const VideoListView: React.FC<VideoListViewProps> = ({ videos, album, secretKey 
                 data-video-id={video.id}
               >
                 <VideoPlayer
+                  folder={folderName || undefined}
                   album={video.album}
                   filename={filename}
                   videoTitle={video.title}
