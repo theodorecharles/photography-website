@@ -416,7 +416,7 @@
     "logLevelWarn": "Peringatan",
     "logLevelInfo": "[EN] Info",
     "logLevelDebug": "[EN] Debug",
-    "logLevelVerbose": "[EN] Verbose",
+    "logLevelVerbose": "Verbosa",
     "logLevelTrace": "Jejak",
     "logLevelDescription": "Mengontrol tingkat detail log server. Level yang lebih tinggi mencakup lebih banyak detail tetapi dapat mempengaruhi kinerja.",
     "viewLiveLogs": "Lihat Log Langsung",

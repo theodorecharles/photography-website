@@ -5,7 +5,6 @@
  */
 
 import React, { useRef, useState, useEffect, useCallback } from 'react';
-import { useLocation } from 'react-router-dom';
 import { API_URL } from '../../config';
 import { trackPhotoNavigation, trackPhotoDownload, trackModalClose } from '../../utils/analytics';
 import { fetchWithRateLimitCheck } from '../../utils/fetchWrapper';
@@ -83,7 +82,6 @@ const ContentModal: React.FC<ContentModalProps> = ({
     setShouldAutoplay(true);
   }, []);
   
-  const location = useLocation();
   const touchStartX = useRef<number | null>(null);
   const touchStartY = useRef<number | null>(null);
   const modalOpenTimeRef = useRef<number | null>(Date.now());
@@ -679,7 +677,6 @@ const ContentModal: React.FC<ContentModalProps> = ({
                 {showVideoPlayer && (
                   <div className="modal-video-overlay">
                     <VideoPlayer
-                      folder={currentFolder() || undefined}
                       album={selectedPhoto.album}
                       filename={selectedPhoto.id.includes('/') ? selectedPhoto.id.split('/').pop() || selectedPhoto.id : selectedPhoto.id}
                       videoTitle={selectedPhoto.title || selectedPhoto.id}

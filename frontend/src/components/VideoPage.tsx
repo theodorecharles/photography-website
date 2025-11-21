@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 import { API_URL } from '../config';
@@ -17,7 +17,6 @@ import { fetchWithRateLimitCheck } from '../utils/fetchWrapper';
 const VideoPage: React.FC = () => {
   const { t } = useTranslation();
   const { album, filename } = useParams<{ album: string; filename: string }>();
-  const location = useLocation();
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
   const [video, setVideo] = useState<Photo | null>(null);
