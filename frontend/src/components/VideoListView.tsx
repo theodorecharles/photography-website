@@ -56,6 +56,18 @@ const VideoListView: React.FC<VideoListViewProps> = ({ videos, album, secretKey 
     const aspectRatio = img.naturalWidth / img.naturalHeight;
     const maxHeight = window.innerHeight * 0.85; // 85vh
     
+    // For portrait videos (aspect ratio < 0.7), don't set a fixed width
+    // Let them center naturally with object-fit: contain
+    if (aspectRatio < 0.7) {
+      // Portrait video - don't constrain width, video will size naturally
+      setContainerWidths(prev => {
+        const newWidths = { ...prev };
+        delete newWidths[videoId];
+        return newWidths;
+      });
+      return;
+    }
+    
     if (img.naturalHeight > maxHeight) {
       // Height is constrained, calculate width based on aspect ratio
       const constrainedWidth = maxHeight * aspectRatio;
