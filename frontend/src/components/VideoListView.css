@@ -98,7 +98,7 @@
 .video-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   gap: 16px;
 }
 
@@ -109,6 +109,8 @@
   margin: 0;
   flex: 1;
   line-height: 1.4;
+  min-width: 0;
+  word-wrap: break-word;
 }
 
 .video-share-button {

@@ -111,16 +111,18 @@ const VideoListView: React.FC<VideoListViewProps> = ({ videos, album, secretKey 
                 data-video-id={video.id}
                 style={{ position: 'relative' }}
               >
-                {/* Always show thumbnail and modal image */}
-                <ImageCanvas
-                  photo={video}
-                  apiUrl={API_URL}
-                  imageQueryString={imageQueryString}
-                  modalImageLoaded={modalImageLoadedMap[video.id] || false}
-                  showModalImage={true}
-                  onThumbnailLoad={() => handleThumbnailLoad(video.id)}
-                  onModalLoad={(img) => handleModalLoad(video.id, img)}
-                />
+                {/* Show thumbnail when not playing */}
+                {!isPlaying && (
+                  <ImageCanvas
+                    photo={video}
+                    apiUrl={API_URL}
+                    imageQueryString={imageQueryString}
+                    modalImageLoaded={modalImageLoadedMap[video.id] || false}
+                    showModalImage={true}
+                    onThumbnailLoad={() => handleThumbnailLoad(video.id)}
+                    onModalLoad={(img) => handleModalLoad(video.id, img)}
+                  />
+                )}
                 
                 {/* Play button overlay (hidden when video is playing) */}
                 {thumbnailLoaded && !isPlaying && (
@@ -158,7 +160,14 @@ const VideoListView: React.FC<VideoListViewProps> = ({ videos, album, secretKey 
               </div>
             </div>
             
-            <div className="video-info">
+            <div 
+              className="video-info"
+              style={{
+                width: containerWidth ? `${containerWidth}px` : '100%',
+                maxWidth: '100%',
+                margin: '0 auto'
+              }}
+            >
               <div className="video-header">
                 <h2 className="video-title">{video.title}</h2>
                 <button
