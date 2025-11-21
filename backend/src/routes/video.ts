@@ -7,7 +7,7 @@ import { Router, Request, Response } from "express";
 import fs from "fs";
 import path from "path";
 import { error, info } from '../utils/logger.js';
-import { getAlbumState } from '../database.js';
+import { getAlbumState, getShareLinkBySecret, isShareLinkExpired } from '../database.js';
 import { requireAuth } from '../auth/middleware.js';
 
 const router = Router();
@@ -23,6 +23,31 @@ const sanitizePath = (name: string): string | null => {
     return null;
   }
   return name;
+};
+
+/**
+ * Check if user has access to album (authenticated, published, or valid share link)
+ */
+const hasAlbumAccess = (req: Request, album: string): boolean => {
+  // Check authentication
+  const isAuthenticated = (req.isAuthenticated && req.isAuthenticated()) || !!(req.session as any)?.userId;
+  
+  // Check for share link in query parameter
+  const shareKey = req.query.key as string;
+  let hasValidShareLink = false;
+  
+  if (shareKey && /^[a-f0-9]{64}$/i.test(shareKey)) {
+    const shareLink = getShareLinkBySecret(shareKey);
+    if (shareLink && shareLink.album === album && !isShareLinkExpired(shareLink)) {
+      hasValidShareLink = true;
+    }
+  }
+  
+  // Check album state
+  const albumState = getAlbumState(album);
+  
+  // Allow access if: album is published OR user is authenticated OR valid share link
+  return albumState && (albumState.published || isAuthenticated || hasValidShareLink);
 };
 
 /**
@@ -44,13 +69,9 @@ router.get("/:album/:filename/master.m3u8", async (req: Request, res: Response):
       return;
     }
 
-    // Check authentication and album published state
-    const isAuthenticated = (req.isAuthenticated && req.isAuthenticated()) || !!(req.session as any)?.userId;
-    const albumState = getAlbumState(sanitizedAlbum);
-    
-    // Deny access if album is unpublished and user is not authenticated
-    if (!albumState || (!albumState.published && !isAuthenticated)) {
-      error(`[Video] Access denied: album=${sanitizedAlbum}, authenticated=${isAuthenticated}, published=${albumState?.published}`);
+    // Check access (authentication, published state, or share link)
+    if (!hasAlbumAccess(req, sanitizedAlbum)) {
+      error(`[Video] Access denied for album: ${sanitizedAlbum}`);
       res.status(404).json({ error: 'Video not found' });
       return;
     }
@@ -116,12 +137,8 @@ router.get("/:album/:filename/:resolution/playlist.m3u8", async (req: Request, r
       return;
     }
 
-    // Check authentication and album published state
-    const isAuthenticated = (req.isAuthenticated && req.isAuthenticated()) || !!(req.session as any)?.userId;
-    const albumState = getAlbumState(sanitizedAlbum);
-    
-    // Deny access if album is unpublished and user is not authenticated
-    if (!albumState || (!albumState.published && !isAuthenticated)) {
+    // Check access (authentication, published state, or share link)
+    if (!hasAlbumAccess(req, sanitizedAlbum)) {
       res.status(404).json({ error: 'Video not found' });
       return;
     }
@@ -191,12 +208,8 @@ router.get("/:album/:filename/:resolution/:segment", async (req: Request, res: R
       return;
     }
 
-    // Check authentication and album published state
-    const isAuthenticated = (req.isAuthenticated && req.isAuthenticated()) || !!(req.session as any)?.userId;
-    const albumState = getAlbumState(sanitizedAlbum);
-    
-    // Deny access if album is unpublished and user is not authenticated
-    if (!albumState || (!albumState.published && !isAuthenticated)) {
+    // Check access (authentication, published state, or share link)
+    if (!hasAlbumAccess(req, sanitizedAlbum)) {
       res.status(404).json({ error: 'Video not found' });
       return;
     }
@@ -270,12 +283,8 @@ router.get("/:album/:filename/resolutions", async (req: Request, res: Response):
       return;
     }
 
-    // Check authentication and album published state
-    const isAuthenticated = (req.isAuthenticated && req.isAuthenticated()) || !!(req.session as any)?.userId;
-    const albumState = getAlbumState(sanitizedAlbum);
-    
-    // Deny access if album is unpublished and user is not authenticated
-    if (!albumState || (!albumState.published && !isAuthenticated)) {
+    // Check access (authentication, published state, or share link)
+    if (!hasAlbumAccess(req, sanitizedAlbum)) {
       res.status(404).json({ error: 'Video not found' });
       return;
     }
