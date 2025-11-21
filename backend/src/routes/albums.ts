@@ -287,11 +287,13 @@ router.get("/api/albums", (req: Request, res) => {
 
 // Get photos in a specific album
 // Get static JSON for an album (authenticated endpoint)
-router.get("/api/albums/:album/photos-json", (req: Request, res): void => {
-  const { album } = req.params;
+// Supports both /api/albums/:album/photos-json and /api/albums/:folder/:album/photos-json
+router.get("/api/albums/:albumOrFolder/:album?/photos-json", (req: Request, res): void => {
+  // Extract album name (last segment of path)
+  const albumName = req.params.album || req.params.albumOrFolder;
 
   // Sanitize album parameter to prevent path traversal
-  const sanitizedAlbum = sanitizePath(album);
+  const sanitizedAlbum = sanitizePath(albumName);
   if (!sanitizedAlbum) {
     res.status(400).json({ error: "Invalid album name" });
     return;
@@ -330,12 +332,24 @@ router.get("/api/albums/:album/photos-json", (req: Request, res): void => {
   res.status(404).json({ error: "Album JSON not found" });
 });
 
-router.get("/api/albums/:album/photos", (req: Request, res): void => {
+// Supports both /api/albums/:album/photos and /api/albums/:folder/:album/photos
+router.get("/api/albums/:albumOrFolder/:albumOrPhotos?/:photos?", (req: Request, res): void => {
+  // Handle both URL patterns:
+  // - /api/albums/:album/photos → albumOrFolder = album, albumOrPhotos = 'photos'
+  // - /api/albums/:folder/:album/photos → albumOrFolder = folder, albumOrPhotos = album, photos = 'photos'
+  const albumName = req.params.photos === 'photos' 
+    ? req.params.albumOrPhotos 
+    : (req.params.albumOrPhotos === 'photos' ? req.params.albumOrFolder : null);
+  
+  if (!albumName) {
+    res.status(400).json({ error: "Invalid album name" });
+    return;
+  }
+  
   const startTime = Date.now();
-  const { album } = req.params;
 
   // Sanitize album parameter to prevent path traversal
-  const sanitizedAlbum = sanitizePath(album);
+  const sanitizedAlbum = sanitizePath(albumName);
   if (!sanitizedAlbum) {
     res.status(400).json({ error: "Invalid album name" });
     return;
@@ -477,11 +491,20 @@ router.get("/api/shared/:secretKey", async (req: Request, res): Promise<void> =>
 });
 
 // Get EXIF data for a specific photo
-router.get("/api/photos/:album/:filename/exif", async (req, res): Promise<void> => {
-  const { album, filename } = req.params;
+// Supports both /api/photos/:album/:filename/exif and /api/photos/:folder/:album/:filename/exif
+router.get("/api/photos/:folderOrAlbum/:albumOrFilename/:filenameOrExif?/:exif?", async (req, res): Promise<void> => {
+  // Handle both URL patterns:
+  // - /api/photos/:album/:filename/exif → folderOrAlbum = album, albumOrFilename = filename, filenameOrExif = 'exif'
+  // - /api/photos/:folder/:album/:filename/exif → folderOrAlbum = folder, albumOrFilename = album, filenameOrExif = filename, exif = 'exif'
+  const albumName = req.params.exif === 'exif' 
+    ? req.params.albumOrFilename 
+    : req.params.folderOrAlbum;
+  const filename = req.params.exif === 'exif' 
+    ? req.params.filenameOrExif 
+    : req.params.albumOrFilename;
 
   // Sanitize inputs to prevent path traversal
-  const sanitizedAlbum = sanitizePath(album);
+  const sanitizedAlbum = sanitizePath(albumName);
   const sanitizedFilename = filename.replace(/[^a-zA-Z0-9_. -]/g, '');
   
   if (!sanitizedAlbum || !sanitizedFilename) {
@@ -521,11 +544,20 @@ router.get("/api/photos/:album/:filename/exif", async (req, res): Promise<void> 
 });
 
 // Get video metadata for a specific video using ffprobe
-router.get("/api/videos/:album/:filename/metadata", async (req, res): Promise<void> => {
-  const { album, filename } = req.params;
+// Supports both /api/videos/:album/:filename/metadata and /api/videos/:folder/:album/:filename/metadata
+router.get("/api/videos/:folderOrAlbum/:albumOrFilename/:filenameOrMetadata?/:metadata?", async (req, res): Promise<void> => {
+  // Handle both URL patterns:
+  // - /api/videos/:album/:filename/metadata → folderOrAlbum = album, albumOrFilename = filename, filenameOrMetadata = 'metadata'
+  // - /api/videos/:folder/:album/:filename/metadata → folderOrAlbum = folder, albumOrFilename = album, filenameOrMetadata = filename, metadata = 'metadata'
+  const albumName = req.params.metadata === 'metadata' 
+    ? req.params.albumOrFilename 
+    : req.params.folderOrAlbum;
+  const filename = req.params.metadata === 'metadata' 
+    ? req.params.filenameOrMetadata 
+    : req.params.albumOrFilename;
 
   // Sanitize inputs to prevent path traversal
-  const sanitizedAlbum = sanitizePath(album);
+  const sanitizedAlbum = sanitizePath(albumName);
   const sanitizedFilename = filename.replace(/[^a-zA-Z0-9_. -]/g, '');
   
   if (!sanitizedAlbum || !sanitizedFilename) {

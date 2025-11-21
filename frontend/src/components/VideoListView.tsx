@@ -16,9 +16,10 @@ import './VideoListView.css';
 interface VideoListViewProps {
   videos: Photo[];
   album: string;
+  secretKey?: string; // For share link access
 }
 
-const VideoListView: React.FC<VideoListViewProps> = ({ videos, album }) => {
+const VideoListView: React.FC<VideoListViewProps> = ({ videos, album, secretKey }) => {
   const { t } = useTranslation();
   const [shareModalVideo, setShareModalVideo] = useState<Photo | null>(null);
 
@@ -86,6 +87,7 @@ const VideoListView: React.FC<VideoListViewProps> = ({ videos, album }) => {
                   videoTitle={video.title}
                   posterUrl={`${API_URL}${video.thumbnail}`}
                   autoplay={false}
+                  secretKey={secretKey}
                 />
               </div>
             </div>

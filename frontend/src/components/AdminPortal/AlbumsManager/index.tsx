@@ -32,6 +32,7 @@ import { createUIInteractionHandlers } from './handlers/uiInteractionHandlers';
 import { createPhotoHandlers } from './handlers/photoHandlers';
 import { createMobileReorderHandlers } from './handlers/mobileReorderHandlers';
 import { createOptimizationStreamHandlers } from './handlers/optimizationStreamHandlers';
+import { buildAlbumUrl } from '../../../utils/albumUrl';
 import '../AlbumsManager.css';
 import '../PhotoOrderControls.css';
 import {
@@ -860,7 +861,11 @@ const AlbumsManager: React.FC<AlbumsManagerProps> = ({
               onTogglePublished={albumHandlers.handleTogglePublished}
               onToggleHomepage={albumHandlers.handleToggleHomepage}
               onPreviewAlbum={(albumName) => {
-                window.open(`/album/${encodeURIComponent(albumName)}`, '_blank');
+                // Find the album to get its folder_id
+                const album = localAlbums.find(a => a.name === albumName);
+                const folderId = album?.folder_id ?? null;
+                const albumUrl = buildAlbumUrl(albumName, localFolders, folderId);
+                window.open(albumUrl, '_blank');
               }}
               onSavePhotoOrder={() => photoManagement.savePhotoOrder()}
               onCancelPhotoOrder={photoManagement.cancelPhotoReorder}

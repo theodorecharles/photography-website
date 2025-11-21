@@ -16,6 +16,7 @@ interface VideoPlayerProps {
   posterUrl?: string; // Thumbnail to show before video plays
   onLoadStart?: () => void;
   onLoaded?: () => void;
+  secretKey?: string; // For share link access
 }
 
 const VideoPlayer: React.FC<VideoPlayerProps> = ({
@@ -25,7 +26,8 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   autoplay = false,
   posterUrl,
   onLoadStart,
-  onLoaded
+  onLoaded,
+  secretKey
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const hlsRef = useRef<Hls | null>(null);
@@ -81,13 +83,15 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     if (onLoadStart) onLoadStart();
 
     // Load master playlist for adaptive streaming
-    const masterPlaylistUrl = `${API_URL}/api/video/${encodeURIComponent(album)}/${encodeURIComponent(filename)}/master.m3u8`;
+    const baseUrl = `${API_URL}/api/video/${encodeURIComponent(album)}/${encodeURIComponent(filename)}/master.m3u8`;
+    const masterPlaylistUrl = secretKey ? `${baseUrl}?key=${secretKey}` : baseUrl;
     const urlDebug = { 
       album, 
       filename, 
       encodedAlbum: encodeURIComponent(album),
       encodedFilename: encodeURIComponent(filename),
       fullUrl: masterPlaylistUrl,
+      hasSecretKey: !!secretKey,
       API_URL
     };
     console.log('[VideoPlayer] Constructed URL:', urlDebug);
@@ -110,9 +114,15 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         abrEwmaFastVoD: 3, // Weight for fast EMA (VOD)
         abrMaxWithRealBitrate: false, // Use bandwidth estimate, not max bitrate
         debug: false, // Disable verbose logging in production
-        xhrSetup: (xhr: XMLHttpRequest) => {
+        xhrSetup: (xhr: XMLHttpRequest, url: string) => {
           // Send credentials (cookies) with video requests for authentication
           xhr.withCredentials = true;
+          
+          // If using share link, append secretKey to all video requests
+          if (secretKey && url.includes('/api/video/')) {
+            const separator = url.includes('?') ? '&' : '?';
+            xhr.open('GET', `${url}${separator}key=${secretKey}`, true);
+          }
         },
       });
 
@@ -296,7 +306,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         hlsRef.current = null;
       }
     };
-  }, [album, filename, videoTitle, autoplay]); // Don't include callbacks in deps - they cause re-render loops
+  }, [album, filename, videoTitle, autoplay, secretKey]); // Don't include callbacks in deps - they cause re-render loops
 
   if (error && !error.includes('Tap to play')) {
     return (

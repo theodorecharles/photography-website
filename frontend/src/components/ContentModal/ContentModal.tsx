@@ -5,6 +5,7 @@
  */
 
 import React, { useRef, useState, useEffect, useCallback } from 'react';
+import { useLocation } from 'react-router-dom';
 import { API_URL } from '../../config';
 import { trackPhotoNavigation, trackPhotoDownload, trackModalClose } from '../../utils/analytics';
 import { fetchWithRateLimitCheck } from '../../utils/fetchWrapper';
@@ -18,6 +19,7 @@ import ModalNavigation from './ModalNavigation';
 import { PlayIcon } from '../icons';
 import './PhotoModal.css';
 import { error as logError } from '../../utils/logger';
+import { parseAlbumUrl } from '../../utils/albumUrl';
 
 
 interface ContentModalProps {
@@ -29,6 +31,7 @@ interface ContentModalProps {
   onNavigateNext: () => void;
   onClose: () => void;
   clickedVideo?: boolean; // Whether user clicked a video (vs navigated to it)
+  secretKey?: string; // For share link access
 }
 
 const ContentModal: React.FC<ContentModalProps> = ({
@@ -40,6 +43,7 @@ const ContentModal: React.FC<ContentModalProps> = ({
   onNavigateNext,
   onClose,
   clickedVideo = false,
+  secretKey,
 }) => {
   // Modal-specific state
   const [modalImageLoaded, setModalImageLoaded] = useState(false);
@@ -80,6 +84,7 @@ const ContentModal: React.FC<ContentModalProps> = ({
     setShouldAutoplay(true);
   }, []);
   
+  const location = useLocation();
   const touchStartX = useRef<number | null>(null);
   const touchStartY = useRef<number | null>(null);
   const modalOpenTimeRef = useRef<number | null>(Date.now());
@@ -98,13 +103,29 @@ const ContentModal: React.FC<ContentModalProps> = ({
     ? `?${queryParams.toString()}&i=${cacheBustValue}`
     : `?i=${cacheBustValue}`;
 
+  // Extract folder from current URL path
+  const currentFolder = useCallback(() => {
+    const parsed = parseAlbumUrl(location.pathname);
+    return parsed.folderName;
+  }, [location.pathname]);
+
   // Update URL with photo parameter
   const updateURLWithPhoto = useCallback((photo: Photo) => {
     const filename = photo.id.split('/').pop();
-    const baseUrl = photo.album === 'homepage' ? '/' : `/album/${photo.album}`;
+    let baseUrl: string;
+    
+    if (photo.album === 'homepage') {
+      baseUrl = '/';
+    } else {
+      const folder = currentFolder();
+      baseUrl = folder 
+        ? `/album/${encodeURIComponent(folder)}/${encodeURIComponent(photo.album)}`
+        : `/album/${encodeURIComponent(photo.album)}`;
+    }
+    
     const newUrl = `${baseUrl}?photo=${encodeURIComponent(filename || '')}`;
     window.history.replaceState(null, '', newUrl);
-  }, []);
+  }, [currentFolder]);
 
   // Fetch branding data on mount
   useEffect(() => {
@@ -125,9 +146,19 @@ const ContentModal: React.FC<ContentModalProps> = ({
   // Get permalink for photo
   const getPhotoPermalink = useCallback((photo: Photo) => {
     const filename = photo.id.split('/').pop();
-    const baseUrl = photo.album === 'homepage' ? '/' : `/album/${photo.album}`;
+    let baseUrl: string;
+    
+    if (photo.album === 'homepage') {
+      baseUrl = '/';
+    } else {
+      const folder = currentFolder();
+      baseUrl = folder 
+        ? `/album/${encodeURIComponent(folder)}/${encodeURIComponent(photo.album)}`
+        : `/album/${encodeURIComponent(photo.album)}`;
+    }
+    
     return `${SITE_URL}${baseUrl}?photo=${encodeURIComponent(filename || '')}`;
-  }, []);
+  }, [currentFolder]);
 
 
   // Reset state when photo changes
@@ -680,6 +711,7 @@ const ContentModal: React.FC<ContentModalProps> = ({
                         setThumbnailLoaded(true);
                         setModalImageLoaded(true);
                       }}
+                      secretKey={secretKey}
                     />
                   </div>
                 )}

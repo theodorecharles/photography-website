@@ -56,12 +56,10 @@ const hasAlbumAccess = (req: Request, album: string): boolean => {
 };
 
 /**
- * Serve master HLS playlist for a video (adaptive streaming)
- * GET /api/video/:album/:filename/master.m3u8
+ * Shared handler for master HLS playlist
  */
-router.get("/:album/:filename/master.m3u8", async (req: Request, res: Response): Promise<void> => {
+const serveMasterPlaylist = async (req: Request, res: Response, album: string, filename: string): Promise<void> => {
   try {
-    const { album, filename } = req.params;
     info(`[Video] Master playlist request: album=${album}, filename=${filename}`);
 
     // Sanitize inputs
@@ -122,6 +120,24 @@ router.get("/:album/:filename/master.m3u8", async (req: Request, res: Response):
     error('[Video] Failed to serve master playlist:', err);
     res.status(500).json({ error: 'Failed to serve master playlist' });
   }
+};
+
+/**
+ * Serve master HLS playlist - with folder path
+ * GET /api/video/:folder/:album/:filename/master.m3u8
+ */
+router.get("/:folder/:album/:filename/master.m3u8", async (req: Request, res: Response): Promise<void> => {
+  const { album, filename } = req.params;
+  await serveMasterPlaylist(req, res, album, filename);
+});
+
+/**
+ * Serve master HLS playlist - without folder path
+ * GET /api/video/:album/:filename/master.m3u8
+ */
+router.get("/:album/:filename/master.m3u8", async (req: Request, res: Response): Promise<void> => {
+  const { album, filename } = req.params;
+  await serveMasterPlaylist(req, res, album, filename);
 });
 
 /**

@@ -76,6 +76,9 @@ function LicenseWrapper({
 }
 
 // AlbumRoute component handles the routing for individual album pages
+// Supports both formats:
+// - /album/AlbumName (no folder)
+// - /album/FolderName/AlbumName (with folder)
 function AlbumRoute({
   onAlbumNotFound,
   onLoadComplete,
@@ -86,9 +89,18 @@ function AlbumRoute({
   siteName: string;
 }) {
   const { t } = useTranslation();
-  const { album } = useParams();
-  // Decode URI-encoded album name
-  const decodedAlbum = album ? decodeURIComponent(album) : "";
+  const { folder, album } = useParams();
+  
+  // If folder param exists, use it; otherwise just use album
+  // Supports both /album/:album and /album/:folder/:album
+  const decodedAlbum = album 
+    ? decodeURIComponent(album) 
+    : (folder ? decodeURIComponent(folder) : "");
+  
+  // Build URL for SEO (include folder if present)
+  const albumUrl = folder && album
+    ? `${SITE_URL}/album/${folder}/${album}`
+    : `${SITE_URL}/album/${folder || album}`;
 
   return (
     <>
@@ -98,7 +110,7 @@ function AlbumRoute({
           albumName: decodedAlbum,
           siteName,
         })}
-        url={`${SITE_URL}/album/${album}`}
+        url={albumUrl}
         image={`${SITE_URL}/photos/avatar.png`}
       />
       <ContentGrid
@@ -256,12 +268,16 @@ function App() {
     setHideAlbumTitle(false);
 
     if (path.startsWith("/album/")) {
-      // Extract album name, handling trailing slashes and removing any extra path segments
-      const encodedAlbum = path
+      // Extract album name, handling both /album/Name and /album/Folder/Name
+      const pathParts = path
         .split("/album/")[1]
-        .split("/")[0]
         .split("?")[0]
-        .trim();
+        .trim()
+        .split("/");
+      
+      // Get the last part as album name (handles both formats)
+      const encodedAlbum = pathParts[pathParts.length - 1];
+      
       // Only set if album name is not empty
       if (encodedAlbum) {
         const albumName = decodeURIComponent(encodedAlbum);
@@ -616,6 +632,17 @@ function App() {
                 </>
               }
             />
+            {/* Album routes - support both /album/:album and /album/:folder/:album */}
+            <Route
+              path="/album/:folder/:album"
+              element={
+                <AlbumRoute
+                  onAlbumNotFound={() => setHideAlbumTitle(true)}
+                  onLoadComplete={() => setShowFooter(true)}
+                  siteName={siteName}
+                />
+              }
+            />
             <Route
               path="/album/:album"
               element={
@@ -763,13 +790,17 @@ function App() {
               location.pathname === "/"
                 ? "homepage"
                 : location.pathname.startsWith("/album/")
-                ? decodeURIComponent(
-                    location.pathname
+                ? (() => {
+                    // Extract album name, handling both /album/Name and /album/Folder/Name
+                    const pathParts = location.pathname
                       .split("/album/")[1]
-                      .split("/")[0]
                       .split("?")[0]
                       .trim()
-                  ) || undefined
+                      .split("/");
+                    // Get the last part as album name
+                    const encodedAlbum = pathParts[pathParts.length - 1];
+                    return encodedAlbum ? decodeURIComponent(encodedAlbum) : undefined;
+                  })()
                 : undefined
             }
           />

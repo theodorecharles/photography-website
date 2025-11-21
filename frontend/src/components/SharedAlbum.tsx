@@ -289,7 +289,7 @@ export default function SharedAlbum() {
           </h1>
         )}
         {allVideos && albumName ? (
-          <VideoListView videos={displayPhotos} album={albumName} />
+          <VideoListView videos={displayPhotos} album={albumName} secretKey={secretKey} />
         ) : (
           <>
             {albumName && videoParam && (
@@ -297,7 +297,7 @@ export default function SharedAlbum() {
                 {displayPhotos[0]?.title || albumName}
               </h1>
             )}
-            <ContentGrid album={albumName} initialPhotos={displayPhotos} />
+            <ContentGrid album={albumName} initialPhotos={displayPhotos} secretKey={secretKey} />
           </>
         )}
       </main>

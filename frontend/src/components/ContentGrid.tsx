@@ -24,12 +24,13 @@ interface ContentGridProps {
   onAlbumNotFound?: () => void;
   initialPhotos?: Photo[];
   onLoadComplete?: () => void;
+  secretKey?: string; // For share link access
 }
 
 // Import Photo from canonical location
 import type { Photo } from '../types/photo';
 
-const ContentGrid: React.FC<ContentGridProps> = ({ album, onAlbumNotFound, initialPhotos, onLoadComplete }) => {
+const ContentGrid: React.FC<ContentGridProps> = ({ album, onAlbumNotFound, initialPhotos, onLoadComplete, secretKey }) => {
   const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
@@ -542,7 +543,7 @@ const ContentGrid: React.FC<ContentGridProps> = ({ album, onAlbumNotFound, initi
       }
       return <NotFound />;
     }
-    return <VideoListView videos={allPhotos} album={album} />;
+    return <VideoListView videos={allPhotos} album={album} secretKey={secretKey} />;
   }
 
   return (
@@ -614,6 +615,7 @@ const ContentGrid: React.FC<ContentGridProps> = ({ album, onAlbumNotFound, initi
           onNavigateNext={handleNavigateNext}
           onClose={handleCloseModal}
           clickedVideo={clickedVideoId === selectedPhoto.id}
+          secretKey={secretKey}
         />
       )}
     </>
