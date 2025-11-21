@@ -12,6 +12,7 @@ import SectionHeader from "../components/SectionHeader";
 import RegenerationControls from "../components/RegenerationControls";
 import AuthSettings from "../components/AuthSettings";
 import SMTPSettings from "../components/SMTPSettings";
+import PushNotificationsSettings from "../components/PushNotificationsSettings";
 import AnalyticsSettings from "../components/AnalyticsSettings";
 import CustomDropdown from "../components/CustomDropdown";
 import {
@@ -389,6 +390,15 @@ const AdvancedSettingsSection: React.FC<AdvancedSettingsSectionProps> = ({
           savingSection={savingSection}
           setMessage={setMessage}
           sectionRef={smtpSectionRef}
+        />
+
+        {/* Push Notifications Settings */}
+        <PushNotificationsSettings
+          config={config}
+          originalConfig={originalConfig!}
+          updateConfig={updateConfig}
+          savingSection={savingSection}
+          onSave={handleSaveSection}
         />
 
         {/* Analytics Settings */}

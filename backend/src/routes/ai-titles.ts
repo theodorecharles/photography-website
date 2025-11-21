@@ -13,6 +13,7 @@ import { getDatabase } from '../database.js';
 import { requireAuth, requireAdmin, requireManager } from '../auth/middleware.js';
 import { DATA_DIR } from '../config.js';
 import { error, warn, info, debug, verbose } from '../utils/logger.js';
+import { sendNotificationToUser } from '../push-notifications.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -491,6 +492,26 @@ router.post('/generate', requireManager, (req, res) => {
         }
       });
       runningJobs.aiTitles.clients.clear();
+      
+      // Send push notification to user
+      if (req.user && 'id' in req.user) {
+        const duration = Date.now() - runningJobs.aiTitles.startTime;
+        const durationMin = (duration / 1000 / 60).toFixed(1);
+        const message = code === 0 
+          ? `✓ AI title generation complete (${durationMin}m)`
+          : `✗ AI title generation failed with code ${code}`;
+        
+        sendNotificationToUser((req.user as any).id, {
+          title: code === 0 ? 'AI Title Generation Complete' : 'AI Title Generation Failed',
+          body: message,
+          icon: '/icon-192.png',
+          badge: '/icon-192.png',
+          tag: 'ai-titles',
+          requireInteraction: false
+        }).catch(err => {
+          warn('[AITitles] Failed to send push notification:', err);
+        });
+      }
       
       // Clean up after 5 minutes
       setTimeout(() => {

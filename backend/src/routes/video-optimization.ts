@@ -9,6 +9,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { error, warn, info } from '../utils/logger.js';
 import { requireManager } from '../auth/middleware.js';
+import { sendNotificationToUser } from '../push-notifications.js';
 
 const router = express.Router();
 
@@ -25,6 +26,7 @@ interface RunningJob {
   clients: Set<any>;
   startTime: number;
   isComplete: boolean;
+  videoCount?: { generated: number; skipped: number; errors: number };
 }
 
 let runningVideoOptimizationJob: RunningJob | null = null;
@@ -86,7 +88,8 @@ router.post('/regenerate', requireManager, (req, res) => {
     output: [],
     clients: new Set([res]),
     startTime: Date.now(),
-    isComplete: false
+    isComplete: false,
+    videoCount: { generated: 0, skipped: 0, errors: 0 }
   };
 
   info('[VideoOptimization] Starting video playlist regeneration');
@@ -117,6 +120,17 @@ router.post('/regenerate', requireManager, (req, res) => {
         const output = JSON.stringify({ type: 'stdout', message: line });
         info(`[VideoOptimization] ${line}`);
         
+        // Parse video counts from script output
+        if (runningVideoOptimizationJob?.videoCount) {
+          const generatedMatch = line.match(/✅ Generated: (\d+)/);
+          const skippedMatch = line.match(/⏭️  Skipped: (\d+)/);
+          const errorsMatch = line.match(/❌ Errors: (\d+)/);
+          
+          if (generatedMatch) runningVideoOptimizationJob.videoCount.generated = parseInt(generatedMatch[1], 10);
+          if (skippedMatch) runningVideoOptimizationJob.videoCount.skipped = parseInt(skippedMatch[1], 10);
+          if (errorsMatch) runningVideoOptimizationJob.videoCount.errors = parseInt(errorsMatch[1], 10);
+        }
+        
         // Store output and broadcast to all clients
         if (runningVideoOptimizationJob) {
           runningVideoOptimizationJob.output.push(output);
@@ -146,11 +160,25 @@ router.post('/regenerate', requireManager, (req, res) => {
   // Handle process completion
   child.on('close', (code: number) => {
     const duration = Date.now() - (runningVideoOptimizationJob?.startTime || Date.now());
-    const durationMin = (duration / 1000 / 60).toFixed(1);
+    const totalSeconds = Math.floor(duration / 1000);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    const timeStr = minutes > 0 
+      ? `${minutes} minute${minutes !== 1 ? 's' : ''} ${seconds} second${seconds !== 1 ? 's' : ''}`
+      : `${seconds} second${seconds !== 1 ? 's' : ''}`;
+    
+    const counts = runningVideoOptimizationJob?.videoCount;
+    const videoCountStr = counts 
+      ? ` • ${counts.generated} processed${counts.skipped > 0 ? `, ${counts.skipped} skipped` : ''}${counts.errors > 0 ? `, ${counts.errors} failed` : ''}`
+      : '';
     
     const message = code === 0 
-      ? `✓ Video playlist regeneration complete (${durationMin}m)`
+      ? `✓ Video playlist regeneration complete (${timeStr})${videoCountStr}`
       : `✗ Video playlist regeneration failed with code ${code}`;
+    
+    const notificationBody = code === 0
+      ? `Completed in ${timeStr}${videoCountStr}`
+      : `Failed with code ${code}`;
     
     info(`[VideoOptimization] ${message}`);
     
@@ -163,6 +191,20 @@ router.post('/regenerate', requireManager, (req, res) => {
       runningVideoOptimizationJob.output.push(completeOutput);
       broadcastToClients(runningVideoOptimizationJob, completeOutput);
       runningVideoOptimizationJob.isComplete = true;
+      
+      // Send push notification to user
+      if (req.user && 'id' in req.user) {
+        sendNotificationToUser((req.user as any).id, {
+          title: code === 0 ? 'Video Processing Complete' : 'Video Processing Failed',
+          body: notificationBody,
+          icon: '/icon-192.png',
+          badge: '/icon-192.png',
+          tag: 'video-optimization',
+          requireInteraction: false
+        }).catch(err => {
+          warn('[VideoOptimization] Failed to send push notification:', err);
+        });
+      }
       
       // Clean up after 5 minutes
       setTimeout(() => {
@@ -294,13 +336,20 @@ router.post('/reprocess', requireManager, (req, res) => {
   // Handle process completion
   child.on('close', (code: number) => {
     const duration = Date.now() - (runningVideoOptimizationJob?.startTime || Date.now());
-    const durationSec = Math.round(duration / 1000);
-    const durationMin = (duration / 1000 / 60).toFixed(1);
-    const timeDisplay = durationSec < 60 ? `${durationSec}s` : `${durationMin}m`;
+    const totalSeconds = Math.floor(duration / 1000);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    const timeStr = minutes > 0 
+      ? `${minutes} minute${minutes !== 1 ? 's' : ''} ${seconds} second${seconds !== 1 ? 's' : ''}`
+      : `${seconds} second${seconds !== 1 ? 's' : ''}`;
     
     const message = code === 0 
-      ? `✓ Video reprocessing complete (${timeDisplay})`
+      ? `✓ Video reprocessing complete (${timeStr})`
       : `✗ Video reprocessing failed with code ${code}`;
+    
+    const notificationBody = code === 0
+      ? `Completed in ${timeStr}`
+      : `Failed with code ${code}`;
     
     info(`[VideoReprocessing] ${message}`);
     
@@ -313,6 +362,20 @@ router.post('/reprocess', requireManager, (req, res) => {
       runningVideoOptimizationJob.output.push(completeOutput);
       broadcastToClients(runningVideoOptimizationJob, completeOutput);
       runningVideoOptimizationJob.isComplete = true;
+      
+      // Send push notification to user
+      if (req.user && 'id' in req.user) {
+        sendNotificationToUser((req.user as any).id, {
+          title: code === 0 ? 'Video Reprocessing Complete' : 'Video Reprocessing Failed',
+          body: notificationBody,
+          icon: '/icon-192.png',
+          badge: '/icon-192.png',
+          tag: 'video-reprocessing',
+          requireInteraction: false
+        }).catch(err => {
+          warn('[VideoReprocessing] Failed to send push notification:', err);
+        });
+      }
       
       // Clean up after 5 minutes
       setTimeout(() => {

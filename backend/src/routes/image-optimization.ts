@@ -44,6 +44,7 @@ const __dirname = path.dirname(__filename);
 
 import { DATA_DIR } from '../config.js';
 import { requireAuth, requireAdmin, requireManager } from '../auth/middleware.js';
+import { sendNotificationToUser } from '../push-notifications.js';
 
 // Path to config.json
 const configPath = path.join(DATA_DIR, 'config.json');
@@ -333,6 +334,26 @@ router.post('/optimize', requireManager, (req, res) => {
         }
       });
       runningOptimizationJob.clients.clear();
+      
+      // Send push notification to user
+      if (req.user && 'id' in req.user) {
+        const duration = Date.now() - runningOptimizationJob.startTime;
+        const durationMin = (duration / 1000 / 60).toFixed(1);
+        const message = code === 0 
+          ? `✓ Image optimization complete (${durationMin}m)`
+          : `✗ Image optimization failed with code ${code}`;
+        
+        sendNotificationToUser((req.user as any).id, {
+          title: code === 0 ? 'Image Optimization Complete' : 'Image Optimization Failed',
+          body: message,
+          icon: '/icon-192.png',
+          badge: '/icon-192.png',
+          tag: 'image-optimization',
+          requireInteraction: false
+        }).catch(err => {
+          warn('[Optimization] Failed to send push notification:', err);
+        });
+      }
       
       // Clean up after 5 minutes
       setTimeout(() => {

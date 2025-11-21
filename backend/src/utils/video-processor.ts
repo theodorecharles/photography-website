@@ -187,6 +187,12 @@ export async function generateHLS(
     const playlistPath = path.join(outputDir, 'playlist.m3u8');
     const segmentPattern = path.join(outputDir, 'segment%03d.ts');
 
+    // Calculate GOP size to match segment duration
+    // Assuming 30fps (typical for most videos), GOP should be segmentDuration * 30
+    // This ensures one keyframe per segment, preventing buffer holes
+    const fps = 30;
+    const gopSize = segmentDuration * fps;
+
     const args = [
       '-i', inputPath,
       '-c:v', 'libx264',
@@ -196,6 +202,11 @@ export async function generateHLS(
       '-b:v', resolution.videoBitrate,
       '-maxrate', resolution.videoBitrate,
       '-bufsize', `${parseInt(resolution.videoBitrate) * 2}k`,
+      // Force keyframes at segment boundaries to prevent buffer holes
+      '-g', gopSize.toString(), // GOP size = segment duration * fps
+      '-keyint_min', gopSize.toString(), // Minimum keyframe interval
+      '-sc_threshold', '0', // Disable scene change detection (prevents extra keyframes)
+      '-force_key_frames', `expr:gte(t,n_forced*${segmentDuration})`, // Force keyframes every N seconds
       '-c:a', 'aac',
       '-b:a', resolution.audioBitrate,
       '-ac', '2',
@@ -203,6 +214,9 @@ export async function generateHLS(
       '-hls_time', segmentDuration.toString(),
       '-hls_list_size', '0',
       '-hls_segment_filename', segmentPattern,
+      '-start_number', '0',
+      '-hls_flags', 'independent_segments+split_by_time', // Ensure segments start at exact timestamps
+      '-avoid_negative_ts', 'make_zero', // Ensure timestamps start at 0
       '-y',
       playlistPath
     ];

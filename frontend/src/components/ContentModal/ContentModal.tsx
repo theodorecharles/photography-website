@@ -30,6 +30,7 @@ interface ContentModalProps {
   onClose: () => void;
   clickedVideo?: boolean; // Whether user clicked a video (vs navigated to it)
   secretKey?: string; // For share link access
+  isHomepage?: boolean; // Whether we're on the homepage
 }
 
 const ContentModal: React.FC<ContentModalProps> = ({
@@ -42,6 +43,7 @@ const ContentModal: React.FC<ContentModalProps> = ({
   onClose,
   clickedVideo = false,
   secretKey,
+  isHomepage = false,
 }) => {
   // Modal-specific state
   const [modalImageLoaded, setModalImageLoaded] = useState(false);
@@ -103,12 +105,12 @@ const ContentModal: React.FC<ContentModalProps> = ({
   // Update URL with photo parameter
   const updateURLWithPhoto = useCallback((photo: Photo) => {
     const filename = photo.id.split('/').pop();
-    const baseUrl = photo.album === 'homepage' 
+    const baseUrl = isHomepage 
       ? '/' 
       : `/album/${encodeURIComponent(photo.album)}`;
     const newUrl = `${baseUrl}?photo=${encodeURIComponent(filename || '')}`;
     window.history.replaceState(null, '', newUrl);
-  }, []);
+  }, [isHomepage]);
 
   // Fetch branding data on mount
   useEffect(() => {
@@ -129,11 +131,11 @@ const ContentModal: React.FC<ContentModalProps> = ({
   // Get permalink for photo
   const getPhotoPermalink = useCallback((photo: Photo) => {
     const filename = photo.id.split('/').pop();
-    const baseUrl = photo.album === 'homepage' 
+    const baseUrl = isHomepage 
       ? '/' 
       : `/album/${encodeURIComponent(photo.album)}`;
     return `${SITE_URL}${baseUrl}?photo=${encodeURIComponent(filename || '')}`;
-  }, []);
+  }, [isHomepage]);
 
 
   // Reset state when photo changes

@@ -95,8 +95,9 @@
   },
   "photo": {
     "title": "Photo",
-    "noPhotosYet": "No Photos Yet",
-    "albumEmpty": "This album is empty. Time to add some amazing photos!",
+    "noContentYet": "No Content Yet",
+    "albumEmpty": "This album is empty. Please log in to add content.",
+    "homepageEmpty": "Add some albums or use the homepage toggle to add them to the homepage.",
     "goToAdminPanel": "Go to Admin Panel",
     "download": "Download",
     "share": "Share",
@@ -1153,5 +1154,19 @@
     "errorPasswordTooShort": "Password must be at least 8 characters",
     "errorRequiredField": "This field is required",
     "setupCompleteWaitingRestart": "Setup complete! Waiting for server to restart..."
+  },
+  "notifications": {
+    "bannerTitle": "Get Notified When Processing Jobs Complete",
+    "bannerDescription": "Enable push notifications to receive alerts when your video processing and image optimization jobs finish. You can work on other tabs or applications while jobs run in the background.",
+    "enable": "Enable Notifications",
+    "dismiss": "Maybe Later",
+    "active": "Push notifications enabled",
+    "sendTest": "Send Test",
+    "disable": "Disable",
+    "permissionGranted": "Push notifications enabled successfully!",
+    "permissionDenied": "Push notifications permission denied",
+    "error": "Failed to manage push notifications",
+    "unsubscribed": "Push notifications disabled",
+    "testSent": "Test notification sent! Check your device."
   }
 }

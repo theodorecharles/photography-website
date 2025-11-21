@@ -146,6 +146,9 @@ export async function requireAdmin(req: Request, res: Response, next: NextFuncti
     return res.status(403).json({ error: 'Access denied - admin role required' });
   }
   
+  // Attach user to request for use in route handlers
+  req.user = user;
+  
   trace('[Admin Middleware] User is admin');
   next();
 }
@@ -175,6 +178,9 @@ export async function requireManager(req: Request, res: Response, next: NextFunc
     trace('[Manager Middleware] User is not admin or manager:', user.role);
     return res.status(403).json({ error: 'Access denied - manager role required' });
   }
+  
+  // Attach user to request for use in route handlers
+  req.user = user;
   
   trace('[Manager Middleware] User is admin or manager');
   next();

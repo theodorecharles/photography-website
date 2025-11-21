@@ -78,6 +78,9 @@ const ContentGrid: React.FC<ContentGridProps> = ({ album, onAlbumNotFound, initi
 
   const [clickedVideoId, setClickedVideoId] = useState<string | null>(null);
 
+  // Check if we're on the homepage
+  const isHomepage = album === 'homepage';
+
   const handlePhotoClick = (photo: Photo, shouldAutoplay: boolean = false) => {
     setSelectedPhoto(photo);
     const index = photoIndexMap.get(photo.id) ?? 0;
@@ -235,20 +238,20 @@ const ContentGrid: React.FC<ContentGridProps> = ({ album, onAlbumNotFound, initi
               // New homepage format with metadata
               shouldShuffle = staticData.shuffle ?? true;
               staticPhotos = staticData.photos.map((data: string[]) => reconstructPhoto(data, album));
-              info(`? Loaded ${staticPhotos.length} photos from homepage JSON (shuffle: ${shouldShuffle})`);
+              info(`✓ Loaded ${staticPhotos.length} photos from homepage JSON (shuffle: ${shouldShuffle})`);
               
               // Shuffle homepage photos for random display order each time (if enabled)
               if (shouldShuffle) {
                 staticPhotos = [...staticPhotos].sort(() => Math.random() - 0.5);
-                info(`?? Shuffled ${staticPhotos.length} homepage photos`);
+                info(`ℹ️  Shuffled ${staticPhotos.length} homepage photos`);
               } else {
-                info(`?? Homepage shuffle disabled - displaying in order`);
+                info(`ℹ️  Homepage shuffle disabled - displaying in order`);
               }
             } else {
               // Regular album format or legacy homepage format (array of photos)
               const photoArray = Array.isArray(staticData) ? staticData : (staticData.photos || []);
               staticPhotos = photoArray.map((data: string[]) => reconstructPhoto(data, album));
-              info(`? Loaded ${staticPhotos.length} photos from optimized static JSON (${album})`);
+              info(`✓ Loaded ${staticPhotos.length} photos from optimized static JSON (${album})`);
             }
             
             // Show first 100 immediately
@@ -262,7 +265,7 @@ const ContentGrid: React.FC<ContentGridProps> = ({ album, onAlbumNotFound, initi
           }
         } catch (staticError) {
           // Static JSON not available or failed, fall back to API
-          info(`??  Static JSON unavailable for ${album}, falling back to API`);
+          info(`⚠️  Static JSON unavailable for ${album}, falling back to API`);
         }
 
         // Fallback to API if static JSON is not available
@@ -517,11 +520,12 @@ const ContentGrid: React.FC<ContentGridProps> = ({ album, onAlbumNotFound, initi
 
   // Empty state - no photos in the album
   if (photos.length === 0) {
+    const isHomepage = album === 'homepage';
     return (
       <div className="empty-state">
-        <div className="empty-icon">??</div>
-        <h2>{t('photo.noPhotosYet')}</h2>
-        <p>{t('photo.albumEmpty')}</p>
+        <div className="empty-icon">📸</div>
+        <h2>{t('photo.noContentYet')}</h2>
+        <p>{isHomepage ? t('photo.homepageEmpty') : t('photo.albumEmpty')}</p>
         <a href="/admin" className="empty-state-button">
           {t('photo.goToAdminPanel')}
         </a>
@@ -615,6 +619,7 @@ const ContentGrid: React.FC<ContentGridProps> = ({ album, onAlbumNotFound, initi
           onClose={handleCloseModal}
           clickedVideo={clickedVideoId === selectedPhoto.id}
           secretKey={secretKey}
+          isHomepage={isHomepage}
         />
       )}
     </>

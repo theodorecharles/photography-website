@@ -270,4 +270,5 @@ export default {
   externalLinks: fullConfig.externalLinks,
   email: fullConfig.email,
   frontend: fullConfig.environment.frontend,
+  pushNotifications: fullConfig.pushNotifications,
 };
