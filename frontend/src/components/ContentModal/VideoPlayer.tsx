@@ -435,8 +435,9 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         style={{
           display: hasInteracted || autoplay ? 'block' : 'none',
           width: '100%',
-          maxHeight: '80vh',
-          height: 'auto',
+          height: '100%',
+          maxWidth: '100%',
+          maxHeight: '100%',
           objectFit: 'contain'
         }}
       />
