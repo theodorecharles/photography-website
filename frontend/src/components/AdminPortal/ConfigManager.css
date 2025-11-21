@@ -41,6 +41,19 @@
   margin-bottom: 1rem;
 }
 
+.collapsible-content {
+  transition: all 0.2s ease;
+}
+
+.collapsible-content:hover {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.07) 100%
+  );
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
 .config-group:last-child {
   margin-bottom: 0;
 }
