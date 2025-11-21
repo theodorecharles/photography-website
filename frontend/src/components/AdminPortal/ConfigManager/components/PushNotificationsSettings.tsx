@@ -312,9 +312,6 @@ const PushNotificationsSettings: React.FC<PushNotificationsSettingsProps> = ({
         Notify managers and admins when video processing and image optimization jobs complete
       </p>
 
-      {/* Subscription Status and Controls */}
-      <PushNotificationStatus isConfigured={pushConfig.enabled && hasKeys} />
-
       {/* 2x2 Grid Layout */}
       <div 
         style={{ 
