@@ -83,16 +83,18 @@ const VideoListView: React.FC<VideoListViewProps> = ({ videos, album, secretKey 
         
         return (
           <div key={video.id} className="video-list-item">
-            <div className="video-player-wrapper">
+            <div 
+              className="video-player-wrapper"
+              style={{
+                width: containerWidth ? `${containerWidth}px` : '100%',
+                maxWidth: '100%',
+                margin: '0 auto'
+              }}
+            >
               <div 
                 className="video-player-container"
                 data-video-id={video.id}
-                style={{ 
-                  position: 'relative', 
-                  width: containerWidth ? `${containerWidth}px` : '100%',
-                  maxWidth: '100%',
-                  margin: '0 auto'
-                }}
+                style={{ position: 'relative' }}
               >
                 {/* Always show thumbnail and modal image */}
                 <ImageCanvas
