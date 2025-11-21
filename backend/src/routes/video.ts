@@ -72,10 +72,18 @@ const serveMasterPlaylist = async (req: Request, res: Response, album: string, f
       return;
     }
 
+    // Check album exists first
+    const albumState = getAlbumState(sanitizedAlbum);
+    if (!albumState) {
+      error(`[Video] Album not found: ${sanitizedAlbum}`);
+      res.status(404).json({ error: 'Video not found' });
+      return;
+    }
+
     // Check access (authentication, published state, or share link)
     if (!hasAlbumAccess(req, sanitizedAlbum)) {
       error(`[Video] Access denied for album: ${sanitizedAlbum}`);
-      res.status(404).json({ error: 'Video not found' });
+      res.status(403).json({ error: 'Access denied' });
       return;
     }
 
@@ -149,9 +157,16 @@ router.get("/:album/:filename/:resolution/playlist.m3u8", async (req: Request, r
       return;
     }
 
+    // Check album exists first
+    const albumState = getAlbumState(sanitizedAlbum);
+    if (!albumState) {
+      res.status(404).json({ error: 'Video not found' });
+      return;
+    }
+
     // Check access (authentication, published state, or share link)
     if (!hasAlbumAccess(req, sanitizedAlbum)) {
-      res.status(404).json({ error: 'Video not found' });
+      res.status(403).json({ error: 'Access denied' });
       return;
     }
 
@@ -220,9 +235,16 @@ router.get("/:album/:filename/:resolution/:segment", async (req: Request, res: R
       return;
     }
 
+    // Check album exists first
+    const albumState = getAlbumState(sanitizedAlbum);
+    if (!albumState) {
+      res.status(404).json({ error: 'Video not found' });
+      return;
+    }
+
     // Check access (authentication, published state, or share link)
     if (!hasAlbumAccess(req, sanitizedAlbum)) {
-      res.status(404).json({ error: 'Video not found' });
+      res.status(403).json({ error: 'Access denied' });
       return;
     }
 
@@ -295,9 +317,16 @@ router.get("/:album/:filename/resolutions", async (req: Request, res: Response):
       return;
     }
 
+    // Check album exists first
+    const albumState = getAlbumState(sanitizedAlbum);
+    if (!albumState) {
+      res.status(404).json({ error: 'Video not found' });
+      return;
+    }
+
     // Check access (authentication, published state, or share link)
     if (!hasAlbumAccess(req, sanitizedAlbum)) {
-      res.status(404).json({ error: 'Video not found' });
+      res.status(403).json({ error: 'Access denied' });
       return;
     }
 

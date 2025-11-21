@@ -1017,7 +1017,7 @@
     "confirmPasswordPlaceholder": "••••••••",
     "googleInstructions": "Cómo obtener credenciales de Google OAuth:",
     "googleStep1": "Ve a",
-    "googleCloudConsole": "Google Cloud Console",
+    "googleCloudConsole": "Consola de Google Cloud",
     "googleStep2": "Crea un nuevo proyecto o selecciona uno existente",
     "googleStep3": "Habilita la API de Google+",
     "googleStep4": "Crea credenciales OAuth 2.0",

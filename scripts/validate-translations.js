@@ -105,29 +105,40 @@ const UNIVERSAL_WORDS = new Set([
   "google",
   "openobserve",
   
-  // Technical identifiers (should NEVER be translated)
+  // Technical protocol identifiers (should NEVER be translated)
   "mfa",
   "smtp",
   "oauth",
   "api",
   "json",
-  "url",
   "iso",
-  
-  // Placeholder names (universal across languages)
-  "john",
-  "doe",
-  
-  // Very short measurement units
-  "min",
 ]);
+
+// Load language-specific whitelist
+let LANGUAGE_WHITELIST = {};
+try {
+  const whitelistPath = join(__dirname, "language-whitelist.json");
+  LANGUAGE_WHITELIST = JSON.parse(readFileSync(whitelistPath, "utf-8"));
+} catch (error) {
+  // Whitelist file doesn't exist yet, that's okay
+}
 
 /**
  * Check if a string is likely a legitimate universal word
  */
-function isUniversalWord(str) {
+function isUniversalWord(str, lang = null) {
   if (typeof str !== "string") return false;
   const lower = str.toLowerCase().trim();
+  
+  // Check language-specific whitelist
+  if (lang && LANGUAGE_WHITELIST[lang]) {
+    if (LANGUAGE_WHITELIST[lang].includes(str)) return true;
+  }
+  
+  // Check common whitelist (applies to all languages)
+  if (LANGUAGE_WHITELIST._common && LANGUAGE_WHITELIST._common.includes(str)) {
+    return true;
+  }
 
   // Check exact matches
   if (UNIVERSAL_WORDS.has(lower)) return true;
@@ -225,7 +236,7 @@ function checkEmptyValues(data, lang, allKeys, referenceData) {
         value === referenceValue &&
         value !== "" &&
         !value.startsWith("[EN] ") &&
-        !isUniversalWord(value)
+        !isUniversalWord(value, lang)
       ) {
         untranslatedKeys.push({ key, value });
       }

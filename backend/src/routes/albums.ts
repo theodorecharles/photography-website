@@ -300,11 +300,15 @@ const serveAlbumJSON = (req: Request, res: Response, albumName: string): void =>
   // Check album published state
   const albumState = getAlbumState(sanitizedAlbum);
   
-  // Deny access if:
-  // 1. Album not in database (albumState is undefined)
-  // 2. Album is unpublished and user is not authenticated
-  if (!albumState || (!albumState.published && !isAuthenticated)) {
+  // Return 404 if album doesn't exist at all
+  if (!albumState) {
     res.status(404).json({ error: "Album not found" });
+    return;
+  }
+  
+  // Return 403 if album exists but is unpublished and user is not authenticated
+  if (!albumState.published && !isAuthenticated) {
+    res.status(403).json({ error: "Access denied" });
     return;
   }
 
@@ -358,11 +362,15 @@ const serveAlbumPhotos = (req: Request, res: Response, albumName: string): void 
   // Check album published state
   const albumState = getAlbumState(sanitizedAlbum);
   
-  // Deny access if:
-  // 1. Album not in database (albumState is undefined)
-  // 2. Album is unpublished and user is not authenticated
-  if (!albumState || (!albumState.published && !isAuthenticated)) {
+  // Return 404 if album doesn't exist at all
+  if (!albumState) {
     res.status(404).json({ error: "Album not found" });
+    return;
+  }
+  
+  // Return 403 if album exists but is unpublished and user is not authenticated
+  if (!albumState.published && !isAuthenticated) {
+    res.status(403).json({ error: "Access denied" });
     return;
   }
 
