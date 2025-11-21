@@ -225,12 +225,12 @@ export function PushNotificationStatus({ isConfigured }: PushNotificationStatusP
         <>
           <div style={{ color: '#888', fontSize: '0.95rem' }}>
             {permission === 'denied' 
-              ? 'Notifications blocked by browser. Check your browser settings.'
-              : 'Subscribe to receive notifications when jobs complete'}
+              ? t('notifications.blocked')
+              : t('notifications.subscribePrompt')}
           </div>
           {permission !== 'denied' && (
             <button className="btn-primary" onClick={handleSubscribe} style={{ padding: '0.4rem 1rem', fontSize: '0.875rem' }}>
-              Subscribe
+              {t('notifications.subscribe')}
             </button>
           )}
         </>

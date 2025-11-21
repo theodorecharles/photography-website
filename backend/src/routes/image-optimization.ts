@@ -45,6 +45,7 @@ const __dirname = path.dirname(__filename);
 import { DATA_DIR } from '../config.js';
 import { requireAuth, requireAdmin, requireManager } from '../auth/middleware.js';
 import { sendNotificationToUser } from '../push-notifications.js';
+import { translateNotificationForUser } from '../i18n-backend.js';
 
 // Path to config.json
 const configPath = path.join(DATA_DIR, 'config.json');
@@ -311,7 +312,7 @@ router.post('/optimize', requireManager, (req, res) => {
   });
   
   // Handle process completion
-  child.on('close', (code) => {
+  child.on('close', async (code) => {
     info(`[Optimization] Process completed with exit code ${code}`);
     
     const completeMsg = JSON.stringify({ 
@@ -337,14 +338,18 @@ router.post('/optimize', requireManager, (req, res) => {
       
       // Send push notification to user
       if (req.user && 'id' in req.user) {
+        const userId = (req.user as any).id;
         const duration = Date.now() - runningOptimizationJob.startTime;
         const durationMin = (duration / 1000 / 60).toFixed(1);
         const message = code === 0 
           ? `✓ Image optimization complete (${durationMin}m)`
           : `✗ Image optimization failed with code ${code}`;
         
-        sendNotificationToUser((req.user as any).id, {
-          title: code === 0 ? 'Image Optimization Complete' : 'Image Optimization Failed',
+        const titleKey = code === 0 ? 'notifications.backend.imageOptimizationComplete' : 'notifications.backend.imageOptimizationFailed';
+        const title = await translateNotificationForUser(userId, titleKey);
+        
+        sendNotificationToUser(userId, {
+          title,
           body: message,
           icon: '/icon-192.png',
           badge: '/icon-192.png',
