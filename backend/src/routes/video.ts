@@ -36,8 +36,11 @@ const hasAlbumAccess = (req: Request, album: string): boolean => {
   const shareKey = req.query.key as string;
   let hasValidShareLink = false;
   
+  info(`[Video] Access check: album=${album}, shareKey=${shareKey ? shareKey.substring(0, 16) + '...' : 'none'}, isAuth=${isAuthenticated}`);
+  
   if (shareKey && /^[a-f0-9]{64}$/i.test(shareKey)) {
     const shareLink = getShareLinkBySecret(shareKey);
+    info(`[Video] Share link lookup: found=${!!shareLink}, match=${shareLink?.album === album}, expired=${shareLink ? isShareLinkExpired(shareLink) : 'N/A'}`);
     if (shareLink && shareLink.album === album && !isShareLinkExpired(shareLink)) {
       hasValidShareLink = true;
     }
@@ -50,6 +53,8 @@ const hasAlbumAccess = (req: Request, album: string): boolean => {
   if (!albumState) {
     return false;
   }
+  
+  info(`[Video] Access decision: published=${albumState.published}, auth=${isAuthenticated}, validShareLink=${hasValidShareLink}, granting=${albumState.published || isAuthenticated || hasValidShareLink}`);
   
   // Allow access if: album is published OR user is authenticated OR valid share link
   return albumState.published || isAuthenticated || hasValidShareLink;
