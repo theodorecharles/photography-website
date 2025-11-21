@@ -13,6 +13,7 @@ interface ImageCanvasProps {
   modalImageLoaded: boolean;
   showModalImage: boolean;
   onThumbnailLoad: (img?: HTMLImageElement) => void;
+  onModalLoad?: (img?: HTMLImageElement) => void;
 }
 
 const ImageCanvas: React.FC<ImageCanvasProps> = ({
@@ -22,8 +23,10 @@ const ImageCanvas: React.FC<ImageCanvasProps> = ({
   modalImageLoaded,
   showModalImage,
   onThumbnailLoad,
+  onModalLoad,
 }) => {
   const thumbnailRef = useRef<HTMLImageElement>(null);
+  const modalRef = useRef<HTMLImageElement>(null);
 
   // Check if thumbnail is already loaded (cached) and call handler immediately
   useEffect(() => {
@@ -33,8 +36,24 @@ const ImageCanvas: React.FC<ImageCanvasProps> = ({
     }
   }, [photo.id, onThumbnailLoad]);
 
-  const handleLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
+  // Check if modal image is already loaded (cached) and call handler immediately
+  useEffect(() => {
+    if (onModalLoad) {
+      const img = modalRef.current;
+      if (img && img.complete && img.naturalHeight !== 0) {
+        onModalLoad(img);
+      }
+    }
+  }, [photo.id, onModalLoad]);
+
+  const handleThumbnailLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
     onThumbnailLoad(e.currentTarget);
+  };
+
+  const handleModalLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    if (onModalLoad) {
+      onModalLoad(e.currentTarget);
+    }
   };
 
   return (
@@ -42,7 +61,7 @@ const ImageCanvas: React.FC<ImageCanvasProps> = ({
       {/* Thumbnail - shows first */}
       <img
         ref={thumbnailRef}
-        onLoad={handleLoad}
+        onLoad={handleThumbnailLoad}
         src={`${apiUrl}${photo.thumbnail}${imageQueryString}`}
         alt={`${photo.album} - ${photo.title}`}
         title={photo.title}
@@ -58,6 +77,8 @@ const ImageCanvas: React.FC<ImageCanvasProps> = ({
       {/* Modal optimized image - overlays on top when loaded */}
       {showModalImage && (
         <img
+          ref={modalRef}
+          onLoad={handleModalLoad}
           src={`${apiUrl}${photo.modal}${imageQueryString}`}
           alt={`${photo.album} - ${photo.title}`}
           title={photo.title}

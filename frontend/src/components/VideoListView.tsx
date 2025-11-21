@@ -44,21 +44,24 @@ const VideoListView: React.FC<VideoListViewProps> = ({ videos, album, secretKey 
     }
   };
 
-  const handleThumbnailLoad = (videoId: string, img?: HTMLImageElement) => {
+  const handleThumbnailLoad = (videoId: string) => {
     setThumbnailLoadedMap(prev => ({ ...prev, [videoId]: true }));
-    
+  };
+
+  const handleModalLoad = (videoId: string, img?: HTMLImageElement) => {
     if (!img) return;
     
     // Calculate appropriate width based on aspect ratio if height is constrained
+    // Use modal image dimensions (2048px) not thumbnail (512px) for proper sizing
     const aspectRatio = img.naturalWidth / img.naturalHeight;
     const maxHeight = window.innerHeight * 0.70; // 70vh
     
     if (img.naturalHeight > maxHeight) {
-      // Height is constrained, calculate width
+      // Height is constrained, calculate width based on aspect ratio
       const constrainedWidth = maxHeight * aspectRatio;
       setContainerWidths(prev => ({ ...prev, [videoId]: constrainedWidth }));
     } else {
-      // Not constrained, use full width
+      // Image fits within height constraint, use its natural width
       setContainerWidths(prev => ({ ...prev, [videoId]: img.naturalWidth }));
     }
   };
@@ -103,7 +106,8 @@ const VideoListView: React.FC<VideoListViewProps> = ({ videos, album, secretKey 
                   imageQueryString={imageQueryString}
                   modalImageLoaded={modalImageLoadedMap[video.id] || false}
                   showModalImage={true}
-                  onThumbnailLoad={(img) => handleThumbnailLoad(video.id, img)}
+                  onThumbnailLoad={() => handleThumbnailLoad(video.id)}
+                  onModalLoad={(img) => handleModalLoad(video.id, img)}
                 />
                 
                 {/* Play button overlay (hidden when video is playing) */}
