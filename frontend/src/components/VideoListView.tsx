@@ -51,10 +51,25 @@ const VideoListView: React.FC<VideoListViewProps> = ({ videos, album, secretKey 
   const handleModalLoad = (videoId: string, img?: HTMLImageElement) => {
     if (!img) return;
     
+    // Mark modal image as loaded
+    setModalImageLoadedMap(prev => ({ ...prev, [videoId]: true }));
+    
     // Calculate appropriate width based on aspect ratio if height is constrained
     // Use modal image dimensions (2048px) not thumbnail (512px) for proper sizing
     const aspectRatio = img.naturalWidth / img.naturalHeight;
-    const maxHeight = window.innerHeight * 0.70; // 70vh
+    const maxHeight = window.innerHeight * 0.85; // 85vh
+    
+    // For portrait videos (aspect ratio < 0.7), don't set a fixed width
+    // Let them center naturally with object-fit: contain
+    if (aspectRatio < 0.7) {
+      // Portrait video - don't constrain width, video will size naturally
+      setContainerWidths(prev => {
+        const newWidths = { ...prev };
+        delete newWidths[videoId];
+        return newWidths;
+      });
+      return;
+    }
     
     if (img.naturalHeight > maxHeight) {
       // Height is constrained, calculate width based on aspect ratio
@@ -95,7 +110,7 @@ const VideoListView: React.FC<VideoListViewProps> = ({ videos, album, secretKey 
               }}
             >
               <div 
-                className="video-player-container"
+                className={`video-player-container ${isPlaying ? 'playing' : ''}`}
                 data-video-id={video.id}
                 style={{ position: 'relative' }}
               >
@@ -146,7 +161,14 @@ const VideoListView: React.FC<VideoListViewProps> = ({ videos, album, secretKey 
               </div>
             </div>
             
-            <div className="video-info">
+            <div 
+              className="video-info"
+              style={{
+                width: containerWidth ? `${containerWidth}px` : '100%',
+                maxWidth: '100%',
+                margin: '0 auto'
+              }}
+            >
               <div className="video-header">
                 <h2 className="video-title">{video.title}</h2>
                 <button
