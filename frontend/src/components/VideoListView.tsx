@@ -3,11 +3,13 @@
  * Shows videos in a single-column list format with titles, descriptions, and share links
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { API_URL } from '../config';
 import { Photo } from '../types/photo';
 import VideoPlayer from './ContentModal/VideoPlayer';
-import { ShareIcon } from './icons';
+import ImageCanvas from './ContentModal/ImageCanvas';
+import { ShareIcon, PlayIcon } from './icons';
 import LinkifiedText from './LinkifiedText';
 import VideoShareModal from './AdminPortal/VideoShareModal';
 import './VideoListView.css';
@@ -21,41 +23,28 @@ interface VideoListViewProps {
 const VideoListView: React.FC<VideoListViewProps> = ({ videos, album, secretKey }) => {
   const { t } = useTranslation();
   const [shareModalVideo, setShareModalVideo] = useState<Photo | null>(null);
+  const [playingVideoId, setPlayingVideoId] = useState<string | null>(null);
+  const [thumbnailLoadedMap, setThumbnailLoadedMap] = useState<Record<string, boolean>>({});
+  const [modalImageLoadedMap, setModalImageLoadedMap] = useState<Record<string, boolean>>({});
 
-  // Pause all other videos when one starts playing
-  useEffect(() => {
-    const handlePlay = (e: Event) => {
-      const playingVideo = e.target as HTMLVideoElement;
-      const videoId = playingVideo.dataset.videoId;
-      
-      if (videoId) {
-        // Pause all other videos
-        const allVideos = document.querySelectorAll('.video-list-item video');
-        allVideos.forEach((video) => {
-          const vid = video as HTMLVideoElement;
-          const vidId = vid.dataset.videoId;
-          if (vidId !== videoId && !vid.paused) {
-            vid.pause();
-          }
-        });
-      }
-    };
-
-    // Add play event listeners to all videos
-    const allVideos = document.querySelectorAll('.video-list-item video');
-    allVideos.forEach((video) => {
-      video.addEventListener('play', handlePlay);
-    });
-
-    return () => {
-      allVideos.forEach((video) => {
-        video.removeEventListener('play', handlePlay);
-      });
-    };
-  }, [videos.length]); // Re-run when video list changes
+  const imageQueryString = secretKey ? `?key=${secretKey}` : '';
 
   const handleShareClick = (video: Photo) => {
     setShareModalVideo(video);
+  };
+
+  const handlePlayClick = (videoId: string) => {
+    // Stop any currently playing video
+    if (playingVideoId && playingVideoId !== videoId) {
+      setPlayingVideoId(null);
+      setTimeout(() => setPlayingVideoId(videoId), 50);
+    } else {
+      setPlayingVideoId(videoId);
+    }
+  };
+
+  const handleThumbnailLoad = (videoId: string) => {
+    setThumbnailLoadedMap(prev => ({ ...prev, [videoId]: true }));
   };
 
   if (videos.length === 0) {
@@ -72,6 +61,8 @@ const VideoListView: React.FC<VideoListViewProps> = ({ videos, album, secretKey 
     <div className="video-list-view">
       {videos.map((video) => {
         const filename = video.id.split('/').pop() || video.id;
+        const isPlaying = playingVideoId === video.id;
+        const thumbnailLoaded = thumbnailLoadedMap[video.id] || false;
         
         return (
           <div key={video.id} className="video-list-item">
@@ -79,15 +70,51 @@ const VideoListView: React.FC<VideoListViewProps> = ({ videos, album, secretKey 
               <div 
                 className="video-player-container"
                 data-video-id={video.id}
+                style={{ position: 'relative', width: '100%' }}
               >
-                <VideoPlayer
-                  album={video.album}
-                  filename={filename}
-                  videoTitle={video.title}
-                  posterUrl={`${video.thumbnail}${secretKey ? `?key=${secretKey}` : ''}`}
-                  autoplay={false}
-                  secretKey={secretKey}
+                {/* Always show thumbnail and modal image */}
+                <ImageCanvas
+                  photo={video}
+                  apiUrl={API_URL}
+                  imageQueryString={imageQueryString}
+                  modalImageLoaded={modalImageLoadedMap[video.id] || false}
+                  showModalImage={true}
+                  onThumbnailLoad={() => handleThumbnailLoad(video.id)}
                 />
+                
+                {/* Play button overlay (hidden when video is playing) */}
+                {thumbnailLoaded && !isPlaying && (
+                  <button
+                    onClick={() => handlePlayClick(video.id)}
+                    onTouchEnd={(e) => {
+                      e.stopPropagation();
+                      e.preventDefault();
+                      handlePlayClick(video.id);
+                    }}
+                    className="video-play-button-overlay"
+                    aria-label="Play video"
+                  >
+                    <PlayIcon width={80} height={80} />
+                  </button>
+                )}
+                
+                {/* Video player overlay (only rendered when playing) */}
+                {isPlaying && (
+                  <div className="modal-video-overlay">
+                    <VideoPlayer
+                      album={video.album}
+                      filename={filename}
+                      videoTitle={video.title}
+                      autoplay={true}
+                      onLoadStart={() => setThumbnailLoadedMap(prev => ({ ...prev, [video.id]: false }))}
+                      onLoaded={() => {
+                        setThumbnailLoadedMap(prev => ({ ...prev, [video.id]: true }));
+                        setModalImageLoadedMap(prev => ({ ...prev, [video.id]: true }));
+                      }}
+                      secretKey={secretKey}
+                    />
+                  </div>
+                )}
               </div>
             </div>
             

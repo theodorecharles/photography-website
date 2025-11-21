@@ -422,7 +422,6 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         controls
         playsInline
         preload="none"
-        poster={posterUrl ? `${API_URL}${posterUrl}` : undefined}
         data-video-id={`${album}/${filename}`}
         style={{
           display: hasInteracted || autoplay ? 'block' : 'none',
