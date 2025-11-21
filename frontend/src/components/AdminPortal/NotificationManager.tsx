@@ -8,6 +8,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { showToast } from '../../utils/toast';
+import { API_URL } from '../../config';
 import './NotificationManager.css';
 
 interface NotificationConfig {
@@ -82,7 +83,7 @@ export function NotificationManager() {
     try {
       // Fetch push notification config from server
       console.log('[NotificationManager] Fetching config from /api/push-notifications/config');
-      const response = await fetch('/api/push-notifications/config', {
+      const response = await fetch(`${API_URL}/api/push-notifications/config`, {
         credentials: 'include'
       });
       
@@ -161,7 +162,7 @@ export function NotificationManager() {
       }
 
       // Send subscription to server
-      const response = await fetch('/api/push-notifications/subscribe', {
+      const response = await fetch(`${API_URL}/api/push-notifications/subscribe`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -192,7 +193,7 @@ export function NotificationManager() {
         await subscription.unsubscribe();
         
         // Notify server
-        await fetch('/api/push-notifications/unsubscribe', {
+        await fetch(`${API_URL}/api/push-notifications/unsubscribe`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -213,7 +214,7 @@ export function NotificationManager() {
 
   async function sendTestNotification() {
     try {
-      const response = await fetch('/api/push-notifications/test', {
+      const response = await fetch(`${API_URL}/api/push-notifications/test`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
