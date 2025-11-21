@@ -131,6 +131,11 @@ const serveMasterPlaylist = async (req: Request, res: Response, album: string, f
     res.sendFile(masterPlaylistPath);
   } catch (err) {
     error('[Video] Failed to serve master playlist:', err);
+    error('[Video] Error details:', {
+      message: (err as Error).message,
+      stack: (err as Error).stack,
+      name: (err as Error).name
+    });
     res.status(500).json({ error: 'Failed to serve master playlist' });
   }
 };
