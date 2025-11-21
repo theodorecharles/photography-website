@@ -77,6 +77,18 @@ function Navigation({
   const [openFolderId, setOpenFolderId] = useState<number | null>(null);
   const location = useLocation();
   const navigate = useNavigate();
+  const navigationAttemptRef = useRef<string | null>(null);
+  
+  // Close dropdown when location changes (after navigation completes)
+  useEffect(() => {
+    // Check if we were trying to navigate somewhere
+    if (navigationAttemptRef.current && location.pathname === navigationAttemptRef.current) {
+      console.log('[Header] Navigation completed successfully to:', location.pathname);
+      navigationAttemptRef.current = null;
+    }
+    setIsDropdownOpen(false);
+    setOpenFolderId(null);
+  }, [location.pathname]);
   
   // Check if user is authenticated and get their role
   useEffect(() => {
@@ -150,11 +162,18 @@ function Navigation({
   // Handle clicks outside the dropdowns to close them
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node;
       const dropdownContainers = document.querySelectorAll('.dropdown-container');
       let clickedInside = false;
       
       dropdownContainers.forEach((container) => {
-        if (container.contains(event.target as Node)) {
+        // Check if click is inside the container OR inside any dropdown menu
+        if (container.contains(target)) {
+          clickedInside = true;
+        }
+        // Also check dropdown menus specifically
+        const dropdownMenu = container.querySelector('.dropdown-menu');
+        if (dropdownMenu && dropdownMenu.contains(target)) {
           clickedInside = true;
         }
       });
@@ -171,13 +190,15 @@ function Navigation({
       }
     };
 
+    // Use mousedown on document (capture phase) to catch clicks before they reach buttons
     if (isDropdownOpen || isExternalOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
+      // Use capture phase to check before the click reaches the button
+      document.addEventListener('mousedown', handleClickOutside, true);
 
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside, true);
+      };
+    }
   }, [isDropdownOpen, isExternalOpen]);
 
   // Handle click events for Albums dropdown
@@ -334,15 +355,19 @@ function Navigation({
                                 const albumName = typeof album === 'string' ? album : album.name;
                                 const isPublished = typeof album === 'string' ? true : (album.published === true || album.published === 1);
                                 return (
-                                  <Link
+                                  <button
                                     key={albumName}
-                                    to={`/album/${encodeURIComponent(albumName)}`}
+                                    type="button"
                                     className="nav-link submenu-link"
-                                    onClick={() => {
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                      const path = `/album/${encodeURIComponent(albumName)}`;
+                                      trackAlbumNavigation(albumName, 'header');
                                       trackDropdownClose('albums', 'navigation');
                                       setIsDropdownOpen(false);
                                       setOpenFolderId(null);
-                                      trackAlbumNavigation(albumName, 'header');
+                                      navigate(path, { replace: false });
                                     }}
                                   >
                                     {!isPublished && (
@@ -353,7 +378,7 @@ function Navigation({
                                       />
                                     )}
                                     <span>{albumName}</span>
-                                  </Link>
+                                  </button>
                                 );
                               })
                             ) : (
@@ -375,14 +400,46 @@ function Navigation({
                     const albumName = typeof album === 'string' ? album : album.name;
                     const isPublished = typeof album === 'string' ? true : (album.published === true || album.published === 1);
                     return (
-                      <Link
+                      <button
                         key={albumName}
-                        to={`/album/${encodeURIComponent(albumName)}`}
+                        type="button"
                         className="nav-link"
-                        onClick={() => {
-                          trackDropdownClose('albums', 'navigation');
-                          setIsDropdownOpen(false);
+                        onMouseDown={(e) => {
+                          // Use onMouseDown to fire before click-outside handler
+                          e.preventDefault();
+                          e.stopPropagation();
+                          console.log('[Header] Button mousedown:', albumName);
+                        }}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          console.log('[Header] Button clicked:', albumName);
+                          const path = `/album/${encodeURIComponent(albumName)}`;
                           trackAlbumNavigation(albumName, 'header');
+                          trackDropdownClose('albums', 'navigation');
+                          // Close dropdown first, then navigate
+                          setIsDropdownOpen(false);
+                          // Force navigation with multiple strategies
+                          console.log('[Header] Navigating to:', path);
+                          console.log('[Header] Current location.pathname:', location.pathname);
+                          navigate(path, { replace: false });
+                          console.log('[Header] navigate() called');
+                          // Double-check: if URL didn't update after 50ms, force it via history API
+                          setTimeout(() => {
+                            const currentUrl = window.location.pathname;
+                            console.log('[Header] After 50ms, URL is:', currentUrl);
+                            console.log('[Header] React Router location.pathname:', location.pathname);
+                            if (currentUrl !== path) {
+                              console.log('[Header] URL mismatch - forcing via history API');
+                              // Update URL directly and dispatch popstate to trigger React Router
+                              window.history.pushState({}, '', path);
+                              window.dispatchEvent(new PopStateEvent('popstate', { state: {} }));
+                            } else if (currentUrl === path && location.pathname !== path) {
+                              console.log('[Header] URL updated but React Router location didn\'t - forcing sync');
+                              // URL updated but React Router didn't - force it
+                              window.dispatchEvent(new PopStateEvent('popstate', { state: {} }));
+                            }
+                          }, 50);
                         }}
                       >
                         {!isPublished && (
@@ -393,7 +450,7 @@ function Navigation({
                           />
                         )}
                         <span>{albumName}</span>
-                      </Link>
+                      </button>
                     );
                   })}
                 </>
@@ -403,15 +460,19 @@ function Navigation({
                   const albumName = typeof album === 'string' ? album : album.name;
                   const isPublished = typeof album === 'string' ? true : (album.published === true || album.published === 1);
                   return (
-                    <Link
+                    <button
                       key={albumName}
-                      to={`/album/${encodeURIComponent(albumName)}`}
+                      type="button"
                       className="nav-link"
-                      onClick={() => {
-                        trackDropdownClose('albums', 'navigation');
-                        setIsDropdownOpen(false);
-                        trackAlbumNavigation(albumName, 'header');
-                      }}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          const path = `/album/${encodeURIComponent(albumName)}`;
+                          trackAlbumNavigation(albumName, 'header');
+                          trackDropdownClose('albums', 'navigation');
+                          setIsDropdownOpen(false);
+                          navigate(path, { replace: false });
+                        }}
                     >
                       {!isPublished && (
                         <LockIcon 
@@ -421,7 +482,7 @@ function Navigation({
                         />
                       )}
                       <span>{albumName}</span>
-                    </Link>
+                    </button>
                   );
                 })
               )}
