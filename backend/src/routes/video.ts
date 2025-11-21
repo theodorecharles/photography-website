@@ -46,8 +46,13 @@ const hasAlbumAccess = (req: Request, album: string): boolean => {
   // Check album state
   const albumState = getAlbumState(album);
   
+  // Return false if album doesn't exist
+  if (!albumState) {
+    return false;
+  }
+  
   // Allow access if: album is published OR user is authenticated OR valid share link
-  return albumState && (albumState.published || isAuthenticated || hasValidShareLink);
+  return albumState.published || isAuthenticated || hasValidShareLink;
 };
 
 /**
