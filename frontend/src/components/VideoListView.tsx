@@ -54,7 +54,7 @@ const VideoListView: React.FC<VideoListViewProps> = ({ videos, album, secretKey 
     // Calculate appropriate width based on aspect ratio if height is constrained
     // Use modal image dimensions (2048px) not thumbnail (512px) for proper sizing
     const aspectRatio = img.naturalWidth / img.naturalHeight;
-    const maxHeight = window.innerHeight * 0.70; // 70vh
+    const maxHeight = window.innerHeight * 0.85; // 85vh
     
     if (img.naturalHeight > maxHeight) {
       // Height is constrained, calculate width based on aspect ratio
