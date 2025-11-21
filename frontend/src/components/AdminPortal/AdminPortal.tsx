@@ -14,7 +14,6 @@ import ConfigManager from './ConfigManager';
 import { ProfileSection } from './ConfigManager/sections/ProfileSection';
 import SecuritySetupPrompt from './SecuritySetupPrompt';
 import LoginForm from './LoginForm';
-import { NotificationManager } from './NotificationManager';
 import {
   trackLoginSucceeded,
   trackLogout,
@@ -548,11 +547,6 @@ export default function AdminPortal() {
             )}
           </div>
         </div>
-
-        {/* Push Notification Banner - Only for managers and admins */}
-        {authStatus?.user?.role && (authStatus.user.role === 'admin' || authStatus.user.role === 'manager') && (
-          <NotificationManager />
-        )}
 
         <div className="toast-container">
           {messages.map((message) => (
