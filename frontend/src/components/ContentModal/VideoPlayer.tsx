@@ -83,9 +83,8 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     if (onLoadStart) onLoadStart();
 
     // Load master playlist for adaptive streaming
-    const masterPlaylistUrl = secretKey 
-      ? `${API_URL}/api/video/${encodeURIComponent(album)}/${encodeURIComponent(filename)}/master.m3u8?key=${secretKey}` 
-      : `${API_URL}/api/video/${encodeURIComponent(album)}/${encodeURIComponent(filename)}/master.m3u8`;
+    // Note: Don't add ?key= here - xhrSetup will add it to all requests (playlist + segments)
+    const masterPlaylistUrl = `${API_URL}/api/video/${encodeURIComponent(album)}/${encodeURIComponent(filename)}/master.m3u8`;
     const urlDebug = { 
       album, 
       filename, 

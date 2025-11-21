@@ -532,10 +532,12 @@ const checkAlbumPublishedMiddleware = (
     const isAuthenticated = (req.isAuthenticated && req.isAuthenticated()) || !!(req.session as any)?.userId;
     
     // Check for share link in query parameter
-    const shareKey = req.query.key as string;
+    // Note: req.query.key can be a string OR an array if multiple keys are provided
+    const shareKeyParam = req.query.key;
+    const shareKey = Array.isArray(shareKeyParam) ? shareKeyParam[0] : shareKeyParam;
     let hasValidShareLink = false;
     
-    if (shareKey && /^[a-f0-9]{64}$/i.test(shareKey)) {
+    if (shareKey && typeof shareKey === 'string' && /^[a-f0-9]{64}$/i.test(shareKey)) {
       const { getShareLinkBySecret, isShareLinkExpired } = require('./database.js');
       const shareLink = getShareLinkBySecret(shareKey);
       if (shareLink && shareLink.album === album && !isShareLinkExpired(shareLink)) {

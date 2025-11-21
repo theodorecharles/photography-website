@@ -33,12 +33,14 @@ const hasAlbumAccess = (req: Request, album: string): boolean => {
   const isAuthenticated = (req.isAuthenticated && req.isAuthenticated()) || !!(req.session as any)?.userId;
   
   // Check for share link in query parameter
-  const shareKey = req.query.key as string;
+  // Note: req.query.key can be a string OR an array if multiple keys are provided
+  const shareKeyParam = req.query.key;
+  const shareKey = Array.isArray(shareKeyParam) ? shareKeyParam[0] : shareKeyParam;
   let hasValidShareLink = false;
   
-  info(`[Video] Access check: album=${album}, shareKey=${shareKey ? shareKey.substring(0, 16) + '...' : 'none'}, isAuth=${isAuthenticated}`);
+  info(`[Video] Access check: album=${album}, shareKey=${shareKey ? String(shareKey).substring(0, 16) + '...' : 'none'}, isAuth=${isAuthenticated}`);
   
-  if (shareKey && /^[a-f0-9]{64}$/i.test(shareKey)) {
+  if (shareKey && typeof shareKey === 'string' && /^[a-f0-9]{64}$/i.test(shareKey)) {
     const shareLink = getShareLinkBySecret(shareKey);
     info(`[Video] Share link lookup: found=${!!shareLink}, match=${shareLink?.album === album}, expired=${shareLink ? isShareLinkExpired(shareLink) : 'N/A'}`);
     if (shareLink && shareLink.album === album && !isShareLinkExpired(shareLink)) {
