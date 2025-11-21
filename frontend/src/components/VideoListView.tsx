@@ -85,7 +85,7 @@ const VideoListView: React.FC<VideoListViewProps> = ({ videos, album, secretKey 
                   album={video.album}
                   filename={filename}
                   videoTitle={video.title}
-                  posterUrl={`${API_URL}${video.thumbnail}`}
+                  posterUrl={`${API_URL}${video.thumbnail}${secretKey ? `?key=${secretKey}` : ''}`}
                   autoplay={false}
                   secretKey={secretKey}
                 />
