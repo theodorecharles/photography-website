@@ -238,20 +238,20 @@ const ContentGrid: React.FC<ContentGridProps> = ({ album, onAlbumNotFound, initi
               // New homepage format with metadata
               shouldShuffle = staticData.shuffle ?? true;
               staticPhotos = staticData.photos.map((data: string[]) => reconstructPhoto(data, album));
-              info(`? Loaded ${staticPhotos.length} photos from homepage JSON (shuffle: ${shouldShuffle})`);
+              info(`✓ Loaded ${staticPhotos.length} photos from homepage JSON (shuffle: ${shouldShuffle})`);
               
               // Shuffle homepage photos for random display order each time (if enabled)
               if (shouldShuffle) {
                 staticPhotos = [...staticPhotos].sort(() => Math.random() - 0.5);
-                info(`?? Shuffled ${staticPhotos.length} homepage photos`);
+                info(`ℹ️  Shuffled ${staticPhotos.length} homepage photos`);
               } else {
-                info(`?? Homepage shuffle disabled - displaying in order`);
+                info(`ℹ️  Homepage shuffle disabled - displaying in order`);
               }
             } else {
               // Regular album format or legacy homepage format (array of photos)
               const photoArray = Array.isArray(staticData) ? staticData : (staticData.photos || []);
               staticPhotos = photoArray.map((data: string[]) => reconstructPhoto(data, album));
-              info(`? Loaded ${staticPhotos.length} photos from optimized static JSON (${album})`);
+              info(`✓ Loaded ${staticPhotos.length} photos from optimized static JSON (${album})`);
             }
             
             // Show first 100 immediately
@@ -265,7 +265,7 @@ const ContentGrid: React.FC<ContentGridProps> = ({ album, onAlbumNotFound, initi
           }
         } catch (staticError) {
           // Static JSON not available or failed, fall back to API
-          info(`??  Static JSON unavailable for ${album}, falling back to API`);
+          info(`⚠️  Static JSON unavailable for ${album}, falling back to API`);
         }
 
         // Fallback to API if static JSON is not available

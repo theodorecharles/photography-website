@@ -214,6 +214,9 @@ export async function generateHLS(
       '-hls_time', segmentDuration.toString(),
       '-hls_list_size', '0',
       '-hls_segment_filename', segmentPattern,
+      '-start_number', '0',
+      '-hls_flags', 'independent_segments+split_by_time', // Ensure segments start at exact timestamps
+      '-avoid_negative_ts', 'make_zero', // Ensure timestamps start at 0
       '-y',
       playlistPath
     ];

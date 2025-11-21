@@ -121,6 +121,15 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         abrEwmaFastVoD: 3, // Weight for fast EMA (VOD)
         abrMaxWithRealBitrate: false, // Use bandwidth estimate, not max bitrate
         debug: false, // Disable verbose logging in production
+        // Buffer configuration to prevent stalling and buffer holes
+        maxBufferLength: 30, // Maximum buffer length in seconds
+        maxMaxBufferLength: 60, // Maximum max buffer length
+        maxBufferSize: 60 * 1000 * 1000, // 60 MB max buffer size
+        maxBufferHole: 0.5, // Max hole size (seconds) that can be skipped
+        highBufferWatchdogPeriod: 2, // Check for buffer issues every 2 seconds
+        nudgeOffset: 0.1, // Small offset to skip tiny buffer holes
+        nudgeMaxRetry: 3, // Max retries for nudging
+        liveSyncDurationCount: 3, // VOD: buffer 3 segments initially
         xhrSetup: (xhr: XMLHttpRequest, url: string) => {
           // Send credentials (cookies) with video requests for authentication
           xhr.withCredentials = true;
