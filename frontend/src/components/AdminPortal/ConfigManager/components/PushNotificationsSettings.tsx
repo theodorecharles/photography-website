@@ -145,7 +145,7 @@ const PushNotificationsSettings: React.FC<PushNotificationsSettingsProps> = ({
           }
         } catch (error) {
           console.error('Failed to enable push notifications:', error);
-          alert('Failed to enable push notifications. Please try again.');
+          alert(t('notifications.settings.errorEnable'));
         }
       }
     } else {
@@ -181,7 +181,7 @@ const PushNotificationsSettings: React.FC<PushNotificationsSettingsProps> = ({
         }
       } catch (error) {
         console.error('Failed to disable push notifications:', error);
-        alert('Failed to disable push notifications. Please try again.');
+        alert(t('notifications.settings.errorDisable'));
       }
     }
   }
@@ -201,7 +201,7 @@ const PushNotificationsSettings: React.FC<PushNotificationsSettingsProps> = ({
         const contentType = response.headers.get('content-type');
         if (contentType && contentType.includes('application/json')) {
           const errorData = await response.json();
-          throw new Error(errorData.error || errorData.message || 'Failed to generate VAPID keys');
+          throw new Error(errorData.error || errorData.message || t('notifications.settings.errorGenerateKeys'));
         } else {
           // Likely got HTML error page
           throw new Error(`Server error (${response.status}) - please check backend logs`);
@@ -429,7 +429,7 @@ const PushNotificationsSettings: React.FC<PushNotificationsSettingsProps> = ({
             <div className="share-modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '500px' }}>
               <div className="share-modal-header">
                 <h2>{t('notifications.settings.confirmTitle')}</h2>
-                <button className="close-button" onClick={() => setShowConfirmModal(false)} aria-label="Close">
+                <button className="close-button" onClick={() => setShowConfirmModal(false)} aria-label={t('notifications.settings.close')}>
                   ×
                 </button>
               </div>

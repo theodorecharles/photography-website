@@ -1196,7 +1196,11 @@
       "confirmTitle": "Generate New Keys?",
       "confirmMessage": "This will generate new VAPID keys and <strong>invalidate all existing push notification subscriptions</strong>. All users will need to re-subscribe to receive notifications.",
       "cancel": "Cancel",
-      "confirmGenerate": "Generate New Keys"
+      "confirmGenerate": "Generate New Keys",
+      "errorEnable": "Failed to enable push notifications. Please try again.",
+      "errorDisable": "Failed to disable push notifications. Please try again.",
+      "errorGenerateKeys": "Failed to generate VAPID keys",
+      "close": "Close"
     },
     "backend": {
       "videoProcessingComplete": "Video Processing Complete",
