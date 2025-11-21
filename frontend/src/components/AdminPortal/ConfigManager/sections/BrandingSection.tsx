@@ -504,7 +504,8 @@ const BrandingSection: React.FC<BrandingSectionProps> = ({
                     setMessage({ type: 'success', text: i18n.t('branding.languageUpdated') });
                     trackBrandingUpdate(['language']);
                     setOriginalBranding(updatedBranding);
-                    await loadBranding();
+                    // Dispatch event so App.tsx can update its state
+                    window.dispatchEvent(new Event('branding-updated'));
                   } else {
                     const errorData = await res.json().catch(() => ({ error: t('common.unknownError') }));
                     setMessage({ type: 'error', text: errorData.error || t('branding.failedToSaveLanguage') });

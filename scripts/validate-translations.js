@@ -99,25 +99,46 @@ function compareKeys(referenceKeys, targetKeys) {
  * Words that are legitimately the same across languages
  */
 const UNIVERSAL_WORDS = new Set([
+  // Brand names (should NEVER be translated)
   "galleria",
   "openai",
   "google",
   "openobserve",
+  
+  // Technical protocol identifiers (should NEVER be translated)
   "mfa",
   "smtp",
-  "email",
-  "url",
+  "oauth",
+  "api",
+  "json",
   "iso",
-  "passkey",
-  "min",
 ]);
+
+// Load language-specific whitelist
+let LANGUAGE_WHITELIST = {};
+try {
+  const whitelistPath = join(__dirname, "language-whitelist.json");
+  LANGUAGE_WHITELIST = JSON.parse(readFileSync(whitelistPath, "utf-8"));
+} catch (error) {
+  // Whitelist file doesn't exist yet, that's okay
+}
 
 /**
  * Check if a string is likely a legitimate universal word
  */
-function isUniversalWord(str) {
+function isUniversalWord(str, lang = null) {
   if (typeof str !== "string") return false;
   const lower = str.toLowerCase().trim();
+  
+  // Check language-specific whitelist
+  if (lang && LANGUAGE_WHITELIST[lang]) {
+    if (LANGUAGE_WHITELIST[lang].includes(str)) return true;
+  }
+  
+  // Check common whitelist (applies to all languages)
+  if (LANGUAGE_WHITELIST._common && LANGUAGE_WHITELIST._common.includes(str)) {
+    return true;
+  }
 
   // Check exact matches
   if (UNIVERSAL_WORDS.has(lower)) return true;
@@ -128,12 +149,20 @@ function isUniversalWord(str) {
     if (UNIVERSAL_WORDS.has(word)) return true;
   }
 
-  // Check if it's mostly template variables
+  // Check if it's mostly template variables (including multi-variable templates)
   if (
     str.match(/^{{[^}]+}}%?$/) ||
-    str.match(/^[^a-zA-Z]*{{[^}]+}}[^a-zA-Z]*$/)
+    str.match(/^[^a-zA-Z]*{{[^}]+}}[^a-zA-Z]*$/) ||
+    str.match(/{{[^}]+}}\s*-\s*{{[^}]+}}/) ||  // Template like "{{var1}} - {{var2}}"
+    str.match(/"{{[^}]+}}"/)  // Template in quotes like "{{folderName}}"
   )
     return true;
+  
+  // Password placeholder dots (should stay universal)
+  if (str.match(/^[•]+$/)) return true;
+  
+  // Emoji-prefixed strings (often universal)
+  if (str.match(/^[⚠️💡✓❌🔑📧]/)) return true;
 
   // Very short words (1-2 chars) that might be universal
   if (str.length <= 2) return true;
@@ -207,7 +236,7 @@ function checkEmptyValues(data, lang, allKeys, referenceData) {
         value === referenceValue &&
         value !== "" &&
         !value.startsWith("[EN] ") &&
-        !isUniversalWord(value)
+        !isUniversalWord(value, lang)
       ) {
         untranslatedKeys.push({ key, value });
       }

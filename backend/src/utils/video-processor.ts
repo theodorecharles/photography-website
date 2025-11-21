@@ -326,7 +326,7 @@ export async function processVideo(
       });
     }
     
-    const rotatedPath = path.join(videoDir, 'rotated.mp4');
+    const rotatedPath = path.join(videoDir, 'original.mp4');
     await rotateVideo(inputPath, rotatedPath, metadata, (progress) => {
       if (onProgress) {
         onProgress({
@@ -479,7 +479,7 @@ export async function processVideo(
 
     // Keep rotated file for thumbnail extraction
     // Don't delete rotatedPath - it's needed for thumbnail updates via the admin panel
-    info(`[VideoProcessor] Keeping rotated.mp4 for thumbnail extraction`);
+    info(`[VideoProcessor] Keeping original.mp4 for thumbnail extraction`);
 
     info(`[VideoProcessor] Video processing complete: ${album}/${filename}`);
   } catch (err) {

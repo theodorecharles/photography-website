@@ -336,7 +336,7 @@ function Navigation({
                                 return (
                                   <Link
                                     key={albumName}
-                                    to={`/album/${albumName}`}
+                                    to={`/album/${encodeURIComponent(albumName)}`}
                                     className="nav-link submenu-link"
                                     onClick={() => {
                                       trackDropdownClose('albums', 'navigation');
@@ -377,7 +377,7 @@ function Navigation({
                     return (
                       <Link
                         key={albumName}
-                        to={`/album/${albumName}`}
+                        to={`/album/${encodeURIComponent(albumName)}`}
                         className="nav-link"
                         onClick={() => {
                           trackDropdownClose('albums', 'navigation');
@@ -405,7 +405,7 @@ function Navigation({
                   return (
                     <Link
                       key={albumName}
-                      to={`/album/${albumName}`}
+                      to={`/album/${encodeURIComponent(albumName)}`}
                       className="nav-link"
                       onClick={() => {
                         trackDropdownClose('albums', 'navigation');

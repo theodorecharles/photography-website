@@ -24,12 +24,13 @@ interface ContentGridProps {
   onAlbumNotFound?: () => void;
   initialPhotos?: Photo[];
   onLoadComplete?: () => void;
+  secretKey?: string; // For share link access
 }
 
 // Import Photo from canonical location
 import type { Photo } from '../types/photo';
 
-const ContentGrid: React.FC<ContentGridProps> = ({ album, onAlbumNotFound, initialPhotos, onLoadComplete }) => {
+const ContentGrid: React.FC<ContentGridProps> = ({ album, onAlbumNotFound, initialPhotos, onLoadComplete, secretKey }) => {
   const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
@@ -72,9 +73,8 @@ const ContentGrid: React.FC<ContentGridProps> = ({ album, onAlbumNotFound, initi
     ? `?${queryParams.toString()}&i=${cacheBustValue}`
     : `?i=${cacheBustValue}`;
   
-  // For image URLs, don't include query strings to improve caching (especially on iOS)
-  // ETags and Last-Modified headers handle cache validation
-  const imageQueryString = ``;
+  // For share links, include the key parameter for accessing unpublished content
+  const imageQueryString = secretKey ? `?key=${secretKey}` : ``;
 
   const [clickedVideoId, setClickedVideoId] = useState<string | null>(null);
 
@@ -542,7 +542,7 @@ const ContentGrid: React.FC<ContentGridProps> = ({ album, onAlbumNotFound, initi
       }
       return <NotFound />;
     }
-    return <VideoListView videos={allPhotos} album={album} />;
+    return <VideoListView videos={allPhotos} album={album} secretKey={secretKey} />;
   }
 
   return (
@@ -614,6 +614,7 @@ const ContentGrid: React.FC<ContentGridProps> = ({ album, onAlbumNotFound, initi
           onNavigateNext={handleNavigateNext}
           onClose={handleCloseModal}
           clickedVideo={clickedVideoId === selectedPhoto.id}
+          secretKey={secretKey}
         />
       )}
     </>

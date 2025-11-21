@@ -161,7 +161,8 @@ async function translateBatch(openai, batch, targetLanguage) {
     const translations = response.choices[0]?.message?.content
       ?.trim()
       .split("\n")
-      .filter((line) => line.trim());
+      .map((line) => line.trim())
+      .filter((line) => line);
 
     if (!translations || translations.length !== texts.length) {
       // If batch translation fails, try one at a time
@@ -172,7 +173,7 @@ async function translateBatch(openai, batch, targetLanguage) {
       const oneByOne = [];
       for (const text of texts) {
         const translation = await translateSingle(openai, text, targetLanguage);
-        oneByOne.push(translation);
+        oneByOne.push(translation.trim());
         await new Promise((resolve) => setTimeout(resolve, 300)); // Small delay
       }
       return oneByOne;
@@ -252,7 +253,7 @@ async function main() {
 
         // Update the data object
         for (let j = 0; j < batch.length; j++) {
-          setNestedValue(data, batch[j].key, translations[j]);
+          setNestedValue(data, batch[j].key, translations[j].trim());
           totalTranslated++;
         }
 

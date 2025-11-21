@@ -77,6 +77,105 @@ body:has(.modal-overlay) {
   line-height: 1.6;
 }
 
+/* Video share specific styles */
+.video-share-info {
+  background-color: #1e1e1e;
+  border: 1px solid #3a3a3a;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.video-share-title {
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.video-share-album {
+  color: #9ca3af;
+  font-size: 0.875rem;
+}
+
+.share-loading {
+  text-align: center;
+  color: #9ca3af;
+  padding: 2rem;
+  font-size: 0.9375rem;
+}
+
+.share-link-container {
+  display: flex;
+  gap: 0.5rem;
+  align-items: stretch;
+  margin-top: 1rem;
+}
+
+.share-link-input {
+  flex: 1;
+  padding: 0.75rem;
+  background-color: #1e1e1e;
+  border: 1px solid #3a3a3a;
+  border-radius: 8px;
+  color: #ffffff;
+  font-size: 0.875rem;
+  font-family: 'SF Mono', 'Monaco', 'Cascadia Code', 'Courier New', monospace;
+  word-break: break-all;
+}
+
+.share-link-input:focus {
+  outline: none;
+  border-color: #4ade80;
+  box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.1);
+}
+
+.custom-expiration-input {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.custom-expiration-input input {
+  flex: 1;
+  padding: 0.75rem;
+  background-color: #1e1e1e;
+  border: 1px solid #3a3a3a;
+  border-radius: 8px;
+  color: #ffffff;
+  font-size: 1rem;
+}
+
+.custom-expiration-input input:focus {
+  outline: none;
+  border-color: #8b5cf6;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+}
+
+.custom-expiration-input button {
+  padding: 0.75rem 1.5rem;
+  background-color: #8b5cf6;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.custom-expiration-input button:hover {
+  background-color: #7c3aed;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+}
+
+.custom-expiration-input button:active {
+  transform: translateY(0);
+}
+
 .expiration-selector {
   margin-bottom: 1.5rem;
 }
@@ -487,5 +586,33 @@ body:has(.modal-overlay) {
   .done-button,
   .new-link-button {
     width: 100%;
+  }
+
+  .share-link-container {
+    flex-direction: column;
+  }
+
+  .share-link-input {
+    width: 100%;
+  }
+
+  .custom-expiration-input {
+    flex-direction: column;
+  }
+
+  .custom-expiration-input button {
+    width: 100%;
+  }
+
+  .video-share-info {
+    padding: 0.75rem;
+  }
+
+  .video-share-title {
+    font-size: 0.9375rem;
+  }
+
+  .video-share-album {
+    font-size: 0.8125rem;
   }
 }

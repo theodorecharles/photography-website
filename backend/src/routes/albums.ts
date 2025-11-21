@@ -4,7 +4,7 @@
  * as well as helper functions for file system operations.
  */
 
-import { Router, Request } from "express";
+import { Router, Request, Response } from "express";
 import fs from "fs";
 import path from "path";
 import exifr from "exifr";
@@ -285,13 +285,10 @@ router.get("/api/albums", (req: Request, res) => {
   }
 });
 
-// Get photos in a specific album
-// Get static JSON for an album (authenticated endpoint)
-router.get("/api/albums/:album/photos-json", (req: Request, res): void => {
-  const { album } = req.params;
-
+// Shared handler for static JSON
+const serveAlbumJSON = (req: Request, res: Response, albumName: string): void => {
   // Sanitize album parameter to prevent path traversal
-  const sanitizedAlbum = sanitizePath(album);
+  const sanitizedAlbum = sanitizePath(albumName);
   if (!sanitizedAlbum) {
     res.status(400).json({ error: "Invalid album name" });
     return;
@@ -303,11 +300,15 @@ router.get("/api/albums/:album/photos-json", (req: Request, res): void => {
   // Check album published state
   const albumState = getAlbumState(sanitizedAlbum);
   
-  // Deny access if:
-  // 1. Album not in database (albumState is undefined)
-  // 2. Album is unpublished and user is not authenticated
-  if (!albumState || (!albumState.published && !isAuthenticated)) {
+  // Return 404 if album doesn't exist at all
+  if (!albumState) {
     res.status(404).json({ error: "Album not found" });
+    return;
+  }
+  
+  // Return 403 if album exists but is unpublished and user is not authenticated
+  if (!albumState.published && !isAuthenticated) {
+    res.status(403).json({ error: "Access denied" });
     return;
   }
 
@@ -328,14 +329,19 @@ router.get("/api/albums/:album/photos-json", (req: Request, res): void => {
   
   // Fallback: JSON doesn't exist, return 404
   res.status(404).json({ error: "Album JSON not found" });
+};
+
+// Get static JSON for an album
+router.get("/api/albums/:album/photos-json", (req: Request, res): void => {
+  serveAlbumJSON(req, res, req.params.album);
 });
 
-router.get("/api/albums/:album/photos", (req: Request, res): void => {
+// Shared handler for album photos
+const serveAlbumPhotos = (req: Request, res: Response, albumName: string): void => {
   const startTime = Date.now();
-  const { album } = req.params;
 
   // Sanitize album parameter to prevent path traversal
-  const sanitizedAlbum = sanitizePath(album);
+  const sanitizedAlbum = sanitizePath(albumName);
   if (!sanitizedAlbum) {
     res.status(400).json({ error: "Invalid album name" });
     return;
@@ -356,11 +362,15 @@ router.get("/api/albums/:album/photos", (req: Request, res): void => {
   // Check album published state
   const albumState = getAlbumState(sanitizedAlbum);
   
-  // Deny access if:
-  // 1. Album not in database (albumState is undefined)
-  // 2. Album is unpublished and user is not authenticated
-  if (!albumState || (!albumState.published && !isAuthenticated)) {
+  // Return 404 if album doesn't exist at all
+  if (!albumState) {
     res.status(404).json({ error: "Album not found" });
+    return;
+  }
+  
+  // Return 403 if album exists but is unpublished and user is not authenticated
+  if (!albumState.published && !isAuthenticated) {
+    res.status(403).json({ error: "Access denied" });
     return;
   }
 
@@ -399,6 +409,11 @@ router.get("/api/albums/:album/photos", (req: Request, res): void => {
     photos,
     published: albumState.published
   });
+};
+
+// Get album photos
+router.get("/api/albums/:album/photos", (req: Request, res): void => {
+  serveAlbumPhotos(req, res, req.params.album);
 });
 
 // Get all photos from albums configured for homepage in random order
@@ -476,12 +491,10 @@ router.get("/api/shared/:secretKey", async (req: Request, res): Promise<void> =>
   });
 });
 
-// Get EXIF data for a specific photo
-router.get("/api/photos/:album/:filename/exif", async (req, res): Promise<void> => {
-  const { album, filename } = req.params;
-
+// Shared handler for EXIF data
+const servePhotoEXIF = async (req: Request, res: Response, albumName: string, filename: string): Promise<void> => {
   // Sanitize inputs to prevent path traversal
-  const sanitizedAlbum = sanitizePath(album);
+  const sanitizedAlbum = sanitizePath(albumName);
   const sanitizedFilename = filename.replace(/[^a-zA-Z0-9_. -]/g, '');
   
   if (!sanitizedAlbum || !sanitizedFilename) {
@@ -515,17 +528,20 @@ router.get("/api/photos/:album/:filename/exif", async (req, res): Promise<void> 
 
     res.json(exif);
   } catch (err) {
-    error(`[Albums] Failed to read EXIF for ${album}/${filename}:`, err);
+    error(`[Albums] Failed to read EXIF for ${albumName}/${filename}:`, err);
     res.status(500).json({ error: "Failed to read EXIF data" });
   }
+};
+
+// Get EXIF data
+router.get("/api/photos/:album/:filename/exif", async (req, res): Promise<void> => {
+  await servePhotoEXIF(req, res, req.params.album, req.params.filename);
 });
 
-// Get video metadata for a specific video using ffprobe
-router.get("/api/videos/:album/:filename/metadata", async (req, res): Promise<void> => {
-  const { album, filename } = req.params;
-
+// Shared handler for video metadata
+const serveVideoMetadata = async (req: Request, res: Response, albumName: string, filename: string): Promise<void> => {
   // Sanitize inputs to prevent path traversal
-  const sanitizedAlbum = sanitizePath(album);
+  const sanitizedAlbum = sanitizePath(albumName);
   const sanitizedFilename = filename.replace(/[^a-zA-Z0-9_. -]/g, '');
   
   if (!sanitizedAlbum || !sanitizedFilename) {
@@ -557,12 +573,17 @@ router.get("/api/videos/:album/:filename/metadata", async (req, res): Promise<vo
       res.json({ message: "No video metadata found" });
       return;
     }
-
+    
     res.json(metadata);
   } catch (err) {
-    error(`[Albums] Failed to read video metadata for ${album}/${filename}:`, err);
+    error(`[Albums] Failed to read video metadata for ${albumName}/${filename}:`, err);
     res.status(500).json({ error: "Failed to read video metadata" });
   }
+};
+
+// Get video metadata
+router.get("/api/videos/:album/:filename/metadata", async (req, res): Promise<void> => {
+  await serveVideoMetadata(req, res, req.params.album, req.params.filename);
 });
 
 export default router;

@@ -29,6 +29,7 @@ interface ContentModalProps {
   onNavigateNext: () => void;
   onClose: () => void;
   clickedVideo?: boolean; // Whether user clicked a video (vs navigated to it)
+  secretKey?: string; // For share link access
 }
 
 const ContentModal: React.FC<ContentModalProps> = ({
@@ -40,6 +41,7 @@ const ContentModal: React.FC<ContentModalProps> = ({
   onNavigateNext,
   onClose,
   clickedVideo = false,
+  secretKey,
 }) => {
   // Modal-specific state
   const [modalImageLoaded, setModalImageLoaded] = useState(false);
@@ -101,7 +103,9 @@ const ContentModal: React.FC<ContentModalProps> = ({
   // Update URL with photo parameter
   const updateURLWithPhoto = useCallback((photo: Photo) => {
     const filename = photo.id.split('/').pop();
-    const baseUrl = photo.album === 'homepage' ? '/' : `/album/${photo.album}`;
+    const baseUrl = photo.album === 'homepage' 
+      ? '/' 
+      : `/album/${encodeURIComponent(photo.album)}`;
     const newUrl = `${baseUrl}?photo=${encodeURIComponent(filename || '')}`;
     window.history.replaceState(null, '', newUrl);
   }, []);
@@ -125,7 +129,9 @@ const ContentModal: React.FC<ContentModalProps> = ({
   // Get permalink for photo
   const getPhotoPermalink = useCallback((photo: Photo) => {
     const filename = photo.id.split('/').pop();
-    const baseUrl = photo.album === 'homepage' ? '/' : `/album/${photo.album}`;
+    const baseUrl = photo.album === 'homepage' 
+      ? '/' 
+      : `/album/${encodeURIComponent(photo.album)}`;
     return `${SITE_URL}${baseUrl}?photo=${encodeURIComponent(filename || '')}`;
   }, []);
 
@@ -680,6 +686,7 @@ const ContentModal: React.FC<ContentModalProps> = ({
                         setThumbnailLoaded(true);
                         setModalImageLoaded(true);
                       }}
+                      secretKey={secretKey}
                     />
                   </div>
                 )}

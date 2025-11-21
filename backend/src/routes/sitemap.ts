@@ -4,20 +4,21 @@
  */
 
 import { Router } from 'express';
-import { getPublishedAlbums } from '../database.js';
+import { getAllAlbums } from '../database.js';
 import { isEnvSet } from '../config.js';
-import { error, warn, info, debug, verbose } from '../utils/logger.js';
+import { error } from '../utils/logger.js';
 
 const router = Router();
 
 /**
- * Get all published album names from database
+ * Get all published albums
  */
-function getAlbums(): string[] {
+function getPublishedAlbums(): string[] {
   try {
-    return getPublishedAlbums()
-      .map(a => a.name)
-      .filter(name => name !== 'homepage');
+    // Get all albums and filter to published ones
+    return getAllAlbums()
+      .filter(a => a.published && a.name !== 'homepage')
+      .map(a => a.name);
   } catch (err) {
     error('[Sitemap] Failed to get albums for sitemap:', err);
     return [];
@@ -52,7 +53,7 @@ function getSiteUrl(req: any): string {
 }
 
 router.get('/sitemap.xml', (req, res) => {
-  const albums = getAlbums();
+  const albums = getPublishedAlbums();
   const baseUrl = getSiteUrl(req);
   const today = new Date().toISOString().split('T')[0];
   
@@ -71,19 +72,13 @@ router.get('/sitemap.xml', (req, res) => {
     <priority>0.5</priority>
   </url>`;
 
-  albums.forEach(album => {
-    // URL encode the album name and escape XML special characters
-    const encodedAlbum = encodeURIComponent(album);
-    const escapedAlbum = album
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&apos;');
+  albums.forEach(albumName => {
+    const encodedAlbum = encodeURIComponent(albumName);
+    const albumUrl = `${baseUrl}/album/${encodedAlbum}`;
     
     xml += `
   <url>
-    <loc>${baseUrl}/album/${encodedAlbum}</loc>
+    <loc>${albumUrl}</loc>
     <lastmod>${today}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>

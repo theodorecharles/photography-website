@@ -29,6 +29,8 @@ Photography portfolio website with React 19, TypeScript, Express 5, and SQLite.
 
 **Frontend**: Frontend uses Vite for fast HMR in development.
 
+**Favicons**: During deployment, `scripts/generate-favicons.js` checks for custom avatar in `data/photos/avatar.png` and generates all icons and favicons from it. If no custom avatar exists, falls back to defaults from `config/icons/`. This ensures custom favicons persist across deployments since `data/` is not gitignored while `frontend/public/*.png` files are.
+
 ### Testing
 
 **Browser Tools**: NEVER use browser tools (browser_navigate, browser_snapshot, browser_click, etc.). NEVER open Chrome or any browser window for testing.
@@ -476,7 +478,15 @@ Photography portfolio website with React 19, TypeScript, Express 5, and SQLite.
 - **Published State Filtering**: All public media endpoints (photos, videos, albums) check authentication AND published state:
   - If user is authenticated: serve content from any album
   - If user is NOT authenticated: only serve content from published albums
-  - Returns 404 for unpublished content to prevent information leakage
+  - **Share Links**: Query parameter `?key={64-char-hex}` grants access to unpublished content
+  - **Status Codes**:
+    - `404 Not Found`: Resource doesn't exist in database
+    - `403 Forbidden`: Resource exists but user lacks permission (unpublished + not authenticated + no valid share link)
+- **Share Link Access**: All media endpoints (videos, thumbnails, static files) MUST check for valid share links in query parameters
+  - Video routes: Check `req.query.key` in `hasAlbumAccess()` function
+  - Static files: Check `req.query.key` in `checkAlbumPublishedMiddleware`
+  - Validate format: 64 hex characters (`/^[a-f0-9]{64}$/i`)
+  - Verify: link exists, album matches, not expired
 
 ## Testing
 

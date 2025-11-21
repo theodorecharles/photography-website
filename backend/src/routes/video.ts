@@ -33,11 +33,16 @@ const hasAlbumAccess = (req: Request, album: string): boolean => {
   const isAuthenticated = (req.isAuthenticated && req.isAuthenticated()) || !!(req.session as any)?.userId;
   
   // Check for share link in query parameter
-  const shareKey = req.query.key as string;
+  // Note: req.query.key can be a string OR an array if multiple keys are provided
+  const shareKeyParam = req.query.key;
+  const shareKey = Array.isArray(shareKeyParam) ? shareKeyParam[0] : shareKeyParam;
   let hasValidShareLink = false;
   
-  if (shareKey && /^[a-f0-9]{64}$/i.test(shareKey)) {
+  info(`[Video] Access check: album=${album}, shareKey=${shareKey ? String(shareKey).substring(0, 16) + '...' : 'none'}, isAuth=${isAuthenticated}`);
+  
+  if (shareKey && typeof shareKey === 'string' && /^[a-f0-9]{64}$/i.test(shareKey)) {
     const shareLink = getShareLinkBySecret(shareKey);
+    info(`[Video] Share link lookup: found=${!!shareLink}, match=${shareLink?.album === album}, expired=${shareLink ? isShareLinkExpired(shareLink) : 'N/A'}`);
     if (shareLink && shareLink.album === album && !isShareLinkExpired(shareLink)) {
       hasValidShareLink = true;
     }
@@ -51,17 +56,17 @@ const hasAlbumAccess = (req: Request, album: string): boolean => {
     return false;
   }
   
+  info(`[Video] Access decision: published=${albumState.published}, auth=${isAuthenticated}, validShareLink=${hasValidShareLink}, granting=${albumState.published || isAuthenticated || hasValidShareLink}`);
+  
   // Allow access if: album is published OR user is authenticated OR valid share link
   return albumState.published || isAuthenticated || hasValidShareLink;
 };
 
 /**
- * Serve master HLS playlist for a video (adaptive streaming)
- * GET /api/video/:album/:filename/master.m3u8
+ * Shared handler for master HLS playlist
  */
-router.get("/:album/:filename/master.m3u8", async (req: Request, res: Response): Promise<void> => {
+const serveMasterPlaylist = async (req: Request, res: Response, album: string, filename: string): Promise<void> => {
   try {
-    const { album, filename } = req.params;
     info(`[Video] Master playlist request: album=${album}, filename=${filename}`);
 
     // Sanitize inputs
@@ -74,10 +79,18 @@ router.get("/:album/:filename/master.m3u8", async (req: Request, res: Response):
       return;
     }
 
+    // Check album exists first
+    const albumState = getAlbumState(sanitizedAlbum);
+    if (!albumState) {
+      error(`[Video] Album not found: ${sanitizedAlbum}`);
+      res.status(404).json({ error: 'Video not found' });
+      return;
+    }
+
     // Check access (authentication, published state, or share link)
     if (!hasAlbumAccess(req, sanitizedAlbum)) {
       error(`[Video] Access denied for album: ${sanitizedAlbum}`);
-      res.status(404).json({ error: 'Video not found' });
+      res.status(403).json({ error: 'Access denied' });
       return;
     }
 
@@ -120,8 +133,22 @@ router.get("/:album/:filename/master.m3u8", async (req: Request, res: Response):
     res.sendFile(masterPlaylistPath);
   } catch (err) {
     error('[Video] Failed to serve master playlist:', err);
+    error('[Video] Error details:', {
+      message: (err as Error).message,
+      stack: (err as Error).stack,
+      name: (err as Error).name
+    });
     res.status(500).json({ error: 'Failed to serve master playlist' });
   }
+};
+
+/**
+ * Serve master HLS playlist
+ * GET /api/video/:album/:filename/master.m3u8
+ */
+router.get("/:album/:filename/master.m3u8", async (req: Request, res: Response): Promise<void> => {
+  const { album, filename } = req.params;
+  await serveMasterPlaylist(req, res, album, filename);
 });
 
 /**
@@ -142,9 +169,16 @@ router.get("/:album/:filename/:resolution/playlist.m3u8", async (req: Request, r
       return;
     }
 
+    // Check album exists first
+    const albumState = getAlbumState(sanitizedAlbum);
+    if (!albumState) {
+      res.status(404).json({ error: 'Video not found' });
+      return;
+    }
+
     // Check access (authentication, published state, or share link)
     if (!hasAlbumAccess(req, sanitizedAlbum)) {
-      res.status(404).json({ error: 'Video not found' });
+      res.status(403).json({ error: 'Access denied' });
       return;
     }
 
@@ -213,9 +247,16 @@ router.get("/:album/:filename/:resolution/:segment", async (req: Request, res: R
       return;
     }
 
+    // Check album exists first
+    const albumState = getAlbumState(sanitizedAlbum);
+    if (!albumState) {
+      res.status(404).json({ error: 'Video not found' });
+      return;
+    }
+
     // Check access (authentication, published state, or share link)
     if (!hasAlbumAccess(req, sanitizedAlbum)) {
-      res.status(404).json({ error: 'Video not found' });
+      res.status(403).json({ error: 'Access denied' });
       return;
     }
 
@@ -288,9 +329,16 @@ router.get("/:album/:filename/resolutions", async (req: Request, res: Response):
       return;
     }
 
+    // Check album exists first
+    const albumState = getAlbumState(sanitizedAlbum);
+    if (!albumState) {
+      res.status(404).json({ error: 'Video not found' });
+      return;
+    }
+
     // Check access (authentication, published state, or share link)
     if (!hasAlbumAccess(req, sanitizedAlbum)) {
-      res.status(404).json({ error: 'Video not found' });
+      res.status(403).json({ error: 'Access denied' });
       return;
     }
 
@@ -338,10 +386,10 @@ router.get("/:album/:filename/resolutions", async (req: Request, res: Response):
 
 /**
  * Serve rotated video file for admin thumbnail scrubbing
- * GET /api/video/:album/:filename/rotated.mp4
+ * GET /api/video/:album/:filename/original.mp4
  * Requires authentication - for admin panel use only
  */
-router.get("/:album/:filename/rotated.mp4", requireAuth, async (req: Request, res: Response): Promise<void> => {
+router.get("/:album/:filename/original.mp4", requireAuth, async (req: Request, res: Response): Promise<void> => {
   try {
     const { album, filename } = req.params;
     info(`[Video] Rotated video request: album=${album}, filename=${filename}`);
@@ -367,7 +415,7 @@ router.get("/:album/:filename/rotated.mp4", requireAuth, async (req: Request, re
       videoDir,
       sanitizedAlbum,
       sanitizedFilename,
-      'rotated.mp4'
+      'original.mp4'
     );
     info(`[Video] Looking for rotated video at: ${rotatedVideoPath}`);
 

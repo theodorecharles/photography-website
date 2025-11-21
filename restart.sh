@@ -46,10 +46,10 @@ fi
 # Run database migrations (if database exists)
 if [ -f "data/gallery.db" ]; then
     log "Running database migrations..."
-    if ! node migrate-share-links-cascade.js; then
+    if ! node scripts/migrate-share-links-cascade.js; then
         handle_error "Database migration (share links) failed"
     fi
-    if ! node migrate-add-video-support.js; then
+    if ! node scripts/migrate-add-video-support.js; then
         handle_error "Database migration (video support) failed"
     fi
     log "✓ Database migrations completed"
