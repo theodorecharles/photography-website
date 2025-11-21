@@ -444,7 +444,7 @@
     "setupSmtp": "Configurar SMTP",
     "email": "Email",
     "role": "Função",
-    "status": "Status",
+    "status": "Estado",
     "actions": "Ações",
     "viewer": "Visualizador",
     "manager": "Gerente",

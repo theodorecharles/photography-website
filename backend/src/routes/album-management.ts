@@ -1503,7 +1503,7 @@ router.post('/:albumName/video/:filename/update-thumbnail', requireManager, asyn
     const dataDir = process.env.DATA_DIR || path.join(appRoot, 'data');
     const videoDir = path.join(dataDir, 'video', sanitizedAlbumName, sanitizedFilename);
     const optimizedDir = path.join(dataDir, 'optimized');
-    const rotatedVideoPath = path.join(videoDir, 'rotated.mp4');
+    const rotatedVideoPath = path.join(videoDir, 'original.mp4');
     
     info(`[VideoThumbnail] Looking for rotated video at: ${rotatedVideoPath}`);
     

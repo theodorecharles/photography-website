@@ -415,7 +415,7 @@
     "logLevelError": "Fehler",
     "logLevelWarn": "Warnung",
     "logLevelInfo": "Information",
-    "logLevelDebug": "Debug",
+    "logLevelDebug": "Debuggen",
     "logLevelVerbose": "Ausführlich",
     "logLevelTrace": "Verfolgung",
     "logLevelDescription": "Steuert die Ausführlichkeit der Serverprotokolle. Höhere Stufen enthalten mehr Details, können aber die Leistung beeinträchtigen.",

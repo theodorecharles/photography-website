@@ -123,19 +123,10 @@ const serveMasterPlaylist = async (req: Request, res: Response, album: string, f
 };
 
 /**
- * Serve master HLS playlist - without folder path (more specific, check first)
+ * Serve master HLS playlist
  * GET /api/video/:album/:filename/master.m3u8
  */
 router.get("/:album/:filename/master.m3u8", async (req: Request, res: Response): Promise<void> => {
-  const { album, filename } = req.params;
-  await serveMasterPlaylist(req, res, album, filename);
-});
-
-/**
- * Serve master HLS playlist - with folder path
- * GET /api/video/:folder/:album/:filename/master.m3u8
- */
-router.get("/:folder/:album/:filename/master.m3u8", async (req: Request, res: Response): Promise<void> => {
   const { album, filename } = req.params;
   await serveMasterPlaylist(req, res, album, filename);
 });
@@ -354,10 +345,10 @@ router.get("/:album/:filename/resolutions", async (req: Request, res: Response):
 
 /**
  * Serve rotated video file for admin thumbnail scrubbing
- * GET /api/video/:album/:filename/rotated.mp4
+ * GET /api/video/:album/:filename/original.mp4
  * Requires authentication - for admin panel use only
  */
-router.get("/:album/:filename/rotated.mp4", requireAuth, async (req: Request, res: Response): Promise<void> => {
+router.get("/:album/:filename/original.mp4", requireAuth, async (req: Request, res: Response): Promise<void> => {
   try {
     const { album, filename } = req.params;
     info(`[Video] Rotated video request: album=${album}, filename=${filename}`);
@@ -383,7 +374,7 @@ router.get("/:album/:filename/rotated.mp4", requireAuth, async (req: Request, re
       videoDir,
       sanitizedAlbum,
       sanitizedFilename,
-      'rotated.mp4'
+      'original.mp4'
     );
     info(`[Video] Looking for rotated video at: ${rotatedVideoPath}`);
 

@@ -154,7 +154,7 @@
     "jobStoppedByUser": "Taak gestopt door gebruiker"
   },
   "branding": {
-    "title": "Branding",
+    "title": "Merkgeving",
     "description": "Pas de naam, ondertitel en avatar van je site aan",
     "logo": "Logo",
     "clickOrDrag": "Klik of sleep afbeelding hier",
@@ -787,8 +787,8 @@
   "imageOptimization": {
     "title": "Afbeeldingskwaliteit",
     "description": "Configureer afbeeldingskwaliteit en verwerkingsinstellingen",
-    "thumbnail": "Thumbnail",
-    "modal": "Modal",
+    "thumbnail": "Miniatuur",
+    "modal": "Modaal",
     "download": "DOWNLOAD",
     "concurrency": "CONCURRENTIE",
     "quality": "Kwaliteit",
@@ -797,7 +797,7 @@
     "concurrencyDescription2": "Vuistregel: ~4× je logische CPU-kernen. Aanbevolen: 8-16 voor typische systemen, 32-64 voor high-performance servers.",
     "maxParallelJobs": "Max Parallelle Taken",
     "warningNote": "Wijzigingen in de afbeeldingskwaliteitsinstellingen zijn alleen van toepassing op nieuw geüploade foto's. Bestaande afbeeldingen behouden hun huidige instellingen, tenzij je",
-    "forceRegenerate": "Force Regenerate All",
+    "forceRegenerate": "Dwing opnieuw genereren van alles",
     "warningNoteLocation": "gebruikt in Geavanceerde Instellingen → Geoptimaliseerde Afbeeldingen."
   },
   "links": {
@@ -844,8 +844,8 @@
     "frontendOnlineWaitingBackend": "Frontend is online, wachten op backend...",
     "waitingForServers": "Wachten tot de servers weer online komen...",
     "timeout": "Serverherstart is verlopen. Controleer de serverlogboeken.",
-    "backendServer": "Backend Server",
-    "frontendServer": "Frontend Server",
+    "backendServer": "Backend-server",
+    "frontendServer": "Frontend-server",
     "online": "Online",
     "restarting": "Opnieuw opstarten...",
     "timeoutDetails": "De server reageerde niet binnen {{seconds}} seconden. Controleer de serverlogboeken op fouten."
@@ -1144,8 +1144,8 @@
     "videoResolutions": "VIDEORESOLUTIES",
     "videoResolutionsSection": "Video Resoluties",
     "resolutionsDescription": "Schakel resoluties in en configureer hun kwaliteitsinstellingen. Hogere bitrates verbeteren de kwaliteit maar vergroten de bestandsgrootte.",
-    "videoBitrate": "Video Bitrate",
-    "audioBitrate": "Audio Bitrate",
+    "videoBitrate": "Videobitrate",
+    "audioBitrate": "Audiobitrate",
     "videoBitrateExample": "bijv. 400k, 2500k, 5000k",
     "audioBitrateExample": "bijv. 64k, 96k, 128k, 192k",
     "on": "Aan",

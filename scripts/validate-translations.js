@@ -99,16 +99,26 @@ function compareKeys(referenceKeys, targetKeys) {
  * Words that are legitimately the same across languages
  */
 const UNIVERSAL_WORDS = new Set([
+  // Brand names (should NEVER be translated)
   "galleria",
   "openai",
   "google",
   "openobserve",
+  
+  // Technical identifiers (should NEVER be translated)
   "mfa",
   "smtp",
-  "email",
+  "oauth",
+  "api",
+  "json",
   "url",
   "iso",
-  "passkey",
+  
+  // Placeholder names (universal across languages)
+  "john",
+  "doe",
+  
+  // Very short measurement units
   "min",
 ]);
 
@@ -128,12 +138,20 @@ function isUniversalWord(str) {
     if (UNIVERSAL_WORDS.has(word)) return true;
   }
 
-  // Check if it's mostly template variables
+  // Check if it's mostly template variables (including multi-variable templates)
   if (
     str.match(/^{{[^}]+}}%?$/) ||
-    str.match(/^[^a-zA-Z]*{{[^}]+}}[^a-zA-Z]*$/)
+    str.match(/^[^a-zA-Z]*{{[^}]+}}[^a-zA-Z]*$/) ||
+    str.match(/{{[^}]+}}\s*-\s*{{[^}]+}}/) ||  // Template like "{{var1}} - {{var2}}"
+    str.match(/"{{[^}]+}}"/)  // Template in quotes like "{{folderName}}"
   )
     return true;
+  
+  // Password placeholder dots (should stay universal)
+  if (str.match(/^[•]+$/)) return true;
+  
+  // Emoji-prefixed strings (often universal)
+  if (str.match(/^[⚠️💡✓❌🔑📧]/)) return true;
 
   // Very short words (1-2 chars) that might be universal
   if (str.length <= 2) return true;

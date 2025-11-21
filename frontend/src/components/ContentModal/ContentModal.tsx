@@ -19,7 +19,6 @@ import ModalNavigation from './ModalNavigation';
 import { PlayIcon } from '../icons';
 import './PhotoModal.css';
 import { error as logError } from '../../utils/logger';
-import { parseAlbumUrl } from '../../utils/albumUrl';
 
 
 interface ContentModalProps {
@@ -103,29 +102,15 @@ const ContentModal: React.FC<ContentModalProps> = ({
     ? `?${queryParams.toString()}&i=${cacheBustValue}`
     : `?i=${cacheBustValue}`;
 
-  // Extract folder from current URL path
-  const currentFolder = useCallback(() => {
-    const parsed = parseAlbumUrl(location.pathname);
-    return parsed.folderName;
-  }, [location.pathname]);
-
   // Update URL with photo parameter
   const updateURLWithPhoto = useCallback((photo: Photo) => {
     const filename = photo.id.split('/').pop();
-    let baseUrl: string;
-    
-    if (photo.album === 'homepage') {
-      baseUrl = '/';
-    } else {
-      const folder = currentFolder();
-      baseUrl = folder 
-        ? `/album/${encodeURIComponent(folder)}/${encodeURIComponent(photo.album)}`
-        : `/album/${encodeURIComponent(photo.album)}`;
-    }
-    
+    const baseUrl = photo.album === 'homepage' 
+      ? '/' 
+      : `/album/${encodeURIComponent(photo.album)}`;
     const newUrl = `${baseUrl}?photo=${encodeURIComponent(filename || '')}`;
     window.history.replaceState(null, '', newUrl);
-  }, [currentFolder]);
+  }, []);
 
   // Fetch branding data on mount
   useEffect(() => {
@@ -146,19 +131,11 @@ const ContentModal: React.FC<ContentModalProps> = ({
   // Get permalink for photo
   const getPhotoPermalink = useCallback((photo: Photo) => {
     const filename = photo.id.split('/').pop();
-    let baseUrl: string;
-    
-    if (photo.album === 'homepage') {
-      baseUrl = '/';
-    } else {
-      const folder = currentFolder();
-      baseUrl = folder 
-        ? `/album/${encodeURIComponent(folder)}/${encodeURIComponent(photo.album)}`
-        : `/album/${encodeURIComponent(photo.album)}`;
-    }
-    
+    const baseUrl = photo.album === 'homepage' 
+      ? '/' 
+      : `/album/${encodeURIComponent(photo.album)}`;
     return `${SITE_URL}${baseUrl}?photo=${encodeURIComponent(filename || '')}`;
-  }, [currentFolder]);
+  }, []);
 
 
   // Reset state when photo changes

@@ -4,31 +4,21 @@
  */
 
 import { Router } from 'express';
-import { getAllAlbums, getPublishedFolders } from '../database.js';
+import { getAllAlbums } from '../database.js';
 import { isEnvSet } from '../config.js';
-import { error, warn, info, debug, verbose } from '../utils/logger.js';
+import { error } from '../utils/logger.js';
 
 const router = Router();
 
 /**
- * Get all published albums with their folder information
+ * Get all published albums
  */
-function getAlbumsWithFolders(): Array<{ name: string; folderId: number | null; folderName: string | null }> {
+function getPublishedAlbums(): string[] {
   try {
     // Get all albums and filter to published ones
-    const albums = getAllAlbums()
-      .filter(a => a.published && a.name !== 'homepage');
-    
-    // Get published folders to build folder map
-    const folders = getPublishedFolders();
-    const folderMap = new Map(folders.map(f => [f.id, f.name]));
-    
-    // Map albums with their folder names
-    return albums.map(album => ({
-      name: album.name,
-      folderId: album.folder_id ?? null,
-      folderName: album.folder_id ? (folderMap.get(album.folder_id) ?? null) : null
-    }));
+    return getAllAlbums()
+      .filter(a => a.published && a.name !== 'homepage')
+      .map(a => a.name);
   } catch (err) {
     error('[Sitemap] Failed to get albums for sitemap:', err);
     return [];
@@ -63,7 +53,7 @@ function getSiteUrl(req: any): string {
 }
 
 router.get('/sitemap.xml', (req, res) => {
-  const albums = getAlbumsWithFolders();
+  const albums = getPublishedAlbums();
   const baseUrl = getSiteUrl(req);
   const today = new Date().toISOString().split('T')[0];
   
@@ -82,19 +72,9 @@ router.get('/sitemap.xml', (req, res) => {
     <priority>0.5</priority>
   </url>`;
 
-  albums.forEach(album => {
-    // Build URL with folder path if album is in a folder
-    let albumUrl: string;
-    if (album.folderName) {
-      // Album is in a folder: /album/FolderName/AlbumName
-      const encodedFolder = encodeURIComponent(album.folderName);
-      const encodedAlbum = encodeURIComponent(album.name);
-      albumUrl = `${baseUrl}/album/${encodedFolder}/${encodedAlbum}`;
-    } else {
-      // Album is not in a folder: /album/AlbumName
-      const encodedAlbum = encodeURIComponent(album.name);
-      albumUrl = `${baseUrl}/album/${encodedAlbum}`;
-    }
+  albums.forEach(albumName => {
+    const encodedAlbum = encodeURIComponent(albumName);
+    const albumUrl = `${baseUrl}/album/${encodedAlbum}`;
     
     xml += `
   <url>

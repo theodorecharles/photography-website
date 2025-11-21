@@ -10,7 +10,6 @@ import { trackVideoPlay, trackVideoPause, trackVideoEnd, trackVideoProgress, tra
 
 interface VideoPlayerProps {
   album: string;
-  folder?: string; // Folder name if album is in a folder
   filename: string;
   videoTitle?: string;
   autoplay?: boolean;
@@ -22,7 +21,6 @@ interface VideoPlayerProps {
 
 const VideoPlayer: React.FC<VideoPlayerProps> = ({
   album,
-  folder,
   filename,
   videoTitle = '',
   autoplay = false,
@@ -85,18 +83,12 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     if (onLoadStart) onLoadStart();
 
     // Load master playlist for adaptive streaming
-    // Build URL with folder if album is in a folder: /api/video/Folder/Album/filename.mov/master.m3u8
-    // Or without folder: /api/video/Album/filename.mov/master.m3u8
-    const videoPath = folder 
-      ? `${encodeURIComponent(folder)}/${encodeURIComponent(album)}/${encodeURIComponent(filename)}`
-      : `${encodeURIComponent(album)}/${encodeURIComponent(filename)}`;
-    const baseUrl = `${API_URL}/api/video/${videoPath}/master.m3u8`;
-    const masterPlaylistUrl = secretKey ? `${baseUrl}?key=${secretKey}` : baseUrl;
+    const masterPlaylistUrl = secretKey 
+      ? `${API_URL}/api/video/${encodeURIComponent(album)}/${encodeURIComponent(filename)}/master.m3u8?key=${secretKey}` 
+      : `${API_URL}/api/video/${encodeURIComponent(album)}/${encodeURIComponent(filename)}/master.m3u8`;
     const urlDebug = { 
-      folder,
       album, 
       filename, 
-      encodedFolder: folder ? encodeURIComponent(folder) : null,
       encodedAlbum: encodeURIComponent(album),
       encodedFilename: encodeURIComponent(filename),
       fullUrl: masterPlaylistUrl,
@@ -315,7 +307,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         hlsRef.current = null;
       }
     };
-  }, [album, folder, filename, videoTitle, autoplay, secretKey]); // Don't include callbacks in deps - they cause re-render loops
+  }, [album, filename, videoTitle, autoplay, secretKey]); // Don't include callbacks in deps - they cause re-render loops
 
   if (error && !error.includes('Tap to play')) {
     return (

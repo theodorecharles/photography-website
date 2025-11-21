@@ -26,7 +26,6 @@ import {
   LogoutIcon
 } from "./icons/";
 import { error } from '../utils/logger';
-import { buildAlbumUrl } from "../utils/albumUrl";
 
 export interface ExternalLink {
   title: string;
@@ -333,13 +332,11 @@ function Navigation({
                             {folderAlbums.length > 0 ? (
                               folderAlbums.map(album => {
                                 const albumName = typeof album === 'string' ? album : album.name;
-                                const albumFolderId = typeof album === 'string' ? null : album.folder_id;
                                 const isPublished = typeof album === 'string' ? true : (album.published === true || album.published === 1);
-                                const albumUrl = buildAlbumUrl(albumName, folders || [], albumFolderId);
                                 return (
                                   <Link
                                     key={albumName}
-                                    to={albumUrl}
+                                    to={`/album/${encodeURIComponent(albumName)}`}
                                     className="nav-link submenu-link"
                                     onClick={() => {
                                       trackDropdownClose('albums', 'navigation');
@@ -376,13 +373,11 @@ function Navigation({
                     return !albumObj.folder_id;
                   }).map(album => {
                     const albumName = typeof album === 'string' ? album : album.name;
-                    const albumFolderId = typeof album === 'string' ? null : album.folder_id;
                     const isPublished = typeof album === 'string' ? true : (album.published === true || album.published === 1);
-                    const albumUrl = buildAlbumUrl(albumName, folders || [], albumFolderId);
                     return (
                       <Link
                         key={albumName}
-                        to={albumUrl}
+                        to={`/album/${encodeURIComponent(albumName)}`}
                         className="nav-link"
                         onClick={() => {
                           trackDropdownClose('albums', 'navigation');
@@ -406,13 +401,11 @@ function Navigation({
                 // No folders - show flat list
                 albums.map(album => {
                   const albumName = typeof album === 'string' ? album : album.name;
-                  const albumFolderId = typeof album === 'string' ? null : album.folder_id;
                   const isPublished = typeof album === 'string' ? true : (album.published === true || album.published === 1);
-                  const albumUrl = buildAlbumUrl(albumName, folders || [], albumFolderId);
                   return (
                     <Link
                       key={albumName}
-                      to={albumUrl}
+                      to={`/album/${encodeURIComponent(albumName)}`}
                       className="nav-link"
                       onClick={() => {
                         trackDropdownClose('albums', 'navigation');

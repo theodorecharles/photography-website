@@ -13,7 +13,6 @@ import VideoPlayer from './ContentModal/VideoPlayer';
 import { ArrowLeftIcon } from './icons';
 import './VideoPage.css';
 import { fetchWithRateLimitCheck } from '../utils/fetchWrapper';
-import { parseAlbumUrl } from '../utils/albumUrl';
 
 const VideoPage: React.FC = () => {
   const { t } = useTranslation();
@@ -24,9 +23,6 @@ const VideoPage: React.FC = () => {
   const [video, setVideo] = useState<Photo | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
-  // Extract folder from URL if present
-  const folderName = parseAlbumUrl(location.pathname).folderName;
 
   useEffect(() => {
     const fetchVideo = async () => {
@@ -124,7 +120,6 @@ const VideoPage: React.FC = () => {
       <div className="video-page-content">
         <div className="video-page-player">
           <VideoPlayer
-            folder={folderName || undefined}
             album={video.album}
             filename={filename || ''}
             autoplay={true}

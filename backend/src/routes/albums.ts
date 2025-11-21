@@ -327,12 +327,7 @@ const serveAlbumJSON = (req: Request, res: Response, albumName: string): void =>
   res.status(404).json({ error: "Album JSON not found" });
 };
 
-// Get static JSON for an album - with folder
-router.get("/api/albums/:folder/:album/photos-json", (req: Request, res): void => {
-  serveAlbumJSON(req, res, req.params.album);
-});
-
-// Get static JSON for an album - without folder
+// Get static JSON for an album
 router.get("/api/albums/:album/photos-json", (req: Request, res): void => {
   serveAlbumJSON(req, res, req.params.album);
 });
@@ -408,12 +403,7 @@ const serveAlbumPhotos = (req: Request, res: Response, albumName: string): void 
   });
 };
 
-// Get album photos - with folder
-router.get("/api/albums/:folder/:album/photos", (req: Request, res): void => {
-  serveAlbumPhotos(req, res, req.params.album);
-});
-
-// Get album photos - without folder
+// Get album photos
 router.get("/api/albums/:album/photos", (req: Request, res): void => {
   serveAlbumPhotos(req, res, req.params.album);
 });
@@ -535,12 +525,7 @@ const servePhotoEXIF = async (req: Request, res: Response, albumName: string, fi
   }
 };
 
-// Get EXIF data - with folder
-router.get("/api/photos/:folder/:album/:filename/exif", async (req, res): Promise<void> => {
-  await servePhotoEXIF(req, res, req.params.album, req.params.filename);
-});
-
-// Get EXIF data - without folder
+// Get EXIF data
 router.get("/api/photos/:album/:filename/exif", async (req, res): Promise<void> => {
   await servePhotoEXIF(req, res, req.params.album, req.params.filename);
 });
@@ -588,12 +573,7 @@ const serveVideoMetadata = async (req: Request, res: Response, albumName: string
   }
 };
 
-// Get video metadata - with folder
-router.get("/api/videos/:folder/:album/:filename/metadata", async (req, res): Promise<void> => {
-  await serveVideoMetadata(req, res, req.params.album, req.params.filename);
-});
-
-// Get video metadata - without folder
+// Get video metadata
 router.get("/api/videos/:album/:filename/metadata", async (req, res): Promise<void> => {
   await serveVideoMetadata(req, res, req.params.album, req.params.filename);
 });
