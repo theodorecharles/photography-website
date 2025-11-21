@@ -118,3 +118,4 @@ log("\n════════════════════════�
 log(`Total keys marked: ${totalMarked}`, "bold");
 log("\n💡 Run: node scripts/auto-translate.js", "cyan");
 
+

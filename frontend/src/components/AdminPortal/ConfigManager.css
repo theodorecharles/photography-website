@@ -92,11 +92,7 @@
 }
 
 .settings-section:hover {
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.1) 0%,
-    rgba(255, 255, 255, 0.07) 100%
-  );
+  background: linear-gradient(135deg, #ffffff14, #ffffff05);
   border-color: rgba(255, 255, 255, 0.2);
 }
 
