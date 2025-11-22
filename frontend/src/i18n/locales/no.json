@@ -527,6 +527,30 @@
         "databaseBackupCompleted": {
           "title": "Sikkerhetskopiering fullført",
           "description": "Når sikkerhetskopiering av databasen er ferdig"
+        },
+        "albumUnpublished": {
+          "title": "Album Ikke Publisert",
+          "description": "Når et album gjøres privat"
+        },
+        "folderCreated": {
+          "title": "Mappe Opprettet",
+          "description": "Når en ny mappe opprettes"
+        },
+        "folderPublished": {
+          "title": "Mappe Publisert",
+          "description": "Når en mappe og dens album publiseres"
+        },
+        "folderUnpublished": {
+          "title": "Mappe Ikke Publisert",
+          "description": "Når en mappe og dens album ikke publiseres"
+        },
+        "folderDeleted": {
+          "title": "Mappe Slettet",
+          "description": "Når en mappe slettes"
+        },
+        "homepageUpdated": {
+          "title": "Hjemmeside Oppdatert",
+          "description": "Når album legges til/fjernes fra hjemmesiden"
         }
       }
     }

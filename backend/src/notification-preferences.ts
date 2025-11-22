@@ -26,7 +26,13 @@ export interface NotificationPreferences {
   // Content Management
   albumCreated: boolean;
   albumPublished: boolean;
+  albumUnpublished: boolean;
   albumDeleted: boolean;
+  folderCreated: boolean;
+  folderPublished: boolean;
+  folderUnpublished: boolean;
+  folderDeleted: boolean;
+  homepageUpdated: boolean;
   largePhotoUpload: boolean;
   shareLinkCreated: boolean;
   shareLinkAccessed: boolean;
@@ -60,11 +66,17 @@ export const DEFAULT_NOTIFICATION_PREFERENCES: NotificationPreferences = {
   // Content Management - selective defaults
   albumCreated: true,
   albumPublished: true,
+  albumUnpublished: true,
   albumDeleted: true,
+  folderCreated: true,
+  folderPublished: true,
+  folderUnpublished: true,
+  folderDeleted: true,
+  homepageUpdated: false, // Can be noisy
   largePhotoUpload: true,
-  shareLinkCreated: false, // Can be noisy
+  shareLinkCreated: true,
   shareLinkAccessed: false, // Can be noisy
-  shareLinkExpired: false,
+  shareLinkExpired: false, // Not implemented yet
   
   // System & Configuration
   configUpdated: true,
@@ -221,10 +233,46 @@ export const NOTIFICATION_CATEGORIES: NotificationCategory[] = [
         icon: '🌐'
       },
       {
+        key: 'albumUnpublished',
+        titleKey: 'settings.notifications.types.albumUnpublished.title',
+        descriptionKey: 'settings.notifications.types.albumUnpublished.description',
+        icon: '🔒'
+      },
+      {
         key: 'albumDeleted',
         titleKey: 'settings.notifications.types.albumDeleted.title',
         descriptionKey: 'settings.notifications.types.albumDeleted.description',
         icon: '🗑️'
+      },
+      {
+        key: 'folderCreated',
+        titleKey: 'settings.notifications.types.folderCreated.title',
+        descriptionKey: 'settings.notifications.types.folderCreated.description',
+        icon: '📂'
+      },
+      {
+        key: 'folderPublished',
+        titleKey: 'settings.notifications.types.folderPublished.title',
+        descriptionKey: 'settings.notifications.types.folderPublished.description',
+        icon: '🌐'
+      },
+      {
+        key: 'folderUnpublished',
+        titleKey: 'settings.notifications.types.folderUnpublished.title',
+        descriptionKey: 'settings.notifications.types.folderUnpublished.description',
+        icon: '🔒'
+      },
+      {
+        key: 'folderDeleted',
+        titleKey: 'settings.notifications.types.folderDeleted.title',
+        descriptionKey: 'settings.notifications.types.folderDeleted.description',
+        icon: '🗑️'
+      },
+      {
+        key: 'homepageUpdated',
+        titleKey: 'settings.notifications.types.homepageUpdated.title',
+        descriptionKey: 'settings.notifications.types.homepageUpdated.description',
+        icon: '🏠'
       },
       {
         key: 'largePhotoUpload',

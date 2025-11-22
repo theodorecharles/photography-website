@@ -527,6 +527,30 @@
         "databaseBackupCompleted": {
           "title": "Kumpleto ang Backup",
           "description": "Kapag natapos ang backup ng database"
+        },
+        "albumUnpublished": {
+          "title": "Album Hindi Nailathala",
+          "description": "Kapag ang isang album ay ginawang pribado"
+        },
+        "folderCreated": {
+          "title": "Nalikha ang Folder",
+          "description": "Kapag may bagong folder na nalikha"
+        },
+        "folderPublished": {
+          "title": "Nailathala ang Folder",
+          "description": "Kapag ang isang folder at ang mga album nito ay nailathala"
+        },
+        "folderUnpublished": {
+          "title": "Hindi Nailathala ang Folder",
+          "description": "Kapag ang isang folder at ang mga album nito ay hindi nailathala"
+        },
+        "folderDeleted": {
+          "title": "Natanggal ang Folder",
+          "description": "Kapag ang isang folder ay natanggal"
+        },
+        "homepageUpdated": {
+          "title": "Na-update ang Homepage",
+          "description": "Kapag ang mga album ay idinagdag/inalis mula sa homepage"
         }
       }
     }

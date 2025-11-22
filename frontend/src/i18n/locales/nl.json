@@ -527,6 +527,30 @@
         "databaseBackupCompleted": {
           "title": "Back-up voltooid",
           "description": "Wanneer de databaseback-up is voltooid"
+        },
+        "albumUnpublished": {
+          "title": "Album Niet Gepubliceerd",
+          "description": "Wanneer een album privé wordt gemaakt"
+        },
+        "folderCreated": {
+          "title": "Map Aangemaakt",
+          "description": "Wanneer een nieuwe map wordt aangemaakt"
+        },
+        "folderPublished": {
+          "title": "Map Gepubliceerd",
+          "description": "Wanneer een map en zijn albums worden gepubliceerd"
+        },
+        "folderUnpublished": {
+          "title": "Map Niet Gepubliceerd",
+          "description": "Wanneer een map en zijn albums niet worden gepubliceerd"
+        },
+        "folderDeleted": {
+          "title": "Map Verwijderd",
+          "description": "Wanneer een map wordt verwijderd"
+        },
+        "homepageUpdated": {
+          "title": "Startpagina Bijgewerkt",
+          "description": "Wanneer albums worden toegevoegd/verwijderd van de startpagina"
         }
       }
     }

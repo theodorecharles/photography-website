@@ -527,6 +527,30 @@
         "databaseBackupCompleted": {
           "title": "Säkerhetskopiering klar",
           "description": "När databasens säkerhetskopiering är klar"
+        },
+        "albumUnpublished": {
+          "title": "Album Ej Publicerat",
+          "description": "När ett album görs privat"
+        },
+        "folderCreated": {
+          "title": "Mapp Skapad",
+          "description": "När en ny mapp skapas"
+        },
+        "folderPublished": {
+          "title": "Mapp Publicerad",
+          "description": "När en mapp och dess album publiceras"
+        },
+        "folderUnpublished": {
+          "title": "Mapp Ej Publicerad",
+          "description": "När en mapp och dess album avpubliceras"
+        },
+        "folderDeleted": {
+          "title": "Mapp Raderad",
+          "description": "När en mapp raderas"
+        },
+        "homepageUpdated": {
+          "title": "Startsida Uppdaterad",
+          "description": "När album läggs till/tas bort från startsidan"
         }
       }
     }

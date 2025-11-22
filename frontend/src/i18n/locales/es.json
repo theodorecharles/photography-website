@@ -527,6 +527,30 @@
         "databaseBackupCompleted": {
           "title": "Copia de seguridad completa",
           "description": "Cuando finaliza la copia de seguridad de la base de datos"
+        },
+        "albumUnpublished": {
+          "title": "Álbum No Publicado",
+          "description": "Cuando un álbum se hace privado"
+        },
+        "folderCreated": {
+          "title": "Carpeta Creada",
+          "description": "Cuando se crea una nueva carpeta"
+        },
+        "folderPublished": {
+          "title": "Carpeta Publicada",
+          "description": "Cuando se publica una carpeta y sus álbumes"
+        },
+        "folderUnpublished": {
+          "title": "Carpeta No Publicada",
+          "description": "Cuando se despublica una carpeta y sus álbumes"
+        },
+        "folderDeleted": {
+          "title": "Carpeta Eliminada",
+          "description": "Cuando se elimina una carpeta"
+        },
+        "homepageUpdated": {
+          "title": "Página de Inicio Actualizada",
+          "description": "Cuando se añaden/eliminan álbumes de la página de inicio"
         }
       }
     }

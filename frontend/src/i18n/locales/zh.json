@@ -527,6 +527,30 @@
         "databaseBackupCompleted": {
           "title": "备份完成",
           "description": "当数据库备份完成时"
+        },
+        "albumUnpublished": {
+          "title": "专辑未发布",
+          "description": "当专辑被设为私密时"
+        },
+        "folderCreated": {
+          "title": "文件夹已创建",
+          "description": "当新文件夹被创建时"
+        },
+        "folderPublished": {
+          "title": "文件夹已发布",
+          "description": "当文件夹及其专辑被发布时"
+        },
+        "folderUnpublished": {
+          "title": "文件夹未发布",
+          "description": "当文件夹及其专辑被取消发布时"
+        },
+        "folderDeleted": {
+          "title": "文件夹已删除",
+          "description": "当文件夹被删除时"
+        },
+        "homepageUpdated": {
+          "title": "首页已更新",
+          "description": "当专辑被添加/移除出首页时"
         }
       }
     }

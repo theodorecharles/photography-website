@@ -504,9 +504,33 @@
           "title": "Album Published",
           "description": "When an album is made public"
         },
+        "albumUnpublished": {
+          "title": "Album Unpublished",
+          "description": "When an album is made private"
+        },
         "albumDeleted": {
           "title": "Album Deleted",
           "description": "When an album is deleted"
+        },
+        "folderCreated": {
+          "title": "Folder Created",
+          "description": "When a new folder is created"
+        },
+        "folderPublished": {
+          "title": "Folder Published",
+          "description": "When a folder and its albums are published"
+        },
+        "folderUnpublished": {
+          "title": "Folder Unpublished",
+          "description": "When a folder and its albums are unpublished"
+        },
+        "folderDeleted": {
+          "title": "Folder Deleted",
+          "description": "When a folder is deleted"
+        },
+        "homepageUpdated": {
+          "title": "Homepage Updated",
+          "description": "When albums are added/removed from homepage"
         },
         "largePhotoUpload": {
           "title": "Large Upload",

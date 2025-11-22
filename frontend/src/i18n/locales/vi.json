@@ -527,6 +527,30 @@
         "databaseBackupCompleted": {
           "title": "Sao lưu hoàn tất",
           "description": "Khi sao lưu cơ sở dữ liệu hoàn tất"
+        },
+        "albumUnpublished": {
+          "title": "Album Chưa Xuất Bản",
+          "description": "Khi một album được đặt ở chế độ riêng tư"
+        },
+        "folderCreated": {
+          "title": "Thư Mục Đã Tạo",
+          "description": "Khi một thư mục mới được tạo"
+        },
+        "folderPublished": {
+          "title": "Thư Mục Đã Xuất Bản",
+          "description": "Khi một thư mục và các album của nó được xuất bản"
+        },
+        "folderUnpublished": {
+          "title": "Thư Mục Chưa Xuất Bản",
+          "description": "Khi một thư mục và các album của nó chưa được xuất bản"
+        },
+        "folderDeleted": {
+          "title": "Thư Mục Đã Xóa",
+          "description": "Khi một thư mục bị xóa"
+        },
+        "homepageUpdated": {
+          "title": "Trang Chủ Đã Cập Nhật",
+          "description": "Khi các album được thêm/xóa khỏi trang chủ"
         }
       }
     }

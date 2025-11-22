@@ -527,6 +527,30 @@
         "databaseBackupCompleted": {
           "title": "Yedekleme Tamamlandı",
           "description": "Veritabanı yedeklemesi bittiğinde"
+        },
+        "albumUnpublished": {
+          "title": "Albüm Yayınlanmadı",
+          "description": "Bir albüm gizli yapıldığında"
+        },
+        "folderCreated": {
+          "title": "Klasör Oluşturuldu",
+          "description": "Yeni bir klasör oluşturulduğunda"
+        },
+        "folderPublished": {
+          "title": "Klasör Yayınlandı",
+          "description": "Bir klasör ve albümleri yayınlandığında"
+        },
+        "folderUnpublished": {
+          "title": "Klasör Yayınlanmadı",
+          "description": "Bir klasör ve albümleri yayınlanmadığında"
+        },
+        "folderDeleted": {
+          "title": "Klasör Silindi",
+          "description": "Bir klasör silindiğinde"
+        },
+        "homepageUpdated": {
+          "title": "Ana Sayfa Güncellendi",
+          "description": "Albümler ana sayfaya eklendiğinde/çıkarıldığında"
         }
       }
     }
