@@ -3,9 +3,10 @@ import { useNavigate } from 'react-router-dom';
 
 interface BreadcrumbsProps {
   section?: string;
+  parentSection?: { title: string; path: string };
 }
 
-const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ section }) => {
+const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ section, parentSection }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
@@ -17,6 +18,17 @@ const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ section }) => {
       >
         {t('adminPortal.settings')}
       </button>
+      {parentSection && (
+        <>
+          <span className="breadcrumb-separator">›</span>
+          <button 
+            className="breadcrumb-link"
+            onClick={() => navigate(parentSection.path)}
+          >
+            {parentSection.title}
+          </button>
+        </>
+      )}
       {section && (
         <>
           <span className="breadcrumb-separator">›</span>

@@ -136,7 +136,13 @@ const NotificationEventsPage: React.FC<NotificationEventsPageProps> = ({ setMess
         </p>
       </div>
 
-      <Breadcrumbs section={`${t('settings.pushNotifications.title')} > ${t('settings.notificationEvents.title')}`} />
+      <Breadcrumbs 
+        parentSection={{
+          title: t('settings.pushNotifications.title'),
+          path: '/admin/settings/push-notifications'
+        }}
+        section={t('settings.notificationEvents.title')} 
+      />
 
       <div style={{ marginTop: '2rem' }}>
         {categories.map((category) => (
@@ -150,7 +156,14 @@ const NotificationEventsPage: React.FC<NotificationEventsPageProps> = ({ setMess
               </p>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            <div 
+              style={{ 
+                display: 'grid', 
+                gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', 
+                gap: '0.75rem' 
+              }}
+              className="notification-events-grid"
+            >
               {category.notifications.map((notification) => (
                 <div
                   key={notification.key}

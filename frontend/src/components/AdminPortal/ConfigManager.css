@@ -999,6 +999,11 @@
     align-items: stretch !important;
   }
 
+  /* Notification Events Grid: Single column on mobile */
+  .notification-events-grid {
+    grid-template-columns: 1fr !important;
+  }
+
   .image-optimization-banner button,
   .video-optimization-banner button {
     width: 100% !important;

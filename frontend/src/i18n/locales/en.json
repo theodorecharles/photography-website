@@ -1381,6 +1381,9 @@
     "blocked": "Notifications blocked by browser. Check your browser settings.",
     "subscribePrompt": "Subscribe to receive notifications",
     "subscribe": "Subscribe",
+    "events": {
+      "saved": "Notification preference saved"
+    },
     "settings": {
       "title": "Push Notifications",
       "configured": "✓ Configured",

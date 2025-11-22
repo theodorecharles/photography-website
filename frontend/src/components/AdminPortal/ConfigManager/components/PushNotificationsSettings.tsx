@@ -310,23 +310,6 @@ const PushNotificationsSettings: React.FC<PushNotificationsSettingsProps> = ({
         setMessage={setMessage}
       />
 
-      {/* Events Configuration Button */}
-      {(pushConfig.enabled || hasKeys) && (
-        <div style={{ marginBottom: '1.5rem', marginTop: pushConfig.enabled && hasKeys ? '1rem' : '0' }}>
-          <button
-            type="button"
-            className="btn-secondary"
-            onClick={() => navigate('/admin/settings/push-notifications/events')}
-            style={{ fontSize: '0.875rem' }}
-          >
-            {t('notifications.settings.configureEvents')}
-          </button>
-          <p style={{ fontSize: '0.8rem', color: '#666', marginTop: '0.5rem', marginBottom: 0 }}>
-            {t('notifications.settings.configureEventsDescription')}
-          </p>
-        </div>
-      )}
-
       {/* 2x2 Grid Layout */}
       <div 
         style={{ 
@@ -358,6 +341,23 @@ const PushNotificationsSettings: React.FC<PushNotificationsSettingsProps> = ({
                 ? t('notifications.settings.generatingKeys')
                 : t('notifications.settings.enabledDescription')}
             </p>
+            
+            {/* Events Configuration Button - only show when enabled */}
+            {pushConfig.enabled && (
+              <div style={{ marginTop: '1rem', marginLeft: '52px' }}>
+                <button
+                  type="button"
+                  className="btn-secondary"
+                  onClick={() => navigate('/admin/settings/push-notifications/events')}
+                  style={{ fontSize: '0.875rem' }}
+                >
+                  {t('notifications.settings.configureEvents')}
+                </button>
+                <p style={{ fontSize: '0.8rem', color: '#666', marginTop: '0.5rem', marginBottom: 0 }}>
+                  {t('notifications.settings.configureEventsDescription')}
+                </p>
+              </div>
+            )}
           </div>
 
           {/* Row 1, Col 2: VAPID Subject */}
