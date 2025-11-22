@@ -189,7 +189,9 @@ const PushNotificationsSettings: React.FC<PushNotificationsSettingsProps> = ({
   async function generateVapidKeys() {
     setGenerating(true);
     try {
-      const response = await fetch(`${API_URL}/api/push-notifications/generate-keys`, {
+      // Use relative URL to avoid Safari PWA cross-origin blocking
+      // Frontend server proxies /api/push-notifications to backend
+      const response = await fetch(`/api/push-notifications/generate-keys`, {
         method: 'POST',
         credentials: 'include',
         headers: {

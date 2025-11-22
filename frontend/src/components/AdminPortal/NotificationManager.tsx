@@ -8,7 +8,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { showToast } from '../../utils/toast';
-import { API_URL } from '../../config';
+// API_URL removed - using relative URLs for push notifications to avoid Safari PWA cross-origin blocking
 import './NotificationManager.css';
 
 interface NotificationConfig {
@@ -83,7 +83,8 @@ export function NotificationManager() {
     try {
       // Fetch push notification config from server
       console.log('[NotificationManager] Fetching config from /api/push-notifications/config');
-      const response = await fetch(`${API_URL}/api/push-notifications/config`, {
+      // Use relative URL to avoid Safari PWA cross-origin blocking
+      const response = await fetch(`/api/push-notifications/config`, {
         credentials: 'include'
       });
       
@@ -162,7 +163,8 @@ export function NotificationManager() {
       }
 
       // Send subscription to server
-      const response = await fetch(`${API_URL}/api/push-notifications/subscribe`, {
+      // Use relative URL to avoid Safari PWA cross-origin blocking
+      const response = await fetch(`/api/push-notifications/subscribe`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -193,7 +195,8 @@ export function NotificationManager() {
         await subscription.unsubscribe();
         
         // Notify server
-        await fetch(`${API_URL}/api/push-notifications/unsubscribe`, {
+        // Use relative URL to avoid Safari PWA cross-origin blocking
+        await fetch(`/api/push-notifications/unsubscribe`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -214,7 +217,8 @@ export function NotificationManager() {
 
   async function sendTestNotification() {
     try {
-      const response = await fetch(`${API_URL}/api/push-notifications/test`, {
+      // Use relative URL to avoid Safari PWA cross-origin blocking
+      const response = await fetch(`/api/push-notifications/test`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
