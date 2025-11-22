@@ -80,7 +80,9 @@
       "folderDeletedTitle": "Dossier Supprimé",
       "folderDeletedBody": "{{deletedBy}} a supprimé le dossier {{folderName}} ({{albumCount}} albums : {{albumNames}})",
       "homepageUpdatedTitle": "Page d'Accueil Mise à Jour",
-      "homepageUpdatedBody": "{{updatedBy}} {{action}} {{albumName}} {{preposition}} la page d'accueil"
+      "homepageUpdatedBody": "{{updatedBy}} {{action}} {{albumName}} {{preposition}} la page d'accueil",
+      "versionUpdateTitle": "Galleria mise à jour",
+      "versionUpdateBody": "Galleria a été mise à jour vers la version {{version}}"
     }
   },
   "email": {

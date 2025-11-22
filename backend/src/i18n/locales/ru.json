@@ -80,7 +80,9 @@
       "folderDeletedTitle": "Папка удалена",
       "folderDeletedBody": "{{deletedBy}} удалил папку {{folderName}} ({{albumCount}} альбомов: {{albumNames}})",
       "homepageUpdatedTitle": "Главная страница обновлена",
-      "homepageUpdatedBody": "{{updatedBy}} {{action}} {{albumName}} {{preposition}} главной страницы"
+      "homepageUpdatedBody": "{{updatedBy}} {{action}} {{albumName}} {{preposition}} главной страницы",
+      "versionUpdateTitle": "Галерея обновлена",
+      "versionUpdateBody": "Галерея была обновлена до версии {{version}}"
     }
   },
   "email": {

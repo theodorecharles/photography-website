@@ -80,7 +80,9 @@
       "folderDeletedTitle": "文件夹已删除",
       "folderDeletedBody": "{{deletedBy}} 删除了文件夹 {{folderName}} ({{albumCount}} 张专辑: {{albumNames}})",
       "homepageUpdatedTitle": "主页已更新",
-      "homepageUpdatedBody": "{{updatedBy}} {{action}} {{albumName}} {{preposition}} 主页"
+      "homepageUpdatedBody": "{{updatedBy}} {{action}} {{albumName}} {{preposition}} 主页",
+      "versionUpdateTitle": "Galleria 已更新",
+      "versionUpdateBody": "Galleria 已更新至版本 {{version}}"
     }
   },
   "email": {

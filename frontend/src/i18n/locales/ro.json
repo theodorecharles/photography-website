@@ -551,6 +551,10 @@
         "homepageUpdated": {
           "title": "Pagina principală actualizată",
           "description": "Când albumele sunt adăugate/eliminate de pe pagina principală"
+        },
+        "versionUpdate": {
+          "title": "Actualizare versiune",
+          "description": "Când Galleria este actualizată la o versiune nouă"
         }
       }
     }

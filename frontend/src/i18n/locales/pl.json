@@ -551,6 +551,10 @@
         "homepageUpdated": {
           "title": "Strona główna zaktualizowana",
           "description": "Gdy albumy są dodawane/usuwane ze strony głównej"
+        },
+        "versionUpdate": {
+          "title": "Aktualizacja wersji",
+          "description": "Gdy Galleria jest aktualizowana do nowej wersji"
         }
       }
     }

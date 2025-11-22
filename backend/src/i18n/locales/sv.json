@@ -80,7 +80,9 @@
       "folderDeletedTitle": "Mapp raderad",
       "folderDeletedBody": "{{deletedBy}} raderade mapp {{folderName}} ({{albumCount}} album: {{albumNames}})",
       "homepageUpdatedTitle": "Startsida uppdaterad",
-      "homepageUpdatedBody": "{{updatedBy}} {{action}} {{albumName}} {{preposition}} startsida"
+      "homepageUpdatedBody": "{{updatedBy}} {{action}} {{albumName}} {{preposition}} startsida",
+      "versionUpdateTitle": "Galleria uppdaterad",
+      "versionUpdateBody": "Galleria har uppdaterats till version {{version}}"
     }
   },
   "email": {

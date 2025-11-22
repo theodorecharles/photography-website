@@ -80,7 +80,9 @@
       "folderDeletedTitle": "フォルダー削除",
       "folderDeletedBody": "{{deletedBy}} フォルダーを削除 {{folderName}} ({{albumCount}} アルバム: {{albumNames}})",
       "homepageUpdatedTitle": "ホームページ更新",
-      "homepageUpdatedBody": "{{updatedBy}} {{action}} {{albumName}} {{preposition}} ホームページ"
+      "homepageUpdatedBody": "{{updatedBy}} {{action}} {{albumName}} {{preposition}} ホームページ",
+      "versionUpdateTitle": "ギャレリアが更新されました",
+      "versionUpdateBody": "ギャレリアがバージョン{{version}}に更新されました"
     }
   },
   "email": {

@@ -551,6 +551,10 @@
         "homepageUpdated": {
           "title": "ホームページが更新されました",
           "description": "ホームページからアルバムが追加/削除されたとき"
+        },
+        "versionUpdate": {
+          "title": "バージョン更新",
+          "description": "Galleriaが新しいバージョンに更新されるとき"
         }
       }
     }

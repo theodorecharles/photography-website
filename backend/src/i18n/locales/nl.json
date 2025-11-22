@@ -80,7 +80,9 @@
       "folderDeletedTitle": "Map Verwijderd",
       "folderDeletedBody": "{{deletedBy}} verwijderde map {{folderName}} ({{albumCount}} albums: {{albumNames}})",
       "homepageUpdatedTitle": "Homepage Bijgewerkt",
-      "homepageUpdatedBody": "{{updatedBy}} {{action}} {{albumName}} {{preposition}} homepage"
+      "homepageUpdatedBody": "{{updatedBy}} {{action}} {{albumName}} {{preposition}} homepage",
+      "versionUpdateTitle": "Galleria Bijgewerkt",
+      "versionUpdateBody": "Galleria is bijgewerkt naar versie {{version}}"
     }
   },
   "email": {

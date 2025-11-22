@@ -551,6 +551,10 @@
         "homepageUpdated": {
           "title": "Na-update ang Homepage",
           "description": "Kapag ang mga album ay idinagdag/inalis mula sa homepage"
+        },
+        "versionUpdate": {
+          "title": "Pag-update ng Bersyon",
+          "description": "Kapag ang Galleria ay na-update sa bagong bersyon"
         }
       }
     }

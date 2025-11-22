@@ -45,6 +45,7 @@ export interface NotificationPreferences {
   brandingUpdated: boolean;
   lowDiskSpace: boolean;
   databaseBackupCompleted: boolean;
+  versionUpdate: boolean;
 }
 
 // Default preferences - all enabled by default
@@ -83,8 +84,9 @@ export const DEFAULT_NOTIFICATION_PREFERENCES: NotificationPreferences = {
   smtpSettingsChanged: true,
   openaiApiKeyUpdated: true,
   brandingUpdated: false,
-  lowDiskSpace: true,
-  databaseBackupCompleted: false,
+  lowDiskSpace: false, // Not implemented yet
+  databaseBackupCompleted: false, // Not implemented yet
+  versionUpdate: true,
 };
 
 /**
@@ -340,6 +342,12 @@ export const NOTIFICATION_CATEGORIES: NotificationCategory[] = [
         titleKey: 'settings.notifications.types.databaseBackupCompleted.title',
         descriptionKey: 'settings.notifications.types.databaseBackupCompleted.description',
         icon: '💼'
+      },
+      {
+        key: 'versionUpdate',
+        titleKey: 'settings.notifications.types.versionUpdate.title',
+        descriptionKey: 'settings.notifications.types.versionUpdate.description',
+        icon: '🚀'
       }
     ]
   }

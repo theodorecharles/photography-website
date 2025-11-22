@@ -476,8 +476,50 @@ router.get("/api/shared/:secretKey", async (req: Request, res): Promise<void> =>
 
   // Check if expired
   if (isShareLinkExpired(shareLink)) {
+    // Notify admins that someone tried to access an expired link
+    try {
+      const { sendNotificationToUser } = await import('../push-notifications.js');
+      const { translateNotificationForUser } = await import('../i18n-backend.js');
+      const { getAllUsers } = await import('../database-users.js');
+      
+      const admins = getAllUsers().filter(u => u.role === 'admin');
+      for (const admin of admins) {
+        const title = await translateNotificationForUser(admin.id, 'notifications.backend.shareLinkExpiredTitle', { albumName: shareLink.album });
+        const body = await translateNotificationForUser(admin.id, 'notifications.backend.shareLinkExpiredBody', { albumName: shareLink.album });
+        
+        sendNotificationToUser(admin.id, {
+          title,
+          body,
+          tag: 'share-link-expired'
+        }, 'shareLinkExpired');
+      }
+    } catch (err) {
+      error('[Albums] Failed to send expired link notification:', err);
+    }
+    
     res.status(410).json({ error: "Share link has expired", expired: true });
     return;
+  }
+  
+  // Notify admins that someone accessed the share link
+  try {
+    const { sendNotificationToUser } = await import('../push-notifications.js');
+    const { translateNotificationForUser } = await import('../i18n-backend.js');
+    const { getAllUsers } = await import('../database-users.js');
+    
+    const admins = getAllUsers().filter(u => u.role === 'admin');
+    for (const admin of admins) {
+      const title = await translateNotificationForUser(admin.id, 'notifications.backend.shareLinkAccessedTitle', { albumName: shareLink.album });
+      const body = await translateNotificationForUser(admin.id, 'notifications.backend.shareLinkAccessedBody', { albumName: shareLink.album });
+      
+      sendNotificationToUser(admin.id, {
+        title,
+        body,
+        tag: 'share-link-accessed'
+      }, 'shareLinkAccessed');
+    }
+  } catch (err) {
+    error('[Albums] Failed to send share link access notification:', err);
   }
 
   // Get the album name

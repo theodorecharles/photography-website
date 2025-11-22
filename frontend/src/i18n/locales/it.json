@@ -551,6 +551,10 @@
         "homepageUpdated": {
           "title": "Homepage Aggiornata",
           "description": "Quando gli album sono aggiunti/rimossi dalla homepage"
+        },
+        "versionUpdate": {
+          "title": "Aggiornamento della versione",
+          "description": "Quando Galleria viene aggiornata a una nuova versione"
         }
       }
     }

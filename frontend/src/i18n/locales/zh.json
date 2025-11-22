@@ -551,6 +551,10 @@
         "homepageUpdated": {
           "title": "首页已更新",
           "description": "当专辑被添加/移除出首页时"
+        },
+        "versionUpdate": {
+          "title": "版本更新",
+          "description": "当Galleria更新到新版本时"
         }
       }
     }

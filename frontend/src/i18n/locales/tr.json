@@ -551,6 +551,10 @@
         "homepageUpdated": {
           "title": "Ana Sayfa Güncellendi",
           "description": "Albümler ana sayfaya eklendiğinde/çıkarıldığında"
+        },
+        "versionUpdate": {
+          "title": "Sürüm Güncellemesi",
+          "description": "Galleria yeni bir sürüme güncellendiğinde"
         }
       }
     }

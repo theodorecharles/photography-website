@@ -80,7 +80,9 @@
       "folderDeletedTitle": "Pasta Excluída",
       "folderDeletedBody": "{{deletedBy}} excluiu pasta {{folderName}} ({{albumCount}} álbuns: {{albumNames}})",
       "homepageUpdatedTitle": "Página Inicial Atualizada",
-      "homepageUpdatedBody": "{{updatedBy}} {{action}} {{albumName}} {{preposition}} página inicial"
+      "homepageUpdatedBody": "{{updatedBy}} {{action}} {{albumName}} {{preposition}} página inicial",
+      "versionUpdateTitle": "Galleria Atualizada",
+      "versionUpdateBody": "Galleria foi atualizada para a versão {{version}}"
     }
   },
   "email": {

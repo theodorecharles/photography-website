@@ -80,7 +80,9 @@
       "folderDeletedTitle": "Mappe Slettet",
       "folderDeletedBody": "{{deletedBy}} slettet mappe {{folderName}} ({{albumCount}} album: {{albumNames}})",
       "homepageUpdatedTitle": "Hjemmeside Oppdatert",
-      "homepageUpdatedBody": "{{updatedBy}} {{action}} {{albumName}} {{preposition}} hjemmeside"
+      "homepageUpdatedBody": "{{updatedBy}} {{action}} {{albumName}} {{preposition}} hjemmeside",
+      "versionUpdateTitle": "Galleria oppdatert",
+      "versionUpdateBody": "Galleria har blitt oppdatert til versjon {{version}}"
     }
   },
   "email": {

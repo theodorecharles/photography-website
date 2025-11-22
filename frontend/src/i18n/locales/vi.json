@@ -551,6 +551,10 @@
         "homepageUpdated": {
           "title": "Trang Chủ Đã Cập Nhật",
           "description": "Khi các album được thêm/xóa khỏi trang chủ"
+        },
+        "versionUpdate": {
+          "title": "Cập nhật phiên bản",
+          "description": "Khi Galleria được cập nhật lên phiên bản mới"
         }
       }
     }

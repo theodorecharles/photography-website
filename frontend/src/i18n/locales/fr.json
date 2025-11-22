@@ -551,6 +551,10 @@
         "homepageUpdated": {
           "title": "Page d'accueil Mise à jour",
           "description": "Lorsque des albums sont ajoutés/supprimés de la page d'accueil"
+        },
+        "versionUpdate": {
+          "title": "Mise à jour de la version",
+          "description": "Lorsque Galleria est mis à jour vers une nouvelle version"
         }
       }
     }

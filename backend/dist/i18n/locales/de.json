@@ -80,7 +80,9 @@
       "folderDeletedTitle": "Ordner Gelöscht",
       "folderDeletedBody": "{{deletedBy}} gelöschter Ordner {{folderName}} ({{albumCount}} Alben: {{albumNames}})",
       "homepageUpdatedTitle": "Startseite Aktualisiert",
-      "homepageUpdatedBody": "{{updatedBy}} {{action}} {{albumName}} {{preposition}} Startseite"
+      "homepageUpdatedBody": "{{updatedBy}} {{action}} {{albumName}} {{preposition}} Startseite",
+      "versionUpdateTitle": "Galleria aktualisiert",
+      "versionUpdateBody": "Galleria wurde auf Version {{version}} aktualisiert"
     }
   },
   "email": {

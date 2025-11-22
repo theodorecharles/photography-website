@@ -551,6 +551,10 @@
         "homepageUpdated": {
           "title": "홈페이지 업데이트됨",
           "description": "앨범이 홈페이지에 추가/제거될 때"
+        },
+        "versionUpdate": {
+          "title": "버전 업데이트",
+          "description": "갤러리아가 새 버전으로 업데이트될 때"
         }
       }
     }

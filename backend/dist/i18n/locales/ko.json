@@ -80,7 +80,9 @@
       "folderDeletedTitle": "폴더 삭제됨",
       "folderDeletedBody": "{{deletedBy}} 삭제된 폴더 {{folderName}} ({{albumCount}} 앨범: {{albumNames}})",
       "homepageUpdatedTitle": "홈페이지 업데이트됨",
-      "homepageUpdatedBody": "{{updatedBy}} {{action}} {{albumName}} {{preposition}} 홈페이지"
+      "homepageUpdatedBody": "{{updatedBy}} {{action}} {{albumName}} {{preposition}} 홈페이지",
+      "versionUpdateTitle": "갤러리아 업데이트됨",
+      "versionUpdateBody": "갤러리아가 버전 {{version}}(으)로 업데이트되었습니다."
     }
   },
   "email": {

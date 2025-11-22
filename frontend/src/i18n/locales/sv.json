@@ -551,6 +551,10 @@
         "homepageUpdated": {
           "title": "Startsida Uppdaterad",
           "description": "När album läggs till/tas bort från startsidan"
+        },
+        "versionUpdate": {
+          "title": "Versionsuppdatering",
+          "description": "När Galleria uppdateras till en ny version"
         }
       }
     }

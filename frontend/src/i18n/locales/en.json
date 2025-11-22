@@ -571,6 +571,10 @@
         "databaseBackupCompleted": {
           "title": "Backup Complete",
           "description": "When database backup finishes"
+        },
+        "versionUpdate": {
+          "title": "Version Update",
+          "description": "When Galleria is updated to a new version"
         }
       }
     }

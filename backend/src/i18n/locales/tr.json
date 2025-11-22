@@ -80,7 +80,9 @@
       "folderDeletedTitle": "Klasör Silindi",
       "folderDeletedBody": "{{deletedBy}} {{folderName}} klasörünü sildi ({{albumCount}} albümler: {{albumNames}})",
       "homepageUpdatedTitle": "Ana Sayfa Güncellendi",
-      "homepageUpdatedBody": "{{updatedBy}} {{albumName}} {{preposition}} ana sayfayı {{action}}"
+      "homepageUpdatedBody": "{{updatedBy}} {{albumName}} {{preposition}} ana sayfayı {{action}}",
+      "versionUpdateTitle": "Galleria Güncellendi",
+      "versionUpdateBody": "Galleria sürüm {{version}} olarak güncellendi"
     }
   },
   "email": {

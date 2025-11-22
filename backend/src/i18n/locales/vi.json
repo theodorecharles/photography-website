@@ -80,7 +80,9 @@
       "folderDeletedTitle": "Thư mục đã bị xóa",
       "folderDeletedBody": "{{deletedBy}} đã xóa thư mục {{folderName}} ({{albumCount}} album: {{albumNames}})",
       "homepageUpdatedTitle": "Trang chủ đã được cập nhật",
-      "homepageUpdatedBody": "{{updatedBy}} {{action}} {{albumName}} {{preposition}} trang chủ"
+      "homepageUpdatedBody": "{{updatedBy}} {{action}} {{albumName}} {{preposition}} trang chủ",
+      "versionUpdateTitle": "Galleria Đã Được Cập Nhật",
+      "versionUpdateBody": "Galleria đã được cập nhật lên phiên bản {{version}}"
     }
   },
   "email": {

@@ -80,7 +80,9 @@
       "folderDeletedTitle": "Folder Dihapus",
       "folderDeletedBody": "{{deletedBy}} menghapus folder {{folderName}} ({{albumCount}} album: {{albumNames}})",
       "homepageUpdatedTitle": "Beranda Diperbarui",
-      "homepageUpdatedBody": "{{updatedBy}} {{action}} {{albumName}} {{preposition}} beranda"
+      "homepageUpdatedBody": "{{updatedBy}} {{action}} {{albumName}} {{preposition}} beranda",
+      "versionUpdateTitle": "Galleria Diperbarui",
+      "versionUpdateBody": "Galleria telah diperbarui ke versi {{version}}"
     }
   },
   "email": {

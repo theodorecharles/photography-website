@@ -551,6 +551,10 @@
         "homepageUpdated": {
           "title": "Beranda Diperbarui",
           "description": "Ketika album ditambahkan/dihapus dari beranda"
+        },
+        "versionUpdate": {
+          "title": "Pembaruan Versi",
+          "description": "Ketika Galleria diperbarui ke versi baru"
         }
       }
     }

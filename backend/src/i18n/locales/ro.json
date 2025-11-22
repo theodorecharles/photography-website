@@ -80,7 +80,9 @@
       "folderDeletedTitle": "Dosar Șters",
       "folderDeletedBody": "{{deletedBy}} a șters dosarul {{folderName}} ({{albumCount}} albume: {{albumNames}})",
       "homepageUpdatedTitle": "Pagina Principală Actualizată",
-      "homepageUpdatedBody": "{{updatedBy}} {{action}} {{albumName}} {{preposition}} pagina principală"
+      "homepageUpdatedBody": "{{updatedBy}} {{action}} {{albumName}} {{preposition}} pagina principală",
+      "versionUpdateTitle": "Galleria actualizată",
+      "versionUpdateBody": "Galleria a fost actualizată la versiunea {{version}}"
     }
   },
   "email": {

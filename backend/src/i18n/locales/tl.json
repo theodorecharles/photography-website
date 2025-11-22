@@ -80,7 +80,9 @@
       "folderDeletedTitle": "Natanggal ang Folder",
       "folderDeletedBody": "{{deletedBy}} natanggal na folder {{folderName}} ({{albumCount}} mga album: {{albumNames}})",
       "homepageUpdatedTitle": "Na-update ang Homepage",
-      "homepageUpdatedBody": "{{updatedBy}} {{action}} {{albumName}} {{preposition}} homepage"
+      "homepageUpdatedBody": "{{updatedBy}} {{action}} {{albumName}} {{preposition}} homepage",
+      "versionUpdateTitle": "Na-update ang Galleria",
+      "versionUpdateBody": "Na-update ang Galleria sa bersyon {{version}}"
     }
   },
   "email": {

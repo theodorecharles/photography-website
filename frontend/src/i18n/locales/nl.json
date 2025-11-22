@@ -551,6 +551,10 @@
         "homepageUpdated": {
           "title": "Startpagina Bijgewerkt",
           "description": "Wanneer albums worden toegevoegd/verwijderd van de startpagina"
+        },
+        "versionUpdate": {
+          "title": "Versie-update",
+          "description": "Wanneer Galleria wordt bijgewerkt naar een nieuwe versie"
         }
       }
     }
