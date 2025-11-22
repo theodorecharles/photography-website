@@ -472,10 +472,6 @@
           "title": "Nieudane próby logowania",
           "description": "Gdy wykryto wiele nieudanych prób logowania"
         },
-        "suspiciousActivity": {
-          "title": "Podejrzana aktywność",
-          "description": "Gdy wykryto logowanie z nowego urządzenia/lokalizacji"
-        },
         "albumCreated": {
           "title": "Album utworzony",
           "description": "Gdy nowy album jest tworzony"
@@ -555,6 +551,14 @@
         "versionUpdate": {
           "title": "Aktualizacja wersji",
           "description": "Gdy Galleria jest aktualizowana do nowej wersji"
+        },
+        "photoDownloaded": {
+          "title": "Zdjęcie pobrano",
+          "description": "Gdy odwiedzający pobiera zdjęcie (może być głośne)"
+        },
+        "albumViewMilestone": {
+          "title": "Zobacz kamienie milowe",
+          "description": "Gdy album osiągnie 100, 1K lub 10K wyświetleń"
         }
       }
     }

@@ -82,7 +82,11 @@
       "homepageUpdatedTitle": "Hjemmeside Oppdatert",
       "homepageUpdatedBody": "{{updatedBy}} {{action}} {{albumName}} {{preposition}} hjemmeside",
       "versionUpdateTitle": "Galleria oppdatert",
-      "versionUpdateBody": "Galleria har blitt oppdatert til versjon {{version}}"
+      "versionUpdateBody": "Galleria har blitt oppdatert til versjon {{version}}",
+      "photoDownloadedTitle": "Bilde lastet ned",
+      "photoDownloadedBody": "{{filename}} fra {{albumName}} ble lastet ned",
+      "albumViewMilestoneTitle": "🎉 Milepæl nådd!",
+      "albumViewMilestoneBody": "{{albumName}} nådde {{milestone}} visninger!"
     }
   },
   "email": {

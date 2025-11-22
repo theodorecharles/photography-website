@@ -82,7 +82,11 @@
       "homepageUpdatedTitle": "Startsida uppdaterad",
       "homepageUpdatedBody": "{{updatedBy}} {{action}} {{albumName}} {{preposition}} startsida",
       "versionUpdateTitle": "Galleria uppdaterad",
-      "versionUpdateBody": "Galleria har uppdaterats till version {{version}}"
+      "versionUpdateBody": "Galleria har uppdaterats till version {{version}}",
+      "photoDownloadedTitle": "Foto nedladdat",
+      "photoDownloadedBody": "{{filename}} från {{albumName}} har laddats ner",
+      "albumViewMilestoneTitle": "🎉 Milstolpe nådd!",
+      "albumViewMilestoneBody": "{{albumName}} nådde {{milestone}} visningar!"
     }
   },
   "email": {

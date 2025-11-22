@@ -472,10 +472,6 @@
           "title": "Upaya Masuk Gagal",
           "description": "Ketika beberapa upaya masuk gagal terdeteksi"
         },
-        "suspiciousActivity": {
-          "title": "Aktivitas Mencurigakan",
-          "description": "Ketika masuk dari perangkat/lokasi baru terdeteksi"
-        },
         "albumCreated": {
           "title": "Album Dibuat",
           "description": "Ketika album baru dibuat"
@@ -555,6 +551,14 @@
         "versionUpdate": {
           "title": "Pembaruan Versi",
           "description": "Ketika Galleria diperbarui ke versi baru"
+        },
+        "photoDownloaded": {
+          "title": "Foto Diunduh",
+          "description": "Ketika seorang pengunjung mengunduh foto (dapat berisik)"
+        },
+        "albumViewMilestone": {
+          "title": "Lihat Tonggak",
+          "description": "Ketika sebuah album mencapai 100, 1K, atau 10K tampilan"
         }
       }
     }

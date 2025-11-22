@@ -82,7 +82,11 @@
       "homepageUpdatedTitle": "Beranda Diperbarui",
       "homepageUpdatedBody": "{{updatedBy}} {{action}} {{albumName}} {{preposition}} beranda",
       "versionUpdateTitle": "Galleria Diperbarui",
-      "versionUpdateBody": "Galleria telah diperbarui ke versi {{version}}"
+      "versionUpdateBody": "Galleria telah diperbarui ke versi {{version}}",
+      "photoDownloadedTitle": "Foto Diunduh",
+      "photoDownloadedBody": "{{filename}} dari {{albumName}} telah diunduh",
+      "albumViewMilestoneTitle": "🎉 Pencapaian Tercapai!",
+      "albumViewMilestoneBody": "{{albumName}} mencapai {{milestone}} tampilan!"
     }
   },
   "email": {

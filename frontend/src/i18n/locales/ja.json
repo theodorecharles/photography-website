@@ -472,10 +472,6 @@
           "title": "ログイン試行の失敗",
           "description": "複数のログイン試行の失敗が検出されたとき"
         },
-        "suspiciousActivity": {
-          "title": "疑わしい活動",
-          "description": "新しいデバイス/場所からのログインが検出されたとき"
-        },
         "albumCreated": {
           "title": "アルバムが作成されました",
           "description": "新しいアルバムが作成されたとき"
@@ -555,6 +551,14 @@
         "versionUpdate": {
           "title": "バージョン更新",
           "description": "Galleriaが新しいバージョンに更新されるとき"
+        },
+        "photoDownloaded": {
+          "title": "写真がダウンロードされました",
+          "description": "訪問者が写真をダウンロードしたとき（騒がしい場合があります）"
+        },
+        "albumViewMilestone": {
+          "title": "マイルストーンを見る",
+          "description": "アルバムが100、1K、または10Kビューに達したとき"
         }
       }
     }

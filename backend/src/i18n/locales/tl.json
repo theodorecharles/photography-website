@@ -82,7 +82,11 @@
       "homepageUpdatedTitle": "Na-update ang Homepage",
       "homepageUpdatedBody": "{{updatedBy}} {{action}} {{albumName}} {{preposition}} homepage",
       "versionUpdateTitle": "Na-update ang Galleria",
-      "versionUpdateBody": "Na-update ang Galleria sa bersyon {{version}}"
+      "versionUpdateBody": "Na-update ang Galleria sa bersyon {{version}}",
+      "photoDownloadedTitle": "Na-download na ang Larawan",
+      "photoDownloadedBody": "Na-download ang {{filename}} mula sa {{albumName}}",
+      "albumViewMilestoneTitle": "🎉 Naabot na ang Milestone!",
+      "albumViewMilestoneBody": "Naabot na ng {{albumName}} ang {{milestone}} na mga view!"
     }
   },
   "email": {

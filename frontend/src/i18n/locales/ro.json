@@ -472,10 +472,6 @@
           "title": "Încercări de Autentificare Eșuate",
           "description": "Când sunt detectate multiple încercări de autentificare eșuate"
         },
-        "suspiciousActivity": {
-          "title": "Activitate Suspectă",
-          "description": "Când se detectează autentificarea de pe un dispozitiv/locație nouă"
-        },
         "albumCreated": {
           "title": "Album Creat",
           "description": "Când un album nou este creat"
@@ -555,6 +551,14 @@
         "versionUpdate": {
           "title": "Actualizare versiune",
           "description": "Când Galleria este actualizată la o versiune nouă"
+        },
+        "photoDownloaded": {
+          "title": "Fotografie descărcată",
+          "description": "Când un vizitator descarcă o fotografie (poate fi zgomotos)"
+        },
+        "albumViewMilestone": {
+          "title": "Vizualizează etapele",
+          "description": "Când un album atinge 100, 1K sau 10K vizualizări"
         }
       }
     }

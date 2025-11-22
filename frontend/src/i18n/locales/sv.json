@@ -472,10 +472,6 @@
           "title": "Misslyckade inloggningsförsök",
           "description": "När flera misslyckade inloggningsförsök upptäckts"
         },
-        "suspiciousActivity": {
-          "title": "Misstänkt aktivitet",
-          "description": "När inloggning från en ny enhet/plats upptäckts"
-        },
         "albumCreated": {
           "title": "Album skapat",
           "description": "När ett nytt album har skapats"
@@ -555,6 +551,14 @@
         "versionUpdate": {
           "title": "Versionsuppdatering",
           "description": "När Galleria uppdateras till en ny version"
+        },
+        "photoDownloaded": {
+          "title": "Foto nedladdad",
+          "description": "När en besökare laddar ner ett foto (kan vara bullrigt)"
+        },
+        "albumViewMilestone": {
+          "title": "Visa milstolpar",
+          "description": "När ett album når 100, 1K eller 10K visningar"
         }
       }
     }

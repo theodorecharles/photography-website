@@ -472,10 +472,6 @@
           "title": "Mislykkede Innloggingsforsøk",
           "description": "Når flere mislykkede innloggingsforsøk oppdages"
         },
-        "suspiciousActivity": {
-          "title": "Mistenkelig Aktivitet",
-          "description": "Når innlogging fra en ny enhet/sted oppdages"
-        },
         "albumCreated": {
           "title": "Album Opprettet",
           "description": "Når et nytt album opprettes"
@@ -555,6 +551,14 @@
         "versionUpdate": {
           "title": "Versjonsoppdatering",
           "description": "Når Galleria oppdateres til en ny versjon"
+        },
+        "photoDownloaded": {
+          "title": "Bilde lastet ned",
+          "description": "Når en besøkende laster ned et bilde (kan være støyende)"
+        },
+        "albumViewMilestone": {
+          "title": "Se milepæler",
+          "description": "Når et album når 100, 1K, eller 10K visninger"
         }
       }
     }

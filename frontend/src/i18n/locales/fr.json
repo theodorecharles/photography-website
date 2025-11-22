@@ -472,10 +472,6 @@
           "title": "Tentatives de connexion échouées",
           "description": "Lorsqu'un grand nombre de tentatives de connexion échouées est détecté"
         },
-        "suspiciousActivity": {
-          "title": "Activité suspecte",
-          "description": "Lorsqu'une connexion depuis un nouvel appareil/emplacement est détectée"
-        },
         "albumCreated": {
           "title": "Album créé",
           "description": "Lorsqu'un nouvel album est créé"
@@ -555,6 +551,14 @@
         "versionUpdate": {
           "title": "Mise à jour de la version",
           "description": "Lorsque Galleria est mis à jour vers une nouvelle version"
+        },
+        "photoDownloaded": {
+          "title": "Photo téléchargée",
+          "description": "Lorsqu'un visiteur télécharge une photo (peut être bruyant)"
+        },
+        "albumViewMilestone": {
+          "title": "Voir les étapes importantes",
+          "description": "Lorsqu'un album atteint 100, 1K ou 10K vues"
         }
       }
     }

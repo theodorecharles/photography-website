@@ -69,6 +69,10 @@
       "shareLinkAccessedBody": "Someone accessed {{albumName}} via share link",
       "shareLinkExpiredTitle": "Share Link Expired",
       "shareLinkExpiredBody": "Someone tried to access {{albumName}} with an expired link",
+      "photoDownloadedTitle": "Photo Downloaded",
+      "photoDownloadedBody": "{{filename}} from {{albumName}} was downloaded",
+      "albumViewMilestoneTitle": "🎉 Milestone Reached!",
+      "albumViewMilestoneBody": "{{albumName}} reached {{milestone}} views!",
       "versionUpdateTitle": "Galleria Updated",
       "versionUpdateBody": "Galleria has been updated to version {{version}}",
       "configUpdatedTitle": "Settings Changed",
@@ -80,9 +84,9 @@
       "brandingUpdatedTitle": "Branding Updated",
       "brandingUpdatedBody": "{{updatedBy}} changed site branding",
       "lowDiskSpaceTitle": "Low Disk Space",
-      "lowDiskSpaceBody": "Storage is running low (< 10% remaining)",
+      "lowDiskSpaceBody": "Only {{availablePercent}}% disk space remaining ({{available}} available)",
       "databaseBackupCompletedTitle": "Backup Complete",
-      "databaseBackupCompletedBody": "Database backup completed successfully"
+      "databaseBackupCompletedBody": "Database backed up successfully ({{filename}}, {{size}})"
     }
   },
   "email": {

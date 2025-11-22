@@ -492,10 +492,6 @@
           "title": "Failed Login Attempts",
           "description": "When multiple failed login attempts are detected"
         },
-        "suspiciousActivity": {
-          "title": "Suspicious Activity",
-          "description": "When login from new device/location is detected"
-        },
         "albumCreated": {
           "title": "Album Created",
           "description": "When a new album is created"
@@ -547,6 +543,14 @@
         "shareLinkExpired": {
           "title": "Share Link Expired",
           "description": "When a share link expires"
+        },
+        "photoDownloaded": {
+          "title": "Photo Downloaded",
+          "description": "When a visitor downloads a photo (can be noisy)"
+        },
+        "albumViewMilestone": {
+          "title": "View Milestones",
+          "description": "When an album reaches 100, 1K, or 10K views"
         },
         "configUpdated": {
           "title": "Settings Changed",

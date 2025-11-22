@@ -82,7 +82,11 @@
       "homepageUpdatedTitle": "Главная страница обновлена",
       "homepageUpdatedBody": "{{updatedBy}} {{action}} {{albumName}} {{preposition}} главной страницы",
       "versionUpdateTitle": "Галерея обновлена",
-      "versionUpdateBody": "Галерея была обновлена до версии {{version}}"
+      "versionUpdateBody": "Галерея была обновлена до версии {{version}}",
+      "photoDownloadedTitle": "Фото загружено",
+      "photoDownloadedBody": "{{filename}} из {{albumName}} был загружен",
+      "albumViewMilestoneTitle": "🎉 Достигнута веха!",
+      "albumViewMilestoneBody": "{{albumName}} достиг {{milestone}} просмотров!"
     }
   },
   "email": {

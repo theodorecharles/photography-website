@@ -472,10 +472,6 @@
           "title": "로그인 실패 시도",
           "description": "여러 번의 로그인 실패 시도가 감지될 때"
         },
-        "suspiciousActivity": {
-          "title": "의심스러운 활동",
-          "description": "새로운 장치/위치에서 로그인할 때 감지됨"
-        },
         "albumCreated": {
           "title": "앨범이 생성되었습니다",
           "description": "새 앨범이 생성될 때"
@@ -555,6 +551,14 @@
         "versionUpdate": {
           "title": "버전 업데이트",
           "description": "갤러리아가 새 버전으로 업데이트될 때"
+        },
+        "photoDownloaded": {
+          "title": "사진 다운로드 완료",
+          "description": "방문자가 사진을 다운로드할 때 (소음이 발생할 수 있음)"
+        },
+        "albumViewMilestone": {
+          "title": "이정표 보기",
+          "description": "앨범이 100, 1K, 또는 10K 조회수를 달성할 때"
         }
       }
     }

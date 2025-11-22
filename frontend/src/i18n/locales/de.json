@@ -472,10 +472,6 @@
           "title": "Fehlgeschlagene Anmeldeversuche",
           "description": "Wenn mehrere fehlgeschlagene Anmeldeversuche erkannt werden"
         },
-        "suspiciousActivity": {
-          "title": "Verdächtige Aktivität",
-          "description": "Wenn eine Anmeldung von einem neuen Gerät/einem neuen Standort erkannt wird"
-        },
         "albumCreated": {
           "title": "Album erstellt",
           "description": "Wenn ein neues Album erstellt wird"
@@ -555,6 +551,14 @@
         "versionUpdate": {
           "title": "Versionsaktualisierung",
           "description": "Wenn Galleria auf eine neue Version aktualisiert wird"
+        },
+        "photoDownloaded": {
+          "title": "Foto heruntergeladen",
+          "description": "Wenn ein Besucher ein Foto herunterlädt (kann laut sein)"
+        },
+        "albumViewMilestone": {
+          "title": "Meilensteine anzeigen",
+          "description": "Wenn ein Album 100, 1K oder 10K Aufrufe erreicht"
         }
       }
     }

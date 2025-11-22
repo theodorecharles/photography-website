@@ -472,10 +472,6 @@
           "title": "Başarısız Giriş Denemeleri",
           "description": "Birden fazla başarısız giriş denemesi tespit edildiğinde"
         },
-        "suspiciousActivity": {
-          "title": "Şüpheli Aktivite",
-          "description": "Yeni bir cihaz/konumdan giriş tespit edildiğinde"
-        },
         "albumCreated": {
           "title": "Albüm Oluşturuldu",
           "description": "Yeni bir albüm oluşturulduğunda"
@@ -555,6 +551,14 @@
         "versionUpdate": {
           "title": "Sürüm Güncellemesi",
           "description": "Galleria yeni bir sürüme güncellendiğinde"
+        },
+        "photoDownloaded": {
+          "title": "Fotoğraf İndirildi",
+          "description": "Bir ziyaretçi bir fotoğraf indirdiğinde (gürültülü olabilir)"
+        },
+        "albumViewMilestone": {
+          "title": "Kilometre Taşlarını Görüntüle",
+          "description": "Bir albüm 100, 1K veya 10K görüntülemeye ulaştığında"
         }
       }
     }

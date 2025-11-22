@@ -82,7 +82,11 @@
       "homepageUpdatedTitle": "Pagina Principală Actualizată",
       "homepageUpdatedBody": "{{updatedBy}} {{action}} {{albumName}} {{preposition}} pagina principală",
       "versionUpdateTitle": "Galleria actualizată",
-      "versionUpdateBody": "Galleria a fost actualizată la versiunea {{version}}"
+      "versionUpdateBody": "Galleria a fost actualizată la versiunea {{version}}",
+      "photoDownloadedTitle": "Fotografie descărcată",
+      "photoDownloadedBody": "{{filename}} din {{albumName}} a fost descărcat",
+      "albumViewMilestoneTitle": "🎉 Prag atins!",
+      "albumViewMilestoneBody": "{{albumName}} a atins {{milestone}} vizualizări!"
     }
   },
   "email": {

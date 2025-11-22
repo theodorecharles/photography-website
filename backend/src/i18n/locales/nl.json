@@ -82,7 +82,11 @@
       "homepageUpdatedTitle": "Homepage Bijgewerkt",
       "homepageUpdatedBody": "{{updatedBy}} {{action}} {{albumName}} {{preposition}} homepage",
       "versionUpdateTitle": "Galleria Bijgewerkt",
-      "versionUpdateBody": "Galleria is bijgewerkt naar versie {{version}}"
+      "versionUpdateBody": "Galleria is bijgewerkt naar versie {{version}}",
+      "photoDownloadedTitle": "Foto Gedownload",
+      "photoDownloadedBody": "{{filename}} van {{albumName}} is gedownload",
+      "albumViewMilestoneTitle": "🎉 Mijlpaal Bereikt!",
+      "albumViewMilestoneBody": "{{albumName}} heeft {{milestone}} weergaven bereikt!"
     }
   },
   "email": {

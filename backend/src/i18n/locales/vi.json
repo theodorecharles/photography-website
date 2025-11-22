@@ -82,7 +82,11 @@
       "homepageUpdatedTitle": "Trang chủ đã được cập nhật",
       "homepageUpdatedBody": "{{updatedBy}} {{action}} {{albumName}} {{preposition}} trang chủ",
       "versionUpdateTitle": "Galleria Đã Được Cập Nhật",
-      "versionUpdateBody": "Galleria đã được cập nhật lên phiên bản {{version}}"
+      "versionUpdateBody": "Galleria đã được cập nhật lên phiên bản {{version}}",
+      "photoDownloadedTitle": "Ảnh đã được tải xuống",
+      "photoDownloadedBody": "{{filename}} từ {{albumName}} đã được tải xuống",
+      "albumViewMilestoneTitle": "🎉 Đã đạt cột mốc!",
+      "albumViewMilestoneBody": "{{albumName}} đã đạt {{milestone}} lượt xem!"
     }
   },
   "email": {

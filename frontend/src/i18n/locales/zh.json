@@ -472,10 +472,6 @@
           "title": "登录尝试失败",
           "description": "当检测到多次登录尝试失败时"
         },
-        "suspiciousActivity": {
-          "title": "可疑活动",
-          "description": "当检测到来自新设备/位置的登录时"
-        },
         "albumCreated": {
           "title": "相册已创建",
           "description": "当创建一个新相册时"
@@ -555,6 +551,14 @@
         "versionUpdate": {
           "title": "版本更新",
           "description": "当Galleria更新到新版本时"
+        },
+        "photoDownloaded": {
+          "title": "照片已下载",
+          "description": "当访客下载照片时（可能会有噪音）"
+        },
+        "albumViewMilestone": {
+          "title": "查看里程碑",
+          "description": "当相册达到100、1K或10K次浏览时"
         }
       }
     }

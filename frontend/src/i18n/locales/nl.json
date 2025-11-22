@@ -472,10 +472,6 @@
           "title": "Mislukte Inlogpogingen",
           "description": "Wanneer meerdere mislukte inlogpogingen worden gedetecteerd"
         },
-        "suspiciousActivity": {
-          "title": "Verdachte Activiteit",
-          "description": "Wanneer inloggen vanaf een nieuw apparaat/lokatie wordt gedetecteerd"
-        },
         "albumCreated": {
           "title": "Album Aangemaakt",
           "description": "Wanneer een nieuw album wordt aangemaakt"
@@ -555,6 +551,14 @@
         "versionUpdate": {
           "title": "Versie-update",
           "description": "Wanneer Galleria wordt bijgewerkt naar een nieuwe versie"
+        },
+        "photoDownloaded": {
+          "title": "Foto Gedownload",
+          "description": "Wanneer een bezoeker een foto downloadt (kan luidruchtig zijn)"
+        },
+        "albumViewMilestone": {
+          "title": "Bekijk Mijlpalen",
+          "description": "Wanneer een album 100, 1K of 10K weergaven bereikt"
         }
       }
     }

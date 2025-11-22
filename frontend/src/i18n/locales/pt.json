@@ -472,10 +472,6 @@
           "title": "Tentativas de Login Falhadas",
           "description": "Quando múltiplas tentativas de login falhadas são detectadas"
         },
-        "suspiciousActivity": {
-          "title": "Atividade Suspeita",
-          "description": "Quando um login de um novo dispositivo/local é detectado"
-        },
         "albumCreated": {
           "title": "Álbum Criado",
           "description": "Quando um novo álbum é criado"
@@ -555,6 +551,14 @@
         "versionUpdate": {
           "title": "Atualização de Versão",
           "description": "Quando o Galleria é atualizado para uma nova versão"
+        },
+        "photoDownloaded": {
+          "title": "Foto Baixada",
+          "description": "Quando um visitante baixa uma foto (pode ser barulhento)"
+        },
+        "albumViewMilestone": {
+          "title": "Ver Marcos",
+          "description": "Quando um álbum atinge 100, 1K ou 10K visualizações"
         }
       }
     }

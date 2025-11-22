@@ -472,10 +472,6 @@
           "title": "Các lần đăng nhập không thành công",
           "description": "Khi phát hiện nhiều lần đăng nhập không thành công"
         },
-        "suspiciousActivity": {
-          "title": "Hoạt động đáng ngờ",
-          "description": "Khi phát hiện đăng nhập từ thiết bị/vị trí mới"
-        },
         "albumCreated": {
           "title": "Album đã được tạo",
           "description": "Khi một album mới được tạo"
@@ -555,6 +551,14 @@
         "versionUpdate": {
           "title": "Cập nhật phiên bản",
           "description": "Khi Galleria được cập nhật lên phiên bản mới"
+        },
+        "photoDownloaded": {
+          "title": "Ảnh đã tải xuống",
+          "description": "Khi một khách truy cập tải xuống một ảnh (có thể gây ồn)"
+        },
+        "albumViewMilestone": {
+          "title": "Xem Cột mốc",
+          "description": "Khi một album đạt 100, 1K, hoặc 10K lượt xem"
         }
       }
     }

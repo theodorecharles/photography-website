@@ -472,10 +472,6 @@
           "title": "Nabigong Pagsubok sa Pag-login",
           "description": "Kapag maraming nabigong pagsubok sa pag-login ang natukoy"
         },
-        "suspiciousActivity": {
-          "title": "Kakaibang Aktibidad",
-          "description": "Kapag ang pag-login mula sa bagong aparato/lokasyon ay natukoy"
-        },
         "albumCreated": {
           "title": "Nagawa ang Album",
           "description": "Kapag ang isang bagong album ay nalikha"
@@ -555,6 +551,14 @@
         "versionUpdate": {
           "title": "Pag-update ng Bersyon",
           "description": "Kapag ang Galleria ay na-update sa bagong bersyon"
+        },
+        "photoDownloaded": {
+          "title": "Larawan Na-download",
+          "description": "Kapag nag-download ang bisita ng larawan (maaaring magdulot ng ingay)"
+        },
+        "albumViewMilestone": {
+          "title": "Tingnan ang Mga Milestone",
+          "description": "Kapag umabot sa 100, 1K, o 10K na pagtingin ang isang album"
         }
       }
     }

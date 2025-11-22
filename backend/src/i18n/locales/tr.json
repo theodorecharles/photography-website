@@ -82,7 +82,11 @@
       "homepageUpdatedTitle": "Ana Sayfa Güncellendi",
       "homepageUpdatedBody": "{{updatedBy}} {{albumName}} {{preposition}} ana sayfayı {{action}}",
       "versionUpdateTitle": "Galleria Güncellendi",
-      "versionUpdateBody": "Galleria sürüm {{version}} olarak güncellendi"
+      "versionUpdateBody": "Galleria sürüm {{version}} olarak güncellendi",
+      "photoDownloadedTitle": "Fotoğraf İndirildi",
+      "photoDownloadedBody": "{{filename}} {{albumName}} albümünden indirildi",
+      "albumViewMilestoneTitle": "🎉 Dönüm Noktasına Ulaşıldı!",
+      "albumViewMilestoneBody": "{{albumName}} {{milestone}} görüntülemeye ulaştı!"
     }
   },
   "email": {

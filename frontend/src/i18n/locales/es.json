@@ -472,10 +472,6 @@
           "title": "Intentos de Inicio de Sesión Fallidos",
           "description": "Cuando se detectan múltiples intentos de inicio de sesión fallidos"
         },
-        "suspiciousActivity": {
-          "title": "Actividad Sospechosa",
-          "description": "Cuando se detecta un inicio de sesión desde un nuevo dispositivo/ubicación"
-        },
         "albumCreated": {
           "title": "Álbum Creado",
           "description": "Cuando se crea un nuevo álbum"
@@ -555,6 +551,14 @@
         "versionUpdate": {
           "title": "Actualización de versión",
           "description": "Cuando Galleria se actualiza a una nueva versión"
+        },
+        "photoDownloaded": {
+          "title": "Foto descargada",
+          "description": "Cuando un visitante descarga una foto (puede ser ruidoso)"
+        },
+        "albumViewMilestone": {
+          "title": "Ver hitos",
+          "description": "Cuando un álbum alcanza 100, 1K, o 10K vistas"
         }
       }
     }

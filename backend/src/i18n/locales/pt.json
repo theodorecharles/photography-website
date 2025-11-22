@@ -82,7 +82,11 @@
       "homepageUpdatedTitle": "Página Inicial Atualizada",
       "homepageUpdatedBody": "{{updatedBy}} {{action}} {{albumName}} {{preposition}} página inicial",
       "versionUpdateTitle": "Galleria Atualizada",
-      "versionUpdateBody": "Galleria foi atualizada para a versão {{version}}"
+      "versionUpdateBody": "Galleria foi atualizada para a versão {{version}}",
+      "photoDownloadedTitle": "Foto Baixada",
+      "photoDownloadedBody": "{{filename}} de {{albumName}} foi baixado",
+      "albumViewMilestoneTitle": "🎉 Marco Alcançado!",
+      "albumViewMilestoneBody": "{{albumName}} alcançou {{milestone}} visualizações!"
     }
   },
   "email": {

@@ -82,7 +82,11 @@
       "homepageUpdatedTitle": "主页已更新",
       "homepageUpdatedBody": "{{updatedBy}} {{action}} {{albumName}} {{preposition}} 主页",
       "versionUpdateTitle": "Galleria 已更新",
-      "versionUpdateBody": "Galleria 已更新至版本 {{version}}"
+      "versionUpdateBody": "Galleria 已更新至版本 {{version}}",
+      "photoDownloadedTitle": "照片已下载",
+      "photoDownloadedBody": "{{filename}} 从 {{albumName}} 下载完成",
+      "albumViewMilestoneTitle": "🎉 里程碑达成！",
+      "albumViewMilestoneBody": "{{albumName}} 达到 {{milestone}} 次浏览！"
     }
   },
   "email": {

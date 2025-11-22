@@ -82,7 +82,11 @@
       "homepageUpdatedTitle": "홈페이지 업데이트됨",
       "homepageUpdatedBody": "{{updatedBy}} {{action}} {{albumName}} {{preposition}} 홈페이지",
       "versionUpdateTitle": "갤러리아 업데이트됨",
-      "versionUpdateBody": "갤러리아가 버전 {{version}}(으)로 업데이트되었습니다."
+      "versionUpdateBody": "갤러리아가 버전 {{version}}(으)로 업데이트되었습니다.",
+      "photoDownloadedTitle": "사진 다운로드 완료",
+      "photoDownloadedBody": "{{albumName}}에서 {{filename}}이(가) 다운로드되었습니다",
+      "albumViewMilestoneTitle": "🎉 이정표 달성!",
+      "albumViewMilestoneBody": "{{albumName}}이(가) {{milestone}} 조회수를 달성했습니다!"
     }
   },
   "email": {

@@ -472,10 +472,6 @@
           "title": "Tentativi di Accesso Falliti",
           "description": "Quando vengono rilevati più tentativi di accesso falliti"
         },
-        "suspiciousActivity": {
-          "title": "Attività Sospetta",
-          "description": "Quando viene rilevato un accesso da un nuovo dispositivo/posizione"
-        },
         "albumCreated": {
           "title": "Album Creato",
           "description": "Quando viene creato un nuovo album"
@@ -555,6 +551,14 @@
         "versionUpdate": {
           "title": "Aggiornamento della versione",
           "description": "Quando Galleria viene aggiornata a una nuova versione"
+        },
+        "photoDownloaded": {
+          "title": "Foto scaricata",
+          "description": "Quando un visitatore scarica una foto (può essere rumoroso)"
+        },
+        "albumViewMilestone": {
+          "title": "Visualizza traguardi",
+          "description": "Quando un album raggiunge 100, 1K o 10K visualizzazioni"
         }
       }
     }

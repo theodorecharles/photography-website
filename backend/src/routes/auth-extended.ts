@@ -98,15 +98,74 @@ function getUserIdFromRequest(req: Request): number | null {
 // Store temporary challenges in memory (in production, use Redis or session store)
 const challenges = new Map<string, { challenge: string; userId?: number; user?: User; expires: number }>();
 
-// Clean up expired challenges every 5 minutes
+// Track failed login attempts
+const failedLoginAttempts = new Map<string, { count: number; firstAttempt: number; notified: boolean }>();
+const FAILED_LOGIN_THRESHOLD = 5; // Send notification after 5 failed attempts
+const FAILED_LOGIN_WINDOW = 15 * 60 * 1000; // 15 minutes
+
+// Clean up expired challenges and failed login attempts every 5 minutes
 setInterval(() => {
   const now = Date.now();
+  
+  // Clean challenges
   for (const [key, value] of challenges.entries()) {
     if (value.expires < now) {
       challenges.delete(key);
     }
   }
+  
+  // Clean old failed login attempts
+  for (const [email, data] of failedLoginAttempts.entries()) {
+    if (now - data.firstAttempt > FAILED_LOGIN_WINDOW) {
+      failedLoginAttempts.delete(email);
+    }
+  }
 }, 5 * 60 * 1000);
+
+/**
+ * Track failed login attempt and send notification if threshold exceeded
+ */
+async function trackFailedLogin(email: string): Promise<void> {
+  const now = Date.now();
+  const existing = failedLoginAttempts.get(email);
+  
+  if (!existing || now - existing.firstAttempt > FAILED_LOGIN_WINDOW) {
+    // New window
+    failedLoginAttempts.set(email, { count: 1, firstAttempt: now, notified: false });
+    return;
+  }
+  
+  // Increment count
+  existing.count++;
+  
+  // Send notification if threshold reached and not already notified
+  if (existing.count >= FAILED_LOGIN_THRESHOLD && !existing.notified) {
+    existing.notified = true;
+    
+    try {
+      await notifyAllAdmins(
+        'notifications.backend.failedLoginAttemptsTitle',
+        'notifications.backend.failedLoginAttemptsBody',
+        'failed-login-attempts',
+        'failedLoginAttempts',
+        {
+          email,
+          attemptCount: existing.count
+        }
+      );
+      warn(`[Auth] ${existing.count} failed login attempts for ${email} - admins notified`);
+    } catch (err) {
+      error('[Auth] Failed to send failed login notification:', err);
+    }
+  }
+}
+
+/**
+ * Clear failed login attempts on successful login
+ */
+function clearFailedLoginAttempts(email: string): void {
+  failedLoginAttempts.delete(email);
+}
 
 /**
  * Login with email/password (with optional MFA)
@@ -123,16 +182,19 @@ router.post('/login', async (req: Request, res: Response) => {
     const user = getUserByEmail(email);
 
     if (!user) {
+      await trackFailedLogin(email);
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
     // Check if user is active
     if (!user.is_active) {
+      await trackFailedLogin(email);
       return res.status(401).json({ error: 'Account is disabled' });
     }
 
     // Verify password
     if (!verifyPassword(user, password)) {
+      await trackFailedLogin(email);
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
@@ -161,12 +223,14 @@ router.post('/login', async (req: Request, res: Response) => {
       if (!user.totp_secret || !verifyTOTP(user.totp_secret, mfaToken)) {
         // Try backup code
         if (!verifyBackupCode(user, mfaToken)) {
+          await trackFailedLogin(email);
           return res.status(401).json({ error: 'Invalid MFA token' });
         }
       }
     }
 
-    // Login successful - create session
+    // Login successful - clear failed login attempts and create session
+    clearFailedLoginAttempts(email);
     (req.session as any).userId = user.id;
     (req.session as any).user = {
       id: user.id,

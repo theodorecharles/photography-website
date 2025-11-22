@@ -73,6 +73,71 @@ async function notifyAllAdmins(title: string, body: string, tag: string, notific
 }
 
 /**
+ * Track photo uploads for large batch detection
+ */
+interface UploadBatch {
+  album: string;
+  uploads: Array<{ timestamp: number; user: string }>;
+  notified: boolean;
+}
+
+const uploadBatches = new Map<string, UploadBatch>();
+const LARGE_UPLOAD_THRESHOLD = 50; // 50 photos
+const BATCH_WINDOW = 5 * 60 * 1000; // 5 minutes
+
+// Clean up old upload tracking every 10 minutes
+setInterval(() => {
+  const now = Date.now();
+  for (const [album, batch] of uploadBatches.entries()) {
+    const lastUpload = batch.uploads[batch.uploads.length - 1]?.timestamp || 0;
+    if (now - lastUpload > BATCH_WINDOW) {
+      uploadBatches.delete(album);
+    }
+  }
+}, 10 * 60 * 1000);
+
+/**
+ * Track upload and send notification if batch threshold reached
+ */
+async function trackPhotoUpload(album: string, userName: string): Promise<void> {
+  const now = Date.now();
+  let batch = uploadBatches.get(album);
+  
+  if (!batch) {
+    batch = { album, uploads: [], notified: false };
+    uploadBatches.set(album, batch);
+  }
+  
+  // Remove old uploads outside the time window
+  batch.uploads = batch.uploads.filter(u => now - u.timestamp < BATCH_WINDOW);
+  
+  // Add current upload
+  batch.uploads.push({ timestamp: now, user: userName });
+  
+  // Send notification if threshold reached and not already notified
+  if (batch.uploads.length >= LARGE_UPLOAD_THRESHOLD && !batch.notified) {
+    batch.notified = true;
+    
+    try {
+      await notifyAllAdmins(
+        'notifications.backend.largePhotoUploadTitle',
+        'notifications.backend.largePhotoUploadBody',
+        'large-photo-upload',
+        'largePhotoUpload',
+        {
+          uploadedBy: userName,
+          photoCount: batch.uploads.length,
+          albumName: album
+        }
+      );
+      info(`[AlbumManagement] Large upload notification sent: ${batch.uploads.length} photos to ${album}`);
+    } catch (err) {
+      error('[AlbumManagement] Failed to send large upload notification:', err);
+    }
+  }
+}
+
+/**
  * Convert text to title case
  * Capitalizes first letter of each word, except for common small words (unless first/last)
  */
@@ -805,6 +870,14 @@ router.post("/:album/upload", requireManager, (req: Request, res: Response, next
         res.status(500).json({ error: `Failed to save file: ${err.message}` });
         return;
       }
+    }
+
+    // Track photo upload for large batch detection (photos only, not videos)
+    if (!isVideo) {
+      const userName = (req.session as any)?.user?.name || 'Unknown User';
+      trackPhotoUpload(sanitizedAlbum, userName).catch(err => {
+        error('[AlbumManagement] Failed to track photo upload:', err);
+      });
     }
 
     // Send success response immediately (don't keep connection open)

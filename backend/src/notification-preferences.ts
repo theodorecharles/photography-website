@@ -21,7 +21,6 @@ export interface NotificationPreferences {
   passwordChanged: boolean;
   adminPasswordReset: boolean;
   failedLoginAttempts: boolean;
-  suspiciousActivity: boolean;
   
   // Content Management
   albumCreated: boolean;
@@ -37,6 +36,8 @@ export interface NotificationPreferences {
   shareLinkCreated: boolean;
   shareLinkAccessed: boolean;
   shareLinkExpired: boolean;
+  photoDownloaded: boolean;
+  albumViewMilestone: boolean;
   
   // System & Configuration
   configUpdated: boolean;
@@ -61,8 +62,7 @@ export const DEFAULT_NOTIFICATION_PREFERENCES: NotificationPreferences = {
   mfaDisabled: true,
   passwordChanged: true,
   adminPasswordReset: true,
-  failedLoginAttempts: true,
-  suspiciousActivity: true,
+  failedLoginAttempts: true, // Security: 5+ failed attempts in 15 minutes
   
   // Content Management - selective defaults
   albumCreated: true,
@@ -74,18 +74,20 @@ export const DEFAULT_NOTIFICATION_PREFERENCES: NotificationPreferences = {
   folderUnpublished: true,
   folderDeleted: true,
   homepageUpdated: false, // Can be noisy
-  largePhotoUpload: true,
+  largePhotoUpload: true, // 50+ photos in 5 minutes
   shareLinkCreated: true,
   shareLinkAccessed: false, // Can be noisy
-  shareLinkExpired: false, // Not implemented yet
+  shareLinkExpired: false, // Can be noisy
+  photoDownloaded: false, // Can be very noisy
+  albumViewMilestone: true, // Celebrate milestones!
   
   // System & Configuration
   configUpdated: true,
   smtpSettingsChanged: true,
   openaiApiKeyUpdated: true,
   brandingUpdated: false,
-  lowDiskSpace: false, // Not implemented yet
-  databaseBackupCompleted: false, // Not implemented yet
+  lowDiskSpace: true, // Alerts when < 10% free space
+  databaseBackupCompleted: true, // Manual or scheduled backups
   versionUpdate: true,
 };
 
@@ -208,12 +210,6 @@ export const NOTIFICATION_CATEGORIES: NotificationCategory[] = [
         titleKey: 'settings.notifications.types.failedLoginAttempts.title',
         descriptionKey: 'settings.notifications.types.failedLoginAttempts.description',
         icon: '⚠️'
-      },
-      {
-        key: 'suspiciousActivity',
-        titleKey: 'settings.notifications.types.suspiciousActivity.title',
-        descriptionKey: 'settings.notifications.types.suspiciousActivity.description',
-        icon: '🚨'
       }
     ]
   },
@@ -299,6 +295,18 @@ export const NOTIFICATION_CATEGORIES: NotificationCategory[] = [
         titleKey: 'settings.notifications.types.shareLinkExpired.title',
         descriptionKey: 'settings.notifications.types.shareLinkExpired.description',
         icon: '⏰'
+      },
+      {
+        key: 'photoDownloaded',
+        titleKey: 'settings.notifications.types.photoDownloaded.title',
+        descriptionKey: 'settings.notifications.types.photoDownloaded.description',
+        icon: '⬇️'
+      },
+      {
+        key: 'albumViewMilestone',
+        titleKey: 'settings.notifications.types.albumViewMilestone.title',
+        descriptionKey: 'settings.notifications.types.albumViewMilestone.description',
+        icon: '🎉'
       }
     ]
   },

@@ -82,7 +82,11 @@
       "homepageUpdatedTitle": "ホームページ更新",
       "homepageUpdatedBody": "{{updatedBy}} {{action}} {{albumName}} {{preposition}} ホームページ",
       "versionUpdateTitle": "ギャレリアが更新されました",
-      "versionUpdateBody": "ギャレリアがバージョン{{version}}に更新されました"
+      "versionUpdateBody": "ギャレリアがバージョン{{version}}に更新されました",
+      "photoDownloadedTitle": "写真がダウンロードされました",
+      "photoDownloadedBody": "{{albumName}} から {{filename}} がダウンロードされました",
+      "albumViewMilestoneTitle": "🎉 マイルストーン達成！",
+      "albumViewMilestoneBody": "{{albumName}} が {{milestone}} 回の閲覧数に達しました！"
     }
   },
   "email": {
