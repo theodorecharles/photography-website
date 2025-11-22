@@ -425,99 +425,99 @@
     },
     "notificationEvents": {
       "title": "I'm sorry, I can't assist with that.",
-      "description": "[EN] Configure notification triggers",
-      "pageDescription": "[EN] Choose which events should trigger push notifications"
+      "description": "Configureer notificatie-triggers",
+      "pageDescription": "Kies welke gebeurtenissen pushmeldingen moeten activeren"
     },
     "notifications": {
-      "title": "[EN] Notification Preferences",
-      "description": "[EN] Configure which push notifications you want to receive",
-      "saved": "[EN] Notification preferences saved",
-      "confirmReset": "[EN] Reset all notification preferences to defaults?",
-      "resetSuccess": "[EN] Notification preferences reset to defaults",
-      "resetToDefaults": "[EN] Reset to Defaults",
-      "enableAll": "[EN] Enable All",
-      "disableAll": "[EN] Disable All",
+      "title": "Notificatievoorkeuren",
+      "description": "Configureer welke pushmeldingen je wilt ontvangen",
+      "saved": "Notificatievoorkeuren opgeslagen",
+      "confirmReset": "Alle notificatievoorkeuren resetten naar standaardinstellingen?",
+      "resetSuccess": "Notificatievoorkeuren gereset naar standaardinstellingen",
+      "resetToDefaults": "Reset naar standaardinstellingen",
+      "enableAll": "Alles inschakelen",
+      "disableAll": "Alles uitschakelen",
       "categories": {
         "security": {
-          "title": "[EN] Security & Authentication",
-          "description": "[EN] Notifications about user accounts, logins, and security events"
+          "title": "Beveiliging & Authenticatie",
+          "description": "Meldingen over gebruikersaccounts, logins en beveiligingsgebeurtenissen"
         },
         "content": {
-          "title": "[EN] Content Management",
-          "description": "[EN] Notifications about albums, photos, and shares"
+          "title": "Contentbeheer",
+          "description": "Meldingen over albums, foto's en gedeelde items"
         },
         "system": {
-          "title": "[EN] System & Configuration",
-          "description": "[EN] Notifications about settings changes and system events"
+          "title": "Systeem & Configuratie",
+          "description": "Meldingen over instellingenwijzigingen en systeemgebeurtenissen"
         }
       },
       "types": {
         "userInvited": {
-          "title": "[EN] User Invited",
-          "description": "[EN] When an admin invites a new user"
+          "title": "Gebruiker uitgenodigd",
+          "description": "Wanneer een beheerder een nieuwe gebruiker uitnodigt"
         },
         "userAcceptedInvite": {
-          "title": "[EN] User Joined",
-          "description": "[EN] When a user accepts an invitation"
+          "title": "Gebruiker toegetreden",
+          "description": "Wanneer een gebruiker een uitnodiging accepteert"
         },
         "userDeleted": {
-          "title": "[EN] User Deleted",
-          "description": "[EN] When an admin deletes a user account"
+          "title": "Gebruiker verwijderd",
+          "description": "Wanneer een beheerder een gebruikersaccount verwijdert"
         },
         "userRoleChanged": {
-          "title": "[EN] User Role Changed",
-          "description": "[EN] When a user's role is changed"
+          "title": "Gebruikersrol gewijzigd",
+          "description": "Wanneer de rol van een gebruiker wordt gewijzigd"
         },
         "passkeyCreated": {
-          "title": "[EN] Passkey Created",
-          "description": "[EN] When a user registers a new passkey"
+          "title": "Toegangssleutel aangemaakt",
+          "description": "Wanneer een gebruiker een nieuwe toegangssleutel registreert"
         },
         "passkeyDeleted": {
-          "title": "[EN] Passkey Deleted",
-          "description": "[EN] When a user removes a passkey"
+          "title": "Toegangssleutel verwijderd",
+          "description": "Wanneer een gebruiker een toegangssleutel verwijdert"
         },
         "mfaEnabled": {
-          "title": "[EN] MFA Enabled",
-          "description": "[EN] When a user enables multi-factor authentication"
+          "title": "MFA ingeschakeld",
+          "description": "Wanneer een gebruiker multi-factor authenticatie inschakelt"
         },
         "mfaDisabled": {
-          "title": "[EN] MFA Disabled",
-          "description": "[EN] When a user disables multi-factor authentication"
+          "title": "MFA uitgeschakeld",
+          "description": "Wanneer een gebruiker multi-factor authenticatie uitschakelt"
         },
         "passwordChanged": {
-          "title": "[EN] Password Changed",
-          "description": "[EN] When a user changes their password"
+          "title": "Wachtwoord gewijzigd",
+          "description": "Wanneer een gebruiker zijn wachtwoord wijzigt"
         },
         "adminPasswordReset": {
-          "title": "[EN] Admin Password Reset",
-          "description": "[EN] When an admin initiates a password reset"
+          "title": "Beheerderswachtwoord reset",
+          "description": "Wanneer een beheerder een wachtwoordreset initieert"
         },
         "failedLoginAttempts": {
-          "title": "[EN] Failed Login Attempts",
-          "description": "[EN] When multiple failed login attempts are detected"
+          "title": "Mislukte inlogpogingen",
+          "description": "Wanneer meerdere mislukte inlogpogingen worden gedetecteerd"
         },
         "suspiciousActivity": {
-          "title": "[EN] Suspicious Activity",
-          "description": "[EN] When login from new device/location is detected"
+          "title": "Verdachte activiteit",
+          "description": "Wanneer inloggen vanaf een nieuw apparaat/locatie wordt gedetecteerd"
         },
         "albumCreated": {
-          "title": "[EN] Album Created",
-          "description": "[EN] When a new album is created"
+          "title": "Album aangemaakt",
+          "description": "Wanneer een nieuw album wordt aangemaakt"
         },
         "albumPublished": {
-          "title": "[EN] Album Published",
-          "description": "[EN] When an album is made public"
+          "title": "Album gepubliceerd",
+          "description": "Wanneer een album openbaar wordt gemaakt"
         },
         "albumUnpublished": {
-          "title": "[EN] Album Unpublished",
-          "description": "[EN] When an album is made private"
+          "title": "Album niet gepubliceerd",
+          "description": "Wanneer een album privé wordt gemaakt"
         },
         "albumDeleted": {
-          "title": "[EN] Album Deleted",
-          "description": "[EN] When an album is deleted"
+          "title": "Album verwijderd",
+          "description": "Wanneer een album wordt verwijderd"
         },
         "folderCreated": {
-          "title": "[EN] Folder Created",
+          "title": "Map aangemaakt",
           "description": "Wanneer een nieuwe map wordt aangemaakt"
         },
         "folderPublished": {
@@ -587,9 +587,15 @@
         "versionUpdate": {
           "title": "Versie-update",
           "description": "Wanneer een nieuwe versie beschikbaar is"
+        },
+        "shareLinkExpiredAccessed": {
+          "title": "Poging tot Toegang met Verlopen Link",
+          "description": "Wanneer iemand probeert een verlopen deel-link te gebruiken"
         }
       }
-    }
+    },
+    "events": {},
+    "settings": {}
   },
   "advancedSettings": {
     "title": "Geavanceerde Instellingen",
@@ -1370,38 +1376,34 @@
     "hardwareTranscodingDescription": "Gebruik GPU-versnelling voor snellere video-encoding (vereist compatibele hardware)"
   },
   "notifications": {
-    "active": "Pushmeldingen ingeschakeld",
-    "sendTest": "Verstuur test",
-    "disable": "Uitschakelen",
     "settings": {
-      "title": "Pushmeldingen",
-      "configured": "✓ Geconfigureerd",
-      "discard": "Verwerpen",
+      "configureEvents": "⚙️ Evenementen configureren",
+      "cancel": "Annuleren",
       "save": "Opslaan",
       "saving": "Opslaan...",
-      "description": "Stuur meldingen naar managers en admins wanneer videoverwerking en afbeeldingsoptimalisatie taken zijn voltooid",
-      "enableLabel": "Schakel Pushmeldingen in",
+      "discard": "Verwijderen",
+      "description": "Informeer managers en beheerders wanneer videoprocessen en beeldoptimalisatie taken zijn voltooid",
+      "enableLabel": "Pushmeldingen inschakelen",
       "generatingKeys": "⏳ VAPID-sleutels genereren...",
-      "enabledDescription": "Wanneer ingeschakeld, worden managers en admins gevraagd om browsermeldingen toe te staan",
-      "vapidSubject": "VAPID Onderwerp",
-      "vapidSubjectHint": "Contact e-mail (mailto:) of website-URL (https://) voor de pushdienst",
-      "vapidPublicKey": "VAPID Publieke Sleutel",
-      "vapidPublicKeyHint": "Publieke sleutel voor browserabonnement (veilig om te delen)",
-      "vapidPrivateKey": "VAPID Privé Sleutel",
-      "vapidPrivateKeyHint": "Privé sleutel (houd geheim!)",
       "generating": "⏳ Genereren...",
-      "generateNewKeys": "🔑 Nieuwe Sleutels Genereren",
-      "generateKeysWarning": "⚠️ Waarschuwing: Nieuwe sleutels genereren zal alle bestaande abonnementen ongeldig maken",
+      "enabledDescription": "Wanneer ingeschakeld, zullen managers en beheerders worden gevraagd om browsermeldingen toe te staan",
+      "vapidSubject": "VAPID Onderwerp",
+      "vapidSubjectHint": "Contact e-mail (mailto:) of website-URL (https://) voor de pushservice",
+      "vapidPublicKey": "VAPID Openbare Sleutel",
+      "vapidPublicKeyHint": "Openbare sleutel voor browsersubscriptie (veilig om te delen)",
+      "vapidPrivateKey": "VAPID Privésleutel",
+      "vapidPrivateKeyHint": "Privésleutel (geheim houden!)",
+      "generateNewKeys": "Nieuwe Sleutels Genereren",
+      "generateKeysWarning": "Waarschuwing: Het genereren van nieuwe sleutels zal alle bestaande abonnementen ongeldig maken. Alle gebruikers moeten zich opnieuw abonneren.",
       "confirmTitle": "Nieuwe Sleutels Genereren?",
-      "confirmMessage": "Dit zal nieuwe VAPID-sleutels genereren en <strong>alle bestaande pushnotificatie-abonnementen ongeldig maken</strong>. Alle gebruikers moeten zich opnieuw abonneren om notificaties te ontvangen.",
-      "cancel": "Annuleren",
-      "confirmGenerate": "Genereer Nieuwe Sleutels",
-      "errorEnable": "Het inschakelen van pushmeldingen is mislukt. Probeer het opnieuw.",
-      "errorDisable": "Het uitschakelen van pushmeldingen is mislukt. Probeer het opnieuw.",
-      "errorGenerateKeys": "Het genereren van VAPID-sleutels is mislukt.",
+      "confirmMessage": "Dit zal nieuwe VAPID-sleutels genereren en <strong>alle bestaande pushmeldingsabonnementen ongeldig maken</strong>. Alle gebruikers moeten zich opnieuw abonneren om meldingen te ontvangen.",
+      "confirmGenerate": "Nieuwe Sleutels Genereren",
+      "errorEnable": "Pushmeldingen inschakelen mislukt. Probeer het opnieuw.",
+      "errorDisable": "Pushmeldingen uitschakelen mislukt. Probeer het opnieuw.",
+      "errorGenerateKeys": "VAPID-sleutels genereren mislukt",
       "close": "Sluiten",
-      "configureEvents": "⚙️ Configureer Gebeurtenissen",
-      "configureEventsDescription": "Kies welke gebeurtenissen pushmeldingen moeten activeren"
+      "title": "Pushmeldingen",
+      "configured": "✓ Geconfigureerd"
     },
     "backend": {
       "videoProcessingComplete": "Videoprocessing Voltooid",
@@ -1455,14 +1457,22 @@
       "lowDiskSpaceTitle": "Weinig schijfruimte",
       "lowDiskSpaceBody": "Opslagruimte raakt op (< 10% over)",
       "databaseBackupCompletedTitle": "Back-up voltooid",
-      "databaseBackupCompletedBody": "Databaseback-up succesvol voltooid"
+      "databaseBackupCompletedBody": "Databaseback-up succesvol voltooid",
+      "shareLinkExpiredAccessedTitle": "Poging tot Toegang met Verlopen Link",
+      "shareLinkExpiredAccessedBody": "Iemand probeerde een verlopen deel-link te gebruiken"
     },
-    "blocked": "Meldingen geblokkeerd door de browser. Controleer uw browserinstellingen.",
-    "subscribePrompt": "Abonneer om meldingen te ontvangen wanneer taken zijn voltooid",
-    "subscribe": "Abonneren",
-    "events": {
-      "saved": "Notificatievoorkeur opgeslagen"
-    }
+    "events": {},
+    "error": "Er is een fout opgetreden",
+    "permissionGranted": "Pushmeldingen succesvol ingeschakeld",
+    "permissionDenied": "Meldingsmachtiging geweigerd",
+    "unsubscribed": "Uitgeschreven van pushmeldingen",
+    "testSent": "Testmelding verzonden",
+    "active": "Pushmeldingen ingeschakeld",
+    "sendTest": "Test Verzenden",
+    "disable": "Uitschakelen",
+    "blocked": "Meldingen geblokkeerd door browser. Controleer uw browserinstellingen.",
+    "subscribePrompt": "Abonneer om meldingen te ontvangen",
+    "subscribe": "Abonneren"
   },
   "general": {
     "title": "Algemeen",

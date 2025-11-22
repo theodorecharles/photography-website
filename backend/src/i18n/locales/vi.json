@@ -86,7 +86,9 @@
       "photoDownloadedTitle": "Ảnh đã được tải xuống",
       "photoDownloadedBody": "{{filename}} từ {{albumName}} đã được tải xuống",
       "albumViewMilestoneTitle": "🎉 Đã đạt cột mốc!",
-      "albumViewMilestoneBody": "{{albumName}} đã đạt {{milestone}} lượt xem!"
+      "albumViewMilestoneBody": "{{albumName}} đã đạt {{milestone}} lượt xem!",
+      "shareLinkExpiredAccessedTitle": "Nỗ Lực Truy Cập Liên Kết Hết Hạn",
+      "shareLinkExpiredAccessedBody": "Ai đó đã cố gắng truy cập {{albumName}} bằng một liên kết hết hạn"
     }
   },
   "email": {

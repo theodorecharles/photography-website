@@ -86,7 +86,9 @@
       "photoDownloadedTitle": "Photo téléchargée",
       "photoDownloadedBody": "{{filename}} de {{albumName}} a été téléchargé",
       "albumViewMilestoneTitle": "🎉 Étape atteinte !",
-      "albumViewMilestoneBody": "{{albumName}} a atteint {{milestone}} vues !"
+      "albumViewMilestoneBody": "{{albumName}} a atteint {{milestone}} vues !",
+      "shareLinkExpiredAccessedTitle": "Tentative d'accès avec un lien expiré",
+      "shareLinkExpiredAccessedBody": "Quelqu'un a essayé d'accéder à {{albumName}} avec un lien expiré"
     }
   },
   "email": {

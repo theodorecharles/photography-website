@@ -713,6 +713,15 @@ i18nInitPromise.then(() => {
     startMilestoneTracking();
   }
 
+  // Start share link expiry tracking service (only after setup is complete)
+  if (getConfigExists()) {
+    import('./services/share-link-expiry-tracker.js').then(({ startShareLinkExpiryTracking }) => {
+      startShareLinkExpiryTracking();
+    }).catch((err) => {
+      error('[Startup] Failed to start share link expiry tracking:', err);
+    });
+  }
+
   // Handle server errors
   server.on("error", (err: NodeJS.ErrnoException) => {
     if (err.code === "EADDRINUSE") {

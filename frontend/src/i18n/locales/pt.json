@@ -587,9 +587,15 @@
         "versionUpdate": {
           "title": "Atualização de Versão",
           "description": "Quando uma nova versão está disponível"
+        },
+        "shareLinkExpiredAccessed": {
+          "title": "Tentativa de Acesso a Link Expirado",
+          "description": "Quando alguém tenta usar um link de compartilhamento expirado"
         }
       }
-    }
+    },
+    "events": {},
+    "settings": {}
   },
   "advancedSettings": {
     "title": "Configurações Avançadas",
@@ -1370,38 +1376,34 @@
     "hardwareTranscodingDescription": "Use aceleração por GPU para codificação de vídeo mais rápida (requer hardware compatível)"
   },
   "notifications": {
-    "active": "Notificações push ativadas",
-    "sendTest": "Enviar Teste",
-    "disable": "Desativar",
     "settings": {
-      "title": "Notificações Push",
-      "configured": "✓ Configurado",
-      "discard": "Descartar",
+      "configureEvents": "⚙️ Configurar Eventos",
+      "cancel": "Cancelar",
       "save": "Salvar",
       "saving": "Salvando...",
-      "description": "Notificar gerentes e administradores quando o processamento de vídeo e as tarefas de otimização de imagem forem concluídas",
+      "discard": "Descartar",
+      "description": "Notificar gerentes e administradores quando os trabalhos de processamento de vídeo e otimização de imagem forem concluídos",
       "enableLabel": "Ativar Notificações Push",
       "generatingKeys": "⏳ Gerando chaves VAPID...",
+      "generating": "⏳ Gerando...",
       "enabledDescription": "Quando ativado, gerentes e administradores serão solicitados a permitir notificações do navegador",
       "vapidSubject": "Assunto VAPID",
-      "vapidSubjectHint": "Email de contato (mailto:) ou URL do site (https://) para o serviço de push",
+      "vapidSubjectHint": "E-mail de contato (mailto:) ou URL do site (https://) para o serviço push",
       "vapidPublicKey": "Chave Pública VAPID",
-      "vapidPublicKeyHint": "Chave pública para assinatura do navegador (seguro para compartilhar)",
+      "vapidPublicKeyHint": "Chave pública para assinatura do navegador (segura para compartilhar)",
       "vapidPrivateKey": "Chave Privada VAPID",
       "vapidPrivateKeyHint": "Chave privada (mantenha em segredo!)",
-      "generating": "⏳ Gerando...",
-      "generateNewKeys": "🔑 Gerar Novas Chaves",
-      "generateKeysWarning": "⚠️ Aviso: Gerar novas chaves invalidará todas as assinaturas existentes",
+      "generateNewKeys": "Gerar Novas Chaves",
+      "generateKeysWarning": "Aviso: Gerar novas chaves invalidará todas as assinaturas existentes. Todos os usuários precisarão se inscrever novamente.",
       "confirmTitle": "Gerar Novas Chaves?",
-      "confirmMessage": "Isso gerará novas chaves VAPID e <strong>invalidará todas as assinaturas de notificações push existentes</strong>. Todos os usuários precisarão se reinscrever para receber notificações.",
-      "cancel": "Cancelar",
+      "confirmMessage": "Isso gerará novas chaves VAPID e <strong>invalidará todas as assinaturas de notificações push existentes</strong>. Todos os usuários precisarão se inscrever novamente para receber notificações.",
       "confirmGenerate": "Gerar Novas Chaves",
-      "errorEnable": "Falha ao habilitar notificações push. Por favor, tente novamente.",
-      "errorDisable": "Falha ao desativar as notificações push. Por favor, tente novamente.",
-      "errorGenerateKeys": "Falha ao gerar as chaves VAPID",
+      "errorEnable": "Falha ao ativar notificações push. Por favor, tente novamente.",
+      "errorDisable": "Falha ao desativar notificações push. Por favor, tente novamente.",
+      "errorGenerateKeys": "Falha ao gerar chaves VAPID",
       "close": "Fechar",
-      "configureEvents": "⚙️ Configurar Eventos",
-      "configureEventsDescription": "Escolha quais eventos devem acionar notificações push"
+      "title": "Notificações Push",
+      "configured": "✓ Configurado"
     },
     "backend": {
       "videoProcessingComplete": "Processamento de Vídeo Completo",
@@ -1455,14 +1457,22 @@
       "lowDiskSpaceTitle": "Espaço em Disco Baixo",
       "lowDiskSpaceBody": "Armazenamento está acabando (< 10% restante)",
       "databaseBackupCompletedTitle": "Backup Completo",
-      "databaseBackupCompletedBody": "Backup do banco de dados concluído com sucesso"
+      "databaseBackupCompletedBody": "Backup do banco de dados concluído com sucesso",
+      "shareLinkExpiredAccessedTitle": "Tentativa de Acesso a Link Expirado",
+      "shareLinkExpiredAccessedBody": "Alguém tentou usar um link de compartilhamento expirado"
     },
+    "events": {},
+    "error": "Ocorreu um erro",
+    "permissionGranted": "Notificações push ativadas com sucesso",
+    "permissionDenied": "Permissão de notificação negada",
+    "unsubscribed": "Cancelou a inscrição de notificações push",
+    "testSent": "Notificação de teste enviada",
+    "active": "Notificações push ativadas",
+    "sendTest": "Enviar Teste",
+    "disable": "Desativar",
     "blocked": "Notificações bloqueadas pelo navegador. Verifique as configurações do seu navegador.",
-    "subscribePrompt": "Inscreva-se para receber notificações quando os trabalhos forem concluídos",
-    "subscribe": "Inscrever-se",
-    "events": {
-      "saved": "Preferência de notificação salva"
-    }
+    "subscribePrompt": "Inscreva-se para receber notificações",
+    "subscribe": "Inscrever-se"
   },
   "general": {
     "title": "Geral",

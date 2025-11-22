@@ -133,9 +133,22 @@ export function initializeDatabase(): any {
       secret_key TEXT NOT NULL UNIQUE,
       expires_at DATETIME,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      notified INTEGER DEFAULT 0,
       FOREIGN KEY (album) REFERENCES albums(name) ON DELETE CASCADE ON UPDATE CASCADE
     )
   `);
+  
+  // Add notified column to share_links if it doesn't exist (migration)
+  try {
+    const shareLinksTableInfo = db.pragma('table_info(share_links)');
+    const hasNotifiedColumn = shareLinksTableInfo.some((col: any) => col.name === 'notified');
+    if (!hasNotifiedColumn) {
+      info('[Database] Adding notified column to share_links...');
+      db.exec('ALTER TABLE share_links ADD COLUMN notified INTEGER DEFAULT 0');
+    }
+  } catch (err) {
+    warn('[Database] Could not check/add notified column to share_links:', err);
+  }
   
   // Create index for share links
   db.exec(`

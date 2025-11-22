@@ -587,9 +587,15 @@
         "versionUpdate": {
           "title": "バージョン更新",
           "description": "新しいバージョンが利用可能になったとき"
+        },
+        "shareLinkExpiredAccessed": {
+          "title": "期限切れリンクのアクセス試行",
+          "description": "誰かが期限切れの共有リンクを使用しようとしたとき"
         }
       }
-    }
+    },
+    "events": {},
+    "settings": {}
   },
   "advancedSettings": {
     "title": "高度な設定",
@@ -1370,38 +1376,34 @@
     "hardwareTranscodingDescription": "GPUアクセラレーションを使用して、より高速なビデオエンコーディングを行います（対応するハードウェアが必要です）"
   },
   "notifications": {
-    "active": "プッシュ通知が有効になりました",
-    "sendTest": "テストを送信",
-    "disable": "無効にする",
     "settings": {
-      "title": "プッシュ通知",
-      "configured": "✓ 設定済み",
-      "discard": "破棄",
+      "configureEvents": "⚙️ イベントを設定する",
+      "cancel": "キャンセル",
       "save": "保存",
       "saving": "保存中...",
-      "description": "ビデオ処理および画像最適化ジョブが完了したときに、マネージャーと管理者に通知",
+      "discard": "破棄",
+      "description": "ビデオ処理と画像最適化ジョブが完了したときにマネージャーと管理者に通知する",
       "enableLabel": "プッシュ通知を有効にする",
       "generatingKeys": "⏳ VAPIDキーを生成中...",
-      "enabledDescription": "有効にすると、マネージャーと管理者にブラウザ通知を許可するように促されます",
-      "vapidSubject": "VAPID サブジェクト",
-      "vapidSubjectHint": "プッシュサービスのための連絡先メール (mailto:) またはウェブサイト URL (https://)",
-      "vapidPublicKey": "VAPID 公開鍵",
-      "vapidPublicKeyHint": "ブラウザのサブスクリプション用の公開鍵 (共有しても安全)",
-      "vapidPrivateKey": "VAPID 秘密鍵",
-      "vapidPrivateKeyHint": "秘密鍵 (秘密にしてください!)",
       "generating": "⏳ 生成中...",
-      "generateNewKeys": "🔑 新しい鍵を生成",
-      "generateKeysWarning": "⚠️ 警告: 新しい鍵を生成すると、すべての既存のサブスクリプションが無効になります",
-      "confirmTitle": "新しい鍵を生成しますか?",
-      "confirmMessage": "これにより、新しいVAPIDキーが生成され、<strong>すべての既存のプッシュ通知サブスクリプションが無効になります</strong>。すべてのユーザーは通知を受け取るために再度サブスクライブする必要があります。",
-      "cancel": "キャンセル",
+      "enabledDescription": "有効にすると、マネージャーと管理者はブラウザ通知を許可するよう促されます",
+      "vapidSubject": "VAPIDサブジェクト",
+      "vapidSubjectHint": "プッシュサービス用の連絡先メール (mailto:) またはウェブサイトURL (https://)",
+      "vapidPublicKey": "VAPID公開鍵",
+      "vapidPublicKeyHint": "ブラウザサブスクリプション用の公開鍵（共有しても安全）",
+      "vapidPrivateKey": "VAPID秘密鍵",
+      "vapidPrivateKeyHint": "秘密鍵（秘密にしておくこと！）",
+      "generateNewKeys": "新しいキーを生成",
+      "generateKeysWarning": "警告: 新しいキーを生成すると、すべての既存のサブスクリプションが無効になります。すべてのユーザーは再購読が必要です。",
+      "confirmTitle": "新しいキーを生成しますか？",
+      "confirmMessage": "これにより、新しいVAPIDキーが生成され、<strong>すべての既存のプッシュ通知サブスクリプションが無効になります</strong>。すべてのユーザーは通知を受け取るために再購読が必要です。",
       "confirmGenerate": "新しいキーを生成",
       "errorEnable": "プッシュ通知を有効にできませんでした。もう一度お試しください。",
       "errorDisable": "プッシュ通知を無効にできませんでした。もう一度お試しください。",
       "errorGenerateKeys": "VAPIDキーの生成に失敗しました",
       "close": "閉じる",
-      "configureEvents": "⚙️ イベントを設定",
-      "configureEventsDescription": "プッシュ通知をトリガーするイベントを選択"
+      "title": "プッシュ通知",
+      "configured": "✓ 設定済み"
     },
     "backend": {
       "videoProcessingComplete": "動画処理が完了しました",
@@ -1455,14 +1457,22 @@
       "lowDiskSpaceTitle": "ディスク容量不足",
       "lowDiskSpaceBody": "ストレージが不足しています（残り < 10%）",
       "databaseBackupCompletedTitle": "バックアップ完了",
-      "databaseBackupCompletedBody": "データベースのバックアップが正常に完了しました"
+      "databaseBackupCompletedBody": "データベースのバックアップが正常に完了しました",
+      "shareLinkExpiredAccessedTitle": "期限切れリンクのアクセス試行",
+      "shareLinkExpiredAccessedBody": "誰かが期限切れの共有リンクを使用しようとしました"
     },
+    "events": {},
+    "error": "エラーが発生しました",
+    "permissionGranted": "プッシュ通知が正常に有効になりました",
+    "permissionDenied": "通知の許可が拒否されました",
+    "unsubscribed": "プッシュ通知の購読を解除しました",
+    "testSent": "テスト通知が送信されました",
+    "active": "プッシュ通知が有効になりました",
+    "sendTest": "テストを送信",
+    "disable": "無効にする",
     "blocked": "ブラウザによって通知がブロックされています。ブラウザの設定を確認してください。",
-    "subscribePrompt": "ジョブが完了したときに通知を受け取るために購読してください",
-    "subscribe": "購読",
-    "events": {
-      "saved": "通知設定が保存されました"
-    }
+    "subscribePrompt": "通知を受け取るために購読する",
+    "subscribe": "購読する"
   },
   "general": {
     "title": "一般",

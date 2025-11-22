@@ -86,7 +86,9 @@
       "photoDownloadedTitle": "사진 다운로드 완료",
       "photoDownloadedBody": "{{albumName}}에서 {{filename}}이(가) 다운로드되었습니다",
       "albumViewMilestoneTitle": "🎉 이정표 달성!",
-      "albumViewMilestoneBody": "{{albumName}}이(가) {{milestone}} 조회수를 달성했습니다!"
+      "albumViewMilestoneBody": "{{albumName}}이(가) {{milestone}} 조회수를 달성했습니다!",
+      "shareLinkExpiredAccessedTitle": "만료된 링크 접근 시도",
+      "shareLinkExpiredAccessedBody": "누군가 만료된 링크로 {{albumName}}에 접근하려고 했습니다."
     }
   },
   "email": {

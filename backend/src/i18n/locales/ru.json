@@ -86,7 +86,9 @@
       "photoDownloadedTitle": "Фото загружено",
       "photoDownloadedBody": "{{filename}} из {{albumName}} был загружен",
       "albumViewMilestoneTitle": "🎉 Достигнута веха!",
-      "albumViewMilestoneBody": "{{albumName}} достиг {{milestone}} просмотров!"
+      "albumViewMilestoneBody": "{{albumName}} достиг {{milestone}} просмотров!",
+      "shareLinkExpiredAccessedTitle": "Попытка доступа по истекшей ссылке",
+      "shareLinkExpiredAccessedBody": "Кто-то попытался получить доступ к {{albumName}} по истекшей ссылке"
     }
   },
   "email": {

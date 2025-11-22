@@ -55,6 +55,9 @@ if [ -f "data/gallery.db" ]; then
     if ! node scripts/migrate-push-notifications.js; then
         handle_error "Database migration (push notifications) failed"
     fi
+    if ! node migrate-share-link-notifications.js; then
+        handle_error "Database migration (share link notifications) failed"
+    fi
     log "✓ Database migrations completed"
 else
     log "Skipping database migrations (database not initialized yet)"

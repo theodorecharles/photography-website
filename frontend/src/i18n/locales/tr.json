@@ -587,9 +587,15 @@
         "versionUpdate": {
           "title": "Sürüm Güncellemesi",
           "description": "Yeni bir sürüm mevcut olduğunda"
+        },
+        "shareLinkExpiredAccessed": {
+          "title": "Süresi Dolmuş Bağlantı Erişim Denemesi",
+          "description": "Birisi süresi dolmuş bir paylaşım bağlantısını kullanmaya çalıştığında"
         }
       }
-    }
+    },
+    "events": {},
+    "settings": {}
   },
   "advancedSettings": {
     "title": "Gelişmiş Ayarlar",
@@ -1370,38 +1376,34 @@
     "hardwareTranscodingDescription": "Daha hızlı video kodlaması için GPU hızlandırmasını kullanın (uyumlu donanım gerektirir)"
   },
   "notifications": {
-    "active": "Push bildirimleri etkinleştirildi",
-    "sendTest": "Test Gönder",
-    "disable": "Devre Dışı Bırak",
     "settings": {
-      "title": "Push Bildirimleri",
-      "configured": "✓ Yapılandırıldı",
-      "discard": "İptal Et",
+      "configureEvents": "⚙️ Etkinlikleri Yapılandır",
+      "cancel": "İptal",
       "save": "Kaydet",
       "saving": "Kaydediliyor...",
-      "description": "Video işleme ve görüntü optimizasyonu işleri tamamlandığında yöneticileri ve yöneticileri bilgilendir",
-      "enableLabel": "Push Bildirimlerini Etkinleştir",
+      "discard": "Vazgeç",
+      "description": "Video işleme ve görüntü optimizasyonu işleri tamamlandığında yöneticilere ve yöneticilere bildirim gönder",
+      "enableLabel": "Anlık Bildirimleri Etkinleştir",
       "generatingKeys": "⏳ VAPID anahtarları oluşturuluyor...",
-      "enabledDescription": "Etkinleştirildiğinde, yöneticiler ve yöneticiler tarayıcı bildirimlerine izin vermek için uyarılacak",
-      "vapidSubject": "VAPID Konusu",
-      "vapidSubjectHint": "Push servisi için iletişim e-posta adresi (mailto:) veya web sitesi URL'si (https://)",
-      "vapidPublicKey": "VAPID Genel Anahtar",
-      "vapidPublicKeyHint": "Tarayıcı aboneliği için genel anahtar (paylaşmak güvenlidir)",
-      "vapidPrivateKey": "VAPID Özel Anahtar",
-      "vapidPrivateKeyHint": "Özel anahtar (gizli tutun!)",
       "generating": "⏳ Oluşturuluyor...",
-      "generateNewKeys": "🔑 Yeni Anahtarlar Oluştur",
-      "generateKeysWarning": "⚠️ Uyarı: Yeni anahtarlar oluşturmak mevcut tüm abonelikleri geçersiz kılacaktır",
+      "enabledDescription": "Etkinleştirildiğinde, yöneticilere ve yöneticilere tarayıcı bildirimlerine izin vermeleri önerilecektir",
+      "vapidSubject": "VAPID Konusu",
+      "vapidSubjectHint": "Anlık bildirim hizmeti için iletişim e-posta (mailto:) veya web sitesi URL'si (https://)",
+      "vapidPublicKey": "VAPID Genel Anahtarı",
+      "vapidPublicKeyHint": "Tarayıcı aboneliği için genel anahtar (paylaşılması güvenlidir)",
+      "vapidPrivateKey": "VAPID Özel Anahtarı",
+      "vapidPrivateKeyHint": "Özel anahtar (gizli tutun!)",
+      "generateNewKeys": "Yeni Anahtarlar Oluştur",
+      "generateKeysWarning": "Uyarı: Yeni anahtarlar oluşturmak mevcut tüm abonelikleri geçersiz kılacaktır. Tüm kullanıcıların yeniden abone olması gerekecek.",
       "confirmTitle": "Yeni Anahtarlar Oluşturulsun mu?",
-      "confirmMessage": "Bu, yeni VAPID anahtarları oluşturacak ve <strong>mevcut tüm bildirim aboneliklerini geçersiz kılacaktır</strong>. Tüm kullanıcıların bildirim almak için yeniden abone olmaları gerekecek.",
-      "cancel": "İptal",
+      "confirmMessage": "Bu, yeni VAPID anahtarları oluşturacak ve <strong>mevcut tüm anlık bildirim aboneliklerini geçersiz kılacaktır</strong>. Bildirim almak için tüm kullanıcıların yeniden abone olması gerekecek.",
       "confirmGenerate": "Yeni Anahtarlar Oluştur",
-      "errorEnable": "Bildirimleri etkinleştirmek başarısız oldu. Lütfen tekrar deneyin.",
-      "errorDisable": "Bildirimleri devre dışı bırakmak başarısız oldu. Lütfen tekrar deneyin.",
-      "errorGenerateKeys": "VAPID anahtarları oluşturmak başarısız oldu",
+      "errorEnable": "Anlık bildirimleri etkinleştirme başarısız oldu. Lütfen tekrar deneyin.",
+      "errorDisable": "Anlık bildirimleri devre dışı bırakma başarısız oldu. Lütfen tekrar deneyin.",
+      "errorGenerateKeys": "VAPID anahtarları oluşturulamadı",
       "close": "Kapat",
-      "configureEvents": "⚙️ Olayları Yapılandır",
-      "configureEventsDescription": "Hangi olayların anlık bildirimleri tetiklemesi gerektiğini seçin"
+      "title": "Anlık Bildirimler",
+      "configured": "✓ Yapılandırıldı"
     },
     "backend": {
       "videoProcessingComplete": "Video İşleme Tamamlandı",
@@ -1455,14 +1457,22 @@
       "lowDiskSpaceTitle": "Düşük Disk Alanı",
       "lowDiskSpaceBody": "Depolama alanı azalıyor (< %10 kaldı)",
       "databaseBackupCompletedTitle": "Yedekleme Tamamlandı",
-      "databaseBackupCompletedBody": "Veritabanı yedeklemesi başarıyla tamamlandı"
+      "databaseBackupCompletedBody": "Veritabanı yedeklemesi başarıyla tamamlandı",
+      "shareLinkExpiredAccessedTitle": "Süresi Dolmuş Bağlantı Erişim Denemesi",
+      "shareLinkExpiredAccessedBody": "Birisi süresi dolmuş bir paylaşım bağlantısını kullanmaya çalıştı"
     },
-    "blocked": "Tarayıcı tarafından bildirimler engellendi. Tarayıcı ayarlarınızı kontrol edin.",
-    "subscribePrompt": "İşler tamamlandığında bildirim almak için abone olun",
-    "subscribe": "Abone ol",
-    "events": {
-      "saved": "Bildirim tercihi kaydedildi"
-    }
+    "events": {},
+    "error": "Bir hata oluştu",
+    "permissionGranted": "Anlık bildirimler başarıyla etkinleştirildi",
+    "permissionDenied": "Bildirim izni reddedildi",
+    "unsubscribed": "Anlık bildirimlerden abonelikten çıkıldı",
+    "testSent": "Test bildirimi gönderildi",
+    "active": "Anlık bildirimler etkinleştirildi",
+    "sendTest": "Test Gönder",
+    "disable": "Devre Dışı Bırak",
+    "blocked": "Bildirimler tarayıcı tarafından engellendi. Tarayıcı ayarlarınızı kontrol edin.",
+    "subscribePrompt": "Bildirim almak için abone olun",
+    "subscribe": "Abone Ol"
   },
   "general": {
     "title": "Genel",

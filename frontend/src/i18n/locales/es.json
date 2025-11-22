@@ -587,9 +587,15 @@
         "versionUpdate": {
           "title": "Actualización de Versión",
           "description": "Cuando hay una nueva versión disponible"
+        },
+        "shareLinkExpiredAccessed": {
+          "title": "Intento de acceso a enlace caducado",
+          "description": "Cuando alguien intenta usar un enlace compartido caducado"
         }
       }
-    }
+    },
+    "events": {},
+    "settings": {}
   },
   "userManagement": {
     "title": "Gestión de Usuarios",
@@ -1370,38 +1376,34 @@
     "hardwareTranscodingDescription": "Usa la aceleración de GPU para una codificación de video más rápida (requiere hardware compatible)"
   },
   "notifications": {
-    "active": "Notificaciones push habilitadas",
-    "sendTest": "Enviar prueba",
-    "disable": "Desactivar",
     "settings": {
-      "title": "Notificaciones Push",
-      "configured": "✓ Configurado",
-      "discard": "Descartar",
+      "configureEvents": "⚙️ Configurar eventos",
+      "cancel": "Cancelar",
       "save": "Guardar",
       "saving": "Guardando...",
+      "discard": "Descartar",
       "description": "Notificar a los gerentes y administradores cuando se completen los trabajos de procesamiento de video y optimización de imágenes",
-      "enableLabel": "Habilitar Notificaciones Push",
+      "enableLabel": "Habilitar notificaciones push",
       "generatingKeys": "⏳ Generando claves VAPID...",
-      "enabledDescription": "Cuando esté habilitado, se pedirá a los gerentes y administradores que permitan notificaciones del navegador",
-      "vapidSubject": "Sujeto VAPID",
-      "vapidSubjectHint": "Correo electrónico de contacto (mailto:) o URL del sitio web (https://) para el servicio de push",
-      "vapidPublicKey": "Clave Pública VAPID",
-      "vapidPublicKeyHint": "Clave pública para la suscripción del navegador (seguro para compartir)",
-      "vapidPrivateKey": "Clave Privada VAPID",
-      "vapidPrivateKeyHint": "Clave privada (¡mantener en secreto!)",
       "generating": "⏳ Generando...",
-      "generateNewKeys": "🔑 Generar Nuevas Claves",
-      "generateKeysWarning": "⚠️ Advertencia: Generar nuevas claves invalidará todas las suscripciones existentes",
-      "confirmTitle": "¿Generar Nuevas Claves?",
-      "confirmMessage": "Esto generará nuevas claves VAPID y <strong>invalidará todas las suscripciones de notificaciones push existentes</strong>. Todos los usuarios necesitarán volver a suscribirse para recibir notificaciones.",
-      "cancel": "Cancelar",
-      "confirmGenerate": "Generar Nuevas Claves",
-      "errorEnable": "Error al habilitar las notificaciones push. Por favor, inténtalo de nuevo.",
-      "errorDisable": "Error al deshabilitar las notificaciones push. Por favor, inténtalo de nuevo.",
-      "errorGenerateKeys": "Error al generar claves VAPID",
+      "enabledDescription": "Cuando esté habilitado, se solicitará a los gerentes y administradores que permitan notificaciones del navegador",
+      "vapidSubject": "Asunto VAPID",
+      "vapidSubjectHint": "Correo electrónico de contacto (mailto:) o URL del sitio web (https://) para el servicio push",
+      "vapidPublicKey": "Clave pública VAPID",
+      "vapidPublicKeyHint": "Clave pública para suscripción del navegador (segura para compartir)",
+      "vapidPrivateKey": "Clave privada VAPID",
+      "vapidPrivateKeyHint": "Clave privada (¡mantener en secreto!)",
+      "generateNewKeys": "Generar nuevas claves",
+      "generateKeysWarning": "Advertencia: Generar nuevas claves invalidará todas las suscripciones existentes. Todos los usuarios deberán volver a suscribirse.",
+      "confirmTitle": "¿Generar nuevas claves?",
+      "confirmMessage": "Esto generará nuevas claves VAPID y <strong>invalidará todas las suscripciones de notificaciones push existentes</strong>. Todos los usuarios deberán volver a suscribirse para recibir notificaciones.",
+      "confirmGenerate": "Generar nuevas claves",
+      "errorEnable": "No se pudo habilitar las notificaciones push. Por favor, inténtalo de nuevo.",
+      "errorDisable": "No se pudo deshabilitar las notificaciones push. Por favor, inténtalo de nuevo.",
+      "errorGenerateKeys": "No se pudo generar claves VAPID",
       "close": "Cerrar",
-      "configureEvents": "⚙️ Configurar Eventos",
-      "configureEventsDescription": "Elige qué eventos deben activar notificaciones push"
+      "title": "Notificaciones push",
+      "configured": "✓ Configurado"
     },
     "backend": {
       "videoProcessingComplete": "Procesamiento de video completo",
@@ -1455,14 +1457,22 @@
       "lowDiskSpaceTitle": "Poco espacio en disco",
       "lowDiskSpaceBody": "El almacenamiento se está agotando (< 10% restante)",
       "databaseBackupCompletedTitle": "Respaldo completo",
-      "databaseBackupCompletedBody": "Respaldo de base de datos completado con éxito"
+      "databaseBackupCompletedBody": "Respaldo de base de datos completado con éxito",
+      "shareLinkExpiredAccessedTitle": "Intento de acceso a enlace caducado",
+      "shareLinkExpiredAccessedBody": "Alguien intentó usar un enlace compartido caducado"
     },
+    "events": {},
+    "error": "Ocurrió un error",
+    "permissionGranted": "Notificaciones push habilitadas con éxito",
+    "permissionDenied": "Permiso de notificación denegado",
+    "unsubscribed": "Desuscrito de notificaciones push",
+    "testSent": "Notificación de prueba enviada",
+    "active": "Notificaciones push habilitadas",
+    "sendTest": "Enviar prueba",
+    "disable": "Deshabilitar",
     "blocked": "Notificaciones bloqueadas por el navegador. Verifica la configuración de tu navegador.",
-    "subscribePrompt": "Suscríbete para recibir notificaciones cuando los trabajos se completen",
-    "subscribe": "Suscribirse",
-    "events": {
-      "saved": "Preferencia de notificación guardada"
-    }
+    "subscribePrompt": "Suscribirse para recibir notificaciones",
+    "subscribe": "Suscribirse"
   },
   "general": {
     "title": "General",

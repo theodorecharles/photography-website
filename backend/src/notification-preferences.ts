@@ -36,6 +36,7 @@ export interface NotificationPreferences {
   shareLinkCreated: boolean;
   shareLinkAccessed: boolean;
   shareLinkExpired: boolean;
+  shareLinkExpiredAccessed: boolean;
   photoDownloaded: boolean;
   albumViewMilestone: boolean;
   
@@ -78,6 +79,7 @@ export const DEFAULT_NOTIFICATION_PREFERENCES: NotificationPreferences = {
   shareLinkCreated: true,
   shareLinkAccessed: false, // Can be noisy
   shareLinkExpired: false, // Can be noisy
+  shareLinkExpiredAccessed: true, // Someone tried to use expired link
   photoDownloaded: false, // Can be very noisy
   albumViewMilestone: true, // Celebrate milestones!
   
@@ -295,6 +297,12 @@ export const NOTIFICATION_CATEGORIES: NotificationCategory[] = [
         titleKey: 'settings.notifications.types.shareLinkExpired.title',
         descriptionKey: 'settings.notifications.types.shareLinkExpired.description',
         icon: '⏰'
+      },
+      {
+        key: 'shareLinkExpiredAccessed',
+        titleKey: 'settings.notifications.types.shareLinkExpiredAccessed.title',
+        descriptionKey: 'settings.notifications.types.shareLinkExpiredAccessed.description',
+        icon: '🚫'
       },
       {
         key: 'photoDownloaded',

@@ -425,99 +425,99 @@
     },
     "notificationEvents": {
       "title": "I'm sorry, I can't assist with that request.",
-      "description": "[EN] Configure notification triggers",
-      "pageDescription": "[EN] Choose which events should trigger push notifications"
+      "description": "Configurer les déclencheurs de notification",
+      "pageDescription": "Choisissez quels événements doivent déclencher des notifications push"
     },
     "notifications": {
-      "title": "[EN] Notification Preferences",
-      "description": "[EN] Configure which push notifications you want to receive",
-      "saved": "[EN] Notification preferences saved",
-      "confirmReset": "[EN] Reset all notification preferences to defaults?",
-      "resetSuccess": "[EN] Notification preferences reset to defaults",
-      "resetToDefaults": "[EN] Reset to Defaults",
-      "enableAll": "[EN] Enable All",
-      "disableAll": "[EN] Disable All",
+      "title": "Préférences de notification",
+      "description": "Configurez les notifications push que vous souhaitez recevoir",
+      "saved": "Préférences de notification enregistrées",
+      "confirmReset": "Réinitialiser toutes les préférences de notification par défaut ?",
+      "resetSuccess": "Préférences de notification réinitialisées aux valeurs par défaut",
+      "resetToDefaults": "Réinitialiser aux valeurs par défaut",
+      "enableAll": "Activer tout",
+      "disableAll": "Désactiver tout",
       "categories": {
         "security": {
-          "title": "[EN] Security & Authentication",
-          "description": "[EN] Notifications about user accounts, logins, and security events"
+          "title": "Sécurité et authentification",
+          "description": "Notifications concernant les comptes utilisateurs, les connexions et les événements de sécurité"
         },
         "content": {
-          "title": "[EN] Content Management",
-          "description": "[EN] Notifications about albums, photos, and shares"
+          "title": "Gestion de contenu",
+          "description": "Notifications concernant les albums, les photos et les partages"
         },
         "system": {
-          "title": "[EN] System & Configuration",
-          "description": "[EN] Notifications about settings changes and system events"
+          "title": "Système et configuration",
+          "description": "Notifications concernant les changements de paramètres et les événements système"
         }
       },
       "types": {
         "userInvited": {
-          "title": "[EN] User Invited",
-          "description": "[EN] When an admin invites a new user"
+          "title": "Utilisateur invité",
+          "description": "Lorsqu'un administrateur invite un nouvel utilisateur"
         },
         "userAcceptedInvite": {
-          "title": "[EN] User Joined",
-          "description": "[EN] When a user accepts an invitation"
+          "title": "Utilisateur rejoint",
+          "description": "Lorsqu'un utilisateur accepte une invitation"
         },
         "userDeleted": {
-          "title": "[EN] User Deleted",
-          "description": "[EN] When an admin deletes a user account"
+          "title": "Utilisateur supprimé",
+          "description": "Lorsqu'un administrateur supprime un compte utilisateur"
         },
         "userRoleChanged": {
-          "title": "[EN] User Role Changed",
-          "description": "[EN] When a user's role is changed"
+          "title": "Rôle utilisateur modifié",
+          "description": "Lorsqu'un rôle d'utilisateur est modifié"
         },
         "passkeyCreated": {
-          "title": "[EN] Passkey Created",
-          "description": "[EN] When a user registers a new passkey"
+          "title": "Clé d'accès créée",
+          "description": "Lorsqu'un utilisateur enregistre une nouvelle clé d'accès"
         },
         "passkeyDeleted": {
-          "title": "[EN] Passkey Deleted",
-          "description": "[EN] When a user removes a passkey"
+          "title": "Clé d'accès supprimée",
+          "description": "Lorsqu'un utilisateur supprime une clé d'accès"
         },
         "mfaEnabled": {
-          "title": "[EN] MFA Enabled",
-          "description": "[EN] When a user enables multi-factor authentication"
+          "title": "MFA activé",
+          "description": "Lorsqu'un utilisateur active l'authentification à plusieurs facteurs"
         },
         "mfaDisabled": {
-          "title": "[EN] MFA Disabled",
-          "description": "[EN] When a user disables multi-factor authentication"
+          "title": "MFA désactivé",
+          "description": "Lorsqu'un utilisateur désactive l'authentification à plusieurs facteurs"
         },
         "passwordChanged": {
-          "title": "[EN] Password Changed",
-          "description": "[EN] When a user changes their password"
+          "title": "Mot de passe modifié",
+          "description": "Lorsqu'un utilisateur change son mot de passe"
         },
         "adminPasswordReset": {
-          "title": "[EN] Admin Password Reset",
-          "description": "[EN] When an admin initiates a password reset"
+          "title": "Réinitialisation du mot de passe administrateur",
+          "description": "Lorsqu'un administrateur initie une réinitialisation de mot de passe"
         },
         "failedLoginAttempts": {
-          "title": "[EN] Failed Login Attempts",
-          "description": "[EN] When multiple failed login attempts are detected"
+          "title": "Tentatives de connexion échouées",
+          "description": "Lors de la détection de plusieurs tentatives de connexion échouées"
         },
         "suspiciousActivity": {
-          "title": "[EN] Suspicious Activity",
-          "description": "[EN] When login from new device/location is detected"
+          "title": "Activité suspecte",
+          "description": "Lorsqu'une connexion depuis un nouvel appareil/emplacement est détectée"
         },
         "albumCreated": {
-          "title": "[EN] Album Created",
-          "description": "[EN] When a new album is created"
+          "title": "Album créé",
+          "description": "Lorsqu'un nouvel album est créé"
         },
         "albumPublished": {
-          "title": "[EN] Album Published",
-          "description": "[EN] When an album is made public"
+          "title": "Album publié",
+          "description": "Lorsqu'un album est rendu public"
         },
         "albumUnpublished": {
-          "title": "[EN] Album Unpublished",
-          "description": "[EN] When an album is made private"
+          "title": "Album non publié",
+          "description": "Lorsqu'un album est rendu privé"
         },
         "albumDeleted": {
-          "title": "[EN] Album Deleted",
-          "description": "[EN] When an album is deleted"
+          "title": "Album supprimé",
+          "description": "Lorsqu'un album est supprimé"
         },
         "folderCreated": {
-          "title": "[EN] Folder Created",
+          "title": "Dossier créé",
           "description": "Lorsqu'un nouveau dossier est créé"
         },
         "folderPublished": {
@@ -587,9 +587,15 @@
         "versionUpdate": {
           "title": "Mise à jour de version",
           "description": "Lorsqu'une nouvelle version est disponible"
+        },
+        "shareLinkExpiredAccessed": {
+          "title": "Tentative d'accès à un lien expiré",
+          "description": "Lorsqu'une personne essaie d'utiliser un lien de partage expiré"
         }
       }
-    }
+    },
+    "events": {},
+    "settings": {}
   },
   "userManagement": {
     "title": "Gestion des Utilisateurs",
@@ -1370,38 +1376,34 @@
     "hardwareTranscodingDescription": "Utilisez l'accélération GPU pour un encodage vidéo plus rapide (nécessite un matériel compatible)"
   },
   "notifications": {
-    "active": "Notifications push activées",
-    "sendTest": "Envoyer un test",
-    "disable": "Désactiver",
     "settings": {
-      "title": "Notifications Push",
-      "configured": "✓ Configuré",
-      "discard": "Ignorer",
+      "configureEvents": "⚙️ Configurer les événements",
+      "cancel": "Annuler",
       "save": "Enregistrer",
       "saving": "Enregistrement...",
-      "description": "Notifier les responsables et les administrateurs lorsque le traitement vidéo et l'optimisation d'image sont terminés",
-      "enableLabel": "Activer les Notifications Push",
+      "discard": "Abandonner",
+      "description": "Avertir les gestionnaires et administrateurs lorsque les tâches de traitement vidéo et d'optimisation d'image sont terminées",
+      "enableLabel": "Activer les notifications push",
       "generatingKeys": "⏳ Génération des clés VAPID...",
-      "enabledDescription": "Lorsque activé, les responsables et les administrateurs seront invités à autoriser les notifications du navigateur",
+      "generating": "⏳ Génération...",
+      "enabledDescription": "Lorsqu'elle est activée, les gestionnaires et administrateurs seront invités à autoriser les notifications du navigateur",
       "vapidSubject": "Sujet VAPID",
-      "vapidSubjectHint": "Email de contact (mailto:) ou URL du site web (https://) pour le service de notification",
+      "vapidSubjectHint": "Adresse e-mail de contact (mailto:) ou URL du site web (https://) pour le service push",
       "vapidPublicKey": "Clé publique VAPID",
-      "vapidPublicKeyHint": "Clé publique pour l'abonnement au navigateur (sûr à partager)",
+      "vapidPublicKeyHint": "Clé publique pour l'abonnement du navigateur (sûr à partager)",
       "vapidPrivateKey": "Clé privée VAPID",
-      "vapidPrivateKeyHint": "Clé privée (à garder secrète !)",
-      "generating": "⏳ Génération en cours...",
-      "generateNewKeys": "🔑 Générer de nouvelles clés",
-      "generateKeysWarning": "⚠️ Avertissement : Générer de nouvelles clés annulera tous les abonnements existants",
+      "vapidPrivateKeyHint": "Clé privée (à garder secrète!)",
+      "generateNewKeys": "Générer de nouvelles clés",
+      "generateKeysWarning": "Avertissement : Générer de nouvelles clés invalidera tous les abonnements existants. Tous les utilisateurs devront se réabonner.",
       "confirmTitle": "Générer de nouvelles clés ?",
-      "confirmMessage": "Cela générera de nouvelles clés VAPID et <strong>annulera tous les abonnements de notification push existants</strong>. Tous les utilisateurs devront se réabonner pour recevoir des notifications.",
-      "cancel": "Annuler",
+      "confirmMessage": "Cela générera de nouvelles clés VAPID et <strong>invalidera tous les abonnements aux notifications push existants</strong>. Tous les utilisateurs devront se réabonner pour recevoir des notifications.",
       "confirmGenerate": "Générer de nouvelles clés",
       "errorEnable": "Échec de l'activation des notifications push. Veuillez réessayer.",
       "errorDisable": "Échec de la désactivation des notifications push. Veuillez réessayer.",
       "errorGenerateKeys": "Échec de la génération des clés VAPID",
       "close": "Fermer",
-      "configureEvents": "⚙️ Configurer les événements",
-      "configureEventsDescription": "Choisissez quels événements doivent déclencher des notifications push"
+      "title": "Notifications push",
+      "configured": "✓ Configuré"
     },
     "backend": {
       "videoProcessingComplete": "Traitement vidéo terminé",
@@ -1455,14 +1457,22 @@
       "lowDiskSpaceTitle": "Espace disque faible",
       "lowDiskSpaceBody": "Le stockage est presque plein (< 10% restants)",
       "databaseBackupCompletedTitle": "Sauvegarde terminée",
-      "databaseBackupCompletedBody": "Sauvegarde de la base de données réussie"
+      "databaseBackupCompletedBody": "Sauvegarde de la base de données réussie",
+      "shareLinkExpiredAccessedTitle": "Tentative d'accès à un lien expiré",
+      "shareLinkExpiredAccessedBody": "Quelqu'un a essayé d'utiliser un lien de partage expiré"
     },
+    "events": {},
+    "error": "Une erreur s'est produite",
+    "permissionGranted": "Notifications push activées avec succès",
+    "permissionDenied": "Autorisation de notification refusée",
+    "unsubscribed": "Désabonné des notifications push",
+    "testSent": "Notification de test envoyée",
+    "active": "Notifications push activées",
+    "sendTest": "Envoyer un test",
+    "disable": "Désactiver",
     "blocked": "Notifications bloquées par le navigateur. Vérifiez les paramètres de votre navigateur.",
-    "subscribePrompt": "Abonnez-vous pour recevoir des notifications lorsque les travaux sont terminés",
-    "subscribe": "S'abonner",
-    "events": {
-      "saved": "Préférence de notification enregistrée"
-    }
+    "subscribePrompt": "Abonnez-vous pour recevoir des notifications",
+    "subscribe": "S'abonner"
   },
   "general": {
     "title": "Général",

@@ -86,7 +86,9 @@
       "photoDownloadedTitle": "Foto Gedownload",
       "photoDownloadedBody": "{{filename}} van {{albumName}} is gedownload",
       "albumViewMilestoneTitle": "🎉 Mijlpaal Bereikt!",
-      "albumViewMilestoneBody": "{{albumName}} heeft {{milestone}} weergaven bereikt!"
+      "albumViewMilestoneBody": "{{albumName}} heeft {{milestone}} weergaven bereikt!",
+      "shareLinkExpiredAccessedTitle": "Poging tot Toegang met Verlopen Link",
+      "shareLinkExpiredAccessedBody": "Iemand probeerde {{albumName}} te openen met een verlopen link"
     }
   },
   "email": {

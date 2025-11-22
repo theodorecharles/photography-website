@@ -28,6 +28,7 @@ const router = express.Router();
 router.get('/', requireAdmin, (req, res) => {
   try {
     const preferences = getNotificationPreferences();
+    info('[NotificationPreferences] Loading preferences:', JSON.stringify(preferences, null, 2));
     
     res.json({
       success: true,
@@ -86,6 +87,7 @@ router.put('/', csrfProtection, requireAdmin, (req, res) => {
     reloadConfig();
     
     info('[NotificationPreferences] Preferences updated successfully');
+    info('[NotificationPreferences] Saved preferences:', JSON.stringify(configData.notificationPreferences, null, 2));
     
     res.json({
       success: true,

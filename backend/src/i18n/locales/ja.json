@@ -86,7 +86,9 @@
       "photoDownloadedTitle": "写真がダウンロードされました",
       "photoDownloadedBody": "{{albumName}} から {{filename}} がダウンロードされました",
       "albumViewMilestoneTitle": "🎉 マイルストーン達成！",
-      "albumViewMilestoneBody": "{{albumName}} が {{milestone}} 回の閲覧数に達しました！"
+      "albumViewMilestoneBody": "{{albumName}} が {{milestone}} 回の閲覧数に達しました！",
+      "shareLinkExpiredAccessedTitle": "期限切れリンクアクセス試行",
+      "shareLinkExpiredAccessedBody": "誰かが期限切れのリンクで{{albumName}}にアクセスしようとしました"
     }
   },
   "email": {

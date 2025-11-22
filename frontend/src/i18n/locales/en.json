@@ -611,7 +611,11 @@
         },
         "shareLinkExpired": {
           "title": "Share Link Expired",
-          "description": "When a share link expires"
+          "description": "When a share link reaches its expiration date"
+        },
+        "shareLinkExpiredAccessed": {
+          "title": "Expired Link Access Attempt",
+          "description": "When someone tries to use an expired share link"
         },
         "photoDownloaded": {
           "title": "Photo Downloaded",
@@ -1411,22 +1415,23 @@
     "setupCompleteWaitingRestart": "Setup complete! Waiting for server to restart..."
   },
   "notifications": {
+    "error": "An error occurred",
+    "permissionGranted": "Push notifications enabled successfully",
+    "permissionDenied": "Notification permission denied",
+    "unsubscribed": "Unsubscribed from push notifications",
+    "testSent": "Test notification sent",
     "active": "Push notifications enabled",
     "sendTest": "Send Test",
     "disable": "Disable",
     "blocked": "Notifications blocked by browser. Check your browser settings.",
     "subscribePrompt": "Subscribe to receive notifications",
     "subscribe": "Subscribe",
-    "events": {
-      "saved": "Notification preference saved"
-    },
     "settings": {
-      "title": "Push Notifications",
-      "configured": "✓ Configured",
-      "discard": "Discard",
+      "configureEvents": "⚙️ Configure Events",
+      "cancel": "Cancel",
       "save": "Save",
       "saving": "Saving...",
-      "cancel": "Cancel",
+      "discard": "Discard",
       "description": "Notify managers and admins when video processing and image optimization jobs complete",
       "enableLabel": "Enable Push Notifications",
       "generatingKeys": "⏳ Generating VAPID keys...",
@@ -1440,15 +1445,15 @@
       "vapidPrivateKeyHint": "Private key (keep secret!)",
       "generateNewKeys": "Generate New Keys",
       "generateKeysWarning": "Warning: Generating new keys will invalidate all existing subscriptions. All users will need to re-subscribe.",
-      "configureEvents": "⚙️ Configure Events",
-      "configureEventsDescription": "Choose which events should trigger push notifications",
       "confirmTitle": "Generate New Keys?",
       "confirmMessage": "This will generate new VAPID keys and <strong>invalidate all existing push notification subscriptions</strong>. All users will need to re-subscribe to receive notifications.",
       "confirmGenerate": "Generate New Keys",
       "errorEnable": "Failed to enable push notifications. Please try again.",
       "errorDisable": "Failed to disable push notifications. Please try again.",
       "errorGenerateKeys": "Failed to generate VAPID keys",
-      "close": "Close"
+      "close": "Close",
+      "title": "Push Notifications",
+      "configured": "✓ Configured"
     },
     "backend": {
       "videoProcessingComplete": "Video Processing Complete",
@@ -1491,6 +1496,8 @@
       "shareLinkAccessedBody": "Someone viewed a shared album",
       "shareLinkExpiredTitle": "Share Link Expired",
       "shareLinkExpiredBody": "A share link has expired",
+      "shareLinkExpiredAccessedTitle": "Expired Link Access Attempt",
+      "shareLinkExpiredAccessedBody": "Someone tried to use an expired share link",
       "configUpdatedTitle": "Settings Changed",
       "configUpdatedBody": "System configuration has been updated",
       "smtpSettingsChangedTitle": "Email Settings Changed",

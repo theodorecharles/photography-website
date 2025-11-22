@@ -86,7 +86,9 @@
       "photoDownloadedTitle": "Fotografie descărcată",
       "photoDownloadedBody": "{{filename}} din {{albumName}} a fost descărcat",
       "albumViewMilestoneTitle": "🎉 Prag atins!",
-      "albumViewMilestoneBody": "{{albumName}} a atins {{milestone}} vizualizări!"
+      "albumViewMilestoneBody": "{{albumName}} a atins {{milestone}} vizualizări!",
+      "shareLinkExpiredAccessedTitle": "Încercare de acces cu link expirat",
+      "shareLinkExpiredAccessedBody": "Cineva a încercat să acceseze {{albumName}} cu un link expirat"
     }
   },
   "email": {

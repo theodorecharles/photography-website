@@ -587,9 +587,15 @@
         "versionUpdate": {
           "title": "Actualizare Versiune",
           "description": "Când este disponibilă o nouă versiune"
+        },
+        "shareLinkExpiredAccessed": {
+          "title": "Încercare de accesare a unui link expirat",
+          "description": "Când cineva încearcă să folosească un link de partajare expirat"
         }
       }
-    }
+    },
+    "events": {},
+    "settings": {}
   },
   "advancedSettings": {
     "title": "Setări avansate",
@@ -1370,38 +1376,34 @@
     "hardwareTranscodingDescription": "Folosește accelerarea GPU pentru o codificare video mai rapidă (necesită hardware compatibil)"
   },
   "notifications": {
-    "active": "Notificările push activate",
-    "sendTest": "Trimite test",
-    "disable": "Dezactivează",
     "settings": {
-      "title": "Notificări Push",
-      "configured": "✓ Configurat",
-      "discard": "Anulează",
+      "configureEvents": "⚙️ Configurează Evenimente",
+      "cancel": "Anulează",
       "save": "Salvează",
       "saving": "Se salvează...",
-      "description": "Notifică managerii și administratorii când procesarea video și optimizarea imaginilor sunt finalizate",
-      "enableLabel": "Activează notificările push",
-      "generatingKeys": "⏳ Generare chei VAPID...",
-      "enabledDescription": "Când este activat, managerii și administratorii vor fi solicitați să permită notificările din browser",
+      "discard": "Renunță",
+      "description": "Notifică managerii și administratorii când sarcinile de procesare video și optimizare a imaginilor sunt finalizate",
+      "enableLabel": "Activează Notificările Push",
+      "generatingKeys": "⏳ Se generează cheile VAPID...",
+      "generating": "⏳ Se generează...",
+      "enabledDescription": "Când este activat, managerii și administratorii vor fi solicitați să permită notificările browserului",
       "vapidSubject": "Subiect VAPID",
-      "vapidSubjectHint": "Email de contact (mailto:) sau URL-ul site-ului (https://) pentru serviciul de push",
-      "vapidPublicKey": "Cheia Publică VAPID",
-      "vapidPublicKeyHint": "Cheia publică pentru abonamentul browserului (sigur de partajat)",
-      "vapidPrivateKey": "Cheia Privată VAPID",
-      "vapidPrivateKeyHint": "Cheia privată (păstrează secret!)",
-      "generating": "⏳ Generare...",
-      "generateNewKeys": "🔑 Generează Chei Noi",
-      "generateKeysWarning": "⚠️ Atenție: Generarea de chei noi va invalida toate abonamentele existente",
+      "vapidSubjectHint": "Email de contact (mailto:) sau URL-ul site-ului web (https://) pentru serviciul push",
+      "vapidPublicKey": "Cheie Publică VAPID",
+      "vapidPublicKeyHint": "Cheie publică pentru abonamentul browserului (sigură pentru a fi partajată)",
+      "vapidPrivateKey": "Cheie Privată VAPID",
+      "vapidPrivateKeyHint": "Cheie privată (păstrează secret!)",
+      "generateNewKeys": "Generează Chei Noi",
+      "generateKeysWarning": "Avertisment: Generarea de chei noi va invalida toate abonamentele existente. Toți utilizatorii vor trebui să se reaboneze.",
       "confirmTitle": "Generează Chei Noi?",
-      "confirmMessage": "Aceasta va genera noi chei VAPID și <strong>va invalida toate abonamentele existente pentru notificările push</strong>. Toți utilizatorii vor trebui să se re-aboneze pentru a primi notificări.",
-      "cancel": "Anulează",
-      "confirmGenerate": "Generați chei noi",
+      "confirmMessage": "Aceasta va genera noi chei VAPID și va <strong>invalida toate abonamentele existente la notificările push</strong>. Toți utilizatorii vor trebui să se reaboneze pentru a primi notificări.",
+      "confirmGenerate": "Generează Chei Noi",
       "errorEnable": "Activarea notificărilor push a eșuat. Vă rugăm să încercați din nou.",
       "errorDisable": "Dezactivarea notificărilor push a eșuat. Vă rugăm să încercați din nou.",
       "errorGenerateKeys": "Generarea cheilor VAPID a eșuat",
-      "close": "Închideți",
-      "configureEvents": "⚙️ Configurează Evenimente",
-      "configureEventsDescription": "Alege care evenimente ar trebui să declanșeze notificări push"
+      "close": "Închide",
+      "title": "Notificări Push",
+      "configured": "✓ Configurat"
     },
     "backend": {
       "videoProcessingComplete": "Procesarea video s-a finalizat",
@@ -1455,14 +1457,22 @@
       "lowDiskSpaceTitle": "Spațiu pe disc redus",
       "lowDiskSpaceBody": "Stocarea este aproape plină (< 10% rămas)",
       "databaseBackupCompletedTitle": "Backup complet",
-      "databaseBackupCompletedBody": "Backup-ul bazei de date a fost finalizat cu succes"
+      "databaseBackupCompletedBody": "Backup-ul bazei de date a fost finalizat cu succes",
+      "shareLinkExpiredAccessedTitle": "Încercare de accesare a unui link expirat",
+      "shareLinkExpiredAccessedBody": "Cineva a încercat să folosească un link de partajare expirat"
     },
+    "events": {},
+    "error": "A apărut o eroare",
+    "permissionGranted": "Notificările push au fost activate cu succes",
+    "permissionDenied": "Permisiunea pentru notificări a fost refuzată",
+    "unsubscribed": "Dezabonat de la notificările push",
+    "testSent": "Notificare de test trimisă",
+    "active": "Notificările push sunt activate",
+    "sendTest": "Trimite Test",
+    "disable": "Dezactivează",
     "blocked": "Notificările sunt blocate de browser. Verifică setările browserului tău.",
-    "subscribePrompt": "Abonează-te pentru a primi notificări când sarcinile sunt finalizate",
-    "subscribe": "Abonează-te",
-    "events": {
-      "saved": "Preferința de notificare salvată"
-    }
+    "subscribePrompt": "Abonează-te pentru a primi notificări",
+    "subscribe": "Abonează-te"
   },
   "general": {
     "title": "General",

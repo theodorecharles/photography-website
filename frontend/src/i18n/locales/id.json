@@ -587,9 +587,15 @@
         "versionUpdate": {
           "title": "Pembaruan Versi",
           "description": "Ketika versi baru tersedia"
+        },
+        "shareLinkExpiredAccessed": {
+          "title": "Percobaan Akses Tautan Kedaluwarsa",
+          "description": "Ketika seseorang mencoba menggunakan tautan berbagi yang kedaluwarsa"
         }
       }
-    }
+    },
+    "events": {},
+    "settings": {}
   },
   "advancedSettings": {
     "title": "Pengaturan Lanjutan",
@@ -1370,38 +1376,34 @@
     "hardwareTranscodingDescription": "Gunakan akselerasi GPU untuk pengkodean video yang lebih cepat (memerlukan perangkat keras yang kompatibel)"
   },
   "notifications": {
-    "active": "Notifikasi push diaktifkan",
-    "sendTest": "Kirim Uji Coba",
-    "disable": "Nonaktifkan",
     "settings": {
-      "title": "Notifikasi Push",
-      "configured": "✓ Terkonfigurasi",
-      "discard": "Buang",
+      "configureEvents": "⚙️ Konfigurasi Acara",
+      "cancel": "Batalkan",
       "save": "Simpan",
       "saving": "Menyimpan...",
-      "description": "Beri tahu manajer dan admin saat pemrosesan video dan pekerjaan optimasi gambar selesai",
+      "discard": "Buang",
+      "description": "Beri tahu manajer dan admin ketika pemrosesan video dan optimalisasi gambar selesai",
       "enableLabel": "Aktifkan Notifikasi Push",
       "generatingKeys": "⏳ Menghasilkan kunci VAPID...",
-      "enabledDescription": "Saat diaktifkan, manajer dan admin akan diminta untuk mengizinkan notifikasi browser",
+      "generating": "⏳ Menghasilkan...",
+      "enabledDescription": "Ketika diaktifkan, manajer dan admin akan diminta untuk mengizinkan notifikasi browser",
       "vapidSubject": "Subjek VAPID",
       "vapidSubjectHint": "Email kontak (mailto:) atau URL situs web (https://) untuk layanan push",
       "vapidPublicKey": "Kunci Publik VAPID",
       "vapidPublicKeyHint": "Kunci publik untuk langganan browser (aman untuk dibagikan)",
-      "vapidPrivateKey": "Kunci Privat VAPID",
-      "vapidPrivateKeyHint": "Kunci privat (jaga kerahasiaannya!)",
-      "generating": "⏳ Menghasilkan...",
-      "generateNewKeys": "🔑 Hasilkan Kunci Baru",
-      "generateKeysWarning": "⚠️ Peringatan: Menghasilkan kunci baru akan membatalkan semua langganan yang ada",
+      "vapidPrivateKey": "Kunci Pribadi VAPID",
+      "vapidPrivateKeyHint": "Kunci pribadi (jaga kerahasiaannya!)",
+      "generateNewKeys": "Hasilkan Kunci Baru",
+      "generateKeysWarning": "Peringatan: Menghasilkan kunci baru akan membatalkan semua langganan yang ada. Semua pengguna harus berlangganan ulang.",
       "confirmTitle": "Hasilkan Kunci Baru?",
-      "confirmMessage": "Ini akan menghasilkan kunci VAPID baru dan <strong>membatalkan semua langganan notifikasi push yang ada</strong>. Semua pengguna perlu mendaftar ulang untuk menerima notifikasi.",
-      "cancel": "Batal",
+      "confirmMessage": "Ini akan menghasilkan kunci VAPID baru dan <strong>membatalkan semua langganan notifikasi push yang ada</strong>. Semua pengguna harus berlangganan ulang untuk menerima notifikasi.",
       "confirmGenerate": "Hasilkan Kunci Baru",
       "errorEnable": "Gagal mengaktifkan notifikasi push. Silakan coba lagi.",
       "errorDisable": "Gagal menonaktifkan notifikasi push. Silakan coba lagi.",
       "errorGenerateKeys": "Gagal menghasilkan kunci VAPID",
       "close": "Tutup",
-      "configureEvents": "⚙️ Konfigurasi Acara",
-      "configureEventsDescription": "Pilih acara mana yang harus memicu notifikasi dorong"
+      "title": "Notifikasi Push",
+      "configured": "✓ Dikonfigurasi"
     },
     "backend": {
       "videoProcessingComplete": "Pemrosesan Video Selesai",
@@ -1455,14 +1457,22 @@
       "lowDiskSpaceTitle": "Ruang Disk Rendah",
       "lowDiskSpaceBody": "Penyimpanan hampir habis (< 10% tersisa)",
       "databaseBackupCompletedTitle": "Cadangan Selesai",
-      "databaseBackupCompletedBody": "Cadangan basis data berhasil diselesaikan"
+      "databaseBackupCompletedBody": "Cadangan basis data berhasil diselesaikan",
+      "shareLinkExpiredAccessedTitle": "Percobaan Akses Tautan Kedaluwarsa",
+      "shareLinkExpiredAccessedBody": "Seseorang mencoba menggunakan tautan berbagi yang kedaluwarsa"
     },
+    "events": {},
+    "error": "Terjadi kesalahan",
+    "permissionGranted": "Notifikasi push berhasil diaktifkan",
+    "permissionDenied": "Izin notifikasi ditolak",
+    "unsubscribed": "Berhenti berlangganan dari notifikasi push",
+    "testSent": "Notifikasi uji terkirim",
+    "active": "Notifikasi push diaktifkan",
+    "sendTest": "Kirim Uji",
+    "disable": "Nonaktifkan",
     "blocked": "Notifikasi diblokir oleh browser. Periksa pengaturan browser Anda.",
-    "subscribePrompt": "Berlangganan untuk menerima notifikasi saat pekerjaan selesai",
-    "subscribe": "Berlangganan",
-    "events": {
-      "saved": "Preferensi notifikasi disimpan"
-    }
+    "subscribePrompt": "Berlangganan untuk menerima notifikasi",
+    "subscribe": "Berlangganan"
   },
   "general": {
     "title": "Umum",

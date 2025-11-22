@@ -86,7 +86,9 @@
       "photoDownloadedTitle": "Foto Diunduh",
       "photoDownloadedBody": "{{filename}} dari {{albumName}} telah diunduh",
       "albumViewMilestoneTitle": "🎉 Pencapaian Tercapai!",
-      "albumViewMilestoneBody": "{{albumName}} mencapai {{milestone}} tampilan!"
+      "albumViewMilestoneBody": "{{albumName}} mencapai {{milestone}} tampilan!",
+      "shareLinkExpiredAccessedTitle": "Percobaan Akses Tautan Kedaluwarsa",
+      "shareLinkExpiredAccessedBody": "Seseorang mencoba mengakses {{albumName}} dengan tautan yang kedaluwarsa"
     }
   },
   "email": {
