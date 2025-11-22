@@ -337,7 +337,7 @@ const SMTPSettings: React.FC<SMTPSettingsProps> = ({
             </span>
           )}
         </label>
-        <div style={{ display: 'flex', gap: '0.5rem' }}>
+        <div className="smtp-action-buttons">
           {isConfigured && emailConfig.enabled && (
             <>
               <button
@@ -347,10 +347,6 @@ const SMTPSettings: React.FC<SMTPSettingsProps> = ({
                   setShowProvidersModal(true);
                 }}
                 className="btn-secondary"
-                style={{
-                  padding: '0.4rem 0.8rem',
-                  fontSize: '0.85rem',
-                }}
               >
                 {t('smtpSettings.setupInstructions')}
               </button>
@@ -361,10 +357,6 @@ const SMTPSettings: React.FC<SMTPSettingsProps> = ({
                   setShowTestModal(true);
                 }}
                 className="btn-secondary"
-                style={{
-                  padding: '0.4rem 0.8rem',
-                  fontSize: '0.85rem',
-                }}
               >
                 {t('smtpSettings.testEmail')}
               </button>

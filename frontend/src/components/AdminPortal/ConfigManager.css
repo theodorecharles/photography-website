@@ -886,3 +886,26 @@
     text-align: center;
   }
 }
+
+/* SMTP Action Buttons (Setup Instructions, Test Email) */
+.smtp-action-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.smtp-action-buttons .btn-secondary {
+  padding: 0.4rem 0.8rem;
+  font-size: 0.85rem;
+}
+
+/* Mobile: Stack SMTP buttons vertically */
+@media (max-width: 768px) {
+  .smtp-action-buttons {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .smtp-action-buttons .btn-secondary {
+    width: 100%;
+  }
+}
