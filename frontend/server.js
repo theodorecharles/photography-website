@@ -204,6 +204,43 @@ app.get("/health", (req, res) => {
   res.json({ status: "ok", message: "Frontend server is running" });
 });
 
+// Proxy for push notification endpoints (fixes Safari PWA content blocker)
+// Safari blocks URLs containing /api/ even when same-origin, so we use /notifications/
+app.use("/notifications", express.json(), async (req, res) => {
+  const apiUrl = config.frontend.apiUrl;
+  // Map /notifications/* to /api/push-notifications/* on backend
+  const backendPath = req.path.replace(/^\//, '/api/push-notifications/');
+  const targetUrl = `${apiUrl}${backendPath}${req.url.includes('?') ? req.url.substring(req.url.indexOf('?')) : ''}`;
+  
+  try {
+    // Forward the request to the backend (using Node's built-in fetch)
+    const response = await fetch(targetUrl, {
+      method: req.method,
+      headers: {
+        'Content-Type': 'application/json',
+        'Cookie': req.headers.cookie || '',
+        'X-CSRF-Token': req.headers['x-csrf-token'] || '',
+      },
+      body: req.method !== 'GET' && req.method !== 'HEAD' ? JSON.stringify(req.body) : undefined,
+    });
+    
+    // Forward the response back to the client
+    const data = await response.text();
+    res.status(response.status);
+    
+    // Copy relevant headers
+    const contentType = response.headers.get('content-type');
+    if (contentType) {
+      res.setHeader('Content-Type', contentType);
+    }
+    
+    res.send(data);
+  } catch (err) {
+    error(`[Proxy] Failed to proxy push notification request:`, err);
+    res.status(500).json({ error: 'Proxy error', message: err.message });
+  }
+});
+
 // Serve dynamic manifest.json with branding values
 app.get("/manifest.json", (req, res) => {
   const siteName = configFile.branding?.siteName || "Galleria";

@@ -8,7 +8,7 @@
 import webPush from 'web-push';
 import { getDatabase } from './database.js';
 import { info, error as logError, warn } from './utils/logger.js';
-import config from './config.js';
+import { getCurrentConfig } from './config.js';
 
 const db = getDatabase();
 
@@ -35,6 +35,7 @@ export interface NotificationPayload {
 let vapidConfigured = false;
 
 export function initializePushNotifications() {
+  const config = getCurrentConfig();
   // @ts-ignore - config structure is dynamic
   const pushConfig = config.pushNotifications || {};
   
@@ -81,6 +82,7 @@ export function initializePushNotifications() {
  * Get VAPID public key for client subscription
  */
 export function getVapidPublicKey(): string | null {
+  const config = getCurrentConfig();
   // @ts-ignore - config structure is dynamic
   const pushConfig = config.pushNotifications || {};
   return pushConfig.vapidPublicKey || null;
@@ -90,9 +92,27 @@ export function getVapidPublicKey(): string | null {
  * Check if push notifications are enabled and configured
  */
 export function isPushNotificationsEnabled(): boolean {
+  const config = getCurrentConfig();
+  info(`[PushNotifications] Full config keys: ${Object.keys(config).join(', ')}`);
+  
   // @ts-ignore - config structure is dynamic
   const pushConfig = config.pushNotifications || {};
-  return pushConfig.enabled === true && vapidConfigured;
+  info(`[PushNotifications] pushConfig: ${JSON.stringify(pushConfig)}`);
+  
+  // Check if enabled and has valid keys
+  const hasKeys = !!pushConfig.vapidPublicKey && !!pushConfig.vapidPrivateKey;
+  const enabled = pushConfig.enabled === true && hasKeys;
+  
+  info(`[PushNotifications] isPushNotificationsEnabled check: enabled=${pushConfig.enabled}, hasKeys=${hasKeys}, vapidConfigured=${vapidConfigured}`);
+  
+  // If enabled but VAPID not configured yet, try to configure it now
+  if (enabled && !vapidConfigured) {
+    info('[PushNotifications] Config is enabled but VAPID not configured, initializing now...');
+    const result = initializePushNotifications();
+    info(`[PushNotifications] Initialization result: ${result}`);
+  }
+  
+  return enabled && vapidConfigured;
 }
 
 /**

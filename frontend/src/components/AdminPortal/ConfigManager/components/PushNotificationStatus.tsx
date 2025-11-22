@@ -5,11 +5,12 @@
 
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { API_URL } from '../../../../config';
-import { showToast } from '../../../../utils/toast';
+// API_URL removed - using relative URLs for push notifications to avoid Safari PWA cross-origin blocking
 
 interface PushNotificationStatusProps {
   isConfigured: boolean; // Whether push notifications are configured on server
+  refreshKey?: number; // Optional key to force refresh when changed
+  setMessage: (message: { type: 'success' | 'error'; text: string }) => void;
 }
 
 function urlBase64ToUint8Array(base64String: string): Uint8Array {
@@ -25,7 +26,7 @@ function urlBase64ToUint8Array(base64String: string): Uint8Array {
   return outputArray;
 }
 
-export function PushNotificationStatus({ isConfigured }: PushNotificationStatusProps) {
+export function PushNotificationStatus({ isConfigured, refreshKey, setMessage }: PushNotificationStatusProps) {
   const { t } = useTranslation();
   const [config, setConfig] = useState<{ enabled: boolean; vapidPublicKey: string | null } | null>(null);
   const [permission, setPermission] = useState<NotificationPermission>('default');
@@ -40,11 +41,13 @@ export function PushNotificationStatus({ isConfigured }: PushNotificationStatusP
     } else {
       setIsLoading(false);
     }
-  }, [isConfigured]);
+  }, [isConfigured, isPushSupported, refreshKey]);
 
   async function fetchConfigAndStatus() {
     try {
-      const response = await fetch(`${API_URL}/api/push-notifications/config`, {
+      console.log('[PushNotificationStatus] Fetching config...');
+      // Use /notifications/ path to avoid Safari content blocker
+      const response = await fetch(`/notifications/config`, {
         credentials: 'include'
       });
       
@@ -53,6 +56,7 @@ export function PushNotificationStatus({ isConfigured }: PushNotificationStatusP
       }
       
       const data = await response.json();
+      console.log('[PushNotificationStatus] Config received:', data);
       setConfig(data);
 
       if ('Notification' in window) {
@@ -63,6 +67,7 @@ export function PushNotificationStatus({ isConfigured }: PushNotificationStatusP
         const registration = await navigator.serviceWorker.ready;
         const subscription = await registration.pushManager.getSubscription();
         setIsSubscribed(!!subscription);
+        console.log('[PushNotificationStatus] Subscription status:', !!subscription);
       }
     } catch (error) {
       console.error('[PushNotificationStatus] Failed to fetch config:', error);
@@ -73,7 +78,7 @@ export function PushNotificationStatus({ isConfigured }: PushNotificationStatusP
 
   async function handleSubscribe() {
     if (!isPushSupported || !config?.enabled || !config.vapidPublicKey) {
-      showToast(t('notifications.error'), 'error');
+      setMessage({ type: 'error', text: t('notifications.error') });
       return;
     }
 
@@ -84,13 +89,13 @@ export function PushNotificationStatus({ isConfigured }: PushNotificationStatusP
 
       if (perm === 'granted') {
         await subscribeToPush();
-        showToast(t('notifications.permissionGranted'), 'success');
+        setMessage({ type: 'success', text: t('notifications.permissionGranted') });
       } else if (perm === 'denied') {
-        showToast(t('notifications.permissionDenied'), 'error');
+        setMessage({ type: 'error', text: t('notifications.permissionDenied') });
       }
     } catch (error) {
       console.error('[PushNotificationStatus] Failed to subscribe:', error);
-      showToast(t('notifications.error'), 'error');
+      setMessage({ type: 'error', text: t('notifications.error') });
     }
   }
 
@@ -111,7 +116,8 @@ export function PushNotificationStatus({ isConfigured }: PushNotificationStatusP
         });
       }
 
-      const response = await fetch(`${API_URL}/api/push-notifications/subscribe`, {
+      // Use /notifications/ path to avoid Safari content blocker
+      const response = await fetch(`/notifications/subscribe`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -140,7 +146,8 @@ export function PushNotificationStatus({ isConfigured }: PushNotificationStatusP
       if (subscription) {
         await subscription.unsubscribe();
         
-        await fetch(`${API_URL}/api/push-notifications/unsubscribe`, {
+        // Use /notifications/ path to avoid Safari content blocker
+        await fetch(`/notifications/unsubscribe`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -151,17 +158,18 @@ export function PushNotificationStatus({ isConfigured }: PushNotificationStatusP
         });
         
         setIsSubscribed(false);
-        showToast(t('notifications.unsubscribed'), 'success');
+        setMessage({ type: 'success', text: t('notifications.unsubscribed') });
       }
     } catch (error) {
       console.error('[PushNotificationStatus] Failed to unsubscribe:', error);
-      showToast(t('notifications.error'), 'error');
+      setMessage({ type: 'error', text: t('notifications.error') });
     }
   }
 
   async function handleTest() {
     try {
-      const response = await fetch(`${API_URL}/api/push-notifications/test`, {
+      // Use /notifications/ path to avoid Safari content blocker
+      const response = await fetch(`/notifications/test`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -174,12 +182,21 @@ export function PushNotificationStatus({ isConfigured }: PushNotificationStatusP
         throw new Error('Failed to send test notification');
       }
 
-      showToast(t('notifications.testSent'), 'success');
+      setMessage({ type: 'success', text: t('notifications.testSent') });
     } catch (error) {
       console.error('[PushNotificationStatus] Failed to send test:', error);
-      showToast(t('notifications.error'), 'error');
+      setMessage({ type: 'error', text: t('notifications.error') });
     }
   }
+
+  // Debug logging
+  console.log('[PushNotificationStatus] Render check:', {
+    isConfigured,
+    isPushSupported,
+    isLoading,
+    configEnabled: config?.enabled,
+    shouldRender: isConfigured && isPushSupported && !isLoading && config?.enabled
+  });
 
   // Don't render if not configured, not supported, or still loading
   if (!isConfigured || !isPushSupported || isLoading || !config?.enabled) {
@@ -187,49 +204,33 @@ export function PushNotificationStatus({ isConfigured }: PushNotificationStatusP
   }
 
   return (
-    <div style={{
-      background: 'rgba(102, 126, 234, 0.1)',
-      border: '1px solid rgba(102, 126, 234, 0.2)',
-      borderRadius: '8px',
-      padding: '1rem',
-      marginBottom: '1.5rem',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      gap: '1rem'
-    }}>
+    <div className="push-notification-status">
       {permission === 'granted' && isSubscribed ? (
         <>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <span style={{
-              width: '8px',
-              height: '8px',
-              borderRadius: '50%',
-              background: '#22c55e',
-              animation: 'pulse 2s ease-in-out infinite'
-            }}></span>
-            <span style={{ color: 'white', fontSize: '0.95rem' }}>
+          <div className="push-status-info">
+            <span className="push-status-indicator"></span>
+            <span className="push-status-text">
               {t('notifications.active')}
             </span>
           </div>
-          <div style={{ display: 'flex', gap: '0.5rem' }}>
-            <button className="btn-secondary" onClick={handleTest} style={{ padding: '0.4rem 0.875rem', fontSize: '0.875rem' }}>
+          <div className="push-status-buttons">
+            <button className="btn-secondary" onClick={handleTest}>
               {t('notifications.sendTest')}
             </button>
-            <button className="btn-secondary" onClick={handleUnsubscribe} style={{ padding: '0.4rem 0.875rem', fontSize: '0.875rem' }}>
+            <button className="btn-secondary" onClick={handleUnsubscribe}>
               {t('notifications.disable')}
             </button>
           </div>
         </>
       ) : (
         <>
-          <div style={{ color: '#888', fontSize: '0.95rem' }}>
+          <div className="push-status-prompt">
             {permission === 'denied' 
               ? t('notifications.blocked')
               : t('notifications.subscribePrompt')}
           </div>
           {permission !== 'denied' && (
-            <button className="btn-primary" onClick={handleSubscribe} style={{ padding: '0.4rem 1rem', fontSize: '0.875rem' }}>
+            <button className="btn-primary push-subscribe-btn" onClick={handleSubscribe}>
               {t('notifications.subscribe')}
             </button>
           )}
