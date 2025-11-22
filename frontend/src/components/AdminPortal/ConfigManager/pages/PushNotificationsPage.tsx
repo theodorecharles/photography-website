@@ -19,6 +19,7 @@ const PushNotificationsPage: React.FC<PushNotificationsPageProps> = ({ setMessag
   const [config, setConfig] = useState<ConfigData | null>(null);
   const [originalConfig, setOriginalConfig] = useState<ConfigData | null>(null);
   const [savingSection, setSavingSection] = useState<string | null>(null);
+  const [actionButtons, setActionButtons] = useState<React.ReactNode>(null);
 
   useEffect(() => {
     loadConfig();
@@ -105,7 +106,10 @@ const PushNotificationsPage: React.FC<PushNotificationsPageProps> = ({ setMessag
         </p>
       </div>
 
-      <Breadcrumbs section={t('settings.pushNotifications.title')} />
+      <Breadcrumbs 
+        section={t('settings.pushNotifications.title')}
+        actions={actionButtons}
+      />
 
       <PushNotificationsSettings
         config={config}
@@ -114,6 +118,7 @@ const PushNotificationsPage: React.FC<PushNotificationsPageProps> = ({ setMessag
         savingSection={savingSection}
         onSave={handleSaveSection}
         setMessage={setMessage}
+        setActionButtons={setActionButtons}
       />
     </div>
   );

@@ -19,6 +19,7 @@ const EmailPage: React.FC<EmailPageProps> = ({ setMessage }) => {
   const [config, setConfig] = useState<ConfigData | null>(null);
   const [originalConfig, setOriginalConfig] = useState<ConfigData | null>(null);
   const [savingSection, setSavingSection] = useState<string | null>(null);
+  const [actionButtons, setActionButtons] = useState<React.ReactNode>(null);
   const sectionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -111,7 +112,10 @@ const EmailPage: React.FC<EmailPageProps> = ({ setMessage }) => {
         </p>
       </div>
 
-      <Breadcrumbs section={t('settings.email.title')} />
+      <Breadcrumbs 
+        section={t('settings.email.title')}
+        actions={actionButtons}
+      />
 
       <SMTPSettings
         config={config}
@@ -125,6 +129,7 @@ const EmailPage: React.FC<EmailPageProps> = ({ setMessage }) => {
         savingSection={savingSection}
         setMessage={setMessage}
         sectionRef={sectionRef}
+        setActionButtons={setActionButtons}
       />
     </div>
   );

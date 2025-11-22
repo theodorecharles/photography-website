@@ -47,7 +47,7 @@ import crypto from 'crypto';
 import { sendInvitationEmail, sendPasswordResetEmail, isEmailServiceEnabled, generateInvitationUrl } from '../email.js';
 import { getCurrentConfig, reloadConfig } from '../config.js';
 import { sendNotificationToUser } from '../push-notifications.js';
-import { translateNotificationForUser } from '../i18n-backend.js';
+import { translateNotification } from '../i18n-backend.js';
 
 const router = Router();
 
@@ -59,8 +59,8 @@ async function notifyAllAdmins(title: string, body: string, tag: string, notific
     const admins = getAllUsers().filter(u => u.role === 'admin');
     
     for (const admin of admins) {
-      const translatedTitle = await translateNotificationForUser(admin.id, title, variables);
-      const translatedBody = await translateNotificationForUser(admin.id, body, variables);
+      const translatedTitle = await translateNotification(title, variables);
+      const translatedBody = await translateNotification(body, variables);
       
       await sendNotificationToUser(admin.id, {
         title: translatedTitle,

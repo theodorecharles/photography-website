@@ -354,6 +354,7 @@ const AdvancedSettingsSection: React.FC<AdvancedSettingsSectionProps> = ({
           onSave={() => handleSaveSection("Authentication")}
           onCancel={() => setConfig(originalConfig!)}
           savingSection={savingSection}
+          setActionButtons={() => {}}
         />
 
         {/* SMTP Settings */}
@@ -369,6 +370,7 @@ const AdvancedSettingsSection: React.FC<AdvancedSettingsSectionProps> = ({
           savingSection={savingSection}
           setMessage={setMessage}
           sectionRef={smtpSectionRef}
+          setActionButtons={() => {}}
         />
 
         {/* Push Notifications Settings */}
@@ -379,6 +381,7 @@ const AdvancedSettingsSection: React.FC<AdvancedSettingsSectionProps> = ({
           savingSection={savingSection}
           onSave={handleSaveSection}
           setMessage={setMessage}
+          setActionButtons={() => {}}
         />
 
         {/* Notification Preferences */}
@@ -397,6 +400,7 @@ const AdvancedSettingsSection: React.FC<AdvancedSettingsSectionProps> = ({
           savingSection={savingSection}
           setMessage={setMessage}
           onOpenObserveSave={onOpenObserveSave}
+          setActionButtons={() => {}}
         />
 
         {/* Logging Settings */}

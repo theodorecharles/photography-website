@@ -18,6 +18,7 @@ interface PushNotificationsSettingsProps {
   savingSection: string | null;
   onSave: (section: string, data: any) => Promise<void>;
   setMessage: (message: { type: 'success' | 'error'; text: string }) => void;
+  setActionButtons: (buttons: React.ReactNode) => void;
 }
 
 const PushNotificationsSettings: React.FC<PushNotificationsSettingsProps> = ({
@@ -27,6 +28,7 @@ const PushNotificationsSettings: React.FC<PushNotificationsSettingsProps> = ({
   savingSection,
   onSave,
   setMessage,
+  setActionButtons,
 }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -105,6 +107,60 @@ const PushNotificationsSettings: React.FC<PushNotificationsSettingsProps> = ({
     }
     updateConfig(path, value);
   };
+
+  // Update action buttons whenever state changes
+  useEffect(() => {
+    const buttons = [];
+
+    // Add Configure Events button when enabled
+    if (pushConfig.enabled) {
+      buttons.push(
+        <button
+          key="configure-events"
+          type="button"
+          className="btn-secondary"
+          onClick={() => navigate('/admin/settings/push-notifications/events')}
+          style={{ fontSize: '0.875rem', padding: '0.4rem 0.8rem' }}
+        >
+          {t('notifications.settings.configureEvents')}
+        </button>
+      );
+    }
+
+    // Add Save/Cancel buttons when there are manual changes
+    if (hasManualChanges) {
+      buttons.push(
+        <button
+          key="cancel"
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            handleCancel();
+          }}
+          disabled={savingSection !== null}
+          className="btn-secondary"
+          style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}
+        >
+          {t('notifications.settings.cancel')}
+        </button>,
+        <button
+          key="save"
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            handleSave();
+          }}
+          disabled={savingSection !== null}
+          className="btn-primary"
+          style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}
+        >
+          {savingSection === 'pushNotifications' ? t('notifications.settings.saving') : t('notifications.settings.save')}
+        </button>
+      );
+    }
+
+    setActionButtons(buttons.length > 0 ? <>{buttons}</> : null);
+  }, [pushConfig.enabled, hasManualChanges, savingSection, t, navigate, setActionButtons]);
 
   // Auto-generate keys when enabling if keys don't exist
   async function handleToggleEnable() {
@@ -271,38 +327,6 @@ const PushNotificationsSettings: React.FC<PushNotificationsSettingsProps> = ({
 
   return (
     <div>
-      {hasManualChanges && (
-        <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem', justifyContent: 'flex-end' }}>
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              handleCancel();
-            }}
-            disabled={savingSection !== null}
-            className="btn-secondary"
-            style={{
-              padding: '0.4rem 0.8rem',
-              fontSize: '0.85rem',
-            }}
-          >
-            {t('notifications.settings.cancel')}
-          </button>
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              handleSave();
-            }}
-            disabled={savingSection !== null}
-            className="btn-primary"
-            style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}
-          >
-            {savingSection === 'pushNotifications' ? t('notifications.settings.saving') : t('notifications.settings.save')}
-          </button>
-        </div>
-      )}
-
       {/* Subscription Status and Controls */}
       <PushNotificationStatus 
         isConfigured={pushConfig.enabled && hasKeys} 
@@ -341,23 +365,6 @@ const PushNotificationsSettings: React.FC<PushNotificationsSettingsProps> = ({
                 ? t('notifications.settings.generatingKeys')
                 : t('notifications.settings.enabledDescription')}
             </p>
-            
-            {/* Events Configuration Button - only show when enabled */}
-            {pushConfig.enabled && (
-              <div style={{ marginTop: '1rem', marginLeft: '52px' }}>
-                <button
-                  type="button"
-                  className="btn-secondary"
-                  onClick={() => navigate('/admin/settings/push-notifications/events')}
-                  style={{ fontSize: '0.875rem' }}
-                >
-                  {t('notifications.settings.configureEvents')}
-                </button>
-                <p style={{ fontSize: '0.8rem', color: '#666', marginTop: '0.5rem', marginBottom: 0 }}>
-                  {t('notifications.settings.configureEventsDescription')}
-                </p>
-              </div>
-            )}
           </div>
 
           {/* Row 1, Col 2: VAPID Subject */}
@@ -418,6 +425,7 @@ const PushNotificationsSettings: React.FC<PushNotificationsSettingsProps> = ({
         {/* Regenerate Keys Section - Yellow Warning Banner */}
         {(pushConfig.enabled || hasKeys) && hasKeys && (
           <div
+            className="regenerate-keys-banner"
             style={{
               marginTop: '1.5rem',
               padding: '1.5rem',

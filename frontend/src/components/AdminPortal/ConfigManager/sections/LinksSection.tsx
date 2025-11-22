@@ -18,12 +18,14 @@ interface LinksSectionProps {
   externalLinks: ExternalLink[];
   setExternalLinks: (links: ExternalLink[]) => void;
   setMessage: (message: { type: "success" | "error"; text: string }) => void;
+  setActionButtons: (buttons: React.ReactNode) => void;
 }
 
 const LinksSection: React.FC<LinksSectionProps> = ({
   externalLinks,
   setExternalLinks,
   setMessage,
+  setActionButtons,
 }) => {
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
@@ -142,6 +144,49 @@ const LinksSection: React.FC<LinksSectionProps> = ({
     );
   };
 
+  // Update action buttons whenever state changes
+  useEffect(() => {
+    const buttons = [];
+
+    // Always show Add Link button
+    buttons.push(
+      <button
+        key="add-link"
+        onClick={handleAddLink}
+        className="btn-secondary"
+        style={{ fontSize: '0.875rem', padding: '0.4rem 0.8rem' }}
+      >
+        + {t('links.addLink')}
+      </button>
+    );
+
+    // Show Cancel/Save buttons when there are unsaved changes
+    if (hasUnsavedLinksChanges()) {
+      buttons.push(
+        <button
+          key="cancel"
+          onClick={handleCancelLinks}
+          className="btn-secondary"
+          disabled={savingLinks}
+          style={{ fontSize: '0.875rem', padding: '0.4rem 0.8rem' }}
+        >
+          {t('common.cancel')}
+        </button>,
+        <button
+          key="save"
+          onClick={handleSaveLinks}
+          className="btn-primary"
+          disabled={savingLinks}
+          style={{ fontSize: '0.875rem', padding: '0.4rem 0.8rem' }}
+        >
+          {savingLinks ? t('common.saving') : t('links.saveChanges')}
+        </button>
+      );
+    }
+
+    setActionButtons(<>{buttons}</>);
+  }, [externalLinks, originalExternalLinks, savingLinks, t, setActionButtons]);
+
   return (
     <div ref={linksSectionRef}>
       <div className="links-list">
@@ -198,30 +243,6 @@ const LinksSection: React.FC<LinksSectionProps> = ({
               </div>
             </div>
           ))}
-
-        <div className="section-actions">
-          <button onClick={handleAddLink} className="btn-secondary">
-            + {t('links.addLink')}
-          </button>
-          {hasUnsavedLinksChanges() && (
-            <>
-              <button
-                onClick={handleCancelLinks}
-                className="btn-secondary"
-                disabled={savingLinks}
-              >
-                {t('common.cancel')}
-              </button>
-              <button
-                onClick={handleSaveLinks}
-                className="btn-primary"
-                disabled={savingLinks}
-              >
-                {savingLinks ? t('common.saving') : t('links.saveChanges')}
-              </button>
-            </>
-          )}
-        </div>
       </div>
     </div>
   );

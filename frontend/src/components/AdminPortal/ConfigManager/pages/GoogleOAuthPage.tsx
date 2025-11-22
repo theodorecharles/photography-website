@@ -25,6 +25,7 @@ const GoogleOAuthPage: React.FC<GoogleOAuthPageProps> = ({ setMessage }) => {
   const [config, setConfig] = useState<ConfigData | null>(null);
   const [originalConfig, setOriginalConfig] = useState<ConfigData | null>(null);
   const [savingSection, setSavingSection] = useState<string | null>(null);
+  const [actionButtons, setActionButtons] = useState<React.ReactNode>(null);
 
   useEffect(() => {
     loadConfig();
@@ -124,7 +125,10 @@ const GoogleOAuthPage: React.FC<GoogleOAuthPageProps> = ({ setMessage }) => {
         </p>
       </div>
 
-      <Breadcrumbs section={t('settings.googleOAuth.title')} />
+      <Breadcrumbs 
+        section={t('settings.googleOAuth.title')}
+        actions={actionButtons}
+      />
 
       <AuthSettings
         config={config}
@@ -136,6 +140,7 @@ const GoogleOAuthPage: React.FC<GoogleOAuthPageProps> = ({ setMessage }) => {
         onSave={handleSave}
         onCancel={() => setConfig(originalConfig)}
         savingSection={savingSection}
+        setActionButtons={setActionButtons}
       />
     </div>
   );

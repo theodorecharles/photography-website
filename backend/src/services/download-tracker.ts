@@ -5,7 +5,7 @@
 
 import { Request, Response, NextFunction } from 'express';
 import { sendNotificationToUser } from '../push-notifications.js';
-import { translateNotificationForUser } from '../i18n-backend.js';
+import { translateNotification } from '../i18n-backend.js';
 import { getAllUsers } from '../database-users.js';
 import { error, info } from '../utils/logger.js';
 import path from 'path';
@@ -44,11 +44,11 @@ async function notifyDownload(album: string, filename: string): Promise<void> {
     const admins = getAllUsers().filter(u => u.role === 'admin');
 
     for (const admin of admins) {
-      const title = await translateNotificationForUser(admin.id, 'notifications.backend.photoDownloadedTitle', {
+      const title = await translateNotification('notifications.backend.photoDownloadedTitle', {
         albumName: album,
         filename
       });
-      const body = await translateNotificationForUser(admin.id, 'notifications.backend.photoDownloadedBody', {
+      const body = await translateNotification('notifications.backend.photoDownloadedBody', {
         albumName: album,
         filename
       });

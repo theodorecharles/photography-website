@@ -11,7 +11,7 @@ import { csrfProtection } from "../security.js";
 import { requireAuth, requireAdmin } from "../auth/middleware.js";
 import { error, warn, info, debug, verbose } from '../utils/logger.js';
 import { sendNotificationToUser } from '../push-notifications.js';
-import { translateNotificationForUser } from '../i18n-backend.js';
+import { translateNotification } from '../i18n-backend.js';
 import { getAllUsers } from '../database-users.js';
 import { DATA_DIR, reloadConfig, getLogLevel } from "../config.js";
 import { sendTestEmail } from "../email.js";
@@ -30,8 +30,8 @@ async function notifyAllAdmins(title: string, body: string, tag: string, notific
     const admins = getAllUsers().filter(u => u.role === 'admin');
     
     for (const admin of admins) {
-      const translatedTitle = await translateNotificationForUser(admin.id, title, variables);
-      const translatedBody = await translateNotificationForUser(admin.id, body, variables);
+      const translatedTitle = await translateNotification(title, variables);
+      const translatedBody = await translateNotification(body, variables);
       
       await sendNotificationToUser(admin.id, {
         title: translatedTitle,

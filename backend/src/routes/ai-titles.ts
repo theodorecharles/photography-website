@@ -14,7 +14,7 @@ import { requireAuth, requireAdmin, requireManager } from '../auth/middleware.js
 import { DATA_DIR } from '../config.js';
 import { error, warn, info, debug, verbose } from '../utils/logger.js';
 import { sendNotificationToUser } from '../push-notifications.js';
-import { translateNotificationForUser } from '../i18n-backend.js';
+import { translateNotification } from '../i18n-backend.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -507,8 +507,8 @@ router.post('/generate', requireManager, (req, res) => {
           ? { albumName: (runningJobs.aiTitles as any).album || 'Unknown', titlesGenerated: (runningJobs.aiTitles as any).generatedCount || 0 }
           : { albumName: (runningJobs.aiTitles as any).album || 'Unknown', error: (runningJobs.aiTitles as any).error || 'Unknown error' };
         
-        const title = await translateNotificationForUser(userId, titleKey, variables);
-        const body = await translateNotificationForUser(userId, bodyKey, variables);
+        const title = await translateNotification(titleKey, variables);
+        const body = await translateNotification(bodyKey, variables);
         
         sendNotificationToUser(userId, {
           title,

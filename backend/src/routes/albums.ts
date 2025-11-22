@@ -479,13 +479,13 @@ router.get("/api/shared/:secretKey", async (req: Request, res): Promise<void> =>
     // Notify admins that someone tried to access an expired link
     try {
       const { sendNotificationToUser } = await import('../push-notifications.js');
-      const { translateNotificationForUser } = await import('../i18n-backend.js');
+      const { translateNotification } = await import('../i18n-backend.js');
       const { getAllUsers } = await import('../database-users.js');
       
       const admins = getAllUsers().filter(u => u.role === 'admin');
       for (const admin of admins) {
-        const title = await translateNotificationForUser(admin.id, 'notifications.backend.shareLinkExpiredTitle', { albumName: shareLink.album });
-        const body = await translateNotificationForUser(admin.id, 'notifications.backend.shareLinkExpiredBody', { albumName: shareLink.album });
+        const title = await translateNotification('notifications.backend.shareLinkExpiredTitle', { albumName: shareLink.album });
+        const body = await translateNotification('notifications.backend.shareLinkExpiredBody', { albumName: shareLink.album });
         
         sendNotificationToUser(admin.id, {
           title,
@@ -504,13 +504,13 @@ router.get("/api/shared/:secretKey", async (req: Request, res): Promise<void> =>
   // Notify admins that someone accessed the share link
   try {
     const { sendNotificationToUser } = await import('../push-notifications.js');
-    const { translateNotificationForUser } = await import('../i18n-backend.js');
+    const { translateNotification } = await import('../i18n-backend.js');
     const { getAllUsers } = await import('../database-users.js');
     
     const admins = getAllUsers().filter(u => u.role === 'admin');
     for (const admin of admins) {
-      const title = await translateNotificationForUser(admin.id, 'notifications.backend.shareLinkAccessedTitle', { albumName: shareLink.album });
-      const body = await translateNotificationForUser(admin.id, 'notifications.backend.shareLinkAccessedBody', { albumName: shareLink.album });
+      const title = await translateNotification('notifications.backend.shareLinkAccessedTitle', { albumName: shareLink.album });
+      const body = await translateNotification('notifications.backend.shareLinkAccessedBody', { albumName: shareLink.album });
       
       sendNotificationToUser(admin.id, {
         title,

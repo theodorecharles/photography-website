@@ -7,7 +7,7 @@ import { Router, Request, Response } from "express";
 import { csrfProtection } from "../security.js";
 import { error, warn, info, debug, verbose } from '../utils/logger.js';
 import { sendNotificationToUser } from '../push-notifications.js';
-import { translateNotificationForUser } from '../i18n-backend.js';
+import { translateNotification } from '../i18n-backend.js';
 import { getAllUsers } from '../database-users.js';
 import { 
   saveAlbumFolder,
@@ -39,8 +39,8 @@ async function notifyAllAdmins(title: string, body: string, tag: string, notific
   try {
     const admins = getAllUsers().filter(u => u.role === 'admin');
     for (const admin of admins) {
-      const translatedTitle = await translateNotificationForUser(admin.id, title, variables);
-      const translatedBody = await translateNotificationForUser(admin.id, body, variables);
+      const translatedTitle = await translateNotification(title, variables);
+      const translatedBody = await translateNotification(body, variables);
       
       sendNotificationToUser(admin.id, {
         title: translatedTitle,

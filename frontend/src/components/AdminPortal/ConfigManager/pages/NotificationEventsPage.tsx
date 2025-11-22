@@ -159,7 +159,7 @@ const NotificationEventsPage: React.FC<NotificationEventsPageProps> = ({ setMess
             <div 
               style={{ 
                 display: 'grid', 
-                gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', 
+                gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', 
                 gap: '0.75rem' 
               }}
               className="notification-events-grid"
@@ -175,21 +175,40 @@ const NotificationEventsPage: React.FC<NotificationEventsPageProps> = ({ setMess
                     background: 'rgba(255, 255, 255, 0.02)',
                     borderRadius: '6px',
                     border: '1px solid rgba(255, 255, 255, 0.05)',
+                    gap: '1rem',
                   }}
                 >
-                  <div style={{ flex: 1 }}>
+                  <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
-                      <span style={{ fontSize: '1.2rem' }}>{notification.icon}</span>
-                      <span style={{ fontSize: '0.95rem', fontWeight: 500, color: '#fff' }}>
+                      <span style={{ fontSize: '1.2rem', flexShrink: 0 }}>{notification.icon}</span>
+                      <span style={{ 
+                        fontSize: '0.95rem', 
+                        fontWeight: 500, 
+                        color: '#fff',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap'
+                      }}>
                         {t(notification.titleKey)}
                       </span>
                     </div>
-                    <p style={{ fontSize: '0.8rem', color: '#999', margin: 0, paddingLeft: '2rem' }}>
+                    <p 
+                      className="notification-event-description"
+                      style={{ 
+                        fontSize: '0.8rem', 
+                        color: '#999', 
+                        margin: 0, 
+                        paddingLeft: '2rem',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap'
+                      }}
+                    >
                       {t(notification.descriptionKey)}
                     </p>
                   </div>
 
-                  <div className="ai-toggle-controls" style={{ marginLeft: '1rem' }}>
+                  <div className="ai-toggle-controls" style={{ flexShrink: 0 }}>
                     <span
                       className="toggle-label"
                       style={{

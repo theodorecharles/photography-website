@@ -9,7 +9,7 @@
 
 import config from '../config.js';
 import { sendNotificationToUser } from '../push-notifications.js';
-import { translateNotificationForUser } from '../i18n-backend.js';
+import { translateNotification } from '../i18n-backend.js';
 import { getAllUsers } from '../database-users.js';
 import { error, info, warn } from '../utils/logger.js';
 import fs from 'fs';
@@ -164,11 +164,11 @@ export async function checkMilestones(): Promise<void> {
           const admins = getAllUsers().filter(u => u.role === 'admin');
 
           for (const admin of admins) {
-            const title = await translateNotificationForUser(admin.id, 'notifications.backend.albumViewMilestoneTitle', {
+            const title = await translateNotification('notifications.backend.albumViewMilestoneTitle', {
               albumName,
               milestone: milestone.toLocaleString()
             });
-            const body = await translateNotificationForUser(admin.id, 'notifications.backend.albumViewMilestoneBody', {
+            const body = await translateNotification('notifications.backend.albumViewMilestoneBody', {
               albumName,
               milestone: milestone.toLocaleString()
             });

@@ -1,5 +1,5 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
 import Breadcrumbs from '../components/Breadcrumbs';
 import UserManagementSection from '../sections/UserManagementSection';
 
@@ -9,7 +9,7 @@ interface UsersPageProps {
 
 const UsersPage: React.FC<UsersPageProps> = ({ setMessage }) => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
+  const [actionButtons, setActionButtons] = useState<React.ReactNode>(null);
 
   return (
     <div className="settings-page">
@@ -20,11 +20,14 @@ const UsersPage: React.FC<UsersPageProps> = ({ setMessage }) => {
         </p>
       </div>
       
-      <Breadcrumbs section={t('settings.users.title')} />
+      <Breadcrumbs 
+        section={t('settings.users.title')}
+        actions={actionButtons}
+      />
 
       <UserManagementSection 
         setMessage={setMessage}
-        onNavigateToSmtp={() => navigate('/admin/settings/email')}
+        setActionButtons={setActionButtons}
       />
     </div>
   );

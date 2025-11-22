@@ -775,6 +775,27 @@
   .config-section-description {
     display: none !important;
   }
+
+  /* Stack breadcrumbs and actions vertically on mobile */
+  .breadcrumbs-container {
+    flex-direction: column;
+    align-items: flex-start !important;
+  }
+
+  .breadcrumbs {
+    text-align: left;
+    justify-content: flex-start;
+    width: 100%;
+  }
+
+  .breadcrumbs-actions {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .breadcrumbs-actions button {
+    width: 100%;
+  }
 }
 
 /* Custom Dropdown Animation */
@@ -790,12 +811,28 @@
 }
 
 /* Breadcrumbs Navigation */
+.breadcrumbs-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
 .breadcrumbs {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  margin-bottom: 1.5rem;
   font-size: 0.95rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.breadcrumbs-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
 }
 
 .breadcrumb-link {
@@ -1002,6 +1039,21 @@
   /* Notification Events Grid: Single column on mobile */
   .notification-events-grid {
     grid-template-columns: 1fr !important;
+  }
+
+  /* Hide event descriptions on mobile */
+  .notification-event-description {
+    display: none !important;
+  }
+
+  /* Regenerate Keys Banner: Stack buttons below text on mobile */
+  .regenerate-keys-banner {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+
+  .regenerate-keys-banner button {
+    width: 100% !important;
   }
 
   .image-optimization-banner button,

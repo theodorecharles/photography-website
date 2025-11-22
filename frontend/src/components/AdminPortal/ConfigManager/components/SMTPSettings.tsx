@@ -2,7 +2,7 @@
  * SMTP Settings Component
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { API_URL } from '../../../../config';
 import { ConfigData } from '../types';
@@ -24,6 +24,7 @@ interface SMTPSettingsProps {
   savingSection: string | null;
   setMessage: (message: { type: 'success' | 'error'; text: string }) => void;
   sectionRef?: React.RefObject<HTMLDivElement | null>;
+  setActionButtons: (buttons: React.ReactNode) => void;
 }
 
 type FieldKey = 'host' | 'port' | 'username' | 'password' | 'fromName' | 'fromAddress';
@@ -40,6 +41,7 @@ const SMTPSettings: React.FC<SMTPSettingsProps> = ({
   savingSection: _savingSection,
   setMessage,
   sectionRef,
+  setActionButtons,
 }) => {
   const { t } = useTranslation();
   const [showTestModal, setShowTestModal] = useState(false);
@@ -82,6 +84,42 @@ const SMTPSettings: React.FC<SMTPSettingsProps> = ({
   };
 
   const isConfigured = emailConfig.smtp.host && emailConfig.smtp.auth.user;
+
+  // Update action buttons when configuration changes
+  useEffect(() => {
+    const buttons = [];
+
+    if (isConfigured && emailConfig.enabled) {
+      buttons.push(
+        <button
+          key="setup-instructions"
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            setShowProvidersModal(true);
+          }}
+          className="btn-secondary"
+          style={{ fontSize: '0.875rem', padding: '0.4rem 0.8rem' }}
+        >
+          {t('smtpSettings.setupInstructions')}
+        </button>,
+        <button
+          key="test-email"
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            setShowTestModal(true);
+          }}
+          className="btn-secondary"
+          style={{ fontSize: '0.875rem', padding: '0.4rem 0.8rem' }}
+        >
+          {t('smtpSettings.testEmail')}
+        </button>
+      );
+    }
+
+    setActionButtons(buttons.length > 0 ? <>{buttons}</> : null);
+  }, [isConfigured, emailConfig.enabled, t, setActionButtons]);
 
   // Check if a specific field has changed
   const hasFieldChanged = (field: FieldKey): boolean => {
@@ -314,32 +352,6 @@ const SMTPSettings: React.FC<SMTPSettingsProps> = ({
 
   return (
     <div ref={sectionRef}>
-      {/* Action buttons */}
-      {isConfigured && emailConfig.enabled && (
-        <div className="smtp-action-buttons" style={{ marginBottom: '1.5rem' }}>
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              setShowProvidersModal(true);
-            }}
-            className="btn-secondary"
-          >
-            {t('smtpSettings.setupInstructions')}
-          </button>
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              setShowTestModal(true);
-            }}
-            className="btn-secondary"
-          >
-            {t('smtpSettings.testEmail')}
-          </button>
-        </div>
-      )}
-      
       <div className="config-grid-inner">
         {/* Enable Email Service Toggle */}
         <div className="branding-group">

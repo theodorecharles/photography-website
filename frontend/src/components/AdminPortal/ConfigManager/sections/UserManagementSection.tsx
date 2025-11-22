@@ -5,6 +5,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { API_URL } from '../../../../config';
 import { 
   trackUserInvited, 
@@ -17,7 +18,6 @@ import { MFASetupModal } from "./UserManagement/MFASetupModal";
 import { ConfirmationModal } from "./UserManagement/ConfirmationModal";
 import { NewUserModal } from "./UserManagement/NewUserModal";
 import { UserCard } from "./UserManagement/UserCard";
-import { SMTPWarningBanner } from "./UserManagement/SMTPWarningBanner";
 import { PasskeysModal } from "./UserManagement/PasskeysModal";
 import { PasswordChangeModal } from "./UserManagement/PasswordChangeModal";
 import { InviteLinkModal } from "./UserManagement/InviteLinkModal";
@@ -36,14 +36,15 @@ import { error } from '../../../../utils/logger';
 
 interface UserManagementSectionProps {
   setMessage: (message: MessageType) => void;
-  onNavigateToSmtp?: () => void;
+  setActionButtons: (buttons: React.ReactNode) => void;
 }
 
 const UserManagementSection: React.FC<UserManagementSectionProps> = ({
   setMessage,
-  onNavigateToSmtp,
+  setActionButtons,
 }) => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [currentUser, setCurrentUser] = useState<{
@@ -147,6 +148,83 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
     }
   };
 
+  // Update action buttons based on user role and SMTP config
+  useEffect(() => {
+    if (!currentUser || currentUser.role !== 'admin' || smtpConfigured === null) {
+      setActionButtons(null);
+      return;
+    }
+
+    const buttons = [];
+
+    // Show SMTP setup button if not configured and not dismissed
+    if (!smtpConfigured && !smtpBannerDismissed) {
+      buttons.push(
+        <button
+          key="setup-smtp"
+          onClick={() => navigate('/admin/settings/email')}
+          className="btn-primary"
+          style={{ fontSize: '0.875rem', padding: '0.4rem 0.8rem', whiteSpace: 'nowrap' }}
+        >
+          {t('userManagement.setupSmtp')}
+        </button>,
+        <button
+          key="dismiss"
+          onClick={async () => {
+            try {
+              // Load current config
+              const res = await fetch(`${API_URL}/api/config`, {
+                credentials: 'include',
+              });
+
+              if (res.ok) {
+                const config = await res.json();
+                
+                // Set smtpBannerDismissed flag
+                const updatedConfig = {
+                  ...config,
+                  smtpBannerDismissed: true
+                };
+
+                // Save updated config
+                const saveRes = await fetch(`${API_URL}/api/config`, {
+                  method: 'PUT',
+                  headers: { 'Content-Type': 'application/json' },
+                  credentials: 'include',
+                  body: JSON.stringify(updatedConfig),
+                });
+
+                if (saveRes.ok) {
+                  setSmtpBannerDismissed(true);
+                }
+              }
+            } catch (err) {
+              error('Failed to dismiss SMTP banner:', err);
+            }
+          }}
+          className="btn-secondary"
+          style={{ fontSize: '0.875rem', padding: '0.4rem 0.8rem', whiteSpace: 'nowrap' }}
+        >
+          {t('common.dismiss')}
+        </button>
+      );
+    } else {
+      // Show Invite User button when SMTP is configured or banner dismissed
+      buttons.push(
+        <button
+          key="invite-user"
+          onClick={() => setShowNewUserForm(!showNewUserForm)}
+          className="btn-primary"
+          style={{ fontSize: '0.875rem', padding: '0.4rem 0.8rem', whiteSpace: 'nowrap' }}
+        >
+          {showNewUserForm ? t('common.cancel') : t('userManagement.inviteUser')}
+        </button>
+      );
+    }
+
+    setActionButtons(<>{buttons}</>);
+  }, [currentUser, smtpConfigured, smtpBannerDismissed, showNewUserForm, t, navigate, setActionButtons]);
+
   const loadUsers = async () => {
     setLoading(true);
     try {
@@ -182,44 +260,6 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
       }
     } catch (err) {
       error("Failed to check SMTP config:", err);
-    }
-  };
-
-  const handleDismissSmtpBanner = async () => {
-    try {
-      // Load current config
-      const res = await fetch(`${API_URL}/api/config`, {
-        credentials: 'include',
-      });
-      if (!res.ok) throw new Error('Failed to load config');
-      
-      const config = await res.json();
-      
-      // Update config with dismissed state
-      const updatedConfig = {
-        ...config,
-        environment: {
-          ...config.environment,
-          features: {
-            ...config.environment?.features,
-            smtpBannerDismissed: true,
-          },
-        },
-      };
-      
-      // Save updated config
-      const saveRes = await fetch(`${API_URL}/api/config`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify(updatedConfig),
-      });
-      
-      if (saveRes.ok) {
-        setSmtpBannerDismissed(true);
-      }
-    } catch (err) {
-      error('Failed to dismiss SMTP banner:', err);
     }
   };
 
@@ -761,16 +801,31 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
   return (
     <div data-section="user-management">
         <div className="branding-grid">
-          {/* SMTP Setup Warning or Invite User Button - Admin Only */}
-          {currentUser && currentUser.role === "admin" && (
-            <SMTPWarningBanner
-              smtpConfigured={smtpConfigured}
-              showNewUserForm={showNewUserForm}
-              bannerDismissed={smtpBannerDismissed}
-              onSetupSmtp={onNavigateToSmtp || (() => {})}
-              onToggleNewUserForm={() => setShowNewUserForm(!showNewUserForm)}
-              onDismissBanner={handleDismissSmtpBanner}
-            />
+          {/* SMTP Warning Banner - Admin Only (shows warning message without buttons) */}
+          {currentUser && currentUser.role === "admin" && !smtpConfigured && !smtpBannerDismissed && (
+            <div
+              style={{
+                gridColumn: '1 / -1',
+                padding: '1rem',
+                background: 'rgba(251, 191, 36, 0.1)',
+                borderLeft: '3px solid #f59e0b',
+                borderRadius: '4px',
+                marginBottom: '1rem',
+              }}
+            >
+              <strong
+                style={{
+                  color: '#f59e0b',
+                  display: 'block',
+                  marginBottom: '0.25rem',
+                }}
+              >
+                {t('userManagement.emailNotConfigured')}
+              </strong>
+              <p style={{ fontSize: '0.85rem', color: '#ccc', margin: 0 }}>
+                {t('userManagement.setupSmtpDescriptionDismissible')}
+              </p>
+            </div>
           )}
 
           {/* Users List */}

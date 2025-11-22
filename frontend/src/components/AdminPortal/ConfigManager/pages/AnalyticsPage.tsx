@@ -20,6 +20,7 @@ const AnalyticsPage: React.FC<AnalyticsPageProps> = ({ setMessage }) => {
   const [config, setConfig] = useState<ConfigData | null>(null);
   const [originalConfig, setOriginalConfig] = useState<ConfigData | null>(null);
   const [savingSection, setSavingSection] = useState<string | null>(null);
+  const [actionButtons, setActionButtons] = useState<React.ReactNode>(null);
 
   useEffect(() => {
     loadConfig();
@@ -102,7 +103,10 @@ const AnalyticsPage: React.FC<AnalyticsPageProps> = ({ setMessage }) => {
         </p>
       </div>
 
-      <Breadcrumbs section={t('settings.analytics.title')} />
+      <Breadcrumbs 
+        section={t('settings.analytics.title')}
+        actions={actionButtons}
+      />
 
       <AnalyticsSettings
         config={config}
@@ -116,6 +120,7 @@ const AnalyticsPage: React.FC<AnalyticsPageProps> = ({ setMessage }) => {
         savingSection={savingSection}
         setMessage={setMessage}
         onOpenObserveSave={() => {}}
+        setActionButtons={setActionButtons}
       />
     </div>
   );

@@ -45,7 +45,7 @@ const __dirname = path.dirname(__filename);
 import { DATA_DIR, reloadConfig } from '../config.js';
 import { requireAuth, requireAdmin, requireManager } from '../auth/middleware.js';
 import { sendNotificationToUser } from '../push-notifications.js';
-import { translateNotificationForUser } from '../i18n-backend.js';
+import { translateNotification } from '../i18n-backend.js';
 
 // Path to config.json
 const configPath = path.join(DATA_DIR, 'config.json');
@@ -353,8 +353,8 @@ router.post('/optimize', requireManager, (req, res) => {
           ? { imagesOptimized: (runningOptimizationJob as any).totalImages || 0 }
           : { error: (runningOptimizationJob as any).error || `Exit code ${code}` };
         
-        const title = await translateNotificationForUser(userId, titleKey, variables);
-        const body = await translateNotificationForUser(userId, bodyKey, variables);
+        const title = await translateNotification(titleKey, variables);
+        const body = await translateNotification(bodyKey, variables);
         
         sendNotificationToUser(userId, {
           title,

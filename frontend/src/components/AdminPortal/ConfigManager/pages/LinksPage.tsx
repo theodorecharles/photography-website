@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Breadcrumbs from '../components/Breadcrumbs';
 import LinksSection from '../sections/LinksSection';
@@ -15,6 +16,7 @@ const LinksPage: React.FC<LinksPageProps> = ({
   setExternalLinks,
 }) => {
   const { t } = useTranslation();
+  const [actionButtons, setActionButtons] = useState<React.ReactNode>(null);
 
   return (
     <div className="settings-page">
@@ -25,12 +27,16 @@ const LinksPage: React.FC<LinksPageProps> = ({
         </p>
       </div>
       
-      <Breadcrumbs section={t('settings.links.title')} />
+      <Breadcrumbs 
+        section={t('settings.links.title')}
+        actions={actionButtons}
+      />
 
       <LinksSection
         externalLinks={externalLinks}
         setExternalLinks={setExternalLinks}
         setMessage={setMessage}
+        setActionButtons={setActionButtons}
       />
     </div>
   );

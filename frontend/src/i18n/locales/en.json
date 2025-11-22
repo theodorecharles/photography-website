@@ -569,9 +569,33 @@
           "title": "Album Published",
           "description": "When an album is made public"
         },
+        "albumUnpublished": {
+          "title": "Album Unpublished",
+          "description": "When an album is made private"
+        },
         "albumDeleted": {
           "title": "Album Deleted",
           "description": "When an album is deleted"
+        },
+        "folderCreated": {
+          "title": "Folder Created",
+          "description": "When a new folder is created"
+        },
+        "folderPublished": {
+          "title": "Folder Published",
+          "description": "When a folder is made public"
+        },
+        "folderUnpublished": {
+          "title": "Folder Unpublished",
+          "description": "When a folder is made private"
+        },
+        "folderDeleted": {
+          "title": "Folder Deleted",
+          "description": "When a folder is deleted"
+        },
+        "homepageUpdated": {
+          "title": "Homepage Updated",
+          "description": "When homepage order is changed"
         },
         "largePhotoUpload": {
           "title": "Large Upload",
@@ -588,6 +612,14 @@
         "shareLinkExpired": {
           "title": "Share Link Expired",
           "description": "When a share link expires"
+        },
+        "photoDownloaded": {
+          "title": "Photo Downloaded",
+          "description": "When someone downloads a photo"
+        },
+        "albumViewMilestone": {
+          "title": "View Milestone",
+          "description": "When an album reaches view milestones (100, 500, 1000, etc.)"
         },
         "configUpdated": {
           "title": "Settings Changed",
@@ -612,6 +644,10 @@
         "databaseBackupCompleted": {
           "title": "Backup Complete",
           "description": "When database backup finishes"
+        },
+        "versionUpdate": {
+          "title": "Version Update",
+          "description": "When a new version is available"
         }
       }
     }

@@ -10,7 +10,7 @@ import { fileURLToPath } from "url";
 import { error, warn, info } from '../utils/logger.js';
 import { requireManager } from '../auth/middleware.js';
 import { sendNotificationToUser } from '../push-notifications.js';
-import { translateNotificationForUser } from '../i18n-backend.js';
+import { translateNotification } from '../i18n-backend.js';
 
 const router = express.Router();
 
@@ -203,8 +203,8 @@ router.post('/regenerate', requireManager, (req, res) => {
           ? { videoName: (runningVideoOptimizationJob as any).filename || 'Unknown', albumName: (runningVideoOptimizationJob as any).album || 'Unknown' }
           : { videoName: (runningVideoOptimizationJob as any).filename || 'Unknown', error: (runningVideoOptimizationJob as any).error || `Exit code ${code}` };
         
-        const title = await translateNotificationForUser(userId, titleKey, variables);
-        const body = await translateNotificationForUser(userId, bodyKey, variables);
+        const title = await translateNotification(titleKey, variables);
+        const body = await translateNotification(bodyKey, variables);
         
         sendNotificationToUser(userId, {
           title,
@@ -385,8 +385,8 @@ router.post('/reprocess', requireManager, (req, res) => {
           ? { videoName: (runningVideoOptimizationJob as any).filename || 'Unknown', albumName: (runningVideoOptimizationJob as any).album || 'Unknown' }
           : { videoName: (runningVideoOptimizationJob as any).filename || 'Unknown', error: (runningVideoOptimizationJob as any).error || `Exit code ${code}` };
         
-        const title = await translateNotificationForUser(userId, titleKey, variables);
-        const body = await translateNotificationForUser(userId, bodyKey, variables);
+        const title = await translateNotification(titleKey, variables);
+        const body = await translateNotification(bodyKey, variables);
         
         sendNotificationToUser(userId, {
           title,
