@@ -93,8 +93,11 @@ export function getVapidPublicKey(): string | null {
  */
 export function isPushNotificationsEnabled(): boolean {
   const config = getCurrentConfig();
+  info(`[PushNotifications] Full config keys: ${Object.keys(config).join(', ')}`);
+  
   // @ts-ignore - config structure is dynamic
   const pushConfig = config.pushNotifications || {};
+  info(`[PushNotifications] pushConfig: ${JSON.stringify(pushConfig)}`);
   
   // Check if enabled and has valid keys
   const hasKeys = !!pushConfig.vapidPublicKey && !!pushConfig.vapidPrivateKey;
