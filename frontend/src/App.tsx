@@ -332,12 +332,15 @@ function App() {
         albumsData = initialData.albums;
         externalLinksData = initialData.externalLinks;
         
-        // Fetch branding separately (not in SSR data)
-        const brandingResponse = await fetchWithRateLimitCheck(`${API_URL}/api/branding`);
-        if (!brandingResponse.ok) {
-          throw new Error("Failed to fetch branding");
-        }
-        brandingData = await brandingResponse.json();
+        // Use already-injected branding from SSR (no network request!)
+        const runtimeBranding = (window as any).__RUNTIME_BRANDING__;
+        brandingData = {
+          siteName: runtimeBranding?.siteName || "Galleria",
+          avatarPath: runtimeBranding?.avatarPath || "/photos/avatar.png",
+          primaryColor: runtimeBranding?.primaryColor || "#4ade80",
+          secondaryColor: runtimeBranding?.secondaryColor || "#3b82f6",
+          language: runtimeBranding?.language || "en"
+        };
       } else {
         // Fallback to API requests if SSR data not available
         debug("⚠ SSR data not available, fetching from API");

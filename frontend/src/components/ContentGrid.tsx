@@ -215,12 +215,11 @@ const ContentGrid: React.FC<ContentGridProps> = ({ album, onAlbumNotFound, initi
 
     const fetchPhotos = async () => {
       try {
-        setLoading(true);
-
         // Check if homepage data was server-side rendered (SSR) into the page
         const initialData = (window as any).__INITIAL_DATA__;
         
         if (album === "homepage" && initialData && initialData.homepage) {
+          // Data is already here - no loading state needed!
           // Use pre-injected homepage data from SSR (no network requests!)
           info("✓ Using server-side rendered homepage data (no network requests)");
           const homepageData = initialData.homepage;
@@ -259,6 +258,9 @@ const ContentGrid: React.FC<ContentGridProps> = ({ album, onAlbumNotFound, initi
           delete (window as any).__INITIAL_DATA__;
           return;
         }
+
+        // No SSR data, show loading state
+        setLoading(true);
 
         // Try to fetch from static JSON first for better performance
         // Use authenticated endpoint to prevent unauthorized access to unpublished albums
