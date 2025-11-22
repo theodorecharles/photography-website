@@ -314,56 +314,21 @@ const SMTPSettings: React.FC<SMTPSettingsProps> = ({
 
   return (
     <div className="settings-section" style={{ marginBottom: '2rem' }} ref={sectionRef}>
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginBottom: '0.75rem',
-        }}
-      >
-        <label className="settings-section-label">
-          {t('smtpSettings.title')}
-          {isConfigured && (
-            <span
-              style={{
-                marginLeft: '0.5rem',
-                fontSize: '0.75rem',
-                color: '#4ade80',
-                fontWeight: 'normal',
-              }}
-            >
-              {t('smtpSettings.configured')}
-            </span>
-          )}
-        </label>
-        <div className="smtp-action-buttons">
-          {isConfigured && emailConfig.enabled && (
-            <>
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setShowProvidersModal(true);
-                }}
-                className="btn-secondary"
-              >
-                {t('smtpSettings.setupInstructions')}
-              </button>
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setShowTestModal(true);
-                }}
-                className="btn-secondary"
-              >
-                {t('smtpSettings.testEmail')}
-              </button>
-            </>
-          )}
-        </div>
-      </div>
+      <label className="settings-section-label" style={{ marginBottom: '0.75rem' }}>
+        {t('smtpSettings.title')}
+        {isConfigured && (
+          <span
+            style={{
+              marginLeft: '0.5rem',
+              fontSize: '0.75rem',
+              color: '#4ade80',
+              fontWeight: 'normal',
+            }}
+          >
+            {t('smtpSettings.configured')}
+          </span>
+        )}
+      </label>
       <p
         style={{
           fontSize: '0.85rem',
@@ -374,6 +339,32 @@ const SMTPSettings: React.FC<SMTPSettingsProps> = ({
       >
         {t('smtpSettings.description')}
       </p>
+      
+      {/* Action buttons below description */}
+      {isConfigured && emailConfig.enabled && (
+        <div className="smtp-action-buttons" style={{ marginBottom: '1.5rem' }}>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowProvidersModal(true);
+            }}
+            className="btn-secondary"
+          >
+            {t('smtpSettings.setupInstructions')}
+          </button>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowTestModal(true);
+            }}
+            className="btn-secondary"
+          >
+            {t('smtpSettings.testEmail')}
+          </button>
+        </div>
+      )}
       
       <div className="config-grid-inner">
         {/* Enable Email Service Toggle */}
