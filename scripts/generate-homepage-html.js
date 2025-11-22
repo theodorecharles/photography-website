@@ -99,7 +99,17 @@ function getAlbumsData() {
       warn('Folders table not found, skipping folder data');
     }
 
-    return { albums, folders };
+    // Normalize published field from SQLite 1/0 to true/false
+    const normalizedAlbums = albums.map(album => ({
+      ...album,
+      published: !!album.published
+    }));
+    const normalizedFolders = folders.map(folder => ({
+      ...folder,
+      published: !!folder.published
+    }));
+
+    return { albums: normalizedAlbums, folders: normalizedFolders };
   } finally {
     db.close();
   }
