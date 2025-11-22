@@ -45,6 +45,7 @@ export function PushNotificationStatus({ isConfigured, refreshKey }: PushNotific
 
   async function fetchConfigAndStatus() {
     try {
+      console.log('[PushNotificationStatus] Fetching config...');
       // Use /notifications/ path to avoid Safari content blocker
       const response = await fetch(`/notifications/config`, {
         credentials: 'include'
@@ -55,6 +56,7 @@ export function PushNotificationStatus({ isConfigured, refreshKey }: PushNotific
       }
       
       const data = await response.json();
+      console.log('[PushNotificationStatus] Config received:', data);
       setConfig(data);
 
       if ('Notification' in window) {
@@ -65,6 +67,7 @@ export function PushNotificationStatus({ isConfigured, refreshKey }: PushNotific
         const registration = await navigator.serviceWorker.ready;
         const subscription = await registration.pushManager.getSubscription();
         setIsSubscribed(!!subscription);
+        console.log('[PushNotificationStatus] Subscription status:', !!subscription);
       }
     } catch (error) {
       console.error('[PushNotificationStatus] Failed to fetch config:', error);
@@ -185,6 +188,15 @@ export function PushNotificationStatus({ isConfigured, refreshKey }: PushNotific
       showToast(t('notifications.error'), 'error');
     }
   }
+
+  // Debug logging
+  console.log('[PushNotificationStatus] Render check:', {
+    isConfigured,
+    isPushSupported,
+    isLoading,
+    configEnabled: config?.enabled,
+    shouldRender: isConfigured && isPushSupported && !isLoading && config?.enabled
+  });
 
   // Don't render if not configured, not supported, or still loading
   if (!isConfigured || !isPushSupported || isLoading || !config?.enabled) {
