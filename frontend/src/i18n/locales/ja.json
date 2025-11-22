@@ -154,47 +154,6 @@
     "uploadInProgress": "アップロード進行中",
     "jobStoppedByUser": "ユーザーによってジョブが停止されました"
   },
-  "branding": {
-    "title": "ブランディング",
-    "description": "サイト名、サブタイトル、アバターをカスタマイズ",
-    "logo": "ロゴ",
-    "clickOrDrag": "ここをクリックまたは画像をドラッグ",
-    "currentAvatar": "現在のアバター",
-    "siteName": "サイト名",
-    "siteNamePlaceholder": "サイト名",
-    "photoLicense": "写真ライセンス",
-    "photoLicenseDescription": "他の人があなたの写真をどのように使用できるかを選択",
-    "shuffleHomepage": "ホームページの写真をシャッフル",
-    "shuffleHomepageDescription": "ページが読み込まれるたびにホームページの写真の順序をランダム化",
-    "animatedBackground": "アニメーション背景",
-    "animatedBackgroundDescription": "管理パネルとログインページでカラフルなアニメーション背景を有効にする",
-    "primaryColor": "プライマリカラー",
-    "secondaryColor": "セカンダリカラー",
-    "metaDescription": "メタ説明",
-    "metaDescriptionPlaceholder": "検索エンジン向けのサイトの簡単な説明",
-    "metaKeywords": "メタキーワード",
-    "metaKeywordsPlaceholder": "写真、ポートフォリオ、あなたの名前（カンマ区切り）",
-    "language": "言語",
-    "languageDescription": "サイトのデフォルト言語を選択",
-    "savedSuccessfully": "{{section}}が正常に保存されました！",
-    "photoLicenseUpdated": "写真ライセンスが更新されました！",
-    "languageUpdated": "言語が更新されました！",
-    "homepageShuffleSaved": "ホームページシャッフル設定が保存されました！",
-    "animatedBackgroundSaved": "アニメーション背景設定が保存されました！",
-    "failedToSave": "{{section}}の保存に失敗しました",
-    "failedToSaveLicense": "ライセンスの保存に失敗しました",
-    "failedToSaveLanguage": "言語の保存に失敗しました",
-    "failedToSaveSetting": "設定の保存に失敗しました",
-    "errorSavingLicense": "ライセンスの保存中にエラーが発生しました",
-    "errorSavingLanguage": "言語の保存中にエラーが発生しました",
-    "errorSavingSetting": "設定の保存中にエラーが発生しました",
-    "siteNameSaved": "サイト名が正常に保存されました！",
-    "primaryColorSaved": "プライマリカラーが正常に保存されました！",
-    "secondaryColorSaved": "セカンダリカラーが正常に保存されました！",
-    "metaDescriptionSaved": "メタディスクリプションが正常に保存されました！",
-    "metaKeywordsSaved": "メタキーワードが正常に保存されました！",
-    "LogoSaved": "ロゴが正常に保存されました！"
-  },
   "license": {
     "title": "写真ライセンス",
     "summary": "概要",
@@ -404,163 +363,63 @@
     "saved": "{{section}}設定が保存されました！",
     "failedToSave": "設定の保存に失敗しました",
     "errorSaving": "設定の保存中にエラーが発生しました",
-    "notifications": {
-      "title": "通知設定",
-      "description": "受信したいプッシュ通知を設定する",
-      "saved": "通知設定が保存されました",
-      "confirmReset": "すべての通知設定をデフォルトにリセットしますか？",
-      "resetSuccess": "通知設定がデフォルトにリセットされました",
-      "resetToDefaults": "デフォルトにリセット",
-      "enableAll": "すべて有効",
-      "disableAll": "すべて無効",
-      "categories": {
-        "security": {
-          "title": "セキュリティと認証",
-          "description": "ユーザーアカウント、ログイン、セキュリティイベントに関する通知"
-        },
-        "content": {
-          "title": "コンテンツ管理",
-          "description": "アルバム、写真、共有に関する通知"
-        },
-        "system": {
-          "title": "システムと設定",
-          "description": "設定変更およびシステムイベントに関する通知"
-        }
-      },
-      "types": {
-        "userInvited": {
-          "title": "ユーザーが招待されました",
-          "description": "管理者が新しいユーザーを招待したとき"
-        },
-        "userAcceptedInvite": {
-          "title": "ユーザーが参加しました",
-          "description": "ユーザーが招待を受け入れたとき"
-        },
-        "userDeleted": {
-          "title": "ユーザーが削除されました",
-          "description": "管理者がユーザーアカウントを削除したとき"
-        },
-        "userRoleChanged": {
-          "title": "ユーザーの役割が変更されました",
-          "description": "ユーザーの役割が変更されたとき"
-        },
-        "passkeyCreated": {
-          "title": "パスキーが作成されました",
-          "description": "ユーザーが新しいパスキーを登録したとき"
-        },
-        "passkeyDeleted": {
-          "title": "パスキーが削除されました",
-          "description": "ユーザーがパスキーを削除したとき"
-        },
-        "mfaEnabled": {
-          "title": "MFAが有効になりました",
-          "description": "ユーザーが多要素認証を有効にしたとき"
-        },
-        "mfaDisabled": {
-          "title": "MFAが無効になりました",
-          "description": "ユーザーが多要素認証を無効にしたとき"
-        },
-        "passwordChanged": {
-          "title": "パスワードが変更されました",
-          "description": "ユーザーがパスワードを変更したとき"
-        },
-        "adminPasswordReset": {
-          "title": "管理者のパスワードリセット",
-          "description": "管理者がパスワードリセットを開始したとき"
-        },
-        "failedLoginAttempts": {
-          "title": "ログイン試行の失敗",
-          "description": "複数のログイン試行の失敗が検出されたとき"
-        },
-        "albumCreated": {
-          "title": "アルバムが作成されました",
-          "description": "新しいアルバムが作成されたとき"
-        },
-        "albumPublished": {
-          "title": "アルバムが公開されました",
-          "description": "アルバムが公開されたとき"
-        },
-        "albumDeleted": {
-          "title": "アルバムが削除されました",
-          "description": "アルバムが削除されたとき"
-        },
-        "largePhotoUpload": {
-          "title": "大きなアップロード",
-          "description": "50枚以上の写真が一度にアップロードされたとき"
-        },
-        "shareLinkCreated": {
-          "title": "共有リンクが作成されました",
-          "description": "新しい共有リンクが作成されたとき"
-        },
-        "shareLinkAccessed": {
-          "title": "共有リンクにアクセスされました",
-          "description": "誰かが共有アルバムを表示したとき"
-        },
-        "shareLinkExpired": {
-          "title": "共有リンクの有効期限が切れました",
-          "description": "共有リンクの有効期限が切れたとき"
-        },
-        "configUpdated": {
-          "title": "設定が変更されました",
-          "description": "システム構成が更新されたとき"
-        },
-        "smtpSettingsChanged": {
-          "title": "SMTP設定が変更されました",
-          "description": "メール構成が更新されたとき"
-        },
-        "openaiApiKeyUpdated": {
-          "title": "AI設定が変更されました",
-          "description": "OpenAI APIキーが更新されたとき"
-        },
-        "brandingUpdated": {
-          "title": "ブランディングが更新されました",
-          "description": "サイトのブランディングが変更されたとき"
-        },
-        "lowDiskSpace": {
-          "title": "ディスク容量不足",
-          "description": "ストレージが10%未満のとき"
-        },
-        "databaseBackupCompleted": {
-          "title": "バックアップ完了",
-          "description": "データベースバックアップが完了したとき"
-        },
-        "albumUnpublished": {
-          "title": "アルバムが非公開になりました",
-          "description": "アルバムが非公開になったとき"
-        },
-        "folderCreated": {
-          "title": "フォルダーが作成されました",
-          "description": "新しいフォルダーが作成されたとき"
-        },
-        "folderPublished": {
-          "title": "フォルダーが公開されました",
-          "description": "フォルダーとそのアルバムが公開されたとき"
-        },
-        "folderUnpublished": {
-          "title": "フォルダーが非公開になりました",
-          "description": "フォルダーとそのアルバムが非公開になったとき"
-        },
-        "folderDeleted": {
-          "title": "フォルダーが削除されました",
-          "description": "フォルダーが削除されたとき"
-        },
-        "homepageUpdated": {
-          "title": "ホームページが更新されました",
-          "description": "ホームページからアルバムが追加/削除されたとき"
-        },
-        "versionUpdate": {
-          "title": "バージョン更新",
-          "description": "Galleriaが新しいバージョンに更新されるとき"
-        },
-        "photoDownloaded": {
-          "title": "写真がダウンロードされました",
-          "description": "訪問者が写真をダウンロードしたとき（騒がしい場合があります）"
-        },
-        "albumViewMilestone": {
-          "title": "マイルストーンを見る",
-          "description": "アルバムが100、1K、または10Kビューに達したとき"
-        }
-      }
+    "home": {
+      "description": "写真ポートフォリオとシステム設定を構成する"
+    },
+    "links": {
+      "title": "リンク",
+      "description": "外部ページとカスタムナビゲーション",
+      "pageDescription": "サイトのナビゲーションに表示される外部リンクを管理する"
+    },
+    "users": {
+      "title": "ユーザー",
+      "description": "ユーザー管理とアクセス制御",
+      "pageDescription": "ユーザーアカウント、役割、および権限を管理する"
+    },
+    "openai": {
+      "title": "OpenAI",
+      "description": "AIによる写真のタイトルと説明",
+      "pageDescription": "自動タイトル生成のためにOpenAI APIを設定する"
+    },
+    "imageQuality": {
+      "title": "画像品質",
+      "description": "サムネイルとモーダル画像の設定",
+      "pageDescription": "画像の最適化品質と寸法を設定する"
+    },
+    "videoQuality": {
+      "title": "動画品質",
+      "description": "動画のエンコーディングとストリーミング設定",
+      "pageDescription": "動画の品質、ビットレート、および解像度を設定する"
+    },
+    "email": {
+      "title": "メール",
+      "description": "招待状のためのSMTP設定",
+      "pageDescription": "招待状とパスワードリセットメールを送信するためのSMTPサーバーを設定"
+    },
+    "pushNotifications": {
+      "title": "プッシュ通知",
+      "description": "管理者向けのブラウザ通知",
+      "pageDescription": "ジョブ完了アラートのためのプッシュ通知を設定"
+    },
+    "googleOAuth": {
+      "title": "Google OAuth",
+      "description": "認証と承認されたユーザー",
+      "pageDescription": "Google OAuthの資格情報と承認されたメールアドレスを設定"
+    },
+    "analytics": {
+      "title": "分析",
+      "description": "訪問者追跡とOpenObserve",
+      "pageDescription": "分析トラッキングとログ集約を設定する"
+    },
+    "logging": {
+      "title": "ログ記録",
+      "description": "サーバーログレベルとビューア",
+      "pageDescription": "サーバーログの冗長性を設定し、ライブログを表示する"
+    },
+    "general": {
+      "title": "一般",
+      "description": "サイト名、ロゴ、および外観",
+      "pageDescription": "サイトの視覚的アイデンティティと一般設定をカスタマイズ"
     }
   },
   "advancedSettings": {
@@ -593,7 +452,14 @@
       "forceRegenerateImagesConfirm": "すべての画像を強制的に再生成しますか？しばらく時間がかかります。",
       "runOptimizationConfirm": "すべての写真に画像最適化を実行しますか？",
       "optimizedVideos": "最適化された動画",
-      "forceRegenerateVideosConfirm": "⚠️ これにより、現在の品質設定で全ての動画が再エンコードされます。これは時間のかかる操作で、一時的にCPU使用率が増加します。\n\n既存の動画ファイルは置き換えられます。続行してもよろしいですか？"
+      "forceRegenerateVideosConfirm": "⚠️ これにより、現在の品質設定で全ての動画が再エンコードされます。これは時間のかかる操作で、一時的にCPU使用率が増加します。\n\n既存の動画ファイルは置き換えられます。続行してもよろしいですか？",
+      "imageOptimization": "画像最適化",
+      "imageOptimizationDescription": "ポートフォリオ内のすべての写真に対して最適化されたサムネイルとモーダル画像を生成する",
+      "optimizeMissing": "欠落している画像を最適化する",
+      "forceRegenerateImages": "すべての画像を強制的に再生成する",
+      "videoOptimization": "動画最適化",
+      "videoOptimizationDescription": "現在の品質設定でのすべての動画のHLSマスタープレイリストを再生成する",
+      "regenerateVideoPlaylists": "ビデオプレイリストを再生成"
     }
   },
   "userManagement": {
@@ -983,7 +849,13 @@
     "autoGenerateEnabled": "AIタイトルの自動生成が有効です",
     "autoGenerateDisabled": "AIタイトルの自動生成が無効です",
     "invalidApiKey": "無効なOpenAI APIキーです。キーを確認してもう一度お試しください。",
-    "failedToUpdate": "設定の更新に失敗しました"
+    "failedToUpdate": "設定の更新に失敗しました",
+    "generateTitles": {
+      "title": "AIタイトルを生成",
+      "description": "写真の説明的なタイトルを自動生成するためにOpenAIを使用",
+      "generateMissing": "不足しているタイトルを生成",
+      "regenerateAll": "すべてのタイトルを強制的に再生成"
+    }
   },
   "profile": {
     "failedToStartMfaSetup": "MFA設定の開始に失敗しました",
@@ -1223,6 +1095,45 @@
     "errorRequiredField": "このフィールドは必須です",
     "setupCompleteWaitingRestart": "セットアップが完了しました！サーバーの再起動を待っています..."
   },
+  "email": {
+    "invitation": {
+      "subject": "{{siteName}}に招待されました",
+      "title": "{{siteName}}のギャレリアに参加する",
+      "greeting": "こんにちは、",
+      "body": "{{inviterName}}が<strong>{{siteName}}のギャレリア</strong>に参加するよう招待しています。",
+      "instructions": "この招待を受け入れてアカウントを設定するには、下のボタンをクリックしてください：",
+      "button": "招待を受け入れる",
+      "orCopyLink": "または、このリンクをブラウザにコピー＆ペーストしてください：",
+      "expiry": "この招待は7日後に期限切れになります。",
+      "footerIgnore": "この招待を予期していなかった場合は、このメールを無視しても安全です。",
+      "footerAutomatic": "これは自動生成されたメッセージですので、このメールに返信しないでください。"
+    },
+    "passwordReset": {
+      "subject": "パスワードリセットリクエスト - {{siteName}}",
+      "title": "パスワードリセットリクエスト",
+      "greeting": "こんにちは {{userName}}、",
+      "greetingFallback": "こんにちは、",
+      "body": "<strong>{{siteName}}のギャラリア</strong>のパスワードをリセットするリクエストを受け取りました。",
+      "instructions": "パスワードをリセットするには、以下のボタンをクリックしてください：",
+      "button": "パスワードをリセット",
+      "orCopyLink": "または、このリンクをブラウザにコピー＆ペーストしてください：",
+      "warningTitle": "⚠️ 重要：",
+      "warningExpiry": "このリンクは1時間で期限切れになります",
+      "warningIgnore": "このメールをリクエストしていない場合は、このメールを無視してください",
+      "warningNoChange": "あなたのパスワードは新しいものを作成するまで変更されません",
+      "footerAutomatic": "これは自動送信されたメッセージです。このメールに返信しないでください。",
+      "footerContact": "サポートが必要な場合は、管理者にご連絡ください。"
+    },
+    "test": {
+      "subject": "{{siteName}}からのテストメール",
+      "title": "メール設定テスト",
+      "success": "✓",
+      "body1": "おめでとうございます！あなたのSMTP設定は正しく機能しています。",
+      "body2": "このテストメールは、あなたのメールサービスが正しく設定され、メッセージを配信できることを確認するために、<strong>{{siteName}}</strong>から送信されました。",
+      "footerTimestamp": "これは{{timestamp}}に送信されたテストメッセージです。",
+      "footerIgnore": "このメールは安全に無視するか削除できます。"
+    }
+  },
   "testEmailModal": {
     "title": "テストメールを送信",
     "description": "テストメッセージを送信し、SMTP設定が正しく機能していることを確認するためにメールアドレスを入力してください。",
@@ -1314,11 +1225,64 @@
       "errorGenerateKeys": "VAPIDキーの生成に失敗しました",
       "close": "閉じる"
     },
+    "backend": {
+      "videoProcessingComplete": "動画処理が完了しました",
+      "videoProcessingFailed": "動画処理に失敗しました",
+      "videoReprocessingComplete": "動画再処理が完了しました",
+      "videoReprocessingFailed": "ビデオの再処理に失敗しました",
+      "imageOptimizationComplete": "画像の最適化が完了しました",
+      "imageOptimizationFailed": "画像の最適化に失敗しました",
+      "aiTitlesComplete": "AIタイトル生成が完了しました",
+      "aiTitlesFailed": "AIタイトル生成に失敗しました",
+      "testNotificationTitle": "テスト通知",
+      "testNotificationBody": "プッシュ通知は正常に動作しています！ 処理ジョブが完了した際にアラートを受け取ります。"
+    },
     "blocked": "ブラウザによって通知がブロックされています。ブラウザの設定を確認してください。",
     "subscribePrompt": "ジョブが完了したときに通知を受け取るために購読してください",
     "subscribe": "購読",
     "loading": "読み込み中...",
     "notSupported": "このブラウザではプッシュ通知はサポートされていません",
     "serverDisabled": "サーバーでプッシュ通知が無効になっています"
+  },
+  "general": {
+    "title": "一般",
+    "description": "サイトの名前、サブタイトル、およびアバターをカスタマイズ",
+    "logo": "ロゴ",
+    "clickOrDrag": "ここに画像をクリックまたはドラッグ",
+    "currentAvatar": "現在のアバター",
+    "siteName": "サイト名",
+    "siteNamePlaceholder": "あなたのサイト名",
+    "photoLicense": "写真ライセンス",
+    "photoLicenseDescription": "他の人があなたの写真をどのように使用できるかを選択してください",
+    "shuffleHomepage": "ホームページの写真をシャッフル",
+    "shuffleHomepageDescription": "ページが読み込まれるたびにホームページの写真の順序をランダム化します",
+    "animatedBackground": "アニメーション背景",
+    "animatedBackgroundDescription": "管理パネルとログインページにカラフルなアニメーション背景を有効にします",
+    "primaryColor": "プライマリカラー",
+    "secondaryColor": "セカンダリカラー",
+    "metaDescription": "メタディスクリプション",
+    "metaDescriptionPlaceholder": "検索エンジン用のサイトの簡潔な説明",
+    "metaKeywords": "メタキーワード",
+    "metaKeywordsPlaceholder": "写真、ポートフォリオ、あなたの名前（カンマ区切り）",
+    "language": "言語",
+    "languageDescription": "サイトのデフォルト言語を選択してください",
+    "savedSuccessfully": "{{section}}が正常に保存されました！",
+    "LogoSaved": "ロゴが正常に保存されました！",
+    "siteNameSaved": "サイト名が正常に保存されました！",
+    "primaryColorSaved": "プライマリカラーが正常に保存されました！",
+    "secondaryColorSaved": "セカンダリカラーが正常に保存されました！",
+    "metaDescriptionSaved": "メタディスクリプションが正常に保存されました！",
+    "metaKeywordsSaved": "メタキーワードが正常に保存されました！",
+    "photoLicenseUpdated": "写真のライセンスが更新されました！",
+    "languageUpdated": "言語が更新されました！",
+    "homepageShuffleSaved": "ホームページのシャッフル設定が保存されました！",
+    "animatedBackgroundSaved": "アニメーション背景設定が保存されました！",
+    "failedToSave": "{{section}}の保存に失敗しました",
+    "failedToSaveLicense": "ライセンスの保存に失敗しました",
+    "failedToSaveLanguage": "言語の保存に失敗しました",
+    "failedToSaveSetting": "設定の保存に失敗しました",
+    "errorSavingLicense": "ライセンスの保存中にエラーが発生しました",
+    "errorSavingLanguage": "言語の保存中にエラーが発生しました",
+    "errorSavingSetting": "設定の保存中にエラーが発生しました"
   }
 }

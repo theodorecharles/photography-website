@@ -154,47 +154,6 @@
     "uploadInProgress": "Încărcare în curs",
     "jobStoppedByUser": "Job oprit de utilizator"
   },
-  "branding": {
-    "title": "Branding",
-    "description": "Personalizează numele, subtitlul și avatarul site-ului tău",
-    "logo": "Logo",
-    "clickOrDrag": "Click aici sau trage imaginea",
-    "currentAvatar": "Avatar curent",
-    "siteName": "Numele site-ului",
-    "siteNamePlaceholder": "Numele site-ului tău",
-    "photoLicense": "Licența fotografiilor",
-    "photoLicenseDescription": "Alege cum pot folosi alții fotografiile tale",
-    "shuffleHomepage": "Amestecă fotografiile de pe pagina principală",
-    "shuffleHomepageDescription": "Rasfoiește ordinea fotografiilor de pe pagina principală de fiecare dată când se încarcă pagina",
-    "animatedBackground": "Fundal Animat",
-    "animatedBackgroundDescription": "Activați fundalul animat colorat pe panoul de administrare și pe pagina de conectare",
-    "primaryColor": "Culoare principală",
-    "secondaryColor": "Culoare secundară",
-    "metaDescription": "Descriere meta",
-    "metaDescriptionPlaceholder": "O scurtă descriere a site-ului tău pentru motoarele de căutare",
-    "metaKeywords": "Cuvinte cheie meta",
-    "metaKeywordsPlaceholder": "fotografie, portofoliu, numele tău (separate prin virgulă)",
-    "language": "Limba",
-    "languageDescription": "Alege limba implicită pentru site-ul tău",
-    "savedSuccessfully": "{{section}} salvat cu succes!",
-    "photoLicenseUpdated": "Licența foto a fost actualizată!",
-    "languageUpdated": "Limba a fost actualizată!",
-    "homepageShuffleSaved": "Setarea de amestecare a paginii de start a fost salvată!",
-    "animatedBackgroundSaved": "Setarea fundalului animat a fost salvată!",
-    "failedToSave": "Nu s-a putut salva {{section}}",
-    "failedToSaveLicense": "Nu s-a putut salva licența",
-    "failedToSaveLanguage": "Nu s-a putut salva limba",
-    "failedToSaveSetting": "Nu s-a putut salva setarea",
-    "errorSavingLicense": "Eroare la salvarea licenței",
-    "errorSavingLanguage": "Eroare la salvarea limbii",
-    "errorSavingSetting": "Eroare la salvarea setării",
-    "siteNameSaved": "Numele site-ului salvat cu succes!",
-    "primaryColorSaved": "Culoare principală salvată cu succes!",
-    "secondaryColorSaved": "Culoare secundară salvată cu succes!",
-    "metaDescriptionSaved": "Descriere meta salvată cu succes!",
-    "metaKeywordsSaved": "Cuvinte cheie meta salvate cu succes!",
-    "LogoSaved": "Logo salvat cu succes!"
-  },
   "license": {
     "title": "Licența foto",
     "summary": "Sumar",
@@ -404,163 +363,63 @@
     "saved": "Setările {{section}} au fost salvate!",
     "failedToSave": "A eșuat salvarea configurației",
     "errorSaving": "Eroare la salvarea configurației",
-    "notifications": {
-      "title": "Preferințe de notificare",
-      "description": "Configurează ce notificări push dorești să primești",
-      "saved": "Preferințele de notificare au fost salvate",
-      "confirmReset": "Resetezi toate preferințele de notificare la valorile implicite?",
-      "resetSuccess": "Preferințele de notificare au fost resetate la valorile implicite",
-      "resetToDefaults": "Resetează la valorile implicite",
-      "enableAll": "Activează tot",
-      "disableAll": "Dezactivează tot",
-      "categories": {
-        "security": {
-          "title": "Securitate și autentificare",
-          "description": "Notificări despre conturile utilizatorilor, autentificări și evenimente de securitate"
-        },
-        "content": {
-          "title": "Gestionarea conținutului",
-          "description": "Notificări despre albume, fotografii și partajări"
-        },
-        "system": {
-          "title": "Sistem și Configurare",
-          "description": "Notificări despre modificările de setări și evenimentele sistemului"
-        }
-      },
-      "types": {
-        "userInvited": {
-          "title": "Utilizator Invitat",
-          "description": "Când un administrator invită un utilizator nou"
-        },
-        "userAcceptedInvite": {
-          "title": "Utilizator Aderat",
-          "description": "Când un utilizator acceptă o invitație"
-        },
-        "userDeleted": {
-          "title": "Utilizator Șters",
-          "description": "Când un administrator șterge un cont de utilizator"
-        },
-        "userRoleChanged": {
-          "title": "Rolul utilizatorului a fost schimbat",
-          "description": "Când rolul unui utilizator este schimbat"
-        },
-        "passkeyCreated": {
-          "title": "Cheia de acces creată",
-          "description": "Când un utilizator înregistrează o nouă cheie de acces"
-        },
-        "passkeyDeleted": {
-          "title": "Cheia de acces ștearsă",
-          "description": "Când un utilizator elimină o cheie de acces"
-        },
-        "mfaEnabled": {
-          "title": "MFA activat",
-          "description": "Când un utilizator activează autentificarea multi-factor"
-        },
-        "mfaDisabled": {
-          "title": "MFA dezactivat",
-          "description": "Când un utilizator dezactivează autentificarea multi-factor"
-        },
-        "passwordChanged": {
-          "title": "Parola Schimbată",
-          "description": "Când un utilizator își schimbă parola"
-        },
-        "adminPasswordReset": {
-          "title": "Resetare Parolă Admin",
-          "description": "Când un administrator inițiază o resetare a parolei"
-        },
-        "failedLoginAttempts": {
-          "title": "Încercări de Autentificare Eșuate",
-          "description": "Când sunt detectate multiple încercări de autentificare eșuate"
-        },
-        "albumCreated": {
-          "title": "Album Creat",
-          "description": "Când un album nou este creat"
-        },
-        "albumPublished": {
-          "title": "Album Publicat",
-          "description": "Când un album devine public"
-        },
-        "albumDeleted": {
-          "title": "Album Șters",
-          "description": "Când un album este șters"
-        },
-        "largePhotoUpload": {
-          "title": "Încărcare Mare",
-          "description": "Când sunt încărcate 50+ fotografii deodată"
-        },
-        "shareLinkCreated": {
-          "title": "Link de Partajare Creat",
-          "description": "Când un nou link de partajare este creat"
-        },
-        "shareLinkAccessed": {
-          "title": "Link de Partajare Accesat",
-          "description": "Când cineva vizualizează un album partajat"
-        },
-        "shareLinkExpired": {
-          "title": "Linkul de partajare a expirat",
-          "description": "Când un link de partajare expiră"
-        },
-        "configUpdated": {
-          "title": "Setări Modificate",
-          "description": "Când configurația sistemului este actualizată"
-        },
-        "smtpSettingsChanged": {
-          "title": "Setări SMTP Modificate",
-          "description": "Când configurația emailului este actualizată"
-        },
-        "openaiApiKeyUpdated": {
-          "title": "Setări AI Modificate",
-          "description": "Când cheia API OpenAI este actualizată"
-        },
-        "brandingUpdated": {
-          "title": "Branding Actualizat",
-          "description": "Când brandingul site-ului este schimbat"
-        },
-        "lowDiskSpace": {
-          "title": "Spațiu pe disc insuficient",
-          "description": "Când stocarea este sub 10%"
-        },
-        "databaseBackupCompleted": {
-          "title": "Backup finalizat",
-          "description": "Când backup-ul bazei de date se termină"
-        },
-        "albumUnpublished": {
-          "title": "Album nepublicat",
-          "description": "Când un album este făcut privat"
-        },
-        "folderCreated": {
-          "title": "Dosar creat",
-          "description": "Când un nou dosar este creat"
-        },
-        "folderPublished": {
-          "title": "Dosar publicat",
-          "description": "Când un dosar și albumele sale sunt publicate"
-        },
-        "folderUnpublished": {
-          "title": "Dosar nepublicat",
-          "description": "Când un dosar și albumele sale sunt nepublicate"
-        },
-        "folderDeleted": {
-          "title": "Dosar șters",
-          "description": "Când un dosar este șters"
-        },
-        "homepageUpdated": {
-          "title": "Pagina principală actualizată",
-          "description": "Când albumele sunt adăugate/eliminate de pe pagina principală"
-        },
-        "versionUpdate": {
-          "title": "Actualizare versiune",
-          "description": "Când Galleria este actualizată la o versiune nouă"
-        },
-        "photoDownloaded": {
-          "title": "Fotografie descărcată",
-          "description": "Când un vizitator descarcă o fotografie (poate fi zgomotos)"
-        },
-        "albumViewMilestone": {
-          "title": "Vizualizează etapele",
-          "description": "Când un album atinge 100, 1K sau 10K vizualizări"
-        }
-      }
+    "home": {
+      "description": "Configurează-ți portofoliul de fotografie și preferințele sistemului"
+    },
+    "links": {
+      "title": "Linkuri",
+      "description": "Pagini externe și navigare personalizată",
+      "pageDescription": "Gestionează linkurile externe care apar în navigarea site-ului tău"
+    },
+    "users": {
+      "title": "Utilizatori",
+      "description": "Gestionarea utilizatorilor și controlul accesului",
+      "pageDescription": "Gestionează conturile utilizatorilor, rolurile și permisiunile"
+    },
+    "openai": {
+      "title": "OpenAI",
+      "description": "Titluri și descrieri de fotografii generate de AI",
+      "pageDescription": "Configurează API-ul OpenAI pentru generarea automată a titlurilor"
+    },
+    "imageQuality": {
+      "title": "Calitatea imaginii",
+      "description": "Setări pentru miniaturi și imagini modale",
+      "pageDescription": "Configurează calitatea și dimensiunile optimizării imaginii"
+    },
+    "videoQuality": {
+      "title": "Calitate video",
+      "description": "Setări pentru codarea și streamingul video",
+      "pageDescription": "Configurează calitatea video, bitrate-urile și rezoluțiile"
+    },
+    "email": {
+      "title": "Email",
+      "description": "Configurare SMTP pentru invitații",
+      "pageDescription": "Configurează serverul SMTP pentru trimiterea emailurilor de invitație și resetare a parolei"
+    },
+    "pushNotifications": {
+      "title": "Notificări push",
+      "description": "Notificări în browser pentru administratori",
+      "pageDescription": "Configurează notificările push pentru alertele de finalizare a muncii"
+    },
+    "googleOAuth": {
+      "title": "Google OAuth",
+      "description": "Autentificare și utilizatori autorizați",
+      "pageDescription": "Configurează acreditivele Google OAuth și adresele de email autorizate"
+    },
+    "analytics": {
+      "title": "Analitică",
+      "description": "Urmărirea vizitatorilor și OpenObserve",
+      "pageDescription": "Configurează urmărirea analitică și agregarea jurnalelor"
+    },
+    "logging": {
+      "title": "Jurnalizare",
+      "description": "Nivelurile jurnalului serverului și vizualizatorul",
+      "pageDescription": "Configurează verbositatea jurnalizării serverului și vizualizează jurnalele live"
+    },
+    "general": {
+      "title": "General",
+      "description": "Nume site, logo și aspect",
+      "pageDescription": "Personalizați identitatea vizuală și setările generale ale site-ului dvs."
     }
   },
   "advancedSettings": {
@@ -593,7 +452,14 @@
       "forceRegenerateImagesConfirm": "Forțează regenerarea TUTUROR imaginilor? Acest lucru va dura ceva timp.",
       "runOptimizationConfirm": "Rulați optimizarea imaginilor pe toate fotografiile?",
       "optimizedVideos": "Videoclipuri optimizate",
-      "forceRegenerateVideosConfirm": "⚠️ Aceasta va re-encoda TOATE videoclipurile cu setările de calitate curente. Aceasta este o operațiune consumatoare de timp și va crește temporar utilizarea CPU-ului.\n\nFișierele video existente vor fi înlocuite. Ești sigur că vrei să continui?"
+      "forceRegenerateVideosConfirm": "⚠️ Aceasta va re-encoda TOATE videoclipurile cu setările de calitate curente. Aceasta este o operațiune consumatoare de timp și va crește temporar utilizarea CPU-ului.\n\nFișierele video existente vor fi înlocuite. Ești sigur că vrei să continui?",
+      "imageOptimization": "Optimizarea imaginilor",
+      "imageOptimizationDescription": "Generează miniaturi optimizate și imagini modale pentru toate fotografiile din portofoliul tău",
+      "optimizeMissing": "Optimizează imaginile lipsă",
+      "forceRegenerateImages": "Forțează regenerarea tuturor imaginilor",
+      "videoOptimization": "Optimizarea videoclipurilor",
+      "videoOptimizationDescription": "Regenerare liste de redare HLS master pentru toate videoclipurile cu setările actuale de calitate",
+      "regenerateVideoPlaylists": "Regenerare liste de redare video"
     }
   },
   "userManagement": {
@@ -983,7 +849,13 @@
     "autoGenerateEnabled": "Generarea automată a titlurilor AI este activată",
     "autoGenerateDisabled": "Generarea automată a titlurilor AI este dezactivată",
     "invalidApiKey": "Cheie API OpenAI invalidă. Vă rugăm să verificați cheia și să încercați din nou.",
-    "failedToUpdate": "Actualizarea setării a eșuat"
+    "failedToUpdate": "Actualizarea setării a eșuat",
+    "generateTitles": {
+      "title": "Generați Titluri AI",
+      "description": "Utilizați OpenAI pentru a genera automat titluri descriptive pentru fotografiile dvs.",
+      "generateMissing": "Generați Titluri Lipsă",
+      "regenerateAll": "Forțați Regenerarea Tuturor Titlurilor"
+    }
   },
   "profile": {
     "failedToStartMfaSetup": "Configurarea MFA a eșuat",
@@ -1223,6 +1095,45 @@
     "errorRequiredField": "Acest câmp este obligatoriu",
     "setupCompleteWaitingRestart": "Configurare completă! Așteptând repornirea serverului..."
   },
+  "email": {
+    "invitation": {
+      "subject": "Ai fost invitat la {{siteName}}",
+      "title": "Alătură-te Galleria {{siteName}}",
+      "greeting": "Bună,",
+      "body": "{{inviterName}} te-a invitat să te alături <strong>Galleria {{siteName}}</strong>.",
+      "instructions": "Pentru a accepta această invitație și a-ți configura contul, dă clic pe butonul de mai jos:",
+      "button": "Acceptă invitația",
+      "orCopyLink": "Sau copiază și lipește acest link în browserul tău:",
+      "expiry": "Această invitație va expira în 7 zile.",
+      "footerIgnore": "Dacă nu te așteptai la această invitație, o poți ignora în siguranță.",
+      "footerAutomatic": "Acesta este un mesaj automat, te rugăm să nu răspunzi la acest email."
+    },
+    "passwordReset": {
+      "subject": "Cerere de resetare a parolei - {{siteName}}",
+      "title": "Cerere de resetare a parolei",
+      "greeting": "Bună {{userName}},",
+      "greetingFallback": "Salut,",
+      "body": "Am primit o cerere pentru a-ți reseta parola pentru <strong>Galleria {{siteName}}</strong>.",
+      "instructions": "Pentru a-ți reseta parola, fă clic pe butonul de mai jos:",
+      "button": "Resetează parola",
+      "orCopyLink": "Sau copiază și lipește acest link în browserul tău:",
+      "warningTitle": "⚠️ Important:",
+      "warningExpiry": "Acest link va expira în 1 oră",
+      "warningIgnore": "Dacă nu ați solicitat acest lucru, vă rugăm să ignorați acest email",
+      "warningNoChange": "Parola dumneavoastră nu se va schimba până când nu creați una nouă",
+      "footerAutomatic": "Acesta este un mesaj automat, vă rugăm să nu răspundeți la acest email.",
+      "footerContact": "Dacă aveți nevoie de asistență, vă rugăm să contactați administratorul dumneavoastră."
+    },
+    "test": {
+      "subject": "Email de test de la {{siteName}}",
+      "title": "Test de configurare a emailului",
+      "success": "✓",
+      "body1": "Felicitări! Configurarea dumneavoastră SMTP funcționează corect.",
+      "body2": "Acest email de test a fost trimis de la <strong>{{siteName}}</strong> pentru a verifica dacă serviciul dumneavoastră de email este configurat corect și poate livra mesaje.",
+      "footerTimestamp": "Acesta este un mesaj de test trimis la {{timestamp}}.",
+      "footerIgnore": "Puteți ignora sau șterge în siguranță acest email."
+    }
+  },
   "testEmailModal": {
     "title": "Trimite email de test",
     "description": "Introduceți o adresă de email pentru a trimite un mesaj de test și verificați dacă configurația dvs. SMTP funcționează corect.",
@@ -1314,11 +1225,64 @@
       "errorGenerateKeys": "Generarea cheilor VAPID a eșuat",
       "close": "Închideți"
     },
+    "backend": {
+      "videoProcessingComplete": "Procesarea video s-a finalizat",
+      "videoProcessingFailed": "Procesarea video a eșuat",
+      "videoReprocessingComplete": "Reprocesarea video s-a finalizat",
+      "videoReprocessingFailed": "Reprocesarea video a eșuat",
+      "imageOptimizationComplete": "Optimizarea imaginii s-a finalizat",
+      "imageOptimizationFailed": "Optimizarea imaginii a eșuat",
+      "aiTitlesComplete": "Generarea titlului AI a fost finalizată",
+      "aiTitlesFailed": "Generarea titlului AI a eșuat",
+      "testNotificationTitle": "Notificare de test",
+      "testNotificationBody": "Notificările push funcționează! Vei primi alerte când sarcinile tale de procesare se finalizează."
+    },
     "blocked": "Notificările sunt blocate de browser. Verifică setările browserului tău.",
     "subscribePrompt": "Abonează-te pentru a primi notificări când sarcinile sunt finalizate",
     "subscribe": "Abonează-te",
     "loading": "Se încarcă...",
     "notSupported": "Notificările push nu sunt acceptate în acest browser",
     "serverDisabled": "Notificările push sunt dezactivate pe server"
+  },
+  "general": {
+    "title": "General",
+    "description": "Personalizați numele, subtitlul și avatarul site-ului dvs.",
+    "logo": "Logo",
+    "clickOrDrag": "Faceți clic sau trageți imaginea aici",
+    "currentAvatar": "Avatar curent",
+    "siteName": "Numele site-ului",
+    "siteNamePlaceholder": "Numele site-ului dvs.",
+    "photoLicense": "Licența foto",
+    "photoLicenseDescription": "Alege cum pot folosi alții fotografiile tale",
+    "shuffleHomepage": "Amestecă fotografiile de pe pagina principală",
+    "shuffleHomepageDescription": "Randomizează ordinea fotografiilor de pe pagina principală de fiecare dată când se încarcă pagina",
+    "animatedBackground": "Fundal animat",
+    "animatedBackgroundDescription": "Activează un fundal animat colorat pe panoul de administrare și pe pagina de autentificare",
+    "primaryColor": "Culoare principală",
+    "secondaryColor": "Culoare secundară",
+    "metaDescription": "Descriere meta",
+    "metaDescriptionPlaceholder": "Descriere scurtă a site-ului tău pentru motoarele de căutare",
+    "metaKeywords": "Meta Cuvinte Cheie",
+    "metaKeywordsPlaceholder": "fotografie, portofoliu, numele tău (separate prin virgulă)",
+    "language": "Limba",
+    "languageDescription": "Alege limba implicită pentru site-ul tău",
+    "savedSuccessfully": "{{section}} salvat cu succes!",
+    "LogoSaved": "Logo salvat cu succes!",
+    "siteNameSaved": "Numele site-ului salvat cu succes!",
+    "primaryColorSaved": "Culoare Primară salvată cu succes!",
+    "secondaryColorSaved": "Culoare Secundară salvată cu succes!",
+    "metaDescriptionSaved": "Descriere Meta salvată cu succes!",
+    "metaKeywordsSaved": "Meta Keywords salvate cu succes!",
+    "photoLicenseUpdated": "Licența foto actualizată!",
+    "languageUpdated": "Limba actualizată!",
+    "homepageShuffleSaved": "Setarea de amestecare a paginii de start salvată!",
+    "animatedBackgroundSaved": "Setarea de fundal animat salvată!",
+    "failedToSave": "Eșec la salvarea {{section}}",
+    "failedToSaveLicense": "Eșec la salvarea licenței",
+    "failedToSaveLanguage": "Eșec la salvarea limbii",
+    "failedToSaveSetting": "Eșec la salvarea setării",
+    "errorSavingLicense": "Eroare la salvarea licenței",
+    "errorSavingLanguage": "Eroare la salvarea limbii",
+    "errorSavingSetting": "Eroare la salvarea setării"
   }
 }

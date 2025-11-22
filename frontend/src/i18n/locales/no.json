@@ -154,47 +154,6 @@
     "uploadInProgress": "Opplasting pågår",
     "jobStoppedByUser": "Jobb stoppet av bruker"
   },
-  "branding": {
-    "title": "Merkevarebygging",
-    "description": "Tilpass nettstedets navn, undertittel og avatar",
-    "logo": "Logo",
-    "clickOrDrag": "Klikk eller dra bilde hit",
-    "currentAvatar": "Nåværende avatar",
-    "siteName": "Nettstednavn",
-    "siteNamePlaceholder": "Ditt nettstednavn",
-    "photoLicense": "Fotolisens",
-    "photoLicenseDescription": "Velg hvordan andre kan bruke fotografiene dine",
-    "shuffleHomepage": "Bland startsiden bilder",
-    "shuffleHomepageDescription": "Tilfeldiggjør rekkefølgen på bilder på startsiden hver gang siden lastes",
-    "animatedBackground": "Animasjonsbakgrunn",
-    "animatedBackgroundDescription": "Aktiver fargerik animasjonsbakgrunn på administrasjonspanelet og innloggingssiden",
-    "primaryColor": "Primærfarge",
-    "secondaryColor": "Sekundærfarge",
-    "metaDescription": "Meta-beskrivelse",
-    "metaDescriptionPlaceholder": "Kort beskrivelse av nettstedet ditt for søkemotorer",
-    "metaKeywords": "Meta-nøkkelord",
-    "metaKeywordsPlaceholder": "fotografi, portefølje, ditt navn (kommaseparert)",
-    "language": "Språk",
-    "languageDescription": "Velg standardspråket for nettstedet ditt",
-    "savedSuccessfully": "{{section}} lagret vellykket!",
-    "photoLicenseUpdated": "Fotolisens oppdatert!",
-    "languageUpdated": "Språk oppdatert!",
-    "homepageShuffleSaved": "Innstilling for blanding av startside lagret!",
-    "animatedBackgroundSaved": "Innstilling for animasjonsbakgrunn lagret!",
-    "failedToSave": "Kunne ikke lagre {{section}}",
-    "failedToSaveLicense": "Kunne ikke lagre lisens",
-    "failedToSaveLanguage": "Kunne ikke lagre språk",
-    "failedToSaveSetting": "Kunne ikke lagre innstilling",
-    "errorSavingLicense": "Feil ved lagring av lisens",
-    "errorSavingLanguage": "Feil ved lagring av språk",
-    "errorSavingSetting": "Feil ved lagring av innstilling",
-    "siteNameSaved": "Nettstedsnavn lagret vellykket!",
-    "primaryColorSaved": "Primærfarge lagret vellykket!",
-    "secondaryColorSaved": "Sekundærfarge lagret vellykket!",
-    "metaDescriptionSaved": "Meta-beskrivelse lagret vellykket!",
-    "metaKeywordsSaved": "Meta-nøkkelord lagret vellykket!",
-    "LogoSaved": "Logoen ble lagret med suksess!"
-  },
   "license": {
     "title": "Fotolisens",
     "summary": "Sammendrag",
@@ -404,163 +363,63 @@
     "saved": "{{section}} innstillinger lagret!",
     "failedToSave": "Kunne ikke lagre konfigurasjonen",
     "errorSaving": "Feil ved lagring av konfigurasjon",
-    "notifications": {
-      "title": "Varsler Innstillinger",
-      "description": "Konfigurer hvilke push-varsler du ønsker å motta",
-      "saved": "Varsler innstillinger lagret",
-      "confirmReset": "Tilbakestill alle varsler innstillinger til standard?",
-      "resetSuccess": "Varsler innstillinger tilbakestilt til standard",
-      "resetToDefaults": "Tilbakestill til standard",
-      "enableAll": "Aktiver alt",
-      "disableAll": "Deaktiver alt",
-      "categories": {
-        "security": {
-          "title": "Sikkerhet & Autentisering",
-          "description": "Varsler om brukerkontoer, pålogginger og sikkerhetshendelser"
-        },
-        "content": {
-          "title": "Innholdsadministrasjon",
-          "description": "Varsler om album, bilder og delinger"
-        },
-        "system": {
-          "title": "System & Konfigurasjon",
-          "description": "Varsler om endringer i innstillinger og systemhendelser"
-        }
-      },
-      "types": {
-        "userInvited": {
-          "title": "Bruker Invitert",
-          "description": "Når en administrator inviterer en ny bruker"
-        },
-        "userAcceptedInvite": {
-          "title": "Bruker Blandet",
-          "description": "Når en bruker aksepterer en invitasjon"
-        },
-        "userDeleted": {
-          "title": "Bruker Slettet",
-          "description": "Når en administrator sletter en brukerkonto"
-        },
-        "userRoleChanged": {
-          "title": "Brukerrolle Endret",
-          "description": "Når en brukers rolle endres"
-        },
-        "passkeyCreated": {
-          "title": "Passordnøkkel Opprettet",
-          "description": "Når en bruker registrerer en ny passordnøkkel"
-        },
-        "passkeyDeleted": {
-          "title": "Passordnøkkel Slettet",
-          "description": "Når en bruker fjerner en passordnøkkel"
-        },
-        "mfaEnabled": {
-          "title": "MFA Aktivert",
-          "description": "Når en bruker aktiverer flerfaktorautentisering"
-        },
-        "mfaDisabled": {
-          "title": "MFA Deaktivert",
-          "description": "Når en bruker deaktiverer flerfaktorautentisering"
-        },
-        "passwordChanged": {
-          "title": "Passord Endret",
-          "description": "Når en bruker endrer passordet sitt"
-        },
-        "adminPasswordReset": {
-          "title": "Admin Passord Tilbakestilling",
-          "description": "Når en admin initierer en tilbakestilling av passord"
-        },
-        "failedLoginAttempts": {
-          "title": "Mislykkede Innloggingsforsøk",
-          "description": "Når flere mislykkede innloggingsforsøk oppdages"
-        },
-        "albumCreated": {
-          "title": "Album Opprettet",
-          "description": "Når et nytt album opprettes"
-        },
-        "albumPublished": {
-          "title": "Album publisert",
-          "description": "Når et album gjøres offentlig"
-        },
-        "albumDeleted": {
-          "title": "Album slettet",
-          "description": "Når et album blir slettet"
-        },
-        "largePhotoUpload": {
-          "title": "Stor opplasting",
-          "description": "Når 50+ bilder lastes opp samtidig"
-        },
-        "shareLinkCreated": {
-          "title": "Delingslenke opprettet",
-          "description": "Når en ny delingslenke opprettes"
-        },
-        "shareLinkAccessed": {
-          "title": "Delingslenke åpnet",
-          "description": "Når noen ser et delt album"
-        },
-        "shareLinkExpired": {
-          "title": "Delingslenke utløpt",
-          "description": "Når en delingslenke utløper"
-        },
-        "configUpdated": {
-          "title": "Innstillinger endret",
-          "description": "Når systemkonfigurasjonen oppdateres"
-        },
-        "smtpSettingsChanged": {
-          "title": "SMTP-innstillinger endret",
-          "description": "Når e-postkonfigurasjonen oppdateres"
-        },
-        "openaiApiKeyUpdated": {
-          "title": "AI-innstillinger endret",
-          "description": "Når OpenAI API-nøkkelen oppdateres"
-        },
-        "brandingUpdated": {
-          "title": "Merkevare oppdatert",
-          "description": "Når nettstedets merkevare endres"
-        },
-        "lowDiskSpace": {
-          "title": "Lav diskplass",
-          "description": "Når lagringen er under 10%"
-        },
-        "databaseBackupCompleted": {
-          "title": "Sikkerhetskopiering fullført",
-          "description": "Når sikkerhetskopiering av databasen er ferdig"
-        },
-        "albumUnpublished": {
-          "title": "Album Ikke Publisert",
-          "description": "Når et album gjøres privat"
-        },
-        "folderCreated": {
-          "title": "Mappe Opprettet",
-          "description": "Når en ny mappe opprettes"
-        },
-        "folderPublished": {
-          "title": "Mappe Publisert",
-          "description": "Når en mappe og dens album publiseres"
-        },
-        "folderUnpublished": {
-          "title": "Mappe Ikke Publisert",
-          "description": "Når en mappe og dens album ikke publiseres"
-        },
-        "folderDeleted": {
-          "title": "Mappe Slettet",
-          "description": "Når en mappe slettes"
-        },
-        "homepageUpdated": {
-          "title": "Hjemmeside Oppdatert",
-          "description": "Når album legges til/fjernes fra hjemmesiden"
-        },
-        "versionUpdate": {
-          "title": "Versjonsoppdatering",
-          "description": "Når Galleria oppdateres til en ny versjon"
-        },
-        "photoDownloaded": {
-          "title": "Bilde lastet ned",
-          "description": "Når en besøkende laster ned et bilde (kan være støyende)"
-        },
-        "albumViewMilestone": {
-          "title": "Se milepæler",
-          "description": "Når et album når 100, 1K, eller 10K visninger"
-        }
-      }
+    "home": {
+      "description": "Konfigurer din fotografiportefølje og systeminnstillinger"
+    },
+    "links": {
+      "title": "Lenker",
+      "description": "Eksterne sider og tilpasset navigasjon",
+      "pageDescription": "Administrer eksterne lenker som vises i navigasjonen på nettstedet ditt"
+    },
+    "users": {
+      "title": "Brukere",
+      "description": "Brukeradministrasjon og tilgangskontroll",
+      "pageDescription": "Administrer brukerkontoer, roller og tillatelser"
+    },
+    "openai": {
+      "title": "OpenAI",
+      "description": "AI-drevne bildetitler og beskrivelser",
+      "pageDescription": "Konfigurer OpenAI API for automatisk tittelgenerering"
+    },
+    "imageQuality": {
+      "title": "Bildekvalitet",
+      "description": "Miniatyrbilde- og modal bildeinnstillinger",
+      "pageDescription": "Konfigurer bildekvalitet og dimensjoner"
+    },
+    "videoQuality": {
+      "title": "Videokvalitet",
+      "description": "Videokoding og streaminginnstillinger",
+      "pageDescription": "Konfigurer videokvalitet, bitrater og oppløsninger"
+    },
+    "email": {
+      "title": "E-post",
+      "description": "SMTP-konfigurasjon for invitasjoner",
+      "pageDescription": "Konfigurer SMTP-server for sending av invitasjons- og tilbakestillings-e-poster"
+    },
+    "pushNotifications": {
+      "title": "Push-varsler",
+      "description": "Nettleservarsler for administratorer",
+      "pageDescription": "Konfigurer push-varsler for jobfullføringsvarsler"
+    },
+    "googleOAuth": {
+      "title": "Google OAuth",
+      "description": "Autentisering og autoriserte brukere",
+      "pageDescription": "Konfigurer Google OAuth-legitimasjon og autoriserte e-postadresser"
+    },
+    "analytics": {
+      "title": "Analyse",
+      "description": "Besøkende sporing og OpenObserve",
+      "pageDescription": "Konfigurer analyse sporing og loggaggregasjon"
+    },
+    "logging": {
+      "title": "Logging",
+      "description": "Serverloggnivåer og visning",
+      "pageDescription": "Konfigurer serverloggingsnivå og vis live logger"
+    },
+    "general": {
+      "title": "Generelt",
+      "description": "Nettstedsnavn, logo og utseende",
+      "pageDescription": "Tilpass nettstedets visuelle identitet og generelle innstillinger"
     }
   },
   "advancedSettings": {
@@ -593,7 +452,14 @@
       "forceRegenerateImagesConfirm": "Tving regenerering av ALLE bilder? Dette vil ta litt tid.",
       "runOptimizationConfirm": "Kjør bildeoptimalisering på alle bilder?",
       "optimizedVideos": "Optimaliserte videoer",
-      "forceRegenerateVideosConfirm": "⚠️ Dette vil re-kode ALLE videoer med nåværende kvalitetinnstillinger. Dette er en tidkrevende operasjon og vil midlertidig øke CPU-bruken.\n\nEksisterende videofiler vil bli erstattet. Er du sikker på at du vil fortsette?"
+      "forceRegenerateVideosConfirm": "⚠️ Dette vil re-kode ALLE videoer med nåværende kvalitetinnstillinger. Dette er en tidkrevende operasjon og vil midlertidig øke CPU-bruken.\n\nEksisterende videofiler vil bli erstattet. Er du sikker på at du vil fortsette?",
+      "imageOptimization": "Bildeoptimalisering",
+      "imageOptimizationDescription": "Generer optimaliserte miniatyrbilder og modalbilder for alle bilder i porteføljen din",
+      "optimizeMissing": "Optimaliser manglende bilder",
+      "forceRegenerateImages": "Tving regenerering av alle bilder",
+      "videoOptimization": "Videooptimalisering",
+      "videoOptimizationDescription": "Regenerer HLS master spillelister for alle videoer med nåværende kvalitetsinnstillinger",
+      "regenerateVideoPlaylists": "Regenerer videospillelister"
     }
   },
   "userManagement": {
@@ -983,7 +849,13 @@
     "autoGenerateEnabled": "Automatisk generering av AI-titler aktivert",
     "autoGenerateDisabled": "Automatisk generering av AI-titler deaktivert",
     "invalidApiKey": "Ugyldig OpenAI API-nøkkel. Vennligst sjekk nøkkelen din og prøv igjen.",
-    "failedToUpdate": "Kunne ikke oppdatere innstilling"
+    "failedToUpdate": "Kunne ikke oppdatere innstilling",
+    "generateTitles": {
+      "title": "Generer AI-titler",
+      "description": "Bruk OpenAI til å automatisk generere beskrivende titler for bildene dine",
+      "generateMissing": "Generer manglende titler",
+      "regenerateAll": "Tving regenerering av alle titler"
+    }
   },
   "profile": {
     "failedToStartMfaSetup": "Kunne ikke starte MFA-oppsett",
@@ -1223,6 +1095,45 @@
     "errorRequiredField": "Dette feltet er påkrevd",
     "setupCompleteWaitingRestart": "Oppsett fullført! Venter på at serveren skal starte på nytt..."
   },
+  "email": {
+    "invitation": {
+      "subject": "Du har blitt invitert til {{siteName}}",
+      "title": "Bli med i <strong>{{siteName}}'s Galleria</strong>",
+      "greeting": "Hei,",
+      "body": "{{inviterName}} har invitert deg til å bli med i <strong>{{siteName}}'s Galleria</strong>.",
+      "instructions": "For å akseptere denne invitasjonen og sette opp kontoen din, klikk på knappen nedenfor:",
+      "button": "Aksepter invitasjon",
+      "orCopyLink": "Eller kopier og lim inn denne lenken i nettleseren din:",
+      "expiry": "Denne invitasjonen vil utløpe om 7 dager.",
+      "footerIgnore": "Hvis du ikke forventet denne invitasjonen, kan du trygt ignorere denne e-posten.",
+      "footerAutomatic": "Dette er en automatisk melding, vennligst ikke svar på denne e-posten."
+    },
+    "passwordReset": {
+      "subject": "Passordtilbakestillingsforespørsel - {{siteName}}",
+      "title": "Passordtilbakestillingsforespørsel",
+      "greeting": "Hei {{userName}},",
+      "greetingFallback": "Hei der,",
+      "body": "Vi har mottatt en forespørsel om å tilbakestille passordet ditt for <strong>{{siteName}}'s Galleria</strong>.",
+      "instructions": "For å tilbakestille passordet ditt, klikk på knappen nedenfor:",
+      "button": "Tilbakestill passord",
+      "orCopyLink": "Eller kopier og lim inn denne lenken i nettleseren din:",
+      "warningTitle": "⚠️ Viktig:",
+      "warningExpiry": "Denne lenken vil utløpe om 1 time",
+      "warningIgnore": "Hvis du ikke ba om dette, vennligst ignorer denne e-posten",
+      "warningNoChange": "Passordet ditt vil ikke endres før du oppretter et nytt",
+      "footerAutomatic": "Dette er en automatisert melding, vennligst ikke svar på denne e-posten.",
+      "footerContact": "Hvis du trenger hjelp, vennligst kontakt administratoren din."
+    },
+    "test": {
+      "subject": "Test e-post fra {{siteName}}",
+      "title": "E-postkonfigurasjonstest",
+      "success": "✓",
+      "body1": "Gratulerer! Din SMTP-konfigurasjon fungerer korrekt.",
+      "body2": "Denne test-e-posten ble sendt fra <strong>{{siteName}}</strong> for å bekrefte at e-posttjenesten din er riktig konfigurert og kan levere meldinger.",
+      "footerTimestamp": "Dette er en testmelding sendt kl {{timestamp}}.",
+      "footerIgnore": "Du kan trygt ignorere eller slette denne e-posten."
+    }
+  },
   "testEmailModal": {
     "title": "Send test-e-post",
     "description": "Skriv inn en e-postadresse for å sende en testmelding og bekrefte at SMTP-konfigurasjonen din fungerer som den skal.",
@@ -1314,11 +1225,64 @@
       "errorGenerateKeys": "Kunne ikke generere VAPID-nøkler",
       "close": "Lukk"
     },
+    "backend": {
+      "videoProcessingComplete": "Videobehandling fullført",
+      "videoProcessingFailed": "Videobehandling mislyktes",
+      "videoReprocessingComplete": "Videobehandling fullført",
+      "videoReprocessingFailed": "Videobehandling mislyktes",
+      "imageOptimizationComplete": "Bildeoptimalisering fullført",
+      "imageOptimizationFailed": "Bildeoptimalisering mislyktes",
+      "aiTitlesComplete": "AI tittelgenerering fullført",
+      "aiTitlesFailed": "AI tittelgenerering mislyktes",
+      "testNotificationTitle": "Testvarsling",
+      "testNotificationBody": "Push-varsler fungerer! Du vil motta varsler når behandlingen av jobbene dine er fullført."
+    },
     "blocked": "Varsler blokkert av nettleseren. Sjekk innstillingene i nettleseren din.",
     "subscribePrompt": "Abonner for å motta varsler når jobber er fullført",
     "subscribe": "Abonner",
     "loading": "Laster...",
     "notSupported": "Push-varsler støttes ikke i denne nettleseren",
     "serverDisabled": "Push-varsler er deaktivert på serveren"
+  },
+  "general": {
+    "title": "Generelt",
+    "description": "Tilpass nettstedets navn, undertittel og avatar",
+    "logo": "Logo",
+    "clickOrDrag": "Klikk eller dra bildet hit",
+    "currentAvatar": "Nåværende avatar",
+    "siteName": "Nettstedsnavn",
+    "siteNamePlaceholder": "Ditt nettstedsnavn",
+    "photoLicense": "Fotolisenser",
+    "photoLicenseDescription": "Velg hvordan andre kan bruke fotografiene dine",
+    "shuffleHomepage": "Bland hjemmesidens bilder",
+    "shuffleHomepageDescription": "Randomiser rekkefølgen på bildene på hjemmesiden hver gang siden lastes inn",
+    "animatedBackground": "Animasjonsbakgrunn",
+    "animatedBackgroundDescription": "Aktiver fargerik animert bakgrunn på administrasjonspanelet og innloggingssiden",
+    "primaryColor": "Primærfarge",
+    "secondaryColor": "Sekundærfarge",
+    "metaDescription": "Meta-beskrivelse",
+    "metaDescriptionPlaceholder": "Kort beskrivelse av nettstedet ditt for søkemotorer",
+    "metaKeywords": "Meta Nøkkelord",
+    "metaKeywordsPlaceholder": "fotografi, portefølje, ditt navn (komma separert)",
+    "language": "Språk",
+    "languageDescription": "Velg standardspråket for nettstedet ditt",
+    "savedSuccessfully": "{{section}} lagret med suksess!",
+    "LogoSaved": "Logo lagret med suksess!",
+    "siteNameSaved": "Nettstedsnavn lagret med suksess!",
+    "primaryColorSaved": "Primærfarge lagret med suksess!",
+    "secondaryColorSaved": "Sekundærfarge lagret med suksess!",
+    "metaDescriptionSaved": "Meta Beskrivelse lagret med suksess!",
+    "metaKeywordsSaved": "Meta-nøkkelord lagret med suksess!",
+    "photoLicenseUpdated": "Fotolisenser oppdatert!",
+    "languageUpdated": "Språk oppdatert!",
+    "homepageShuffleSaved": "Innstilling for hjemmesidens blanding lagret!",
+    "animatedBackgroundSaved": "Innstilling for animert bakgrunn lagret!",
+    "failedToSave": "Kunne ikke lagre {{section}}",
+    "failedToSaveLicense": "Kunne ikke lagre lisens",
+    "failedToSaveLanguage": "Kunne ikke lagre språk",
+    "failedToSaveSetting": "Kunne ikke lagre innstilling",
+    "errorSavingLicense": "Feil ved lagring av lisens",
+    "errorSavingLanguage": "Feil ved lagring av språk",
+    "errorSavingSetting": "Feil ved lagring av innstilling"
   }
 }

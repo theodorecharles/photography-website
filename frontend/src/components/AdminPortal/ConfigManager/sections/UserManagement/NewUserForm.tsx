@@ -7,6 +7,7 @@ import { error } from '../../../../../utils/logger';
 interface NewUserFormProps {
   newUser: NewUserState;
   loading: boolean;
+  smtpConfigured: boolean;
   onChange: (newUser: NewUserState) => void;
   onCancel: () => void;
   onSubmit: () => void;
@@ -15,24 +16,21 @@ interface NewUserFormProps {
 export const NewUserForm: React.FC<NewUserFormProps> = ({
   newUser,
   loading,
+  smtpConfigured,
   onChange,
   onCancel,
   onSubmit,
 }) => {
   const { t } = useTranslation();
   const [copied, setCopied] = useState(false);
+  const [inviteCompleted, setInviteCompleted] = useState(false);
   const [showRoleDropdown, setShowRoleDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const handleCopyInvite = async () => {
-    if (!newUser.inviteToken) return;
-    
-    try {
-      await copyInvitationUrl(newUser.inviteToken);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
-      error('Failed to copy invitation link:', err);
+  const handleCopyInvite = () => {
+    // Create the invitation - the useEffect will auto-copy when token is created
+    if (!newUser.inviteToken) {
+      onSubmit();
     }
   };
 
@@ -49,6 +47,24 @@ export const NewUserForm: React.FC<NewUserFormProps> = ({
       return () => document.removeEventListener('mousedown', handleClickOutside);
     }
   }, [showRoleDropdown]);
+
+  // Auto-copy link when invitation token is created (only if SMTP not configured)
+  useEffect(() => {
+    if (newUser.inviteToken && !inviteCompleted && !copied && !smtpConfigured) {
+      // Automatically copy the link when it's created
+      const autoCopy = async () => {
+        try {
+          await copyInvitationUrl(newUser.inviteToken!);
+          setCopied(true);
+          setInviteCompleted(true);
+          setTimeout(() => setCopied(false), 2000);
+        } catch (err) {
+          error('Failed to copy invitation link:', err);
+        }
+      };
+      autoCopy();
+    }
+  }, [newUser.inviteToken, inviteCompleted, copied, smtpConfigured]);
 
   const handleRoleSelect = (role: string) => {
     onChange({ ...newUser, role });
@@ -67,17 +83,8 @@ export const NewUserForm: React.FC<NewUserFormProps> = ({
           placeholder="user@example.com"
           disabled={!!newUser.inviteToken}
         />
-        <p
-          style={{
-            fontSize: '0.85rem',
-            color: '#9ca3af',
-            margin: '0.5rem 0 0 0',
-          }}
-        >
-          {t('userManagement.invitationEmailDescription')}
-        </p>
       </div>
-      <div className="branding-group">
+      <div className="branding-group" style={{ marginTop: '1.5rem' }}>
         <label className="branding-label">{t('userManagement.role')} *</label>
         <div ref={dropdownRef} style={{ position: 'relative' }}>
           <div
@@ -149,42 +156,54 @@ export const NewUserForm: React.FC<NewUserFormProps> = ({
         </div>
       </div>
       
-      {newUser.inviteToken && (
+      {inviteCompleted && (
         <div
           style={{
             background: 'rgba(74, 222, 128, 0.1)',
             border: '1px solid rgba(74, 222, 128, 0.3)',
             borderRadius: '8px',
             padding: '1rem',
+            marginTop: '1.5rem',
             marginBottom: '1rem',
           }}
         >
           <p style={{ margin: 0, fontSize: '0.9rem', color: '#4ade80', lineHeight: 1.6 }}>
-            <strong>{t('userManagement.invitationSent')}</strong>
+            <strong>✓ {t('userManagement.linkCopied')}</strong>
             <br />
-            {t('userManagement.copyInvitationLinkManually')}
+            {t('userManagement.shareLinkWithUser')}
           </p>
         </div>
       )}
 
-      <div className="section-button-group">
-        <button onClick={onCancel} className="btn-secondary" disabled={loading}>
-          {newUser.inviteToken ? t('common.close') : t('common.cancel')}
-        </button>
-        {!newUser.inviteToken ? (
-          <button onClick={onSubmit} className="btn-primary" disabled={loading}>
-            {loading ? t('userManagement.sending') : t('userManagement.sendInvitation')}
+      <div 
+        className="section-button-group new-user-button-group"
+        style={{ marginTop: '1.5rem' }}
+      >
+        {inviteCompleted ? (
+          // After copying: Show only Close button
+          <button onClick={onCancel} className="btn-primary" style={{ width: '100%' }}>
+            {t('common.close')}
           </button>
         ) : (
-          <button 
-            onClick={handleCopyInvite} 
-            className="btn-primary"
-            style={{
-              background: copied ? '#4ade80' : 'var(--primary-color)',
-            }}
-          >
-            {copied ? t('photo.copied') : t('userManagement.copyInvitationLinkButton')}
-          </button>
+          <>
+            <button onClick={onCancel} className="btn-secondary" disabled={loading}>
+              {t('common.cancel')}
+            </button>
+            <button 
+              onClick={handleCopyInvite} 
+              className="btn-primary"
+              disabled={loading}
+              style={{
+                background: copied ? '#4ade80' : 'var(--primary-color)',
+              }}
+            >
+              {loading 
+                ? (smtpConfigured ? t('userManagement.sending') : t('userManagement.creating'))
+                : copied 
+                  ? t('photo.copied') 
+                  : (smtpConfigured ? t('userManagement.sendInvitation') : t('userManagement.copyInvitationLinkButton'))}
+            </button>
+          </>
         )}
       </div>
     </>

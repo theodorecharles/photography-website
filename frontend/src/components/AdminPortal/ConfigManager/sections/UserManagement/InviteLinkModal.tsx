@@ -34,18 +34,18 @@ export const InviteLinkModal: React.FC<InviteLinkModalProps> = ({
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div
-        className="share-modal"
+        className="generic-modal"
         onClick={(e) => e.stopPropagation()}
         style={{ maxWidth: '600px' }}
       >
-        <div className="share-modal-header">
+        <div className="generic-modal-header">
           <h2>📧 {t('userManagement.invitationLink')}</h2>
           <button className="close-button" onClick={onClose} aria-label={t('common.close')}>
             ×
           </button>
         </div>
 
-        <div className="share-modal-content">
+        <div className="generic-modal-content">
           <div
             style={{
               background: 'rgba(255, 200, 0, 0.1)',

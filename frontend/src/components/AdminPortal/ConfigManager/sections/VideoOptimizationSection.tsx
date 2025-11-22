@@ -3,12 +3,11 @@
  * Manages video quality and streaming settings
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { API_URL } from '../../../../config';
 import { ConfigData } from '../types';
 import { trackConfigSettingsSaved } from '../../../../utils/analytics';
-import SectionHeader from '../components/SectionHeader';
 import { error } from '../../../../utils/logger';
 import '../../AlbumsManager.css'; // For toggle switch styles
 
@@ -21,7 +20,6 @@ interface VideoOptimizationSectionProps {
   savingSection: string | null;
   setSavingSection: (section: string | null) => void;
   setMessage: (message: { type: "success" | "error"; text: string }) => void;
-  onNavigateToAdvanced: () => void;
 }
 
 const VideoOptimizationSection: React.FC<VideoOptimizationSectionProps> = ({
@@ -32,10 +30,9 @@ const VideoOptimizationSection: React.FC<VideoOptimizationSectionProps> = ({
   savingSection,
   setSavingSection,
   setMessage,
-  onNavigateToAdvanced,
 }) => {
   const { t } = useTranslation();
-  const [showVideoOptimization, setShowVideoOptimization] = useState(false);
+  const [isAutoSaving, setIsAutoSaving] = React.useState(false);
 
   const updateConfig = (path: string[], value: any) => {
     if (!config) return;
@@ -151,70 +148,24 @@ const VideoOptimizationSection: React.FC<VideoOptimizationSectionProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const hasVideoChanges = JSON.stringify(config?.environment?.optimization?.video) !== 
-                          JSON.stringify(originalConfig?.environment?.optimization?.video);
-
   // Check for changes in HLS settings only
   const hasHLSChanges = config?.environment?.optimization?.video?.segmentDuration !==
                         originalConfig?.environment?.optimization?.video?.segmentDuration;
+
+  // Check for changes in hardware transcoding only
+  const hasHardwareTranscodingChanges = config?.environment?.optimization?.video?.hardwareAcceleration !==
+                                        originalConfig?.environment?.optimization?.video?.hardwareAcceleration;
 
   // Check for changes in resolutions only
   const hasResolutionChanges = JSON.stringify(config?.environment?.optimization?.video?.resolutions) !==
                                JSON.stringify(originalConfig?.environment?.optimization?.video?.resolutions);
 
   return (
-    <div className="config-group full-width">
-      <SectionHeader
-        title={t('videoOptimization.title')}
-        description={t('videoOptimization.description')}
-        isExpanded={showVideoOptimization}
-        onToggle={() => setShowVideoOptimization(!showVideoOptimization)}
-      />
-
-      <div
-        className={`collapsible-content ${
-          showVideoOptimization ? "expanded" : "collapsed"
-        }`}
-        style={{
-          maxHeight: showVideoOptimization ? "10000px" : "0",
-        }}
-      >
+    <>
         {/* Grid of optimization subsections */}
         <div className="config-grid-inner">
-          
-          {/* Warning Note */}
-          <div style={{ gridColumn: '1 / -1' }}>
-            <div style={{
-              padding: '1rem',
-              background: 'rgba(255, 193, 7, 0.1)',
-              border: '1px solid rgba(255, 193, 7, 0.3)',
-              borderRadius: '8px',
-              fontSize: '0.875rem',
-              color: 'rgba(255, 193, 7, 0.9)',
-              height: 'fit-content',
-            }}>
-              <div style={{ marginBottom: '0.75rem' }}>
-                <strong>⚠️ {t('common.note')}:</strong> {t('videoOptimization.warningNote')}
-              </div>
-              <button
-                onClick={onNavigateToAdvanced}
-                className="btn-secondary"
-                style={{
-                  fontSize: '0.85rem',
-                  padding: '0.5rem 0.75rem',
-                  width: '100%',
-                  background: 'rgba(255, 193, 7, 0.15)',
-                  border: '1px solid rgba(255, 193, 7, 0.5)',
-                  color: 'rgba(255, 193, 7, 1)',
-                }}
-              >
-                🎯 {t('videoOptimization.forceRegenerate')}
-              </button>
-            </div>
-          </div>
-
-          {/* HLS Settings */}
-          <div className="settings-section" style={{ gridColumn: '1 / -1' }}>
+          {/* Segment Duration */}
+          <div className="settings-section">
             <div
               style={{
                 display: "flex",
@@ -223,7 +174,7 @@ const VideoOptimizationSection: React.FC<VideoOptimizationSectionProps> = ({
                 marginBottom: "0.75rem",
               }}
             >
-              <label className="settings-section-label">{t('videoOptimization.hlsStreaming')}</label>
+              <label className="settings-section-label">{t('videoOptimization.segmentDuration')}</label>
               {hasHLSChanges && (
                 <div style={{ display: "flex", gap: "0.5rem" }}>
                   <button
@@ -244,7 +195,7 @@ const VideoOptimizationSection: React.FC<VideoOptimizationSectionProps> = ({
                   </button>
                   <button
                     type="button"
-                    onClick={() => handleSaveSection(t('videoOptimization.hlsStreamingSection'))}
+                    onClick={() => handleSaveSection(t('videoOptimization.segmentDurationSection'))}
                     disabled={savingSection !== null}
                     className="btn-primary"
                     style={{
@@ -252,28 +203,36 @@ const VideoOptimizationSection: React.FC<VideoOptimizationSectionProps> = ({
                       fontSize: "0.85rem",
                     }}
                   >
-                    {savingSection === t('videoOptimization.hlsStreamingSection') ? t('common.saving') : t('common.save')}
+                    {savingSection === t('videoOptimization.segmentDurationSection') ? t('common.saving') : t('common.save')}
                   </button>
                 </div>
               )}
             </div>
-            <p style={{
-              fontSize: '0.85rem',
-              color: '#888',
-              marginTop: '0',
-              marginBottom: '1rem',
-            }}>
-              {t('videoOptimization.hlsDescription')}
-            </p>
             <div className="branding-group">
-              <label className="branding-label">{t('videoOptimization.segmentDuration')}</label>
               <input
                 type="number"
                 min="1"
                 max="10"
                 step="1"
                 value={segmentDuration}
-                onChange={(e) => updateConfig(['environment', 'optimization', 'video', 'segmentDuration'], parseInt(e.target.value))}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value === '') {
+                    updateConfig(['environment', 'optimization', 'video', 'segmentDuration'], '');
+                  } else {
+                    updateConfig(['environment', 'optimization', 'video', 'segmentDuration'], parseInt(value));
+                  }
+                }}
+                onBlur={(e) => {
+                  const value = e.target.value;
+                  if (value === '' || isNaN(parseInt(value))) {
+                    updateConfig(['environment', 'optimization', 'video', 'segmentDuration'], 4);
+                  } else {
+                    const parsed = parseInt(value);
+                    if (parsed < 1) updateConfig(['environment', 'optimization', 'video', 'segmentDuration'], 1);
+                    else if (parsed > 10) updateConfig(['environment', 'optimization', 'video', 'segmentDuration'], 10);
+                  }
+                }}
                 className="branding-input"
               />
               <p style={{
@@ -284,6 +243,70 @@ const VideoOptimizationSection: React.FC<VideoOptimizationSectionProps> = ({
               }}>
                 {t('videoOptimization.segmentDurationHelp')}
               </p>
+            </div>
+          </div>
+
+          {/* Hardware Transcoding */}
+          <div className="settings-section">
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: "0.75rem",
+              }}
+            >
+              <label className="settings-section-label">{t('videoOptimization.hardwareTranscoding')}</label>
+              {hasHardwareTranscodingChanges && (
+                <div style={{ display: "flex", gap: "0.5rem" }}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (originalConfig) {
+                        setConfig(structuredClone(originalConfig));
+                      }
+                    }}
+                    disabled={savingSection !== null}
+                    className="btn-secondary"
+                    style={{
+                      padding: "0.4rem 0.8rem",
+                      fontSize: "0.85rem",
+                    }}
+                  >
+                    {t('common.cancel')}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleSaveSection(t('videoOptimization.hardwareTranscodingSection'))}
+                    disabled={savingSection !== null}
+                    className="btn-primary"
+                    style={{
+                      padding: "0.4rem 0.8rem",
+                      fontSize: "0.85rem",
+                    }}
+                  >
+                    {savingSection === t('videoOptimization.hardwareTranscodingSection') ? t('common.saving') : t('common.save')}
+                  </button>
+                </div>
+              )}
+            </div>
+            <div className="ai-toggle-container">
+              <div className="ai-toggle-label">
+                <p className="ai-toggle-title">{t('videoOptimization.hardwareTranscodingDescription')}</p>
+              </div>
+              <div className="ai-toggle-controls">
+                <label className="toggle-switch">
+                  <input
+                    type="checkbox"
+                    checked={config?.environment?.optimization?.video?.hardwareAcceleration || false}
+                    onChange={(e) => updateConfig(['environment', 'optimization', 'video', 'hardwareAcceleration'], e.target.checked)}
+                  />
+                  <span className="toggle-slider"></span>
+                  <span className="toggle-label">
+                    {config?.environment?.optimization?.video?.hardwareAcceleration ? t('common.enabled') : t('common.disabled')}
+                  </span>
+                </label>
+              </div>
             </div>
           </div>
 
@@ -298,7 +321,7 @@ const VideoOptimizationSection: React.FC<VideoOptimizationSectionProps> = ({
               }}
             >
               <label className="settings-section-label">{t('videoOptimization.videoResolutions')}</label>
-              {hasResolutionChanges && (
+              {hasResolutionChanges && !isAutoSaving && (
                 <div style={{ display: "flex", gap: "0.5rem" }}>
                   <button
                     type="button"
@@ -363,36 +386,68 @@ const VideoOptimizationSection: React.FC<VideoOptimizationSectionProps> = ({
                   paddingBottom: res.enabled ? '0.75rem' : '0',
                   borderBottom: res.enabled ? '1px solid rgba(255, 255, 255, 0.1)' : 'none'
                 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <span style={{
-                      fontSize: '0.9rem',
-                      fontWeight: 600,
-                      color: res.enabled ? '#fff' : 'rgba(255, 255, 255, 0.5)',
-                      transition: 'color 0.3s ease',
-                    }}>
-                      {name}
-                    </span>
-                    <span style={{
-                      fontSize: '0.75rem',
-                      color: 'rgba(255, 255, 255, 0.4)',
-                      fontWeight: 400,
-                    }}>
-                      {res.height}p
-                    </span>
-                  </div>
+                  <span style={{
+                    fontSize: '0.9rem',
+                    fontWeight: 600,
+                    color: res.enabled ? '#fff' : 'rgba(255, 255, 255, 0.5)',
+                    transition: 'color 0.3s ease',
+                  }}>
+                    {name}
+                  </span>
                   
-                  <label className="toggle-switch">
-                    <input
-                      type="checkbox"
-                      checked={res.enabled}
-                      onChange={(e) => updateConfig(
-                        ['environment', 'optimization', 'video', 'resolutions', name, 'enabled'],
-                        e.target.checked
-                      )}
-                    />
-                    <span className="toggle-slider"></span>
-                    <span className="toggle-label" style={{ minWidth: '60px' }}>{res.enabled ? t('videoOptimization.on') : t('videoOptimization.off')}</span>
-                  </label>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <span style={{ 
+                      fontSize: '0.85rem', 
+                      color: 'rgba(255, 255, 255, 0.7)',
+                      minWidth: '30px',
+                      textAlign: 'right',
+                    }}>
+                      {res.enabled ? t('videoOptimization.on') : t('videoOptimization.off')}
+                    </span>
+                    <label className="toggle-switch">
+                      <input
+                        type="checkbox"
+                        checked={res.enabled}
+                        onChange={async (e) => {
+                          const newValue = e.target.checked;
+                          
+                          // Set auto-saving flag to prevent buttons from flashing
+                          setIsAutoSaving(true);
+                          
+                          // Update local state
+                          if (!config) return;
+                          const newConfig = JSON.parse(JSON.stringify(config));
+                          if (!newConfig.environment?.optimization?.video?.resolutions?.[name]) return;
+                          newConfig.environment.optimization.video.resolutions[name].enabled = newValue;
+                          setConfig(newConfig);
+                          
+                          // Auto-save
+                          setSavingSection('Video Resolutions');
+                          try {
+                            const res = await fetch(`${API_URL}/api/config`, {
+                              method: "PUT",
+                              headers: { "Content-Type": "application/json" },
+                              credentials: "include",
+                              body: JSON.stringify(newConfig),
+                            });
+                            if (res.ok) {
+                              setOriginalConfig(structuredClone(newConfig));
+                              setMessage({ type: "success", text: t('settings.saved', { section: 'Video Resolutions' }) });
+                            } else {
+                              setMessage({ type: "error", text: t('settings.failedToSave') });
+                            }
+                          } catch (err) {
+                            error("[VideoOptimization] Failed to save config:", err);
+                            setMessage({ type: "error", text: t('settings.failedToSave') });
+                          } finally {
+                            setSavingSection(null);
+                            setIsAutoSaving(false);
+                          }
+                        }}
+                      />
+                      <span className="toggle-slider"></span>
+                    </label>
+                  </div>
                 </div>
 
                 {res.enabled && (
@@ -422,7 +477,7 @@ const VideoOptimizationSection: React.FC<VideoOptimizationSectionProps> = ({
                       </p>
                     </div>
 
-                    <div className="branding-group">
+                    <div className="branding-group" style={{ marginTop: '1rem' }}>
                       <label className="branding-label">{t('videoOptimization.audioBitrate')}</label>
                       <input
                         type="text"
@@ -452,34 +507,9 @@ const VideoOptimizationSection: React.FC<VideoOptimizationSectionProps> = ({
             )}
             )}
             </div>
-
-            {/* Save and Cancel Buttons - Only show when there are changes */}
-            {hasVideoChanges && (
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', paddingTop: '1rem', marginTop: '1rem', borderTop: '1px solid rgba(255, 255, 255, 0.1)' }}>
-                <button
-                  onClick={() => {
-                    if (originalConfig) {
-                      setConfig(structuredClone(originalConfig));
-                    }
-                  }}
-                  disabled={savingSection === 'Video Optimization'}
-                  className="btn-secondary"
-                >
-                  {t('common.cancel')}
-                </button>
-                <button
-                  onClick={() => handleSaveSection('Video Optimization')}
-                  disabled={savingSection === 'Video Optimization'}
-                  className="btn-primary"
-                >
-                  {savingSection === 'Video Optimization' ? t('common.saving') : t('common.save')}
-                </button>
-              </div>
-            )}
           </div>
         </div>
-      </div>
-    </div>
+    </>
   );
 };
 

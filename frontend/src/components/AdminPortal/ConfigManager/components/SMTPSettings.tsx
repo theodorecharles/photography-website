@@ -313,34 +313,8 @@ const SMTPSettings: React.FC<SMTPSettingsProps> = ({
   };
 
   return (
-    <div className="settings-section" style={{ marginBottom: '2rem' }} ref={sectionRef}>
-      <label className="settings-section-label" style={{ marginBottom: '0.75rem' }}>
-        {t('smtpSettings.title')}
-        {isConfigured && (
-          <span
-            style={{
-              marginLeft: '0.5rem',
-              fontSize: '0.75rem',
-              color: '#4ade80',
-              fontWeight: 'normal',
-            }}
-          >
-            {t('smtpSettings.configured')}
-          </span>
-        )}
-      </label>
-      <p
-        style={{
-          fontSize: '0.85rem',
-          color: '#888',
-          marginTop: '0',
-          marginBottom: '1rem',
-        }}
-      >
-        {t('smtpSettings.description')}
-      </p>
-      
-      {/* Action buttons below description */}
+    <div ref={sectionRef}>
+      {/* Action buttons */}
       {isConfigured && emailConfig.enabled && (
         <div className="smtp-action-buttons" style={{ marginBottom: '1.5rem' }}>
           <button

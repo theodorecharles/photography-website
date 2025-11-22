@@ -154,47 +154,6 @@
     "uploadInProgress": "Uppladdning pågår",
     "jobStoppedByUser": "Jobbet stoppades av användaren"
   },
-  "branding": {
-    "title": "Varumärke",
-    "description": "Anpassa din webbplats namn, undertitel och avatar",
-    "logo": "Logotyp",
-    "clickOrDrag": "Klicka eller dra bilden hit",
-    "currentAvatar": "Nuvarande avatar",
-    "siteName": "Webbplatsens namn",
-    "siteNamePlaceholder": "Ditt webbplatsnamn",
-    "photoLicense": "Fotolicens",
-    "photoLicenseDescription": "Välj hur andra kan använda dina fotografier",
-    "shuffleHomepage": "Blanda startsidans foton",
-    "shuffleHomepageDescription": "Slumpa ordningen på foton på startsidan varje gång sidan laddas",
-    "animatedBackground": "Animerad Bakgrund",
-    "animatedBackgroundDescription": "Aktivera färgglad animerad bakgrund på administrationspanelen och inloggningssidan",
-    "primaryColor": "Primär färg",
-    "secondaryColor": "Sekundär färg",
-    "metaDescription": "Meta beskrivning",
-    "metaDescriptionPlaceholder": "Kort beskrivning av din webbplats för sökmotorer",
-    "metaKeywords": "Meta nyckelord",
-    "metaKeywordsPlaceholder": "fotografi, portfölj, ditt namn (kommaseparerade)",
-    "language": "Språk",
-    "languageDescription": "Välj standardspråk för din webbplats",
-    "savedSuccessfully": "{{section}} sparades framgångsrikt!",
-    "photoLicenseUpdated": "Fotolicens uppdaterad!",
-    "languageUpdated": "Språk uppdaterat!",
-    "homepageShuffleSaved": "Inställning för blandning av startsidan sparad!",
-    "animatedBackgroundSaved": "Inställning för animerad bakgrund sparad!",
-    "failedToSave": "Misslyckades med att spara {{section}}",
-    "failedToSaveLicense": "Misslyckades med att spara licens",
-    "failedToSaveLanguage": "Misslyckades med att spara språk",
-    "failedToSaveSetting": "Misslyckades med att spara inställning",
-    "errorSavingLicense": "Fel vid sparande av licens",
-    "errorSavingLanguage": "Fel vid sparande av språk",
-    "errorSavingSetting": "Fel vid sparande av inställning",
-    "siteNameSaved": "Webbplatsnamn har sparats framgångsrikt!",
-    "primaryColorSaved": "Primär färg har sparats framgångsrikt!",
-    "secondaryColorSaved": "Sekundär färg har sparats framgångsrikt!",
-    "metaDescriptionSaved": "Meta-beskrivning har sparats framgångsrikt!",
-    "metaKeywordsSaved": "Meta-nyckelord har sparats framgångsrikt!",
-    "LogoSaved": "Logotypen har sparats framgångsrikt!"
-  },
   "license": {
     "title": "Fotolicens",
     "summary": "Sammanfattning",
@@ -404,163 +363,63 @@
     "saved": "{{section}} inställningar sparade!",
     "failedToSave": "Misslyckades med att spara konfigurationen",
     "errorSaving": "Fel vid sparande av konfiguration",
-    "notifications": {
-      "title": "Notifikationsinställningar",
-      "description": "Konfigurera vilka push-notifikationer du vill ta emot",
-      "saved": "Notifikationsinställningar sparade",
-      "confirmReset": "Återställ alla notifikationsinställningar till standard?",
-      "resetSuccess": "Notifikationsinställningar återställda till standard",
-      "resetToDefaults": "Återställ till standard",
-      "enableAll": "Aktivera alla",
-      "disableAll": "Inaktivera alla",
-      "categories": {
-        "security": {
-          "title": "Säkerhet & Autentisering",
-          "description": "Notifikationer om användarkonton, inloggningar och säkerhetshändelser"
-        },
-        "content": {
-          "title": "Innehållshantering",
-          "description": "Meddelanden om album, foton och delningar"
-        },
-        "system": {
-          "title": "System & Konfiguration",
-          "description": "Meddelanden om inställningsändringar och systemhändelser"
-        }
-      },
-      "types": {
-        "userInvited": {
-          "title": "Användare inbjuden",
-          "description": "När en administratör bjuder in en ny användare"
-        },
-        "userAcceptedInvite": {
-          "title": "Användare gick med",
-          "description": "När en användare accepterar en inbjudan"
-        },
-        "userDeleted": {
-          "title": "Användare raderad",
-          "description": "När en administratör raderar ett användarkonto"
-        },
-        "userRoleChanged": {
-          "title": "Användarroll Ändrad",
-          "description": "När en användares roll ändras"
-        },
-        "passkeyCreated": {
-          "title": "Passnyckel Skapad",
-          "description": "När en användare registrerar en ny passnyckel"
-        },
-        "passkeyDeleted": {
-          "title": "Passnyckel Borttagen",
-          "description": "När en användare tar bort en passnyckel"
-        },
-        "mfaEnabled": {
-          "title": "MFA Aktiverad",
-          "description": "När en användare aktiverar flerfaktorsautentisering"
-        },
-        "mfaDisabled": {
-          "title": "MFA Avaktiverad",
-          "description": "När en användare avaktiverar flerfaktorsautentisering"
-        },
-        "passwordChanged": {
-          "title": "Lösenordet har ändrats",
-          "description": "När en användare ändrar sitt lösenord"
-        },
-        "adminPasswordReset": {
-          "title": "Återställning av administratörslösenord",
-          "description": "När en administratör initierar en återställning av lösenord"
-        },
-        "failedLoginAttempts": {
-          "title": "Misslyckade inloggningsförsök",
-          "description": "När flera misslyckade inloggningsförsök upptäckts"
-        },
-        "albumCreated": {
-          "title": "Album skapat",
-          "description": "När ett nytt album har skapats"
-        },
-        "albumPublished": {
-          "title": "Album Publicerad",
-          "description": "När ett album görs offentligt"
-        },
-        "albumDeleted": {
-          "title": "Album Raderat",
-          "description": "När ett album raderas"
-        },
-        "largePhotoUpload": {
-          "title": "Större Uppladdning",
-          "description": "När 50+ foton laddas upp på en gång"
-        },
-        "shareLinkCreated": {
-          "title": "Dela Länk Skapad",
-          "description": "När en ny delningslänk skapas"
-        },
-        "shareLinkAccessed": {
-          "title": "Dela Länk Åtkommet",
-          "description": "När någon visar ett delat album"
-        },
-        "shareLinkExpired": {
-          "title": "Dela länk har gått ut",
-          "description": "När en delningslänk går ut"
-        },
-        "configUpdated": {
-          "title": "Inställningar ändrade",
-          "description": "När systemkonfigurationen uppdateras"
-        },
-        "smtpSettingsChanged": {
-          "title": "SMTP-inställningar ändrade",
-          "description": "När e-postkonfigurationen uppdateras"
-        },
-        "openaiApiKeyUpdated": {
-          "title": "AI-inställningar ändrade",
-          "description": "När OpenAI API-nyckeln uppdateras"
-        },
-        "brandingUpdated": {
-          "title": "Varumärke uppdaterat",
-          "description": "När webbplatsens varumärke ändras"
-        },
-        "lowDiskSpace": {
-          "title": "Låg diskutrymme",
-          "description": "När lagringen är under 10%"
-        },
-        "databaseBackupCompleted": {
-          "title": "Säkerhetskopiering klar",
-          "description": "När databasens säkerhetskopiering är klar"
-        },
-        "albumUnpublished": {
-          "title": "Album Ej Publicerat",
-          "description": "När ett album görs privat"
-        },
-        "folderCreated": {
-          "title": "Mapp Skapad",
-          "description": "När en ny mapp skapas"
-        },
-        "folderPublished": {
-          "title": "Mapp Publicerad",
-          "description": "När en mapp och dess album publiceras"
-        },
-        "folderUnpublished": {
-          "title": "Mapp Ej Publicerad",
-          "description": "När en mapp och dess album avpubliceras"
-        },
-        "folderDeleted": {
-          "title": "Mapp Raderad",
-          "description": "När en mapp raderas"
-        },
-        "homepageUpdated": {
-          "title": "Startsida Uppdaterad",
-          "description": "När album läggs till/tas bort från startsidan"
-        },
-        "versionUpdate": {
-          "title": "Versionsuppdatering",
-          "description": "När Galleria uppdateras till en ny version"
-        },
-        "photoDownloaded": {
-          "title": "Foto nedladdad",
-          "description": "När en besökare laddar ner ett foto (kan vara bullrigt)"
-        },
-        "albumViewMilestone": {
-          "title": "Visa milstolpar",
-          "description": "När ett album når 100, 1K eller 10K visningar"
-        }
-      }
+    "home": {
+      "description": "Konfigurera din fotografiportfölj och systeminställningar"
+    },
+    "links": {
+      "title": "Länkar",
+      "description": "Externa sidor och anpassad navigering",
+      "pageDescription": "Hantera externa länkar som visas i din webbplats navigering"
+    },
+    "users": {
+      "title": "Användare",
+      "description": "Användarhantering och åtkomstkontroll",
+      "pageDescription": "Hantera användarkonton, roller och behörigheter"
+    },
+    "openai": {
+      "title": "OpenAI",
+      "description": "AI-drivna fototitlar och beskrivningar",
+      "pageDescription": "Konfigurera OpenAI API för automatisk titelgenerering"
+    },
+    "imageQuality": {
+      "title": "Bildkvalitet",
+      "description": "Miniatyr- och modalbildinställningar",
+      "pageDescription": "Konfigurera bildoptimeringskvalitet och dimensioner"
+    },
+    "videoQuality": {
+      "title": "Videokvalitet",
+      "description": "Inställningar för videokodning och streaming",
+      "pageDescription": "Konfigurera videokvalitet, bithastigheter och upplösningar"
+    },
+    "email": {
+      "title": "E-post",
+      "description": "SMTP-konfiguration för inbjudningar",
+      "pageDescription": "Konfigurera SMTP-server för att skicka inbjudningar och e-post för återställning av lösenord"
+    },
+    "pushNotifications": {
+      "title": "Push-notiser",
+      "description": "Webbläsarnotiser för administratörer",
+      "pageDescription": "Konfigurera push-notiser för aviseringar om jobbfärdigställande"
+    },
+    "googleOAuth": {
+      "title": "Google OAuth",
+      "description": "Autentisering och auktoriserade användare",
+      "pageDescription": "Konfigurera Google OAuth-referenser och auktoriserade e-postadresser"
+    },
+    "analytics": {
+      "title": "Analys",
+      "description": "Besöksspårning och OpenObserve",
+      "pageDescription": "Konfigurera analysövervakning och loggaggregat"
+    },
+    "logging": {
+      "title": "Loggning",
+      "description": "Serverloggnivåer och visare",
+      "pageDescription": "Konfigurera serverloggningens detaljeringsgrad och visa live-loggar"
+    },
+    "general": {
+      "title": "Allmänt",
+      "description": "Webbplatsnamn, logotyp och utseende",
+      "pageDescription": "Anpassa din webbplats visuella identitet och allmänna inställningar"
     }
   },
   "advancedSettings": {
@@ -593,7 +452,14 @@
       "forceRegenerateImagesConfirm": "Tvinga att återskapa ALLA bilder? Detta kommer att ta en stund.",
       "runOptimizationConfirm": "Kör bildoptimering på alla foton?",
       "optimizedVideos": "Optimerade videor",
-      "forceRegenerateVideosConfirm": "⚠️ Detta kommer att omkoda ALLA videor med nuvarande kvalitetsinställningar. Detta är en tidskrävande operation och kommer tillfälligt att öka CPU-användningen.\n\nBefintliga videofiler kommer att ersättas. Är du säker på att du vill fortsätta?"
+      "forceRegenerateVideosConfirm": "⚠️ Detta kommer att omkoda ALLA videor med nuvarande kvalitetsinställningar. Detta är en tidskrävande operation och kommer tillfälligt att öka CPU-användningen.\n\nBefintliga videofiler kommer att ersättas. Är du säker på att du vill fortsätta?",
+      "imageOptimization": "Bildoptimering",
+      "imageOptimizationDescription": "Generera optimerade miniatyrer och modalbilder för alla foton i din portfölj",
+      "optimizeMissing": "Optimera saknade bilder",
+      "forceRegenerateImages": "Tvinga att regenerera alla bilder",
+      "videoOptimization": "Videoinställning",
+      "videoOptimizationDescription": "Regenerera HLS master spellistor för alla videor med aktuella kvalitetsinställningar",
+      "regenerateVideoPlaylists": "Regenerera videospelistor"
     }
   },
   "userManagement": {
@@ -983,7 +849,13 @@
     "autoGenerateEnabled": "Automatisk generering av AI-titlar aktiverad",
     "autoGenerateDisabled": "Automatisk generering av AI-titlar inaktiverad",
     "invalidApiKey": "Ogiltig OpenAI API-nyckel. Kontrollera din nyckel och försök igen.",
-    "failedToUpdate": "Det gick inte att uppdatera inställningen"
+    "failedToUpdate": "Det gick inte att uppdatera inställningen",
+    "generateTitles": {
+      "title": "Generera AI-titlar",
+      "description": "Använd OpenAI för att automatiskt generera beskrivande titlar för dina foton",
+      "generateMissing": "Generera saknade titlar",
+      "regenerateAll": "Tvinga att regenerera alla titlar"
+    }
   },
   "profile": {
     "failedToStartMfaSetup": "Misslyckades med att starta MFA-inställning",
@@ -1223,6 +1095,45 @@
     "errorRequiredField": "Detta fält är obligatoriskt",
     "setupCompleteWaitingRestart": "Installation klar! Väntar på att servern ska starta om..."
   },
+  "email": {
+    "invitation": {
+      "subject": "Du har blivit inbjuden till {{siteName}}",
+      "title": "Gå med i <strong>{{siteName}}'s Galleria</strong>",
+      "greeting": "Hej,",
+      "body": "{{inviterName}} har bjudit in dig att gå med i <strong>{{siteName}}'s Galleria</strong>.",
+      "instructions": "För att acceptera denna inbjudan och skapa ditt konto, klicka på knappen nedan:",
+      "button": "Acceptera inbjudan",
+      "orCopyLink": "Eller kopiera och klistra in denna länk i din webbläsare:",
+      "expiry": "Denna inbjudan kommer att gå ut om 7 dagar.",
+      "footerIgnore": "Om du inte förväntade dig denna inbjudan kan du säkert ignorera detta e-postmeddelande.",
+      "footerAutomatic": "Detta är ett automatiskt meddelande, vänligen svara inte på detta e-postmeddelande."
+    },
+    "passwordReset": {
+      "subject": "Återställningsbegäran av lösenord - {{siteName}}",
+      "title": "Återställningsbegäran av lösenord",
+      "greeting": "Hej {{userName}},",
+      "greetingFallback": "Hej där,",
+      "body": "Vi har mottagit en begäran om att återställa ditt lösenord för <strong>{{siteName}}'s Galleria</strong>.",
+      "instructions": "För att återställa ditt lösenord, klicka på knappen nedan:",
+      "button": "Återställ lösenord",
+      "orCopyLink": "Eller kopiera och klistra in denna länk i din webbläsare:",
+      "warningTitle": "⚠️ Viktigt:",
+      "warningExpiry": "Denna länk kommer att gå ut om 1 timme",
+      "warningIgnore": "Om du inte begärde detta, vänligen ignorera detta e-postmeddelande",
+      "warningNoChange": "Ditt lösenord kommer inte att ändras förrän du skapar ett nytt",
+      "footerAutomatic": "Detta är ett automatiserat meddelande, vänligen svara inte på detta e-postmeddelande.",
+      "footerContact": "Om du behöver hjälp, vänligen kontakta din administratör."
+    },
+    "test": {
+      "subject": "Test-e-post från {{siteName}}",
+      "title": "E-postkonfigurationstest",
+      "success": "✓",
+      "body1": "Grattis! Din SMTP-konfiguration fungerar korrekt.",
+      "body2": "Detta test-e-postmeddelande skickades från <strong>{{siteName}}</strong> för att verifiera att din e-posttjänst är korrekt konfigurerad och kan leverera meddelanden.",
+      "footerTimestamp": "Detta är ett testmeddelande skickat vid {{timestamp}}.",
+      "footerIgnore": "Du kan säkert ignorera eller radera detta e-postmeddelande."
+    }
+  },
   "testEmailModal": {
     "title": "Skicka test-e-post",
     "description": "Ange en e-postadress för att skicka ett testmeddelande och verifiera att din SMTP-konfiguration fungerar korrekt.",
@@ -1314,11 +1225,64 @@
       "errorGenerateKeys": "Misslyckades med att generera VAPID-nycklar",
       "close": "Stäng"
     },
+    "backend": {
+      "videoProcessingComplete": "Videobehandling slutförd",
+      "videoProcessingFailed": "Videobehandling misslyckades",
+      "videoReprocessingComplete": "Videorebearbetning slutförd",
+      "videoReprocessingFailed": "Videorebearbetning misslyckades",
+      "imageOptimizationComplete": "Bildoptimering slutförd",
+      "imageOptimizationFailed": "Bildoptimering misslyckades",
+      "aiTitlesComplete": "AI-titelgenerering slutförd",
+      "aiTitlesFailed": "AI-titelgenerering misslyckades",
+      "testNotificationTitle": "Testmeddelande",
+      "testNotificationBody": "Push-notiser fungerar! Du kommer att få aviseringar när dina bearbetningsjobb är klara."
+    },
     "blocked": "Aviseringar blockerade av webbläsaren. Kontrollera dina webbläsarinställningar.",
     "subscribePrompt": "Prenumerera för att ta emot aviseringar när jobb är klara",
     "subscribe": "Prenumerera",
     "loading": "Laddar...",
     "notSupported": "Push-aviseringar stöds inte i den här webbläsaren",
     "serverDisabled": "Push-aviseringar är inaktiverade på servern"
+  },
+  "general": {
+    "title": "Allmänt",
+    "description": "Anpassa din webbplats namn, undertitel och avatar",
+    "logo": "Logotyp",
+    "clickOrDrag": "Klicka eller dra bild hit",
+    "currentAvatar": "Aktuell avatar",
+    "siteName": "Webbplatsnamn",
+    "siteNamePlaceholder": "Ditt webbplatsnamn",
+    "photoLicense": "Fotolicens",
+    "photoLicenseDescription": "Välj hur andra kan använda dina fotografier",
+    "shuffleHomepage": "Blanda startsidans foton",
+    "shuffleHomepageDescription": "Slumpar ordningen på foton på startsidan varje gång sidan laddas",
+    "animatedBackground": "Animerad bakgrund",
+    "animatedBackgroundDescription": "Aktivera färgglad animerad bakgrund på adminpanelen och inloggningssidan",
+    "primaryColor": "Primär färg",
+    "secondaryColor": "Sekundär färg",
+    "metaDescription": "Meta-beskrivning",
+    "metaDescriptionPlaceholder": "Kort beskrivning av din webbplats för sökmotorer",
+    "metaKeywords": "Meta Nyckelord",
+    "metaKeywordsPlaceholder": "fotografi, portfolio, ditt namn (komma separerat)",
+    "language": "Språk",
+    "languageDescription": "Välj standardspråk för din webbplats",
+    "savedSuccessfully": "{{section}} har sparats framgångsrikt!",
+    "LogoSaved": "Logotyp har sparats framgångsrikt!",
+    "siteNameSaved": "Webbplatsnamn har sparats framgångsrikt!",
+    "primaryColorSaved": "Primär färg har sparats framgångsrikt!",
+    "secondaryColorSaved": "Sekundär färg har sparats framgångsrikt!",
+    "metaDescriptionSaved": "Meta Beskrivning har sparats framgångsrikt!",
+    "metaKeywordsSaved": "Meta-nyckelord sparades framgångsrikt!",
+    "photoLicenseUpdated": "Fotolicens uppdaterad!",
+    "languageUpdated": "Språk uppdaterat!",
+    "homepageShuffleSaved": "Inställning för startsidan sparad!",
+    "animatedBackgroundSaved": "Inställning för animerad bakgrund sparad!",
+    "failedToSave": "Misslyckades med att spara {{section}}",
+    "failedToSaveLicense": "Misslyckades med att spara licens",
+    "failedToSaveLanguage": "Misslyckades med att spara språk",
+    "failedToSaveSetting": "Misslyckades med att spara inställning",
+    "errorSavingLicense": "Fel vid sparande av licens",
+    "errorSavingLanguage": "Fel vid sparande av språk",
+    "errorSavingSetting": "Fel vid sparande av inställning"
   }
 }

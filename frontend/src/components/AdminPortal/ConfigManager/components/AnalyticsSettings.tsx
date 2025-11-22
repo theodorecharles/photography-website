@@ -79,58 +79,38 @@ const AnalyticsSettings: React.FC<AnalyticsSettingsProps> = ({
   };
 
   return (
-    <div className="settings-section" style={{ marginBottom: "2rem" }}>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "0.75rem",
-        }}
-      >
-        <label className="settings-section-label">{t('analyticsSettings.title')}</label>
-        {hasUnsavedChanges && (
-          <div style={{ display: "flex", gap: "0.5rem" }}>
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                onCancel();
-              }}
-              disabled={savingSection !== null}
-              className="btn-secondary"
-              style={{
-                padding: "0.4rem 0.8rem",
-                fontSize: "0.85rem",
-              }}
-            >
-              {t('analyticsSettings.cancel')}
-            </button>
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleSaveAnalytics();
-              }}
-              disabled={savingSection !== null}
-              className="btn-primary"
-              style={{ padding: "0.4rem 0.8rem", fontSize: "0.85rem" }}
-            >
-              {savingSection === t('analyticsSettings.sectionName') ? t('analyticsSettings.saving') : t('analyticsSettings.save')}
-            </button>
-          </div>
-        )}
-      </div>
-      <p
-        style={{
-          fontSize: "0.85rem",
-          color: "#888",
-          marginTop: "0",
-          marginBottom: "1rem",
-        }}
-      >
-        {t('analyticsSettings.description')}
-      </p>
+    <div>
+      {hasUnsavedChanges && (
+        <div style={{ display: "flex", gap: "0.5rem", marginBottom: "1rem", justifyContent: "flex-end" }}>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onCancel();
+            }}
+            disabled={savingSection !== null}
+            className="btn-secondary"
+            style={{
+              padding: "0.4rem 0.8rem",
+              fontSize: "0.85rem",
+            }}
+          >
+            {t('analyticsSettings.cancel')}
+          </button>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleSaveAnalytics();
+            }}
+            disabled={savingSection !== null}
+            className="btn-primary"
+            style={{ padding: "0.4rem 0.8rem", fontSize: "0.85rem" }}
+          >
+            {savingSection === t('analyticsSettings.sectionName') ? t('analyticsSettings.saving') : t('analyticsSettings.save')}
+          </button>
+        </div>
+      )}
       <div className="config-grid-inner">
         <div className="branding-group">
           <label className="branding-label">

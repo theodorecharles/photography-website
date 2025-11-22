@@ -154,47 +154,6 @@
     "uploadInProgress": "Carregamento em andamento",
     "jobStoppedByUser": "Trabalho interrompido pelo usuário"
   },
-  "branding": {
-    "title": "Marca",
-    "description": "Personalize o nome, subtítulo e avatar do seu site",
-    "logo": "Logotipo",
-    "clickOrDrag": "Clique ou arraste a imagem aqui",
-    "currentAvatar": "Avatar atual",
-    "siteName": "Nome do Site",
-    "siteNamePlaceholder": "Nome do seu site",
-    "photoLicense": "Licença de Foto",
-    "photoLicenseDescription": "Escolha como outros podem usar suas fotografias",
-    "shuffleHomepage": "Embaralhar Fotos da Página Inicial",
-    "shuffleHomepageDescription": "Aleatorize a ordem das fotos na página inicial cada vez que a página for carregada",
-    "animatedBackground": "Fundo Animado",
-    "animatedBackgroundDescription": "Ativar fundo animado colorido no painel de administração e na página de login",
-    "primaryColor": "Cor Primária",
-    "secondaryColor": "Cor Secundária",
-    "metaDescription": "Meta Descrição",
-    "metaDescriptionPlaceholder": "Descrição breve do seu site para motores de busca",
-    "metaKeywords": "Meta Palavras-chave",
-    "metaKeywordsPlaceholder": "fotografia, portfólio, seu nome (separados por vírgula)",
-    "language": "Idioma",
-    "languageDescription": "Escolha o idioma padrão para o seu site",
-    "savedSuccessfully": "{{section}} salvo com sucesso!",
-    "photoLicenseUpdated": "Licença de foto atualizada!",
-    "languageUpdated": "Idioma atualizado!",
-    "homepageShuffleSaved": "Configuração de embaralhamento da página inicial salva!",
-    "animatedBackgroundSaved": "Configuração de fundo animado salva!",
-    "failedToSave": "Falha ao salvar {{section}}",
-    "failedToSaveLicense": "Falha ao salvar licença",
-    "failedToSaveLanguage": "Falha ao salvar idioma",
-    "failedToSaveSetting": "Falha ao salvar configuração",
-    "errorSavingLicense": "Erro ao salvar licença",
-    "errorSavingLanguage": "Erro ao salvar idioma",
-    "errorSavingSetting": "Erro ao salvar configuração",
-    "siteNameSaved": "Nome do Site salvo com sucesso!",
-    "primaryColorSaved": "Cor Primária salva com sucesso!",
-    "secondaryColorSaved": "Cor Secundária salva com sucesso!",
-    "metaDescriptionSaved": "Descrição Meta salva com sucesso!",
-    "metaKeywordsSaved": "Palavras-chave Meta salvas com sucesso!",
-    "LogoSaved": "Logo salvo com sucesso!"
-  },
   "license": {
     "title": "Licença de Foto",
     "summary": "Resumo",
@@ -404,163 +363,63 @@
     "saved": "Configurações de {{section}} salvas!",
     "failedToSave": "Falha ao salvar a configuração",
     "errorSaving": "Erro ao salvar a configuração",
-    "notifications": {
-      "title": "Preferências de Notificação",
-      "description": "Configure quais notificações push você deseja receber",
-      "saved": "Preferências de notificação salvas",
-      "confirmReset": "Redefinir todas as preferências de notificação para os padrões?",
-      "resetSuccess": "Preferências de notificação redefinidas para os padrões",
-      "resetToDefaults": "Redefinir para os Padrões",
-      "enableAll": "Ativar Tudo",
-      "disableAll": "Desativar Tudo",
-      "categories": {
-        "security": {
-          "title": "Segurança e Autenticação",
-          "description": "Notificações sobre contas de usuário, logins e eventos de segurança"
-        },
-        "content": {
-          "title": "Gerenciamento de Conteúdo",
-          "description": "Notificações sobre álbuns, fotos e compartilhamentos"
-        },
-        "system": {
-          "title": "Sistema e Configuração",
-          "description": "Notificações sobre alterações de configurações e eventos do sistema"
-        }
-      },
-      "types": {
-        "userInvited": {
-          "title": "Usuário Convidado",
-          "description": "Quando um administrador convida um novo usuário"
-        },
-        "userAcceptedInvite": {
-          "title": "Usuário Participou",
-          "description": "Quando um usuário aceita um convite"
-        },
-        "userDeleted": {
-          "title": "Usuário Excluído",
-          "description": "Quando um administrador exclui uma conta de usuário"
-        },
-        "userRoleChanged": {
-          "title": "Função do Usuário Alterada",
-          "description": "Quando a função de um usuário é alterada"
-        },
-        "passkeyCreated": {
-          "title": "Chave de Acesso Criada",
-          "description": "Quando um usuário registra uma nova chave de acesso"
-        },
-        "passkeyDeleted": {
-          "title": "Chave de Acesso Excluída",
-          "description": "Quando um usuário remove uma chave de acesso"
-        },
-        "mfaEnabled": {
-          "title": "MFA Ativado",
-          "description": "Quando um usuário ativa a autenticação de múltiplos fatores"
-        },
-        "mfaDisabled": {
-          "title": "MFA Desativado",
-          "description": "Quando um usuário desativa a autenticação de múltiplos fatores"
-        },
-        "passwordChanged": {
-          "title": "Senha Alterada",
-          "description": "Quando um usuário altera sua senha"
-        },
-        "adminPasswordReset": {
-          "title": "Redefinição de Senha do Admin",
-          "description": "Quando um admin inicia uma redefinição de senha"
-        },
-        "failedLoginAttempts": {
-          "title": "Tentativas de Login Falhadas",
-          "description": "Quando múltiplas tentativas de login falhadas são detectadas"
-        },
-        "albumCreated": {
-          "title": "Álbum Criado",
-          "description": "Quando um novo álbum é criado"
-        },
-        "albumPublished": {
-          "title": "Álbum Publicado",
-          "description": "Quando um álbum é tornado público"
-        },
-        "albumDeleted": {
-          "title": "Álbum Excluído",
-          "description": "Quando um álbum é excluído"
-        },
-        "largePhotoUpload": {
-          "title": "Upload Grande",
-          "description": "Quando 50+ fotos são enviadas de uma vez"
-        },
-        "shareLinkCreated": {
-          "title": "Link de Compartilhamento Criado",
-          "description": "Quando um novo link de compartilhamento é criado"
-        },
-        "shareLinkAccessed": {
-          "title": "Link de Compartilhamento Acessado",
-          "description": "Quando alguém visualiza um álbum compartilhado"
-        },
-        "shareLinkExpired": {
-          "title": "Link de Compartilhamento Expirado",
-          "description": "Quando um link de compartilhamento expira"
-        },
-        "configUpdated": {
-          "title": "Configurações Alteradas",
-          "description": "Quando a configuração do sistema é atualizada"
-        },
-        "smtpSettingsChanged": {
-          "title": "Configurações SMTP Alteradas",
-          "description": "Quando a configuração de e-mail é atualizada"
-        },
-        "openaiApiKeyUpdated": {
-          "title": "Configurações de IA Alteradas",
-          "description": "Quando a chave da API do OpenAI é atualizada"
-        },
-        "brandingUpdated": {
-          "title": "Marca Atualizada",
-          "description": "Quando a marca do site é alterada"
-        },
-        "lowDiskSpace": {
-          "title": "Espaço em Disco Baixo",
-          "description": "Quando o armazenamento está abaixo de 10%"
-        },
-        "databaseBackupCompleted": {
-          "title": "Backup Completo",
-          "description": "Quando o backup do banco de dados é concluído"
-        },
-        "albumUnpublished": {
-          "title": "Álbum Não Publicado",
-          "description": "Quando um álbum é tornado privado"
-        },
-        "folderCreated": {
-          "title": "Pasta Criada",
-          "description": "Quando uma nova pasta é criada"
-        },
-        "folderPublished": {
-          "title": "Pasta Publicada",
-          "description": "Quando uma pasta e seus álbuns são publicados"
-        },
-        "folderUnpublished": {
-          "title": "Pasta Não Publicada",
-          "description": "Quando uma pasta e seus álbuns são não publicados"
-        },
-        "folderDeleted": {
-          "title": "Pasta Excluída",
-          "description": "Quando uma pasta é excluída"
-        },
-        "homepageUpdated": {
-          "title": "Página Inicial Atualizada",
-          "description": "Quando álbuns são adicionados/removidos da página inicial"
-        },
-        "versionUpdate": {
-          "title": "Atualização de Versão",
-          "description": "Quando o Galleria é atualizado para uma nova versão"
-        },
-        "photoDownloaded": {
-          "title": "Foto Baixada",
-          "description": "Quando um visitante baixa uma foto (pode ser barulhento)"
-        },
-        "albumViewMilestone": {
-          "title": "Ver Marcos",
-          "description": "Quando um álbum atinge 100, 1K ou 10K visualizações"
-        }
-      }
+    "home": {
+      "description": "Configure seu portfólio de fotografia e preferências do sistema"
+    },
+    "links": {
+      "title": "Links",
+      "description": "Páginas externas e navegação personalizada",
+      "pageDescription": "Gerencie links externos que aparecem na navegação do seu site"
+    },
+    "users": {
+      "title": "Usuários",
+      "description": "Gerenciamento de usuários e controle de acesso",
+      "pageDescription": "Gerenciar contas de usuário, funções e permissões"
+    },
+    "openai": {
+      "title": "OpenAI",
+      "description": "Títulos e descrições de fotos gerados por IA",
+      "pageDescription": "Configurar API do OpenAI para geração automática de títulos"
+    },
+    "imageQuality": {
+      "title": "Qualidade da Imagem",
+      "description": "Configurações de miniatura e imagem modal",
+      "pageDescription": "Configurar qualidade de otimização de imagem e dimensões"
+    },
+    "videoQuality": {
+      "title": "Qualidade do Vídeo",
+      "description": "Configurações de codificação e streaming de vídeo",
+      "pageDescription": "Configurar qualidade de vídeo, taxas de bits e resoluções"
+    },
+    "email": {
+      "title": "Email",
+      "description": "Configuração SMTP para convites",
+      "pageDescription": "Configurar servidor SMTP para envio de convites e e-mails de redefinição de senha"
+    },
+    "pushNotifications": {
+      "title": "Notificações Push",
+      "description": "Notificações do navegador para administradores",
+      "pageDescription": "Configurar notificações push para alertas de conclusão de trabalho"
+    },
+    "googleOAuth": {
+      "title": "Google OAuth",
+      "description": "Autenticação e usuários autorizados",
+      "pageDescription": "Configurar credenciais do Google OAuth e endereços de e-mail autorizados"
+    },
+    "analytics": {
+      "title": "Análise",
+      "description": "Rastreamento de visitantes e OpenObserve",
+      "pageDescription": "Configurar rastreamento de análises e agregação de logs"
+    },
+    "logging": {
+      "title": "Registro",
+      "description": "Níveis de log do servidor e visualizador",
+      "pageDescription": "Configurar a verbosidade do registro do servidor e visualizar logs ao vivo"
+    },
+    "general": {
+      "title": "Geral",
+      "description": "Nome do site, logotipo e aparência",
+      "pageDescription": "Personalize a identidade visual e as configurações gerais do seu site"
     }
   },
   "advancedSettings": {
@@ -593,7 +452,14 @@
       "forceRegenerateImagesConfirm": "Forçar regenerar TODAS as imagens? Isso levará um tempo.",
       "runOptimizationConfirm": "Executar otimização de imagem em todas as fotos?",
       "optimizedVideos": "Vídeos Otimizados",
-      "forceRegenerateVideosConfirm": "⚠️ Isso irá re-encodar TODOS os vídeos com as configurações de qualidade atuais. Esta é uma operação demorada e aumentará temporariamente o uso da CPU.\n\nOs arquivos de vídeo existentes serão substituídos. Você tem certeza de que deseja continuar?"
+      "forceRegenerateVideosConfirm": "⚠️ Isso irá re-encodar TODOS os vídeos com as configurações de qualidade atuais. Esta é uma operação demorada e aumentará temporariamente o uso da CPU.\n\nOs arquivos de vídeo existentes serão substituídos. Você tem certeza de que deseja continuar?",
+      "imageOptimization": "Otimização de Imagens",
+      "imageOptimizationDescription": "Gerar miniaturas otimizadas e imagens modais para todas as fotos em seu portfólio",
+      "optimizeMissing": "Otimizar Imagens Ausentes",
+      "forceRegenerateImages": "Forçar Regenerar Todas as Imagens",
+      "videoOptimization": "Otimização de Vídeo",
+      "videoOptimizationDescription": "Regenerar playlists mestres HLS para todos os vídeos com as configurações de qualidade atuais",
+      "regenerateVideoPlaylists": "Regenerar Playlists de Vídeo"
     }
   },
   "userManagement": {
@@ -983,7 +849,13 @@
     "autoGenerateEnabled": "Geração automática de títulos com IA ativada",
     "autoGenerateDisabled": "Geração automática de títulos com IA desativada",
     "invalidApiKey": "Chave API do OpenAI inválida. Por favor, verifique sua chave e tente novamente.",
-    "failedToUpdate": "Falha ao atualizar configuração"
+    "failedToUpdate": "Falha ao atualizar configuração",
+    "generateTitles": {
+      "title": "Gerar Títulos de IA",
+      "description": "Use OpenAI para gerar automaticamente títulos descritivos para suas fotos",
+      "generateMissing": "Gerar Títulos Faltantes",
+      "regenerateAll": "Forçar Regenerar Todos os Títulos"
+    }
   },
   "profile": {
     "failedToStartMfaSetup": "Falha ao iniciar a configuração de MFA",
@@ -1223,6 +1095,45 @@
     "errorRequiredField": "Este campo é obrigatório",
     "setupCompleteWaitingRestart": "Configuração concluída! Aguardando o servidor reiniciar..."
   },
+  "email": {
+    "invitation": {
+      "subject": "Você foi convidado para {{siteName}}",
+      "title": "Junte-se à Galleria do {{siteName}}",
+      "greeting": "Olá,",
+      "body": "{{inviterName}} convidou você para se juntar à <strong>Galleria do {{siteName}}</strong>.",
+      "instructions": "Para aceitar este convite e configurar sua conta, clique no botão abaixo:",
+      "button": "Aceitar Convite",
+      "orCopyLink": "Ou copie e cole este link no seu navegador:",
+      "expiry": "Este convite expirará em 7 dias.",
+      "footerIgnore": "Se você não esperava por este convite, pode ignorar este e-mail com segurança.",
+      "footerAutomatic": "Esta é uma mensagem automática, por favor, não responda a este e-mail."
+    },
+    "passwordReset": {
+      "subject": "Solicitação de Redefinição de Senha - {{siteName}}",
+      "title": "Solicitação de Redefinição de Senha",
+      "greeting": "Olá {{userName}},",
+      "greetingFallback": "Olá,",
+      "body": "Recebemos uma solicitação para redefinir sua senha para <strong>Galleria do {{siteName}}</strong>.",
+      "instructions": "Para redefinir sua senha, clique no botão abaixo:",
+      "button": "Redefinir Senha",
+      "orCopyLink": "Ou copie e cole este link no seu navegador:",
+      "warningTitle": "⚠️ Importante:",
+      "warningExpiry": "Este link expirará em 1 hora",
+      "warningIgnore": "Se você não solicitou isso, por favor, ignore este e-mail",
+      "warningNoChange": "Sua senha não mudará até que você crie uma nova",
+      "footerAutomatic": "Esta é uma mensagem automática, por favor, não responda a este e-mail.",
+      "footerContact": "Se você precisar de assistência, entre em contato com seu administrador."
+    },
+    "test": {
+      "subject": "E-mail de Teste de {{siteName}}",
+      "title": "Teste de Configuração de E-mail",
+      "success": "✓",
+      "body1": "Parabéns! Sua configuração SMTP está funcionando corretamente.",
+      "body2": "Este e-mail de teste foi enviado de <strong>{{siteName}}</strong> para verificar se seu serviço de e-mail está configurado corretamente e pode entregar mensagens.",
+      "footerTimestamp": "Esta é uma mensagem de teste enviada em {{timestamp}}.",
+      "footerIgnore": "Você pode ignorar ou excluir este e-mail com segurança."
+    }
+  },
   "testEmailModal": {
     "title": "Enviar Email de Teste",
     "description": "Digite um endereço de email para enviar uma mensagem de teste e verificar se sua configuração SMTP está funcionando corretamente.",
@@ -1314,11 +1225,64 @@
       "errorGenerateKeys": "Falha ao gerar as chaves VAPID",
       "close": "Fechar"
     },
+    "backend": {
+      "videoProcessingComplete": "Processamento de Vídeo Completo",
+      "videoProcessingFailed": "Falha no Processamento de Vídeo",
+      "videoReprocessingComplete": "Reprocessamento de Vídeo Completo",
+      "videoReprocessingFailed": "Falha no Reprocessamento de Vídeo",
+      "imageOptimizationComplete": "Otimização de Imagem Completa",
+      "imageOptimizationFailed": "Falha na Otimização de Imagem",
+      "aiTitlesComplete": "Geração de Título de IA Completa",
+      "aiTitlesFailed": "Falha na Geração de Títulos de IA",
+      "testNotificationTitle": "Notificação de Teste",
+      "testNotificationBody": "As notificações push estão funcionando! Você receberá alertas quando seus trabalhos de processamento forem concluídos."
+    },
     "blocked": "Notificações bloqueadas pelo navegador. Verifique as configurações do seu navegador.",
     "subscribePrompt": "Inscreva-se para receber notificações quando os trabalhos forem concluídos",
     "subscribe": "Inscrever-se",
     "loading": "Carregando...",
     "notSupported": "Notificações push não são suportadas neste navegador",
     "serverDisabled": "Notificações push estão desativadas no servidor"
+  },
+  "general": {
+    "title": "Geral",
+    "description": "Personalize o nome, subtítulo e avatar do seu site",
+    "logo": "Logotipo",
+    "clickOrDrag": "Clique ou arraste a imagem aqui",
+    "currentAvatar": "Avatar atual",
+    "siteName": "Nome do site",
+    "siteNamePlaceholder": "O nome do seu site",
+    "photoLicense": "Licença de Foto",
+    "photoLicenseDescription": "Escolha como outros podem usar suas fotografias",
+    "shuffleHomepage": "Embaralhar Fotos da Página Inicial",
+    "shuffleHomepageDescription": "Randomizar a ordem das fotos na página inicial cada vez que a página é carregada",
+    "animatedBackground": "Fundo Animado",
+    "animatedBackgroundDescription": "Ativar fundo animado colorido no painel de administração e na página de login",
+    "primaryColor": "Cor Primária",
+    "secondaryColor": "Cor Secundária",
+    "metaDescription": "Descrição Meta",
+    "metaDescriptionPlaceholder": "Breve descrição do seu site para motores de busca",
+    "metaKeywords": "Meta Palavras-chave",
+    "metaKeywordsPlaceholder": "fotografia, portfólio, seu nome (separados por vírgula)",
+    "language": "Idioma",
+    "languageDescription": "Escolha o idioma padrão para o seu site",
+    "savedSuccessfully": "{{section}} salvo com sucesso!",
+    "LogoSaved": "Logo salvo com sucesso!",
+    "siteNameSaved": "Nome do site salvo com sucesso!",
+    "primaryColorSaved": "Cor primária salva com sucesso!",
+    "secondaryColorSaved": "Cor secundária salva com sucesso!",
+    "metaDescriptionSaved": "Meta Descrição salva com sucesso!",
+    "metaKeywordsSaved": "Meta palavras-chave salvas com sucesso!",
+    "photoLicenseUpdated": "Licença da foto atualizada!",
+    "languageUpdated": "Idioma atualizado!",
+    "homepageShuffleSaved": "Configuração de embaralhamento da página inicial salva!",
+    "animatedBackgroundSaved": "Configuração de fundo animado salva!",
+    "failedToSave": "Falha ao salvar {{section}}",
+    "failedToSaveLicense": "Falha ao salvar licença",
+    "failedToSaveLanguage": "Falha ao salvar idioma",
+    "failedToSaveSetting": "Falha ao salvar configuração",
+    "errorSavingLicense": "Erro ao salvar licença",
+    "errorSavingLanguage": "Erro ao salvar o idioma",
+    "errorSavingSetting": "Erro ao salvar a configuração"
   }
 }

@@ -154,47 +154,6 @@
     "uploadInProgress": "Nasa proseso ng pag-upload",
     "jobStoppedByUser": "Itinigil ng gumagamit"
   },
-  "branding": {
-    "title": "Pagba-branding",
-    "description": "I-customize ang pangalan, subtitle, at avatar ng iyong site",
-    "logo": "Logo",
-    "clickOrDrag": "I-click o i-drag ang larawan dito",
-    "currentAvatar": "Kasalukuyang avatar",
-    "siteName": "Pangalan ng Site",
-    "siteNamePlaceholder": "Ang pangalan ng iyong site",
-    "photoLicense": "Lisensya ng Larawan",
-    "photoLicenseDescription": "Pumili kung paano maaaring gamitin ng iba ang iyong mga litrato",
-    "shuffleHomepage": "I-shuffle ang mga Larawan sa Homepage",
-    "shuffleHomepageDescription": "I-randomize ang pagkakasunod-sunod ng mga larawan sa homepage sa bawat pag-load ng pahina",
-    "animatedBackground": "Animated na Background",
-    "animatedBackgroundDescription": "I-enable ang makulay na animated na background sa admin panel at login page",
-    "primaryColor": "Pangunahing Kulay",
-    "secondaryColor": "Sekondaryang Kulay",
-    "metaDescription": "Meta Paglalarawan",
-    "metaDescriptionPlaceholder": "Maikling paglalarawan ng iyong site para sa mga search engine",
-    "metaKeywords": "Meta Mga Keyword",
-    "metaKeywordsPlaceholder": "potograpiya, portfolio, iyong pangalan (pinaghiwalay ng kuwit)",
-    "language": "Wika",
-    "languageDescription": "Pumili ng default na wika para sa iyong site",
-    "savedSuccessfully": "{{section}} na-save nang matagumpay!",
-    "photoLicenseUpdated": "Na-update ang lisensya ng larawan!",
-    "languageUpdated": "Na-update ang wika!",
-    "homepageShuffleSaved": "Naka-save ang setting ng homepage shuffle!",
-    "animatedBackgroundSaved": "Naka-save ang setting ng animated na background!",
-    "failedToSave": "Nabigong i-save ang {{section}}",
-    "failedToSaveLicense": "Nabigong i-save ang lisensya",
-    "failedToSaveLanguage": "Nabigong i-save ang wika",
-    "failedToSaveSetting": "Nabigong i-save ang setting",
-    "errorSavingLicense": "Error sa pag-save ng lisensya",
-    "errorSavingLanguage": "Error sa pag-save ng wika",
-    "errorSavingSetting": "Error sa pag-save ng setting",
-    "siteNameSaved": "Pangalan ng Site na-save nang matagumpay!",
-    "primaryColorSaved": "Pangunahing Kulay na-save nang matagumpay!",
-    "secondaryColorSaved": "Pangalawang Kulay na-save nang matagumpay!",
-    "metaDescriptionSaved": "Meta Paglalarawan na-save nang matagumpay!",
-    "metaKeywordsSaved": "Meta Mga Keyword na-save nang matagumpay!",
-    "LogoSaved": "Matagumpay na na-save ang logo!"
-  },
   "license": {
     "title": "Lisensya ng Larawan",
     "summary": "Buod",
@@ -404,163 +363,63 @@
     "saved": "{{section}} mga setting ay na-save!",
     "failedToSave": "Nabigong i-save ang configuration",
     "errorSaving": "Error sa pag-save ng configuration",
-    "notifications": {
-      "title": "Mga Kagustuhan sa Abiso",
-      "description": "I-configure kung aling mga push notification ang nais mong matanggap",
-      "saved": "Naka-save ang mga kagustuhan sa abiso",
-      "confirmReset": "I-reset ang lahat ng mga kagustuhan sa abiso sa mga default?",
-      "resetSuccess": "Naka-reset ang mga kagustuhan sa abiso sa mga default",
-      "resetToDefaults": "I-reset sa Mga Default",
-      "enableAll": "I-enable ang Lahat",
-      "disableAll": "I-disable ang Lahat",
-      "categories": {
-        "security": {
-          "title": "Seguridad at Pagpapatotoo",
-          "description": "Mga abiso tungkol sa mga account ng gumagamit, mga pag-login, at mga kaganapan sa seguridad"
-        },
-        "content": {
-          "title": "Pamamahala ng Nilalaman",
-          "description": "Mga abiso tungkol sa mga album, larawan, at pagbabahagi"
-        },
-        "system": {
-          "title": "Sistema at Konfigurasyon",
-          "description": "Mga abiso tungkol sa mga pagbabago sa mga setting at mga kaganapan sa sistema"
-        }
-      },
-      "types": {
-        "userInvited": {
-          "title": "Inanyayahang Gumagamit",
-          "description": "Kapag ang isang admin ay nag-anyaya ng bagong gumagamit"
-        },
-        "userAcceptedInvite": {
-          "title": "Sumali ang Gumagamit",
-          "description": "Kapag ang isang gumagamit ay tumanggap ng paanyaya"
-        },
-        "userDeleted": {
-          "title": "Tinanggal na Gumagamit",
-          "description": "Kapag ang isang admin ay nagtanggal ng account ng gumagamit"
-        },
-        "userRoleChanged": {
-          "title": "Nabago ang Papel ng Gumagamit",
-          "description": "Kapag ang papel ng isang gumagamit ay nabago"
-        },
-        "passkeyCreated": {
-          "title": "Nalikha ang Passkey",
-          "description": "Kapag ang isang gumagamit ay nagrehistro ng bagong passkey"
-        },
-        "passkeyDeleted": {
-          "title": "Nawala ang Passkey",
-          "description": "Kapag ang isang gumagamit ay nag-alis ng passkey"
-        },
-        "mfaEnabled": {
-          "title": "Pinagana ang MFA",
-          "description": "Kapag ang isang gumagamit ay nag-enable ng multi-factor authentication"
-        },
-        "mfaDisabled": {
-          "title": "Naka-disable ang MFA",
-          "description": "Kapag ang isang gumagamit ay nag-disable ng multi-factor authentication"
-        },
-        "passwordChanged": {
-          "title": "Nabago ang Password",
-          "description": "Kapag ang isang gumagamit ay nagbago ng kanilang password"
-        },
-        "adminPasswordReset": {
-          "title": "Pag-reset ng Admin Password",
-          "description": "Kapag ang isang admin ay nagpasimula ng pag-reset ng password"
-        },
-        "failedLoginAttempts": {
-          "title": "Nabigong Pagsubok sa Pag-login",
-          "description": "Kapag maraming nabigong pagsubok sa pag-login ang natukoy"
-        },
-        "albumCreated": {
-          "title": "Nagawa ang Album",
-          "description": "Kapag ang isang bagong album ay nalikha"
-        },
-        "albumPublished": {
-          "title": "Nailathalang Album",
-          "description": "Kapag ang album ay ginawa nang pampubliko"
-        },
-        "albumDeleted": {
-          "title": "Nawawalang Album",
-          "description": "Kapag ang album ay tinanggal"
-        },
-        "largePhotoUpload": {
-          "title": "Malaking Pag-upload",
-          "description": "Kapag 50+ na mga larawan ang na-upload nang sabay-sabay"
-        },
-        "shareLinkCreated": {
-          "title": "Nalikha ang Link ng Pagbabahagi",
-          "description": "Kapag isang bagong link ng pagbabahagi ang nalikha"
-        },
-        "shareLinkAccessed": {
-          "title": "Na-access ang Link ng Pagbabahagi",
-          "description": "Kapag may tumingin sa isang ibinahaging album"
-        },
-        "shareLinkExpired": {
-          "title": "Nawalang Bisa ang Link ng Pagbabahagi",
-          "description": "Kapag ang link ng pagbabahagi ay nawalan ng bisa"
-        },
-        "configUpdated": {
-          "title": "Nabago ang Mga Setting",
-          "description": "Kapag ang configuration ng sistema ay na-update"
-        },
-        "smtpSettingsChanged": {
-          "title": "Nabago ang Mga Setting ng SMTP",
-          "description": "Kapag ang configuration ng email ay na-update"
-        },
-        "openaiApiKeyUpdated": {
-          "title": "Nabago ang Mga Setting ng AI",
-          "description": "Kapag ang OpenAI API key ay na-update"
-        },
-        "brandingUpdated": {
-          "title": "Nabago ang Branding",
-          "description": "Kapag ang branding ng site ay nabago"
-        },
-        "lowDiskSpace": {
-          "title": "Mababang Espasyo sa Disk",
-          "description": "Kapag ang imbakan ay nasa ibaba ng 10%"
-        },
-        "databaseBackupCompleted": {
-          "title": "Kumpleto ang Backup",
-          "description": "Kapag natapos ang backup ng database"
-        },
-        "albumUnpublished": {
-          "title": "Album Hindi Nailathala",
-          "description": "Kapag ang isang album ay ginawang pribado"
-        },
-        "folderCreated": {
-          "title": "Nalikha ang Folder",
-          "description": "Kapag may bagong folder na nalikha"
-        },
-        "folderPublished": {
-          "title": "Nailathala ang Folder",
-          "description": "Kapag ang isang folder at ang mga album nito ay nailathala"
-        },
-        "folderUnpublished": {
-          "title": "Hindi Nailathala ang Folder",
-          "description": "Kapag ang isang folder at ang mga album nito ay hindi nailathala"
-        },
-        "folderDeleted": {
-          "title": "Natanggal ang Folder",
-          "description": "Kapag ang isang folder ay natanggal"
-        },
-        "homepageUpdated": {
-          "title": "Na-update ang Homepage",
-          "description": "Kapag ang mga album ay idinagdag/inalis mula sa homepage"
-        },
-        "versionUpdate": {
-          "title": "Pag-update ng Bersyon",
-          "description": "Kapag ang Galleria ay na-update sa bagong bersyon"
-        },
-        "photoDownloaded": {
-          "title": "Larawan Na-download",
-          "description": "Kapag nag-download ang bisita ng larawan (maaaring magdulot ng ingay)"
-        },
-        "albumViewMilestone": {
-          "title": "Tingnan ang Mga Milestone",
-          "description": "Kapag umabot sa 100, 1K, o 10K na pagtingin ang isang album"
-        }
-      }
+    "home": {
+      "description": "I-configure ang iyong photography portfolio at mga preference ng sistema"
+    },
+    "links": {
+      "title": "Mga Link",
+      "description": "Mga panlabas na pahina at pasadyang nabigasyon",
+      "pageDescription": "Pamahalaan ang mga panlabas na link na lumalabas sa nabigasyon ng iyong site"
+    },
+    "users": {
+      "title": "Mga Gumagamit",
+      "description": "Pamamahala ng gumagamit at kontrol sa access",
+      "pageDescription": "Pamahalaan ang mga account ng gumagamit, tungkulin, at pahintulot"
+    },
+    "openai": {
+      "title": "OpenAI",
+      "description": "Mga pamagat at paglalarawan ng larawan na pinapagana ng AI",
+      "pageDescription": "I-configure ang OpenAI API para sa awtomatikong pagbuo ng pamagat"
+    },
+    "imageQuality": {
+      "title": "Kalidad ng Larawan",
+      "description": "Mga setting ng thumbnail at modal na larawan",
+      "pageDescription": "I-configure ang kalidad ng pag-optimize ng larawan at mga sukat"
+    },
+    "videoQuality": {
+      "title": "Kalidad ng Video",
+      "description": "Mga setting ng pag-encode at streaming ng video",
+      "pageDescription": "I-configure ang kalidad ng video, bitrates, at resolusyon"
+    },
+    "email": {
+      "title": "Email",
+      "description": "SMTP na pagsasaayos para sa mga paanyaya",
+      "pageDescription": "I-configure ang SMTP server para sa pagpapadala ng mga paanyaya at mga email sa pag-reset ng password"
+    },
+    "pushNotifications": {
+      "title": "Mga Push Notification",
+      "description": "Mga notification sa browser para sa mga admin",
+      "pageDescription": "I-configure ang mga push notification para sa mga alerto sa pagkumpleto ng trabaho"
+    },
+    "googleOAuth": {
+      "title": "Google OAuth",
+      "description": "Pagpapatotoo at mga awtorisadong gumagamit",
+      "pageDescription": "I-configure ang mga kredensyal ng Google OAuth at mga awtorisadong email address"
+    },
+    "analytics": {
+      "title": "Analitika",
+      "description": "Pagsubaybay sa bisita at OpenObserve",
+      "pageDescription": "I-configure ang analytics tracking at log aggregation"
+    },
+    "logging": {
+      "title": "Pag-log",
+      "description": "Mga antas ng log ng server at tagapanood",
+      "pageDescription": "I-configure ang verbosity ng pag-log ng server at tingnan ang live na mga log"
+    },
+    "general": {
+      "title": "Pangkalahatan",
+      "description": "Pangalan ng site, logo, at hitsura",
+      "pageDescription": "I-customize ang visual na pagkakakilanlan at pangkalahatang mga setting ng iyong site"
     }
   },
   "advancedSettings": {
@@ -593,7 +452,14 @@
       "forceRegenerateImagesConfirm": "Puwersahin ang muling pagbuo ng LAHAT ng mga larawan? Magtatagal ito ng kaunti.",
       "runOptimizationConfirm": "Ipatupad ang pag-optimize ng larawan sa lahat ng mga larawan?",
       "optimizedVideos": "Na-optimize na Mga Video",
-      "forceRegenerateVideosConfirm": "⚠️ Ito ay muling i-encode ang LAHAT ng mga video gamit ang kasalukuyang mga setting ng kalidad. Ito ay isang operasyon na kumukuha ng oras at pansamantalang magpapataas ng paggamit ng CPU.\n\nAng mga umiiral na file ng video ay mapapalitan. Sigurado ka bang nais mong ipagpatuloy?"
+      "forceRegenerateVideosConfirm": "⚠️ Ito ay muling i-encode ang LAHAT ng mga video gamit ang kasalukuyang mga setting ng kalidad. Ito ay isang operasyon na kumukuha ng oras at pansamantalang magpapataas ng paggamit ng CPU.\n\nAng mga umiiral na file ng video ay mapapalitan. Sigurado ka bang nais mong ipagpatuloy?",
+      "imageOptimization": "Pag-optimize ng Imahe",
+      "imageOptimizationDescription": "Bumuo ng na-optimize na mga thumbnail at modal na mga imahe para sa lahat ng mga larawan sa iyong portfolio",
+      "optimizeMissing": "I-optimize ang Nawawalang mga Imahe",
+      "forceRegenerateImages": "Piliting I-regenerate ang Lahat ng mga Imahe",
+      "videoOptimization": "Pag-optimize ng Video",
+      "videoOptimizationDescription": "I-regenerate ang HLS master playlists para sa lahat ng video gamit ang kasalukuyang mga setting ng kalidad",
+      "regenerateVideoPlaylists": "I-regenerate ang Video Playlists"
     }
   },
   "userManagement": {
@@ -983,7 +849,13 @@
     "autoGenerateEnabled": "Naka-enable ang awtomatikong pagbubuo ng mga AI title",
     "autoGenerateDisabled": "Naka-disable ang awtomatikong pagbubuo ng mga AI title",
     "invalidApiKey": "Hindi wastong OpenAI API key. Pakisuri ang iyong key at subukan muli.",
-    "failedToUpdate": "Nabigong i-update ang setting"
+    "failedToUpdate": "Nabigong i-update ang setting",
+    "generateTitles": {
+      "title": "Bumuo ng AI Titles",
+      "description": "Gamitin ang OpenAI upang awtomatikong bumuo ng mga deskriptibong pamagat para sa iyong mga larawan",
+      "generateMissing": "Bumuo ng Nawawalang mga Pamagat",
+      "regenerateAll": "Pilitin ang Muling Pagbuo ng Lahat ng mga Pamagat"
+    }
   },
   "profile": {
     "failedToStartMfaSetup": "Nabigong simulan ang setup ng MFA",
@@ -1184,7 +1056,7 @@
     "googleStep6": "Kopyahin ang Client ID at Client Secret sa ibaba",
     "googleClientIdLabel": "Google Client ID",
     "googleClientIdPlaceholder": "xxxxx.apps.googleusercontent.com",
-    "googleClientSecretLabel": "Google Client Secret",
+    "googleClientSecretLabel": "Lihim na Kliyente ng Google",
     "googleClientSecretPlaceholder": "GOCSPX-xxxxx",
     "backToBasicInfo": "← Bumalik sa Pangunahing Impormasyon",
     "nextCustomize": "Susunod: I-customize →",
@@ -1223,10 +1095,49 @@
     "errorRequiredField": "Kailangan ang larangang ito",
     "setupCompleteWaitingRestart": "Kumpleto na ang setup! Naghihintay para sa pag-restart ng server..."
   },
+  "email": {
+    "invitation": {
+      "subject": "Naimbitahan ka sa {{siteName}}",
+      "title": "Sumali sa Galleria ng {{siteName}}",
+      "greeting": "Kamusta,",
+      "body": "Naimbitahan ka ni {{inviterName}} na sumali sa <strong>Galleria ng {{siteName}}</strong>.",
+      "instructions": "Upang tanggapin ang paanyayang ito at i-set up ang iyong account, i-click ang button sa ibaba:",
+      "button": "Tanggapin ang Paanyaya",
+      "orCopyLink": "O kopyahin at i-paste ang link na ito sa iyong browser:",
+      "expiry": "Magtatapos ang paanyayang ito sa loob ng 7 araw.",
+      "footerIgnore": "Kung hindi mo inaasahan ang paanyayang ito, maaari mo itong ligtas na balewalain.",
+      "footerAutomatic": "Ito ay isang awtomatikong mensahe, mangyaring huwag tumugon sa email na ito."
+    },
+    "passwordReset": {
+      "subject": "Hiling sa Pag-reset ng Password - {{siteName}}",
+      "title": "Hiling sa Pag-reset ng Password",
+      "greeting": "Kamusta {{userName}},",
+      "greetingFallback": "Kamusta,",
+      "body": "Nakatanggap kami ng hiling upang i-reset ang iyong password para sa <strong>{{siteName}}'s Galleria</strong>.",
+      "instructions": "Upang i-reset ang iyong password, i-click ang button sa ibaba:",
+      "button": "I-reset ang Password",
+      "orCopyLink": "O kopyahin at i-paste ang link na ito sa iyong browser:",
+      "warningTitle": "⚠️ Mahalaga:",
+      "warningExpiry": "Mawawalan ng bisa ang link na ito sa loob ng 1 oras",
+      "warningIgnore": "Kung hindi mo ito hiniling, mangyaring balewalain ang email na ito",
+      "warningNoChange": "Ang iyong password ay hindi magbabago hanggang lumikha ka ng bago",
+      "footerAutomatic": "Ito ay isang automated na mensahe, mangyaring huwag tumugon sa email na ito.",
+      "footerContact": "Kung kailangan mo ng tulong, mangyaring makipag-ugnayan sa iyong administrator."
+    },
+    "test": {
+      "subject": "Test Email mula sa {{siteName}}",
+      "title": "Pagsubok sa Konpigurasyon ng Email",
+      "success": "✓",
+      "body1": "Binabati kita! Ang iyong SMTP na konpigurasyon ay gumagana nang tama.",
+      "body2": "Ang test email na ito ay ipinadala mula sa <strong>{{siteName}}</strong> upang tiyakin na ang iyong serbisyo sa email ay maayos na nakakonpigur at makapaghatid ng mga mensahe.",
+      "footerTimestamp": "Ito ay isang test na mensahe na ipinadala sa {{timestamp}}.",
+      "footerIgnore": "Maaari mong ligtas na balewalain o tanggalin ang email na ito."
+    }
+  },
   "testEmailModal": {
     "title": "Magpadala ng Test Email",
     "description": "Maglagay ng email address upang magpadala ng test na mensahe at tiyakin na gumagana nang tama ang iyong SMTP configuration.",
-    "emailLabel": "Email Address",
+    "emailLabel": "Tala ng Email",
     "emailPlaceholder": "your@email.com",
     "close": "Isara",
     "sendButton": "Magpadala ng Test Email",
@@ -1314,11 +1225,64 @@
       "errorGenerateKeys": "Nabigo na makabuo ng VAPID keys",
       "close": "Isara"
     },
+    "backend": {
+      "videoProcessingComplete": "Tapos na ang Pagproseso ng Video",
+      "videoProcessingFailed": "Nabigo ang Pagproseso ng Video",
+      "videoReprocessingComplete": "Tapos na ang Pag-uulit ng Video",
+      "videoReprocessingFailed": "Nabigo ang Pag-uulit ng Video",
+      "imageOptimizationComplete": "Tapos na ang Pag-optimize ng Imahe",
+      "imageOptimizationFailed": "Nabigo ang Pag-optimize ng Imahe",
+      "aiTitlesComplete": "Tapos na ang Pagbuo ng AI Title",
+      "aiTitlesFailed": "Nabigong Lumikha ng Pamagat ng AI",
+      "testNotificationTitle": "Pagsubok na Abiso",
+      "testNotificationBody": "Nagtatrabaho ang mga push notification! Makakatanggap ka ng mga alerto kapag natapos ang iyong mga processing job."
+    },
     "blocked": "Naka-block ang mga notification ng browser. Suriin ang iyong mga setting ng browser.",
     "subscribePrompt": "Mag-subscribe upang makatanggap ng mga notification kapag natapos ang mga trabaho",
     "subscribe": "Mag-subscribe",
     "loading": "Naglo-load...",
     "notSupported": "Hindi sinusuportahan ang mga push notification sa browser na ito",
     "serverDisabled": "Naka-disable ang mga push notification sa server"
+  },
+  "general": {
+    "title": "Pangkalahatan",
+    "description": "I-customize ang pangalan, subtitle, at avatar ng iyong site",
+    "logo": "Logo",
+    "clickOrDrag": "I-click o i-drag ang imahe dito",
+    "currentAvatar": "Kasalukuyang avatar",
+    "siteName": "Pangalan ng Site",
+    "siteNamePlaceholder": "Ang pangalan ng iyong site",
+    "photoLicense": "Lisensya ng Larawan",
+    "photoLicenseDescription": "Pumili kung paano maaaring gamitin ng iba ang iyong mga larawan",
+    "shuffleHomepage": "I-shuffle ang Mga Larawan sa Homepage",
+    "shuffleHomepageDescription": "I-randomize ang pagkakasunod-sunod ng mga larawan sa homepage sa bawat pag-load ng pahina",
+    "animatedBackground": "Animated na Background",
+    "animatedBackgroundDescription": "I-enable ang makulay na animated na background sa admin panel at login page",
+    "primaryColor": "Pangunahing Kulay",
+    "secondaryColor": "Pangalawang Kulay",
+    "metaDescription": "Meta Deskripsyon",
+    "metaDescriptionPlaceholder": "Maikling deskripsyon ng iyong site para sa mga search engine",
+    "metaKeywords": "Mga Meta Keyword",
+    "metaKeywordsPlaceholder": "potograpiya, portfolio, iyong pangalan (pinaghiwalay ng kuwit)",
+    "language": "Wika",
+    "languageDescription": "Pumili ng default na wika para sa iyong site",
+    "savedSuccessfully": "{{section}} ay matagumpay na na-save!",
+    "LogoSaved": "Logo ay matagumpay na na-save!",
+    "siteNameSaved": "Pangalan ng Site ay matagumpay na na-save!",
+    "primaryColorSaved": "Pangunahin na Kulay ay matagumpay na na-save!",
+    "secondaryColorSaved": "Sekondaryang Kulay ay matagumpay na na-save!",
+    "metaDescriptionSaved": "Meta Description ay matagumpay na na-save!",
+    "metaKeywordsSaved": "Matagumpay na na-save ang Meta Keywords!",
+    "photoLicenseUpdated": "Na-update ang lisensya ng larawan!",
+    "languageUpdated": "Na-update ang wika!",
+    "homepageShuffleSaved": "Na-save ang setting ng homepage shuffle!",
+    "animatedBackgroundSaved": "Na-save ang setting ng animated background!",
+    "failedToSave": "Nabigong i-save ang {{section}}",
+    "failedToSaveLicense": "Nabigong i-save ang lisensya",
+    "failedToSaveLanguage": "Nabigong i-save ang wika",
+    "failedToSaveSetting": "Nabigong i-save ang setting",
+    "errorSavingLicense": "Error sa pag-save ng lisensya",
+    "errorSavingLanguage": "Error sa pag-save ng wika",
+    "errorSavingSetting": "Error sa pag-save ng setting"
   }
 }

@@ -1,6 +1,7 @@
 {
   "de": [
     "Album",
+    "Branding",
     "Dashboard",
     "Links",
     "Logo",
@@ -26,6 +27,8 @@
     "photos",
     "Photo",
     "Photos",
+    "Branding",
+    "Email",
     "Logo",
     "URL",
     "Actions",
@@ -56,10 +59,12 @@
     "albums",
     "Album",
     "Albums",
+    "Branding",
     "Camera",
     "Dashboard",
     "Lens",
     "Links",
+    "Logging",
     "Logo",
     "Manager",
     "Online",
@@ -72,6 +77,7 @@
     "min"
   ],
   "pt": [
+    "Branding",
     "Email",
     "Email (SMTP)",
     "Links",
@@ -83,6 +89,7 @@
   "pl": [
     "album",
     "Album",
+    "Branding",
     "Email",
     "Email (SMTP)",
     "Logo",
@@ -107,6 +114,7 @@
     "Admin",
     "album",
     "Album",
+    "Branding",
     "Modal",
     "Online",
     "Status",
@@ -134,6 +142,7 @@
     "Admin",
     "album",
     "Album",
+    "Branding",
     "Debug",
     "Email",
     "Email (SMTP)",

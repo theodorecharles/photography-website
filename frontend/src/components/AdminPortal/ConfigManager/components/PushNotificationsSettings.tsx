@@ -268,63 +268,38 @@ const PushNotificationsSettings: React.FC<PushNotificationsSettingsProps> = ({
   }
 
   return (
-    <div className="settings-section" style={{ marginBottom: '2rem' }}>
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginBottom: '0.75rem',
-        }}
-      >
-        <label className="settings-section-label">
-          {t('notifications.settings.title')}
-          {pushConfig.enabled && hasKeys && (
-            <span className="smtp-badge" style={{ marginLeft: '0.75rem' }}>{t('notifications.settings.configured')}</span>
-          )}
-        </label>
-        {hasManualChanges && (
-          <div style={{ display: 'flex', gap: '0.5rem' }}>
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleCancel();
-              }}
-              disabled={savingSection !== null}
-              className="btn-secondary"
-              style={{
-                padding: '0.4rem 0.8rem',
-                fontSize: '0.85rem',
-              }}
-            >
-              {t('notifications.settings.cancel')}
-            </button>
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleSave();
-              }}
-              disabled={savingSection !== null}
-              className="btn-primary"
-              style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}
-            >
-              {savingSection === 'pushNotifications' ? t('notifications.settings.saving') : t('notifications.settings.save')}
-            </button>
-          </div>
-        )}
-      </div>
-      <p
-        style={{
-          fontSize: '0.85rem',
-          color: '#888',
-          marginTop: '0',
-          marginBottom: '1rem',
-        }}
-      >
-        {t('notifications.settings.description')}
-      </p>
+    <div>
+      {hasManualChanges && (
+        <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem', justifyContent: 'flex-end' }}>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleCancel();
+            }}
+            disabled={savingSection !== null}
+            className="btn-secondary"
+            style={{
+              padding: '0.4rem 0.8rem',
+              fontSize: '0.85rem',
+            }}
+          >
+            {t('notifications.settings.cancel')}
+          </button>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleSave();
+            }}
+            disabled={savingSection !== null}
+            className="btn-primary"
+            style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}
+          >
+            {savingSection === 'pushNotifications' ? t('notifications.settings.saving') : t('notifications.settings.save')}
+          </button>
+        </div>
+      )}
 
       {/* Subscription Status and Controls */}
       <PushNotificationStatus 
@@ -442,14 +417,14 @@ const PushNotificationsSettings: React.FC<PushNotificationsSettingsProps> = ({
         {/* Confirmation Modal */}
         {showConfirmModal && (
           <div className="modal-overlay" onClick={() => setShowConfirmModal(false)}>
-            <div className="share-modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '500px' }}>
-              <div className="share-modal-header">
+            <div className="generic-modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '500px' }}>
+              <div className="generic-modal-header">
                 <h2>{t('notifications.settings.confirmTitle')}</h2>
                 <button className="close-button" onClick={() => setShowConfirmModal(false)} aria-label={t('notifications.settings.close')}>
                   ×
                 </button>
               </div>
-              <div className="share-modal-content">
+              <div className="generic-modal-content">
                 <p className="share-description" dangerouslySetInnerHTML={{ __html: t('notifications.settings.confirmMessage') }}>
                 </p>
                 <div

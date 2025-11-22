@@ -6,7 +6,7 @@
 import React, { useState } from 'react';
 import { API_URL } from '../../config';
 import { PasswordInput } from './PasswordInput';
-import './ShareModal.css';
+import './GenericModal.css';
 
 
 interface SMTPSetupWizardProps {
@@ -207,17 +207,17 @@ const SMTPSetupWizard: React.FC<SMTPSetupWizardProps> = ({
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div
-        className="share-modal"
+        className="generic-modal"
         onClick={(e) => e.stopPropagation()}
         style={{ maxWidth: '700px' }}
       >
-        <div className="share-modal-header">
+        <div className="generic-modal-header">
           <h2>📧 Set Up Email (SMTP)</h2>
           <button className="close-button" onClick={onClose} aria-label="Close">
             ×
           </button>
         </div>
-        <div className="share-modal-content">
+        <div className="generic-modal-content">
 
         {step === 1 && (
           <>

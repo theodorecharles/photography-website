@@ -42,11 +42,11 @@ export const MFASetupModal: React.FC<MFASetupModalProps> = ({
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div
-        className="share-modal"
+        className="generic-modal"
         onClick={(e) => e.stopPropagation()}
         style={{ maxWidth: "600px" }}
       >
-        <div className="share-modal-header">
+        <div className="generic-modal-header">
           <h2>{t('userManagement.enableTwoFactorAuthentication')}</h2>
           <button className="close-button" onClick={onClose} aria-label={t('common.close')}>
             ×
@@ -58,7 +58,7 @@ export const MFASetupModal: React.FC<MFASetupModalProps> = ({
             e.stopPropagation();
             return false;
           }}
-          className="share-modal-content"
+          className="generic-modal-content"
         >
           <div style={{ marginBottom: "1rem" }}>
             <p className="share-description">

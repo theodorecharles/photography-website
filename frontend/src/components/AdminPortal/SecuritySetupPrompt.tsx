@@ -120,11 +120,11 @@ const SecuritySetupPrompt: React.FC<SecuritySetupPromptProps> = ({
       onClick={mfaSetup ? undefined : handleDismiss}
     >
       <div
-        className="share-modal"
+        className="generic-modal"
         onClick={(e) => e.stopPropagation()}
         style={{ maxWidth: "600px" }}
       >
-        <div className="share-modal-header">
+        <div className="generic-modal-header">
           <h2>
             {mfaSetup
               ? t('securitySetup.enableMfaTitle')
@@ -144,7 +144,7 @@ const SecuritySetupPrompt: React.FC<SecuritySetupPromptProps> = ({
             e.stopPropagation();
             return false;
           }}
-          className="share-modal-content"
+          className="generic-modal-content"
         >
           {/* Error Display */}
           {error && (

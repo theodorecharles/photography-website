@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { API_URL, SITE_URL } from '../../config';
 import { trackShareLinkCreated } from '../../utils/analytics';
 import CustomDropdown from './ConfigManager/components/CustomDropdown';
-import './ShareModal.css';
+import './GenericModal.css';
 import { error as logError } from '../../utils/logger';
 
 interface VideoShareModalProps {
@@ -116,15 +116,15 @@ export default function VideoShareModal({ album, filename, videoTitle, onClose }
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="share-modal" onClick={(e) => e.stopPropagation()}>
-        <div className="share-modal-header">
+      <div className="generic-modal" onClick={(e) => e.stopPropagation()}>
+        <div className="generic-modal-header">
           <h2>{t('videoShare.shareVideo')}</h2>
           <button className="close-button" onClick={onClose}>
             ×
           </button>
         </div>
 
-        <div className="share-modal-content">
+        <div className="generic-modal-content">
           <div className="video-share-info">
             <div className="video-share-title">{videoTitle}</div>
             <div className="video-share-album">{album}</div>

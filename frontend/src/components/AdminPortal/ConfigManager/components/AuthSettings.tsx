@@ -35,60 +35,40 @@ const AuthSettings: React.FC<AuthSettingsProps> = ({
   const isEnabled = config.environment.auth.google.enabled;
 
   return (
-    <div className="settings-section" style={{ marginBottom: "2rem" }}>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "0.75rem",
-        }}
-      >
-        <label className="settings-section-label">{t('authSettings.title')}</label>
-        {hasUnsavedChanges && (
-          <div style={{ display: "flex", gap: "0.5rem" }}>
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                onCancel();
-              }}
-              disabled={savingSection !== null}
-              className="btn-secondary"
-              style={{
-                padding: "0.4rem 0.8rem",
-                fontSize: "0.85rem",
-              }}
-            >
-              {t('authSettings.cancel')}
-            </button>
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                onSave();
-              }}
-              disabled={savingSection !== null}
-              className="btn-primary"
-              style={{ padding: "0.4rem 0.8rem", fontSize: "0.85rem" }}
-            >
-              {savingSection === t('authSettings.sectionName')
-                ? t('authSettings.saving')
-                : t('authSettings.save')}
-            </button>
-          </div>
-        )}
-      </div>
-      <p
-        style={{
-          fontSize: "0.85rem",
-          color: "#888",
-          marginTop: "0",
-          marginBottom: "1rem",
-        }}
-      >
-        {t('authSettings.description')}
-      </p>
+    <div>
+      {hasUnsavedChanges && (
+        <div style={{ display: "flex", gap: "0.5rem", marginBottom: "1rem", justifyContent: "flex-end" }}>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onCancel();
+            }}
+            disabled={savingSection !== null}
+            className="btn-secondary"
+            style={{
+              padding: "0.4rem 0.8rem",
+              fontSize: "0.85rem",
+            }}
+          >
+            {t('authSettings.cancel')}
+          </button>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onSave();
+            }}
+            disabled={savingSection !== null}
+            className="btn-primary"
+            style={{ padding: "0.4rem 0.8rem", fontSize: "0.85rem" }}
+          >
+            {savingSection === t('authSettings.sectionName')
+              ? t('authSettings.saving')
+              : t('authSettings.save')}
+          </button>
+        </div>
+      )}
 
       {/* Enable/Disable Toggle */}
       <div className="branding-group" style={{ margin: 0, marginBottom: "1.5rem" }}>

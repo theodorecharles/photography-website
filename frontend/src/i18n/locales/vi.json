@@ -154,47 +154,6 @@
     "uploadInProgress": "Đang tải lên",
     "jobStoppedByUser": "Công việc đã dừng bởi người dùng"
   },
-  "branding": {
-    "title": "Thương hiệu",
-    "description": "Tùy chỉnh tên trang web, phụ đề và hình đại diện của bạn",
-    "logo": "Logo",
-    "clickOrDrag": "Nhấp hoặc kéo hình ảnh vào đây",
-    "currentAvatar": "Hình đại diện hiện tại",
-    "siteName": "Tên trang web",
-    "siteNamePlaceholder": "Tên trang web của bạn",
-    "photoLicense": "Giấy phép ảnh",
-    "photoLicenseDescription": "Chọn cách người khác có thể sử dụng những bức ảnh của bạn",
-    "shuffleHomepage": "Xáo trộn ảnh trên trang chủ",
-    "shuffleHomepageDescription": "Ngẫu nhiên hóa thứ tự của các bức ảnh trên trang chính mỗi khi trang được tải",
-    "animatedBackground": "Nền hoạt hình",
-    "animatedBackgroundDescription": "Bật nền hoạt hình đầy màu sắc trên bảng điều khiển quản trị và trang đăng nhập",
-    "primaryColor": "Màu chính",
-    "secondaryColor": "Màu phụ",
-    "metaDescription": "Mô tả Meta",
-    "metaDescriptionPlaceholder": "Mô tả ngắn gọn về trang web của bạn cho các công cụ tìm kiếm",
-    "metaKeywords": "Từ khóa Meta",
-    "metaKeywordsPlaceholder": "nhiếp ảnh, danh mục đầu tư, tên của bạn (cách nhau bằng dấu phẩy)",
-    "language": "Ngôn ngữ",
-    "languageDescription": "Chọn ngôn ngữ mặc định cho trang web của bạn",
-    "savedSuccessfully": "{{section}} đã lưu thành công!",
-    "photoLicenseUpdated": "Giấy phép ảnh đã được cập nhật!",
-    "languageUpdated": "Ngôn ngữ đã được cập nhật!",
-    "homepageShuffleSaved": "Cài đặt xáo trộn trang chính đã được lưu!",
-    "animatedBackgroundSaved": "Cài đặt nền hoạt hình đã được lưu!",
-    "failedToSave": "Lưu {{section}} không thành công",
-    "failedToSaveLicense": "Lưu giấy phép không thành công",
-    "failedToSaveLanguage": "Lưu ngôn ngữ không thành công",
-    "failedToSaveSetting": "Lưu cài đặt không thành công",
-    "errorSavingLicense": "Lỗi khi lưu giấy phép",
-    "errorSavingLanguage": "Lỗi khi lưu ngôn ngữ",
-    "errorSavingSetting": "Lỗi khi lưu cài đặt",
-    "siteNameSaved": "Tên trang đã được lưu thành công!",
-    "primaryColorSaved": "Màu chính đã được lưu thành công!",
-    "secondaryColorSaved": "Màu phụ đã được lưu thành công!",
-    "metaDescriptionSaved": "Mô tả meta đã được lưu thành công!",
-    "metaKeywordsSaved": "Từ khóa meta đã được lưu thành công!",
-    "LogoSaved": "Đã lưu logo thành công!"
-  },
   "license": {
     "title": "Giấy phép Ảnh",
     "summary": "Tóm tắt",
@@ -404,163 +363,63 @@
     "saved": "Cài đặt {{section}} đã được lưu!",
     "failedToSave": "Không thể lưu cấu hình",
     "errorSaving": "Lỗi khi lưu cấu hình",
-    "notifications": {
-      "title": "Tùy chọn Thông báo",
-      "description": "Cấu hình các thông báo đẩy bạn muốn nhận",
-      "saved": "Tùy chọn thông báo đã được lưu",
-      "confirmReset": "Đặt lại tất cả tùy chọn thông báo về mặc định?",
-      "resetSuccess": "Tùy chọn thông báo đã được đặt lại về mặc định",
-      "resetToDefaults": "Đặt lại về Mặc định",
-      "enableAll": "Bật Tất cả",
-      "disableAll": "Tắt Tất cả",
-      "categories": {
-        "security": {
-          "title": "Bảo mật & Xác thực",
-          "description": "Thông báo về tài khoản người dùng, đăng nhập và sự kiện bảo mật"
-        },
-        "content": {
-          "title": "Quản lý nội dung",
-          "description": "Thông báo về album, ảnh và chia sẻ"
-        },
-        "system": {
-          "title": "Hệ thống & Cấu hình",
-          "description": "Thông báo về thay đổi cài đặt và sự kiện hệ thống"
-        }
-      },
-      "types": {
-        "userInvited": {
-          "title": "Người dùng được mời",
-          "description": "Khi một quản trị viên mời một người dùng mới"
-        },
-        "userAcceptedInvite": {
-          "title": "Người dùng đã tham gia",
-          "description": "Khi một người dùng chấp nhận lời mời"
-        },
-        "userDeleted": {
-          "title": "Người dùng đã xóa",
-          "description": "Khi một quản trị viên xóa tài khoản người dùng"
-        },
-        "userRoleChanged": {
-          "title": "Vai trò người dùng đã thay đổi",
-          "description": "Khi vai trò của người dùng được thay đổi"
-        },
-        "passkeyCreated": {
-          "title": "Mã truy cập đã được tạo",
-          "description": "Khi người dùng đăng ký một mã truy cập mới"
-        },
-        "passkeyDeleted": {
-          "title": "Mã truy cập đã bị xóa",
-          "description": "Khi người dùng xóa một mã truy cập"
-        },
-        "mfaEnabled": {
-          "title": "MFA đã được kích hoạt",
-          "description": "Khi người dùng kích hoạt xác thực đa yếu tố"
-        },
-        "mfaDisabled": {
-          "title": "MFA đã bị vô hiệu hóa",
-          "description": "Khi người dùng vô hiệu hóa xác thực đa yếu tố"
-        },
-        "passwordChanged": {
-          "title": "Mật khẩu đã được thay đổi",
-          "description": "Khi người dùng thay đổi mật khẩu của họ"
-        },
-        "adminPasswordReset": {
-          "title": "Đặt lại mật khẩu quản trị viên",
-          "description": "Khi một quản trị viên khởi động quá trình đặt lại mật khẩu"
-        },
-        "failedLoginAttempts": {
-          "title": "Các lần đăng nhập không thành công",
-          "description": "Khi phát hiện nhiều lần đăng nhập không thành công"
-        },
-        "albumCreated": {
-          "title": "Album đã được tạo",
-          "description": "Khi một album mới được tạo"
-        },
-        "albumPublished": {
-          "title": "Album đã được công khai",
-          "description": "Khi một album được công khai"
-        },
-        "albumDeleted": {
-          "title": "Album đã bị xóa",
-          "description": "Khi một album bị xóa"
-        },
-        "largePhotoUpload": {
-          "title": "Tải lên lớn",
-          "description": "Khi 50+ ảnh được tải lên cùng một lúc"
-        },
-        "shareLinkCreated": {
-          "title": "Liên kết chia sẻ đã được tạo",
-          "description": "Khi một liên kết chia sẻ mới được tạo"
-        },
-        "shareLinkAccessed": {
-          "title": "Liên kết chia sẻ đã được truy cập",
-          "description": "Khi ai đó xem một album đã chia sẻ"
-        },
-        "shareLinkExpired": {
-          "title": "Liên kết chia sẻ đã hết hạn",
-          "description": "Khi liên kết chia sẻ hết hạn"
-        },
-        "configUpdated": {
-          "title": "Cài đặt đã thay đổi",
-          "description": "Khi cấu hình hệ thống được cập nhật"
-        },
-        "smtpSettingsChanged": {
-          "title": "Cài đặt SMTP đã thay đổi",
-          "description": "Khi cấu hình email được cập nhật"
-        },
-        "openaiApiKeyUpdated": {
-          "title": "Cài đặt AI đã thay đổi",
-          "description": "Khi khóa API OpenAI được cập nhật"
-        },
-        "brandingUpdated": {
-          "title": "Thương hiệu đã được cập nhật",
-          "description": "Khi thương hiệu trang web được thay đổi"
-        },
-        "lowDiskSpace": {
-          "title": "Không gian đĩa thấp",
-          "description": "Khi dung lượng lưu trữ dưới 10%"
-        },
-        "databaseBackupCompleted": {
-          "title": "Sao lưu hoàn tất",
-          "description": "Khi sao lưu cơ sở dữ liệu hoàn tất"
-        },
-        "albumUnpublished": {
-          "title": "Album Chưa Xuất Bản",
-          "description": "Khi một album được đặt ở chế độ riêng tư"
-        },
-        "folderCreated": {
-          "title": "Thư Mục Đã Tạo",
-          "description": "Khi một thư mục mới được tạo"
-        },
-        "folderPublished": {
-          "title": "Thư Mục Đã Xuất Bản",
-          "description": "Khi một thư mục và các album của nó được xuất bản"
-        },
-        "folderUnpublished": {
-          "title": "Thư Mục Chưa Xuất Bản",
-          "description": "Khi một thư mục và các album của nó chưa được xuất bản"
-        },
-        "folderDeleted": {
-          "title": "Thư Mục Đã Xóa",
-          "description": "Khi một thư mục bị xóa"
-        },
-        "homepageUpdated": {
-          "title": "Trang Chủ Đã Cập Nhật",
-          "description": "Khi các album được thêm/xóa khỏi trang chủ"
-        },
-        "versionUpdate": {
-          "title": "Cập nhật phiên bản",
-          "description": "Khi Galleria được cập nhật lên phiên bản mới"
-        },
-        "photoDownloaded": {
-          "title": "Ảnh đã tải xuống",
-          "description": "Khi một khách truy cập tải xuống một ảnh (có thể gây ồn)"
-        },
-        "albumViewMilestone": {
-          "title": "Xem Cột mốc",
-          "description": "Khi một album đạt 100, 1K, hoặc 10K lượt xem"
-        }
-      }
+    "home": {
+      "description": "Cấu hình danh mục nhiếp ảnh và sở thích hệ thống"
+    },
+    "links": {
+      "title": "Liên kết",
+      "description": "Các trang bên ngoài và điều hướng tùy chỉnh",
+      "pageDescription": "Quản lý các liên kết bên ngoài xuất hiện trong điều hướng của trang web của bạn"
+    },
+    "users": {
+      "title": "Người dùng",
+      "description": "Quản lý người dùng và kiểm soát quyền truy cập",
+      "pageDescription": "Quản lý tài khoản người dùng, vai trò và quyền hạn"
+    },
+    "openai": {
+      "title": "OpenAI",
+      "description": "Tiêu đề và mô tả ảnh được hỗ trợ bởi AI",
+      "pageDescription": "Cấu hình API OpenAI để tự động tạo tiêu đề"
+    },
+    "imageQuality": {
+      "title": "Chất lượng hình ảnh",
+      "description": "Cài đặt hình thu nhỏ và hình ảnh modal",
+      "pageDescription": "Cấu hình chất lượng và kích thước tối ưu hóa hình ảnh"
+    },
+    "videoQuality": {
+      "title": "Chất lượng video",
+      "description": "Cài đặt mã hóa và phát video",
+      "pageDescription": "Cấu hình chất lượng video, bitrate và độ phân giải"
+    },
+    "email": {
+      "title": "Email",
+      "description": "Cấu hình SMTP cho lời mời",
+      "pageDescription": "Cấu hình máy chủ SMTP để gửi email lời mời và đặt lại mật khẩu"
+    },
+    "pushNotifications": {
+      "title": "Thông báo đẩy",
+      "description": "Thông báo trình duyệt cho quản trị viên",
+      "pageDescription": "Cấu hình thông báo đẩy cho thông báo hoàn thành công việc"
+    },
+    "googleOAuth": {
+      "title": "Google OAuth",
+      "description": "Xác thực và người dùng được ủy quyền",
+      "pageDescription": "Cấu hình thông tin xác thực Google OAuth và địa chỉ email được ủy quyền"
+    },
+    "analytics": {
+      "title": "Phân tích",
+      "description": "Theo dõi khách truy cập và OpenObserve",
+      "pageDescription": "Cấu hình theo dõi phân tích và tổng hợp nhật ký"
+    },
+    "logging": {
+      "title": "Ghi nhật ký",
+      "description": "Mức độ ghi nhật ký máy chủ và người xem",
+      "pageDescription": "Cấu hình độ chi tiết ghi nhật ký máy chủ và xem nhật ký trực tiếp"
+    },
+    "general": {
+      "title": "Chung",
+      "description": "Tên trang web, logo và giao diện",
+      "pageDescription": "Tùy chỉnh bản sắc hình ảnh và cài đặt chung của trang web của bạn"
     }
   },
   "advancedSettings": {
@@ -593,7 +452,14 @@
       "forceRegenerateImagesConfirm": "Buộc tái tạo TẤT CẢ hình ảnh? Điều này sẽ mất một thời gian.",
       "runOptimizationConfirm": "Chạy tối ưu hóa hình ảnh cho tất cả các bức ảnh?",
       "optimizedVideos": "Video đã tối ưu hóa",
-      "forceRegenerateVideosConfirm": "⚠️ Điều này sẽ mã hóa lại TẤT CẢ video với cài đặt chất lượng hiện tại. Đây là một thao tác tốn thời gian và sẽ tạm thời tăng mức sử dụng CPU.\n\nCác tệp video hiện có sẽ bị thay thế. Bạn có chắc chắn muốn tiếp tục không?"
+      "forceRegenerateVideosConfirm": "⚠️ Điều này sẽ mã hóa lại TẤT CẢ video với cài đặt chất lượng hiện tại. Đây là một thao tác tốn thời gian và sẽ tạm thời tăng mức sử dụng CPU.\n\nCác tệp video hiện có sẽ bị thay thế. Bạn có chắc chắn muốn tiếp tục không?",
+      "imageOptimization": "Tối ưu hóa hình ảnh",
+      "imageOptimizationDescription": "Tạo hình thu nhỏ và hình ảnh modal tối ưu cho tất cả ảnh trong danh mục của bạn",
+      "optimizeMissing": "Tối ưu hóa hình ảnh thiếu",
+      "forceRegenerateImages": "Buộc tái tạo tất cả hình ảnh",
+      "videoOptimization": "Tối ưu hóa video",
+      "videoOptimizationDescription": "Tái tạo danh sách phát HLS master cho tất cả video với cài đặt chất lượng hiện tại",
+      "regenerateVideoPlaylists": "Tái tạo danh sách phát video"
     }
   },
   "userManagement": {
@@ -983,7 +849,13 @@
     "autoGenerateEnabled": "Đã bật tính năng tự động tạo tiêu đề AI",
     "autoGenerateDisabled": "Đã tắt tính năng tự động tạo tiêu đề AI",
     "invalidApiKey": "Khóa API OpenAI không hợp lệ. Vui lòng kiểm tra khóa của bạn và thử lại.",
-    "failedToUpdate": "Cập nhật cài đặt không thành công"
+    "failedToUpdate": "Cập nhật cài đặt không thành công",
+    "generateTitles": {
+      "title": "Tạo tiêu đề AI",
+      "description": "Sử dụng OpenAI để tự động tạo tiêu đề mô tả cho ảnh của bạn",
+      "generateMissing": "Tạo tiêu đề thiếu",
+      "regenerateAll": "Buộc Tái Tạo Tất Cả Tiêu Đề"
+    }
   },
   "profile": {
     "failedToStartMfaSetup": "Khởi động thiết lập MFA không thành công",
@@ -1223,6 +1095,45 @@
     "errorRequiredField": "Trường này là bắt buộc",
     "setupCompleteWaitingRestart": "Cài đặt hoàn tất! Đang chờ máy chủ khởi động lại..."
   },
+  "email": {
+    "invitation": {
+      "subject": "Bạn đã được mời tham gia {{siteName}}",
+      "title": "Tham gia Galleria của {{siteName}}",
+      "greeting": "Chào bạn,",
+      "body": "{{inviterName}} đã mời bạn tham gia <strong>Galleria của {{siteName}}</strong>.",
+      "instructions": "Để chấp nhận lời mời này và thiết lập tài khoản của bạn, hãy nhấp vào nút bên dưới:",
+      "button": "Chấp nhận lời mời",
+      "orCopyLink": "Hoặc sao chép và dán liên kết này vào trình duyệt của bạn:",
+      "expiry": "Lời mời này sẽ hết hạn sau 7 ngày.",
+      "footerIgnore": "Nếu bạn không mong đợi lời mời này, bạn có thể an tâm bỏ qua email này.",
+      "footerAutomatic": "Đây là một tin nhắn tự động, vui lòng không trả lời email này."
+    },
+    "passwordReset": {
+      "subject": "Yêu cầu đặt lại mật khẩu - {{siteName}}",
+      "title": "Yêu cầu đặt lại mật khẩu",
+      "greeting": "Chào {{userName}},",
+      "greetingFallback": "Xin chào,",
+      "body": "Chúng tôi đã nhận được yêu cầu đặt lại mật khẩu của bạn cho <strong>{{siteName}}'s Galleria</strong>.",
+      "instructions": "Để đặt lại mật khẩu của bạn, hãy nhấp vào nút bên dưới:",
+      "button": "Đặt lại mật khẩu",
+      "orCopyLink": "Hoặc sao chép và dán liên kết này vào trình duyệt của bạn:",
+      "warningTitle": "⚠️ Quan trọng:",
+      "warningExpiry": "Liên kết này sẽ hết hạn sau 1 giờ",
+      "warningIgnore": "Nếu bạn không yêu cầu điều này, vui lòng bỏ qua email này",
+      "warningNoChange": "Mật khẩu của bạn sẽ không thay đổi cho đến khi bạn tạo một mật khẩu mới",
+      "footerAutomatic": "Đây là một tin nhắn tự động, vui lòng không trả lời email này.",
+      "footerContact": "Nếu bạn cần hỗ trợ, vui lòng liên hệ với quản trị viên của bạn."
+    },
+    "test": {
+      "subject": "Email kiểm tra từ {{siteName}}",
+      "title": "Kiểm tra cấu hình email",
+      "success": "✓",
+      "body1": "Chúc mừng! Cấu hình SMTP của bạn đang hoạt động chính xác.",
+      "body2": "Email thử nghiệm này được gửi từ <strong>{{siteName}}</strong> để xác minh rằng dịch vụ email của bạn được cấu hình đúng và có thể gửi tin nhắn.",
+      "footerTimestamp": "Đây là một tin nhắn thử nghiệm được gửi vào {{timestamp}}.",
+      "footerIgnore": "Bạn có thể an toàn bỏ qua hoặc xóa email này."
+    }
+  },
   "testEmailModal": {
     "title": "Gửi Email Kiểm Tra",
     "description": "Nhập địa chỉ email để gửi tin nhắn kiểm tra và xác minh cấu hình SMTP của bạn hoạt động chính xác.",
@@ -1314,11 +1225,64 @@
       "errorGenerateKeys": "Không thể tạo khóa VAPID",
       "close": "Đóng"
     },
+    "backend": {
+      "videoProcessingComplete": "Xử Lý Video Hoàn Tất",
+      "videoProcessingFailed": "Xử Lý Video Thất Bại",
+      "videoReprocessingComplete": "Xử lý video hoàn tất",
+      "videoReprocessingFailed": "Xử lý video thất bại",
+      "imageOptimizationComplete": "Tối ưu hóa hình ảnh hoàn tất",
+      "imageOptimizationFailed": "Tối ưu hóa hình ảnh thất bại",
+      "aiTitlesComplete": "Tạo tiêu đề AI hoàn tất",
+      "aiTitlesFailed": "Tạo tiêu đề AI thất bại",
+      "testNotificationTitle": "Thông báo thử nghiệm",
+      "testNotificationBody": "Thông báo đẩy đang hoạt động! Bạn sẽ nhận được thông báo khi các công việc xử lý của bạn hoàn tất."
+    },
     "blocked": "Thông báo bị chặn bởi trình duyệt. Kiểm tra cài đặt trình duyệt của bạn.",
     "subscribePrompt": "Đăng ký để nhận thông báo khi công việc hoàn thành",
     "subscribe": "Đăng ký",
     "loading": "Đang tải...",
     "notSupported": "Thông báo đẩy không được hỗ trợ trong trình duyệt này",
     "serverDisabled": "Thông báo đẩy đã bị vô hiệu hóa trên máy chủ"
+  },
+  "general": {
+    "title": "Chung",
+    "description": "Tùy chỉnh tên trang web, phụ đề và ảnh đại diện của bạn",
+    "logo": "Biểu tượng",
+    "clickOrDrag": "Nhấp hoặc kéo hình ảnh vào đây",
+    "currentAvatar": "Ảnh đại diện hiện tại",
+    "siteName": "Tên trang web",
+    "siteNamePlaceholder": "Tên trang web của bạn",
+    "photoLicense": "Giấy phép Ảnh",
+    "photoLicenseDescription": "Chọn cách mà người khác có thể sử dụng những bức ảnh của bạn",
+    "shuffleHomepage": "Xáo trộn Ảnh Trang Chủ",
+    "shuffleHomepageDescription": "Ngẫu nhiên hóa thứ tự của các bức ảnh trên trang chủ mỗi khi trang được tải",
+    "animatedBackground": "Nền Hoạt Hình",
+    "animatedBackgroundDescription": "Bật nền hoạt hình đầy màu sắc trên bảng điều khiển quản trị và trang đăng nhập",
+    "primaryColor": "Màu Chính",
+    "secondaryColor": "Màu Phụ",
+    "metaDescription": "Mô Tả Meta",
+    "metaDescriptionPlaceholder": "Mô tả ngắn gọn về trang web của bạn cho các công cụ tìm kiếm",
+    "metaKeywords": "Từ khóa Meta",
+    "metaKeywordsPlaceholder": "nhiếp ảnh, danh mục, tên của bạn (cách nhau bằng dấu phẩy)",
+    "language": "Ngôn ngữ",
+    "languageDescription": "Chọn ngôn ngữ mặc định cho trang của bạn",
+    "savedSuccessfully": "{{section}} đã lưu thành công!",
+    "LogoSaved": "Logo đã lưu thành công!",
+    "siteNameSaved": "Tên trang đã lưu thành công!",
+    "primaryColorSaved": "Màu chính đã lưu thành công!",
+    "secondaryColorSaved": "Màu phụ đã lưu thành công!",
+    "metaDescriptionSaved": "Mô tả Meta đã lưu thành công!",
+    "metaKeywordsSaved": "Meta từ khóa đã được lưu thành công!",
+    "photoLicenseUpdated": "Giấy phép ảnh đã được cập nhật!",
+    "languageUpdated": "Ngôn ngữ đã được cập nhật!",
+    "homepageShuffleSaved": "Cài đặt xáo trộn trang chính đã được lưu!",
+    "animatedBackgroundSaved": "Cài đặt nền hoạt hình đã được lưu!",
+    "failedToSave": "Lưu {{section}} không thành công",
+    "failedToSaveLicense": "Lưu giấy phép không thành công",
+    "failedToSaveLanguage": "Lưu ngôn ngữ không thành công",
+    "failedToSaveSetting": "Lưu cài đặt không thành công",
+    "errorSavingLicense": "Lỗi khi lưu giấy phép",
+    "errorSavingLanguage": "Lỗi khi lưu ngôn ngữ",
+    "errorSavingSetting": "Lỗi khi lưu cài đặt"
   }
 }

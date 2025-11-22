@@ -154,47 +154,6 @@
     "uploadInProgress": "Upload bezig",
     "jobStoppedByUser": "Taak gestopt door gebruiker"
   },
-  "branding": {
-    "title": "Merkgeving",
-    "description": "Pas de naam, ondertitel en avatar van je site aan",
-    "logo": "Logo",
-    "clickOrDrag": "Klik of sleep afbeelding hier",
-    "currentAvatar": "Huidige avatar",
-    "siteName": "Sitenaam",
-    "siteNamePlaceholder": "De naam van je site",
-    "photoLicense": "Fotolicentie",
-    "photoLicenseDescription": "Kies hoe anderen je foto's kunnen gebruiken",
-    "shuffleHomepage": "Shuffle Homepage Foto's",
-    "shuffleHomepageDescription": "Willekeurige volgorde van foto's op de homepage elke keer dat de pagina wordt geladen",
-    "animatedBackground": "Geanimeerde Achtergrond",
-    "animatedBackgroundDescription": "Schakel een kleurrijke geanimeerde achtergrond in op het beheerpaneel en de inlogpagina",
-    "primaryColor": "Primaire Kleur",
-    "secondaryColor": "Secundaire Kleur",
-    "metaDescription": "Meta Beschrijving",
-    "metaDescriptionPlaceholder": "Korte beschrijving van je site voor zoekmachines",
-    "metaKeywords": "Meta Trefwoorden",
-    "metaKeywordsPlaceholder": "fotografie, portfolio, jouw naam (komma gescheiden)",
-    "language": "Taal",
-    "languageDescription": "Kies de standaardtaal voor je site",
-    "savedSuccessfully": "{{section}} succesvol opgeslagen!",
-    "photoLicenseUpdated": "Fotolicentie bijgewerkt!",
-    "languageUpdated": "Taal bijgewerkt!",
-    "homepageShuffleSaved": "Instelling voor shuffle homepage opgeslagen!",
-    "animatedBackgroundSaved": "Instelling voor geanimeerde achtergrond opgeslagen!",
-    "failedToSave": "Kon {{section}} niet opslaan",
-    "failedToSaveLicense": "Kon licentie niet opslaan",
-    "failedToSaveLanguage": "Kon taal niet opslaan",
-    "failedToSaveSetting": "Kon instelling niet opslaan",
-    "errorSavingLicense": "Fout bij opslaan van licentie",
-    "errorSavingLanguage": "Fout bij opslaan van taal",
-    "errorSavingSetting": "Fout bij opslaan van instelling",
-    "siteNameSaved": "Site naam succesvol opgeslagen!",
-    "primaryColorSaved": "Primaire kleur succesvol opgeslagen!",
-    "secondaryColorSaved": "Secundaire kleur succesvol opgeslagen!",
-    "metaDescriptionSaved": "Meta beschrijving succesvol opgeslagen!",
-    "metaKeywordsSaved": "Meta zoekwoorden succesvol opgeslagen!",
-    "LogoSaved": "Logo succesvol opgeslagen!"
-  },
   "license": {
     "title": "Fotolicentie",
     "summary": "Samenvatting",
@@ -404,163 +363,63 @@
     "saved": "{{section}} instellingen opgeslagen!",
     "failedToSave": "Kon configuratie niet opslaan",
     "errorSaving": "Fout bij het opslaan van configuratie",
-    "notifications": {
-      "title": "Meldingsvoorkeuren",
-      "description": "Configureer welke pushmeldingen je wilt ontvangen",
-      "saved": "Meldingsvoorkeuren opgeslagen",
-      "confirmReset": "Alle meldingsvoorkeuren terugzetten naar standaardinstellingen?",
-      "resetSuccess": "Meldingsvoorkeuren teruggezet naar standaardinstellingen",
-      "resetToDefaults": "Terugzetten naar Standaard",
-      "enableAll": "Alles Inschakelen",
-      "disableAll": "Alles Uitschakelen",
-      "categories": {
-        "security": {
-          "title": "Beveiliging & Authenticatie",
-          "description": "Meldingen over gebruikersaccounts, inlogpogingen en beveiligingsgebeurtenissen"
-        },
-        "content": {
-          "title": "Inhoudsbeheer",
-          "description": "Meldingen over albums, foto's en gedeelde items"
-        },
-        "system": {
-          "title": "Systeem & Configuratie",
-          "description": "Meldingen over instellingenwijzigingen en systeemgebeurtenissen"
-        }
-      },
-      "types": {
-        "userInvited": {
-          "title": "Gebruiker Uitgenodigd",
-          "description": "Wanneer een beheerder een nieuwe gebruiker uitnodigt"
-        },
-        "userAcceptedInvite": {
-          "title": "Gebruiker Toegevoegd",
-          "description": "Wanneer een gebruiker een uitnodiging accepteert"
-        },
-        "userDeleted": {
-          "title": "Gebruiker Verwijderd",
-          "description": "Wanneer een beheerder een gebruikersaccount verwijdert"
-        },
-        "userRoleChanged": {
-          "title": "Gebruikersrol Gewijzigd",
-          "description": "Wanneer de rol van een gebruiker wordt gewijzigd"
-        },
-        "passkeyCreated": {
-          "title": "Toegangscode Aangemaakt",
-          "description": "Wanneer een gebruiker een nieuwe toegangscode registreert"
-        },
-        "passkeyDeleted": {
-          "title": "Toegangscode Verwijderd",
-          "description": "Wanneer een gebruiker een toegangscode verwijdert"
-        },
-        "mfaEnabled": {
-          "title": "MFA Ingeschakeld",
-          "description": "Wanneer een gebruiker multi-factor authenticatie inschakelt"
-        },
-        "mfaDisabled": {
-          "title": "MFA Uitgeschakeld",
-          "description": "Wanneer een gebruiker multi-factor authenticatie uitschakelt"
-        },
-        "passwordChanged": {
-          "title": "Wachtwoord Gewijzigd",
-          "description": "Wanneer een gebruiker zijn wachtwoord wijzigt"
-        },
-        "adminPasswordReset": {
-          "title": "Wachtwoord Reset Admin",
-          "description": "Wanneer een admin een wachtwoordreset initieert"
-        },
-        "failedLoginAttempts": {
-          "title": "Mislukte Inlogpogingen",
-          "description": "Wanneer meerdere mislukte inlogpogingen worden gedetecteerd"
-        },
-        "albumCreated": {
-          "title": "Album Aangemaakt",
-          "description": "Wanneer een nieuw album wordt aangemaakt"
-        },
-        "albumPublished": {
-          "title": "Album Gepubliceerd",
-          "description": "Wanneer een album openbaar wordt gemaakt"
-        },
-        "albumDeleted": {
-          "title": "Album Verwijderd",
-          "description": "Wanneer een album wordt verwijderd"
-        },
-        "largePhotoUpload": {
-          "title": "Grote Upload",
-          "description": "Wanneer er 50+ foto's tegelijk worden geüpload"
-        },
-        "shareLinkCreated": {
-          "title": "Delen Link Aangemaakt",
-          "description": "Wanneer er een nieuwe deel link wordt aangemaakt"
-        },
-        "shareLinkAccessed": {
-          "title": "Delen Link Toegang",
-          "description": "Wanneer iemand een gedeeld album bekijkt"
-        },
-        "shareLinkExpired": {
-          "title": "Deel Link Verlopen",
-          "description": "Wanneer een deel link verloopt"
-        },
-        "configUpdated": {
-          "title": "Instellingen Gewijzigd",
-          "description": "Wanneer de systeemconfiguratie is bijgewerkt"
-        },
-        "smtpSettingsChanged": {
-          "title": "SMTP Instellingen Gewijzigd",
-          "description": "Wanneer de e-mailconfiguratie is bijgewerkt"
-        },
-        "openaiApiKeyUpdated": {
-          "title": "AI Instellingen Gewijzigd",
-          "description": "Wanneer de OpenAI API-sleutel is bijgewerkt"
-        },
-        "brandingUpdated": {
-          "title": "Branding Bijgewerkt",
-          "description": "Wanneer de sitebranding is gewijzigd"
-        },
-        "lowDiskSpace": {
-          "title": "Weinig schijfruimte",
-          "description": "Wanneer de opslag onder de 10% is"
-        },
-        "databaseBackupCompleted": {
-          "title": "Back-up voltooid",
-          "description": "Wanneer de databaseback-up is voltooid"
-        },
-        "albumUnpublished": {
-          "title": "Album Niet Gepubliceerd",
-          "description": "Wanneer een album privé wordt gemaakt"
-        },
-        "folderCreated": {
-          "title": "Map Aangemaakt",
-          "description": "Wanneer een nieuwe map wordt aangemaakt"
-        },
-        "folderPublished": {
-          "title": "Map Gepubliceerd",
-          "description": "Wanneer een map en zijn albums worden gepubliceerd"
-        },
-        "folderUnpublished": {
-          "title": "Map Niet Gepubliceerd",
-          "description": "Wanneer een map en zijn albums niet worden gepubliceerd"
-        },
-        "folderDeleted": {
-          "title": "Map Verwijderd",
-          "description": "Wanneer een map wordt verwijderd"
-        },
-        "homepageUpdated": {
-          "title": "Startpagina Bijgewerkt",
-          "description": "Wanneer albums worden toegevoegd/verwijderd van de startpagina"
-        },
-        "versionUpdate": {
-          "title": "Versie-update",
-          "description": "Wanneer Galleria wordt bijgewerkt naar een nieuwe versie"
-        },
-        "photoDownloaded": {
-          "title": "Foto Gedownload",
-          "description": "Wanneer een bezoeker een foto downloadt (kan luidruchtig zijn)"
-        },
-        "albumViewMilestone": {
-          "title": "Bekijk Mijlpalen",
-          "description": "Wanneer een album 100, 1K of 10K weergaven bereikt"
-        }
-      }
+    "home": {
+      "description": "Configureer je fotografieportfolio en systeemvoorkeuren"
+    },
+    "links": {
+      "title": "Links",
+      "description": "Externe pagina's en aangepaste navigatie",
+      "pageDescription": "Beheer externe links die in de navigatie van uw site verschijnen"
+    },
+    "users": {
+      "title": "Gebruikers",
+      "description": "Gebruikersbeheer en toegangscontrole",
+      "pageDescription": "Beheer gebruikersaccounts, rollen en machtigingen"
+    },
+    "openai": {
+      "title": "OpenAI",
+      "description": "AI-gestuurde fototitels en beschrijvingen",
+      "pageDescription": "Configureer OpenAI API voor automatische titelgeneratie"
+    },
+    "imageQuality": {
+      "title": "Afbeeldingskwaliteit",
+      "description": "Thumbnail- en modaal afbeeldingsinstellingen",
+      "pageDescription": "Configureer de kwaliteit en afmetingen van afbeeldingsoptimalisatie"
+    },
+    "videoQuality": {
+      "title": "Videokwaliteit",
+      "description": "Instellingen voor video-encoding en streaming",
+      "pageDescription": "Configureer videokwaliteit, bitrates en resoluties"
+    },
+    "email": {
+      "title": "E-mail",
+      "description": "SMTP-configuratie voor uitnodigingen",
+      "pageDescription": "Configureer SMTP-server voor het verzenden van uitnodigings- en wachtwoordreset-e-mails"
+    },
+    "pushNotifications": {
+      "title": "Pushmeldingen",
+      "description": "Browsermeldingen voor beheerders",
+      "pageDescription": "Configureer pushmeldingen voor meldingen van voltooide taken"
+    },
+    "googleOAuth": {
+      "title": "Google OAuth",
+      "description": "Authenticatie en geautoriseerde gebruikers",
+      "pageDescription": "Configureer Google OAuth-inloggegevens en geautoriseerde e-mailadressen"
+    },
+    "analytics": {
+      "title": "Analytics",
+      "description": "Bezoekerstracking en OpenObserve",
+      "pageDescription": "Configureer analytics-tracking en logaggregatie"
+    },
+    "logging": {
+      "title": "Logging",
+      "description": "Serverlogniveaus en kijker",
+      "pageDescription": "Configureer de serverlog-verbose en bekijk live logs"
+    },
+    "general": {
+      "title": "Algemeen",
+      "description": "Site naam, logo en uiterlijk",
+      "pageDescription": "Pas de visuele identiteit en algemene instellingen van uw site aan"
     }
   },
   "advancedSettings": {
@@ -593,7 +452,14 @@
       "forceRegenerateImagesConfirm": "Alle afbeeldingen opnieuw genereren? Dit kan even duren.",
       "runOptimizationConfirm": "Afbeeldingsoptimalisatie uitvoeren op alle foto's?",
       "optimizedVideos": "Geoptimaliseerde video's",
-      "forceRegenerateVideosConfirm": "⚠️ Dit zal ALLE video's opnieuw coderen met de huidige kwaliteit instellingen. Dit is een tijdrovende operatie en zal tijdelijk het CPU-gebruik verhogen.\n\nBestaande videobestanden zullen worden vervangen. Weet je zeker dat je wilt doorgaan?"
+      "forceRegenerateVideosConfirm": "⚠️ Dit zal ALLE video's opnieuw coderen met de huidige kwaliteit instellingen. Dit is een tijdrovende operatie en zal tijdelijk het CPU-gebruik verhogen.\n\nBestaande videobestanden zullen worden vervangen. Weet je zeker dat je wilt doorgaan?",
+      "imageOptimization": "Afbeeldingsoptimalisatie",
+      "imageOptimizationDescription": "Genereer geoptimaliseerde miniaturen en modale afbeeldingen voor alle foto's in uw portfolio",
+      "optimizeMissing": "Optimaliseer ontbrekende afbeeldingen",
+      "forceRegenerateImages": "Forceer het regenereren van alle afbeeldingen",
+      "videoOptimization": "Video-optimalisatie",
+      "videoOptimizationDescription": "Regenerateer HLS-masterafspeellijsten voor alle video's met de huidige kwaliteitinstellingen",
+      "regenerateVideoPlaylists": "Regenerateer video-afspeellijsten"
     }
   },
   "userManagement": {
@@ -983,7 +849,13 @@
     "autoGenerateEnabled": "Automatisch genereren van AI-titels ingeschakeld",
     "autoGenerateDisabled": "Automatisch genereren van AI-titels uitgeschakeld",
     "invalidApiKey": "Ongeldige OpenAI API-sleutel. Controleer uw sleutel en probeer het opnieuw.",
-    "failedToUpdate": "Instelling bijwerken mislukt"
+    "failedToUpdate": "Instelling bijwerken mislukt",
+    "generateTitles": {
+      "title": "Genereer AI-titels",
+      "description": "Gebruik OpenAI om automatisch beschrijvende titels voor je foto's te genereren",
+      "generateMissing": "Genereer ontbrekende titels",
+      "regenerateAll": "Dwing alle titels opnieuw te genereren"
+    }
   },
   "profile": {
     "failedToStartMfaSetup": "Kon MFA-installatie niet starten",
@@ -1223,6 +1095,45 @@
     "errorRequiredField": "Dit veld is verplicht",
     "setupCompleteWaitingRestart": "Installatie voltooid! Wachten op server om opnieuw op te starten..."
   },
+  "email": {
+    "invitation": {
+      "subject": "Je bent uitgenodigd voor {{siteName}}",
+      "title": "Word lid van <strong>{{siteName}}'s Galleria</strong>",
+      "greeting": "Hallo,",
+      "body": "{{inviterName}} heeft je uitgenodigd om lid te worden van <strong>{{siteName}}'s Galleria</strong>.",
+      "instructions": "Om deze uitnodiging te accepteren en je account in te stellen, klik op de knop hieronder:",
+      "button": "Uitnodiging Accepteren",
+      "orCopyLink": "Of kopieer en plak deze link in je browser:",
+      "expiry": "Deze uitnodiging vervalt over 7 dagen.",
+      "footerIgnore": "Als je deze uitnodiging niet verwachtte, kun je deze e-mail veilig negeren.",
+      "footerAutomatic": "Dit is een automatisch bericht, gelieve niet op deze e-mail te reageren."
+    },
+    "passwordReset": {
+      "subject": "Wachtwoordresetverzoek - {{siteName}}",
+      "title": "Wachtwoordresetverzoek",
+      "greeting": "Hallo {{userName}},",
+      "greetingFallback": "Hallo daar,",
+      "body": "We hebben een verzoek ontvangen om je wachtwoord voor <strong>{{siteName}}'s Galleria</strong> te resetten.",
+      "instructions": "Om je wachtwoord te resetten, klik op de knop hieronder:",
+      "button": "Wachtwoord resetten",
+      "orCopyLink": "Of kopieer en plak deze link in je browser:",
+      "warningTitle": "⚠️ Belangrijk:",
+      "warningExpiry": "Deze link vervalt over 1 uur",
+      "warningIgnore": "Als u dit niet heeft aangevraagd, negeer dan deze e-mail",
+      "warningNoChange": "Uw wachtwoord zal niet veranderen totdat u een nieuw wachtwoord aanmaakt",
+      "footerAutomatic": "Dit is een automatisch bericht, gelieve niet op deze e-mail te antwoorden.",
+      "footerContact": "Als u hulp nodig heeft, neem dan contact op met uw beheerder."
+    },
+    "test": {
+      "subject": "Test e-mail van {{siteName}}",
+      "title": "E-mailconfiguratietest",
+      "success": "✓",
+      "body1": "Gefeliciteerd! Uw SMTP-configuratie werkt correct.",
+      "body2": "Deze test-e-mail is verzonden van <strong>{{siteName}}</strong> om te verifiëren dat uw e-mailservice correct is geconfigureerd en berichten kan afleveren.",
+      "footerTimestamp": "Dit is een testbericht verzonden op {{timestamp}}.",
+      "footerIgnore": "Je kunt deze e-mail veilig negeren of verwijderen."
+    }
+  },
   "testEmailModal": {
     "title": "Verstuur test-e-mail",
     "description": "Voer een e-mailadres in om een testbericht te verzenden en te verifiëren of uw SMTP-configuratie correct werkt.",
@@ -1314,11 +1225,64 @@
       "errorGenerateKeys": "Het genereren van VAPID-sleutels is mislukt.",
       "close": "Sluiten"
     },
+    "backend": {
+      "videoProcessingComplete": "Videoprocessing Voltooid",
+      "videoProcessingFailed": "Videoprocessing Mislukt",
+      "videoReprocessingComplete": "Videoherverwerking Voltooid",
+      "videoReprocessingFailed": "Videoherverwerking Mislukt",
+      "imageOptimizationComplete": "Afbeeldingsoptimalisatie Voltooid",
+      "imageOptimizationFailed": "Afbeeldingsoptimalisatie Mislukt",
+      "aiTitlesComplete": "AI Titelgeneratie Voltooid",
+      "aiTitlesFailed": "AI Titelgeneratie Mislukt",
+      "testNotificationTitle": "Testmelding",
+      "testNotificationBody": "Pushmeldingen werken! Je ontvangt meldingen wanneer je verwerkingsjobs zijn voltooid."
+    },
     "blocked": "Meldingen geblokkeerd door de browser. Controleer uw browserinstellingen.",
     "subscribePrompt": "Abonneer om meldingen te ontvangen wanneer taken zijn voltooid",
     "subscribe": "Abonneren",
     "loading": "Laden...",
     "notSupported": "Pushmeldingen worden niet ondersteund in deze browser",
     "serverDisabled": "Pushmeldingen zijn uitgeschakeld op de server"
+  },
+  "general": {
+    "title": "Algemeen",
+    "description": "Pas de naam, ondertitel en avatar van uw site aan",
+    "logo": "Logo",
+    "clickOrDrag": "Klik of sleep afbeelding hier",
+    "currentAvatar": "Huidige avatar",
+    "siteName": "Site Naam",
+    "siteNamePlaceholder": "Uw site naam",
+    "photoLicense": "Foto Licentie",
+    "photoLicenseDescription": "Kies hoe anderen jouw foto's kunnen gebruiken",
+    "shuffleHomepage": "Schud Homepage Foto's",
+    "shuffleHomepageDescription": "Randomiseer de volgorde van foto's op de homepage elke keer dat de pagina laadt",
+    "animatedBackground": "Geanimeerde Achtergrond",
+    "animatedBackgroundDescription": "Schakel een kleurrijke geanimeerde achtergrond in op het beheerpaneel en de inlogpagina",
+    "primaryColor": "Primaire Kleur",
+    "secondaryColor": "Secundaire Kleur",
+    "metaDescription": "Meta Beschrijving",
+    "metaDescriptionPlaceholder": "Korte beschrijving van jouw site voor zoekmachines",
+    "metaKeywords": "Meta-trefwoorden",
+    "metaKeywordsPlaceholder": "fotografie, portfolio, jouw naam (komma gescheiden)",
+    "language": "Taal",
+    "languageDescription": "Kies de standaardtaal voor je site",
+    "savedSuccessfully": "{{section}} succesvol opgeslagen!",
+    "LogoSaved": "Logo succesvol opgeslagen!",
+    "siteNameSaved": "Site naam succesvol opgeslagen!",
+    "primaryColorSaved": "Primaire kleur succesvol opgeslagen!",
+    "secondaryColorSaved": "Secundaire kleur succesvol opgeslagen!",
+    "metaDescriptionSaved": "Meta-beschrijving succesvol opgeslagen!",
+    "metaKeywordsSaved": "Meta-trefwoorden succesvol opgeslagen!",
+    "photoLicenseUpdated": "Foto-licentie bijgewerkt!",
+    "languageUpdated": "Taal bijgewerkt!",
+    "homepageShuffleSaved": "Instelling voor homepage-shuffle opgeslagen!",
+    "animatedBackgroundSaved": "Instelling voor geanimeerde achtergrond opgeslagen!",
+    "failedToSave": "Opslaan van {{section}} is mislukt",
+    "failedToSaveLicense": "Licentie opslaan is mislukt",
+    "failedToSaveLanguage": "Taal opslaan is mislukt",
+    "failedToSaveSetting": "Instelling opslaan is mislukt",
+    "errorSavingLicense": "Fout bij het opslaan van de licentie",
+    "errorSavingLanguage": "Fout bij het opslaan van de taal",
+    "errorSavingSetting": "Fout bij het opslaan van de instelling"
   }
 }

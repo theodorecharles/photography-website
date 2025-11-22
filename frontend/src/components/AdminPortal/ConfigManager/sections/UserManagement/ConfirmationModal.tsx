@@ -42,8 +42,8 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
 
   return (
     <div className="modal-overlay" onClick={handleClose}>
-      <div className="share-modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '500px' }}>
-        <div className="share-modal-header">
+      <div className="generic-modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '500px' }}>
+        <div className="generic-modal-header">
           <h2>{title}</h2>
           <button className="close-button" onClick={handleClose} aria-label={t('common.close')}>
             ×
@@ -57,7 +57,7 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
             handleConfirm();
             return false;
           }}
-          className="share-modal-content"
+          className="generic-modal-content"
         >
           <p className="share-description">{message}</p>
 

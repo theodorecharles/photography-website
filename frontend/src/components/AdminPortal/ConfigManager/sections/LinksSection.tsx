@@ -9,7 +9,6 @@ import { API_URL } from '../../../../config';
 import { useSearchParams } from 'react-router-dom';
 import { ExternalLink } from '../../types';
 import { trackExternalLinksUpdate } from '../../../../utils/analytics';
-import SectionHeader from '../components/SectionHeader';
 import { ChevronUpIcon, ChevronDownIcon } from '../../../icons';
 import '../../LinksManager.css';
 import { info } from '../../../../utils/logger';
@@ -28,7 +27,6 @@ const LinksSection: React.FC<LinksSectionProps> = ({
 }) => {
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
-  const [showLinks, setShowLinks] = useState(false);
   const [originalExternalLinks, setOriginalExternalLinks] = useState<ExternalLink[]>([]);
   const [savingLinks, setSavingLinks] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
@@ -51,15 +49,12 @@ const LinksSection: React.FC<LinksSectionProps> = ({
     // Wait for component to mount and render
     setTimeout(() => {
       if (section === 'links') {
-        setShowLinks(true);
-        setTimeout(() => {
-          if (linksSectionRef.current) {
-            const yOffset = -100; // Offset to account for header
-            const element = linksSectionRef.current;
-            const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
-            window.scrollTo({ top: y, behavior: "smooth" });
-          }
-        }, 300); // Wait for section to expand
+        if (linksSectionRef.current) {
+          const yOffset = -100; // Offset to account for header
+          const element = linksSectionRef.current;
+          const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+          window.scrollTo({ top: y, behavior: "smooth" });
+        }
       }
     }, 100);
   }, [searchParams]);
@@ -148,21 +143,8 @@ const LinksSection: React.FC<LinksSectionProps> = ({
   };
 
   return (
-    <div className="config-group full-width" ref={linksSectionRef}>
-      <SectionHeader
-        title={t('links.title')}
-        description={t('links.description')}
-        isExpanded={showLinks}
-        onToggle={() => setShowLinks(!showLinks)}
-      />
-
-      <div
-        className={`collapsible-content ${showLinks ? "expanded" : "collapsed"}`}
-        style={{
-          maxHeight: showLinks ? "10000px" : "0",
-        }}
-      >
-        <div className="links-list">
+    <div ref={linksSectionRef}>
+      <div className="links-list">
           {externalLinks.map((link, index) => (
             <div key={index} className="link-wrapper">
               <div className="link-item">
@@ -216,7 +198,6 @@ const LinksSection: React.FC<LinksSectionProps> = ({
               </div>
             </div>
           ))}
-        </div>
 
         <div className="section-actions">
           <button onClick={handleAddLink} className="btn-secondary">

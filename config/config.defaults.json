@@ -1,5 +1,8 @@
 {
   "environment": {
+    "features": {
+      "useGridSettings": true
+    },
     "frontend": {
       "port": 3000,
       "apiUrl": "http://localhost:3001"
@@ -92,8 +95,7 @@
       "stream": "website",
       "username": "your-username",
       "password": "your-password"
-    },
-    "hmacSecret": ""
+    }
   },
   "externalLinks": [
     {
