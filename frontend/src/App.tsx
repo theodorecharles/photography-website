@@ -320,17 +320,21 @@ function App() {
 
   // Fetch albums, external links, and branding data
   const fetchData = async () => {
+    console.log('[PERF] App.fetchData() called at', performance.now(), 'ms');
     try {
       // Check if initial data was server-side rendered (SSR) into the page
       const initialData = (window as any).__INITIAL_DATA__;
+      console.log('[PERF] SSR data check:', !!initialData, 'at', performance.now(), 'ms');
       
       let albumsData, externalLinksData, brandingData;
       
       if (initialData && initialData.albums && initialData.externalLinks) {
         // Use pre-injected data from SSR (no network requests!)
+        console.log('[PERF] Using SSR data (no network)');
         debug("✓ Using server-side rendered initial data (no network requests)");
         albumsData = initialData.albums;
         externalLinksData = initialData.externalLinks;
+        console.log('[PERF] Albums count:', albumsData?.albums?.length, 'Links count:', externalLinksData?.externalLinks?.length);
         
         // Use already-injected branding from SSR (no network request!)
         const runtimeBranding = (window as any).__RUNTIME_BRANDING__;
@@ -341,7 +345,9 @@ function App() {
           secondaryColor: runtimeBranding?.secondaryColor || "#3b82f6",
           language: runtimeBranding?.language || "en"
         };
+        console.log('[PERF] Branding loaded at', performance.now(), 'ms');
       } else {
+        console.log('[PERF] No SSR data, fetching from API at', performance.now(), 'ms');
         // Fallback to API requests if SSR data not available
         debug("⚠ SSR data not available, fetching from API");
         const [albumsResponse, externalLinksResponse, brandingResponse] =
@@ -416,6 +422,9 @@ function App() {
         setAlbums(albumNames);
         setFolders([]);
       }
+      
+      console.log('[PERF] About to set state at', performance.now(), 'ms');
+      
       setExternalLinks(externalLinksData.externalLinks);
       setSiteName(brandingData.siteName || "Galleria");
       
@@ -434,6 +443,9 @@ function App() {
         i18n.changeLanguage(brandingData.language);
       }
 
+      console.log('[PERF] State updated at', performance.now(), 'ms');
+      console.log('[PERF] Albums:', albums.length, 'External links:', externalLinks.length);
+      
       setErrorState(null);
     } catch (err) {
       const errorMessage =
