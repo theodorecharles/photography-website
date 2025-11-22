@@ -69,29 +69,27 @@ export function translateBackend(key: string, locale: string = 'en'): string {
 }
 
 /**
- * Get user's preferred locale from database
+ * Get global locale from config.json
  * Returns 'en' as default if not set
  */
-export async function getUserLocale(userId: number): Promise<string> {
+export function getGlobalLocale(): string {
   try {
-    const { getDatabase } = await import('./database.js');
-    const db = getDatabase();
+    const { getCurrentConfig } = require('./config.js');
+    const config = getCurrentConfig();
     
-    const user = db.prepare('SELECT locale FROM users WHERE id = ?').get(userId) as { locale?: string } | undefined;
-    
-    return user?.locale || 'en';
+    return config?.branding?.language || 'en';
   } catch (err) {
-    logError('[i18n] Failed to get user locale:', err);
+    logError('[i18n] Failed to get global locale from config:', err);
     return 'en';
   }
 }
 
 /**
- * Translate notification for a specific user
- * Automatically fetches user's locale from database
+ * Translate notification using global language setting
+ * Reads language from data/config.json
  */
 export async function translateNotificationForUser(userId: number, key: string): Promise<string> {
-  const locale = await getUserLocale(userId);
+  const locale = getGlobalLocale();
   return translateBackend(key, locale);
 }
 
