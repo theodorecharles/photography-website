@@ -60,7 +60,15 @@
       "lowDiskSpaceTitle": "Low Disk Space",
       "lowDiskSpaceBody": "Storage is running low (< 10% remaining)",
       "databaseBackupCompletedTitle": "Backup Complete",
-      "databaseBackupCompletedBody": "Database backup completed successfully"
+      "databaseBackupCompletedBody": "Database backup completed successfully",
+      "videoProcessingCompleteBody": "{{videoName}} in {{albumName}} erfolgreich verarbeitet",
+      "videoProcessingFailedBody": "Verarbeitung von {{videoName}} fehlgeschlagen: {{error}}",
+      "videoReprocessingCompleteBody": "{{videoName}} in {{albumName}} erfolgreich neu verarbeitet",
+      "videoReprocessingFailedBody": "Neuverarbeitung von {{videoName}} fehlgeschlagen: {{error}}",
+      "imageOptimizationCompleteBody": "{{imagesOptimized}} Bilder erfolgreich optimiert",
+      "imageOptimizationFailedBody": "Bildoptimierung fehlgeschlagen: {{error}}",
+      "aiTitlesCompleteBody": "{{titlesGenerated}} Titel für {{albumName}} generiert",
+      "aiTitlesFailedBody": "Titelgenerierung für {{albumName}} fehlgeschlagen: {{error}}"
     }
   },
   "email": {

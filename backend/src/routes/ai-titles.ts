@@ -499,16 +499,20 @@ router.post('/generate', requireManager, (req, res) => {
         const userId = (req.user as any).id;
         const duration = Date.now() - runningJobs.aiTitles.startTime;
         const durationMin = (duration / 1000 / 60).toFixed(1);
-        const message = code === 0 
-          ? `✓ AI title generation complete (${durationMin}m)`
-          : `✗ AI title generation failed with code ${code}`;
         
         const titleKey = code === 0 ? 'notifications.backend.aiTitlesComplete' : 'notifications.backend.aiTitlesFailed';
-        const title = await translateNotificationForUser(userId, titleKey);
+        const bodyKey = code === 0 ? 'notifications.backend.aiTitlesCompleteBody' : 'notifications.backend.aiTitlesFailedBody';
+        
+        const variables = code === 0 
+          ? { albumName: (runningJobs.aiTitles as any).album || 'Unknown', titlesGenerated: (runningJobs.aiTitles as any).generatedCount || 0 }
+          : { albumName: (runningJobs.aiTitles as any).album || 'Unknown', error: (runningJobs.aiTitles as any).error || 'Unknown error' };
+        
+        const title = await translateNotificationForUser(userId, titleKey, variables);
+        const body = await translateNotificationForUser(userId, bodyKey, variables);
         
         sendNotificationToUser(userId, {
           title,
-          body: message,
+          body,
           icon: '/icon-192.png',
           badge: '/icon-192.png',
           tag: 'ai-titles',

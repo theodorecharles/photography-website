@@ -23,13 +23,13 @@ const router = Router();
 /**
  * Helper to send push notification to all admin users
  */
-async function notifyAllAdmins(title: string, body: string, tag: string, notificationType?: any): Promise<void> {
+async function notifyAllAdmins(title: string, body: string, tag: string, notificationType?: any, variables?: Record<string, any>): Promise<void> {
   try {
     const admins = getAllUsers().filter(u => u.role === 'admin');
     
     for (const admin of admins) {
-      const translatedTitle = await translateNotificationForUser(admin.id, title);
-      const translatedBody = await translateNotificationForUser(admin.id, body);
+      const translatedTitle = await translateNotificationForUser(admin.id, title, variables);
+      const translatedBody = await translateNotificationForUser(admin.id, body, variables);
       
       await sendNotificationToUser(admin.id, {
         title: translatedTitle,
@@ -96,7 +96,11 @@ router.post("/create", csrfProtection, requireManager, async (req: Request, res:
       'notifications.backend.shareLinkCreatedTitle',
       'notifications.backend.shareLinkCreatedBody',
       'share-link-created',
-      'shareLinkCreated'
+      'shareLinkCreated',
+      {
+        albumName: sanitizedAlbum,
+        createdBy: (req.user as any).name || (req.user as any).email
+      }
     ).catch(err => error('[ShareLinks] Failed to send share link creation notification:', err));
 
     res.json({

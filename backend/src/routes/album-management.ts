@@ -50,13 +50,13 @@ router.use(csrfProtection);
 /**
  * Helper to send push notification to all admin users
  */
-async function notifyAllAdmins(title: string, body: string, tag: string, notificationType?: any): Promise<void> {
+async function notifyAllAdmins(title: string, body: string, tag: string, notificationType?: any, variables?: Record<string, any>): Promise<void> {
   try {
     const admins = getAllUsers().filter(u => u.role === 'admin');
     
     for (const admin of admins) {
-      const translatedTitle = await translateNotificationForUser(admin.id, title);
-      const translatedBody = await translateNotificationForUser(admin.id, body);
+      const translatedTitle = await translateNotificationForUser(admin.id, title, variables);
+      const translatedBody = await translateNotificationForUser(admin.id, body, variables);
       
       await sendNotificationToUser(admin.id, {
         title: translatedTitle,
@@ -452,6 +452,18 @@ router.post("/", requireManager, async (req: Request, res: Response): Promise<vo
       info(`Assigned album "${sanitizedName}" to folder ID: ${folder_id}`);
     }
 
+    // Send push notification to all admins
+    await notifyAllAdmins(
+      'notifications.backend.albumCreatedTitle',
+      'notifications.backend.albumCreatedBody',
+      'album-created',
+      'albumCreated',
+      {
+        albumName: sanitizedName,
+        createdBy: (req.user as any).name || (req.user as any).email
+      }
+    ).catch(err => error('[AlbumManagement] Failed to send album creation notification:', err));
+
     // Regenerate static JSON files
     const appRoot = req.app.get('appRoot');
     generateStaticJSONFiles(appRoot);
@@ -602,6 +614,18 @@ router.delete("/:album", requireManager, async (req: Request, res: Response): Pr
     } else {
       info(`[AlbumManagement] Album state not found in database: ${sanitizedAlbum}`);
     }
+
+    // Send push notification to all admins
+    await notifyAllAdmins(
+      'notifications.backend.albumDeletedTitle',
+      'notifications.backend.albumDeletedBody',
+      'album-deleted',
+      'albumDeleted',
+      {
+        albumName: sanitizedAlbum,
+        deletedBy: (req.user as any).name || (req.user as any).email
+      }
+    ).catch(err => error('[AlbumManagement] Failed to send album deletion notification:', err));
 
     // Invalidate cache for this album
     invalidateAlbumCache(sanitizedAlbum);
@@ -1109,6 +1133,20 @@ router.patch("/:album/publish", requireManager, async (req: Request, res: Respon
       return;
     }
     info(`[AlbumManagement] Verified album state in DB: published=${albumState.published}`);
+
+    // Send push notification to all admins when album is published
+    if (published) {
+      await notifyAllAdmins(
+        'notifications.backend.albumPublishedTitle',
+        'notifications.backend.albumPublishedBody',
+        'album-published',
+        'albumPublished',
+        {
+          albumName: sanitizedAlbum,
+          publishedBy: (req.user as any).name || (req.user as any).email
+        }
+      ).catch(err => error('[AlbumManagement] Failed to send album publish notification:', err));
+    }
 
     // Regenerate static JSON files
     info(`[Publish] Regenerating static JSON files...`);

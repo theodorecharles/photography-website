@@ -60,7 +60,15 @@
       "lowDiskSpaceTitle": "Low Disk Space",
       "lowDiskSpaceBody": "Storage is running low (< 10% remaining)",
       "databaseBackupCompletedTitle": "Backup Complete",
-      "databaseBackupCompletedBody": "Database backup completed successfully"
+      "databaseBackupCompletedBody": "Database backup completed successfully",
+      "videoProcessingCompleteBody": "{{videoName}} dalam {{albumName}} diproses dengan sukses",
+      "videoProcessingFailedBody": "Gagal memproses {{videoName}}: {{error}}",
+      "videoReprocessingCompleteBody": "{{videoName}} dalam {{albumName}} diproses ulang dengan sukses",
+      "videoReprocessingFailedBody": "Gagal memproses ulang {{videoName}}: {{error}}",
+      "imageOptimizationCompleteBody": "{{imagesOptimized}} gambar dioptimalkan dengan sukses",
+      "imageOptimizationFailedBody": "Optimasi gambar gagal: {{error}}",
+      "aiTitlesCompleteBody": "{{titlesGenerated}} judul dihasilkan untuk {{albumName}}",
+      "aiTitlesFailedBody": "Gagal menghasilkan judul untuk {{albumName}}: {{error}}"
     }
   },
   "email": {

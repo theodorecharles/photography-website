@@ -60,7 +60,15 @@
       "lowDiskSpaceTitle": "Low Disk Space",
       "lowDiskSpaceBody": "Storage is running low (< 10% remaining)",
       "databaseBackupCompletedTitle": "Backup Complete",
-      "databaseBackupCompletedBody": "Database backup completed successfully"
+      "databaseBackupCompletedBody": "Database backup completed successfully",
+      "videoProcessingCompleteBody": "{{albumName}}의 {{videoName}} 처리 성공",
+      "videoProcessingFailedBody": "{{videoName}} 처리 실패: {{error}}",
+      "videoReprocessingCompleteBody": "{{albumName}}의 {{videoName}} 재처리 성공",
+      "videoReprocessingFailedBody": "{{videoName}} 재처리 실패: {{error}}",
+      "imageOptimizationCompleteBody": "{{imagesOptimized}}개의 이미지 최적화 성공",
+      "imageOptimizationFailedBody": "이미지 최적화 실패: {{error}}",
+      "aiTitlesCompleteBody": "{{albumName}}에 대한 {{titlesGenerated}}개의 제목 생성",
+      "aiTitlesFailedBody": "{{albumName}}에 대한 제목 생성 실패: {{error}}"
     }
   },
   "email": {

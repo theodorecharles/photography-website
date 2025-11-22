@@ -60,7 +60,15 @@
       "lowDiskSpaceTitle": "Low Disk Space",
       "lowDiskSpaceBody": "Storage is running low (< 10% remaining)",
       "databaseBackupCompletedTitle": "Backup Complete",
-      "databaseBackupCompletedBody": "Database backup completed successfully"
+      "databaseBackupCompletedBody": "Database backup completed successfully",
+      "videoProcessingCompleteBody": "{{videoName}} i {{albumName}} bearbetades framgångsrikt",
+      "videoProcessingFailedBody": "Misslyckades med att bearbeta {{videoName}}: {{error}}",
+      "videoReprocessingCompleteBody": "{{videoName}} i {{albumName}} ombearbetades framgångsrikt",
+      "videoReprocessingFailedBody": "Misslyckades med att ombearbeta {{videoName}}: {{error}}",
+      "imageOptimizationCompleteBody": "Optimerade {{imagesOptimized}} bilder framgångsrikt",
+      "imageOptimizationFailedBody": "Bildoptimering misslyckades: {{error}}",
+      "aiTitlesCompleteBody": "Genererade {{titlesGenerated}} titlar för {{albumName}}",
+      "aiTitlesFailedBody": "Misslyckades med att generera titlar för {{albumName}}: {{error}}"
     }
   },
   "email": {

@@ -60,7 +60,15 @@
       "lowDiskSpaceTitle": "Low Disk Space",
       "lowDiskSpaceBody": "Storage is running low (< 10% remaining)",
       "databaseBackupCompletedTitle": "Backup Complete",
-      "databaseBackupCompletedBody": "Database backup completed successfully"
+      "databaseBackupCompletedBody": "Database backup completed successfully",
+      "videoProcessingCompleteBody": "{{albumName}}の{{videoName}}が正常に処理されました",
+      "videoProcessingFailedBody": "{{videoName}}の処理に失敗しました: {{error}}",
+      "videoReprocessingCompleteBody": "{{albumName}}の{{videoName}}が再処理されました",
+      "videoReprocessingFailedBody": "{{videoName}}の再処理に失敗しました: {{error}}",
+      "imageOptimizationCompleteBody": "{{imagesOptimized}}枚の画像が正常に最適化されました",
+      "imageOptimizationFailedBody": "画像の最適化に失敗しました: {{error}}",
+      "aiTitlesCompleteBody": "{{albumName}}のために{{titlesGenerated}}件のタイトルが生成されました",
+      "aiTitlesFailedBody": "{{albumName}}のタイトル生成に失敗しました: {{error}}"
     }
   },
   "email": {

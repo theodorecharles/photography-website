@@ -230,9 +230,10 @@ router.post('/test', csrfProtection, requireManager, async (req, res) => {
 
   try {
     const userId = (req.user as any).id;
+    const userName = (req.user as any).name || (req.user as any).email;
     
-    const title = await translateNotificationForUser(userId, 'notifications.backend.testNotificationTitle');
-    const body = await translateNotificationForUser(userId, 'notifications.backend.testNotificationBody');
+    const title = await translateNotificationForUser(userId, 'notifications.backend.testNotificationTitle', { userName });
+    const body = await translateNotificationForUser(userId, 'notifications.backend.testNotificationBody', { userName });
     
     await sendNotificationToUser(userId, {
       title,

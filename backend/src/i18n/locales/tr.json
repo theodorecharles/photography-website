@@ -60,7 +60,15 @@
       "lowDiskSpaceTitle": "Low Disk Space",
       "lowDiskSpaceBody": "Storage is running low (< 10% remaining)",
       "databaseBackupCompletedTitle": "Backup Complete",
-      "databaseBackupCompletedBody": "Database backup completed successfully"
+      "databaseBackupCompletedBody": "Database backup completed successfully",
+      "videoProcessingCompleteBody": "{{albumName}} içindeki {{videoName}} başarıyla işlendi",
+      "videoProcessingFailedBody": "{{videoName}} işlenemedi: {{error}}",
+      "videoReprocessingCompleteBody": "{{albumName}} içindeki {{videoName}} yeniden başarıyla işlendi",
+      "videoReprocessingFailedBody": "{{videoName}} yeniden işlenemedi: {{error}}",
+      "imageOptimizationCompleteBody": "{{imagesOptimized}} görüntü başarıyla optimize edildi",
+      "imageOptimizationFailedBody": "Görüntü optimizasyonu başarısız oldu: {{error}}",
+      "aiTitlesCompleteBody": "{{albumName}} için {{titlesGenerated}} başlık oluşturuldu",
+      "aiTitlesFailedBody": "{{albumName}} için başlık oluşturulamadı: {{error}}"
     }
   },
   "email": {

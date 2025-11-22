@@ -60,7 +60,15 @@
       "lowDiskSpaceTitle": "Low Disk Space",
       "lowDiskSpaceBody": "Storage is running low (< 10% remaining)",
       "databaseBackupCompletedTitle": "Backup Complete",
-      "databaseBackupCompletedBody": "Database backup completed successfully"
+      "databaseBackupCompletedBody": "Database backup completed successfully",
+      "videoProcessingCompleteBody": "{{videoName}} trong {{albumName}} đã xử lý thành công",
+      "videoProcessingFailedBody": "Không thể xử lý {{videoName}}: {{error}}",
+      "videoReprocessingCompleteBody": "{{videoName}} trong {{albumName}} đã xử lý lại thành công",
+      "videoReprocessingFailedBody": "Không thể xử lý lại {{videoName}}: {{error}}",
+      "imageOptimizationCompleteBody": "Đã tối ưu hóa {{imagesOptimized}} hình ảnh thành công",
+      "imageOptimizationFailedBody": "Tối ưu hóa hình ảnh thất bại: {{error}}",
+      "aiTitlesCompleteBody": "Đã tạo {{titlesGenerated}} tiêu đề cho {{albumName}}",
+      "aiTitlesFailedBody": "Không thể tạo tiêu đề cho {{albumName}}: {{error}}"
     }
   },
   "email": {

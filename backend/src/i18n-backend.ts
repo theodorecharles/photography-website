@@ -99,11 +99,23 @@ export function getGlobalLocale(): string {
 }
 
 /**
- * Translate notification using global language setting
+ * Translate notification using global language setting with variable interpolation
  * Reads language from data/config.json
+ * @param userId - User ID (not used currently, kept for compatibility)
+ * @param key - Translation key
+ * @param variables - Optional variables for interpolation (e.g., {userName: 'John'})
  */
-export async function translateNotificationForUser(userId: number, key: string): Promise<string> {
+export async function translateNotificationForUser(userId: number, key: string, variables?: Record<string, any>): Promise<string> {
   const locale = getGlobalLocale();
-  return translateBackend(key, locale);
+  let translated = translateBackend(key, locale);
+  
+  // Interpolate variables if provided
+  if (variables) {
+    Object.entries(variables).forEach(([varName, value]) => {
+      translated = translated.replace(new RegExp(`{{${varName}}}`, 'g'), String(value));
+    });
+  }
+  
+  return translated;
 }
 

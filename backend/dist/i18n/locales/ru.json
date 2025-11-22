@@ -60,7 +60,15 @@
       "lowDiskSpaceTitle": "Low Disk Space",
       "lowDiskSpaceBody": "Storage is running low (< 10% remaining)",
       "databaseBackupCompletedTitle": "Backup Complete",
-      "databaseBackupCompletedBody": "Database backup completed successfully"
+      "databaseBackupCompletedBody": "Database backup completed successfully",
+      "videoProcessingCompleteBody": "{{videoName}} в {{albumName}} успешно обработано",
+      "videoProcessingFailedBody": "Не удалось обработать {{videoName}}: {{error}}",
+      "videoReprocessingCompleteBody": "{{videoName}} в {{albumName}} успешно переобработано",
+      "videoReprocessingFailedBody": "Не удалось переобработать {{videoName}}: {{error}}",
+      "imageOptimizationCompleteBody": "Оптимизировано {{imagesOptimized}} изображений успешно",
+      "imageOptimizationFailedBody": "Ошибка оптимизации изображения: {{error}}",
+      "aiTitlesCompleteBody": "Сгенерировано {{titlesGenerated}} заголовков для {{albumName}}",
+      "aiTitlesFailedBody": "Не удалось сгенерировать заголовки для {{albumName}}: {{error}}"
     }
   },
   "email": {

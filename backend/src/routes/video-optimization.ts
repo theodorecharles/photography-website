@@ -197,11 +197,18 @@ router.post('/regenerate', requireManager, (req, res) => {
       if (req.user && 'id' in req.user) {
         const userId = (req.user as any).id;
         const titleKey = code === 0 ? 'notifications.backend.videoProcessingComplete' : 'notifications.backend.videoProcessingFailed';
-        const title = await translateNotificationForUser(userId, titleKey);
+        const bodyKey = code === 0 ? 'notifications.backend.videoProcessingCompleteBody' : 'notifications.backend.videoProcessingFailedBody';
+        
+        const variables = code === 0 
+          ? { videoName: (runningVideoOptimizationJob as any).filename || 'Unknown', albumName: (runningVideoOptimizationJob as any).album || 'Unknown' }
+          : { videoName: (runningVideoOptimizationJob as any).filename || 'Unknown', error: (runningVideoOptimizationJob as any).error || `Exit code ${code}` };
+        
+        const title = await translateNotificationForUser(userId, titleKey, variables);
+        const body = await translateNotificationForUser(userId, bodyKey, variables);
         
         sendNotificationToUser(userId, {
           title,
-          body: notificationBody,
+          body,
           icon: '/icon-192.png',
           badge: '/icon-192.png',
           tag: 'video-optimization',
@@ -372,11 +379,18 @@ router.post('/reprocess', requireManager, (req, res) => {
       if (req.user && 'id' in req.user) {
         const userId = (req.user as any).id;
         const titleKey = code === 0 ? 'notifications.backend.videoReprocessingComplete' : 'notifications.backend.videoReprocessingFailed';
-        const title = await translateNotificationForUser(userId, titleKey);
+        const bodyKey = code === 0 ? 'notifications.backend.videoReprocessingCompleteBody' : 'notifications.backend.videoReprocessingFailedBody';
+        
+        const variables = code === 0 
+          ? { videoName: (runningVideoOptimizationJob as any).filename || 'Unknown', albumName: (runningVideoOptimizationJob as any).album || 'Unknown' }
+          : { videoName: (runningVideoOptimizationJob as any).filename || 'Unknown', error: (runningVideoOptimizationJob as any).error || `Exit code ${code}` };
+        
+        const title = await translateNotificationForUser(userId, titleKey, variables);
+        const body = await translateNotificationForUser(userId, bodyKey, variables);
         
         sendNotificationToUser(userId, {
           title,
-          body: notificationBody,
+          body,
           icon: '/icon-192.png',
           badge: '/icon-192.png',
           tag: 'video-reprocessing',

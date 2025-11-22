@@ -60,7 +60,15 @@
       "lowDiskSpaceTitle": "Low Disk Space",
       "lowDiskSpaceBody": "Storage is running low (< 10% remaining)",
       "databaseBackupCompletedTitle": "Backup Complete",
-      "databaseBackupCompletedBody": "Database backup completed successfully"
+      "databaseBackupCompletedBody": "Database backup completed successfully",
+      "videoProcessingCompleteBody": "{{videoName}} 在 {{albumName}} 处理中成功",
+      "videoProcessingFailedBody": "处理 {{videoName}} 失败：{{error}}",
+      "videoReprocessingCompleteBody": "{{videoName}} 在 {{albumName}} 重新处理中成功",
+      "videoReprocessingFailedBody": "重新处理 {{videoName}} 失败：{{error}}",
+      "imageOptimizationCompleteBody": "成功优化 {{imagesOptimized}} 张图片",
+      "imageOptimizationFailedBody": "图片优化失败：{{error}}",
+      "aiTitlesCompleteBody": "为 {{albumName}} 生成了 {{titlesGenerated}} 个标题",
+      "aiTitlesFailedBody": "为 {{albumName}} 生成标题失败：{{error}}"
     }
   },
   "email": {
