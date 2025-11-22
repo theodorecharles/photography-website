@@ -403,7 +403,133 @@
   "settings": {
     "saved": "{{section}} instellingen opgeslagen!",
     "failedToSave": "Kon configuratie niet opslaan",
-    "errorSaving": "Fout bij het opslaan van configuratie"
+    "errorSaving": "Fout bij het opslaan van configuratie",
+    "notifications": {
+      "title": "Meldingsvoorkeuren",
+      "description": "Configureer welke pushmeldingen je wilt ontvangen",
+      "saved": "Meldingsvoorkeuren opgeslagen",
+      "confirmReset": "Alle meldingsvoorkeuren terugzetten naar standaardinstellingen?",
+      "resetSuccess": "Meldingsvoorkeuren teruggezet naar standaardinstellingen",
+      "resetToDefaults": "Terugzetten naar Standaard",
+      "enableAll": "Alles Inschakelen",
+      "disableAll": "Alles Uitschakelen",
+      "categories": {
+        "security": {
+          "title": "Beveiliging & Authenticatie",
+          "description": "Meldingen over gebruikersaccounts, inlogpogingen en beveiligingsgebeurtenissen"
+        },
+        "content": {
+          "title": "Inhoudsbeheer",
+          "description": "Meldingen over albums, foto's en gedeelde items"
+        },
+        "system": {
+          "title": "Systeem & Configuratie",
+          "description": "Meldingen over instellingenwijzigingen en systeemgebeurtenissen"
+        }
+      },
+      "types": {
+        "userInvited": {
+          "title": "Gebruiker Uitgenodigd",
+          "description": "Wanneer een beheerder een nieuwe gebruiker uitnodigt"
+        },
+        "userAcceptedInvite": {
+          "title": "Gebruiker Toegevoegd",
+          "description": "Wanneer een gebruiker een uitnodiging accepteert"
+        },
+        "userDeleted": {
+          "title": "Gebruiker Verwijderd",
+          "description": "Wanneer een beheerder een gebruikersaccount verwijdert"
+        },
+        "userRoleChanged": {
+          "title": "Gebruikersrol Gewijzigd",
+          "description": "Wanneer de rol van een gebruiker wordt gewijzigd"
+        },
+        "passkeyCreated": {
+          "title": "Toegangscode Aangemaakt",
+          "description": "Wanneer een gebruiker een nieuwe toegangscode registreert"
+        },
+        "passkeyDeleted": {
+          "title": "Toegangscode Verwijderd",
+          "description": "Wanneer een gebruiker een toegangscode verwijdert"
+        },
+        "mfaEnabled": {
+          "title": "MFA Ingeschakeld",
+          "description": "Wanneer een gebruiker multi-factor authenticatie inschakelt"
+        },
+        "mfaDisabled": {
+          "title": "MFA Uitgeschakeld",
+          "description": "Wanneer een gebruiker multi-factor authenticatie uitschakelt"
+        },
+        "passwordChanged": {
+          "title": "Wachtwoord Gewijzigd",
+          "description": "Wanneer een gebruiker zijn wachtwoord wijzigt"
+        },
+        "adminPasswordReset": {
+          "title": "Wachtwoord Reset Admin",
+          "description": "Wanneer een admin een wachtwoordreset initieert"
+        },
+        "failedLoginAttempts": {
+          "title": "Mislukte Inlogpogingen",
+          "description": "Wanneer meerdere mislukte inlogpogingen worden gedetecteerd"
+        },
+        "suspiciousActivity": {
+          "title": "Verdachte Activiteit",
+          "description": "Wanneer inloggen vanaf een nieuw apparaat/lokatie wordt gedetecteerd"
+        },
+        "albumCreated": {
+          "title": "Album Aangemaakt",
+          "description": "Wanneer een nieuw album wordt aangemaakt"
+        },
+        "albumPublished": {
+          "title": "Album Gepubliceerd",
+          "description": "Wanneer een album openbaar wordt gemaakt"
+        },
+        "albumDeleted": {
+          "title": "Album Verwijderd",
+          "description": "Wanneer een album wordt verwijderd"
+        },
+        "largePhotoUpload": {
+          "title": "Grote Upload",
+          "description": "Wanneer er 50+ foto's tegelijk worden geüpload"
+        },
+        "shareLinkCreated": {
+          "title": "Delen Link Aangemaakt",
+          "description": "Wanneer er een nieuwe deel link wordt aangemaakt"
+        },
+        "shareLinkAccessed": {
+          "title": "Delen Link Toegang",
+          "description": "Wanneer iemand een gedeeld album bekijkt"
+        },
+        "shareLinkExpired": {
+          "title": "Deel Link Verlopen",
+          "description": "Wanneer een deel link verloopt"
+        },
+        "configUpdated": {
+          "title": "Instellingen Gewijzigd",
+          "description": "Wanneer de systeemconfiguratie is bijgewerkt"
+        },
+        "smtpSettingsChanged": {
+          "title": "SMTP Instellingen Gewijzigd",
+          "description": "Wanneer de e-mailconfiguratie is bijgewerkt"
+        },
+        "openaiApiKeyUpdated": {
+          "title": "AI Instellingen Gewijzigd",
+          "description": "Wanneer de OpenAI API-sleutel is bijgewerkt"
+        },
+        "brandingUpdated": {
+          "title": "Branding Bijgewerkt",
+          "description": "Wanneer de sitebranding is gewijzigd"
+        },
+        "lowDiskSpace": {
+          "title": "Weinig schijfruimte",
+          "description": "Wanneer de opslag onder de 10% is"
+        },
+        "databaseBackupCompleted": {
+          "title": "Back-up voltooid",
+          "description": "Wanneer de databaseback-up is voltooid"
+        }
+      }
+    }
   },
   "advancedSettings": {
     "title": "Geavanceerde Instellingen",
@@ -1065,45 +1191,6 @@
     "errorRequiredField": "Dit veld is verplicht",
     "setupCompleteWaitingRestart": "Installatie voltooid! Wachten op server om opnieuw op te starten..."
   },
-  "email": {
-    "invitation": {
-      "subject": "Je bent uitgenodigd voor {{siteName}}",
-      "title": "Word lid van <strong>{{siteName}}'s Galleria</strong>",
-      "greeting": "Hallo,",
-      "body": "{{inviterName}} heeft je uitgenodigd om lid te worden van <strong>{{siteName}}'s Galleria</strong>.",
-      "instructions": "Om deze uitnodiging te accepteren en je account in te stellen, klik op de knop hieronder:",
-      "button": "Uitnodiging Accepteren",
-      "orCopyLink": "Of kopieer en plak deze link in je browser:",
-      "expiry": "Deze uitnodiging vervalt over 7 dagen.",
-      "footerIgnore": "Als je deze uitnodiging niet verwachtte, kun je deze e-mail veilig negeren.",
-      "footerAutomatic": "Dit is een automatisch bericht, gelieve niet op deze e-mail te reageren."
-    },
-    "passwordReset": {
-      "subject": "Wachtwoordresetverzoek - {{siteName}}",
-      "title": "Wachtwoordresetverzoek",
-      "greeting": "Hallo {{userName}},",
-      "greetingFallback": "Hallo daar,",
-      "body": "We hebben een verzoek ontvangen om je wachtwoord voor <strong>{{siteName}}'s Galleria</strong> te resetten.",
-      "instructions": "Om je wachtwoord te resetten, klik op de knop hieronder:",
-      "button": "Wachtwoord resetten",
-      "orCopyLink": "Of kopieer en plak deze link in je browser:",
-      "warningTitle": "⚠️ Belangrijk:",
-      "warningExpiry": "Deze link vervalt over 1 uur",
-      "warningIgnore": "Als u dit niet heeft aangevraagd, negeer dan deze e-mail",
-      "warningNoChange": "Uw wachtwoord zal niet veranderen totdat u een nieuw wachtwoord aanmaakt",
-      "footerAutomatic": "Dit is een automatisch bericht, gelieve niet op deze e-mail te antwoorden.",
-      "footerContact": "Als u hulp nodig heeft, neem dan contact op met uw beheerder."
-    },
-    "test": {
-      "subject": "Test e-mail van {{siteName}}",
-      "title": "E-mailconfiguratietest",
-      "success": "✓",
-      "body1": "Gefeliciteerd! Uw SMTP-configuratie werkt correct.",
-      "body2": "Deze test-e-mail is verzonden van <strong>{{siteName}}</strong> om te verifiëren dat uw e-mailservice correct is geconfigureerd en berichten kan afleveren.",
-      "footerTimestamp": "Dit is een testbericht verzonden op {{timestamp}}.",
-      "footerIgnore": "Je kunt deze e-mail veilig negeren of verwijderen."
-    }
-  },
   "testEmailModal": {
     "title": "Verstuur test-e-mail",
     "description": "Voer een e-mailadres in om een testbericht te verzenden en te verifiëren of uw SMTP-configuratie correct werkt.",
@@ -1194,26 +1281,6 @@
       "errorDisable": "Het uitschakelen van pushmeldingen is mislukt. Probeer het opnieuw.",
       "errorGenerateKeys": "Het genereren van VAPID-sleutels is mislukt.",
       "close": "Sluiten"
-    },
-    "backend": {
-      "videoProcessingComplete": "Videoprocessing Voltooid",
-      "videoProcessingFailed": "Videoprocessing Mislukt",
-      "videoReprocessingComplete": "Videoherverwerking Voltooid",
-      "videoReprocessingFailed": "Videoherverwerking Mislukt",
-      "imageOptimizationComplete": "Afbeeldingsoptimalisatie Voltooid",
-      "imageOptimizationFailed": "Afbeeldingsoptimalisatie Mislukt",
-      "aiTitlesComplete": "AI Titelgeneratie Voltooid",
-      "aiTitlesFailed": "AI Titelgeneratie Mislukt",
-      "testNotificationTitle": "Testmelding",
-      "testNotificationBody": "Pushmeldingen werken! Je ontvangt meldingen wanneer je verwerkingsjobs zijn voltooid.",
-      "userInvitedTitle": "Nieuwe gebruiker uitgenodigd",
-      "userInvitedBody": "Een nieuwe gebruiker is uitgenodigd op uw site",
-      "userAcceptedInviteTitle": "Gebruiker toegetreden",
-      "userAcceptedInviteBody": "Een gebruiker heeft hun uitnodiging geaccepteerd en is toegetreden",
-      "userCreatedPasskeyTitle": "Wachtwoordsleutel aangemaakt",
-      "userCreatedPasskeyBody": "Een gebruiker heeft een nieuwe wachtwoordsleutel geregistreerd",
-      "userSetupMFATitle": "MFA ingeschakeld",
-      "userSetupMFABody": "Een gebruiker heeft multi-factor authenticatie ingeschakeld"
     },
     "blocked": "Meldingen geblokkeerd door de browser. Controleer uw browserinstellingen.",
     "subscribePrompt": "Abonneer om meldingen te ontvangen wanneer taken zijn voltooid",

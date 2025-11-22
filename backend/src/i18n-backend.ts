@@ -11,9 +11,9 @@ import { error as logError } from './utils/logger.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Load all translation files
+// Load all translation files (backend-only translations)
 const translationsCache: { [locale: string]: any } = {};
-const localesDir = path.join(__dirname, '../../frontend/src/i18n/locales');
+const localesDir = path.join(__dirname, 'i18n/locales');
 
 // Supported languages
 const supportedLocales = [

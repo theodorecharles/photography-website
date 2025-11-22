@@ -403,7 +403,133 @@
   "settings": {
     "saved": "Setările {{section}} au fost salvate!",
     "failedToSave": "A eșuat salvarea configurației",
-    "errorSaving": "Eroare la salvarea configurației"
+    "errorSaving": "Eroare la salvarea configurației",
+    "notifications": {
+      "title": "Preferințe de notificare",
+      "description": "Configurează ce notificări push dorești să primești",
+      "saved": "Preferințele de notificare au fost salvate",
+      "confirmReset": "Resetezi toate preferințele de notificare la valorile implicite?",
+      "resetSuccess": "Preferințele de notificare au fost resetate la valorile implicite",
+      "resetToDefaults": "Resetează la valorile implicite",
+      "enableAll": "Activează tot",
+      "disableAll": "Dezactivează tot",
+      "categories": {
+        "security": {
+          "title": "Securitate și autentificare",
+          "description": "Notificări despre conturile utilizatorilor, autentificări și evenimente de securitate"
+        },
+        "content": {
+          "title": "Gestionarea conținutului",
+          "description": "Notificări despre albume, fotografii și partajări"
+        },
+        "system": {
+          "title": "Sistem și Configurare",
+          "description": "Notificări despre modificările de setări și evenimentele sistemului"
+        }
+      },
+      "types": {
+        "userInvited": {
+          "title": "Utilizator Invitat",
+          "description": "Când un administrator invită un utilizator nou"
+        },
+        "userAcceptedInvite": {
+          "title": "Utilizator Aderat",
+          "description": "Când un utilizator acceptă o invitație"
+        },
+        "userDeleted": {
+          "title": "Utilizator Șters",
+          "description": "Când un administrator șterge un cont de utilizator"
+        },
+        "userRoleChanged": {
+          "title": "Rolul utilizatorului a fost schimbat",
+          "description": "Când rolul unui utilizator este schimbat"
+        },
+        "passkeyCreated": {
+          "title": "Cheia de acces creată",
+          "description": "Când un utilizator înregistrează o nouă cheie de acces"
+        },
+        "passkeyDeleted": {
+          "title": "Cheia de acces ștearsă",
+          "description": "Când un utilizator elimină o cheie de acces"
+        },
+        "mfaEnabled": {
+          "title": "MFA activat",
+          "description": "Când un utilizator activează autentificarea multi-factor"
+        },
+        "mfaDisabled": {
+          "title": "MFA dezactivat",
+          "description": "Când un utilizator dezactivează autentificarea multi-factor"
+        },
+        "passwordChanged": {
+          "title": "Parola Schimbată",
+          "description": "Când un utilizator își schimbă parola"
+        },
+        "adminPasswordReset": {
+          "title": "Resetare Parolă Admin",
+          "description": "Când un administrator inițiază o resetare a parolei"
+        },
+        "failedLoginAttempts": {
+          "title": "Încercări de Autentificare Eșuate",
+          "description": "Când sunt detectate multiple încercări de autentificare eșuate"
+        },
+        "suspiciousActivity": {
+          "title": "Activitate Suspectă",
+          "description": "Când se detectează autentificarea de pe un dispozitiv/locație nouă"
+        },
+        "albumCreated": {
+          "title": "Album Creat",
+          "description": "Când un album nou este creat"
+        },
+        "albumPublished": {
+          "title": "Album Publicat",
+          "description": "Când un album devine public"
+        },
+        "albumDeleted": {
+          "title": "Album Șters",
+          "description": "Când un album este șters"
+        },
+        "largePhotoUpload": {
+          "title": "Încărcare Mare",
+          "description": "Când sunt încărcate 50+ fotografii deodată"
+        },
+        "shareLinkCreated": {
+          "title": "Link de Partajare Creat",
+          "description": "Când un nou link de partajare este creat"
+        },
+        "shareLinkAccessed": {
+          "title": "Link de Partajare Accesat",
+          "description": "Când cineva vizualizează un album partajat"
+        },
+        "shareLinkExpired": {
+          "title": "Linkul de partajare a expirat",
+          "description": "Când un link de partajare expiră"
+        },
+        "configUpdated": {
+          "title": "Setări Modificate",
+          "description": "Când configurația sistemului este actualizată"
+        },
+        "smtpSettingsChanged": {
+          "title": "Setări SMTP Modificate",
+          "description": "Când configurația emailului este actualizată"
+        },
+        "openaiApiKeyUpdated": {
+          "title": "Setări AI Modificate",
+          "description": "Când cheia API OpenAI este actualizată"
+        },
+        "brandingUpdated": {
+          "title": "Branding Actualizat",
+          "description": "Când brandingul site-ului este schimbat"
+        },
+        "lowDiskSpace": {
+          "title": "Spațiu pe disc insuficient",
+          "description": "Când stocarea este sub 10%"
+        },
+        "databaseBackupCompleted": {
+          "title": "Backup finalizat",
+          "description": "Când backup-ul bazei de date se termină"
+        }
+      }
+    }
   },
   "advancedSettings": {
     "title": "Setări avansate",
@@ -1065,45 +1191,6 @@
     "errorRequiredField": "Acest câmp este obligatoriu",
     "setupCompleteWaitingRestart": "Configurare completă! Așteptând repornirea serverului..."
   },
-  "email": {
-    "invitation": {
-      "subject": "Ai fost invitat la {{siteName}}",
-      "title": "Alătură-te Galleria {{siteName}}",
-      "greeting": "Bună,",
-      "body": "{{inviterName}} te-a invitat să te alături <strong>Galleria {{siteName}}</strong>.",
-      "instructions": "Pentru a accepta această invitație și a-ți configura contul, dă clic pe butonul de mai jos:",
-      "button": "Acceptă invitația",
-      "orCopyLink": "Sau copiază și lipește acest link în browserul tău:",
-      "expiry": "Această invitație va expira în 7 zile.",
-      "footerIgnore": "Dacă nu te așteptai la această invitație, o poți ignora în siguranță.",
-      "footerAutomatic": "Acesta este un mesaj automat, te rugăm să nu răspunzi la acest email."
-    },
-    "passwordReset": {
-      "subject": "Cerere de resetare a parolei - {{siteName}}",
-      "title": "Cerere de resetare a parolei",
-      "greeting": "Bună {{userName}},",
-      "greetingFallback": "Salut,",
-      "body": "Am primit o cerere pentru a-ți reseta parola pentru <strong>Galleria {{siteName}}</strong>.",
-      "instructions": "Pentru a-ți reseta parola, fă clic pe butonul de mai jos:",
-      "button": "Resetează parola",
-      "orCopyLink": "Sau copiază și lipește acest link în browserul tău:",
-      "warningTitle": "⚠️ Important:",
-      "warningExpiry": "Acest link va expira în 1 oră",
-      "warningIgnore": "Dacă nu ați solicitat acest lucru, vă rugăm să ignorați acest email",
-      "warningNoChange": "Parola dumneavoastră nu se va schimba până când nu creați una nouă",
-      "footerAutomatic": "Acesta este un mesaj automat, vă rugăm să nu răspundeți la acest email.",
-      "footerContact": "Dacă aveți nevoie de asistență, vă rugăm să contactați administratorul dumneavoastră."
-    },
-    "test": {
-      "subject": "Email de test de la {{siteName}}",
-      "title": "Test de configurare a emailului",
-      "success": "✓",
-      "body1": "Felicitări! Configurarea dumneavoastră SMTP funcționează corect.",
-      "body2": "Acest email de test a fost trimis de la <strong>{{siteName}}</strong> pentru a verifica dacă serviciul dumneavoastră de email este configurat corect și poate livra mesaje.",
-      "footerTimestamp": "Acesta este un mesaj de test trimis la {{timestamp}}.",
-      "footerIgnore": "Puteți ignora sau șterge în siguranță acest email."
-    }
-  },
   "testEmailModal": {
     "title": "Trimite email de test",
     "description": "Introduceți o adresă de email pentru a trimite un mesaj de test și verificați dacă configurația dvs. SMTP funcționează corect.",
@@ -1194,26 +1281,6 @@
       "errorDisable": "Dezactivarea notificărilor push a eșuat. Vă rugăm să încercați din nou.",
       "errorGenerateKeys": "Generarea cheilor VAPID a eșuat",
       "close": "Închideți"
-    },
-    "backend": {
-      "videoProcessingComplete": "Procesarea video s-a finalizat",
-      "videoProcessingFailed": "Procesarea video a eșuat",
-      "videoReprocessingComplete": "Reprocesarea video s-a finalizat",
-      "videoReprocessingFailed": "Reprocesarea video a eșuat",
-      "imageOptimizationComplete": "Optimizarea imaginii s-a finalizat",
-      "imageOptimizationFailed": "Optimizarea imaginii a eșuat",
-      "aiTitlesComplete": "Generarea titlului AI a fost finalizată",
-      "aiTitlesFailed": "Generarea titlului AI a eșuat",
-      "testNotificationTitle": "Notificare de test",
-      "testNotificationBody": "Notificările push funcționează! Vei primi alerte când sarcinile tale de procesare se finalizează.",
-      "userInvitedTitle": "Utilizator Nou Invitat",
-      "userInvitedBody": "Un utilizator nou a fost invitat pe site-ul tău",
-      "userAcceptedInviteTitle": "Utilizator A Aderat",
-      "userAcceptedInviteBody": "Un utilizator a acceptat invitația și s-a alăturat",
-      "userCreatedPasskeyTitle": "Cheie de Acces Creată",
-      "userCreatedPasskeyBody": "Un utilizator a înregistrat o nouă cheie de acces",
-      "userSetupMFATitle": "MFA Activat",
-      "userSetupMFABody": "Un utilizator a activat autentificarea multi-factor"
     },
     "blocked": "Notificările sunt blocate de browser. Verifică setările browserului tău.",
     "subscribePrompt": "Abonează-te pentru a primi notificări când sarcinile sunt finalizate",

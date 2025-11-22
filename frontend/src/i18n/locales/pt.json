@@ -403,7 +403,133 @@
   "settings": {
     "saved": "Configurações de {{section}} salvas!",
     "failedToSave": "Falha ao salvar a configuração",
-    "errorSaving": "Erro ao salvar a configuração"
+    "errorSaving": "Erro ao salvar a configuração",
+    "notifications": {
+      "title": "Preferências de Notificação",
+      "description": "Configure quais notificações push você deseja receber",
+      "saved": "Preferências de notificação salvas",
+      "confirmReset": "Redefinir todas as preferências de notificação para os padrões?",
+      "resetSuccess": "Preferências de notificação redefinidas para os padrões",
+      "resetToDefaults": "Redefinir para os Padrões",
+      "enableAll": "Ativar Tudo",
+      "disableAll": "Desativar Tudo",
+      "categories": {
+        "security": {
+          "title": "Segurança e Autenticação",
+          "description": "Notificações sobre contas de usuário, logins e eventos de segurança"
+        },
+        "content": {
+          "title": "Gerenciamento de Conteúdo",
+          "description": "Notificações sobre álbuns, fotos e compartilhamentos"
+        },
+        "system": {
+          "title": "Sistema e Configuração",
+          "description": "Notificações sobre alterações de configurações e eventos do sistema"
+        }
+      },
+      "types": {
+        "userInvited": {
+          "title": "Usuário Convidado",
+          "description": "Quando um administrador convida um novo usuário"
+        },
+        "userAcceptedInvite": {
+          "title": "Usuário Participou",
+          "description": "Quando um usuário aceita um convite"
+        },
+        "userDeleted": {
+          "title": "Usuário Excluído",
+          "description": "Quando um administrador exclui uma conta de usuário"
+        },
+        "userRoleChanged": {
+          "title": "Função do Usuário Alterada",
+          "description": "Quando a função de um usuário é alterada"
+        },
+        "passkeyCreated": {
+          "title": "Chave de Acesso Criada",
+          "description": "Quando um usuário registra uma nova chave de acesso"
+        },
+        "passkeyDeleted": {
+          "title": "Chave de Acesso Excluída",
+          "description": "Quando um usuário remove uma chave de acesso"
+        },
+        "mfaEnabled": {
+          "title": "MFA Ativado",
+          "description": "Quando um usuário ativa a autenticação de múltiplos fatores"
+        },
+        "mfaDisabled": {
+          "title": "MFA Desativado",
+          "description": "Quando um usuário desativa a autenticação de múltiplos fatores"
+        },
+        "passwordChanged": {
+          "title": "Senha Alterada",
+          "description": "Quando um usuário altera sua senha"
+        },
+        "adminPasswordReset": {
+          "title": "Redefinição de Senha do Admin",
+          "description": "Quando um admin inicia uma redefinição de senha"
+        },
+        "failedLoginAttempts": {
+          "title": "Tentativas de Login Falhadas",
+          "description": "Quando múltiplas tentativas de login falhadas são detectadas"
+        },
+        "suspiciousActivity": {
+          "title": "Atividade Suspeita",
+          "description": "Quando um login de um novo dispositivo/local é detectado"
+        },
+        "albumCreated": {
+          "title": "Álbum Criado",
+          "description": "Quando um novo álbum é criado"
+        },
+        "albumPublished": {
+          "title": "Álbum Publicado",
+          "description": "Quando um álbum é tornado público"
+        },
+        "albumDeleted": {
+          "title": "Álbum Excluído",
+          "description": "Quando um álbum é excluído"
+        },
+        "largePhotoUpload": {
+          "title": "Upload Grande",
+          "description": "Quando 50+ fotos são enviadas de uma vez"
+        },
+        "shareLinkCreated": {
+          "title": "Link de Compartilhamento Criado",
+          "description": "Quando um novo link de compartilhamento é criado"
+        },
+        "shareLinkAccessed": {
+          "title": "Link de Compartilhamento Acessado",
+          "description": "Quando alguém visualiza um álbum compartilhado"
+        },
+        "shareLinkExpired": {
+          "title": "Link de Compartilhamento Expirado",
+          "description": "Quando um link de compartilhamento expira"
+        },
+        "configUpdated": {
+          "title": "Configurações Alteradas",
+          "description": "Quando a configuração do sistema é atualizada"
+        },
+        "smtpSettingsChanged": {
+          "title": "Configurações SMTP Alteradas",
+          "description": "Quando a configuração de e-mail é atualizada"
+        },
+        "openaiApiKeyUpdated": {
+          "title": "Configurações de IA Alteradas",
+          "description": "Quando a chave da API do OpenAI é atualizada"
+        },
+        "brandingUpdated": {
+          "title": "Marca Atualizada",
+          "description": "Quando a marca do site é alterada"
+        },
+        "lowDiskSpace": {
+          "title": "Espaço em Disco Baixo",
+          "description": "Quando o armazenamento está abaixo de 10%"
+        },
+        "databaseBackupCompleted": {
+          "title": "Backup Completo",
+          "description": "Quando o backup do banco de dados é concluído"
+        }
+      }
+    }
   },
   "advancedSettings": {
     "title": "Configurações Avançadas",
@@ -1065,45 +1191,6 @@
     "errorRequiredField": "Este campo é obrigatório",
     "setupCompleteWaitingRestart": "Configuração concluída! Aguardando o servidor reiniciar..."
   },
-  "email": {
-    "invitation": {
-      "subject": "Você foi convidado para {{siteName}}",
-      "title": "Junte-se à Galleria do {{siteName}}",
-      "greeting": "Olá,",
-      "body": "{{inviterName}} convidou você para se juntar à <strong>Galleria do {{siteName}}</strong>.",
-      "instructions": "Para aceitar este convite e configurar sua conta, clique no botão abaixo:",
-      "button": "Aceitar Convite",
-      "orCopyLink": "Ou copie e cole este link no seu navegador:",
-      "expiry": "Este convite expirará em 7 dias.",
-      "footerIgnore": "Se você não esperava por este convite, pode ignorar este e-mail com segurança.",
-      "footerAutomatic": "Esta é uma mensagem automática, por favor, não responda a este e-mail."
-    },
-    "passwordReset": {
-      "subject": "Solicitação de Redefinição de Senha - {{siteName}}",
-      "title": "Solicitação de Redefinição de Senha",
-      "greeting": "Olá {{userName}},",
-      "greetingFallback": "Olá,",
-      "body": "Recebemos uma solicitação para redefinir sua senha para <strong>Galleria do {{siteName}}</strong>.",
-      "instructions": "Para redefinir sua senha, clique no botão abaixo:",
-      "button": "Redefinir Senha",
-      "orCopyLink": "Ou copie e cole este link no seu navegador:",
-      "warningTitle": "⚠️ Importante:",
-      "warningExpiry": "Este link expirará em 1 hora",
-      "warningIgnore": "Se você não solicitou isso, por favor, ignore este e-mail",
-      "warningNoChange": "Sua senha não mudará até que você crie uma nova",
-      "footerAutomatic": "Esta é uma mensagem automática, por favor, não responda a este e-mail.",
-      "footerContact": "Se você precisar de assistência, entre em contato com seu administrador."
-    },
-    "test": {
-      "subject": "E-mail de Teste de {{siteName}}",
-      "title": "Teste de Configuração de E-mail",
-      "success": "✓",
-      "body1": "Parabéns! Sua configuração SMTP está funcionando corretamente.",
-      "body2": "Este e-mail de teste foi enviado de <strong>{{siteName}}</strong> para verificar se seu serviço de e-mail está configurado corretamente e pode entregar mensagens.",
-      "footerTimestamp": "Esta é uma mensagem de teste enviada em {{timestamp}}.",
-      "footerIgnore": "Você pode ignorar ou excluir este e-mail com segurança."
-    }
-  },
   "testEmailModal": {
     "title": "Enviar Email de Teste",
     "description": "Digite um endereço de email para enviar uma mensagem de teste e verificar se sua configuração SMTP está funcionando corretamente.",
@@ -1194,26 +1281,6 @@
       "errorDisable": "Falha ao desativar as notificações push. Por favor, tente novamente.",
       "errorGenerateKeys": "Falha ao gerar as chaves VAPID",
       "close": "Fechar"
-    },
-    "backend": {
-      "videoProcessingComplete": "Processamento de Vídeo Completo",
-      "videoProcessingFailed": "Falha no Processamento de Vídeo",
-      "videoReprocessingComplete": "Reprocessamento de Vídeo Completo",
-      "videoReprocessingFailed": "Falha no Reprocessamento de Vídeo",
-      "imageOptimizationComplete": "Otimização de Imagem Completa",
-      "imageOptimizationFailed": "Falha na Otimização de Imagem",
-      "aiTitlesComplete": "Geração de Título de IA Completa",
-      "aiTitlesFailed": "Falha na Geração de Títulos de IA",
-      "testNotificationTitle": "Notificação de Teste",
-      "testNotificationBody": "As notificações push estão funcionando! Você receberá alertas quando seus trabalhos de processamento forem concluídos.",
-      "userInvitedTitle": "Novo Usuário Convidado",
-      "userInvitedBody": "Um novo usuário foi convidado para o seu site",
-      "userAcceptedInviteTitle": "Usuário Juntou-se",
-      "userAcceptedInviteBody": "Um usuário aceitou seu convite e se juntou",
-      "userCreatedPasskeyTitle": "Chave de Acesso Criada",
-      "userCreatedPasskeyBody": "Um usuário registrou uma nova chave de acesso",
-      "userSetupMFATitle": "MFA Ativado",
-      "userSetupMFABody": "Um usuário ativou a autenticação multifatorial"
     },
     "blocked": "Notificações bloqueadas pelo navegador. Verifique as configurações do seu navegador.",
     "subscribePrompt": "Inscreva-se para receber notificações quando os trabalhos forem concluídos",

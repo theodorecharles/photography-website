@@ -87,6 +87,7 @@ import staticJsonRouter, {
 import setupRouter from "./routes/setup.ts";
 import videoRouter from "./routes/video.ts";
 import pushNotificationsRouter from "./routes/push-notifications.ts";
+import notificationPreferencesRouter from "./routes/notification-preferences.ts";
 
 // Get the current directory path for ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -627,6 +628,7 @@ app.use("/api/preview-grid", previewGridRouter);
 app.use("/api/static-json", staticJsonRouter);
 app.use("/api/video", videoRouter);
 app.use("/api/push-notifications", pushNotificationsRouter);
+app.use("/api/notification-preferences", notificationPreferencesRouter);
 app.use(albumsRouter);
 app.use("/api/albums", albumManagementRouter);
 app.use("/api/folders", folderManagementRouter);

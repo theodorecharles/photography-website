@@ -403,7 +403,133 @@
   "settings": {
     "saved": "Cài đặt {{section}} đã được lưu!",
     "failedToSave": "Không thể lưu cấu hình",
-    "errorSaving": "Lỗi khi lưu cấu hình"
+    "errorSaving": "Lỗi khi lưu cấu hình",
+    "notifications": {
+      "title": "Tùy chọn Thông báo",
+      "description": "Cấu hình các thông báo đẩy bạn muốn nhận",
+      "saved": "Tùy chọn thông báo đã được lưu",
+      "confirmReset": "Đặt lại tất cả tùy chọn thông báo về mặc định?",
+      "resetSuccess": "Tùy chọn thông báo đã được đặt lại về mặc định",
+      "resetToDefaults": "Đặt lại về Mặc định",
+      "enableAll": "Bật Tất cả",
+      "disableAll": "Tắt Tất cả",
+      "categories": {
+        "security": {
+          "title": "Bảo mật & Xác thực",
+          "description": "Thông báo về tài khoản người dùng, đăng nhập và sự kiện bảo mật"
+        },
+        "content": {
+          "title": "Quản lý nội dung",
+          "description": "Thông báo về album, ảnh và chia sẻ"
+        },
+        "system": {
+          "title": "Hệ thống & Cấu hình",
+          "description": "Thông báo về thay đổi cài đặt và sự kiện hệ thống"
+        }
+      },
+      "types": {
+        "userInvited": {
+          "title": "Người dùng được mời",
+          "description": "Khi một quản trị viên mời một người dùng mới"
+        },
+        "userAcceptedInvite": {
+          "title": "Người dùng đã tham gia",
+          "description": "Khi một người dùng chấp nhận lời mời"
+        },
+        "userDeleted": {
+          "title": "Người dùng đã xóa",
+          "description": "Khi một quản trị viên xóa tài khoản người dùng"
+        },
+        "userRoleChanged": {
+          "title": "Vai trò người dùng đã thay đổi",
+          "description": "Khi vai trò của người dùng được thay đổi"
+        },
+        "passkeyCreated": {
+          "title": "Mã truy cập đã được tạo",
+          "description": "Khi người dùng đăng ký một mã truy cập mới"
+        },
+        "passkeyDeleted": {
+          "title": "Mã truy cập đã bị xóa",
+          "description": "Khi người dùng xóa một mã truy cập"
+        },
+        "mfaEnabled": {
+          "title": "MFA đã được kích hoạt",
+          "description": "Khi người dùng kích hoạt xác thực đa yếu tố"
+        },
+        "mfaDisabled": {
+          "title": "MFA đã bị vô hiệu hóa",
+          "description": "Khi người dùng vô hiệu hóa xác thực đa yếu tố"
+        },
+        "passwordChanged": {
+          "title": "Mật khẩu đã được thay đổi",
+          "description": "Khi người dùng thay đổi mật khẩu của họ"
+        },
+        "adminPasswordReset": {
+          "title": "Đặt lại mật khẩu quản trị viên",
+          "description": "Khi một quản trị viên khởi động quá trình đặt lại mật khẩu"
+        },
+        "failedLoginAttempts": {
+          "title": "Các lần đăng nhập không thành công",
+          "description": "Khi phát hiện nhiều lần đăng nhập không thành công"
+        },
+        "suspiciousActivity": {
+          "title": "Hoạt động đáng ngờ",
+          "description": "Khi phát hiện đăng nhập từ thiết bị/vị trí mới"
+        },
+        "albumCreated": {
+          "title": "Album đã được tạo",
+          "description": "Khi một album mới được tạo"
+        },
+        "albumPublished": {
+          "title": "Album đã được công khai",
+          "description": "Khi một album được công khai"
+        },
+        "albumDeleted": {
+          "title": "Album đã bị xóa",
+          "description": "Khi một album bị xóa"
+        },
+        "largePhotoUpload": {
+          "title": "Tải lên lớn",
+          "description": "Khi 50+ ảnh được tải lên cùng một lúc"
+        },
+        "shareLinkCreated": {
+          "title": "Liên kết chia sẻ đã được tạo",
+          "description": "Khi một liên kết chia sẻ mới được tạo"
+        },
+        "shareLinkAccessed": {
+          "title": "Liên kết chia sẻ đã được truy cập",
+          "description": "Khi ai đó xem một album đã chia sẻ"
+        },
+        "shareLinkExpired": {
+          "title": "Liên kết chia sẻ đã hết hạn",
+          "description": "Khi liên kết chia sẻ hết hạn"
+        },
+        "configUpdated": {
+          "title": "Cài đặt đã thay đổi",
+          "description": "Khi cấu hình hệ thống được cập nhật"
+        },
+        "smtpSettingsChanged": {
+          "title": "Cài đặt SMTP đã thay đổi",
+          "description": "Khi cấu hình email được cập nhật"
+        },
+        "openaiApiKeyUpdated": {
+          "title": "Cài đặt AI đã thay đổi",
+          "description": "Khi khóa API OpenAI được cập nhật"
+        },
+        "brandingUpdated": {
+          "title": "Thương hiệu đã được cập nhật",
+          "description": "Khi thương hiệu trang web được thay đổi"
+        },
+        "lowDiskSpace": {
+          "title": "Không gian đĩa thấp",
+          "description": "Khi dung lượng lưu trữ dưới 10%"
+        },
+        "databaseBackupCompleted": {
+          "title": "Sao lưu hoàn tất",
+          "description": "Khi sao lưu cơ sở dữ liệu hoàn tất"
+        }
+      }
+    }
   },
   "advancedSettings": {
     "title": "Cài đặt nâng cao",
@@ -1065,45 +1191,6 @@
     "errorRequiredField": "Trường này là bắt buộc",
     "setupCompleteWaitingRestart": "Cài đặt hoàn tất! Đang chờ máy chủ khởi động lại..."
   },
-  "email": {
-    "invitation": {
-      "subject": "Bạn đã được mời tham gia {{siteName}}",
-      "title": "Tham gia Galleria của {{siteName}}",
-      "greeting": "Chào bạn,",
-      "body": "{{inviterName}} đã mời bạn tham gia <strong>Galleria của {{siteName}}</strong>.",
-      "instructions": "Để chấp nhận lời mời này và thiết lập tài khoản của bạn, hãy nhấp vào nút bên dưới:",
-      "button": "Chấp nhận lời mời",
-      "orCopyLink": "Hoặc sao chép và dán liên kết này vào trình duyệt của bạn:",
-      "expiry": "Lời mời này sẽ hết hạn sau 7 ngày.",
-      "footerIgnore": "Nếu bạn không mong đợi lời mời này, bạn có thể an tâm bỏ qua email này.",
-      "footerAutomatic": "Đây là một tin nhắn tự động, vui lòng không trả lời email này."
-    },
-    "passwordReset": {
-      "subject": "Yêu cầu đặt lại mật khẩu - {{siteName}}",
-      "title": "Yêu cầu đặt lại mật khẩu",
-      "greeting": "Chào {{userName}},",
-      "greetingFallback": "Xin chào,",
-      "body": "Chúng tôi đã nhận được yêu cầu đặt lại mật khẩu của bạn cho <strong>{{siteName}}'s Galleria</strong>.",
-      "instructions": "Để đặt lại mật khẩu của bạn, hãy nhấp vào nút bên dưới:",
-      "button": "Đặt lại mật khẩu",
-      "orCopyLink": "Hoặc sao chép và dán liên kết này vào trình duyệt của bạn:",
-      "warningTitle": "⚠️ Quan trọng:",
-      "warningExpiry": "Liên kết này sẽ hết hạn sau 1 giờ",
-      "warningIgnore": "Nếu bạn không yêu cầu điều này, vui lòng bỏ qua email này",
-      "warningNoChange": "Mật khẩu của bạn sẽ không thay đổi cho đến khi bạn tạo một mật khẩu mới",
-      "footerAutomatic": "Đây là một tin nhắn tự động, vui lòng không trả lời email này.",
-      "footerContact": "Nếu bạn cần hỗ trợ, vui lòng liên hệ với quản trị viên của bạn."
-    },
-    "test": {
-      "subject": "Email kiểm tra từ {{siteName}}",
-      "title": "Kiểm tra cấu hình email",
-      "success": "✓",
-      "body1": "Chúc mừng! Cấu hình SMTP của bạn đang hoạt động chính xác.",
-      "body2": "Email thử nghiệm này được gửi từ <strong>{{siteName}}</strong> để xác minh rằng dịch vụ email của bạn được cấu hình đúng và có thể gửi tin nhắn.",
-      "footerTimestamp": "Đây là một tin nhắn thử nghiệm được gửi vào {{timestamp}}.",
-      "footerIgnore": "Bạn có thể an toàn bỏ qua hoặc xóa email này."
-    }
-  },
   "testEmailModal": {
     "title": "Gửi Email Kiểm Tra",
     "description": "Nhập địa chỉ email để gửi tin nhắn kiểm tra và xác minh cấu hình SMTP của bạn hoạt động chính xác.",
@@ -1194,26 +1281,6 @@
       "errorDisable": "Không thể tắt thông báo đẩy. Vui lòng thử lại.",
       "errorGenerateKeys": "Không thể tạo khóa VAPID",
       "close": "Đóng"
-    },
-    "backend": {
-      "videoProcessingComplete": "Xử Lý Video Hoàn Tất",
-      "videoProcessingFailed": "Xử Lý Video Thất Bại",
-      "videoReprocessingComplete": "Xử lý video hoàn tất",
-      "videoReprocessingFailed": "Xử lý video thất bại",
-      "imageOptimizationComplete": "Tối ưu hóa hình ảnh hoàn tất",
-      "imageOptimizationFailed": "Tối ưu hóa hình ảnh thất bại",
-      "aiTitlesComplete": "Tạo tiêu đề AI hoàn tất",
-      "aiTitlesFailed": "Tạo tiêu đề AI thất bại",
-      "testNotificationTitle": "Thông báo thử nghiệm",
-      "testNotificationBody": "Thông báo đẩy đang hoạt động! Bạn sẽ nhận được thông báo khi các công việc xử lý của bạn hoàn tất.",
-      "userInvitedTitle": "Người dùng mới được mời",
-      "userInvitedBody": "Một người dùng mới đã được mời đến trang của bạn",
-      "userAcceptedInviteTitle": "Người dùng đã tham gia",
-      "userAcceptedInviteBody": "Một người dùng đã chấp nhận lời mời và tham gia",
-      "userCreatedPasskeyTitle": "Khóa truy cập đã được tạo",
-      "userCreatedPasskeyBody": "Một người dùng đã đăng ký một khóa truy cập mới",
-      "userSetupMFATitle": "MFA đã được kích hoạt",
-      "userSetupMFABody": "Một người dùng đã kích hoạt xác thực nhiều yếu tố"
     },
     "blocked": "Thông báo bị chặn bởi trình duyệt. Kiểm tra cài đặt trình duyệt của bạn.",
     "subscribePrompt": "Đăng ký để nhận thông báo khi công việc hoàn thành",

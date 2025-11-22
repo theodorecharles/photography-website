@@ -14,6 +14,9 @@ import os from "os";
 import sharp from "sharp";
 import { csrfProtection } from "../security.js";
 import { requireAuth, requireAdmin, requireManager } from '../auth/middleware.js';
+import { sendNotificationToUser } from '../push-notifications.js';
+import { translateNotificationForUser } from '../i18n-backend.js';
+import { getAllUsers } from '../database-users.js';
 import { 
   deleteAlbumMetadata, 
   deleteImageMetadata, 
@@ -43,6 +46,31 @@ const execFileAsync = promisify(execFile);
 
 // Apply CSRF protection to all routes in this router
 router.use(csrfProtection);
+
+/**
+ * Helper to send push notification to all admin users
+ */
+async function notifyAllAdmins(title: string, body: string, tag: string, notificationType?: any): Promise<void> {
+  try {
+    const admins = getAllUsers().filter(u => u.role === 'admin');
+    
+    for (const admin of admins) {
+      const translatedTitle = await translateNotificationForUser(admin.id, title);
+      const translatedBody = await translateNotificationForUser(admin.id, body);
+      
+      await sendNotificationToUser(admin.id, {
+        title: translatedTitle,
+        body: translatedBody,
+        icon: '/icon-192.png',
+        badge: '/icon-192.png',
+        tag,
+        requireInteraction: false
+      }, notificationType);
+    }
+  } catch (err) {
+    error('[AlbumManagement] Failed to send admin notification:', err);
+  }
+}
 
 /**
  * Convert text to title case

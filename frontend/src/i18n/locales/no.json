@@ -403,7 +403,133 @@
   "settings": {
     "saved": "{{section}} innstillinger lagret!",
     "failedToSave": "Kunne ikke lagre konfigurasjonen",
-    "errorSaving": "Feil ved lagring av konfigurasjon"
+    "errorSaving": "Feil ved lagring av konfigurasjon",
+    "notifications": {
+      "title": "Varsler Innstillinger",
+      "description": "Konfigurer hvilke push-varsler du ønsker å motta",
+      "saved": "Varsler innstillinger lagret",
+      "confirmReset": "Tilbakestill alle varsler innstillinger til standard?",
+      "resetSuccess": "Varsler innstillinger tilbakestilt til standard",
+      "resetToDefaults": "Tilbakestill til standard",
+      "enableAll": "Aktiver alt",
+      "disableAll": "Deaktiver alt",
+      "categories": {
+        "security": {
+          "title": "Sikkerhet & Autentisering",
+          "description": "Varsler om brukerkontoer, pålogginger og sikkerhetshendelser"
+        },
+        "content": {
+          "title": "Innholdsadministrasjon",
+          "description": "Varsler om album, bilder og delinger"
+        },
+        "system": {
+          "title": "System & Konfigurasjon",
+          "description": "Varsler om endringer i innstillinger og systemhendelser"
+        }
+      },
+      "types": {
+        "userInvited": {
+          "title": "Bruker Invitert",
+          "description": "Når en administrator inviterer en ny bruker"
+        },
+        "userAcceptedInvite": {
+          "title": "Bruker Blandet",
+          "description": "Når en bruker aksepterer en invitasjon"
+        },
+        "userDeleted": {
+          "title": "Bruker Slettet",
+          "description": "Når en administrator sletter en brukerkonto"
+        },
+        "userRoleChanged": {
+          "title": "Brukerrolle Endret",
+          "description": "Når en brukers rolle endres"
+        },
+        "passkeyCreated": {
+          "title": "Passordnøkkel Opprettet",
+          "description": "Når en bruker registrerer en ny passordnøkkel"
+        },
+        "passkeyDeleted": {
+          "title": "Passordnøkkel Slettet",
+          "description": "Når en bruker fjerner en passordnøkkel"
+        },
+        "mfaEnabled": {
+          "title": "MFA Aktivert",
+          "description": "Når en bruker aktiverer flerfaktorautentisering"
+        },
+        "mfaDisabled": {
+          "title": "MFA Deaktivert",
+          "description": "Når en bruker deaktiverer flerfaktorautentisering"
+        },
+        "passwordChanged": {
+          "title": "Passord Endret",
+          "description": "Når en bruker endrer passordet sitt"
+        },
+        "adminPasswordReset": {
+          "title": "Admin Passord Tilbakestilling",
+          "description": "Når en admin initierer en tilbakestilling av passord"
+        },
+        "failedLoginAttempts": {
+          "title": "Mislykkede Innloggingsforsøk",
+          "description": "Når flere mislykkede innloggingsforsøk oppdages"
+        },
+        "suspiciousActivity": {
+          "title": "Mistenkelig Aktivitet",
+          "description": "Når innlogging fra en ny enhet/sted oppdages"
+        },
+        "albumCreated": {
+          "title": "Album Opprettet",
+          "description": "Når et nytt album opprettes"
+        },
+        "albumPublished": {
+          "title": "Album publisert",
+          "description": "Når et album gjøres offentlig"
+        },
+        "albumDeleted": {
+          "title": "Album slettet",
+          "description": "Når et album blir slettet"
+        },
+        "largePhotoUpload": {
+          "title": "Stor opplasting",
+          "description": "Når 50+ bilder lastes opp samtidig"
+        },
+        "shareLinkCreated": {
+          "title": "Delingslenke opprettet",
+          "description": "Når en ny delingslenke opprettes"
+        },
+        "shareLinkAccessed": {
+          "title": "Delingslenke åpnet",
+          "description": "Når noen ser et delt album"
+        },
+        "shareLinkExpired": {
+          "title": "Delingslenke utløpt",
+          "description": "Når en delingslenke utløper"
+        },
+        "configUpdated": {
+          "title": "Innstillinger endret",
+          "description": "Når systemkonfigurasjonen oppdateres"
+        },
+        "smtpSettingsChanged": {
+          "title": "SMTP-innstillinger endret",
+          "description": "Når e-postkonfigurasjonen oppdateres"
+        },
+        "openaiApiKeyUpdated": {
+          "title": "AI-innstillinger endret",
+          "description": "Når OpenAI API-nøkkelen oppdateres"
+        },
+        "brandingUpdated": {
+          "title": "Merkevare oppdatert",
+          "description": "Når nettstedets merkevare endres"
+        },
+        "lowDiskSpace": {
+          "title": "Lav diskplass",
+          "description": "Når lagringen er under 10%"
+        },
+        "databaseBackupCompleted": {
+          "title": "Sikkerhetskopiering fullført",
+          "description": "Når sikkerhetskopiering av databasen er ferdig"
+        }
+      }
+    }
   },
   "advancedSettings": {
     "title": "Avanserte innstillinger",
@@ -1065,45 +1191,6 @@
     "errorRequiredField": "Dette feltet er påkrevd",
     "setupCompleteWaitingRestart": "Oppsett fullført! Venter på at serveren skal starte på nytt..."
   },
-  "email": {
-    "invitation": {
-      "subject": "Du har blitt invitert til {{siteName}}",
-      "title": "Bli med i <strong>{{siteName}}'s Galleria</strong>",
-      "greeting": "Hei,",
-      "body": "{{inviterName}} har invitert deg til å bli med i <strong>{{siteName}}'s Galleria</strong>.",
-      "instructions": "For å akseptere denne invitasjonen og sette opp kontoen din, klikk på knappen nedenfor:",
-      "button": "Aksepter invitasjon",
-      "orCopyLink": "Eller kopier og lim inn denne lenken i nettleseren din:",
-      "expiry": "Denne invitasjonen vil utløpe om 7 dager.",
-      "footerIgnore": "Hvis du ikke forventet denne invitasjonen, kan du trygt ignorere denne e-posten.",
-      "footerAutomatic": "Dette er en automatisk melding, vennligst ikke svar på denne e-posten."
-    },
-    "passwordReset": {
-      "subject": "Passordtilbakestillingsforespørsel - {{siteName}}",
-      "title": "Passordtilbakestillingsforespørsel",
-      "greeting": "Hei {{userName}},",
-      "greetingFallback": "Hei der,",
-      "body": "Vi har mottatt en forespørsel om å tilbakestille passordet ditt for <strong>{{siteName}}'s Galleria</strong>.",
-      "instructions": "For å tilbakestille passordet ditt, klikk på knappen nedenfor:",
-      "button": "Tilbakestill passord",
-      "orCopyLink": "Eller kopier og lim inn denne lenken i nettleseren din:",
-      "warningTitle": "⚠️ Viktig:",
-      "warningExpiry": "Denne lenken vil utløpe om 1 time",
-      "warningIgnore": "Hvis du ikke ba om dette, vennligst ignorer denne e-posten",
-      "warningNoChange": "Passordet ditt vil ikke endres før du oppretter et nytt",
-      "footerAutomatic": "Dette er en automatisert melding, vennligst ikke svar på denne e-posten.",
-      "footerContact": "Hvis du trenger hjelp, vennligst kontakt administratoren din."
-    },
-    "test": {
-      "subject": "Test e-post fra {{siteName}}",
-      "title": "E-postkonfigurasjonstest",
-      "success": "✓",
-      "body1": "Gratulerer! Din SMTP-konfigurasjon fungerer korrekt.",
-      "body2": "Denne test-e-posten ble sendt fra <strong>{{siteName}}</strong> for å bekrefte at e-posttjenesten din er riktig konfigurert og kan levere meldinger.",
-      "footerTimestamp": "Dette er en testmelding sendt kl {{timestamp}}.",
-      "footerIgnore": "Du kan trygt ignorere eller slette denne e-posten."
-    }
-  },
   "testEmailModal": {
     "title": "Send test-e-post",
     "description": "Skriv inn en e-postadresse for å sende en testmelding og bekrefte at SMTP-konfigurasjonen din fungerer som den skal.",
@@ -1194,26 +1281,6 @@
       "errorDisable": "Kunne ikke deaktivere push-varsler. Vennligst prøv igjen.",
       "errorGenerateKeys": "Kunne ikke generere VAPID-nøkler",
       "close": "Lukk"
-    },
-    "backend": {
-      "videoProcessingComplete": "Videobehandling fullført",
-      "videoProcessingFailed": "Videobehandling mislyktes",
-      "videoReprocessingComplete": "Videobehandling fullført",
-      "videoReprocessingFailed": "Videobehandling mislyktes",
-      "imageOptimizationComplete": "Bildeoptimalisering fullført",
-      "imageOptimizationFailed": "Bildeoptimalisering mislyktes",
-      "aiTitlesComplete": "AI tittelgenerering fullført",
-      "aiTitlesFailed": "AI tittelgenerering mislyktes",
-      "testNotificationTitle": "Testvarsling",
-      "testNotificationBody": "Push-varsler fungerer! Du vil motta varsler når behandlingen av jobbene dine er fullført.",
-      "userInvitedTitle": "Ny bruker invitert",
-      "userInvitedBody": "En ny bruker har blitt invitert til nettstedet ditt",
-      "userAcceptedInviteTitle": "Bruker ble med",
-      "userAcceptedInviteBody": "En bruker har akseptert invitasjonen sin og blitt med",
-      "userCreatedPasskeyTitle": "Passordnøkkel opprettet",
-      "userCreatedPasskeyBody": "En bruker har registrert en ny passordnøkkel",
-      "userSetupMFATitle": "MFA aktivert",
-      "userSetupMFABody": "En bruker har aktivert flerfaktorautentisering"
     },
     "blocked": "Varsler blokkert av nettleseren. Sjekk innstillingene i nettleseren din.",
     "subscribePrompt": "Abonner for å motta varsler når jobber er fullført",

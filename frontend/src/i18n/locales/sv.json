@@ -403,7 +403,133 @@
   "settings": {
     "saved": "{{section}} inställningar sparade!",
     "failedToSave": "Misslyckades med att spara konfigurationen",
-    "errorSaving": "Fel vid sparande av konfiguration"
+    "errorSaving": "Fel vid sparande av konfiguration",
+    "notifications": {
+      "title": "Notifikationsinställningar",
+      "description": "Konfigurera vilka push-notifikationer du vill ta emot",
+      "saved": "Notifikationsinställningar sparade",
+      "confirmReset": "Återställ alla notifikationsinställningar till standard?",
+      "resetSuccess": "Notifikationsinställningar återställda till standard",
+      "resetToDefaults": "Återställ till standard",
+      "enableAll": "Aktivera alla",
+      "disableAll": "Inaktivera alla",
+      "categories": {
+        "security": {
+          "title": "Säkerhet & Autentisering",
+          "description": "Notifikationer om användarkonton, inloggningar och säkerhetshändelser"
+        },
+        "content": {
+          "title": "Innehållshantering",
+          "description": "Meddelanden om album, foton och delningar"
+        },
+        "system": {
+          "title": "System & Konfiguration",
+          "description": "Meddelanden om inställningsändringar och systemhändelser"
+        }
+      },
+      "types": {
+        "userInvited": {
+          "title": "Användare inbjuden",
+          "description": "När en administratör bjuder in en ny användare"
+        },
+        "userAcceptedInvite": {
+          "title": "Användare gick med",
+          "description": "När en användare accepterar en inbjudan"
+        },
+        "userDeleted": {
+          "title": "Användare raderad",
+          "description": "När en administratör raderar ett användarkonto"
+        },
+        "userRoleChanged": {
+          "title": "Användarroll Ändrad",
+          "description": "När en användares roll ändras"
+        },
+        "passkeyCreated": {
+          "title": "Passnyckel Skapad",
+          "description": "När en användare registrerar en ny passnyckel"
+        },
+        "passkeyDeleted": {
+          "title": "Passnyckel Borttagen",
+          "description": "När en användare tar bort en passnyckel"
+        },
+        "mfaEnabled": {
+          "title": "MFA Aktiverad",
+          "description": "När en användare aktiverar flerfaktorsautentisering"
+        },
+        "mfaDisabled": {
+          "title": "MFA Avaktiverad",
+          "description": "När en användare avaktiverar flerfaktorsautentisering"
+        },
+        "passwordChanged": {
+          "title": "Lösenordet har ändrats",
+          "description": "När en användare ändrar sitt lösenord"
+        },
+        "adminPasswordReset": {
+          "title": "Återställning av administratörslösenord",
+          "description": "När en administratör initierar en återställning av lösenord"
+        },
+        "failedLoginAttempts": {
+          "title": "Misslyckade inloggningsförsök",
+          "description": "När flera misslyckade inloggningsförsök upptäckts"
+        },
+        "suspiciousActivity": {
+          "title": "Misstänkt aktivitet",
+          "description": "När inloggning från en ny enhet/plats upptäckts"
+        },
+        "albumCreated": {
+          "title": "Album skapat",
+          "description": "När ett nytt album har skapats"
+        },
+        "albumPublished": {
+          "title": "Album Publicerad",
+          "description": "När ett album görs offentligt"
+        },
+        "albumDeleted": {
+          "title": "Album Raderat",
+          "description": "När ett album raderas"
+        },
+        "largePhotoUpload": {
+          "title": "Större Uppladdning",
+          "description": "När 50+ foton laddas upp på en gång"
+        },
+        "shareLinkCreated": {
+          "title": "Dela Länk Skapad",
+          "description": "När en ny delningslänk skapas"
+        },
+        "shareLinkAccessed": {
+          "title": "Dela Länk Åtkommet",
+          "description": "När någon visar ett delat album"
+        },
+        "shareLinkExpired": {
+          "title": "Dela länk har gått ut",
+          "description": "När en delningslänk går ut"
+        },
+        "configUpdated": {
+          "title": "Inställningar ändrade",
+          "description": "När systemkonfigurationen uppdateras"
+        },
+        "smtpSettingsChanged": {
+          "title": "SMTP-inställningar ändrade",
+          "description": "När e-postkonfigurationen uppdateras"
+        },
+        "openaiApiKeyUpdated": {
+          "title": "AI-inställningar ändrade",
+          "description": "När OpenAI API-nyckeln uppdateras"
+        },
+        "brandingUpdated": {
+          "title": "Varumärke uppdaterat",
+          "description": "När webbplatsens varumärke ändras"
+        },
+        "lowDiskSpace": {
+          "title": "Låg diskutrymme",
+          "description": "När lagringen är under 10%"
+        },
+        "databaseBackupCompleted": {
+          "title": "Säkerhetskopiering klar",
+          "description": "När databasens säkerhetskopiering är klar"
+        }
+      }
+    }
   },
   "advancedSettings": {
     "title": "Avancerade inställningar",
@@ -1065,45 +1191,6 @@
     "errorRequiredField": "Detta fält är obligatoriskt",
     "setupCompleteWaitingRestart": "Installation klar! Väntar på att servern ska starta om..."
   },
-  "email": {
-    "invitation": {
-      "subject": "Du har blivit inbjuden till {{siteName}}",
-      "title": "Gå med i <strong>{{siteName}}'s Galleria</strong>",
-      "greeting": "Hej,",
-      "body": "{{inviterName}} har bjudit in dig att gå med i <strong>{{siteName}}'s Galleria</strong>.",
-      "instructions": "För att acceptera denna inbjudan och skapa ditt konto, klicka på knappen nedan:",
-      "button": "Acceptera inbjudan",
-      "orCopyLink": "Eller kopiera och klistra in denna länk i din webbläsare:",
-      "expiry": "Denna inbjudan kommer att gå ut om 7 dagar.",
-      "footerIgnore": "Om du inte förväntade dig denna inbjudan kan du säkert ignorera detta e-postmeddelande.",
-      "footerAutomatic": "Detta är ett automatiskt meddelande, vänligen svara inte på detta e-postmeddelande."
-    },
-    "passwordReset": {
-      "subject": "Återställningsbegäran av lösenord - {{siteName}}",
-      "title": "Återställningsbegäran av lösenord",
-      "greeting": "Hej {{userName}},",
-      "greetingFallback": "Hej där,",
-      "body": "Vi har mottagit en begäran om att återställa ditt lösenord för <strong>{{siteName}}'s Galleria</strong>.",
-      "instructions": "För att återställa ditt lösenord, klicka på knappen nedan:",
-      "button": "Återställ lösenord",
-      "orCopyLink": "Eller kopiera och klistra in denna länk i din webbläsare:",
-      "warningTitle": "⚠️ Viktigt:",
-      "warningExpiry": "Denna länk kommer att gå ut om 1 timme",
-      "warningIgnore": "Om du inte begärde detta, vänligen ignorera detta e-postmeddelande",
-      "warningNoChange": "Ditt lösenord kommer inte att ändras förrän du skapar ett nytt",
-      "footerAutomatic": "Detta är ett automatiserat meddelande, vänligen svara inte på detta e-postmeddelande.",
-      "footerContact": "Om du behöver hjälp, vänligen kontakta din administratör."
-    },
-    "test": {
-      "subject": "Test-e-post från {{siteName}}",
-      "title": "E-postkonfigurationstest",
-      "success": "✓",
-      "body1": "Grattis! Din SMTP-konfiguration fungerar korrekt.",
-      "body2": "Detta test-e-postmeddelande skickades från <strong>{{siteName}}</strong> för att verifiera att din e-posttjänst är korrekt konfigurerad och kan leverera meddelanden.",
-      "footerTimestamp": "Detta är ett testmeddelande skickat vid {{timestamp}}.",
-      "footerIgnore": "Du kan säkert ignorera eller radera detta e-postmeddelande."
-    }
-  },
   "testEmailModal": {
     "title": "Skicka test-e-post",
     "description": "Ange en e-postadress för att skicka ett testmeddelande och verifiera att din SMTP-konfiguration fungerar korrekt.",
@@ -1194,26 +1281,6 @@
       "errorDisable": "Misslyckades med att inaktivera push-notiser. Vänligen försök igen.",
       "errorGenerateKeys": "Misslyckades med att generera VAPID-nycklar",
       "close": "Stäng"
-    },
-    "backend": {
-      "videoProcessingComplete": "Videobehandling slutförd",
-      "videoProcessingFailed": "Videobehandling misslyckades",
-      "videoReprocessingComplete": "Videorebearbetning slutförd",
-      "videoReprocessingFailed": "Videorebearbetning misslyckades",
-      "imageOptimizationComplete": "Bildoptimering slutförd",
-      "imageOptimizationFailed": "Bildoptimering misslyckades",
-      "aiTitlesComplete": "AI-titelgenerering slutförd",
-      "aiTitlesFailed": "AI-titelgenerering misslyckades",
-      "testNotificationTitle": "Testmeddelande",
-      "testNotificationBody": "Push-notiser fungerar! Du kommer att få aviseringar när dina bearbetningsjobb är klara.",
-      "userInvitedTitle": "Ny användare inbjuden",
-      "userInvitedBody": "En ny användare har blivit inbjuden till din webbplats",
-      "userAcceptedInviteTitle": "Användare gick med",
-      "userAcceptedInviteBody": "En användare har accepterat sin inbjudan och gått med",
-      "userCreatedPasskeyTitle": "Lösenordsskydd skapat",
-      "userCreatedPasskeyBody": "En användare har registrerat ett nytt lösenordsskydd",
-      "userSetupMFATitle": "MFA aktiverad",
-      "userSetupMFABody": "En användare har aktiverat flerfaktorsautentisering"
     },
     "blocked": "Aviseringar blockerade av webbläsaren. Kontrollera dina webbläsarinställningar.",
     "subscribePrompt": "Prenumerera för att ta emot aviseringar när jobb är klara",

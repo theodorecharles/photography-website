@@ -403,7 +403,133 @@
   "settings": {
     "saved": "{{section}} mga setting ay na-save!",
     "failedToSave": "Nabigong i-save ang configuration",
-    "errorSaving": "Error sa pag-save ng configuration"
+    "errorSaving": "Error sa pag-save ng configuration",
+    "notifications": {
+      "title": "Mga Kagustuhan sa Abiso",
+      "description": "I-configure kung aling mga push notification ang nais mong matanggap",
+      "saved": "Naka-save ang mga kagustuhan sa abiso",
+      "confirmReset": "I-reset ang lahat ng mga kagustuhan sa abiso sa mga default?",
+      "resetSuccess": "Naka-reset ang mga kagustuhan sa abiso sa mga default",
+      "resetToDefaults": "I-reset sa Mga Default",
+      "enableAll": "I-enable ang Lahat",
+      "disableAll": "I-disable ang Lahat",
+      "categories": {
+        "security": {
+          "title": "Seguridad at Pagpapatotoo",
+          "description": "Mga abiso tungkol sa mga account ng gumagamit, mga pag-login, at mga kaganapan sa seguridad"
+        },
+        "content": {
+          "title": "Pamamahala ng Nilalaman",
+          "description": "Mga abiso tungkol sa mga album, larawan, at pagbabahagi"
+        },
+        "system": {
+          "title": "Sistema at Konfigurasyon",
+          "description": "Mga abiso tungkol sa mga pagbabago sa mga setting at mga kaganapan sa sistema"
+        }
+      },
+      "types": {
+        "userInvited": {
+          "title": "Inanyayahang Gumagamit",
+          "description": "Kapag ang isang admin ay nag-anyaya ng bagong gumagamit"
+        },
+        "userAcceptedInvite": {
+          "title": "Sumali ang Gumagamit",
+          "description": "Kapag ang isang gumagamit ay tumanggap ng paanyaya"
+        },
+        "userDeleted": {
+          "title": "Tinanggal na Gumagamit",
+          "description": "Kapag ang isang admin ay nagtanggal ng account ng gumagamit"
+        },
+        "userRoleChanged": {
+          "title": "Nabago ang Papel ng Gumagamit",
+          "description": "Kapag ang papel ng isang gumagamit ay nabago"
+        },
+        "passkeyCreated": {
+          "title": "Nalikha ang Passkey",
+          "description": "Kapag ang isang gumagamit ay nagrehistro ng bagong passkey"
+        },
+        "passkeyDeleted": {
+          "title": "Nawala ang Passkey",
+          "description": "Kapag ang isang gumagamit ay nag-alis ng passkey"
+        },
+        "mfaEnabled": {
+          "title": "Pinagana ang MFA",
+          "description": "Kapag ang isang gumagamit ay nag-enable ng multi-factor authentication"
+        },
+        "mfaDisabled": {
+          "title": "Naka-disable ang MFA",
+          "description": "Kapag ang isang gumagamit ay nag-disable ng multi-factor authentication"
+        },
+        "passwordChanged": {
+          "title": "Nabago ang Password",
+          "description": "Kapag ang isang gumagamit ay nagbago ng kanilang password"
+        },
+        "adminPasswordReset": {
+          "title": "Pag-reset ng Admin Password",
+          "description": "Kapag ang isang admin ay nagpasimula ng pag-reset ng password"
+        },
+        "failedLoginAttempts": {
+          "title": "Nabigong Pagsubok sa Pag-login",
+          "description": "Kapag maraming nabigong pagsubok sa pag-login ang natukoy"
+        },
+        "suspiciousActivity": {
+          "title": "Kakaibang Aktibidad",
+          "description": "Kapag ang pag-login mula sa bagong aparato/lokasyon ay natukoy"
+        },
+        "albumCreated": {
+          "title": "Nagawa ang Album",
+          "description": "Kapag ang isang bagong album ay nalikha"
+        },
+        "albumPublished": {
+          "title": "Nailathalang Album",
+          "description": "Kapag ang album ay ginawa nang pampubliko"
+        },
+        "albumDeleted": {
+          "title": "Nawawalang Album",
+          "description": "Kapag ang album ay tinanggal"
+        },
+        "largePhotoUpload": {
+          "title": "Malaking Pag-upload",
+          "description": "Kapag 50+ na mga larawan ang na-upload nang sabay-sabay"
+        },
+        "shareLinkCreated": {
+          "title": "Nalikha ang Link ng Pagbabahagi",
+          "description": "Kapag isang bagong link ng pagbabahagi ang nalikha"
+        },
+        "shareLinkAccessed": {
+          "title": "Na-access ang Link ng Pagbabahagi",
+          "description": "Kapag may tumingin sa isang ibinahaging album"
+        },
+        "shareLinkExpired": {
+          "title": "Nawalang Bisa ang Link ng Pagbabahagi",
+          "description": "Kapag ang link ng pagbabahagi ay nawalan ng bisa"
+        },
+        "configUpdated": {
+          "title": "Nabago ang Mga Setting",
+          "description": "Kapag ang configuration ng sistema ay na-update"
+        },
+        "smtpSettingsChanged": {
+          "title": "Nabago ang Mga Setting ng SMTP",
+          "description": "Kapag ang configuration ng email ay na-update"
+        },
+        "openaiApiKeyUpdated": {
+          "title": "Nabago ang Mga Setting ng AI",
+          "description": "Kapag ang OpenAI API key ay na-update"
+        },
+        "brandingUpdated": {
+          "title": "Nabago ang Branding",
+          "description": "Kapag ang branding ng site ay nabago"
+        },
+        "lowDiskSpace": {
+          "title": "Mababang Espasyo sa Disk",
+          "description": "Kapag ang imbakan ay nasa ibaba ng 10%"
+        },
+        "databaseBackupCompleted": {
+          "title": "Kumpleto ang Backup",
+          "description": "Kapag natapos ang backup ng database"
+        }
+      }
+    }
   },
   "advancedSettings": {
     "title": "Mga Advanced na Setting",
@@ -1065,45 +1191,6 @@
     "errorRequiredField": "Kailangan ang larangang ito",
     "setupCompleteWaitingRestart": "Kumpleto na ang setup! Naghihintay para sa pag-restart ng server..."
   },
-  "email": {
-    "invitation": {
-      "subject": "Naimbitahan ka sa {{siteName}}",
-      "title": "Sumali sa Galleria ng {{siteName}}",
-      "greeting": "Kamusta,",
-      "body": "Naimbitahan ka ni {{inviterName}} na sumali sa <strong>Galleria ng {{siteName}}</strong>.",
-      "instructions": "Upang tanggapin ang paanyayang ito at i-set up ang iyong account, i-click ang button sa ibaba:",
-      "button": "Tanggapin ang Paanyaya",
-      "orCopyLink": "O kopyahin at i-paste ang link na ito sa iyong browser:",
-      "expiry": "Magtatapos ang paanyayang ito sa loob ng 7 araw.",
-      "footerIgnore": "Kung hindi mo inaasahan ang paanyayang ito, maaari mo itong ligtas na balewalain.",
-      "footerAutomatic": "Ito ay isang awtomatikong mensahe, mangyaring huwag tumugon sa email na ito."
-    },
-    "passwordReset": {
-      "subject": "Hiling sa Pag-reset ng Password - {{siteName}}",
-      "title": "Hiling sa Pag-reset ng Password",
-      "greeting": "Kamusta {{userName}},",
-      "greetingFallback": "Kamusta,",
-      "body": "Nakatanggap kami ng hiling upang i-reset ang iyong password para sa <strong>{{siteName}}'s Galleria</strong>.",
-      "instructions": "Upang i-reset ang iyong password, i-click ang button sa ibaba:",
-      "button": "I-reset ang Password",
-      "orCopyLink": "O kopyahin at i-paste ang link na ito sa iyong browser:",
-      "warningTitle": "⚠️ Mahalaga:",
-      "warningExpiry": "Mawawalan ng bisa ang link na ito sa loob ng 1 oras",
-      "warningIgnore": "Kung hindi mo ito hiniling, mangyaring balewalain ang email na ito",
-      "warningNoChange": "Ang iyong password ay hindi magbabago hanggang lumikha ka ng bago",
-      "footerAutomatic": "Ito ay isang automated na mensahe, mangyaring huwag tumugon sa email na ito.",
-      "footerContact": "Kung kailangan mo ng tulong, mangyaring makipag-ugnayan sa iyong administrator."
-    },
-    "test": {
-      "subject": "Test Email mula sa {{siteName}}",
-      "title": "Pagsubok sa Konpigurasyon ng Email",
-      "success": "✓",
-      "body1": "Binabati kita! Ang iyong SMTP na konpigurasyon ay gumagana nang tama.",
-      "body2": "Ang test email na ito ay ipinadala mula sa <strong>{{siteName}}</strong> upang tiyakin na ang iyong serbisyo sa email ay maayos na nakakonpigur at makapaghatid ng mga mensahe.",
-      "footerTimestamp": "Ito ay isang test na mensahe na ipinadala sa {{timestamp}}.",
-      "footerIgnore": "Maaari mong ligtas na balewalain o tanggalin ang email na ito."
-    }
-  },
   "testEmailModal": {
     "title": "Magpadala ng Test Email",
     "description": "Maglagay ng email address upang magpadala ng test na mensahe at tiyakin na gumagana nang tama ang iyong SMTP configuration.",
@@ -1194,26 +1281,6 @@
       "errorDisable": "Nabigo na i-disable ang push notifications. Pakisubukan muli.",
       "errorGenerateKeys": "Nabigo na makabuo ng VAPID keys",
       "close": "Isara"
-    },
-    "backend": {
-      "videoProcessingComplete": "Tapos na ang Pagproseso ng Video",
-      "videoProcessingFailed": "Nabigo ang Pagproseso ng Video",
-      "videoReprocessingComplete": "Tapos na ang Pag-uulit ng Video",
-      "videoReprocessingFailed": "Nabigo ang Pag-uulit ng Video",
-      "imageOptimizationComplete": "Tapos na ang Pag-optimize ng Imahe",
-      "imageOptimizationFailed": "Nabigo ang Pag-optimize ng Imahe",
-      "aiTitlesComplete": "Tapos na ang Pagbuo ng AI Title",
-      "aiTitlesFailed": "Nabigong Lumikha ng Pamagat ng AI",
-      "testNotificationTitle": "Pagsubok na Abiso",
-      "testNotificationBody": "Nagtatrabaho ang mga push notification! Makakatanggap ka ng mga alerto kapag natapos ang iyong mga processing job.",
-      "userInvitedTitle": "Bago Gumagamit na Inaanyayahan",
-      "userInvitedBody": "Isang bagong gumagamit ang naanyayahan sa iyong site",
-      "userAcceptedInviteTitle": "Sumali ang Gumagamit",
-      "userAcceptedInviteBody": "Isang gumagamit ang tumanggap ng kanilang paanyaya at sumali",
-      "userCreatedPasskeyTitle": "Nalikha ang Passkey",
-      "userCreatedPasskeyBody": "Isang gumagamit ang nagrehistro ng bagong passkey",
-      "userSetupMFATitle": "Pinagana ang MFA",
-      "userSetupMFABody": "Isang gumagamit ang nag-enable ng multi-factor authentication"
     },
     "blocked": "Naka-block ang mga notification ng browser. Suriin ang iyong mga setting ng browser.",
     "subscribePrompt": "Mag-subscribe upang makatanggap ng mga notification kapag natapos ang mga trabaho",

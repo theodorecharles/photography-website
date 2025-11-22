@@ -403,7 +403,133 @@
   "settings": {
     "saved": "{{section}} 설정이 저장되었습니다!",
     "failedToSave": "구성을 저장하지 못했습니다",
-    "errorSaving": "구성 저장 오류"
+    "errorSaving": "구성 저장 오류",
+    "notifications": {
+      "title": "알림 설정",
+      "description": "받고 싶은 푸시 알림을 설정하세요",
+      "saved": "알림 설정이 저장되었습니다",
+      "confirmReset": "모든 알림 설정을 기본값으로 재설정하시겠습니까?",
+      "resetSuccess": "알림 설정이 기본값으로 재설정되었습니다",
+      "resetToDefaults": "기본값으로 재설정",
+      "enableAll": "모두 활성화",
+      "disableAll": "모두 비활성화",
+      "categories": {
+        "security": {
+          "title": "보안 및 인증",
+          "description": "사용자 계정, 로그인 및 보안 이벤트에 대한 알림"
+        },
+        "content": {
+          "title": "콘텐츠 관리",
+          "description": "앨범, 사진 및 공유에 대한 알림"
+        },
+        "system": {
+          "title": "시스템 및 구성",
+          "description": "설정 변경 및 시스템 이벤트에 대한 알림"
+        }
+      },
+      "types": {
+        "userInvited": {
+          "title": "사용자 초대됨",
+          "description": "관리자가 새 사용자를 초대할 때"
+        },
+        "userAcceptedInvite": {
+          "title": "사용자 가입됨",
+          "description": "사용자가 초대를 수락할 때"
+        },
+        "userDeleted": {
+          "title": "사용자 삭제됨",
+          "description": "관리자가 사용자 계정을 삭제할 때"
+        },
+        "userRoleChanged": {
+          "title": "사용자 역할 변경됨",
+          "description": "사용자의 역할이 변경될 때"
+        },
+        "passkeyCreated": {
+          "title": "패스키 생성됨",
+          "description": "사용자가 새 패스키를 등록할 때"
+        },
+        "passkeyDeleted": {
+          "title": "패스키 삭제됨",
+          "description": "사용자가 패스키를 제거할 때"
+        },
+        "mfaEnabled": {
+          "title": "MFA 활성화됨",
+          "description": "사용자가 다중 인증을 활성화할 때"
+        },
+        "mfaDisabled": {
+          "title": "MFA 비활성화됨",
+          "description": "사용자가 다중 인증을 비활성화할 때"
+        },
+        "passwordChanged": {
+          "title": "비밀번호가 변경되었습니다",
+          "description": "사용자가 비밀번호를 변경할 때"
+        },
+        "adminPasswordReset": {
+          "title": "관리자 비밀번호 재설정",
+          "description": "관리자가 비밀번호 재설정을 시작할 때"
+        },
+        "failedLoginAttempts": {
+          "title": "로그인 실패 시도",
+          "description": "여러 번의 로그인 실패 시도가 감지될 때"
+        },
+        "suspiciousActivity": {
+          "title": "의심스러운 활동",
+          "description": "새로운 장치/위치에서 로그인할 때 감지됨"
+        },
+        "albumCreated": {
+          "title": "앨범이 생성되었습니다",
+          "description": "새 앨범이 생성될 때"
+        },
+        "albumPublished": {
+          "title": "앨범 공개됨",
+          "description": "앨범이 공개될 때"
+        },
+        "albumDeleted": {
+          "title": "앨범 삭제됨",
+          "description": "앨범이 삭제될 때"
+        },
+        "largePhotoUpload": {
+          "title": "대용량 업로드",
+          "description": "50장 이상의 사진이 한 번에 업로드될 때"
+        },
+        "shareLinkCreated": {
+          "title": "공유 링크 생성됨",
+          "description": "새 공유 링크가 생성될 때"
+        },
+        "shareLinkAccessed": {
+          "title": "공유 링크 접근됨",
+          "description": "누군가 공유된 앨범을 볼 때"
+        },
+        "shareLinkExpired": {
+          "title": "공유 링크가 만료됨",
+          "description": "공유 링크가 만료될 때"
+        },
+        "configUpdated": {
+          "title": "설정 변경됨",
+          "description": "시스템 구성 업데이트 시"
+        },
+        "smtpSettingsChanged": {
+          "title": "SMTP 설정 변경됨",
+          "description": "이메일 구성 업데이트 시"
+        },
+        "openaiApiKeyUpdated": {
+          "title": "AI 설정 변경됨",
+          "description": "OpenAI API 키가 업데이트될 때"
+        },
+        "brandingUpdated": {
+          "title": "브랜딩 업데이트됨",
+          "description": "사이트 브랜딩이 변경될 때"
+        },
+        "lowDiskSpace": {
+          "title": "디스크 공간 부족",
+          "description": "저장 공간이 10% 미만일 때"
+        },
+        "databaseBackupCompleted": {
+          "title": "백업 완료",
+          "description": "데이터베이스 백업이 완료되었을 때"
+        }
+      }
+    }
   },
   "advancedSettings": {
     "title": "고급 설정",
@@ -1065,45 +1191,6 @@
     "errorRequiredField": "이 필드는 필수입니다",
     "setupCompleteWaitingRestart": "설정이 완료되었습니다! 서버가 재시작되기를 기다리고 있습니다..."
   },
-  "email": {
-    "invitation": {
-      "subject": "{{siteName}}에 초대되었습니다",
-      "title": "{{siteName}}의 갤러리에 참여하세요",
-      "greeting": "안녕하세요,",
-      "body": "{{inviterName}}님이 <strong>{{siteName}}의 갤러리</strong>에 참여하도록 초대했습니다.",
-      "instructions": "이 초대를 수락하고 계정을 설정하려면 아래 버튼을 클릭하세요:",
-      "button": "초대 수락",
-      "orCopyLink": "또는 이 링크를 복사하여 브라우저에 붙여넣으세요:",
-      "expiry": "이 초대는 7일 후에 만료됩니다.",
-      "footerIgnore": "이 초대를 예상하지 못하셨다면, 이 이메일을 무시하셔도 됩니다.",
-      "footerAutomatic": "이 메시지는 자동으로 생성된 것입니다. 이 이메일에 회신하지 마세요."
-    },
-    "passwordReset": {
-      "subject": "비밀번호 재설정 요청 - {{siteName}}",
-      "title": "비밀번호 재설정 요청",
-      "greeting": "안녕하세요 {{userName}},",
-      "greetingFallback": "안녕하세요,",
-      "body": "<strong>{{siteName}}의 갤러리</strong>에 대한 비밀번호 재설정 요청을 받았습니다.",
-      "instructions": "비밀번호를 재설정하려면 아래 버튼을 클릭하세요:",
-      "button": "비밀번호 재설정",
-      "orCopyLink": "또는 이 링크를 복사하여 브라우저에 붙여넣으세요:",
-      "warningTitle": "⚠️ 중요:",
-      "warningExpiry": "이 링크는 1시간 후에 만료됩니다.",
-      "warningIgnore": "이 이메일을 요청하지 않으셨다면 무시해 주시기 바랍니다",
-      "warningNoChange": "비밀번호는 새 비밀번호를 생성할 때까지 변경되지 않습니다",
-      "footerAutomatic": "이것은 자동 생성된 메시지입니다. 이 이메일에 회신하지 마십시오.",
-      "footerContact": "도움이 필요하시면 관리자에게 문의해 주십시오."
-    },
-    "test": {
-      "subject": "{{siteName}}에서 보낸 테스트 이메일",
-      "title": "이메일 구성 테스트",
-      "success": "✓",
-      "body1": "축하합니다! 귀하의 SMTP 구성이 올바르게 작동하고 있습니다.",
-      "body2": "이 테스트 이메일은 <strong>{{siteName}}</strong>에서 귀하의 이메일 서비스가 제대로 구성되어 메시지를 전달할 수 있는지 확인하기 위해 전송되었습니다.",
-      "footerTimestamp": "이것은 {{timestamp}}에 전송된 테스트 메시지입니다.",
-      "footerIgnore": "이 이메일은 안전하게 무시하거나 삭제해도 됩니다."
-    }
-  },
   "testEmailModal": {
     "title": "테스트 이메일 보내기",
     "description": "테스트 메시지를 보내고 SMTP 구성이 올바르게 작동하는지 확인하려면 이메일 주소를 입력하세요.",
@@ -1194,26 +1281,6 @@
       "errorDisable": "푸시 알림을 비활성화하지 못했습니다. 다시 시도해 주세요.",
       "errorGenerateKeys": "VAPID 키 생성을 실패했습니다.",
       "close": "닫기"
-    },
-    "backend": {
-      "videoProcessingComplete": "비디오 처리 완료",
-      "videoProcessingFailed": "비디오 처리 실패",
-      "videoReprocessingComplete": "비디오 재처리 완료",
-      "videoReprocessingFailed": "비디오 재처리 실패",
-      "imageOptimizationComplete": "이미지 최적화 완료",
-      "imageOptimizationFailed": "이미지 최적화 실패",
-      "aiTitlesComplete": "AI 제목 생성 완료",
-      "aiTitlesFailed": "AI 제목 생성 실패",
-      "testNotificationTitle": "테스트 알림",
-      "testNotificationBody": "푸시 알림이 작동하고 있습니다! 처리 작업이 완료되면 알림을 받게 됩니다.",
-      "userInvitedTitle": "새 사용자 초대됨",
-      "userInvitedBody": "새 사용자가 귀하의 사이트에 초대되었습니다",
-      "userAcceptedInviteTitle": "사용자가 가입함",
-      "userAcceptedInviteBody": "사용자가 초대를 수락하고 가입했습니다",
-      "userCreatedPasskeyTitle": "패스키 생성됨",
-      "userCreatedPasskeyBody": "사용자가 새 패스키를 등록했습니다",
-      "userSetupMFATitle": "MFA 활성화됨",
-      "userSetupMFABody": "사용자가 다단계 인증을 활성화했습니다"
     },
     "blocked": "브라우저에서 알림이 차단되었습니다. 브라우저 설정을 확인하세요.",
     "subscribePrompt": "작업이 완료될 때 알림을 받으려면 구독하세요",

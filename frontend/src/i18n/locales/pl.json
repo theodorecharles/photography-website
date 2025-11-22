@@ -403,7 +403,133 @@
   "settings": {
     "saved": "Ustawienia {{section}} zapisane!",
     "failedToSave": "Nie udało się zapisać konfiguracji",
-    "errorSaving": "Błąd zapisywania konfiguracji"
+    "errorSaving": "Błąd zapisywania konfiguracji",
+    "notifications": {
+      "title": "Preferencje powiadomień",
+      "description": "Skonfiguruj, które powiadomienia push chcesz otrzymywać",
+      "saved": "Preferencje powiadomień zapisane",
+      "confirmReset": "Zresetować wszystkie preferencje powiadomień do ustawień domyślnych?",
+      "resetSuccess": "Preferencje powiadomień zresetowane do ustawień domyślnych",
+      "resetToDefaults": "Zresetuj do ustawień domyślnych",
+      "enableAll": "Włącz wszystko",
+      "disableAll": "Wyłącz wszystko",
+      "categories": {
+        "security": {
+          "title": "Bezpieczeństwo i uwierzytelnianie",
+          "description": "Powiadomienia o kontach użytkowników, logowaniach i zdarzeniach związanych z bezpieczeństwem"
+        },
+        "content": {
+          "title": "Zarządzanie treścią",
+          "description": "Powiadomienia o albumach, zdjęciach i udostępnieniach"
+        },
+        "system": {
+          "title": "System i konfiguracja",
+          "description": "Powiadomienia o zmianach ustawień i zdarzeniach systemowych"
+        }
+      },
+      "types": {
+        "userInvited": {
+          "title": "Użytkownik zaproszony",
+          "description": "Gdy administrator zaprasza nowego użytkownika"
+        },
+        "userAcceptedInvite": {
+          "title": "Użytkownik dołączył",
+          "description": "Gdy użytkownik akceptuje zaproszenie"
+        },
+        "userDeleted": {
+          "title": "Użytkownik usunięty",
+          "description": "Gdy administrator usuwa konto użytkownika"
+        },
+        "userRoleChanged": {
+          "title": "Rola użytkownika zmieniona",
+          "description": "Gdy rola użytkownika jest zmieniana"
+        },
+        "passkeyCreated": {
+          "title": "Utworzono klucz dostępu",
+          "description": "Gdy użytkownik rejestruje nowy klucz dostępu"
+        },
+        "passkeyDeleted": {
+          "title": "Usunięto klucz dostępu",
+          "description": "Gdy użytkownik usuwa klucz dostępu"
+        },
+        "mfaEnabled": {
+          "title": "MFA włączona",
+          "description": "Gdy użytkownik włącza uwierzytelnianie wieloskładnikowe"
+        },
+        "mfaDisabled": {
+          "title": "MFA wyłączona",
+          "description": "Gdy użytkownik wyłącza uwierzytelnianie wieloskładnikowe"
+        },
+        "passwordChanged": {
+          "title": "Hasło zmienione",
+          "description": "Gdy użytkownik zmienia swoje hasło"
+        },
+        "adminPasswordReset": {
+          "title": "Resetowanie hasła administratora",
+          "description": "Gdy administrator inicjuje reset hasła"
+        },
+        "failedLoginAttempts": {
+          "title": "Nieudane próby logowania",
+          "description": "Gdy wykryto wiele nieudanych prób logowania"
+        },
+        "suspiciousActivity": {
+          "title": "Podejrzana aktywność",
+          "description": "Gdy wykryto logowanie z nowego urządzenia/lokalizacji"
+        },
+        "albumCreated": {
+          "title": "Album utworzony",
+          "description": "Gdy nowy album jest tworzony"
+        },
+        "albumPublished": {
+          "title": "Album opublikowany",
+          "description": "Gdy album jest udostępniony publicznie"
+        },
+        "albumDeleted": {
+          "title": "Album usunięty",
+          "description": "Gdy album jest usunięty"
+        },
+        "largePhotoUpload": {
+          "title": "Duże przesyłanie",
+          "description": "Gdy przesyłane jest 50+ zdjęć jednocześnie"
+        },
+        "shareLinkCreated": {
+          "title": "Utworzono link do udostępnienia",
+          "description": "Gdy utworzony jest nowy link do udostępnienia"
+        },
+        "shareLinkAccessed": {
+          "title": "Link do udostępnienia otwarty",
+          "description": "Gdy ktoś przegląda udostępniony album"
+        },
+        "shareLinkExpired": {
+          "title": "Link do udostępnienia wygasł",
+          "description": "Gdy link do udostępnienia wygasa"
+        },
+        "configUpdated": {
+          "title": "Ustawienia zmienione",
+          "description": "Gdy konfiguracja systemu jest aktualizowana"
+        },
+        "smtpSettingsChanged": {
+          "title": "Ustawienia SMTP zmienione",
+          "description": "Gdy konfiguracja e-mail jest aktualizowana"
+        },
+        "openaiApiKeyUpdated": {
+          "title": "Ustawienia AI zmienione",
+          "description": "Gdy klucz API OpenAI jest aktualizowany"
+        },
+        "brandingUpdated": {
+          "title": "Aktualizacja marki",
+          "description": "Gdy branding witryny jest zmieniany"
+        },
+        "lowDiskSpace": {
+          "title": "Niski poziom miejsca na dysku",
+          "description": "Gdy przestrzeń dyskowa jest poniżej 10%"
+        },
+        "databaseBackupCompleted": {
+          "title": "Kopia zapasowa zakończona",
+          "description": "Gdy kopia zapasowa bazy danych się kończy"
+        }
+      }
+    }
   },
   "advancedSettings": {
     "title": "Zaawansowane ustawienia",
@@ -1065,45 +1191,6 @@
     "errorRequiredField": "To pole jest wymagane",
     "setupCompleteWaitingRestart": "Konfiguracja zakończona! Oczekiwanie na ponowne uruchomienie serwera..."
   },
-  "email": {
-    "invitation": {
-      "subject": "Zostałeś zaproszony do {{siteName}}",
-      "title": "Dołącz do Gallerii {{siteName}}",
-      "greeting": "Cześć,",
-      "body": "{{inviterName}} zaprosił Cię do dołączenia do <strong>Gallerii {{siteName}}</strong>.",
-      "instructions": "Aby zaakceptować to zaproszenie i założyć konto, kliknij przycisk poniżej:",
-      "button": "Akceptuj zaproszenie",
-      "orCopyLink": "Lub skopiuj i wklej ten link do swojej przeglądarki:",
-      "expiry": "To zaproszenie wygaśnie za 7 dni.",
-      "footerIgnore": "Jeśli nie spodziewałeś się tego zaproszenia, możesz bezpiecznie zignorować ten e-mail.",
-      "footerAutomatic": "To jest automatyczna wiadomość, proszę nie odpowiadać na ten e-mail."
-    },
-    "passwordReset": {
-      "subject": "Prośba o zresetowanie hasła - {{siteName}}",
-      "title": "Prośba o zresetowanie hasła",
-      "greeting": "Cześć {{userName}},",
-      "greetingFallback": "Witaj,",
-      "body": "Otrzymaliśmy prośbę o zresetowanie hasła do <strong>Galerii {{siteName}}</strong>.",
-      "instructions": "Aby zresetować hasło, kliknij przycisk poniżej:",
-      "button": "Zresetuj hasło",
-      "orCopyLink": "Lub skopiuj i wklej ten link do swojej przeglądarki:",
-      "warningTitle": "⚠️ Ważne:",
-      "warningExpiry": "Ten link wygaśnie za 1 godzinę",
-      "warningIgnore": "Jeśli nie prosiłeś o to, zignoruj ten e-mail",
-      "warningNoChange": "Twoje hasło nie zmieni się, dopóki nie utworzysz nowego",
-      "footerAutomatic": "To jest automatyczna wiadomość, proszę nie odpowiadać na ten e-mail.",
-      "footerContact": "Jeśli potrzebujesz pomocy, skontaktuj się ze swoim administratorem."
-    },
-    "test": {
-      "subject": "Testowy e-mail z {{siteName}}",
-      "title": "Test konfiguracji e-maila",
-      "success": "✓",
-      "body1": "Gratulacje! Twoja konfiguracja SMTP działa poprawnie.",
-      "body2": "Ten testowy e-mail został wysłany z <strong>{{siteName}}</strong>, aby zweryfikować, że Twoja usługa e-mail jest poprawnie skonfigurowana i może dostarczać wiadomości.",
-      "footerTimestamp": "To jest wiadomość testowa wysłana o {{timestamp}}.",
-      "footerIgnore": "Możesz bezpiecznie zignorować lub usunąć ten e-mail."
-    }
-  },
   "testEmailModal": {
     "title": "Wyślij wiadomość testową",
     "description": "Wprowadź adres e-mail, aby wysłać wiadomość testową i zweryfikować, czy Twoja konfiguracja SMTP działa poprawnie.",
@@ -1194,26 +1281,6 @@
       "errorDisable": "Nie udało się wyłączyć powiadomień push. Proszę spróbować ponownie.",
       "errorGenerateKeys": "Nie udało się wygenerować kluczy VAPID",
       "close": "Zamknij"
-    },
-    "backend": {
-      "videoProcessingComplete": "Przetwarzanie wideo zakończone",
-      "videoProcessingFailed": "Przetwarzanie wideo nie powiodło się",
-      "videoReprocessingComplete": "Przetwarzanie wideo zakończone",
-      "videoReprocessingFailed": "Przetwarzanie wideo nie powiodło się",
-      "imageOptimizationComplete": "Optymalizacja obrazu zakończona",
-      "imageOptimizationFailed": "Optymalizacja obrazu nie powiodła się",
-      "aiTitlesComplete": "Generowanie tytułów AI zakończone",
-      "aiTitlesFailed": "Generowanie tytułów AI nie powiodło się",
-      "testNotificationTitle": "Powiadomienie testowe",
-      "testNotificationBody": "Powiadomienia push działają! Otrzymasz powiadomienia, gdy Twoje zadania przetwarzania zostaną zakończone.",
-      "userInvitedTitle": "Nowy użytkownik zaproszony",
-      "userInvitedBody": "Nowy użytkownik został zaproszony na twoją stronę",
-      "userAcceptedInviteTitle": "Użytkownik dołączył",
-      "userAcceptedInviteBody": "Użytkownik zaakceptował zaproszenie i dołączył",
-      "userCreatedPasskeyTitle": "Utworzono klucz dostępu",
-      "userCreatedPasskeyBody": "Użytkownik zarejestrował nowy klucz dostępu",
-      "userSetupMFATitle": "MFA włączone",
-      "userSetupMFABody": "Użytkownik włączył uwierzytelnianie wieloskładnikowe"
     },
     "blocked": "Powiadomienia zablokowane przez przeglądarkę. Sprawdź ustawienia przeglądarki.",
     "subscribePrompt": "Zapisz się, aby otrzymywać powiadomienia, gdy zadania zostaną zakończone",

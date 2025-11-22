@@ -403,7 +403,133 @@
   "settings": {
     "saved": "{{section}} Einstellungen gespeichert!",
     "failedToSave": "Fehler beim Speichern der Konfiguration",
-    "errorSaving": "Fehler beim Speichern der Konfiguration"
+    "errorSaving": "Fehler beim Speichern der Konfiguration",
+    "notifications": {
+      "title": "Benachrichtigungseinstellungen",
+      "description": "Konfigurieren Sie, welche Push-Benachrichtigungen Sie erhalten möchten",
+      "saved": "Benachrichtigungseinstellungen gespeichert",
+      "confirmReset": "Alle Benachrichtigungseinstellungen auf die Standardwerte zurücksetzen?",
+      "resetSuccess": "Benachrichtigungseinstellungen auf die Standardwerte zurückgesetzt",
+      "resetToDefaults": "Auf Standardwerte zurücksetzen",
+      "enableAll": "Alle aktivieren",
+      "disableAll": "Alle deaktivieren",
+      "categories": {
+        "security": {
+          "title": "Sicherheit & Authentifizierung",
+          "description": "Benachrichtigungen über Benutzerkonten, Anmeldungen und Sicherheitsereignisse"
+        },
+        "content": {
+          "title": "Inhaltsverwaltung",
+          "description": "Benachrichtigungen über Alben, Fotos und Freigaben"
+        },
+        "system": {
+          "title": "System & Konfiguration",
+          "description": "Benachrichtigungen über Änderungen der Einstellungen und Systemereignisse"
+        }
+      },
+      "types": {
+        "userInvited": {
+          "title": "Benutzer eingeladen",
+          "description": "Wenn ein Administrator einen neuen Benutzer einlädt"
+        },
+        "userAcceptedInvite": {
+          "title": "Benutzer beigetreten",
+          "description": "Wenn ein Benutzer eine Einladung annimmt"
+        },
+        "userDeleted": {
+          "title": "Benutzer gelöscht",
+          "description": "Wenn ein Administrator ein Benutzerkonto löscht"
+        },
+        "userRoleChanged": {
+          "title": "Benutzerrolle geändert",
+          "description": "Wenn die Rolle eines Benutzers geändert wird"
+        },
+        "passkeyCreated": {
+          "title": "Passkey erstellt",
+          "description": "Wenn ein Benutzer einen neuen Passkey registriert"
+        },
+        "passkeyDeleted": {
+          "title": "Passkey gelöscht",
+          "description": "Wenn ein Benutzer einen Passkey entfernt"
+        },
+        "mfaEnabled": {
+          "title": "MFA aktiviert",
+          "description": "Wenn ein Benutzer die Multi-Faktor-Authentifizierung aktiviert"
+        },
+        "mfaDisabled": {
+          "title": "MFA deaktiviert",
+          "description": "Wenn ein Benutzer die Multi-Faktor-Authentifizierung deaktiviert"
+        },
+        "passwordChanged": {
+          "title": "Passwort geändert",
+          "description": "Wenn ein Benutzer sein Passwort ändert"
+        },
+        "adminPasswordReset": {
+          "title": "Admin-Passwort zurücksetzen",
+          "description": "Wenn ein Admin einen Passwortreset initiiert"
+        },
+        "failedLoginAttempts": {
+          "title": "Fehlgeschlagene Anmeldeversuche",
+          "description": "Wenn mehrere fehlgeschlagene Anmeldeversuche erkannt werden"
+        },
+        "suspiciousActivity": {
+          "title": "Verdächtige Aktivität",
+          "description": "Wenn eine Anmeldung von einem neuen Gerät/einem neuen Standort erkannt wird"
+        },
+        "albumCreated": {
+          "title": "Album erstellt",
+          "description": "Wenn ein neues Album erstellt wird"
+        },
+        "albumPublished": {
+          "title": "Album veröffentlicht",
+          "description": "Wenn ein Album öffentlich gemacht wird"
+        },
+        "albumDeleted": {
+          "title": "Album gelöscht",
+          "description": "Wenn ein Album gelöscht wird"
+        },
+        "largePhotoUpload": {
+          "title": "Großer Upload",
+          "description": "Wenn 50+ Fotos auf einmal hochgeladen werden"
+        },
+        "shareLinkCreated": {
+          "title": "Freigabelink erstellt",
+          "description": "Wenn ein neuer Freigabelink erstellt wird"
+        },
+        "shareLinkAccessed": {
+          "title": "Freigabelink aufgerufen",
+          "description": "Wenn jemand ein freigegebenes Album ansieht"
+        },
+        "shareLinkExpired": {
+          "title": "Freigabelink abgelaufen",
+          "description": "Wenn ein Freigabelink abläuft"
+        },
+        "configUpdated": {
+          "title": "Einstellungen geändert",
+          "description": "Wenn die Systemkonfiguration aktualisiert wird"
+        },
+        "smtpSettingsChanged": {
+          "title": "SMTP-Einstellungen geändert",
+          "description": "Wenn die E-Mail-Konfiguration aktualisiert wird"
+        },
+        "openaiApiKeyUpdated": {
+          "title": "AI-Einstellungen geändert",
+          "description": "Wenn der OpenAI API-Schlüssel aktualisiert wird"
+        },
+        "brandingUpdated": {
+          "title": "Branding aktualisiert",
+          "description": "Wenn das Branding der Seite geändert wird"
+        },
+        "lowDiskSpace": {
+          "title": "Wenig Speicherplatz",
+          "description": "Wenn der Speicher unter 10% liegt"
+        },
+        "databaseBackupCompleted": {
+          "title": "Backup abgeschlossen",
+          "description": "Wenn das Datenbank-Backup abgeschlossen ist"
+        }
+      }
+    }
   },
   "advancedSettings": {
     "title": "Erweiterte Einstellungen",
@@ -1065,45 +1191,6 @@
     "errorRequiredField": "Dieses Feld ist erforderlich",
     "setupCompleteWaitingRestart": "Einrichtung abgeschlossen! Warte auf den Neustart des Servers..."
   },
-  "email": {
-    "invitation": {
-      "subject": "Sie wurden eingeladen, {{siteName}} beizutreten",
-      "title": "Treten Sie der Galleria von {{siteName}} bei",
-      "greeting": "Hallo,",
-      "body": "{{inviterName}} hat Sie eingeladen, der <strong>Galleria von {{siteName}}</strong> beizutreten.",
-      "instructions": "Um diese Einladung anzunehmen und Ihr Konto einzurichten, klicken Sie auf die Schaltfläche unten:",
-      "button": "Einladung annehmen",
-      "orCopyLink": "Oder kopieren Sie diesen Link und fügen Sie ihn in Ihren Browser ein:",
-      "expiry": "Diese Einladung läuft in 7 Tagen ab.",
-      "footerIgnore": "Wenn Sie diese Einladung nicht erwartet haben, können Sie diese E-Mail sicher ignorieren.",
-      "footerAutomatic": "Dies ist eine automatisierte Nachricht, bitte antworten Sie nicht auf diese E-Mail."
-    },
-    "passwordReset": {
-      "subject": "Passwortzurücksetzungsanfrage - {{siteName}}",
-      "title": "Passwortzurücksetzungsanfrage",
-      "greeting": "Hallo {{userName}},",
-      "greetingFallback": "Hallo,",
-      "body": "Wir haben eine Anfrage zum Zurücksetzen Ihres Passworts für <strong>{{siteName}}'s Galleria</strong> erhalten.",
-      "instructions": "Um Ihr Passwort zurückzusetzen, klicken Sie auf die Schaltfläche unten:",
-      "button": "Passwort zurücksetzen",
-      "orCopyLink": "Oder kopieren Sie diesen Link und fügen Sie ihn in Ihren Browser ein:",
-      "warningTitle": "⚠️ Wichtig:",
-      "warningExpiry": "Dieser Link läuft in 1 Stunde ab",
-      "warningIgnore": "Wenn Sie dies nicht angefordert haben, ignorieren Sie bitte diese E-Mail",
-      "warningNoChange": "Ihr Passwort wird nicht geändert, bis Sie ein neues erstellen",
-      "footerAutomatic": "Dies ist eine automatische Nachricht, bitte antworten Sie nicht auf diese E-Mail.",
-      "footerContact": "Wenn Sie Hilfe benötigen, wenden Sie sich bitte an Ihren Administrator."
-    },
-    "test": {
-      "subject": "Test-E-Mail von {{siteName}}",
-      "title": "E-Mail-Konfigurationstest",
-      "success": "✓",
-      "body1": "Herzlichen Glückwunsch! Ihre SMTP-Konfiguration funktioniert korrekt.",
-      "body2": "Diese Test-E-Mail wurde von <strong>{{siteName}}</strong> gesendet, um zu überprüfen, ob Ihr E-Mail-Dienst ordnungsgemäß konfiguriert ist und Nachrichten zustellen kann.",
-      "footerTimestamp": "Dies ist eine Testnachricht, die am {{timestamp}} gesendet wurde.",
-      "footerIgnore": "Sie können diese E-Mail sicher ignorieren oder löschen."
-    }
-  },
   "testEmailModal": {
     "title": "Test-E-Mail senden",
     "description": "Geben Sie eine E-Mail-Adresse ein, um eine Testnachricht zu senden und zu überprüfen, ob Ihre SMTP-Konfiguration korrekt funktioniert.",
@@ -1194,26 +1281,6 @@
       "errorDisable": "Fehler beim Deaktivieren von Push-Benachrichtigungen. Bitte versuche es erneut.",
       "errorGenerateKeys": "Fehler beim Generieren von VAPID-Schlüsseln",
       "close": "Schließen"
-    },
-    "backend": {
-      "videoProcessingComplete": "Videoverarbeitung abgeschlossen",
-      "videoProcessingFailed": "Videoverarbeitung fehlgeschlagen",
-      "videoReprocessingComplete": "Videoerneuerung abgeschlossen",
-      "videoReprocessingFailed": "Videoerneuerung fehlgeschlagen",
-      "imageOptimizationComplete": "Bildoptimierung abgeschlossen",
-      "imageOptimizationFailed": "Bildoptimierung fehlgeschlagen",
-      "aiTitlesComplete": "KI-Titelgenerierung abgeschlossen",
-      "aiTitlesFailed": "KI-Titelgenerierung fehlgeschlagen",
-      "testNotificationTitle": "Testbenachrichtigung",
-      "testNotificationBody": "Push-Benachrichtigungen funktionieren! Sie erhalten Benachrichtigungen, wenn Ihre Verarbeitungsjobs abgeschlossen sind.",
-      "userInvitedTitle": "Neuer Benutzer Eingeladen",
-      "userInvitedBody": "Ein neuer Benutzer wurde zu Ihrer Seite eingeladen",
-      "userAcceptedInviteTitle": "Benutzer Beigetreten",
-      "userAcceptedInviteBody": "Ein Benutzer hat seine Einladung angenommen und ist beigetreten",
-      "userCreatedPasskeyTitle": "Passkey Erstellt",
-      "userCreatedPasskeyBody": "Ein Benutzer hat einen neuen Passkey registriert",
-      "userSetupMFATitle": "MFA Aktiviert",
-      "userSetupMFABody": "Ein Benutzer hat die mehrfaktorielle Authentifizierung aktiviert"
     },
     "blocked": "Benachrichtigungen durch den Browser blockiert. Überprüfen Sie Ihre Browsereinstellungen.",
     "subscribePrompt": "Abonnieren, um Benachrichtigungen zu erhalten, wenn Jobs abgeschlossen sind",

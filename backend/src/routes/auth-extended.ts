@@ -54,7 +54,7 @@ const router = Router();
 /**
  * Helper to send push notification to all admin users
  */
-async function notifyAllAdmins(title: string, body: string, tag: string): Promise<void> {
+async function notifyAllAdmins(title: string, body: string, tag: string, notificationType?: any): Promise<void> {
   try {
     const admins = getAllUsers().filter(u => u.role === 'admin');
     
@@ -69,7 +69,7 @@ async function notifyAllAdmins(title: string, body: string, tag: string): Promis
         badge: '/icon-192.png',
         tag,
         requireInteraction: false
-      });
+      }, notificationType);
     }
   } catch (err) {
     error('[AuthExtended] Failed to send admin notification:', err);
@@ -302,7 +302,8 @@ router.post('/invite', requireAdmin, async (req: Request, res: Response) => {
     await notifyAllAdmins(
       'notifications.backend.userInvitedTitle',
       'notifications.backend.userInvitedBody',
-      'user-invited'
+      'user-invited',
+      'userInvited'
     ).catch(err => error('[AuthExtended] Failed to send invitation notification:', err));
 
     res.json({
@@ -487,7 +488,8 @@ router.post('/invite/:token/complete', async (req: Request, res: Response) => {
     await notifyAllAdmins(
       'notifications.backend.userAcceptedInviteTitle',
       'notifications.backend.userAcceptedInviteBody',
-      'user-accepted-invite'
+      'user-accepted-invite',
+      'userAcceptedInvite'
     ).catch(err => error('[AuthExtended] Failed to send invite acceptance notification:', err));
 
     res.json({
@@ -630,6 +632,14 @@ router.post('/password-reset/:token/complete', async (req: Request, res: Respons
     // Clear reset token
     clearPasswordResetToken(user.id);
 
+    // Send push notification to all admins
+    await notifyAllAdmins(
+      'notifications.backend.passwordChangedTitle',
+      'notifications.backend.passwordChangedBody',
+      'password-changed',
+      'passwordChanged'
+    ).catch(err => error('[AuthExtended] Failed to send password change notification:', err));
+
     res.json({ success: true });
   } catch (err) {
     error('[AuthExtended] Complete password reset error:', err);
@@ -657,6 +667,14 @@ router.post('/users/:userId/reset-mfa', requireAdmin, async (req: Request, res: 
     disableMFA(userId);
 
     info(`[Admin] MFA disabled for user ${user.email} (ID: ${userId})`);
+
+    // Send push notification to all admins
+    await notifyAllAdmins(
+      'notifications.backend.mfaDisabledTitle',
+      'notifications.backend.mfaDisabledBody',
+      'mfa-disabled',
+      'mfaDisabled'
+    ).catch(err => error('[AuthExtended] Failed to send MFA disable notification:', err));
 
     res.json({
       success: true,
@@ -711,6 +729,14 @@ router.post('/users/:userId/send-password-reset', requireAdmin, async (req: Requ
 
     info(`[Admin] Password reset email sent to ${user.email} (ID: ${userId})`);
 
+    // Send push notification to all admins
+    await notifyAllAdmins(
+      'notifications.backend.adminPasswordResetTitle',
+      'notifications.backend.adminPasswordResetBody',
+      'admin-password-reset',
+      'adminPasswordReset'
+    ).catch(err => error('[AuthExtended] Failed to send admin password reset notification:', err));
+
     res.json({
       success: true,
       emailSent,
@@ -754,6 +780,16 @@ router.post('/change-password', requireAuth, async (req: Request, res: Response)
 
     // Update password
     updatePassword(userId, newPassword);
+
+    // Send push notification to all admins
+    if (user) {
+      await notifyAllAdmins(
+        'notifications.backend.passwordChangedTitle',
+        'notifications.backend.passwordChangedBody',
+        'password-changed',
+        'passwordChanged'
+      ).catch(err => error('[AuthExtended] Failed to send password change notification:', err));
+    }
 
     res.json({ success: true });
   } catch (err) {
@@ -848,7 +884,8 @@ router.post('/mfa/verify-setup', requireAuth, async (req: Request, res: Response
       await notifyAllAdmins(
         'notifications.backend.userSetupMFATitle',
         'notifications.backend.userSetupMFABody',
-        'user-setup-mfa'
+        'user-setup-mfa',
+        'mfaEnabled'
       ).catch(err => error('[AuthExtended] Failed to send MFA setup notification:', err));
     }
 
@@ -881,6 +918,16 @@ router.post('/mfa/disable', requireAuth, async (req: Request, res: Response) => 
     }
 
     disableMFA(userId);
+
+    // Send push notification to all admins
+    if (user) {
+      await notifyAllAdmins(
+        'notifications.backend.mfaDisabledTitle',
+        'notifications.backend.mfaDisabledBody',
+        'mfa-disabled',
+        'mfaDisabled'
+      ).catch(err => error('[AuthExtended] Failed to send MFA disable notification:', err));
+    }
 
     res.json({ success: true });
   } catch (err) {
@@ -1027,7 +1074,8 @@ router.post('/passkey/register-verify', requireAuth, async (req: Request, res: R
       await notifyAllAdmins(
         'notifications.backend.userCreatedPasskeyTitle',
         'notifications.backend.userCreatedPasskeyBody',
-        'user-created-passkey'
+        'user-created-passkey',
+        'passkeyCreated'
       ).catch(err => error('[AuthExtended] Failed to send passkey creation notification:', err));
     }
 
@@ -1204,7 +1252,7 @@ router.get('/passkey/list', requireAuth, (req: Request, res: Response) => {
 /**
  * Remove a passkey
  */
-router.delete('/passkey/:id', requireAuth, (req: Request, res: Response) => {
+router.delete('/passkey/:id', requireAuth, async (req: Request, res: Response) => {
   try {
     const userId = getUserIdFromRequest(req);
     if (!userId) {
@@ -1216,6 +1264,19 @@ router.delete('/passkey/:id', requireAuth, (req: Request, res: Response) => {
 
     if (!success) {
       return res.status(404).json({ error: 'Passkey not found' });
+    }
+
+    // Get user info for notification
+    const user = getUserById(userId);
+
+    // Send push notification to all admins
+    if (user) {
+      await notifyAllAdmins(
+        'notifications.backend.passkeyDeletedTitle',
+        'notifications.backend.passkeyDeletedBody',
+        'passkey-deleted',
+        'passkeyDeleted'
+      ).catch(err => error('[AuthExtended] Failed to send passkey deletion notification:', err));
     }
 
     res.json({ success: true });
@@ -1281,7 +1342,7 @@ router.get('/users', requireAuth, (req: Request, res: Response) => {
 /**
  * Delete user (admin only - can't delete yourself)
  */
-router.delete('/users/:userId', requireAdmin, (req: Request, res: Response) => {
+router.delete('/users/:userId', requireAdmin, async (req: Request, res: Response) => {
   try {
     const userId = parseInt(req.params.userId);
     const currentUserId = getUserIdFromRequest(req);
@@ -1307,6 +1368,14 @@ router.delete('/users/:userId', requireAdmin, (req: Request, res: Response) => {
     if (!success) {
       return res.status(500).json({ error: 'Failed to delete user' });
     }
+
+    // Send push notification to all admins
+    await notifyAllAdmins(
+      'notifications.backend.userDeletedTitle',
+      'notifications.backend.userDeletedBody',
+      'user-deleted',
+      'userDeleted'
+    ).catch(err => error('[AuthExtended] Failed to send user deletion notification:', err));
     
     // Invalidate all sessions for this user
     const sessionStore = req.sessionStore;
@@ -1350,7 +1419,7 @@ router.delete('/users/:userId', requireAdmin, (req: Request, res: Response) => {
 /**
  * Update user role (Admin only)
  */
-router.patch('/users/:userId/role', requireAdmin, (req: Request, res: Response) => {
+router.patch('/users/:userId/role', requireAdmin, async (req: Request, res: Response) => {
   try {
     const userId = parseInt(req.params.userId);
     const { role } = req.body;
@@ -1381,6 +1450,14 @@ router.patch('/users/:userId/role', requireAdmin, (req: Request, res: Response) 
     updateUser(userId, { role });
     
     info(`[User Management] User ${targetUser.email} (ID: ${userId}) role changed to ${role} by user ID: ${currentUserId}`);
+
+    // Send push notification to all admins
+    await notifyAllAdmins(
+      'notifications.backend.userRoleChangedTitle',
+      'notifications.backend.userRoleChangedBody',
+      'user-role-changed',
+      'userRoleChanged'
+    ).catch(err => error('[AuthExtended] Failed to send role change notification:', err));
     
     res.json({
       success: true,

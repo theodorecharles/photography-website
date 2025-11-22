@@ -13,6 +13,8 @@ import RegenerationControls from "../components/RegenerationControls";
 import AuthSettings from "../components/AuthSettings";
 import SMTPSettings from "../components/SMTPSettings";
 import PushNotificationsSettings from "../components/PushNotificationsSettings";
+import NotificationPreferencesSection from "./NotificationPreferencesSection";
+import "../sections/NotificationPreferencesSection.css";
 import AnalyticsSettings from "../components/AnalyticsSettings";
 import CustomDropdown from "../components/CustomDropdown";
 import {
@@ -401,6 +403,9 @@ const AdvancedSettingsSection: React.FC<AdvancedSettingsSectionProps> = ({
           onSave={handleSaveSection}
           setMessage={setMessage}
         />
+
+        {/* Notification Preferences */}
+        <NotificationPreferencesSection />
 
         {/* Analytics Settings */}
         <AnalyticsSettings

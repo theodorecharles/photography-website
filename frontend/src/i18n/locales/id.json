@@ -403,7 +403,133 @@
   "settings": {
     "saved": "Pengaturan {{section}} disimpan!",
     "failedToSave": "Gagal menyimpan konfigurasi",
-    "errorSaving": "Kesalahan saat menyimpan konfigurasi"
+    "errorSaving": "Kesalahan saat menyimpan konfigurasi",
+    "notifications": {
+      "title": "Preferensi Notifikasi",
+      "description": "Atur notifikasi dorong mana yang ingin Anda terima",
+      "saved": "Preferensi notifikasi disimpan",
+      "confirmReset": "Reset semua preferensi notifikasi ke default?",
+      "resetSuccess": "Preferensi notifikasi direset ke default",
+      "resetToDefaults": "Reset ke Default",
+      "enableAll": "Aktifkan Semua",
+      "disableAll": "Nonaktifkan Semua",
+      "categories": {
+        "security": {
+          "title": "Keamanan & Autentikasi",
+          "description": "Notifikasi tentang akun pengguna, login, dan peristiwa keamanan"
+        },
+        "content": {
+          "title": "Manajemen Konten",
+          "description": "Notifikasi tentang album, foto, dan berbagi"
+        },
+        "system": {
+          "title": "Sistem & Konfigurasi",
+          "description": "Notifikasi tentang perubahan pengaturan dan peristiwa sistem"
+        }
+      },
+      "types": {
+        "userInvited": {
+          "title": "Pengguna Diundang",
+          "description": "Ketika seorang admin mengundang pengguna baru"
+        },
+        "userAcceptedInvite": {
+          "title": "Pengguna Bergabung",
+          "description": "Ketika seorang pengguna menerima undangan"
+        },
+        "userDeleted": {
+          "title": "Pengguna Dihapus",
+          "description": "Ketika seorang admin menghapus akun pengguna"
+        },
+        "userRoleChanged": {
+          "title": "Peran Pengguna Berubah",
+          "description": "Ketika peran pengguna diubah"
+        },
+        "passkeyCreated": {
+          "title": "Passkey Dibuat",
+          "description": "Ketika pengguna mendaftar passkey baru"
+        },
+        "passkeyDeleted": {
+          "title": "Passkey Dihapus",
+          "description": "Ketika pengguna menghapus passkey"
+        },
+        "mfaEnabled": {
+          "title": "MFA Diaktifkan",
+          "description": "Ketika pengguna mengaktifkan otentikasi multi-faktor"
+        },
+        "mfaDisabled": {
+          "title": "MFA Dinonaktifkan",
+          "description": "Ketika pengguna menonaktifkan otentikasi multi-faktor"
+        },
+        "passwordChanged": {
+          "title": "Kata Sandi Berhasil Diubah",
+          "description": "Ketika pengguna mengubah kata sandi mereka"
+        },
+        "adminPasswordReset": {
+          "title": "Reset Kata Sandi Admin",
+          "description": "Ketika admin memulai reset kata sandi"
+        },
+        "failedLoginAttempts": {
+          "title": "Upaya Masuk Gagal",
+          "description": "Ketika beberapa upaya masuk gagal terdeteksi"
+        },
+        "suspiciousActivity": {
+          "title": "Aktivitas Mencurigakan",
+          "description": "Ketika masuk dari perangkat/lokasi baru terdeteksi"
+        },
+        "albumCreated": {
+          "title": "Album Dibuat",
+          "description": "Ketika album baru dibuat"
+        },
+        "albumPublished": {
+          "title": "Album Dipublikasikan",
+          "description": "Ketika album dibuat publik"
+        },
+        "albumDeleted": {
+          "title": "Album Dihapus",
+          "description": "Ketika album dihapus"
+        },
+        "largePhotoUpload": {
+          "title": "Unggahan Besar",
+          "description": "Ketika 50+ foto diunggah sekaligus"
+        },
+        "shareLinkCreated": {
+          "title": "Tautan Berbagi Dibuat",
+          "description": "Ketika tautan berbagi baru dibuat"
+        },
+        "shareLinkAccessed": {
+          "title": "Tautan Berbagi Diakses",
+          "description": "Ketika seseorang melihat album yang dibagikan"
+        },
+        "shareLinkExpired": {
+          "title": "Tautan Berbagi Kadaluarsa",
+          "description": "Ketika tautan berbagi kadaluarsa"
+        },
+        "configUpdated": {
+          "title": "Pengaturan Diubah",
+          "description": "Ketika konfigurasi sistem diperbarui"
+        },
+        "smtpSettingsChanged": {
+          "title": "Pengaturan SMTP Diubah",
+          "description": "Ketika konfigurasi email diperbarui"
+        },
+        "openaiApiKeyUpdated": {
+          "title": "Pengaturan AI Diubah",
+          "description": "Ketika kunci API OpenAI diperbarui"
+        },
+        "brandingUpdated": {
+          "title": "Pembaruan Branding",
+          "description": "Ketika branding situs diubah"
+        },
+        "lowDiskSpace": {
+          "title": "Ruang Disk Rendah",
+          "description": "Ketika penyimpanan di bawah 10%"
+        },
+        "databaseBackupCompleted": {
+          "title": "Cadangan Selesai",
+          "description": "Ketika cadangan basis data selesai"
+        }
+      }
+    }
   },
   "advancedSettings": {
     "title": "Pengaturan Lanjutan",
@@ -1065,45 +1191,6 @@
     "errorRequiredField": "Kolom ini wajib diisi",
     "setupCompleteWaitingRestart": "Pengaturan selesai! Menunggu server untuk restart..."
   },
-  "email": {
-    "invitation": {
-      "subject": "Anda telah diundang ke {{siteName}}",
-      "title": "Bergabunglah dengan Galleria {{siteName}}",
-      "greeting": "Halo,",
-      "body": "{{inviterName}} telah mengundang Anda untuk bergabung dengan <strong>Galleria {{siteName}}</strong>.",
-      "instructions": "Untuk menerima undangan ini dan mengatur akun Anda, klik tombol di bawah ini:",
-      "button": "Terima Undangan",
-      "orCopyLink": "Atau salin dan tempel tautan ini ke browser Anda:",
-      "expiry": "Undangan ini akan kedaluwarsa dalam 7 hari.",
-      "footerIgnore": "Jika Anda tidak mengharapkan undangan ini, Anda dapat dengan aman mengabaikan email ini.",
-      "footerAutomatic": "Ini adalah pesan otomatis, mohon jangan balas email ini."
-    },
-    "passwordReset": {
-      "subject": "Permintaan Reset Kata Sandi - {{siteName}}",
-      "title": "Permintaan Reset Kata Sandi",
-      "greeting": "Hai {{userName}},",
-      "greetingFallback": "Halo,",
-      "body": "Kami menerima permintaan untuk mereset kata sandi Anda untuk <strong>Galleria {{siteName}}</strong>.",
-      "instructions": "Untuk mereset kata sandi Anda, klik tombol di bawah ini:",
-      "button": "Reset Kata Sandi",
-      "orCopyLink": "Atau salin dan tempel tautan ini ke browser Anda:",
-      "warningTitle": "⚠️ Penting:",
-      "warningExpiry": "Tautan ini akan kedaluwarsa dalam 1 jam",
-      "warningIgnore": "Jika Anda tidak meminta ini, silakan abaikan email ini",
-      "warningNoChange": "Kata sandi Anda tidak akan berubah sampai Anda membuat yang baru",
-      "footerAutomatic": "Ini adalah pesan otomatis, silakan jangan balas email ini.",
-      "footerContact": "Jika Anda memerlukan bantuan, silakan hubungi administrator Anda."
-    },
-    "test": {
-      "subject": "Email Uji dari {{siteName}}",
-      "title": "Uji Konfigurasi Email",
-      "success": "✓",
-      "body1": "Selamat! Konfigurasi SMTP Anda berfungsi dengan baik.",
-      "body2": "Email uji ini dikirim dari <strong>{{siteName}}</strong> untuk memverifikasi bahwa layanan email Anda telah dikonfigurasi dengan benar dan dapat mengirimkan pesan.",
-      "footerTimestamp": "Ini adalah pesan uji yang dikirim pada {{timestamp}}.",
-      "footerIgnore": "Anda dapat dengan aman mengabaikan atau menghapus email ini."
-    }
-  },
   "testEmailModal": {
     "title": "Kirim Email Uji",
     "description": "Masukkan alamat email untuk mengirim pesan uji dan verifikasi konfigurasi SMTP Anda berfungsi dengan baik.",
@@ -1194,26 +1281,6 @@
       "errorDisable": "Gagal menonaktifkan notifikasi push. Silakan coba lagi.",
       "errorGenerateKeys": "Gagal menghasilkan kunci VAPID",
       "close": "Tutup"
-    },
-    "backend": {
-      "videoProcessingComplete": "Pemrosesan Video Selesai",
-      "videoProcessingFailed": "Pemrosesan Video Gagal",
-      "videoReprocessingComplete": "Pemrosesan Ulang Video Selesai",
-      "videoReprocessingFailed": "Pemrosesan Video Gagal",
-      "imageOptimizationComplete": "Optimasi Gambar Selesai",
-      "imageOptimizationFailed": "Optimasi Gambar Gagal",
-      "aiTitlesComplete": "Pembuatan Judul AI Selesai",
-      "aiTitlesFailed": "Pembuatan Judul AI Gagal",
-      "testNotificationTitle": "Notifikasi Uji",
-      "testNotificationBody": "Notifikasi dorong berfungsi! Anda akan menerima pemberitahuan saat pekerjaan pemrosesan Anda selesai.",
-      "userInvitedTitle": "Pengguna Baru Diundang",
-      "userInvitedBody": "Seorang pengguna baru telah diundang ke situs Anda",
-      "userAcceptedInviteTitle": "Pengguna Bergabung",
-      "userAcceptedInviteBody": "Seorang pengguna telah menerima undangan mereka dan bergabung",
-      "userCreatedPasskeyTitle": "Kunci Akses Dibuat",
-      "userCreatedPasskeyBody": "Seorang pengguna telah mendaftarkan kunci akses baru",
-      "userSetupMFATitle": "MFA Diaktifkan",
-      "userSetupMFABody": "Seorang pengguna telah mengaktifkan otentikasi multi-faktor"
     },
     "blocked": "Notifikasi diblokir oleh browser. Periksa pengaturan browser Anda.",
     "subscribePrompt": "Berlangganan untuk menerima notifikasi saat pekerjaan selesai",

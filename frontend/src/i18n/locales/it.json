@@ -403,7 +403,133 @@
   "settings": {
     "saved": "Impostazioni di {{section}} salvate!",
     "failedToSave": "Impossibile salvare la configurazione",
-    "errorSaving": "Errore nel salvataggio della configurazione"
+    "errorSaving": "Errore nel salvataggio della configurazione",
+    "notifications": {
+      "title": "Preferenze di Notifica",
+      "description": "Configura quali notifiche push desideri ricevere",
+      "saved": "Preferenze di notifica salvate",
+      "confirmReset": "Ripristinare tutte le preferenze di notifica ai valori predefiniti?",
+      "resetSuccess": "Preferenze di notifica ripristinate ai valori predefiniti",
+      "resetToDefaults": "Ripristina ai valori predefiniti",
+      "enableAll": "Abilita Tutto",
+      "disableAll": "Disabilita Tutto",
+      "categories": {
+        "security": {
+          "title": "Sicurezza e Autenticazione",
+          "description": "Notifiche sugli account utente, accessi ed eventi di sicurezza"
+        },
+        "content": {
+          "title": "Gestione dei contenuti",
+          "description": "Notifiche su album, foto e condivisioni"
+        },
+        "system": {
+          "title": "Sistema e configurazione",
+          "description": "Notifiche su modifiche delle impostazioni ed eventi di sistema"
+        }
+      },
+      "types": {
+        "userInvited": {
+          "title": "Utente invitato",
+          "description": "Quando un admin invita un nuovo utente"
+        },
+        "userAcceptedInvite": {
+          "title": "Utente unito",
+          "description": "Quando un utente accetta un invito"
+        },
+        "userDeleted": {
+          "title": "Utente eliminato",
+          "description": "Quando un admin elimina un'account utente"
+        },
+        "userRoleChanged": {
+          "title": "Ruolo Utente Modificato",
+          "description": "Quando il ruolo di un utente viene modificato"
+        },
+        "passkeyCreated": {
+          "title": "Passkey Creata",
+          "description": "Quando un utente registra una nuova passkey"
+        },
+        "passkeyDeleted": {
+          "title": "Passkey Eliminata",
+          "description": "Quando un utente rimuove una passkey"
+        },
+        "mfaEnabled": {
+          "title": "MFA Abilitata",
+          "description": "Quando un utente abilita l'autenticazione a più fattori"
+        },
+        "mfaDisabled": {
+          "title": "MFA Disabilitata",
+          "description": "Quando un utente disabilita l'autenticazione a più fattori"
+        },
+        "passwordChanged": {
+          "title": "Password Cambiata",
+          "description": "Quando un utente cambia la propria password"
+        },
+        "adminPasswordReset": {
+          "title": "Ripristino Password Amministratore",
+          "description": "Quando un amministratore avvia un ripristino della password"
+        },
+        "failedLoginAttempts": {
+          "title": "Tentativi di Accesso Falliti",
+          "description": "Quando vengono rilevati più tentativi di accesso falliti"
+        },
+        "suspiciousActivity": {
+          "title": "Attività Sospetta",
+          "description": "Quando viene rilevato un accesso da un nuovo dispositivo/posizione"
+        },
+        "albumCreated": {
+          "title": "Album Creato",
+          "description": "Quando viene creato un nuovo album"
+        },
+        "albumPublished": {
+          "title": "Album Pubblicato",
+          "description": "Quando un album è reso pubblico"
+        },
+        "albumDeleted": {
+          "title": "Album Eliminato",
+          "description": "Quando un album viene eliminato"
+        },
+        "largePhotoUpload": {
+          "title": "Caricamento Grande",
+          "description": "Quando vengono caricate più di 50 foto contemporaneamente"
+        },
+        "shareLinkCreated": {
+          "title": "Link di Condivisione Creato",
+          "description": "Quando viene creato un nuovo link di condivisione"
+        },
+        "shareLinkAccessed": {
+          "title": "Link di Condivisione Accessato",
+          "description": "Quando qualcuno visualizza un album condiviso"
+        },
+        "shareLinkExpired": {
+          "title": "Link di condivisione scaduto",
+          "description": "Quando un link di condivisione scade"
+        },
+        "configUpdated": {
+          "title": "Impostazioni modificate",
+          "description": "Quando la configurazione del sistema viene aggiornata"
+        },
+        "smtpSettingsChanged": {
+          "title": "Impostazioni SMTP modificate",
+          "description": "Quando la configurazione dell'email viene aggiornata"
+        },
+        "openaiApiKeyUpdated": {
+          "title": "Impostazioni AI modificate",
+          "description": "Quando la chiave API di OpenAI viene aggiornata"
+        },
+        "brandingUpdated": {
+          "title": "Branding aggiornato",
+          "description": "Quando il branding del sito viene modificato"
+        },
+        "lowDiskSpace": {
+          "title": "Spazio su disco insufficiente",
+          "description": "Quando lo spazio di archiviazione è inferiore al 10%"
+        },
+        "databaseBackupCompleted": {
+          "title": "Backup completato",
+          "description": "Quando il backup del database è terminato"
+        }
+      }
+    }
   },
   "advancedSettings": {
     "title": "Impostazioni Avanzate",
@@ -1065,45 +1191,6 @@
     "errorRequiredField": "Questo campo è obbligatorio",
     "setupCompleteWaitingRestart": "Impostazione completata! In attesa del riavvio del server..."
   },
-  "email": {
-    "invitation": {
-      "subject": "Sei stato invitato a {{siteName}}",
-      "title": "Unisciti alla Galleria di {{siteName}}",
-      "greeting": "Ciao,",
-      "body": "{{inviterName}} ti ha invitato a unirti alla <strong>Galleria di {{siteName}}</strong>.",
-      "instructions": "Per accettare questo invito e impostare il tuo account, fai clic sul pulsante qui sotto:",
-      "button": "Accetta l'invito",
-      "orCopyLink": "Oppure copia e incolla questo link nel tuo browser:",
-      "expiry": "Questo invito scadrà tra 7 giorni.",
-      "footerIgnore": "Se non ti aspettavi questo invito, puoi ignorare tranquillamente questa email.",
-      "footerAutomatic": "Questo è un messaggio automatico, ti preghiamo di non rispondere a questa email."
-    },
-    "passwordReset": {
-      "subject": "Richiesta di reimpostazione della password - {{siteName}}",
-      "title": "Richiesta di reimpostazione della password",
-      "greeting": "Ciao {{userName}},",
-      "greetingFallback": "Ciao,",
-      "body": "Abbiamo ricevuto una richiesta per reimpostare la tua password per <strong>la Galleria di {{siteName}}</strong>.",
-      "instructions": "Per reimpostare la tua password, clicca sul pulsante qui sotto:",
-      "button": "Reimposta password",
-      "orCopyLink": "Oppure copia e incolla questo link nel tuo browser:",
-      "warningTitle": "⚠️ Importante:",
-      "warningExpiry": "Questo link scadrà in 1 ora",
-      "warningIgnore": "Se non hai richiesto questo, ti preghiamo di ignorare questa email",
-      "warningNoChange": "La tua password non cambierà finché non ne creerai una nuova",
-      "footerAutomatic": "Questo è un messaggio automatico, ti preghiamo di non rispondere a questa email.",
-      "footerContact": "Se hai bisogno di assistenza, ti preghiamo di contattare il tuo amministratore."
-    },
-    "test": {
-      "subject": "Email di prova da {{siteName}}",
-      "title": "Test di configurazione email",
-      "success": "✓",
-      "body1": "Congratulazioni! La tua configurazione SMTP sta funzionando correttamente.",
-      "body2": "Questa email di prova è stata inviata da <strong>{{siteName}}</strong> per verificare che il tuo servizio email sia configurato correttamente e possa inviare messaggi.",
-      "footerTimestamp": "Questo è un messaggio di prova inviato il {{timestamp}}.",
-      "footerIgnore": "Puoi ignorare o eliminare questa email in tutta sicurezza."
-    }
-  },
   "testEmailModal": {
     "title": "Invia Email di Prova",
     "description": "Inserisci un indirizzo email per inviare un messaggio di prova e verificare che la tua configurazione SMTP funzioni correttamente.",
@@ -1194,26 +1281,6 @@
       "errorDisable": "Impossibile disabilitare le notifiche push. Riprova.",
       "errorGenerateKeys": "Impossibile generare le chiavi VAPID",
       "close": "Chiudi"
-    },
-    "backend": {
-      "videoProcessingComplete": "Elaborazione video completata",
-      "videoProcessingFailed": "Elaborazione video non riuscita",
-      "videoReprocessingComplete": "Rielaborazione video completata",
-      "videoReprocessingFailed": "Rielaborazione video non riuscita",
-      "imageOptimizationComplete": "Ottimizzazione immagine completata",
-      "imageOptimizationFailed": "Ottimizzazione immagine non riuscita",
-      "aiTitlesComplete": "Generazione titolo AI completata",
-      "aiTitlesFailed": "Generazione titolo AI non riuscita",
-      "testNotificationTitle": "Notifica di Test",
-      "testNotificationBody": "Le notifiche push funzionano! Riceverai avvisi quando i tuoi lavori di elaborazione sono completati.",
-      "userInvitedTitle": "Nuovo Utente Invitato",
-      "userInvitedBody": "Un nuovo utente è stato invitato al tuo sito",
-      "userAcceptedInviteTitle": "Utente Unito",
-      "userAcceptedInviteBody": "Un utente ha accettato il proprio invito e si è unito",
-      "userCreatedPasskeyTitle": "Passkey Creata",
-      "userCreatedPasskeyBody": "Un utente ha registrato una nuova passkey",
-      "userSetupMFATitle": "MFA Abilitato",
-      "userSetupMFABody": "Un utente ha abilitato l'autenticazione a più fattori"
     },
     "blocked": "Notifiche bloccate dal browser. Controlla le impostazioni del tuo browser.",
     "subscribePrompt": "Iscriviti per ricevere notifiche quando i lavori sono completati",

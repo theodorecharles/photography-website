@@ -403,7 +403,133 @@
   "settings": {
     "saved": "¡Configuración de {{section}} guardada!",
     "failedToSave": "Error al guardar la configuración",
-    "errorSaving": "Error al guardar la configuración"
+    "errorSaving": "Error al guardar la configuración",
+    "notifications": {
+      "title": "Preferencias de Notificación",
+      "description": "Configura qué notificaciones push deseas recibir",
+      "saved": "Preferencias de notificación guardadas",
+      "confirmReset": "¿Restablecer todas las preferencias de notificación a los valores predeterminados?",
+      "resetSuccess": "Preferencias de notificación restablecidas a los valores predeterminados",
+      "resetToDefaults": "Restablecer a los Valores Predeterminados",
+      "enableAll": "Habilitar Todo",
+      "disableAll": "Deshabilitar Todo",
+      "categories": {
+        "security": {
+          "title": "Seguridad y Autenticación",
+          "description": "Notificaciones sobre cuentas de usuario, inicios de sesión y eventos de seguridad"
+        },
+        "content": {
+          "title": "Gestión de Contenidos",
+          "description": "Notificaciones sobre álbumes, fotos y comparticiones"
+        },
+        "system": {
+          "title": "Sistema y Configuración",
+          "description": "Notificaciones sobre cambios de configuración y eventos del sistema"
+        }
+      },
+      "types": {
+        "userInvited": {
+          "title": "Usuario Invitado",
+          "description": "Cuando un administrador invita a un nuevo usuario"
+        },
+        "userAcceptedInvite": {
+          "title": "Usuario Unido",
+          "description": "Cuando un usuario acepta una invitación"
+        },
+        "userDeleted": {
+          "title": "Usuario Eliminado",
+          "description": "Cuando un administrador elimina una cuenta de usuario"
+        },
+        "userRoleChanged": {
+          "title": "Rol de usuario cambiado",
+          "description": "Cuando se cambia el rol de un usuario"
+        },
+        "passkeyCreated": {
+          "title": "Clave de acceso creada",
+          "description": "Cuando un usuario registra una nueva clave de acceso"
+        },
+        "passkeyDeleted": {
+          "title": "Clave de acceso eliminada",
+          "description": "Cuando un usuario elimina una clave de acceso"
+        },
+        "mfaEnabled": {
+          "title": "MFA habilitado",
+          "description": "Cuando un usuario habilita la autenticación de múltiples factores"
+        },
+        "mfaDisabled": {
+          "title": "MFA deshabilitado",
+          "description": "Cuando un usuario deshabilita la autenticación de múltiples factores"
+        },
+        "passwordChanged": {
+          "title": "Contraseña Cambiada",
+          "description": "Cuando un usuario cambia su contraseña"
+        },
+        "adminPasswordReset": {
+          "title": "Restablecimiento de Contraseña de Admin",
+          "description": "Cuando un admin inicia un restablecimiento de contraseña"
+        },
+        "failedLoginAttempts": {
+          "title": "Intentos de Inicio de Sesión Fallidos",
+          "description": "Cuando se detectan múltiples intentos de inicio de sesión fallidos"
+        },
+        "suspiciousActivity": {
+          "title": "Actividad Sospechosa",
+          "description": "Cuando se detecta un inicio de sesión desde un nuevo dispositivo/ubicación"
+        },
+        "albumCreated": {
+          "title": "Álbum Creado",
+          "description": "Cuando se crea un nuevo álbum"
+        },
+        "albumPublished": {
+          "title": "Álbum Publicado",
+          "description": "Cuando un álbum se hace público"
+        },
+        "albumDeleted": {
+          "title": "Álbum Eliminado",
+          "description": "Cuando un álbum es eliminado"
+        },
+        "largePhotoUpload": {
+          "title": "Carga Grande",
+          "description": "Cuando se suben 50+ fotos a la vez"
+        },
+        "shareLinkCreated": {
+          "title": "Enlace Compartido Creado",
+          "description": "Cuando se crea un nuevo enlace compartido"
+        },
+        "shareLinkAccessed": {
+          "title": "Enlace Compartido Accedido",
+          "description": "Cuando alguien ve un álbum compartido"
+        },
+        "shareLinkExpired": {
+          "title": "Enlace de compartición expirado",
+          "description": "Cuando un enlace de compartición expira"
+        },
+        "configUpdated": {
+          "title": "Configuraciones cambiadas",
+          "description": "Cuando la configuración del sistema se actualiza"
+        },
+        "smtpSettingsChanged": {
+          "title": "Configuraciones SMTP cambiadas",
+          "description": "Cuando la configuración del correo electrónico se actualiza"
+        },
+        "openaiApiKeyUpdated": {
+          "title": "Configuraciones de IA cambiadas",
+          "description": "Cuando se actualiza la clave de API de OpenAI"
+        },
+        "brandingUpdated": {
+          "title": "Marca actualizada",
+          "description": "Cuando se cambia la marca del sitio"
+        },
+        "lowDiskSpace": {
+          "title": "Espacio en disco bajo",
+          "description": "Cuando el almacenamiento está por debajo del 10%"
+        },
+        "databaseBackupCompleted": {
+          "title": "Copia de seguridad completa",
+          "description": "Cuando finaliza la copia de seguridad de la base de datos"
+        }
+      }
+    }
   },
   "userManagement": {
     "title": "Gestión de Usuarios",
@@ -1065,45 +1191,6 @@
     "errorRequiredField": "Este campo es obligatorio",
     "setupCompleteWaitingRestart": "¡Configuración completa! Esperando a que el servidor se reinicie..."
   },
-  "email": {
-    "invitation": {
-      "subject": "Has sido invitado a {{siteName}}",
-      "title": "Únete a la Galería de {{siteName}}",
-      "greeting": "Hola,",
-      "body": "{{inviterName}} te ha invitado a unirte a <strong>la Galería de {{siteName}}</strong>.",
-      "instructions": "Para aceptar esta invitación y configurar tu cuenta, haz clic en el botón de abajo:",
-      "button": "Aceptar invitación",
-      "orCopyLink": "O copia y pega este enlace en tu navegador:",
-      "expiry": "Esta invitación expirará en 7 días.",
-      "footerIgnore": "Si no esperabas esta invitación, puedes ignorar este correo electrónico de forma segura.",
-      "footerAutomatic": "Este es un mensaje automatizado, por favor no respondas a este correo electrónico."
-    },
-    "passwordReset": {
-      "subject": "Solicitud de restablecimiento de contraseña - {{siteName}}",
-      "title": "Solicitud de restablecimiento de contraseña",
-      "greeting": "Hola {{userName}},",
-      "greetingFallback": "Hola,",
-      "body": "Recibimos una solicitud para restablecer tu contraseña para <strong>la Galleria de {{siteName}}</strong>.",
-      "instructions": "Para restablecer tu contraseña, haz clic en el botón de abajo:",
-      "button": "Restablecer contraseña",
-      "orCopyLink": "O copia y pega este enlace en tu navegador:",
-      "warningTitle": "⚠️ Importante:",
-      "warningExpiry": "Este enlace expirará en 1 hora",
-      "warningIgnore": "Si no solicitaste esto, por favor ignora este correo electrónico",
-      "warningNoChange": "Tu contraseña no cambiará hasta que crees una nueva",
-      "footerAutomatic": "Este es un mensaje automatizado, por favor no respondas a este correo electrónico.",
-      "footerContact": "Si necesitas asistencia, por favor contacta a tu administrador."
-    },
-    "test": {
-      "subject": "Correo de prueba de {{siteName}}",
-      "title": "Prueba de configuración de correo electrónico",
-      "success": "✓",
-      "body1": "¡Felicidades! Tu configuración SMTP está funcionando correctamente.",
-      "body2": "Este correo de prueba fue enviado desde <strong>{{siteName}}</strong> para verificar que tu servicio de correo electrónico esté correctamente configurado y pueda entregar mensajes.",
-      "footerTimestamp": "Este es un mensaje de prueba enviado en {{timestamp}}.",
-      "footerIgnore": "Puedes ignorar o eliminar este correo electrónico de forma segura."
-    }
-  },
   "testEmailModal": {
     "title": "Enviar correo electrónico de prueba",
     "description": "Introduce una dirección de correo electrónico para enviar un mensaje de prueba y verificar que tu configuración SMTP está funcionando correctamente.",
@@ -1194,26 +1281,6 @@
       "errorDisable": "Error al deshabilitar las notificaciones push. Por favor, inténtalo de nuevo.",
       "errorGenerateKeys": "Error al generar claves VAPID",
       "close": "Cerrar"
-    },
-    "backend": {
-      "videoProcessingComplete": "Procesamiento de video completo",
-      "videoProcessingFailed": "El procesamiento de video falló",
-      "videoReprocessingComplete": "Reprocesamiento de video completo",
-      "videoReprocessingFailed": "El reprocesamiento de video falló",
-      "imageOptimizationComplete": "Optimización de imagen completa",
-      "imageOptimizationFailed": "La optimización de imagen falló",
-      "aiTitlesComplete": "Generación de título AI completa",
-      "aiTitlesFailed": "La generación de título AI falló",
-      "testNotificationTitle": "Notificación de prueba",
-      "testNotificationBody": "¡Las notificaciones push están funcionando! Recibirás alertas cuando tus trabajos de procesamiento se completen.",
-      "userInvitedTitle": "Nuevo usuario invitado",
-      "userInvitedBody": "Se ha invitado a un nuevo usuario a tu sitio",
-      "userAcceptedInviteTitle": "Usuario unido",
-      "userAcceptedInviteBody": "Un usuario ha aceptado su invitación y se ha unido",
-      "userCreatedPasskeyTitle": "Clave de acceso creada",
-      "userCreatedPasskeyBody": "Un usuario ha registrado una nueva clave de acceso",
-      "userSetupMFATitle": "MFA habilitado",
-      "userSetupMFABody": "Un usuario ha habilitado la autenticación de múltiples factores"
     },
     "blocked": "Notificaciones bloqueadas por el navegador. Verifica la configuración de tu navegador.",
     "subscribePrompt": "Suscríbete para recibir notificaciones cuando los trabajos se completen",

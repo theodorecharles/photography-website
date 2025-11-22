@@ -403,7 +403,133 @@
   "settings": {
     "saved": "{{section}} 设置已保存！",
     "failedToSave": "保存配置失败",
-    "errorSaving": "保存配置时出错"
+    "errorSaving": "保存配置时出错",
+    "notifications": {
+      "title": "通知偏好设置",
+      "description": "配置您希望接收的推送通知",
+      "saved": "通知偏好设置已保存",
+      "confirmReset": "将所有通知偏好设置重置为默认值？",
+      "resetSuccess": "通知偏好设置已重置为默认值",
+      "resetToDefaults": "重置为默认值",
+      "enableAll": "启用全部",
+      "disableAll": "禁用全部",
+      "categories": {
+        "security": {
+          "title": "安全与身份验证",
+          "description": "关于用户帐户、登录和安全事件的通知"
+        },
+        "content": {
+          "title": "内容管理",
+          "description": "关于相册、照片和分享的通知"
+        },
+        "system": {
+          "title": "系统与配置",
+          "description": "关于设置更改和系统事件的通知"
+        }
+      },
+      "types": {
+        "userInvited": {
+          "title": "用户被邀请",
+          "description": "当管理员邀请新用户时"
+        },
+        "userAcceptedInvite": {
+          "title": "用户加入",
+          "description": "当用户接受邀请时"
+        },
+        "userDeleted": {
+          "title": "用户已删除",
+          "description": "当管理员删除用户账户时"
+        },
+        "userRoleChanged": {
+          "title": "用户角色已更改",
+          "description": "当用户的角色被更改时"
+        },
+        "passkeyCreated": {
+          "title": "密钥已创建",
+          "description": "当用户注册新密钥时"
+        },
+        "passkeyDeleted": {
+          "title": "密钥已删除",
+          "description": "当用户移除密钥时"
+        },
+        "mfaEnabled": {
+          "title": "多因素认证已启用",
+          "description": "当用户启用多因素认证时"
+        },
+        "mfaDisabled": {
+          "title": "多因素认证已禁用",
+          "description": "当用户禁用多因素认证时"
+        },
+        "passwordChanged": {
+          "title": "密码已更改",
+          "description": "当用户更改他们的密码时"
+        },
+        "adminPasswordReset": {
+          "title": "管理员密码重置",
+          "description": "当管理员发起密码重置时"
+        },
+        "failedLoginAttempts": {
+          "title": "登录尝试失败",
+          "description": "当检测到多次登录尝试失败时"
+        },
+        "suspiciousActivity": {
+          "title": "可疑活动",
+          "description": "当检测到来自新设备/位置的登录时"
+        },
+        "albumCreated": {
+          "title": "相册已创建",
+          "description": "当创建一个新相册时"
+        },
+        "albumPublished": {
+          "title": "相册已发布",
+          "description": "当相册公开时"
+        },
+        "albumDeleted": {
+          "title": "相册已删除",
+          "description": "当相册被删除时"
+        },
+        "largePhotoUpload": {
+          "title": "大文件上传",
+          "description": "当一次上传50张以上的照片时"
+        },
+        "shareLinkCreated": {
+          "title": "分享链接已创建",
+          "description": "当创建新的分享链接时"
+        },
+        "shareLinkAccessed": {
+          "title": "分享链接已访问",
+          "description": "当有人查看共享相册时"
+        },
+        "shareLinkExpired": {
+          "title": "分享链接已过期",
+          "description": "分享链接过期时"
+        },
+        "configUpdated": {
+          "title": "设置已更改",
+          "description": "系统配置更新时"
+        },
+        "smtpSettingsChanged": {
+          "title": "SMTP 设置已更改",
+          "description": "电子邮件配置更新时"
+        },
+        "openaiApiKeyUpdated": {
+          "title": "AI 设置已更改",
+          "description": "OpenAI API 密钥更新时"
+        },
+        "brandingUpdated": {
+          "title": "品牌已更新",
+          "description": "网站品牌更改时"
+        },
+        "lowDiskSpace": {
+          "title": "磁盘空间不足",
+          "description": "当存储低于10%时"
+        },
+        "databaseBackupCompleted": {
+          "title": "备份完成",
+          "description": "当数据库备份完成时"
+        }
+      }
+    }
   },
   "advancedSettings": {
     "title": "高级设置",
@@ -1065,45 +1191,6 @@
     "errorRequiredField": "此字段为必填项",
     "setupCompleteWaitingRestart": "设置完成！等待服务器重启…"
   },
-  "email": {
-    "invitation": {
-      "subject": "您已被邀请加入{{siteName}}",
-      "title": "加入{{siteName}}的画廊",
-      "greeting": "您好，",
-      "body": "{{inviterName}}邀请您加入<strong>{{siteName}}的画廊</strong>。",
-      "instructions": "要接受此邀请并设置您的帐户，请点击下面的按钮：",
-      "button": "接受邀请",
-      "orCopyLink": "或将此链接复制并粘贴到您的浏览器中：",
-      "expiry": "此邀请将在7天内过期。",
-      "footerIgnore": "如果您没有预期此邀请，可以安全地忽略此电子邮件。",
-      "footerAutomatic": "这是自动生成的消息，请勿回复此电子邮件。"
-    },
-    "passwordReset": {
-      "subject": "密码重置请求 - {{siteName}}",
-      "title": "密码重置请求",
-      "greeting": "嗨 {{userName}}，",
-      "greetingFallback": "你好，",
-      "body": "我们收到了重置您在 <strong>{{siteName}} 的 Galleria</strong> 的密码的请求。",
-      "instructions": "要重置您的密码，请点击下面的按钮：",
-      "button": "重置密码",
-      "orCopyLink": "或者将此链接复制并粘贴到您的浏览器中：",
-      "warningTitle": "⚠️ 重要：",
-      "warningExpiry": "此链接将在 1 小时内过期",
-      "warningIgnore": "如果您没有请求此操作，请忽略此电子邮件",
-      "warningNoChange": "您的密码在您创建新密码之前不会更改",
-      "footerAutomatic": "这是自动生成的消息，请不要回复此电子邮件。",
-      "footerContact": "如果您需要帮助，请联系您的管理员。"
-    },
-    "test": {
-      "subject": "来自 {{siteName}} 的测试电子邮件",
-      "title": "电子邮件配置测试",
-      "success": "✓",
-      "body1": "恭喜！您的 SMTP 配置正常工作。",
-      "body2": "此测试电子邮件是从 <strong>{{siteName}}</strong> 发送的，以验证您的电子邮件服务已正确配置并能够发送消息。",
-      "footerTimestamp": "这是在 {{timestamp}} 发送的测试消息。",
-      "footerIgnore": "您可以安全地忽略或删除此电子邮件。"
-    }
-  },
   "testEmailModal": {
     "title": "发送测试邮件",
     "description": "输入电子邮件地址以发送测试消息并验证您的SMTP配置是否正常工作。",
@@ -1194,26 +1281,6 @@
       "errorDisable": "无法禁用推送通知。请再试一次。",
       "errorGenerateKeys": "生成 VAPID 密钥失败",
       "close": "关闭"
-    },
-    "backend": {
-      "videoProcessingComplete": "视频处理完成",
-      "videoProcessingFailed": "视频处理失败",
-      "videoReprocessingComplete": "视频重新处理完成",
-      "videoReprocessingFailed": "视频重新处理失败",
-      "imageOptimizationComplete": "图像优化完成",
-      "imageOptimizationFailed": "图像优化失败",
-      "aiTitlesComplete": "AI标题生成完成",
-      "aiTitlesFailed": "AI标题生成失败",
-      "testNotificationTitle": "测试通知",
-      "testNotificationBody": "推送通知正常工作！当您的处理任务完成时，您将收到提醒。",
-      "userInvitedTitle": "新用户已被邀请",
-      "userInvitedBody": "新用户已被邀请到您的网站",
-      "userAcceptedInviteTitle": "用户已加入",
-      "userAcceptedInviteBody": "用户已接受邀请并加入",
-      "userCreatedPasskeyTitle": "密钥已创建",
-      "userCreatedPasskeyBody": "用户已注册新的密钥",
-      "userSetupMFATitle": "MFA已启用",
-      "userSetupMFABody": "用户已启用多因素身份验证"
     },
     "blocked": "浏览器阻止了通知。请检查您的浏览器设置。",
     "subscribePrompt": "订阅以在工作完成时接收通知",

@@ -14,8 +14,36 @@ import {
   getShareLinksForAlbum
 } from "../database.js";
 import { error, warn, info, debug, verbose } from '../utils/logger.js';
+import { sendNotificationToUser } from '../push-notifications.js';
+import { translateNotificationForUser } from '../i18n-backend.js';
+import { getAllUsers } from '../database-users.js';
 
 const router = Router();
+
+/**
+ * Helper to send push notification to all admin users
+ */
+async function notifyAllAdmins(title: string, body: string, tag: string, notificationType?: any): Promise<void> {
+  try {
+    const admins = getAllUsers().filter(u => u.role === 'admin');
+    
+    for (const admin of admins) {
+      const translatedTitle = await translateNotificationForUser(admin.id, title);
+      const translatedBody = await translateNotificationForUser(admin.id, body);
+      
+      await sendNotificationToUser(admin.id, {
+        title: translatedTitle,
+        body: translatedBody,
+        icon: '/icon-192.png',
+        badge: '/icon-192.png',
+        tag,
+        requireInteraction: false
+      }, notificationType);
+    }
+  } catch (err) {
+    error('[ShareLinks] Failed to send admin notification:', err);
+  }
+}
 
 /**
  * Sanitize album name
@@ -62,6 +90,14 @@ router.post("/create", csrfProtection, requireManager, async (req: Request, res:
     const shareLink = createShareLink(sanitizedAlbum, expiresAt);
     
     info(`Created share link for album "${sanitizedAlbum}": ${shareLink.secret_key} (expires: ${expiresAt || 'never'})`);
+
+    // Send push notification to all admins
+    await notifyAllAdmins(
+      'notifications.backend.shareLinkCreatedTitle',
+      'notifications.backend.shareLinkCreatedBody',
+      'share-link-created',
+      'shareLinkCreated'
+    ).catch(err => error('[ShareLinks] Failed to send share link creation notification:', err));
 
     res.json({
       success: true,
