@@ -106,32 +106,19 @@ function getAlbumsData() {
 }
 
 /**
- * Fetch external links from database
+ * Fetch external links from config.json
  */
-function getExternalLinks() {
-  const db = new Database(dbPath, { readonly: true });
+function getExternalLinks(config) {
+  // External links are stored in config.json, not in database
+  const externalLinks = config.externalLinks || [];
   
-  try {
-    // Check if external_links table exists
-    const tableExists = db.prepare(`
-      SELECT name FROM sqlite_master WHERE type='table' AND name='external_links'
-    `).get();
-    
-    if (!tableExists) {
-      warn('external_links table not found, skipping external links data');
-      return { externalLinks: [] };
-    }
-    
-    const links = db.prepare(`
-      SELECT url, label, icon
-      FROM external_links
-      ORDER BY sort_order
-    `).all();
-
-    return { externalLinks: links };
-  } finally {
-    db.close();
+  if (externalLinks.length > 0) {
+    success(`Loaded ${externalLinks.length} external links from config.json`);
+  } else {
+    info('No external links found in config.json');
   }
+  
+  return { externalLinks };
 }
 
 /**
@@ -203,9 +190,9 @@ async function generateHomepageHtml() {
       warn('homepage.json not found, skipping photo data injection');
     }
 
-    // Get albums and external links from database
+    // Get albums from database and external links from config
     const albumsData = getAlbumsData();
-    const externalLinksData = getExternalLinks();
+    const externalLinksData = getExternalLinks(config);
     success(`Loaded ${albumsData.albums.length} albums, ${albumsData.folders.length} folders`);
     success(`Loaded ${externalLinksData.externalLinks.length} external links`);
 
