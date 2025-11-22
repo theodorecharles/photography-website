@@ -32,6 +32,7 @@ const PushNotificationsSettings: React.FC<PushNotificationsSettingsProps> = ({
   const [justGenerated, setJustGenerated] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [localEnabled, setLocalEnabled] = useState<boolean | null>(null);
+  const [refreshKey, setRefreshKey] = useState(Date.now()); // Force refresh of PushNotificationStatus
 
   // Fetch current user's email on mount
   useEffect(() => {
@@ -143,6 +144,8 @@ const PushNotificationsSettings: React.FC<PushNotificationsSettingsProps> = ({
             setJustGenerated(false);
             throw new Error('Failed to save config');
           }
+          // Trigger refresh of PushNotificationStatus
+          setRefreshKey(Date.now());
         } catch (error) {
           console.error('Failed to enable push notifications:', error);
           alert(t('notifications.settings.errorEnable'));
@@ -179,6 +182,8 @@ const PushNotificationsSettings: React.FC<PushNotificationsSettingsProps> = ({
           updateConfig(['pushNotifications', 'enabled'], true);
           throw new Error('Failed to save config');
         }
+        // Trigger refresh of PushNotificationStatus
+        setRefreshKey(Date.now());
       } catch (error) {
         console.error('Failed to disable push notifications:', error);
         alert(t('notifications.settings.errorDisable'));
@@ -221,6 +226,8 @@ const PushNotificationsSettings: React.FC<PushNotificationsSettingsProps> = ({
       
       // Mark as just generated so Save/Cancel buttons don't appear
       setJustGenerated(true);
+      // Trigger refresh of PushNotificationStatus
+      setRefreshKey(Date.now());
     } catch (error: any) {
       console.error('Failed to generate VAPID keys:', error);
       alert(`Failed to generate VAPID keys: ${error.message}`);
@@ -318,7 +325,7 @@ const PushNotificationsSettings: React.FC<PushNotificationsSettingsProps> = ({
       </p>
 
       {/* Subscription Status and Controls */}
-      <PushNotificationStatus isConfigured={pushConfig.enabled && hasKeys} />
+      <PushNotificationStatus isConfigured={pushConfig.enabled && hasKeys} refreshKey={refreshKey} />
 
       {/* 2x2 Grid Layout */}
       <div 

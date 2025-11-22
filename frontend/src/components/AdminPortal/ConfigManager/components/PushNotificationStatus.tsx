@@ -10,6 +10,7 @@ import { showToast } from '../../../../utils/toast';
 
 interface PushNotificationStatusProps {
   isConfigured: boolean; // Whether push notifications are configured on server
+  refreshKey?: number; // Optional key to force refresh when changed
 }
 
 function urlBase64ToUint8Array(base64String: string): Uint8Array {
@@ -25,7 +26,7 @@ function urlBase64ToUint8Array(base64String: string): Uint8Array {
   return outputArray;
 }
 
-export function PushNotificationStatus({ isConfigured }: PushNotificationStatusProps) {
+export function PushNotificationStatus({ isConfigured, refreshKey }: PushNotificationStatusProps) {
   const { t } = useTranslation();
   const [config, setConfig] = useState<{ enabled: boolean; vapidPublicKey: string | null } | null>(null);
   const [permission, setPermission] = useState<NotificationPermission>('default');
@@ -40,7 +41,7 @@ export function PushNotificationStatus({ isConfigured }: PushNotificationStatusP
     } else {
       setIsLoading(false);
     }
-  }, [isConfigured]);
+  }, [isConfigured, isPushSupported, refreshKey]);
 
   async function fetchConfigAndStatus() {
     try {
