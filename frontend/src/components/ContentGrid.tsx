@@ -254,8 +254,10 @@ const ContentGrid: React.FC<ContentGridProps> = ({ album, onAlbumNotFound, initi
           setError(null);
           onLoadComplete?.();
           
-          // Clear SSR data after using it (prevent stale data on navigation)
-          delete (window as any).__INITIAL_DATA__;
+          // Clear only the homepage SSR data after using it (keep albums/links for App.tsx)
+          if ((window as any).__INITIAL_DATA__) {
+            delete (window as any).__INITIAL_DATA__.homepage;
+          }
           return;
         }
 

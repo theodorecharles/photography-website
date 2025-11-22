@@ -326,6 +326,23 @@ function App() {
       const initialData = (window as any).__INITIAL_DATA__;
       console.log('[PERF] SSR data check:', !!initialData, 'at', performance.now(), 'ms');
       
+      // Detailed logging of what's in SSR data
+      if (initialData) {
+        console.log('[PERF] initialData exists, checking contents...');
+        console.log('[PERF]   - homepage:', !!initialData.homepage, '(length:', initialData.homepage?.length || 0, ')');
+        console.log('[PERF]   - albums:', !!initialData.albums);
+        if (initialData.albums) {
+          console.log('[PERF]     - albums.albums:', !!initialData.albums.albums, '(length:', initialData.albums.albums?.length || 0, ')');
+          console.log('[PERF]     - albums.folders:', !!initialData.albums.folders, '(length:', initialData.albums.folders?.length || 0, ')');
+        }
+        console.log('[PERF]   - externalLinks:', !!initialData.externalLinks);
+        if (initialData.externalLinks) {
+          console.log('[PERF]     - externalLinks.externalLinks:', !!initialData.externalLinks.externalLinks, '(length:', initialData.externalLinks.externalLinks?.length || 0, ')');
+        }
+      } else {
+        console.log('[PERF] initialData is', initialData, '- SSR data missing or deleted!');
+      }
+      
       let albumsData, externalLinksData, brandingData;
       
       if (initialData && initialData.albums && initialData.externalLinks) {
@@ -346,6 +363,9 @@ function App() {
           language: runtimeBranding?.language || "en"
         };
         console.log('[PERF] Branding loaded at', performance.now(), 'ms');
+        
+        // Clear remaining SSR data after using it (homepage was already cleared by ContentGrid)
+        delete (window as any).__INITIAL_DATA__;
       } else {
         console.log('[PERF] No SSR data, fetching from API at', performance.now(), 'ms');
         // Fallback to API requests if SSR data not available
