@@ -36,7 +36,9 @@
     "restore": "还原",
     "expand": "展开",
     "collapse": "折叠",
-    "note": "注意"
+    "note": "注意",
+    "dismiss": "关闭",
+    "stop": "停止"
   },
   "app": {
     "loadingAlbums": "正在加载相册...",
@@ -585,7 +587,16 @@
     "registering": "正在注册...",
     "register": "+ 注册",
     "registeredPasskeys": "已注册通行密钥",
-    "passkeysNote": "注意：通行密钥需要 HTTPS（或 localhost）和兼容设备"
+    "passkeysNote": "注意：通行密钥需要 HTTPS（或 localhost）和兼容设备",
+    "creating": "创建中...",
+    "createInviteLink": "创建邀请链接",
+    "invitationCreated": "邀请已创建",
+    "clickCopyLinkToShare": "点击下面的按钮复制邀请链接并与用户分享。",
+    "linkCopied": "链接已复制！",
+    "shareLinkWithUser": "与用户分享此链接以完成他们的注册。",
+    "setupSmtpDescriptionDismissible": "设置SMTP以发送用户邀请和密码重置邮件，或关闭以仅通过复制链接邀请用户。",
+    "linkOnlyMode": "仅链接模式",
+    "linkOnlyModeDescription": "邮件未配置。创建邀请后，您需要复制并手动将邀请链接发送给用户。"
   },
   "expiredLink": {
     "title": "你好，伙伴！",
@@ -854,7 +865,10 @@
       "title": "生成AI标题",
       "description": "使用OpenAI自动生成您照片的描述性标题",
       "generateMissing": "生成缺失的标题",
-      "regenerateAll": "强制重新生成所有标题"
+      "regenerateAll": "强制重新生成所有标题",
+      "autoEnabledDescription": "自动AI标题生成已启用。新照片将自动生成AI标题。使用下面的按钮填补缺失的标题或重新生成现有标题。",
+      "autoDisabledDescription": "自动AI标题生成已禁用。AI标题将仅通过下面的按钮或在元数据编辑器中生成。",
+      "noMissingTitles": "没有缺失的标题"
     }
   },
   "profile": {
@@ -1182,7 +1196,11 @@
     "on": "开启",
     "off": "关闭",
     "warningNote": "对视频设置的更改仅适用于新上传的视频。现有视频将保持其当前质量设置，除非您使用",
-    "forceRegenerate": "强制重新生成所有"
+    "forceRegenerate": "强制重新生成所有",
+    "segmentDurationSection": "段持续时间",
+    "hardwareTranscoding": "硬件转码",
+    "hardwareTranscodingSection": "硬件转码",
+    "hardwareTranscodingDescription": "使用GPU加速以更快的视频编码（需要兼容的硬件）"
   },
   "notifications": {
     "bannerTitle": "处理作业完成时获取通知",

@@ -36,7 +36,9 @@
     "generating": "Đang tạo...",
     "album": "album",
     "albums": "các album",
-    "note": "Ghi chú"
+    "note": "Ghi chú",
+    "dismiss": "Bỏ qua",
+    "stop": "Dừng"
   },
   "app": {
     "loadingAlbums": "Đang tải các album...",
@@ -585,7 +587,16 @@
     "registering": "Đang đăng ký...",
     "register": "+ Đăng ký",
     "registeredPasskeys": "Khóa đăng ký",
-    "passkeysNote": "Lưu ý: Khóa yêu cầu HTTPS (hoặc localhost) và một thiết bị tương thích"
+    "passkeysNote": "Lưu ý: Khóa yêu cầu HTTPS (hoặc localhost) và một thiết bị tương thích",
+    "creating": "Đang tạo...",
+    "createInviteLink": "Tạo Liên Kết Mời",
+    "invitationCreated": "Lời Mời Đã Được Tạo",
+    "clickCopyLinkToShare": "Nhấn nút dưới đây để sao chép liên kết mời và chia sẻ với người dùng.",
+    "linkCopied": "Liên Kết Đã Được Sao Chép!",
+    "shareLinkWithUser": "Chia sẻ liên kết này với người dùng để hoàn tất đăng ký của họ.",
+    "setupSmtpDescriptionDismissible": "Thiết lập SMTP để gửi email mời người dùng và đặt lại mật khẩu, hoặc bỏ qua để chỉ mời người dùng bằng cách sao chép liên kết.",
+    "linkOnlyMode": "Chế Độ Chỉ Liên Kết",
+    "linkOnlyModeDescription": "Email chưa được cấu hình. Sau khi tạo lời mời, bạn sẽ cần sao chép và gửi liên kết mời thủ công cho người dùng."
   },
   "expiredLink": {
     "title": "Chà, chào bạn!",
@@ -854,7 +865,10 @@
       "title": "Tạo tiêu đề AI",
       "description": "Sử dụng OpenAI để tự động tạo tiêu đề mô tả cho ảnh của bạn",
       "generateMissing": "Tạo tiêu đề thiếu",
-      "regenerateAll": "Buộc Tái Tạo Tất Cả Tiêu Đề"
+      "regenerateAll": "Buộc Tái Tạo Tất Cả Tiêu Đề",
+      "autoEnabledDescription": "Tính năng tạo tiêu đề AI tự động đã được bật. Ảnh mới sẽ tự động được tạo tiêu đề AI. Sử dụng các nút dưới đây để điền tiêu đề còn thiếu hoặc tạo lại tiêu đề hiện có.",
+      "autoDisabledDescription": "Tính năng tạo tiêu đề AI tự động đã bị tắt. Tiêu đề AI chỉ được tạo bằng cách sử dụng các nút dưới đây hoặc trong trình chỉnh sửa siêu dữ liệu.",
+      "noMissingTitles": "Không Có Tiêu Đề Thiếu"
     }
   },
   "profile": {
@@ -1182,7 +1196,11 @@
     "on": "Bật",
     "off": "Tắt",
     "warningNote": "Các thay đổi đối với cài đặt video chỉ áp dụng cho video mới được tải lên. Các video hiện có sẽ giữ nguyên cài đặt chất lượng hiện tại trừ khi bạn sử dụng",
-    "forceRegenerate": "Buộc tái tạo tất cả"
+    "forceRegenerate": "Buộc tái tạo tất cả",
+    "segmentDurationSection": "Thời Lượng Phân Đoạn",
+    "hardwareTranscoding": "Mã Hóa Phần Cứng",
+    "hardwareTranscodingSection": "Mã Hóa Phần Cứng",
+    "hardwareTranscodingDescription": "Sử dụng tăng tốc GPU để mã hóa video nhanh hơn (yêu cầu phần cứng tương thích)"
   },
   "notifications": {
     "bannerTitle": "Nhận thông báo khi các công việc xử lý hoàn tất",

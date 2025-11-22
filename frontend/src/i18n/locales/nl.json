@@ -36,7 +36,9 @@
     "restore": "Herstellen",
     "expand": "Uitbreiden",
     "collapse": "Inklappen",
-    "note": "Opmerking"
+    "note": "Opmerking",
+    "dismiss": "Verwijderen",
+    "stop": "Stoppen"
   },
   "app": {
     "loadingAlbums": "Albums laden...",
@@ -585,7 +587,16 @@
     "registering": "Registreren...",
     "register": "+ Registreren",
     "registeredPasskeys": "Geregistreerde passkeys",
-    "passkeysNote": "Opmerking: Passkeys vereisen HTTPS (of localhost) en een compatibel apparaat"
+    "passkeysNote": "Opmerking: Passkeys vereisen HTTPS (of localhost) en een compatibel apparaat",
+    "creating": "Maken...",
+    "createInviteLink": "Uitnodigingslink maken",
+    "invitationCreated": "Uitnodiging gemaakt",
+    "clickCopyLinkToShare": "Klik op de knop hieronder om de uitnodigingslink te kopiëren en deze met de gebruiker te delen.",
+    "linkCopied": "Link gekopieerd!",
+    "shareLinkWithUser": "Deel deze link met de gebruiker om hun registratie te voltooien.",
+    "setupSmtpDescriptionDismissible": "Stel SMTP in om gebruikersuitnodigingen en wachtwoordreset-e-mails te verzenden, of sluit om gebruikers alleen met kopieerlinks uit te nodigen.",
+    "linkOnlyMode": "Alleen-linkmodus",
+    "linkOnlyModeDescription": "E-mail is niet geconfigureerd. Na het maken van de uitnodiging moet je de uitnodigingslink kopiëren en handmatig naar de gebruiker sturen."
   },
   "expiredLink": {
     "title": "Nou, hallo daar, partner!",
@@ -854,7 +865,10 @@
       "title": "Genereer AI-titels",
       "description": "Gebruik OpenAI om automatisch beschrijvende titels voor je foto's te genereren",
       "generateMissing": "Genereer ontbrekende titels",
-      "regenerateAll": "Dwing alle titels opnieuw te genereren"
+      "regenerateAll": "Dwing alle titels opnieuw te genereren",
+      "autoEnabledDescription": "Automatische AI-titelgeneratie is ingeschakeld. Nieuwe foto's krijgen automatisch gegenereerde AI-titels. Gebruik de knoppen hieronder om ontbrekende titels in te vullen of bestaande opnieuw te genereren.",
+      "autoDisabledDescription": "Automatische AI-titelgeneratie is uitgeschakeld. AI-titels worden alleen gegenereerd met de knoppen hieronder of in de metadata-editor.",
+      "noMissingTitles": "Geen ontbrekende titels"
     }
   },
   "profile": {
@@ -1182,7 +1196,11 @@
     "on": "Aan",
     "off": "Uit",
     "warningNote": "Wijzigingen in video-instellingen zijn alleen van toepassing op nieuw geüploade video's. Bestaande video's behouden hun huidige kwaliteitsinstellingen tenzij je",
-    "forceRegenerate": "Alle Dwingen Regenereren gebruikt"
+    "forceRegenerate": "Alle Dwingen Regenereren gebruikt",
+    "segmentDurationSection": "Segmentduur",
+    "hardwareTranscoding": "Hardwaretranscodering",
+    "hardwareTranscodingSection": "Hardwaretranscodering",
+    "hardwareTranscodingDescription": "Gebruik GPU-versnelling voor snellere video-encoding (vereist compatibele hardware)"
   },
   "notifications": {
     "bannerTitle": "Ontvang een melding wanneer verwerkingsjobs zijn voltooid",

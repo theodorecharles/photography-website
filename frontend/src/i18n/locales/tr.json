@@ -36,7 +36,9 @@
     "restore": "Geri yükle",
     "expand": "Genişlet",
     "collapse": "Daralt",
-    "note": "Not"
+    "note": "Not",
+    "dismiss": "Kapat",
+    "stop": "Durdur"
   },
   "app": {
     "loadingAlbums": "Albümler yükleniyor...",
@@ -585,7 +587,16 @@
     "registering": "Kayıt ediliyor...",
     "register": "+ Kaydet",
     "registeredPasskeys": "Kayıtlı Geçiş Anahtarları",
-    "passkeysNote": "Not: Geçiş anahtarları HTTPS (veya localhost) ve uyumlu bir cihaz gerektirir"
+    "passkeysNote": "Not: Geçiş anahtarları HTTPS (veya localhost) ve uyumlu bir cihaz gerektirir",
+    "creating": "Oluşturuluyor...",
+    "createInviteLink": "Davet Bağlantısı Oluştur",
+    "invitationCreated": "Davet Oluşturuldu",
+    "clickCopyLinkToShare": "Davet bağlantısını kopyalamak ve kullanıcı ile paylaşmak için aşağıdaki butona tıklayın.",
+    "linkCopied": "Bağlantı Kopyalandı!",
+    "shareLinkWithUser": "Kullanıcının kaydını tamamlaması için bu bağlantıyı paylaşın.",
+    "setupSmtpDescriptionDismissible": "Kullanıcı daveti ve şifre sıfırlama e-postalarını göndermek için SMTP kurun veya yalnızca kopya bağlantılarla kullanıcıları davet etmek için kapatın.",
+    "linkOnlyMode": "Yalnızca Bağlantı Modu",
+    "linkOnlyModeDescription": "E-posta yapılandırılmadı. Daveti oluşturduktan sonra, davet bağlantısını kopyalayıp kullanıcıya manuel olarak göndermeniz gerekecek."
   },
   "expiredLink": {
     "title": "Vay, nasılsın ortak!",
@@ -854,7 +865,10 @@
       "title": "AI Başlıkları Oluştur",
       "description": "Fotoğraflarınız için açıklayıcı başlıkları otomatik olarak oluşturmak için OpenAI'yi kullanın",
       "generateMissing": "Eksik Başlıkları Oluştur",
-      "regenerateAll": "Tüm Başlıkları Yeniden Oluşturmayı Zorla"
+      "regenerateAll": "Tüm Başlıkları Yeniden Oluşturmayı Zorla",
+      "autoEnabledDescription": "Otomatik AI başlık oluşturma etkin. Yeni fotoğraflar için AI başlıkları otomatik olarak oluşturulacak. Eksik başlıkları doldurmak veya mevcut olanları yeniden oluşturmak için aşağıdaki butonları kullanın.",
+      "autoDisabledDescription": "Otomatik AI başlık oluşturma devre dışı. AI başlıkları yalnızca aşağıdaki butonlar veya meta veri düzenleyicisinde oluşturulacak.",
+      "noMissingTitles": "Eksik Başlık Yok"
     }
   },
   "profile": {
@@ -1182,7 +1196,11 @@
     "on": "Açık",
     "off": "Kapalı",
     "warningNote": "Video ayarlarındaki değişiklikler yalnızca yeni yüklenen videolara uygulanır. Mevcut videolar, mevcut kalite ayarlarını koruyacaktır, aksi takdirde",
-    "forceRegenerate": "Tümünü Zorla Yenile"
+    "forceRegenerate": "Tümünü Zorla Yenile",
+    "segmentDurationSection": "Segment Süresi",
+    "hardwareTranscoding": "Donanım Kod Çözme",
+    "hardwareTranscodingSection": "Donanım Kod Çözme",
+    "hardwareTranscodingDescription": "Daha hızlı video kodlaması için GPU hızlandırmasını kullanın (uyumlu donanım gerektirir)"
   },
   "notifications": {
     "bannerTitle": "İşlem Görevleri Tamamlandığında Bildirim Al",

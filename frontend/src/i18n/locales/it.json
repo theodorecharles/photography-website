@@ -36,7 +36,9 @@
     "restore": "Ripristina",
     "expand": "Espandi",
     "collapse": "Riduci",
-    "note": "Nota"
+    "note": "Nota",
+    "dismiss": "Ignora",
+    "stop": "Ferma"
   },
   "app": {
     "loadingAlbums": "Caricamento album...",
@@ -585,7 +587,16 @@
     "registering": "Registrazione in corso...",
     "register": "+ Registra",
     "registeredPasskeys": "Chiavi di Accesso Registrate",
-    "passkeysNote": "Nota: Le chiavi di accesso richiedono HTTPS (o localhost) e un dispositivo compatibile"
+    "passkeysNote": "Nota: Le chiavi di accesso richiedono HTTPS (o localhost) e un dispositivo compatibile",
+    "creating": "Creazione in corso...",
+    "createInviteLink": "Crea Link di Invito",
+    "invitationCreated": "Invito Creato",
+    "clickCopyLinkToShare": "Clicca il pulsante qui sotto per copiare il link di invito e condividerlo con l'utente.",
+    "linkCopied": "Link Copiato!",
+    "shareLinkWithUser": "Condividi questo link con l'utente per completare la loro registrazione.",
+    "setupSmtpDescriptionDismissible": "Configura SMTP per inviare email di invito e reimpostazione password agli utenti, oppure ignora per invitare gli utenti solo con link copiati.",
+    "linkOnlyMode": "Modalità Solo-Link",
+    "linkOnlyModeDescription": "L'email non è configurata. Dopo aver creato l'invito, dovrai copiare e inviare manualmente il link di invito all'utente."
   },
   "expiredLink": {
     "title": "Ehi, come va, amico!",
@@ -854,7 +865,10 @@
       "title": "Genera Titoli AI",
       "description": "Usa OpenAI per generare automaticamente titoli descrittivi per le tue foto",
       "generateMissing": "Genera Titoli Mancanti",
-      "regenerateAll": "Forza Rigenerazione di Tutti i Titoli"
+      "regenerateAll": "Forza Rigenerazione di Tutti i Titoli",
+      "autoEnabledDescription": "La generazione automatica dei titoli AI è abilitata. Le nuove foto riceveranno automaticamente titoli AI generati. Usa i pulsanti qui sotto per riempire i titoli mancanti o rigenerare quelli esistenti.",
+      "autoDisabledDescription": "La generazione automatica dei titoli AI è disabilitata. I titoli AI saranno generati solo utilizzando i pulsanti qui sotto o nell'editor dei metadati.",
+      "noMissingTitles": "Nessun Titolo Mancante"
     }
   },
   "profile": {
@@ -1182,7 +1196,11 @@
     "on": "Attivo",
     "off": "Disattivo",
     "warningNote": "Le modifiche alle impostazioni video si applicano solo ai video caricati di recente. I video esistenti manterranno le loro attuali impostazioni di qualità a meno che tu non utilizzi",
-    "forceRegenerate": "Forza Rigenerazione Tutto"
+    "forceRegenerate": "Forza Rigenerazione Tutto",
+    "segmentDurationSection": "Durata del Segmento",
+    "hardwareTranscoding": "Transcodifica Hardware",
+    "hardwareTranscodingSection": "Transcodifica Hardware",
+    "hardwareTranscodingDescription": "Usa l'accelerazione GPU per una codifica video più veloce (richiede hardware compatibile)"
   },
   "notifications": {
     "bannerTitle": "Ricevi notifiche quando i lavori di elaborazione sono completati",

@@ -36,7 +36,9 @@
     "restore": "Restaurar",
     "expand": "Expandir",
     "collapse": "Colapsar",
-    "note": "Nota"
+    "note": "Nota",
+    "dismiss": "Dispensar",
+    "stop": "Parar"
   },
   "app": {
     "loadingAlbums": "Carregando álbuns...",
@@ -585,7 +587,16 @@
     "registering": "Registrando...",
     "register": "+ Registrar",
     "registeredPasskeys": "Chaves de Acesso Registradas",
-    "passkeysNote": "Nota: Chaves de acesso requerem HTTPS (ou localhost) e um dispositivo compatível"
+    "passkeysNote": "Nota: Chaves de acesso requerem HTTPS (ou localhost) e um dispositivo compatível",
+    "creating": "Criando...",
+    "createInviteLink": "Criar Link de Convite",
+    "invitationCreated": "Convite Criado",
+    "clickCopyLinkToShare": "Clique no botão abaixo para copiar o link do convite e compartilhá-lo com o usuário.",
+    "linkCopied": "Link Copiado!",
+    "shareLinkWithUser": "Compartilhe este link com o usuário para completar o registro.",
+    "setupSmtpDescriptionDismissible": "Configure SMTP para enviar convites e e-mails de redefinição de senha, ou dispense para convidar usuários apenas com links copiados.",
+    "linkOnlyMode": "Modo Somente Link",
+    "linkOnlyModeDescription": "O e-mail não está configurado. Após criar o convite, você precisará copiar e enviar manualmente o link de convite para o usuário."
   },
   "expiredLink": {
     "title": "Bem, como vai, parceiro!",
@@ -854,7 +865,10 @@
       "title": "Gerar Títulos de IA",
       "description": "Use OpenAI para gerar automaticamente títulos descritivos para suas fotos",
       "generateMissing": "Gerar Títulos Faltantes",
-      "regenerateAll": "Forçar Regenerar Todos os Títulos"
+      "regenerateAll": "Forçar Regenerar Todos os Títulos",
+      "autoEnabledDescription": "A geração automática de títulos por IA está ativada. Novas fotos terão títulos gerados automaticamente por IA. Use os botões abaixo para preencher títulos ausentes ou regenerar os existentes.",
+      "autoDisabledDescription": "A geração automática de títulos por IA está desativada. Títulos por IA serão gerados apenas usando os botões abaixo ou no editor de metadados.",
+      "noMissingTitles": "Sem Títulos Ausentes"
     }
   },
   "profile": {
@@ -1182,7 +1196,11 @@
     "on": "Ativado",
     "off": "Desativado",
     "warningNote": "As alterações nas configurações de vídeo se aplicam apenas a vídeos recém-carregados. Vídeos existentes manterão suas configurações de qualidade atuais, a menos que você use",
-    "forceRegenerate": "Forçar Regenerar Todos"
+    "forceRegenerate": "Forçar Regenerar Todos",
+    "segmentDurationSection": "Duração do Segmento",
+    "hardwareTranscoding": "Transcodificação de Hardware",
+    "hardwareTranscodingSection": "Transcodificação de Hardware",
+    "hardwareTranscodingDescription": "Use aceleração por GPU para codificação de vídeo mais rápida (requer hardware compatível)"
   },
   "notifications": {
     "bannerTitle": "Receber Notificações Quando os Trabalhos de Processamento Estiverem Concluídos",

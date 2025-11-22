@@ -36,7 +36,9 @@
     "restore": "Wiederherstellen",
     "expand": "Erweitern",
     "collapse": "Einklappen",
-    "note": "Hinweis"
+    "note": "Hinweis",
+    "dismiss": "Schließen",
+    "stop": "Stoppen"
   },
   "app": {
     "loadingAlbums": "Lade Alben...",
@@ -585,7 +587,16 @@
     "registering": "Registriere...",
     "register": "+ Registrieren",
     "registeredPasskeys": "Registrierte Passkeys",
-    "passkeysNote": "Hinweis: Passkeys erfordern HTTPS (oder localhost) und ein kompatibles Gerät"
+    "passkeysNote": "Hinweis: Passkeys erfordern HTTPS (oder localhost) und ein kompatibles Gerät",
+    "creating": "Erstellen...",
+    "createInviteLink": "Einladung Link Erstellen",
+    "invitationCreated": "Einladung Erstellt",
+    "clickCopyLinkToShare": "Klicken Sie auf die Schaltfläche unten, um den Einladungslink zu kopieren und mit dem Benutzer zu teilen.",
+    "linkCopied": "Link Kopiert!",
+    "shareLinkWithUser": "Teilen Sie diesen Link mit dem Benutzer, um seine Registrierung abzuschließen.",
+    "setupSmtpDescriptionDismissible": "Richten Sie SMTP ein, um Benutzereinladungen und E-Mails zum Zurücksetzen des Passworts zu senden, oder schließen Sie, um Benutzer nur mit Kopierlinks einzuladen.",
+    "linkOnlyMode": "Nur-Link-Modus",
+    "linkOnlyModeDescription": "E-Mail ist nicht konfiguriert. Nach dem Erstellen der Einladung müssen Sie den Einladungslink kopieren und manuell an den Benutzer senden."
   },
   "expiredLink": {
     "title": "Hallo, Partner!",
@@ -854,7 +865,10 @@
       "title": "AI-Titel generieren",
       "description": "Verwenden Sie OpenAI, um automatisch beschreibende Titel für Ihre Fotos zu generieren",
       "generateMissing": "Fehlende Titel generieren",
-      "regenerateAll": "Alle Titel erneut generieren"
+      "regenerateAll": "Alle Titel erneut generieren",
+      "autoEnabledDescription": "Automatische KI-Titelgenerierung ist aktiviert. Neue Fotos erhalten automatisch generierte KI-Titel. Verwenden Sie die untenstehenden Schaltflächen, um fehlende Titel nachträglich zu generieren oder bestehende neu zu generieren.",
+      "autoDisabledDescription": "Automatische KI-Titelgenerierung ist deaktiviert. KI-Titel werden nur mit den untenstehenden Schaltflächen oder im Metadaten-Editor generiert.",
+      "noMissingTitles": "Keine Fehlenden Titel"
     }
   },
   "profile": {
@@ -1182,7 +1196,11 @@
     "on": "Ein",
     "off": "Aus",
     "warningNote": "Änderungen an den Videoeinstellungen gelten nur für neu hochgeladene Videos. Bestehende Videos behalten ihre aktuellen Qualitätseinstellungen, es sei denn, Sie verwenden",
-    "forceRegenerate": "Alle neu generieren erzwingen"
+    "forceRegenerate": "Alle neu generieren erzwingen",
+    "segmentDurationSection": "Segmentdauer",
+    "hardwareTranscoding": "Hardware-Transkodierung",
+    "hardwareTranscodingSection": "Hardware-Transkodierung",
+    "hardwareTranscodingDescription": "Verwenden Sie GPU-Beschleunigung für schnelleres Video-Encoding (erfordert kompatible Hardware)"
   },
   "notifications": {
     "bannerTitle": "Benachrichtigen Sie mich, wenn die Verarbeitungsjobs abgeschlossen sind",

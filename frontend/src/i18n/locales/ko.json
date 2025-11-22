@@ -36,7 +36,9 @@
     "restore": "복원",
     "expand": "확장",
     "collapse": "축소",
-    "note": "노트"
+    "note": "노트",
+    "dismiss": "닫기",
+    "stop": "중지"
   },
   "app": {
     "loadingAlbums": "앨범을 불러오는 중...",
@@ -585,7 +587,16 @@
     "registering": "등록 중...",
     "register": "+ 등록",
     "registeredPasskeys": "등록된 패스키",
-    "passkeysNote": "참고: 패스키는 HTTPS(또는 localhost) 및 호환 가능한 장치가 필요합니다"
+    "passkeysNote": "참고: 패스키는 HTTPS(또는 localhost) 및 호환 가능한 장치가 필요합니다",
+    "creating": "생성 중...",
+    "createInviteLink": "초대 링크 생성",
+    "invitationCreated": "초대가 생성되었습니다",
+    "clickCopyLinkToShare": "초대 링크를 복사하여 사용자와 공유하려면 아래 버튼을 클릭하세요.",
+    "linkCopied": "링크가 복사되었습니다!",
+    "shareLinkWithUser": "이 링크를 사용자와 공유하여 등록을 완료하세요.",
+    "setupSmtpDescriptionDismissible": "SMTP를 설정하여 사용자 초대 및 비밀번호 재설정 이메일을 전송하거나, 링크 복사로만 사용자를 초대하려면 무시하세요.",
+    "linkOnlyMode": "링크 전용 모드",
+    "linkOnlyModeDescription": "이메일이 구성되지 않았습니다. 초대를 생성한 후 초대 링크를 복사하여 수동으로 사용자에게 보내야 합니다."
   },
   "expiredLink": {
     "title": "자, 안녕하세요, 파드너!",
@@ -854,7 +865,10 @@
       "title": "AI 제목 생성",
       "description": "OpenAI를 사용하여 사진에 대한 설명 제목을 자동으로 생성합니다",
       "generateMissing": "누락된 제목 생성",
-      "regenerateAll": "모든 제목 강제로 다시 생성"
+      "regenerateAll": "모든 제목 강제로 다시 생성",
+      "autoEnabledDescription": "자동 AI 제목 생성이 활성화되었습니다. 새로운 사진에는 자동으로 AI 제목이 생성됩니다. 아래 버튼을 사용하여 누락된 제목을 채우거나 기존 제목을 재생성하세요.",
+      "autoDisabledDescription": "자동 AI 제목 생성이 비활성화되었습니다. AI 제목은 아래 버튼을 사용하거나 메타데이터 편집기에서만 생성됩니다.",
+      "noMissingTitles": "누락된 제목 없음"
     }
   },
   "profile": {
@@ -1182,7 +1196,11 @@
     "on": "켜기",
     "off": "끄기",
     "warningNote": "비디오 설정에 대한 변경 사항은 새로 업로드된 비디오에만 적용됩니다. 기존 비디오는 현재 품질 설정을 유지하며,",
-    "forceRegenerate": "모두 강제로 재생성 사용 시 변경됩니다."
+    "forceRegenerate": "모두 강제로 재생성 사용 시 변경됩니다.",
+    "segmentDurationSection": "세그먼트 지속 시간",
+    "hardwareTranscoding": "하드웨어 트랜스코딩",
+    "hardwareTranscodingSection": "하드웨어 트랜스코딩",
+    "hardwareTranscodingDescription": "GPU 가속을 사용하여 더 빠른 비디오 인코딩 (호환 가능한 하드웨어 필요)"
   },
   "notifications": {
     "bannerTitle": "처리 작업이 완료되면 알림 받기",

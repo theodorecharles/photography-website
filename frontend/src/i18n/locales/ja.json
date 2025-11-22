@@ -36,7 +36,9 @@
     "restore": "復元",
     "expand": "展開",
     "collapse": "折りたたむ",
-    "note": "ノート"
+    "note": "ノート",
+    "dismiss": "閉じる",
+    "stop": "停止"
   },
   "app": {
     "loadingAlbums": "アルバムを読み込み中...",
@@ -585,7 +587,16 @@
     "registering": "登録中...",
     "register": "+ 登録",
     "registeredPasskeys": "登録済みパスキー",
-    "passkeysNote": "注：パスキーにはHTTPS（またはlocalhost）と互換性のあるデバイスが必要です"
+    "passkeysNote": "注：パスキーにはHTTPS（またはlocalhost）と互換性のあるデバイスが必要です",
+    "creating": "作成中...",
+    "createInviteLink": "招待リンクを作成",
+    "invitationCreated": "招待が作成されました",
+    "clickCopyLinkToShare": "招待リンクをコピーしてユーザーと共有するには、下のボタンをクリックしてください。",
+    "linkCopied": "リンクがコピーされました！",
+    "shareLinkWithUser": "このリンクをユーザーと共有して、登録を完了させてください。",
+    "setupSmtpDescriptionDismissible": "SMTPを設定してユーザー招待とパスワードリセットのメールを送信するか、リンクのコピーのみでユーザーを招待するには閉じてください。",
+    "linkOnlyMode": "リンクのみモード",
+    "linkOnlyModeDescription": "メールが設定されていません。招待を作成した後、招待リンクをコピーして手動でユーザーに送信する必要があります。"
   },
   "expiredLink": {
     "title": "おっと、パートナー！",
@@ -854,7 +865,10 @@
       "title": "AIタイトルを生成",
       "description": "写真の説明的なタイトルを自動生成するためにOpenAIを使用",
       "generateMissing": "不足しているタイトルを生成",
-      "regenerateAll": "すべてのタイトルを強制的に再生成"
+      "regenerateAll": "すべてのタイトルを強制的に再生成",
+      "autoEnabledDescription": "自動AIタイトル生成が有効です。新しい写真には自動的にAIタイトルが生成されます。欠落しているタイトルを補完するか、既存のタイトルを再生成するには、以下のボタンを使用してください。",
+      "autoDisabledDescription": "自動AIタイトル生成が無効です。AIタイトルは以下のボタンまたはメタデータエディタでのみ生成されます。",
+      "noMissingTitles": "欠落しているタイトルはありません"
     }
   },
   "profile": {
@@ -1182,7 +1196,11 @@
     "on": "オン",
     "off": "オフ",
     "warningNote": "動画設定の変更は、新しくアップロードされた動画にのみ適用されます。既存の動画は、使用しない限り現在の品質設定を維持します。",
-    "forceRegenerate": "すべてを強制再生成"
+    "forceRegenerate": "すべてを強制再生成",
+    "segmentDurationSection": "セグメントの期間",
+    "hardwareTranscoding": "ハードウェアトランスコーディング",
+    "hardwareTranscodingSection": "ハードウェアトランスコーディング",
+    "hardwareTranscodingDescription": "GPUアクセラレーションを使用して、より高速なビデオエンコーディングを行います（対応するハードウェアが必要です）"
   },
   "notifications": {
     "bannerTitle": "処理ジョブが完了したときに通知を受け取る",

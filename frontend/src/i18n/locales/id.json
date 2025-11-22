@@ -36,7 +36,9 @@
     "generating": "Menghasilkan...",
     "album": "album",
     "albums": "album",
-    "note": "Catatan"
+    "note": "Catatan",
+    "dismiss": "Abaikan",
+    "stop": "Berhenti"
   },
   "app": {
     "loadingAlbums": "Memuat album...",
@@ -585,7 +587,16 @@
     "registering": "Sedang mendaftar...",
     "register": "+ Daftar",
     "registeredPasskeys": "Kunci Terdaftar",
-    "passkeysNote": "Catatan: Kunci memerlukan HTTPS (atau localhost) dan perangkat yang kompatibel"
+    "passkeysNote": "Catatan: Kunci memerlukan HTTPS (atau localhost) dan perangkat yang kompatibel",
+    "creating": "Membuat...",
+    "createInviteLink": "Buat Tautan Undangan",
+    "invitationCreated": "Undangan Dibuat",
+    "clickCopyLinkToShare": "Klik tombol di bawah untuk menyalin tautan undangan dan membagikannya dengan pengguna.",
+    "linkCopied": "Tautan Disalin!",
+    "shareLinkWithUser": "Bagikan tautan ini dengan pengguna untuk menyelesaikan pendaftaran mereka.",
+    "setupSmtpDescriptionDismissible": "Atur SMTP untuk mengirim email undangan pengguna dan pengaturan ulang kata sandi, atau abaikan untuk mengundang pengguna hanya dengan tautan salinan.",
+    "linkOnlyMode": "Mode Hanya-Tautan",
+    "linkOnlyModeDescription": "Email tidak dikonfigurasi. Setelah membuat undangan, Anda perlu menyalin dan mengirim tautan undangan secara manual kepada pengguna."
   },
   "expiredLink": {
     "title": "Halo, teman!",
@@ -854,7 +865,10 @@
       "title": "Hasilkan Judul AI",
       "description": "Gunakan OpenAI untuk secara otomatis menghasilkan judul deskriptif untuk foto-foto Anda",
       "generateMissing": "Hasilkan Judul yang Hilang",
-      "regenerateAll": "Paksa Regenerasi Semua Judul"
+      "regenerateAll": "Paksa Regenerasi Semua Judul",
+      "autoEnabledDescription": "Pembuatan judul AI otomatis diaktifkan. Foto baru akan mendapatkan judul AI yang dihasilkan secara otomatis. Gunakan tombol di bawah untuk mengisi judul yang hilang atau meregenerasi yang sudah ada.",
+      "autoDisabledDescription": "Pembuatan judul AI otomatis dinonaktifkan. Judul AI hanya akan dihasilkan menggunakan tombol di bawah atau di editor metadata.",
+      "noMissingTitles": "Tidak Ada Judul yang Hilang"
     }
   },
   "profile": {
@@ -1182,7 +1196,11 @@
     "on": "Hidup",
     "off": "Matikan",
     "warningNote": "Perubahan pada pengaturan video hanya berlaku untuk video yang baru diunggah. Video yang sudah ada akan mempertahankan pengaturan kualitas saat ini kecuali Anda menggunakan",
-    "forceRegenerate": "Paksa Regenerasi Semua"
+    "forceRegenerate": "Paksa Regenerasi Semua",
+    "segmentDurationSection": "Durasi Segmen",
+    "hardwareTranscoding": "Transcoding Perangkat Keras",
+    "hardwareTranscodingSection": "Transcoding Perangkat Keras",
+    "hardwareTranscodingDescription": "Gunakan akselerasi GPU untuk pengkodean video yang lebih cepat (memerlukan perangkat keras yang kompatibel)"
   },
   "notifications": {
     "bannerTitle": "Dapatkan Notifikasi Ketika Pekerjaan Pemrosesan Selesai",

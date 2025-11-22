@@ -36,7 +36,9 @@
     "generating": "Nabuo...",
     "album": "album",
     "albums": "mga album",
-    "note": "Tala"
+    "note": "Tala",
+    "dismiss": "I-dismiss",
+    "stop": "Itigil"
   },
   "app": {
     "loadingAlbums": "Nagloload ng mga album...",
@@ -585,7 +587,16 @@
     "registering": "Nagre-register...",
     "register": "+ Magrehistro",
     "registeredPasskeys": "Naka-rehistrong Passkeys",
-    "passkeysNote": "Tandaan: Ang Passkeys ay nangangailangan ng HTTPS (o localhost) at isang compatible na device"
+    "passkeysNote": "Tandaan: Ang Passkeys ay nangangailangan ng HTTPS (o localhost) at isang compatible na device",
+    "creating": "Lumilikha...",
+    "createInviteLink": "Lumikha ng Imbitasyon na Link",
+    "invitationCreated": "Nalikha ang Imbitasyon",
+    "clickCopyLinkToShare": "I-click ang button sa ibaba upang kopyahin ang link ng imbitasyon at ibahagi ito sa gumagamit.",
+    "linkCopied": "Nakopya ang Link!",
+    "shareLinkWithUser": "Ibahagi ang link na ito sa gumagamit upang makumpleto ang kanilang pagpaparehistro.",
+    "setupSmtpDescriptionDismissible": "I-set up ang SMTP upang magpadala ng imbitasyon sa gumagamit at mga email para sa pag-reset ng password, o i-dismiss upang mag-imbita ng mga gumagamit gamit lamang ang mga kopyang link.",
+    "linkOnlyMode": "Mode na Link-Lamang",
+    "linkOnlyModeDescription": "Hindi naka-configure ang Email. Pagkatapos lumikha ng imbitasyon, kakailanganin mong kopyahin at manu-manong ipadala ang link ng imbitasyon sa gumagamit."
   },
   "expiredLink": {
     "title": "Kumusta, kaibigan!",
@@ -854,7 +865,10 @@
       "title": "Bumuo ng AI Titles",
       "description": "Gamitin ang OpenAI upang awtomatikong bumuo ng mga deskriptibong pamagat para sa iyong mga larawan",
       "generateMissing": "Bumuo ng Nawawalang mga Pamagat",
-      "regenerateAll": "Pilitin ang Muling Pagbuo ng Lahat ng mga Pamagat"
+      "regenerateAll": "Pilitin ang Muling Pagbuo ng Lahat ng mga Pamagat",
+      "autoEnabledDescription": "Naka-enable ang awtomatikong pagbuo ng pamagat ng AI. Ang mga bagong larawan ay magkakaroon ng mga pamagat ng AI na awtomatikong nabuo. Gamitin ang mga button sa ibaba upang punan ang mga nawawalang pamagat o muling buuin ang mga umiiral na.",
+      "autoDisabledDescription": "Naka-disable ang awtomatikong pagbuo ng pamagat ng AI. Ang mga pamagat ng AI ay mabubuo lamang gamit ang mga button sa ibaba o sa metadata editor.",
+      "noMissingTitles": "Walang Nawawalang Pamagat"
     }
   },
   "profile": {
@@ -1182,7 +1196,11 @@
     "on": "Naka-on",
     "off": "Naka-off",
     "warningNote": "Ang mga pagbabago sa mga setting ng video ay nalalapat lamang sa mga bagong na-upload na video. Ang mga umiiral na video ay mananatili sa kanilang kasalukuyang mga setting ng kalidad maliban kung gagamitin mo ang",
-    "forceRegenerate": "Puwersang I-regenerate Lahat"
+    "forceRegenerate": "Puwersang I-regenerate Lahat",
+    "segmentDurationSection": "Tagal ng Segment",
+    "hardwareTranscoding": "Hardware na Pag-transcode",
+    "hardwareTranscodingSection": "Hardware na Pag-transcode",
+    "hardwareTranscodingDescription": "Gamitin ang GPU acceleration para sa mas mabilis na pag-encode ng video (nangangailangan ng compatible na hardware)"
   },
   "notifications": {
     "bannerTitle": "Makatanggap ng Abiso Kapag Kumpleto ang Mga Trabaho sa Pagpoproseso",

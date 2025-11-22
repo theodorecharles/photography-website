@@ -36,7 +36,9 @@
     "restore": "Restaurer",
     "expand": "Développer",
     "collapse": "Réduire",
-    "note": "Remarque"
+    "note": "Remarque",
+    "dismiss": "Ignorer",
+    "stop": "Arrêter"
   },
   "app": {
     "loadingAlbums": "Chargement des albums...",
@@ -545,7 +547,16 @@
     "registering": "Enregistrement...",
     "register": "+ Enregistrer",
     "registeredPasskeys": "Clés d'Accès Enregistrées",
-    "passkeysNote": "Note : Les clés d'accès nécessitent HTTPS (ou localhost) et un appareil compatible"
+    "passkeysNote": "Note : Les clés d'accès nécessitent HTTPS (ou localhost) et un appareil compatible",
+    "creating": "Création...",
+    "createInviteLink": "Créer un lien d'invitation",
+    "invitationCreated": "Invitation créée",
+    "clickCopyLinkToShare": "Cliquez sur le bouton ci-dessous pour copier le lien d'invitation et le partager avec l'utilisateur.",
+    "linkCopied": "Lien copié !",
+    "shareLinkWithUser": "Partagez ce lien avec l'utilisateur pour compléter son inscription.",
+    "setupSmtpDescriptionDismissible": "Configurez SMTP pour envoyer des emails d'invitation et de réinitialisation de mot de passe, ou ignorez pour inviter des utilisateurs uniquement avec des liens copiés.",
+    "linkOnlyMode": "Mode uniquement par lien",
+    "linkOnlyModeDescription": "L'email n'est pas configuré. Après avoir créé l'invitation, vous devrez copier et envoyer manuellement le lien d'invitation à l'utilisateur."
   },
   "advancedSettings": {
     "title": "Paramètres avancés",
@@ -854,7 +865,10 @@
       "title": "Générer des titres AI",
       "description": "Utilisez OpenAI pour générer automatiquement des titres descriptifs pour vos photos",
       "generateMissing": "Générer des titres manquants",
-      "regenerateAll": "Forcer la régénération de tous les titres"
+      "regenerateAll": "Forcer la régénération de tous les titres",
+      "autoEnabledDescription": "La génération automatique de titres par IA est activée. Les nouvelles photos recevront automatiquement des titres générés par IA. Utilisez les boutons ci-dessous pour remplir les titres manquants ou régénérer ceux existants.",
+      "autoDisabledDescription": "La génération automatique de titres par IA est désactivée. Les titres par IA ne seront générés qu'en utilisant les boutons ci-dessous ou dans l'éditeur de métadonnées.",
+      "noMissingTitles": "Aucun titre manquant"
     }
   },
   "profile": {
@@ -1182,7 +1196,11 @@
     "on": "Activé",
     "off": "Désactivé",
     "warningNote": "Les modifications des paramètres vidéo ne s'appliquent qu'aux vidéos nouvellement téléchargées. Les vidéos existantes conserveront leurs paramètres de qualité actuels, sauf si vous utilisez",
-    "forceRegenerate": "Forcer la régénération de tout"
+    "forceRegenerate": "Forcer la régénération de tout",
+    "segmentDurationSection": "Durée du segment",
+    "hardwareTranscoding": "Transcodage matériel",
+    "hardwareTranscodingSection": "Transcodage matériel",
+    "hardwareTranscodingDescription": "Utilisez l'accélération GPU pour un encodage vidéo plus rapide (nécessite un matériel compatible)"
   },
   "notifications": {
     "bannerTitle": "Recevez une notification lorsque les travaux de traitement sont terminés",

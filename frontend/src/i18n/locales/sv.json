@@ -36,7 +36,9 @@
     "restore": "Återställ",
     "expand": "Expandera",
     "collapse": "Kollapsa",
-    "note": "Notis"
+    "note": "Notis",
+    "dismiss": "Avvisa",
+    "stop": "Stoppa"
   },
   "app": {
     "loadingAlbums": "Laddar album...",
@@ -585,7 +587,16 @@
     "registering": "Registrerar...",
     "register": "+ Registrera",
     "registeredPasskeys": "Registrerade passnycklar",
-    "passkeysNote": "Notera: Passnycklar kräver HTTPS (eller localhost) och en kompatibel enhet"
+    "passkeysNote": "Notera: Passnycklar kräver HTTPS (eller localhost) och en kompatibel enhet",
+    "creating": "Skapar...",
+    "createInviteLink": "Skapa inbjudningslänk",
+    "invitationCreated": "Inbjudan skapad",
+    "clickCopyLinkToShare": "Klicka på knappen nedan för att kopiera inbjudningslänken och dela den med användaren.",
+    "linkCopied": "Länk kopierad!",
+    "shareLinkWithUser": "Dela denna länk med användaren för att slutföra deras registrering.",
+    "setupSmtpDescriptionDismissible": "Ställ in SMTP för att skicka användarinbjudan och lösenordsåterställningsmail, eller avvisa för att bjuda in användare endast med kopieringslänkar.",
+    "linkOnlyMode": "Endast länk-läge",
+    "linkOnlyModeDescription": "E-post är inte konfigurerad. Efter att ha skapat inbjudan måste du kopiera och manuellt skicka inbjudningslänken till användaren."
   },
   "expiredLink": {
     "title": "Nåväl, hur står det till, partner!",
@@ -854,7 +865,10 @@
       "title": "Generera AI-titlar",
       "description": "Använd OpenAI för att automatiskt generera beskrivande titlar för dina foton",
       "generateMissing": "Generera saknade titlar",
-      "regenerateAll": "Tvinga att regenerera alla titlar"
+      "regenerateAll": "Tvinga att regenerera alla titlar",
+      "autoEnabledDescription": "Automatisk AI-titelgenerering är aktiverad. Nya foton kommer automatiskt att få AI-genererade titlar. Använd knapparna nedan för att fylla i saknade titlar eller återskapa befintliga.",
+      "autoDisabledDescription": "Automatisk AI-titelgenerering är inaktiverad. AI-titlar kommer endast att genereras med hjälp av knapparna nedan eller i metadataredigeraren.",
+      "noMissingTitles": "Inga saknade titlar"
     }
   },
   "profile": {
@@ -1182,7 +1196,11 @@
     "on": "På",
     "off": "Av",
     "warningNote": "Ändringar i videoinställningar gäller endast för nyligen uppladdade videor. Befintliga videor behåller sina nuvarande kvalitetsinställningar om du inte använder",
-    "forceRegenerate": "Tvinga att återskapa alla"
+    "forceRegenerate": "Tvinga att återskapa alla",
+    "segmentDurationSection": "Segmentlängd",
+    "hardwareTranscoding": "Hårdvaru-transkodering",
+    "hardwareTranscodingSection": "Hårdvaru-transkodering",
+    "hardwareTranscodingDescription": "Använd GPU-acceleration för snabbare videokodning (kräver kompatibel hårdvara)"
   },
   "notifications": {
     "bannerTitle": "Få meddelande när bearbetningsjobb är klara",

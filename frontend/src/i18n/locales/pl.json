@@ -36,7 +36,9 @@
     "restore": "Przywróć",
     "expand": "Rozwiń",
     "collapse": "Zwiń",
-    "note": "Uwaga"
+    "note": "Uwaga",
+    "dismiss": "Odrzuć",
+    "stop": "Zatrzymaj"
   },
   "app": {
     "loadingAlbums": "Ładowanie albumów...",
@@ -585,7 +587,16 @@
     "registering": "Rejestracja...",
     "register": "+ Zarejestruj",
     "registeredPasskeys": "Zarejestrowane klucze dostępu",
-    "passkeysNote": "Uwaga: Klucze dostępu wymagają HTTPS (lub localhost) i kompatybilnego urządzenia"
+    "passkeysNote": "Uwaga: Klucze dostępu wymagają HTTPS (lub localhost) i kompatybilnego urządzenia",
+    "creating": "Tworzenie...",
+    "createInviteLink": "Utwórz link zaproszenia",
+    "invitationCreated": "Zaproszenie utworzone",
+    "clickCopyLinkToShare": "Kliknij przycisk poniżej, aby skopiować link zaproszenia i udostępnić go użytkownikowi.",
+    "linkCopied": "Link skopiowany!",
+    "shareLinkWithUser": "Udostępnij ten link użytkownikowi, aby zakończyć jego rejestrację.",
+    "setupSmtpDescriptionDismissible": "Skonfiguruj SMTP, aby wysyłać zaproszenia użytkowników i e-maile do resetowania hasła, lub odrzuć, aby zapraszać użytkowników tylko za pomocą skopiowanych linków.",
+    "linkOnlyMode": "Tryb tylko z linkiem",
+    "linkOnlyModeDescription": "E-mail nie jest skonfigurowany. Po utworzeniu zaproszenia będziesz musiał skopiować i ręcznie wysłać link zaproszenia do użytkownika."
   },
   "expiredLink": {
     "title": "Cóż, witaj, partnerze!",
@@ -854,7 +865,10 @@
       "title": "Generuj tytuły AI",
       "description": "Użyj OpenAI, aby automatycznie generować opisowe tytuły dla swoich zdjęć",
       "generateMissing": "Generuj brakujące tytuły",
-      "regenerateAll": "Wymuś ponowne wygenerowanie wszystkich tytułów"
+      "regenerateAll": "Wymuś ponowne wygenerowanie wszystkich tytułów",
+      "autoEnabledDescription": "Automatyczne generowanie tytułów AI jest włączone. Nowe zdjęcia będą automatycznie otrzymywać tytuły AI. Użyj przycisków poniżej, aby uzupełnić brakujące tytuły lub zregenerować istniejące.",
+      "autoDisabledDescription": "Automatyczne generowanie tytułów AI jest wyłączone. Tytuły AI będą generowane tylko za pomocą przycisków poniżej lub w edytorze metadanych.",
+      "noMissingTitles": "Brak brakujących tytułów"
     }
   },
   "profile": {
@@ -1182,7 +1196,11 @@
     "on": "Włącz",
     "off": "Wyłącz",
     "warningNote": "Zmiany w ustawieniach wideo dotyczą tylko nowo przesłanych filmów. Istniejące filmy zachowają swoje aktualne ustawienia jakości, chyba że użyjesz",
-    "forceRegenerate": "Wymuś regenerację wszystkich"
+    "forceRegenerate": "Wymuś regenerację wszystkich",
+    "segmentDurationSection": "Czas trwania segmentu",
+    "hardwareTranscoding": "Transkodowanie sprzętowe",
+    "hardwareTranscodingSection": "Transkodowanie sprzętowe",
+    "hardwareTranscodingDescription": "Użyj przyspieszenia GPU, aby przyspieszyć kodowanie wideo (wymaga kompatybilnego sprzętu)"
   },
   "notifications": {
     "bannerTitle": "Powiadom mnie, gdy zadania przetwarzania zostaną zakończone",

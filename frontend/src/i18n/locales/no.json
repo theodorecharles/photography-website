@@ -36,7 +36,9 @@
     "restore": "Gjenopprett",
     "expand": "Utvid",
     "collapse": "Kollaps",
-    "note": "Merk"
+    "note": "Merk",
+    "dismiss": "Avvis",
+    "stop": "Stopp"
   },
   "app": {
     "loadingAlbums": "Laster inn album...",
@@ -585,7 +587,16 @@
     "registering": "Registrerer...",
     "register": "+ Registrer",
     "registeredPasskeys": "Registrerte passnøkler",
-    "passkeysNote": "Merk: Passnøkler krever HTTPS (eller localhost) og en kompatibel enhet"
+    "passkeysNote": "Merk: Passnøkler krever HTTPS (eller localhost) og en kompatibel enhet",
+    "creating": "Oppretter...",
+    "createInviteLink": "Opprett invitasjonslenke",
+    "invitationCreated": "Invitasjon opprettet",
+    "clickCopyLinkToShare": "Klikk på knappen nedenfor for å kopiere invitasjonslenken og dele den med brukeren.",
+    "linkCopied": "Lenke kopiert!",
+    "shareLinkWithUser": "Del denne lenken med brukeren for å fullføre registreringen deres.",
+    "setupSmtpDescriptionDismissible": "Sett opp SMTP for å sende brukerinvitasjon og e-post for tilbakestilling av passord, eller avvis for å invitere brukere kun med kopilenker.",
+    "linkOnlyMode": "Kun lenke-modus",
+    "linkOnlyModeDescription": "E-post er ikke konfigurert. Etter å ha opprettet invitasjonen, må du kopiere og manuelt sende invitasjonslenken til brukeren."
   },
   "expiredLink": {
     "title": "Vel, hvordan står det til, partner!",
@@ -854,7 +865,10 @@
       "title": "Generer AI-titler",
       "description": "Bruk OpenAI til å automatisk generere beskrivende titler for bildene dine",
       "generateMissing": "Generer manglende titler",
-      "regenerateAll": "Tving regenerering av alle titler"
+      "regenerateAll": "Tving regenerering av alle titler",
+      "autoEnabledDescription": "Automatisk AI-tittelgenerering er aktivert. Nye bilder vil få AI-titler generert automatisk. Bruk knappene nedenfor for å fylle ut manglende titler eller regenerere eksisterende.",
+      "autoDisabledDescription": "Automatisk AI-tittelgenerering er deaktivert. AI-titler vil kun genereres ved å bruke knappene nedenfor eller i metadataredigereren.",
+      "noMissingTitles": "Ingen manglende titler"
     }
   },
   "profile": {
@@ -1182,7 +1196,11 @@
     "on": "På",
     "off": "Av",
     "warningNote": "Endringer i videoinnstillinger gjelder kun for nylig opplastede videoer. Eksisterende videoer vil beholde sine nåværende kvalitetinnstillinger med mindre du bruker",
-    "forceRegenerate": "Tving gjenoppretting av alt"
+    "forceRegenerate": "Tving gjenoppretting av alt",
+    "segmentDurationSection": "Segmentvarighet",
+    "hardwareTranscoding": "Maskinvaretranskoding",
+    "hardwareTranscodingSection": "Maskinvaretranskoding",
+    "hardwareTranscodingDescription": "Bruk GPU-akselerasjon for raskere videokoding (krever kompatibel maskinvare)"
   },
   "notifications": {
     "bannerTitle": "Bli varslet når behandling av jobber er fullført",

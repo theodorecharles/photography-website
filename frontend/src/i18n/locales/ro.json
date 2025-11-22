@@ -36,7 +36,9 @@
     "generating": "Se generează...",
     "album": "album",
     "albums": "albume",
-    "note": "Notă"
+    "note": "Notă",
+    "dismiss": "Respinge",
+    "stop": "Oprește"
   },
   "app": {
     "loadingAlbums": "Se încarcă albumele...",
@@ -585,7 +587,16 @@
     "registering": "Se înregistrează...",
     "register": "+ Înregistrează",
     "registeredPasskeys": "Chei de acces înregistrate",
-    "passkeysNote": "Notă: Cheile de acces necesită HTTPS (sau localhost) și un dispozitiv compatibil"
+    "passkeysNote": "Notă: Cheile de acces necesită HTTPS (sau localhost) și un dispozitiv compatibil",
+    "creating": "Creare...",
+    "createInviteLink": "Creează Link de Invitație",
+    "invitationCreated": "Invitație Creată",
+    "clickCopyLinkToShare": "Apasă butonul de mai jos pentru a copia linkul de invitație și a-l împărtăși cu utilizatorul.",
+    "linkCopied": "Link Copiat!",
+    "shareLinkWithUser": "Împărtășește acest link cu utilizatorul pentru a finaliza înregistrarea lor.",
+    "setupSmtpDescriptionDismissible": "Configurează SMTP pentru a trimite invitații și emailuri de resetare a parolei utilizatorilor, sau respinge pentru a invita utilizatori doar cu linkuri copiate.",
+    "linkOnlyMode": "Modul Doar Link",
+    "linkOnlyModeDescription": "Emailul nu este configurat. După crearea invitației, va trebui să copiezi și să trimiți manual linkul de invitație utilizatorului."
   },
   "expiredLink": {
     "title": "Ei bine, salut acolo, partener!",
@@ -854,7 +865,10 @@
       "title": "Generați Titluri AI",
       "description": "Utilizați OpenAI pentru a genera automat titluri descriptive pentru fotografiile dvs.",
       "generateMissing": "Generați Titluri Lipsă",
-      "regenerateAll": "Forțați Regenerarea Tuturor Titlurilor"
+      "regenerateAll": "Forțați Regenerarea Tuturor Titlurilor",
+      "autoEnabledDescription": "Generarea automată a titlurilor AI este activată. Fotografiile noi vor primi titluri AI generate automat. Folosește butoanele de mai jos pentru a completa titlurile lipsă sau a regenera pe cele existente.",
+      "autoDisabledDescription": "Generarea automată a titlurilor AI este dezactivată. Titlurile AI vor fi generate doar folosind butoanele de mai jos sau în editorul de metadate.",
+      "noMissingTitles": "Niciun Titlu Lipsă"
     }
   },
   "profile": {
@@ -1182,7 +1196,11 @@
     "on": "Activat",
     "off": "Dezactivat",
     "warningNote": "Modificările la setările video se aplică doar videoclipurilor încărcate recent. Videoclipurile existente își vor păstra setările de calitate curente, cu excepția cazului în care folosești",
-    "forceRegenerate": "Forțează regenerarea tuturor"
+    "forceRegenerate": "Forțează regenerarea tuturor",
+    "segmentDurationSection": "Durata Segmentului",
+    "hardwareTranscoding": "Transcodare Hardware",
+    "hardwareTranscodingSection": "Transcodare Hardware",
+    "hardwareTranscodingDescription": "Folosește accelerarea GPU pentru o codificare video mai rapidă (necesită hardware compatibil)"
   },
   "notifications": {
     "bannerTitle": "Fii notificat când lucrările de procesare sunt complete",
