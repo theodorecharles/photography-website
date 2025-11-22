@@ -13,6 +13,7 @@ const __dirname = path.dirname(__filename);
 
 // Load all translation files (backend-only translations)
 const translationsCache: { [locale: string]: any } = {};
+// Resolve path relative to this file's location (works in both src and dist)
 const localesDir = path.join(__dirname, 'i18n/locales');
 
 // Supported languages
