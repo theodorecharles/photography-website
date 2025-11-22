@@ -1134,7 +1134,8 @@ router.patch("/:album/publish", requireManager, async (req: Request, res: Respon
     }
     info(`[AlbumManagement] Verified album state in DB: published=${albumState.published}`);
 
-    // Send push notification to all admins when album is published
+    // Send push notification to all admins
+    const userName = (req.user as any).name || (req.user as any).email;
     if (published) {
       await notifyAllAdmins(
         'notifications.backend.albumPublishedTitle',
@@ -1143,9 +1144,20 @@ router.patch("/:album/publish", requireManager, async (req: Request, res: Respon
         'albumPublished',
         {
           albumName: sanitizedAlbum,
-          publishedBy: (req.user as any).name || (req.user as any).email
+          publishedBy: userName
         }
       ).catch(err => error('[AlbumManagement] Failed to send album publish notification:', err));
+    } else {
+      await notifyAllAdmins(
+        'notifications.backend.albumUnpublishedTitle',
+        'notifications.backend.albumUnpublishedBody',
+        'album-unpublished',
+        'albumUnpublished',
+        {
+          albumName: sanitizedAlbum,
+          unpublishedBy: userName
+        }
+      ).catch(err => error('[AlbumManagement] Failed to send album unpublish notification:', err));
     }
 
     // Regenerate static JSON files
@@ -1217,6 +1229,23 @@ router.patch("/:album/show-on-homepage", requireManager, async (req: Request, re
     }
     
     info(`[AlbumManagement] Set album "${sanitizedAlbum}" show_on_homepage state to: ${showOnHomepage}`);
+
+    // Send push notification to all admins
+    const userName = (req.user as any).name || (req.user as any).email;
+    const action = showOnHomepage ? 'added' : 'removed';
+    const preposition = showOnHomepage ? 'to' : 'from';
+    await notifyAllAdmins(
+      'notifications.backend.homepageUpdatedTitle',
+      'notifications.backend.homepageUpdatedBody',
+      'homepage-updated',
+      'homepageUpdated',
+      {
+        updatedBy: userName,
+        albumName: sanitizedAlbum,
+        action,
+        preposition
+      }
+    ).catch(err => error('[AlbumManagement] Failed to send homepage update notification:', err));
 
     // Regenerate static JSON files (specifically homepage.json)
     info(`[Homepage] Regenerating static JSON files...`);

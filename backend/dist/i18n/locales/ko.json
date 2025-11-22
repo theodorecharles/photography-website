@@ -68,7 +68,19 @@
       "imageOptimizationCompleteBody": "{{imagesOptimized}}개의 이미지 최적화 성공",
       "imageOptimizationFailedBody": "이미지 최적화 실패: {{error}}",
       "aiTitlesCompleteBody": "{{albumName}}에 대한 {{titlesGenerated}}개의 제목 생성",
-      "aiTitlesFailedBody": "{{albumName}}에 대한 제목 생성 실패: {{error}}"
+      "aiTitlesFailedBody": "{{albumName}}에 대한 제목 생성 실패: {{error}}",
+      "albumUnpublishedTitle": "앨범 미발행",
+      "albumUnpublishedBody": "{{unpublishedBy}} 미발행 앨범: {{albumName}}",
+      "folderCreatedTitle": "폴더 생성됨",
+      "folderCreatedBody": "{{createdBy}} 생성된 폴더: {{folderName}}",
+      "folderPublishedTitle": "폴더 발행됨",
+      "folderPublishedBody": "{{publishedBy}} 발행된 폴더 {{folderName}} ({{albumCount}} 앨범: {{albumNames}})",
+      "folderUnpublishedTitle": "폴더 미발행",
+      "folderUnpublishedBody": "{{unpublishedBy}} 미발행 폴더 {{folderName}} ({{albumCount}} 앨범: {{albumNames}})",
+      "folderDeletedTitle": "폴더 삭제됨",
+      "folderDeletedBody": "{{deletedBy}} 삭제된 폴더 {{folderName}} ({{albumCount}} 앨범: {{albumNames}})",
+      "homepageUpdatedTitle": "홈페이지 업데이트됨",
+      "homepageUpdatedBody": "{{updatedBy}} {{action}} {{albumName}} {{preposition}} 홈페이지"
     }
   },
   "email": {

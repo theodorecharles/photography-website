@@ -68,7 +68,19 @@
       "imageOptimizationCompleteBody": "{{imagesOptimized}} imagini optimizate cu succes",
       "imageOptimizationFailedBody": "Optimizarea imaginilor a eșuat: {{error}}",
       "aiTitlesCompleteBody": "Au fost generate {{titlesGenerated}} titluri pentru {{albumName}}",
-      "aiTitlesFailedBody": "Nu s-a reușit generarea titlurilor pentru {{albumName}}: {{error}}"
+      "aiTitlesFailedBody": "Nu s-a reușit generarea titlurilor pentru {{albumName}}: {{error}}",
+      "albumUnpublishedTitle": "Album Nepublicat",
+      "albumUnpublishedBody": "{{unpublishedBy}} album nepublicat: {{albumName}}",
+      "folderCreatedTitle": "Dosar Creat",
+      "folderCreatedBody": "{{createdBy}} a creat dosarul: {{folderName}}",
+      "folderPublishedTitle": "Dosar Publicat",
+      "folderPublishedBody": "{{publishedBy}} a publicat dosarul {{folderName}} ({{albumCount}} albume: {{albumNames}})",
+      "folderUnpublishedTitle": "Dosar Nepublicat",
+      "folderUnpublishedBody": "{{unpublishedBy}} a nepublicat dosarul {{folderName}} ({{albumCount}} albume: {{albumNames}})",
+      "folderDeletedTitle": "Dosar Șters",
+      "folderDeletedBody": "{{deletedBy}} a șters dosarul {{folderName}} ({{albumCount}} albume: {{albumNames}})",
+      "homepageUpdatedTitle": "Pagina Principală Actualizată",
+      "homepageUpdatedBody": "{{updatedBy}} {{action}} {{albumName}} {{preposition}} pagina principală"
     }
   },
   "email": {

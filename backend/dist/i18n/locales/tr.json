@@ -68,7 +68,19 @@
       "imageOptimizationCompleteBody": "{{imagesOptimized}} görüntü başarıyla optimize edildi",
       "imageOptimizationFailedBody": "Görüntü optimizasyonu başarısız oldu: {{error}}",
       "aiTitlesCompleteBody": "{{albumName}} için {{titlesGenerated}} başlık oluşturuldu",
-      "aiTitlesFailedBody": "{{albumName}} için başlık oluşturulamadı: {{error}}"
+      "aiTitlesFailedBody": "{{albumName}} için başlık oluşturulamadı: {{error}}",
+      "albumUnpublishedTitle": "Albüm Yayınlanmadı",
+      "albumUnpublishedBody": "{{unpublishedBy}} yayınlanmamış albüm: {{albumName}}",
+      "folderCreatedTitle": "Klasör Oluşturuldu",
+      "folderCreatedBody": "{{createdBy}} klasör oluşturdu: {{folderName}}",
+      "folderPublishedTitle": "Klasör Yayınlandı",
+      "folderPublishedBody": "{{publishedBy}} {{folderName}} klasörünü yayınladı ({{albumCount}} albümler: {{albumNames}})",
+      "folderUnpublishedTitle": "Klasör Yayınlanmadı",
+      "folderUnpublishedBody": "{{unpublishedBy}} {{folderName}} klasörünü yayınlamadı ({{albumCount}} albümler: {{albumNames}})",
+      "folderDeletedTitle": "Klasör Silindi",
+      "folderDeletedBody": "{{deletedBy}} {{folderName}} klasörünü sildi ({{albumCount}} albümler: {{albumNames}})",
+      "homepageUpdatedTitle": "Ana Sayfa Güncellendi",
+      "homepageUpdatedBody": "{{updatedBy}} {{albumName}} {{preposition}} ana sayfayı {{action}}"
     }
   },
   "email": {

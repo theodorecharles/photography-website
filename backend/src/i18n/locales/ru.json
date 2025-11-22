@@ -68,7 +68,19 @@
       "imageOptimizationCompleteBody": "Оптимизировано {{imagesOptimized}} изображений успешно",
       "imageOptimizationFailedBody": "Ошибка оптимизации изображения: {{error}}",
       "aiTitlesCompleteBody": "Сгенерировано {{titlesGenerated}} заголовков для {{albumName}}",
-      "aiTitlesFailedBody": "Не удалось сгенерировать заголовки для {{albumName}}: {{error}}"
+      "aiTitlesFailedBody": "Не удалось сгенерировать заголовки для {{albumName}}: {{error}}",
+      "albumUnpublishedTitle": "Альбом не опубликован",
+      "albumUnpublishedBody": "{{unpublishedBy}} снял с публикации альбом: {{albumName}}",
+      "folderCreatedTitle": "Папка создана",
+      "folderCreatedBody": "{{createdBy}} создал папку: {{folderName}}",
+      "folderPublishedTitle": "Папка опубликована",
+      "folderPublishedBody": "{{publishedBy}} опубликовал папку {{folderName}} ({{albumCount}} альбомов: {{albumNames}})",
+      "folderUnpublishedTitle": "Папка не опубликована",
+      "folderUnpublishedBody": "{{unpublishedBy}} снял с публикации папку {{folderName}} ({{albumCount}} альбомов: {{albumNames}})",
+      "folderDeletedTitle": "Папка удалена",
+      "folderDeletedBody": "{{deletedBy}} удалил папку {{folderName}} ({{albumCount}} альбомов: {{albumNames}})",
+      "homepageUpdatedTitle": "Главная страница обновлена",
+      "homepageUpdatedBody": "{{updatedBy}} {{action}} {{albumName}} {{preposition}} главной страницы"
     }
   },
   "email": {

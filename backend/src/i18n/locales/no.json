@@ -68,7 +68,19 @@
       "imageOptimizationCompleteBody": "Optimaliserte {{imagesOptimized}} bilder vellykket",
       "imageOptimizationFailedBody": "Bildeoptimalisering mislyktes: {{error}}",
       "aiTitlesCompleteBody": "Genererte {{titlesGenerated}} titler for {{albumName}}",
-      "aiTitlesFailedBody": "Kunne ikke generere titler for {{albumName}}: {{error}}"
+      "aiTitlesFailedBody": "Kunne ikke generere titler for {{albumName}}: {{error}}",
+      "albumUnpublishedTitle": "Album Ikke Publisert",
+      "albumUnpublishedBody": "{{unpublishedBy}} upublisert album: {{albumName}}",
+      "folderCreatedTitle": "Mappe Opprettet",
+      "folderCreatedBody": "{{createdBy}} opprettet mappe: {{folderName}}",
+      "folderPublishedTitle": "Mappe Publisert",
+      "folderPublishedBody": "{{publishedBy}} publisert mappe {{folderName}} ({{albumCount}} album: {{albumNames}})",
+      "folderUnpublishedTitle": "Mappe Ikke Publisert",
+      "folderUnpublishedBody": "{{unpublishedBy}} upublisert mappe {{folderName}} ({{albumCount}} album: {{albumNames}})",
+      "folderDeletedTitle": "Mappe Slettet",
+      "folderDeletedBody": "{{deletedBy}} slettet mappe {{folderName}} ({{albumCount}} album: {{albumNames}})",
+      "homepageUpdatedTitle": "Hjemmeside Oppdatert",
+      "homepageUpdatedBody": "{{updatedBy}} {{action}} {{albumName}} {{preposition}} hjemmeside"
     }
   },
   "email": {

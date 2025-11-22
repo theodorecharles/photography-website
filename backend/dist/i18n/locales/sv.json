@@ -68,7 +68,19 @@
       "imageOptimizationCompleteBody": "Optimerade {{imagesOptimized}} bilder framgångsrikt",
       "imageOptimizationFailedBody": "Bildoptimering misslyckades: {{error}}",
       "aiTitlesCompleteBody": "Genererade {{titlesGenerated}} titlar för {{albumName}}",
-      "aiTitlesFailedBody": "Misslyckades med att generera titlar för {{albumName}}: {{error}}"
+      "aiTitlesFailedBody": "Misslyckades med att generera titlar för {{albumName}}: {{error}}",
+      "albumUnpublishedTitle": "Album opublicerat",
+      "albumUnpublishedBody": "{{unpublishedBy}} opublicerat album: {{albumName}}",
+      "folderCreatedTitle": "Mapp skapad",
+      "folderCreatedBody": "{{createdBy}} skapade mapp: {{folderName}}",
+      "folderPublishedTitle": "Mapp publicerad",
+      "folderPublishedBody": "{{publishedBy}} publicerade mapp {{folderName}} ({{albumCount}} album: {{albumNames}})",
+      "folderUnpublishedTitle": "Mapp opublicerad",
+      "folderUnpublishedBody": "{{unpublishedBy}} opublicerad mapp {{folderName}} ({{albumCount}} album: {{albumNames}})",
+      "folderDeletedTitle": "Mapp raderad",
+      "folderDeletedBody": "{{deletedBy}} raderade mapp {{folderName}} ({{albumCount}} album: {{albumNames}})",
+      "homepageUpdatedTitle": "Startsida uppdaterad",
+      "homepageUpdatedBody": "{{updatedBy}} {{action}} {{albumName}} {{preposition}} startsida"
     }
   },
   "email": {

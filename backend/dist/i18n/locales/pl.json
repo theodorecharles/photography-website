@@ -68,7 +68,19 @@
       "imageOptimizationCompleteBody": "Pomyślnie zoptymalizowano {{imagesOptimized}} obrazów",
       "imageOptimizationFailedBody": "Optymalizacja obrazu nie powiodła się: {{error}}",
       "aiTitlesCompleteBody": "Wygenerowano {{titlesGenerated}} tytułów dla {{albumName}}",
-      "aiTitlesFailedBody": "Nie udało się wygenerować tytułów dla {{albumName}}: {{error}}"
+      "aiTitlesFailedBody": "Nie udało się wygenerować tytułów dla {{albumName}}: {{error}}",
+      "albumUnpublishedTitle": "Album nieopublikowany",
+      "albumUnpublishedBody": "{{unpublishedBy}} nieopublikował albumu: {{albumName}}",
+      "folderCreatedTitle": "Folder utworzony",
+      "folderCreatedBody": "{{createdBy}} utworzył folder: {{folderName}}",
+      "folderPublishedTitle": "Folder opublikowany",
+      "folderPublishedBody": "{{publishedBy}} opublikował folder {{folderName}} ({{albumCount}} albumy: {{albumNames}})",
+      "folderUnpublishedTitle": "Folder nieopublikowany",
+      "folderUnpublishedBody": "{{unpublishedBy}} nieopublikował folderu {{folderName}} ({{albumCount}} albumy: {{albumNames}})",
+      "folderDeletedTitle": "Folder usunięty",
+      "folderDeletedBody": "{{deletedBy}} usunął folder {{folderName}} ({{albumCount}} albumy: {{albumNames}})",
+      "homepageUpdatedTitle": "Strona główna zaktualizowana",
+      "homepageUpdatedBody": "{{updatedBy}} {{action}} {{albumName}} {{preposition}} strony głównej"
     }
   },
   "email": {

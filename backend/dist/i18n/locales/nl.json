@@ -68,7 +68,19 @@
       "imageOptimizationCompleteBody": "Succesvol {{imagesOptimized}} afbeeldingen geoptimaliseerd",
       "imageOptimizationFailedBody": "Afbeeldingsoptimalisatie mislukt: {{error}}",
       "aiTitlesCompleteBody": "{{titlesGenerated}} titels gegenereerd voor {{albumName}}",
-      "aiTitlesFailedBody": "Genereren van titels voor {{albumName}} mislukt: {{error}}"
+      "aiTitlesFailedBody": "Genereren van titels voor {{albumName}} mislukt: {{error}}",
+      "albumUnpublishedTitle": "Album Niet-gepubliceerd",
+      "albumUnpublishedBody": "{{unpublishedBy}} niet-gepubliceerd album: {{albumName}}",
+      "folderCreatedTitle": "Map Aangemaakt",
+      "folderCreatedBody": "{{createdBy}} aangemaakte map: {{folderName}}",
+      "folderPublishedTitle": "Map Gepubliceerd",
+      "folderPublishedBody": "{{publishedBy}} gepubliceerde map {{folderName}} ({{albumCount}} albums: {{albumNames}})",
+      "folderUnpublishedTitle": "Map Niet-gepubliceerd",
+      "folderUnpublishedBody": "{{unpublishedBy}} niet-gepubliceerde map {{folderName}} ({{albumCount}} albums: {{albumNames}})",
+      "folderDeletedTitle": "Map Verwijderd",
+      "folderDeletedBody": "{{deletedBy}} verwijderde map {{folderName}} ({{albumCount}} albums: {{albumNames}})",
+      "homepageUpdatedTitle": "Homepage Bijgewerkt",
+      "homepageUpdatedBody": "{{updatedBy}} {{action}} {{albumName}} {{preposition}} homepage"
     }
   },
   "email": {

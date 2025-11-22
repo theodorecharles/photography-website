@@ -68,7 +68,19 @@
       "imageOptimizationCompleteBody": "Na-optimize ang {{imagesOptimized}} na mga larawan nang matagumpay",
       "imageOptimizationFailedBody": "Nabigo ang pag-optimize ng larawan: {{error}}",
       "aiTitlesCompleteBody": "Nakabuo ng {{titlesGenerated}} na mga pamagat para sa {{albumName}}",
-      "aiTitlesFailedBody": "Nabigo sa pagbuo ng mga pamagat para sa {{albumName}}: {{error}}"
+      "aiTitlesFailedBody": "Nabigo sa pagbuo ng mga pamagat para sa {{albumName}}: {{error}}",
+      "albumUnpublishedTitle": "Album Hindi Nailathala",
+      "albumUnpublishedBody": "{{unpublishedBy}} hindi nailathalang album: {{albumName}}",
+      "folderCreatedTitle": "Nalikha ang Folder",
+      "folderCreatedBody": "{{createdBy}} nalikhang folder: {{folderName}}",
+      "folderPublishedTitle": "Nailathala ang Folder",
+      "folderPublishedBody": "{{publishedBy}} nailathalang folder {{folderName}} ({{albumCount}} mga album: {{albumNames}})",
+      "folderUnpublishedTitle": "Hindi Nailathala ang Folder",
+      "folderUnpublishedBody": "{{unpublishedBy}} hindi nailathalang folder {{folderName}} ({{albumCount}} mga album: {{albumNames}})",
+      "folderDeletedTitle": "Natanggal ang Folder",
+      "folderDeletedBody": "{{deletedBy}} natanggal na folder {{folderName}} ({{albumCount}} mga album: {{albumNames}})",
+      "homepageUpdatedTitle": "Na-update ang Homepage",
+      "homepageUpdatedBody": "{{updatedBy}} {{action}} {{albumName}} {{preposition}} homepage"
     }
   },
   "email": {

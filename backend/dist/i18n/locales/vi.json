@@ -68,7 +68,19 @@
       "imageOptimizationCompleteBody": "Đã tối ưu hóa {{imagesOptimized}} hình ảnh thành công",
       "imageOptimizationFailedBody": "Tối ưu hóa hình ảnh thất bại: {{error}}",
       "aiTitlesCompleteBody": "Đã tạo {{titlesGenerated}} tiêu đề cho {{albumName}}",
-      "aiTitlesFailedBody": "Không thể tạo tiêu đề cho {{albumName}}: {{error}}"
+      "aiTitlesFailedBody": "Không thể tạo tiêu đề cho {{albumName}}: {{error}}",
+      "albumUnpublishedTitle": "Album chưa xuất bản",
+      "albumUnpublishedBody": "{{unpublishedBy}} chưa xuất bản album: {{albumName}}",
+      "folderCreatedTitle": "Thư mục đã được tạo",
+      "folderCreatedBody": "{{createdBy}} đã tạo thư mục: {{folderName}}",
+      "folderPublishedTitle": "Thư mục đã được xuất bản",
+      "folderPublishedBody": "{{publishedBy}} đã xuất bản thư mục {{folderName}} ({{albumCount}} album: {{albumNames}})",
+      "folderUnpublishedTitle": "Thư mục chưa xuất bản",
+      "folderUnpublishedBody": "{{unpublishedBy}} chưa xuất bản thư mục {{folderName}} ({{albumCount}} album: {{albumNames}})",
+      "folderDeletedTitle": "Thư mục đã bị xóa",
+      "folderDeletedBody": "{{deletedBy}} đã xóa thư mục {{folderName}} ({{albumCount}} album: {{albumNames}})",
+      "homepageUpdatedTitle": "Trang chủ đã được cập nhật",
+      "homepageUpdatedBody": "{{updatedBy}} {{action}} {{albumName}} {{preposition}} trang chủ"
     }
   },
   "email": {

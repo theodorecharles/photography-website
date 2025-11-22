@@ -68,7 +68,19 @@
       "imageOptimizationCompleteBody": "{{imagesOptimized}} gambar dioptimalkan dengan sukses",
       "imageOptimizationFailedBody": "Optimasi gambar gagal: {{error}}",
       "aiTitlesCompleteBody": "{{titlesGenerated}} judul dihasilkan untuk {{albumName}}",
-      "aiTitlesFailedBody": "Gagal menghasilkan judul untuk {{albumName}}: {{error}}"
+      "aiTitlesFailedBody": "Gagal menghasilkan judul untuk {{albumName}}: {{error}}",
+      "albumUnpublishedTitle": "Album Belum Diterbitkan",
+      "albumUnpublishedBody": "{{unpublishedBy}} album belum diterbitkan: {{albumName}}",
+      "folderCreatedTitle": "Folder Dibuat",
+      "folderCreatedBody": "{{createdBy}} membuat folder: {{folderName}}",
+      "folderPublishedTitle": "Folder Diterbitkan",
+      "folderPublishedBody": "{{publishedBy}} menerbitkan folder {{folderName}} ({{albumCount}} album: {{albumNames}})",
+      "folderUnpublishedTitle": "Folder Belum Diterbitkan",
+      "folderUnpublishedBody": "{{unpublishedBy}} folder belum diterbitkan {{folderName}} ({{albumCount}} album: {{albumNames}})",
+      "folderDeletedTitle": "Folder Dihapus",
+      "folderDeletedBody": "{{deletedBy}} menghapus folder {{folderName}} ({{albumCount}} album: {{albumNames}})",
+      "homepageUpdatedTitle": "Beranda Diperbarui",
+      "homepageUpdatedBody": "{{updatedBy}} {{action}} {{albumName}} {{preposition}} beranda"
     }
   },
   "email": {

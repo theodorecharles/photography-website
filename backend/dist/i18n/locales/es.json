@@ -68,7 +68,19 @@
       "imageOptimizationCompleteBody": "{{imagesOptimized}} imágenes optimizadas exitosamente",
       "imageOptimizationFailedBody": "Falló la optimización de imágenes: {{error}}",
       "aiTitlesCompleteBody": "Generados {{titlesGenerated}} títulos para {{albumName}}",
-      "aiTitlesFailedBody": "Falló al generar títulos para {{albumName}}: {{error}}"
+      "aiTitlesFailedBody": "Falló al generar títulos para {{albumName}}: {{error}}",
+      "albumUnpublishedTitle": "Álbum No Publicado",
+      "albumUnpublishedBody": "{{unpublishedBy}} álbum no publicado: {{albumName}}",
+      "folderCreatedTitle": "Carpeta Creada",
+      "folderCreatedBody": "{{createdBy}} creó carpeta: {{folderName}}",
+      "folderPublishedTitle": "Carpeta Publicada",
+      "folderPublishedBody": "{{publishedBy}} publicó carpeta {{folderName}} ({{albumCount}} álbumes: {{albumNames}})",
+      "folderUnpublishedTitle": "Carpeta No Publicada",
+      "folderUnpublishedBody": "{{unpublishedBy}} carpeta no publicada {{folderName}} ({{albumCount}} álbumes: {{albumNames}})",
+      "folderDeletedTitle": "Carpeta Eliminada",
+      "folderDeletedBody": "{{deletedBy}} eliminó carpeta {{folderName}} ({{albumCount}} álbumes: {{albumNames}})",
+      "homepageUpdatedTitle": "Página de Inicio Actualizada",
+      "homepageUpdatedBody": "{{updatedBy}} {{action}} {{albumName}} {{preposition}} página de inicio"
     }
   },
   "email": {

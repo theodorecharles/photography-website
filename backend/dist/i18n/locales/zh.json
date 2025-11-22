@@ -68,7 +68,19 @@
       "imageOptimizationCompleteBody": "成功优化 {{imagesOptimized}} 张图片",
       "imageOptimizationFailedBody": "图片优化失败：{{error}}",
       "aiTitlesCompleteBody": "为 {{albumName}} 生成了 {{titlesGenerated}} 个标题",
-      "aiTitlesFailedBody": "为 {{albumName}} 生成标题失败：{{error}}"
+      "aiTitlesFailedBody": "为 {{albumName}} 生成标题失败：{{error}}",
+      "albumUnpublishedTitle": "专辑未发布",
+      "albumUnpublishedBody": "{{unpublishedBy}} 未发布专辑: {{albumName}}",
+      "folderCreatedTitle": "文件夹已创建",
+      "folderCreatedBody": "{{createdBy}} 创建了文件夹: {{folderName}}",
+      "folderPublishedTitle": "文件夹已发布",
+      "folderPublishedBody": "{{publishedBy}} 发布了文件夹 {{folderName}} ({{albumCount}} 张专辑: {{albumNames}})",
+      "folderUnpublishedTitle": "文件夹未发布",
+      "folderUnpublishedBody": "{{unpublishedBy}} 未发布文件夹 {{folderName}} ({{albumCount}} 张专辑: {{albumNames}})",
+      "folderDeletedTitle": "文件夹已删除",
+      "folderDeletedBody": "{{deletedBy}} 删除了文件夹 {{folderName}} ({{albumCount}} 张专辑: {{albumNames}})",
+      "homepageUpdatedTitle": "主页已更新",
+      "homepageUpdatedBody": "{{updatedBy}} {{action}} {{albumName}} {{preposition}} 主页"
     }
   },
   "email": {

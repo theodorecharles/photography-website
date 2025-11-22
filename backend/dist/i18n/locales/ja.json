@@ -68,7 +68,19 @@
       "imageOptimizationCompleteBody": "{{imagesOptimized}}枚の画像が正常に最適化されました",
       "imageOptimizationFailedBody": "画像の最適化に失敗しました: {{error}}",
       "aiTitlesCompleteBody": "{{albumName}}のために{{titlesGenerated}}件のタイトルが生成されました",
-      "aiTitlesFailedBody": "{{albumName}}のタイトル生成に失敗しました: {{error}}"
+      "aiTitlesFailedBody": "{{albumName}}のタイトル生成に失敗しました: {{error}}",
+      "albumUnpublishedTitle": "アルバム未公開",
+      "albumUnpublishedBody": "{{unpublishedBy}} 未公開アルバム: {{albumName}}",
+      "folderCreatedTitle": "フォルダー作成",
+      "folderCreatedBody": "{{createdBy}} フォルダーを作成: {{folderName}}",
+      "folderPublishedTitle": "フォルダー公開",
+      "folderPublishedBody": "{{publishedBy}} フォルダーを公開 {{folderName}} ({{albumCount}} アルバム: {{albumNames}})",
+      "folderUnpublishedTitle": "フォルダー未公開",
+      "folderUnpublishedBody": "{{unpublishedBy}} フォルダーを未公開 {{folderName}} ({{albumCount}} アルバム: {{albumNames}})",
+      "folderDeletedTitle": "フォルダー削除",
+      "folderDeletedBody": "{{deletedBy}} フォルダーを削除 {{folderName}} ({{albumCount}} アルバム: {{albumNames}})",
+      "homepageUpdatedTitle": "ホームページ更新",
+      "homepageUpdatedBody": "{{updatedBy}} {{action}} {{albumName}} {{preposition}} ホームページ"
     }
   },
   "email": {

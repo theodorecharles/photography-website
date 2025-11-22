@@ -68,7 +68,19 @@
       "imageOptimizationCompleteBody": "{{imagesOptimized}} images optimisées avec succès",
       "imageOptimizationFailedBody": "Échec de l'optimisation des images : {{error}}",
       "aiTitlesCompleteBody": "{{titlesGenerated}} titres générés pour {{albumName}}",
-      "aiTitlesFailedBody": "Échec de la génération des titres pour {{albumName}} : {{error}}"
+      "aiTitlesFailedBody": "Échec de la génération des titres pour {{albumName}} : {{error}}",
+      "albumUnpublishedTitle": "Album Non Publié",
+      "albumUnpublishedBody": "{{unpublishedBy}} album non publié : {{albumName}}",
+      "folderCreatedTitle": "Dossier Créé",
+      "folderCreatedBody": "{{createdBy}} a créé le dossier : {{folderName}}",
+      "folderPublishedTitle": "Dossier Publié",
+      "folderPublishedBody": "{{publishedBy}} a publié le dossier {{folderName}} ({{albumCount}} albums : {{albumNames}})",
+      "folderUnpublishedTitle": "Dossier Non Publié",
+      "folderUnpublishedBody": "{{unpublishedBy}} a retiré le dossier {{folderName}} ({{albumCount}} albums : {{albumNames}})",
+      "folderDeletedTitle": "Dossier Supprimé",
+      "folderDeletedBody": "{{deletedBy}} a supprimé le dossier {{folderName}} ({{albumCount}} albums : {{albumNames}})",
+      "homepageUpdatedTitle": "Page d'Accueil Mise à Jour",
+      "homepageUpdatedBody": "{{updatedBy}} {{action}} {{albumName}} {{preposition}} la page d'accueil"
     }
   },
   "email": {
