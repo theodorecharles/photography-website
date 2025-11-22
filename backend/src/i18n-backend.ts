@@ -6,7 +6,8 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { error as logError } from './utils/logger.js';
+import { error as logError, info } from './utils/logger.js';
+import { getCurrentConfig } from './config.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -24,17 +25,30 @@ const supportedLocales = [
 
 // Load translations on module initialization
 function loadTranslations() {
+  let successCount = 0;
+  let failCount = 0;
+  
   supportedLocales.forEach(locale => {
     try {
       const filePath = path.join(localesDir, `${locale}.json`);
       if (fs.existsSync(filePath)) {
         const content = fs.readFileSync(filePath, 'utf8');
         translationsCache[locale] = JSON.parse(content);
+        successCount++;
+      } else {
+        failCount++;
+        logError(`[i18n] File not found: ${filePath}`);
       }
     } catch (err) {
+      failCount++;
       logError(`[i18n] Failed to load ${locale} translations:`, err);
     }
   });
+  
+  info(`[i18n-backend] Loaded ${successCount}/${supportedLocales.length} translation files from ${localesDir}`);
+  if (failCount > 0) {
+    logError(`[i18n-backend] Failed to load ${failCount} translation files`);
+  }
 }
 
 loadTranslations();
@@ -75,12 +89,11 @@ export function translateBackend(key: string, locale: string = 'en'): string {
  */
 export function getGlobalLocale(): string {
   try {
-    const { getCurrentConfig } = require('./config.js');
     const config = getCurrentConfig();
-    
-    return config?.branding?.language || 'en';
+    const locale = config?.branding?.language || 'en';
+    return locale;
   } catch (err) {
-    logError('[i18n] Failed to get global locale from config:', err);
+    logError('[i18n-backend] Failed to get global locale from config:', err);
     return 'en';
   }
 }
