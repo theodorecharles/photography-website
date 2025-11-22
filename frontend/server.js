@@ -11,6 +11,10 @@ const __dirname = path.dirname(__filename);
 const jsonCache = new Map();
 const JSON_CACHE_MAX_AGE = 5 * 60 * 1000; // 5 minutes
 
+// In-memory cache for pre-rendered homepage HTML
+let homepageHTMLCache = null;
+let homepageHTMLCacheTime = 0;
+
 // Configuration paths and defaults
 const dataDir = process.env.DATA_DIR || path.join(__dirname, "../data");
 const configPath = path.join(dataDir, "config.json");
@@ -378,81 +382,47 @@ app.get(/^\/.*/, async (req, res) => {
 
   // Check if this is the homepage (root path)
   if (req.path === "/") {
-    const apiUrl = config.frontend.apiUrl;
-
-    try {
-      // Fetch random photos to get photo count for description
-      const response = await fetch(`${apiUrl}/api/random-photos`);
-
-      if (response.ok) {
-        const photos = await response.json();
-
-        if (photos.length > 0) {
-          // Derive site URL
-          let siteUrl;
-          if (apiUrl.includes("localhost")) {
-            siteUrl = apiUrl.replace(":3001", ":3000");
-          } else {
-            siteUrl = apiUrl.replace(/api(-dev)?\./, "www$1.");
-          }
-
-          // Use homepage grid preview image
-          const gridUrl = `${apiUrl}/api/preview-grid/homepage`;
-          const pageUrl = siteUrl;
-
-          debug(`[Meta Injection] Homepage detected:`);
-          debug(`  Photos: ${photos.length}`);
-          debug(`  Preview Image: ${gridUrl}`);
-          debug(`  Page URL: ${pageUrl}`);
-
-          // Get site name from branding
-          const siteName = configFile.branding?.siteName || "Galleria";
-          const safeSiteName = escapeHtml(siteName);
-
-          // Read and modify index.html
-          const html = fs.readFileSync(indexPath, "utf8");
-          const modifiedHtml = html
-            .replace(/<title>.*?<\/title>/, `<title>${safeSiteName}</title>`)
-            .replace(
-              /<meta property="og:image" content=".*?" \/>/,
-              `<meta property="og:image" content="${gridUrl}" />\n    <meta property="og:image:secure_url" content="${gridUrl.replace(
-                "http://",
-                "https://"
-              )}" />\n    <meta property="og:image:alt" content="Photography by ${safeSiteName}" />\n    <meta property="og:image:width" content="1200" />\n    <meta property="og:image:height" content="630" />`
-            )
-            .replace(
-              /<meta property="twitter:image" content=".*?" \/>/,
-              `<meta property="twitter:image" content="${gridUrl}" />`
-            );
-
-          // Set CSP and other security headers
-          setCSPHeader(res, apiUrl, configFile);
-
-          // Replace runtime placeholders
-          let htmlWithPlaceholders = replaceRuntimePlaceholders(
-            modifiedHtml,
-            apiUrl
-          );
-
-          // Inject runtime config and branding
-          const brandingData = {
-            siteName: configFile.branding?.siteName || "Galleria",
-            avatarPath: configFile.branding?.avatarPath || "/photos/avatar.png",
-            primaryColor: configFile.branding?.primaryColor || "#4ade80",
-            secondaryColor: configFile.branding?.secondaryColor || "#3b82f6",
-            language: configFile.branding?.language || "en"
-          };
-          
-          const modifiedHtmlWithRuntime = htmlWithPlaceholders.replace(
-            '<script type="module"',
-            `<script>window.__RUNTIME_API_URL__ = "${apiUrl}"; window.__RUNTIME_BRANDING__ = ${JSON.stringify(brandingData)};</script>\n    <script type="module"`
-          );
-
-          return res.send(modifiedHtmlWithRuntime);
+    // Try to serve pre-rendered homepage HTML if it exists
+    const prerenderedPath = path.join(__dirname, "dist", "homepage-prerendered.html");
+    
+    if (fs.existsSync(prerenderedPath)) {
+      try {
+        // Check if we have cached HTML in memory
+        const fileStats = fs.statSync(prerenderedPath);
+        const fileModTime = fileStats.mtimeMs;
+        
+        // Use cached HTML if available and file hasn't changed
+        if (homepageHTMLCache && homepageHTMLCacheTime === fileModTime) {
+          debug("[SSR] Serving pre-rendered homepage HTML from memory cache");
+        } else {
+          // Read from disk and cache in memory
+          homepageHTMLCache = fs.readFileSync(prerenderedPath, "utf8");
+          homepageHTMLCacheTime = fileModTime;
+          info("[SSR] Loaded pre-rendered homepage HTML into memory cache");
         }
+        
+        const apiUrl = config.frontend.apiUrl;
+        
+        // Set CSP and other security headers
+        setCSPHeader(res, apiUrl, configFile);
+        
+        // Tell browsers NOT to cache (always fetch fresh from server)
+        // But server caches in memory for instant serving
+        res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate, private");
+        res.setHeader("Pragma", "no-cache");
+        res.setHeader("Expires", "0");
+        res.setHeader("X-Cache", "HIT"); // Indicate this came from server cache
+        
+        return res.send(homepageHTMLCache);
+      } catch (err) {
+        error("[SSR] Failed to read pre-rendered homepage:", err);
+        // Clear cache on error
+        homepageHTMLCache = null;
+        homepageHTMLCacheTime = 0;
+        // Fall through to default handling
       }
-    } catch (err) {
-      error("[MetaInjection] Failed to fetch homepage data:", err);
+    } else {
+      warn("[SSR] Pre-rendered homepage not found, using default index.html");
       // Fall through to default handling
     }
   }

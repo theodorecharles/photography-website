@@ -321,26 +321,47 @@ function App() {
   // Fetch albums, external links, and branding data
   const fetchData = async () => {
     try {
-      const [albumsResponse, externalLinksResponse, brandingResponse] =
-        await Promise.all([
-          fetchWithRateLimitCheck(`${API_URL}/api/albums`),
-          fetchWithRateLimitCheck(`${API_URL}/api/external-pages`),
-          fetchWithRateLimitCheck(`${API_URL}/api/branding`),
-        ]);
+      // Check if initial data was server-side rendered (SSR) into the page
+      const initialData = (window as any).__INITIAL_DATA__;
+      
+      let albumsData, externalLinksData, brandingData;
+      
+      if (initialData && initialData.albums && initialData.externalLinks) {
+        // Use pre-injected data from SSR (no network requests!)
+        debug("✓ Using server-side rendered initial data (no network requests)");
+        albumsData = initialData.albums;
+        externalLinksData = initialData.externalLinks;
+        
+        // Fetch branding separately (not in SSR data)
+        const brandingResponse = await fetchWithRateLimitCheck(`${API_URL}/api/branding`);
+        if (!brandingResponse.ok) {
+          throw new Error("Failed to fetch branding");
+        }
+        brandingData = await brandingResponse.json();
+      } else {
+        // Fallback to API requests if SSR data not available
+        debug("⚠ SSR data not available, fetching from API");
+        const [albumsResponse, externalLinksResponse, brandingResponse] =
+          await Promise.all([
+            fetchWithRateLimitCheck(`${API_URL}/api/albums`),
+            fetchWithRateLimitCheck(`${API_URL}/api/external-pages`),
+            fetchWithRateLimitCheck(`${API_URL}/api/branding`),
+          ]);
 
-      if (!albumsResponse.ok) {
-        throw new Error("Failed to fetch albums");
-      }
-      if (!externalLinksResponse.ok) {
-        throw new Error("Failed to fetch external links");
-      }
-      if (!brandingResponse.ok) {
-        throw new Error("Failed to fetch branding");
-      }
+        if (!albumsResponse.ok) {
+          throw new Error("Failed to fetch albums");
+        }
+        if (!externalLinksResponse.ok) {
+          throw new Error("Failed to fetch external links");
+        }
+        if (!brandingResponse.ok) {
+          throw new Error("Failed to fetch branding");
+        }
 
-      const albumsData = await albumsResponse.json();
-      const externalLinksData = await externalLinksResponse.json();
-      const brandingData = await brandingResponse.json();
+        albumsData = await albumsResponse.json();
+        externalLinksData = await externalLinksResponse.json();
+        brandingData = await brandingResponse.json();
+      }
 
       // Handle new API format: { albums: [...], folders: [...] } or old format: [...]
       if (

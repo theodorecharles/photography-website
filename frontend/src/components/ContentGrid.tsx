@@ -215,6 +215,49 @@ const ContentGrid: React.FC<ContentGridProps> = ({ album, onAlbumNotFound, initi
       try {
         setLoading(true);
 
+        // Check if homepage data was server-side rendered (SSR) into the page
+        const initialData = (window as any).__INITIAL_DATA__;
+        
+        if (album === "homepage" && initialData && initialData.homepage) {
+          // Use pre-injected homepage data from SSR (no network requests!)
+          info("✓ Using server-side rendered homepage data (no network requests)");
+          const homepageData = initialData.homepage;
+          
+          let staticPhotos;
+          let shouldShuffle = false;
+          
+          if (homepageData && typeof homepageData === 'object' && 'photos' in homepageData) {
+            // Homepage format with metadata
+            shouldShuffle = homepageData.shuffle ?? true;
+            staticPhotos = homepageData.photos.map((data: string[]) => reconstructPhoto(data, album));
+            info(`✓ Loaded ${staticPhotos.length} photos from SSR data (shuffle: ${shouldShuffle})`);
+            
+            // Shuffle homepage photos for random display order each time (if enabled)
+            if (shouldShuffle) {
+              staticPhotos = [...staticPhotos].sort(() => Math.random() - 0.5);
+              info(`ℹ️  Shuffled ${staticPhotos.length} homepage photos`);
+            } else {
+              info(`ℹ️  Homepage shuffle disabled - displaying in order`);
+            }
+          } else {
+            // Legacy format (array of photos)
+            const photoArray = Array.isArray(homepageData) ? homepageData : (homepageData.photos || []);
+            staticPhotos = photoArray.map((data: string[]) => reconstructPhoto(data, album));
+            info(`✓ Loaded ${staticPhotos.length} photos from SSR data`);
+          }
+          
+          // Show first 100 immediately
+          setAllPhotos(staticPhotos);
+          setPhotos(staticPhotos.slice(0, 100));
+          setLoading(false);
+          setError(null);
+          onLoadComplete?.();
+          
+          // Clear SSR data after using it (prevent stale data on navigation)
+          delete (window as any).__INITIAL_DATA__;
+          return;
+        }
+
         // Try to fetch from static JSON first for better performance
         // Use authenticated endpoint to prevent unauthorized access to unpublished albums
         const staticJsonUrl = album === "homepage" 
