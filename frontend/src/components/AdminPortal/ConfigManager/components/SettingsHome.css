@@ -35,6 +35,11 @@
   gap: 0.75rem;
 }
 
+.settings-card-icon-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
 .settings-card:hover .settings-card-icon {
   background: #55ff682e;
   border-color: rgba(74, 222, 128, 0.3);
@@ -61,6 +66,25 @@
 
 .settings-card-icon > svg {
   opacity: 0.8;
+}
+
+.settings-card-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 20px;
+  height: 20px;
+  background: #f59e0b;
+  color: #1a1f2e;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border: 2px solid #1a1f2e;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4);
+  z-index: 1;
 }
 
 .settings-card-title {
@@ -97,6 +121,19 @@
     height: 64px;
   }
 
+  .settings-card-icon > svg {
+    width: 36px;
+    height: 36px;
+  }
+
+  .settings-card-badge {
+    width: 16px;
+    height: 16px;
+    font-size: 0.65rem;
+    top: -3px;
+    right: -3px;
+  }
+
   .settings-card-title {
     font-size: 0.8rem;
   }
@@ -112,6 +149,17 @@
   .settings-card-icon {
     width: 72px;
     height: 72px;
+  }
+
+  .settings-card-icon > svg {
+    width: 40px;
+    height: 40px;
+  }
+
+  .settings-card-badge {
+    width: 18px;
+    height: 18px;
+    font-size: 0.7rem;
   }
 
   .settings-card-title {
