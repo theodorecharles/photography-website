@@ -1,5 +1,6 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
+import { visualizer } from 'rollup-plugin-visualizer';
 import fs from 'fs';
 import path from 'path';
 
@@ -107,6 +108,12 @@ export default defineConfig({
         });
       },
     },
+    visualizer({
+      filename: './dist/stats.html',
+      open: false,
+      gzipSize: true,
+      brotliSize: false,
+    }) as any,
   ],
   define: {
     // Inject config values from config.json for both dev and build

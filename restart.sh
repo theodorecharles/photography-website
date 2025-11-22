@@ -283,8 +283,16 @@ if [ -f "data/config.json" ]; then
     else
         log "WARNING: Static JSON generation failed (site will use API fallback)"
     fi
+    
+    # Generate pre-rendered homepage HTML with all initial data baked in
+    log "Generating pre-rendered homepage HTML..."
+    if node scripts/generate-homepage-html.js; then
+        log "Pre-rendered homepage HTML generated successfully"
+    else
+        log "WARNING: Homepage HTML generation failed (site will use dynamic rendering)"
+    fi
 else
-    log "Skipping static JSON generation (system not configured yet)"
+    log "Skipping static JSON and HTML generation (system not configured yet)"
 fi
 
 log "Deployment completed successfully!"

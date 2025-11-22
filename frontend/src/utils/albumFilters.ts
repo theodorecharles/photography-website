@@ -6,7 +6,7 @@
 
 interface Album {
   name: string;
-  published: boolean;
+  published: boolean | number; // SQLite returns 1/0 for booleans
   folder_id?: number | null;
 }
 
@@ -34,7 +34,8 @@ export const filterAlbums = (
     if (isAuthenticated) return true;
     
     // Only show published albums to public
-    return album.published === true;
+    // Note: SQLite returns boolean as 1/0, so we check for both true and 1
+    return album.published === true || album.published === 1;
   });
 };
 

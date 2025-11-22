@@ -3,14 +3,16 @@
  * Displays an album accessed via a share link
  */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, lazy, Suspense } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import ContentGrid from './ContentGrid';
-import VideoListView from './VideoListView';
 import { API_URL } from '../config';
 import { trackSharedAlbumView } from '../utils/analytics';
 import ExpiredLink from './Misc/ExpiredLink';
+
+// Lazy load VideoListView (includes VideoPlayer and hls.js)
+const VideoListView = lazy(() => import('./VideoListView'));
 import NotFound from './Misc/NotFound';
 import Header, { ExternalLink } from './Header';
 import Footer from './Footer';
@@ -289,7 +291,14 @@ export default function SharedAlbum() {
           </h1>
         )}
         {allVideos && albumName ? (
-          <VideoListView videos={displayPhotos} album={albumName} secretKey={secretKey} />
+          <Suspense fallback={
+            <div className="photo-grid-loading">
+              <div className="loading-spinner"></div>
+              <p>{t('common.loading')}</p>
+            </div>
+          }>
+            <VideoListView videos={displayPhotos} album={albumName} secretKey={secretKey} />
+          </Suspense>
         ) : (
           <>
             {albumName && videoParam && (

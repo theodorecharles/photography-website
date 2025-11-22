@@ -11,6 +11,10 @@ const __dirname = path.dirname(__filename);
 const jsonCache = new Map();
 const JSON_CACHE_MAX_AGE = 5 * 60 * 1000; // 5 minutes
 
+// In-memory cache for pre-rendered homepage HTML
+let homepageHTMLCache = null;
+let homepageHTMLCacheTime = 0;
+
 // Configuration paths and defaults
 const dataDir = process.env.DATA_DIR || path.join(__dirname, "../data");
 const configPath = path.join(dataDir, "config.json");
@@ -204,6 +208,46 @@ app.get("/health", (req, res) => {
   res.json({ status: "ok", message: "Frontend server is running" });
 });
 
+// Proxy all /api/* requests to backend
+app.use("/api", express.json(), async (req, res, next) => {
+  const apiUrl = config.frontend.apiUrl;
+  const targetUrl = `${apiUrl}${req.originalUrl}`;
+  
+  try {
+    // Forward the request to the backend
+    const response = await fetch(targetUrl, {
+      method: req.method,
+      headers: {
+        'Content-Type': 'application/json',
+        'Cookie': req.headers.cookie || '',
+        'X-CSRF-Token': req.headers['x-csrf-token'] || '',
+      },
+      body: req.method !== 'GET' && req.method !== 'HEAD' ? JSON.stringify(req.body) : undefined,
+    });
+    
+    // Forward the response back to the client
+    const contentType = response.headers.get('content-type');
+    
+    // Set status and headers
+    res.status(response.status);
+    if (contentType) {
+      res.setHeader('Content-Type', contentType);
+    }
+    
+    // Handle different content types
+    if (contentType && contentType.includes('application/json')) {
+      const data = await response.json();
+      res.json(data);
+    } else {
+      const data = await response.text();
+      res.send(data);
+    }
+  } catch (err) {
+    error(`[API Proxy] Failed to proxy request to ${targetUrl}:`, err);
+    res.status(500).json({ error: 'Proxy error', message: err.message });
+  }
+});
+
 // Proxy for push notification endpoints (fixes Safari PWA content blocker)
 // Safari blocks URLs containing /api/ even when same-origin, so we use /notifications/
 app.use("/notifications", express.json(), async (req, res) => {
@@ -378,81 +422,96 @@ app.get(/^\/.*/, async (req, res) => {
 
   // Check if this is the homepage (root path)
   if (req.path === "/") {
-    const apiUrl = config.frontend.apiUrl;
-
-    try {
-      // Fetch random photos to get photo count for description
-      const response = await fetch(`${apiUrl}/api/random-photos`);
-
-      if (response.ok) {
-        const photos = await response.json();
-
-        if (photos.length > 0) {
-          // Derive site URL
-          let siteUrl;
-          if (apiUrl.includes("localhost")) {
-            siteUrl = apiUrl.replace(":3001", ":3000");
-          } else {
-            siteUrl = apiUrl.replace(/api(-dev)?\./, "www$1.");
-          }
-
-          // Use homepage grid preview image
-          const gridUrl = `${apiUrl}/api/preview-grid/homepage`;
-          const pageUrl = siteUrl;
-
-          debug(`[Meta Injection] Homepage detected:`);
-          debug(`  Photos: ${photos.length}`);
-          debug(`  Preview Image: ${gridUrl}`);
-          debug(`  Page URL: ${pageUrl}`);
-
-          // Get site name from branding
-          const siteName = configFile.branding?.siteName || "Galleria";
-          const safeSiteName = escapeHtml(siteName);
-
-          // Read and modify index.html
-          const html = fs.readFileSync(indexPath, "utf8");
-          const modifiedHtml = html
-            .replace(/<title>.*?<\/title>/, `<title>${safeSiteName}</title>`)
-            .replace(
-              /<meta property="og:image" content=".*?" \/>/,
-              `<meta property="og:image" content="${gridUrl}" />\n    <meta property="og:image:secure_url" content="${gridUrl.replace(
-                "http://",
-                "https://"
-              )}" />\n    <meta property="og:image:alt" content="Photography by ${safeSiteName}" />\n    <meta property="og:image:width" content="1200" />\n    <meta property="og:image:height" content="630" />`
-            )
-            .replace(
-              /<meta property="twitter:image" content=".*?" \/>/,
-              `<meta property="twitter:image" content="${gridUrl}" />`
-            );
-
-          // Set CSP and other security headers
-          setCSPHeader(res, apiUrl, configFile);
-
-          // Replace runtime placeholders
-          let htmlWithPlaceholders = replaceRuntimePlaceholders(
-            modifiedHtml,
-            apiUrl
-          );
-
-          // Inject runtime config and branding
-          const brandingData = {
-            siteName: configFile.branding?.siteName || "Galleria",
-            avatarPath: configFile.branding?.avatarPath || "/photos/avatar.png",
-            primaryColor: configFile.branding?.primaryColor || "#4ade80",
-            secondaryColor: configFile.branding?.secondaryColor || "#3b82f6",
-            language: configFile.branding?.language || "en"
-          };
-          
-          const modifiedHtmlWithRuntime = htmlWithPlaceholders.replace(
-            '<script type="module"',
-            `<script>window.__RUNTIME_API_URL__ = "${apiUrl}"; window.__RUNTIME_BRANDING__ = ${JSON.stringify(brandingData)};</script>\n    <script type="module"`
-          );
-
-          return res.send(modifiedHtmlWithRuntime);
+    // Try to serve pre-rendered homepage HTML if it exists
+    const prerenderedPath = path.join(__dirname, "dist", "homepage-prerendered.html");
+    
+    if (fs.existsSync(prerenderedPath)) {
+      try {
+        // Check if we have cached HTML template in memory
+        const fileStats = fs.statSync(prerenderedPath);
+        const fileModTime = fileStats.mtimeMs;
+        
+        let htmlTemplate;
+        
+        // Use cached template if available and file hasn't changed
+        if (homepageHTMLCache && homepageHTMLCacheTime === fileModTime) {
+          debug("[SSR] Using pre-rendered homepage template from memory cache");
+          htmlTemplate = homepageHTMLCache;
+        } else {
+          // Read from disk and cache in memory
+          htmlTemplate = fs.readFileSync(prerenderedPath, "utf8");
+          homepageHTMLCache = htmlTemplate;
+          homepageHTMLCacheTime = fileModTime;
+          info("[SSR] Loaded pre-rendered homepage HTML template into memory cache");
         }
+        
+        // Determine runtime API URL (same logic as other routes)
+        const protocol =
+          req.headers["x-forwarded-proto"] || (req.secure ? "https" : "http");
+        const hostHeader =
+          req.headers["x-forwarded-host"] ||
+          req.headers["host"] ||
+          "localhost:3000";
+        const host = Array.isArray(hostHeader) ? hostHeader[0] : hostHeader;
+        let runtimeApiUrl;
+
+        // Check if accessing via IP address (e.g., 192.168.1.219:3000)
+        const ipPattern = /^\d+\.\d+\.\d+\.\d+(:\d+)?$/;
+        if (ipPattern.test(host)) {
+          // Direct IP access: use same IP with port 3001
+          const ipAddress = host.split(":")[0];
+          runtimeApiUrl = `${protocol}://${ipAddress}:3001`;
+        } else if (host.includes("localhost")) {
+          // Localhost development
+          runtimeApiUrl = "http://localhost:3001";
+        } else if (host.startsWith("www-")) {
+          // Domain with www- prefix (e.g., www-dev.example.com -> api-dev.example.com)
+          runtimeApiUrl = `${protocol}://api-${host.substring(4)}`;
+        } else if (host.startsWith("www.")) {
+          // Domain with www. prefix (e.g., www.example.com -> api.example.com)
+          runtimeApiUrl = `${protocol}://api.${host.substring(4)}`;
+        } else if (process.env.BACKEND_DOMAIN || process.env.API_URL) {
+          // Fall back to environment variable if provided
+          runtimeApiUrl = process.env.BACKEND_DOMAIN || process.env.API_URL;
+        } else if (
+          !isSetupMode &&
+          config.frontend.apiUrl &&
+          !config.frontend.apiUrl.includes("localhost")
+        ) {
+          // Use config file value if available
+          runtimeApiUrl = config.frontend.apiUrl;
+        } else {
+          // Final fallback: derive from host
+          runtimeApiUrl = `${protocol}://api.${host}`;
+        }
+        
+        // Replace placeholder API URL with runtime-detected one
+        const html = htmlTemplate.replace(
+          /"http:\/\/localhost:3001"/g,
+          `"${runtimeApiUrl}"`
+        );
+        
+        // Set CSP and other security headers
+        setCSPHeader(res, runtimeApiUrl, configFile);
+        
+        // Tell browsers NOT to cache (always fetch fresh from server)
+        // But server caches template in memory for instant serving
+        res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate, private");
+        res.setHeader("Pragma", "no-cache");
+        res.setHeader("Expires", "0");
+        res.setHeader("X-Cache", "HIT"); // Indicate this came from server cache
+        
+        debug(`[SSR] Serving pre-rendered homepage with runtime API URL: ${runtimeApiUrl}`);
+        return res.send(html);
+      } catch (err) {
+        error("[SSR] Failed to read pre-rendered homepage:", err);
+        // Clear cache on error
+        homepageHTMLCache = null;
+        homepageHTMLCacheTime = 0;
+        // Fall through to default handling
       }
-    } catch (err) {
-      error("[MetaInjection] Failed to fetch homepage data:", err);
+    } else {
+      warn("[SSR] Pre-rendered homepage not found, using default index.html");
       // Fall through to default handling
     }
   }

@@ -234,7 +234,7 @@ function App() {
   const [currentAlbum, setCurrentAlbum] = useState<string | undefined>(
     undefined
   );
-  const [showFooter, setShowFooter] = useState(false);
+  const [showFooter, setShowFooter] = useState(true);  // Start visible, hide on navigation if needed
   const [hideAlbumTitle, setHideAlbumTitle] = useState(false);
   const [setupComplete, setSetupComplete] = useState<boolean | null>(null);
   const location = useLocation();
@@ -279,9 +279,12 @@ function App() {
     );
   }, [primaryColor, secondaryColor]);
 
-  // Hide footer on navigation
+  // Hide footer on navigation (except homepage)
   useEffect(() => {
-    setShowFooter(false);
+    // Don't hide footer on homepage - it should show immediately via SSR
+    if (location.pathname !== "/") {
+      setShowFooter(false);
+    }
   }, [location.pathname]);
 
   // Update current album based on route changes and track page views
@@ -321,26 +324,53 @@ function App() {
   // Fetch albums, external links, and branding data
   const fetchData = async () => {
     try {
-      const [albumsResponse, externalLinksResponse, brandingResponse] =
-        await Promise.all([
-          fetchWithRateLimitCheck(`${API_URL}/api/albums`),
-          fetchWithRateLimitCheck(`${API_URL}/api/external-pages`),
-          fetchWithRateLimitCheck(`${API_URL}/api/branding`),
-        ]);
+      // Check if initial data was server-side rendered (SSR) into the page
+      const initialData = (window as any).__INITIAL_DATA__;
+      
+      let albumsData, externalLinksData, brandingData;
+      
+      if (initialData && initialData.albums && initialData.externalLinks) {
+        // Use pre-injected data from SSR (no network requests!)
+        debug("✓ Using server-side rendered initial data (no network requests)");
+        albumsData = initialData.albums;
+        externalLinksData = initialData.externalLinks;
+        
+        // Use already-injected branding from SSR (no network request!)
+        const runtimeBranding = (window as any).__RUNTIME_BRANDING__;
+        brandingData = {
+          siteName: runtimeBranding?.siteName || "Galleria",
+          avatarPath: runtimeBranding?.avatarPath || "/photos/avatar.png",
+          primaryColor: runtimeBranding?.primaryColor || "#4ade80",
+          secondaryColor: runtimeBranding?.secondaryColor || "#3b82f6",
+          language: runtimeBranding?.language || "en"
+        };
+        
+        // Clear remaining SSR data after using it (homepage was already cleared by ContentGrid)
+        delete (window as any).__INITIAL_DATA__;
+      } else {
+        // Fallback to API requests if SSR data not available
+        debug("⚠ SSR data not available, fetching from API");
+        const [albumsResponse, externalLinksResponse, brandingResponse] =
+          await Promise.all([
+            fetchWithRateLimitCheck(`${API_URL}/api/albums`),
+            fetchWithRateLimitCheck(`${API_URL}/api/external-pages`),
+            fetchWithRateLimitCheck(`${API_URL}/api/branding`),
+          ]);
 
-      if (!albumsResponse.ok) {
-        throw new Error("Failed to fetch albums");
-      }
-      if (!externalLinksResponse.ok) {
-        throw new Error("Failed to fetch external links");
-      }
-      if (!brandingResponse.ok) {
-        throw new Error("Failed to fetch branding");
-      }
+        if (!albumsResponse.ok) {
+          throw new Error("Failed to fetch albums");
+        }
+        if (!externalLinksResponse.ok) {
+          throw new Error("Failed to fetch external links");
+        }
+        if (!brandingResponse.ok) {
+          throw new Error("Failed to fetch branding");
+        }
 
-      const albumsData = await albumsResponse.json();
-      const externalLinksData = await externalLinksResponse.json();
-      const brandingData = await brandingResponse.json();
+        albumsData = await albumsResponse.json();
+        externalLinksData = await externalLinksResponse.json();
+        brandingData = await brandingResponse.json();
+      }
 
       // Handle new API format: { albums: [...], folders: [...] } or old format: [...]
       if (
@@ -392,6 +422,7 @@ function App() {
         setAlbums(albumNames);
         setFolders([]);
       }
+      
       setExternalLinks(externalLinksData.externalLinks);
       setSiteName(brandingData.siteName || "Galleria");
       
@@ -409,7 +440,7 @@ function App() {
       if (brandingData.language && i18n.language !== brandingData.language) {
         i18n.changeLanguage(brandingData.language);
       }
-
+      
       setErrorState(null);
     } catch (err) {
       const errorMessage =

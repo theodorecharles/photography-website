@@ -4,7 +4,7 @@
  * and provides functionality for viewing photos in a modal.
  */
 
-import { useState, useEffect, useRef, useMemo, useCallback } from "react";
+import { useState, useEffect, useRef, useMemo, useCallback, lazy, Suspense } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../contexts/AuthContext";
@@ -14,10 +14,12 @@ import { trackPhotoClick, trackError } from "../utils/analytics";
 import { fetchWithRateLimitCheck } from "../utils/fetchWrapper";
 import ContentModal from "./ContentModal";
 import NotFound from "./Misc/NotFound";
-import VideoListView from "./VideoListView";
 import { reconstructPhoto, getNumColumns, distributePhotos } from "../utils/photoHelpers";
 import { info } from '../utils/logger';
 import { VideoIcon, PlayIcon } from './icons';
+
+// Lazy load VideoListView (includes VideoPlayer and hls.js)
+const VideoListView = lazy(() => import("./VideoListView"));
 
 interface ContentGridProps {
   album: string;
@@ -213,6 +215,53 @@ const ContentGrid: React.FC<ContentGridProps> = ({ album, onAlbumNotFound, initi
 
     const fetchPhotos = async () => {
       try {
+        // Check if homepage data was server-side rendered (SSR) into the page
+        const initialData = (window as any).__INITIAL_DATA__;
+        
+        if (album === "homepage" && initialData && initialData.homepage) {
+          // Data is already here - no loading state needed!
+          // Use pre-injected homepage data from SSR (no network requests!)
+          info("✓ Using server-side rendered homepage data (no network requests)");
+          const homepageData = initialData.homepage;
+          
+          let staticPhotos;
+          let shouldShuffle = false;
+          
+          if (homepageData && typeof homepageData === 'object' && 'photos' in homepageData) {
+            // Homepage format with metadata
+            shouldShuffle = homepageData.shuffle ?? true;
+            staticPhotos = homepageData.photos.map((data: string[]) => reconstructPhoto(data, album));
+            info(`✓ Loaded ${staticPhotos.length} photos from SSR data (shuffle: ${shouldShuffle})`);
+            
+            // Shuffle homepage photos for random display order each time (if enabled)
+            if (shouldShuffle) {
+              staticPhotos = [...staticPhotos].sort(() => Math.random() - 0.5);
+              info(`ℹ️  Shuffled ${staticPhotos.length} homepage photos`);
+            } else {
+              info(`ℹ️  Homepage shuffle disabled - displaying in order`);
+            }
+          } else {
+            // Legacy format (array of photos)
+            const photoArray = Array.isArray(homepageData) ? homepageData : (homepageData.photos || []);
+            staticPhotos = photoArray.map((data: string[]) => reconstructPhoto(data, album));
+            info(`✓ Loaded ${staticPhotos.length} photos from SSR data`);
+          }
+          
+          // Show first 100 immediately
+          setAllPhotos(staticPhotos);
+          setPhotos(staticPhotos.slice(0, 100));
+          setLoading(false);
+          setError(null);
+          onLoadComplete?.();
+          
+          // Clear only the homepage SSR data after using it (keep albums/links for App.tsx)
+          if ((window as any).__INITIAL_DATA__) {
+            delete (window as any).__INITIAL_DATA__.homepage;
+          }
+          return;
+        }
+
+        // No SSR data, show loading state
         setLoading(true);
 
         // Try to fetch from static JSON first for better performance
@@ -546,7 +595,16 @@ const ContentGrid: React.FC<ContentGridProps> = ({ album, onAlbumNotFound, initi
       }
       return <NotFound />;
     }
-    return <VideoListView videos={allPhotos} album={album} secretKey={secretKey} />;
+    return (
+      <Suspense fallback={
+        <div className="photo-grid-loading">
+          <div className="loading-spinner"></div>
+          <p>{t('app.loadingAlbum')}</p>
+        </div>
+      }>
+        <VideoListView videos={allPhotos} album={album} secretKey={secretKey} />
+      </Suspense>
+    );
   }
 
   return (

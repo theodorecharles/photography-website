@@ -37,6 +37,7 @@ import {
 import { processVideo, VideoProcessingProgress } from "../utils/video-processor.js";
 import { invalidateAlbumCache } from "./albums.js";
 import { generateStaticJSONFiles } from "./static-json.js";
+import { generateHomepageHTML } from "./homepage-html.js";
 import { broadcastOptimizationUpdate, queueOptimizationJob } from "./optimization-stream.js";
 import OpenAI from "openai";
 import { error, warn, info, debug, verbose } from '../utils/logger.js';
@@ -754,6 +755,13 @@ router.delete("/:album/photos/:photo", requireManager, async (req: Request, res:
     // Regenerate static JSON files
     const appRoot = req.app.get('appRoot');
     generateStaticJSONFiles(appRoot);
+    
+    // Check if this album is on homepage and regenerate homepage HTML if needed
+    const albumState = getAlbumState(sanitizedAlbum);
+    if (albumState?.show_on_homepage) {
+      info(`[AlbumManagement] Photo deleted from homepage album - regenerating homepage HTML`);
+      generateHomepageHTML(appRoot);
+    }
 
     res.json({ success: true });
   } catch (err) {
@@ -924,6 +932,13 @@ router.post("/:album/upload", requireManager, (req: Request, res: Response, next
             const appRoot = req.app.get('appRoot');
             generateStaticJSONFiles(appRoot);
             invalidateAlbumCache();
+            
+            // Check if this album is on homepage and regenerate homepage HTML if needed
+            const albumState = getAlbumState(sanitizedAlbum);
+            if (albumState?.show_on_homepage) {
+              info(`[AlbumManagement] Video uploaded to homepage album - regenerating homepage HTML`);
+              generateHomepageHTML(appRoot);
+            }
           } catch (err) {
             error('[AlbumManagement] Failed to regenerate static JSON after video upload:', err);
           }
@@ -1004,6 +1019,13 @@ router.post("/:album/upload", requireManager, (req: Request, res: Response, next
               const appRoot = req.app.get('appRoot');
               generateStaticJSONFiles(appRoot);
               invalidateAlbumCache();
+              
+              // Check if this album is on homepage and regenerate homepage HTML if needed
+              const albumState = getAlbumState(sanitizedAlbum);
+              if (albumState?.show_on_homepage) {
+                info(`[AlbumManagement] Photo uploaded to homepage album - regenerating homepage HTML`);
+                generateHomepageHTML(appRoot);
+              }
             } catch (err) {
               error('[AlbumManagement] Failed to regenerate static JSON after photo upload:', err);
             }
@@ -1243,6 +1265,14 @@ router.patch("/:album/publish", requireManager, async (req: Request, res: Respon
       error(`[Publish] Failed to regenerate static JSON:`, result.error);
     }
 
+    // Regenerate pre-rendered homepage HTML
+    const htmlResult = await generateHomepageHTML(appRoot);
+    if (htmlResult.success) {
+      info(`[Publish] Homepage HTML regenerated`);
+    } else {
+      error(`[Publish] Failed to regenerate homepage HTML:`, htmlResult.error);
+    }
+
     res.json({ 
       success: true, 
       album: sanitizedAlbum,
@@ -1328,6 +1358,14 @@ router.patch("/:album/show-on-homepage", requireManager, async (req: Request, re
       info(`[Homepage] Static JSON regenerated (${result.albumCount} albums)`);
     } else {
       error(`[Homepage] Failed to regenerate static JSON:`, result.error);
+    }
+
+    // Regenerate pre-rendered homepage HTML
+    const htmlResult = await generateHomepageHTML(appRoot);
+    if (htmlResult.success) {
+      info(`[Homepage] Homepage HTML regenerated`);
+    } else {
+      error(`[Homepage] Failed to regenerate homepage HTML:`, htmlResult.error);
     }
 
     res.json({ 

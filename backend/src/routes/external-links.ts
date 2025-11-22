@@ -9,6 +9,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { requireManager } from '../auth/middleware.js';
 import { csrfProtection } from '../security.js';
+import { generateHomepageHTML } from './homepage-html.js';
 import { error, warn, info, debug, verbose } from '../utils/logger.js';
 
 const router = Router();
@@ -92,6 +93,18 @@ router.put('/', requireManager, (req: Request, res: Response): void => {
     // Reload config cache in memory
     reloadConfig();
     info("[ExternalLinks] Config reloaded after external links update");
+    
+    // Regenerate homepage HTML since external links are in the navigation
+    const appRoot = path.join(__dirname, '..', '..');
+    generateHomepageHTML(appRoot).then(result => {
+      if (result.success) {
+        info("[ExternalLinks] Homepage HTML regenerated after external links update");
+      } else {
+        error("[ExternalLinks] Failed to regenerate homepage HTML:", result.error);
+      }
+    }).catch(err => {
+      error("[ExternalLinks] Error regenerating homepage HTML:", err);
+    });
 
     res.json({ success: true, links });
   } catch (err) {
