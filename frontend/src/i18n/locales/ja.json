@@ -422,6 +422,173 @@
       "title": "一般",
       "description": "サイト名、ロゴ、および外観",
       "pageDescription": "サイトの視覚的アイデンティティと一般設定をカスタマイズ"
+    },
+    "notificationEvents": {
+      "title": "イベント",
+      "description": "通知トリガーを設定する",
+      "pageDescription": "プッシュ通知をトリガーするイベントを選択する"
+    },
+    "notifications": {
+      "title": "通知の設定",
+      "description": "受け取りたいプッシュ通知を設定する",
+      "saved": "通知の設定が保存されました",
+      "confirmReset": "通知の設定をデフォルトにリセットしますか？",
+      "resetSuccess": "通知の設定がデフォルトにリセットされました",
+      "resetToDefaults": "デフォルトにリセット",
+      "enableAll": "すべてを有効にする",
+      "disableAll": "すべてを無効にする",
+      "categories": {
+        "security": {
+          "title": "セキュリティと認証",
+          "description": "ユーザーアカウント、ログイン、およびセキュリティイベントに関する通知"
+        },
+        "content": {
+          "title": "コンテンツ管理",
+          "description": "アルバム、写真、および共有に関する通知"
+        },
+        "system": {
+          "title": "システムと構成",
+          "description": "設定変更とシステムイベントに関する通知"
+        }
+      },
+      "types": {
+        "userInvited": {
+          "title": "ユーザー招待",
+          "description": "管理者が新しいユーザーを招待したとき"
+        },
+        "userAcceptedInvite": {
+          "title": "ユーザー参加",
+          "description": "ユーザーが招待を受け入れたとき"
+        },
+        "userDeleted": {
+          "title": "ユーザー削除",
+          "description": "管理者がユーザーアカウントを削除したとき"
+        },
+        "userRoleChanged": {
+          "title": "ユーザーの役割変更",
+          "description": "ユーザーの役割が変更されたとき"
+        },
+        "passkeyCreated": {
+          "title": "パスキー作成",
+          "description": "ユーザーが新しいパスキーを登録したとき"
+        },
+        "passkeyDeleted": {
+          "title": "パスキー削除",
+          "description": "ユーザーがパスキーを削除したとき"
+        },
+        "mfaEnabled": {
+          "title": "MFA有効化",
+          "description": "ユーザーが多要素認証を有効にしたとき"
+        },
+        "mfaDisabled": {
+          "title": "MFA無効化",
+          "description": "ユーザーが多要素認証を無効にしたとき"
+        },
+        "passwordChanged": {
+          "title": "パスワード変更",
+          "description": "ユーザーがパスワードを変更したとき"
+        },
+        "adminPasswordReset": {
+          "title": "管理者パスワードリセット",
+          "description": "管理者がパスワードリセットを開始したとき"
+        },
+        "failedLoginAttempts": {
+          "title": "ログイン失敗試行",
+          "description": "複数のログイン失敗試行が検出されたとき"
+        },
+        "suspiciousActivity": {
+          "title": "不審な活動",
+          "description": "新しいデバイス/場所からのログインが検出されたとき"
+        },
+        "albumCreated": {
+          "title": "アルバム作成",
+          "description": "新しいアルバムが作成されたとき"
+        },
+        "albumPublished": {
+          "title": "アルバム公開",
+          "description": "アルバムが公開されたとき"
+        },
+        "albumUnpublished": {
+          "title": "アルバム非公開",
+          "description": "アルバムが非公開になったとき"
+        },
+        "albumDeleted": {
+          "title": "アルバム削除",
+          "description": "アルバムが削除されたとき"
+        },
+        "folderCreated": {
+          "title": "フォルダー作成",
+          "description": "新しいフォルダーが作成されたとき"
+        },
+        "folderPublished": {
+          "title": "フォルダーが公開されました",
+          "description": "フォルダーが公開されたとき"
+        },
+        "folderUnpublished": {
+          "title": "フォルダーが非公開になりました",
+          "description": "フォルダーが非公開になったとき"
+        },
+        "folderDeleted": {
+          "title": "フォルダーが削除されました",
+          "description": "フォルダーが削除されたとき"
+        },
+        "homepageUpdated": {
+          "title": "ホームページが更新されました",
+          "description": "ホームページの順序が変更されたとき"
+        },
+        "largePhotoUpload": {
+          "title": "大量アップロード",
+          "description": "50枚以上の写真が一度にアップロードされたとき"
+        },
+        "shareLinkCreated": {
+          "title": "共有リンクが作成されました",
+          "description": "新しい共有リンクが作成されたとき"
+        },
+        "shareLinkAccessed": {
+          "title": "共有リンクがアクセスされました",
+          "description": "誰かが共有アルバムを閲覧したとき"
+        },
+        "shareLinkExpired": {
+          "title": "共有リンクが期限切れになりました",
+          "description": "共有リンクが期限切れになったとき"
+        },
+        "photoDownloaded": {
+          "title": "写真がダウンロードされました",
+          "description": "誰かが写真をダウンロードしたとき"
+        },
+        "albumViewMilestone": {
+          "title": "ビューマイルストーン",
+          "description": "アルバムがビューマイルストーン（100、500、1000など）に達したとき"
+        },
+        "configUpdated": {
+          "title": "設定が変更されました",
+          "description": "システム構成が更新されたとき"
+        },
+        "smtpSettingsChanged": {
+          "title": "SMTP設定が変更されました",
+          "description": "メール構成が更新されたとき"
+        },
+        "openaiApiKeyUpdated": {
+          "title": "AI設定が変更されました",
+          "description": "OpenAI APIキーが更新されたとき"
+        },
+        "brandingUpdated": {
+          "title": "ブランディングが更新されました",
+          "description": "サイトのブランディングが変更されたとき"
+        },
+        "lowDiskSpace": {
+          "title": "ディスク容量が少ない",
+          "description": "ストレージが10%未満になったとき"
+        },
+        "databaseBackupCompleted": {
+          "title": "バックアップ完了",
+          "description": "データベースのバックアップが完了したとき"
+        },
+        "versionUpdate": {
+          "title": "バージョン更新",
+          "description": "新しいバージョンが利用可能になったとき"
+        }
+      }
     }
   },
   "advancedSettings": {
@@ -1203,18 +1370,9 @@
     "hardwareTranscodingDescription": "GPUアクセラレーションを使用して、より高速なビデオエンコーディングを行います（対応するハードウェアが必要です）"
   },
   "notifications": {
-    "bannerTitle": "処理ジョブが完了したときに通知を受け取る",
-    "bannerDescription": "ビデオ処理および画像最適化ジョブが完了したときにアラートを受け取るためにプッシュ通知を有効にしてください。ジョブがバックグラウンドで実行されている間、他のタブやアプリケーションで作業できます。",
-    "enable": "通知を有効にする",
-    "dismiss": "後で",
     "active": "プッシュ通知が有効になりました",
     "sendTest": "テストを送信",
     "disable": "無効にする",
-    "permissionGranted": "プッシュ通知が正常に有効になりました！",
-    "permissionDenied": "プッシュ通知の権限が拒否されました",
-    "error": "プッシュ通知の管理に失敗しました",
-    "unsubscribed": "プッシュ通知が無効になりました",
-    "testSent": "テスト通知が送信されました！デバイスを確認してください。",
     "settings": {
       "title": "プッシュ通知",
       "configured": "✓ 設定済み",
@@ -1241,7 +1399,9 @@
       "errorEnable": "プッシュ通知を有効にできませんでした。もう一度お試しください。",
       "errorDisable": "プッシュ通知を無効にできませんでした。もう一度お試しください。",
       "errorGenerateKeys": "VAPIDキーの生成に失敗しました",
-      "close": "閉じる"
+      "close": "閉じる",
+      "configureEvents": "⚙️ イベントを設定",
+      "configureEventsDescription": "プッシュ通知をトリガーするイベントを選択"
     },
     "backend": {
       "videoProcessingComplete": "動画処理が完了しました",
@@ -1253,14 +1413,56 @@
       "aiTitlesComplete": "AIタイトル生成が完了しました",
       "aiTitlesFailed": "AIタイトル生成に失敗しました",
       "testNotificationTitle": "テスト通知",
-      "testNotificationBody": "プッシュ通知は正常に動作しています！ 処理ジョブが完了した際にアラートを受け取ります。"
+      "testNotificationBody": "プッシュ通知は正常に動作しています！ 処理ジョブが完了した際にアラートを受け取ります。",
+      "userDeletedTitle": "ユーザーが削除されました",
+      "userDeletedBody": "ユーザーアカウントが削除されました",
+      "userRoleChangedTitle": "ユーザーの役割が変更されました",
+      "userRoleChangedBody": "ユーザーの役割が変更されました",
+      "passkeyDeletedTitle": "パスキーが削除されました",
+      "passkeyDeletedBody": "ユーザーがパスキーを削除しました",
+      "mfaDisabledTitle": "MFAが無効になりました",
+      "mfaDisabledBody": "ユーザーが多要素認証を無効にしました",
+      "passwordChangedTitle": "パスワードが変更されました",
+      "passwordChangedBody": "ユーザーがパスワードを変更しました",
+      "adminPasswordResetTitle": "パスワードリセットが送信されました",
+      "adminPasswordResetBody": "管理者がパスワードリセットメールを送信しました",
+      "failedLoginAttemptsTitle": "ログイン試行失敗",
+      "failedLoginAttemptsBody": "複数のログイン失敗試行が検出されました",
+      "suspiciousActivityTitle": "不審な活動",
+      "suspiciousActivityBody": "新しいデバイスまたは場所からのログインが検出されました",
+      "albumCreatedTitle": "アルバムが作成されました",
+      "albumCreatedBody": "新しいアルバムが作成されました",
+      "albumPublishedTitle": "アルバムが公開されました",
+      "albumPublishedBody": "アルバムが公開されました",
+      "albumDeletedTitle": "アルバムが削除されました",
+      "albumDeletedBody": "アルバムが削除されました",
+      "largePhotoUploadTitle": "大量アップロード",
+      "largePhotoUploadBody": "50枚以上の写真が一度にアップロードされました",
+      "shareLinkCreatedTitle": "共有リンクが作成されました",
+      "shareLinkCreatedBody": "新しい共有リンクが作成されました",
+      "shareLinkAccessedTitle": "共有リンクが閲覧されました",
+      "shareLinkAccessedBody": "誰かが共有アルバムを閲覧しました",
+      "shareLinkExpiredTitle": "共有リンクが期限切れになりました",
+      "shareLinkExpiredBody": "共有リンクが期限切れになりました",
+      "configUpdatedTitle": "設定が変更されました",
+      "configUpdatedBody": "システム構成が更新されました",
+      "smtpSettingsChangedTitle": "メール設定が変更されました",
+      "smtpSettingsChangedBody": "SMTP構成が更新されました",
+      "openaiApiKeyUpdatedTitle": "AI設定が変更されました",
+      "openaiApiKeyUpdatedBody": "OpenAI APIキーが更新されました",
+      "brandingUpdatedTitle": "ブランディングが更新されました",
+      "brandingUpdatedBody": "サイトのブランディングが変更されました",
+      "lowDiskSpaceTitle": "ディスク容量不足",
+      "lowDiskSpaceBody": "ストレージが不足しています（残り < 10%）",
+      "databaseBackupCompletedTitle": "バックアップ完了",
+      "databaseBackupCompletedBody": "データベースのバックアップが正常に完了しました"
     },
     "blocked": "ブラウザによって通知がブロックされています。ブラウザの設定を確認してください。",
     "subscribePrompt": "ジョブが完了したときに通知を受け取るために購読してください",
     "subscribe": "購読",
-    "loading": "読み込み中...",
-    "notSupported": "このブラウザではプッシュ通知はサポートされていません",
-    "serverDisabled": "サーバーでプッシュ通知が無効になっています"
+    "events": {
+      "saved": "通知設定が保存されました"
+    }
   },
   "general": {
     "title": "一般",

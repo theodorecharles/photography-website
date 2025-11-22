@@ -422,6 +422,173 @@
       "title": "General",
       "description": "Nombre del sitio, logo y apariencia",
       "pageDescription": "Personaliza la identidad visual y la configuración general de tu sitio"
+    },
+    "notificationEvents": {
+      "title": "Eventos",
+      "description": "Configurar disparadores de notificaciones",
+      "pageDescription": "Elegir qué eventos deben activar notificaciones push"
+    },
+    "notifications": {
+      "title": "Preferencias de Notificación",
+      "description": "Configurar qué notificaciones push deseas recibir",
+      "saved": "Preferencias de notificación guardadas",
+      "confirmReset": "¿Restablecer todas las preferencias de notificación a los valores predeterminados?",
+      "resetSuccess": "Preferencias de notificación restablecidas a los valores predeterminados",
+      "resetToDefaults": "Restablecer a los valores predeterminados",
+      "enableAll": "Habilitar Todo",
+      "disableAll": "Deshabilitar Todo",
+      "categories": {
+        "security": {
+          "title": "Seguridad y Autenticación",
+          "description": "Notificaciones sobre cuentas de usuario, inicios de sesión y eventos de seguridad"
+        },
+        "content": {
+          "title": "Gestión de Contenido",
+          "description": "Notificaciones sobre álbumes, fotos y comparticiones"
+        },
+        "system": {
+          "title": "Sistema y Configuración",
+          "description": "Notificaciones sobre cambios de configuración y eventos del sistema"
+        }
+      },
+      "types": {
+        "userInvited": {
+          "title": "Usuario Invitado",
+          "description": "Cuando un administrador invita a un nuevo usuario"
+        },
+        "userAcceptedInvite": {
+          "title": "Usuario Unido",
+          "description": "Cuando un usuario acepta una invitación"
+        },
+        "userDeleted": {
+          "title": "Usuario Eliminado",
+          "description": "Cuando un administrador elimina una cuenta de usuario"
+        },
+        "userRoleChanged": {
+          "title": "Rol de Usuario Cambiado",
+          "description": "Cuando se cambia el rol de un usuario"
+        },
+        "passkeyCreated": {
+          "title": "Llave de Acceso Creada",
+          "description": "Cuando un usuario registra una nueva llave de acceso"
+        },
+        "passkeyDeleted": {
+          "title": "Llave de Acceso Eliminada",
+          "description": "Cuando un usuario elimina una llave de acceso"
+        },
+        "mfaEnabled": {
+          "title": "MFA Habilitado",
+          "description": "Cuando un usuario habilita la autenticación multifactor"
+        },
+        "mfaDisabled": {
+          "title": "MFA Deshabilitado",
+          "description": "Cuando un usuario deshabilita la autenticación multifactor"
+        },
+        "passwordChanged": {
+          "title": "Contraseña Cambiada",
+          "description": "Cuando un usuario cambia su contraseña"
+        },
+        "adminPasswordReset": {
+          "title": "Restablecimiento de Contraseña de Administrador",
+          "description": "Cuando un administrador inicia un restablecimiento de contraseña"
+        },
+        "failedLoginAttempts": {
+          "title": "Intentos de Inicio de Sesión Fallidos",
+          "description": "Cuando se detectan múltiples intentos fallidos de inicio de sesión"
+        },
+        "suspiciousActivity": {
+          "title": "Actividad Sospechosa",
+          "description": "Cuando se detecta un inicio de sesión desde un nuevo dispositivo/ubicación"
+        },
+        "albumCreated": {
+          "title": "Álbum Creado",
+          "description": "Cuando se crea un nuevo álbum"
+        },
+        "albumPublished": {
+          "title": "Álbum Publicado",
+          "description": "Cuando un álbum se hace público"
+        },
+        "albumUnpublished": {
+          "title": "Álbum No Publicado",
+          "description": "Cuando un álbum se hace privado"
+        },
+        "albumDeleted": {
+          "title": "Álbum Eliminado",
+          "description": "Cuando se elimina un álbum"
+        },
+        "folderCreated": {
+          "title": "Carpeta Creada",
+          "description": "Cuando se crea una nueva carpeta"
+        },
+        "folderPublished": {
+          "title": "Carpeta Publicada",
+          "description": "Cuando una carpeta se hace pública"
+        },
+        "folderUnpublished": {
+          "title": "Carpeta No Publicada",
+          "description": "Cuando una carpeta se hace privada"
+        },
+        "folderDeleted": {
+          "title": "Carpeta Eliminada",
+          "description": "Cuando una carpeta es eliminada"
+        },
+        "homepageUpdated": {
+          "title": "Página de Inicio Actualizada",
+          "description": "Cuando se cambia el orden de la página de inicio"
+        },
+        "largePhotoUpload": {
+          "title": "Carga Grande",
+          "description": "Cuando se suben 50+ fotos a la vez"
+        },
+        "shareLinkCreated": {
+          "title": "Enlace para Compartir Creado",
+          "description": "Cuando se crea un nuevo enlace para compartir"
+        },
+        "shareLinkAccessed": {
+          "title": "Enlace para Compartir Accedido",
+          "description": "Cuando alguien ve un álbum compartido"
+        },
+        "shareLinkExpired": {
+          "title": "Enlace para Compartir Caducado",
+          "description": "Cuando un enlace para compartir caduca"
+        },
+        "photoDownloaded": {
+          "title": "Foto Descargada",
+          "description": "Cuando alguien descarga una foto"
+        },
+        "albumViewMilestone": {
+          "title": "Hito de Visualización",
+          "description": "Cuando un álbum alcanza hitos de visualización (100, 500, 1000, etc.)"
+        },
+        "configUpdated": {
+          "title": "Configuración Cambiada",
+          "description": "Cuando se actualiza la configuración del sistema"
+        },
+        "smtpSettingsChanged": {
+          "title": "Configuración SMTP Cambiada",
+          "description": "Cuando se actualiza la configuración de correo electrónico"
+        },
+        "openaiApiKeyUpdated": {
+          "title": "Configuración de IA Cambiada",
+          "description": "Cuando se actualiza la clave API de OpenAI"
+        },
+        "brandingUpdated": {
+          "title": "Marca Actualizada",
+          "description": "Cuando se cambia la marca del sitio"
+        },
+        "lowDiskSpace": {
+          "title": "Espacio en Disco Bajo",
+          "description": "Cuando el almacenamiento está por debajo del 10%"
+        },
+        "databaseBackupCompleted": {
+          "title": "Respaldo Completo",
+          "description": "Cuando se completa el respaldo de la base de datos"
+        },
+        "versionUpdate": {
+          "title": "Actualización de Versión",
+          "description": "Cuando hay una nueva versión disponible"
+        }
+      }
     }
   },
   "userManagement": {
@@ -1203,18 +1370,9 @@
     "hardwareTranscodingDescription": "Usa la aceleración de GPU para una codificación de video más rápida (requiere hardware compatible)"
   },
   "notifications": {
-    "bannerTitle": "Recibir notificaciones cuando se completen los trabajos de procesamiento",
-    "bannerDescription": "Habilita las notificaciones push para recibir alertas cuando finalicen tus trabajos de procesamiento de video y optimización de imágenes. Puedes trabajar en otras pestañas o aplicaciones mientras los trabajos se ejecutan en segundo plano.",
-    "enable": "Habilitar notificaciones",
-    "dismiss": "Quizás más tarde",
     "active": "Notificaciones push habilitadas",
     "sendTest": "Enviar prueba",
     "disable": "Desactivar",
-    "permissionGranted": "¡Notificaciones push habilitadas con éxito!",
-    "permissionDenied": "Permiso de notificaciones push denegado",
-    "error": "Error al gestionar las notificaciones push",
-    "unsubscribed": "Notificaciones push deshabilitadas",
-    "testSent": "¡Notificación de prueba enviada! Revisa tu dispositivo.",
     "settings": {
       "title": "Notificaciones Push",
       "configured": "✓ Configurado",
@@ -1241,7 +1399,9 @@
       "errorEnable": "Error al habilitar las notificaciones push. Por favor, inténtalo de nuevo.",
       "errorDisable": "Error al deshabilitar las notificaciones push. Por favor, inténtalo de nuevo.",
       "errorGenerateKeys": "Error al generar claves VAPID",
-      "close": "Cerrar"
+      "close": "Cerrar",
+      "configureEvents": "⚙️ Configurar Eventos",
+      "configureEventsDescription": "Elige qué eventos deben activar notificaciones push"
     },
     "backend": {
       "videoProcessingComplete": "Procesamiento de video completo",
@@ -1253,14 +1413,56 @@
       "aiTitlesComplete": "Generación de título AI completa",
       "aiTitlesFailed": "La generación de título AI falló",
       "testNotificationTitle": "Notificación de prueba",
-      "testNotificationBody": "¡Las notificaciones push están funcionando! Recibirás alertas cuando tus trabajos de procesamiento se completen."
+      "testNotificationBody": "¡Las notificaciones push están funcionando! Recibirás alertas cuando tus trabajos de procesamiento se completen.",
+      "userDeletedTitle": "Usuario Eliminado",
+      "userDeletedBody": "Se ha eliminado una cuenta de usuario",
+      "userRoleChangedTitle": "Rol de Usuario Cambiado",
+      "userRoleChangedBody": "Se ha cambiado el rol de un usuario",
+      "passkeyDeletedTitle": "Llave de Acceso Eliminada",
+      "passkeyDeletedBody": "Un usuario ha eliminado una llave de acceso",
+      "mfaDisabledTitle": "MFA Deshabilitada",
+      "mfaDisabledBody": "Un usuario ha deshabilitado la autenticación multifactor",
+      "passwordChangedTitle": "Contraseña Cambiada",
+      "passwordChangedBody": "Un usuario ha cambiado su contraseña",
+      "adminPasswordResetTitle": "Restablecimiento de Contraseña Enviado",
+      "adminPasswordResetBody": "Un administrador envió un correo electrónico de restablecimiento de contraseña",
+      "failedLoginAttemptsTitle": "Intentos de Inicio de Sesión Fallidos",
+      "failedLoginAttemptsBody": "Se detectaron múltiples intentos fallidos de inicio de sesión",
+      "suspiciousActivityTitle": "Actividad sospechosa",
+      "suspiciousActivityBody": "Se detectó inicio de sesión desde un nuevo dispositivo o ubicación",
+      "albumCreatedTitle": "Álbum creado",
+      "albumCreatedBody": "Se ha creado un nuevo álbum",
+      "albumPublishedTitle": "Álbum publicado",
+      "albumPublishedBody": "Un álbum se ha hecho público",
+      "albumDeletedTitle": "Álbum eliminado",
+      "albumDeletedBody": "Un álbum ha sido eliminado",
+      "largePhotoUploadTitle": "Carga grande",
+      "largePhotoUploadBody": "Se subieron más de 50 fotos en un solo lote",
+      "shareLinkCreatedTitle": "Enlace de compartición creado",
+      "shareLinkCreatedBody": "Se ha creado un nuevo enlace de compartición",
+      "shareLinkAccessedTitle": "Enlace de compartición visto",
+      "shareLinkAccessedBody": "Alguien vio un álbum compartido",
+      "shareLinkExpiredTitle": "Enlace de compartición expirado",
+      "shareLinkExpiredBody": "Un enlace de compartición ha expirado",
+      "configUpdatedTitle": "Configuración cambiada",
+      "configUpdatedBody": "La configuración del sistema ha sido actualizada",
+      "smtpSettingsChangedTitle": "Configuración de correo electrónico cambiada",
+      "smtpSettingsChangedBody": "La configuración de SMTP ha sido actualizada",
+      "openaiApiKeyUpdatedTitle": "Configuración de IA cambiada",
+      "openaiApiKeyUpdatedBody": "La clave API de OpenAI ha sido actualizada",
+      "brandingUpdatedTitle": "Marca actualizada",
+      "brandingUpdatedBody": "La marca del sitio ha sido cambiada",
+      "lowDiskSpaceTitle": "Poco espacio en disco",
+      "lowDiskSpaceBody": "El almacenamiento se está agotando (< 10% restante)",
+      "databaseBackupCompletedTitle": "Respaldo completo",
+      "databaseBackupCompletedBody": "Respaldo de base de datos completado con éxito"
     },
     "blocked": "Notificaciones bloqueadas por el navegador. Verifica la configuración de tu navegador.",
     "subscribePrompt": "Suscríbete para recibir notificaciones cuando los trabajos se completen",
     "subscribe": "Suscribirse",
-    "loading": "Cargando...",
-    "notSupported": "Las notificaciones push no son compatibles con este navegador",
-    "serverDisabled": "Las notificaciones push están desactivadas en el servidor"
+    "events": {
+      "saved": "Preferencia de notificación guardada"
+    }
   },
   "general": {
     "title": "General",

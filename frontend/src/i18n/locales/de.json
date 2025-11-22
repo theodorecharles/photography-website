@@ -422,6 +422,173 @@
       "title": "Allgemein",
       "description": "Website-Name, Logo und Erscheinungsbild",
       "pageDescription": "Passen Sie die visuelle Identität und die allgemeinen Einstellungen Ihrer Website an"
+    },
+    "notificationEvents": {
+      "title": "Ereignisse",
+      "description": "Benachrichtigungsauslöser konfigurieren",
+      "pageDescription": "Wählen Sie, welche Ereignisse Push-Benachrichtigungen auslösen sollen"
+    },
+    "notifications": {
+      "title": "Benachrichtigungseinstellungen",
+      "description": "Konfigurieren Sie, welche Push-Benachrichtigungen Sie erhalten möchten",
+      "saved": "Benachrichtigungseinstellungen gespeichert",
+      "confirmReset": "Alle Benachrichtigungseinstellungen auf Standard zurücksetzen?",
+      "resetSuccess": "Benachrichtigungseinstellungen auf Standard zurückgesetzt",
+      "resetToDefaults": "Auf Standard zurücksetzen",
+      "enableAll": "Alle aktivieren",
+      "disableAll": "Alle deaktivieren",
+      "categories": {
+        "security": {
+          "title": "Sicherheit & Authentifizierung",
+          "description": "Benachrichtigungen über Benutzerkonten, Anmeldungen und Sicherheitsereignisse"
+        },
+        "content": {
+          "title": "Inhaltsverwaltung",
+          "description": "Benachrichtigungen über Alben, Fotos und Freigaben"
+        },
+        "system": {
+          "title": "System & Konfiguration",
+          "description": "Benachrichtigungen über Einstellungsänderungen und Systemereignisse"
+        }
+      },
+      "types": {
+        "userInvited": {
+          "title": "Benutzer eingeladen",
+          "description": "Wenn ein Administrator einen neuen Benutzer einlädt"
+        },
+        "userAcceptedInvite": {
+          "title": "Benutzer beigetreten",
+          "description": "Wenn ein Benutzer eine Einladung annimmt"
+        },
+        "userDeleted": {
+          "title": "Benutzer gelöscht",
+          "description": "Wenn ein Administrator ein Benutzerkonto löscht"
+        },
+        "userRoleChanged": {
+          "title": "Benutzerrolle geändert",
+          "description": "Wenn die Rolle eines Benutzers geändert wird"
+        },
+        "passkeyCreated": {
+          "title": "Passkey erstellt",
+          "description": "Wenn ein Benutzer einen neuen Passkey registriert"
+        },
+        "passkeyDeleted": {
+          "title": "Passkey gelöscht",
+          "description": "Wenn ein Benutzer einen Passkey entfernt"
+        },
+        "mfaEnabled": {
+          "title": "MFA aktiviert",
+          "description": "Wenn ein Benutzer die Multi-Faktor-Authentifizierung aktiviert"
+        },
+        "mfaDisabled": {
+          "title": "MFA deaktiviert",
+          "description": "Wenn ein Benutzer die Multi-Faktor-Authentifizierung deaktiviert"
+        },
+        "passwordChanged": {
+          "title": "Passwort geändert",
+          "description": "Wenn ein Benutzer sein Passwort ändert"
+        },
+        "adminPasswordReset": {
+          "title": "Admin-Passwort zurückgesetzt",
+          "description": "Wenn ein Administrator ein Passwort-Reset initiiert"
+        },
+        "failedLoginAttempts": {
+          "title": "Fehlgeschlagene Anmeldeversuche",
+          "description": "Wenn mehrere fehlgeschlagene Anmeldeversuche erkannt werden"
+        },
+        "suspiciousActivity": {
+          "title": "Verdächtige Aktivität",
+          "description": "Wenn eine Anmeldung von einem neuen Gerät/Standort erkannt wird"
+        },
+        "albumCreated": {
+          "title": "Album erstellt",
+          "description": "Wenn ein neues Album erstellt wird"
+        },
+        "albumPublished": {
+          "title": "Album veröffentlicht",
+          "description": "Wenn ein Album öffentlich gemacht wird"
+        },
+        "albumUnpublished": {
+          "title": "Album unveröffentlicht",
+          "description": "Wenn ein Album privat gemacht wird"
+        },
+        "albumDeleted": {
+          "title": "Album gelöscht",
+          "description": "Wenn ein Album gelöscht wird"
+        },
+        "folderCreated": {
+          "title": "Ordner erstellt",
+          "description": "Wenn ein neuer Ordner erstellt wird"
+        },
+        "folderPublished": {
+          "title": "Ordner veröffentlicht",
+          "description": "Wenn ein Ordner öffentlich gemacht wird"
+        },
+        "folderUnpublished": {
+          "title": "Ordner unveröffentlicht",
+          "description": "Wenn ein Ordner privat gemacht wird"
+        },
+        "folderDeleted": {
+          "title": "Ordner gelöscht",
+          "description": "Wenn ein Ordner gelöscht wird"
+        },
+        "homepageUpdated": {
+          "title": "Startseite aktualisiert",
+          "description": "Wenn die Reihenfolge der Startseite geändert wird"
+        },
+        "largePhotoUpload": {
+          "title": "Großer Upload",
+          "description": "Wenn 50+ Fotos auf einmal hochgeladen werden"
+        },
+        "shareLinkCreated": {
+          "title": "Freigabelink erstellt",
+          "description": "Wenn ein neuer Freigabelink erstellt wird"
+        },
+        "shareLinkAccessed": {
+          "title": "Freigabelink aufgerufen",
+          "description": "Wenn jemand ein freigegebenes Album ansieht"
+        },
+        "shareLinkExpired": {
+          "title": "Freigabelink abgelaufen",
+          "description": "Wenn ein Freigabelink abläuft"
+        },
+        "photoDownloaded": {
+          "title": "Foto heruntergeladen",
+          "description": "Wenn jemand ein Foto herunterlädt"
+        },
+        "albumViewMilestone": {
+          "title": "Meilenstein erreicht",
+          "description": "Wenn ein Album Meilensteine bei den Ansichten erreicht (100, 500, 1000, etc.)"
+        },
+        "configUpdated": {
+          "title": "Einstellungen geändert",
+          "description": "Wenn die Systemkonfiguration aktualisiert wird"
+        },
+        "smtpSettingsChanged": {
+          "title": "SMTP-Einstellungen geändert",
+          "description": "Wenn die E-Mail-Konfiguration aktualisiert wird"
+        },
+        "openaiApiKeyUpdated": {
+          "title": "KI-Einstellungen geändert",
+          "description": "Wenn der OpenAI-API-Schlüssel aktualisiert wird"
+        },
+        "brandingUpdated": {
+          "title": "Branding aktualisiert",
+          "description": "Wenn das Site-Branding geändert wird"
+        },
+        "lowDiskSpace": {
+          "title": "Wenig Speicherplatz",
+          "description": "Wenn der Speicherplatz unter 10% liegt"
+        },
+        "databaseBackupCompleted": {
+          "title": "Sicherung abgeschlossen",
+          "description": "Wenn die Datenbanksicherung abgeschlossen ist"
+        },
+        "versionUpdate": {
+          "title": "Versionsaktualisierung",
+          "description": "Wenn eine neue Version verfügbar ist"
+        }
+      }
     }
   },
   "advancedSettings": {
@@ -1203,18 +1370,9 @@
     "hardwareTranscodingDescription": "Verwenden Sie GPU-Beschleunigung für schnelleres Video-Encoding (erfordert kompatible Hardware)"
   },
   "notifications": {
-    "bannerTitle": "Benachrichtigen Sie mich, wenn die Verarbeitungsjobs abgeschlossen sind",
-    "bannerDescription": "Aktivieren Sie Push-Benachrichtigungen, um Benachrichtigungen zu erhalten, wenn Ihre Videoverarbeitungs- und Bildoptimierungsjobs abgeschlossen sind. Sie können in anderen Tabs oder Anwendungen arbeiten, während die Jobs im Hintergrund laufen.",
-    "enable": "Benachrichtigungen aktivieren",
-    "dismiss": "Vielleicht später",
     "active": "Push-Benachrichtigungen aktiviert",
     "sendTest": "Test senden",
     "disable": "Deaktivieren",
-    "permissionGranted": "Push-Benachrichtigungen erfolgreich aktiviert!",
-    "permissionDenied": "Berechtigung für Push-Benachrichtigungen verweigert",
-    "error": "Fehler beim Verwalten von Push-Benachrichtigungen",
-    "unsubscribed": "Push-Benachrichtigungen deaktiviert",
-    "testSent": "Testbenachrichtigung gesendet! Überprüfen Sie Ihr Gerät.",
     "settings": {
       "title": "Push-Benachrichtigungen",
       "configured": "✓ Konfiguriert",
@@ -1241,7 +1399,9 @@
       "errorEnable": "Fehler beim Aktivieren von Push-Benachrichtigungen. Bitte versuche es erneut.",
       "errorDisable": "Fehler beim Deaktivieren von Push-Benachrichtigungen. Bitte versuche es erneut.",
       "errorGenerateKeys": "Fehler beim Generieren von VAPID-Schlüsseln",
-      "close": "Schließen"
+      "close": "Schließen",
+      "configureEvents": "⚙️ Ereignisse konfigurieren",
+      "configureEventsDescription": "Wählen Sie, welche Ereignisse Push-Benachrichtigungen auslösen sollen"
     },
     "backend": {
       "videoProcessingComplete": "Videoverarbeitung abgeschlossen",
@@ -1253,14 +1413,56 @@
       "aiTitlesComplete": "KI-Titelgenerierung abgeschlossen",
       "aiTitlesFailed": "KI-Titelgenerierung fehlgeschlagen",
       "testNotificationTitle": "Testbenachrichtigung",
-      "testNotificationBody": "Push-Benachrichtigungen funktionieren! Sie erhalten Benachrichtigungen, wenn Ihre Verarbeitungsjobs abgeschlossen sind."
+      "testNotificationBody": "Push-Benachrichtigungen funktionieren! Sie erhalten Benachrichtigungen, wenn Ihre Verarbeitungsjobs abgeschlossen sind.",
+      "userDeletedTitle": "Benutzer gelöscht",
+      "userDeletedBody": "Ein Benutzerkonto wurde gelöscht",
+      "userRoleChangedTitle": "Benutzerrolle geändert",
+      "userRoleChangedBody": "Die Rolle eines Benutzers wurde geändert",
+      "passkeyDeletedTitle": "Passkey gelöscht",
+      "passkeyDeletedBody": "Ein Benutzer hat einen Passkey entfernt",
+      "mfaDisabledTitle": "MFA deaktiviert",
+      "mfaDisabledBody": "Ein Benutzer hat die Multi-Faktor-Authentifizierung deaktiviert",
+      "passwordChangedTitle": "Passwort geändert",
+      "passwordChangedBody": "Ein Benutzer hat sein Passwort geändert",
+      "adminPasswordResetTitle": "Passwort-Reset gesendet",
+      "adminPasswordResetBody": "Ein Administrator hat eine Passwort-Reset-E-Mail gesendet",
+      "failedLoginAttemptsTitle": "Fehlgeschlagene Anmeldeversuche",
+      "failedLoginAttemptsBody": "Mehrere fehlgeschlagene Anmeldeversuche erkannt",
+      "suspiciousActivityTitle": "Verdächtige Aktivität",
+      "suspiciousActivityBody": "Anmeldung von neuem Gerät oder Standort erkannt",
+      "albumCreatedTitle": "Album erstellt",
+      "albumCreatedBody": "Ein neues Album wurde erstellt",
+      "albumPublishedTitle": "Album veröffentlicht",
+      "albumPublishedBody": "Ein Album wurde öffentlich gemacht",
+      "albumDeletedTitle": "Album gelöscht",
+      "albumDeletedBody": "Ein Album wurde gelöscht",
+      "largePhotoUploadTitle": "Großer Upload",
+      "largePhotoUploadBody": "50+ Fotos in einem Schwung hochgeladen",
+      "shareLinkCreatedTitle": "Freigabelink erstellt",
+      "shareLinkCreatedBody": "Ein neuer Freigabelink wurde erstellt",
+      "shareLinkAccessedTitle": "Freigabelink angesehen",
+      "shareLinkAccessedBody": "Jemand hat ein freigegebenes Album angesehen",
+      "shareLinkExpiredTitle": "Freigabelink abgelaufen",
+      "shareLinkExpiredBody": "Ein Freigabelink ist abgelaufen",
+      "configUpdatedTitle": "Einstellungen geändert",
+      "configUpdatedBody": "Systemkonfiguration wurde aktualisiert",
+      "smtpSettingsChangedTitle": "E-Mail-Einstellungen geändert",
+      "smtpSettingsChangedBody": "SMTP-Konfiguration wurde aktualisiert",
+      "openaiApiKeyUpdatedTitle": "KI-Einstellungen geändert",
+      "openaiApiKeyUpdatedBody": "OpenAI-API-Schlüssel wurde aktualisiert",
+      "brandingUpdatedTitle": "Branding aktualisiert",
+      "brandingUpdatedBody": "Website-Branding wurde geändert",
+      "lowDiskSpaceTitle": "Wenig Speicherplatz",
+      "lowDiskSpaceBody": "Speicherplatz wird knapp (< 10% verbleibend)",
+      "databaseBackupCompletedTitle": "Sicherung abgeschlossen",
+      "databaseBackupCompletedBody": "Datenbanksicherung erfolgreich abgeschlossen"
     },
     "blocked": "Benachrichtigungen durch den Browser blockiert. Überprüfen Sie Ihre Browsereinstellungen.",
     "subscribePrompt": "Abonnieren, um Benachrichtigungen zu erhalten, wenn Jobs abgeschlossen sind",
     "subscribe": "Abonnieren",
-    "loading": "Laden...",
-    "notSupported": "Push-Benachrichtigungen werden in diesem Browser nicht unterstützt",
-    "serverDisabled": "Push-Benachrichtigungen sind auf dem Server deaktiviert"
+    "events": {
+      "saved": "Benachrichtigungseinstellungen gespeichert"
+    }
   },
   "general": {
     "title": "Allgemein",

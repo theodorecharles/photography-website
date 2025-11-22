@@ -422,6 +422,173 @@
       "title": "常规",
       "description": "网站名称、徽标和外观",
       "pageDescription": "自定义您网站的视觉身份和一般设置"
+    },
+    "notificationEvents": {
+      "title": "事件",
+      "description": "配置通知触发器",
+      "pageDescription": "选择哪些事件应触发推送通知"
+    },
+    "notifications": {
+      "title": "通知偏好设置",
+      "description": "配置您想接收的推送通知",
+      "saved": "通知偏好设置已保存",
+      "confirmReset": "重置所有通知偏好设置为默认值？",
+      "resetSuccess": "通知偏好设置已重置为默认值",
+      "resetToDefaults": "重置为默认值",
+      "enableAll": "启用全部",
+      "disableAll": "禁用全部",
+      "categories": {
+        "security": {
+          "title": "安全与认证",
+          "description": "关于用户账户、登录和安全事件的通知"
+        },
+        "content": {
+          "title": "内容管理",
+          "description": "关于相册、照片和共享的通知"
+        },
+        "system": {
+          "title": "系统与配置",
+          "description": "关于设置更改和系统事件的通知"
+        }
+      },
+      "types": {
+        "userInvited": {
+          "title": "用户已邀请",
+          "description": "当管理员邀请新用户时"
+        },
+        "userAcceptedInvite": {
+          "title": "用户已加入",
+          "description": "当用户接受邀请时"
+        },
+        "userDeleted": {
+          "title": "用户已删除",
+          "description": "当管理员删除用户账户时"
+        },
+        "userRoleChanged": {
+          "title": "用户角色已更改",
+          "description": "当用户的角色被更改时"
+        },
+        "passkeyCreated": {
+          "title": "密钥已创建",
+          "description": "当用户注册新密钥时"
+        },
+        "passkeyDeleted": {
+          "title": "密钥已删除",
+          "description": "当用户移除密钥时"
+        },
+        "mfaEnabled": {
+          "title": "多因素认证已启用",
+          "description": "当用户启用多因素认证时"
+        },
+        "mfaDisabled": {
+          "title": "多因素认证已禁用",
+          "description": "当用户禁用多因素认证时"
+        },
+        "passwordChanged": {
+          "title": "密码已更改",
+          "description": "当用户更改密码时"
+        },
+        "adminPasswordReset": {
+          "title": "管理员密码重置",
+          "description": "当管理员启动密码重置时"
+        },
+        "failedLoginAttempts": {
+          "title": "登录尝试失败",
+          "description": "当检测到多次登录失败尝试时"
+        },
+        "suspiciousActivity": {
+          "title": "可疑活动",
+          "description": "当检测到新设备/位置的登录时"
+        },
+        "albumCreated": {
+          "title": "相册已创建",
+          "description": "当新相册被创建时"
+        },
+        "albumPublished": {
+          "title": "相册已发布",
+          "description": "当相册被公开时"
+        },
+        "albumUnpublished": {
+          "title": "相册已取消发布",
+          "description": "当相册被设为私密时"
+        },
+        "albumDeleted": {
+          "title": "相册已删除",
+          "description": "当相册被删除时"
+        },
+        "folderCreated": {
+          "title": "文件夹已创建",
+          "description": "创建新文件夹时"
+        },
+        "folderPublished": {
+          "title": "文件夹已发布",
+          "description": "文件夹公开时"
+        },
+        "folderUnpublished": {
+          "title": "文件夹未发布",
+          "description": "文件夹设为私有时"
+        },
+        "folderDeleted": {
+          "title": "文件夹已删除",
+          "description": "文件夹删除时"
+        },
+        "homepageUpdated": {
+          "title": "首页已更新",
+          "description": "首页顺序更改时"
+        },
+        "largePhotoUpload": {
+          "title": "大量上传",
+          "description": "一次上传50张以上照片时"
+        },
+        "shareLinkCreated": {
+          "title": "分享链接已创建",
+          "description": "创建新分享链接时"
+        },
+        "shareLinkAccessed": {
+          "title": "分享链接已访问",
+          "description": "有人查看共享相册时"
+        },
+        "shareLinkExpired": {
+          "title": "分享链接已过期",
+          "description": "分享链接过期时"
+        },
+        "photoDownloaded": {
+          "title": "照片已下载",
+          "description": "有人下载照片时"
+        },
+        "albumViewMilestone": {
+          "title": "浏览里程碑",
+          "description": "相册达到浏览里程碑（100, 500, 1000等）时"
+        },
+        "configUpdated": {
+          "title": "设置已更改",
+          "description": "系统配置更新时"
+        },
+        "smtpSettingsChanged": {
+          "title": "SMTP设置已更改",
+          "description": "邮件配置更新时"
+        },
+        "openaiApiKeyUpdated": {
+          "title": "AI设置已更改",
+          "description": "OpenAI API密钥更新时"
+        },
+        "brandingUpdated": {
+          "title": "品牌已更新",
+          "description": "网站品牌更改时"
+        },
+        "lowDiskSpace": {
+          "title": "磁盘空间不足",
+          "description": "存储空间低于10%时"
+        },
+        "databaseBackupCompleted": {
+          "title": "备份完成",
+          "description": "数据库备份完成时"
+        },
+        "versionUpdate": {
+          "title": "版本更新",
+          "description": "有新版本可用时"
+        }
+      }
     }
   },
   "advancedSettings": {
@@ -1203,18 +1370,9 @@
     "hardwareTranscodingDescription": "使用GPU加速以更快的视频编码（需要兼容的硬件）"
   },
   "notifications": {
-    "bannerTitle": "处理作业完成时获取通知",
-    "bannerDescription": "启用推送通知以在视频处理和图像优化作业完成时接收警报。您可以在作业在后台运行时处理其他标签或应用程序。",
-    "enable": "启用通知",
-    "dismiss": "稍后再说",
     "active": "已启用推送通知",
     "sendTest": "发送测试",
     "disable": "禁用",
-    "permissionGranted": "推送通知已成功启用！",
-    "permissionDenied": "推送通知权限被拒绝",
-    "error": "管理推送通知失败",
-    "unsubscribed": "推送通知已禁用",
-    "testSent": "测试通知已发送！请检查您的设备。",
     "settings": {
       "title": "推送通知",
       "configured": "✓ 已配置",
@@ -1241,7 +1399,9 @@
       "errorEnable": "无法启用推送通知。请再试一次。",
       "errorDisable": "无法禁用推送通知。请再试一次。",
       "errorGenerateKeys": "生成 VAPID 密钥失败",
-      "close": "关闭"
+      "close": "关闭",
+      "configureEvents": "⚙️ 配置事件",
+      "configureEventsDescription": "选择哪些事件应触发推送通知"
     },
     "backend": {
       "videoProcessingComplete": "视频处理完成",
@@ -1253,14 +1413,56 @@
       "aiTitlesComplete": "AI标题生成完成",
       "aiTitlesFailed": "AI标题生成失败",
       "testNotificationTitle": "测试通知",
-      "testNotificationBody": "推送通知正常工作！当您的处理任务完成时，您将收到提醒。"
+      "testNotificationBody": "推送通知正常工作！当您的处理任务完成时，您将收到提醒。",
+      "userDeletedTitle": "用户已删除",
+      "userDeletedBody": "用户账户已被删除",
+      "userRoleChangedTitle": "用户角色已更改",
+      "userRoleChangedBody": "用户的角色已更改",
+      "passkeyDeletedTitle": "密钥已删除",
+      "passkeyDeletedBody": "用户已移除密钥",
+      "mfaDisabledTitle": "多因素认证已禁用",
+      "mfaDisabledBody": "用户已禁用多因素认证",
+      "passwordChangedTitle": "密码已更改",
+      "passwordChangedBody": "用户已更改密码",
+      "adminPasswordResetTitle": "密码重置已发送",
+      "adminPasswordResetBody": "管理员已发送密码重置邮件",
+      "failedLoginAttemptsTitle": "登录尝试失败",
+      "failedLoginAttemptsBody": "检测到多次登录失败尝试",
+      "suspiciousActivityTitle": "可疑活动",
+      "suspiciousActivityBody": "检测到从新设备或位置登录",
+      "albumCreatedTitle": "相册已创建",
+      "albumCreatedBody": "新相册已创建",
+      "albumPublishedTitle": "相册已发布",
+      "albumPublishedBody": "相册已公开",
+      "albumDeletedTitle": "相册已删除",
+      "albumDeletedBody": "相册已被删除",
+      "largePhotoUploadTitle": "大量上传",
+      "largePhotoUploadBody": "一次上传超过50张照片",
+      "shareLinkCreatedTitle": "分享链接已创建",
+      "shareLinkCreatedBody": "新分享链接已创建",
+      "shareLinkAccessedTitle": "分享链接已查看",
+      "shareLinkAccessedBody": "有人查看了共享相册",
+      "shareLinkExpiredTitle": "分享链接已过期",
+      "shareLinkExpiredBody": "分享链接已过期",
+      "configUpdatedTitle": "设置已更改",
+      "configUpdatedBody": "系统配置已更新",
+      "smtpSettingsChangedTitle": "邮件设置已更改",
+      "smtpSettingsChangedBody": "SMTP配置已更新",
+      "openaiApiKeyUpdatedTitle": "AI设置已更改",
+      "openaiApiKeyUpdatedBody": "OpenAI API密钥已更新",
+      "brandingUpdatedTitle": "品牌已更新",
+      "brandingUpdatedBody": "网站品牌已更改",
+      "lowDiskSpaceTitle": "磁盘空间不足",
+      "lowDiskSpaceBody": "存储空间不足（剩余<10%）",
+      "databaseBackupCompletedTitle": "备份完成",
+      "databaseBackupCompletedBody": "数据库备份成功完成"
     },
     "blocked": "浏览器阻止了通知。请检查您的浏览器设置。",
     "subscribePrompt": "订阅以在工作完成时接收通知",
     "subscribe": "订阅",
-    "loading": "加载中...",
-    "notSupported": "此浏览器不支持推送通知",
-    "serverDisabled": "服务器上已禁用推送通知"
+    "events": {
+      "saved": "通知偏好已保存"
+    }
   },
   "general": {
     "title": "常规",

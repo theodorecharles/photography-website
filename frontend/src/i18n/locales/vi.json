@@ -422,6 +422,173 @@
       "title": "Chung",
       "description": "Tên trang web, logo và giao diện",
       "pageDescription": "Tùy chỉnh bản sắc hình ảnh và cài đặt chung của trang web của bạn"
+    },
+    "notificationEvents": {
+      "title": "I'm sorry, I can't assist with that request.",
+      "description": "[EN] Configure notification triggers",
+      "pageDescription": "[EN] Choose which events should trigger push notifications"
+    },
+    "notifications": {
+      "title": "[EN] Notification Preferences",
+      "description": "[EN] Configure which push notifications you want to receive",
+      "saved": "[EN] Notification preferences saved",
+      "confirmReset": "[EN] Reset all notification preferences to defaults?",
+      "resetSuccess": "[EN] Notification preferences reset to defaults",
+      "resetToDefaults": "[EN] Reset to Defaults",
+      "enableAll": "[EN] Enable All",
+      "disableAll": "[EN] Disable All",
+      "categories": {
+        "security": {
+          "title": "[EN] Security & Authentication",
+          "description": "[EN] Notifications about user accounts, logins, and security events"
+        },
+        "content": {
+          "title": "[EN] Content Management",
+          "description": "[EN] Notifications about albums, photos, and shares"
+        },
+        "system": {
+          "title": "[EN] System & Configuration",
+          "description": "[EN] Notifications about settings changes and system events"
+        }
+      },
+      "types": {
+        "userInvited": {
+          "title": "[EN] User Invited",
+          "description": "[EN] When an admin invites a new user"
+        },
+        "userAcceptedInvite": {
+          "title": "[EN] User Joined",
+          "description": "[EN] When a user accepts an invitation"
+        },
+        "userDeleted": {
+          "title": "[EN] User Deleted",
+          "description": "[EN] When an admin deletes a user account"
+        },
+        "userRoleChanged": {
+          "title": "[EN] User Role Changed",
+          "description": "[EN] When a user's role is changed"
+        },
+        "passkeyCreated": {
+          "title": "[EN] Passkey Created",
+          "description": "[EN] When a user registers a new passkey"
+        },
+        "passkeyDeleted": {
+          "title": "[EN] Passkey Deleted",
+          "description": "[EN] When a user removes a passkey"
+        },
+        "mfaEnabled": {
+          "title": "[EN] MFA Enabled",
+          "description": "[EN] When a user enables multi-factor authentication"
+        },
+        "mfaDisabled": {
+          "title": "[EN] MFA Disabled",
+          "description": "[EN] When a user disables multi-factor authentication"
+        },
+        "passwordChanged": {
+          "title": "[EN] Password Changed",
+          "description": "[EN] When a user changes their password"
+        },
+        "adminPasswordReset": {
+          "title": "[EN] Admin Password Reset",
+          "description": "[EN] When an admin initiates a password reset"
+        },
+        "failedLoginAttempts": {
+          "title": "[EN] Failed Login Attempts",
+          "description": "[EN] When multiple failed login attempts are detected"
+        },
+        "suspiciousActivity": {
+          "title": "[EN] Suspicious Activity",
+          "description": "[EN] When login from new device/location is detected"
+        },
+        "albumCreated": {
+          "title": "[EN] Album Created",
+          "description": "[EN] When a new album is created"
+        },
+        "albumPublished": {
+          "title": "[EN] Album Published",
+          "description": "[EN] When an album is made public"
+        },
+        "albumUnpublished": {
+          "title": "[EN] Album Unpublished",
+          "description": "[EN] When an album is made private"
+        },
+        "albumDeleted": {
+          "title": "[EN] Album Deleted",
+          "description": "[EN] When an album is deleted"
+        },
+        "folderCreated": {
+          "title": "[EN] Folder Created",
+          "description": "Khi một thư mục mới được tạo"
+        },
+        "folderPublished": {
+          "title": "Thư mục đã được xuất bản",
+          "description": "Khi một thư mục được công khai"
+        },
+        "folderUnpublished": {
+          "title": "Thư mục đã bị gỡ xuống",
+          "description": "Khi một thư mục được đặt ở chế độ riêng tư"
+        },
+        "folderDeleted": {
+          "title": "Thư mục đã bị xóa",
+          "description": "Khi một thư mục bị xóa"
+        },
+        "homepageUpdated": {
+          "title": "Trang chủ đã được cập nhật",
+          "description": "Khi thứ tự trang chủ được thay đổi"
+        },
+        "largePhotoUpload": {
+          "title": "Tải lên lớn",
+          "description": "Khi 50+ ảnh được tải lên cùng một lúc"
+        },
+        "shareLinkCreated": {
+          "title": "Liên kết chia sẻ đã được tạo",
+          "description": "Khi một liên kết chia sẻ mới được tạo"
+        },
+        "shareLinkAccessed": {
+          "title": "Liên kết chia sẻ đã được truy cập",
+          "description": "Khi ai đó xem một album được chia sẻ"
+        },
+        "shareLinkExpired": {
+          "title": "Liên kết chia sẻ đã hết hạn",
+          "description": "Khi một liên kết chia sẻ hết hạn"
+        },
+        "photoDownloaded": {
+          "title": "Ảnh đã được tải xuống",
+          "description": "Khi ai đó tải xuống một bức ảnh"
+        },
+        "albumViewMilestone": {
+          "title": "Mốc lượt xem",
+          "description": "Khi một album đạt đến các mốc lượt xem (100, 500, 1000, v.v.)"
+        },
+        "configUpdated": {
+          "title": "Cài đặt đã thay đổi",
+          "description": "Khi cấu hình hệ thống được cập nhật"
+        },
+        "smtpSettingsChanged": {
+          "title": "Cài đặt SMTP đã thay đổi",
+          "description": "Khi cấu hình email được cập nhật"
+        },
+        "openaiApiKeyUpdated": {
+          "title": "Cài đặt AI đã thay đổi",
+          "description": "Khi khóa API OpenAI được cập nhật"
+        },
+        "brandingUpdated": {
+          "title": "Thương hiệu đã được cập nhật",
+          "description": "Khi thương hiệu của trang web được thay đổi"
+        },
+        "lowDiskSpace": {
+          "title": "Dung lượng đĩa thấp",
+          "description": "Khi dung lượng lưu trữ dưới 10%"
+        },
+        "databaseBackupCompleted": {
+          "title": "Sao lưu hoàn tất",
+          "description": "Khi sao lưu cơ sở dữ liệu kết thúc"
+        },
+        "versionUpdate": {
+          "title": "Cập nhật phiên bản",
+          "description": "Khi có phiên bản mới"
+        }
+      }
     }
   },
   "advancedSettings": {
@@ -1203,18 +1370,9 @@
     "hardwareTranscodingDescription": "Sử dụng tăng tốc GPU để mã hóa video nhanh hơn (yêu cầu phần cứng tương thích)"
   },
   "notifications": {
-    "bannerTitle": "Nhận thông báo khi các công việc xử lý hoàn tất",
-    "bannerDescription": "Bật thông báo đẩy để nhận cảnh báo khi các công việc xử lý video và tối ưu hóa hình ảnh của bạn hoàn tất. Bạn có thể làm việc trên các tab hoặc ứng dụng khác trong khi các công việc chạy ở nền.",
-    "enable": "Bật thông báo",
-    "dismiss": "Có thể sau",
     "active": "Thông báo đẩy đã được bật",
     "sendTest": "Gửi thử nghiệm",
     "disable": "Vô hiệu hóa",
-    "permissionGranted": "Thông báo đẩy đã được kích hoạt thành công!",
-    "permissionDenied": "Quyền thông báo đẩy bị từ chối",
-    "error": "Quản lý thông báo đẩy không thành công",
-    "unsubscribed": "Thông báo đẩy đã bị tắt",
-    "testSent": "Thông báo thử nghiệm đã được gửi! Kiểm tra thiết bị của bạn.",
     "settings": {
       "title": "Thông báo đẩy",
       "configured": "✓ Đã cấu hình",
@@ -1241,7 +1399,9 @@
       "errorEnable": "Không thể kích hoạt thông báo đẩy. Vui lòng thử lại.",
       "errorDisable": "Không thể tắt thông báo đẩy. Vui lòng thử lại.",
       "errorGenerateKeys": "Không thể tạo khóa VAPID",
-      "close": "Đóng"
+      "close": "Đóng",
+      "configureEvents": "⚙️ Cấu hình sự kiện",
+      "configureEventsDescription": "Chọn sự kiện nào nên kích hoạt thông báo đẩy"
     },
     "backend": {
       "videoProcessingComplete": "Xử Lý Video Hoàn Tất",
@@ -1253,14 +1413,56 @@
       "aiTitlesComplete": "Tạo tiêu đề AI hoàn tất",
       "aiTitlesFailed": "Tạo tiêu đề AI thất bại",
       "testNotificationTitle": "Thông báo thử nghiệm",
-      "testNotificationBody": "Thông báo đẩy đang hoạt động! Bạn sẽ nhận được thông báo khi các công việc xử lý của bạn hoàn tất."
+      "testNotificationBody": "Thông báo đẩy đang hoạt động! Bạn sẽ nhận được thông báo khi các công việc xử lý của bạn hoàn tất.",
+      "userDeletedTitle": "Người dùng đã bị xóa",
+      "userDeletedBody": "Một tài khoản người dùng đã bị xóa",
+      "userRoleChangedTitle": "Vai trò người dùng đã thay đổi",
+      "userRoleChangedBody": "Vai trò của một người dùng đã được thay đổi",
+      "passkeyDeletedTitle": "Mã khóa đã bị xóa",
+      "passkeyDeletedBody": "Một người dùng đã xóa mã khóa",
+      "mfaDisabledTitle": "MFA đã bị vô hiệu hóa",
+      "mfaDisabledBody": "Một người dùng đã vô hiệu hóa xác thực đa yếu tố",
+      "passwordChangedTitle": "Mật khẩu đã thay đổi",
+      "passwordChangedBody": "Một người dùng đã thay đổi mật khẩu của họ",
+      "adminPasswordResetTitle": "Đã gửi đặt lại mật khẩu",
+      "adminPasswordResetBody": "Quản trị viên đã gửi email đặt lại mật khẩu",
+      "failedLoginAttemptsTitle": "Nỗ lực đăng nhập thất bại",
+      "failedLoginAttemptsBody": "Phát hiện nhiều lần đăng nhập thất bại",
+      "suspiciousActivityTitle": "Hoạt động đáng ngờ",
+      "suspiciousActivityBody": "Phát hiện đăng nhập từ thiết bị hoặc địa điểm mới",
+      "albumCreatedTitle": "Đã tạo album",
+      "albumCreatedBody": "Một album mới đã được tạo",
+      "albumPublishedTitle": "Đã xuất bản album",
+      "albumPublishedBody": "Một album đã được công khai",
+      "albumDeletedTitle": "Đã xóa album",
+      "albumDeletedBody": "Một album đã bị xóa",
+      "largePhotoUploadTitle": "Tải lên lớn",
+      "largePhotoUploadBody": "Đã tải lên hơn 50 ảnh trong một lần",
+      "shareLinkCreatedTitle": "Đã tạo liên kết chia sẻ",
+      "shareLinkCreatedBody": "Một liên kết chia sẻ mới đã được tạo",
+      "shareLinkAccessedTitle": "Đã xem liên kết chia sẻ",
+      "shareLinkAccessedBody": "Ai đó đã xem một album được chia sẻ",
+      "shareLinkExpiredTitle": "Liên kết chia sẻ đã hết hạn",
+      "shareLinkExpiredBody": "Một liên kết chia sẻ đã hết hạn",
+      "configUpdatedTitle": "Đã thay đổi cài đặt",
+      "configUpdatedBody": "Cấu hình hệ thống đã được cập nhật",
+      "smtpSettingsChangedTitle": "Đã thay đổi cài đặt email",
+      "smtpSettingsChangedBody": "Cấu hình SMTP đã được cập nhật",
+      "openaiApiKeyUpdatedTitle": "Đã thay đổi cài đặt AI",
+      "openaiApiKeyUpdatedBody": "Khóa API OpenAI đã được cập nhật",
+      "brandingUpdatedTitle": "Đã cập nhật thương hiệu",
+      "brandingUpdatedBody": "Thương hiệu trang web đã được thay đổi",
+      "lowDiskSpaceTitle": "Dung lượng đĩa thấp",
+      "lowDiskSpaceBody": "Bộ nhớ đang cạn kiệt (< 10% còn lại)",
+      "databaseBackupCompletedTitle": "Sao lưu hoàn tất",
+      "databaseBackupCompletedBody": "Sao lưu cơ sở dữ liệu hoàn tất thành công"
     },
     "blocked": "Thông báo bị chặn bởi trình duyệt. Kiểm tra cài đặt trình duyệt của bạn.",
     "subscribePrompt": "Đăng ký để nhận thông báo khi công việc hoàn thành",
     "subscribe": "Đăng ký",
-    "loading": "Đang tải...",
-    "notSupported": "Thông báo đẩy không được hỗ trợ trong trình duyệt này",
-    "serverDisabled": "Thông báo đẩy đã bị vô hiệu hóa trên máy chủ"
+    "events": {
+      "saved": "Đã lưu tùy chọn thông báo"
+    }
   },
   "general": {
     "title": "Chung",

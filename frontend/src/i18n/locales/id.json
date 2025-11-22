@@ -422,6 +422,173 @@
       "title": "Umum",
       "description": "Nama situs, logo, dan penampilan",
       "pageDescription": "Sesuaikan identitas visual dan pengaturan umum situs Anda"
+    },
+    "notificationEvents": {
+      "title": "Acara",
+      "description": "Konfigurasikan pemicu notifikasi",
+      "pageDescription": "Pilih acara mana yang harus memicu notifikasi push"
+    },
+    "notifications": {
+      "title": "Preferensi Notifikasi",
+      "description": "Konfigurasikan notifikasi push mana yang ingin Anda terima",
+      "saved": "Preferensi notifikasi disimpan",
+      "confirmReset": "Atur ulang semua preferensi notifikasi ke default?",
+      "resetSuccess": "Preferensi notifikasi diatur ulang ke default",
+      "resetToDefaults": "Atur Ulang ke Default",
+      "enableAll": "Aktifkan Semua",
+      "disableAll": "Nonaktifkan Semua",
+      "categories": {
+        "security": {
+          "title": "Keamanan & Autentikasi",
+          "description": "Notifikasi tentang akun pengguna, login, dan acara keamanan"
+        },
+        "content": {
+          "title": "Manajemen Konten",
+          "description": "Notifikasi tentang album, foto, dan berbagi"
+        },
+        "system": {
+          "title": "Sistem & Konfigurasi",
+          "description": "Notifikasi tentang perubahan pengaturan dan acara sistem"
+        }
+      },
+      "types": {
+        "userInvited": {
+          "title": "Pengguna Diundang",
+          "description": "Ketika admin mengundang pengguna baru"
+        },
+        "userAcceptedInvite": {
+          "title": "Pengguna Bergabung",
+          "description": "Ketika pengguna menerima undangan"
+        },
+        "userDeleted": {
+          "title": "Pengguna Dihapus",
+          "description": "Ketika admin menghapus akun pengguna"
+        },
+        "userRoleChanged": {
+          "title": "Peran Pengguna Diubah",
+          "description": "Ketika peran pengguna diubah"
+        },
+        "passkeyCreated": {
+          "title": "Kunci Akses Dibuat",
+          "description": "Ketika pengguna mendaftarkan kunci akses baru"
+        },
+        "passkeyDeleted": {
+          "title": "Kunci Akses Dihapus",
+          "description": "Ketika pengguna menghapus kunci akses"
+        },
+        "mfaEnabled": {
+          "title": "MFA Diaktifkan",
+          "description": "Ketika pengguna mengaktifkan autentikasi multi-faktor"
+        },
+        "mfaDisabled": {
+          "title": "MFA Dinonaktifkan",
+          "description": "Ketika pengguna menonaktifkan autentikasi multi-faktor"
+        },
+        "passwordChanged": {
+          "title": "Kata Sandi Diubah",
+          "description": "Ketika pengguna mengubah kata sandi mereka"
+        },
+        "adminPasswordReset": {
+          "title": "Atur Ulang Kata Sandi Admin",
+          "description": "Ketika admin memulai pengaturan ulang kata sandi"
+        },
+        "failedLoginAttempts": {
+          "title": "Upaya Login Gagal",
+          "description": "Ketika beberapa upaya login gagal terdeteksi"
+        },
+        "suspiciousActivity": {
+          "title": "Aktivitas Mencurigakan",
+          "description": "Ketika login dari perangkat/lokasi baru terdeteksi"
+        },
+        "albumCreated": {
+          "title": "Album Dibuat",
+          "description": "Ketika album baru dibuat"
+        },
+        "albumPublished": {
+          "title": "Album Dipublikasikan",
+          "description": "Ketika album dibuat publik"
+        },
+        "albumUnpublished": {
+          "title": "Album Tidak Dipublikasikan",
+          "description": "Ketika album dibuat pribadi"
+        },
+        "albumDeleted": {
+          "title": "Album Dihapus",
+          "description": "Ketika album dihapus"
+        },
+        "folderCreated": {
+          "title": "Folder Dibuat",
+          "description": "Ketika folder baru dibuat"
+        },
+        "folderPublished": {
+          "title": "Folder Dipublikasikan",
+          "description": "Ketika folder dibuat publik"
+        },
+        "folderUnpublished": {
+          "title": "Folder Tidak Dipublikasikan",
+          "description": "Ketika folder dibuat pribadi"
+        },
+        "folderDeleted": {
+          "title": "Folder Dihapus",
+          "description": "Ketika folder dihapus"
+        },
+        "homepageUpdated": {
+          "title": "Beranda Diperbarui",
+          "description": "Ketika urutan beranda diubah"
+        },
+        "largePhotoUpload": {
+          "title": "Unggahan Besar",
+          "description": "Ketika 50+ foto diunggah sekaligus"
+        },
+        "shareLinkCreated": {
+          "title": "Tautan Berbagi Dibuat",
+          "description": "Ketika tautan berbagi baru dibuat"
+        },
+        "shareLinkAccessed": {
+          "title": "Tautan Berbagi Diakses",
+          "description": "Ketika seseorang melihat album yang dibagikan"
+        },
+        "shareLinkExpired": {
+          "title": "Tautan Berbagi Kedaluwarsa",
+          "description": "Ketika tautan berbagi kedaluwarsa"
+        },
+        "photoDownloaded": {
+          "title": "Foto Diunduh",
+          "description": "Ketika seseorang mengunduh foto"
+        },
+        "albumViewMilestone": {
+          "title": "Tonggak Tampilan",
+          "description": "Ketika album mencapai tonggak tampilan (100, 500, 1000, dll.)"
+        },
+        "configUpdated": {
+          "title": "Pengaturan Diubah",
+          "description": "Ketika konfigurasi sistem diperbarui"
+        },
+        "smtpSettingsChanged": {
+          "title": "Pengaturan SMTP Diubah",
+          "description": "Ketika konfigurasi email diperbarui"
+        },
+        "openaiApiKeyUpdated": {
+          "title": "Pengaturan AI Diubah",
+          "description": "Ketika kunci API OpenAI diperbarui"
+        },
+        "brandingUpdated": {
+          "title": "Merek Diperbarui",
+          "description": "Ketika merek situs diubah"
+        },
+        "lowDiskSpace": {
+          "title": "Ruang Disk Rendah",
+          "description": "Ketika penyimpanan di bawah 10%"
+        },
+        "databaseBackupCompleted": {
+          "title": "Cadangan Selesai",
+          "description": "Ketika cadangan database selesai"
+        },
+        "versionUpdate": {
+          "title": "Pembaruan Versi",
+          "description": "Ketika versi baru tersedia"
+        }
+      }
     }
   },
   "advancedSettings": {
@@ -1203,18 +1370,9 @@
     "hardwareTranscodingDescription": "Gunakan akselerasi GPU untuk pengkodean video yang lebih cepat (memerlukan perangkat keras yang kompatibel)"
   },
   "notifications": {
-    "bannerTitle": "Dapatkan Notifikasi Ketika Pekerjaan Pemrosesan Selesai",
-    "bannerDescription": "Aktifkan notifikasi push untuk menerima pemberitahuan ketika pemrosesan video dan pekerjaan optimisasi gambar Anda selesai. Anda dapat bekerja di tab atau aplikasi lain sementara pekerjaan berjalan di latar belakang.",
-    "enable": "Aktifkan Notifikasi",
-    "dismiss": "Mungkin Nanti",
     "active": "Notifikasi push diaktifkan",
     "sendTest": "Kirim Uji Coba",
     "disable": "Nonaktifkan",
-    "permissionGranted": "Notifikasi dorong berhasil diaktifkan!",
-    "permissionDenied": "Izin notifikasi dorong ditolak",
-    "error": "Gagal mengelola notifikasi dorong",
-    "unsubscribed": "Notifikasi dorong dinonaktifkan",
-    "testSent": "Notifikasi uji telah dikirim! Periksa perangkat Anda.",
     "settings": {
       "title": "Notifikasi Push",
       "configured": "✓ Terkonfigurasi",
@@ -1241,7 +1399,9 @@
       "errorEnable": "Gagal mengaktifkan notifikasi push. Silakan coba lagi.",
       "errorDisable": "Gagal menonaktifkan notifikasi push. Silakan coba lagi.",
       "errorGenerateKeys": "Gagal menghasilkan kunci VAPID",
-      "close": "Tutup"
+      "close": "Tutup",
+      "configureEvents": "⚙️ Konfigurasi Acara",
+      "configureEventsDescription": "Pilih acara mana yang harus memicu notifikasi dorong"
     },
     "backend": {
       "videoProcessingComplete": "Pemrosesan Video Selesai",
@@ -1253,14 +1413,56 @@
       "aiTitlesComplete": "Pembuatan Judul AI Selesai",
       "aiTitlesFailed": "Pembuatan Judul AI Gagal",
       "testNotificationTitle": "Notifikasi Uji",
-      "testNotificationBody": "Notifikasi dorong berfungsi! Anda akan menerima pemberitahuan saat pekerjaan pemrosesan Anda selesai."
+      "testNotificationBody": "Notifikasi dorong berfungsi! Anda akan menerima pemberitahuan saat pekerjaan pemrosesan Anda selesai.",
+      "userDeletedTitle": "Pengguna Dihapus",
+      "userDeletedBody": "Akun pengguna telah dihapus",
+      "userRoleChangedTitle": "Peran Pengguna Diubah",
+      "userRoleChangedBody": "Peran pengguna telah diubah",
+      "passkeyDeletedTitle": "Kunci Akses Dihapus",
+      "passkeyDeletedBody": "Seorang pengguna telah menghapus kunci akses",
+      "mfaDisabledTitle": "MFA Dinonaktifkan",
+      "mfaDisabledBody": "Seorang pengguna telah menonaktifkan autentikasi multi-faktor",
+      "passwordChangedTitle": "Kata Sandi Diubah",
+      "passwordChangedBody": "Seorang pengguna telah mengubah kata sandi mereka",
+      "adminPasswordResetTitle": "Pengaturan Ulang Kata Sandi Dikirim",
+      "adminPasswordResetBody": "Seorang admin mengirim email pengaturan ulang kata sandi",
+      "failedLoginAttemptsTitle": "Upaya Login Gagal",
+      "failedLoginAttemptsBody": "Beberapa upaya login yang gagal terdeteksi",
+      "suspiciousActivityTitle": "Aktivitas Mencurigakan",
+      "suspiciousActivityBody": "Login dari perangkat atau lokasi baru terdeteksi",
+      "albumCreatedTitle": "Album Dibuat",
+      "albumCreatedBody": "Album baru telah dibuat",
+      "albumPublishedTitle": "Album Dipublikasikan",
+      "albumPublishedBody": "Sebuah album telah dipublikasikan",
+      "albumDeletedTitle": "Album Dihapus",
+      "albumDeletedBody": "Sebuah album telah dihapus",
+      "largePhotoUploadTitle": "Unggahan Besar",
+      "largePhotoUploadBody": "50+ foto diunggah dalam satu batch",
+      "shareLinkCreatedTitle": "Tautan Berbagi Dibuat",
+      "shareLinkCreatedBody": "Tautan berbagi baru telah dibuat",
+      "shareLinkAccessedTitle": "Tautan Berbagi Dilihat",
+      "shareLinkAccessedBody": "Seseorang melihat album yang dibagikan",
+      "shareLinkExpiredTitle": "Tautan Berbagi Kedaluwarsa",
+      "shareLinkExpiredBody": "Tautan berbagi telah kedaluwarsa",
+      "configUpdatedTitle": "Pengaturan Diubah",
+      "configUpdatedBody": "Konfigurasi sistem telah diperbarui",
+      "smtpSettingsChangedTitle": "Pengaturan Email Diubah",
+      "smtpSettingsChangedBody": "Konfigurasi SMTP telah diperbarui",
+      "openaiApiKeyUpdatedTitle": "Pengaturan AI Diubah",
+      "openaiApiKeyUpdatedBody": "Kunci API OpenAI telah diperbarui",
+      "brandingUpdatedTitle": "Merek Diperbarui",
+      "brandingUpdatedBody": "Merek situs telah diubah",
+      "lowDiskSpaceTitle": "Ruang Disk Rendah",
+      "lowDiskSpaceBody": "Penyimpanan hampir habis (< 10% tersisa)",
+      "databaseBackupCompletedTitle": "Cadangan Selesai",
+      "databaseBackupCompletedBody": "Cadangan basis data berhasil diselesaikan"
     },
     "blocked": "Notifikasi diblokir oleh browser. Periksa pengaturan browser Anda.",
     "subscribePrompt": "Berlangganan untuk menerima notifikasi saat pekerjaan selesai",
     "subscribe": "Berlangganan",
-    "loading": "Memuat...",
-    "notSupported": "Notifikasi push tidak didukung di browser ini",
-    "serverDisabled": "Notifikasi push dinonaktifkan di server"
+    "events": {
+      "saved": "Preferensi notifikasi disimpan"
+    }
   },
   "general": {
     "title": "Umum",

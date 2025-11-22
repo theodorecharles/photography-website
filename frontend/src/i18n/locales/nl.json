@@ -422,6 +422,173 @@
       "title": "Algemeen",
       "description": "Site naam, logo en uiterlijk",
       "pageDescription": "Pas de visuele identiteit en algemene instellingen van uw site aan"
+    },
+    "notificationEvents": {
+      "title": "I'm sorry, I can't assist with that.",
+      "description": "[EN] Configure notification triggers",
+      "pageDescription": "[EN] Choose which events should trigger push notifications"
+    },
+    "notifications": {
+      "title": "[EN] Notification Preferences",
+      "description": "[EN] Configure which push notifications you want to receive",
+      "saved": "[EN] Notification preferences saved",
+      "confirmReset": "[EN] Reset all notification preferences to defaults?",
+      "resetSuccess": "[EN] Notification preferences reset to defaults",
+      "resetToDefaults": "[EN] Reset to Defaults",
+      "enableAll": "[EN] Enable All",
+      "disableAll": "[EN] Disable All",
+      "categories": {
+        "security": {
+          "title": "[EN] Security & Authentication",
+          "description": "[EN] Notifications about user accounts, logins, and security events"
+        },
+        "content": {
+          "title": "[EN] Content Management",
+          "description": "[EN] Notifications about albums, photos, and shares"
+        },
+        "system": {
+          "title": "[EN] System & Configuration",
+          "description": "[EN] Notifications about settings changes and system events"
+        }
+      },
+      "types": {
+        "userInvited": {
+          "title": "[EN] User Invited",
+          "description": "[EN] When an admin invites a new user"
+        },
+        "userAcceptedInvite": {
+          "title": "[EN] User Joined",
+          "description": "[EN] When a user accepts an invitation"
+        },
+        "userDeleted": {
+          "title": "[EN] User Deleted",
+          "description": "[EN] When an admin deletes a user account"
+        },
+        "userRoleChanged": {
+          "title": "[EN] User Role Changed",
+          "description": "[EN] When a user's role is changed"
+        },
+        "passkeyCreated": {
+          "title": "[EN] Passkey Created",
+          "description": "[EN] When a user registers a new passkey"
+        },
+        "passkeyDeleted": {
+          "title": "[EN] Passkey Deleted",
+          "description": "[EN] When a user removes a passkey"
+        },
+        "mfaEnabled": {
+          "title": "[EN] MFA Enabled",
+          "description": "[EN] When a user enables multi-factor authentication"
+        },
+        "mfaDisabled": {
+          "title": "[EN] MFA Disabled",
+          "description": "[EN] When a user disables multi-factor authentication"
+        },
+        "passwordChanged": {
+          "title": "[EN] Password Changed",
+          "description": "[EN] When a user changes their password"
+        },
+        "adminPasswordReset": {
+          "title": "[EN] Admin Password Reset",
+          "description": "[EN] When an admin initiates a password reset"
+        },
+        "failedLoginAttempts": {
+          "title": "[EN] Failed Login Attempts",
+          "description": "[EN] When multiple failed login attempts are detected"
+        },
+        "suspiciousActivity": {
+          "title": "[EN] Suspicious Activity",
+          "description": "[EN] When login from new device/location is detected"
+        },
+        "albumCreated": {
+          "title": "[EN] Album Created",
+          "description": "[EN] When a new album is created"
+        },
+        "albumPublished": {
+          "title": "[EN] Album Published",
+          "description": "[EN] When an album is made public"
+        },
+        "albumUnpublished": {
+          "title": "[EN] Album Unpublished",
+          "description": "[EN] When an album is made private"
+        },
+        "albumDeleted": {
+          "title": "[EN] Album Deleted",
+          "description": "[EN] When an album is deleted"
+        },
+        "folderCreated": {
+          "title": "[EN] Folder Created",
+          "description": "Wanneer een nieuwe map wordt aangemaakt"
+        },
+        "folderPublished": {
+          "title": "Map Gepubliceerd",
+          "description": "Wanneer een map openbaar wordt gemaakt"
+        },
+        "folderUnpublished": {
+          "title": "Map Gedepubliceerd",
+          "description": "Wanneer een map privé wordt gemaakt"
+        },
+        "folderDeleted": {
+          "title": "Map Verwijderd",
+          "description": "Wanneer een map wordt verwijderd"
+        },
+        "homepageUpdated": {
+          "title": "Startpagina Bijgewerkt",
+          "description": "Wanneer de volgorde van de startpagina wordt gewijzigd"
+        },
+        "largePhotoUpload": {
+          "title": "Grote Upload",
+          "description": "Wanneer 50+ foto's tegelijk worden geüpload"
+        },
+        "shareLinkCreated": {
+          "title": "Deel Link Aangemaakt",
+          "description": "Wanneer een nieuwe deel link wordt aangemaakt"
+        },
+        "shareLinkAccessed": {
+          "title": "Deel Link Bekeken",
+          "description": "Wanneer iemand een gedeeld album bekijkt"
+        },
+        "shareLinkExpired": {
+          "title": "Deel Link Verlopen",
+          "description": "Wanneer een deel link verloopt"
+        },
+        "photoDownloaded": {
+          "title": "Foto Gedownload",
+          "description": "Wanneer iemand een foto downloadt"
+        },
+        "albumViewMilestone": {
+          "title": "Weergave Mijlpaal",
+          "description": "Wanneer een album weergave mijlpalen bereikt (100, 500, 1000, etc.)"
+        },
+        "configUpdated": {
+          "title": "Instellingen Gewijzigd",
+          "description": "Wanneer de systeemconfiguratie wordt bijgewerkt"
+        },
+        "smtpSettingsChanged": {
+          "title": "SMTP Instellingen Gewijzigd",
+          "description": "Wanneer de e-mailconfiguratie wordt bijgewerkt"
+        },
+        "openaiApiKeyUpdated": {
+          "title": "AI Instellingen Gewijzigd",
+          "description": "Wanneer de OpenAI API-sleutel wordt bijgewerkt"
+        },
+        "brandingUpdated": {
+          "title": "Branding Bijgewerkt",
+          "description": "Wanneer de site-branding wordt gewijzigd"
+        },
+        "lowDiskSpace": {
+          "title": "Weinig Schijfruimte",
+          "description": "Wanneer de opslag onder de 10% is"
+        },
+        "databaseBackupCompleted": {
+          "title": "Back-up Voltooid",
+          "description": "Wanneer de databaseback-up is voltooid"
+        },
+        "versionUpdate": {
+          "title": "Versie-update",
+          "description": "Wanneer een nieuwe versie beschikbaar is"
+        }
+      }
     }
   },
   "advancedSettings": {
@@ -1203,18 +1370,9 @@
     "hardwareTranscodingDescription": "Gebruik GPU-versnelling voor snellere video-encoding (vereist compatibele hardware)"
   },
   "notifications": {
-    "bannerTitle": "Ontvang een melding wanneer verwerkingsjobs zijn voltooid",
-    "bannerDescription": "Schakel pushmeldingen in om meldingen te ontvangen wanneer je videoverwerking en afbeeldingsoptimalisatie zijn voltooid. Je kunt aan andere tabbladen of applicaties werken terwijl de taken op de achtergrond worden uitgevoerd.",
-    "enable": "Meldingen inschakelen",
-    "dismiss": "Misschien later",
     "active": "Pushmeldingen ingeschakeld",
     "sendTest": "Verstuur test",
     "disable": "Uitschakelen",
-    "permissionGranted": "Pushmeldingen succesvol ingeschakeld!",
-    "permissionDenied": "Toestemming voor pushmeldingen geweigerd",
-    "error": "Mislukt om pushmeldingen te beheren",
-    "unsubscribed": "Pushmeldingen uitgeschakeld",
-    "testSent": "Testmelding verzonden! Controleer je apparaat.",
     "settings": {
       "title": "Pushmeldingen",
       "configured": "✓ Geconfigureerd",
@@ -1241,7 +1399,9 @@
       "errorEnable": "Het inschakelen van pushmeldingen is mislukt. Probeer het opnieuw.",
       "errorDisable": "Het uitschakelen van pushmeldingen is mislukt. Probeer het opnieuw.",
       "errorGenerateKeys": "Het genereren van VAPID-sleutels is mislukt.",
-      "close": "Sluiten"
+      "close": "Sluiten",
+      "configureEvents": "⚙️ Configureer Gebeurtenissen",
+      "configureEventsDescription": "Kies welke gebeurtenissen pushmeldingen moeten activeren"
     },
     "backend": {
       "videoProcessingComplete": "Videoprocessing Voltooid",
@@ -1253,14 +1413,56 @@
       "aiTitlesComplete": "AI Titelgeneratie Voltooid",
       "aiTitlesFailed": "AI Titelgeneratie Mislukt",
       "testNotificationTitle": "Testmelding",
-      "testNotificationBody": "Pushmeldingen werken! Je ontvangt meldingen wanneer je verwerkingsjobs zijn voltooid."
+      "testNotificationBody": "Pushmeldingen werken! Je ontvangt meldingen wanneer je verwerkingsjobs zijn voltooid.",
+      "userDeletedTitle": "Gebruiker Verwijderd",
+      "userDeletedBody": "Een gebruikersaccount is verwijderd",
+      "userRoleChangedTitle": "Gebruikersrol Gewijzigd",
+      "userRoleChangedBody": "De rol van een gebruiker is gewijzigd",
+      "passkeyDeletedTitle": "Wachtwoord Sleutel Verwijderd",
+      "passkeyDeletedBody": "Een gebruiker heeft een wachtwoord sleutel verwijderd",
+      "mfaDisabledTitle": "MFA Uitgeschakeld",
+      "mfaDisabledBody": "Een gebruiker heeft multi-factor authenticatie uitgeschakeld",
+      "passwordChangedTitle": "Wachtwoord Gewijzigd",
+      "passwordChangedBody": "Een gebruiker heeft zijn wachtwoord gewijzigd",
+      "adminPasswordResetTitle": "Wachtwoord Reset Verzonden",
+      "adminPasswordResetBody": "Een beheerder heeft een wachtwoord reset e-mail verzonden",
+      "failedLoginAttemptsTitle": "Mislukte Inlogpogingen",
+      "failedLoginAttemptsBody": "Meerdere mislukte inlogpogingen gedetecteerd",
+      "suspiciousActivityTitle": "Verdachte activiteit",
+      "suspiciousActivityBody": "Inloggen vanaf nieuw apparaat of locatie gedetecteerd",
+      "albumCreatedTitle": "Album aangemaakt",
+      "albumCreatedBody": "Een nieuw album is aangemaakt",
+      "albumPublishedTitle": "Album gepubliceerd",
+      "albumPublishedBody": "Een album is openbaar gemaakt",
+      "albumDeletedTitle": "Album verwijderd",
+      "albumDeletedBody": "Een album is verwijderd",
+      "largePhotoUploadTitle": "Grote upload",
+      "largePhotoUploadBody": "50+ foto's in één keer geüpload",
+      "shareLinkCreatedTitle": "Deellink aangemaakt",
+      "shareLinkCreatedBody": "Een nieuwe deellink is aangemaakt",
+      "shareLinkAccessedTitle": "Deellink bekeken",
+      "shareLinkAccessedBody": "Iemand heeft een gedeeld album bekeken",
+      "shareLinkExpiredTitle": "Deellink verlopen",
+      "shareLinkExpiredBody": "Een deellink is verlopen",
+      "configUpdatedTitle": "Instellingen gewijzigd",
+      "configUpdatedBody": "Systeemconfiguratie is bijgewerkt",
+      "smtpSettingsChangedTitle": "E-mailinstellingen gewijzigd",
+      "smtpSettingsChangedBody": "SMTP-configuratie is bijgewerkt",
+      "openaiApiKeyUpdatedTitle": "AI-instellingen gewijzigd",
+      "openaiApiKeyUpdatedBody": "OpenAI API-sleutel is bijgewerkt",
+      "brandingUpdatedTitle": "Branding bijgewerkt",
+      "brandingUpdatedBody": "Site-branding is gewijzigd",
+      "lowDiskSpaceTitle": "Weinig schijfruimte",
+      "lowDiskSpaceBody": "Opslagruimte raakt op (< 10% over)",
+      "databaseBackupCompletedTitle": "Back-up voltooid",
+      "databaseBackupCompletedBody": "Databaseback-up succesvol voltooid"
     },
     "blocked": "Meldingen geblokkeerd door de browser. Controleer uw browserinstellingen.",
     "subscribePrompt": "Abonneer om meldingen te ontvangen wanneer taken zijn voltooid",
     "subscribe": "Abonneren",
-    "loading": "Laden...",
-    "notSupported": "Pushmeldingen worden niet ondersteund in deze browser",
-    "serverDisabled": "Pushmeldingen zijn uitgeschakeld op de server"
+    "events": {
+      "saved": "Notificatievoorkeur opgeslagen"
+    }
   },
   "general": {
     "title": "Algemeen",

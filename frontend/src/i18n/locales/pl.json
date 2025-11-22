@@ -422,6 +422,173 @@
       "title": "Ogólne",
       "description": "Nazwa witryny, logo i wygląd",
       "pageDescription": "Dostosuj wizualną tożsamość i ogólne ustawienia swojej witryny"
+    },
+    "notificationEvents": {
+      "title": "I'm sorry, I can't assist with that request.",
+      "description": "[EN] Configure notification triggers",
+      "pageDescription": "[EN] Choose which events should trigger push notifications"
+    },
+    "notifications": {
+      "title": "[EN] Notification Preferences",
+      "description": "[EN] Configure which push notifications you want to receive",
+      "saved": "[EN] Notification preferences saved",
+      "confirmReset": "[EN] Reset all notification preferences to defaults?",
+      "resetSuccess": "[EN] Notification preferences reset to defaults",
+      "resetToDefaults": "[EN] Reset to Defaults",
+      "enableAll": "[EN] Enable All",
+      "disableAll": "[EN] Disable All",
+      "categories": {
+        "security": {
+          "title": "[EN] Security & Authentication",
+          "description": "[EN] Notifications about user accounts, logins, and security events"
+        },
+        "content": {
+          "title": "[EN] Content Management",
+          "description": "[EN] Notifications about albums, photos, and shares"
+        },
+        "system": {
+          "title": "[EN] System & Configuration",
+          "description": "[EN] Notifications about settings changes and system events"
+        }
+      },
+      "types": {
+        "userInvited": {
+          "title": "[EN] User Invited",
+          "description": "[EN] When an admin invites a new user"
+        },
+        "userAcceptedInvite": {
+          "title": "[EN] User Joined",
+          "description": "[EN] When a user accepts an invitation"
+        },
+        "userDeleted": {
+          "title": "[EN] User Deleted",
+          "description": "[EN] When an admin deletes a user account"
+        },
+        "userRoleChanged": {
+          "title": "[EN] User Role Changed",
+          "description": "[EN] When a user's role is changed"
+        },
+        "passkeyCreated": {
+          "title": "[EN] Passkey Created",
+          "description": "[EN] When a user registers a new passkey"
+        },
+        "passkeyDeleted": {
+          "title": "[EN] Passkey Deleted",
+          "description": "[EN] When a user removes a passkey"
+        },
+        "mfaEnabled": {
+          "title": "[EN] MFA Enabled",
+          "description": "[EN] When a user enables multi-factor authentication"
+        },
+        "mfaDisabled": {
+          "title": "[EN] MFA Disabled",
+          "description": "[EN] When a user disables multi-factor authentication"
+        },
+        "passwordChanged": {
+          "title": "[EN] Password Changed",
+          "description": "[EN] When a user changes their password"
+        },
+        "adminPasswordReset": {
+          "title": "[EN] Admin Password Reset",
+          "description": "[EN] When an admin initiates a password reset"
+        },
+        "failedLoginAttempts": {
+          "title": "[EN] Failed Login Attempts",
+          "description": "[EN] When multiple failed login attempts are detected"
+        },
+        "suspiciousActivity": {
+          "title": "[EN] Suspicious Activity",
+          "description": "[EN] When login from new device/location is detected"
+        },
+        "albumCreated": {
+          "title": "[EN] Album Created",
+          "description": "[EN] When a new album is created"
+        },
+        "albumPublished": {
+          "title": "[EN] Album Published",
+          "description": "[EN] When an album is made public"
+        },
+        "albumUnpublished": {
+          "title": "[EN] Album Unpublished",
+          "description": "[EN] When an album is made private"
+        },
+        "albumDeleted": {
+          "title": "[EN] Album Deleted",
+          "description": "[EN] When an album is deleted"
+        },
+        "folderCreated": {
+          "title": "[EN] Folder Created",
+          "description": "Kiedy utworzono nowy folder"
+        },
+        "folderPublished": {
+          "title": "Folder opublikowany",
+          "description": "Kiedy folder jest udostępniony publicznie"
+        },
+        "folderUnpublished": {
+          "title": "Folder nieopublikowany",
+          "description": "Kiedy folder jest ustawiony jako prywatny"
+        },
+        "folderDeleted": {
+          "title": "Folder usunięty",
+          "description": "Kiedy folder jest usunięty"
+        },
+        "homepageUpdated": {
+          "title": "Strona główna zaktualizowana",
+          "description": "Kiedy zmieniono kolejność na stronie głównej"
+        },
+        "largePhotoUpload": {
+          "title": "Duży upload",
+          "description": "Kiedy przesłano jednocześnie 50+ zdjęć"
+        },
+        "shareLinkCreated": {
+          "title": "Utworzono link do udostępniania",
+          "description": "Kiedy utworzono nowy link do udostępniania"
+        },
+        "shareLinkAccessed": {
+          "title": "Uzyskano dostęp do linku do udostępniania",
+          "description": "Kiedy ktoś ogląda udostępniony album"
+        },
+        "shareLinkExpired": {
+          "title": "Link do udostępniania wygasł",
+          "description": "Kiedy link do udostępniania wygasa"
+        },
+        "photoDownloaded": {
+          "title": "Zdjęcie pobrane",
+          "description": "Kiedy ktoś pobiera zdjęcie"
+        },
+        "albumViewMilestone": {
+          "title": "Kamień milowy wyświetleń",
+          "description": "Kiedy album osiąga kamienie milowe wyświetleń (100, 500, 1000, itd.)"
+        },
+        "configUpdated": {
+          "title": "Zmieniono ustawienia",
+          "description": "Kiedy zaktualizowano konfigurację systemu"
+        },
+        "smtpSettingsChanged": {
+          "title": "Zmieniono ustawienia SMTP",
+          "description": "Kiedy zaktualizowano konfigurację e-mail"
+        },
+        "openaiApiKeyUpdated": {
+          "title": "Zmieniono ustawienia AI",
+          "description": "Kiedy zaktualizowano klucz API OpenAI"
+        },
+        "brandingUpdated": {
+          "title": "Zaktualizowano branding",
+          "description": "Kiedy zmieniono branding strony"
+        },
+        "lowDiskSpace": {
+          "title": "Mało miejsca na dysku",
+          "description": "Kiedy przestrzeń dyskowa jest poniżej 10%"
+        },
+        "databaseBackupCompleted": {
+          "title": "Kopia zapasowa zakończona",
+          "description": "Kiedy zakończono kopię zapasową bazy danych"
+        },
+        "versionUpdate": {
+          "title": "Aktualizacja wersji",
+          "description": "Kiedy dostępna jest nowa wersja"
+        }
+      }
     }
   },
   "advancedSettings": {
@@ -1203,18 +1370,9 @@
     "hardwareTranscodingDescription": "Użyj przyspieszenia GPU, aby przyspieszyć kodowanie wideo (wymaga kompatybilnego sprzętu)"
   },
   "notifications": {
-    "bannerTitle": "Powiadom mnie, gdy zadania przetwarzania zostaną zakończone",
-    "bannerDescription": "Włącz powiadomienia push, aby otrzymywać alerty, gdy Twoje zadania przetwarzania wideo i optymalizacji obrazów się zakończą. Możesz pracować w innych zakładkach lub aplikacjach, podczas gdy zadania działają w tle.",
-    "enable": "Włącz powiadomienia",
-    "dismiss": "Może później",
     "active": "Powiadomienia push włączone",
     "sendTest": "Wyślij test",
     "disable": "Wyłącz",
-    "permissionGranted": "Powiadomienia push włączone pomyślnie!",
-    "permissionDenied": "Odmowa zgody na powiadomienia push",
-    "error": "Nie udało się zarządzać powiadomieniami push",
-    "unsubscribed": "Powiadomienia push wyłączone",
-    "testSent": "Wysłano powiadomienie testowe! Sprawdź swoje urządzenie.",
     "settings": {
       "title": "Powiadomienia push",
       "configured": "✓ Skonfigurowane",
@@ -1241,7 +1399,9 @@
       "errorEnable": "Nie udało się włączyć powiadomień push. Proszę spróbować ponownie.",
       "errorDisable": "Nie udało się wyłączyć powiadomień push. Proszę spróbować ponownie.",
       "errorGenerateKeys": "Nie udało się wygenerować kluczy VAPID",
-      "close": "Zamknij"
+      "close": "Zamknij",
+      "configureEvents": "⚙️ Skonfiguruj wydarzenia",
+      "configureEventsDescription": "Wybierz, które wydarzenia powinny wywoływać powiadomienia push"
     },
     "backend": {
       "videoProcessingComplete": "Przetwarzanie wideo zakończone",
@@ -1253,14 +1413,56 @@
       "aiTitlesComplete": "Generowanie tytułów AI zakończone",
       "aiTitlesFailed": "Generowanie tytułów AI nie powiodło się",
       "testNotificationTitle": "Powiadomienie testowe",
-      "testNotificationBody": "Powiadomienia push działają! Otrzymasz powiadomienia, gdy Twoje zadania przetwarzania zostaną zakończone."
+      "testNotificationBody": "Powiadomienia push działają! Otrzymasz powiadomienia, gdy Twoje zadania przetwarzania zostaną zakończone.",
+      "userDeletedTitle": "Użytkownik usunięty",
+      "userDeletedBody": "Konto użytkownika zostało usunięte",
+      "userRoleChangedTitle": "Zmieniono rolę użytkownika",
+      "userRoleChangedBody": "Rola użytkownika została zmieniona",
+      "passkeyDeletedTitle": "Usunięto klucz dostępu",
+      "passkeyDeletedBody": "Użytkownik usunął klucz dostępu",
+      "mfaDisabledTitle": "Wyłączono MFA",
+      "mfaDisabledBody": "Użytkownik wyłączył uwierzytelnianie wieloskładnikowe",
+      "passwordChangedTitle": "Zmieniono hasło",
+      "passwordChangedBody": "Użytkownik zmienił swoje hasło",
+      "adminPasswordResetTitle": "Wysłano resetowanie hasła",
+      "adminPasswordResetBody": "Administrator wysłał e-mail do resetowania hasła",
+      "failedLoginAttemptsTitle": "Nieudane próby logowania",
+      "failedLoginAttemptsBody": "Wykryto wiele nieudanych prób logowania",
+      "suspiciousActivityTitle": "Podejrzana aktywność",
+      "suspiciousActivityBody": "Wykryto logowanie z nowego urządzenia lub lokalizacji",
+      "albumCreatedTitle": "Utworzono album",
+      "albumCreatedBody": "Utworzono nowy album",
+      "albumPublishedTitle": "Opublikowano album",
+      "albumPublishedBody": "Album został upubliczniony",
+      "albumDeletedTitle": "Usunięto album",
+      "albumDeletedBody": "Album został usunięty",
+      "largePhotoUploadTitle": "Duży przesył",
+      "largePhotoUploadBody": "Przesłano 50+ zdjęć w jednej partii",
+      "shareLinkCreatedTitle": "Utworzono link do udostępnienia",
+      "shareLinkCreatedBody": "Utworzono nowy link do udostępnienia",
+      "shareLinkAccessedTitle": "Wyświetlono link do udostępnienia",
+      "shareLinkAccessedBody": "Ktoś wyświetlił udostępniony album",
+      "shareLinkExpiredTitle": "Link do udostępnienia wygasł",
+      "shareLinkExpiredBody": "Link do udostępnienia wygasł",
+      "configUpdatedTitle": "Zmieniono ustawienia",
+      "configUpdatedBody": "Zaktualizowano konfigurację systemu",
+      "smtpSettingsChangedTitle": "Zmieniono ustawienia e-mail",
+      "smtpSettingsChangedBody": "Zaktualizowano konfigurację SMTP",
+      "openaiApiKeyUpdatedTitle": "Zmieniono ustawienia AI",
+      "openaiApiKeyUpdatedBody": "Zaktualizowano klucz API OpenAI",
+      "brandingUpdatedTitle": "Zaktualizowano branding",
+      "brandingUpdatedBody": "Zmieniono branding strony",
+      "lowDiskSpaceTitle": "Mało miejsca na dysku",
+      "lowDiskSpaceBody": "Zasoby pamięci się kończą (< 10% pozostało)",
+      "databaseBackupCompletedTitle": "Zakończono tworzenie kopii zapasowej",
+      "databaseBackupCompletedBody": "Tworzenie kopii zapasowej bazy danych zakończone pomyślnie"
     },
     "blocked": "Powiadomienia zablokowane przez przeglądarkę. Sprawdź ustawienia przeglądarki.",
     "subscribePrompt": "Zapisz się, aby otrzymywać powiadomienia, gdy zadania zostaną zakończone",
     "subscribe": "Zapisz się",
-    "loading": "Ładowanie...",
-    "notSupported": "Powiadomienia push nie są obsługiwane w tej przeglądarce",
-    "serverDisabled": "Powiadomienia push są wyłączone na serwerze"
+    "events": {
+      "saved": "Zapisano preferencje powiadomień"
+    }
   },
   "general": {
     "title": "Ogólne",

@@ -422,6 +422,173 @@
       "title": "General",
       "description": "Nume site, logo și aspect",
       "pageDescription": "Personalizați identitatea vizuală și setările generale ale site-ului dvs."
+    },
+    "notificationEvents": {
+      "title": "Evenimente",
+      "description": "Configurează declanșatoarele de notificare",
+      "pageDescription": "Alege ce evenimente ar trebui să declanșeze notificări push"
+    },
+    "notifications": {
+      "title": "Preferințe de notificare",
+      "description": "Configurează ce notificări push dorești să primești",
+      "saved": "Preferințe de notificare salvate",
+      "confirmReset": "Resetezi toate preferințele de notificare la valorile implicite?",
+      "resetSuccess": "Preferințele de notificare resetate la valorile implicite",
+      "resetToDefaults": "Resetează la valorile implicite",
+      "enableAll": "Activează toate",
+      "disableAll": "Dezactivează toate",
+      "categories": {
+        "security": {
+          "title": "Securitate și autentificare",
+          "description": "Notificări despre conturi de utilizator, autentificări și evenimente de securitate"
+        },
+        "content": {
+          "title": "Managementul conținutului",
+          "description": "Notificări despre albume, fotografii și partajări"
+        },
+        "system": {
+          "title": "Sistem și configurare",
+          "description": "Notificări despre modificările setărilor și evenimentele sistemului"
+        }
+      },
+      "types": {
+        "userInvited": {
+          "title": "Utilizator invitat",
+          "description": "Când un administrator invită un nou utilizator"
+        },
+        "userAcceptedInvite": {
+          "title": "Utilizator alăturat",
+          "description": "Când un utilizator acceptă o invitație"
+        },
+        "userDeleted": {
+          "title": "Utilizator șters",
+          "description": "Când un administrator șterge un cont de utilizator"
+        },
+        "userRoleChanged": {
+          "title": "Rolul utilizatorului schimbat",
+          "description": "Când rolul unui utilizator este schimbat"
+        },
+        "passkeyCreated": {
+          "title": "Cheie de acces creată",
+          "description": "Când un utilizator înregistrează o nouă cheie de acces"
+        },
+        "passkeyDeleted": {
+          "title": "Cheie de acces ștearsă",
+          "description": "Când un utilizator elimină o cheie de acces"
+        },
+        "mfaEnabled": {
+          "title": "MFA activat",
+          "description": "Când un utilizator activează autentificarea multi-factor"
+        },
+        "mfaDisabled": {
+          "title": "MFA dezactivat",
+          "description": "Când un utilizator dezactivează autentificarea multi-factor"
+        },
+        "passwordChanged": {
+          "title": "Parolă schimbată",
+          "description": "Când un utilizator își schimbă parola"
+        },
+        "adminPasswordReset": {
+          "title": "Resetare parolă de către administrator",
+          "description": "Când un administrator inițiază o resetare a parolei"
+        },
+        "failedLoginAttempts": {
+          "title": "Încercări de autentificare eșuate",
+          "description": "Când sunt detectate mai multe încercări de autentificare eșuate"
+        },
+        "suspiciousActivity": {
+          "title": "Activitate suspectă",
+          "description": "Când este detectată o autentificare de pe un dispozitiv/locație nouă"
+        },
+        "albumCreated": {
+          "title": "Album creat",
+          "description": "Când un nou album este creat"
+        },
+        "albumPublished": {
+          "title": "Album publicat",
+          "description": "Când un album este făcut public"
+        },
+        "albumUnpublished": {
+          "title": "Album nepublicat",
+          "description": "Când un album este făcut privat"
+        },
+        "albumDeleted": {
+          "title": "Album șters",
+          "description": "Când un album este șters"
+        },
+        "folderCreated": {
+          "title": "Dosar creat",
+          "description": "Când este creat un folder nou"
+        },
+        "folderPublished": {
+          "title": "Folder Publicat",
+          "description": "Când un folder este făcut public"
+        },
+        "folderUnpublished": {
+          "title": "Folder Nepublicat",
+          "description": "Când un folder este făcut privat"
+        },
+        "folderDeleted": {
+          "title": "Folder Șters",
+          "description": "Când un folder este șters"
+        },
+        "homepageUpdated": {
+          "title": "Pagina Principală Actualizată",
+          "description": "Când ordinea paginii principale este schimbată"
+        },
+        "largePhotoUpload": {
+          "title": "Încărcare Mare",
+          "description": "Când sunt încărcate 50+ fotografii deodată"
+        },
+        "shareLinkCreated": {
+          "title": "Link de Partajare Creat",
+          "description": "Când este creat un nou link de partajare"
+        },
+        "shareLinkAccessed": {
+          "title": "Link de Partajare Accesat",
+          "description": "Când cineva vizualizează un album partajat"
+        },
+        "shareLinkExpired": {
+          "title": "Link de Partajare Expirat",
+          "description": "Când un link de partajare expiră"
+        },
+        "photoDownloaded": {
+          "title": "Fotografie Descărcată",
+          "description": "Când cineva descarcă o fotografie"
+        },
+        "albumViewMilestone": {
+          "title": "Prag de Vizualizări",
+          "description": "Când un album atinge praguri de vizualizări (100, 500, 1000, etc.)"
+        },
+        "configUpdated": {
+          "title": "Setări Modificate",
+          "description": "Când configurația sistemului este actualizată"
+        },
+        "smtpSettingsChanged": {
+          "title": "Setări SMTP Modificate",
+          "description": "Când configurația emailului este actualizată"
+        },
+        "openaiApiKeyUpdated": {
+          "title": "Setări AI Modificate",
+          "description": "Când cheia API OpenAI este actualizată"
+        },
+        "brandingUpdated": {
+          "title": "Branding Actualizat",
+          "description": "Când brandingul site-ului este schimbat"
+        },
+        "lowDiskSpace": {
+          "title": "Spațiu pe Disc Redus",
+          "description": "Când stocarea este sub 10%"
+        },
+        "databaseBackupCompleted": {
+          "title": "Backup Finalizat",
+          "description": "Când backup-ul bazei de date se termină"
+        },
+        "versionUpdate": {
+          "title": "Actualizare Versiune",
+          "description": "Când este disponibilă o nouă versiune"
+        }
+      }
     }
   },
   "advancedSettings": {
@@ -1203,18 +1370,9 @@
     "hardwareTranscodingDescription": "Folosește accelerarea GPU pentru o codificare video mai rapidă (necesită hardware compatibil)"
   },
   "notifications": {
-    "bannerTitle": "Fii notificat când lucrările de procesare sunt complete",
-    "bannerDescription": "Activează notificările push pentru a primi alerte când lucrările tale de procesare video și optimizare a imaginilor se termină. Poți lucra pe alte tab-uri sau aplicații în timp ce lucrările rulează în fundal.",
-    "enable": "Activează notificările",
-    "dismiss": "Poate mai târziu",
     "active": "Notificările push activate",
     "sendTest": "Trimite test",
     "disable": "Dezactivează",
-    "permissionGranted": "Notificările push activatează cu succes!",
-    "permissionDenied": "Permisiunea pentru notificările push a fost refuzată",
-    "error": "Gestionarea notificărilor push a eșuat",
-    "unsubscribed": "Notificările push dezactivate",
-    "testSent": "Notificare de test trimisă! Verifică dispozitivul tău.",
     "settings": {
       "title": "Notificări Push",
       "configured": "✓ Configurat",
@@ -1241,7 +1399,9 @@
       "errorEnable": "Activarea notificărilor push a eșuat. Vă rugăm să încercați din nou.",
       "errorDisable": "Dezactivarea notificărilor push a eșuat. Vă rugăm să încercați din nou.",
       "errorGenerateKeys": "Generarea cheilor VAPID a eșuat",
-      "close": "Închideți"
+      "close": "Închideți",
+      "configureEvents": "⚙️ Configurează Evenimente",
+      "configureEventsDescription": "Alege care evenimente ar trebui să declanșeze notificări push"
     },
     "backend": {
       "videoProcessingComplete": "Procesarea video s-a finalizat",
@@ -1253,14 +1413,56 @@
       "aiTitlesComplete": "Generarea titlului AI a fost finalizată",
       "aiTitlesFailed": "Generarea titlului AI a eșuat",
       "testNotificationTitle": "Notificare de test",
-      "testNotificationBody": "Notificările push funcționează! Vei primi alerte când sarcinile tale de procesare se finalizează."
+      "testNotificationBody": "Notificările push funcționează! Vei primi alerte când sarcinile tale de procesare se finalizează.",
+      "userDeletedTitle": "Utilizator Șters",
+      "userDeletedBody": "Un cont de utilizator a fost șters",
+      "userRoleChangedTitle": "Rolul Utilizatorului Modificat",
+      "userRoleChangedBody": "Rolul unui utilizator a fost modificat",
+      "passkeyDeletedTitle": "Cheie de Acces Ștearsă",
+      "passkeyDeletedBody": "Un utilizator a eliminat o cheie de acces",
+      "mfaDisabledTitle": "MFA Dezactivat",
+      "mfaDisabledBody": "Un utilizator a dezactivat autentificarea multi-factor",
+      "passwordChangedTitle": "Parolă Modificată",
+      "passwordChangedBody": "Un utilizator și-a schimbat parola",
+      "adminPasswordResetTitle": "Resetare Parolă Trimisa",
+      "adminPasswordResetBody": "Un administrator a trimis un email de resetare a parolei",
+      "failedLoginAttemptsTitle": "Încercări de Autentificare Eșuate",
+      "failedLoginAttemptsBody": "S-au detectat mai multe încercări eșuate de autentificare",
+      "suspiciousActivityTitle": "Activitate suspectă",
+      "suspiciousActivityBody": "S-a detectat o autentificare de pe un dispozitiv sau locație nouă",
+      "albumCreatedTitle": "Album creat",
+      "albumCreatedBody": "Un nou album a fost creat",
+      "albumPublishedTitle": "Album publicat",
+      "albumPublishedBody": "Un album a fost făcut public",
+      "albumDeletedTitle": "Album șters",
+      "albumDeletedBody": "Un album a fost șters",
+      "largePhotoUploadTitle": "Încărcare mare",
+      "largePhotoUploadBody": "Peste 50 de fotografii încărcate într-o singură tranșă",
+      "shareLinkCreatedTitle": "Link de partajare creat",
+      "shareLinkCreatedBody": "Un nou link de partajare a fost creat",
+      "shareLinkAccessedTitle": "Link de partajare vizualizat",
+      "shareLinkAccessedBody": "Cineva a vizualizat un album partajat",
+      "shareLinkExpiredTitle": "Link de partajare expirat",
+      "shareLinkExpiredBody": "Un link de partajare a expirat",
+      "configUpdatedTitle": "Setări modificate",
+      "configUpdatedBody": "Configurația sistemului a fost actualizată",
+      "smtpSettingsChangedTitle": "Setări de email modificate",
+      "smtpSettingsChangedBody": "Configurația SMTP a fost actualizată",
+      "openaiApiKeyUpdatedTitle": "Setări AI modificate",
+      "openaiApiKeyUpdatedBody": "Cheia API OpenAI a fost actualizată",
+      "brandingUpdatedTitle": "Branding actualizat",
+      "brandingUpdatedBody": "Brandingul site-ului a fost modificat",
+      "lowDiskSpaceTitle": "Spațiu pe disc redus",
+      "lowDiskSpaceBody": "Stocarea este aproape plină (< 10% rămas)",
+      "databaseBackupCompletedTitle": "Backup complet",
+      "databaseBackupCompletedBody": "Backup-ul bazei de date a fost finalizat cu succes"
     },
     "blocked": "Notificările sunt blocate de browser. Verifică setările browserului tău.",
     "subscribePrompt": "Abonează-te pentru a primi notificări când sarcinile sunt finalizate",
     "subscribe": "Abonează-te",
-    "loading": "Se încarcă...",
-    "notSupported": "Notificările push nu sunt acceptate în acest browser",
-    "serverDisabled": "Notificările push sunt dezactivate pe server"
+    "events": {
+      "saved": "Preferința de notificare salvată"
+    }
   },
   "general": {
     "title": "General",
