@@ -554,7 +554,6 @@ export default function Header({
   avatarPath,
   avatarCacheBust,
 }: HeaderProps) {
-  console.log('[PERF] Header rendering at', performance.now(), 'ms with', albums.length, 'albums and', externalLinks.length, 'links');
   const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();

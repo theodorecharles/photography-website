@@ -234,7 +234,7 @@ function App() {
   const [currentAlbum, setCurrentAlbum] = useState<string | undefined>(
     undefined
   );
-  const [showFooter, setShowFooter] = useState(false);
+  const [showFooter, setShowFooter] = useState(true);  // Start visible, hide on navigation if needed
   const [hideAlbumTitle, setHideAlbumTitle] = useState(false);
   const [setupComplete, setSetupComplete] = useState<boolean | null>(null);
   const location = useLocation();
@@ -279,9 +279,12 @@ function App() {
     );
   }, [primaryColor, secondaryColor]);
 
-  // Hide footer on navigation
+  // Hide footer on navigation (except homepage)
   useEffect(() => {
-    setShowFooter(false);
+    // Don't hide footer on homepage - it should show immediately via SSR
+    if (location.pathname !== "/") {
+      setShowFooter(false);
+    }
   }, [location.pathname]);
 
   // Update current album based on route changes and track page views
@@ -320,38 +323,17 @@ function App() {
 
   // Fetch albums, external links, and branding data
   const fetchData = async () => {
-    console.log('[PERF] App.fetchData() called at', performance.now(), 'ms');
     try {
       // Check if initial data was server-side rendered (SSR) into the page
       const initialData = (window as any).__INITIAL_DATA__;
-      console.log('[PERF] SSR data check:', !!initialData, 'at', performance.now(), 'ms');
-      
-      // Detailed logging of what's in SSR data
-      if (initialData) {
-        console.log('[PERF] initialData exists, checking contents...');
-        console.log('[PERF]   - homepage:', !!initialData.homepage, '(length:', initialData.homepage?.length || 0, ')');
-        console.log('[PERF]   - albums:', !!initialData.albums);
-        if (initialData.albums) {
-          console.log('[PERF]     - albums.albums:', !!initialData.albums.albums, '(length:', initialData.albums.albums?.length || 0, ')');
-          console.log('[PERF]     - albums.folders:', !!initialData.albums.folders, '(length:', initialData.albums.folders?.length || 0, ')');
-        }
-        console.log('[PERF]   - externalLinks:', !!initialData.externalLinks);
-        if (initialData.externalLinks) {
-          console.log('[PERF]     - externalLinks.externalLinks:', !!initialData.externalLinks.externalLinks, '(length:', initialData.externalLinks.externalLinks?.length || 0, ')');
-        }
-      } else {
-        console.log('[PERF] initialData is', initialData, '- SSR data missing or deleted!');
-      }
       
       let albumsData, externalLinksData, brandingData;
       
       if (initialData && initialData.albums && initialData.externalLinks) {
         // Use pre-injected data from SSR (no network requests!)
-        console.log('[PERF] Using SSR data (no network)');
         debug("✓ Using server-side rendered initial data (no network requests)");
         albumsData = initialData.albums;
         externalLinksData = initialData.externalLinks;
-        console.log('[PERF] Albums count:', albumsData?.albums?.length, 'Links count:', externalLinksData?.externalLinks?.length);
         
         // Use already-injected branding from SSR (no network request!)
         const runtimeBranding = (window as any).__RUNTIME_BRANDING__;
@@ -362,12 +344,10 @@ function App() {
           secondaryColor: runtimeBranding?.secondaryColor || "#3b82f6",
           language: runtimeBranding?.language || "en"
         };
-        console.log('[PERF] Branding loaded at', performance.now(), 'ms');
         
         // Clear remaining SSR data after using it (homepage was already cleared by ContentGrid)
         delete (window as any).__INITIAL_DATA__;
       } else {
-        console.log('[PERF] No SSR data, fetching from API at', performance.now(), 'ms');
         // Fallback to API requests if SSR data not available
         debug("⚠ SSR data not available, fetching from API");
         const [albumsResponse, externalLinksResponse, brandingResponse] =
@@ -443,8 +423,6 @@ function App() {
         setFolders([]);
       }
       
-      console.log('[PERF] About to set state at', performance.now(), 'ms');
-      
       setExternalLinks(externalLinksData.externalLinks);
       setSiteName(brandingData.siteName || "Galleria");
       
@@ -462,9 +440,6 @@ function App() {
       if (brandingData.language && i18n.language !== brandingData.language) {
         i18n.changeLanguage(brandingData.language);
       }
-
-      console.log('[PERF] State updated at', performance.now(), 'ms');
-      console.log('[PERF] Albums:', albums.length, 'External links:', externalLinks.length);
       
       setErrorState(null);
     } catch (err) {
