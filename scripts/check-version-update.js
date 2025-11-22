@@ -46,10 +46,10 @@ if (isNewVersion && previousVersion) {
   
   // Send notification to all admins
   try {
-    // Dynamic import to work with ES modules
-    const { getAllUsers } = await import('../backend/src/database-users.js');
-    const { sendNotificationToUser } = await import('../backend/src/push-notifications.js');
-    const { translateNotificationForUser } = await import('../backend/src/i18n-backend.js');
+      // Dynamic import TypeScript files via tsx
+      const { getAllUsers } = await import('../backend/src/database-users.ts');
+      const { sendNotificationToUser } = await import('../backend/src/push-notifications.ts');
+      const { translateNotificationForUser } = await import('../backend/src/i18n-backend.ts');
     
     const admins = getAllUsers().filter(u => u.role === 'admin');
     
