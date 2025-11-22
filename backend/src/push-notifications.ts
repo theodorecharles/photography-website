@@ -100,9 +100,13 @@ export function isPushNotificationsEnabled(): boolean {
   const hasKeys = !!pushConfig.vapidPublicKey && !!pushConfig.vapidPrivateKey;
   const enabled = pushConfig.enabled === true && hasKeys;
   
+  info(`[PushNotifications] isPushNotificationsEnabled check: enabled=${pushConfig.enabled}, hasKeys=${hasKeys}, vapidConfigured=${vapidConfigured}`);
+  
   // If enabled but VAPID not configured yet, try to configure it now
   if (enabled && !vapidConfigured) {
-    initializePushNotifications();
+    info('[PushNotifications] Config is enabled but VAPID not configured, initializing now...');
+    const result = initializePushNotifications();
+    info(`[PushNotifications] Initialization result: ${result}`);
   }
   
   return enabled && vapidConfigured;
