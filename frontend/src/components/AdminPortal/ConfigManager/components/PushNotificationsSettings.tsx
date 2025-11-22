@@ -193,7 +193,8 @@ const PushNotificationsSettings: React.FC<PushNotificationsSettingsProps> = ({
         method: 'POST',
         credentials: 'include',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': (window as any).csrfToken || ''
         }
       });
 
