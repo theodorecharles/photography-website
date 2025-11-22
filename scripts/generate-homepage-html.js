@@ -176,7 +176,15 @@ async function generateHomepageHtml() {
 
     // Read config
     const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-    const apiUrl = config.environment?.backend?.apiUrl || "http://localhost:3001";
+    
+    // Determine API URL from environment or config
+    // Priority: environment variable > config file > default
+    let apiUrl = process.env.API_URL || process.env.BACKEND_DOMAIN;
+    if (!apiUrl) {
+      apiUrl = config.environment?.backend?.apiUrl || "http://localhost:3001";
+    }
+    
+    log(`Using API URL: ${apiUrl}`);
 
     // Derive site URL
     let siteUrl;

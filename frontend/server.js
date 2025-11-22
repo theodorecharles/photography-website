@@ -387,33 +387,82 @@ app.get(/^\/.*/, async (req, res) => {
     
     if (fs.existsSync(prerenderedPath)) {
       try {
-        // Check if we have cached HTML in memory
+        // Check if we have cached HTML template in memory
         const fileStats = fs.statSync(prerenderedPath);
         const fileModTime = fileStats.mtimeMs;
         
-        // Use cached HTML if available and file hasn't changed
+        let htmlTemplate;
+        
+        // Use cached template if available and file hasn't changed
         if (homepageHTMLCache && homepageHTMLCacheTime === fileModTime) {
-          debug("[SSR] Serving pre-rendered homepage HTML from memory cache");
+          debug("[SSR] Using pre-rendered homepage template from memory cache");
+          htmlTemplate = homepageHTMLCache;
         } else {
           // Read from disk and cache in memory
-          homepageHTMLCache = fs.readFileSync(prerenderedPath, "utf8");
+          htmlTemplate = fs.readFileSync(prerenderedPath, "utf8");
+          homepageHTMLCache = htmlTemplate;
           homepageHTMLCacheTime = fileModTime;
-          info("[SSR] Loaded pre-rendered homepage HTML into memory cache");
+          info("[SSR] Loaded pre-rendered homepage HTML template into memory cache");
         }
         
-        const apiUrl = config.frontend.apiUrl;
+        // Determine runtime API URL (same logic as other routes)
+        const protocol =
+          req.headers["x-forwarded-proto"] || (req.secure ? "https" : "http");
+        const hostHeader =
+          req.headers["x-forwarded-host"] ||
+          req.headers["host"] ||
+          "localhost:3000";
+        const host = Array.isArray(hostHeader) ? hostHeader[0] : hostHeader;
+        let runtimeApiUrl;
+
+        // Check if accessing via IP address (e.g., 192.168.1.219:3000)
+        const ipPattern = /^\d+\.\d+\.\d+\.\d+(:\d+)?$/;
+        if (ipPattern.test(host)) {
+          // Direct IP access: use same IP with port 3001
+          const ipAddress = host.split(":")[0];
+          runtimeApiUrl = `${protocol}://${ipAddress}:3001`;
+        } else if (host.includes("localhost")) {
+          // Localhost development
+          runtimeApiUrl = "http://localhost:3001";
+        } else if (host.startsWith("www-")) {
+          // Domain with www- prefix (e.g., www-dev.example.com -> api-dev.example.com)
+          runtimeApiUrl = `${protocol}://api-${host.substring(4)}`;
+        } else if (host.startsWith("www.")) {
+          // Domain with www. prefix (e.g., www.example.com -> api.example.com)
+          runtimeApiUrl = `${protocol}://api.${host.substring(4)}`;
+        } else if (process.env.BACKEND_DOMAIN || process.env.API_URL) {
+          // Fall back to environment variable if provided
+          runtimeApiUrl = process.env.BACKEND_DOMAIN || process.env.API_URL;
+        } else if (
+          !isSetupMode &&
+          config.frontend.apiUrl &&
+          !config.frontend.apiUrl.includes("localhost")
+        ) {
+          // Use config file value if available
+          runtimeApiUrl = config.frontend.apiUrl;
+        } else {
+          // Final fallback: derive from host
+          runtimeApiUrl = `${protocol}://api.${host}`;
+        }
+        
+        // Replace placeholder API URL with runtime-detected one
+        const html = htmlTemplate.replace(
+          /"http:\/\/localhost:3001"/g,
+          `"${runtimeApiUrl}"`
+        );
         
         // Set CSP and other security headers
-        setCSPHeader(res, apiUrl, configFile);
+        setCSPHeader(res, runtimeApiUrl, configFile);
         
         // Tell browsers NOT to cache (always fetch fresh from server)
-        // But server caches in memory for instant serving
+        // But server caches template in memory for instant serving
         res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate, private");
         res.setHeader("Pragma", "no-cache");
         res.setHeader("Expires", "0");
         res.setHeader("X-Cache", "HIT"); // Indicate this came from server cache
         
-        return res.send(homepageHTMLCache);
+        debug(`[SSR] Serving pre-rendered homepage with runtime API URL: ${runtimeApiUrl}`);
+        return res.send(html);
       } catch (err) {
         error("[SSR] Failed to read pre-rendered homepage:", err);
         // Clear cache on error
