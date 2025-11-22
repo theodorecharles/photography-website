@@ -86,7 +86,9 @@
       "photoDownloadedTitle": "照片已下载",
       "photoDownloadedBody": "{{filename}} 从 {{albumName}} 下载完成",
       "albumViewMilestoneTitle": "🎉 里程碑达成！",
-      "albumViewMilestoneBody": "{{albumName}} 达到 {{milestone}} 次浏览！"
+      "albumViewMilestoneBody": "{{albumName}} 达到 {{milestone}} 次浏览！",
+      "shareLinkExpiredAccessedTitle": "过期链接访问尝试",
+      "shareLinkExpiredAccessedBody": "有人尝试使用过期链接访问{{albumName}}"
     }
   },
   "email": {

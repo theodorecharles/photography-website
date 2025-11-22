@@ -86,7 +86,9 @@
       "photoDownloadedTitle": "Foto descargada",
       "photoDownloadedBody": "{{filename}} de {{albumName}} fue descargado",
       "albumViewMilestoneTitle": "🎉 ¡Hito alcanzado!",
-      "albumViewMilestoneBody": "¡{{albumName}} alcanzó {{milestone}} vistas!"
+      "albumViewMilestoneBody": "¡{{albumName}} alcanzó {{milestone}} vistas!",
+      "shareLinkExpiredAccessedTitle": "Intento de acceso con enlace caducado",
+      "shareLinkExpiredAccessedBody": "Alguien intentó acceder a {{albumName}} con un enlace caducado"
     }
   },
   "email": {

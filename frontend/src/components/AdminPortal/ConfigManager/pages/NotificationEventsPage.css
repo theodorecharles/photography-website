@@ -1,0 +1,16 @@
+/* Notification Events Page Styles */
+
+/* Desktop: Allow descriptions to wrap to multiple lines */
+.notification-event-description {
+  line-height: 1.4;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Mobile: Hide descriptions */
+@media (max-width: 768px) {
+  .notification-event-description {
+    display: none;
+  }
+}
+

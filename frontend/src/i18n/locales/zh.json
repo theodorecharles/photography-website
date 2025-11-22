@@ -587,9 +587,15 @@
         "versionUpdate": {
           "title": "版本更新",
           "description": "有新版本可用时"
+        },
+        "shareLinkExpiredAccessed": {
+          "title": "过期链接访问尝试",
+          "description": "当有人尝试使用过期的分享链接"
         }
       }
-    }
+    },
+    "events": {},
+    "settings": {}
   },
   "advancedSettings": {
     "title": "高级设置",
@@ -1370,38 +1376,34 @@
     "hardwareTranscodingDescription": "使用GPU加速以更快的视频编码（需要兼容的硬件）"
   },
   "notifications": {
-    "active": "已启用推送通知",
-    "sendTest": "发送测试",
-    "disable": "禁用",
     "settings": {
-      "title": "推送通知",
-      "configured": "✓ 已配置",
-      "discard": "丢弃",
-      "save": "保存",
-      "saving": "保存中...",
-      "description": "视频处理和图像优化任务完成时通知经理和管理员",
-      "enableLabel": "启用推送通知",
-      "generatingKeys": "⏳ 正在生成 VAPID 密钥...",
-      "enabledDescription": "启用后，经理和管理员将被提示允许浏览器通知",
-      "vapidSubject": "VAPID 主题",
-      "vapidSubjectHint": "推送服务的联系邮箱 (mailto:) 或网站 URL (https://)",
-      "vapidPublicKey": "VAPID 公钥",
-      "vapidPublicKeyHint": "浏览器订阅的公钥（可以安全分享）",
-      "vapidPrivateKey": "VAPID 私钥",
-      "vapidPrivateKeyHint": "私钥（请保密！）",
-      "generating": "⏳ 正在生成...",
-      "generateNewKeys": "🔑 生成新密钥",
-      "generateKeysWarning": "⚠️ 警告：生成新密钥将使所有现有订阅失效",
-      "confirmTitle": "生成新密钥吗？",
-      "confirmMessage": "这将生成新的 VAPID 密钥并<strong>使所有现有推送通知订阅失效</strong>。所有用户需要重新订阅才能接收通知。",
-      "cancel": "取消",
-      "confirmGenerate": "生成新密钥",
-      "errorEnable": "无法启用推送通知。请再试一次。",
-      "errorDisable": "无法禁用推送通知。请再试一次。",
-      "errorGenerateKeys": "生成 VAPID 密钥失败",
-      "close": "关闭",
       "configureEvents": "⚙️ 配置事件",
-      "configureEventsDescription": "选择哪些事件应触发推送通知"
+      "cancel": "取消",
+      "save": "保存",
+      "saving": "正在保存...",
+      "discard": "丢弃",
+      "description": "视频处理和图像优化作业完成时通知经理和管理员",
+      "enableLabel": "启用推送通知",
+      "generatingKeys": "⏳ 正在生成VAPID密钥...",
+      "generating": "⏳ 正在生成...",
+      "enabledDescription": "启用后，经理和管理员将被提示允许浏览器通知",
+      "vapidSubject": "VAPID主题",
+      "vapidSubjectHint": "推送服务的联系电子邮件(mailto:)或网站URL(https://)",
+      "vapidPublicKey": "VAPID公钥",
+      "vapidPublicKeyHint": "浏览器订阅的公钥（可以分享）",
+      "vapidPrivateKey": "VAPID私钥",
+      "vapidPrivateKeyHint": "私钥（请保密！）",
+      "generateNewKeys": "生成新密钥",
+      "generateKeysWarning": "警告：生成新密钥将使所有现有订阅失效。所有用户需要重新订阅。",
+      "confirmTitle": "生成新密钥？",
+      "confirmMessage": "这将生成新的VAPID密钥并<strong>使所有现有的推送通知订阅失效</strong>。所有用户需要重新订阅以接收通知。",
+      "confirmGenerate": "生成新密钥",
+      "errorEnable": "启用推送通知失败。请再试一次。",
+      "errorDisable": "禁用推送通知失败。请再试一次。",
+      "errorGenerateKeys": "生成VAPID密钥失败",
+      "close": "关闭",
+      "title": "推送通知",
+      "configured": "✓ 已配置"
     },
     "backend": {
       "videoProcessingComplete": "视频处理完成",
@@ -1455,14 +1457,22 @@
       "lowDiskSpaceTitle": "磁盘空间不足",
       "lowDiskSpaceBody": "存储空间不足（剩余<10%）",
       "databaseBackupCompletedTitle": "备份完成",
-      "databaseBackupCompletedBody": "数据库备份成功完成"
+      "databaseBackupCompletedBody": "数据库备份成功完成",
+      "shareLinkExpiredAccessedTitle": "过期链接访问尝试",
+      "shareLinkExpiredAccessedBody": "有人尝试使用过期的分享链接"
     },
+    "events": {},
+    "error": "发生错误",
+    "permissionGranted": "推送通知启用成功",
+    "permissionDenied": "通知权限被拒绝",
+    "unsubscribed": "已取消推送通知订阅",
+    "testSent": "测试通知已发送",
+    "active": "推送通知已启用",
+    "sendTest": "发送测试",
+    "disable": "禁用",
     "blocked": "浏览器阻止了通知。请检查您的浏览器设置。",
-    "subscribePrompt": "订阅以在工作完成时接收通知",
-    "subscribe": "订阅",
-    "events": {
-      "saved": "通知偏好已保存"
-    }
+    "subscribePrompt": "订阅以接收通知",
+    "subscribe": "订阅"
   },
   "general": {
     "title": "常规",

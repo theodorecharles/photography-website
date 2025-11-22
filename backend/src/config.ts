@@ -259,6 +259,7 @@ export function getCurrentConfig() {
     email: fullConfig.email,
     frontend: fullConfig.environment.frontend,
     pushNotifications: fullConfig.pushNotifications,
+    notificationPreferences: fullConfig.notificationPreferences,
     configExists,
   };
 }

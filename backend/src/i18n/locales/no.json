@@ -86,7 +86,9 @@
       "photoDownloadedTitle": "Bilde lastet ned",
       "photoDownloadedBody": "{{filename}} fra {{albumName}} ble lastet ned",
       "albumViewMilestoneTitle": "🎉 Milepæl nådd!",
-      "albumViewMilestoneBody": "{{albumName}} nådde {{milestone}} visninger!"
+      "albumViewMilestoneBody": "{{albumName}} nådde {{milestone}} visninger!",
+      "shareLinkExpiredAccessedTitle": "Forsøk på tilgang med utløpt lenke",
+      "shareLinkExpiredAccessedBody": "Noen prøvde å få tilgang til {{albumName}} med en utløpt lenke"
     }
   },
   "email": {

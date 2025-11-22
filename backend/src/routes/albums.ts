@@ -484,17 +484,17 @@ router.get("/api/shared/:secretKey", async (req: Request, res): Promise<void> =>
       
       const admins = getAllUsers().filter(u => u.role === 'admin');
       for (const admin of admins) {
-        const title = await translateNotification('notifications.backend.shareLinkExpiredTitle', { albumName: shareLink.album });
-        const body = await translateNotification('notifications.backend.shareLinkExpiredBody', { albumName: shareLink.album });
+        const title = await translateNotification('notifications.backend.shareLinkExpiredAccessedTitle', { albumName: shareLink.album });
+        const body = await translateNotification('notifications.backend.shareLinkExpiredAccessedBody', { albumName: shareLink.album });
         
         sendNotificationToUser(admin.id, {
           title,
           body,
-          tag: 'share-link-expired'
-        }, 'shareLinkExpired');
+          tag: 'share-link-expired-accessed'
+        }, 'shareLinkExpiredAccessed');
       }
     } catch (err) {
-      error('[Albums] Failed to send expired link notification:', err);
+      error('[Albums] Failed to send expired link access notification:', err);
     }
     
     res.status(410).json({ error: "Share link has expired", expired: true });

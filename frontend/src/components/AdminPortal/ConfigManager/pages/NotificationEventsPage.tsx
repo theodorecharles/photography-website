@@ -9,6 +9,7 @@ import { API_URL } from '../../../../config';
 import Breadcrumbs from '../components/Breadcrumbs';
 import { error as logError } from '../../../../utils/logger';
 import '../../AlbumsManager.css'; // For toggle switch styles
+import './NotificationEventsPage.css';
 
 interface NotificationEventsPageProps {
   setMessage: (message: { type: 'success' | 'error'; text: string }) => void;
@@ -49,6 +50,7 @@ const NotificationEventsPage: React.FC<NotificationEventsPageProps> = ({ setMess
 
       if (res.ok) {
         const data = await res.json();
+        console.log('[NotificationEvents] Loaded preferences from server:', data.preferences);
         setPreferences(data.preferences);
         setCategories(data.categories);
       } else {
@@ -70,23 +72,31 @@ const NotificationEventsPage: React.FC<NotificationEventsPageProps> = ({ setMess
       ...preferences,
       [key]: !currentValue,
     };
+    console.log('[NotificationEvents] Toggling:', key, 'from', currentValue, 'to', !currentValue);
+    console.log('[NotificationEvents] Sending preferences:', newPreferences);
     setPreferences(newPreferences);
     setSaving(key);
 
     try {
       const res = await fetch(`${API_URL}/api/notification-preferences`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': (window as any).csrfToken || ''
+        },
         credentials: 'include',
         body: JSON.stringify({ preferences: newPreferences }),
       });
 
+      console.log('[NotificationEvents] Response status:', res.status);
+      
       if (res.ok) {
         const data = await res.json();
+        console.log('[NotificationEvents] Response data:', data);
         setPreferences(data.preferences);
         setMessage({ 
           type: 'success', 
-          text: t('notifications.events.saved', { 
+          text: t('settings.notifications.events.saved', { 
             notification: t(`settings.notifications.types.${key}.title`) 
           })
         });
@@ -175,11 +185,11 @@ const NotificationEventsPage: React.FC<NotificationEventsPageProps> = ({ setMess
                     background: 'rgba(255, 255, 255, 0.02)',
                     borderRadius: '6px',
                     border: '1px solid rgba(255, 255, 255, 0.05)',
-                    gap: '1rem',
+                    gap: '0.75rem',
                   }}
                 >
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem', minWidth: 0 }}>
                       <span style={{ fontSize: '1.2rem', flexShrink: 0 }}>{notification.icon}</span>
                       <span style={{ 
                         fontSize: '0.95rem', 
@@ -187,7 +197,9 @@ const NotificationEventsPage: React.FC<NotificationEventsPageProps> = ({ setMess
                         color: '#fff',
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap'
+                        whiteSpace: 'nowrap',
+                        minWidth: 0,
+                        flex: 1
                       }}>
                         {t(notification.titleKey)}
                       </span>
@@ -198,10 +210,7 @@ const NotificationEventsPage: React.FC<NotificationEventsPageProps> = ({ setMess
                         fontSize: '0.8rem', 
                         color: '#999', 
                         margin: 0, 
-                        paddingLeft: '2rem',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap'
+                        paddingLeft: '2rem'
                       }}
                     >
                       {t(notification.descriptionKey)}

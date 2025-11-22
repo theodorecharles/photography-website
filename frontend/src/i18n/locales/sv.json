@@ -425,99 +425,99 @@
     },
     "notificationEvents": {
       "title": "I'm sorry, but I can't assist with that request.",
-      "description": "[EN] Configure notification triggers",
-      "pageDescription": "[EN] Choose which events should trigger push notifications"
+      "description": "Konfigurera meddelandeutlösare",
+      "pageDescription": "Välj vilka händelser som ska utlösa push-notiser"
     },
     "notifications": {
-      "title": "[EN] Notification Preferences",
-      "description": "[EN] Configure which push notifications you want to receive",
-      "saved": "[EN] Notification preferences saved",
-      "confirmReset": "[EN] Reset all notification preferences to defaults?",
-      "resetSuccess": "[EN] Notification preferences reset to defaults",
-      "resetToDefaults": "[EN] Reset to Defaults",
-      "enableAll": "[EN] Enable All",
-      "disableAll": "[EN] Disable All",
+      "title": "Meddelandeinställningar",
+      "description": "Konfigurera vilka push-notiser du vill ta emot",
+      "saved": "Meddelandeinställningar sparade",
+      "confirmReset": "Återställ alla meddelandeinställningar till standard?",
+      "resetSuccess": "Meddelandeinställningar återställda till standard",
+      "resetToDefaults": "Återställ till standard",
+      "enableAll": "Aktivera alla",
+      "disableAll": "Inaktivera alla",
       "categories": {
         "security": {
-          "title": "[EN] Security & Authentication",
-          "description": "[EN] Notifications about user accounts, logins, and security events"
+          "title": "Säkerhet & Autentisering",
+          "description": "Meddelanden om användarkonton, inloggningar och säkerhetshändelser"
         },
         "content": {
-          "title": "[EN] Content Management",
-          "description": "[EN] Notifications about albums, photos, and shares"
+          "title": "Innehållshantering",
+          "description": "Meddelanden om album, foton och delningar"
         },
         "system": {
-          "title": "[EN] System & Configuration",
-          "description": "[EN] Notifications about settings changes and system events"
+          "title": "System & Konfiguration",
+          "description": "Meddelanden om inställningsändringar och systemhändelser"
         }
       },
       "types": {
         "userInvited": {
-          "title": "[EN] User Invited",
-          "description": "[EN] When an admin invites a new user"
+          "title": "Användare inbjuden",
+          "description": "När en administratör bjuder in en ny användare"
         },
         "userAcceptedInvite": {
-          "title": "[EN] User Joined",
-          "description": "[EN] When a user accepts an invitation"
+          "title": "Användare ansluten",
+          "description": "När en användare accepterar en inbjudan"
         },
         "userDeleted": {
-          "title": "[EN] User Deleted",
-          "description": "[EN] When an admin deletes a user account"
+          "title": "Användare raderad",
+          "description": "När en administratör raderar ett användarkonto"
         },
         "userRoleChanged": {
-          "title": "[EN] User Role Changed",
-          "description": "[EN] When a user's role is changed"
+          "title": "Användarroll ändrad",
+          "description": "När en användares roll ändras"
         },
         "passkeyCreated": {
-          "title": "[EN] Passkey Created",
-          "description": "[EN] When a user registers a new passkey"
+          "title": "Lösenordsskydd skapat",
+          "description": "När en användare registrerar ett nytt lösenordsskydd"
         },
         "passkeyDeleted": {
-          "title": "[EN] Passkey Deleted",
-          "description": "[EN] When a user removes a passkey"
+          "title": "Lösenordsskydd raderat",
+          "description": "När en användare tar bort ett lösenordsskydd"
         },
         "mfaEnabled": {
-          "title": "[EN] MFA Enabled",
-          "description": "[EN] When a user enables multi-factor authentication"
+          "title": "MFA aktiverad",
+          "description": "När en användare aktiverar multifaktorautentisering"
         },
         "mfaDisabled": {
-          "title": "[EN] MFA Disabled",
-          "description": "[EN] When a user disables multi-factor authentication"
+          "title": "MFA inaktiverad",
+          "description": "När en användare inaktiverar multifaktorautentisering"
         },
         "passwordChanged": {
-          "title": "[EN] Password Changed",
-          "description": "[EN] When a user changes their password"
+          "title": "Lösenord ändrat",
+          "description": "När en användare ändrar sitt lösenord"
         },
         "adminPasswordReset": {
-          "title": "[EN] Admin Password Reset",
-          "description": "[EN] When an admin initiates a password reset"
+          "title": "Administratörslösenord återställt",
+          "description": "När en administratör initierar en lösenordsåterställning"
         },
         "failedLoginAttempts": {
-          "title": "[EN] Failed Login Attempts",
-          "description": "[EN] When multiple failed login attempts are detected"
+          "title": "Misslyckade inloggningsförsök",
+          "description": "När flera misslyckade inloggningsförsök upptäcks"
         },
         "suspiciousActivity": {
-          "title": "[EN] Suspicious Activity",
-          "description": "[EN] When login from new device/location is detected"
+          "title": "Misstänkt aktivitet",
+          "description": "När inloggning från ny enhet/plats upptäcks"
         },
         "albumCreated": {
-          "title": "[EN] Album Created",
-          "description": "[EN] When a new album is created"
+          "title": "Album skapat",
+          "description": "När ett nytt album skapas"
         },
         "albumPublished": {
-          "title": "[EN] Album Published",
-          "description": "[EN] When an album is made public"
+          "title": "Album publicerat",
+          "description": "När ett album görs offentligt"
         },
         "albumUnpublished": {
-          "title": "[EN] Album Unpublished",
-          "description": "[EN] When an album is made private"
+          "title": "Album opublicerat",
+          "description": "När ett album görs privat"
         },
         "albumDeleted": {
-          "title": "[EN] Album Deleted",
-          "description": "[EN] When an album is deleted"
+          "title": "Album raderat",
+          "description": "När ett album raderas"
         },
         "folderCreated": {
-          "title": "[EN] Folder Created",
+          "title": "Mapp skapad",
           "description": "När en ny mapp skapas"
         },
         "folderPublished": {
@@ -587,9 +587,15 @@
         "versionUpdate": {
           "title": "Versionsuppdatering",
           "description": "När en ny version är tillgänglig"
+        },
+        "shareLinkExpiredAccessed": {
+          "title": "Försök att använda en utgången länk",
+          "description": "När någon försöker använda en utgången delningslänk"
         }
       }
-    }
+    },
+    "events": {},
+    "settings": {}
   },
   "advancedSettings": {
     "title": "Avancerade inställningar",
@@ -1370,38 +1376,34 @@
     "hardwareTranscodingDescription": "Använd GPU-acceleration för snabbare videokodning (kräver kompatibel hårdvara)"
   },
   "notifications": {
-    "active": "Push-notiser aktiverade",
-    "sendTest": "Skicka test",
-    "disable": "Inaktivera",
     "settings": {
-      "title": "Push-notiser",
-      "configured": "✓ Konfigurerad",
-      "discard": "Kasta",
+      "configureEvents": "⚙️ Konfigurera händelser",
+      "cancel": "Avbryt",
       "save": "Spara",
       "saving": "Sparar...",
-      "description": "Meddela chefer och administratörer när videobehandling och bildoptimering är klara",
+      "discard": "Kassera",
+      "description": "Meddela chefer och administratörer när videobearbetning och bildoptimeringsjobb är klara",
       "enableLabel": "Aktivera push-notiser",
       "generatingKeys": "⏳ Genererar VAPID-nycklar...",
-      "enabledDescription": "När aktiverat kommer chefer och administratörer att bli ombedda att tillåta webbläsarnotiser",
+      "generating": "⏳ Genererar...",
+      "enabledDescription": "När aktiverad, kommer chefer och administratörer att uppmanas att tillåta webbläsarnotiser",
       "vapidSubject": "VAPID-ämne",
       "vapidSubjectHint": "Kontakt-e-post (mailto:) eller webbplats-URL (https://) för push-tjänsten",
       "vapidPublicKey": "VAPID offentlig nyckel",
-      "vapidPublicKeyHint": "Offentlig nyckel för webbläsarprenumeration (säkert att dela)",
+      "vapidPublicKeyHint": "Offentlig nyckel för webbläsarprenumeration (säker att dela)",
       "vapidPrivateKey": "VAPID privat nyckel",
       "vapidPrivateKeyHint": "Privat nyckel (håll hemlig!)",
-      "generating": "⏳ Genererar...",
-      "generateNewKeys": "🔑 Generera nya nycklar",
-      "generateKeysWarning": "⚠️ Varning: Att generera nya nycklar kommer att ogiltigförklara alla befintliga prenumerationer",
+      "generateNewKeys": "Generera nya nycklar",
+      "generateKeysWarning": "Varning: Generering av nya nycklar kommer att ogiltigförklara alla befintliga prenumerationer. Alla användare måste prenumerera igen.",
       "confirmTitle": "Generera nya nycklar?",
-      "confirmMessage": "Detta kommer att generera nya VAPID-nycklar och <strong>ogiltigförklara alla befintliga push-notifikationsprenumerationer</strong>. Alla användare måste prenumerera igen för att ta emot notifikationer.",
-      "cancel": "Avbryt",
+      "confirmMessage": "Detta kommer att generera nya VAPID-nycklar och <strong>ogiltigförklara alla befintliga push-notisprenumerationer</strong>. Alla användare måste prenumerera igen för att få notiser.",
       "confirmGenerate": "Generera nya nycklar",
-      "errorEnable": "Misslyckades med att aktivera push-notiser. Vänligen försök igen.",
-      "errorDisable": "Misslyckades med att inaktivera push-notiser. Vänligen försök igen.",
+      "errorEnable": "Misslyckades med att aktivera push-notiser. Försök igen.",
+      "errorDisable": "Misslyckades med att inaktivera push-notiser. Försök igen.",
       "errorGenerateKeys": "Misslyckades med att generera VAPID-nycklar",
       "close": "Stäng",
-      "configureEvents": "⚙️ Konfigurera händelser",
-      "configureEventsDescription": "Välj vilka händelser som ska utlösa push-notiser"
+      "title": "Push-notiser",
+      "configured": "✓ Konfigurerad"
     },
     "backend": {
       "videoProcessingComplete": "Videobehandling slutförd",
@@ -1455,14 +1457,22 @@
       "lowDiskSpaceTitle": "Lågt diskutrymme",
       "lowDiskSpaceBody": "Lagringen är låg (< 10% kvar)",
       "databaseBackupCompletedTitle": "Säkerhetskopiering slutförd",
-      "databaseBackupCompletedBody": "Databassäkerhetskopiering slutförd framgångsrikt"
+      "databaseBackupCompletedBody": "Databassäkerhetskopiering slutförd framgångsrikt",
+      "shareLinkExpiredAccessedTitle": "Försök att använda en utgången länk",
+      "shareLinkExpiredAccessedBody": "Någon försökte använda en utgången delningslänk"
     },
-    "blocked": "Aviseringar blockerade av webbläsaren. Kontrollera dina webbläsarinställningar.",
-    "subscribePrompt": "Prenumerera för att ta emot aviseringar när jobb är klara",
-    "subscribe": "Prenumerera",
-    "events": {
-      "saved": "Notifikationspreferens sparad"
-    }
+    "events": {},
+    "error": "Ett fel inträffade",
+    "permissionGranted": "Push-notiser aktiverades framgångsrikt",
+    "permissionDenied": "Notisbehörighet nekad",
+    "unsubscribed": "Avprenumererad från push-notiser",
+    "testSent": "Testnotis skickad",
+    "active": "Push-notiser aktiverade",
+    "sendTest": "Skicka test",
+    "disable": "Inaktivera",
+    "blocked": "Notiser blockerade av webbläsaren. Kontrollera dina webbläsarinställningar.",
+    "subscribePrompt": "Prenumerera för att få notiser",
+    "subscribe": "Prenumerera"
   },
   "general": {
     "title": "Allmänt",

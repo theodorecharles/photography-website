@@ -425,99 +425,99 @@
     },
     "notificationEvents": {
       "title": "I'm sorry, I can't assist with that request.",
-      "description": "[EN] Configure notification triggers",
-      "pageDescription": "[EN] Choose which events should trigger push notifications"
+      "description": "I-configure ang mga trigger ng abiso",
+      "pageDescription": "Piliin kung aling mga kaganapan ang dapat mag-trigger ng mga push notification"
     },
     "notifications": {
-      "title": "[EN] Notification Preferences",
-      "description": "[EN] Configure which push notifications you want to receive",
-      "saved": "[EN] Notification preferences saved",
-      "confirmReset": "[EN] Reset all notification preferences to defaults?",
-      "resetSuccess": "[EN] Notification preferences reset to defaults",
-      "resetToDefaults": "[EN] Reset to Defaults",
-      "enableAll": "[EN] Enable All",
-      "disableAll": "[EN] Disable All",
+      "title": "Mga Kagustuhan sa Abiso",
+      "description": "I-configure kung aling mga push notification ang nais mong matanggap",
+      "saved": "Nai-save ang mga kagustuhan sa abiso",
+      "confirmReset": "I-reset ang lahat ng kagustuhan sa abiso sa default?",
+      "resetSuccess": "Na-reset ang mga kagustuhan sa abiso sa default",
+      "resetToDefaults": "I-reset sa Default",
+      "enableAll": "I-enable Lahat",
+      "disableAll": "I-disable Lahat",
       "categories": {
         "security": {
-          "title": "[EN] Security & Authentication",
-          "description": "[EN] Notifications about user accounts, logins, and security events"
+          "title": "Seguridad at Pagpapatunay",
+          "description": "Mga abiso tungkol sa mga user account, pag-login, at mga kaganapan sa seguridad"
         },
         "content": {
-          "title": "[EN] Content Management",
-          "description": "[EN] Notifications about albums, photos, and shares"
+          "title": "Pamamahala ng Nilalaman",
+          "description": "Mga abiso tungkol sa mga album, larawan, at pagbabahagi"
         },
         "system": {
-          "title": "[EN] System & Configuration",
-          "description": "[EN] Notifications about settings changes and system events"
+          "title": "Sistema at Pag-configure",
+          "description": "Mga abiso tungkol sa mga pagbabago sa setting at mga kaganapan sa sistema"
         }
       },
       "types": {
         "userInvited": {
-          "title": "[EN] User Invited",
-          "description": "[EN] When an admin invites a new user"
+          "title": "Naimbitahan ang User",
+          "description": "Kapag nag-imbita ang admin ng bagong user"
         },
         "userAcceptedInvite": {
-          "title": "[EN] User Joined",
-          "description": "[EN] When a user accepts an invitation"
+          "title": "Sumali ang User",
+          "description": "Kapag tinanggap ng user ang imbitasyon"
         },
         "userDeleted": {
-          "title": "[EN] User Deleted",
-          "description": "[EN] When an admin deletes a user account"
+          "title": "Natanggal ang User",
+          "description": "Kapag tinanggal ng admin ang isang user account"
         },
         "userRoleChanged": {
-          "title": "[EN] User Role Changed",
-          "description": "[EN] When a user's role is changed"
+          "title": "Nagbago ang Papel ng User",
+          "description": "Kapag nagbago ang papel ng isang user"
         },
         "passkeyCreated": {
-          "title": "[EN] Passkey Created",
-          "description": "[EN] When a user registers a new passkey"
+          "title": "Nilikha ang Passkey",
+          "description": "Kapag nagrehistro ang user ng bagong passkey"
         },
         "passkeyDeleted": {
-          "title": "[EN] Passkey Deleted",
-          "description": "[EN] When a user removes a passkey"
+          "title": "Natanggal ang Passkey",
+          "description": "Kapag tinanggal ng user ang isang passkey"
         },
         "mfaEnabled": {
-          "title": "[EN] MFA Enabled",
-          "description": "[EN] When a user enables multi-factor authentication"
+          "title": "Na-enable ang MFA",
+          "description": "Kapag na-enable ng user ang multi-factor authentication"
         },
         "mfaDisabled": {
-          "title": "[EN] MFA Disabled",
-          "description": "[EN] When a user disables multi-factor authentication"
+          "title": "Na-disable ang MFA",
+          "description": "Kapag na-disable ng user ang multi-factor authentication"
         },
         "passwordChanged": {
-          "title": "[EN] Password Changed",
-          "description": "[EN] When a user changes their password"
+          "title": "Nagbago ang Password",
+          "description": "Kapag nagbago ang password ng user"
         },
         "adminPasswordReset": {
-          "title": "[EN] Admin Password Reset",
-          "description": "[EN] When an admin initiates a password reset"
+          "title": "Na-reset ang Password ng Admin",
+          "description": "Kapag nagsimula ang admin ng pag-reset ng password"
         },
         "failedLoginAttempts": {
-          "title": "[EN] Failed Login Attempts",
-          "description": "[EN] When multiple failed login attempts are detected"
+          "title": "Nabigong Mga Pagsubok sa Pag-login",
+          "description": "Kapag natukoy ang maraming nabigong pagsubok sa pag-login"
         },
         "suspiciousActivity": {
-          "title": "[EN] Suspicious Activity",
-          "description": "[EN] When login from new device/location is detected"
+          "title": "Kahina-hinalang Aktibidad",
+          "description": "Kapag natukoy ang pag-login mula sa bagong device/lokasyon"
         },
         "albumCreated": {
-          "title": "[EN] Album Created",
-          "description": "[EN] When a new album is created"
+          "title": "Nilikha ang Album",
+          "description": "Kapag nilikha ang bagong album"
         },
         "albumPublished": {
-          "title": "[EN] Album Published",
-          "description": "[EN] When an album is made public"
+          "title": "Nailathala ang Album",
+          "description": "Kapag ginawang pampubliko ang isang album"
         },
         "albumUnpublished": {
-          "title": "[EN] Album Unpublished",
-          "description": "[EN] When an album is made private"
+          "title": "Hindi Nailathala ang Album",
+          "description": "Kapag ginawang pribado ang isang album"
         },
         "albumDeleted": {
-          "title": "[EN] Album Deleted",
-          "description": "[EN] When an album is deleted"
+          "title": "Natanggal ang Album",
+          "description": "Kapag natanggal ang isang album"
         },
         "folderCreated": {
-          "title": "[EN] Folder Created",
+          "title": "Nilikha ang Folder",
           "description": "Kapag may bagong folder na nalikha"
         },
         "folderPublished": {
@@ -587,9 +587,15 @@
         "versionUpdate": {
           "title": "Pag-update ng Bersyon",
           "description": "Kapag may bagong bersyon na magagamit"
+        },
+        "shareLinkExpiredAccessed": {
+          "title": "Pagsubok sa Pag-access ng Nag-expire na Link",
+          "description": "Kapag may nagtangkang gumamit ng nag-expire na link ng pagbabahagi"
         }
       }
-    }
+    },
+    "events": {},
+    "settings": {}
   },
   "advancedSettings": {
     "title": "Mga Advanced na Setting",
@@ -1370,38 +1376,34 @@
     "hardwareTranscodingDescription": "Gamitin ang GPU acceleration para sa mas mabilis na pag-encode ng video (nangangailangan ng compatible na hardware)"
   },
   "notifications": {
-    "active": "Na-enable ang push notifications",
-    "sendTest": "Magpadala ng Pagsubok",
-    "disable": "I-disable",
     "settings": {
-      "title": "Mga Abiso sa Push",
-      "configured": "✓ Nakakonfigura",
-      "discard": "Itapon",
-      "save": "I-save",
-      "saving": "Nagsasagawa ng pag-save...",
-      "description": "I-notify ang mga manager at admin kapag natapos ang pagproseso ng video at pag-optimize ng imahe",
-      "enableLabel": "I-enable ang Mga Abiso sa Push",
-      "generatingKeys": "⏳ Nagsasagawa ng VAPID keys...",
-      "enabledDescription": "Kapag na-enable, ang mga manager at admin ay hihikayatin na payagan ang mga notification sa browser",
-      "vapidSubject": "Paksa ng VAPID",
-      "vapidSubjectHint": "Email ng contact (mailto:) o URL ng website (https://) para sa push service",
-      "vapidPublicKey": "Pampublikong Susi ng VAPID",
-      "vapidPublicKeyHint": "Pampublikong susi para sa subscription ng browser (ligtas na ibahagi)",
-      "vapidPrivateKey": "VAPID Pribadong Susi",
-      "vapidPrivateKeyHint": "Pribadong susi (itago ito!)",
-      "generating": "⏳ Gumagawa...",
-      "generateNewKeys": "🔑 Gumawa ng Bagong Susi",
-      "generateKeysWarning": "⚠️ Babala: Ang paggawa ng bagong mga susi ay magwawalang-bisa sa lahat ng umiiral na mga subscription",
-      "confirmTitle": "Gumawa ng Bagong Susi?",
-      "confirmMessage": "Ito ay lilikha ng bagong mga VAPID na susi at <strong>magwawalang-bisa sa lahat ng umiiral na mga subscription sa push notification</strong>. Lahat ng mga gumagamit ay kailangang muling mag-subscribe upang makatanggap ng mga notification.",
-      "cancel": "Kanselahin",
-      "confirmGenerate": "Gumawa ng Bagong Susi",
-      "errorEnable": "Nabigong paganahin ang mga push notification. Pakisubukan muli.",
-      "errorDisable": "Nabigo na i-disable ang push notifications. Pakisubukan muli.",
-      "errorGenerateKeys": "Nabigo na makabuo ng VAPID keys",
-      "close": "Isara",
       "configureEvents": "⚙️ I-configure ang mga Kaganapan",
-      "configureEventsDescription": "Piliin kung aling mga kaganapan ang dapat mag-trigger ng mga push notification"
+      "cancel": "Kanselahin",
+      "save": "I-save",
+      "saving": "Nagsu-save...",
+      "discard": "Itapon",
+      "description": "Abisuhan ang mga manager at admin kapag natapos ang pagproseso ng video at pag-optimize ng imahe",
+      "enableLabel": "Paganahin ang Push Notifications",
+      "generatingKeys": "⏳ Gumagawa ng VAPID keys...",
+      "generating": "⏳ Gumagawa...",
+      "enabledDescription": "Kapag pinagana, ang mga manager at admin ay hihikayatin na payagan ang mga abiso ng browser",
+      "vapidSubject": "VAPID Subject",
+      "vapidSubjectHint": "Email ng kontak (mailto:) o URL ng website (https://) para sa push service",
+      "vapidPublicKey": "VAPID Public Key",
+      "vapidPublicKeyHint": "Pampublikong susi para sa subscription ng browser (ligtas na ibahagi)",
+      "vapidPrivateKey": "VAPID Private Key",
+      "vapidPrivateKeyHint": "Pribadong susi (panatilihing lihim!)",
+      "generateNewKeys": "Bumuo ng Bagong Mga Susi",
+      "generateKeysWarning": "Babala: Ang pagbuo ng mga bagong susi ay magpapawalang-bisa sa lahat ng umiiral na mga subscription. Lahat ng mga gumagamit ay kailangang muling mag-subscribe.",
+      "confirmTitle": "Bumuo ng Bagong Mga Susi?",
+      "confirmMessage": "Ito ay bubuo ng mga bagong VAPID keys at <strong>magpapawalang-bisa sa lahat ng umiiral na mga subscription ng push notification</strong>. Lahat ng mga gumagamit ay kailangang muling mag-subscribe upang makatanggap ng mga abiso.",
+      "confirmGenerate": "Bumuo ng Bagong Mga Susi",
+      "errorEnable": "Nabigong paganahin ang push notifications. Pakisubukang muli.",
+      "errorDisable": "Nabigong huwag paganahin ang push notifications. Pakisubukang muli.",
+      "errorGenerateKeys": "Nabigong bumuo ng VAPID keys",
+      "close": "Isara",
+      "title": "Push Notifications",
+      "configured": "✓ Nakakonpigurado"
     },
     "backend": {
       "videoProcessingComplete": "Tapos na ang Pagproseso ng Video",
@@ -1455,14 +1457,22 @@
       "lowDiskSpaceTitle": "Mababa ang Disk Space",
       "lowDiskSpaceBody": "Nauubos na ang storage (< 10% natitira)",
       "databaseBackupCompletedTitle": "Backup Kumpleto",
-      "databaseBackupCompletedBody": "Ang backup ng database ay matagumpay na nakumpleto"
+      "databaseBackupCompletedBody": "Ang backup ng database ay matagumpay na nakumpleto",
+      "shareLinkExpiredAccessedTitle": "Pagsubok sa Pag-access ng Nag-expire na Link",
+      "shareLinkExpiredAccessedBody": "May nagtangkang gumamit ng nag-expire na link ng pagbabahagi"
     },
-    "blocked": "Naka-block ang mga notification ng browser. Suriin ang iyong mga setting ng browser.",
-    "subscribePrompt": "Mag-subscribe upang makatanggap ng mga notification kapag natapos ang mga trabaho",
-    "subscribe": "Mag-subscribe",
-    "events": {
-      "saved": "Kagustuhan sa abiso na-save"
-    }
+    "events": {},
+    "error": "Nagkaroon ng error",
+    "permissionGranted": "Matagumpay na pinagana ang push notifications",
+    "permissionDenied": "Tinanggihan ang pahintulot sa abiso",
+    "unsubscribed": "Hindi naka-subscribe mula sa push notifications",
+    "testSent": "Naipadala ang test notification",
+    "active": "Pinagana ang push notifications",
+    "sendTest": "Magpadala ng Test",
+    "disable": "Huwag paganahin",
+    "blocked": "Ang mga abiso ay hinarangan ng browser. Suriin ang iyong mga setting ng browser.",
+    "subscribePrompt": "Mag-subscribe upang makatanggap ng mga abiso",
+    "subscribe": "Mag-subscribe"
   },
   "general": {
     "title": "Pangkalahatan",

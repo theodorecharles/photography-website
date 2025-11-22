@@ -1041,9 +1041,31 @@
     grid-template-columns: 1fr !important;
   }
 
-  /* Hide event descriptions on mobile */
+  /* Ensure event items have proper constraints on mobile */
+  .notification-events-grid > div {
+    min-width: 0 !important;
+  }
+
+  /* Ensure event descriptions are properly truncated on mobile */
   .notification-event-description {
-    display: none !important;
+    display: block !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    padding-left: 0 !important;
+    max-width: 100%;
+  }
+
+  /* Ensure ai-toggle-controls stay visible on mobile */
+  .ai-toggle-controls {
+    flex-shrink: 0 !important;
+    min-width: auto !important;
+  }
+
+  /* Make toggle labels more compact on mobile */
+  .ai-toggle-controls .toggle-label {
+    font-size: 0.75rem !important;
+    min-width: 35px !important;
   }
 
   /* Regenerate Keys Banner: Stack buttons below text on mobile */

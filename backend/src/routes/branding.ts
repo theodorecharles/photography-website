@@ -201,6 +201,34 @@ router.put("/", requireManager, (req: Request, res: Response) => {
     reloadConfig();
     info("[Branding] Config reloaded after branding update");
 
+    // Send push notification to all admins about branding update
+    (async () => {
+      try {
+        const { sendNotificationToUser } = await import('../push-notifications.js');
+        const { translateNotification } = await import('../i18n-backend.js');
+        const { getAllUsers } = await import('../database-users.js');
+        
+        const admins = getAllUsers().filter(u => u.role === 'admin');
+        for (const admin of admins) {
+          const title = await translateNotification('notifications.backend.brandingUpdatedTitle', {
+            updatedBy: (req.user as any).name || (req.user as any).email
+          });
+          const body = await translateNotification('notifications.backend.brandingUpdatedBody', {
+            updatedBy: (req.user as any).name || (req.user as any).email
+          });
+          
+          sendNotificationToUser(admin.id, {
+            title,
+            body,
+            tag: 'branding-updated',
+            requireInteraction: false
+          }, 'brandingUpdated');
+        }
+      } catch (err) {
+        error('[Branding] Failed to send branding update notification:', err);
+      }
+    })();
+
     // Reload frontend if siteName, avatarPath, or metaDescription changed (affects HTML placeholders)
     const needsFrontendReload =
       updates.siteName || updates.avatarPath || updates.metaDescription;

@@ -425,99 +425,99 @@
     },
     "notificationEvents": {
       "title": "I'm sorry, I can't assist with that request.",
-      "description": "[EN] Configure notification triggers",
-      "pageDescription": "[EN] Choose which events should trigger push notifications"
+      "description": "Konfigurer varslingsutløsere",
+      "pageDescription": "Velg hvilke hendelser som skal utløse push-varsler"
     },
     "notifications": {
-      "title": "[EN] Notification Preferences",
-      "description": "[EN] Configure which push notifications you want to receive",
-      "saved": "[EN] Notification preferences saved",
-      "confirmReset": "[EN] Reset all notification preferences to defaults?",
-      "resetSuccess": "[EN] Notification preferences reset to defaults",
-      "resetToDefaults": "[EN] Reset to Defaults",
-      "enableAll": "[EN] Enable All",
-      "disableAll": "[EN] Disable All",
+      "title": "Varslingspreferanser",
+      "description": "Konfigurer hvilke push-varsler du vil motta",
+      "saved": "Varslingspreferanser lagret",
+      "confirmReset": "Tilbakestille alle varslingspreferanser til standardverdier?",
+      "resetSuccess": "Varslingspreferanser tilbakestilt til standardverdier",
+      "resetToDefaults": "Tilbakestill til standardverdier",
+      "enableAll": "Aktiver alle",
+      "disableAll": "Deaktiver alle",
       "categories": {
         "security": {
-          "title": "[EN] Security & Authentication",
-          "description": "[EN] Notifications about user accounts, logins, and security events"
+          "title": "Sikkerhet og autentisering",
+          "description": "Varsler om brukerkontoer, pålogginger og sikkerhetshendelser"
         },
         "content": {
-          "title": "[EN] Content Management",
-          "description": "[EN] Notifications about albums, photos, and shares"
+          "title": "Innholdsstyring",
+          "description": "Varsler om album, bilder og delinger"
         },
         "system": {
-          "title": "[EN] System & Configuration",
-          "description": "[EN] Notifications about settings changes and system events"
+          "title": "System og konfigurasjon",
+          "description": "Varsler om innstillingsendringer og systemhendelser"
         }
       },
       "types": {
         "userInvited": {
-          "title": "[EN] User Invited",
-          "description": "[EN] When an admin invites a new user"
+          "title": "Bruker invitert",
+          "description": "Når en administrator inviterer en ny bruker"
         },
         "userAcceptedInvite": {
-          "title": "[EN] User Joined",
-          "description": "[EN] When a user accepts an invitation"
+          "title": "Bruker ble med",
+          "description": "Når en bruker aksepterer en invitasjon"
         },
         "userDeleted": {
-          "title": "[EN] User Deleted",
-          "description": "[EN] When an admin deletes a user account"
+          "title": "Bruker slettet",
+          "description": "Når en administrator sletter en brukerkonto"
         },
         "userRoleChanged": {
-          "title": "[EN] User Role Changed",
-          "description": "[EN] When a user's role is changed"
+          "title": "Brukerrolle endret",
+          "description": "Når en brukers rolle endres"
         },
         "passkeyCreated": {
-          "title": "[EN] Passkey Created",
-          "description": "[EN] When a user registers a new passkey"
+          "title": "Passnøkkel opprettet",
+          "description": "Når en bruker registrerer en ny passnøkkel"
         },
         "passkeyDeleted": {
-          "title": "[EN] Passkey Deleted",
-          "description": "[EN] When a user removes a passkey"
+          "title": "Passnøkkel slettet",
+          "description": "Når en bruker fjerner en passnøkkel"
         },
         "mfaEnabled": {
-          "title": "[EN] MFA Enabled",
-          "description": "[EN] When a user enables multi-factor authentication"
+          "title": "MFA aktivert",
+          "description": "Når en bruker aktiverer flerfaktorautentisering"
         },
         "mfaDisabled": {
-          "title": "[EN] MFA Disabled",
-          "description": "[EN] When a user disables multi-factor authentication"
+          "title": "MFA deaktivert",
+          "description": "Når en bruker deaktiverer flerfaktorautentisering"
         },
         "passwordChanged": {
-          "title": "[EN] Password Changed",
-          "description": "[EN] When a user changes their password"
+          "title": "Passord endret",
+          "description": "Når en bruker endrer passordet sitt"
         },
         "adminPasswordReset": {
-          "title": "[EN] Admin Password Reset",
-          "description": "[EN] When an admin initiates a password reset"
+          "title": "Administratorpassord tilbakestilt",
+          "description": "Når en administrator initierer en tilbakestilling av passord"
         },
         "failedLoginAttempts": {
-          "title": "[EN] Failed Login Attempts",
-          "description": "[EN] When multiple failed login attempts are detected"
+          "title": "Mislykkede påloggingsforsøk",
+          "description": "Når flere mislykkede påloggingsforsøk oppdages"
         },
         "suspiciousActivity": {
-          "title": "[EN] Suspicious Activity",
-          "description": "[EN] When login from new device/location is detected"
+          "title": "Mistenkelig aktivitet",
+          "description": "Når pålogging fra ny enhet/posisjon oppdages"
         },
         "albumCreated": {
-          "title": "[EN] Album Created",
-          "description": "[EN] When a new album is created"
+          "title": "Album opprettet",
+          "description": "Når et nytt album opprettes"
         },
         "albumPublished": {
-          "title": "[EN] Album Published",
-          "description": "[EN] When an album is made public"
+          "title": "Album publisert",
+          "description": "Når et album gjøres offentlig"
         },
         "albumUnpublished": {
-          "title": "[EN] Album Unpublished",
-          "description": "[EN] When an album is made private"
+          "title": "Album avpublisert",
+          "description": "Når et album gjøres privat"
         },
         "albumDeleted": {
-          "title": "[EN] Album Deleted",
-          "description": "[EN] When an album is deleted"
+          "title": "Album slettet",
+          "description": "Når et album slettes"
         },
         "folderCreated": {
-          "title": "[EN] Folder Created",
+          "title": "Mappe opprettet",
           "description": "Når en ny mappe opprettes"
         },
         "folderPublished": {
@@ -587,9 +587,15 @@
         "versionUpdate": {
           "title": "Versjonsoppdatering",
           "description": "Når en ny versjon er tilgjengelig"
+        },
+        "shareLinkExpiredAccessed": {
+          "title": "Forsøk på tilgang til utløpt lenke",
+          "description": "Når noen prøver å bruke en utløpt delelenke"
         }
       }
-    }
+    },
+    "events": {},
+    "settings": {}
   },
   "advancedSettings": {
     "title": "Avanserte innstillinger",
@@ -1370,38 +1376,34 @@
     "hardwareTranscodingDescription": "Bruk GPU-akselerasjon for raskere videokoding (krever kompatibel maskinvare)"
   },
   "notifications": {
-    "active": "Push-varsler aktivert",
-    "sendTest": "Send test",
-    "disable": "Deaktiver",
     "settings": {
-      "title": "Push-varsler",
-      "configured": "✓ Konfigurert",
-      "discard": "Forkast",
+      "configureEvents": "⚙️ Konfigurer hendelser",
+      "cancel": "Avbryt",
       "save": "Lagre",
       "saving": "Lagrer...",
+      "discard": "Forkast",
       "description": "Varsle ledere og administratorer når videobehandling og bildeoptimalisering er fullført",
-      "enableLabel": "Aktiver Push-varsler",
+      "enableLabel": "Aktiver push-varsler",
       "generatingKeys": "⏳ Genererer VAPID-nøkler...",
-      "enabledDescription": "Når aktivert, vil ledere og administratorer bli bedt om å tillate nettlesermeldinger",
+      "generating": "⏳ Genererer...",
+      "enabledDescription": "Når aktivert, vil ledere og administratorer bli bedt om å tillate nettleservarsler",
       "vapidSubject": "VAPID-emne",
-      "vapidSubjectHint": "Kontakt-e-post (mailto:) eller nettsteds-URL (https://) for push-tjenesten",
+      "vapidSubjectHint": "Kontakt e-post (mailto:) eller nettsteds-URL (https://) for push-tjenesten",
       "vapidPublicKey": "VAPID offentlig nøkkel",
       "vapidPublicKeyHint": "Offentlig nøkkel for nettleserabonnement (trygt å dele)",
       "vapidPrivateKey": "VAPID privat nøkkel",
       "vapidPrivateKeyHint": "Privat nøkkel (hold hemmelig!)",
-      "generating": "⏳ Genererer...",
-      "generateNewKeys": "🔑 Generer nye nøkler",
-      "generateKeysWarning": "⚠️ Advarsel: Generering av nye nøkler vil ugyldiggjøre alle eksisterende abonnementer",
-      "confirmTitle": "Generere nye nøkler?",
-      "confirmMessage": "Dette vil generere nye VAPID-nøkler og <strong>ugyldiggjøre alle eksisterende push-varsler</strong>. Alle brukere må abonnere på nytt for å motta varsler.",
-      "cancel": "Avbryt",
-      "confirmGenerate": "Generere nye nøkler",
+      "generateNewKeys": "Generer nye nøkler",
+      "generateKeysWarning": "Advarsel: Generering av nye nøkler vil ugyldiggjøre alle eksisterende abonnementer. Alle brukere må abonnere på nytt.",
+      "confirmTitle": "Generer nye nøkler?",
+      "confirmMessage": "Dette vil generere nye VAPID-nøkler og <strong>ugyldiggjøre alle eksisterende push-varslingsabonnementer</strong>. Alle brukere må abonnere på nytt for å motta varsler.",
+      "confirmGenerate": "Generer nye nøkler",
       "errorEnable": "Kunne ikke aktivere push-varsler. Vennligst prøv igjen.",
       "errorDisable": "Kunne ikke deaktivere push-varsler. Vennligst prøv igjen.",
       "errorGenerateKeys": "Kunne ikke generere VAPID-nøkler",
       "close": "Lukk",
-      "configureEvents": "⚙️ Konfigurer hendelser",
-      "configureEventsDescription": "Velg hvilke hendelser som skal utløse push-varsler"
+      "title": "Push-varsler",
+      "configured": "✓ Konfigurert"
     },
     "backend": {
       "videoProcessingComplete": "Videobehandling fullført",
@@ -1455,14 +1457,22 @@
       "lowDiskSpaceTitle": "Lav diskplass",
       "lowDiskSpaceBody": "Lagringsplass er i ferd med å bli lav (< 10% igjen)",
       "databaseBackupCompletedTitle": "Sikkerhetskopiering fullført",
-      "databaseBackupCompletedBody": "Database-sikkerhetskopiering fullført med suksess"
+      "databaseBackupCompletedBody": "Database-sikkerhetskopiering fullført med suksess",
+      "shareLinkExpiredAccessedTitle": "Forsøk på tilgang til utløpt lenke",
+      "shareLinkExpiredAccessedBody": "Noen prøvde å bruke en utløpt delelenke"
     },
-    "blocked": "Varsler blokkert av nettleseren. Sjekk innstillingene i nettleseren din.",
-    "subscribePrompt": "Abonner for å motta varsler når jobber er fullført",
-    "subscribe": "Abonner",
-    "events": {
-      "saved": "Varslingspreferanse lagret"
-    }
+    "events": {},
+    "error": "En feil oppstod",
+    "permissionGranted": "Push-varsler aktivert vellykket",
+    "permissionDenied": "Varslingstillatelse avvist",
+    "unsubscribed": "Avmeldt fra push-varsler",
+    "testSent": "Testvarsel sendt",
+    "active": "Push-varsler aktivert",
+    "sendTest": "Send test",
+    "disable": "Deaktiver",
+    "blocked": "Varsler blokkert av nettleser. Sjekk nettleserinnstillingene dine.",
+    "subscribePrompt": "Abonner for å motta varsler",
+    "subscribe": "Abonner"
   },
   "general": {
     "title": "Generelt",

@@ -587,9 +587,15 @@
         "versionUpdate": {
           "title": "Versionsaktualisierung",
           "description": "Wenn eine neue Version verfügbar ist"
+        },
+        "shareLinkExpiredAccessed": {
+          "title": "Abgelaufener Link-Zugriffsversuch",
+          "description": "Wenn jemand versucht, einen abgelaufenen Freigabelink zu verwenden"
         }
       }
-    }
+    },
+    "events": {},
+    "settings": {}
   },
   "advancedSettings": {
     "title": "Erweiterte Einstellungen",
@@ -1370,38 +1376,34 @@
     "hardwareTranscodingDescription": "Verwenden Sie GPU-Beschleunigung für schnelleres Video-Encoding (erfordert kompatible Hardware)"
   },
   "notifications": {
-    "active": "Push-Benachrichtigungen aktiviert",
-    "sendTest": "Test senden",
-    "disable": "Deaktivieren",
     "settings": {
-      "title": "Push-Benachrichtigungen",
-      "configured": "✓ Konfiguriert",
-      "discard": "Verwerfen",
+      "configureEvents": "⚙️ Ereignisse konfigurieren",
+      "cancel": "Abbrechen",
       "save": "Speichern",
       "saving": "Speichern...",
-      "description": "Benachrichtigen Sie Manager und Administratoren, wenn die Videoverarbeitung und die Bildoptimierungsjobs abgeschlossen sind",
+      "discard": "Verwerfen",
+      "description": "Benachrichtigen Sie Manager und Administratoren, wenn Videoverarbeitungs- und Bildoptimierungsaufgaben abgeschlossen sind",
       "enableLabel": "Push-Benachrichtigungen aktivieren",
       "generatingKeys": "⏳ VAPID-Schlüssel werden generiert...",
-      "enabledDescription": "Wenn aktiviert, werden Manager und Administratoren aufgefordert, Browserbenachrichtigungen zuzulassen",
-      "vapidSubject": "VAPID-Subjekt",
+      "generating": "⏳ Wird generiert...",
+      "enabledDescription": "Wenn aktiviert, werden Manager und Administratoren aufgefordert, Browser-Benachrichtigungen zuzulassen",
+      "vapidSubject": "VAPID-Betreff",
       "vapidSubjectHint": "Kontakt-E-Mail (mailto:) oder Website-URL (https://) für den Push-Dienst",
       "vapidPublicKey": "VAPID-Öffentlicher Schlüssel",
-      "vapidPublicKeyHint": "Öffentlicher Schlüssel für die Browser-Abonnierung (sicher zu teilen)",
-      "vapidPrivateKey": "VAPID-Privater Schlüssel",
-      "vapidPrivateKeyHint": "Privater Schlüssel (geheim halten!)",
-      "generating": "⏳ Generiere...",
-      "generateNewKeys": "🔑 Neue Schlüssel generieren",
-      "generateKeysWarning": "⚠️ Warnung: Das Generieren neuer Schlüssel wird alle bestehenden Abonnements ungültig machen",
+      "vapidPublicKeyHint": "Öffentlicher Schlüssel für Browser-Abonnement (sicher zu teilen)",
+      "vapidPrivateKey": "VAPID-Geheimer Schlüssel",
+      "vapidPrivateKeyHint": "Geheimer Schlüssel (geheim halten!)",
+      "generateNewKeys": "Neue Schlüssel generieren",
+      "generateKeysWarning": "Warnung: Das Generieren neuer Schlüssel macht alle bestehenden Abonnements ungültig. Alle Benutzer müssen sich erneut anmelden.",
       "confirmTitle": "Neue Schlüssel generieren?",
       "confirmMessage": "Dies wird neue VAPID-Schlüssel generieren und <strong>alle bestehenden Push-Benachrichtigungsabonnements ungültig machen</strong>. Alle Benutzer müssen sich erneut anmelden, um Benachrichtigungen zu erhalten.",
-      "cancel": "Abbrechen",
       "confirmGenerate": "Neue Schlüssel generieren",
-      "errorEnable": "Fehler beim Aktivieren von Push-Benachrichtigungen. Bitte versuche es erneut.",
-      "errorDisable": "Fehler beim Deaktivieren von Push-Benachrichtigungen. Bitte versuche es erneut.",
-      "errorGenerateKeys": "Fehler beim Generieren von VAPID-Schlüsseln",
+      "errorEnable": "Push-Benachrichtigungen konnten nicht aktiviert werden. Bitte versuchen Sie es erneut.",
+      "errorDisable": "Push-Benachrichtigungen konnten nicht deaktiviert werden. Bitte versuchen Sie es erneut.",
+      "errorGenerateKeys": "VAPID-Schlüssel konnten nicht generiert werden",
       "close": "Schließen",
-      "configureEvents": "⚙️ Ereignisse konfigurieren",
-      "configureEventsDescription": "Wählen Sie, welche Ereignisse Push-Benachrichtigungen auslösen sollen"
+      "title": "Push-Benachrichtigungen",
+      "configured": "✓ Konfiguriert"
     },
     "backend": {
       "videoProcessingComplete": "Videoverarbeitung abgeschlossen",
@@ -1455,14 +1457,22 @@
       "lowDiskSpaceTitle": "Wenig Speicherplatz",
       "lowDiskSpaceBody": "Speicherplatz wird knapp (< 10% verbleibend)",
       "databaseBackupCompletedTitle": "Sicherung abgeschlossen",
-      "databaseBackupCompletedBody": "Datenbanksicherung erfolgreich abgeschlossen"
+      "databaseBackupCompletedBody": "Datenbanksicherung erfolgreich abgeschlossen",
+      "shareLinkExpiredAccessedTitle": "Abgelaufener Link-Zugriffsversuch",
+      "shareLinkExpiredAccessedBody": "Jemand hat versucht, einen abgelaufenen Freigabelink zu verwenden"
     },
-    "blocked": "Benachrichtigungen durch den Browser blockiert. Überprüfen Sie Ihre Browsereinstellungen.",
-    "subscribePrompt": "Abonnieren, um Benachrichtigungen zu erhalten, wenn Jobs abgeschlossen sind",
-    "subscribe": "Abonnieren",
-    "events": {
-      "saved": "Benachrichtigungseinstellungen gespeichert"
-    }
+    "events": {},
+    "error": "Ein Fehler ist aufgetreten",
+    "permissionGranted": "Push-Benachrichtigungen erfolgreich aktiviert",
+    "permissionDenied": "Benachrichtigungsberechtigung verweigert",
+    "unsubscribed": "Von Push-Benachrichtigungen abgemeldet",
+    "testSent": "Testbenachrichtigung gesendet",
+    "active": "Push-Benachrichtigungen aktiviert",
+    "sendTest": "Test senden",
+    "disable": "Deaktivieren",
+    "blocked": "Benachrichtigungen vom Browser blockiert. Überprüfen Sie Ihre Browsereinstellungen.",
+    "subscribePrompt": "Abonnieren, um Benachrichtigungen zu erhalten",
+    "subscribe": "Abonnieren"
   },
   "general": {
     "title": "Allgemein",

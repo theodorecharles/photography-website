@@ -86,7 +86,9 @@
       "photoDownloadedTitle": "Fotoğraf İndirildi",
       "photoDownloadedBody": "{{filename}} {{albumName}} albümünden indirildi",
       "albumViewMilestoneTitle": "🎉 Dönüm Noktasına Ulaşıldı!",
-      "albumViewMilestoneBody": "{{albumName}} {{milestone}} görüntülemeye ulaştı!"
+      "albumViewMilestoneBody": "{{albumName}} {{milestone}} görüntülemeye ulaştı!",
+      "shareLinkExpiredAccessedTitle": "Süresi Dolmuş Bağlantı Erişim Denemesi",
+      "shareLinkExpiredAccessedBody": "Birisi {{albumName}}'e süresi dolmuş bir bağlantı ile erişmeye çalıştı"
     }
   },
   "email": {
