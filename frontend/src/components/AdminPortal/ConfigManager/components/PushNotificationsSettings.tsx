@@ -5,6 +5,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { PasswordInput } from '../../PasswordInput';
 import { Toggle } from './Toggle';
 import { API_URL } from '../../../../config';
@@ -17,6 +18,7 @@ interface PushNotificationsSettingsProps {
   savingSection: string | null;
   onSave: (section: string, data: any) => Promise<void>;
   setMessage: (message: { type: 'success' | 'error'; text: string }) => void;
+  setActionButtons: (buttons: React.ReactNode) => void;
 }
 
 const PushNotificationsSettings: React.FC<PushNotificationsSettingsProps> = ({
@@ -26,8 +28,10 @@ const PushNotificationsSettings: React.FC<PushNotificationsSettingsProps> = ({
   savingSection,
   onSave,
   setMessage,
+  setActionButtons,
 }) => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [generating, setGenerating] = useState(false);
   const [userEmail, setUserEmail] = useState('');
   const [localKeys, setLocalKeys] = useState<{ publicKey: string; privateKey: string } | null>(null);
@@ -103,6 +107,60 @@ const PushNotificationsSettings: React.FC<PushNotificationsSettingsProps> = ({
     }
     updateConfig(path, value);
   };
+
+  // Update action buttons whenever state changes
+  useEffect(() => {
+    const buttons = [];
+
+    // Add Configure Events button when enabled
+    if (pushConfig.enabled) {
+      buttons.push(
+        <button
+          key="configure-events"
+          type="button"
+          className="btn-secondary"
+          onClick={() => navigate('/admin/settings/push-notifications/events')}
+          style={{ fontSize: '0.875rem', padding: '0.4rem 0.8rem' }}
+        >
+          {t('notifications.settings.configureEvents')}
+        </button>
+      );
+    }
+
+    // Add Save/Cancel buttons when there are manual changes
+    if (hasManualChanges) {
+      buttons.push(
+        <button
+          key="cancel"
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            handleCancel();
+          }}
+          disabled={savingSection !== null}
+          className="btn-secondary"
+          style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}
+        >
+          {t('notifications.settings.cancel')}
+        </button>,
+        <button
+          key="save"
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            handleSave();
+          }}
+          disabled={savingSection !== null}
+          className="btn-primary"
+          style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}
+        >
+          {savingSection === 'pushNotifications' ? t('notifications.settings.saving') : t('notifications.settings.save')}
+        </button>
+      );
+    }
+
+    setActionButtons(buttons.length > 0 ? <>{buttons}</> : null);
+  }, [pushConfig.enabled, hasManualChanges, savingSection, t, navigate, setActionButtons]);
 
   // Auto-generate keys when enabling if keys don't exist
   async function handleToggleEnable() {
@@ -268,64 +326,7 @@ const PushNotificationsSettings: React.FC<PushNotificationsSettingsProps> = ({
   }
 
   return (
-    <div className="settings-section" style={{ marginBottom: '2rem' }}>
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginBottom: '0.75rem',
-        }}
-      >
-        <label className="settings-section-label">
-          {t('notifications.settings.title')}
-          {pushConfig.enabled && hasKeys && (
-            <span className="smtp-badge" style={{ marginLeft: '0.75rem' }}>{t('notifications.settings.configured')}</span>
-          )}
-        </label>
-        {hasManualChanges && (
-          <div style={{ display: 'flex', gap: '0.5rem' }}>
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleCancel();
-              }}
-              disabled={savingSection !== null}
-              className="btn-secondary"
-              style={{
-                padding: '0.4rem 0.8rem',
-                fontSize: '0.85rem',
-              }}
-            >
-              {t('notifications.settings.cancel')}
-            </button>
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleSave();
-              }}
-              disabled={savingSection !== null}
-              className="btn-primary"
-              style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}
-            >
-              {savingSection === 'pushNotifications' ? t('notifications.settings.saving') : t('notifications.settings.save')}
-            </button>
-          </div>
-        )}
-      </div>
-      <p
-        style={{
-          fontSize: '0.85rem',
-          color: '#888',
-          marginTop: '0',
-          marginBottom: '1rem',
-        }}
-      >
-        {t('notifications.settings.description')}
-      </p>
-
+    <div>
       {/* Subscription Status and Controls */}
       <PushNotificationStatus 
         isConfigured={pushConfig.enabled && hasKeys} 
@@ -421,35 +422,59 @@ const PushNotificationsSettings: React.FC<PushNotificationsSettingsProps> = ({
           </div>
         </div>
 
-        {/* Regenerate Keys Button */}
+        {/* Regenerate Keys Section - Yellow Warning Banner */}
         {(pushConfig.enabled || hasKeys) && hasKeys && (
-          <div className="branding-group" style={{ margin: 0, marginTop: '1.5rem' }}>
+          <div
+            className="regenerate-keys-banner"
+            style={{
+              marginTop: '1.5rem',
+              padding: '1.5rem',
+              background: 'rgba(255, 193, 7, 0.1)',
+              border: '1px solid rgba(255, 193, 7, 0.3)',
+              borderRadius: '8px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: '1.5rem',
+            }}
+          >
+            <div style={{ flex: 1 }}>
+              <strong style={{ fontSize: '0.875rem', color: 'rgba(255, 193, 7, 0.9)' }}>
+                ⚠️ {t('common.note')}:
+              </strong>
+              <span style={{ fontSize: '0.875rem', color: 'rgba(255, 193, 7, 0.9)', marginLeft: '0.5rem' }}>
+                {t('notifications.settings.generateKeysWarning')}
+              </span>
+            </div>
             <button
               type="button"
               className="btn-secondary"
               onClick={() => setShowConfirmModal(true)}
               disabled={generating}
-              style={{ fontSize: '0.875rem' }}
+              style={{
+                whiteSpace: 'nowrap',
+                fontSize: '0.875rem',
+                background: 'rgba(239, 68, 68, 0.15)',
+                border: '1px solid rgba(239, 68, 68, 0.5)',
+                color: '#ef4444',
+              }}
             >
               {generating ? t('notifications.settings.generating') : t('notifications.settings.generateNewKeys')}
             </button>
-            <p style={{ fontSize: '0.8rem', color: '#f59e0b', marginTop: '0.5rem', marginBottom: 0 }}>
-              {t('notifications.settings.generateKeysWarning')}
-            </p>
           </div>
         )}
 
         {/* Confirmation Modal */}
         {showConfirmModal && (
           <div className="modal-overlay" onClick={() => setShowConfirmModal(false)}>
-            <div className="share-modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '500px' }}>
-              <div className="share-modal-header">
+            <div className="generic-modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '500px' }}>
+              <div className="generic-modal-header">
                 <h2>{t('notifications.settings.confirmTitle')}</h2>
                 <button className="close-button" onClick={() => setShowConfirmModal(false)} aria-label={t('notifications.settings.close')}>
                   ×
                 </button>
               </div>
-              <div className="share-modal-content">
+              <div className="generic-modal-content">
                 <p className="share-description" dangerouslySetInnerHTML={{ __html: t('notifications.settings.confirmMessage') }}>
                 </p>
                 <div

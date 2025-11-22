@@ -9,6 +9,7 @@ import webPush from 'web-push';
 import { getDatabase } from './database.js';
 import { info, error as logError, warn } from './utils/logger.js';
 import { getCurrentConfig } from './config.js';
+import { isNotificationEnabled, type NotificationPreferences } from './notification-preferences.js';
 
 const db = getDatabase();
 
@@ -196,10 +197,23 @@ export function getUserSubscriptions(userId: number): PushSubscription[] {
 
 /**
  * Send a push notification to a specific user
+ * @param userId - User ID to send notification to
+ * @param payload - Notification payload
+ * @param notificationType - Optional notification type to check preferences
  */
-export async function sendNotificationToUser(userId: number, payload: NotificationPayload): Promise<void> {
+export async function sendNotificationToUser(
+  userId: number, 
+  payload: NotificationPayload,
+  notificationType?: keyof NotificationPreferences
+): Promise<void> {
   if (!isPushNotificationsEnabled()) {
     warn('[PushNotifications] Cannot send notification - push notifications are disabled');
+    return;
+  }
+
+  // Check notification preferences if type is specified
+  if (notificationType && !isNotificationEnabled(notificationType)) {
+    info(`[PushNotifications] Notification type '${notificationType}' is disabled in preferences, skipping`);
     return;
   }
 

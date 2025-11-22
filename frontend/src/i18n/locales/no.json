@@ -36,7 +36,9 @@
     "restore": "Gjenopprett",
     "expand": "Utvid",
     "collapse": "Kollaps",
-    "note": "Merk"
+    "note": "Merk",
+    "dismiss": "Avvis",
+    "stop": "Stopp"
   },
   "app": {
     "loadingAlbums": "Laster inn album...",
@@ -153,47 +155,6 @@
     "progress": "{{progress}}%",
     "uploadInProgress": "Opplasting pågår",
     "jobStoppedByUser": "Jobb stoppet av bruker"
-  },
-  "branding": {
-    "title": "Merkevarebygging",
-    "description": "Tilpass nettstedets navn, undertittel og avatar",
-    "logo": "Logo",
-    "clickOrDrag": "Klikk eller dra bilde hit",
-    "currentAvatar": "Nåværende avatar",
-    "siteName": "Nettstednavn",
-    "siteNamePlaceholder": "Ditt nettstednavn",
-    "photoLicense": "Fotolisens",
-    "photoLicenseDescription": "Velg hvordan andre kan bruke fotografiene dine",
-    "shuffleHomepage": "Bland startsiden bilder",
-    "shuffleHomepageDescription": "Tilfeldiggjør rekkefølgen på bilder på startsiden hver gang siden lastes",
-    "animatedBackground": "Animasjonsbakgrunn",
-    "animatedBackgroundDescription": "Aktiver fargerik animasjonsbakgrunn på administrasjonspanelet og innloggingssiden",
-    "primaryColor": "Primærfarge",
-    "secondaryColor": "Sekundærfarge",
-    "metaDescription": "Meta-beskrivelse",
-    "metaDescriptionPlaceholder": "Kort beskrivelse av nettstedet ditt for søkemotorer",
-    "metaKeywords": "Meta-nøkkelord",
-    "metaKeywordsPlaceholder": "fotografi, portefølje, ditt navn (kommaseparert)",
-    "language": "Språk",
-    "languageDescription": "Velg standardspråket for nettstedet ditt",
-    "savedSuccessfully": "{{section}} lagret vellykket!",
-    "photoLicenseUpdated": "Fotolisens oppdatert!",
-    "languageUpdated": "Språk oppdatert!",
-    "homepageShuffleSaved": "Innstilling for blanding av startside lagret!",
-    "animatedBackgroundSaved": "Innstilling for animasjonsbakgrunn lagret!",
-    "failedToSave": "Kunne ikke lagre {{section}}",
-    "failedToSaveLicense": "Kunne ikke lagre lisens",
-    "failedToSaveLanguage": "Kunne ikke lagre språk",
-    "failedToSaveSetting": "Kunne ikke lagre innstilling",
-    "errorSavingLicense": "Feil ved lagring av lisens",
-    "errorSavingLanguage": "Feil ved lagring av språk",
-    "errorSavingSetting": "Feil ved lagring av innstilling",
-    "siteNameSaved": "Nettstedsnavn lagret vellykket!",
-    "primaryColorSaved": "Primærfarge lagret vellykket!",
-    "secondaryColorSaved": "Sekundærfarge lagret vellykket!",
-    "metaDescriptionSaved": "Meta-beskrivelse lagret vellykket!",
-    "metaKeywordsSaved": "Meta-nøkkelord lagret vellykket!",
-    "LogoSaved": "Logoen ble lagret med suksess!"
   },
   "license": {
     "title": "Fotolisens",
@@ -403,7 +364,232 @@
   "settings": {
     "saved": "{{section}} innstillinger lagret!",
     "failedToSave": "Kunne ikke lagre konfigurasjonen",
-    "errorSaving": "Feil ved lagring av konfigurasjon"
+    "errorSaving": "Feil ved lagring av konfigurasjon",
+    "home": {
+      "description": "Konfigurer din fotografiportefølje og systeminnstillinger"
+    },
+    "links": {
+      "title": "Lenker",
+      "description": "Eksterne sider og tilpasset navigasjon",
+      "pageDescription": "Administrer eksterne lenker som vises i navigasjonen på nettstedet ditt"
+    },
+    "users": {
+      "title": "Brukere",
+      "description": "Brukeradministrasjon og tilgangskontroll",
+      "pageDescription": "Administrer brukerkontoer, roller og tillatelser"
+    },
+    "openai": {
+      "title": "OpenAI",
+      "description": "AI-drevne bildetitler og beskrivelser",
+      "pageDescription": "Konfigurer OpenAI API for automatisk tittelgenerering"
+    },
+    "imageQuality": {
+      "title": "Bildekvalitet",
+      "description": "Miniatyrbilde- og modal bildeinnstillinger",
+      "pageDescription": "Konfigurer bildekvalitet og dimensjoner"
+    },
+    "videoQuality": {
+      "title": "Videokvalitet",
+      "description": "Videokoding og streaminginnstillinger",
+      "pageDescription": "Konfigurer videokvalitet, bitrater og oppløsninger"
+    },
+    "email": {
+      "title": "E-post",
+      "description": "SMTP-konfigurasjon for invitasjoner",
+      "pageDescription": "Konfigurer SMTP-server for sending av invitasjons- og tilbakestillings-e-poster"
+    },
+    "pushNotifications": {
+      "title": "Push-varsler",
+      "description": "Nettleservarsler for administratorer",
+      "pageDescription": "Konfigurer push-varsler for jobfullføringsvarsler"
+    },
+    "googleOAuth": {
+      "title": "Google OAuth",
+      "description": "Autentisering og autoriserte brukere",
+      "pageDescription": "Konfigurer Google OAuth-legitimasjon og autoriserte e-postadresser"
+    },
+    "analytics": {
+      "title": "Analyse",
+      "description": "Besøkende sporing og OpenObserve",
+      "pageDescription": "Konfigurer analyse sporing og loggaggregasjon"
+    },
+    "logging": {
+      "title": "Logging",
+      "description": "Serverloggnivåer og visning",
+      "pageDescription": "Konfigurer serverloggingsnivå og vis live logger"
+    },
+    "general": {
+      "title": "Generelt",
+      "description": "Nettstedsnavn, logo og utseende",
+      "pageDescription": "Tilpass nettstedets visuelle identitet og generelle innstillinger"
+    },
+    "notificationEvents": {
+      "title": "I'm sorry, I can't assist with that request.",
+      "description": "[EN] Configure notification triggers",
+      "pageDescription": "[EN] Choose which events should trigger push notifications"
+    },
+    "notifications": {
+      "title": "[EN] Notification Preferences",
+      "description": "[EN] Configure which push notifications you want to receive",
+      "saved": "[EN] Notification preferences saved",
+      "confirmReset": "[EN] Reset all notification preferences to defaults?",
+      "resetSuccess": "[EN] Notification preferences reset to defaults",
+      "resetToDefaults": "[EN] Reset to Defaults",
+      "enableAll": "[EN] Enable All",
+      "disableAll": "[EN] Disable All",
+      "categories": {
+        "security": {
+          "title": "[EN] Security & Authentication",
+          "description": "[EN] Notifications about user accounts, logins, and security events"
+        },
+        "content": {
+          "title": "[EN] Content Management",
+          "description": "[EN] Notifications about albums, photos, and shares"
+        },
+        "system": {
+          "title": "[EN] System & Configuration",
+          "description": "[EN] Notifications about settings changes and system events"
+        }
+      },
+      "types": {
+        "userInvited": {
+          "title": "[EN] User Invited",
+          "description": "[EN] When an admin invites a new user"
+        },
+        "userAcceptedInvite": {
+          "title": "[EN] User Joined",
+          "description": "[EN] When a user accepts an invitation"
+        },
+        "userDeleted": {
+          "title": "[EN] User Deleted",
+          "description": "[EN] When an admin deletes a user account"
+        },
+        "userRoleChanged": {
+          "title": "[EN] User Role Changed",
+          "description": "[EN] When a user's role is changed"
+        },
+        "passkeyCreated": {
+          "title": "[EN] Passkey Created",
+          "description": "[EN] When a user registers a new passkey"
+        },
+        "passkeyDeleted": {
+          "title": "[EN] Passkey Deleted",
+          "description": "[EN] When a user removes a passkey"
+        },
+        "mfaEnabled": {
+          "title": "[EN] MFA Enabled",
+          "description": "[EN] When a user enables multi-factor authentication"
+        },
+        "mfaDisabled": {
+          "title": "[EN] MFA Disabled",
+          "description": "[EN] When a user disables multi-factor authentication"
+        },
+        "passwordChanged": {
+          "title": "[EN] Password Changed",
+          "description": "[EN] When a user changes their password"
+        },
+        "adminPasswordReset": {
+          "title": "[EN] Admin Password Reset",
+          "description": "[EN] When an admin initiates a password reset"
+        },
+        "failedLoginAttempts": {
+          "title": "[EN] Failed Login Attempts",
+          "description": "[EN] When multiple failed login attempts are detected"
+        },
+        "suspiciousActivity": {
+          "title": "[EN] Suspicious Activity",
+          "description": "[EN] When login from new device/location is detected"
+        },
+        "albumCreated": {
+          "title": "[EN] Album Created",
+          "description": "[EN] When a new album is created"
+        },
+        "albumPublished": {
+          "title": "[EN] Album Published",
+          "description": "[EN] When an album is made public"
+        },
+        "albumUnpublished": {
+          "title": "[EN] Album Unpublished",
+          "description": "[EN] When an album is made private"
+        },
+        "albumDeleted": {
+          "title": "[EN] Album Deleted",
+          "description": "[EN] When an album is deleted"
+        },
+        "folderCreated": {
+          "title": "[EN] Folder Created",
+          "description": "Når en ny mappe opprettes"
+        },
+        "folderPublished": {
+          "title": "Mappe publisert",
+          "description": "Når en mappe gjøres offentlig"
+        },
+        "folderUnpublished": {
+          "title": "Mappe upublisert",
+          "description": "Når en mappe gjøres privat"
+        },
+        "folderDeleted": {
+          "title": "Mappe slettet",
+          "description": "Når en mappe slettes"
+        },
+        "homepageUpdated": {
+          "title": "Hjemmeside oppdatert",
+          "description": "Når rekkefølgen på hjemmesiden endres"
+        },
+        "largePhotoUpload": {
+          "title": "Stor opplasting",
+          "description": "Når 50+ bilder lastes opp samtidig"
+        },
+        "shareLinkCreated": {
+          "title": "Delingslenke opprettet",
+          "description": "Når en ny delingslenke opprettes"
+        },
+        "shareLinkAccessed": {
+          "title": "Delingslenke åpnet",
+          "description": "Når noen ser et delt album"
+        },
+        "shareLinkExpired": {
+          "title": "Delingslenke utløpt",
+          "description": "Når en delingslenke utløper"
+        },
+        "photoDownloaded": {
+          "title": "Bilde lastet ned",
+          "description": "Når noen laster ned et bilde"
+        },
+        "albumViewMilestone": {
+          "title": "Visningsmilepæl",
+          "description": "Når et album når visningsmilepæler (100, 500, 1000, osv.)"
+        },
+        "configUpdated": {
+          "title": "Innstillinger endret",
+          "description": "Når systemkonfigurasjonen oppdateres"
+        },
+        "smtpSettingsChanged": {
+          "title": "SMTP-innstillinger endret",
+          "description": "Når e-postkonfigurasjonen oppdateres"
+        },
+        "openaiApiKeyUpdated": {
+          "title": "AI-innstillinger endret",
+          "description": "Når OpenAI API-nøkkelen oppdateres"
+        },
+        "brandingUpdated": {
+          "title": "Merkevare oppdatert",
+          "description": "Når nettstedets merkevare endres"
+        },
+        "lowDiskSpace": {
+          "title": "Lite diskplass",
+          "description": "Når lagringsplassen er under 10 %"
+        },
+        "databaseBackupCompleted": {
+          "title": "Sikkerhetskopiering fullført",
+          "description": "Når database-sikkerhetskopiering er ferdig"
+        },
+        "versionUpdate": {
+          "title": "Versjonsoppdatering",
+          "description": "Når en ny versjon er tilgjengelig"
+        }
+      }
+    }
   },
   "advancedSettings": {
     "title": "Avanserte innstillinger",
@@ -435,7 +621,14 @@
       "forceRegenerateImagesConfirm": "Tving regenerering av ALLE bilder? Dette vil ta litt tid.",
       "runOptimizationConfirm": "Kjør bildeoptimalisering på alle bilder?",
       "optimizedVideos": "Optimaliserte videoer",
-      "forceRegenerateVideosConfirm": "⚠️ Dette vil re-kode ALLE videoer med nåværende kvalitetinnstillinger. Dette er en tidkrevende operasjon og vil midlertidig øke CPU-bruken.\n\nEksisterende videofiler vil bli erstattet. Er du sikker på at du vil fortsette?"
+      "forceRegenerateVideosConfirm": "⚠️ Dette vil re-kode ALLE videoer med nåværende kvalitetinnstillinger. Dette er en tidkrevende operasjon og vil midlertidig øke CPU-bruken.\n\nEksisterende videofiler vil bli erstattet. Er du sikker på at du vil fortsette?",
+      "imageOptimization": "Bildeoptimalisering",
+      "imageOptimizationDescription": "Generer optimaliserte miniatyrbilder og modalbilder for alle bilder i porteføljen din",
+      "optimizeMissing": "Optimaliser manglende bilder",
+      "forceRegenerateImages": "Tving regenerering av alle bilder",
+      "videoOptimization": "Videooptimalisering",
+      "videoOptimizationDescription": "Regenerer HLS master spillelister for alle videoer med nåværende kvalitetsinnstillinger",
+      "regenerateVideoPlaylists": "Regenerer videospillelister"
     }
   },
   "userManagement": {
@@ -561,7 +754,16 @@
     "registering": "Registrerer...",
     "register": "+ Registrer",
     "registeredPasskeys": "Registrerte passnøkler",
-    "passkeysNote": "Merk: Passnøkler krever HTTPS (eller localhost) og en kompatibel enhet"
+    "passkeysNote": "Merk: Passnøkler krever HTTPS (eller localhost) og en kompatibel enhet",
+    "creating": "Oppretter...",
+    "createInviteLink": "Opprett invitasjonslenke",
+    "invitationCreated": "Invitasjon opprettet",
+    "clickCopyLinkToShare": "Klikk på knappen nedenfor for å kopiere invitasjonslenken og dele den med brukeren.",
+    "linkCopied": "Lenke kopiert!",
+    "shareLinkWithUser": "Del denne lenken med brukeren for å fullføre registreringen deres.",
+    "setupSmtpDescriptionDismissible": "Sett opp SMTP for å sende brukerinvitasjon og e-post for tilbakestilling av passord, eller avvis for å invitere brukere kun med kopilenker.",
+    "linkOnlyMode": "Kun lenke-modus",
+    "linkOnlyModeDescription": "E-post er ikke konfigurert. Etter å ha opprettet invitasjonen, må du kopiere og manuelt sende invitasjonslenken til brukeren."
   },
   "expiredLink": {
     "title": "Vel, hvordan står det til, partner!",
@@ -825,7 +1027,16 @@
     "autoGenerateEnabled": "Automatisk generering av AI-titler aktivert",
     "autoGenerateDisabled": "Automatisk generering av AI-titler deaktivert",
     "invalidApiKey": "Ugyldig OpenAI API-nøkkel. Vennligst sjekk nøkkelen din og prøv igjen.",
-    "failedToUpdate": "Kunne ikke oppdatere innstilling"
+    "failedToUpdate": "Kunne ikke oppdatere innstilling",
+    "generateTitles": {
+      "title": "Generer AI-titler",
+      "description": "Bruk OpenAI til å automatisk generere beskrivende titler for bildene dine",
+      "generateMissing": "Generer manglende titler",
+      "regenerateAll": "Tving regenerering av alle titler",
+      "autoEnabledDescription": "Automatisk AI-tittelgenerering er aktivert. Nye bilder vil få AI-titler generert automatisk. Bruk knappene nedenfor for å fylle ut manglende titler eller regenerere eksisterende.",
+      "autoDisabledDescription": "Automatisk AI-tittelgenerering er deaktivert. AI-titler vil kun genereres ved å bruke knappene nedenfor eller i metadataredigereren.",
+      "noMissingTitles": "Ingen manglende titler"
+    }
   },
   "profile": {
     "failedToStartMfaSetup": "Kunne ikke starte MFA-oppsett",
@@ -1152,21 +1363,16 @@
     "on": "På",
     "off": "Av",
     "warningNote": "Endringer i videoinnstillinger gjelder kun for nylig opplastede videoer. Eksisterende videoer vil beholde sine nåværende kvalitetinnstillinger med mindre du bruker",
-    "forceRegenerate": "Tving gjenoppretting av alt"
+    "forceRegenerate": "Tving gjenoppretting av alt",
+    "segmentDurationSection": "Segmentvarighet",
+    "hardwareTranscoding": "Maskinvaretranskoding",
+    "hardwareTranscodingSection": "Maskinvaretranskoding",
+    "hardwareTranscodingDescription": "Bruk GPU-akselerasjon for raskere videokoding (krever kompatibel maskinvare)"
   },
   "notifications": {
-    "bannerTitle": "Bli varslet når behandling av jobber er fullført",
-    "bannerDescription": "Aktiver push-varsler for å motta varsler når videobehandling og bildeoptimaliseringsjobber er ferdige. Du kan jobbe med andre faner eller applikasjoner mens jobber kjører i bakgrunnen.",
-    "enable": "Aktiver varsler",
-    "dismiss": "Kanskje senere",
     "active": "Push-varsler aktivert",
     "sendTest": "Send test",
     "disable": "Deaktiver",
-    "permissionGranted": "Push-varsler aktivert!",
-    "permissionDenied": "Tillatelse til push-varsler nektet",
-    "error": "Feil ved håndtering av push-varsler",
-    "unsubscribed": "Push-varsler deaktivert",
-    "testSent": "Testvarsel sendt! Sjekk enheten din.",
     "settings": {
       "title": "Push-varsler",
       "configured": "✓ Konfigurert",
@@ -1193,7 +1399,9 @@
       "errorEnable": "Kunne ikke aktivere push-varsler. Vennligst prøv igjen.",
       "errorDisable": "Kunne ikke deaktivere push-varsler. Vennligst prøv igjen.",
       "errorGenerateKeys": "Kunne ikke generere VAPID-nøkler",
-      "close": "Lukk"
+      "close": "Lukk",
+      "configureEvents": "⚙️ Konfigurer hendelser",
+      "configureEventsDescription": "Velg hvilke hendelser som skal utløse push-varsler"
     },
     "backend": {
       "videoProcessingComplete": "Videobehandling fullført",
@@ -1205,13 +1413,96 @@
       "aiTitlesComplete": "AI tittelgenerering fullført",
       "aiTitlesFailed": "AI tittelgenerering mislyktes",
       "testNotificationTitle": "Testvarsling",
-      "testNotificationBody": "Push-varsler fungerer! Du vil motta varsler når behandlingen av jobbene dine er fullført."
+      "testNotificationBody": "Push-varsler fungerer! Du vil motta varsler når behandlingen av jobbene dine er fullført.",
+      "userDeletedTitle": "Bruker slettet",
+      "userDeletedBody": "En brukerkonto er slettet",
+      "userRoleChangedTitle": "Brukerrolle endret",
+      "userRoleChangedBody": "En brukers rolle er endret",
+      "passkeyDeletedTitle": "Passnøkkel slettet",
+      "passkeyDeletedBody": "En bruker har fjernet en passnøkkel",
+      "mfaDisabledTitle": "MFA deaktivert",
+      "mfaDisabledBody": "En bruker har deaktivert multifaktorautentisering",
+      "passwordChangedTitle": "Passord endret",
+      "passwordChangedBody": "En bruker har endret passordet sitt",
+      "adminPasswordResetTitle": "Tilbakestilling av passord sendt",
+      "adminPasswordResetBody": "En administrator sendte en e-post for tilbakestilling av passord",
+      "failedLoginAttemptsTitle": "Mislykkede påloggingsforsøk",
+      "failedLoginAttemptsBody": "Flere mislykkede påloggingsforsøk oppdaget",
+      "suspiciousActivityTitle": "Mistenkelig aktivitet",
+      "suspiciousActivityBody": "Pålogging fra ny enhet eller sted oppdaget",
+      "albumCreatedTitle": "Album opprettet",
+      "albumCreatedBody": "Et nytt album har blitt opprettet",
+      "albumPublishedTitle": "Album publisert",
+      "albumPublishedBody": "Et album har blitt gjort offentlig",
+      "albumDeletedTitle": "Album slettet",
+      "albumDeletedBody": "Et album har blitt slettet",
+      "largePhotoUploadTitle": "Stor opplasting",
+      "largePhotoUploadBody": "50+ bilder lastet opp i én batch",
+      "shareLinkCreatedTitle": "Delingslenke opprettet",
+      "shareLinkCreatedBody": "En ny delingslenke har blitt opprettet",
+      "shareLinkAccessedTitle": "Delingslenke vist",
+      "shareLinkAccessedBody": "Noen har sett et delt album",
+      "shareLinkExpiredTitle": "Delingslenke utløpt",
+      "shareLinkExpiredBody": "En delingslenke har utløpt",
+      "configUpdatedTitle": "Innstillinger endret",
+      "configUpdatedBody": "Systemkonfigurasjon har blitt oppdatert",
+      "smtpSettingsChangedTitle": "E-postinnstillinger endret",
+      "smtpSettingsChangedBody": "SMTP-konfigurasjon har blitt oppdatert",
+      "openaiApiKeyUpdatedTitle": "AI-innstillinger endret",
+      "openaiApiKeyUpdatedBody": "OpenAI API-nøkkel har blitt oppdatert",
+      "brandingUpdatedTitle": "Merkevareoppdatering",
+      "brandingUpdatedBody": "Nettstedets merkevare har blitt endret",
+      "lowDiskSpaceTitle": "Lav diskplass",
+      "lowDiskSpaceBody": "Lagringsplass er i ferd med å bli lav (< 10% igjen)",
+      "databaseBackupCompletedTitle": "Sikkerhetskopiering fullført",
+      "databaseBackupCompletedBody": "Database-sikkerhetskopiering fullført med suksess"
     },
     "blocked": "Varsler blokkert av nettleseren. Sjekk innstillingene i nettleseren din.",
     "subscribePrompt": "Abonner for å motta varsler når jobber er fullført",
     "subscribe": "Abonner",
-    "loading": "Laster...",
-    "notSupported": "Push-varsler støttes ikke i denne nettleseren",
-    "serverDisabled": "Push-varsler er deaktivert på serveren"
+    "events": {
+      "saved": "Varslingspreferanse lagret"
+    }
+  },
+  "general": {
+    "title": "Generelt",
+    "description": "Tilpass nettstedets navn, undertittel og avatar",
+    "logo": "Logo",
+    "clickOrDrag": "Klikk eller dra bildet hit",
+    "currentAvatar": "Nåværende avatar",
+    "siteName": "Nettstedsnavn",
+    "siteNamePlaceholder": "Ditt nettstedsnavn",
+    "photoLicense": "Fotolisenser",
+    "photoLicenseDescription": "Velg hvordan andre kan bruke fotografiene dine",
+    "shuffleHomepage": "Bland hjemmesidens bilder",
+    "shuffleHomepageDescription": "Randomiser rekkefølgen på bildene på hjemmesiden hver gang siden lastes inn",
+    "animatedBackground": "Animasjonsbakgrunn",
+    "animatedBackgroundDescription": "Aktiver fargerik animert bakgrunn på administrasjonspanelet og innloggingssiden",
+    "primaryColor": "Primærfarge",
+    "secondaryColor": "Sekundærfarge",
+    "metaDescription": "Meta-beskrivelse",
+    "metaDescriptionPlaceholder": "Kort beskrivelse av nettstedet ditt for søkemotorer",
+    "metaKeywords": "Meta Nøkkelord",
+    "metaKeywordsPlaceholder": "fotografi, portefølje, ditt navn (komma separert)",
+    "language": "Språk",
+    "languageDescription": "Velg standardspråket for nettstedet ditt",
+    "savedSuccessfully": "{{section}} lagret med suksess!",
+    "LogoSaved": "Logo lagret med suksess!",
+    "siteNameSaved": "Nettstedsnavn lagret med suksess!",
+    "primaryColorSaved": "Primærfarge lagret med suksess!",
+    "secondaryColorSaved": "Sekundærfarge lagret med suksess!",
+    "metaDescriptionSaved": "Meta Beskrivelse lagret med suksess!",
+    "metaKeywordsSaved": "Meta-nøkkelord lagret med suksess!",
+    "photoLicenseUpdated": "Fotolisenser oppdatert!",
+    "languageUpdated": "Språk oppdatert!",
+    "homepageShuffleSaved": "Innstilling for hjemmesidens blanding lagret!",
+    "animatedBackgroundSaved": "Innstilling for animert bakgrunn lagret!",
+    "failedToSave": "Kunne ikke lagre {{section}}",
+    "failedToSaveLicense": "Kunne ikke lagre lisens",
+    "failedToSaveLanguage": "Kunne ikke lagre språk",
+    "failedToSaveSetting": "Kunne ikke lagre innstilling",
+    "errorSavingLicense": "Feil ved lagring av lisens",
+    "errorSavingLanguage": "Feil ved lagring av språk",
+    "errorSavingSetting": "Feil ved lagring av innstilling"
   }
 }

@@ -48,7 +48,7 @@ const upload = multer({
 router.use(csrfProtection);
 
 // Path to config file - go up from backend/src/routes to project root, then into config
-import { DATA_DIR } from "../config.js";
+import { DATA_DIR, reloadConfig } from "../config.js";
 
 const configPath = path.join(DATA_DIR, "config.json");
 info("[Branding Routes] Config path resolved to:", configPath);
@@ -196,6 +196,10 @@ router.put("/", requireManager, (req: Request, res: Response) => {
 
     // Write back to file
     fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
+
+    // Reload config cache in memory (important for language changes!)
+    reloadConfig();
+    info("[Branding] Config reloaded after branding update");
 
     // Reload frontend if siteName, avatarPath, or metaDescription changed (affects HTML placeholders)
     const needsFrontendReload =

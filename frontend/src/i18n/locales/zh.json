@@ -36,7 +36,9 @@
     "restore": "还原",
     "expand": "展开",
     "collapse": "折叠",
-    "note": "注意"
+    "note": "注意",
+    "dismiss": "关闭",
+    "stop": "停止"
   },
   "app": {
     "loadingAlbums": "正在加载相册...",
@@ -153,47 +155,6 @@
     "progress": "{{progress}}%",
     "uploadInProgress": "上传进行中",
     "jobStoppedByUser": "作业已被用户停止"
-  },
-  "branding": {
-    "title": "品牌",
-    "description": "自定义您网站的名称、副标题和头像",
-    "logo": "标志",
-    "clickOrDrag": "点击或拖动图片到此处",
-    "currentAvatar": "当前头像",
-    "siteName": "网站名称",
-    "siteNamePlaceholder": "您的网站名称",
-    "photoLicense": "照片许可",
-    "photoLicenseDescription": "选择他人如何使用您的照片",
-    "shuffleHomepage": "随机首页照片",
-    "shuffleHomepageDescription": "每次页面加载时随机排列首页照片的顺序",
-    "animatedBackground": "动画背景",
-    "animatedBackgroundDescription": "在管理面板和登录页面启用多彩动画背景",
-    "primaryColor": "主色",
-    "secondaryColor": "次色",
-    "metaDescription": "元描述",
-    "metaDescriptionPlaceholder": "为搜索引擎提供您网站的简短描述",
-    "metaKeywords": "元关键词",
-    "metaKeywordsPlaceholder": "摄影, 作品集, 您的名字（用逗号分隔）",
-    "language": "语言",
-    "languageDescription": "选择您网站的默认语言",
-    "savedSuccessfully": "{{section}} 保存成功！",
-    "photoLicenseUpdated": "照片许可已更新！",
-    "languageUpdated": "语言已更新！",
-    "homepageShuffleSaved": "首页随机设置已保存！",
-    "animatedBackgroundSaved": "动画背景设置已保存！",
-    "failedToSave": "保存 {{section}} 失败",
-    "failedToSaveLicense": "保存许可失败",
-    "failedToSaveLanguage": "保存语言失败",
-    "failedToSaveSetting": "保存设置失败",
-    "errorSavingLicense": "保存许可时出错",
-    "errorSavingLanguage": "保存语言时出错",
-    "errorSavingSetting": "保存设置时出错",
-    "siteNameSaved": "网站名称保存成功！",
-    "primaryColorSaved": "主色保存成功！",
-    "secondaryColorSaved": "副色保存成功！",
-    "metaDescriptionSaved": "元描述保存成功！",
-    "metaKeywordsSaved": "元关键词保存成功！",
-    "LogoSaved": "徽标保存成功！"
   },
   "license": {
     "title": "照片许可",
@@ -403,7 +364,232 @@
   "settings": {
     "saved": "{{section}} 设置已保存！",
     "failedToSave": "保存配置失败",
-    "errorSaving": "保存配置时出错"
+    "errorSaving": "保存配置时出错",
+    "home": {
+      "description": "配置您的摄影作品集和系统偏好设置"
+    },
+    "links": {
+      "title": "链接",
+      "description": "外部页面和自定义导航",
+      "pageDescription": "管理出现在您网站导航中的外部链接"
+    },
+    "users": {
+      "title": "用户",
+      "description": "用户管理和访问控制",
+      "pageDescription": "管理用户帐户、角色和权限"
+    },
+    "openai": {
+      "title": "OpenAI",
+      "description": "AI驱动的照片标题和描述",
+      "pageDescription": "配置OpenAI API以自动生成标题"
+    },
+    "imageQuality": {
+      "title": "图像质量",
+      "description": "缩略图和模态图像设置",
+      "pageDescription": "配置图像优化质量和尺寸"
+    },
+    "videoQuality": {
+      "title": "视频质量",
+      "description": "视频编码和流媒体设置",
+      "pageDescription": "配置视频质量、比特率和分辨率"
+    },
+    "email": {
+      "title": "电子邮件",
+      "description": "邀请的SMTP配置",
+      "pageDescription": "配置SMTP服务器以发送邀请和密码重置电子邮件"
+    },
+    "pushNotifications": {
+      "title": "推送通知",
+      "description": "管理员的浏览器通知",
+      "pageDescription": "配置推送通知以获取工作完成警报"
+    },
+    "googleOAuth": {
+      "title": "Google OAuth",
+      "description": "身份验证和授权用户",
+      "pageDescription": "配置Google OAuth凭据和授权电子邮件地址"
+    },
+    "analytics": {
+      "title": "分析",
+      "description": "访客跟踪和OpenObserve",
+      "pageDescription": "配置分析跟踪和日志聚合"
+    },
+    "logging": {
+      "title": "日志记录",
+      "description": "服务器日志级别和查看器",
+      "pageDescription": "配置服务器日志详细程度并查看实时日志"
+    },
+    "general": {
+      "title": "常规",
+      "description": "网站名称、徽标和外观",
+      "pageDescription": "自定义您网站的视觉身份和一般设置"
+    },
+    "notificationEvents": {
+      "title": "事件",
+      "description": "配置通知触发器",
+      "pageDescription": "选择哪些事件应触发推送通知"
+    },
+    "notifications": {
+      "title": "通知偏好设置",
+      "description": "配置您想接收的推送通知",
+      "saved": "通知偏好设置已保存",
+      "confirmReset": "重置所有通知偏好设置为默认值？",
+      "resetSuccess": "通知偏好设置已重置为默认值",
+      "resetToDefaults": "重置为默认值",
+      "enableAll": "启用全部",
+      "disableAll": "禁用全部",
+      "categories": {
+        "security": {
+          "title": "安全与认证",
+          "description": "关于用户账户、登录和安全事件的通知"
+        },
+        "content": {
+          "title": "内容管理",
+          "description": "关于相册、照片和共享的通知"
+        },
+        "system": {
+          "title": "系统与配置",
+          "description": "关于设置更改和系统事件的通知"
+        }
+      },
+      "types": {
+        "userInvited": {
+          "title": "用户已邀请",
+          "description": "当管理员邀请新用户时"
+        },
+        "userAcceptedInvite": {
+          "title": "用户已加入",
+          "description": "当用户接受邀请时"
+        },
+        "userDeleted": {
+          "title": "用户已删除",
+          "description": "当管理员删除用户账户时"
+        },
+        "userRoleChanged": {
+          "title": "用户角色已更改",
+          "description": "当用户的角色被更改时"
+        },
+        "passkeyCreated": {
+          "title": "密钥已创建",
+          "description": "当用户注册新密钥时"
+        },
+        "passkeyDeleted": {
+          "title": "密钥已删除",
+          "description": "当用户移除密钥时"
+        },
+        "mfaEnabled": {
+          "title": "多因素认证已启用",
+          "description": "当用户启用多因素认证时"
+        },
+        "mfaDisabled": {
+          "title": "多因素认证已禁用",
+          "description": "当用户禁用多因素认证时"
+        },
+        "passwordChanged": {
+          "title": "密码已更改",
+          "description": "当用户更改密码时"
+        },
+        "adminPasswordReset": {
+          "title": "管理员密码重置",
+          "description": "当管理员启动密码重置时"
+        },
+        "failedLoginAttempts": {
+          "title": "登录尝试失败",
+          "description": "当检测到多次登录失败尝试时"
+        },
+        "suspiciousActivity": {
+          "title": "可疑活动",
+          "description": "当检测到新设备/位置的登录时"
+        },
+        "albumCreated": {
+          "title": "相册已创建",
+          "description": "当新相册被创建时"
+        },
+        "albumPublished": {
+          "title": "相册已发布",
+          "description": "当相册被公开时"
+        },
+        "albumUnpublished": {
+          "title": "相册已取消发布",
+          "description": "当相册被设为私密时"
+        },
+        "albumDeleted": {
+          "title": "相册已删除",
+          "description": "当相册被删除时"
+        },
+        "folderCreated": {
+          "title": "文件夹已创建",
+          "description": "创建新文件夹时"
+        },
+        "folderPublished": {
+          "title": "文件夹已发布",
+          "description": "文件夹公开时"
+        },
+        "folderUnpublished": {
+          "title": "文件夹未发布",
+          "description": "文件夹设为私有时"
+        },
+        "folderDeleted": {
+          "title": "文件夹已删除",
+          "description": "文件夹删除时"
+        },
+        "homepageUpdated": {
+          "title": "首页已更新",
+          "description": "首页顺序更改时"
+        },
+        "largePhotoUpload": {
+          "title": "大量上传",
+          "description": "一次上传50张以上照片时"
+        },
+        "shareLinkCreated": {
+          "title": "分享链接已创建",
+          "description": "创建新分享链接时"
+        },
+        "shareLinkAccessed": {
+          "title": "分享链接已访问",
+          "description": "有人查看共享相册时"
+        },
+        "shareLinkExpired": {
+          "title": "分享链接已过期",
+          "description": "分享链接过期时"
+        },
+        "photoDownloaded": {
+          "title": "照片已下载",
+          "description": "有人下载照片时"
+        },
+        "albumViewMilestone": {
+          "title": "浏览里程碑",
+          "description": "相册达到浏览里程碑（100, 500, 1000等）时"
+        },
+        "configUpdated": {
+          "title": "设置已更改",
+          "description": "系统配置更新时"
+        },
+        "smtpSettingsChanged": {
+          "title": "SMTP设置已更改",
+          "description": "邮件配置更新时"
+        },
+        "openaiApiKeyUpdated": {
+          "title": "AI设置已更改",
+          "description": "OpenAI API密钥更新时"
+        },
+        "brandingUpdated": {
+          "title": "品牌已更新",
+          "description": "网站品牌更改时"
+        },
+        "lowDiskSpace": {
+          "title": "磁盘空间不足",
+          "description": "存储空间低于10%时"
+        },
+        "databaseBackupCompleted": {
+          "title": "备份完成",
+          "description": "数据库备份完成时"
+        },
+        "versionUpdate": {
+          "title": "版本更新",
+          "description": "有新版本可用时"
+        }
+      }
+    }
   },
   "advancedSettings": {
     "title": "高级设置",
@@ -435,7 +621,14 @@
       "forceRegenerateImagesConfirm": "强制重新生成所有图像？这将需要一些时间。",
       "runOptimizationConfirm": "对所有照片运行图像优化？",
       "optimizedVideos": "优化视频",
-      "forceRegenerateVideosConfirm": "⚠️ 这将重新编码所有视频，使用当前的质量设置。这是一个耗时的操作，并且会暂时增加 CPU 使用率。\n\n现有的视频文件将被替换。您确定要继续吗？"
+      "forceRegenerateVideosConfirm": "⚠️ 这将重新编码所有视频，使用当前的质量设置。这是一个耗时的操作，并且会暂时增加 CPU 使用率。\n\n现有的视频文件将被替换。您确定要继续吗？",
+      "imageOptimization": "图像优化",
+      "imageOptimizationDescription": "为您所有的照片生成优化的缩略图和弹出图像",
+      "optimizeMissing": "优化缺失的图像",
+      "forceRegenerateImages": "强制重新生成所有图像",
+      "videoOptimization": "视频优化",
+      "videoOptimizationDescription": "为所有视频使用当前质量设置重新生成HLS主播放列表",
+      "regenerateVideoPlaylists": "重新生成视频播放列表"
     }
   },
   "userManagement": {
@@ -561,7 +754,16 @@
     "registering": "正在注册...",
     "register": "+ 注册",
     "registeredPasskeys": "已注册通行密钥",
-    "passkeysNote": "注意：通行密钥需要 HTTPS（或 localhost）和兼容设备"
+    "passkeysNote": "注意：通行密钥需要 HTTPS（或 localhost）和兼容设备",
+    "creating": "创建中...",
+    "createInviteLink": "创建邀请链接",
+    "invitationCreated": "邀请已创建",
+    "clickCopyLinkToShare": "点击下面的按钮复制邀请链接并与用户分享。",
+    "linkCopied": "链接已复制！",
+    "shareLinkWithUser": "与用户分享此链接以完成他们的注册。",
+    "setupSmtpDescriptionDismissible": "设置SMTP以发送用户邀请和密码重置邮件，或关闭以仅通过复制链接邀请用户。",
+    "linkOnlyMode": "仅链接模式",
+    "linkOnlyModeDescription": "邮件未配置。创建邀请后，您需要复制并手动将邀请链接发送给用户。"
   },
   "expiredLink": {
     "title": "你好，伙伴！",
@@ -825,7 +1027,16 @@
     "autoGenerateEnabled": "已启用自动生成AI标题",
     "autoGenerateDisabled": "已禁用自动生成AI标题",
     "invalidApiKey": "无效的OpenAI API密钥。请检查您的密钥并重试。",
-    "failedToUpdate": "更新设置失败"
+    "failedToUpdate": "更新设置失败",
+    "generateTitles": {
+      "title": "生成AI标题",
+      "description": "使用OpenAI自动生成您照片的描述性标题",
+      "generateMissing": "生成缺失的标题",
+      "regenerateAll": "强制重新生成所有标题",
+      "autoEnabledDescription": "自动AI标题生成已启用。新照片将自动生成AI标题。使用下面的按钮填补缺失的标题或重新生成现有标题。",
+      "autoDisabledDescription": "自动AI标题生成已禁用。AI标题将仅通过下面的按钮或在元数据编辑器中生成。",
+      "noMissingTitles": "没有缺失的标题"
+    }
   },
   "profile": {
     "failedToStartMfaSetup": "无法启动 MFA 设置",
@@ -1152,21 +1363,16 @@
     "on": "开启",
     "off": "关闭",
     "warningNote": "对视频设置的更改仅适用于新上传的视频。现有视频将保持其当前质量设置，除非您使用",
-    "forceRegenerate": "强制重新生成所有"
+    "forceRegenerate": "强制重新生成所有",
+    "segmentDurationSection": "段持续时间",
+    "hardwareTranscoding": "硬件转码",
+    "hardwareTranscodingSection": "硬件转码",
+    "hardwareTranscodingDescription": "使用GPU加速以更快的视频编码（需要兼容的硬件）"
   },
   "notifications": {
-    "bannerTitle": "处理作业完成时获取通知",
-    "bannerDescription": "启用推送通知以在视频处理和图像优化作业完成时接收警报。您可以在作业在后台运行时处理其他标签或应用程序。",
-    "enable": "启用通知",
-    "dismiss": "稍后再说",
     "active": "已启用推送通知",
     "sendTest": "发送测试",
     "disable": "禁用",
-    "permissionGranted": "推送通知已成功启用！",
-    "permissionDenied": "推送通知权限被拒绝",
-    "error": "管理推送通知失败",
-    "unsubscribed": "推送通知已禁用",
-    "testSent": "测试通知已发送！请检查您的设备。",
     "settings": {
       "title": "推送通知",
       "configured": "✓ 已配置",
@@ -1193,7 +1399,9 @@
       "errorEnable": "无法启用推送通知。请再试一次。",
       "errorDisable": "无法禁用推送通知。请再试一次。",
       "errorGenerateKeys": "生成 VAPID 密钥失败",
-      "close": "关闭"
+      "close": "关闭",
+      "configureEvents": "⚙️ 配置事件",
+      "configureEventsDescription": "选择哪些事件应触发推送通知"
     },
     "backend": {
       "videoProcessingComplete": "视频处理完成",
@@ -1205,13 +1413,96 @@
       "aiTitlesComplete": "AI标题生成完成",
       "aiTitlesFailed": "AI标题生成失败",
       "testNotificationTitle": "测试通知",
-      "testNotificationBody": "推送通知正常工作！当您的处理任务完成时，您将收到提醒。"
+      "testNotificationBody": "推送通知正常工作！当您的处理任务完成时，您将收到提醒。",
+      "userDeletedTitle": "用户已删除",
+      "userDeletedBody": "用户账户已被删除",
+      "userRoleChangedTitle": "用户角色已更改",
+      "userRoleChangedBody": "用户的角色已更改",
+      "passkeyDeletedTitle": "密钥已删除",
+      "passkeyDeletedBody": "用户已移除密钥",
+      "mfaDisabledTitle": "多因素认证已禁用",
+      "mfaDisabledBody": "用户已禁用多因素认证",
+      "passwordChangedTitle": "密码已更改",
+      "passwordChangedBody": "用户已更改密码",
+      "adminPasswordResetTitle": "密码重置已发送",
+      "adminPasswordResetBody": "管理员已发送密码重置邮件",
+      "failedLoginAttemptsTitle": "登录尝试失败",
+      "failedLoginAttemptsBody": "检测到多次登录失败尝试",
+      "suspiciousActivityTitle": "可疑活动",
+      "suspiciousActivityBody": "检测到从新设备或位置登录",
+      "albumCreatedTitle": "相册已创建",
+      "albumCreatedBody": "新相册已创建",
+      "albumPublishedTitle": "相册已发布",
+      "albumPublishedBody": "相册已公开",
+      "albumDeletedTitle": "相册已删除",
+      "albumDeletedBody": "相册已被删除",
+      "largePhotoUploadTitle": "大量上传",
+      "largePhotoUploadBody": "一次上传超过50张照片",
+      "shareLinkCreatedTitle": "分享链接已创建",
+      "shareLinkCreatedBody": "新分享链接已创建",
+      "shareLinkAccessedTitle": "分享链接已查看",
+      "shareLinkAccessedBody": "有人查看了共享相册",
+      "shareLinkExpiredTitle": "分享链接已过期",
+      "shareLinkExpiredBody": "分享链接已过期",
+      "configUpdatedTitle": "设置已更改",
+      "configUpdatedBody": "系统配置已更新",
+      "smtpSettingsChangedTitle": "邮件设置已更改",
+      "smtpSettingsChangedBody": "SMTP配置已更新",
+      "openaiApiKeyUpdatedTitle": "AI设置已更改",
+      "openaiApiKeyUpdatedBody": "OpenAI API密钥已更新",
+      "brandingUpdatedTitle": "品牌已更新",
+      "brandingUpdatedBody": "网站品牌已更改",
+      "lowDiskSpaceTitle": "磁盘空间不足",
+      "lowDiskSpaceBody": "存储空间不足（剩余<10%）",
+      "databaseBackupCompletedTitle": "备份完成",
+      "databaseBackupCompletedBody": "数据库备份成功完成"
     },
     "blocked": "浏览器阻止了通知。请检查您的浏览器设置。",
     "subscribePrompt": "订阅以在工作完成时接收通知",
     "subscribe": "订阅",
-    "loading": "加载中...",
-    "notSupported": "此浏览器不支持推送通知",
-    "serverDisabled": "服务器上已禁用推送通知"
+    "events": {
+      "saved": "通知偏好已保存"
+    }
+  },
+  "general": {
+    "title": "常规",
+    "description": "自定义您网站的名称、副标题和头像",
+    "logo": "徽标",
+    "clickOrDrag": "点击或拖动图像到这里",
+    "currentAvatar": "当前头像",
+    "siteName": "网站名称",
+    "siteNamePlaceholder": "您的网站名称",
+    "photoLicense": "照片许可证",
+    "photoLicenseDescription": "选择其他人如何使用您的照片",
+    "shuffleHomepage": "随机主页照片",
+    "shuffleHomepageDescription": "每次页面加载时随机排列主页上的照片",
+    "animatedBackground": "动画背景",
+    "animatedBackgroundDescription": "在管理面板和登录页面启用多彩的动画背景",
+    "primaryColor": "主色",
+    "secondaryColor": "辅助色",
+    "metaDescription": "元描述",
+    "metaDescriptionPlaceholder": "您网站的简要描述，以便搜索引擎使用",
+    "metaKeywords": "元关键词",
+    "metaKeywordsPlaceholder": "摄影, 作品集, 你的名字 (用逗号分隔)",
+    "language": "语言",
+    "languageDescription": "选择您网站的默认语言",
+    "savedSuccessfully": "{{section}} 保存成功！",
+    "LogoSaved": "徽标保存成功！",
+    "siteNameSaved": "网站名称保存成功！",
+    "primaryColorSaved": "主色保存成功！",
+    "secondaryColorSaved": "次色保存成功！",
+    "metaDescriptionSaved": "元描述保存成功！",
+    "metaKeywordsSaved": "元关键词已成功保存！",
+    "photoLicenseUpdated": "照片许可证已更新！",
+    "languageUpdated": "语言已更新！",
+    "homepageShuffleSaved": "主页随机设置已保存！",
+    "animatedBackgroundSaved": "动画背景设置已保存！",
+    "failedToSave": "保存{{section}}失败",
+    "failedToSaveLicense": "保存许可证失败",
+    "failedToSaveLanguage": "保存语言失败",
+    "failedToSaveSetting": "保存设置失败",
+    "errorSavingLicense": "保存许可证时出错",
+    "errorSavingLanguage": "保存语言时出错",
+    "errorSavingSetting": "保存设置时出错"
   }
 }

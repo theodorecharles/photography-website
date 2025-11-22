@@ -775,6 +775,27 @@
   .config-section-description {
     display: none !important;
   }
+
+  /* Stack breadcrumbs and actions vertically on mobile */
+  .breadcrumbs-container {
+    flex-direction: column;
+    align-items: flex-start !important;
+  }
+
+  .breadcrumbs {
+    text-align: left;
+    justify-content: flex-start;
+    width: 100%;
+  }
+
+  .breadcrumbs-actions {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .breadcrumbs-actions button {
+    width: 100%;
+  }
 }
 
 /* Custom Dropdown Animation */
@@ -787,6 +808,81 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+/* Breadcrumbs Navigation */
+.breadcrumbs-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.breadcrumbs-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.breadcrumb-link {
+  color: var(--primary-color);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  font-size: 0.95rem;
+  transition: opacity 0.2s ease;
+}
+
+.breadcrumb-link:hover {
+  opacity: 0.8;
+  text-decoration: underline;
+}
+
+.breadcrumb-separator {
+  color: #6b7280;
+  font-weight: 300;
+  user-select: none;
+}
+
+.breadcrumb-current {
+  color: #e5e7eb;
+  font-weight: 500;
+}
+
+/* Settings Page Container */
+.settings-page {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.settings-page-header {
+  margin-bottom: 2rem;
+}
+
+.settings-page-title {
+  color: var(--primary-color);
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+}
+
+.settings-page-description {
+  color: #9ca3af;
+  font-size: 1rem;
+  line-height: 1.5;
+  margin: 0;
 }
 
 /* Push Notifications Grid - Responsive 2x2 → 1 column on mobile */
@@ -908,4 +1004,100 @@
   .smtp-action-buttons .btn-secondary {
     width: 100%;
   }
+
+  /* SMTP Warning Banner: Stack buttons below text on mobile */
+  .smtp-warning-banner {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+
+  .smtp-warning-banner-buttons {
+    width: 100%;
+    flex-direction: column !important;
+  }
+
+  .smtp-warning-banner-buttons button {
+    width: 100%;
+  }
+
+  /* OpenAI Button Group: Stack buttons vertically on mobile */
+  .openai-button-group {
+    flex-direction: column !important;
+  }
+
+  .openai-button-group button {
+    width: 100% !important;
+  }
+
+  /* Image and Video Optimization Banners: Stack vertically on mobile */
+  .image-optimization-banner,
+  .video-optimization-banner {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+
+  /* Notification Events Grid: Single column on mobile */
+  .notification-events-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Hide event descriptions on mobile */
+  .notification-event-description {
+    display: none !important;
+  }
+
+  /* Regenerate Keys Banner: Stack buttons below text on mobile */
+  .regenerate-keys-banner {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+
+  .regenerate-keys-banner button {
+    width: 100% !important;
+  }
+
+  .image-optimization-banner button,
+  .video-optimization-banner button {
+    width: 100% !important;
+  }
+}
+
+/* Quality Slider Styling */
+.quality-slider {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.quality-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--primary-color);
+  border: 3px solid #fff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.quality-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 8px var(--primary-color);
+}
+
+.quality-slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--primary-color);
+  border: 3px solid #fff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.quality-slider::-moz-range-thumb:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 8px var(--primary-color);
 }

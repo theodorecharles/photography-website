@@ -22,11 +22,11 @@ export const PasswordChangeModal: React.FC<PasswordChangeModalProps> = ({
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div
-        className="share-modal"
+        className="generic-modal"
         onClick={(e) => e.stopPropagation()}
         style={{ maxWidth: "500px" }}
       >
-        <div className="share-modal-header">
+        <div className="generic-modal-header">
           <h2>🔑 {t('userManagement.changePassword')}</h2>
           <button className="close-button" onClick={onClose} aria-label={t('common.close')}>
             ×
@@ -39,7 +39,7 @@ export const PasswordChangeModal: React.FC<PasswordChangeModalProps> = ({
             onChangePassword();
             return false;
           }}
-          className="share-modal-content"
+          className="generic-modal-content"
         >
           <p className="share-description" style={{ marginBottom: "1.5rem" }}>
             {t('userManagement.changePasswordDescription')}

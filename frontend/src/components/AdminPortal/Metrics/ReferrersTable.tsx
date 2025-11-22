@@ -5,6 +5,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { formatNumber } from '../../../utils/formatters';
+import { SkeletonTable } from './SkeletonLoader';
 
 interface Referrer {
   referrer: string;
@@ -15,6 +16,7 @@ interface ReferrersTableProps {
   referrers: Referrer[];
   expandedRows: Set<number>;
   isExpanded: boolean;
+  loading?: boolean;
   onToggleRow: (index: number) => void;
   onToggleTable: () => void;
 }
@@ -23,10 +25,16 @@ const ReferrersTable: React.FC<ReferrersTableProps> = ({
   referrers,
   expandedRows,
   isExpanded,
+  loading,
   onToggleRow,
   onToggleTable,
 }) => {
   const { t } = useTranslation();
+  
+  if (loading) {
+    return <SkeletonTable rows={5} />;
+  }
+  
   if (!referrers || referrers.length === 0) {
     return <div className="no-data">{t('metrics.referrersTable.noData')}</div>;
   }

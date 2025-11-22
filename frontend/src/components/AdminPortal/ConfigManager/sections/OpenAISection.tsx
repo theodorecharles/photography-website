@@ -3,13 +3,12 @@
  * Manages OpenAI API configuration and AI title generation
  */
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { API_URL } from '../../../../config';
 import { ConfigData } from '../types';
 import { trackConfigSettingsSaved } from '../../../../utils/analytics';
 import { PasswordInput } from '../../PasswordInput';
-import SectionHeader from '../components/SectionHeader';
 import { error as logError } from '../../../../utils/logger';
 
 
@@ -40,34 +39,30 @@ const OpenAISection: React.FC<OpenAISectionProps> = ({
   sectionRef,
 }) => {
   const { t } = useTranslation();
-  const [showOpenAI, setShowOpenAI] = useState(false);
   const openAISectionRef = useRef<HTMLDivElement>(null);
   const apiKeyInputRef = useRef<HTMLInputElement>(null);
 
   // Handle scrollToOpenAI trigger from parent
   useEffect(() => {
     if (scrollToOpenAI) {
-      setShowOpenAI(true);
-      setTimeout(() => {
-        // Use the sectionRef if provided, otherwise use local openAISectionRef
-        const refToUse = sectionRef?.current || openAISectionRef.current;
-        if (refToUse) {
-          const yOffset = -100; // Offset to account for header
-          const y = refToUse.getBoundingClientRect().top + window.pageYOffset + yOffset;
-          window.scrollTo({ top: y, behavior: 'smooth' });
-          
-          // Focus the API key input after scrolling
-          setTimeout(() => {
-            if (apiKeyInputRef.current) {
-              apiKeyInputRef.current.focus();
-            }
-          }, 400);
-        }
-        // Reset the trigger
-        if (setScrollToOpenAI) {
-          setScrollToOpenAI(false);
-        }
-      }, 400); // Wait for expansion animation
+      // Use the sectionRef if provided, otherwise use local openAISectionRef
+      const refToUse = sectionRef?.current || openAISectionRef.current;
+      if (refToUse) {
+        const yOffset = -100; // Offset to account for header
+        const y = refToUse.getBoundingClientRect().top + window.pageYOffset + yOffset;
+        window.scrollTo({ top: y, behavior: 'smooth' });
+        
+        // Focus the API key input after scrolling
+        setTimeout(() => {
+          if (apiKeyInputRef.current) {
+            apiKeyInputRef.current.focus();
+          }
+        }, 400);
+      }
+      // Reset the trigger
+      if (setScrollToOpenAI) {
+        setScrollToOpenAI(false);
+      }
     }
   }, [scrollToOpenAI, setScrollToOpenAI, sectionRef]);
 
@@ -227,6 +222,8 @@ const OpenAISection: React.FC<OpenAISectionProps> = ({
         setMessage({ type: "success", text: t('settings.saved', { section: 'OpenAI' }) });
         // Update original config after successful save
         setOriginalConfig(structuredClone(config));
+        // Dispatch event to notify OpenAI page
+        window.dispatchEvent(new Event('openai-config-saved'));
       } else {
         const errorData = await res
           .json()
@@ -255,21 +252,8 @@ const OpenAISection: React.FC<OpenAISectionProps> = ({
   if (!config) return null;
 
   return (
-    <div className="config-group full-width" ref={sectionRef || openAISectionRef}>
-      <SectionHeader
-        title={t('openAI.title')}
-        description={t('openAI.description')}
-        isExpanded={showOpenAI}
-        onToggle={() => setShowOpenAI(!showOpenAI)}
-      />
-
-      <div
-        className={`collapsible-content ${showOpenAI ? "expanded" : "collapsed"}`}
-        style={{
-          maxHeight: showOpenAI ? "10000px" : "0",
-        }}
-      >
-        <div className="openai-settings-grid">
+    <div ref={sectionRef || openAISectionRef}>
+      <div className="openai-settings-grid">
           {/* Left: API Key Section */}
           <div className="openai-section">
             <label className="openai-section-label">{t('openAI.apiKey')}</label>
@@ -399,7 +383,6 @@ const OpenAISection: React.FC<OpenAISectionProps> = ({
             )}
           </div>
         </div>
-      </div>
     </div>
   );
 };

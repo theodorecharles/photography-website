@@ -226,6 +226,12 @@ fi
 rm -f ecosystem.config.cjs
 cp ecosystem.local.cjs ecosystem.config.cjs
 
+# Check for version updates and notify admins BEFORE restart
+log "Checking for version updates..."
+if ! node scripts/check-version-update.js; then
+    log "WARNING: Version check failed (non-fatal)"
+fi
+
 # Use graceful reload if processes exist, otherwise fresh start
 if [ "$PM2_PROCESSES_EXIST" = true ]; then
     log "Performing zero-downtime reload..."

@@ -14,6 +14,7 @@ import {
   ResponsiveContainer
 } from 'recharts';
 import { HourlyPageviewData } from './types';
+import { SkeletonChart } from './SkeletonLoader';
 
 interface PageviewsChartProps {
   data: HourlyPageviewData[];
@@ -25,7 +26,7 @@ const PageviewsChart: React.FC<PageviewsChartProps> = ({ data, loading, secondar
   const { t } = useTranslation();
   
   if (loading) {
-    return <div className="chart-loading">{t('metrics.charts.loadingChartData')}</div>;
+    return <SkeletonChart />;
   }
 
   if (data.length === 0) {

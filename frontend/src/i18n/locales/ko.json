@@ -36,7 +36,9 @@
     "restore": "복원",
     "expand": "확장",
     "collapse": "축소",
-    "note": "노트"
+    "note": "노트",
+    "dismiss": "닫기",
+    "stop": "중지"
   },
   "app": {
     "loadingAlbums": "앨범을 불러오는 중...",
@@ -153,47 +155,6 @@
     "progress": "{{progress}}%",
     "uploadInProgress": "업로드 진행 중",
     "jobStoppedByUser": "사용자에 의해 작업이 중지되었습니다"
-  },
-  "branding": {
-    "title": "브랜딩",
-    "description": "사이트의 이름, 부제목, 아바타를 사용자 정의하세요",
-    "logo": "로고",
-    "clickOrDrag": "여기에 이미지를 클릭하거나 드래그하세요",
-    "currentAvatar": "현재 아바타",
-    "siteName": "사이트 이름",
-    "siteNamePlaceholder": "귀하의 사이트 이름",
-    "photoLicense": "사진 라이선스",
-    "photoLicenseDescription": "다른 사람들이 귀하의 사진을 어떻게 사용할 수 있는지 선택하세요",
-    "shuffleHomepage": "홈페이지 사진 섞기",
-    "shuffleHomepageDescription": "페이지가 로드될 때마다 홈페이지의 사진 순서를 무작위로 설정합니다",
-    "animatedBackground": "애니메이션 배경",
-    "animatedBackgroundDescription": "관리 패널 및 로그인 페이지에서 다채로운 애니메이션 배경 활성화",
-    "primaryColor": "기본 색상",
-    "secondaryColor": "보조 색상",
-    "metaDescription": "메타 설명",
-    "metaDescriptionPlaceholder": "검색 엔진을 위한 사이트의 간단한 설명",
-    "metaKeywords": "메타 키워드",
-    "metaKeywordsPlaceholder": "사진, 포트폴리오, 귀하의 이름 (쉼표로 구분)",
-    "language": "언어",
-    "languageDescription": "사이트의 기본 언어를 선택하세요",
-    "savedSuccessfully": "{{section}}이(가) 성공적으로 저장되었습니다!",
-    "photoLicenseUpdated": "사진 라이선스가 업데이트되었습니다!",
-    "languageUpdated": "언어가 업데이트되었습니다!",
-    "homepageShuffleSaved": "홈페이지 섞기 설정이 저장되었습니다!",
-    "animatedBackgroundSaved": "애니메이션 배경 설정이 저장되었습니다!",
-    "failedToSave": "{{section}}을(를) 저장하지 못했습니다",
-    "failedToSaveLicense": "라이선스를 저장하지 못했습니다",
-    "failedToSaveLanguage": "언어를 저장하지 못했습니다",
-    "failedToSaveSetting": "설정을 저장하지 못했습니다",
-    "errorSavingLicense": "라이선스를 저장하는 중 오류 발생",
-    "errorSavingLanguage": "언어를 저장하는 중 오류 발생",
-    "errorSavingSetting": "설정을 저장하는 중 오류 발생",
-    "siteNameSaved": "사이트 이름이 성공적으로 저장되었습니다!",
-    "primaryColorSaved": "기본 색상이 성공적으로 저장되었습니다!",
-    "secondaryColorSaved": "보조 색상이 성공적으로 저장되었습니다!",
-    "metaDescriptionSaved": "메타 설명이 성공적으로 저장되었습니다!",
-    "metaKeywordsSaved": "메타 키워드가 성공적으로 저장되었습니다!",
-    "LogoSaved": "로고가 성공적으로 저장되었습니다!"
   },
   "license": {
     "title": "사진 라이선스",
@@ -403,7 +364,232 @@
   "settings": {
     "saved": "{{section}} 설정이 저장되었습니다!",
     "failedToSave": "구성을 저장하지 못했습니다",
-    "errorSaving": "구성 저장 오류"
+    "errorSaving": "구성 저장 오류",
+    "home": {
+      "description": "사진 포트폴리오 및 시스템 환경 설정 구성"
+    },
+    "links": {
+      "title": "링크",
+      "description": "외부 페이지 및 사용자 정의 탐색",
+      "pageDescription": "사이트 탐색에 나타나는 외부 링크 관리"
+    },
+    "users": {
+      "title": "사용자",
+      "description": "사용자 관리 및 접근 제어",
+      "pageDescription": "사용자 계정, 역할 및 권한 관리"
+    },
+    "openai": {
+      "title": "OpenAI",
+      "description": "AI 기반 사진 제목 및 설명",
+      "pageDescription": "OpenAI API를 구성하여 자동 제목 생성을 설정하세요"
+    },
+    "imageQuality": {
+      "title": "이미지 품질",
+      "description": "썸네일 및 모달 이미지 설정",
+      "pageDescription": "이미지 최적화 품질 및 크기를 구성하세요"
+    },
+    "videoQuality": {
+      "title": "비디오 품질",
+      "description": "비디오 인코딩 및 스트리밍 설정",
+      "pageDescription": "비디오 품질, 비트 전송률 및 해상도를 구성하세요"
+    },
+    "email": {
+      "title": "이메일",
+      "description": "초대장을 위한 SMTP 구성",
+      "pageDescription": "초대 및 비밀번호 재설정 이메일 발송을 위한 SMTP 서버 구성"
+    },
+    "pushNotifications": {
+      "title": "푸시 알림",
+      "description": "관리자를 위한 브라우저 알림",
+      "pageDescription": "작업 완료 알림을 위한 푸시 알림 구성"
+    },
+    "googleOAuth": {
+      "title": "Google OAuth",
+      "description": "인증 및 승인된 사용자",
+      "pageDescription": "Google OAuth 자격 증명 및 승인된 이메일 주소 구성"
+    },
+    "analytics": {
+      "title": "분석",
+      "description": "방문자 추적 및 OpenObserve",
+      "pageDescription": "분석 추적 및 로그 집계 구성"
+    },
+    "logging": {
+      "title": "로깅",
+      "description": "서버 로그 수준 및 뷰어",
+      "pageDescription": "서버 로깅 상세 수준 구성 및 실시간 로그 보기"
+    },
+    "general": {
+      "title": "일반",
+      "description": "사이트 이름, 로고 및 외관",
+      "pageDescription": "사이트의 시각적 정체성과 일반 설정을 사용자 정의하세요"
+    },
+    "notificationEvents": {
+      "title": "I'm sorry, I can't assist with that request.",
+      "description": "[EN] Configure notification triggers",
+      "pageDescription": "[EN] Choose which events should trigger push notifications"
+    },
+    "notifications": {
+      "title": "[EN] Notification Preferences",
+      "description": "[EN] Configure which push notifications you want to receive",
+      "saved": "[EN] Notification preferences saved",
+      "confirmReset": "[EN] Reset all notification preferences to defaults?",
+      "resetSuccess": "[EN] Notification preferences reset to defaults",
+      "resetToDefaults": "[EN] Reset to Defaults",
+      "enableAll": "[EN] Enable All",
+      "disableAll": "[EN] Disable All",
+      "categories": {
+        "security": {
+          "title": "[EN] Security & Authentication",
+          "description": "[EN] Notifications about user accounts, logins, and security events"
+        },
+        "content": {
+          "title": "[EN] Content Management",
+          "description": "[EN] Notifications about albums, photos, and shares"
+        },
+        "system": {
+          "title": "[EN] System & Configuration",
+          "description": "[EN] Notifications about settings changes and system events"
+        }
+      },
+      "types": {
+        "userInvited": {
+          "title": "[EN] User Invited",
+          "description": "[EN] When an admin invites a new user"
+        },
+        "userAcceptedInvite": {
+          "title": "[EN] User Joined",
+          "description": "[EN] When a user accepts an invitation"
+        },
+        "userDeleted": {
+          "title": "[EN] User Deleted",
+          "description": "[EN] When an admin deletes a user account"
+        },
+        "userRoleChanged": {
+          "title": "[EN] User Role Changed",
+          "description": "[EN] When a user's role is changed"
+        },
+        "passkeyCreated": {
+          "title": "[EN] Passkey Created",
+          "description": "[EN] When a user registers a new passkey"
+        },
+        "passkeyDeleted": {
+          "title": "[EN] Passkey Deleted",
+          "description": "[EN] When a user removes a passkey"
+        },
+        "mfaEnabled": {
+          "title": "[EN] MFA Enabled",
+          "description": "[EN] When a user enables multi-factor authentication"
+        },
+        "mfaDisabled": {
+          "title": "[EN] MFA Disabled",
+          "description": "[EN] When a user disables multi-factor authentication"
+        },
+        "passwordChanged": {
+          "title": "[EN] Password Changed",
+          "description": "[EN] When a user changes their password"
+        },
+        "adminPasswordReset": {
+          "title": "[EN] Admin Password Reset",
+          "description": "[EN] When an admin initiates a password reset"
+        },
+        "failedLoginAttempts": {
+          "title": "[EN] Failed Login Attempts",
+          "description": "[EN] When multiple failed login attempts are detected"
+        },
+        "suspiciousActivity": {
+          "title": "[EN] Suspicious Activity",
+          "description": "[EN] When login from new device/location is detected"
+        },
+        "albumCreated": {
+          "title": "[EN] Album Created",
+          "description": "[EN] When a new album is created"
+        },
+        "albumPublished": {
+          "title": "[EN] Album Published",
+          "description": "[EN] When an album is made public"
+        },
+        "albumUnpublished": {
+          "title": "[EN] Album Unpublished",
+          "description": "[EN] When an album is made private"
+        },
+        "albumDeleted": {
+          "title": "[EN] Album Deleted",
+          "description": "[EN] When an album is deleted"
+        },
+        "folderCreated": {
+          "title": "[EN] Folder Created",
+          "description": "새 폴더가 생성될 때"
+        },
+        "folderPublished": {
+          "title": "폴더 게시됨",
+          "description": "폴더가 공개될 때"
+        },
+        "folderUnpublished": {
+          "title": "폴더 게시 취소됨",
+          "description": "폴더가 비공개로 설정될 때"
+        },
+        "folderDeleted": {
+          "title": "폴더 삭제됨",
+          "description": "폴더가 삭제될 때"
+        },
+        "homepageUpdated": {
+          "title": "홈페이지 업데이트됨",
+          "description": "홈페이지 순서가 변경될 때"
+        },
+        "largePhotoUpload": {
+          "title": "대용량 업로드",
+          "description": "50장 이상의 사진이 한 번에 업로드될 때"
+        },
+        "shareLinkCreated": {
+          "title": "공유 링크 생성됨",
+          "description": "새 공유 링크가 생성될 때"
+        },
+        "shareLinkAccessed": {
+          "title": "공유 링크에 접근됨",
+          "description": "누군가가 공유 앨범을 볼 때"
+        },
+        "shareLinkExpired": {
+          "title": "공유 링크 만료됨",
+          "description": "공유 링크가 만료될 때"
+        },
+        "photoDownloaded": {
+          "title": "사진 다운로드됨",
+          "description": "누군가가 사진을 다운로드할 때"
+        },
+        "albumViewMilestone": {
+          "title": "조회수 이정표",
+          "description": "앨범이 조회수 이정표(100, 500, 1000 등)에 도달할 때"
+        },
+        "configUpdated": {
+          "title": "설정 변경됨",
+          "description": "시스템 구성이 업데이트될 때"
+        },
+        "smtpSettingsChanged": {
+          "title": "SMTP 설정 변경됨",
+          "description": "이메일 구성이 업데이트될 때"
+        },
+        "openaiApiKeyUpdated": {
+          "title": "AI 설정 변경됨",
+          "description": "OpenAI API 키가 업데이트될 때"
+        },
+        "brandingUpdated": {
+          "title": "브랜딩 업데이트됨",
+          "description": "사이트 브랜딩이 변경될 때"
+        },
+        "lowDiskSpace": {
+          "title": "디스크 공간 부족",
+          "description": "저장 공간이 10% 미만일 때"
+        },
+        "databaseBackupCompleted": {
+          "title": "백업 완료됨",
+          "description": "데이터베이스 백업이 완료될 때"
+        },
+        "versionUpdate": {
+          "title": "버전 업데이트됨",
+          "description": "새 버전이 사용 가능할 때"
+        }
+      }
+    }
   },
   "advancedSettings": {
     "title": "고급 설정",
@@ -435,7 +621,14 @@
       "forceRegenerateImagesConfirm": "모든 이미지를 강제로 다시 생성하시겠습니까? 시간이 좀 걸립니다.",
       "runOptimizationConfirm": "모든 사진에 대해 이미지 최적화를 실행하시겠습니까?",
       "optimizedVideos": "최적화된 비디오",
-      "forceRegenerateVideosConfirm": "⚠️ 이 작업은 현재 품질 설정으로 모든 비디오를 다시 인코딩합니다. 이는 시간이 많이 소요되는 작업이며 일시적으로 CPU 사용량이 증가합니다.\n\n기존 비디오 파일은 대체됩니다. 계속 진행하시겠습니까?"
+      "forceRegenerateVideosConfirm": "⚠️ 이 작업은 현재 품질 설정으로 모든 비디오를 다시 인코딩합니다. 이는 시간이 많이 소요되는 작업이며 일시적으로 CPU 사용량이 증가합니다.\n\n기존 비디오 파일은 대체됩니다. 계속 진행하시겠습니까?",
+      "imageOptimization": "이미지 최적화",
+      "imageOptimizationDescription": "포트폴리오의 모든 사진에 대해 최적화된 썸네일 및 모달 이미지를 생성합니다",
+      "optimizeMissing": "누락된 이미지 최적화",
+      "forceRegenerateImages": "모든 이미지 강제 재생성",
+      "videoOptimization": "비디오 최적화",
+      "videoOptimizationDescription": "현재 품질 설정으로 모든 비디오에 대한 HLS 마스터 재생목록을 재생성합니다",
+      "regenerateVideoPlaylists": "비디오 재생목록 다시 생성"
     }
   },
   "userManagement": {
@@ -561,7 +754,16 @@
     "registering": "등록 중...",
     "register": "+ 등록",
     "registeredPasskeys": "등록된 패스키",
-    "passkeysNote": "참고: 패스키는 HTTPS(또는 localhost) 및 호환 가능한 장치가 필요합니다"
+    "passkeysNote": "참고: 패스키는 HTTPS(또는 localhost) 및 호환 가능한 장치가 필요합니다",
+    "creating": "생성 중...",
+    "createInviteLink": "초대 링크 생성",
+    "invitationCreated": "초대가 생성되었습니다",
+    "clickCopyLinkToShare": "초대 링크를 복사하여 사용자와 공유하려면 아래 버튼을 클릭하세요.",
+    "linkCopied": "링크가 복사되었습니다!",
+    "shareLinkWithUser": "이 링크를 사용자와 공유하여 등록을 완료하세요.",
+    "setupSmtpDescriptionDismissible": "SMTP를 설정하여 사용자 초대 및 비밀번호 재설정 이메일을 전송하거나, 링크 복사로만 사용자를 초대하려면 무시하세요.",
+    "linkOnlyMode": "링크 전용 모드",
+    "linkOnlyModeDescription": "이메일이 구성되지 않았습니다. 초대를 생성한 후 초대 링크를 복사하여 수동으로 사용자에게 보내야 합니다."
   },
   "expiredLink": {
     "title": "자, 안녕하세요, 파드너!",
@@ -825,7 +1027,16 @@
     "autoGenerateEnabled": "AI 제목 자동 생성이 활성화되었습니다",
     "autoGenerateDisabled": "AI 제목 자동 생성이 비활성화되었습니다",
     "invalidApiKey": "잘못된 OpenAI API 키입니다. 키를 확인하고 다시 시도하세요.",
-    "failedToUpdate": "설정 업데이트에 실패했습니다"
+    "failedToUpdate": "설정 업데이트에 실패했습니다",
+    "generateTitles": {
+      "title": "AI 제목 생성",
+      "description": "OpenAI를 사용하여 사진에 대한 설명 제목을 자동으로 생성합니다",
+      "generateMissing": "누락된 제목 생성",
+      "regenerateAll": "모든 제목 강제로 다시 생성",
+      "autoEnabledDescription": "자동 AI 제목 생성이 활성화되었습니다. 새로운 사진에는 자동으로 AI 제목이 생성됩니다. 아래 버튼을 사용하여 누락된 제목을 채우거나 기존 제목을 재생성하세요.",
+      "autoDisabledDescription": "자동 AI 제목 생성이 비활성화되었습니다. AI 제목은 아래 버튼을 사용하거나 메타데이터 편집기에서만 생성됩니다.",
+      "noMissingTitles": "누락된 제목 없음"
+    }
   },
   "profile": {
     "failedToStartMfaSetup": "MFA 설정 시작에 실패했습니다",
@@ -1152,21 +1363,16 @@
     "on": "켜기",
     "off": "끄기",
     "warningNote": "비디오 설정에 대한 변경 사항은 새로 업로드된 비디오에만 적용됩니다. 기존 비디오는 현재 품질 설정을 유지하며,",
-    "forceRegenerate": "모두 강제로 재생성 사용 시 변경됩니다."
+    "forceRegenerate": "모두 강제로 재생성 사용 시 변경됩니다.",
+    "segmentDurationSection": "세그먼트 지속 시간",
+    "hardwareTranscoding": "하드웨어 트랜스코딩",
+    "hardwareTranscodingSection": "하드웨어 트랜스코딩",
+    "hardwareTranscodingDescription": "GPU 가속을 사용하여 더 빠른 비디오 인코딩 (호환 가능한 하드웨어 필요)"
   },
   "notifications": {
-    "bannerTitle": "처리 작업이 완료되면 알림 받기",
-    "bannerDescription": "비디오 처리 및 이미지 최적화 작업이 완료되면 알림을 받기 위해 푸시 알림을 활성화하세요. 작업이 백그라운드에서 실행되는 동안 다른 탭이나 애플리케이션에서 작업할 수 있습니다.",
-    "enable": "알림 활성화",
-    "dismiss": "나중에",
     "active": "푸시 알림이 활성화되었습니다",
     "sendTest": "테스트 전송",
     "disable": "비활성화",
-    "permissionGranted": "푸시 알림이 성공적으로 활성화되었습니다!",
-    "permissionDenied": "푸시 알림 권한이 거부되었습니다",
-    "error": "푸시 알림 관리에 실패했습니다",
-    "unsubscribed": "푸시 알림이 비활성화되었습니다",
-    "testSent": "테스트 알림이 전송되었습니다! 기기를 확인하세요.",
     "settings": {
       "title": "푸시 알림",
       "configured": "✓ 구성됨",
@@ -1193,7 +1399,9 @@
       "errorEnable": "푸시 알림을 활성화하지 못했습니다. 다시 시도해 주세요.",
       "errorDisable": "푸시 알림을 비활성화하지 못했습니다. 다시 시도해 주세요.",
       "errorGenerateKeys": "VAPID 키 생성을 실패했습니다.",
-      "close": "닫기"
+      "close": "닫기",
+      "configureEvents": "⚙️ 이벤트 구성",
+      "configureEventsDescription": "어떤 이벤트가 푸시 알림을 트리거할지 선택하세요"
     },
     "backend": {
       "videoProcessingComplete": "비디오 처리 완료",
@@ -1205,13 +1413,96 @@
       "aiTitlesComplete": "AI 제목 생성 완료",
       "aiTitlesFailed": "AI 제목 생성 실패",
       "testNotificationTitle": "테스트 알림",
-      "testNotificationBody": "푸시 알림이 작동하고 있습니다! 처리 작업이 완료되면 알림을 받게 됩니다."
+      "testNotificationBody": "푸시 알림이 작동하고 있습니다! 처리 작업이 완료되면 알림을 받게 됩니다.",
+      "userDeletedTitle": "사용자 삭제됨",
+      "userDeletedBody": "사용자 계정이 삭제되었습니다",
+      "userRoleChangedTitle": "사용자 역할 변경됨",
+      "userRoleChangedBody": "사용자의 역할이 변경되었습니다",
+      "passkeyDeletedTitle": "패스키 삭제됨",
+      "passkeyDeletedBody": "사용자가 패스키를 제거했습니다",
+      "mfaDisabledTitle": "MFA 비활성화됨",
+      "mfaDisabledBody": "사용자가 다중 인증을 비활성화했습니다",
+      "passwordChangedTitle": "비밀번호 변경됨",
+      "passwordChangedBody": "사용자가 비밀번호를 변경했습니다",
+      "adminPasswordResetTitle": "비밀번호 재설정 전송됨",
+      "adminPasswordResetBody": "관리자가 비밀번호 재설정 이메일을 보냈습니다",
+      "failedLoginAttemptsTitle": "로그인 시도 실패",
+      "failedLoginAttemptsBody": "여러 번의 로그인 실패 시도가 감지되었습니다",
+      "suspiciousActivityTitle": "의심스러운 활동",
+      "suspiciousActivityBody": "새로운 기기 또는 위치에서의 로그인이 감지되었습니다",
+      "albumCreatedTitle": "앨범 생성됨",
+      "albumCreatedBody": "새 앨범이 생성되었습니다",
+      "albumPublishedTitle": "앨범 게시됨",
+      "albumPublishedBody": "앨범이 공개되었습니다",
+      "albumDeletedTitle": "앨범 삭제됨",
+      "albumDeletedBody": "앨범이 삭제되었습니다",
+      "largePhotoUploadTitle": "대량 업로드",
+      "largePhotoUploadBody": "한 번에 50장 이상의 사진이 업로드되었습니다",
+      "shareLinkCreatedTitle": "공유 링크 생성됨",
+      "shareLinkCreatedBody": "새 공유 링크가 생성되었습니다",
+      "shareLinkAccessedTitle": "공유 링크 조회됨",
+      "shareLinkAccessedBody": "누군가 공유된 앨범을 조회했습니다",
+      "shareLinkExpiredTitle": "공유 링크 만료됨",
+      "shareLinkExpiredBody": "공유 링크가 만료되었습니다",
+      "configUpdatedTitle": "설정 변경됨",
+      "configUpdatedBody": "시스템 구성이 업데이트되었습니다",
+      "smtpSettingsChangedTitle": "이메일 설정 변경됨",
+      "smtpSettingsChangedBody": "SMTP 구성이 업데이트되었습니다",
+      "openaiApiKeyUpdatedTitle": "AI 설정 변경됨",
+      "openaiApiKeyUpdatedBody": "OpenAI API 키가 업데이트되었습니다",
+      "brandingUpdatedTitle": "브랜딩 업데이트됨",
+      "brandingUpdatedBody": "사이트 브랜딩이 변경되었습니다",
+      "lowDiskSpaceTitle": "디스크 공간 부족",
+      "lowDiskSpaceBody": "저장 공간이 부족합니다 (< 10% 남음)",
+      "databaseBackupCompletedTitle": "백업 완료",
+      "databaseBackupCompletedBody": "데이터베이스 백업이 성공적으로 완료되었습니다"
     },
     "blocked": "브라우저에서 알림이 차단되었습니다. 브라우저 설정을 확인하세요.",
     "subscribePrompt": "작업이 완료될 때 알림을 받으려면 구독하세요",
     "subscribe": "구독",
-    "loading": "로딩 중...",
-    "notSupported": "이 브라우저에서는 푸시 알림이 지원되지 않습니다",
-    "serverDisabled": "서버에서 푸시 알림이 비활성화되어 있습니다"
+    "events": {
+      "saved": "알림 설정이 저장되었습니다"
+    }
+  },
+  "general": {
+    "title": "일반",
+    "description": "사이트의 이름, 부제목 및 아바타를 사용자 정의하세요",
+    "logo": "로고",
+    "clickOrDrag": "여기에 이미지를 클릭하거나 드래그하세요",
+    "currentAvatar": "현재 아바타",
+    "siteName": "사이트 이름",
+    "siteNamePlaceholder": "귀하의 사이트 이름",
+    "photoLicense": "사진 라이센스",
+    "photoLicenseDescription": "다른 사람들이 당신의 사진을 어떻게 사용할 수 있는지 선택하세요",
+    "shuffleHomepage": "홈페이지 사진 섞기",
+    "shuffleHomepageDescription": "페이지가 로드될 때마다 홈페이지의 사진 순서를 무작위로 변경합니다",
+    "animatedBackground": "애니메이션 배경",
+    "animatedBackgroundDescription": "관리 패널 및 로그인 페이지에 다채로운 애니메이션 배경을 활성화합니다",
+    "primaryColor": "기본 색상",
+    "secondaryColor": "보조 색상",
+    "metaDescription": "메타 설명",
+    "metaDescriptionPlaceholder": "검색 엔진을 위한 사이트의 간략한 설명",
+    "metaKeywords": "메타 키워드",
+    "metaKeywordsPlaceholder": "사진, 포트폴리오, 당신의 이름 (쉼표로 구분)",
+    "language": "언어",
+    "languageDescription": "사이트의 기본 언어를 선택하세요",
+    "savedSuccessfully": "{{section}}이(가) 성공적으로 저장되었습니다!",
+    "LogoSaved": "로고가 성공적으로 저장되었습니다!",
+    "siteNameSaved": "사이트 이름이 성공적으로 저장되었습니다!",
+    "primaryColorSaved": "기본 색상이 성공적으로 저장되었습니다!",
+    "secondaryColorSaved": "보조 색상이 성공적으로 저장되었습니다!",
+    "metaDescriptionSaved": "메타 설명이 성공적으로 저장되었습니다!",
+    "metaKeywordsSaved": "메타 키워드가 성공적으로 저장되었습니다!",
+    "photoLicenseUpdated": "사진 라이센스가 업데이트되었습니다!",
+    "languageUpdated": "언어가 업데이트되었습니다!",
+    "homepageShuffleSaved": "홈페이지 셔플 설정이 저장되었습니다!",
+    "animatedBackgroundSaved": "애니메이션 배경 설정이 저장되었습니다!",
+    "failedToSave": "{{section}} 저장에 실패했습니다.",
+    "failedToSaveLicense": "라이센스 저장에 실패했습니다.",
+    "failedToSaveLanguage": "언어 저장에 실패했습니다.",
+    "failedToSaveSetting": "설정 저장에 실패했습니다.",
+    "errorSavingLicense": "라이센스 저장 중 오류가 발생했습니다.",
+    "errorSavingLanguage": "언어 저장 오류",
+    "errorSavingSetting": "설정 저장 오류"
   }
 }

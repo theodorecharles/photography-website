@@ -45,3 +45,17 @@ export { default as VideoIcon } from './VideoIcon';
 export { default as ShareIcon } from './ShareIcon';
 export { default as ArrowLeftIcon } from './ArrowLeftIcon';
 
+// Settings Page Icons
+export { default as GeneralIcon } from './GeneralIcon';
+export { default as BrandingIcon } from './BrandingIcon';
+export { default as LinksIcon } from './LinksIcon';
+export { default as UsersIcon } from './UsersIcon';
+export { default as AIIcon } from './AIIcon';
+export { default as ImageQualityIcon } from './ImageQualityIcon';
+export { default as VideoQualityIcon } from './VideoQualityIcon';
+export { default as EmailIcon } from './EmailIcon';
+export { default as BellIcon } from './BellIcon';
+export { default as GoogleGrayIcon } from './GoogleGrayIcon';
+export { default as AnalyticsIcon } from './AnalyticsIcon';
+export { default as LoggingIcon } from './LoggingIcon';
+

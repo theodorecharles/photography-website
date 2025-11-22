@@ -43,17 +43,17 @@ export const PasskeysModal: React.FC<PasskeysModalProps> = ({
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div
-        className="share-modal"
+        className="generic-modal"
         onClick={(e) => e.stopPropagation()}
         style={{ maxWidth: "600px" }}
       >
-        <div className="share-modal-header">
+        <div className="generic-modal-header">
           <h2>🔑 {t('userManagement.managePasskeys')}</h2>
           <button className="close-button" onClick={onClose} aria-label={t('common.close')}>
             ×
           </button>
         </div>
-        <div className="share-modal-content">
+        <div className="generic-modal-content">
           <p className="share-description" style={{ marginBottom: "1rem" }}>
             {t('userManagement.passkeysDescription')}
           </p>

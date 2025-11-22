@@ -3,12 +3,11 @@
  * Manages image quality and optimization settings
  */
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { API_URL } from '../../../../config';
 import { ConfigData } from '../types';
 import { trackConfigSettingsSaved } from '../../../../utils/analytics';
-import SectionHeader from '../components/SectionHeader';
 import { error } from '../../../../utils/logger';
 
 
@@ -20,7 +19,6 @@ interface ImageOptimizationSectionProps {
   savingSection: string | null;
   setSavingSection: (section: string | null) => void;
   setMessage: (message: { type: "success" | "error"; text: string }) => void;
-  onNavigateToAdvanced: () => void;
 }
 
 const ImageOptimizationSection: React.FC<ImageOptimizationSectionProps> = ({
@@ -28,13 +26,11 @@ const ImageOptimizationSection: React.FC<ImageOptimizationSectionProps> = ({
   originalConfig,
   setConfig,
   setOriginalConfig,
-  onNavigateToAdvanced,
   savingSection,
   setSavingSection,
   setMessage,
 }) => {
   const { t } = useTranslation();
-  const [showImageOptimization, setShowImageOptimization] = useState(false);
 
   const updateConfig = (path: string[], value: any) => {
     if (!config) return;
@@ -115,11 +111,6 @@ const ImageOptimizationSection: React.FC<ImageOptimizationSectionProps> = ({
           JSON.stringify(config.environment.optimization.images.download) !==
           JSON.stringify(originalConfig.environment.optimization.images.download)
         );
-      case "Concurrency":
-        return (
-          config.environment.optimization.concurrency !==
-          originalConfig.environment.optimization.concurrency
-        );
       default:
         return false;
     }
@@ -128,51 +119,7 @@ const ImageOptimizationSection: React.FC<ImageOptimizationSectionProps> = ({
   if (!config) return null;
 
   return (
-    <div className="config-group full-width">
-      <SectionHeader
-        title={t('imageOptimization.title')}
-        description={t('imageOptimization.description')}
-        isExpanded={showImageOptimization}
-        onToggle={() => setShowImageOptimization(!showImageOptimization)}
-      />
-
-      <div
-        className={`collapsible-content ${
-          showImageOptimization ? "expanded" : "collapsed"
-        }`}
-        style={{
-          maxHeight: showImageOptimization ? "10000px" : "0",
-        }}
-      >
-        {/* Warning Note */}
-        <div style={{
-          marginBottom: '1.5rem',
-          padding: '1rem',
-          background: 'rgba(255, 193, 7, 0.1)',
-          border: '1px solid rgba(255, 193, 7, 0.3)',
-          borderRadius: '8px',
-          fontSize: '0.875rem',
-          color: 'rgba(255, 193, 7, 0.9)',
-        }}>
-          <div style={{ marginBottom: '0.75rem' }}>
-            <strong>⚠️ {t('common.note')}:</strong> {t('imageOptimization.warningNote')}
-          </div>
-          <button
-            onClick={onNavigateToAdvanced}
-            className="btn-secondary"
-            style={{
-              fontSize: '0.85rem',
-              padding: '0.5rem 0.75rem',
-              width: '100%',
-              background: 'rgba(255, 193, 7, 0.15)',
-              border: '1px solid rgba(255, 193, 7, 0.5)',
-              color: 'rgba(255, 193, 7, 1)',
-            }}
-          >
-            🎯 {t('imageOptimization.forceRegenerate')}
-          </button>
-        </div>
-
+    <>
         {/* Grid of optimization subsections */}
         <div className="config-grid-inner">
           {/* Thumbnail Settings */}
@@ -218,9 +165,11 @@ const ImageOptimizationSection: React.FC<ImageOptimizationSectionProps> = ({
               )}
             </div>
             <div className="branding-group">
-              <label className="branding-label">{t('imageOptimization.quality')}</label>
+              <label className="branding-label">
+                {t('imageOptimization.quality')}: {config.environment.optimization.images.thumbnail.quality}
+              </label>
               <input
-                type="number"
+                type="range"
                 value={
                   config.environment.optimization.images.thumbnail.quality
                 }
@@ -236,9 +185,17 @@ const ImageOptimizationSection: React.FC<ImageOptimizationSectionProps> = ({
                     parseInt(e.target.value)
                   )
                 }
-                className="branding-input"
+                className="quality-slider"
                 min="1"
                 max="100"
+                style={{
+                  width: '100%',
+                  height: '6px',
+                  borderRadius: '3px',
+                  outline: 'none',
+                  background: `linear-gradient(to right, var(--primary-color) 0%, var(--primary-color) ${config.environment.optimization.images.thumbnail.quality}%, rgba(255, 255, 255, 0.1) ${config.environment.optimization.images.thumbnail.quality}%, rgba(255, 255, 255, 0.1) 100%)`,
+                  cursor: 'pointer',
+                }}
               />
             </div>
             <div className="branding-group">
@@ -309,9 +266,11 @@ const ImageOptimizationSection: React.FC<ImageOptimizationSectionProps> = ({
               )}
             </div>
             <div className="branding-group">
-              <label className="branding-label">{t('imageOptimization.quality')}</label>
+              <label className="branding-label">
+                {t('imageOptimization.quality')}: {config.environment.optimization.images.modal.quality}
+              </label>
               <input
-                type="number"
+                type="range"
                 value={config.environment.optimization.images.modal.quality}
                 onChange={(e) =>
                   updateConfig(
@@ -325,9 +284,17 @@ const ImageOptimizationSection: React.FC<ImageOptimizationSectionProps> = ({
                     parseInt(e.target.value)
                   )
                 }
-                className="branding-input"
+                className="quality-slider"
                 min="1"
                 max="100"
+                style={{
+                  width: '100%',
+                  height: '6px',
+                  borderRadius: '3px',
+                  outline: 'none',
+                  background: `linear-gradient(to right, var(--primary-color) 0%, var(--primary-color) ${config.environment.optimization.images.modal.quality}%, rgba(255, 255, 255, 0.1) ${config.environment.optimization.images.modal.quality}%, rgba(255, 255, 255, 0.1) 100%)`,
+                  cursor: 'pointer',
+                }}
               />
             </div>
             <div className="branding-group">
@@ -397,9 +364,11 @@ const ImageOptimizationSection: React.FC<ImageOptimizationSectionProps> = ({
               )}
             </div>
             <div className="branding-group">
-              <label className="branding-label">{t('imageOptimization.quality')}</label>
+              <label className="branding-label">
+                {t('imageOptimization.quality')}: {config.environment.optimization.images.download.quality}
+              </label>
               <input
-                type="number"
+                type="range"
                 value={
                   config.environment.optimization.images.download.quality
                 }
@@ -415,9 +384,17 @@ const ImageOptimizationSection: React.FC<ImageOptimizationSectionProps> = ({
                     parseInt(e.target.value)
                   )
                 }
-                className="branding-input"
+                className="quality-slider"
                 min="1"
                 max="100"
+                style={{
+                  width: '100%',
+                  height: '6px',
+                  borderRadius: '3px',
+                  outline: 'none',
+                  background: `linear-gradient(to right, var(--primary-color) 0%, var(--primary-color) ${config.environment.optimization.images.download.quality}%, rgba(255, 255, 255, 0.1) ${config.environment.optimization.images.download.quality}%, rgba(255, 255, 255, 0.1) 100%)`,
+                  cursor: 'pointer',
+                }}
               />
             </div>
             <div className="branding-group">
@@ -445,7 +422,7 @@ const ImageOptimizationSection: React.FC<ImageOptimizationSectionProps> = ({
             </div>
           </div>
 
-          {/* Concurrency Settings */}
+          {/* Max Parallel Jobs */}
           <div className="settings-section">
             <div
               style={{
@@ -455,7 +432,7 @@ const ImageOptimizationSection: React.FC<ImageOptimizationSectionProps> = ({
                 marginBottom: "0.75rem",
               }}
             >
-              <label className="settings-section-label">{t('imageOptimization.concurrency')}</label>
+              <label className="settings-section-label">{t('imageOptimization.maxParallelJobs')}</label>
               {hasUnsavedChanges("Concurrency") && (
                 <div style={{ display: "flex", gap: "0.5rem" }}>
                   <button
@@ -497,27 +474,29 @@ const ImageOptimizationSection: React.FC<ImageOptimizationSectionProps> = ({
             >
               {t('imageOptimization.concurrencyDescription1')}
             </p>
-            <p
-              style={{
-                fontSize: "0.85rem",
-                color: "#888",
-                marginTop: "0",
-                marginBottom: "1rem",
-              }}
-            >
-              {t('imageOptimization.concurrencyDescription2')}
-            </p>
             <div className="branding-group">
-              <label className="branding-label">{t('imageOptimization.maxParallelJobs')}</label>
               <input
                 type="number"
                 value={config.environment.optimization.concurrency}
-                onChange={(e) =>
-                  updateConfig(
-                    ["environment", "optimization", "concurrency"],
-                    parseInt(e.target.value)
-                  )
-                }
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value === '') {
+                    updateConfig(["environment", "optimization", "concurrency"], '' as any);
+                  } else {
+                    updateConfig(["environment", "optimization", "concurrency"], parseInt(value));
+                  }
+                }}
+                onBlur={(e) => {
+                  const value = e.target.value;
+                  if (value === '' || isNaN(parseInt(value))) {
+                    updateConfig(["environment", "optimization", "concurrency"], 8);
+                  } else {
+                    const parsed = parseInt(value);
+                    if (parsed < 1) updateConfig(["environment", "optimization", "concurrency"], 1);
+                    else if (parsed > 256) updateConfig(["environment", "optimization", "concurrency"], 256);
+                    else updateConfig(["environment", "optimization", "concurrency"], parsed);
+                  }
+                }}
                 className="branding-input"
                 min="1"
                 max="256"
@@ -525,8 +504,7 @@ const ImageOptimizationSection: React.FC<ImageOptimizationSectionProps> = ({
             </div>
           </div>
         </div>
-      </div>
-    </div>
+    </>
   );
 };
 

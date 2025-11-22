@@ -13,18 +13,18 @@ export const SMTPProvidersModal: React.FC<SMTPProvidersModalProps> = ({ onClose 
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div
-        className="share-modal"
+        className="generic-modal"
         onClick={(e) => e.stopPropagation()}
         style={{ maxWidth: '700px' }}
       >
-        <div className="share-modal-header">
+        <div className="generic-modal-header">
           <h2>📧 SMTP Provider Setup Instructions</h2>
           <button className="close-button" onClick={onClose} aria-label="Close">
             ×
           </button>
         </div>
 
-        <div className="share-modal-content">
+        <div className="generic-modal-content">
           {/* Gmail */}
           <div style={{ marginBottom: '2rem' }}>
             <h4 style={{ marginTop: 0, marginBottom: '0.75rem', color: '#e5e7eb', fontSize: '0.95rem', fontWeight: 600 }}>

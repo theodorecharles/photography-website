@@ -10,7 +10,7 @@ import { API_URL } from '../../config';
 import { AuthStatus, ExternalLink, BrandingConfig, Album, AlbumFolder } from './types';
 import AlbumsManager from './AlbumsManager';
 import Metrics from './Metrics/Metrics';
-import ConfigManager from './ConfigManager';
+import ConfigManagerV2 from './ConfigManagerV2';
 import { ProfileSection } from './ConfigManager/sections/ProfileSection';
 import SecuritySetupPrompt from './SecuritySetupPrompt';
 import LoginForm from './LoginForm';
@@ -236,6 +236,7 @@ export default function AdminPortal() {
       logError('Failed to check metrics config:', err);
     }
   }, []);
+
 
   // Listen for config updates (triggered after restart)
   useEffect(() => {
@@ -586,7 +587,7 @@ export default function AdminPortal() {
         )}
 
         {activeTab === 'config' && authStatus?.user?.role === 'admin' && (
-          <ConfigManager
+          <ConfigManagerV2
             setMessage={addMessage}
             branding={branding}
             setBranding={setBranding}

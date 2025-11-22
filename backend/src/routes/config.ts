@@ -10,15 +10,42 @@ import { fileURLToPath } from "url";
 import { csrfProtection } from "../security.js";
 import { requireAuth, requireAdmin } from "../auth/middleware.js";
 import { error, warn, info, debug, verbose } from '../utils/logger.js';
+import { sendNotificationToUser } from '../push-notifications.js';
+import { translateNotification } from '../i18n-backend.js';
+import { getAllUsers } from '../database-users.js';
+import { DATA_DIR, reloadConfig, getLogLevel } from "../config.js";
+import { sendTestEmail } from "../email.js";
+import { initLogger } from '../utils/logger.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const router = express.Router();
 
-import { DATA_DIR, reloadConfig, getLogLevel } from "../config.js";
-import { sendTestEmail } from "../email.js";
-import { initLogger } from '../utils/logger.js';
+/**
+ * Helper to send push notification to all admin users
+ */
+async function notifyAllAdmins(title: string, body: string, tag: string, notificationType?: any, variables?: Record<string, any>): Promise<void> {
+  try {
+    const admins = getAllUsers().filter(u => u.role === 'admin');
+    
+    for (const admin of admins) {
+      const translatedTitle = await translateNotification(title, variables);
+      const translatedBody = await translateNotification(body, variables);
+      
+      await sendNotificationToUser(admin.id, {
+        title: translatedTitle,
+        body: translatedBody,
+        icon: '/icon-192.png',
+        badge: '/icon-192.png',
+        tag,
+        requireInteraction: false
+      }, notificationType);
+    }
+  } catch (err) {
+    error('[Config] Failed to send admin notification:', err);
+  }
+}
 
 const CONFIG_PATH = path.join(DATA_DIR, "config.json");
 const LOGS_DIR = path.join(DATA_DIR, "logs");
@@ -139,7 +166,7 @@ router.post(
  * PUT /api/config
  * Update configuration
  */
-router.put("/", requireAdmin, express.json(), (req, res) => {
+router.put("/", requireAdmin, express.json(), async (req, res) => {
   try {
     const newConfig = req.body;
 
@@ -176,6 +203,60 @@ router.put("/", requireAdmin, express.json(), (req, res) => {
     }
 
     verbose("[Config] Configuration updated by:", req.user);
+
+    // Detect which settings changed for specific notifications
+    const smtpChanged = JSON.stringify(currentConfig.email) !== JSON.stringify(updatedConfig.email);
+    const openaiChanged = currentConfig.openAI?.apiKey !== updatedConfig.openAI?.apiKey;
+    const brandingChanged = JSON.stringify(currentConfig.branding) !== JSON.stringify(updatedConfig.branding);
+
+    if (smtpChanged) {
+      await notifyAllAdmins(
+        'notifications.backend.smtpSettingsChangedTitle',
+        'notifications.backend.smtpSettingsChangedBody',
+        'smtp-settings-changed',
+        'smtpSettingsChanged',
+        {
+          updatedBy: (req.user as any).name || (req.user as any).email
+        }
+      ).catch(err => error('[Config] Failed to send SMTP change notification:', err));
+    }
+
+    if (openaiChanged) {
+      await notifyAllAdmins(
+        'notifications.backend.openaiApiKeyUpdatedTitle',
+        'notifications.backend.openaiApiKeyUpdatedBody',
+        'openai-api-key-updated',
+        'openaiApiKeyUpdated',
+        {
+          updatedBy: (req.user as any).name || (req.user as any).email
+        }
+      ).catch(err => error('[Config] Failed to send OpenAI change notification:', err));
+    }
+
+    if (brandingChanged) {
+      await notifyAllAdmins(
+        'notifications.backend.brandingUpdatedTitle',
+        'notifications.backend.brandingUpdatedBody',
+        'branding-updated',
+        'brandingUpdated',
+        {
+          updatedBy: (req.user as any).name || (req.user as any).email
+        }
+      ).catch(err => error('[Config] Failed to send branding change notification:', err));
+    }
+
+    // General config update notification if nothing specific matched
+    if (!smtpChanged && !openaiChanged && !brandingChanged) {
+      await notifyAllAdmins(
+        'notifications.backend.configUpdatedTitle',
+        'notifications.backend.configUpdatedBody',
+        'config-updated',
+        'configUpdated',
+        {
+          updatedBy: (req.user as any).name || (req.user as any).email
+        }
+      ).catch(err => error('[Config] Failed to send config update notification:', err));
+    }
 
     res.json({
       success: true,

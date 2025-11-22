@@ -4,6 +4,7 @@
  * Auto-Translate Script
  *
  * Uses OpenAI GPT-4 to translate all [EN] placeholders to target languages
+ * Works with BOTH frontend and backend translation files
  */
 
 import OpenAI from "openai";
@@ -21,7 +22,17 @@ if (existsSync(envPath)) {
   loadEnv({ path: envPath });
 }
 
-const LOCALES_DIR = join(__dirname, "../frontend/src/i18n/locales");
+const TRANSLATION_DIRS = [
+  {
+    name: "Frontend",
+    path: join(__dirname, "../frontend/src/i18n/locales"),
+  },
+  {
+    name: "Backend",
+    path: join(__dirname, "../backend/src/i18n/locales"),
+  },
+];
+
 const CONFIG_PATH = join(__dirname, "../data/config.json");
 
 // Language configurations
@@ -52,6 +63,7 @@ const colors = {
   green: "\x1b[32m",
   yellow: "\x1b[33m",
   cyan: "\x1b[36m",
+  red: "\x1b[31m",
   bold: "\x1b[1m",
 };
 
@@ -81,207 +93,180 @@ function findEnPlaceholders(obj, prefix = "") {
  */
 function setNestedValue(obj, path, value) {
   const keys = path.split(".");
-  const lastKey = keys.pop();
-  const target = keys.reduce((current, key) => {
-    if (!(key in current)) {
+  let current = obj;
+
+  for (let i = 0; i < keys.length - 1; i++) {
+    const key = keys[i];
+    if (!(key in current) || typeof current[key] !== "object") {
       current[key] = {};
     }
-    return current[key];
-  }, obj);
-  target[lastKey] = value;
-}
-
-/**
- * Translate a single string using OpenAI
- */
-async function translateSingle(openai, text, targetLanguage) {
-  const response = await openai.chat.completions.create({
-    model: "gpt-4o-mini",
-    messages: [
-      {
-        role: "system",
-        content: `You are a professional translator specializing in software UI translations. Translate the UI string to ${targetLanguage}. Important rules:
-1. Preserve {{variables}} exactly as they appear (e.g., {{count}}, {{email}}, {{albumName}})
-2. Preserve HTML tags like <strong></strong>
-3. Preserve special characters and emojis (✓, ❌, 🔒, etc.)
-4. Keep the tone appropriate for UI elements
-5. DO NOT translate brand names and technical acronyms: Google, OpenObserve, OpenAI, Galleria, MFA, SMTP
-6. DO translate common UI terms like "Modal" (referring to a popup dialog) - translate it appropriately for ${targetLanguage}
-7. Return ONLY the translation, no quotes, explanations, or extra text`,
-      },
-      {
-        role: "user",
-        content: text,
-      },
-    ],
-    temperature: 0.3,
-    max_tokens: 200,
-  });
-
-  const translation = response.choices[0]?.message?.content?.trim();
-
-  if (!translation) {
-    throw new Error(`Empty translation received`);
+    current = current[key];
   }
 
-  return translation;
+  current[keys[keys.length - 1]] = value;
 }
 
 /**
- * Translate a batch of strings using OpenAI
+ * Get OpenAI API key from config or environment
  */
-async function translateBatch(openai, batch, targetLanguage) {
-  const texts = batch.map((item) => item.text);
-
-  try {
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
-      messages: [
-        {
-          role: "system",
-          content: `You are a professional translator specializing in software UI translations. Translate the following UI strings to ${targetLanguage}. Important rules:
-1. Preserve {{variables}} exactly as they appear (e.g., {{count}}, {{email}}, {{albumName}})
-2. Preserve HTML tags like <strong></strong>
-3. Preserve special characters and emojis (✓, ❌, 🔒, etc.)
-4. Keep the tone appropriate for UI elements
-5. DO NOT translate brand names and technical acronyms: Google, OpenObserve, OpenAI, Galleria, MFA, SMTP
-6. DO translate common UI terms like "Modal" (referring to a popup dialog) - translate it appropriately for ${targetLanguage}
-7. Return ONLY the translations, one per line, in the same order as the input
-8. Do not add quotes, explanations, or extra text`,
-        },
-        {
-          role: "user",
-          content: texts.join("\n"),
-        },
-      ],
-      temperature: 0.3,
-      max_tokens: 2000,
-    });
-
-    const translations = response.choices[0]?.message?.content
-      ?.trim()
-      .split("\n")
-      .map((line) => line.trim())
-      .filter((line) => line);
-
-    if (!translations || translations.length !== texts.length) {
-      // If batch translation fails, try one at a time
-      log(
-        `  Batch mismatch (expected ${texts.length}, got ${translations?.length}), trying one-by-one...`,
-        "yellow"
-      );
-      const oneByOne = [];
-      for (const text of texts) {
-        const translation = await translateSingle(openai, text, targetLanguage);
-        oneByOne.push(translation.trim());
-        await new Promise((resolve) => setTimeout(resolve, 300)); // Small delay
+function getOpenAIKey() {
+  // Try config file first
+  if (existsSync(CONFIG_PATH)) {
+    try {
+      const config = JSON.parse(readFileSync(CONFIG_PATH, "utf8"));
+      if (config.openAI?.apiKey) {
+        return config.openAI.apiKey;
       }
-      return oneByOne;
+    } catch (err) {
+      // Config file exists but couldn't be parsed, fall through to env var
+    }
+  }
+
+  // Fall back to environment variable
+  if (process.env.OPENAI_API_KEY) {
+    return process.env.OPENAI_API_KEY;
+  }
+
+  throw new Error(
+    "No OpenAI API key found. Add it to data/config.json or set OPENAI_API_KEY environment variable."
+  );
+}
+
+/**
+ * Translate placeholders for a language
+ */
+async function translateLanguage(openai, langCode, langName, filePath) {
+  try {
+    const content = readFileSync(filePath, "utf8");
+    const data = JSON.parse(content);
+
+    const placeholders = findEnPlaceholders(data);
+
+    if (placeholders.length === 0) {
+      log(`  ✓ No placeholders to translate`, "green");
+      return { success: true, translated: 0 };
     }
 
-    return translations;
-  } catch (error) {
-    console.error(`Translation error:`, error.message);
-    throw error;
+    log(`  Found ${placeholders.length} placeholder(s) to translate`);
+
+    // Batch translate (max 50 at a time to avoid token limits)
+    const batchSize = 50;
+    let totalTranslated = 0;
+
+    for (let i = 0; i < placeholders.length; i += batchSize) {
+      const batch = placeholders.slice(i, i + batchSize);
+
+      // Create numbered list for translation
+      const textList = batch.map((p, idx) => `${idx + 1}. ${p.text}`).join("\n");
+
+      const prompt = `Translate the following English text to ${langName}. Preserve any HTML tags, variables in {{curly braces}}, and formatting exactly as they appear. Return ONLY the translated text, one per line, numbered:
+
+${textList}`;
+
+      const response = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: [{ role: "user", content: prompt }],
+        temperature: 0.3,
+      });
+
+      const translatedText = response.choices[0].message.content.trim();
+      const translations = translatedText
+        .split("\n")
+        .map((line) => line.replace(/^\d+\.\s*/, "").trim())
+        .filter((line) => line.length > 0);
+
+      // Apply translations
+      for (let j = 0; j < Math.min(translations.length, batch.length); j++) {
+        setNestedValue(data, batch[j].key, translations[j]);
+        totalTranslated++;
+      }
+    }
+
+    // Write back to file
+    writeFileSync(filePath, JSON.stringify(data, null, 2) + "\n", "utf8");
+
+    log(`  ✓ Translated ${totalTranslated} string(s)`, "green");
+    return { success: true, translated: totalTranslated };
+  } catch (err) {
+    log(`  ✗ Translation failed: ${err.message}`, "red");
+    return { success: false, translated: 0, error: err.message };
   }
+}
+
+/**
+ * Translate all files in a directory
+ */
+async function translateDirectory(openai, dirName, dirPath) {
+  log(`\n${colors.cyan}${colors.bold}${dirName} Translations${colors.reset}`);
+  log(`${colors.cyan}${"═".repeat(60)}${colors.reset}\n`);
+
+  const results = [];
+
+  for (const [langCode, langName] of Object.entries(languages)) {
+    log(`\n🌍 Translating ${langName} (${langCode})...`, "cyan");
+
+    const filePath = join(dirPath, `${langCode}.json`);
+    if (!existsSync(filePath)) {
+      log(`  ✗ File not found: ${langCode}.json`, "yellow");
+      continue;
+    }
+
+    const result = await translateLanguage(
+      openai,
+      langCode,
+      langName,
+      filePath
+    );
+    results.push({ langCode, langName, ...result });
+  }
+
+  return results;
 }
 
 /**
  * Main function
  */
 async function main() {
-  log("\n╔════════════════════════════════════════════════════╗", "cyan");
-  log("║     Auto-Translate Tool                          ║", "cyan");
-  log("╚════════════════════════════════════════════════════╝\n", "cyan");
+  log("\n" + colors.cyan);
+  log("╔════════════════════════════════════════════════════╗");
+  log("║     Auto-Translate Tool (Frontend + Backend)      ║");
+  log("╚════════════════════════════════════════════════════╝");
+  log(colors.reset);
 
-  // Load OpenAI API key from .env or config.json
-  let apiKey = process.env.OPENAI_API_KEY;
+  try {
+    const apiKey = getOpenAIKey();
+    const openai = new OpenAI({ apiKey });
 
-  if (!apiKey || apiKey.trim() === "") {
-    // Fall back to config.json
-    if (existsSync(CONFIG_PATH)) {
-      const configData = readFileSync(CONFIG_PATH, "utf8");
-      const config = JSON.parse(configData);
-      apiKey = config.openai?.apiKey;
-    }
-  }
+    const allResults = [];
 
-  if (!apiKey || apiKey.trim() === "") {
-    log("ERROR: OpenAI API key not configured", "yellow");
-    log(
-      "Please set OPENAI_API_KEY in .env or configure it in data/config.json",
-      "yellow"
-    );
-    process.exit(1);
-  }
-
-  const openai = new OpenAI({ apiKey });
-
-  let totalTranslated = 0;
-  const batchSize = 10; // Translate 10 strings at a time
-
-  // Process each language
-  for (const [langCode, langName] of Object.entries(languages)) {
-    log(`\n🌍 Translating ${langName} (${langCode})...`, "cyan");
-
-    const filePath = join(LOCALES_DIR, `${langCode}.json`);
-    const data = JSON.parse(readFileSync(filePath, "utf-8"));
-
-    // Find all [EN] placeholders
-    const placeholders = findEnPlaceholders(data);
-
-    if (placeholders.length === 0) {
-      log(`  ✓ No placeholders to translate`, "green");
-      continue;
+    // Translate each directory
+    for (const dir of TRANSLATION_DIRS) {
+      const results = await translateDirectory(openai, dir.name, dir.path);
+      allResults.push({ name: dir.name, results });
     }
 
-    log(`  Found ${placeholders.length} placeholders to translate`, "yellow");
+    // Summary
+    log(`\n${colors.cyan}${colors.bold}SUMMARY${colors.reset}`);
+    log(`${colors.cyan}${"═".repeat(60)}${colors.reset}\n`);
 
-    // Process in batches
-    for (let i = 0; i < placeholders.length; i += batchSize) {
-      const batch = placeholders.slice(i, i + batchSize);
-      const batchNum = Math.floor(i / batchSize) + 1;
-      const totalBatches = Math.ceil(placeholders.length / batchSize);
-
-      log(
-        `  Batch ${batchNum}/${totalBatches} (${batch.length} strings)...`,
-        "yellow"
+    for (const dir of allResults) {
+      const successful = dir.results.filter((r) => r.success).length;
+      const totalTranslated = dir.results.reduce(
+        (sum, r) => sum + r.translated,
+        0
       );
 
-      try {
-        const translations = await translateBatch(openai, batch, langName);
-
-        // Update the data object
-        for (let j = 0; j < batch.length; j++) {
-          setNestedValue(data, batch[j].key, translations[j].trim());
-          totalTranslated++;
-        }
-
-        log(`  ✓ Batch ${batchNum} complete`, "green");
-
-        // Small delay to avoid rate limits
-        if (i + batchSize < placeholders.length) {
-          await new Promise((resolve) => setTimeout(resolve, 1000));
-        }
-      } catch (error) {
-        log(`  ✗ Batch ${batchNum} failed: ${error.message}`, "yellow");
-        log(`  Skipping this batch...`, "yellow");
-      }
+      log(
+        `${dir.name}: ${successful}/${dir.results.length} languages, ${totalTranslated} strings translated`,
+        totalTranslated > 0 ? "green" : "yellow"
+      );
     }
 
-    // Save the updated file
-    writeFileSync(filePath, JSON.stringify(data, null, 2) + "\n", "utf-8");
-    log(`  ✓ Saved ${langCode}.json`, "green");
+    log("\n✨ Translation complete!\n", "green");
+  } catch (err) {
+    log(`\n✗ Error: ${err.message}\n`, "red");
+    process.exit(1);
   }
-
-  log("\n" + "═".repeat(60), "cyan");
-  log("COMPLETE", "cyan");
-  log("═".repeat(60) + "\n", "cyan");
-  log(`Total translations: ${totalTranslated}`, "bold");
-  log("\n💡 Run `node scripts/validate-translations.js` to verify.", "cyan");
 }
 
-main().catch((error) => {
-  console.error("Fatal error:", error);
-  process.exit(1);
-});
+main();

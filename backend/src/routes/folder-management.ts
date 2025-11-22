@@ -6,6 +6,9 @@
 import { Router, Request, Response } from "express";
 import { csrfProtection } from "../security.js";
 import { error, warn, info, debug, verbose } from '../utils/logger.js';
+import { sendNotificationToUser } from '../push-notifications.js';
+import { translateNotification } from '../i18n-backend.js';
+import { getAllUsers } from '../database-users.js';
 import { 
   saveAlbumFolder,
   deleteFolderState,
@@ -28,6 +31,28 @@ const router = Router();
 
 // Apply CSRF protection to all routes in this router
 router.use(csrfProtection);
+
+/**
+ * Helper to send push notification to all admin users
+ */
+async function notifyAllAdmins(title: string, body: string, tag: string, notificationType?: any, variables?: Record<string, any>): Promise<void> {
+  try {
+    const admins = getAllUsers().filter(u => u.role === 'admin');
+    for (const admin of admins) {
+      const translatedTitle = await translateNotification(title, variables);
+      const translatedBody = await translateNotification(body, variables);
+      
+      sendNotificationToUser(admin.id, {
+        title: translatedTitle,
+        body: translatedBody,
+        tag,
+        data: { type: notificationType }
+      }, notificationType);
+    }
+  } catch (err) {
+    error('[FolderManagement] Failed to send notification to admins:', err);
+  }
+}
 
 /**
  * Sanitize folder name - allows letters, numbers, spaces, hyphens, and underscores
@@ -92,6 +117,19 @@ router.post("/", requireManager, async (req: Request, res: Response): Promise<vo
       return;
     }
 
+    // Send push notification to all admins
+    const userName = (req.user as any).name || (req.user as any).email;
+    await notifyAllAdmins(
+      'notifications.backend.folderCreatedTitle',
+      'notifications.backend.folderCreatedBody',
+      'folder-created',
+      'folderCreated',
+      {
+        folderName: sanitizedName,
+        createdBy: userName
+      }
+    ).catch(err => error('[FolderManagement] Failed to send folder creation notification:', err));
+
     // Regenerate static JSON files
     const appRoot = req.app.get('appRoot');
     generateStaticJSONFiles(appRoot);
@@ -126,9 +164,12 @@ router.delete("/:folder", requireManager, async (req: Request, res: Response): P
       return;
     }
 
+    // Get albums in folder for notification BEFORE deletion
+    const albumsInFolder = getAlbumsInFolder(folderState.id);
+    const albumNames = albumsInFolder.map(a => a.name).join(', ') || 'none';
+
     // If deleteAlbums is true, delete all albums in the folder
     if (deleteAlbums) {
-      const albumsInFolder = getAlbumsInFolder(folderState.id);
       info(`[FolderManagement] Deleting ${albumsInFolder.length} albums in folder "${sanitizedFolder}"`);
       
       const photosDir = req.app.get('photosDir');
@@ -174,6 +215,21 @@ router.delete("/:folder", requireManager, async (req: Request, res: Response): P
       res.status(404).json({ error: 'Folder not found' });
       return;
     }
+
+    // Send push notification to all admins
+    const userName = (req.user as any).name || (req.user as any).email;
+    await notifyAllAdmins(
+      'notifications.backend.folderDeletedTitle',
+      'notifications.backend.folderDeletedBody',
+      'folder-deleted',
+      'folderDeleted',
+      {
+        folderName: sanitizedFolder,
+        deletedBy: userName,
+        albumCount: albumsInFolder.length,
+        albumNames
+      }
+    ).catch(err => error('[FolderManagement] Failed to send folder deletion notification:', err));
 
     // Note: If deleteAlbums is false, albums will automatically have folder_id set to NULL (ON DELETE SET NULL)
 
@@ -235,12 +291,34 @@ router.patch("/:folder/publish", requireManager, async (req: Request, res: Respo
 
     // Cascade publish state to all albums in this folder
     const albumsInFolder = getAlbumsInFolder(folderState.id);
+    const albumNames = albumsInFolder.map(a => a.name).join(', ') || 'none';
     let albumsUpdated = 0;
     for (const album of albumsInFolder) {
       setAlbumPublished(album.name, published);
       albumsUpdated++;
     }
     info(`[FolderManagement] Updated ${albumsUpdated} album(s) in folder to published=${published}`);
+
+    // Send push notification to all admins
+    const userName = (req.user as any).name || (req.user as any).email;
+    const titleKey = published ? 'notifications.backend.folderPublishedTitle' : 'notifications.backend.folderUnpublishedTitle';
+    const bodyKey = published ? 'notifications.backend.folderPublishedBody' : 'notifications.backend.folderUnpublishedBody';
+    const tag = published ? 'folder-published' : 'folder-unpublished';
+    const notificationType = published ? 'folderPublished' : 'folderUnpublished';
+    const userKey = published ? 'publishedBy' : 'unpublishedBy';
+    
+    await notifyAllAdmins(
+      titleKey,
+      bodyKey,
+      tag,
+      notificationType,
+      {
+        folderName: sanitizedFolder,
+        [userKey]: userName,
+        albumCount: albumsInFolder.length,
+        albumNames
+      }
+    ).catch(err => error('[FolderManagement] Failed to send folder publish/unpublish notification:', err));
 
     // Regenerate static JSON files
     const appRoot = req.app.get('appRoot');

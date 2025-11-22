@@ -14,6 +14,7 @@ import {
   ResponsiveContainer
 } from 'recharts';
 import { TimeSeriesData } from './types';
+import { SkeletonChart } from './SkeletonLoader';
 
 interface VisitorsChartProps {
   data: TimeSeriesData[];
@@ -25,7 +26,7 @@ const VisitorsChart: React.FC<VisitorsChartProps> = ({ data, loading, secondaryC
   const { t } = useTranslation();
   
   if (loading) {
-    return <div className="chart-loading">{t('metrics.charts.loadingChartData')}</div>;
+    return <SkeletonChart />;
   }
 
   if (data.length === 0) {

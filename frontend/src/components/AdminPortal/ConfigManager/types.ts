@@ -5,6 +5,9 @@
 import { BrandingConfig, ExternalLink } from '../types';
 
 export interface EnvironmentConfig {
+  features?: {
+    smtpBannerDismissed?: boolean;
+  };
   frontend: {
     port: number;
     apiUrl: string;
@@ -23,6 +26,7 @@ export interface EnvironmentConfig {
     };
     video?: {
       segmentDuration?: number;
+      hardwareAcceleration?: boolean;
       resolutions?: {
         [key: string]: {
           enabled: boolean;

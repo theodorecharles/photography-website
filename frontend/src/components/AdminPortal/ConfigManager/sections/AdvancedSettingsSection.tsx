@@ -3,16 +3,17 @@
  * Contains backend, frontend, security, auth, analytics settings, and regeneration operations
  */
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { API_URL } from "../../../../config";
 import { ConfigData } from "../types";
 import { trackConfigSettingsSaved } from "../../../../utils/analytics";
-import SectionHeader from "../components/SectionHeader";
 import RegenerationControls from "../components/RegenerationControls";
 import AuthSettings from "../components/AuthSettings";
 import SMTPSettings from "../components/SMTPSettings";
 import PushNotificationsSettings from "../components/PushNotificationsSettings";
+import NotificationPreferencesSection from "./NotificationPreferencesSection";
+import "../sections/NotificationPreferencesSection.css";
 import AnalyticsSettings from "../components/AnalyticsSettings";
 import CustomDropdown from "../components/CustomDropdown";
 import {
@@ -88,46 +89,39 @@ const AdvancedSettingsSection: React.FC<AdvancedSettingsSectionProps> = ({
   sectionRef,
 }) => {
   const { t } = useTranslation();
-  const [showAdvanced, setShowAdvanced] = useState(false);
   const smtpSectionRef = useRef<HTMLDivElement>(null);
 
   // Handle scrollToSmtp trigger from parent
   useEffect(() => {
     if (scrollToSmtp) {
-      setShowAdvanced(true);
-      setTimeout(() => {
-        if (smtpSectionRef.current) {
-          const yOffset = -100; // Offset to account for header
-          const element = smtpSectionRef.current;
-          const y =
-            element.getBoundingClientRect().top + window.pageYOffset + yOffset;
-          window.scrollTo({ top: y, behavior: "smooth" });
-        }
-        // Reset the trigger
-        if (setScrollToSmtp) {
-          setScrollToSmtp(false);
-        }
-      }, 400); // Wait for expansion animation
+      if (smtpSectionRef.current) {
+        const yOffset = -100; // Offset to account for header
+        const element = smtpSectionRef.current;
+        const y =
+          element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+        window.scrollTo({ top: y, behavior: "smooth" });
+      }
+      // Reset the trigger
+      if (setScrollToSmtp) {
+        setScrollToSmtp(false);
+      }
     }
   }, [scrollToSmtp, setScrollToSmtp]);
 
   // Handle scrollToAdvanced trigger from parent (for navigation from optimization sections)
   useEffect(() => {
     if (scrollToAdvanced) {
-      setShowAdvanced(true);
-      setTimeout(() => {
-        if (sectionRef?.current) {
-          const yOffset = -100; // Offset to account for header
-          const element = sectionRef.current;
-          const y =
-            element.getBoundingClientRect().top + window.pageYOffset + yOffset;
-          window.scrollTo({ top: y, behavior: "smooth" });
-        }
-        // Reset the trigger
-        if (setScrollToAdvanced) {
-          setScrollToAdvanced(false);
-        }
-      }, 400); // Wait for expansion animation
+      if (sectionRef?.current) {
+        const yOffset = -100; // Offset to account for header
+        const element = sectionRef.current;
+        const y =
+          element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+        window.scrollTo({ top: y, behavior: "smooth" });
+      }
+      // Reset the trigger
+      if (setScrollToAdvanced) {
+        setScrollToAdvanced(false);
+      }
     }
   }, [scrollToAdvanced, setScrollToAdvanced, sectionRef]);
 
@@ -296,22 +290,7 @@ const AdvancedSettingsSection: React.FC<AdvancedSettingsSectionProps> = ({
   if (!config) return null;
 
   return (
-    <div className="config-group full-width" ref={sectionRef}>
-      <SectionHeader
-        title={t("advancedSettings.title")}
-        description={t("advancedSettings.description")}
-        isExpanded={showAdvanced}
-        onToggle={() => setShowAdvanced(!showAdvanced)}
-      />
-
-      <div
-        className={`collapsible-content ${
-          showAdvanced ? "expanded" : "collapsed"
-        }`}
-        style={{
-          maxHeight: showAdvanced ? "10000px" : "0",
-        }}
-      >
+    <div ref={sectionRef}>
         {/* Danger Zone Warning */}
         <div
           style={{
@@ -375,6 +354,7 @@ const AdvancedSettingsSection: React.FC<AdvancedSettingsSectionProps> = ({
           onSave={() => handleSaveSection("Authentication")}
           onCancel={() => setConfig(originalConfig!)}
           savingSection={savingSection}
+          setActionButtons={() => {}}
         />
 
         {/* SMTP Settings */}
@@ -390,6 +370,7 @@ const AdvancedSettingsSection: React.FC<AdvancedSettingsSectionProps> = ({
           savingSection={savingSection}
           setMessage={setMessage}
           sectionRef={smtpSectionRef}
+          setActionButtons={() => {}}
         />
 
         {/* Push Notifications Settings */}
@@ -400,7 +381,11 @@ const AdvancedSettingsSection: React.FC<AdvancedSettingsSectionProps> = ({
           savingSection={savingSection}
           onSave={handleSaveSection}
           setMessage={setMessage}
+          setActionButtons={() => {}}
         />
+
+        {/* Notification Preferences */}
+        <NotificationPreferencesSection />
 
         {/* Analytics Settings */}
         <AnalyticsSettings
@@ -415,6 +400,7 @@ const AdvancedSettingsSection: React.FC<AdvancedSettingsSectionProps> = ({
           savingSection={savingSection}
           setMessage={setMessage}
           onOpenObserveSave={onOpenObserveSave}
+          setActionButtons={() => {}}
         />
 
         {/* Logging Settings */}
@@ -525,7 +511,6 @@ const AdvancedSettingsSection: React.FC<AdvancedSettingsSectionProps> = ({
             </div>
           </div>
         </div>
-      </div>
     </div>
   );
 };

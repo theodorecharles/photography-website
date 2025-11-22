@@ -10,10 +10,12 @@
     "edit": "Edit",
     "create": "Create",
     "close": "Close",
+    "dismiss": "Dismiss",
     "confirm": "Confirm",
     "confirmAction": "Confirm Action",
     "yes": "Yes",
     "no": "No",
+    "stop": "Stop",
     "maximize": "Maximize",
     "restore": "Restore",
     "expand": "Expand",
@@ -174,8 +176,8 @@
     "uploadInProgress": "Upload in progress",
     "jobStoppedByUser": "Job stopped by user"
   },
-  "branding": {
-    "title": "Branding",
+  "general": {
+    "title": "General",
     "description": "Customize your site's name, subtitle, and avatar",
     "logo": "Logo",
     "clickOrDrag": "Click or drag image here",
@@ -391,7 +393,6 @@
     "retryingAIGeneration": "Retrying AI title generation for {{filename}}...",
     "aiGenerationRestarted": "AI title generation restarted for {{filename}}",
     "failedToRetryAIGeneration": "Failed to retry AI title generation",
-    "photoDeleted": "Photo deleted",
     "failedToDeletePhoto": "Failed to delete photo",
     "maxRetryAttemptsReached": "Maximum retry attempts ({{maxRetries}}) reached for {{filename}}",
     "successfullyUploaded": "Successfully uploaded {{filename}}",
@@ -424,7 +425,232 @@
   "settings": {
     "saved": "{{section}} settings saved!",
     "failedToSave": "Failed to save configuration",
-    "errorSaving": "Error saving configuration"
+    "errorSaving": "Error saving configuration",
+    "home": {
+      "description": "Configure your photography portfolio and system preferences"
+    },
+    "general": {
+      "title": "General",
+      "description": "Site name, logo, and appearance",
+      "pageDescription": "Customize your site's visual identity and general settings"
+    },
+    "links": {
+      "title": "Links",
+      "description": "External pages and custom navigation",
+      "pageDescription": "Manage external links that appear in your site's navigation"
+    },
+    "users": {
+      "title": "Users",
+      "description": "User management and access control",
+      "pageDescription": "Manage user accounts, roles, and permissions"
+    },
+    "openai": {
+      "title": "OpenAI",
+      "description": "AI-powered photo titles and descriptions",
+      "pageDescription": "Configure OpenAI API for automatic title generation"
+    },
+    "imageQuality": {
+      "title": "Image Quality",
+      "description": "Thumbnail and modal image settings",
+      "pageDescription": "Configure image optimization quality and dimensions"
+    },
+    "videoQuality": {
+      "title": "Video Quality",
+      "description": "Video encoding and streaming settings",
+      "pageDescription": "Configure video quality, bitrates, and resolutions"
+    },
+    "email": {
+      "title": "Email",
+      "description": "SMTP configuration for invitations",
+      "pageDescription": "Configure SMTP server for sending invitation and password reset emails"
+    },
+    "pushNotifications": {
+      "title": "Push Notifications",
+      "description": "Browser notifications for admins",
+      "pageDescription": "Configure push notifications for job completion alerts"
+    },
+    "notificationEvents": {
+      "title": "Events",
+      "description": "Configure notification triggers",
+      "pageDescription": "Choose which events should trigger push notifications"
+    },
+    "googleOAuth": {
+      "title": "Google OAuth",
+      "description": "Authentication and authorized users",
+      "pageDescription": "Configure Google OAuth credentials and authorized email addresses"
+    },
+    "analytics": {
+      "title": "Analytics",
+      "description": "Visitor tracking and OpenObserve",
+      "pageDescription": "Configure analytics tracking and log aggregation"
+    },
+    "logging": {
+      "title": "Logging",
+      "description": "Server log levels and viewer",
+      "pageDescription": "Configure server logging verbosity and view live logs"
+    },
+    "notifications": {
+      "title": "Notification Preferences",
+      "description": "Configure which push notifications you want to receive",
+      "saved": "Notification preferences saved",
+      "confirmReset": "Reset all notification preferences to defaults?",
+      "resetSuccess": "Notification preferences reset to defaults",
+      "resetToDefaults": "Reset to Defaults",
+      "enableAll": "Enable All",
+      "disableAll": "Disable All",
+      "categories": {
+        "security": {
+          "title": "Security & Authentication",
+          "description": "Notifications about user accounts, logins, and security events"
+        },
+        "content": {
+          "title": "Content Management",
+          "description": "Notifications about albums, photos, and shares"
+        },
+        "system": {
+          "title": "System & Configuration",
+          "description": "Notifications about settings changes and system events"
+        }
+      },
+      "types": {
+        "userInvited": {
+          "title": "User Invited",
+          "description": "When an admin invites a new user"
+        },
+        "userAcceptedInvite": {
+          "title": "User Joined",
+          "description": "When a user accepts an invitation"
+        },
+        "userDeleted": {
+          "title": "User Deleted",
+          "description": "When an admin deletes a user account"
+        },
+        "userRoleChanged": {
+          "title": "User Role Changed",
+          "description": "When a user's role is changed"
+        },
+        "passkeyCreated": {
+          "title": "Passkey Created",
+          "description": "When a user registers a new passkey"
+        },
+        "passkeyDeleted": {
+          "title": "Passkey Deleted",
+          "description": "When a user removes a passkey"
+        },
+        "mfaEnabled": {
+          "title": "MFA Enabled",
+          "description": "When a user enables multi-factor authentication"
+        },
+        "mfaDisabled": {
+          "title": "MFA Disabled",
+          "description": "When a user disables multi-factor authentication"
+        },
+        "passwordChanged": {
+          "title": "Password Changed",
+          "description": "When a user changes their password"
+        },
+        "adminPasswordReset": {
+          "title": "Admin Password Reset",
+          "description": "When an admin initiates a password reset"
+        },
+        "failedLoginAttempts": {
+          "title": "Failed Login Attempts",
+          "description": "When multiple failed login attempts are detected"
+        },
+        "suspiciousActivity": {
+          "title": "Suspicious Activity",
+          "description": "When login from new device/location is detected"
+        },
+        "albumCreated": {
+          "title": "Album Created",
+          "description": "When a new album is created"
+        },
+        "albumPublished": {
+          "title": "Album Published",
+          "description": "When an album is made public"
+        },
+        "albumUnpublished": {
+          "title": "Album Unpublished",
+          "description": "When an album is made private"
+        },
+        "albumDeleted": {
+          "title": "Album Deleted",
+          "description": "When an album is deleted"
+        },
+        "folderCreated": {
+          "title": "Folder Created",
+          "description": "When a new folder is created"
+        },
+        "folderPublished": {
+          "title": "Folder Published",
+          "description": "When a folder is made public"
+        },
+        "folderUnpublished": {
+          "title": "Folder Unpublished",
+          "description": "When a folder is made private"
+        },
+        "folderDeleted": {
+          "title": "Folder Deleted",
+          "description": "When a folder is deleted"
+        },
+        "homepageUpdated": {
+          "title": "Homepage Updated",
+          "description": "When homepage order is changed"
+        },
+        "largePhotoUpload": {
+          "title": "Large Upload",
+          "description": "When 50+ photos are uploaded at once"
+        },
+        "shareLinkCreated": {
+          "title": "Share Link Created",
+          "description": "When a new share link is created"
+        },
+        "shareLinkAccessed": {
+          "title": "Share Link Accessed",
+          "description": "When someone views a shared album"
+        },
+        "shareLinkExpired": {
+          "title": "Share Link Expired",
+          "description": "When a share link expires"
+        },
+        "photoDownloaded": {
+          "title": "Photo Downloaded",
+          "description": "When someone downloads a photo"
+        },
+        "albumViewMilestone": {
+          "title": "View Milestone",
+          "description": "When an album reaches view milestones (100, 500, 1000, etc.)"
+        },
+        "configUpdated": {
+          "title": "Settings Changed",
+          "description": "When system configuration is updated"
+        },
+        "smtpSettingsChanged": {
+          "title": "SMTP Settings Changed",
+          "description": "When email configuration is updated"
+        },
+        "openaiApiKeyUpdated": {
+          "title": "AI Settings Changed",
+          "description": "When OpenAI API key is updated"
+        },
+        "brandingUpdated": {
+          "title": "Branding Updated",
+          "description": "When site branding is changed"
+        },
+        "lowDiskSpace": {
+          "title": "Low Disk Space",
+          "description": "When storage is below 10%"
+        },
+        "databaseBackupCompleted": {
+          "title": "Backup Complete",
+          "description": "When database backup finishes"
+        },
+        "versionUpdate": {
+          "title": "Version Update",
+          "description": "When a new version is available"
+        }
+      }
+    }
   },
   "advancedSettings": {
     "title": "Advanced Settings",
@@ -456,13 +682,20 @@
       "forceRegenerateAllConfirm": "⚠️ This will regenerate ALL image titles and overwrite any custom titles you have set. This action cannot be undone.\n\nAre you sure you want to continue?",
       "forceRegenerateImagesConfirm": "Force regenerate ALL images? This will take a while.",
       "forceRegenerateVideosConfirm": "⚠️ This will re-encode ALL videos with current quality settings. This is a time-consuming operation and will temporarily increase CPU usage.\n\nExisting video files will be replaced. Are you sure you want to continue?",
-      "runOptimizationConfirm": "Run image optimization on all photos?"
+      "runOptimizationConfirm": "Run image optimization on all photos?",
+      "imageOptimization": "Image Optimization",
+      "imageOptimizationDescription": "Generate optimized thumbnails and modal images for all photos in your portfolio",
+      "optimizeMissing": "Optimize Missing Images",
+      "forceRegenerateImages": "Force Regenerate All Images",
+      "videoOptimization": "Video Optimization",
+      "videoOptimizationDescription": "Regenerate HLS master playlists for all videos with current quality settings",
+      "regenerateVideoPlaylists": "Regenerate Video Playlists"
     }
   },
   "userManagement": {
     "title": "User Management",
     "description": "Manage user accounts, roles, and authentication",
-    "inviteUser": "+ Invite User",
+    "inviteUser": "Invite User",
     "setupSmtp": "Set up SMTP",
     "email": "Email",
     "role": "Role",
@@ -546,10 +779,19 @@
     "invitationSent": "✓ Invitation Sent",
     "copyInvitationLinkManually": "You can also copy the invitation link below to send it manually.",
     "sending": "Sending...",
+    "creating": "Creating...",
     "sendInvitation": "Send Invitation",
-    "copyInvitationLinkButton": "📋 Copy Invitation Link",
+    "createInviteLink": "Create Invite Link",
+    "invitationCreated": "Invitation Created",
+    "clickCopyLinkToShare": "Click the button below to copy the invitation link and share it with the user.",
+    "linkCopied": "Link Copied!",
+    "shareLinkWithUser": "Share this link with the user to complete their registration.",
+    "copyInvitationLinkButton": "Copy Invitation Link",
     "emailNotConfigured": "⚠️ Email Not Configured",
     "setupSmtpDescription": "Set up SMTP to send user invitation and password reset emails.",
+    "setupSmtpDescriptionDismissible": "Set up SMTP to send user invitation and password reset emails, or dismiss to invite users with copy links only.",
+    "linkOnlyMode": "Link-Only Mode",
+    "linkOnlyModeDescription": "Email is not configured. After creating the invitation, you'll need to copy and manually send the invite link to the user.",
     "enableTwoFactorAuthentication": "Enable Two-Factor Authentication",
     "scanQrCodeDescription": "Scan this QR code with your authenticator app (Google Authenticator, Authy, 1Password, etc.)",
     "mfaQrCode": "MFA QR Code",
@@ -846,7 +1088,11 @@
     "hlsStreamingSection": "HLS Settings",
     "hlsDescription": "Configure HTTP Live Streaming (HLS) settings for adaptive video delivery",
     "segmentDuration": "Segment Duration (seconds)",
+    "segmentDurationSection": "Segment Duration",
     "segmentDurationHelp": "Length of each video segment. Longer segments (4-6s) reduce server requests.",
+    "hardwareTranscoding": "Hardware Transcoding",
+    "hardwareTranscodingSection": "Hardware Transcoding",
+    "hardwareTranscodingDescription": "Use GPU acceleration for faster video encoding (requires compatible hardware)",
     "videoResolutions": "VIDEO RESOLUTIONS",
     "videoResolutionsSection": "Video Resolutions",
     "resolutionsDescription": "Enable resolutions and configure their quality settings. Higher bitrates improve quality but increase file size.",
@@ -883,7 +1129,16 @@
     "autoGenerateEnabled": "Auto-generate AI titles enabled",
     "autoGenerateDisabled": "Auto-generate AI titles disabled",
     "invalidApiKey": "Invalid OpenAI API key. Please check your key and try again.",
-    "failedToUpdate": "Failed to update setting"
+    "failedToUpdate": "Failed to update setting",
+    "generateTitles": {
+      "title": "Generate AI Titles",
+      "description": "Use OpenAI to automatically generate descriptive titles for your photos",
+      "autoEnabledDescription": "Automatic AI title generation is enabled. New photos will get AI titles generated automatically. Use the buttons below to backfill missing titles or regenerate existing ones.",
+      "autoDisabledDescription": "Automatic AI title generation is disabled. AI titles will only be generated using the buttons below or in the metadata editor.",
+      "generateMissing": "Backfill Missing Titles",
+      "noMissingTitles": "No Missing Titles",
+      "regenerateAll": "Force Regenerate All Titles"
+    }
   },
   "profile": {
     "failedToStartMfaSetup": "Failed to start MFA setup",
@@ -1156,33 +1411,26 @@
     "setupCompleteWaitingRestart": "Setup complete! Waiting for server to restart..."
   },
   "notifications": {
-    "bannerTitle": "Get Notified When Processing Jobs Complete",
-    "bannerDescription": "Enable push notifications to receive alerts when your video processing and image optimization jobs finish. You can work on other tabs or applications while jobs run in the background.",
-    "enable": "Enable Notifications",
-    "dismiss": "Maybe Later",
     "active": "Push notifications enabled",
     "sendTest": "Send Test",
     "disable": "Disable",
-    "permissionGranted": "Push notifications enabled successfully!",
-    "permissionDenied": "Push notifications permission denied",
-    "error": "Failed to manage push notifications",
-    "unsubscribed": "Push notifications disabled",
-    "testSent": "Test notification sent! Check your device.",
     "blocked": "Notifications blocked by browser. Check your browser settings.",
-    "subscribePrompt": "Subscribe to receive notifications when jobs complete",
+    "subscribePrompt": "Subscribe to receive notifications",
     "subscribe": "Subscribe",
-    "loading": "Loading...",
-    "notSupported": "Push notifications are not supported in this browser",
-    "serverDisabled": "Push notifications are disabled on the server",
+    "events": {
+      "saved": "Notification preference saved"
+    },
     "settings": {
       "title": "Push Notifications",
       "configured": "✓ Configured",
       "discard": "Discard",
       "save": "Save",
       "saving": "Saving...",
+      "cancel": "Cancel",
       "description": "Notify managers and admins when video processing and image optimization jobs complete",
       "enableLabel": "Enable Push Notifications",
       "generatingKeys": "⏳ Generating VAPID keys...",
+      "generating": "⏳ Generating...",
       "enabledDescription": "When enabled, managers and admins will be prompted to allow browser notifications",
       "vapidSubject": "VAPID Subject",
       "vapidSubjectHint": "Contact email (mailto:) or website URL (https://) for the push service",
@@ -1190,12 +1438,12 @@
       "vapidPublicKeyHint": "Public key for browser subscription (safe to share)",
       "vapidPrivateKey": "VAPID Private Key",
       "vapidPrivateKeyHint": "Private key (keep secret!)",
-      "generating": "⏳ Generating...",
-      "generateNewKeys": "🔑 Generate New Keys",
-      "generateKeysWarning": "⚠️ Warning: Generating new keys will invalidate all existing subscriptions",
+      "generateNewKeys": "Generate New Keys",
+      "generateKeysWarning": "Warning: Generating new keys will invalidate all existing subscriptions. All users will need to re-subscribe.",
+      "configureEvents": "⚙️ Configure Events",
+      "configureEventsDescription": "Choose which events should trigger push notifications",
       "confirmTitle": "Generate New Keys?",
       "confirmMessage": "This will generate new VAPID keys and <strong>invalidate all existing push notification subscriptions</strong>. All users will need to re-subscribe to receive notifications.",
-      "cancel": "Cancel",
       "confirmGenerate": "Generate New Keys",
       "errorEnable": "Failed to enable push notifications. Please try again.",
       "errorDisable": "Failed to disable push notifications. Please try again.",
@@ -1212,7 +1460,49 @@
       "aiTitlesComplete": "AI Title Generation Complete",
       "aiTitlesFailed": "AI Title Generation Failed",
       "testNotificationTitle": "Test Notification",
-      "testNotificationBody": "Push notifications are working! You'll receive alerts when your processing jobs complete."
+      "testNotificationBody": "Push notifications are working! You'll receive alerts when your processing jobs complete.",
+      "userDeletedTitle": "User Deleted",
+      "userDeletedBody": "A user account has been deleted",
+      "userRoleChangedTitle": "User Role Changed",
+      "userRoleChangedBody": "A user's role has been changed",
+      "passkeyDeletedTitle": "Passkey Deleted",
+      "passkeyDeletedBody": "A user has removed a passkey",
+      "mfaDisabledTitle": "MFA Disabled",
+      "mfaDisabledBody": "A user has disabled multi-factor authentication",
+      "passwordChangedTitle": "Password Changed",
+      "passwordChangedBody": "A user has changed their password",
+      "adminPasswordResetTitle": "Password Reset Sent",
+      "adminPasswordResetBody": "An admin sent a password reset email",
+      "failedLoginAttemptsTitle": "Failed Login Attempts",
+      "failedLoginAttemptsBody": "Multiple failed login attempts detected",
+      "suspiciousActivityTitle": "Suspicious Activity",
+      "suspiciousActivityBody": "Login from new device or location detected",
+      "albumCreatedTitle": "Album Created",
+      "albumCreatedBody": "A new album has been created",
+      "albumPublishedTitle": "Album Published",
+      "albumPublishedBody": "An album has been made public",
+      "albumDeletedTitle": "Album Deleted",
+      "albumDeletedBody": "An album has been deleted",
+      "largePhotoUploadTitle": "Large Upload",
+      "largePhotoUploadBody": "50+ photos uploaded in one batch",
+      "shareLinkCreatedTitle": "Share Link Created",
+      "shareLinkCreatedBody": "A new share link has been created",
+      "shareLinkAccessedTitle": "Share Link Viewed",
+      "shareLinkAccessedBody": "Someone viewed a shared album",
+      "shareLinkExpiredTitle": "Share Link Expired",
+      "shareLinkExpiredBody": "A share link has expired",
+      "configUpdatedTitle": "Settings Changed",
+      "configUpdatedBody": "System configuration has been updated",
+      "smtpSettingsChangedTitle": "Email Settings Changed",
+      "smtpSettingsChangedBody": "SMTP configuration has been updated",
+      "openaiApiKeyUpdatedTitle": "AI Settings Changed",
+      "openaiApiKeyUpdatedBody": "OpenAI API key has been updated",
+      "brandingUpdatedTitle": "Branding Updated",
+      "brandingUpdatedBody": "Site branding has been changed",
+      "lowDiskSpaceTitle": "Low Disk Space",
+      "lowDiskSpaceBody": "Storage is running low (< 10% remaining)",
+      "databaseBackupCompletedTitle": "Backup Complete",
+      "databaseBackupCompletedBody": "Database backup completed successfully"
     }
   }
 }

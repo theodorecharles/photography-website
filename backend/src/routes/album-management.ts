@@ -14,6 +14,9 @@ import os from "os";
 import sharp from "sharp";
 import { csrfProtection } from "../security.js";
 import { requireAuth, requireAdmin, requireManager } from '../auth/middleware.js';
+import { sendNotificationToUser } from '../push-notifications.js';
+import { translateNotification } from '../i18n-backend.js';
+import { getAllUsers } from '../database-users.js';
 import { 
   deleteAlbumMetadata, 
   deleteImageMetadata, 
@@ -43,6 +46,96 @@ const execFileAsync = promisify(execFile);
 
 // Apply CSRF protection to all routes in this router
 router.use(csrfProtection);
+
+/**
+ * Helper to send push notification to all admin users
+ */
+async function notifyAllAdmins(title: string, body: string, tag: string, notificationType?: any, variables?: Record<string, any>): Promise<void> {
+  try {
+    const admins = getAllUsers().filter(u => u.role === 'admin');
+    
+    for (const admin of admins) {
+      const translatedTitle = await translateNotification(title, variables);
+      const translatedBody = await translateNotification(body, variables);
+      
+      await sendNotificationToUser(admin.id, {
+        title: translatedTitle,
+        body: translatedBody,
+        icon: '/icon-192.png',
+        badge: '/icon-192.png',
+        tag,
+        requireInteraction: false
+      }, notificationType);
+    }
+  } catch (err) {
+    error('[AlbumManagement] Failed to send admin notification:', err);
+  }
+}
+
+/**
+ * Track photo uploads for large batch detection
+ */
+interface UploadBatch {
+  album: string;
+  uploads: Array<{ timestamp: number; user: string }>;
+  notified: boolean;
+}
+
+const uploadBatches = new Map<string, UploadBatch>();
+const LARGE_UPLOAD_THRESHOLD = 50; // 50 photos
+const BATCH_WINDOW = 5 * 60 * 1000; // 5 minutes
+
+// Clean up old upload tracking every 10 minutes
+setInterval(() => {
+  const now = Date.now();
+  for (const [album, batch] of uploadBatches.entries()) {
+    const lastUpload = batch.uploads[batch.uploads.length - 1]?.timestamp || 0;
+    if (now - lastUpload > BATCH_WINDOW) {
+      uploadBatches.delete(album);
+    }
+  }
+}, 10 * 60 * 1000);
+
+/**
+ * Track upload and send notification if batch threshold reached
+ */
+async function trackPhotoUpload(album: string, userName: string): Promise<void> {
+  const now = Date.now();
+  let batch = uploadBatches.get(album);
+  
+  if (!batch) {
+    batch = { album, uploads: [], notified: false };
+    uploadBatches.set(album, batch);
+  }
+  
+  // Remove old uploads outside the time window
+  batch.uploads = batch.uploads.filter(u => now - u.timestamp < BATCH_WINDOW);
+  
+  // Add current upload
+  batch.uploads.push({ timestamp: now, user: userName });
+  
+  // Send notification if threshold reached and not already notified
+  if (batch.uploads.length >= LARGE_UPLOAD_THRESHOLD && !batch.notified) {
+    batch.notified = true;
+    
+    try {
+      await notifyAllAdmins(
+        'notifications.backend.largePhotoUploadTitle',
+        'notifications.backend.largePhotoUploadBody',
+        'large-photo-upload',
+        'largePhotoUpload',
+        {
+          uploadedBy: userName,
+          photoCount: batch.uploads.length,
+          albumName: album
+        }
+      );
+      info(`[AlbumManagement] Large upload notification sent: ${batch.uploads.length} photos to ${album}`);
+    } catch (err) {
+      error('[AlbumManagement] Failed to send large upload notification:', err);
+    }
+  }
+}
 
 /**
  * Convert text to title case
@@ -424,6 +517,18 @@ router.post("/", requireManager, async (req: Request, res: Response): Promise<vo
       info(`Assigned album "${sanitizedName}" to folder ID: ${folder_id}`);
     }
 
+    // Send push notification to all admins
+    await notifyAllAdmins(
+      'notifications.backend.albumCreatedTitle',
+      'notifications.backend.albumCreatedBody',
+      'album-created',
+      'albumCreated',
+      {
+        albumName: sanitizedName,
+        createdBy: (req.user as any).name || (req.user as any).email
+      }
+    ).catch(err => error('[AlbumManagement] Failed to send album creation notification:', err));
+
     // Regenerate static JSON files
     const appRoot = req.app.get('appRoot');
     generateStaticJSONFiles(appRoot);
@@ -574,6 +679,18 @@ router.delete("/:album", requireManager, async (req: Request, res: Response): Pr
     } else {
       info(`[AlbumManagement] Album state not found in database: ${sanitizedAlbum}`);
     }
+
+    // Send push notification to all admins
+    await notifyAllAdmins(
+      'notifications.backend.albumDeletedTitle',
+      'notifications.backend.albumDeletedBody',
+      'album-deleted',
+      'albumDeleted',
+      {
+        albumName: sanitizedAlbum,
+        deletedBy: (req.user as any).name || (req.user as any).email
+      }
+    ).catch(err => error('[AlbumManagement] Failed to send album deletion notification:', err));
 
     // Invalidate cache for this album
     invalidateAlbumCache(sanitizedAlbum);
@@ -753,6 +870,14 @@ router.post("/:album/upload", requireManager, (req: Request, res: Response, next
         res.status(500).json({ error: `Failed to save file: ${err.message}` });
         return;
       }
+    }
+
+    // Track photo upload for large batch detection (photos only, not videos)
+    if (!isVideo) {
+      const userName = (req.session as any)?.user?.name || 'Unknown User';
+      trackPhotoUpload(sanitizedAlbum, userName).catch(err => {
+        error('[AlbumManagement] Failed to track photo upload:', err);
+      });
     }
 
     // Send success response immediately (don't keep connection open)
@@ -1082,6 +1207,32 @@ router.patch("/:album/publish", requireManager, async (req: Request, res: Respon
     }
     info(`[AlbumManagement] Verified album state in DB: published=${albumState.published}`);
 
+    // Send push notification to all admins
+    const userName = (req.user as any).name || (req.user as any).email;
+    if (published) {
+      await notifyAllAdmins(
+        'notifications.backend.albumPublishedTitle',
+        'notifications.backend.albumPublishedBody',
+        'album-published',
+        'albumPublished',
+        {
+          albumName: sanitizedAlbum,
+          publishedBy: userName
+        }
+      ).catch(err => error('[AlbumManagement] Failed to send album publish notification:', err));
+    } else {
+      await notifyAllAdmins(
+        'notifications.backend.albumUnpublishedTitle',
+        'notifications.backend.albumUnpublishedBody',
+        'album-unpublished',
+        'albumUnpublished',
+        {
+          albumName: sanitizedAlbum,
+          unpublishedBy: userName
+        }
+      ).catch(err => error('[AlbumManagement] Failed to send album unpublish notification:', err));
+    }
+
     // Regenerate static JSON files
     info(`[Publish] Regenerating static JSON files...`);
     const appRoot = req.app.get('appRoot');
@@ -1151,6 +1302,23 @@ router.patch("/:album/show-on-homepage", requireManager, async (req: Request, re
     }
     
     info(`[AlbumManagement] Set album "${sanitizedAlbum}" show_on_homepage state to: ${showOnHomepage}`);
+
+    // Send push notification to all admins
+    const userName = (req.user as any).name || (req.user as any).email;
+    const action = showOnHomepage ? 'added' : 'removed';
+    const preposition = showOnHomepage ? 'to' : 'from';
+    await notifyAllAdmins(
+      'notifications.backend.homepageUpdatedTitle',
+      'notifications.backend.homepageUpdatedBody',
+      'homepage-updated',
+      'homepageUpdated',
+      {
+        updatedBy: userName,
+        albumName: sanitizedAlbum,
+        action,
+        preposition
+      }
+    ).catch(err => error('[AlbumManagement] Failed to send homepage update notification:', err));
 
     // Regenerate static JSON files (specifically homepage.json)
     info(`[Homepage] Regenerating static JSON files...`);

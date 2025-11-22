@@ -6,7 +6,7 @@
 import nodemailer from "nodemailer";
 import { getCurrentConfig } from "./config.js";
 import { error, info } from "./utils/logger.js";
-import i18next from "./i18n.js";
+import { translateBackend, getGlobalLocale } from "./i18n-backend.js";
 
 export interface EmailConfig {
   enabled: boolean;
@@ -23,6 +23,24 @@ export interface EmailConfig {
     name: string;
     address: string;
   };
+}
+
+/**
+ * Translation helper function with variable interpolation
+ * Replaces {{variable}} placeholders in translated strings
+ */
+function t(key: string, variables?: Record<string, any>): string {
+  const locale = getGlobalLocale();
+  let translated = translateBackend(key, locale);
+  
+  // Interpolate variables
+  if (variables) {
+    Object.entries(variables).forEach(([varName, value]) => {
+      translated = translated.replace(new RegExp(`{{${varName}}}`, 'g'), String(value));
+    });
+  }
+  
+  return translated;
 }
 
 /**
@@ -115,13 +133,9 @@ export async function sendInvitationEmail(
   const avatarPath = config.branding?.avatarPath || "/photos/avatar.png";
   const avatarUrl = `${frontendUrl}${avatarPath}`;
 
-  // Get translations for the specified language
-  info(`[Email] Sending invitation email in language: ${language}`);
-  const t = i18next.getFixedT(language);
-  
-  // Test translation
-  const testSubject = t('email.invitation.subject', { siteName });
-  info(`[Email] Test translation - Subject: ${testSubject}`);
+  // Get translations for the global language setting
+  const locale = getGlobalLocale();
+  info(`[Email] Sending invitation email in language: ${locale}`);
 
   const mailOptions = {
     from: `"${emailConfig.from.name}" <${emailConfig.from.address}>`,
@@ -261,8 +275,9 @@ export async function sendPasswordResetEmail(
   const avatarPath = config.branding?.avatarPath || "/photos/avatar.png";
   const avatarUrl = `${frontendUrl}${avatarPath}`;
 
-  // Get translations for the specified language
-  const t = i18next.getFixedT(language);
+  // Get translations for the global language setting
+  const locale = getGlobalLocale();
+  info(`[Email] Sending password reset email in language: ${locale}`);
   
   const greeting = userName 
     ? t('email.passwordReset.greeting', { userName })
@@ -425,14 +440,9 @@ export async function sendTestEmail(toEmail: string, language: string = 'en'): P
   const config = getCurrentConfig();
   const siteName = config.branding?.siteName || "Galleria";
 
-  // Get translations for the specified language
-  info(`[Email] Test email language: ${language}`);
-  info(`[Email] Available languages: ${i18next.languages.join(', ')}`);
-  const t = i18next.getFixedT(language);
-  
-  // Test translation
-  const testSubject = t('email.test.subject', { siteName });
-  info(`[Email] Test translation - Subject: ${testSubject}`);
+  // Get translations for the global language setting
+  const locale = getGlobalLocale();
+  info(`[Email] Test email language: ${locale}`);
   
   const timestamp = new Date().toLocaleString();
 

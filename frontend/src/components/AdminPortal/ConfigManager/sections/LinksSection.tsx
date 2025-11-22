@@ -9,7 +9,6 @@ import { API_URL } from '../../../../config';
 import { useSearchParams } from 'react-router-dom';
 import { ExternalLink } from '../../types';
 import { trackExternalLinksUpdate } from '../../../../utils/analytics';
-import SectionHeader from '../components/SectionHeader';
 import { ChevronUpIcon, ChevronDownIcon } from '../../../icons';
 import '../../LinksManager.css';
 import { info } from '../../../../utils/logger';
@@ -19,16 +18,17 @@ interface LinksSectionProps {
   externalLinks: ExternalLink[];
   setExternalLinks: (links: ExternalLink[]) => void;
   setMessage: (message: { type: "success" | "error"; text: string }) => void;
+  setActionButtons: (buttons: React.ReactNode) => void;
 }
 
 const LinksSection: React.FC<LinksSectionProps> = ({
   externalLinks,
   setExternalLinks,
   setMessage,
+  setActionButtons,
 }) => {
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
-  const [showLinks, setShowLinks] = useState(false);
   const [originalExternalLinks, setOriginalExternalLinks] = useState<ExternalLink[]>([]);
   const [savingLinks, setSavingLinks] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
@@ -51,15 +51,12 @@ const LinksSection: React.FC<LinksSectionProps> = ({
     // Wait for component to mount and render
     setTimeout(() => {
       if (section === 'links') {
-        setShowLinks(true);
-        setTimeout(() => {
-          if (linksSectionRef.current) {
-            const yOffset = -100; // Offset to account for header
-            const element = linksSectionRef.current;
-            const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
-            window.scrollTo({ top: y, behavior: "smooth" });
-          }
-        }, 300); // Wait for section to expand
+        if (linksSectionRef.current) {
+          const yOffset = -100; // Offset to account for header
+          const element = linksSectionRef.current;
+          const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+          window.scrollTo({ top: y, behavior: "smooth" });
+        }
       }
     }, 100);
   }, [searchParams]);
@@ -147,22 +144,52 @@ const LinksSection: React.FC<LinksSectionProps> = ({
     );
   };
 
-  return (
-    <div className="config-group full-width" ref={linksSectionRef}>
-      <SectionHeader
-        title={t('links.title')}
-        description={t('links.description')}
-        isExpanded={showLinks}
-        onToggle={() => setShowLinks(!showLinks)}
-      />
+  // Update action buttons whenever state changes
+  useEffect(() => {
+    const buttons = [];
 
-      <div
-        className={`collapsible-content ${showLinks ? "expanded" : "collapsed"}`}
-        style={{
-          maxHeight: showLinks ? "10000px" : "0",
-        }}
+    // Always show Add Link button
+    buttons.push(
+      <button
+        key="add-link"
+        onClick={handleAddLink}
+        className="btn-secondary"
+        style={{ fontSize: '0.875rem', padding: '0.4rem 0.8rem' }}
       >
-        <div className="links-list">
+        + {t('links.addLink')}
+      </button>
+    );
+
+    // Show Cancel/Save buttons when there are unsaved changes
+    if (hasUnsavedLinksChanges()) {
+      buttons.push(
+        <button
+          key="cancel"
+          onClick={handleCancelLinks}
+          className="btn-secondary"
+          disabled={savingLinks}
+          style={{ fontSize: '0.875rem', padding: '0.4rem 0.8rem' }}
+        >
+          {t('common.cancel')}
+        </button>,
+        <button
+          key="save"
+          onClick={handleSaveLinks}
+          className="btn-primary"
+          disabled={savingLinks}
+          style={{ fontSize: '0.875rem', padding: '0.4rem 0.8rem' }}
+        >
+          {savingLinks ? t('common.saving') : t('links.saveChanges')}
+        </button>
+      );
+    }
+
+    setActionButtons(<>{buttons}</>);
+  }, [externalLinks, originalExternalLinks, savingLinks, t, setActionButtons]);
+
+  return (
+    <div ref={linksSectionRef}>
+      <div className="links-list">
           {externalLinks.map((link, index) => (
             <div key={index} className="link-wrapper">
               <div className="link-item">
@@ -216,31 +243,6 @@ const LinksSection: React.FC<LinksSectionProps> = ({
               </div>
             </div>
           ))}
-        </div>
-
-        <div className="section-actions">
-          <button onClick={handleAddLink} className="btn-secondary">
-            + {t('links.addLink')}
-          </button>
-          {hasUnsavedLinksChanges() && (
-            <>
-              <button
-                onClick={handleCancelLinks}
-                className="btn-secondary"
-                disabled={savingLinks}
-              >
-                {t('common.cancel')}
-              </button>
-              <button
-                onClick={handleSaveLinks}
-                className="btn-primary"
-                disabled={savingLinks}
-              >
-                {savingLinks ? t('common.saving') : t('links.saveChanges')}
-              </button>
-            </>
-          )}
-        </div>
       </div>
     </div>
   );

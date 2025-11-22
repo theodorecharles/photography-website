@@ -6,14 +6,16 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { error as logError } from './utils/logger.js';
+import { error as logError, info } from './utils/logger.js';
+import { getCurrentConfig } from './config.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Load all translation files
+// Load all translation files (backend-only translations)
 const translationsCache: { [locale: string]: any } = {};
-const localesDir = path.join(__dirname, '../../frontend/src/i18n/locales');
+// Resolve path relative to this file's location (works in both src and dist)
+const localesDir = path.join(__dirname, 'i18n/locales');
 
 // Supported languages
 const supportedLocales = [
@@ -23,17 +25,30 @@ const supportedLocales = [
 
 // Load translations on module initialization
 function loadTranslations() {
+  let successCount = 0;
+  let failCount = 0;
+  
   supportedLocales.forEach(locale => {
     try {
       const filePath = path.join(localesDir, `${locale}.json`);
       if (fs.existsSync(filePath)) {
         const content = fs.readFileSync(filePath, 'utf8');
         translationsCache[locale] = JSON.parse(content);
+        successCount++;
+      } else {
+        failCount++;
+        logError(`[i18n] File not found: ${filePath}`);
       }
     } catch (err) {
+      failCount++;
       logError(`[i18n] Failed to load ${locale} translations:`, err);
     }
   });
+  
+  info(`[i18n-backend] Loaded ${successCount}/${supportedLocales.length} translation files from ${localesDir}`);
+  if (failCount > 0) {
+    logError(`[i18n-backend] Failed to load ${failCount} translation files`);
+  }
 }
 
 loadTranslations();
@@ -69,29 +84,37 @@ export function translateBackend(key: string, locale: string = 'en'): string {
 }
 
 /**
- * Get user's preferred locale from database
+ * Get global locale from config.json
  * Returns 'en' as default if not set
  */
-export async function getUserLocale(userId: number): Promise<string> {
+export function getGlobalLocale(): string {
   try {
-    const { getDatabase } = await import('./database.js');
-    const db = getDatabase();
-    
-    const user = db.prepare('SELECT locale FROM users WHERE id = ?').get(userId) as { locale?: string } | undefined;
-    
-    return user?.locale || 'en';
+    const config = getCurrentConfig();
+    const locale = config?.branding?.language || 'en';
+    return locale;
   } catch (err) {
-    logError('[i18n] Failed to get user locale:', err);
+    logError('[i18n-backend] Failed to get global locale from config:', err);
     return 'en';
   }
 }
 
 /**
- * Translate notification for a specific user
- * Automatically fetches user's locale from database
+ * Translate notification using global language setting with variable interpolation
+ * Reads language from data/config.json
+ * @param key - Translation key
+ * @param variables - Optional variables for interpolation (e.g., {userName: 'John'})
  */
-export async function translateNotificationForUser(userId: number, key: string): Promise<string> {
-  const locale = await getUserLocale(userId);
-  return translateBackend(key, locale);
+export async function translateNotification(key: string, variables?: Record<string, any>): Promise<string> {
+  const locale = getGlobalLocale();
+  let translated = translateBackend(key, locale);
+  
+  // Interpolate variables if provided
+  if (variables) {
+    Object.entries(variables).forEach(([varName, value]) => {
+      translated = translated.replace(new RegExp(`{{${varName}}}`, 'g'), String(value));
+    });
+  }
+  
+  return translated;
 }
 

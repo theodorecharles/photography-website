@@ -5,6 +5,7 @@
  *
  * Validates that all translation files have the same schema as en.json
  * Checks for missing keys, extra keys, and structural differences
+ * Works with BOTH frontend and backend translation files
  */
 
 import { readFileSync, readdirSync } from "fs";
@@ -14,7 +15,16 @@ import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const LOCALES_DIR = join(__dirname, "../frontend/src/i18n/locales");
+const TRANSLATION_DIRS = [
+  {
+    name: "Frontend",
+    path: join(__dirname, "../frontend/src/i18n/locales"),
+  },
+  {
+    name: "Backend",
+    path: join(__dirname, "../backend/src/i18n/locales"),
+  },
+];
 
 // Colors for terminal output
 const colors = {
@@ -89,38 +99,33 @@ function validateTranslationFile(referenceKeys, filePath, langCode) {
 }
 
 /**
- * Main validation function
+ * Validate all translations in a directory
  */
-function validateAllTranslations() {
+function validateTranslationDir(dirName, dirPath) {
   console.log(
-    `${colors.blue}\n╔════════════════════════════════════════════════════╗${colors.reset}`
+    `${colors.blue}${colors.bold}${dirName} Translations${colors.reset}`
   );
-  console.log(
-    `${colors.blue}║     Translation Schema Validator                 ║${colors.reset}`
-  );
-  console.log(
-    `${colors.blue}╚════════════════════════════════════════════════════╝${colors.reset}\n`
-  );
+  console.log(`${colors.blue}${"═".repeat(60)}${colors.reset}\n`);
 
   // Load reference schema (en.json)
-  const referenceFile = join(LOCALES_DIR, "en.json");
+  const referenceFile = join(dirPath, "en.json");
   let referenceData, referenceKeys;
 
   try {
     referenceData = JSON.parse(readFileSync(referenceFile, "utf8"));
     referenceKeys = getAllKeys(referenceData);
     console.log(
-      `${colors.blue}📋 Reference schema: en.json (${referenceKeys.length} keys)${colors.reset}\n`
+      `${colors.blue}📋 Reference: en.json (${referenceKeys.length} keys)${colors.reset}\n`
     );
   } catch (error) {
     console.error(
-      `${colors.red}❌ Error reading reference file (en.json): ${error.message}${colors.reset}`
+      `${colors.red}❌ Error reading reference file (en.json): ${error.message}${colors.reset}\n`
     );
-    process.exit(1);
+    return { valid: false, validCount: 0, totalCount: 0, invalidFiles: [] };
   }
 
   // Get all translation files
-  const files = readdirSync(LOCALES_DIR).filter(
+  const files = readdirSync(dirPath).filter(
     (f) => f.endsWith(".json") && f !== "en.json"
   );
 
@@ -128,7 +133,7 @@ function validateAllTranslations() {
   const results = [];
   for (const file of files) {
     const langCode = file.replace(".json", "");
-    const filePath = join(LOCALES_DIR, file);
+    const filePath = join(dirPath, file);
     const result = validateTranslationFile(referenceKeys, filePath, langCode);
     results.push(result);
   }
@@ -162,53 +167,109 @@ function validateAllTranslations() {
         console.log(
           `${colors.yellow}  Missing keys (${result.missing.length}):${colors.reset}`
         );
-        result.missing.forEach((key) => {
+        result.missing.slice(0, 5).forEach((key) => {
           console.log(`${colors.yellow}    - ${key}${colors.reset}`);
         });
+        if (result.missing.length > 5) {
+          console.log(
+            `${colors.yellow}    ... and ${result.missing.length - 5} more${colors.reset}`
+          );
+        }
       }
 
       if (result.extra.length > 0) {
         console.log(
           `${colors.yellow}  Extra keys (${result.extra.length}):${colors.reset}`
         );
-        result.extra.forEach((key) => {
+        result.extra.slice(0, 5).forEach((key) => {
           console.log(`${colors.yellow}    + ${key}${colors.reset}`);
         });
+        if (result.extra.length > 5) {
+          console.log(
+            `${colors.yellow}    ... and ${result.extra.length - 5} more${colors.reset}`
+          );
+        }
       }
 
       console.log(); // Empty line for readability
     }
   }
 
-  // Summary
-  console.log(
-    `${colors.blue}\n════════════════════════════════════════════════════════════${colors.reset}`
-  );
-  console.log(`${colors.blue}SUMMARY${colors.reset}`);
-  console.log(
-    `${colors.blue}════════════════════════════════════════════════════════════${colors.reset}\n`
-  );
-
   const validCount = results.filter((r) => r.valid && !r.error).length;
   const totalCount = results.length;
 
-  if (allValid) {
+  console.log();
+
+  return { valid: allValid, validCount, totalCount, invalidFiles };
+}
+
+/**
+ * Main validation function
+ */
+function validateAllTranslations() {
+  console.log(
+    `${colors.blue}\n╔════════════════════════════════════════════════════╗${colors.reset}`
+  );
+  console.log(
+    `${colors.blue}║     Translation Schema Validator                 ║${colors.reset}`
+  );
+  console.log(
+    `${colors.blue}╚════════════════════════════════════════════════════╝${colors.reset}\n`
+  );
+
+  const allResults = [];
+
+  // Validate each directory
+  for (const dir of TRANSLATION_DIRS) {
+    const result = validateTranslationDir(dir.name, dir.path);
+    allResults.push({ ...result, name: dir.name });
+  }
+
+  // Overall summary
+  console.log(
+    `${colors.blue}${colors.bold}OVERALL SUMMARY${colors.reset}`
+  );
+  console.log(
+    `${colors.blue}${"═".repeat(60)}${colors.reset}\n`
+  );
+
+  let overallValid = true;
+  for (const result of allResults) {
+    const status = result.valid
+      ? `${colors.green}✓ VALID${colors.reset}`
+      : `${colors.red}✗ INVALID${colors.reset}`;
+
     console.log(
-      `${colors.green}${colors.bold}✓ All ${totalCount} translation files are valid!${colors.reset}`
+      `${result.name}: ${status} (${result.validCount}/${result.totalCount} files)`
+    );
+
+    if (!result.valid) {
+      overallValid = false;
+      console.log(
+        `${colors.yellow}  Invalid: ${result.invalidFiles.join(", ")}${colors.reset}`
+      );
+    }
+  }
+
+  console.log();
+
+  if (overallValid) {
+    const totalFiles = allResults.reduce((sum, r) => sum + r.totalCount, 0);
+    console.log(
+      `${colors.green}${colors.bold}✓ All ${totalFiles} translation files are valid!${colors.reset}`
     );
     console.log(
-      `${colors.green}  All files have the same schema as en.json${colors.reset}\n`
+      `${colors.green}  All files have the same schema as their respective en.json${colors.reset}\n`
     );
     process.exit(0);
   } else {
-    console.log(
-      `${colors.red}${colors.bold}✗ ${invalidFiles.length} of ${totalCount} translation files have schema issues${colors.reset}`
+    const totalFiles = allResults.reduce((sum, r) => sum + r.totalCount, 0);
+    const totalInvalid = allResults.reduce(
+      (sum, r) => sum + (r.totalCount - r.validCount),
+      0
     );
     console.log(
-      `${colors.yellow}  Valid: ${validCount}, Invalid: ${invalidFiles.length}${colors.reset}`
-    );
-    console.log(
-      `${colors.yellow}  Invalid files: ${invalidFiles.join(", ")}${colors.reset}\n`
+      `${colors.red}${colors.bold}✗ ${totalInvalid} of ${totalFiles} translation files have schema issues${colors.reset}\n`
     );
     process.exit(1);
   }

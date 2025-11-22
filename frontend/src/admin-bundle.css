@@ -5,7 +5,7 @@
 @import './components/AdminPortal/ConfigManager.css';
 @import './components/AdminPortal/BrandingManager.css';
 @import './components/AdminPortal/LinksManager.css';
-@import './components/AdminPortal/ShareModal.css';
+@import './components/AdminPortal/GenericModal.css';
 @import './components/AdminPortal/PasswordInput.css';
 @import './components/AdminPortal/Metrics/Metrics.css';
 @import './components/AdminPortal/Metrics/VisitorMap.css';

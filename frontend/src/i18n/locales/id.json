@@ -36,7 +36,9 @@
     "generating": "Menghasilkan...",
     "album": "album",
     "albums": "album",
-    "note": "Catatan"
+    "note": "Catatan",
+    "dismiss": "Abaikan",
+    "stop": "Berhenti"
   },
   "app": {
     "loadingAlbums": "Memuat album...",
@@ -99,7 +101,7 @@
     "lens": "Lensa",
     "focalLength": "Panjang Fokus",
     "aperture": "Bukaan",
-    "shutter": "Shutter",
+    "shutter": "Rana",
     "iso": "ISO",
     "dateTaken": "Tanggal Diambil",
     "resolution": "Resolusi",
@@ -153,47 +155,6 @@
     "progress": "{{progress}}%",
     "uploadInProgress": "Unggahan sedang berlangsung",
     "jobStoppedByUser": "Pekerjaan dihentikan oleh pengguna"
-  },
-  "branding": {
-    "title": "Merek",
-    "description": "Sesuaikan nama situs Anda, subtitle, dan avatar",
-    "logo": "Logo",
-    "clickOrDrag": "Klik atau seret gambar ke sini",
-    "currentAvatar": "Avatar saat ini",
-    "siteName": "Nama Situs",
-    "siteNamePlaceholder": "Nama situs Anda",
-    "photoLicense": "Lisensi Foto",
-    "photoLicenseDescription": "Pilih bagaimana orang lain dapat menggunakan foto Anda",
-    "shuffleHomepage": "Acak Foto Beranda",
-    "shuffleHomepageDescription": "Acak urutan foto di beranda setiap kali halaman dimuat",
-    "animatedBackground": "Latar Belakang Animasi",
-    "animatedBackgroundDescription": "Aktifkan latar belakang animasi berwarna di panel admin dan halaman login",
-    "primaryColor": "Warna Utama",
-    "secondaryColor": "Warna Sekunder",
-    "metaDescription": "Deskripsi Meta",
-    "metaDescriptionPlaceholder": "Deskripsi singkat tentang situs Anda untuk mesin pencari",
-    "metaKeywords": "Kata Kunci Meta",
-    "metaKeywordsPlaceholder": "fotografi, portofolio, nama Anda (dipisahkan dengan koma)",
-    "language": "Bahasa",
-    "languageDescription": "Pilih bahasa default untuk situs Anda",
-    "savedSuccessfully": "{{section}} berhasil disimpan!",
-    "photoLicenseUpdated": "Lisensi foto diperbarui!",
-    "languageUpdated": "Bahasa diperbarui!",
-    "homepageShuffleSaved": "Pengaturan acak beranda disimpan!",
-    "animatedBackgroundSaved": "Pengaturan latar belakang animasi disimpan!",
-    "failedToSave": "Gagal menyimpan {{section}}",
-    "failedToSaveLicense": "Gagal menyimpan lisensi",
-    "failedToSaveLanguage": "Gagal menyimpan bahasa",
-    "failedToSaveSetting": "Gagal menyimpan pengaturan",
-    "errorSavingLicense": "Kesalahan saat menyimpan lisensi",
-    "errorSavingLanguage": "Kesalahan saat menyimpan bahasa",
-    "errorSavingSetting": "Kesalahan saat menyimpan pengaturan",
-    "siteNameSaved": "Nama Situs berhasil disimpan!",
-    "primaryColorSaved": "Warna Utama berhasil disimpan!",
-    "secondaryColorSaved": "Warna Sekunder berhasil disimpan!",
-    "metaDescriptionSaved": "Deskripsi Meta berhasil disimpan!",
-    "metaKeywordsSaved": "Kata Kunci Meta berhasil disimpan!",
-    "LogoSaved": "Logo berhasil disimpan!"
   },
   "license": {
     "title": "Lisensi Foto",
@@ -403,7 +364,232 @@
   "settings": {
     "saved": "Pengaturan {{section}} disimpan!",
     "failedToSave": "Gagal menyimpan konfigurasi",
-    "errorSaving": "Kesalahan saat menyimpan konfigurasi"
+    "errorSaving": "Kesalahan saat menyimpan konfigurasi",
+    "home": {
+      "description": "Konfigurasikan portofolio fotografi dan preferensi sistem Anda"
+    },
+    "links": {
+      "title": "Tautan",
+      "description": "Halaman eksternal dan navigasi kustom",
+      "pageDescription": "Kelola tautan eksternal yang muncul di navigasi situs Anda"
+    },
+    "users": {
+      "title": "Pengguna",
+      "description": "Manajemen pengguna dan kontrol akses",
+      "pageDescription": "Kelola akun pengguna, peran, dan izin"
+    },
+    "openai": {
+      "title": "OpenAI",
+      "description": "Judul dan deskripsi foto yang didukung AI",
+      "pageDescription": "Konfigurasi API OpenAI untuk generasi judul otomatis"
+    },
+    "imageQuality": {
+      "title": "Kualitas Gambar",
+      "description": "Pengaturan gambar thumbnail dan modal",
+      "pageDescription": "Konfigurasi kualitas dan dimensi optimisasi gambar"
+    },
+    "videoQuality": {
+      "title": "Kualitas Video",
+      "description": "Pengaturan encoding dan streaming video",
+      "pageDescription": "Konfigurasi kualitas video, bitrate, dan resolusi"
+    },
+    "email": {
+      "title": "Email",
+      "description": "Konfigurasi SMTP untuk undangan",
+      "pageDescription": "Konfigurasi server SMTP untuk mengirim undangan dan email reset kata sandi"
+    },
+    "pushNotifications": {
+      "title": "Notifikasi Dorong",
+      "description": "Notifikasi browser untuk admin",
+      "pageDescription": "Konfigurasi notifikasi dorong untuk pemberitahuan penyelesaian pekerjaan"
+    },
+    "googleOAuth": {
+      "title": "Google OAuth",
+      "description": "Autentikasi dan pengguna yang terotorisasi",
+      "pageDescription": "Konfigurasi kredensial Google OAuth dan alamat email yang terotorisasi"
+    },
+    "analytics": {
+      "title": "Analitik",
+      "description": "Pelacakan pengunjung dan OpenObserve",
+      "pageDescription": "Konfigurasi pelacakan analitik dan agregasi log"
+    },
+    "logging": {
+      "title": "Pencatatan",
+      "description": "Tingkat log server dan penampil",
+      "pageDescription": "Konfigurasi tingkat verbositas logging server dan lihat log langsung"
+    },
+    "general": {
+      "title": "Umum",
+      "description": "Nama situs, logo, dan penampilan",
+      "pageDescription": "Sesuaikan identitas visual dan pengaturan umum situs Anda"
+    },
+    "notificationEvents": {
+      "title": "Acara",
+      "description": "Konfigurasikan pemicu notifikasi",
+      "pageDescription": "Pilih acara mana yang harus memicu notifikasi push"
+    },
+    "notifications": {
+      "title": "Preferensi Notifikasi",
+      "description": "Konfigurasikan notifikasi push mana yang ingin Anda terima",
+      "saved": "Preferensi notifikasi disimpan",
+      "confirmReset": "Atur ulang semua preferensi notifikasi ke default?",
+      "resetSuccess": "Preferensi notifikasi diatur ulang ke default",
+      "resetToDefaults": "Atur Ulang ke Default",
+      "enableAll": "Aktifkan Semua",
+      "disableAll": "Nonaktifkan Semua",
+      "categories": {
+        "security": {
+          "title": "Keamanan & Autentikasi",
+          "description": "Notifikasi tentang akun pengguna, login, dan acara keamanan"
+        },
+        "content": {
+          "title": "Manajemen Konten",
+          "description": "Notifikasi tentang album, foto, dan berbagi"
+        },
+        "system": {
+          "title": "Sistem & Konfigurasi",
+          "description": "Notifikasi tentang perubahan pengaturan dan acara sistem"
+        }
+      },
+      "types": {
+        "userInvited": {
+          "title": "Pengguna Diundang",
+          "description": "Ketika admin mengundang pengguna baru"
+        },
+        "userAcceptedInvite": {
+          "title": "Pengguna Bergabung",
+          "description": "Ketika pengguna menerima undangan"
+        },
+        "userDeleted": {
+          "title": "Pengguna Dihapus",
+          "description": "Ketika admin menghapus akun pengguna"
+        },
+        "userRoleChanged": {
+          "title": "Peran Pengguna Diubah",
+          "description": "Ketika peran pengguna diubah"
+        },
+        "passkeyCreated": {
+          "title": "Kunci Akses Dibuat",
+          "description": "Ketika pengguna mendaftarkan kunci akses baru"
+        },
+        "passkeyDeleted": {
+          "title": "Kunci Akses Dihapus",
+          "description": "Ketika pengguna menghapus kunci akses"
+        },
+        "mfaEnabled": {
+          "title": "MFA Diaktifkan",
+          "description": "Ketika pengguna mengaktifkan autentikasi multi-faktor"
+        },
+        "mfaDisabled": {
+          "title": "MFA Dinonaktifkan",
+          "description": "Ketika pengguna menonaktifkan autentikasi multi-faktor"
+        },
+        "passwordChanged": {
+          "title": "Kata Sandi Diubah",
+          "description": "Ketika pengguna mengubah kata sandi mereka"
+        },
+        "adminPasswordReset": {
+          "title": "Atur Ulang Kata Sandi Admin",
+          "description": "Ketika admin memulai pengaturan ulang kata sandi"
+        },
+        "failedLoginAttempts": {
+          "title": "Upaya Login Gagal",
+          "description": "Ketika beberapa upaya login gagal terdeteksi"
+        },
+        "suspiciousActivity": {
+          "title": "Aktivitas Mencurigakan",
+          "description": "Ketika login dari perangkat/lokasi baru terdeteksi"
+        },
+        "albumCreated": {
+          "title": "Album Dibuat",
+          "description": "Ketika album baru dibuat"
+        },
+        "albumPublished": {
+          "title": "Album Dipublikasikan",
+          "description": "Ketika album dibuat publik"
+        },
+        "albumUnpublished": {
+          "title": "Album Tidak Dipublikasikan",
+          "description": "Ketika album dibuat pribadi"
+        },
+        "albumDeleted": {
+          "title": "Album Dihapus",
+          "description": "Ketika album dihapus"
+        },
+        "folderCreated": {
+          "title": "Folder Dibuat",
+          "description": "Ketika folder baru dibuat"
+        },
+        "folderPublished": {
+          "title": "Folder Dipublikasikan",
+          "description": "Ketika folder dibuat publik"
+        },
+        "folderUnpublished": {
+          "title": "Folder Tidak Dipublikasikan",
+          "description": "Ketika folder dibuat pribadi"
+        },
+        "folderDeleted": {
+          "title": "Folder Dihapus",
+          "description": "Ketika folder dihapus"
+        },
+        "homepageUpdated": {
+          "title": "Beranda Diperbarui",
+          "description": "Ketika urutan beranda diubah"
+        },
+        "largePhotoUpload": {
+          "title": "Unggahan Besar",
+          "description": "Ketika 50+ foto diunggah sekaligus"
+        },
+        "shareLinkCreated": {
+          "title": "Tautan Berbagi Dibuat",
+          "description": "Ketika tautan berbagi baru dibuat"
+        },
+        "shareLinkAccessed": {
+          "title": "Tautan Berbagi Diakses",
+          "description": "Ketika seseorang melihat album yang dibagikan"
+        },
+        "shareLinkExpired": {
+          "title": "Tautan Berbagi Kedaluwarsa",
+          "description": "Ketika tautan berbagi kedaluwarsa"
+        },
+        "photoDownloaded": {
+          "title": "Foto Diunduh",
+          "description": "Ketika seseorang mengunduh foto"
+        },
+        "albumViewMilestone": {
+          "title": "Tonggak Tampilan",
+          "description": "Ketika album mencapai tonggak tampilan (100, 500, 1000, dll.)"
+        },
+        "configUpdated": {
+          "title": "Pengaturan Diubah",
+          "description": "Ketika konfigurasi sistem diperbarui"
+        },
+        "smtpSettingsChanged": {
+          "title": "Pengaturan SMTP Diubah",
+          "description": "Ketika konfigurasi email diperbarui"
+        },
+        "openaiApiKeyUpdated": {
+          "title": "Pengaturan AI Diubah",
+          "description": "Ketika kunci API OpenAI diperbarui"
+        },
+        "brandingUpdated": {
+          "title": "Merek Diperbarui",
+          "description": "Ketika merek situs diubah"
+        },
+        "lowDiskSpace": {
+          "title": "Ruang Disk Rendah",
+          "description": "Ketika penyimpanan di bawah 10%"
+        },
+        "databaseBackupCompleted": {
+          "title": "Cadangan Selesai",
+          "description": "Ketika cadangan database selesai"
+        },
+        "versionUpdate": {
+          "title": "Pembaruan Versi",
+          "description": "Ketika versi baru tersedia"
+        }
+      }
+    }
   },
   "advancedSettings": {
     "title": "Pengaturan Lanjutan",
@@ -435,7 +621,14 @@
       "forceRegenerateImagesConfirm": "Apakah Anda yakin ingin memaksa regenerasi SEMUA gambar? Ini akan memakan waktu.",
       "runOptimizationConfirm": "Jalankan optimasi gambar pada semua foto?",
       "optimizedVideos": "Video yang Dioptimalkan",
-      "forceRegenerateVideosConfirm": "⚠️ Ini akan mengkode ulang SEMUA video dengan pengaturan kualitas saat ini. Ini adalah operasi yang memakan waktu dan akan sementara meningkatkan penggunaan CPU.\n\nFile video yang ada akan diganti. Apakah Anda yakin ingin melanjutkan?"
+      "forceRegenerateVideosConfirm": "⚠️ Ini akan mengkode ulang SEMUA video dengan pengaturan kualitas saat ini. Ini adalah operasi yang memakan waktu dan akan sementara meningkatkan penggunaan CPU.\n\nFile video yang ada akan diganti. Apakah Anda yakin ingin melanjutkan?",
+      "imageOptimization": "Optimisasi Gambar",
+      "imageOptimizationDescription": "Hasilkan thumbnail dan gambar modal yang dioptimalkan untuk semua foto di portofolio Anda",
+      "optimizeMissing": "Optimalkan Gambar yang Hilang",
+      "forceRegenerateImages": "Paksa Regenerasi Semua Gambar",
+      "videoOptimization": "Optimisasi Video",
+      "videoOptimizationDescription": "Regenerasi daftar putar master HLS untuk semua video dengan pengaturan kualitas saat ini",
+      "regenerateVideoPlaylists": "Regenerasi Daftar Putar Video"
     }
   },
   "userManagement": {
@@ -561,7 +754,16 @@
     "registering": "Sedang mendaftar...",
     "register": "+ Daftar",
     "registeredPasskeys": "Kunci Terdaftar",
-    "passkeysNote": "Catatan: Kunci memerlukan HTTPS (atau localhost) dan perangkat yang kompatibel"
+    "passkeysNote": "Catatan: Kunci memerlukan HTTPS (atau localhost) dan perangkat yang kompatibel",
+    "creating": "Membuat...",
+    "createInviteLink": "Buat Tautan Undangan",
+    "invitationCreated": "Undangan Dibuat",
+    "clickCopyLinkToShare": "Klik tombol di bawah untuk menyalin tautan undangan dan membagikannya dengan pengguna.",
+    "linkCopied": "Tautan Disalin!",
+    "shareLinkWithUser": "Bagikan tautan ini dengan pengguna untuk menyelesaikan pendaftaran mereka.",
+    "setupSmtpDescriptionDismissible": "Atur SMTP untuk mengirim email undangan pengguna dan pengaturan ulang kata sandi, atau abaikan untuk mengundang pengguna hanya dengan tautan salinan.",
+    "linkOnlyMode": "Mode Hanya-Tautan",
+    "linkOnlyModeDescription": "Email tidak dikonfigurasi. Setelah membuat undangan, Anda perlu menyalin dan mengirim tautan undangan secara manual kepada pengguna."
   },
   "expiredLink": {
     "title": "Halo, teman!",
@@ -825,7 +1027,16 @@
     "autoGenerateEnabled": "Auto-generate AI titles diaktifkan",
     "autoGenerateDisabled": "Auto-generate AI titles dinonaktifkan",
     "invalidApiKey": "Kunci API OpenAI tidak valid. Silakan periksa kunci Anda dan coba lagi.",
-    "failedToUpdate": "Gagal memperbarui pengaturan"
+    "failedToUpdate": "Gagal memperbarui pengaturan",
+    "generateTitles": {
+      "title": "Hasilkan Judul AI",
+      "description": "Gunakan OpenAI untuk secara otomatis menghasilkan judul deskriptif untuk foto-foto Anda",
+      "generateMissing": "Hasilkan Judul yang Hilang",
+      "regenerateAll": "Paksa Regenerasi Semua Judul",
+      "autoEnabledDescription": "Pembuatan judul AI otomatis diaktifkan. Foto baru akan mendapatkan judul AI yang dihasilkan secara otomatis. Gunakan tombol di bawah untuk mengisi judul yang hilang atau meregenerasi yang sudah ada.",
+      "autoDisabledDescription": "Pembuatan judul AI otomatis dinonaktifkan. Judul AI hanya akan dihasilkan menggunakan tombol di bawah atau di editor metadata.",
+      "noMissingTitles": "Tidak Ada Judul yang Hilang"
+    }
   },
   "profile": {
     "failedToStartMfaSetup": "Gagal memulai pengaturan MFA",
@@ -1152,21 +1363,16 @@
     "on": "Hidup",
     "off": "Matikan",
     "warningNote": "Perubahan pada pengaturan video hanya berlaku untuk video yang baru diunggah. Video yang sudah ada akan mempertahankan pengaturan kualitas saat ini kecuali Anda menggunakan",
-    "forceRegenerate": "Paksa Regenerasi Semua"
+    "forceRegenerate": "Paksa Regenerasi Semua",
+    "segmentDurationSection": "Durasi Segmen",
+    "hardwareTranscoding": "Transcoding Perangkat Keras",
+    "hardwareTranscodingSection": "Transcoding Perangkat Keras",
+    "hardwareTranscodingDescription": "Gunakan akselerasi GPU untuk pengkodean video yang lebih cepat (memerlukan perangkat keras yang kompatibel)"
   },
   "notifications": {
-    "bannerTitle": "Dapatkan Notifikasi Ketika Pekerjaan Pemrosesan Selesai",
-    "bannerDescription": "Aktifkan notifikasi push untuk menerima pemberitahuan ketika pemrosesan video dan pekerjaan optimisasi gambar Anda selesai. Anda dapat bekerja di tab atau aplikasi lain sementara pekerjaan berjalan di latar belakang.",
-    "enable": "Aktifkan Notifikasi",
-    "dismiss": "Mungkin Nanti",
     "active": "Notifikasi push diaktifkan",
     "sendTest": "Kirim Uji Coba",
     "disable": "Nonaktifkan",
-    "permissionGranted": "Notifikasi dorong berhasil diaktifkan!",
-    "permissionDenied": "Izin notifikasi dorong ditolak",
-    "error": "Gagal mengelola notifikasi dorong",
-    "unsubscribed": "Notifikasi dorong dinonaktifkan",
-    "testSent": "Notifikasi uji telah dikirim! Periksa perangkat Anda.",
     "settings": {
       "title": "Notifikasi Push",
       "configured": "✓ Terkonfigurasi",
@@ -1193,7 +1399,9 @@
       "errorEnable": "Gagal mengaktifkan notifikasi push. Silakan coba lagi.",
       "errorDisable": "Gagal menonaktifkan notifikasi push. Silakan coba lagi.",
       "errorGenerateKeys": "Gagal menghasilkan kunci VAPID",
-      "close": "Tutup"
+      "close": "Tutup",
+      "configureEvents": "⚙️ Konfigurasi Acara",
+      "configureEventsDescription": "Pilih acara mana yang harus memicu notifikasi dorong"
     },
     "backend": {
       "videoProcessingComplete": "Pemrosesan Video Selesai",
@@ -1205,13 +1413,96 @@
       "aiTitlesComplete": "Pembuatan Judul AI Selesai",
       "aiTitlesFailed": "Pembuatan Judul AI Gagal",
       "testNotificationTitle": "Notifikasi Uji",
-      "testNotificationBody": "Notifikasi dorong berfungsi! Anda akan menerima pemberitahuan saat pekerjaan pemrosesan Anda selesai."
+      "testNotificationBody": "Notifikasi dorong berfungsi! Anda akan menerima pemberitahuan saat pekerjaan pemrosesan Anda selesai.",
+      "userDeletedTitle": "Pengguna Dihapus",
+      "userDeletedBody": "Akun pengguna telah dihapus",
+      "userRoleChangedTitle": "Peran Pengguna Diubah",
+      "userRoleChangedBody": "Peran pengguna telah diubah",
+      "passkeyDeletedTitle": "Kunci Akses Dihapus",
+      "passkeyDeletedBody": "Seorang pengguna telah menghapus kunci akses",
+      "mfaDisabledTitle": "MFA Dinonaktifkan",
+      "mfaDisabledBody": "Seorang pengguna telah menonaktifkan autentikasi multi-faktor",
+      "passwordChangedTitle": "Kata Sandi Diubah",
+      "passwordChangedBody": "Seorang pengguna telah mengubah kata sandi mereka",
+      "adminPasswordResetTitle": "Pengaturan Ulang Kata Sandi Dikirim",
+      "adminPasswordResetBody": "Seorang admin mengirim email pengaturan ulang kata sandi",
+      "failedLoginAttemptsTitle": "Upaya Login Gagal",
+      "failedLoginAttemptsBody": "Beberapa upaya login yang gagal terdeteksi",
+      "suspiciousActivityTitle": "Aktivitas Mencurigakan",
+      "suspiciousActivityBody": "Login dari perangkat atau lokasi baru terdeteksi",
+      "albumCreatedTitle": "Album Dibuat",
+      "albumCreatedBody": "Album baru telah dibuat",
+      "albumPublishedTitle": "Album Dipublikasikan",
+      "albumPublishedBody": "Sebuah album telah dipublikasikan",
+      "albumDeletedTitle": "Album Dihapus",
+      "albumDeletedBody": "Sebuah album telah dihapus",
+      "largePhotoUploadTitle": "Unggahan Besar",
+      "largePhotoUploadBody": "50+ foto diunggah dalam satu batch",
+      "shareLinkCreatedTitle": "Tautan Berbagi Dibuat",
+      "shareLinkCreatedBody": "Tautan berbagi baru telah dibuat",
+      "shareLinkAccessedTitle": "Tautan Berbagi Dilihat",
+      "shareLinkAccessedBody": "Seseorang melihat album yang dibagikan",
+      "shareLinkExpiredTitle": "Tautan Berbagi Kedaluwarsa",
+      "shareLinkExpiredBody": "Tautan berbagi telah kedaluwarsa",
+      "configUpdatedTitle": "Pengaturan Diubah",
+      "configUpdatedBody": "Konfigurasi sistem telah diperbarui",
+      "smtpSettingsChangedTitle": "Pengaturan Email Diubah",
+      "smtpSettingsChangedBody": "Konfigurasi SMTP telah diperbarui",
+      "openaiApiKeyUpdatedTitle": "Pengaturan AI Diubah",
+      "openaiApiKeyUpdatedBody": "Kunci API OpenAI telah diperbarui",
+      "brandingUpdatedTitle": "Merek Diperbarui",
+      "brandingUpdatedBody": "Merek situs telah diubah",
+      "lowDiskSpaceTitle": "Ruang Disk Rendah",
+      "lowDiskSpaceBody": "Penyimpanan hampir habis (< 10% tersisa)",
+      "databaseBackupCompletedTitle": "Cadangan Selesai",
+      "databaseBackupCompletedBody": "Cadangan basis data berhasil diselesaikan"
     },
     "blocked": "Notifikasi diblokir oleh browser. Periksa pengaturan browser Anda.",
     "subscribePrompt": "Berlangganan untuk menerima notifikasi saat pekerjaan selesai",
     "subscribe": "Berlangganan",
-    "loading": "Memuat...",
-    "notSupported": "Notifikasi push tidak didukung di browser ini",
-    "serverDisabled": "Notifikasi push dinonaktifkan di server"
+    "events": {
+      "saved": "Preferensi notifikasi disimpan"
+    }
+  },
+  "general": {
+    "title": "Umum",
+    "description": "Sesuaikan nama situs, subtitle, dan avatar Anda",
+    "logo": "Logo",
+    "clickOrDrag": "Klik atau seret gambar ke sini",
+    "currentAvatar": "Avatar saat ini",
+    "siteName": "Nama Situs",
+    "siteNamePlaceholder": "Nama situs Anda",
+    "photoLicense": "Lisensi Foto",
+    "photoLicenseDescription": "Pilih bagaimana orang lain dapat menggunakan foto Anda",
+    "shuffleHomepage": "Acak Foto Beranda",
+    "shuffleHomepageDescription": "Acak urutan foto di beranda setiap kali halaman dimuat",
+    "animatedBackground": "Latar Belakang Animasi",
+    "animatedBackgroundDescription": "Aktifkan latar belakang animasi berwarna di panel admin dan halaman login",
+    "primaryColor": "Warna Utama",
+    "secondaryColor": "Warna Sekunder",
+    "metaDescription": "Deskripsi Meta",
+    "metaDescriptionPlaceholder": "Deskripsi singkat tentang situs Anda untuk mesin pencari",
+    "metaKeywords": "Kata Kunci Meta",
+    "metaKeywordsPlaceholder": "fotografi, portofolio, nama Anda (dipisahkan koma)",
+    "language": "Bahasa",
+    "languageDescription": "Pilih bahasa default untuk situs Anda",
+    "savedSuccessfully": "{{section}} berhasil disimpan!",
+    "LogoSaved": "Logo berhasil disimpan!",
+    "siteNameSaved": "Nama Situs berhasil disimpan!",
+    "primaryColorSaved": "Warna Utama berhasil disimpan!",
+    "secondaryColorSaved": "Warna Sekunder berhasil disimpan!",
+    "metaDescriptionSaved": "Deskripsi Meta berhasil disimpan!",
+    "metaKeywordsSaved": "Meta Kata kunci berhasil disimpan!",
+    "photoLicenseUpdated": "Lisensi foto diperbarui!",
+    "languageUpdated": "Bahasa diperbarui!",
+    "homepageShuffleSaved": "Pengaturan acak halaman utama disimpan!",
+    "animatedBackgroundSaved": "Pengaturan latar belakang animasi disimpan!",
+    "failedToSave": "Gagal menyimpan {{section}}",
+    "failedToSaveLicense": "Gagal menyimpan lisensi",
+    "failedToSaveLanguage": "Gagal menyimpan bahasa",
+    "failedToSaveSetting": "Gagal menyimpan pengaturan",
+    "errorSavingLicense": "Kesalahan saat menyimpan lisensi",
+    "errorSavingLanguage": "Kesalahan saat menyimpan bahasa",
+    "errorSavingSetting": "Kesalahan saat menyimpan pengaturan"
   }
 }

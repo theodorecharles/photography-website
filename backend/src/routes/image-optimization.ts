@@ -42,10 +42,10 @@ function broadcastToClients(job: RunningJob | null, message: string) {
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-import { DATA_DIR } from '../config.js';
+import { DATA_DIR, reloadConfig } from '../config.js';
 import { requireAuth, requireAdmin, requireManager } from '../auth/middleware.js';
 import { sendNotificationToUser } from '../push-notifications.js';
-import { translateNotificationForUser } from '../i18n-backend.js';
+import { translateNotification } from '../i18n-backend.js';
 
 // Path to config.json
 const configPath = path.join(DATA_DIR, 'config.json');
@@ -119,6 +119,10 @@ router.put('/settings', requireAdmin, (req, res) => {
     
     // Write back to config
     fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
+    
+    // Reload config cache in memory
+    reloadConfig();
+    info("[ImageOptimization] Config reloaded after optimization settings update");
     
     res.json({ success: true, settings: config.environment.optimization });
   } catch (err) {
@@ -341,16 +345,20 @@ router.post('/optimize', requireManager, (req, res) => {
         const userId = (req.user as any).id;
         const duration = Date.now() - runningOptimizationJob.startTime;
         const durationMin = (duration / 1000 / 60).toFixed(1);
-        const message = code === 0 
-          ? `✓ Image optimization complete (${durationMin}m)`
-          : `✗ Image optimization failed with code ${code}`;
         
         const titleKey = code === 0 ? 'notifications.backend.imageOptimizationComplete' : 'notifications.backend.imageOptimizationFailed';
-        const title = await translateNotificationForUser(userId, titleKey);
+        const bodyKey = code === 0 ? 'notifications.backend.imageOptimizationCompleteBody' : 'notifications.backend.imageOptimizationFailedBody';
+        
+        const variables = code === 0 
+          ? { imagesOptimized: (runningOptimizationJob as any).totalImages || 0 }
+          : { error: (runningOptimizationJob as any).error || `Exit code ${code}` };
+        
+        const title = await translateNotification(titleKey, variables);
+        const body = await translateNotification(bodyKey, variables);
         
         sendNotificationToUser(userId, {
           title,
-          body: message,
+          body,
           icon: '/icon-192.png',
           badge: '/icon-192.png',
           tag: 'image-optimization',

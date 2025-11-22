@@ -61,17 +61,17 @@ export const TestEmailModal: React.FC<TestEmailModalProps> = ({ onClose }) => {
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div
-        className="share-modal"
+        className="generic-modal"
         onClick={(e) => e.stopPropagation()}
         style={{ maxWidth: '500px' }}
       >
-        <div className="share-modal-header">
+        <div className="generic-modal-header">
           <h2>{t('testEmailModal.title')}</h2>
           <button className="close-button" onClick={onClose} aria-label={t('common.close')}>
             ×
           </button>
         </div>
-        <div className="share-modal-content">
+        <div className="generic-modal-content">
           <p style={{ marginBottom: '1.5rem', color: '#d1d5db', fontSize: '0.95rem' }}>
             {t('testEmailModal.description')}
           </p>

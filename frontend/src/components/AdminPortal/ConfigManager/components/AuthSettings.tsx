@@ -2,7 +2,7 @@
  * Google Sign On Settings Component
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ConfigData } from '../types';
 import { PasswordInput } from '../../PasswordInput';
@@ -18,6 +18,7 @@ interface AuthSettingsProps {
   onSave: () => void;
   onCancel: () => void;
   savingSection: string | null;
+  setActionButtons: (buttons: React.ReactNode) => void;
 }
 
 const AuthSettings: React.FC<AuthSettingsProps> = ({
@@ -30,66 +31,50 @@ const AuthSettings: React.FC<AuthSettingsProps> = ({
   onSave,
   onCancel,
   savingSection,
+  setActionButtons,
 }) => {
   const { t } = useTranslation();
   const isEnabled = config.environment.auth.google.enabled;
 
-  return (
-    <div className="settings-section" style={{ marginBottom: "2rem" }}>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "0.75rem",
-        }}
-      >
-        <label className="settings-section-label">{t('authSettings.title')}</label>
-        {hasUnsavedChanges && (
-          <div style={{ display: "flex", gap: "0.5rem" }}>
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                onCancel();
-              }}
-              disabled={savingSection !== null}
-              className="btn-secondary"
-              style={{
-                padding: "0.4rem 0.8rem",
-                fontSize: "0.85rem",
-              }}
-            >
-              {t('authSettings.cancel')}
-            </button>
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                onSave();
-              }}
-              disabled={savingSection !== null}
-              className="btn-primary"
-              style={{ padding: "0.4rem 0.8rem", fontSize: "0.85rem" }}
-            >
-              {savingSection === t('authSettings.sectionName')
-                ? t('authSettings.saving')
-                : t('authSettings.save')}
-            </button>
-          </div>
-        )}
-      </div>
-      <p
-        style={{
-          fontSize: "0.85rem",
-          color: "#888",
-          marginTop: "0",
-          marginBottom: "1rem",
-        }}
-      >
-        {t('authSettings.description')}
-      </p>
+  // Update action buttons when changes occur
+  useEffect(() => {
+    if (hasUnsavedChanges) {
+      const buttons = [
+        <button
+          key="cancel"
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onCancel();
+          }}
+          disabled={savingSection !== null}
+          className="btn-secondary"
+          style={{ fontSize: '0.875rem', padding: '0.4rem 0.8rem' }}
+        >
+          {t('common.cancel')}
+        </button>,
+        <button
+          key="save"
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onSave();
+          }}
+          disabled={savingSection !== null}
+          className="btn-primary"
+          style={{ fontSize: '0.875rem', padding: '0.4rem 0.8rem' }}
+        >
+          {savingSection ? t('common.saving') : t('common.save')}
+        </button>
+      ];
+      setActionButtons(<>{buttons}</>);
+    } else {
+      setActionButtons(null);
+    }
+  }, [hasUnsavedChanges, savingSection, onCancel, onSave, t, setActionButtons]);
 
+  return (
+    <div>
       {/* Enable/Disable Toggle */}
       <div className="branding-group" style={{ margin: 0, marginBottom: "1.5rem" }}>
         <Toggle

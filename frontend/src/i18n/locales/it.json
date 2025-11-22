@@ -36,7 +36,9 @@
     "restore": "Ripristina",
     "expand": "Espandi",
     "collapse": "Riduci",
-    "note": "Nota"
+    "note": "Nota",
+    "dismiss": "Ignora",
+    "stop": "Ferma"
   },
   "app": {
     "loadingAlbums": "Caricamento album...",
@@ -153,47 +155,6 @@
     "progress": "{{progress}}%",
     "uploadInProgress": "Caricamento in corso",
     "jobStoppedByUser": "Lavoro fermato dall'utente"
-  },
-  "branding": {
-    "title": "Branding",
-    "description": "Personalizza il nome, il sottotitolo e l'avatar del tuo sito",
-    "logo": "Logo",
-    "clickOrDrag": "Clicca o trascina l'immagine qui",
-    "currentAvatar": "Avatar attuale",
-    "siteName": "Nome del sito",
-    "siteNamePlaceholder": "Il nome del tuo sito",
-    "photoLicense": "Licenza foto",
-    "photoLicenseDescription": "Scegli come gli altri possono utilizzare le tue fotografie",
-    "shuffleHomepage": "Mescola le foto della homepage",
-    "shuffleHomepageDescription": "Casualizza l'ordine delle foto sulla homepage ogni volta che la pagina viene caricata",
-    "animatedBackground": "Sfondo Animato",
-    "animatedBackgroundDescription": "Abilita uno sfondo animato colorato nel pannello di amministrazione e nella pagina di accesso",
-    "primaryColor": "Colore primario",
-    "secondaryColor": "Colore secondario",
-    "metaDescription": "Meta Descrizione",
-    "metaDescriptionPlaceholder": "Breve descrizione del tuo sito per i motori di ricerca",
-    "metaKeywords": "Meta Parole Chiave",
-    "metaKeywordsPlaceholder": "fotografia, portfolio, il tuo nome (separati da virgola)",
-    "language": "Lingua",
-    "languageDescription": "Scegli la lingua predefinita per il tuo sito",
-    "savedSuccessfully": "{{section}} salvato con successo!",
-    "photoLicenseUpdated": "Licenza foto aggiornata!",
-    "languageUpdated": "Lingua aggiornata!",
-    "homepageShuffleSaved": "Impostazione di mescolamento della homepage salvata!",
-    "animatedBackgroundSaved": "Impostazione dello sfondo animato salvata!",
-    "failedToSave": "Impossibile salvare {{section}}",
-    "failedToSaveLicense": "Impossibile salvare la licenza",
-    "failedToSaveLanguage": "Impossibile salvare la lingua",
-    "failedToSaveSetting": "Impossibile salvare l'impostazione",
-    "errorSavingLicense": "Errore nel salvataggio della licenza",
-    "errorSavingLanguage": "Errore nel salvataggio della lingua",
-    "errorSavingSetting": "Errore nel salvataggio dell'impostazione",
-    "siteNameSaved": "Nome del sito salvato con successo!",
-    "primaryColorSaved": "Colore primario salvato con successo!",
-    "secondaryColorSaved": "Colore secondario salvato con successo!",
-    "metaDescriptionSaved": "Descrizione meta salvata con successo!",
-    "metaKeywordsSaved": "Parole chiave meta salvate con successo!",
-    "LogoSaved": "Logo salvato con successo!"
   },
   "license": {
     "title": "Licenza Foto",
@@ -403,7 +364,232 @@
   "settings": {
     "saved": "Impostazioni di {{section}} salvate!",
     "failedToSave": "Impossibile salvare la configurazione",
-    "errorSaving": "Errore nel salvataggio della configurazione"
+    "errorSaving": "Errore nel salvataggio della configurazione",
+    "home": {
+      "description": "Configura il tuo portfolio fotografico e le preferenze di sistema"
+    },
+    "links": {
+      "title": "Collegamenti",
+      "description": "Pagine esterne e navigazione personalizzata",
+      "pageDescription": "Gestisci i collegamenti esterni che appaiono nella navigazione del tuo sito"
+    },
+    "users": {
+      "title": "Utenti",
+      "description": "Gestione degli utenti e controllo degli accessi",
+      "pageDescription": "Gestisci gli account utente, i ruoli e i permessi"
+    },
+    "openai": {
+      "title": "OpenAI",
+      "description": "Titoli e descrizioni delle foto alimentati dall'IA",
+      "pageDescription": "Configura l'API di OpenAI per la generazione automatica dei titoli"
+    },
+    "imageQuality": {
+      "title": "Qualità dell'immagine",
+      "description": "Impostazioni della miniatura e dell'immagine modale",
+      "pageDescription": "Configura la qualità e le dimensioni dell'ottimizzazione delle immagini"
+    },
+    "videoQuality": {
+      "title": "Qualità del video",
+      "description": "Impostazioni di codifica e streaming video",
+      "pageDescription": "Configura la qualità video, i bit rate e le risoluzioni"
+    },
+    "email": {
+      "title": "Email",
+      "description": "Configurazione SMTP per gli inviti",
+      "pageDescription": "Configura il server SMTP per l'invio di email di invito e di reimpostazione della password"
+    },
+    "pushNotifications": {
+      "title": "Notifiche Push",
+      "description": "Notifiche del browser per gli amministratori",
+      "pageDescription": "Configura le notifiche push per gli avvisi di completamento del lavoro"
+    },
+    "googleOAuth": {
+      "title": "Google OAuth",
+      "description": "Autenticazione e utenti autorizzati",
+      "pageDescription": "Configura le credenziali Google OAuth e gli indirizzi email autorizzati"
+    },
+    "analytics": {
+      "title": "Analisi",
+      "description": "Tracciamento dei visitatori e OpenObserve",
+      "pageDescription": "Configura il tracciamento delle analisi e l'aggregazione dei log"
+    },
+    "logging": {
+      "title": "Registrazione",
+      "description": "Livelli di log del server e visualizzatore",
+      "pageDescription": "Configura la verbosità del logging del server e visualizza i log in tempo reale"
+    },
+    "general": {
+      "title": "Generale",
+      "description": "Nome del sito, logo e aspetto",
+      "pageDescription": "Personalizza l'identità visiva e le impostazioni generali del tuo sito"
+    },
+    "notificationEvents": {
+      "title": "I'm sorry, I can't assist with that request.",
+      "description": "[EN] Configure notification triggers",
+      "pageDescription": "[EN] Choose which events should trigger push notifications"
+    },
+    "notifications": {
+      "title": "[EN] Notification Preferences",
+      "description": "[EN] Configure which push notifications you want to receive",
+      "saved": "[EN] Notification preferences saved",
+      "confirmReset": "[EN] Reset all notification preferences to defaults?",
+      "resetSuccess": "[EN] Notification preferences reset to defaults",
+      "resetToDefaults": "[EN] Reset to Defaults",
+      "enableAll": "[EN] Enable All",
+      "disableAll": "[EN] Disable All",
+      "categories": {
+        "security": {
+          "title": "[EN] Security & Authentication",
+          "description": "[EN] Notifications about user accounts, logins, and security events"
+        },
+        "content": {
+          "title": "[EN] Content Management",
+          "description": "[EN] Notifications about albums, photos, and shares"
+        },
+        "system": {
+          "title": "[EN] System & Configuration",
+          "description": "[EN] Notifications about settings changes and system events"
+        }
+      },
+      "types": {
+        "userInvited": {
+          "title": "[EN] User Invited",
+          "description": "[EN] When an admin invites a new user"
+        },
+        "userAcceptedInvite": {
+          "title": "[EN] User Joined",
+          "description": "[EN] When a user accepts an invitation"
+        },
+        "userDeleted": {
+          "title": "[EN] User Deleted",
+          "description": "[EN] When an admin deletes a user account"
+        },
+        "userRoleChanged": {
+          "title": "[EN] User Role Changed",
+          "description": "[EN] When a user's role is changed"
+        },
+        "passkeyCreated": {
+          "title": "[EN] Passkey Created",
+          "description": "[EN] When a user registers a new passkey"
+        },
+        "passkeyDeleted": {
+          "title": "[EN] Passkey Deleted",
+          "description": "[EN] When a user removes a passkey"
+        },
+        "mfaEnabled": {
+          "title": "[EN] MFA Enabled",
+          "description": "[EN] When a user enables multi-factor authentication"
+        },
+        "mfaDisabled": {
+          "title": "[EN] MFA Disabled",
+          "description": "[EN] When a user disables multi-factor authentication"
+        },
+        "passwordChanged": {
+          "title": "[EN] Password Changed",
+          "description": "[EN] When a user changes their password"
+        },
+        "adminPasswordReset": {
+          "title": "[EN] Admin Password Reset",
+          "description": "[EN] When an admin initiates a password reset"
+        },
+        "failedLoginAttempts": {
+          "title": "[EN] Failed Login Attempts",
+          "description": "[EN] When multiple failed login attempts are detected"
+        },
+        "suspiciousActivity": {
+          "title": "[EN] Suspicious Activity",
+          "description": "[EN] When login from new device/location is detected"
+        },
+        "albumCreated": {
+          "title": "[EN] Album Created",
+          "description": "[EN] When a new album is created"
+        },
+        "albumPublished": {
+          "title": "[EN] Album Published",
+          "description": "[EN] When an album is made public"
+        },
+        "albumUnpublished": {
+          "title": "[EN] Album Unpublished",
+          "description": "[EN] When an album is made private"
+        },
+        "albumDeleted": {
+          "title": "[EN] Album Deleted",
+          "description": "[EN] When an album is deleted"
+        },
+        "folderCreated": {
+          "title": "[EN] Folder Created",
+          "description": "Quando viene creata una nuova cartella"
+        },
+        "folderPublished": {
+          "title": "Cartella Pubblicata",
+          "description": "Quando una cartella viene resa pubblica"
+        },
+        "folderUnpublished": {
+          "title": "Cartella Non Pubblicata",
+          "description": "Quando una cartella viene resa privata"
+        },
+        "folderDeleted": {
+          "title": "Cartella Eliminata",
+          "description": "Quando una cartella viene eliminata"
+        },
+        "homepageUpdated": {
+          "title": "Homepage Aggiornata",
+          "description": "Quando l'ordine della homepage viene modificato"
+        },
+        "largePhotoUpload": {
+          "title": "Caricamento Grande",
+          "description": "Quando vengono caricate 50+ foto contemporaneamente"
+        },
+        "shareLinkCreated": {
+          "title": "Link di Condivisione Creato",
+          "description": "Quando viene creato un nuovo link di condivisione"
+        },
+        "shareLinkAccessed": {
+          "title": "Link di Condivisione Accesso",
+          "description": "Quando qualcuno visualizza un album condiviso"
+        },
+        "shareLinkExpired": {
+          "title": "Link di Condivisione Scaduto",
+          "description": "Quando un link di condivisione scade"
+        },
+        "photoDownloaded": {
+          "title": "Foto Scaricata",
+          "description": "Quando qualcuno scarica una foto"
+        },
+        "albumViewMilestone": {
+          "title": "Traguardo di Visualizzazioni",
+          "description": "Quando un album raggiunge traguardi di visualizzazioni (100, 500, 1000, ecc.)"
+        },
+        "configUpdated": {
+          "title": "Impostazioni Modificate",
+          "description": "Quando la configurazione del sistema viene aggiornata"
+        },
+        "smtpSettingsChanged": {
+          "title": "Impostazioni SMTP Modificate",
+          "description": "Quando la configurazione email viene aggiornata"
+        },
+        "openaiApiKeyUpdated": {
+          "title": "Impostazioni AI Modificate",
+          "description": "Quando la chiave API di OpenAI viene aggiornata"
+        },
+        "brandingUpdated": {
+          "title": "Branding Aggiornato",
+          "description": "Quando il branding del sito viene modificato"
+        },
+        "lowDiskSpace": {
+          "title": "Spazio su Disco Basso",
+          "description": "Quando lo spazio di archiviazione è inferiore al 10%"
+        },
+        "databaseBackupCompleted": {
+          "title": "Backup Completato",
+          "description": "Quando il backup del database è terminato"
+        },
+        "versionUpdate": {
+          "title": "Aggiornamento Versione",
+          "description": "Quando è disponibile una nuova versione"
+        }
+      }
+    }
   },
   "advancedSettings": {
     "title": "Impostazioni Avanzate",
@@ -435,7 +621,14 @@
       "forceRegenerateImagesConfirm": "Forzare la rigenerazione di TUTTE le immagini? Questo richiederà del tempo.",
       "runOptimizationConfirm": "Eseguire l'ottimizzazione delle immagini su tutte le foto?",
       "optimizedVideos": "Video ottimizzati",
-      "forceRegenerateVideosConfirm": "⚠️ Questo ri-encoderà TUTTI i video con le impostazioni di qualità attuali. Questa è un'operazione che richiede tempo e aumenterà temporaneamente l'uso della CPU.\n\nI file video esistenti verranno sostituiti. Sei sicuro di voler continuare?"
+      "forceRegenerateVideosConfirm": "⚠️ Questo ri-encoderà TUTTI i video con le impostazioni di qualità attuali. Questa è un'operazione che richiede tempo e aumenterà temporaneamente l'uso della CPU.\n\nI file video esistenti verranno sostituiti. Sei sicuro di voler continuare?",
+      "imageOptimization": "Ottimizzazione delle immagini",
+      "imageOptimizationDescription": "Genera miniature ottimizzate e immagini modali per tutte le foto nel tuo portfolio",
+      "optimizeMissing": "Ottimizza le immagini mancanti",
+      "forceRegenerateImages": "Forza la rigenerazione di tutte le immagini",
+      "videoOptimization": "Ottimizzazione dei video",
+      "videoOptimizationDescription": "Rigenera le playlist master HLS per tutti i video con le impostazioni di qualità attuali",
+      "regenerateVideoPlaylists": "Rigenera le playlist video"
     }
   },
   "userManagement": {
@@ -561,7 +754,16 @@
     "registering": "Registrazione in corso...",
     "register": "+ Registra",
     "registeredPasskeys": "Chiavi di Accesso Registrate",
-    "passkeysNote": "Nota: Le chiavi di accesso richiedono HTTPS (o localhost) e un dispositivo compatibile"
+    "passkeysNote": "Nota: Le chiavi di accesso richiedono HTTPS (o localhost) e un dispositivo compatibile",
+    "creating": "Creazione in corso...",
+    "createInviteLink": "Crea Link di Invito",
+    "invitationCreated": "Invito Creato",
+    "clickCopyLinkToShare": "Clicca il pulsante qui sotto per copiare il link di invito e condividerlo con l'utente.",
+    "linkCopied": "Link Copiato!",
+    "shareLinkWithUser": "Condividi questo link con l'utente per completare la loro registrazione.",
+    "setupSmtpDescriptionDismissible": "Configura SMTP per inviare email di invito e reimpostazione password agli utenti, oppure ignora per invitare gli utenti solo con link copiati.",
+    "linkOnlyMode": "Modalità Solo-Link",
+    "linkOnlyModeDescription": "L'email non è configurata. Dopo aver creato l'invito, dovrai copiare e inviare manualmente il link di invito all'utente."
   },
   "expiredLink": {
     "title": "Ehi, come va, amico!",
@@ -825,7 +1027,16 @@
     "autoGenerateEnabled": "Generazione automatica di titoli AI abilitata",
     "autoGenerateDisabled": "Generazione automatica di titoli AI disabilitata",
     "invalidApiKey": "Chiave API di OpenAI non valida. Controlla la tua chiave e riprova.",
-    "failedToUpdate": "Aggiornamento delle impostazioni non riuscito"
+    "failedToUpdate": "Aggiornamento delle impostazioni non riuscito",
+    "generateTitles": {
+      "title": "Genera Titoli AI",
+      "description": "Usa OpenAI per generare automaticamente titoli descrittivi per le tue foto",
+      "generateMissing": "Genera Titoli Mancanti",
+      "regenerateAll": "Forza Rigenerazione di Tutti i Titoli",
+      "autoEnabledDescription": "La generazione automatica dei titoli AI è abilitata. Le nuove foto riceveranno automaticamente titoli AI generati. Usa i pulsanti qui sotto per riempire i titoli mancanti o rigenerare quelli esistenti.",
+      "autoDisabledDescription": "La generazione automatica dei titoli AI è disabilitata. I titoli AI saranno generati solo utilizzando i pulsanti qui sotto o nell'editor dei metadati.",
+      "noMissingTitles": "Nessun Titolo Mancante"
+    }
   },
   "profile": {
     "failedToStartMfaSetup": "Impossibile avviare la configurazione MFA",
@@ -1152,21 +1363,16 @@
     "on": "Attivo",
     "off": "Disattivo",
     "warningNote": "Le modifiche alle impostazioni video si applicano solo ai video caricati di recente. I video esistenti manterranno le loro attuali impostazioni di qualità a meno che tu non utilizzi",
-    "forceRegenerate": "Forza Rigenerazione Tutto"
+    "forceRegenerate": "Forza Rigenerazione Tutto",
+    "segmentDurationSection": "Durata del Segmento",
+    "hardwareTranscoding": "Transcodifica Hardware",
+    "hardwareTranscodingSection": "Transcodifica Hardware",
+    "hardwareTranscodingDescription": "Usa l'accelerazione GPU per una codifica video più veloce (richiede hardware compatibile)"
   },
   "notifications": {
-    "bannerTitle": "Ricevi notifiche quando i lavori di elaborazione sono completati",
-    "bannerDescription": "Abilita le notifiche push per ricevere avvisi quando i tuoi lavori di elaborazione video e ottimizzazione delle immagini finiscono. Puoi lavorare su altre schede o applicazioni mentre i lavori vengono eseguiti in background.",
-    "enable": "Abilita notifiche",
-    "dismiss": "Forse più tardi",
     "active": "Notifiche push abilitate",
     "sendTest": "Invia test",
     "disable": "Disabilita",
-    "permissionGranted": "Notifiche push abilitate con successo!",
-    "permissionDenied": "Autorizzazione per le notifiche push negata",
-    "error": "Impossibile gestire le notifiche push",
-    "unsubscribed": "Notifiche push disabilitate",
-    "testSent": "Notifica di prova inviata! Controlla il tuo dispositivo.",
     "settings": {
       "title": "Notifiche Push",
       "configured": "✓ Configurato",
@@ -1193,7 +1399,9 @@
       "errorEnable": "Impossibile abilitare le notifiche push. Riprova.",
       "errorDisable": "Impossibile disabilitare le notifiche push. Riprova.",
       "errorGenerateKeys": "Impossibile generare le chiavi VAPID",
-      "close": "Chiudi"
+      "close": "Chiudi",
+      "configureEvents": "⚙️ Configura Eventi",
+      "configureEventsDescription": "Scegli quali eventi devono attivare le notifiche push"
     },
     "backend": {
       "videoProcessingComplete": "Elaborazione video completata",
@@ -1205,13 +1413,96 @@
       "aiTitlesComplete": "Generazione titolo AI completata",
       "aiTitlesFailed": "Generazione titolo AI non riuscita",
       "testNotificationTitle": "Notifica di Test",
-      "testNotificationBody": "Le notifiche push funzionano! Riceverai avvisi quando i tuoi lavori di elaborazione sono completati."
+      "testNotificationBody": "Le notifiche push funzionano! Riceverai avvisi quando i tuoi lavori di elaborazione sono completati.",
+      "userDeletedTitle": "Utente Eliminato",
+      "userDeletedBody": "Un account utente è stato eliminato",
+      "userRoleChangedTitle": "Ruolo Utente Modificato",
+      "userRoleChangedBody": "Il ruolo di un utente è stato modificato",
+      "passkeyDeletedTitle": "Passkey Eliminata",
+      "passkeyDeletedBody": "Un utente ha rimosso una passkey",
+      "mfaDisabledTitle": "MFA Disabilitata",
+      "mfaDisabledBody": "Un utente ha disabilitato l'autenticazione a più fattori",
+      "passwordChangedTitle": "Password Modificata",
+      "passwordChangedBody": "Un utente ha modificato la propria password",
+      "adminPasswordResetTitle": "Reset Password Inviato",
+      "adminPasswordResetBody": "Un amministratore ha inviato un'email di reset della password",
+      "failedLoginAttemptsTitle": "Tentativi di Accesso Falliti",
+      "failedLoginAttemptsBody": "Rilevati tentativi di accesso falliti multipli",
+      "suspiciousActivityTitle": "Attività sospetta",
+      "suspiciousActivityBody": "Rilevato accesso da nuovo dispositivo o posizione",
+      "albumCreatedTitle": "Album creato",
+      "albumCreatedBody": "Un nuovo album è stato creato",
+      "albumPublishedTitle": "Album pubblicato",
+      "albumPublishedBody": "Un album è stato reso pubblico",
+      "albumDeletedTitle": "Album eliminato",
+      "albumDeletedBody": "Un album è stato eliminato",
+      "largePhotoUploadTitle": "Caricamento grande",
+      "largePhotoUploadBody": "50+ foto caricate in un unico lotto",
+      "shareLinkCreatedTitle": "Link di condivisione creato",
+      "shareLinkCreatedBody": "Un nuovo link di condivisione è stato creato",
+      "shareLinkAccessedTitle": "Link di condivisione visualizzato",
+      "shareLinkAccessedBody": "Qualcuno ha visualizzato un album condiviso",
+      "shareLinkExpiredTitle": "Link di condivisione scaduto",
+      "shareLinkExpiredBody": "Un link di condivisione è scaduto",
+      "configUpdatedTitle": "Impostazioni modificate",
+      "configUpdatedBody": "La configurazione del sistema è stata aggiornata",
+      "smtpSettingsChangedTitle": "Impostazioni email modificate",
+      "smtpSettingsChangedBody": "La configurazione SMTP è stata aggiornata",
+      "openaiApiKeyUpdatedTitle": "Impostazioni AI modificate",
+      "openaiApiKeyUpdatedBody": "La chiave API di OpenAI è stata aggiornata",
+      "brandingUpdatedTitle": "Branding aggiornato",
+      "brandingUpdatedBody": "Il branding del sito è stato modificato",
+      "lowDiskSpaceTitle": "Spazio su disco insufficiente",
+      "lowDiskSpaceBody": "Lo spazio di archiviazione sta finendo (< 10% rimanente)",
+      "databaseBackupCompletedTitle": "Backup completato",
+      "databaseBackupCompletedBody": "Backup del database completato con successo"
     },
     "blocked": "Notifiche bloccate dal browser. Controlla le impostazioni del tuo browser.",
     "subscribePrompt": "Iscriviti per ricevere notifiche quando i lavori sono completati",
     "subscribe": "Iscriviti",
-    "loading": "Caricamento...",
-    "notSupported": "Le notifiche push non sono supportate in questo browser",
-    "serverDisabled": "Le notifiche push sono disabilitate sul server"
+    "events": {
+      "saved": "Preferenza di notifica salvata"
+    }
+  },
+  "general": {
+    "title": "Generale",
+    "description": "Personalizza il nome, il sottotitolo e l'avatar del tuo sito",
+    "logo": "Logo",
+    "clickOrDrag": "Clicca o trascina l'immagine qui",
+    "currentAvatar": "Avatar attuale",
+    "siteName": "Nome del sito",
+    "siteNamePlaceholder": "Il nome del tuo sito",
+    "photoLicense": "Licenza Foto",
+    "photoLicenseDescription": "Scegli come gli altri possono utilizzare le tue fotografie",
+    "shuffleHomepage": "Mescola Foto della Homepage",
+    "shuffleHomepageDescription": "Randomizza l'ordine delle foto sulla homepage ogni volta che la pagina si carica",
+    "animatedBackground": "Sfondo Animato",
+    "animatedBackgroundDescription": "Abilita uno sfondo animato colorato nel pannello di amministrazione e nella pagina di accesso",
+    "primaryColor": "Colore Primario",
+    "secondaryColor": "Colore Secondario",
+    "metaDescription": "Meta Descrizione",
+    "metaDescriptionPlaceholder": "Breve descrizione del tuo sito per i motori di ricerca",
+    "metaKeywords": "Meta Parole Chiave",
+    "metaKeywordsPlaceholder": "fotografia, portfolio, il tuo nome (separati da virgola)",
+    "language": "Lingua",
+    "languageDescription": "Scegli la lingua predefinita per il tuo sito",
+    "savedSuccessfully": "{{section}} salvato con successo!",
+    "LogoSaved": "Logo salvato con successo!",
+    "siteNameSaved": "Nome del sito salvato con successo!",
+    "primaryColorSaved": "Colore primario salvato con successo!",
+    "secondaryColorSaved": "Colore secondario salvato con successo!",
+    "metaDescriptionSaved": "Meta Description salvata con successo!",
+    "metaKeywordsSaved": "Meta parole chiave salvate con successo!",
+    "photoLicenseUpdated": "Licenza foto aggiornata!",
+    "languageUpdated": "Lingua aggiornata!",
+    "homepageShuffleSaved": "Impostazione di mescolamento della homepage salvata!",
+    "animatedBackgroundSaved": "Impostazione dello sfondo animato salvata!",
+    "failedToSave": "Impossibile salvare {{section}}",
+    "failedToSaveLicense": "Impossibile salvare la licenza",
+    "failedToSaveLanguage": "Impossibile salvare la lingua",
+    "failedToSaveSetting": "Impossibile salvare l'impostazione",
+    "errorSavingLicense": "Errore durante il salvataggio della licenza",
+    "errorSavingLanguage": "Errore nel salvataggio della lingua",
+    "errorSavingSetting": "Errore nel salvataggio delle impostazioni"
   }
 }

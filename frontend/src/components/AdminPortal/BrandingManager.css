@@ -27,6 +27,17 @@
   margin-top: 0.5rem;
 }
 
+.new-user-button-group {
+  display: flex;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.new-user-button-group button {
+  flex: 1;
+  min-width: 0;
+}
+
 .btn-small {
   padding: 0.625rem 1rem;
   font-size: 0.875rem;
@@ -259,6 +270,14 @@ select.branding-input option {
   }
 
   .section-button-group button {
+    width: 100%;
+  }
+
+  .new-user-button-group {
+    flex-direction: column;
+  }
+
+  .new-user-button-group button {
     width: 100%;
   }
 

@@ -5,6 +5,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { API_URL } from '../../../../config';
 import { 
   trackUserInvited, 
@@ -13,12 +14,10 @@ import {
   trackMFAReset, 
   trackPasswordResetSent 
 } from '../../../../utils/analytics';
-import SectionHeader from "../components/SectionHeader";
 import { MFASetupModal } from "./UserManagement/MFASetupModal";
 import { ConfirmationModal } from "./UserManagement/ConfirmationModal";
-import { NewUserForm } from "./UserManagement/NewUserForm";
+import { NewUserModal } from "./UserManagement/NewUserModal";
 import { UserCard } from "./UserManagement/UserCard";
-import { SMTPWarningBanner } from "./UserManagement/SMTPWarningBanner";
 import { PasskeysModal } from "./UserManagement/PasskeysModal";
 import { PasswordChangeModal } from "./UserManagement/PasswordChangeModal";
 import { InviteLinkModal } from "./UserManagement/InviteLinkModal";
@@ -37,15 +36,15 @@ import { error } from '../../../../utils/logger';
 
 interface UserManagementSectionProps {
   setMessage: (message: MessageType) => void;
-  onNavigateToSmtp?: () => void;
+  setActionButtons: (buttons: React.ReactNode) => void;
 }
 
 const UserManagementSection: React.FC<UserManagementSectionProps> = ({
   setMessage,
-  onNavigateToSmtp,
+  setActionButtons,
 }) => {
   const { t } = useTranslation();
-  const [showSection, setShowSection] = useState(false);
+  const navigate = useNavigate();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [currentUser, setCurrentUser] = useState<{
@@ -56,6 +55,7 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
 
   // SMTP configuration check
   const [smtpConfigured, setSmtpConfigured] = useState<boolean | null>(null);
+  const [smtpBannerDismissed, setSmtpBannerDismissed] = useState<boolean>(false);
 
   // New user form (invitation)
   const [showNewUserForm, setShowNewUserForm] = useState<boolean>(false);
@@ -119,13 +119,11 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
     fetchCurrentUser();
   }, []);
 
-  // Load users and check SMTP when section is opened
+  // Load users and check SMTP on mount
   useEffect(() => {
-    if (showSection) {
-      loadUsers();
-      checkSmtpConfig();
-    }
-  }, [showSection]);
+    loadUsers();
+    checkSmtpConfig();
+  }, []);
 
   // Listen for SMTP config updates from other sections
   useEffect(() => {
@@ -150,6 +148,83 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
     }
   };
 
+  // Update action buttons based on user role and SMTP config
+  useEffect(() => {
+    if (!currentUser || currentUser.role !== 'admin' || smtpConfigured === null) {
+      setActionButtons(null);
+      return;
+    }
+
+    const buttons = [];
+
+    // Show SMTP setup button if not configured and not dismissed
+    if (!smtpConfigured && !smtpBannerDismissed) {
+      buttons.push(
+        <button
+          key="setup-smtp"
+          onClick={() => navigate('/admin/settings/email')}
+          className="btn-primary"
+          style={{ fontSize: '0.875rem', padding: '0.4rem 0.8rem', whiteSpace: 'nowrap' }}
+        >
+          {t('userManagement.setupSmtp')}
+        </button>,
+        <button
+          key="dismiss"
+          onClick={async () => {
+            try {
+              // Load current config
+              const res = await fetch(`${API_URL}/api/config`, {
+                credentials: 'include',
+              });
+
+              if (res.ok) {
+                const config = await res.json();
+                
+                // Set smtpBannerDismissed flag
+                const updatedConfig = {
+                  ...config,
+                  smtpBannerDismissed: true
+                };
+
+                // Save updated config
+                const saveRes = await fetch(`${API_URL}/api/config`, {
+                  method: 'PUT',
+                  headers: { 'Content-Type': 'application/json' },
+                  credentials: 'include',
+                  body: JSON.stringify(updatedConfig),
+                });
+
+                if (saveRes.ok) {
+                  setSmtpBannerDismissed(true);
+                }
+              }
+            } catch (err) {
+              error('Failed to dismiss SMTP banner:', err);
+            }
+          }}
+          className="btn-secondary"
+          style={{ fontSize: '0.875rem', padding: '0.4rem 0.8rem', whiteSpace: 'nowrap' }}
+        >
+          {t('common.dismiss')}
+        </button>
+      );
+    } else {
+      // Show Invite User button when SMTP is configured or banner dismissed
+      buttons.push(
+        <button
+          key="invite-user"
+          onClick={() => setShowNewUserForm(!showNewUserForm)}
+          className="btn-primary"
+          style={{ fontSize: '0.875rem', padding: '0.4rem 0.8rem', whiteSpace: 'nowrap' }}
+        >
+          {showNewUserForm ? t('common.cancel') : t('userManagement.inviteUser')}
+        </button>
+      );
+    }
+
+    setActionButtons(<>{buttons}</>);
+  }, [currentUser, smtpConfigured, smtpBannerDismissed, showNewUserForm, t, navigate, setActionButtons]);
+
   const loadUsers = async () => {
     setLoading(true);
     try {
@@ -164,8 +239,25 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
 
   const checkSmtpConfig = async () => {
     try {
-      const isConfigured = await userManagementAPI.checkSmtpConfig();
-      setSmtpConfigured(isConfigured);
+      const res = await fetch(`${API_URL}/api/config`, {
+        credentials: 'include',
+      });
+      if (res.ok) {
+        const config = await res.json();
+        
+        // Check if SMTP is configured
+        const emailConfig = config.email || {};
+        const isConfigured =
+          emailConfig.enabled &&
+          emailConfig.smtp?.host &&
+          emailConfig.smtp?.auth?.user &&
+          emailConfig.smtp?.auth?.pass;
+        setSmtpConfigured(isConfigured);
+        
+        // Check if banner has been dismissed
+        const bannerDismissed = config.environment?.features?.smtpBannerDismissed || false;
+        setSmtpBannerDismissed(bannerDismissed);
+      }
     } catch (err) {
       error("Failed to check SMTP config:", err);
     }
@@ -181,43 +273,30 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
     try {
       const data = await userManagementAPI.inviteUser(newUser);
       
-      // If email is disabled, show the invite link modal
-      if (!data.emailEnabled && data.inviteUrl) {
-        setInviteLinkModal({
-          show: true,
-          inviteUrl: data.inviteUrl,
-          userEmail: newUser.email,
-        });
-        setMessage({
-          type: "success",
-          text: t('userManagement.userCreatedCopyLink'),
-        });
-        // Store invite token in form so user can copy it
-        setNewUser({ 
-          ...newUser, 
-          inviteToken: data.user.invite_token || data.inviteUrl.split('/invite/')[1]
-        });
-      } else {
-        const message = data.emailSent
-          ? t('userManagement.invitationSentSuccessfully')
-          : t('userManagement.userCreatedEmailFailed');
-
-        setMessage({
-          type: data.emailSent ? "success" : "error",
-          text: message,
-        });
-        
-        // Store invite token in form for copy functionality
-        if (data.user.invite_token) {
-          setNewUser({ 
-            ...newUser, 
-            inviteToken: data.user.invite_token
-          });
-        }
-      }
-
       // Track user invited
       trackUserInvited(newUser.email, newUser.role);
+      
+      // If email was sent, close the modal and show success
+      if (data.emailSent) {
+        setMessage({
+          type: "success",
+          text: t('userManagement.invitationSentSuccessfully'),
+        });
+        setShowNewUserForm(false);
+        setNewUser({ email: "", role: "viewer" });
+        loadUsers();
+        return;
+      }
+      
+      // Email was NOT sent (SMTP not configured)
+      // Store invite token in form so the NewUserModal can handle copying
+      const inviteToken = data.user.invite_token || data.inviteUrl?.split('/invite/')[1];
+      if (inviteToken) {
+        setNewUser({ 
+          ...newUser, 
+          inviteToken: inviteToken
+        });
+      }
       
       loadUsers();
     } catch (err: any) {
@@ -596,6 +675,7 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
       setMessage({ type: "success", text: t('userManagement.passkeyRegisteredSuccessfully') });
       setPasskeyName("");
       handleLoadPasskeys(userId);
+      loadUsers(); // Refresh user list to update passkey count
     } catch (err: any) {
       if (err.name === "NotAllowedError") {
         setMessage({ type: "error", text: t('userManagement.passkeyRegistrationCancelled') });
@@ -641,6 +721,7 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
       if (showPasskeys) {
         handleLoadPasskeys(showPasskeys);
       }
+      loadUsers(); // Refresh user list to update passkey count
     } catch (err) {
       setMessage({ type: "error", text: t('userManagement.failedToRemovePasskey') });
     } finally {
@@ -718,51 +799,37 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
   };
 
   return (
-    <div className="config-group full-width" data-section="user-management">
-      <SectionHeader
-        title={t('userManagement.title')}
-        description={t('userManagement.description')}
-        isExpanded={showSection}
-        onToggle={() => setShowSection(!showSection)}
-      />
-
-      <div
-        className={`collapsible-content ${
-          showSection ? "expanded" : "collapsed"
-        }`}
-        style={{
-          maxHeight: showSection ? "10000px" : "0",
-          overflow: showSection ? "visible" : "hidden",
-        }}
-      >
+    <div data-section="user-management">
         <div className="branding-grid">
-          {/* SMTP Setup Warning or Invite User Button - Admin Only */}
-          {currentUser && currentUser.role === "admin" && (
-            <SMTPWarningBanner
-              smtpConfigured={smtpConfigured}
-              showNewUserForm={showNewUserForm}
-              onSetupSmtp={onNavigateToSmtp || (() => {})}
-              onToggleNewUserForm={() => setShowNewUserForm(!showNewUserForm)}
-            />
-          )}
-
-          {/* New User Form (Invitation) */}
-          {showNewUserForm && (
-            <NewUserForm
-              newUser={newUser}
-              loading={loading}
-              onChange={setNewUser}
-              onCancel={() => {
-                setShowNewUserForm(false);
-                setNewUser({ email: "", role: "viewer" });
+          {/* SMTP Warning Banner - Admin Only (shows warning message without buttons) */}
+          {currentUser && currentUser.role === "admin" && !smtpConfigured && !smtpBannerDismissed && (
+            <div
+              style={{
+                gridColumn: '1 / -1',
+                padding: '1rem',
+                background: 'rgba(251, 191, 36, 0.1)',
+                borderLeft: '3px solid #f59e0b',
+                borderRadius: '4px',
+                marginBottom: '1rem',
               }}
-              onSubmit={handleInviteUser}
-            />
+            >
+              <strong
+                style={{
+                  color: '#f59e0b',
+                  display: 'block',
+                  marginBottom: '0.25rem',
+                }}
+              >
+                {t('userManagement.emailNotConfigured')}
+              </strong>
+              <p style={{ fontSize: '0.85rem', color: '#ccc', margin: 0 }}>
+                {t('userManagement.setupSmtpDescriptionDismissible')}
+              </p>
+            </div>
           )}
 
           {/* Users List */}
-          {!showNewUserForm && (
-            <div style={{ gridColumn: "1 / -1" }}>
+          <div style={{ gridColumn: "1 / -1" }}>
               {loading ? (
                 <div
                   style={{
@@ -814,7 +881,6 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
                 </div>
               )}
             </div>
-          )}
 
           {/* MFA Setup Modal */}
           {mfaSetup && (
@@ -879,8 +945,22 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
               }
             />
           )}
+
+          {/* New User Invitation Modal */}
+          {showNewUserForm && (
+            <NewUserModal
+              newUser={newUser}
+              loading={loading}
+              smtpConfigured={smtpConfigured || false}
+              onClose={() => {
+                setShowNewUserForm(false);
+                setNewUser({ email: "", role: "viewer" });
+              }}
+              onChange={setNewUser}
+              onSubmit={handleInviteUser}
+            />
+          )}
         </div>
-      </div>
     </div>
   );
 };

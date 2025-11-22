@@ -87,6 +87,7 @@ import staticJsonRouter, {
 import setupRouter from "./routes/setup.ts";
 import videoRouter from "./routes/video.ts";
 import pushNotificationsRouter from "./routes/push-notifications.ts";
+import notificationPreferencesRouter from "./routes/notification-preferences.ts";
 
 // Get the current directory path for ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -570,11 +571,16 @@ const checkAlbumPublishedMiddleware = (
   next();
 };
 
+// Import download tracker and milestone tracker
+import { downloadTrackingMiddleware } from './services/download-tracker.js';
+import { startMilestoneTracking } from './services/milestone-tracker.js';
+
 // Serve optimized photos with caching and CORS headers
 app.use(
   "/optimized",
   checkAlbumPublishedMiddleware,
   cacheImageMiddleware,
+  downloadTrackingMiddleware, // Track downloads before serving files
   express.static(optimizedDir, {
     maxAge: "1y",
     etag: true,
@@ -627,6 +633,7 @@ app.use("/api/preview-grid", previewGridRouter);
 app.use("/api/static-json", staticJsonRouter);
 app.use("/api/video", videoRouter);
 app.use("/api/push-notifications", pushNotificationsRouter);
+app.use("/api/notification-preferences", notificationPreferencesRouter);
 app.use(albumsRouter);
 app.use("/api/albums", albumManagementRouter);
 app.use("/api/folders", folderManagementRouter);
@@ -700,6 +707,11 @@ i18nInitPromise.then(() => {
   server.timeout = 7200000; // 2 hours
   server.keepAliveTimeout = 7210000; // Slightly longer than timeout
   server.headersTimeout = 7220000; // Slightly longer than keepAliveTimeout
+
+  // Start milestone tracking service (only after setup is complete)
+  if (getConfigExists()) {
+    startMilestoneTracking();
+  }
 
   // Handle server errors
   server.on("error", (err: NodeJS.ErrnoException) => {

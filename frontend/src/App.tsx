@@ -678,6 +678,7 @@ function App() {
             <Route path="/admin/albums" element={<AdminPortal />} />
             <Route path="/admin/metrics" element={<AdminPortal />} />
             <Route path="/admin/settings" element={<AdminPortal />} />
+            <Route path="/admin/settings/*" element={<AdminPortal />} />
             <Route path="/admin/profile" element={<AdminPortal />} />
             <Route path="/logs" element={<LogViewer />} />
             <Route

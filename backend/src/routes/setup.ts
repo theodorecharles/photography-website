@@ -236,6 +236,9 @@ router.post(
         // Fallback: create minimal config structure
         config = {
           environment: {
+            features: {
+              useGridSettings: true
+            },
             frontend: {
               port: 3000,
               apiUrl: backendUrl,
@@ -293,7 +296,6 @@ router.post(
               username: "",
               password: "",
             },
-            hmacSecret: "",
           },
           externalLinks: [],
           openai: {

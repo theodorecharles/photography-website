@@ -36,7 +36,9 @@
     "restore": "Восстановить",
     "expand": "Развернуть",
     "collapse": "Свернуть",
-    "note": "Заметка"
+    "note": "Заметка",
+    "dismiss": "Отклонить",
+    "stop": "Остановить"
   },
   "app": {
     "loadingAlbums": "Загрузка альбомов...",
@@ -153,47 +155,6 @@
     "progress": "{{progress}}%",
     "uploadInProgress": "Загрузка в процессе",
     "jobStoppedByUser": "Задание остановлено пользователем"
-  },
-  "branding": {
-    "title": "Брендинг",
-    "description": "Настройте название вашего сайта, подзаголовок и аватар",
-    "logo": "Логотип",
-    "clickOrDrag": "Кликните или перетащите изображение сюда",
-    "currentAvatar": "Текущий аватар",
-    "siteName": "Название сайта",
-    "siteNamePlaceholder": "Название вашего сайта",
-    "photoLicense": "Лицензия на фото",
-    "photoLicenseDescription": "Выберите, как другие могут использовать ваши фотографии",
-    "shuffleHomepage": "Перемешать фотографии на главной странице",
-    "shuffleHomepageDescription": "Случайный порядок фотографий на главной странице при каждой загрузке страницы",
-    "animatedBackground": "Анимированный фон",
-    "animatedBackgroundDescription": "Включите красочный анимированный фон на панели администратора и странице входа",
-    "primaryColor": "Основной цвет",
-    "secondaryColor": "Вторичный цвет",
-    "metaDescription": "Мета-описание",
-    "metaDescriptionPlaceholder": "Краткое описание вашего сайта для поисковых систем",
-    "metaKeywords": "Мета-ключевые слова",
-    "metaKeywordsPlaceholder": "фотография, портфолио, ваше имя (через запятую)",
-    "language": "Язык",
-    "languageDescription": "Выберите язык по умолчанию для вашего сайта",
-    "savedSuccessfully": "{{section}} успешно сохранен!",
-    "photoLicenseUpdated": "Лицензия на фото обновлена!",
-    "languageUpdated": "Язык обновлен!",
-    "homepageShuffleSaved": "Настройка перемешивания на главной странице сохранена!",
-    "animatedBackgroundSaved": "Настройки анимированного фона сохранены!",
-    "failedToSave": "Не удалось сохранить {{section}}",
-    "failedToSaveLicense": "Не удалось сохранить лицензию",
-    "failedToSaveLanguage": "Не удалось сохранить язык",
-    "failedToSaveSetting": "Не удалось сохранить настройку",
-    "errorSavingLicense": "Ошибка при сохранении лицензии",
-    "errorSavingLanguage": "Ошибка при сохранении языка",
-    "errorSavingSetting": "Ошибка при сохранении настройки",
-    "siteNameSaved": "Имя сайта успешно сохранено!",
-    "primaryColorSaved": "Основной цвет успешно сохранён!",
-    "secondaryColorSaved": "Вторичный цвет успешно сохранён!",
-    "metaDescriptionSaved": "Мета-описание успешно сохранено!",
-    "metaKeywordsSaved": "Мета-ключевые слова успешно сохранены!",
-    "LogoSaved": "Логотип успешно сохранён!"
   },
   "license": {
     "title": "Лицензия на фото",
@@ -403,7 +364,232 @@
   "settings": {
     "saved": "Настройки {{section}} сохранены!",
     "failedToSave": "Не удалось сохранить конфигурацию",
-    "errorSaving": "Ошибка при сохранении конфигурации"
+    "errorSaving": "Ошибка при сохранении конфигурации",
+    "home": {
+      "description": "Настройте свое портфолио фотографий и системные предпочтения"
+    },
+    "links": {
+      "title": "Ссылки",
+      "description": "Внешние страницы и пользовательская навигация",
+      "pageDescription": "Управляйте внешними ссылками, которые отображаются в навигации вашего сайта"
+    },
+    "users": {
+      "title": "Пользователи",
+      "description": "Управление пользователями и контроль доступа",
+      "pageDescription": "Управляйте учетными записями пользователей, ролями и разрешениями"
+    },
+    "openai": {
+      "title": "OpenAI",
+      "description": "Названия и описания фотографий с использованием ИИ",
+      "pageDescription": "Настройка API OpenAI для автоматической генерации заголовков"
+    },
+    "imageQuality": {
+      "title": "Качество изображения",
+      "description": "Настройки миниатюр и модального изображения",
+      "pageDescription": "Настройка качества оптимизации изображения и его размеров"
+    },
+    "videoQuality": {
+      "title": "Качество видео",
+      "description": "Настройки кодирования и потоковой передачи видео",
+      "pageDescription": "Настройка качества видео, битрейтов и разрешений"
+    },
+    "email": {
+      "title": "Электронная почта",
+      "description": "Настройка SMTP для приглашений",
+      "pageDescription": "Настройте SMTP-сервер для отправки приглашений и писем для сброса пароля"
+    },
+    "pushNotifications": {
+      "title": "Push-уведомления",
+      "description": "Уведомления в браузере для администраторов",
+      "pageDescription": "Настройте push-уведомления для оповещений о завершении работы"
+    },
+    "googleOAuth": {
+      "title": "Google OAuth",
+      "description": "Аутентификация и авторизованные пользователи",
+      "pageDescription": "Настройте учетные данные Google OAuth и авторизованные адреса электронной почты"
+    },
+    "analytics": {
+      "title": "Аналитика",
+      "description": "Отслеживание посетителей и OpenObserve",
+      "pageDescription": "Настройка отслеживания аналитики и агрегации логов"
+    },
+    "logging": {
+      "title": "Логирование",
+      "description": "Уровни логов сервера и просмотрщик",
+      "pageDescription": "Настройка подробности логирования сервера и просмотр живых логов"
+    },
+    "general": {
+      "title": "Общее",
+      "description": "Название сайта, логотип и внешний вид",
+      "pageDescription": "Настройте визуальную идентичность и общие настройки вашего сайта"
+    },
+    "notificationEvents": {
+      "title": "I'm sorry, I can't assist with that request.",
+      "description": "[EN] Configure notification triggers",
+      "pageDescription": "[EN] Choose which events should trigger push notifications"
+    },
+    "notifications": {
+      "title": "[EN] Notification Preferences",
+      "description": "[EN] Configure which push notifications you want to receive",
+      "saved": "[EN] Notification preferences saved",
+      "confirmReset": "[EN] Reset all notification preferences to defaults?",
+      "resetSuccess": "[EN] Notification preferences reset to defaults",
+      "resetToDefaults": "[EN] Reset to Defaults",
+      "enableAll": "[EN] Enable All",
+      "disableAll": "[EN] Disable All",
+      "categories": {
+        "security": {
+          "title": "[EN] Security & Authentication",
+          "description": "[EN] Notifications about user accounts, logins, and security events"
+        },
+        "content": {
+          "title": "[EN] Content Management",
+          "description": "[EN] Notifications about albums, photos, and shares"
+        },
+        "system": {
+          "title": "[EN] System & Configuration",
+          "description": "[EN] Notifications about settings changes and system events"
+        }
+      },
+      "types": {
+        "userInvited": {
+          "title": "[EN] User Invited",
+          "description": "[EN] When an admin invites a new user"
+        },
+        "userAcceptedInvite": {
+          "title": "[EN] User Joined",
+          "description": "[EN] When a user accepts an invitation"
+        },
+        "userDeleted": {
+          "title": "[EN] User Deleted",
+          "description": "[EN] When an admin deletes a user account"
+        },
+        "userRoleChanged": {
+          "title": "[EN] User Role Changed",
+          "description": "[EN] When a user's role is changed"
+        },
+        "passkeyCreated": {
+          "title": "[EN] Passkey Created",
+          "description": "[EN] When a user registers a new passkey"
+        },
+        "passkeyDeleted": {
+          "title": "[EN] Passkey Deleted",
+          "description": "[EN] When a user removes a passkey"
+        },
+        "mfaEnabled": {
+          "title": "[EN] MFA Enabled",
+          "description": "[EN] When a user enables multi-factor authentication"
+        },
+        "mfaDisabled": {
+          "title": "[EN] MFA Disabled",
+          "description": "[EN] When a user disables multi-factor authentication"
+        },
+        "passwordChanged": {
+          "title": "[EN] Password Changed",
+          "description": "[EN] When a user changes their password"
+        },
+        "adminPasswordReset": {
+          "title": "[EN] Admin Password Reset",
+          "description": "[EN] When an admin initiates a password reset"
+        },
+        "failedLoginAttempts": {
+          "title": "[EN] Failed Login Attempts",
+          "description": "[EN] When multiple failed login attempts are detected"
+        },
+        "suspiciousActivity": {
+          "title": "[EN] Suspicious Activity",
+          "description": "[EN] When login from new device/location is detected"
+        },
+        "albumCreated": {
+          "title": "[EN] Album Created",
+          "description": "[EN] When a new album is created"
+        },
+        "albumPublished": {
+          "title": "[EN] Album Published",
+          "description": "[EN] When an album is made public"
+        },
+        "albumUnpublished": {
+          "title": "[EN] Album Unpublished",
+          "description": "[EN] When an album is made private"
+        },
+        "albumDeleted": {
+          "title": "[EN] Album Deleted",
+          "description": "[EN] When an album is deleted"
+        },
+        "folderCreated": {
+          "title": "[EN] Folder Created",
+          "description": "Когда создается новая папка"
+        },
+        "folderPublished": {
+          "title": "Папка опубликована",
+          "description": "Когда папка становится общедоступной"
+        },
+        "folderUnpublished": {
+          "title": "Папка снята с публикации",
+          "description": "Когда папка становится приватной"
+        },
+        "folderDeleted": {
+          "title": "Папка удалена",
+          "description": "Когда папка удаляется"
+        },
+        "homepageUpdated": {
+          "title": "Главная страница обновлена",
+          "description": "Когда изменяется порядок главной страницы"
+        },
+        "largePhotoUpload": {
+          "title": "Большая загрузка",
+          "description": "Когда загружается более 50 фотографий одновременно"
+        },
+        "shareLinkCreated": {
+          "title": "Создана ссылка для общего доступа",
+          "description": "Когда создается новая ссылка для общего доступа"
+        },
+        "shareLinkAccessed": {
+          "title": "Доступ к ссылке для общего доступа",
+          "description": "Когда кто-то просматривает общий альбом"
+        },
+        "shareLinkExpired": {
+          "title": "Срок действия ссылки для общего доступа истек",
+          "description": "Когда срок действия ссылки для общего доступа истекает"
+        },
+        "photoDownloaded": {
+          "title": "Фото загружено",
+          "description": "Когда кто-то загружает фото"
+        },
+        "albumViewMilestone": {
+          "title": "Веха просмотров",
+          "description": "Когда альбом достигает вех просмотров (100, 500, 1000 и т.д.)"
+        },
+        "configUpdated": {
+          "title": "Настройки изменены",
+          "description": "Когда обновляется конфигурация системы"
+        },
+        "smtpSettingsChanged": {
+          "title": "Настройки SMTP изменены",
+          "description": "Когда обновляется конфигурация электронной почты"
+        },
+        "openaiApiKeyUpdated": {
+          "title": "Настройки AI изменены",
+          "description": "Когда обновляется ключ API OpenAI"
+        },
+        "brandingUpdated": {
+          "title": "Брендинг обновлен",
+          "description": "Когда изменяется брендинг сайта"
+        },
+        "lowDiskSpace": {
+          "title": "Мало места на диске",
+          "description": "Когда объем хранения ниже 10%"
+        },
+        "databaseBackupCompleted": {
+          "title": "Резервное копирование завершено",
+          "description": "Когда резервное копирование базы данных завершено"
+        },
+        "versionUpdate": {
+          "title": "Обновление версии",
+          "description": "Когда доступна новая версия"
+        }
+      }
+    }
   },
   "advancedSettings": {
     "title": "Расширенные настройки",
@@ -435,7 +621,14 @@
       "forceRegenerateImagesConfirm": "Принудительно регенерировать ВСЕ изображения? Это займет некоторое время.",
       "runOptimizationConfirm": "Запустить оптимизацию изображений для всех фотографий?",
       "optimizedVideos": "Оптимизированные видео",
-      "forceRegenerateVideosConfirm": "⚠️ Это перекодирует ВСЕ видео с текущими настройками качества. Это трудоемкая операция и временно увеличит использование ЦП.\n\nСуществующие видеофайлы будут заменены. Вы уверены, что хотите продолжить?"
+      "forceRegenerateVideosConfirm": "⚠️ Это перекодирует ВСЕ видео с текущими настройками качества. Это трудоемкая операция и временно увеличит использование ЦП.\n\nСуществующие видеофайлы будут заменены. Вы уверены, что хотите продолжить?",
+      "imageOptimization": "Оптимизация изображений",
+      "imageOptimizationDescription": "Генерировать оптимизированные миниатюры и модальные изображения для всех фотографий в вашем портфолио",
+      "optimizeMissing": "Оптимизировать отсутствующие изображения",
+      "forceRegenerateImages": "Принудительно регенерировать все изображения",
+      "videoOptimization": "Оптимизация видео",
+      "videoOptimizationDescription": "Регенерировать HLS мастер-плейлисты для всех видео с текущими настройками качества",
+      "regenerateVideoPlaylists": "Сгенерировать видеоплейлисты"
     }
   },
   "userManagement": {
@@ -561,7 +754,16 @@
     "registering": "Регистрация...",
     "register": "+ Зарегистрировать",
     "registeredPasskeys": "Зарегистрированные ключи доступа",
-    "passkeysNote": "Примечание: Ключи доступа требуют HTTPS (или localhost) и совместимого устройства"
+    "passkeysNote": "Примечание: Ключи доступа требуют HTTPS (или localhost) и совместимого устройства",
+    "creating": "Создание...",
+    "createInviteLink": "Создать ссылку приглашения",
+    "invitationCreated": "Приглашение создано",
+    "clickCopyLinkToShare": "Нажмите кнопку ниже, чтобы скопировать ссылку приглашения и поделиться ею с пользователем.",
+    "linkCopied": "Ссылка скопирована!",
+    "shareLinkWithUser": "Поделитесь этой ссылкой с пользователем, чтобы завершить его регистрацию.",
+    "setupSmtpDescriptionDismissible": "Настройте SMTP для отправки писем с приглашениями пользователей и сбросом пароля, или отклоните, чтобы приглашать пользователей только с помощью копирования ссылок.",
+    "linkOnlyMode": "Режим только ссылки",
+    "linkOnlyModeDescription": "Электронная почта не настроена. После создания приглашения вам нужно будет скопировать и вручную отправить ссылку приглашения пользователю."
   },
   "expiredLink": {
     "title": "Ну, привет, партнёр!",
@@ -825,7 +1027,16 @@
     "autoGenerateEnabled": "Автогенерация заголовков ИИ включена",
     "autoGenerateDisabled": "Автогенерация заголовков ИИ отключена",
     "invalidApiKey": "Недействительный API ключ OpenAI. Пожалуйста, проверьте ваш ключ и попробуйте снова.",
-    "failedToUpdate": "Не удалось обновить настройку"
+    "failedToUpdate": "Не удалось обновить настройку",
+    "generateTitles": {
+      "title": "Сгенерировать AI заголовки",
+      "description": "Используйте OpenAI для автоматической генерации описательных заголовков для ваших фотографий",
+      "generateMissing": "Сгенерировать отсутствующие заголовки",
+      "regenerateAll": "Принудительно сгенерировать все заголовки",
+      "autoEnabledDescription": "Автоматическая генерация заголовков с помощью ИИ включена. Новые фотографии будут автоматически получать заголовки, сгенерированные ИИ. Используйте кнопки ниже, чтобы заполнить отсутствующие заголовки или перегенерировать существующие.",
+      "autoDisabledDescription": "Автоматическая генерация заголовков с помощью ИИ отключена. Заголовки ИИ будут генерироваться только с помощью кнопок ниже или в редакторе метаданных.",
+      "noMissingTitles": "Нет отсутствующих заголовков"
+    }
   },
   "profile": {
     "failedToStartMfaSetup": "Не удалось начать настройку MFA",
@@ -1152,21 +1363,16 @@
     "on": "Включено",
     "off": "Выключено",
     "warningNote": "Изменения в настройках видео применяются только к вновь загруженным видео. Существующие видео сохранят свои текущие настройки качества, если вы не используете",
-    "forceRegenerate": "Принудительно регенерировать все"
+    "forceRegenerate": "Принудительно регенерировать все",
+    "segmentDurationSection": "Продолжительность сегмента",
+    "hardwareTranscoding": "Аппаратное транскодирование",
+    "hardwareTranscodingSection": "Аппаратное транскодирование",
+    "hardwareTranscodingDescription": "Используйте ускорение GPU для более быстрого кодирования видео (требуется совместимое оборудование)"
   },
   "notifications": {
-    "bannerTitle": "Получать уведомления, когда задачи обработки завершены",
-    "bannerDescription": "Включите push-уведомления, чтобы получать оповещения, когда ваши задачи обработки видео и оптимизации изображений завершатся. Вы можете работать в других вкладках или приложениях, пока задачи выполняются в фоновом режиме.",
-    "enable": "Включить уведомления",
-    "dismiss": "Может быть позже",
     "active": "Push-уведомления включены",
     "sendTest": "Отправить тест",
     "disable": "Отключить",
-    "permissionGranted": "Уведомления Push успешно включены!",
-    "permissionDenied": "Разрешение на уведомления Push отклонено",
-    "error": "Не удалось управлять уведомлениями Push",
-    "unsubscribed": "Уведомления Push отключены",
-    "testSent": "Тестовое уведомление отправлено! Проверьте ваше устройство.",
     "settings": {
       "title": "Push-уведомления",
       "configured": "✓ Настроено",
@@ -1193,7 +1399,9 @@
       "errorEnable": "Не удалось включить push-уведомления. Пожалуйста, попробуйте еще раз.",
       "errorDisable": "Не удалось отключить push-уведомления. Пожалуйста, попробуйте еще раз.",
       "errorGenerateKeys": "Не удалось сгенерировать VAPID-ключи",
-      "close": "Закрыть"
+      "close": "Закрыть",
+      "configureEvents": "⚙️ Настроить события",
+      "configureEventsDescription": "Выберите, какие события должны вызывать push-уведомления"
     },
     "backend": {
       "videoProcessingComplete": "Обработка видео завершена",
@@ -1205,13 +1413,96 @@
       "aiTitlesComplete": "Генерация заголовка ИИ завершена",
       "aiTitlesFailed": "Не удалось сгенерировать заголовок ИИ",
       "testNotificationTitle": "Тестовое уведомление",
-      "testNotificationBody": "Уведомления Push работают! Вы получите оповещения, когда ваши задания на обработку будут завершены."
+      "testNotificationBody": "Уведомления Push работают! Вы получите оповещения, когда ваши задания на обработку будут завершены.",
+      "userDeletedTitle": "Пользователь удален",
+      "userDeletedBody": "Учетная запись пользователя была удалена",
+      "userRoleChangedTitle": "Роль пользователя изменена",
+      "userRoleChangedBody": "Роль пользователя была изменена",
+      "passkeyDeletedTitle": "Ключ доступа удален",
+      "passkeyDeletedBody": "Пользователь удалил ключ доступа",
+      "mfaDisabledTitle": "MFA отключена",
+      "mfaDisabledBody": "Пользователь отключил многофакторную аутентификацию",
+      "passwordChangedTitle": "Пароль изменен",
+      "passwordChangedBody": "Пользователь изменил свой пароль",
+      "adminPasswordResetTitle": "Отправлен запрос на сброс пароля",
+      "adminPasswordResetBody": "Администратор отправил электронное письмо для сброса пароля",
+      "failedLoginAttemptsTitle": "Неудачные попытки входа в систему",
+      "failedLoginAttemptsBody": "Обнаружено несколько неудачных попыток входа",
+      "suspiciousActivityTitle": "Подозрительная активность",
+      "suspiciousActivityBody": "Обнаружен вход с нового устройства или местоположения",
+      "albumCreatedTitle": "Альбом создан",
+      "albumCreatedBody": "Создан новый альбом",
+      "albumPublishedTitle": "Альбом опубликован",
+      "albumPublishedBody": "Альбом стал публичным",
+      "albumDeletedTitle": "Альбом удален",
+      "albumDeletedBody": "Альбом был удален",
+      "largePhotoUploadTitle": "Большая загрузка",
+      "largePhotoUploadBody": "Загружено более 50 фотографий за один раз",
+      "shareLinkCreatedTitle": "Создана ссылка для общего доступа",
+      "shareLinkCreatedBody": "Создана новая ссылка для общего доступа",
+      "shareLinkAccessedTitle": "Просмотрена ссылка для общего доступа",
+      "shareLinkAccessedBody": "Кто-то просмотрел общий альбом",
+      "shareLinkExpiredTitle": "Срок действия ссылки для общего доступа истек",
+      "shareLinkExpiredBody": "Срок действия ссылки для общего доступа истек",
+      "configUpdatedTitle": "Настройки изменены",
+      "configUpdatedBody": "Конфигурация системы обновлена",
+      "smtpSettingsChangedTitle": "Настройки электронной почты изменены",
+      "smtpSettingsChangedBody": "Конфигурация SMTP обновлена",
+      "openaiApiKeyUpdatedTitle": "Настройки AI изменены",
+      "openaiApiKeyUpdatedBody": "Ключ API OpenAI обновлен",
+      "brandingUpdatedTitle": "Обновлен брендинг",
+      "brandingUpdatedBody": "Брендинг сайта изменен",
+      "lowDiskSpaceTitle": "Мало места на диске",
+      "lowDiskSpaceBody": "Заканчивается место для хранения (< 10% осталось)",
+      "databaseBackupCompletedTitle": "Резервное копирование завершено",
+      "databaseBackupCompletedBody": "Резервное копирование базы данных успешно завершено"
     },
     "blocked": "Уведомления заблокированы браузером. Проверьте настройки вашего браузера.",
     "subscribePrompt": "Подписаться, чтобы получать уведомления, когда задания завершены",
     "subscribe": "Подписаться",
-    "loading": "Загрузка...",
-    "notSupported": "Push-уведомления не поддерживаются в этом браузере",
-    "serverDisabled": "Push-уведомления отключены на сервере"
+    "events": {
+      "saved": "Предпочтения уведомлений сохранены"
+    }
+  },
+  "general": {
+    "title": "Общее",
+    "description": "Настройте название сайта, подзаголовок и аватар",
+    "logo": "Логотип",
+    "clickOrDrag": "Нажмите или перетащите изображение сюда",
+    "currentAvatar": "Текущий аватар",
+    "siteName": "Название сайта",
+    "siteNamePlaceholder": "Ваше название сайта",
+    "photoLicense": "Лицензия на фото",
+    "photoLicenseDescription": "Выберите, как другие могут использовать ваши фотографии",
+    "shuffleHomepage": "Перемешать фотографии на главной странице",
+    "shuffleHomepageDescription": "Случайным образом менять порядок фотографий на главной странице при каждом загрузке страницы",
+    "animatedBackground": "Анимированный фон",
+    "animatedBackgroundDescription": "Включить цветной анимированный фон на панели администратора и странице входа",
+    "primaryColor": "Основной цвет",
+    "secondaryColor": "Вторичный цвет",
+    "metaDescription": "Мета-описание",
+    "metaDescriptionPlaceholder": "Краткое описание вашего сайта для поисковых систем",
+    "metaKeywords": "Мета ключевые слова",
+    "metaKeywordsPlaceholder": "фотография, портфолио, ваше имя (разделенные запятыми)",
+    "language": "Язык",
+    "languageDescription": "Выберите язык по умолчанию для вашего сайта",
+    "savedSuccessfully": "{{section}} успешно сохранен!",
+    "LogoSaved": "Логотип успешно сохранен!",
+    "siteNameSaved": "Название сайта успешно сохранено!",
+    "primaryColorSaved": "Основной цвет успешно сохранен!",
+    "secondaryColorSaved": "Вторичный цвет успешно сохранен!",
+    "metaDescriptionSaved": "Мета описание успешно сохранено!",
+    "metaKeywordsSaved": "Мета-ключевые слова успешно сохранены!",
+    "photoLicenseUpdated": "Лицензия на фото обновлена!",
+    "languageUpdated": "Язык обновлён!",
+    "homepageShuffleSaved": "Настройка перемешивания главной страницы сохранена!",
+    "animatedBackgroundSaved": "Настройка анимированного фона сохранена!",
+    "failedToSave": "Не удалось сохранить {{section}}",
+    "failedToSaveLicense": "Не удалось сохранить лицензию",
+    "failedToSaveLanguage": "Не удалось сохранить язык",
+    "failedToSaveSetting": "Не удалось сохранить настройку",
+    "errorSavingLicense": "Ошибка при сохранении лицензии",
+    "errorSavingLanguage": "Ошибка при сохранении языка",
+    "errorSavingSetting": "Ошибка при сохранении настройки"
   }
 }
