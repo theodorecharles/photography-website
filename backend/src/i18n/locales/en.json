@@ -1,6 +1,24 @@
 {
   "notifications": {
     "backend": {
+      "videoProcessingComplete": "Video Processing Complete",
+      "videoProcessingFailed": "Video Processing Failed",
+      "videoReprocessingComplete": "Video Reprocessing Complete",
+      "videoReprocessingFailed": "Video Reprocessing Failed",
+      "imageOptimizationComplete": "Image Optimization Complete",
+      "imageOptimizationFailed": "Image Optimization Failed",
+      "aiTitlesComplete": "AI Title Generation Complete",
+      "aiTitlesFailed": "AI Title Generation Failed",
+      "testNotificationTitle": "Test Notification",
+      "testNotificationBody": "Push notifications are working! You'll receive alerts when your processing jobs complete.",
+      "userInvitedTitle": "New User Invited",
+      "userInvitedBody": "A new user has been invited to your site",
+      "userAcceptedInviteTitle": "User Joined",
+      "userAcceptedInviteBody": "A user has accepted their invitation and joined",
+      "userCreatedPasskeyTitle": "Passkey Created",
+      "userCreatedPasskeyBody": "A user has registered a new passkey",
+      "userSetupMFATitle": "MFA Enabled",
+      "userSetupMFABody": "A user has enabled multi-factor authentication",
       "userDeletedTitle": "User Deleted",
       "userDeletedBody": "A user account has been deleted",
       "userRoleChangedTitle": "User Role Changed",
@@ -45,5 +63,43 @@
       "databaseBackupCompletedBody": "Database backup completed successfully"
     }
   },
-  "email": {}
+  "email": {
+    "invitation": {
+      "subject": "You've been invited to {{siteName}}",
+      "title": "Join {{siteName}}'s Galleria",
+      "greeting": "Hi there,",
+      "body": "{{inviterName}} has invited you to join <strong>{{siteName}}'s Galleria</strong>.",
+      "instructions": "To accept this invitation and set up your account, click the button below:",
+      "button": "Accept Invitation",
+      "orCopyLink": "Or copy and paste this link into your browser:",
+      "expiry": "This invitation will expire in 7 days.",
+      "footerIgnore": "If you didn't expect this invitation, you can safely ignore this email.",
+      "footerAutomatic": "This is an automated message, please do not reply to this email."
+    },
+    "passwordReset": {
+      "subject": "Password Reset Request - {{siteName}}",
+      "title": "Password Reset Request",
+      "greeting": "Hi {{userName}},",
+      "greetingFallback": "Hi there,",
+      "body": "We received a request to reset your password for <strong>{{siteName}}'s Galleria</strong>.",
+      "instructions": "To reset your password, click the button below:",
+      "button": "Reset Password",
+      "orCopyLink": "Or copy and paste this link into your browser:",
+      "warningTitle": "⚠️ Important:",
+      "warningExpiry": "This link will expire in 1 hour",
+      "warningIgnore": "If you didn't request this, please ignore this email",
+      "warningNoChange": "Your password will not change until you create a new one",
+      "footerAutomatic": "This is an automated message, please do not reply to this email.",
+      "footerContact": "If you need assistance, please contact your administrator."
+    },
+    "test": {
+      "subject": "Test Email from {{siteName}}",
+      "title": "Email Configuration Test",
+      "success": "✓",
+      "body1": "Congratulations! Your SMTP configuration is working correctly.",
+      "body2": "This test email was sent from <strong>{{siteName}}</strong> to verify that your email service is properly configured and can deliver messages.",
+      "footerTimestamp": "This is a test message sent at {{timestamp}}.",
+      "footerIgnore": "You can safely ignore or delete this email."
+    }
+  }
 }
