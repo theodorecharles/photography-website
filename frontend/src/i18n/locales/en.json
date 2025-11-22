@@ -1375,6 +1375,12 @@
     "setupCompleteWaitingRestart": "Setup complete! Waiting for server to restart..."
   },
   "notifications": {
+    "active": "Push notifications enabled",
+    "sendTest": "Send Test",
+    "disable": "Disable",
+    "blocked": "Notifications blocked by browser. Check your browser settings.",
+    "subscribePrompt": "Subscribe to receive notifications",
+    "subscribe": "Subscribe",
     "backend": {
       "videoProcessingComplete": "Video Processing Complete",
       "videoProcessingFailed": "Video Processing Failed",

@@ -415,30 +415,44 @@ const PushNotificationsSettings: React.FC<PushNotificationsSettingsProps> = ({
           </div>
         </div>
 
-        {/* Regenerate Keys Section */}
+        {/* Regenerate Keys Section - Yellow Warning Banner */}
         {(pushConfig.enabled || hasKeys) && hasKeys && (
-          <div className="note-banner" style={{ marginTop: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap' }}>
-              <div style={{ flex: 1, minWidth: '200px' }}>
-                <p style={{ margin: 0, fontSize: '0.9rem' }}>
-                  {t('notifications.settings.generateKeysWarning')}
-                </p>
-              </div>
-              <button
-                type="button"
-                className="btn-secondary"
-                onClick={() => setShowConfirmModal(true)}
-                disabled={generating}
-                style={{ 
-                  fontSize: '0.875rem',
-                  background: 'rgba(239, 68, 68, 0.2)',
-                  borderColor: 'rgba(239, 68, 68, 0.3)',
-                  color: '#ef4444'
-                }}
-              >
-                {generating ? t('notifications.settings.generating') : t('notifications.settings.generateNewKeys')}
-              </button>
+          <div
+            style={{
+              marginTop: '1.5rem',
+              padding: '1.5rem',
+              background: 'rgba(255, 193, 7, 0.1)',
+              border: '1px solid rgba(255, 193, 7, 0.3)',
+              borderRadius: '8px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: '1.5rem',
+            }}
+          >
+            <div style={{ flex: 1 }}>
+              <strong style={{ fontSize: '0.875rem', color: 'rgba(255, 193, 7, 0.9)' }}>
+                ⚠️ {t('common.note')}:
+              </strong>
+              <span style={{ fontSize: '0.875rem', color: 'rgba(255, 193, 7, 0.9)', marginLeft: '0.5rem' }}>
+                {t('notifications.settings.generateKeysWarning')}
+              </span>
             </div>
+            <button
+              type="button"
+              className="btn-secondary"
+              onClick={() => setShowConfirmModal(true)}
+              disabled={generating}
+              style={{
+                whiteSpace: 'nowrap',
+                fontSize: '0.875rem',
+                background: 'rgba(239, 68, 68, 0.15)',
+                border: '1px solid rgba(239, 68, 68, 0.5)',
+                color: '#ef4444',
+              }}
+            >
+              {generating ? t('notifications.settings.generating') : t('notifications.settings.generateNewKeys')}
+            </button>
           </div>
         )}
 

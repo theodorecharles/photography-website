@@ -204,33 +204,66 @@ export function PushNotificationStatus({ isConfigured, refreshKey, setMessage }:
   }
 
   return (
-    <div className="push-notification-status">
+    <div
+      className="push-notification-status"
+      style={{
+        background: 'rgba(102, 126, 234, 0.1)',
+        border: '1px solid rgba(102, 126, 234, 0.2)',
+        borderRadius: '8px',
+        padding: '1rem',
+        marginBottom: '1.5rem',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        gap: '1rem',
+      }}
+    >
       {permission === 'granted' && isSubscribed ? (
         <>
-          <div className="push-status-info">
-            <span className="push-status-indicator"></span>
-            <span className="push-status-text">
+          <div className="push-status-info" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <span
+              className="push-status-indicator"
+              style={{
+                width: '8px',
+                height: '8px',
+                borderRadius: '50%',
+                background: '#22c55e',
+              }}
+            ></span>
+            <span className="push-status-text" style={{ color: 'white', fontSize: '0.95rem' }}>
               {t('notifications.active')}
             </span>
           </div>
-          <div className="push-status-buttons">
-            <button className="btn-secondary" onClick={handleTest}>
+          <div className="push-status-buttons" style={{ display: 'flex', gap: '0.5rem' }}>
+            <button
+              className="btn-secondary"
+              onClick={handleTest}
+              style={{ padding: '0.4rem 0.875rem', fontSize: '0.875rem' }}
+            >
               {t('notifications.sendTest')}
             </button>
-            <button className="btn-secondary" onClick={handleUnsubscribe}>
+            <button
+              className="btn-secondary"
+              onClick={handleUnsubscribe}
+              style={{ padding: '0.4rem 0.875rem', fontSize: '0.875rem' }}
+            >
               {t('notifications.disable')}
             </button>
           </div>
         </>
       ) : (
         <>
-          <div className="push-status-prompt">
-            {permission === 'denied' 
+          <div className="push-status-prompt" style={{ color: '#888', fontSize: '0.95rem', flex: 1 }}>
+            {permission === 'denied'
               ? t('notifications.blocked')
               : t('notifications.subscribePrompt')}
           </div>
           {permission !== 'denied' && (
-            <button className="btn-primary push-subscribe-btn" onClick={handleSubscribe}>
+            <button
+              className="btn-primary push-subscribe-btn"
+              onClick={handleSubscribe}
+              style={{ padding: '0.4rem 1rem', fontSize: '0.875rem', whiteSpace: 'nowrap' }}
+            >
               {t('notifications.subscribe')}
             </button>
           )}

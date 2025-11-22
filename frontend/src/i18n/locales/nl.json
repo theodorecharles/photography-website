@@ -409,12 +409,12 @@
       "pageDescription": "Configureer Google OAuth-inloggegevens en geautoriseerde e-mailadressen"
     },
     "analytics": {
-      "title": "Analytics",
+      "title": "Analyse",
       "description": "Bezoekerstracking en OpenObserve",
       "pageDescription": "Configureer analytics-tracking en logaggregatie"
     },
     "logging": {
-      "title": "Logging",
+      "title": "Inloggen",
       "description": "Serverlogniveaus en kijker",
       "pageDescription": "Configureer de serverlog-verbose en bekijk live logs"
     },
@@ -474,7 +474,7 @@
     "status": "Status",
     "actions": "Acties",
     "viewer": "Kijker",
-    "manager": "Manager",
+    "manager": "Beheerder",
     "admin": "Beheerder",
     "invited": "Uitgenodigd",
     "inviteExpired": "Uitnodiging verlopen",
@@ -975,7 +975,7 @@
     "fromAddressPlaceholder": "noreply@yoursite.com"
   },
   "analyticsSettings": {
-    "title": "Analytics",
+    "title": "Analyse",
     "description": "Configuratie van analytics-tracking inclusief OpenObserve-integratie",
     "enableOpenObserve": "OpenObserve-integratie inschakelen",
     "enabled": "Ingeschakeld",
