@@ -41,57 +41,57 @@ const SettingsHome: React.FC = () => {
 
   const settingsSections = [
     {
-      icon: <GeneralIcon width={48} height={48} />,
+      icon: <GeneralIcon width={56} height={56} />,
       title: t('settings.general.title'),
       path: '/admin/settings/general',
     },
     {
-      icon: <LinksIcon width={48} height={48} />,
+      icon: <LinksIcon width={56} height={56} />,
       title: t('settings.links.title'),
       path: '/admin/settings/links',
     },
     {
-      icon: <UsersIcon width={48} height={48} />,
+      icon: <UsersIcon width={56} height={56} />,
       title: t('settings.users.title'),
       path: '/admin/settings/users',
     },
     {
-      icon: <AIIcon width={48} height={48} />,
+      icon: <AIIcon width={56} height={56} />,
       title: t('settings.openai.title'),
       path: '/admin/settings/openai',
     },
     {
-      icon: <ImageQualityIcon width={48} height={48} />,
+      icon: <ImageQualityIcon width={56} height={56} />,
       title: t('settings.imageQuality.title'),
       path: '/admin/settings/image-quality',
     },
     {
-      icon: <VideoQualityIcon width={48} height={48} />,
+      icon: <VideoQualityIcon width={56} height={56} />,
       title: t('settings.videoQuality.title'),
       path: '/admin/settings/video-quality',
     },
     {
-      icon: <EmailIcon width={48} height={48} />,
+      icon: <EmailIcon width={56} height={56} />,
       title: t('settings.email.title'),
       path: '/admin/settings/email',
     },
     {
-      icon: <BellIcon width={48} height={48} />,
+      icon: <BellIcon width={56} height={56} />,
       title: t('settings.pushNotifications.title'),
       path: '/admin/settings/push-notifications',
     },
     {
-      icon: <GoogleGrayIcon width={48} height={48} />,
+      icon: <GoogleGrayIcon width={56} height={56} />,
       title: t('settings.googleOAuth.title'),
       path: '/admin/settings/google-oauth',
     },
     {
-      icon: <AnalyticsIcon width={48} height={48} />,
+      icon: <AnalyticsIcon width={56} height={56} />,
       title: t('settings.analytics.title'),
       path: '/admin/settings/analytics',
     },
     {
-      icon: <LoggingIcon width={48} height={48} />,
+      icon: <LoggingIcon width={56} height={56} />,
       title: t('settings.logging.title'),
       path: '/admin/settings/logging',
     },

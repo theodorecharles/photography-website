@@ -465,7 +465,7 @@
       "pageDescription": "Configure SMTP server for sending invitation and password reset emails"
     },
     "pushNotifications": {
-      "title": "Push Notifications",
+      "title": "Notifications",
       "description": "Browser notifications for admins",
       "pageDescription": "Configure push notifications for job completion alerts"
     },
