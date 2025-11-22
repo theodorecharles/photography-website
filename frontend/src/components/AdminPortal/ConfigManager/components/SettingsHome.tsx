@@ -83,7 +83,7 @@ const SettingsHome: React.FC = () => {
           smtp: !!(config.email?.enabled),
           oauth: !!(config.environment?.auth?.google?.enabled),
           pushNotifications: !!(config.pushNotifications?.enabled),
-          analytics: !!(config.analytics?.enabled),
+          analytics: !!((config.analytics?.scriptPath && config.analytics.scriptPath.trim()) || config.analytics?.openobserve?.enabled),
         };
         console.log('Config status (true = configured, false = needs badge):', status);
         setConfigStatus(status);
