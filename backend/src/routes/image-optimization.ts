@@ -42,7 +42,7 @@ function broadcastToClients(job: RunningJob | null, message: string) {
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-import { DATA_DIR } from '../config.js';
+import { DATA_DIR, reloadConfig } from '../config.js';
 import { requireAuth, requireAdmin, requireManager } from '../auth/middleware.js';
 import { sendNotificationToUser } from '../push-notifications.js';
 import { translateNotificationForUser } from '../i18n-backend.js';
@@ -119,6 +119,10 @@ router.put('/settings', requireAdmin, (req, res) => {
     
     // Write back to config
     fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
+    
+    // Reload config cache in memory
+    reloadConfig();
+    info("[ImageOptimization] Config reloaded after optimization settings update");
     
     res.json({ success: true, settings: config.environment.optimization });
   } catch (err) {

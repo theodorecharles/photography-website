@@ -18,7 +18,7 @@ router.use(csrfProtection);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-import { DATA_DIR } from '../config.js';
+import { DATA_DIR, reloadConfig } from '../config.js';
 
 const configPath = path.join(DATA_DIR, 'config.json');
 
@@ -88,6 +88,10 @@ router.put('/', requireManager, (req: Request, res: Response): void => {
 
     // Write back to config file
     fs.writeFileSync(configPath, JSON.stringify(configData, null, 2), 'utf8');
+    
+    // Reload config cache in memory
+    reloadConfig();
+    info("[ExternalLinks] Config reloaded after external links update");
 
     res.json({ success: true, links });
   } catch (err) {
