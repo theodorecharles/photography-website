@@ -5,6 +5,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { PasswordInput } from '../../PasswordInput';
 import { Toggle } from './Toggle';
 import { API_URL } from '../../../../config';
@@ -28,6 +29,7 @@ const PushNotificationsSettings: React.FC<PushNotificationsSettingsProps> = ({
   setMessage,
 }) => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [generating, setGenerating] = useState(false);
   const [userEmail, setUserEmail] = useState('');
   const [localKeys, setLocalKeys] = useState<{ publicKey: string; privateKey: string } | null>(null);
@@ -308,6 +310,23 @@ const PushNotificationsSettings: React.FC<PushNotificationsSettingsProps> = ({
         setMessage={setMessage}
       />
 
+      {/* Events Configuration Button */}
+      {(pushConfig.enabled || hasKeys) && (
+        <div style={{ marginBottom: '1.5rem', marginTop: pushConfig.enabled && hasKeys ? '1rem' : '0' }}>
+          <button
+            type="button"
+            className="btn-secondary"
+            onClick={() => navigate('/admin/settings/push-notifications/events')}
+            style={{ fontSize: '0.875rem' }}
+          >
+            {t('notifications.settings.configureEvents')}
+          </button>
+          <p style={{ fontSize: '0.8rem', color: '#666', marginTop: '0.5rem', marginBottom: 0 }}>
+            {t('notifications.settings.configureEventsDescription')}
+          </p>
+        </div>
+      )}
+
       {/* 2x2 Grid Layout */}
       <div 
         style={{ 
@@ -396,21 +415,30 @@ const PushNotificationsSettings: React.FC<PushNotificationsSettingsProps> = ({
           </div>
         </div>
 
-        {/* Regenerate Keys Button */}
+        {/* Regenerate Keys Section */}
         {(pushConfig.enabled || hasKeys) && hasKeys && (
-          <div className="branding-group" style={{ margin: 0, marginTop: '1.5rem' }}>
-            <button
-              type="button"
-              className="btn-secondary"
-              onClick={() => setShowConfirmModal(true)}
-              disabled={generating}
-              style={{ fontSize: '0.875rem' }}
-            >
-              {generating ? t('notifications.settings.generating') : t('notifications.settings.generateNewKeys')}
-            </button>
-            <p style={{ fontSize: '0.8rem', color: '#f59e0b', marginTop: '0.5rem', marginBottom: 0 }}>
-              {t('notifications.settings.generateKeysWarning')}
-            </p>
+          <div className="note-banner" style={{ marginTop: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap' }}>
+              <div style={{ flex: 1, minWidth: '200px' }}>
+                <p style={{ margin: 0, fontSize: '0.9rem' }}>
+                  {t('notifications.settings.generateKeysWarning')}
+                </p>
+              </div>
+              <button
+                type="button"
+                className="btn-secondary"
+                onClick={() => setShowConfirmModal(true)}
+                disabled={generating}
+                style={{ 
+                  fontSize: '0.875rem',
+                  background: 'rgba(239, 68, 68, 0.2)',
+                  borderColor: 'rgba(239, 68, 68, 0.3)',
+                  color: '#ef4444'
+                }}
+              >
+                {generating ? t('notifications.settings.generating') : t('notifications.settings.generateNewKeys')}
+              </button>
+            </div>
           </div>
         )}
 

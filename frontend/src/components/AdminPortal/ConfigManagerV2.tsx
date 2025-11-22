@@ -14,6 +14,7 @@ import ImageQualityPage from './ConfigManager/pages/ImageQualityPage';
 import VideoQualityPage from './ConfigManager/pages/VideoQualityPage';
 import EmailPage from './ConfigManager/pages/EmailPage';
 import PushNotificationsPage from './ConfigManager/pages/PushNotificationsPage';
+import NotificationEventsPage from './ConfigManager/pages/NotificationEventsPage';
 import GoogleOAuthPage from './ConfigManager/pages/GoogleOAuthPage';
 import AnalyticsPage from './ConfigManager/pages/AnalyticsPage';
 import LoggingPage from './ConfigManager/pages/LoggingPage';
@@ -71,6 +72,10 @@ const ConfigManagerV2: React.FC<ConfigManagerProps> = ({
         <Route
           path="push-notifications"
           element={<PushNotificationsPage setMessage={setMessage} />}
+        />
+        <Route
+          path="push-notifications/events"
+          element={<NotificationEventsPage setMessage={setMessage} />}
         />
         <Route
           path="google-oauth"
