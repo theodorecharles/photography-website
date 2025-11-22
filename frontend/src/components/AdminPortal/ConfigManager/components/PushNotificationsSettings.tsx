@@ -16,6 +16,7 @@ interface PushNotificationsSettingsProps {
   updateConfig: (path: string[], value: any) => void;
   savingSection: string | null;
   onSave: (section: string, data: any) => Promise<void>;
+  setMessage: (message: { type: 'success' | 'error'; text: string }) => void;
 }
 
 const PushNotificationsSettings: React.FC<PushNotificationsSettingsProps> = ({
@@ -24,6 +25,7 @@ const PushNotificationsSettings: React.FC<PushNotificationsSettingsProps> = ({
   updateConfig,
   savingSection,
   onSave,
+  setMessage,
 }) => {
   const { t } = useTranslation();
   const [generating, setGenerating] = useState(false);
@@ -325,7 +327,11 @@ const PushNotificationsSettings: React.FC<PushNotificationsSettingsProps> = ({
       </p>
 
       {/* Subscription Status and Controls */}
-      <PushNotificationStatus isConfigured={pushConfig.enabled && hasKeys} refreshKey={refreshKey} />
+      <PushNotificationStatus 
+        isConfigured={pushConfig.enabled && hasKeys} 
+        refreshKey={refreshKey} 
+        setMessage={setMessage}
+      />
 
       {/* 2x2 Grid Layout */}
       <div 

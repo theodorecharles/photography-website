@@ -399,6 +399,7 @@ const AdvancedSettingsSection: React.FC<AdvancedSettingsSectionProps> = ({
           updateConfig={updateConfig}
           savingSection={savingSection}
           onSave={handleSaveSection}
+          setMessage={setMessage}
         />
 
         {/* Analytics Settings */}
