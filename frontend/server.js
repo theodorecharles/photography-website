@@ -208,6 +208,46 @@ app.get("/health", (req, res) => {
   res.json({ status: "ok", message: "Frontend server is running" });
 });
 
+// Proxy all /api/* requests to backend
+app.use("/api", express.json(), async (req, res, next) => {
+  const apiUrl = config.frontend.apiUrl;
+  const targetUrl = `${apiUrl}${req.originalUrl}`;
+  
+  try {
+    // Forward the request to the backend
+    const response = await fetch(targetUrl, {
+      method: req.method,
+      headers: {
+        'Content-Type': 'application/json',
+        'Cookie': req.headers.cookie || '',
+        'X-CSRF-Token': req.headers['x-csrf-token'] || '',
+      },
+      body: req.method !== 'GET' && req.method !== 'HEAD' ? JSON.stringify(req.body) : undefined,
+    });
+    
+    // Forward the response back to the client
+    const contentType = response.headers.get('content-type');
+    
+    // Set status and headers
+    res.status(response.status);
+    if (contentType) {
+      res.setHeader('Content-Type', contentType);
+    }
+    
+    // Handle different content types
+    if (contentType && contentType.includes('application/json')) {
+      const data = await response.json();
+      res.json(data);
+    } else {
+      const data = await response.text();
+      res.send(data);
+    }
+  } catch (err) {
+    error(`[API Proxy] Failed to proxy request to ${targetUrl}:`, err);
+    res.status(500).json({ error: 'Proxy error', message: err.message });
+  }
+});
+
 // Proxy for push notification endpoints (fixes Safari PWA content blocker)
 // Safari blocks URLs containing /api/ even when same-origin, so we use /notifications/
 app.use("/notifications", express.json(), async (req, res) => {

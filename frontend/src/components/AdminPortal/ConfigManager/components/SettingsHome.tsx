@@ -33,7 +33,7 @@ const SettingsCard: React.FC<SettingsCardProps> = ({
   return (
     <button className="settings-card" onClick={onClick}>
       <div className="settings-card-icon-wrapper">
-        <div className="settings-card-icon">{icon}</div>
+        <div className={`settings-card-icon ${needsConfig ? 'needs-config' : ''}`}>{icon}</div>
         {needsConfig && (
           <span className="settings-card-badge" title="Not configured">
             !
@@ -80,9 +80,9 @@ const SettingsHome: React.FC = () => {
         console.log('Raw config:', config);
         const status = {
           openai: !!(config.openai?.apiKey && config.openai.apiKey.trim()),
-          smtp: !!(config.email?.enabled && config.email?.smtp?.host),
-          oauth: !!(config.googleOAuth?.clientId && config.googleOAuth?.clientSecret),
-          pushNotifications: !!(config.pushNotifications?.vapidPublicKey),
+          smtp: !!(config.email?.enabled),
+          oauth: !!(config.environment?.auth?.google?.enabled),
+          pushNotifications: !!(config.pushNotifications?.enabled),
           analytics: !!(config.analytics?.enabled),
         };
         console.log('Config status (true = configured, false = needs badge):', status);

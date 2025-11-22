@@ -68,6 +68,26 @@
   opacity: 0.8;
 }
 
+.settings-card-icon.needs-config {
+  background: rgba(245, 158, 11, 0.1);
+  border-color: rgba(245, 158, 11, 0.3);
+}
+
+.settings-card-icon.needs-config > svg {
+  color: #f59e0b;
+  opacity: 0.9;
+}
+
+.settings-card:hover .settings-card-icon.needs-config {
+  background: rgba(245, 158, 11, 0.15);
+  border-color: rgba(245, 158, 11, 0.4);
+  box-shadow: 0px 0px 25px rgba(245, 158, 11, 0.2);
+}
+
+.settings-card:hover .settings-card-icon.needs-config > svg {
+  opacity: 1;
+}
+
 .settings-card-badge {
   position: absolute;
   top: -4px;
