@@ -1205,7 +1205,15 @@
       "aiTitlesComplete": "Generarea titlului AI a fost finalizată",
       "aiTitlesFailed": "Generarea titlului AI a eșuat",
       "testNotificationTitle": "Notificare de test",
-      "testNotificationBody": "Notificările push funcționează! Vei primi alerte când sarcinile tale de procesare se finalizează."
+      "testNotificationBody": "Notificările push funcționează! Vei primi alerte când sarcinile tale de procesare se finalizează.",
+      "userInvitedTitle": "Utilizator Nou Invitat",
+      "userInvitedBody": "Un utilizator nou a fost invitat pe site-ul tău",
+      "userAcceptedInviteTitle": "Utilizator A Aderat",
+      "userAcceptedInviteBody": "Un utilizator a acceptat invitația și s-a alăturat",
+      "userCreatedPasskeyTitle": "Cheie de Acces Creată",
+      "userCreatedPasskeyBody": "Un utilizator a înregistrat o nouă cheie de acces",
+      "userSetupMFATitle": "MFA Activat",
+      "userSetupMFABody": "Un utilizator a activat autentificarea multi-factor"
     },
     "blocked": "Notificările sunt blocate de browser. Verifică setările browserului tău.",
     "subscribePrompt": "Abonează-te pentru a primi notificări când sarcinile sunt finalizate",

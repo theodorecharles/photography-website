@@ -5,6 +5,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { formatNumber } from '../../../utils/formatters';
+import { SkeletonTable } from './SkeletonLoader';
 
 interface Page {
   page_path: string;
@@ -16,6 +17,7 @@ interface PagesTableProps {
   totalPageViews: number;
   expandedRows: Set<number>;
   isExpanded: boolean;
+  loading?: boolean;
   onToggleRow: (index: number) => void;
   onToggleTable: () => void;
 }
@@ -25,10 +27,16 @@ const PagesTable: React.FC<PagesTableProps> = ({
   totalPageViews,
   expandedRows,
   isExpanded,
+  loading,
   onToggleRow,
   onToggleTable,
 }) => {
   const { t } = useTranslation();
+  
+  if (loading) {
+    return <SkeletonTable rows={5} />;
+  }
+  
   if (!pages || pages.length === 0) {
     return <div className="no-data">{t('metrics.pagesTable.noData')}</div>;
   }

@@ -1212,7 +1212,15 @@
       "aiTitlesComplete": "AI Title Generation Complete",
       "aiTitlesFailed": "AI Title Generation Failed",
       "testNotificationTitle": "Test Notification",
-      "testNotificationBody": "Push notifications are working! You'll receive alerts when your processing jobs complete."
+      "testNotificationBody": "Push notifications are working! You'll receive alerts when your processing jobs complete.",
+      "userInvitedTitle": "New User Invited",
+      "userInvitedBody": "A new user has been invited to your site",
+      "userAcceptedInviteTitle": "User Joined",
+      "userAcceptedInviteBody": "A user has accepted their invitation and joined",
+      "userCreatedPasskeyTitle": "Passkey Created",
+      "userCreatedPasskeyBody": "A user has registered a new passkey",
+      "userSetupMFATitle": "MFA Enabled",
+      "userSetupMFABody": "A user has enabled multi-factor authentication"
     }
   }
 }

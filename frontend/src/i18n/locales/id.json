@@ -1205,7 +1205,15 @@
       "aiTitlesComplete": "Pembuatan Judul AI Selesai",
       "aiTitlesFailed": "Pembuatan Judul AI Gagal",
       "testNotificationTitle": "Notifikasi Uji",
-      "testNotificationBody": "Notifikasi dorong berfungsi! Anda akan menerima pemberitahuan saat pekerjaan pemrosesan Anda selesai."
+      "testNotificationBody": "Notifikasi dorong berfungsi! Anda akan menerima pemberitahuan saat pekerjaan pemrosesan Anda selesai.",
+      "userInvitedTitle": "Pengguna Baru Diundang",
+      "userInvitedBody": "Seorang pengguna baru telah diundang ke situs Anda",
+      "userAcceptedInviteTitle": "Pengguna Bergabung",
+      "userAcceptedInviteBody": "Seorang pengguna telah menerima undangan mereka dan bergabung",
+      "userCreatedPasskeyTitle": "Kunci Akses Dibuat",
+      "userCreatedPasskeyBody": "Seorang pengguna telah mendaftarkan kunci akses baru",
+      "userSetupMFATitle": "MFA Diaktifkan",
+      "userSetupMFABody": "Seorang pengguna telah mengaktifkan otentikasi multi-faktor"
     },
     "blocked": "Notifikasi diblokir oleh browser. Periksa pengaturan browser Anda.",
     "subscribePrompt": "Berlangganan untuk menerima notifikasi saat pekerjaan selesai",

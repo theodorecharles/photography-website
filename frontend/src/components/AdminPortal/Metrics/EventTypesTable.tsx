@@ -5,6 +5,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { formatNumber } from '../../../utils/formatters';
+import { SkeletonTable } from './SkeletonLoader';
 
 interface EventType {
   event_type: string;
@@ -15,6 +16,7 @@ interface EventTypesTableProps {
   events: EventType[];
   expandedRows: Set<number>;
   isExpanded: boolean;
+  loading?: boolean;
   onToggleRow: (index: number) => void;
   onToggleTable: () => void;
 }
@@ -23,10 +25,16 @@ const EventTypesTable: React.FC<EventTypesTableProps> = ({
   events,
   expandedRows,
   isExpanded,
+  loading,
   onToggleRow,
   onToggleTable,
 }) => {
   const { t } = useTranslation();
+  
+  if (loading) {
+    return <SkeletonTable rows={5} />;
+  }
+  
   if (!events || events.length === 0) {
     return <div className="no-data">{t('metrics.eventTypesTable.noData')}</div>;
   }

@@ -1205,7 +1205,15 @@
       "aiTitlesComplete": "AIタイトル生成が完了しました",
       "aiTitlesFailed": "AIタイトル生成に失敗しました",
       "testNotificationTitle": "テスト通知",
-      "testNotificationBody": "プッシュ通知は正常に動作しています！ 処理ジョブが完了した際にアラートを受け取ります。"
+      "testNotificationBody": "プッシュ通知は正常に動作しています！ 処理ジョブが完了した際にアラートを受け取ります。",
+      "userInvitedTitle": "新しいユーザーが招待されました",
+      "userInvitedBody": "新しいユーザーがあなたのサイトに招待されました",
+      "userAcceptedInviteTitle": "ユーザーが参加しました",
+      "userAcceptedInviteBody": "ユーザーが招待を受け入れ、参加しました",
+      "userCreatedPasskeyTitle": "パスキーが作成されました",
+      "userCreatedPasskeyBody": "ユーザーが新しいパスキーを登録しました",
+      "userSetupMFATitle": "MFAが有効になりました",
+      "userSetupMFABody": "ユーザーが多要素認証を有効にしました"
     },
     "blocked": "ブラウザによって通知がブロックされています。ブラウザの設定を確認してください。",
     "subscribePrompt": "ジョブが完了したときに通知を受け取るために購読してください",

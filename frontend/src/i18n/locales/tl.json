@@ -1205,7 +1205,15 @@
       "aiTitlesComplete": "Tapos na ang Pagbuo ng AI Title",
       "aiTitlesFailed": "Nabigong Lumikha ng Pamagat ng AI",
       "testNotificationTitle": "Pagsubok na Abiso",
-      "testNotificationBody": "Nagtatrabaho ang mga push notification! Makakatanggap ka ng mga alerto kapag natapos ang iyong mga processing job."
+      "testNotificationBody": "Nagtatrabaho ang mga push notification! Makakatanggap ka ng mga alerto kapag natapos ang iyong mga processing job.",
+      "userInvitedTitle": "Bago Gumagamit na Inaanyayahan",
+      "userInvitedBody": "Isang bagong gumagamit ang naanyayahan sa iyong site",
+      "userAcceptedInviteTitle": "Sumali ang Gumagamit",
+      "userAcceptedInviteBody": "Isang gumagamit ang tumanggap ng kanilang paanyaya at sumali",
+      "userCreatedPasskeyTitle": "Nalikha ang Passkey",
+      "userCreatedPasskeyBody": "Isang gumagamit ang nagrehistro ng bagong passkey",
+      "userSetupMFATitle": "Pinagana ang MFA",
+      "userSetupMFABody": "Isang gumagamit ang nag-enable ng multi-factor authentication"
     },
     "blocked": "Naka-block ang mga notification ng browser. Suriin ang iyong mga setting ng browser.",
     "subscribePrompt": "Mag-subscribe upang makatanggap ng mga notification kapag natapos ang mga trabaho",

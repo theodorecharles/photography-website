@@ -1205,7 +1205,15 @@
       "aiTitlesComplete": "AI 제목 생성 완료",
       "aiTitlesFailed": "AI 제목 생성 실패",
       "testNotificationTitle": "테스트 알림",
-      "testNotificationBody": "푸시 알림이 작동하고 있습니다! 처리 작업이 완료되면 알림을 받게 됩니다."
+      "testNotificationBody": "푸시 알림이 작동하고 있습니다! 처리 작업이 완료되면 알림을 받게 됩니다.",
+      "userInvitedTitle": "새 사용자 초대됨",
+      "userInvitedBody": "새 사용자가 귀하의 사이트에 초대되었습니다",
+      "userAcceptedInviteTitle": "사용자가 가입함",
+      "userAcceptedInviteBody": "사용자가 초대를 수락하고 가입했습니다",
+      "userCreatedPasskeyTitle": "패스키 생성됨",
+      "userCreatedPasskeyBody": "사용자가 새 패스키를 등록했습니다",
+      "userSetupMFATitle": "MFA 활성화됨",
+      "userSetupMFABody": "사용자가 다단계 인증을 활성화했습니다"
     },
     "blocked": "브라우저에서 알림이 차단되었습니다. 브라우저 설정을 확인하세요.",
     "subscribePrompt": "작업이 완료될 때 알림을 받으려면 구독하세요",

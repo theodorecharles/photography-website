@@ -1,0 +1,209 @@
+/* Skeleton Loader Styles */
+
+/* Skeleton animation */
+@keyframes skeleton-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.skeleton-base {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.03) 0%,
+    rgba(255, 255, 255, 0.08) 50%,
+    rgba(255, 255, 255, 0.03) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+}
+
+/* Skeleton Card */
+.skeleton-card {
+  pointer-events: none;
+}
+
+.skeleton-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+.skeleton-value {
+  height: 1.8rem;
+  width: 90px;
+  border-radius: 4px;
+  margin-bottom: 0.25rem;
+  background: rgba(255, 255, 255, 0.05);
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+.skeleton-label {
+  height: 0.8rem;
+  width: 120px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.03);
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+/* Skeleton Chart */
+.skeleton-chart-container {
+  position: relative;
+  min-height: 300px;
+}
+
+.skeleton-chart {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  background: rgba(255, 255, 255, 0.01);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.skeleton-chart-bars {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  height: 100%;
+  padding: 2rem 1rem 1rem;
+  gap: 4px;
+}
+
+.skeleton-bar {
+  flex: 1;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.03) 0%,
+    rgba(255, 255, 255, 0.08) 50%,
+    rgba(255, 255, 255, 0.03) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 2s ease-in-out infinite;
+  border-radius: 4px 4px 0 0;
+  min-height: 20%;
+}
+
+.skeleton-bar:nth-child(even) {
+  animation-delay: 0.1s;
+}
+
+.skeleton-chart-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(2px);
+}
+
+.skeleton-chart-overlay span {
+  color: #9ca3af;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+/* Skeleton Table */
+.skeleton-table-container {
+  pointer-events: none;
+}
+
+.skeleton-text {
+  height: 0.875rem;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.05);
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+.skeleton-thumbnail {
+  width: 60px;
+  height: 60px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+/* Skeleton Map */
+.skeleton-map {
+  position: relative;
+  width: 100%;
+  height: 400px;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 8px;
+  overflow: hidden;
+  min-height: 400px;
+}
+
+.skeleton-map::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    radial-gradient(circle at 30% 40%, rgba(255, 255, 255, 0.03) 0%, transparent 50%),
+    radial-gradient(circle at 70% 60%, rgba(255, 255, 255, 0.03) 0%, transparent 50%),
+    radial-gradient(circle at 50% 20%, rgba(255, 255, 255, 0.02) 0%, transparent 50%);
+  animation: skeleton-pulse 2s ease-in-out infinite;
+}
+
+.skeleton-map-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(2px);
+  z-index: 1;
+}
+
+.skeleton-map-overlay span {
+  color: #9ca3af;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .skeleton-chart {
+    height: 200px;
+  }
+  
+  .skeleton-chart-container {
+    min-height: 200px;
+  }
+  
+  .skeleton-map {
+    height: 300px;
+  }
+  
+  .skeleton-thumbnail {
+    width: 50px;
+    height: 50px;
+  }
+}

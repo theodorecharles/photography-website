@@ -1205,7 +1205,15 @@
       "aiTitlesComplete": "KI-Titelgenerierung abgeschlossen",
       "aiTitlesFailed": "KI-Titelgenerierung fehlgeschlagen",
       "testNotificationTitle": "Testbenachrichtigung",
-      "testNotificationBody": "Push-Benachrichtigungen funktionieren! Sie erhalten Benachrichtigungen, wenn Ihre Verarbeitungsjobs abgeschlossen sind."
+      "testNotificationBody": "Push-Benachrichtigungen funktionieren! Sie erhalten Benachrichtigungen, wenn Ihre Verarbeitungsjobs abgeschlossen sind.",
+      "userInvitedTitle": "Neuer Benutzer Eingeladen",
+      "userInvitedBody": "Ein neuer Benutzer wurde zu Ihrer Seite eingeladen",
+      "userAcceptedInviteTitle": "Benutzer Beigetreten",
+      "userAcceptedInviteBody": "Ein Benutzer hat seine Einladung angenommen und ist beigetreten",
+      "userCreatedPasskeyTitle": "Passkey Erstellt",
+      "userCreatedPasskeyBody": "Ein Benutzer hat einen neuen Passkey registriert",
+      "userSetupMFATitle": "MFA Aktiviert",
+      "userSetupMFABody": "Ein Benutzer hat die mehrfaktorielle Authentifizierung aktiviert"
     },
     "blocked": "Benachrichtigungen durch den Browser blockiert. Überprüfen Sie Ihre Browsereinstellungen.",
     "subscribePrompt": "Abonnieren, um Benachrichtigungen zu erhalten, wenn Jobs abgeschlossen sind",

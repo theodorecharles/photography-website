@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { API_URL } from '../../../config';
 import { formatNumber } from '../../../utils/formatters';
 import { normalizeAlbumName, formatDurationDetailed } from '../../../utils/metricsHelpers';
+import { SkeletonTable } from './SkeletonLoader';
 
 interface Picture {
   photo_id: string;
@@ -19,6 +20,7 @@ interface PicturesTableProps {
   pictures: Picture[];
   expandedRows: Set<number>;
   isExpanded: boolean;
+  loading?: boolean;
   onToggleRow: (index: number) => void;
   onToggleTable: () => void;
 }
@@ -27,10 +29,16 @@ const PicturesTable: React.FC<PicturesTableProps> = ({
   pictures,
   expandedRows,
   isExpanded,
+  loading,
   onToggleRow,
   onToggleTable,
 }) => {
   const { t } = useTranslation();
+  
+  if (loading) {
+    return <SkeletonTable rows={5} />;
+  }
+  
   if (!pictures || pictures.length === 0) {
     return <div className="no-data">{t('metrics.picturesTable.noData')}</div>;
   }

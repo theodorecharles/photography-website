@@ -17,6 +17,7 @@ import PicturesTable from './PicturesTable';
 import PagesTable from './PagesTable';
 import ReferrersTable from './ReferrersTable';
 import EventTypesTable from './EventTypesTable';
+import { SkeletonCard } from './SkeletonLoader';
 import './Metrics.css';
 
 // Import interfaces from types.ts (canonical location)
@@ -235,17 +236,6 @@ export default function Metrics() {
     }));
   };
 
-  if (loading && !stats) {
-    return (
-      <div className="metrics-container">
-        <div className="loading-container">
-          <div className="loading-spinner"></div>
-          <p>{t('metrics.loading')}</p>
-        </div>
-      </div>
-    );
-  }
-
   if (error && !stats) {
     return (
       <div className="metrics-container">
@@ -282,10 +272,16 @@ export default function Metrics() {
         </div>
       </div>
 
-      {stats && (
-        <>
-          {/* Summary Cards */}
-          <div className="metrics-summary">
+      {/* Summary Cards */}
+      <div className="metrics-summary">
+        {loading && !stats ? (
+          <>
+            <SkeletonCard />
+            <SkeletonCard />
+            <SkeletonCard />
+          </>
+        ) : stats ? (
+          <>
             <div className="metric-card">
               <div className="metric-icon">👥</div>
               <div className="metric-content">
@@ -309,108 +305,114 @@ export default function Metrics() {
                 <div className="metric-label">{t('metrics.totalTimeViewing')}</div>
               </div>
             </div>
-          </div>
+          </>
+        ) : null}
+      </div>
 
-          {/* Visitor Locations Map */}
-          <div className="metrics-section">
-            <h3>{t('metrics.visitorLocations')}</h3>
-            <p style={{ color: '#9ca3af', fontSize: '0.85rem', marginBottom: '0.75rem' }}>
-              {t('metrics.visitorLocationsDescription')}
-            </p>
-            <VisitorMap locations={visitorLocations} loading={loadingLocations} />
-          </div>
+      {/* Visitor Locations Map */}
+      <div className="metrics-section">
+        <h3>{t('metrics.visitorLocations')}</h3>
+        <p style={{ color: '#9ca3af', fontSize: '0.85rem', marginBottom: '0.75rem' }}>
+          {t('metrics.visitorLocationsDescription')}
+        </p>
+        <VisitorMap locations={visitorLocations} loading={loadingLocations} />
+      </div>
 
-          {/* Charts Grid - Side by Side on Desktop */}
-          <div className="metrics-grid">
-            <div className="metrics-section">
-              <h3>{t('metrics.uniqueVisitorsOverTime')}</h3>
-              <p style={{ color: '#9ca3af', fontSize: '0.85rem', marginBottom: '0.75rem' }}>
-                {t('metrics.uniqueVisitorsOverTimeDescription')}
-              </p>
-              <VisitorsChart 
-                data={visitorsOverTime} 
-                loading={loadingTimeSeries} 
-                secondaryColor={secondaryColor} 
-              />
-            </div>
+      {/* Charts Grid - Side by Side on Desktop */}
+      <div className="metrics-grid">
+        <div className="metrics-section">
+          <h3>{t('metrics.uniqueVisitorsOverTime')}</h3>
+          <p style={{ color: '#9ca3af', fontSize: '0.85rem', marginBottom: '0.75rem' }}>
+            {t('metrics.uniqueVisitorsOverTimeDescription')}
+          </p>
+          <VisitorsChart 
+            data={visitorsOverTime} 
+            loading={loadingTimeSeries} 
+            secondaryColor={secondaryColor} 
+          />
+        </div>
 
-            <div className="metrics-section">
-              <h3>{t('metrics.pageviewsPerHour')}</h3>
-              <p style={{ color: '#9ca3af', fontSize: '0.85rem', marginBottom: '0.75rem' }}>
-                {t('metrics.pageviewsPerHourDescription')}
-              </p>
-              <PageviewsChart 
-                data={pageviewsByHour} 
-                loading={loadingPageviewsByHour} 
-                secondaryColor={secondaryColor} 
-              />
-            </div>
-          </div>
+        <div className="metrics-section">
+          <h3>{t('metrics.pageviewsPerHour')}</h3>
+          <p style={{ color: '#9ca3af', fontSize: '0.85rem', marginBottom: '0.75rem' }}>
+            {t('metrics.pageviewsPerHourDescription')}
+          </p>
+          <PageviewsChart 
+            data={pageviewsByHour} 
+            loading={loadingPageviewsByHour} 
+            secondaryColor={secondaryColor} 
+          />
+        </div>
+      </div>
 
-          {/* Tables Grid - Most Engaging Pictures and Top Pages */}
-          <div className="metrics-grid">
-            <div className="metrics-section">
-              <h3>{t('metrics.mostEngagingPictures')}</h3>
-              <p style={{ color: '#9ca3af', fontSize: '0.85rem', marginBottom: '0.75rem' }}>
-                {t('metrics.mostEngagingPicturesDescription')}
-              </p>
-              <PicturesTable
-                pictures={stats.topPicturesByDuration || []}
-                expandedRows={expandedRows['pictures'] || new Set()}
-                isExpanded={expandedTables['pictures'] || false}
-                onToggleRow={(index) => toggleRowExpansion('pictures', index)}
-                onToggleTable={() => toggleTableExpansion('pictures')}
-              />
-            </div>
+      {/* Tables Grid - Most Engaging Pictures and Top Pages */}
+      <div className="metrics-grid">
+        <div className="metrics-section">
+          <h3>{t('metrics.mostEngagingPictures')}</h3>
+          <p style={{ color: '#9ca3af', fontSize: '0.85rem', marginBottom: '0.75rem' }}>
+            {t('metrics.mostEngagingPicturesDescription')}
+          </p>
+          <PicturesTable
+            pictures={stats?.topPicturesByDuration || []}
+            expandedRows={expandedRows['pictures'] || new Set()}
+            isExpanded={expandedTables['pictures'] || false}
+            loading={loading && !stats}
+            onToggleRow={(index) => toggleRowExpansion('pictures', index)}
+            onToggleTable={() => toggleTableExpansion('pictures')}
+          />
+        </div>
 
-            <div className="metrics-section">
-              <h3>{t('metrics.topPages')}</h3>
-              <p style={{ color: '#9ca3af', fontSize: '0.85rem', marginBottom: '0.75rem' }}>
-                {t('metrics.topPagesDescription')}
-              </p>
-              <PagesTable
-                pages={stats.topPages || []}
-                totalPageViews={stats.pageViews}
-                expandedRows={expandedRows['pages'] || new Set()}
-                isExpanded={expandedTables['pages'] || false}
-                onToggleRow={(index) => toggleRowExpansion('pages', index)}
-                onToggleTable={() => toggleTableExpansion('pages')}
-              />
-            </div>
-          </div>
+        <div className="metrics-section">
+          <h3>{t('metrics.topPages')}</h3>
+          <p style={{ color: '#9ca3af', fontSize: '0.85rem', marginBottom: '0.75rem' }}>
+            {t('metrics.topPagesDescription')}
+          </p>
+          <PagesTable
+            pages={stats?.topPages || []}
+            totalPageViews={stats?.pageViews || 0}
+            expandedRows={expandedRows['pages'] || new Set()}
+            isExpanded={expandedTables['pages'] || false}
+            loading={loading && !stats}
+            onToggleRow={(index) => toggleRowExpansion('pages', index)}
+            onToggleTable={() => toggleTableExpansion('pages')}
+          />
+        </div>
+      </div>
 
-          {/* Tables Grid - Top Referrers and Event Types */}
-          <div className="metrics-grid">
-            <div className="metrics-section">
-              <h3>{t('metrics.topReferrers')}</h3>
-              <ReferrersTable
-                referrers={stats.topReferrers || []}
-                expandedRows={expandedRows['referrers'] || new Set()}
-                isExpanded={expandedTables['referrers'] || false}
-                onToggleRow={(index) => toggleRowExpansion('referrers', index)}
-                onToggleTable={() => toggleTableExpansion('referrers')}
-              />
-            </div>
+      {/* Tables Grid - Top Referrers and Event Types */}
+      <div className="metrics-grid">
+        <div className="metrics-section">
+          <h3>{t('metrics.topReferrers')}</h3>
+          <ReferrersTable
+            referrers={stats?.topReferrers || []}
+            expandedRows={expandedRows['referrers'] || new Set()}
+            isExpanded={expandedTables['referrers'] || false}
+            loading={loading && !stats}
+            onToggleRow={(index) => toggleRowExpansion('referrers', index)}
+            onToggleTable={() => toggleTableExpansion('referrers')}
+          />
+        </div>
 
-            <div className="metrics-section">
-              <h3>{t('metrics.eventTypes')}</h3>
-              <EventTypesTable
-                events={stats.eventTypes || []}
-                expandedRows={expandedRows['events'] || new Set()}
-                isExpanded={expandedTables['events'] || false}
-                onToggleRow={(index) => toggleRowExpansion('events', index)}
-                onToggleTable={() => toggleTableExpansion('events')}
-              />
-            </div>
-          </div>
+        <div className="metrics-section">
+          <h3>{t('metrics.eventTypes')}</h3>
+          <EventTypesTable
+            events={stats?.eventTypes || []}
+            expandedRows={expandedRows['events'] || new Set()}
+            isExpanded={expandedTables['events'] || false}
+            loading={loading && !stats}
+            onToggleRow={(index) => toggleRowExpansion('events', index)}
+            onToggleTable={() => toggleTableExpansion('events')}
+          />
+        </div>
+      </div>
 
-          {/* Footer Info */}
-          <div className="metrics-footer">
-            <p>
-              {t('metrics.dataFrom', { start: formatDateFromMicroseconds(stats.timeRange.start), end: formatDateFromMicroseconds(stats.timeRange.end) })}
-            </p>
-          </div>
-        </>
+      {/* Footer Info */}
+      {stats && (
+        <div className="metrics-footer">
+          <p>
+            {t('metrics.dataFrom', { start: formatDateFromMicroseconds(stats.timeRange.start), end: formatDateFromMicroseconds(stats.timeRange.end) })}
+          </p>
+        </div>
       )}
     </section>
   );

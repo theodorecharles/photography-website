@@ -1205,7 +1205,15 @@
       "aiTitlesComplete": "AI标题生成完成",
       "aiTitlesFailed": "AI标题生成失败",
       "testNotificationTitle": "测试通知",
-      "testNotificationBody": "推送通知正常工作！当您的处理任务完成时，您将收到提醒。"
+      "testNotificationBody": "推送通知正常工作！当您的处理任务完成时，您将收到提醒。",
+      "userInvitedTitle": "新用户已被邀请",
+      "userInvitedBody": "新用户已被邀请到您的网站",
+      "userAcceptedInviteTitle": "用户已加入",
+      "userAcceptedInviteBody": "用户已接受邀请并加入",
+      "userCreatedPasskeyTitle": "密钥已创建",
+      "userCreatedPasskeyBody": "用户已注册新的密钥",
+      "userSetupMFATitle": "MFA已启用",
+      "userSetupMFABody": "用户已启用多因素身份验证"
     },
     "blocked": "浏览器阻止了通知。请检查您的浏览器设置。",
     "subscribePrompt": "订阅以在工作完成时接收通知",

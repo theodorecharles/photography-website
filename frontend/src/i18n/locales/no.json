@@ -1205,7 +1205,15 @@
       "aiTitlesComplete": "AI tittelgenerering fullført",
       "aiTitlesFailed": "AI tittelgenerering mislyktes",
       "testNotificationTitle": "Testvarsling",
-      "testNotificationBody": "Push-varsler fungerer! Du vil motta varsler når behandlingen av jobbene dine er fullført."
+      "testNotificationBody": "Push-varsler fungerer! Du vil motta varsler når behandlingen av jobbene dine er fullført.",
+      "userInvitedTitle": "Ny bruker invitert",
+      "userInvitedBody": "En ny bruker har blitt invitert til nettstedet ditt",
+      "userAcceptedInviteTitle": "Bruker ble med",
+      "userAcceptedInviteBody": "En bruker har akseptert invitasjonen sin og blitt med",
+      "userCreatedPasskeyTitle": "Passordnøkkel opprettet",
+      "userCreatedPasskeyBody": "En bruker har registrert en ny passordnøkkel",
+      "userSetupMFATitle": "MFA aktivert",
+      "userSetupMFABody": "En bruker har aktivert flerfaktorautentisering"
     },
     "blocked": "Varsler blokkert av nettleseren. Sjekk innstillingene i nettleseren din.",
     "subscribePrompt": "Abonner for å motta varsler når jobber er fullført",

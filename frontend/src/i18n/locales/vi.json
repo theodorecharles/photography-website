@@ -1205,7 +1205,15 @@
       "aiTitlesComplete": "Tạo tiêu đề AI hoàn tất",
       "aiTitlesFailed": "Tạo tiêu đề AI thất bại",
       "testNotificationTitle": "Thông báo thử nghiệm",
-      "testNotificationBody": "Thông báo đẩy đang hoạt động! Bạn sẽ nhận được thông báo khi các công việc xử lý của bạn hoàn tất."
+      "testNotificationBody": "Thông báo đẩy đang hoạt động! Bạn sẽ nhận được thông báo khi các công việc xử lý của bạn hoàn tất.",
+      "userInvitedTitle": "Người dùng mới được mời",
+      "userInvitedBody": "Một người dùng mới đã được mời đến trang của bạn",
+      "userAcceptedInviteTitle": "Người dùng đã tham gia",
+      "userAcceptedInviteBody": "Một người dùng đã chấp nhận lời mời và tham gia",
+      "userCreatedPasskeyTitle": "Khóa truy cập đã được tạo",
+      "userCreatedPasskeyBody": "Một người dùng đã đăng ký một khóa truy cập mới",
+      "userSetupMFATitle": "MFA đã được kích hoạt",
+      "userSetupMFABody": "Một người dùng đã kích hoạt xác thực nhiều yếu tố"
     },
     "blocked": "Thông báo bị chặn bởi trình duyệt. Kiểm tra cài đặt trình duyệt của bạn.",
     "subscribePrompt": "Đăng ký để nhận thông báo khi công việc hoàn thành",

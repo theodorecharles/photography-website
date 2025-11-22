@@ -1205,7 +1205,15 @@
       "aiTitlesComplete": "AI-titelgenerering slutförd",
       "aiTitlesFailed": "AI-titelgenerering misslyckades",
       "testNotificationTitle": "Testmeddelande",
-      "testNotificationBody": "Push-notiser fungerar! Du kommer att få aviseringar när dina bearbetningsjobb är klara."
+      "testNotificationBody": "Push-notiser fungerar! Du kommer att få aviseringar när dina bearbetningsjobb är klara.",
+      "userInvitedTitle": "Ny användare inbjuden",
+      "userInvitedBody": "En ny användare har blivit inbjuden till din webbplats",
+      "userAcceptedInviteTitle": "Användare gick med",
+      "userAcceptedInviteBody": "En användare har accepterat sin inbjudan och gått med",
+      "userCreatedPasskeyTitle": "Lösenordsskydd skapat",
+      "userCreatedPasskeyBody": "En användare har registrerat ett nytt lösenordsskydd",
+      "userSetupMFATitle": "MFA aktiverad",
+      "userSetupMFABody": "En användare har aktiverat flerfaktorsautentisering"
     },
     "blocked": "Aviseringar blockerade av webbläsaren. Kontrollera dina webbläsarinställningar.",
     "subscribePrompt": "Prenumerera för att ta emot aviseringar när jobb är klara",

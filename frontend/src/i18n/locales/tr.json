@@ -1205,7 +1205,15 @@
       "aiTitlesComplete": "Yapay Zeka Başlık Oluşturma Tamamlandı",
       "aiTitlesFailed": "Yapay Zeka Başlık Oluşturma Başarısız",
       "testNotificationTitle": "Test Bildirimi",
-      "testNotificationBody": "Push bildirimleri çalışıyor! İşleme görevleriniz tamamlandığında bildirim alacaksınız."
+      "testNotificationBody": "Push bildirimleri çalışıyor! İşleme görevleriniz tamamlandığında bildirim alacaksınız.",
+      "userInvitedTitle": "Yeni Kullanıcı Davet Edildi",
+      "userInvitedBody": "Yeni bir kullanıcı sitenize davet edildi",
+      "userAcceptedInviteTitle": "Kullanıcı Katıldı",
+      "userAcceptedInviteBody": "Bir kullanıcı davetini kabul etti ve katıldı",
+      "userCreatedPasskeyTitle": "Şifre Anahtarı Oluşturuldu",
+      "userCreatedPasskeyBody": "Bir kullanıcı yeni bir şifre anahtarı kaydetti",
+      "userSetupMFATitle": "MFA Etkinleştirildi",
+      "userSetupMFABody": "Bir kullanıcı çok faktörlü kimlik doğrulamayı etkinleştirdi"
     },
     "blocked": "Tarayıcı tarafından bildirimler engellendi. Tarayıcı ayarlarınızı kontrol edin.",
     "subscribePrompt": "İşler tamamlandığında bildirim almak için abone olun",

@@ -9,6 +9,7 @@ import { MapContainer, TileLayer, CircleMarker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import './VisitorMap.css';
 import { getMarkerRadius, getMarkerOpacity, formatLocationName } from '../../../utils/mapHelpers';
+import { SkeletonMap } from './SkeletonLoader';
 
 // Import VisitorLocation from types.ts (canonical location)
 import type { VisitorLocation } from './types';
@@ -32,12 +33,7 @@ export default function VisitorMap({ locations, loading }: VisitorMapProps) {
   // Functions moved to utils/mapHelpers.ts
 
   if (loading) {
-    return (
-      <div className="visitor-map-loading">
-        <div className="loading-spinner"></div>
-        <p>{t('metrics.map.loadingMapData')}</p>
-      </div>
-    );
+    return <SkeletonMap />;
   }
 
   if (locations.length === 0) {

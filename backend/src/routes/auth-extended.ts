@@ -46,8 +46,35 @@ import {
 import crypto from 'crypto';
 import { sendInvitationEmail, sendPasswordResetEmail, isEmailServiceEnabled, generateInvitationUrl } from '../email.js';
 import { getCurrentConfig, reloadConfig } from '../config.js';
+import { sendNotificationToUser } from '../push-notifications.js';
+import { translateNotificationForUser } from '../i18n-backend.js';
 
 const router = Router();
+
+/**
+ * Helper to send push notification to all admin users
+ */
+async function notifyAllAdmins(title: string, body: string, tag: string): Promise<void> {
+  try {
+    const admins = getAllUsers().filter(u => u.role === 'admin');
+    
+    for (const admin of admins) {
+      const translatedTitle = await translateNotificationForUser(admin.id, title);
+      const translatedBody = await translateNotificationForUser(admin.id, body);
+      
+      await sendNotificationToUser(admin.id, {
+        title: translatedTitle,
+        body: translatedBody,
+        icon: '/icon-192.png',
+        badge: '/icon-192.png',
+        tag,
+        requireInteraction: false
+      });
+    }
+  } catch (err) {
+    error('[AuthExtended] Failed to send admin notification:', err);
+  }
+}
 
 /**
  * Helper to get user ID from either Passport session or credential session
@@ -271,6 +298,13 @@ router.post('/invite', requireAdmin, async (req: Request, res: Response) => {
     // Generate invite URL for manual sharing when email is disabled
     const inviteUrl = !emailEnabled ? generateInvitationUrl(inviteToken) : undefined;
 
+    // Send push notification to all admins
+    await notifyAllAdmins(
+      'notifications.backend.userInvitedTitle',
+      'notifications.backend.userInvitedBody',
+      'user-invited'
+    ).catch(err => error('[AuthExtended] Failed to send invitation notification:', err));
+
     res.json({
       success: true,
       user: {
@@ -448,6 +482,13 @@ router.post('/invite/:token/complete', async (req: Request, res: Response) => {
 
     // Get updated user
     const updatedUser = getUserById(user.id);
+
+    // Send push notification to all admins
+    await notifyAllAdmins(
+      'notifications.backend.userAcceptedInviteTitle',
+      'notifications.backend.userAcceptedInviteBody',
+      'user-accepted-invite'
+    ).catch(err => error('[AuthExtended] Failed to send invite acceptance notification:', err));
 
     res.json({
       success: true,
@@ -799,6 +840,18 @@ router.post('/mfa/verify-setup', requireAuth, async (req: Request, res: Response
     enableMFA(userId, setup.challenge, backupCodes);
     challenges.delete(`mfa-setup-${setupToken}`);
 
+    // Get user info for notification
+    const user = getUserById(userId);
+
+    // Send push notification to all admins
+    if (user) {
+      await notifyAllAdmins(
+        'notifications.backend.userSetupMFATitle',
+        'notifications.backend.userSetupMFABody',
+        'user-setup-mfa'
+      ).catch(err => error('[AuthExtended] Failed to send MFA setup notification:', err));
+    }
+
     res.json({ success: true });
   } catch (err) {
     error('[AuthExtended] MFA verification error:', err);
@@ -965,6 +1018,18 @@ router.post('/passkey/register-verify', requireAuth, async (req: Request, res: R
 
     addPasskey(userId, passkey);
     challenges.delete(challengeKey);
+
+    // Get user info for notification
+    const user = getUserById(userId);
+
+    // Send push notification to all admins
+    if (user) {
+      await notifyAllAdmins(
+        'notifications.backend.userCreatedPasskeyTitle',
+        'notifications.backend.userCreatedPasskeyBody',
+        'user-created-passkey'
+      ).catch(err => error('[AuthExtended] Failed to send passkey creation notification:', err));
+    }
 
     res.json({ success: true, passkey: { id: passkey.id, name: passkey.name } });
   } catch (err: any) {

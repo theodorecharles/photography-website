@@ -1205,7 +1205,15 @@
       "aiTitlesComplete": "Generowanie tytułów AI zakończone",
       "aiTitlesFailed": "Generowanie tytułów AI nie powiodło się",
       "testNotificationTitle": "Powiadomienie testowe",
-      "testNotificationBody": "Powiadomienia push działają! Otrzymasz powiadomienia, gdy Twoje zadania przetwarzania zostaną zakończone."
+      "testNotificationBody": "Powiadomienia push działają! Otrzymasz powiadomienia, gdy Twoje zadania przetwarzania zostaną zakończone.",
+      "userInvitedTitle": "Nowy użytkownik zaproszony",
+      "userInvitedBody": "Nowy użytkownik został zaproszony na twoją stronę",
+      "userAcceptedInviteTitle": "Użytkownik dołączył",
+      "userAcceptedInviteBody": "Użytkownik zaakceptował zaproszenie i dołączył",
+      "userCreatedPasskeyTitle": "Utworzono klucz dostępu",
+      "userCreatedPasskeyBody": "Użytkownik zarejestrował nowy klucz dostępu",
+      "userSetupMFATitle": "MFA włączone",
+      "userSetupMFABody": "Użytkownik włączył uwierzytelnianie wieloskładnikowe"
     },
     "blocked": "Powiadomienia zablokowane przez przeglądarkę. Sprawdź ustawienia przeglądarki.",
     "subscribePrompt": "Zapisz się, aby otrzymywać powiadomienia, gdy zadania zostaną zakończone",

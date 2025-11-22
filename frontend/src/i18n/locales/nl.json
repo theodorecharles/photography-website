@@ -1205,7 +1205,15 @@
       "aiTitlesComplete": "AI Titelgeneratie Voltooid",
       "aiTitlesFailed": "AI Titelgeneratie Mislukt",
       "testNotificationTitle": "Testmelding",
-      "testNotificationBody": "Pushmeldingen werken! Je ontvangt meldingen wanneer je verwerkingsjobs zijn voltooid."
+      "testNotificationBody": "Pushmeldingen werken! Je ontvangt meldingen wanneer je verwerkingsjobs zijn voltooid.",
+      "userInvitedTitle": "Nieuwe gebruiker uitgenodigd",
+      "userInvitedBody": "Een nieuwe gebruiker is uitgenodigd op uw site",
+      "userAcceptedInviteTitle": "Gebruiker toegetreden",
+      "userAcceptedInviteBody": "Een gebruiker heeft hun uitnodiging geaccepteerd en is toegetreden",
+      "userCreatedPasskeyTitle": "Wachtwoordsleutel aangemaakt",
+      "userCreatedPasskeyBody": "Een gebruiker heeft een nieuwe wachtwoordsleutel geregistreerd",
+      "userSetupMFATitle": "MFA ingeschakeld",
+      "userSetupMFABody": "Een gebruiker heeft multi-factor authenticatie ingeschakeld"
     },
     "blocked": "Meldingen geblokkeerd door de browser. Controleer uw browserinstellingen.",
     "subscribePrompt": "Abonneer om meldingen te ontvangen wanneer taken zijn voltooid",

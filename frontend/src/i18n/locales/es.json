@@ -1205,7 +1205,15 @@
       "aiTitlesComplete": "Generación de título AI completa",
       "aiTitlesFailed": "La generación de título AI falló",
       "testNotificationTitle": "Notificación de prueba",
-      "testNotificationBody": "¡Las notificaciones push están funcionando! Recibirás alertas cuando tus trabajos de procesamiento se completen."
+      "testNotificationBody": "¡Las notificaciones push están funcionando! Recibirás alertas cuando tus trabajos de procesamiento se completen.",
+      "userInvitedTitle": "Nuevo usuario invitado",
+      "userInvitedBody": "Se ha invitado a un nuevo usuario a tu sitio",
+      "userAcceptedInviteTitle": "Usuario unido",
+      "userAcceptedInviteBody": "Un usuario ha aceptado su invitación y se ha unido",
+      "userCreatedPasskeyTitle": "Clave de acceso creada",
+      "userCreatedPasskeyBody": "Un usuario ha registrado una nueva clave de acceso",
+      "userSetupMFATitle": "MFA habilitado",
+      "userSetupMFABody": "Un usuario ha habilitado la autenticación de múltiples factores"
     },
     "blocked": "Notificaciones bloqueadas por el navegador. Verifica la configuración de tu navegador.",
     "subscribePrompt": "Suscríbete para recibir notificaciones cuando los trabajos se completen",
