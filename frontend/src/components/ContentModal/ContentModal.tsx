@@ -4,7 +4,7 @@
  * Combines all sub-components
  */
 
-import React, { useRef, useState, useEffect, useCallback } from 'react';
+import React, { useRef, useState, useEffect, useCallback, lazy, Suspense } from 'react';
 import { API_URL } from '../../config';
 import { trackPhotoNavigation, trackPhotoDownload, trackModalClose } from '../../utils/analytics';
 import { fetchWithRateLimitCheck } from '../../utils/fetchWrapper';
@@ -13,11 +13,13 @@ import { Photo, ExifData } from './types';
 import ModalControls from './ModalControls';
 import InfoPanel from './InfoPanel';
 import ImageCanvas from './ImageCanvas';
-import VideoPlayer from './VideoPlayer';
 import ModalNavigation from './ModalNavigation';
 import { PlayIcon } from '../icons';
 import './PhotoModal.css';
 import { error as logError } from '../../utils/logger';
+
+// Lazy load VideoPlayer (includes hls.js which is 300KB+)
+const VideoPlayer = lazy(() => import('./VideoPlayer'));
 
 
 interface ContentModalProps {
@@ -678,18 +680,20 @@ const ContentModal: React.FC<ContentModalProps> = ({
                 {/* Video player overlay (on top of thumbnail) */}
                 {showVideoPlayer && (
                   <div className="modal-video-overlay">
-                    <VideoPlayer
-                      album={selectedPhoto.album}
-                      filename={selectedPhoto.id.includes('/') ? selectedPhoto.id.split('/').pop() || selectedPhoto.id : selectedPhoto.id}
-                      videoTitle={selectedPhoto.title || selectedPhoto.id}
-                      autoplay={shouldAutoplay}
-                      onLoadStart={() => setThumbnailLoaded(false)}
-                      onLoaded={() => {
-                        setThumbnailLoaded(true);
-                        setModalImageLoaded(true);
-                      }}
-                      secretKey={secretKey}
-                    />
+                    <Suspense fallback={<div className="photo-loading-overlay"><div className="photo-loading-spinner"></div></div>}>
+                      <VideoPlayer
+                        album={selectedPhoto.album}
+                        filename={selectedPhoto.id.includes('/') ? selectedPhoto.id.split('/').pop() || selectedPhoto.id : selectedPhoto.id}
+                        videoTitle={selectedPhoto.title || selectedPhoto.id}
+                        autoplay={shouldAutoplay}
+                        onLoadStart={() => setThumbnailLoaded(false)}
+                        onLoaded={() => {
+                          setThumbnailLoaded(true);
+                          setModalImageLoaded(true);
+                        }}
+                        secretKey={secretKey}
+                      />
+                    </Suspense>
                   </div>
                 )}
               </div>

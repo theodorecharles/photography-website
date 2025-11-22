@@ -4,7 +4,7 @@
  * and provides functionality for viewing photos in a modal.
  */
 
-import { useState, useEffect, useRef, useMemo, useCallback } from "react";
+import { useState, useEffect, useRef, useMemo, useCallback, lazy, Suspense } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../contexts/AuthContext";
@@ -14,10 +14,12 @@ import { trackPhotoClick, trackError } from "../utils/analytics";
 import { fetchWithRateLimitCheck } from "../utils/fetchWrapper";
 import ContentModal from "./ContentModal";
 import NotFound from "./Misc/NotFound";
-import VideoListView from "./VideoListView";
 import { reconstructPhoto, getNumColumns, distributePhotos } from "../utils/photoHelpers";
 import { info } from '../utils/logger';
 import { VideoIcon, PlayIcon } from './icons';
+
+// Lazy load VideoListView (includes VideoPlayer and hls.js)
+const VideoListView = lazy(() => import("./VideoListView"));
 
 interface ContentGridProps {
   album: string;
@@ -589,7 +591,16 @@ const ContentGrid: React.FC<ContentGridProps> = ({ album, onAlbumNotFound, initi
       }
       return <NotFound />;
     }
-    return <VideoListView videos={allPhotos} album={album} secretKey={secretKey} />;
+    return (
+      <Suspense fallback={
+        <div className="photo-grid-loading">
+          <div className="loading-spinner"></div>
+          <p>{t('app.loadingAlbum')}</p>
+        </div>
+      }>
+        <VideoListView videos={allPhotos} album={album} secretKey={secretKey} />
+      </Suspense>
+    );
   }
 
   return (
