@@ -204,11 +204,13 @@ app.get("/health", (req, res) => {
   res.json({ status: "ok", message: "Frontend server is running" });
 });
 
-// Proxy for push notification API endpoints (fixes Safari PWA cross-origin blocking)
-// This makes the requests same-origin from the browser's perspective
-app.use("/api/push-notifications", express.json(), async (req, res) => {
+// Proxy for push notification endpoints (fixes Safari PWA content blocker)
+// Safari blocks URLs containing /api/ even when same-origin, so we use /notifications/
+app.use("/notifications", express.json(), async (req, res) => {
   const apiUrl = config.frontend.apiUrl;
-  const targetUrl = `${apiUrl}${req.originalUrl}`;
+  // Map /notifications/* to /api/push-notifications/* on backend
+  const backendPath = req.path.replace(/^\//, '/api/push-notifications/');
+  const targetUrl = `${apiUrl}${backendPath}${req.url.includes('?') ? req.url.substring(req.url.indexOf('?')) : ''}`;
   
   try {
     // Forward the request to the backend (using Node's built-in fetch)

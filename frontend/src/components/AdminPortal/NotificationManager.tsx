@@ -83,8 +83,8 @@ export function NotificationManager() {
     try {
       // Fetch push notification config from server
       console.log('[NotificationManager] Fetching config from /api/push-notifications/config');
-      // Use relative URL to avoid Safari PWA cross-origin blocking
-      const response = await fetch(`/api/push-notifications/config`, {
+      // Use /notifications/ path to avoid Safari content blocker
+      const response = await fetch(`/notifications/config`, {
         credentials: 'include'
       });
       
@@ -163,8 +163,8 @@ export function NotificationManager() {
       }
 
       // Send subscription to server
-      // Use relative URL to avoid Safari PWA cross-origin blocking
-      const response = await fetch(`/api/push-notifications/subscribe`, {
+      // Use /notifications/ path to avoid Safari content blocker
+      const response = await fetch(`/notifications/subscribe`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -195,8 +195,8 @@ export function NotificationManager() {
         await subscription.unsubscribe();
         
         // Notify server
-        // Use relative URL to avoid Safari PWA cross-origin blocking
-        await fetch(`/api/push-notifications/unsubscribe`, {
+        // Use /notifications/ path to avoid Safari content blocker
+        await fetch(`/notifications/unsubscribe`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -217,8 +217,8 @@ export function NotificationManager() {
 
   async function sendTestNotification() {
     try {
-      // Use relative URL to avoid Safari PWA cross-origin blocking
-      const response = await fetch(`/api/push-notifications/test`, {
+      // Use /notifications/ path to avoid Safari content blocker
+      const response = await fetch(`/notifications/test`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
