@@ -74,14 +74,20 @@ if [ ! -f "data/GeoLite2-City.mmdb" ]; then
     
     # Download and extract
     if curl -sL "$GEOIP_URL" | gunzip > data/GeoLite2-City.mmdb 2>/dev/null; then
-        log "✓ GeoIP database downloaded successfully"
+        # Verify the file was actually created and has content
+        if [ -s "data/GeoLite2-City.mmdb" ]; then
+            log "✓ GeoIP database downloaded successfully ($(du -h data/GeoLite2-City.mmdb | cut -f1))"
+        else
+            log "WARNING: GeoIP database download failed (empty file)"
+            rm -f data/GeoLite2-City.mmdb
+        fi
     else
         log "WARNING: Failed to download GeoIP database. Location lookup will be disabled."
         log "         You can manually download from https://db-ip.com/db/download/ip-to-city-lite"
         log "         and save it as data/GeoLite2-City.mmdb"
     fi
 else
-    log "GeoIP database already exists, skipping download"
+    log "GeoIP database already exists ($(du -h data/GeoLite2-City.mmdb | cut -f1)), skipping download"
 fi
 
 # Run image optimization script (only if configured and albums exist)
