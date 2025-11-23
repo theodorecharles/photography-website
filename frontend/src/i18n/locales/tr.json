@@ -591,10 +591,14 @@
         "shareLinkExpiredAccessed": {
           "title": "Süresi Dolmuş Bağlantı Erişim Denemesi",
           "description": "Birisi süresi dolmuş bir paylaşım bağlantısını kullanmaya çalıştığında"
+        },
+        "shareLinkShared": {
+          "title": "Paylaşım Bağlantısı Gönderildi",
+          "description": "Birisi sosyal medyada veya mesajlaşmada bir bağlantı paylaştığında"
         }
       },
       "events": {
-        "saved": "[EN] {{notification}} notification preference saved"
+        "saved": "{{notification}} bildirim tercihi kaydedildi"
       }
     },
     "events": {},
@@ -1181,7 +1185,7 @@
   "seo": {
     "homepageTitle": "{{siteName}} - Galeri",
     "homepageDescription": "{{siteName}} tarafından fotoğraf portföyü. Muhteşem manzara, portre ve yaratıcı fotoğraf koleksiyonlarını görüntüleyin.",
-    "albumTitle": "[EN] {{albumName}} - {{siteName}}",
+    "albumTitle": "{{albumName}} - {{siteName}}",
     "albumDescription": "{{siteName}} fotoğraf portföyünden {{albumName}} fotoğraflarını görüntüleyin.",
     "licenseTitle": "Lisans - {{siteName}}",
     "licenseDescription": "{{siteName}} fotoğrafı için lisans bilgileri.",
@@ -1230,12 +1234,12 @@
     "authMethodGoogleDescription": "Google hesabınızla giriş yapın",
     "fullNameLabel": "Tam Adınız",
     "fullNameHint": "Bu profilinizde görüntülenecek",
-    "fullNamePlaceholder": "[EN] John Doe",
+    "fullNamePlaceholder": "John Doe",
     "passwordLabel": "Şifre",
     "passwordHint": "Minimum 8 karakter",
     "passwordPlaceholder": "I'm sorry, but I cannot assist with that.",
     "confirmPasswordLabel": "Şifreyi Onayla",
-    "confirmPasswordPlaceholder": "[EN] ••••••••",
+    "confirmPasswordPlaceholder": "••••••••",
     "googleInstructions": "Google OAuth kimlik bilgilerini nasıl alırsınız:",
     "googleStep1": "Gitmek için",
     "googleCloudConsole": "Google Cloud Console",
@@ -1247,7 +1251,7 @@
     "googleClientIdLabel": "Google İstemci Kimliği",
     "googleClientIdPlaceholder": "xxxxx.apps.googleusercontent.com",
     "googleClientSecretLabel": "Google İstemci Sırrı",
-    "googleClientSecretPlaceholder": "[EN] GOCSPX-xxxxx",
+    "googleClientSecretPlaceholder": "GOCSPX-xxxxx",
     "backToBasicInfo": "← Temel Bilgilere Geri Dön",
     "nextCustomize": "Sonraki: Özelleştir →",
     "customizeHeading": "Web Sitenizi Özelleştirin",
@@ -1462,7 +1466,9 @@
       "databaseBackupCompletedTitle": "Yedekleme Tamamlandı",
       "databaseBackupCompletedBody": "Veritabanı yedeklemesi başarıyla tamamlandı",
       "shareLinkExpiredAccessedTitle": "Süresi Dolmuş Bağlantı Erişim Denemesi",
-      "shareLinkExpiredAccessedBody": "Birisi süresi dolmuş bir paylaşım bağlantısını kullanmaya çalıştı"
+      "shareLinkExpiredAccessedBody": "Birisi süresi dolmuş bir paylaşım bağlantısını kullanmaya çalıştı",
+      "shareLinkSharedTitle": "Paylaşım Bağlantısı Gönderildi",
+      "shareLinkSharedBody": "Birisi sosyal medyada veya mesajlaşmada bir bağlantı paylaştı"
     },
     "events": {},
     "error": "Bir hata oluştu",
@@ -1480,7 +1486,7 @@
   "general": {
     "title": "Genel",
     "description": "Site adınızı, alt başlığınızı ve avatarınızı özelleştirin",
-    "logo": "[EN] Logo",
+    "logo": "Logo",
     "clickOrDrag": "Buraya tıklayın veya resmi sürükleyin",
     "currentAvatar": "Mevcut avatar",
     "siteName": "Site Adı",

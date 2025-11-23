@@ -10,6 +10,7 @@ import CustomDropdown from '../components/CustomDropdown';
 import { ConfigData } from '../types';
 import { error } from '../../../../utils/logger';
 import { trackConfigSettingsSaved } from '../../../../utils/analytics';
+import './LoggingPage.css';
 
 interface LoggingPageProps {
   setMessage: (message: { type: 'success' | 'error'; text: string }) => void;
@@ -113,14 +114,7 @@ const LoggingPage: React.FC<LoggingPageProps> = ({ setMessage }) => {
           padding: '1.5rem',
         }}
       >
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-            gap: '1.5rem',
-            marginBottom: '1.5rem',
-          }}
-        >
+        <div className="logging-grid">
           <div>
             <label
               className="branding-label"
@@ -182,7 +176,7 @@ const LoggingPage: React.FC<LoggingPageProps> = ({ setMessage }) => {
             </p>
           </div>
 
-          <div>
+          <div className="logging-button-container">
             <button
               className="btn-secondary"
               onClick={() =>
@@ -192,16 +186,6 @@ const LoggingPage: React.FC<LoggingPageProps> = ({ setMessage }) => {
                   'width=1200,height=800,menubar=no,toolbar=no,location=no,status=no'
                 )
               }
-              style={{
-                width: '100%',
-                padding: '0.5rem 0.75rem',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '0.5rem',
-                height: 'auto',
-                marginTop: '1.8rem',
-              }}
             >
               📋 {t('advancedSettings.viewLiveLogs')}
             </button>

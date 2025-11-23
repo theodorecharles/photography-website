@@ -88,9 +88,11 @@
       "albumViewMilestoneBody": "{{albumName}} mencapai {{milestone}} tampilan!",
       "shareLinkExpiredAccessedTitle": "Percobaan Akses Tautan Kedaluwarsa",
       "shareLinkExpiredAccessedBody": "Seseorang mencoba mengakses {{albumName}} dengan tautan yang kedaluwarsa",
-      "folderDeletedBodyEmpty": "[EN] {{deletedBy}} deleted empty folder {{folderName}}",
-      "folderDeletedBodyWithDeleted": "[EN] {{deletedBy}} deleted folder {{folderName}} and {{albumCount}} albums: {{albumNames}}",
-      "folderDeletedBodyWithReleased": "[EN] {{deletedBy}} deleted folder {{folderName}} and released {{albumCount}} albums to root: {{albumNames}}"
+      "folderDeletedBodyEmpty": "{{deletedBy}} menghapus folder kosong {{folderName}}",
+      "folderDeletedBodyWithDeleted": "{{deletedBy}} menghapus folder {{folderName}} dan {{albumCount}} album: {{albumNames}}",
+      "folderDeletedBodyWithReleased": "{{deletedBy}} menghapus folder {{folderName}} dan memindahkan {{albumCount}} album ke root: {{albumNames}}",
+      "shareLinkSharedTitle": "Tautan Berbagi Diposting",
+      "shareLinkSharedBody": "Seseorang membagikan tautan {{albumName}} di media sosial atau pesan"
     }
   },
   "email": {

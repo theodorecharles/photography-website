@@ -88,9 +88,11 @@
       "albumViewMilestoneBody": "{{albumName}} đã đạt {{milestone}} lượt xem!",
       "shareLinkExpiredAccessedTitle": "Nỗ Lực Truy Cập Liên Kết Hết Hạn",
       "shareLinkExpiredAccessedBody": "Ai đó đã cố gắng truy cập {{albumName}} bằng một liên kết hết hạn",
-      "folderDeletedBodyEmpty": "[EN] {{deletedBy}} deleted empty folder {{folderName}}",
-      "folderDeletedBodyWithDeleted": "[EN] {{deletedBy}} deleted folder {{folderName}} and {{albumCount}} albums: {{albumNames}}",
-      "folderDeletedBodyWithReleased": "[EN] {{deletedBy}} deleted folder {{folderName}} and released {{albumCount}} albums to root: {{albumNames}}"
+      "folderDeletedBodyEmpty": "{{deletedBy}} đã xóa thư mục trống {{folderName}}",
+      "folderDeletedBodyWithDeleted": "{{deletedBy}} đã xóa thư mục {{folderName}} và {{albumCount}} album: {{albumNames}}",
+      "folderDeletedBodyWithReleased": "{{deletedBy}} đã xóa thư mục {{folderName}} và chuyển {{albumCount}} album lên gốc: {{albumNames}}",
+      "shareLinkSharedTitle": "Liên kết chia sẻ đã được đăng",
+      "shareLinkSharedBody": "Ai đó đã chia sẻ liên kết {{albumName}} trên mạng xã hội hoặc tin nhắn"
     }
   },
   "email": {

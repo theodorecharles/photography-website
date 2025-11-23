@@ -88,9 +88,11 @@
       "albumViewMilestoneBody": "{{albumName}}이(가) {{milestone}} 조회수를 달성했습니다!",
       "shareLinkExpiredAccessedTitle": "만료된 링크 접근 시도",
       "shareLinkExpiredAccessedBody": "누군가 만료된 링크로 {{albumName}}에 접근하려고 했습니다.",
-      "folderDeletedBodyEmpty": "[EN] {{deletedBy}} deleted empty folder {{folderName}}",
-      "folderDeletedBodyWithDeleted": "[EN] {{deletedBy}} deleted folder {{folderName}} and {{albumCount}} albums: {{albumNames}}",
-      "folderDeletedBodyWithReleased": "[EN] {{deletedBy}} deleted folder {{folderName}} and released {{albumCount}} albums to root: {{albumNames}}"
+      "folderDeletedBodyEmpty": "{{deletedBy}}님이 빈 폴더 {{folderName}}을(를) 삭제했습니다.",
+      "folderDeletedBodyWithDeleted": "{{deletedBy}}님이 폴더 {{folderName}}과(와) {{albumCount}}개의 앨범을 삭제했습니다: {{albumNames}}",
+      "folderDeletedBodyWithReleased": "{{deletedBy}}님이 폴더 {{folderName}}을(를) 삭제하고 {{albumCount}}개의 앨범을 루트로 이동했습니다: {{albumNames}}",
+      "shareLinkSharedTitle": "공유 링크 게시됨",
+      "shareLinkSharedBody": "누군가 소셜 미디어나 메시징에 {{albumName}} 링크를 공유했습니다."
     }
   },
   "email": {

@@ -88,9 +88,11 @@
       "albumViewMilestoneBody": "{{albumName}} достиг {{milestone}} просмотров!",
       "shareLinkExpiredAccessedTitle": "Попытка доступа по истекшей ссылке",
       "shareLinkExpiredAccessedBody": "Кто-то попытался получить доступ к {{albumName}} по истекшей ссылке",
-      "folderDeletedBodyEmpty": "[EN] {{deletedBy}} deleted empty folder {{folderName}}",
-      "folderDeletedBodyWithDeleted": "[EN] {{deletedBy}} deleted folder {{folderName}} and {{albumCount}} albums: {{albumNames}}",
-      "folderDeletedBodyWithReleased": "[EN] {{deletedBy}} deleted folder {{folderName}} and released {{albumCount}} albums to root: {{albumNames}}"
+      "folderDeletedBodyEmpty": "{{deletedBy}} удалил пустую папку {{folderName}}",
+      "folderDeletedBodyWithDeleted": "{{deletedBy}} удалил папку {{folderName}} и {{albumCount}} альбомов: {{albumNames}}",
+      "folderDeletedBodyWithReleased": "{{deletedBy}} удалил папку {{folderName}} и переместил {{albumCount}} альбомов в корень: {{albumNames}}",
+      "shareLinkSharedTitle": "Ссылка для общего доступа опубликована",
+      "shareLinkSharedBody": "Кто-то поделился ссылкой на {{albumName}} в социальных сетях или мессенджере"
     }
   },
   "email": {

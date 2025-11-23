@@ -88,9 +88,11 @@
       "albumViewMilestoneBody": "Naabot na ng {{albumName}} ang {{milestone}} na mga view!",
       "shareLinkExpiredAccessedTitle": "Pagsubok sa Pag-access ng Nag-expire na Link",
       "shareLinkExpiredAccessedBody": "May nagtangkang mag-access ng {{albumName}} gamit ang nag-expire na link",
-      "folderDeletedBodyEmpty": "[EN] {{deletedBy}} deleted empty folder {{folderName}}",
-      "folderDeletedBodyWithDeleted": "[EN] {{deletedBy}} deleted folder {{folderName}} and {{albumCount}} albums: {{albumNames}}",
-      "folderDeletedBodyWithReleased": "[EN] {{deletedBy}} deleted folder {{folderName}} and released {{albumCount}} albums to root: {{albumNames}}"
+      "folderDeletedBodyEmpty": "{{deletedBy}} ay nagtanggal ng walang laman na folder na {{folderName}}",
+      "folderDeletedBodyWithDeleted": "{{deletedBy}} ay nagtanggal ng folder na {{folderName}} at {{albumCount}} na mga album: {{albumNames}}",
+      "folderDeletedBodyWithReleased": "{{deletedBy}} ay nagtanggal ng folder na {{folderName}} at inilabas ang {{albumCount}} na mga album sa ugat: {{albumNames}}",
+      "shareLinkSharedTitle": "Naipost ang Link ng Pagbabahagi",
+      "shareLinkSharedBody": "May nagbahagi ng link ng {{albumName}} sa social media o messaging"
     }
   },
   "email": {

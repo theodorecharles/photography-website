@@ -605,11 +605,20 @@ label.photos-btn {
 
 /* Mobile Responsive - 768px for modal sizing, 500px for controls layout */
 @media (max-width: 768px) {
+  .photos-modal-backdrop {
+    padding: 10px;
+  }
+
   .photos-modal {
-    top: 54px;
-    width: 100%;
-    max-width: 100%;
-    height: calc(100vh - 54px);
+    top: calc(54px + 10px);
+    left: 10px;
+    right: 10px;
+    width: calc(100% - 20px);
+    max-width: calc(100% - 20px);
+    height: calc(100vh - 54px - 20px);
+    transform: none;
+    border: 1px solid #444;
+    border-radius: 12px;
   }
 
   .photos-modal-title {

@@ -88,9 +88,11 @@
       "albumViewMilestoneBody": "{{albumName}} heeft {{milestone}} weergaven bereikt!",
       "shareLinkExpiredAccessedTitle": "Poging tot Toegang met Verlopen Link",
       "shareLinkExpiredAccessedBody": "Iemand probeerde {{albumName}} te openen met een verlopen link",
-      "folderDeletedBodyEmpty": "[EN] {{deletedBy}} deleted empty folder {{folderName}}",
-      "folderDeletedBodyWithDeleted": "[EN] {{deletedBy}} deleted folder {{folderName}} and {{albumCount}} albums: {{albumNames}}",
-      "folderDeletedBodyWithReleased": "[EN] {{deletedBy}} deleted folder {{folderName}} and released {{albumCount}} albums to root: {{albumNames}}"
+      "folderDeletedBodyEmpty": "{{deletedBy}} heeft lege map {{folderName}} verwijderd",
+      "folderDeletedBodyWithDeleted": "{{deletedBy}} heeft map {{folderName}} en {{albumCount}} albums verwijderd: {{albumNames}}",
+      "folderDeletedBodyWithReleased": "{{deletedBy}} heeft map {{folderName}} verwijderd en {{albumCount}} albums naar de hoofdmap verplaatst: {{albumNames}}",
+      "shareLinkSharedTitle": "Deel Link Geplaatst",
+      "shareLinkSharedBody": "Iemand heeft de {{albumName}} link gedeeld op sociale media of berichten"
     }
   },
   "email": {

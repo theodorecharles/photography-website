@@ -88,9 +88,11 @@
       "albumViewMilestoneBody": "{{albumName}} nådde {{milestone}} visninger!",
       "shareLinkExpiredAccessedTitle": "Forsøk på tilgang med utløpt lenke",
       "shareLinkExpiredAccessedBody": "Noen prøvde å få tilgang til {{albumName}} med en utløpt lenke",
-      "folderDeletedBodyEmpty": "[EN] {{deletedBy}} deleted empty folder {{folderName}}",
-      "folderDeletedBodyWithDeleted": "[EN] {{deletedBy}} deleted folder {{folderName}} and {{albumCount}} albums: {{albumNames}}",
-      "folderDeletedBodyWithReleased": "[EN] {{deletedBy}} deleted folder {{folderName}} and released {{albumCount}} albums to root: {{albumNames}}"
+      "folderDeletedBodyEmpty": "{{deletedBy}} slettet tom mappe {{folderName}}",
+      "folderDeletedBodyWithDeleted": "{{deletedBy}} slettet mappe {{folderName}} og {{albumCount}} album: {{albumNames}}",
+      "folderDeletedBodyWithReleased": "{{deletedBy}} slettet mappe {{folderName}} og flyttet {{albumCount}} album til roten: {{albumNames}}",
+      "shareLinkSharedTitle": "Delingslenke postet",
+      "shareLinkSharedBody": "Noen delte {{albumName}}-lenken på sosiale medier eller meldingsplattform"
     }
   },
   "email": {

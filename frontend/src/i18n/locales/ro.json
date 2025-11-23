@@ -34,7 +34,7 @@
     "actionCannotBeUndone": "Această acțiune nu poate fi anulată",
     "creating": "Se creează...",
     "generating": "Se generează...",
-    "album": "[EN] album",
+    "album": "album",
     "albums": "albume",
     "note": "Notă",
     "dismiss": "Respinge",
@@ -70,7 +70,7 @@
     "signIn": "Conectare"
   },
   "album": {
-    "title": "[EN] Album",
+    "title": "Album",
     "photos": "Fotografii",
     "viewAlbum": "Vezi {{albumName}}",
     "albumNotFound": "Albumul nu a fost găsit"
@@ -94,7 +94,7 @@
     "exitFullscreen": "Ieși din modul pe întreaga ecran",
     "file": "Fișier",
     "titleLabel": "Titlu",
-    "albumLabel": "[EN] Album",
+    "albumLabel": "Album",
     "size": "Dimensiune",
     "loadingExif": "Se încarcă datele EXIF...",
     "camera": "Cameră",
@@ -246,7 +246,7 @@
     "moveDown": "Mută în jos",
     "cannotPublishEmptyFolder": "Nu se poate publica un folder gol",
     "deleteFolderTitle": "Șterge folderul",
-    "album": "[EN] album",
+    "album": "album",
     "albums": "albume",
     "loadingPhotos": "Se încarcă fotografiile...",
     "uploadingEllipsis": "Încărcare...",
@@ -419,7 +419,7 @@
       "pageDescription": "Configurează verbositatea jurnalizării serverului și vizualizează jurnalele live"
     },
     "general": {
-      "title": "[EN] General",
+      "title": "General",
       "description": "Nume site, logo și aspect",
       "pageDescription": "Personalizați identitatea vizuală și setările generale ale site-ului dvs."
     },
@@ -591,10 +591,14 @@
         "shareLinkExpiredAccessed": {
           "title": "Încercare de accesare a unui link expirat",
           "description": "Când cineva încearcă să folosească un link de partajare expirat"
+        },
+        "shareLinkShared": {
+          "title": "Link de partajare postat",
+          "description": "Când cineva partajează un link pe rețelele sociale sau mesagerie"
         }
       },
       "events": {
-        "saved": "[EN] {{notification}} notification preference saved"
+        "saved": "Preferința de notificare {{notification}} salvată"
       }
     },
     "events": {},
@@ -650,8 +654,8 @@
     "status": "Stare",
     "actions": "Acțiuni",
     "viewer": "Vizualizator",
-    "manager": "[EN] Manager",
-    "admin": "[EN] Admin",
+    "manager": "Manager",
+    "admin": "Admin",
     "invited": "Invitat",
     "inviteExpired": "Invitație Expirată",
     "active": "Activ",
@@ -945,7 +949,7 @@
       "avgTime": "Timp mediu",
       "views": "Vizualizări",
       "photoId": "ID foto",
-      "album": "[EN] Album",
+      "album": "Album",
       "fileName": "Nume fișier",
       "viewPhoto": "Vizualizează fotografia"
     },
@@ -1181,7 +1185,7 @@
   "seo": {
     "homepageTitle": "{{siteName}} - Galleria",
     "homepageDescription": "Portofoliu de fotografie de la {{siteName}}. Vizualizați colecții uimitoare de peisaje, portrete și fotografie creativă.",
-    "albumTitle": "[EN] {{albumName}} - {{siteName}}",
+    "albumTitle": "{{albumName}} - {{siteName}}",
     "albumDescription": "Vizualizați fotografiile din {{albumName}} din portofoliul de fotografie {{siteName}}.",
     "licenseTitle": "Licență - {{siteName}}",
     "licenseDescription": "Informații despre licență pentru fotografia {{siteName}}.",
@@ -1230,12 +1234,12 @@
     "authMethodGoogleDescription": "Conectează-te cu contul tău Google",
     "fullNameLabel": "Numele tău complet",
     "fullNameHint": "Acest lucru va fi afișat în profilul tău",
-    "fullNamePlaceholder": "[EN] John Doe",
+    "fullNamePlaceholder": "John Doe",
     "passwordLabel": "Parolă",
     "passwordHint": "Minimum 8 caractere",
-    "passwordPlaceholder": "[EN] ••••••••",
+    "passwordPlaceholder": "••••••••",
     "confirmPasswordLabel": "Confirmă parola",
-    "confirmPasswordPlaceholder": "[EN] ••••••••",
+    "confirmPasswordPlaceholder": "••••••••",
     "googleInstructions": "Cum să obții acreditivele Google OAuth:",
     "googleStep1": "Mergi la",
     "googleCloudConsole": "Google Cloud Console",
@@ -1247,7 +1251,7 @@
     "googleClientIdLabel": "ID-ul Clientului Google",
     "googleClientIdPlaceholder": "xxxxx.apps.googleusercontent.com",
     "googleClientSecretLabel": "Secretul Clientului Google",
-    "googleClientSecretPlaceholder": "[EN] GOCSPX-xxxxx",
+    "googleClientSecretPlaceholder": "GOCSPX-xxxxx",
     "backToBasicInfo": "← Înapoi la Informații de Bază",
     "nextCustomize": "Următor: Personalizează →",
     "customizeHeading": "Personalizează-ți site-ul",
@@ -1307,7 +1311,7 @@
       "instructions": "Pentru a-ți reseta parola, fă clic pe butonul de mai jos:",
       "button": "Resetează parola",
       "orCopyLink": "Sau copiază și lipește acest link în browserul tău:",
-      "warningTitle": "[EN] ⚠️ Important:",
+      "warningTitle": "⚠️ Important:",
       "warningExpiry": "Acest link va expira în 1 oră",
       "warningIgnore": "Dacă nu ați solicitat acest lucru, vă rugăm să ignorați acest email",
       "warningNoChange": "Parola dumneavoastră nu se va schimba până când nu creați una nouă",
@@ -1462,7 +1466,9 @@
       "databaseBackupCompletedTitle": "Backup complet",
       "databaseBackupCompletedBody": "Backup-ul bazei de date a fost finalizat cu succes",
       "shareLinkExpiredAccessedTitle": "Încercare de accesare a unui link expirat",
-      "shareLinkExpiredAccessedBody": "Cineva a încercat să folosească un link de partajare expirat"
+      "shareLinkExpiredAccessedBody": "Cineva a încercat să folosească un link de partajare expirat",
+      "shareLinkSharedTitle": "Link de partajare postat",
+      "shareLinkSharedBody": "Cineva a partajat un link pe rețelele sociale sau mesagerie"
     },
     "events": {},
     "error": "A apărut o eroare",
@@ -1478,9 +1484,9 @@
     "subscribe": "Abonează-te"
   },
   "general": {
-    "title": "[EN] General",
+    "title": "General",
     "description": "Personalizați numele, subtitlul și avatarul site-ului dvs.",
-    "logo": "[EN] Logo",
+    "logo": "Logo",
     "clickOrDrag": "Faceți clic sau trageți imaginea aici",
     "currentAvatar": "Avatar curent",
     "siteName": "Numele site-ului",

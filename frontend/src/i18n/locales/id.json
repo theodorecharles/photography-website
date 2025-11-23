@@ -34,7 +34,7 @@
     "actionCannotBeUndone": "Tindakan ini tidak dapat dibatalkan",
     "creating": "Membuat...",
     "generating": "Menghasilkan...",
-    "album": "[EN] album",
+    "album": "album",
     "albums": "album",
     "note": "Catatan",
     "dismiss": "Abaikan",
@@ -70,7 +70,7 @@
     "signIn": "Masuk"
   },
   "album": {
-    "title": "[EN] Album",
+    "title": "Album",
     "photos": "Foto",
     "viewAlbum": "Lihat {{albumName}}",
     "albumNotFound": "Album tidak ditemukan"
@@ -94,7 +94,7 @@
     "exitFullscreen": "Keluar dari layar penuh",
     "file": "Berkas",
     "titleLabel": "Judul",
-    "albumLabel": "[EN] Album",
+    "albumLabel": "Album",
     "size": "Ukuran",
     "loadingExif": "Memuat data EXIF...",
     "camera": "Kamera",
@@ -218,7 +218,7 @@
     "editPhoto": "Edit Foto",
     "editPhotoTitle": "Edit Judul Foto",
     "editVideoTitle": "Edit Judul Video",
-    "editMetadata": "[EN] Edit Metadata",
+    "editMetadata": "Edit Metadata",
     "photoTitle": "Judul Foto",
     "photoDescription": "Deskripsi Foto",
     "enterTitle": "Masukkan judul...",
@@ -246,7 +246,7 @@
     "moveDown": "Pindahkan ke bawah",
     "cannotPublishEmptyFolder": "Tidak dapat menerbitkan folder kosong",
     "deleteFolderTitle": "Hapus folder",
-    "album": "[EN] album",
+    "album": "album",
     "albums": "album",
     "loadingPhotos": "Memuat foto...",
     "uploadingEllipsis": "Mengunggah...",
@@ -326,7 +326,7 @@
     "failedToSaveChangesBeforeDeletingFolder": "Gagal menyimpan perubahan sebelum menghapus folder",
     "networkErrorOccurred": "Terjadi kesalahan jaringan",
     "folderDeleted": "Folder \"{{folderName}}\" dihapus",
-    "folderActionCompleted": "[EN] Folder \"{{folderName}}\" {{action}}",
+    "folderActionCompleted": "Folder \"{{folderName}}\" {{action}}",
     "retryingOptimization": "Mencoba kembali optimasi untuk {{filename}}...",
     "optimizationRestarted": "Optimasi dimulai ulang untuk {{filename}}",
     "retryingAIGeneration": "Mencoba kembali pembuatan judul AI untuk {{filename}}...",
@@ -591,10 +591,14 @@
         "shareLinkExpiredAccessed": {
           "title": "Percobaan Akses Tautan Kedaluwarsa",
           "description": "Ketika seseorang mencoba menggunakan tautan berbagi yang kedaluwarsa"
+        },
+        "shareLinkShared": {
+          "title": "Tautan Berbagi Diposting",
+          "description": "Ketika seseorang membagikan tautan di media sosial atau pesan"
         }
       },
       "events": {
-        "saved": "[EN] {{notification}} notification preference saved"
+        "saved": "Preferensi notifikasi {{notification}} disimpan"
       }
     },
     "events": {},
@@ -610,8 +614,8 @@
     "logLevelSilent": "Diam",
     "logLevelError": "Kesalahan",
     "logLevelWarn": "Peringatan",
-    "logLevelInfo": "[EN] Info",
-    "logLevelDebug": "[EN] Debug",
+    "logLevelInfo": "Info",
+    "logLevelDebug": "Debug",
     "logLevelVerbose": "Verbosa",
     "logLevelTrace": "Jejak",
     "logLevelDescription": "Mengontrol tingkat detail log server. Level yang lebih tinggi mencakup lebih banyak detail tetapi dapat mempengaruhi kinerja.",
@@ -647,11 +651,11 @@
     "setupSmtp": "Atur SMTP",
     "email": "Email",
     "role": "Peran",
-    "status": "[EN] Status",
+    "status": "Status",
     "actions": "Aksi",
     "viewer": "Penonton",
     "manager": "Manajer",
-    "admin": "[EN] Admin",
+    "admin": "Admin",
     "invited": "Diundang",
     "inviteExpired": "Undangan Kedaluwarsa",
     "active": "Aktif",
@@ -749,7 +753,7 @@
     "emailServiceNotConfiguredDescription": "Email undangan tidak dapat dikirim secara otomatis. Silakan salin tautan di bawah ini dan kirimkan kepada pengguna secara manual.",
     "userEmail": "Email Pengguna",
     "copy": "Salin",
-    "tip": "[EN] 💡 Tip",
+    "tip": "💡 Tip",
     "invitationLinkExpiry": "Tautan undangan ini akan kedaluwarsa dalam 7 hari. Pengguna dapat menggunakannya untuk membuat akun mereka dan mengatur kredensial mereka.",
     "copiedToClipboard": "✓ Disalin ke Papan Klip",
     "copyLink": "Salin Tautan",
@@ -945,7 +949,7 @@
       "avgTime": "Waktu Rata-rata",
       "views": "Tampilan",
       "photoId": "ID Foto",
-      "album": "[EN] Album",
+      "album": "Album",
       "fileName": "Nama Berkas",
       "viewPhoto": "Lihat Foto"
     },
@@ -1181,7 +1185,7 @@
   "seo": {
     "homepageTitle": "{{siteName}} - Galleria",
     "homepageDescription": "Portofolio fotografi oleh {{siteName}}. Lihat koleksi fotografi lanskap, potret, dan kreatif yang menakjubkan.",
-    "albumTitle": "[EN] {{albumName}} - {{siteName}}",
+    "albumTitle": "{{albumName}} - {{siteName}}",
     "albumDescription": "Lihat foto {{albumName}} dari portofolio fotografi {{siteName}}.",
     "licenseTitle": "Lisensi - {{siteName}}",
     "licenseDescription": "Informasi lisensi untuk fotografi {{siteName}}.",
@@ -1230,12 +1234,12 @@
     "authMethodGoogleDescription": "Masuk dengan akun Google Anda",
     "fullNameLabel": "Nama Lengkap Anda",
     "fullNameHint": "Ini akan ditampilkan di profil Anda",
-    "fullNamePlaceholder": "[EN] John Doe",
+    "fullNamePlaceholder": "John Doe",
     "passwordLabel": "Kata Sandi",
     "passwordHint": "Minimal 8 karakter",
-    "passwordPlaceholder": "[EN] ••••••••",
+    "passwordPlaceholder": "••••••••",
     "confirmPasswordLabel": "Konfirmasi Kata Sandi",
-    "confirmPasswordPlaceholder": "[EN] ••••••••",
+    "confirmPasswordPlaceholder": "••••••••",
     "googleInstructions": "Cara mendapatkan kredensial Google OAuth:",
     "googleStep1": "Pergi ke",
     "googleCloudConsole": "Google Cloud Console",
@@ -1247,7 +1251,7 @@
     "googleClientIdLabel": "ID Klien Google",
     "googleClientIdPlaceholder": "xxxxx.apps.googleusercontent.com",
     "googleClientSecretLabel": "Rahasia Klien Google",
-    "googleClientSecretPlaceholder": "[EN] GOCSPX-xxxxx",
+    "googleClientSecretPlaceholder": "GOCSPX-xxxxx",
     "backToBasicInfo": "← Kembali ke Info Dasar",
     "nextCustomize": "Selanjutnya: Sesuaikan →",
     "customizeHeading": "Sesuaikan Situs Anda",
@@ -1462,7 +1466,9 @@
       "databaseBackupCompletedTitle": "Cadangan Selesai",
       "databaseBackupCompletedBody": "Cadangan basis data berhasil diselesaikan",
       "shareLinkExpiredAccessedTitle": "Percobaan Akses Tautan Kedaluwarsa",
-      "shareLinkExpiredAccessedBody": "Seseorang mencoba menggunakan tautan berbagi yang kedaluwarsa"
+      "shareLinkExpiredAccessedBody": "Seseorang mencoba menggunakan tautan berbagi yang kedaluwarsa",
+      "shareLinkSharedTitle": "Tautan Berbagi Diposting",
+      "shareLinkSharedBody": "Seseorang membagikan tautan di media sosial atau pesan"
     },
     "events": {},
     "error": "Terjadi kesalahan",
@@ -1480,7 +1486,7 @@
   "general": {
     "title": "Umum",
     "description": "Sesuaikan nama situs, subtitle, dan avatar Anda",
-    "logo": "[EN] Logo",
+    "logo": "Logo",
     "clickOrDrag": "Klik atau seret gambar ke sini",
     "currentAvatar": "Avatar saat ini",
     "siteName": "Nama Situs",

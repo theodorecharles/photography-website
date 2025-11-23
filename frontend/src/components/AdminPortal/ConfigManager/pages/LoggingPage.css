@@ -1,0 +1,39 @@
+/**
+ * Logging Page Styles
+ */
+
+.logging-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.logging-button-container {
+  display: flex;
+  align-items: flex-end;
+}
+
+.logging-button-container .btn-secondary {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  height: auto;
+  margin-top: 1.8rem;
+}
+
+/* Mobile: Stack vertically */
+@media (max-width: 768px) {
+  .logging-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem;
+  }
+
+  .logging-button-container .btn-secondary {
+    margin-top: 0;
+  }
+}
+

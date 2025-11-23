@@ -3,7 +3,7 @@
     "loading": "Cargando...",
     "checkingSetupStatus": "Verificando el estado de la configuración...",
     "loadingSharedAlbum": "Cargando álbum compartido...",
-    "error": "[EN] Error",
+    "error": "Error",
     "save": "Guardar",
     "cancel": "Cancelar",
     "delete": "Eliminar",
@@ -419,7 +419,7 @@
       "pageDescription": "Configurar la verbosidad del registro del servidor y ver registros en vivo"
     },
     "general": {
-      "title": "[EN] General",
+      "title": "General",
       "description": "Nombre del sitio, logo y apariencia",
       "pageDescription": "Personaliza la identidad visual y la configuración general de tu sitio"
     },
@@ -591,10 +591,14 @@
         "shareLinkExpiredAccessed": {
           "title": "Intento de acceso a enlace caducado",
           "description": "Cuando alguien intenta usar un enlace compartido caducado"
+        },
+        "shareLinkShared": {
+          "title": "Enlace compartido publicado",
+          "description": "Cuando alguien comparte un enlace en redes sociales o mensajería"
         }
       },
       "events": {
-        "saved": "[EN] {{notification}} notification preference saved"
+        "saved": "Preferencia de notificación {{notification}} guardada"
       }
     },
     "events": {},
@@ -742,7 +746,7 @@
     "logging": "Registro",
     "logLevel": "Nivel de Registro",
     "logLevelSilent": "Silencioso",
-    "logLevelError": "[EN] Error",
+    "logLevelError": "Error",
     "logLevelWarn": "Advertencia",
     "logLevelInfo": "Información",
     "logLevelDebug": "Depuración",
@@ -1000,7 +1004,7 @@
     "title": "Calidad de imagen",
     "description": "Configurar la calidad de imagen y los ajustes de procesamiento",
     "thumbnail": "Miniatura",
-    "modal": "[EN] Modal",
+    "modal": "Modal",
     "download": "DESCARGAR",
     "concurrency": "CONCURRENCIA",
     "quality": "Calidad",
@@ -1181,7 +1185,7 @@
   "seo": {
     "homepageTitle": "{{siteName}} - Galería",
     "homepageDescription": "Portafolio de fotografía de {{siteName}}. Ve colecciones impresionantes de paisajes, retratos y fotografía creativa.",
-    "albumTitle": "[EN] {{albumName}} - {{siteName}}",
+    "albumTitle": "{{albumName}} - {{siteName}}",
     "albumDescription": "Ve las fotos de {{albumName}} del portafolio de fotografía de {{siteName}}.",
     "licenseTitle": "Licencia - {{siteName}}",
     "licenseDescription": "Información de licencia para la fotografía de {{siteName}}.",
@@ -1230,12 +1234,12 @@
     "authMethodGoogleDescription": "Iniciar sesión con tu cuenta de Google",
     "fullNameLabel": "Tu nombre completo",
     "fullNameHint": "Esto se mostrará en tu perfil",
-    "fullNamePlaceholder": "[EN] John Doe",
+    "fullNamePlaceholder": "John Doe",
     "passwordLabel": "Contraseña",
     "passwordHint": "Mínimo 8 caracteres",
-    "passwordPlaceholder": "[EN] ••••••••",
+    "passwordPlaceholder": "••••••••",
     "confirmPasswordLabel": "Confirmar contraseña",
-    "confirmPasswordPlaceholder": "[EN] ••••••••",
+    "confirmPasswordPlaceholder": "••••••••",
     "googleInstructions": "Cómo obtener credenciales de Google OAuth:",
     "googleStep1": "Ve a",
     "googleCloudConsole": "Consola de Google Cloud",
@@ -1247,7 +1251,7 @@
     "googleClientIdLabel": "ID de cliente de Google",
     "googleClientIdPlaceholder": "xxxxx.apps.googleusercontent.com",
     "googleClientSecretLabel": "Secreto de cliente de Google",
-    "googleClientSecretPlaceholder": "[EN] GOCSPX-xxxxx",
+    "googleClientSecretPlaceholder": "GOCSPX-xxxxx",
     "backToBasicInfo": "← Volver a Información Básica",
     "nextCustomize": "Siguiente: Personalizar →",
     "customizeHeading": "Personaliza tu sitio",
@@ -1462,7 +1466,9 @@
       "databaseBackupCompletedTitle": "Respaldo completo",
       "databaseBackupCompletedBody": "Respaldo de base de datos completado con éxito",
       "shareLinkExpiredAccessedTitle": "Intento de acceso a enlace caducado",
-      "shareLinkExpiredAccessedBody": "Alguien intentó usar un enlace compartido caducado"
+      "shareLinkExpiredAccessedBody": "Alguien intentó usar un enlace compartido caducado",
+      "shareLinkSharedTitle": "Enlace compartido publicado",
+      "shareLinkSharedBody": "Alguien compartió un enlace en redes sociales o mensajería"
     },
     "events": {},
     "error": "Ocurrió un error",
@@ -1478,9 +1484,9 @@
     "subscribe": "Suscribirse"
   },
   "general": {
-    "title": "[EN] General",
+    "title": "General",
     "description": "Personaliza el nombre, subtítulo y avatar de tu sitio",
-    "logo": "[EN] Logo",
+    "logo": "Logo",
     "clickOrDrag": "Haz clic o arrastra la imagen aquí",
     "currentAvatar": "Avatar actual",
     "siteName": "Nombre del sitio",

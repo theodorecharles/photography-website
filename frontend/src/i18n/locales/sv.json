@@ -29,7 +29,7 @@
     "actionCannotBeUndone": "Denna åtgärd kan inte ångras",
     "creating": "Skapar...",
     "generating": "Genererar...",
-    "album": "[EN] album",
+    "album": "album",
     "albums": "album",
     "confirmAction": "Bekräfta åtgärd",
     "maximize": "Maximera",
@@ -70,7 +70,7 @@
     "signIn": "Logga in"
   },
   "album": {
-    "title": "[EN] Album",
+    "title": "Album",
     "photos": "Foton",
     "viewAlbum": "Visa {{albumName}}",
     "albumNotFound": "Album hittades inte"
@@ -90,7 +90,7 @@
     "exitFullscreen": "Avsluta helskärm",
     "file": "Fil",
     "titleLabel": "Titel",
-    "albumLabel": "[EN] Album",
+    "albumLabel": "Album",
     "size": "Storlek",
     "loadingExif": "Laddar EXIF-data...",
     "camera": "Kamera",
@@ -311,7 +311,7 @@
     "moveDown": "Flytta ner",
     "cannotPublishEmptyFolder": "Kan inte publicera tom mapp",
     "deleteFolderTitle": "Ta bort mapp",
-    "album": "[EN] album",
+    "album": "album",
     "albums": "album",
     "moveToFolderTitle": "Flytta \"{{albumName}}\" till mapp",
     "moveToFolderHint": "Välj en destinationsmapp eller välj Oklassificerad för att ta bort från någon mapp.",
@@ -591,10 +591,14 @@
         "shareLinkExpiredAccessed": {
           "title": "Försök att använda en utgången länk",
           "description": "När någon försöker använda en utgången delningslänk"
+        },
+        "shareLinkShared": {
+          "title": "Delningslänk publicerad",
+          "description": "När någon delar en länk på sociala medier eller meddelanden"
         }
       },
       "events": {
-        "saved": "[EN] {{notification}} notification preference saved"
+        "saved": "{{notification}} anmälningspreferens sparad"
       }
     },
     "events": {},
@@ -647,11 +651,11 @@
     "setupSmtp": "Ställ in SMTP",
     "email": "E-post",
     "role": "Roll",
-    "status": "[EN] Status",
+    "status": "Status",
     "actions": "Åtgärder",
     "viewer": "Tittare",
     "manager": "Chef",
-    "admin": "[EN] Admin",
+    "admin": "Admin",
     "invited": "Inbjuden",
     "inviteExpired": "Inbjudan utgången",
     "active": "Aktiv",
@@ -945,7 +949,7 @@
       "avgTime": "Genomsnittlig tid",
       "views": "Visningar",
       "photoId": "Foto-ID",
-      "album": "[EN] Album",
+      "album": "Album",
       "fileName": "Filnamn",
       "viewPhoto": "Visa foto"
     },
@@ -1000,7 +1004,7 @@
     "title": "Bildkvalitet",
     "description": "Konfigurera bildkvalitet och bearbetningsinställningar",
     "thumbnail": "Miniatyrbild",
-    "modal": "[EN] Modal",
+    "modal": "Modal",
     "download": "Ladda ner",
     "concurrency": "Samtidighet",
     "quality": "Kvalitet",
@@ -1067,7 +1071,7 @@
     "timeout": "Serveromstarten tog för lång tid. Vänligen kontrollera serverloggarna.",
     "backendServer": "Backend-server",
     "frontendServer": "Frontend-server",
-    "online": "[EN] Online",
+    "online": "Online",
     "restarting": "Startar om...",
     "timeoutDetails": "Servern svarade inte inom {{seconds}} sekunder. Vänligen kontrollera serverloggarna för fel."
   },
@@ -1181,7 +1185,7 @@
   "seo": {
     "homepageTitle": "{{siteName}} - Galleri",
     "homepageDescription": "Fotografportfölj av {{siteName}}. Se fantastiska samlingar av landskaps-, porträtt- och kreativ fotografi.",
-    "albumTitle": "[EN] {{albumName}} - {{siteName}}",
+    "albumTitle": "{{albumName}} - {{siteName}}",
     "albumDescription": "Se {{albumName}}-bilder från {{siteName}} fotografportfölj.",
     "licenseTitle": "Licens - {{siteName}}",
     "licenseDescription": "Licensinformation för {{siteName}} fotografi.",
@@ -1230,12 +1234,12 @@
     "authMethodGoogleDescription": "Logga in med ditt Google-konto",
     "fullNameLabel": "Ditt fullständiga namn",
     "fullNameHint": "Detta kommer att visas i din profil",
-    "fullNamePlaceholder": "[EN] John Doe",
+    "fullNamePlaceholder": "John Doe",
     "passwordLabel": "Lösenord",
     "passwordHint": "Minst 8 tecken",
-    "passwordPlaceholder": "[EN] ••••••••",
+    "passwordPlaceholder": "••••••••",
     "confirmPasswordLabel": "Bekräfta lösenord",
-    "confirmPasswordPlaceholder": "[EN] ••••••••",
+    "confirmPasswordPlaceholder": "••••••••",
     "googleInstructions": "Hur man får Google OAuth-uppgifter:",
     "googleStep1": "Gå till",
     "googleCloudConsole": "Google Cloud Console",
@@ -1247,7 +1251,7 @@
     "googleClientIdLabel": "Google klient-ID",
     "googleClientIdPlaceholder": "xxxxx.apps.googleusercontent.com",
     "googleClientSecretLabel": "Google klienthemlighet",
-    "googleClientSecretPlaceholder": "[EN] GOCSPX-xxxxx",
+    "googleClientSecretPlaceholder": "GOCSPX-xxxxx",
     "backToBasicInfo": "← Tillbaka till Grundläggande information",
     "nextCustomize": "Nästa: Anpassa →",
     "customizeHeading": "Anpassa din webbplats",
@@ -1462,7 +1466,9 @@
       "databaseBackupCompletedTitle": "Säkerhetskopiering slutförd",
       "databaseBackupCompletedBody": "Databassäkerhetskopiering slutförd framgångsrikt",
       "shareLinkExpiredAccessedTitle": "Försök att använda en utgången länk",
-      "shareLinkExpiredAccessedBody": "Någon försökte använda en utgången delningslänk"
+      "shareLinkExpiredAccessedBody": "Någon försökte använda en utgången delningslänk",
+      "shareLinkSharedTitle": "Delningslänk publicerad",
+      "shareLinkSharedBody": "Någon delade en länk på sociala medier eller meddelanden"
     },
     "events": {},
     "error": "Ett fel inträffade",

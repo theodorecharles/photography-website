@@ -88,9 +88,11 @@
       "albumViewMilestoneBody": "{{albumName}} osiągnął {{milestone}} wyświetleń!",
       "shareLinkExpiredAccessedTitle": "Próba dostępu do wygasłego linku",
       "shareLinkExpiredAccessedBody": "Ktoś próbował uzyskać dostęp do {{albumName}} za pomocą wygasłego linku",
-      "folderDeletedBodyEmpty": "[EN] {{deletedBy}} deleted empty folder {{folderName}}",
-      "folderDeletedBodyWithDeleted": "[EN] {{deletedBy}} deleted folder {{folderName}} and {{albumCount}} albums: {{albumNames}}",
-      "folderDeletedBodyWithReleased": "[EN] {{deletedBy}} deleted folder {{folderName}} and released {{albumCount}} albums to root: {{albumNames}}"
+      "folderDeletedBodyEmpty": "{{deletedBy}} usunął pusty folder {{folderName}}",
+      "folderDeletedBodyWithDeleted": "{{deletedBy}} usunął folder {{folderName}} i {{albumCount}} albumów: {{albumNames}}",
+      "folderDeletedBodyWithReleased": "{{deletedBy}} usunął folder {{folderName}} i przeniósł {{albumCount}} albumów do katalogu głównego: {{albumNames}}",
+      "shareLinkSharedTitle": "Link do udostępnienia opublikowany",
+      "shareLinkSharedBody": "Ktoś udostępnił link do {{albumName}} w mediach społecznościowych lub komunikatorze"
     }
   },
   "email": {

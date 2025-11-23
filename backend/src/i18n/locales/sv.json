@@ -88,9 +88,11 @@
       "albumViewMilestoneBody": "{{albumName}} nådde {{milestone}} visningar!",
       "shareLinkExpiredAccessedTitle": "Försök att komma åt en utgången länk",
       "shareLinkExpiredAccessedBody": "Någon försökte komma åt {{albumName}} med en utgången länk",
-      "folderDeletedBodyEmpty": "[EN] {{deletedBy}} deleted empty folder {{folderName}}",
-      "folderDeletedBodyWithDeleted": "[EN] {{deletedBy}} deleted folder {{folderName}} and {{albumCount}} albums: {{albumNames}}",
-      "folderDeletedBodyWithReleased": "[EN] {{deletedBy}} deleted folder {{folderName}} and released {{albumCount}} albums to root: {{albumNames}}"
+      "folderDeletedBodyEmpty": "{{deletedBy}} tog bort tom mapp {{folderName}}",
+      "folderDeletedBodyWithDeleted": "{{deletedBy}} tog bort mapp {{folderName}} och {{albumCount}} album: {{albumNames}}",
+      "folderDeletedBodyWithReleased": "{{deletedBy}} tog bort mapp {{folderName}} och flyttade {{albumCount}} album till roten: {{albumNames}}",
+      "shareLinkSharedTitle": "Delningslänk publicerad",
+      "shareLinkSharedBody": "Någon delade {{albumName}}-länken på sociala medier eller meddelandeplattformar"
     }
   },
   "email": {

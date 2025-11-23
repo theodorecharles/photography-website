@@ -591,10 +591,14 @@
         "shareLinkExpiredAccessed": {
           "title": "Попытка доступа по истекшей ссылке",
           "description": "Когда кто-то пытается использовать истекшую ссылку для совместного доступа"
+        },
+        "shareLinkShared": {
+          "title": "Ссылка для обмена опубликована",
+          "description": "Когда кто-то делится ссылкой в социальных сетях или мессенджерах"
         }
       },
       "events": {
-        "saved": "[EN] {{notification}} notification preference saved"
+        "saved": "Предпочтение уведомления {{notification}} сохранено"
       }
     },
     "events": {},
@@ -1181,7 +1185,7 @@
   "seo": {
     "homepageTitle": "{{siteName}} - Галерея",
     "homepageDescription": "Фотографическое портфолио от {{siteName}}. Посмотрите потрясающие коллекции пейзажной, портретной и креативной фотографии.",
-    "albumTitle": "[EN] {{albumName}} - {{siteName}}",
+    "albumTitle": "{{albumName}} - {{siteName}}",
     "albumDescription": "Посмотрите фотографии {{albumName}} из портфолио фотографии {{siteName}}.",
     "licenseTitle": "Лицензия - {{siteName}}",
     "licenseDescription": "Информация о лицензии для фотографии {{siteName}}.",
@@ -1233,9 +1237,9 @@
     "fullNamePlaceholder": "Джон Доу",
     "passwordLabel": "Пароль",
     "passwordHint": "Минимум 8 символов",
-    "passwordPlaceholder": "[EN] ••••••••",
+    "passwordPlaceholder": "••••••••",
     "confirmPasswordLabel": "Подтвердите пароль",
-    "confirmPasswordPlaceholder": "[EN] ••••••••",
+    "confirmPasswordPlaceholder": "••••••••",
     "googleInstructions": "Как получить учетные данные Google OAuth:",
     "googleStep1": "Перейдите в",
     "googleCloudConsole": "Google Cloud Console",
@@ -1247,7 +1251,7 @@
     "googleClientIdLabel": "Идентификатор клиента Google",
     "googleClientIdPlaceholder": "xxxxx.apps.googleusercontent.com",
     "googleClientSecretLabel": "Секрет клиента Google",
-    "googleClientSecretPlaceholder": "[EN] GOCSPX-xxxxx",
+    "googleClientSecretPlaceholder": "GOCSPX-xxxxx",
     "backToBasicInfo": "← Назад к основной информации",
     "nextCustomize": "Далее: Настроить →",
     "customizeHeading": "Настройте свой сайт",
@@ -1462,7 +1466,9 @@
       "databaseBackupCompletedTitle": "Резервное копирование завершено",
       "databaseBackupCompletedBody": "Резервное копирование базы данных успешно завершено",
       "shareLinkExpiredAccessedTitle": "Попытка доступа по истекшей ссылке",
-      "shareLinkExpiredAccessedBody": "Кто-то пытался использовать истекшую ссылку для совместного доступа"
+      "shareLinkExpiredAccessedBody": "Кто-то пытался использовать истекшую ссылку для совместного доступа",
+      "shareLinkSharedTitle": "Ссылка для обмена опубликована",
+      "shareLinkSharedBody": "Кто-то поделился ссылкой в социальных сетях или мессенджерах"
     },
     "events": {},
     "error": "Произошла ошибка",

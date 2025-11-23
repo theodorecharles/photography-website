@@ -88,9 +88,11 @@
       "albumViewMilestoneBody": "{{albumName}} a atins {{milestone}} vizualizări!",
       "shareLinkExpiredAccessedTitle": "Încercare de acces cu link expirat",
       "shareLinkExpiredAccessedBody": "Cineva a încercat să acceseze {{albumName}} cu un link expirat",
-      "folderDeletedBodyEmpty": "[EN] {{deletedBy}} deleted empty folder {{folderName}}",
-      "folderDeletedBodyWithDeleted": "[EN] {{deletedBy}} deleted folder {{folderName}} and {{albumCount}} albums: {{albumNames}}",
-      "folderDeletedBodyWithReleased": "[EN] {{deletedBy}} deleted folder {{folderName}} and released {{albumCount}} albums to root: {{albumNames}}"
+      "folderDeletedBodyEmpty": "{{deletedBy}} a șters folderul gol {{folderName}}",
+      "folderDeletedBodyWithDeleted": "{{deletedBy}} a șters folderul {{folderName}} și {{albumCount}} albume: {{albumNames}}",
+      "folderDeletedBodyWithReleased": "{{deletedBy}} a șters folderul {{folderName}} și a mutat {{albumCount}} albume în rădăcină: {{albumNames}}",
+      "shareLinkSharedTitle": "Link de partajare postat",
+      "shareLinkSharedBody": "Cineva a distribuit linkul {{albumName}} pe rețelele sociale sau mesagerie"
     }
   },
   "email": {

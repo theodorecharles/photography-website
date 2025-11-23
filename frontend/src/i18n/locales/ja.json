@@ -591,10 +591,14 @@
         "shareLinkExpiredAccessed": {
           "title": "期限切れリンクのアクセス試行",
           "description": "誰かが期限切れの共有リンクを使用しようとしたとき"
+        },
+        "shareLinkShared": {
+          "title": "リンクが共有されました",
+          "description": "誰かがソーシャルメディアやメッセージでリンクを共有したとき"
         }
       },
       "events": {
-        "saved": "[EN] {{notification}} notification preference saved"
+        "saved": "{{notification}} 通知設定が保存されました"
       }
     },
     "events": {},
@@ -1181,7 +1185,7 @@
   "seo": {
     "homepageTitle": "{{siteName}} - ギャラリー",
     "homepageDescription": "{{siteName}}による写真ポートフォリオ。素晴らしい風景、ポートレート、クリエイティブな写真コレクションを閲覧してください。",
-    "albumTitle": "[EN] {{albumName}} - {{siteName}}",
+    "albumTitle": "{{albumName}} - {{siteName}}",
     "albumDescription": "{{siteName}}の写真ポートフォリオから{{albumName}}の写真を閲覧してください。",
     "licenseTitle": "ライセンス - {{siteName}}",
     "licenseDescription": "{{siteName}}の写真に関するライセンス情報。",
@@ -1233,9 +1237,9 @@
     "fullNamePlaceholder": "ジョン・ドー",
     "passwordLabel": "パスワード",
     "passwordHint": "最小8文字",
-    "passwordPlaceholder": "[EN] ••••••••",
+    "passwordPlaceholder": "••••••••",
     "confirmPasswordLabel": "パスワードを確認",
-    "confirmPasswordPlaceholder": "[EN] ••••••••",
+    "confirmPasswordPlaceholder": "••••••••",
     "googleInstructions": "Google OAuth資格情報を取得する方法:",
     "googleStep1": "に移動",
     "googleCloudConsole": "Google Cloud Console",
@@ -1247,7 +1251,7 @@
     "googleClientIdLabel": "GoogleクライアントID",
     "googleClientIdPlaceholder": "xxxxx.apps.googleusercontent.com",
     "googleClientSecretLabel": "Googleクライアントシークレット",
-    "googleClientSecretPlaceholder": "[EN] GOCSPX-xxxxx",
+    "googleClientSecretPlaceholder": "GOCSPX-xxxxx",
     "backToBasicInfo": "← 基本情報に戻る",
     "nextCustomize": "次へ: カスタマイズ →",
     "customizeHeading": "サイトをカスタマイズ",
@@ -1462,7 +1466,9 @@
       "databaseBackupCompletedTitle": "バックアップ完了",
       "databaseBackupCompletedBody": "データベースのバックアップが正常に完了しました",
       "shareLinkExpiredAccessedTitle": "期限切れリンクのアクセス試行",
-      "shareLinkExpiredAccessedBody": "誰かが期限切れの共有リンクを使用しようとしました"
+      "shareLinkExpiredAccessedBody": "誰かが期限切れの共有リンクを使用しようとしました",
+      "shareLinkSharedTitle": "リンクが共有されました",
+      "shareLinkSharedBody": "誰かがソーシャルメディアやメッセージでリンクを共有しました"
     },
     "events": {},
     "error": "エラーが発生しました",

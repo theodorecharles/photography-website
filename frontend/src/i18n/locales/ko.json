@@ -591,10 +591,14 @@
         "shareLinkExpiredAccessed": {
           "title": "만료된 링크 접근 시도",
           "description": "누군가 만료된 공유 링크를 사용하려고 할 때"
+        },
+        "shareLinkShared": {
+          "title": "링크 공유됨",
+          "description": "누군가 소셜 미디어나 메시징에 링크를 공유할 때"
         }
       },
       "events": {
-        "saved": "[EN] {{notification}} notification preference saved"
+        "saved": "{{notification}} 알림 설정이 저장되었습니다"
       }
     },
     "events": {},
@@ -1181,7 +1185,7 @@
   "seo": {
     "homepageTitle": "{{siteName}} - 갤러리",
     "homepageDescription": "{{siteName}}의 사진 포트폴리오. 멋진 풍경, 인물 및 창의적인 사진 컬렉션을 확인하세요.",
-    "albumTitle": "[EN] {{albumName}} - {{siteName}}",
+    "albumTitle": "{{albumName}} - {{siteName}}",
     "albumDescription": "{{siteName}} 사진 포트폴리오에서 {{albumName}} 사진을 확인하세요.",
     "licenseTitle": "라이센스 - {{siteName}}",
     "licenseDescription": "{{siteName}} 사진에 대한 라이센스 정보.",
@@ -1233,9 +1237,9 @@
     "fullNamePlaceholder": "존 도",
     "passwordLabel": "비밀번호",
     "passwordHint": "최소 8자",
-    "passwordPlaceholder": "[EN] ••••••••",
+    "passwordPlaceholder": "••••••••",
     "confirmPasswordLabel": "비밀번호 확인",
-    "confirmPasswordPlaceholder": "[EN] ••••••••",
+    "confirmPasswordPlaceholder": "••••••••",
     "googleInstructions": "Google OAuth 자격 증명을 얻는 방법:",
     "googleStep1": "이동하십시오",
     "googleCloudConsole": "Google Cloud Console",
@@ -1247,7 +1251,7 @@
     "googleClientIdLabel": "Google 클라이언트 ID",
     "googleClientIdPlaceholder": "xxxxx.apps.googleusercontent.com",
     "googleClientSecretLabel": "Google 클라이언트 비밀",
-    "googleClientSecretPlaceholder": "[EN] GOCSPX-xxxxx",
+    "googleClientSecretPlaceholder": "GOCSPX-xxxxx",
     "backToBasicInfo": "← 기본 정보로 돌아가기",
     "nextCustomize": "다음: 사용자 정의 →",
     "customizeHeading": "사이트 사용자 정의",
@@ -1462,7 +1466,9 @@
       "databaseBackupCompletedTitle": "백업 완료",
       "databaseBackupCompletedBody": "데이터베이스 백업이 성공적으로 완료되었습니다",
       "shareLinkExpiredAccessedTitle": "만료된 링크 접근 시도",
-      "shareLinkExpiredAccessedBody": "누군가 만료된 공유 링크를 사용하려고 했습니다"
+      "shareLinkExpiredAccessedBody": "누군가 만료된 공유 링크를 사용하려고 했습니다",
+      "shareLinkSharedTitle": "링크 공유됨",
+      "shareLinkSharedBody": "누군가 소셜 미디어나 메시징에 링크를 공유했습니다"
     },
     "events": {},
     "error": "오류가 발생했습니다",

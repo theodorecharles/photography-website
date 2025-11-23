@@ -57,7 +57,7 @@
   },
   "header": {
     "albums": "Alben",
-    "links": "[EN] Links",
+    "links": "Links",
     "editAlbum": "Dieses Album bearbeiten",
     "editLinks": "Links bearbeiten",
     "logout": "Abmelden",
@@ -70,7 +70,7 @@
     "signIn": "Anmelden"
   },
   "album": {
-    "title": "[EN] Album",
+    "title": "Album",
     "photos": "Fotos",
     "viewAlbum": "{{albumName}} ansehen",
     "albumNotFound": "Album nicht gefunden"
@@ -90,7 +90,7 @@
     "exitFullscreen": "Vollbild verlassen",
     "file": "Datei",
     "titleLabel": "Titel",
-    "albumLabel": "[EN] Album",
+    "albumLabel": "Album",
     "size": "Größe",
     "loadingExif": "Lade EXIF-Daten...",
     "camera": "Kamera",
@@ -113,7 +113,7 @@
   },
   "admin": {
     "title": "Admin-Portal",
-    "dashboard": "[EN] Dashboard",
+    "dashboard": "Dashboard",
     "albums": "Alben",
     "settings": "Einstellungen",
     "metrics": "Metriken",
@@ -369,7 +369,7 @@
       "description": "Konfigurieren Sie Ihr Fotografie-Portfolio und die Systemeinstellungen"
     },
     "links": {
-      "title": "[EN] Links",
+      "title": "Links",
       "description": "Externe Seiten und benutzerdefinierte Navigation",
       "pageDescription": "Verwalten Sie externe Links, die in der Navigation Ihrer Website erscheinen"
     },
@@ -591,10 +591,14 @@
         "shareLinkExpiredAccessed": {
           "title": "Abgelaufener Link-Zugriffsversuch",
           "description": "Wenn jemand versucht, einen abgelaufenen Freigabelink zu verwenden"
+        },
+        "shareLinkShared": {
+          "title": "Freigabelink veröffentlicht",
+          "description": "Wenn jemand einen Link in sozialen Medien oder Nachrichten teilt"
         }
       },
       "events": {
-        "saved": "[EN] {{notification}} notification preference saved"
+        "saved": "{{notification}} Benachrichtigungseinstellung gespeichert"
       }
     },
     "events": {},
@@ -647,10 +651,10 @@
     "setupSmtp": "SMTP einrichten",
     "email": "E-Mail",
     "role": "Rolle",
-    "status": "[EN] Status",
+    "status": "Status",
     "actions": "Aktionen",
     "viewer": "Betrachter",
-    "manager": "[EN] Manager",
+    "manager": "Manager",
     "admin": "Administrator",
     "invited": "Eingeladen",
     "inviteExpired": "Einladung abgelaufen",
@@ -945,7 +949,7 @@
       "avgTime": "Durchschnittszeit",
       "views": "Aufrufe",
       "photoId": "Foto-ID",
-      "album": "[EN] Album",
+      "album": "Album",
       "fileName": "Dateiname",
       "viewPhoto": "Foto ansehen"
     },
@@ -1000,7 +1004,7 @@
     "title": "Bildqualität",
     "description": "Konfigurieren Sie die Bildqualität und Verarbeitungseinstellungen",
     "thumbnail": "MINIATURANSICHT",
-    "modal": "[EN] Modal",
+    "modal": "Modal",
     "download": "HERUNTERLADEN",
     "concurrency": "PARALLELITÄT",
     "quality": "Qualität",
@@ -1013,7 +1017,7 @@
     "warningNoteLocation": "in den erweiterten Einstellungen → Optimierte Bilder."
   },
   "links": {
-    "title": "[EN] Links",
+    "title": "Links",
     "description": "Externe Links und Kontaktinformationen verwalten",
     "titlePlaceholder": "Titel",
     "urlPlaceholder": "URL",
@@ -1067,7 +1071,7 @@
     "timeout": "Server-Neustart-Zeitüberschreitung. Bitte überprüfen Sie die Server-Protokolle.",
     "backendServer": "Backend-Server",
     "frontendServer": "Frontend-Server",
-    "online": "[EN] Online",
+    "online": "Online",
     "restarting": "Wird neu gestartet...",
     "timeoutDetails": "Der Server hat nicht innerhalb von {{seconds}} Sekunden geantwortet. Bitte überprüfen Sie die Server-Protokolle auf Fehler."
   },
@@ -1167,7 +1171,7 @@
     "organization": "Organisation",
     "username": "Benutzername",
     "password": "Passwort",
-    "stream": "[EN] Stream",
+    "stream": "Stream",
     "cancel": "Abbrechen",
     "save": "Speichern",
     "saving": "Speichern...",
@@ -1181,7 +1185,7 @@
   "seo": {
     "homepageTitle": "{{siteName}} - Galleria",
     "homepageDescription": "Fotografie-Portfolio von {{siteName}}. Sehen Sie sich beeindruckende Landschafts-, Porträt- und kreative Fotografie-Kollektionen an.",
-    "albumTitle": "[EN] {{albumName}} - {{siteName}}",
+    "albumTitle": "{{albumName}} - {{siteName}}",
     "albumDescription": "Sehen Sie sich die {{albumName}}-Fotos aus dem Fotografie-Portfolio von {{siteName}} an.",
     "licenseTitle": "Lizenz - {{siteName}}",
     "licenseDescription": "Lizenzinformationen für die Fotografie von {{siteName}}.",
@@ -1230,12 +1234,12 @@
     "authMethodGoogleDescription": "Mit Ihrem Google-Konto anmelden",
     "fullNameLabel": "Ihr vollständiger Name",
     "fullNameHint": "Dies wird in deinem Profil angezeigt",
-    "fullNamePlaceholder": "[EN] John Doe",
+    "fullNamePlaceholder": "John Doe",
     "passwordLabel": "Passwort",
     "passwordHint": "Mindestens 8 Zeichen",
-    "passwordPlaceholder": "[EN] ••••••••",
+    "passwordPlaceholder": "••••••••",
     "confirmPasswordLabel": "Passwort bestätigen",
-    "confirmPasswordPlaceholder": "[EN] ••••••••",
+    "confirmPasswordPlaceholder": "••••••••",
     "googleInstructions": "So erhältst du Google OAuth-Anmeldeinformationen:",
     "googleStep1": "Gehe zu",
     "googleCloudConsole": "Google Cloud Console",
@@ -1247,7 +1251,7 @@
     "googleClientIdLabel": "Google Client-ID",
     "googleClientIdPlaceholder": "xxxxx.apps.googleusercontent.com",
     "googleClientSecretLabel": "Google Client-Geheimnis",
-    "googleClientSecretPlaceholder": "[EN] GOCSPX-xxxxx",
+    "googleClientSecretPlaceholder": "GOCSPX-xxxxx",
     "backToBasicInfo": "← Zurück zu den Basisinformationen",
     "nextCustomize": "Weiter: Anpassen →",
     "customizeHeading": "Passen Sie Ihre Seite an",
@@ -1462,7 +1466,9 @@
       "databaseBackupCompletedTitle": "Sicherung abgeschlossen",
       "databaseBackupCompletedBody": "Datenbanksicherung erfolgreich abgeschlossen",
       "shareLinkExpiredAccessedTitle": "Abgelaufener Link-Zugriffsversuch",
-      "shareLinkExpiredAccessedBody": "Jemand hat versucht, einen abgelaufenen Freigabelink zu verwenden"
+      "shareLinkExpiredAccessedBody": "Jemand hat versucht, einen abgelaufenen Freigabelink zu verwenden",
+      "shareLinkSharedTitle": "Freigabelink veröffentlicht",
+      "shareLinkSharedBody": "Jemand hat einen Link in sozialen Medien oder Nachrichten geteilt"
     },
     "events": {},
     "error": "Ein Fehler ist aufgetreten",
@@ -1480,7 +1486,7 @@
   "general": {
     "title": "Allgemein",
     "description": "Passen Sie den Namen, den Untertitel und das Avatar Ihrer Website an",
-    "logo": "[EN] Logo",
+    "logo": "Logo",
     "clickOrDrag": "Klicken oder ziehen Sie das Bild hierher",
     "currentAvatar": "Aktuelles Avatar",
     "siteName": "Website-Name",

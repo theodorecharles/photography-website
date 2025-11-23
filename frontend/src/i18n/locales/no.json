@@ -29,7 +29,7 @@
     "actionCannotBeUndone": "Denne handlingen kan ikke angres",
     "creating": "Oppretter...",
     "generating": "Genererer...",
-    "album": "[EN] album",
+    "album": "album",
     "albums": "album",
     "confirmAction": "Bekreft handling",
     "maximize": "Maksimer",
@@ -70,7 +70,7 @@
     "signIn": "Logg inn"
   },
   "album": {
-    "title": "[EN] Album",
+    "title": "Album",
     "photos": "Bilder",
     "viewAlbum": "Vis {{albumName}}",
     "albumNotFound": "Album ikke funnet"
@@ -90,7 +90,7 @@
     "exitFullscreen": "Avslutt fullskjerm",
     "file": "Fil",
     "titleLabel": "Tittel",
-    "albumLabel": "[EN] Album",
+    "albumLabel": "Album",
     "size": "Størrelse",
     "loadingExif": "Laster EXIF-data...",
     "camera": "Kamera",
@@ -112,7 +112,7 @@
     "duration": "Varighet"
   },
   "admin": {
-    "title": "[EN] Admin Portal",
+    "title": "Admin Portal",
     "dashboard": "Oversikt",
     "albums": "Album",
     "settings": "Innstillinger",
@@ -311,7 +311,7 @@
     "moveDown": "Flytt ned",
     "cannotPublishEmptyFolder": "Kan ikke publisere tom mappe",
     "deleteFolderTitle": "Slett mappe",
-    "album": "[EN] album",
+    "album": "album",
     "albums": "album",
     "moveToFolderTitle": "Flytt \"{{albumName}}\" til mappe",
     "moveToFolderHint": "Velg en destinasjonsmappe eller velg Uklassifisert for å fjerne fra enhver mappe.",
@@ -414,7 +414,7 @@
       "pageDescription": "Konfigurer analyse sporing og loggaggregasjon"
     },
     "logging": {
-      "title": "[EN] Logging",
+      "title": "Logging",
       "description": "Serverloggnivåer og visning",
       "pageDescription": "Konfigurer serverloggingsnivå og vis live logger"
     },
@@ -591,10 +591,14 @@
         "shareLinkExpiredAccessed": {
           "title": "Forsøk på tilgang til utløpt lenke",
           "description": "Når noen prøver å bruke en utløpt delelenke"
+        },
+        "shareLinkShared": {
+          "title": "Delingslenke postet",
+          "description": "Når noen deler en lenke på sosiale medier eller meldinger"
         }
       },
       "events": {
-        "saved": "[EN] {{notification}} notification preference saved"
+        "saved": "{{notification}} varselpreferanse lagret"
       }
     },
     "events": {},
@@ -605,7 +609,7 @@
     "description": "Systemkontroller og utvikleralternativer",
     "dangerZone": "[ FARESONE ]",
     "dangerZoneWarning": "Sørg for at du vet hva du gjør!",
-    "logging": "[EN] Logging",
+    "logging": "Logging",
     "logLevel": "Loggnivå",
     "logLevelSilent": "Stille (Ingen logging)",
     "logLevelError": "Feil (Standard - Kun kritiske feil)",
@@ -647,11 +651,11 @@
     "setupSmtp": "Sett opp SMTP",
     "email": "E-post",
     "role": "Rolle",
-    "status": "[EN] Status",
+    "status": "Status",
     "actions": "Handlinger",
     "viewer": "Seer",
     "manager": "Leder",
-    "admin": "[EN] Admin",
+    "admin": "Admin",
     "invited": "Invitert",
     "inviteExpired": "Invitasjon utløpt",
     "active": "Aktiv",
@@ -945,7 +949,7 @@
       "avgTime": "Gj.snitt tid",
       "views": "Visninger",
       "photoId": "Foto-ID",
-      "album": "[EN] Album",
+      "album": "Album",
       "fileName": "Filnavn",
       "viewPhoto": "Vis foto"
     },
@@ -1000,7 +1004,7 @@
     "title": "Bildekvalitet",
     "description": "Konfigurer bilde kvalitet og behandlingsinnstillinger",
     "thumbnail": "Miniatyrbild",
-    "modal": "[EN] Modal",
+    "modal": "Modal",
     "download": "LAST NED",
     "concurrency": "KONKURRANSE",
     "quality": "Kvalitet",
@@ -1181,7 +1185,7 @@
   "seo": {
     "homepageTitle": "{{siteName}} - Galleria",
     "homepageDescription": "Fotografportefølje av {{siteName}}. Se fantastiske samlinger av landskaps-, portrett- og kreativ fotografering.",
-    "albumTitle": "[EN] {{albumName}} - {{siteName}}",
+    "albumTitle": "{{albumName}} - {{siteName}}",
     "albumDescription": "Se {{albumName}} bilder fra {{siteName}} fotografportefølje.",
     "licenseTitle": "Lisens - {{siteName}}",
     "licenseDescription": "Lisensinformasjon for {{siteName}} fotografering.",
@@ -1230,12 +1234,12 @@
     "authMethodGoogleDescription": "Logg inn med Google-kontoen din",
     "fullNameLabel": "Ditt fulle navn",
     "fullNameHint": "Dette vil bli vist i profilen din",
-    "fullNamePlaceholder": "[EN] John Doe",
+    "fullNamePlaceholder": "John Doe",
     "passwordLabel": "Passord",
     "passwordHint": "Minimum 8 tegn",
-    "passwordPlaceholder": "[EN] ••••••••",
+    "passwordPlaceholder": "••••••••",
     "confirmPasswordLabel": "Bekreft passord",
-    "confirmPasswordPlaceholder": "[EN] ••••••••",
+    "confirmPasswordPlaceholder": "••••••••",
     "googleInstructions": "Slik får du Google OAuth-legitimasjon:",
     "googleStep1": "Gå til",
     "googleCloudConsole": "Google Cloud Console",
@@ -1247,7 +1251,7 @@
     "googleClientIdLabel": "Google Klient-ID",
     "googleClientIdPlaceholder": "xxxxx.apps.googleusercontent.com",
     "googleClientSecretLabel": "Google Klienthemmelighet",
-    "googleClientSecretPlaceholder": "[EN] GOCSPX-xxxxx",
+    "googleClientSecretPlaceholder": "GOCSPX-xxxxx",
     "backToBasicInfo": "← Tilbake til Grunnleggende informasjon",
     "nextCustomize": "Neste: Tilpass →",
     "customizeHeading": "Tilpass nettstedet ditt",
@@ -1462,7 +1466,9 @@
       "databaseBackupCompletedTitle": "Sikkerhetskopiering fullført",
       "databaseBackupCompletedBody": "Database-sikkerhetskopiering fullført med suksess",
       "shareLinkExpiredAccessedTitle": "Forsøk på tilgang til utløpt lenke",
-      "shareLinkExpiredAccessedBody": "Noen prøvde å bruke en utløpt delelenke"
+      "shareLinkExpiredAccessedBody": "Noen prøvde å bruke en utløpt delelenke",
+      "shareLinkSharedTitle": "Delingslenke postet",
+      "shareLinkSharedBody": "Noen delte en lenke på sosiale medier eller meldinger"
     },
     "events": {},
     "error": "En feil oppstod",
@@ -1480,7 +1486,7 @@
   "general": {
     "title": "Generelt",
     "description": "Tilpass nettstedets navn, undertittel og avatar",
-    "logo": "[EN] Logo",
+    "logo": "Logo",
     "clickOrDrag": "Klikk eller dra bildet hit",
     "currentAvatar": "Nåværende avatar",
     "siteName": "Nettstedsnavn",

@@ -88,9 +88,11 @@
       "albumViewMilestoneBody": "{{albumName}} {{milestone}} görüntülemeye ulaştı!",
       "shareLinkExpiredAccessedTitle": "Süresi Dolmuş Bağlantı Erişim Denemesi",
       "shareLinkExpiredAccessedBody": "Birisi {{albumName}}'e süresi dolmuş bir bağlantı ile erişmeye çalıştı",
-      "folderDeletedBodyEmpty": "[EN] {{deletedBy}} deleted empty folder {{folderName}}",
-      "folderDeletedBodyWithDeleted": "[EN] {{deletedBy}} deleted folder {{folderName}} and {{albumCount}} albums: {{albumNames}}",
-      "folderDeletedBodyWithReleased": "[EN] {{deletedBy}} deleted folder {{folderName}} and released {{albumCount}} albums to root: {{albumNames}}"
+      "folderDeletedBodyEmpty": "{{deletedBy}}, boş klasörü sildi {{folderName}}",
+      "folderDeletedBodyWithDeleted": "{{deletedBy}}, {{folderName}} klasörünü ve {{albumCount}} albümleri sildi: {{albumNames}}",
+      "folderDeletedBodyWithReleased": "{{deletedBy}}, {{folderName}} klasörünü sildi ve {{albumCount}} albümleri köke taşıdı: {{albumNames}}",
+      "shareLinkSharedTitle": "Paylaşım Bağlantısı Gönderildi",
+      "shareLinkSharedBody": "Birisi {{albumName}} bağlantısını sosyal medyada veya mesajlaşmada paylaştı"
     }
   },
   "email": {

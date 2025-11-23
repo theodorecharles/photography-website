@@ -29,8 +29,8 @@
     "actionCannotBeUndone": "Deze actie kan niet ongedaan worden gemaakt",
     "creating": "Aanmaken...",
     "generating": "Genereren...",
-    "album": "[EN] album",
-    "albums": "[EN] albums",
+    "album": "album",
+    "albums": "albums",
     "confirmAction": "Bevestig actie",
     "maximize": "Maximaliseren",
     "restore": "Herstellen",
@@ -56,8 +56,8 @@
     "navigationHint": "← druk op de pijltoetsen om te navigeren →"
   },
   "header": {
-    "albums": "[EN] Albums",
-    "links": "[EN] Links",
+    "albums": "Albums",
+    "links": "Links",
     "editAlbum": "Bewerk dit album",
     "editLinks": "Bewerk links",
     "logout": "Uitloggen",
@@ -70,7 +70,7 @@
     "signIn": "Aanmelden"
   },
   "album": {
-    "title": "[EN] Album",
+    "title": "Album",
     "photos": "Foto's",
     "viewAlbum": "Bekijk {{albumName}}",
     "albumNotFound": "Album niet gevonden"
@@ -90,11 +90,11 @@
     "exitFullscreen": "Volledig scherm afsluiten",
     "file": "Bestand",
     "titleLabel": "Titel",
-    "albumLabel": "[EN] Album",
+    "albumLabel": "Album",
     "size": "Grootte",
     "loadingExif": "EXIF-gegevens laden...",
-    "camera": "[EN] Camera",
-    "lens": "[EN] Lens",
+    "camera": "Camera",
+    "lens": "Lens",
     "focalLength": "Brandpuntsafstand",
     "aperture": "Diafragma",
     "shutter": "Sluiter",
@@ -113,8 +113,8 @@
   },
   "admin": {
     "title": "Beheerportaal",
-    "dashboard": "[EN] Dashboard",
-    "albums": "[EN] Albums",
+    "dashboard": "Dashboard",
+    "albums": "Albums",
     "settings": "Instellingen",
     "metrics": "Statistieken",
     "profile": "Profiel"
@@ -304,15 +304,15 @@
     "albumsInPublishedFolders": "Albums in gepubliceerde mappen zijn altijd gepubliceerd",
     "albumWillBePrivate": "🔒 Album zal privé zijn",
     "albumsInUnpublishedFolders": "Albums in niet-gepubliceerde mappen zijn altijd privé",
-    "title": "[EN] Albums",
+    "title": "Albums",
     "description": "Beheer je fotoalbums en upload nieuwe afbeeldingen.",
     "uploadInProgress": "Uploaden in uitvoering",
     "moveUp": "Omhoog verplaatsen",
     "moveDown": "Omlaag verplaatsen",
     "cannotPublishEmptyFolder": "Kan lege map niet publiceren",
     "deleteFolderTitle": "Verwijder map",
-    "album": "[EN] album",
-    "albums": "[EN] albums",
+    "album": "album",
+    "albums": "albums",
     "moveToFolderTitle": "Verplaats \"{{albumName}}\" naar map",
     "moveToFolderHint": "Selecteer een bestemmingsmap of kies Ongesorteerd om uit elke map te verwijderen.",
     "currentFolder": "Huidig",
@@ -369,7 +369,7 @@
       "description": "Configureer je fotografieportfolio en systeemvoorkeuren"
     },
     "links": {
-      "title": "[EN] Links",
+      "title": "Links",
       "description": "Externe pagina's en aangepaste navigatie",
       "pageDescription": "Beheer externe links die in de navigatie van uw site verschijnen"
     },
@@ -591,10 +591,14 @@
         "shareLinkExpiredAccessed": {
           "title": "Poging tot Toegang met Verlopen Link",
           "description": "Wanneer iemand probeert een verlopen deel-link te gebruiken"
+        },
+        "shareLinkShared": {
+          "title": "Deellink Geplaatst",
+          "description": "Wanneer iemand een link deelt op sociale media of berichten"
         }
       },
       "events": {
-        "saved": "[EN] {{notification}} notification preference saved"
+        "saved": "{{notification}} meldingsvoorkeur opgeslagen"
       }
     },
     "events": {},
@@ -647,7 +651,7 @@
     "setupSmtp": "SMTP instellen",
     "email": "E-mail",
     "role": "Rol",
-    "status": "[EN] Status",
+    "status": "Status",
     "actions": "Acties",
     "viewer": "Kijker",
     "manager": "Beheerder",
@@ -749,7 +753,7 @@
     "emailServiceNotConfiguredDescription": "De uitnodigingsmail kon niet automatisch worden verzonden. Kopieer de link hieronder en stuur deze handmatig naar de gebruiker.",
     "userEmail": "Gebruikers e-mail",
     "copy": "Kopiëren",
-    "tip": "[EN] 💡 Tip",
+    "tip": "💡 Tip",
     "invitationLinkExpiry": "Deze uitnodigingslink verloopt over 7 dagen. De gebruiker kan deze gebruiken om zijn account aan te maken en zijn inloggegevens in te stellen.",
     "copiedToClipboard": "✓ Gekopieerd naar klembord",
     "copyLink": "Kopieer link",
@@ -879,7 +883,7 @@
     "expiration1Hour": "1 uur",
     "expiration12Hours": "12 uur",
     "expiration1Day": "1 dag",
-    "expiration1Week": "[EN] 1 week",
+    "expiration1Week": "1 week",
     "expiration1Month": "1 maand",
     "expirationForever": "Voor altijd",
     "expirationCustom": "Aangepast...",
@@ -945,7 +949,7 @@
       "avgTime": "Gem. Tijd",
       "views": "Weergaven",
       "photoId": "Foto-ID",
-      "album": "[EN] Album",
+      "album": "Album",
       "fileName": "Bestandsnaam",
       "viewPhoto": "Foto Bekijken"
     },
@@ -966,7 +970,7 @@
       "percentOfTotal": "% van Totaal",
       "fullReferrerUrl": "Volledige Verwijzer-URL",
       "totalVisits": "Totale Bezoeken",
-      "percentage": "[EN] Percentage",
+      "percentage": "Percentage",
       "percentageText": "{{percentage}}% van alle verwijzers"
     },
     "eventTypesTable": {
@@ -975,7 +979,7 @@
       "count": "Aantal",
       "percentOfTotal": "% van Totaal",
       "totalCount": "Totaal Aantal",
-      "percentage": "[EN] Percentage",
+      "percentage": "Percentage",
       "percentageText": "{{percentage}}% van alle gebeurtenissen"
     },
     "map": {
@@ -1013,7 +1017,7 @@
     "warningNoteLocation": "gebruikt in Geavanceerde Instellingen → Geoptimaliseerde Afbeeldingen."
   },
   "links": {
-    "title": "[EN] Links",
+    "title": "Links",
     "description": "Beheer externe links en contactinformatie",
     "titlePlaceholder": "Titel",
     "urlPlaceholder": "URL",
@@ -1067,13 +1071,13 @@
     "timeout": "Serverherstart is verlopen. Controleer de serverlogboeken.",
     "backendServer": "Backend-server",
     "frontendServer": "Frontend-server",
-    "online": "[EN] Online",
+    "online": "Online",
     "restarting": "Opnieuw opstarten...",
     "timeoutDetails": "De server reageerde niet binnen {{seconds}} seconden. Controleer de serverlogboeken op fouten."
   },
   "adminPortal": {
     "logout": "Uitloggen",
-    "albums": "[EN] Albums",
+    "albums": "Albums",
     "metrics": "Statistieken",
     "settings": "Instellingen",
     "profile": "Profiel",
@@ -1181,7 +1185,7 @@
   "seo": {
     "homepageTitle": "{{siteName}} - Galleria",
     "homepageDescription": "Fotografie portfolio van {{siteName}}. Bekijk prachtige landschaps-, portret- en creatieve fotografiecollecties.",
-    "albumTitle": "[EN] {{albumName}} - {{siteName}}",
+    "albumTitle": "{{albumName}} - {{siteName}}",
     "albumDescription": "Bekijk {{albumName}} foto's van het {{siteName}} fotografieportfolio.",
     "licenseTitle": "Licentie - {{siteName}}",
     "licenseDescription": "Licentie-informatie voor {{siteName}} fotografie.",
@@ -1204,7 +1208,7 @@
     "language": "Taal",
     "selectLanguage": "Selecteer taal",
     "step1Title": "Basisinformatie",
-    "step2Title": "[EN] Account",
+    "step2Title": "Account",
     "step3Title": "Aanpassen",
     "step4Title": "Voltooi",
     "basicInfoHeading": "Basisinformatie",
@@ -1230,12 +1234,12 @@
     "authMethodGoogleDescription": "Inloggen met uw Google-account",
     "fullNameLabel": "Uw volledige naam",
     "fullNameHint": "Dit wordt weergegeven in je profiel",
-    "fullNamePlaceholder": "[EN] John Doe",
+    "fullNamePlaceholder": "John Doe",
     "passwordLabel": "Wachtwoord",
     "passwordHint": "Minimaal 8 tekens",
-    "passwordPlaceholder": "[EN] ••••••••",
+    "passwordPlaceholder": "••••••••",
     "confirmPasswordLabel": "Bevestig wachtwoord",
-    "confirmPasswordPlaceholder": "[EN] ••••••••",
+    "confirmPasswordPlaceholder": "••••••••",
     "googleInstructions": "Hoe je Google OAuth-gegevens kunt krijgen:",
     "googleStep1": "Ga naar",
     "googleCloudConsole": "Google Cloud Console",
@@ -1247,7 +1251,7 @@
     "googleClientIdLabel": "Google Client-ID",
     "googleClientIdPlaceholder": "xxxxx.apps.googleusercontent.com",
     "googleClientSecretLabel": "Google Client Secret",
-    "googleClientSecretPlaceholder": "[EN] GOCSPX-xxxxx",
+    "googleClientSecretPlaceholder": "GOCSPX-xxxxx",
     "backToBasicInfo": "← Terug naar Basisinformatie",
     "nextCustomize": "Volgende: Aanpassen →",
     "customizeHeading": "Pas uw site aan",
@@ -1462,7 +1466,9 @@
       "databaseBackupCompletedTitle": "Back-up voltooid",
       "databaseBackupCompletedBody": "Databaseback-up succesvol voltooid",
       "shareLinkExpiredAccessedTitle": "Poging tot Toegang met Verlopen Link",
-      "shareLinkExpiredAccessedBody": "Iemand probeerde een verlopen deel-link te gebruiken"
+      "shareLinkExpiredAccessedBody": "Iemand probeerde een verlopen deel-link te gebruiken",
+      "shareLinkSharedTitle": "Deellink Geplaatst",
+      "shareLinkSharedBody": "Iemand deelde een link op sociale media of berichten"
     },
     "events": {},
     "error": "Er is een fout opgetreden",
@@ -1480,7 +1486,7 @@
   "general": {
     "title": "Algemeen",
     "description": "Pas de naam, ondertitel en avatar van uw site aan",
-    "logo": "[EN] Logo",
+    "logo": "Logo",
     "clickOrDrag": "Klik of sleep afbeelding hier",
     "currentAvatar": "Huidige avatar",
     "siteName": "Site Naam",

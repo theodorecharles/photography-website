@@ -29,7 +29,7 @@
     "actionCannotBeUndone": "Questa azione non può essere annullata",
     "creating": "Creazione...",
     "generating": "Generazione...",
-    "album": "[EN] album",
+    "album": "album",
     "albums": "album",
     "confirmAction": "Conferma azione",
     "maximize": "Massimizza",
@@ -70,7 +70,7 @@
     "signIn": "Accedi"
   },
   "album": {
-    "title": "[EN] Album",
+    "title": "Album",
     "photos": "Foto",
     "viewAlbum": "Visualizza {{albumName}}",
     "albumNotFound": "Album non trovato"
@@ -88,9 +88,9 @@
     "copied": "Copiato!",
     "downloadPhoto": "Scarica foto",
     "exitFullscreen": "Esci da schermo intero",
-    "file": "[EN] File",
+    "file": "File",
     "titleLabel": "Titolo",
-    "albumLabel": "[EN] Album",
+    "albumLabel": "Album",
     "size": "Dimensione",
     "loadingExif": "Caricamento dati EXIF...",
     "camera": "Fotocamera",
@@ -160,7 +160,7 @@
     "title": "Licenza Foto",
     "summary": "Sommario",
     "fullLicenseText": "Testo Completo della Licenza",
-    "copyright": "[EN] Copyright",
+    "copyright": "Copyright",
     "copyrightText": "© {{year}} {{siteName}}. Tutte le fotografie su questo sito web sono protette dalla legge sul copyright.",
     "howToAttribute": "Come Attribuire",
     "attributionText": "Se utilizzi queste fotografie sotto questa licenza, fornisci l'attribuzione come segue:",
@@ -311,7 +311,7 @@
     "moveDown": "Sposta giù",
     "cannotPublishEmptyFolder": "Impossibile pubblicare una cartella vuota",
     "deleteFolderTitle": "Elimina cartella",
-    "album": "[EN] album",
+    "album": "album",
     "albums": "album",
     "moveToFolderTitle": "Sposta \"{{albumName}}\" nella cartella",
     "moveToFolderHint": "Seleziona una cartella di destinazione o scegli Non classificato per rimuovere da qualsiasi cartella.",
@@ -591,10 +591,14 @@
         "shareLinkExpiredAccessed": {
           "title": "Tentativo di accesso con link scaduto",
           "description": "Quando qualcuno tenta di utilizzare un link di condivisione scaduto"
+        },
+        "shareLinkShared": {
+          "title": "Link di condivisione pubblicato",
+          "description": "Quando qualcuno condivide un link sui social media o tramite messaggistica"
         }
       },
       "events": {
-        "saved": "[EN] {{notification}} notification preference saved"
+        "saved": "Preferenza di notifica {{notification}} salvata"
       }
     },
     "events": {},
@@ -650,7 +654,7 @@
     "status": "Stato",
     "actions": "Azioni",
     "viewer": "Visualizzatore",
-    "manager": "[EN] Manager",
+    "manager": "Manager",
     "admin": "Amministratore",
     "invited": "Invitato",
     "inviteExpired": "Invito Scaduto",
@@ -753,7 +757,7 @@
     "invitationLinkExpiry": "Questo link di invito scadrà in 7 giorni. L'utente può utilizzarlo per creare il proprio account e impostare le proprie credenziali.",
     "copiedToClipboard": "✓ Copiato negli Appunti",
     "copyLink": "Copia Link",
-    "password": "[EN] Password",
+    "password": "Password",
     "enterPasswordToConfirm": "Inserisci la tua password per confermare",
     "passkeysDescription": "Le chiavi di accesso forniscono un'autenticazione sicura senza password utilizzando biometria o sicurezza del dispositivo.",
     "noPasskeysRegistered": "Nessuna chiave di accesso registrata",
@@ -812,7 +816,7 @@
     "signingUpAs": "Registrandoti come",
     "fullName": "Nome completo",
     "yourName": "Il tuo nome",
-    "password": "[EN] Password",
+    "password": "Password",
     "passwordPlaceholder": "Min 8 caratteri",
     "passwordMinLengthHint": "Deve essere di almeno 8 caratteri",
     "confirmPassword": "Conferma Password",
@@ -859,7 +863,7 @@
     "signInWithPassword": "Accedi con password",
     "email": "Email",
     "enterEmail": "Inserisci la tua email",
-    "password": "[EN] Password",
+    "password": "Password",
     "enterPassword": "Inserisci la tua password",
     "signingIn": "Accesso in corso...",
     "signIn": "Accedi",
@@ -945,7 +949,7 @@
       "avgTime": "Tempo Medio",
       "views": "Visualizzazioni",
       "photoId": "ID Foto",
-      "album": "[EN] Album",
+      "album": "Album",
       "fileName": "Nome File",
       "viewPhoto": "Visualizza Foto"
     },
@@ -1067,7 +1071,7 @@
     "timeout": "Timeout del riavvio del server. Si prega di controllare i log del server.",
     "backendServer": "Server Backend",
     "frontendServer": "Server Frontend",
-    "online": "[EN] Online",
+    "online": "Online",
     "restarting": "Riavvio in corso...",
     "timeoutDetails": "Il server non ha risposto entro {{seconds}} secondi. Si prega di controllare i log del server per errori."
   },
@@ -1160,7 +1164,7 @@
     "openObserveEndpoint": "Endpoint OpenObserve",
     "organization": "Organizzazione",
     "username": "Nome utente",
-    "password": "[EN] Password",
+    "password": "Password",
     "stream": "Flusso",
     "cancel": "Annulla",
     "save": "Salva",
@@ -1173,7 +1177,7 @@
     "endpointPlaceholder": "https://api.openobserve.ai"
   },
   "userCard": {
-    "password": "[EN] 🔑 Password",
+    "password": "🔑 Password",
     "changePassword": "Cambia password",
     "enableMfa": "Abilita MFA",
     "disableMfa": "Disabilita MFA"
@@ -1181,7 +1185,7 @@
   "seo": {
     "homepageTitle": "{{siteName}} - Galleria",
     "homepageDescription": "Portfolio fotografico di {{siteName}}. Visualizza collezioni di fotografia paesaggistica, ritrattistica e creativa.",
-    "albumTitle": "[EN] {{albumName}} - {{siteName}}",
+    "albumTitle": "{{albumName}} - {{siteName}}",
     "albumDescription": "Visualizza le foto di {{albumName}} dal portfolio fotografico di {{siteName}}.",
     "licenseTitle": "Licenza - {{siteName}}",
     "licenseDescription": "Informazioni sulla licenza per la fotografia di {{siteName}}.",
@@ -1204,7 +1208,7 @@
     "language": "Lingua",
     "selectLanguage": "Seleziona lingua",
     "step1Title": "Informazioni di base",
-    "step2Title": "[EN] Account",
+    "step2Title": "Account",
     "step3Title": "Personalizza",
     "step4Title": "Completa",
     "basicInfoHeading": "Informazioni di base",
@@ -1224,18 +1228,18 @@
     "emailPlaceholder": "john@example.com",
     "authMethodLabel": "Scegli il metodo di autenticazione",
     "authMethodHint": "Come desideri accedere?",
-    "authMethodPassword": "[EN] Password",
+    "authMethodPassword": "Password",
     "authMethodPasswordDescription": "Accedi con email e password",
     "authMethodGoogle": "Google OAuth",
     "authMethodGoogleDescription": "Accedi con il tuo account Google",
     "fullNameLabel": "Il tuo nome completo",
     "fullNameHint": "Questo verrà visualizzato nel tuo profilo",
-    "fullNamePlaceholder": "[EN] John Doe",
-    "passwordLabel": "[EN] Password",
+    "fullNamePlaceholder": "John Doe",
+    "passwordLabel": "Password",
     "passwordHint": "Minimo 8 caratteri",
-    "passwordPlaceholder": "[EN] ••••••••",
+    "passwordPlaceholder": "••••••••",
     "confirmPasswordLabel": "Conferma Password",
-    "confirmPasswordPlaceholder": "[EN] ••••••••",
+    "confirmPasswordPlaceholder": "••••••••",
     "googleInstructions": "Come ottenere le credenziali Google OAuth:",
     "googleStep1": "Vai a",
     "googleCloudConsole": "Google Cloud Console",
@@ -1247,7 +1251,7 @@
     "googleClientIdLabel": "ID client di Google",
     "googleClientIdPlaceholder": "xxxxx.apps.googleusercontent.com",
     "googleClientSecretLabel": "Segreto client di Google",
-    "googleClientSecretPlaceholder": "[EN] GOCSPX-xxxxx",
+    "googleClientSecretPlaceholder": "GOCSPX-xxxxx",
     "backToBasicInfo": "← Torna alle informazioni di base",
     "nextCustomize": "Avanti: Personalizza →",
     "customizeHeading": "Personalizza il tuo sito",
@@ -1462,7 +1466,9 @@
       "databaseBackupCompletedTitle": "Backup completato",
       "databaseBackupCompletedBody": "Backup del database completato con successo",
       "shareLinkExpiredAccessedTitle": "Tentativo di accesso con link scaduto",
-      "shareLinkExpiredAccessedBody": "Qualcuno ha tentato di utilizzare un link di condivisione scaduto"
+      "shareLinkExpiredAccessedBody": "Qualcuno ha tentato di utilizzare un link di condivisione scaduto",
+      "shareLinkSharedTitle": "Link di condivisione pubblicato",
+      "shareLinkSharedBody": "Qualcuno ha condiviso un link sui social media o tramite messaggistica"
     },
     "events": {},
     "error": "Si è verificato un errore",
@@ -1480,7 +1486,7 @@
   "general": {
     "title": "Generale",
     "description": "Personalizza il nome, il sottotitolo e l'avatar del tuo sito",
-    "logo": "[EN] Logo",
+    "logo": "Logo",
     "clickOrDrag": "Clicca o trascina l'immagine qui",
     "currentAvatar": "Avatar attuale",
     "siteName": "Nome del sito",

@@ -88,9 +88,11 @@
       "albumViewMilestoneBody": "{{albumName}} が {{milestone}} 回の閲覧数に達しました！",
       "shareLinkExpiredAccessedTitle": "期限切れリンクアクセス試行",
       "shareLinkExpiredAccessedBody": "誰かが期限切れのリンクで{{albumName}}にアクセスしようとしました",
-      "folderDeletedBodyEmpty": "[EN] {{deletedBy}} deleted empty folder {{folderName}}",
-      "folderDeletedBodyWithDeleted": "[EN] {{deletedBy}} deleted folder {{folderName}} and {{albumCount}} albums: {{albumNames}}",
-      "folderDeletedBodyWithReleased": "[EN] {{deletedBy}} deleted folder {{folderName}} and released {{albumCount}} albums to root: {{albumNames}}"
+      "folderDeletedBodyEmpty": "{{deletedBy}} が空のフォルダ {{folderName}} を削除しました",
+      "folderDeletedBodyWithDeleted": "{{deletedBy}} がフォルダ {{folderName}} と {{albumCount}} 個のアルバムを削除しました: {{albumNames}}",
+      "folderDeletedBodyWithReleased": "{{deletedBy}} がフォルダ {{folderName}} を削除し、{{albumCount}} 個のアルバムをルートに解放しました: {{albumNames}}",
+      "shareLinkSharedTitle": "共有リンクが投稿されました",
+      "shareLinkSharedBody": "誰かがソーシャルメディアやメッセージングで {{albumName}} のリンクを共有しました"
     }
   },
   "email": {

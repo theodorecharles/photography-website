@@ -88,9 +88,11 @@
       "albumViewMilestoneBody": "{{albumName}} 达到 {{milestone}} 次浏览！",
       "shareLinkExpiredAccessedTitle": "过期链接访问尝试",
       "shareLinkExpiredAccessedBody": "有人尝试使用过期链接访问{{albumName}}",
-      "folderDeletedBodyEmpty": "[EN] {{deletedBy}} deleted empty folder {{folderName}}",
-      "folderDeletedBodyWithDeleted": "[EN] {{deletedBy}} deleted folder {{folderName}} and {{albumCount}} albums: {{albumNames}}",
-      "folderDeletedBodyWithReleased": "[EN] {{deletedBy}} deleted folder {{folderName}} and released {{albumCount}} albums to root: {{albumNames}}"
+      "folderDeletedBodyEmpty": "{{deletedBy}} 删除了空文件夹 {{folderName}}",
+      "folderDeletedBodyWithDeleted": "{{deletedBy}} 删除了文件夹 {{folderName}} 和 {{albumCount}} 个相册: {{albumNames}}",
+      "folderDeletedBodyWithReleased": "{{deletedBy}} 删除了文件夹 {{folderName}} 并将 {{albumCount}} 个相册释放到根目录: {{albumNames}}",
+      "shareLinkSharedTitle": "分享链接已发布",
+      "shareLinkSharedBody": "有人分享了 {{albumName}} 链接到社交媒体或消息平台"
     }
   },
   "email": {

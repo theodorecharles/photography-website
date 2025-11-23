@@ -34,7 +34,7 @@
     "actionCannotBeUndone": "Hành động này không thể hoàn tác",
     "creating": "Đang tạo...",
     "generating": "Đang tạo...",
-    "album": "[EN] album",
+    "album": "album",
     "albums": "các album",
     "note": "Ghi chú",
     "dismiss": "Bỏ qua",
@@ -70,7 +70,7 @@
     "signIn": "Đăng Nhập"
   },
   "album": {
-    "title": "[EN] Album",
+    "title": "Album",
     "photos": "Ảnh",
     "viewAlbum": "Xem {{albumName}}",
     "albumNotFound": "Không tìm thấy album"
@@ -94,7 +94,7 @@
     "exitFullscreen": "Thoát chế độ toàn màn hình",
     "file": "Tệp",
     "titleLabel": "Tiêu đề",
-    "albumLabel": "[EN] Album",
+    "albumLabel": "Album",
     "size": "Kích thước",
     "loadingExif": "Đang tải dữ liệu EXIF...",
     "camera": "Máy ảnh",
@@ -246,7 +246,7 @@
     "moveDown": "Di chuyển xuống",
     "cannotPublishEmptyFolder": "Không thể xuất bản thư mục trống",
     "deleteFolderTitle": "Xóa thư mục",
-    "album": "[EN] album",
+    "album": "album",
     "albums": "album",
     "loadingPhotos": "Đang tải ảnh...",
     "uploadingEllipsis": "Đang tải lên...",
@@ -591,10 +591,14 @@
         "shareLinkExpiredAccessed": {
           "title": "Nỗ lực Truy cập Liên kết Hết hạn",
           "description": "Khi ai đó cố gắng sử dụng liên kết chia sẻ đã hết hạn"
+        },
+        "shareLinkShared": {
+          "title": "Đã đăng liên kết chia sẻ",
+          "description": "Khi ai đó chia sẻ một liên kết trên mạng xã hội hoặc nhắn tin"
         }
       },
       "events": {
-        "saved": "[EN] {{notification}} notification preference saved"
+        "saved": "Tùy chọn thông báo {{notification}} đã được lưu"
       }
     },
     "events": {},
@@ -945,7 +949,7 @@
       "avgTime": "Thời gian trung bình",
       "views": "Lượt xem",
       "photoId": "ID ảnh",
-      "album": "[EN] Album",
+      "album": "Album",
       "fileName": "Tên tệp",
       "viewPhoto": "Xem ảnh"
     },
@@ -1181,7 +1185,7 @@
   "seo": {
     "homepageTitle": "{{siteName}} - Galleria",
     "homepageDescription": "Danh mục nhiếp ảnh của {{siteName}}. Xem các bộ sưu tập nhiếp ảnh phong cảnh, chân dung và sáng tạo tuyệt đẹp.",
-    "albumTitle": "[EN] {{albumName}} - {{siteName}}",
+    "albumTitle": "{{albumName}} - {{siteName}}",
     "albumDescription": "Xem ảnh {{albumName}} từ danh mục nhiếp ảnh của {{siteName}}.",
     "licenseTitle": "Giấy phép - {{siteName}}",
     "licenseDescription": "Thông tin giấy phép cho nhiếp ảnh của {{siteName}}.",
@@ -1230,12 +1234,12 @@
     "authMethodGoogleDescription": "Đăng nhập bằng tài khoản Google của bạn",
     "fullNameLabel": "Họ và tên của bạn",
     "fullNameHint": "Điều này sẽ được hiển thị trong hồ sơ của bạn",
-    "fullNamePlaceholder": "[EN] John Doe",
+    "fullNamePlaceholder": "John Doe",
     "passwordLabel": "Mật khẩu",
     "passwordHint": "Tối thiểu 8 ký tự",
-    "passwordPlaceholder": "[EN] ••••••••",
+    "passwordPlaceholder": "••••••••",
     "confirmPasswordLabel": "Xác nhận mật khẩu",
-    "confirmPasswordPlaceholder": "[EN] ••••••••",
+    "confirmPasswordPlaceholder": "••••••••",
     "googleInstructions": "Cách lấy thông tin xác thực Google OAuth:",
     "googleStep1": "Đi đến",
     "googleCloudConsole": "Google Cloud Console",
@@ -1247,7 +1251,7 @@
     "googleClientIdLabel": "ID Khách hàng Google",
     "googleClientIdPlaceholder": "xxxxx.apps.googleusercontent.com",
     "googleClientSecretLabel": "Mật khẩu Khách hàng Google",
-    "googleClientSecretPlaceholder": "[EN] GOCSPX-xxxxx",
+    "googleClientSecretPlaceholder": "GOCSPX-xxxxx",
     "backToBasicInfo": "← Quay lại Thông tin Cơ bản",
     "nextCustomize": "Tiếp theo: Tùy chỉnh →",
     "customizeHeading": "Tùy chỉnh trang web của bạn",
@@ -1462,7 +1466,9 @@
       "databaseBackupCompletedTitle": "Sao lưu hoàn tất",
       "databaseBackupCompletedBody": "Sao lưu cơ sở dữ liệu hoàn tất thành công",
       "shareLinkExpiredAccessedTitle": "Cố gắng truy cập liên kết đã hết hạn",
-      "shareLinkExpiredAccessedBody": "Ai đó đã cố gắng sử dụng liên kết chia sẻ đã hết hạn"
+      "shareLinkExpiredAccessedBody": "Ai đó đã cố gắng sử dụng liên kết chia sẻ đã hết hạn",
+      "shareLinkSharedTitle": "Đã đăng liên kết chia sẻ",
+      "shareLinkSharedBody": "Ai đó đã chia sẻ một liên kết trên mạng xã hội hoặc nhắn tin"
     },
     "events": {},
     "error": "Đã xảy ra lỗi",
