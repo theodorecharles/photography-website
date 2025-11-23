@@ -63,6 +63,27 @@ else
     log "Skipping database migrations (database not initialized yet)"
 fi
 
+# Download GeoIP database if it doesn't exist (for failed login location tracking)
+if [ ! -f "data/GeoLite2-City.mmdb" ]; then
+    log "Downloading GeoIP database for location lookup..."
+    
+    # Get current year and month
+    YEAR=$(date +%Y)
+    MONTH=$(date +%m)
+    GEOIP_URL="https://download.db-ip.com/free/dbip-city-lite-${YEAR}-${MONTH}.mmdb.gz"
+    
+    # Download and extract
+    if curl -sL "$GEOIP_URL" | gunzip > data/GeoLite2-City.mmdb 2>/dev/null; then
+        log "✓ GeoIP database downloaded successfully"
+    else
+        log "WARNING: Failed to download GeoIP database. Location lookup will be disabled."
+        log "         You can manually download from https://db-ip.com/db/download/ip-to-city-lite"
+        log "         and save it as data/GeoLite2-City.mmdb"
+    fi
+else
+    log "GeoIP database already exists, skipping download"
+fi
+
 # Run image optimization script (only if configured and albums exist)
 if [ -f "data/config.json" ]; then
     # Check if there are any albums (directories) to optimize
