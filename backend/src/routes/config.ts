@@ -237,32 +237,99 @@ router.put("/", requireAdmin, express.json(), async (req, res) => {
       // Detect which specific settings changed
       const changedSettings: string[] = [];
       
-      // Check major config sections
-      if (JSON.stringify(currentConfig.pushNotifications) !== JSON.stringify(updatedConfig.pushNotifications)) {
-        changedSettings.push('Push Notifications');
-      }
-      if (JSON.stringify(currentConfig.openAI) !== JSON.stringify(updatedConfig.openAI)) {
-        changedSettings.push('OpenAI API');
-      }
-      if (JSON.stringify(currentConfig.environment) !== JSON.stringify(updatedConfig.environment)) {
-        changedSettings.push('Environment');
-      }
-      if (JSON.stringify(currentConfig.analytics) !== JSON.stringify(updatedConfig.analytics)) {
-        changedSettings.push('Analytics');
-      }
-      if (JSON.stringify(currentConfig.imageOptimization) !== JSON.stringify(updatedConfig.imageOptimization)) {
-        changedSettings.push('Image Optimization');
-      }
-      if (JSON.stringify(currentConfig.videoOptimization) !== JSON.stringify(updatedConfig.videoOptimization)) {
-        changedSettings.push('Video Optimization');
-      }
-      if (JSON.stringify(currentConfig.notificationPreferences) !== JSON.stringify(updatedConfig.notificationPreferences)) {
-        changedSettings.push('Notification Preferences');
+      // Helper to format a value for display (hide sensitive data)
+      const formatValue = (value: any, isSensitive: boolean): string => {
+        if (value === undefined || value === null) return 'null';
+        if (typeof value === 'boolean') return value ? 'enabled' : 'disabled';
+        if (typeof value === 'number') return String(value);
+        if (typeof value === 'string') {
+          if (isSensitive) {
+            // For sensitive values like API keys, show last 4 chars only
+            return value.length > 4 ? `***${value.slice(-4)}` : '***';
+          }
+          // Truncate long strings
+          return value.length > 50 ? `${value.slice(0, 47)}...` : value;
+        }
+        if (Array.isArray(value)) return `[${value.length} items]`;
+        if (typeof value === 'object') return '[object]';
+        return String(value);
+      };
+      
+      // Helper function to find changed fields recursively
+      const findChangedFields = (oldObj: any, newObj: any, prefix = ''): Array<{path: string, oldVal: any, newVal: any}> => {
+        const changes: Array<{path: string, oldVal: any, newVal: any}> = [];
+        const allKeys = new Set([...Object.keys(oldObj || {}), ...Object.keys(newObj || {})]);
+        
+        for (const key of allKeys) {
+          const oldVal = oldObj?.[key];
+          const newVal = newObj?.[key];
+          const path = prefix ? `${prefix}.${key}` : key;
+          
+          // Skip if both are undefined
+          if (oldVal === undefined && newVal === undefined) continue;
+          
+          // If values are objects, recurse
+          if (typeof oldVal === 'object' && typeof newVal === 'object' && oldVal !== null && newVal !== null && !Array.isArray(oldVal) && !Array.isArray(newVal)) {
+            changes.push(...findChangedFields(oldVal, newVal, path));
+          } else if (JSON.stringify(oldVal) !== JSON.stringify(newVal)) {
+            changes.push({ path, oldVal, newVal });
+          }
+        }
+        
+        return changes;
+      };
+      
+      // Friendly names for config paths
+      const friendlyNames: Record<string, string> = {
+        'pushNotifications.vapidPublicKey': 'Push Notifications → Public Key',
+        'pushNotifications.vapidPrivateKey': 'Push Notifications → Private Key',
+        'openAI.apiKey': 'OpenAI → API Key',
+        'openAI.model': 'OpenAI → Model',
+        'environment.logging.level': 'Environment → Log Level',
+        'environment.timezone': 'Environment → Timezone',
+        'analytics.enabled': 'Analytics → Enabled',
+        'analytics.trackVisitors': 'Analytics → Track Visitors',
+        'analytics.trackDownloads': 'Analytics → Track Downloads',
+        'imageOptimization.quality': 'Image Optimization → Quality',
+        'imageOptimization.thumbnailSize': 'Image Optimization → Thumbnail Size',
+        'imageOptimization.modalSize': 'Image Optimization → Modal Size',
+        'imageOptimization.downloadSize': 'Image Optimization → Download Size',
+        'videoOptimization.enabled': 'Video Optimization → Enabled',
+        'videoOptimization.quality': 'Video Optimization → Quality',
+      };
+      
+      // Sensitive fields that should be partially hidden
+      const sensitiveFields = new Set([
+        'pushNotifications.vapidPublicKey',
+        'pushNotifications.vapidPrivateKey',
+        'openAI.apiKey',
+      ]);
+      
+      // Find all changed fields
+      const allChangedFields = findChangedFields(currentConfig, updatedConfig);
+      
+      // Convert to friendly names with old/new values
+      for (const change of allChangedFields) {
+        const isSensitive = sensitiveFields.has(change.path);
+        const oldDisplay = formatValue(change.oldVal, isSensitive);
+        const newDisplay = formatValue(change.newVal, isSensitive);
+        
+        let fieldName: string;
+        if (friendlyNames[change.path]) {
+          fieldName = friendlyNames[change.path];
+        } else {
+          // Fallback: capitalize and format the path
+          fieldName = change.path.split('.').map(part => 
+            part.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())
+          ).join(' → ');
+        }
+        
+        changedSettings.push(`${fieldName}: ${oldDisplay} → ${newDisplay}`);
       }
       
       // Build descriptive message
       const settingsDescription = changedSettings.length > 0 
-        ? changedSettings.join(', ')
+        ? changedSettings.join('; ')
         : 'system configuration';
       
       await notifyAllAdmins(
