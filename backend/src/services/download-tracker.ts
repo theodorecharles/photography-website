@@ -29,7 +29,8 @@ export function downloadTrackingMiddleware(req: Request, res: Response, next: Ne
   const [, album, filename] = pathParts;
 
   // Send notification asynchronously (don't block download)
-  notifyDownload(album, decodeURIComponent(filename)).catch(err => {
+  // Decode both album and filename to handle special characters and spaces
+  notifyDownload(decodeURIComponent(album), decodeURIComponent(filename)).catch(err => {
     error('[DownloadTracker] Failed to send notification:', err);
   });
 

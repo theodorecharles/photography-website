@@ -57,7 +57,7 @@
   },
   "header": {
     "albums": "Álbuns",
-    "links": "Links",
+    "links": "[EN] Links",
     "editAlbum": "Editar este álbum",
     "editLinks": "Editar links",
     "logout": "Sair",
@@ -369,7 +369,7 @@
       "description": "Configure seu portfólio de fotografia e preferências do sistema"
     },
     "links": {
-      "title": "Links",
+      "title": "[EN] Links",
       "description": "Páginas externas e navegação personalizada",
       "pageDescription": "Gerencie links externos que aparecem na navegação do seu site"
     },
@@ -1000,7 +1000,7 @@
     "title": "Qualidade da Imagem",
     "description": "Configure as configurações de qualidade e processamento da imagem",
     "thumbnail": "Miniatura",
-    "modal": "Modal",
+    "modal": "[EN] Modal",
     "download": "DOWNLOAD",
     "concurrency": "Concorrência",
     "quality": "Qualidade",
@@ -1013,7 +1013,7 @@
     "warningNoteLocation": "em Configurações Avançadas → Imagens Otimizadas."
   },
   "links": {
-    "title": "Links",
+    "title": "[EN] Links",
     "description": "Gerenciar links externos e informações de contato",
     "titlePlaceholder": "Título",
     "urlPlaceholder": "URL",
@@ -1067,7 +1067,7 @@
     "timeout": "Tempo de reinício do servidor esgotado. Por favor, verifique os logs do servidor.",
     "backendServer": "Servidor Backend",
     "frontendServer": "Servidor Frontend",
-    "online": "Online",
+    "online": "[EN] Online",
     "restarting": "Reiniciando...",
     "timeoutDetails": "O servidor não respondeu dentro de {{seconds}} segundos. Por favor, verifique os logs do servidor para erros."
   },
@@ -1181,7 +1181,7 @@
   "seo": {
     "homepageTitle": "{{siteName}} - Galeria",
     "homepageDescription": "Portfólio de fotografia por {{siteName}}. Veja coleções impressionantes de paisagens, retratos e fotografia criativa.",
-    "albumTitle": "{{albumName}} - {{siteName}}",
+    "albumTitle": "[EN] {{albumName}} - {{siteName}}",
     "albumDescription": "Veja fotos de {{albumName}} do portfólio de fotografia de {{siteName}}.",
     "licenseTitle": "Licença - {{siteName}}",
     "licenseDescription": "Informações de licença para a fotografia de {{siteName}}.",
@@ -1230,12 +1230,12 @@
     "authMethodGoogleDescription": "Faça login com sua conta do Google",
     "fullNameLabel": "Seu Nome Completo",
     "fullNameHint": "Isso será exibido no seu perfil",
-    "fullNamePlaceholder": "John Doe",
+    "fullNamePlaceholder": "[EN] John Doe",
     "passwordLabel": "Senha",
     "passwordHint": "Mínimo de 8 caracteres",
-    "passwordPlaceholder": "••••••••",
+    "passwordPlaceholder": "[EN] ••••••••",
     "confirmPasswordLabel": "Confirmar Senha",
-    "confirmPasswordPlaceholder": "••••••••",
+    "confirmPasswordPlaceholder": "[EN] ••••••••",
     "googleInstructions": "Como obter credenciais do Google OAuth:",
     "googleStep1": "Vá para",
     "googleCloudConsole": "Google Cloud Console",
@@ -1247,7 +1247,7 @@
     "googleClientIdLabel": "ID do Cliente do Google",
     "googleClientIdPlaceholder": "xxxxx.apps.googleusercontent.com",
     "googleClientSecretLabel": "Segredo do Cliente do Google",
-    "googleClientSecretPlaceholder": "GOCSPX-xxxxx",
+    "googleClientSecretPlaceholder": "[EN] GOCSPX-xxxxx",
     "backToBasicInfo": "← Voltar para Informações Básicas",
     "nextCustomize": "Próximo: Personalizar →",
     "customizeHeading": "Personalize seu site",

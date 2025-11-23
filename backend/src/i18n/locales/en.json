@@ -67,6 +67,8 @@
       "largePhotoUploadBody": "{{uploadedBy}} uploaded {{photoCount}} photos to {{albumName}}",
       "shareLinkCreatedTitle": "Share Link Created",
       "shareLinkCreatedBody": "{{createdBy}} created a share link for {{albumName}}",
+      "shareLinkSharedTitle": "Share Link Posted",
+      "shareLinkSharedBody": "Someone shared the {{albumName}} link on social media or messaging",
       "shareLinkAccessedTitle": "Share Link Viewed",
       "shareLinkAccessedBody": "Someone accessed {{albumName}} via share link",
       "shareLinkExpiredTitle": "Share Link Expired",

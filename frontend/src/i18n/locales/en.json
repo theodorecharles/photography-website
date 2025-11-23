@@ -608,6 +608,10 @@
           "title": "Share Link Created",
           "description": "When a new share link is created"
         },
+        "shareLinkShared": {
+          "title": "Share Link Posted",
+          "description": "When someone shares a link on social media or messaging"
+        },
         "shareLinkAccessed": {
           "title": "Share Link Accessed",
           "description": "When someone views a shared album"
@@ -1495,6 +1499,8 @@
       "largePhotoUploadBody": "50+ photos uploaded in one batch",
       "shareLinkCreatedTitle": "Share Link Created",
       "shareLinkCreatedBody": "A new share link has been created",
+      "shareLinkSharedTitle": "Share Link Posted",
+      "shareLinkSharedBody": "Someone shared a link on social media or messaging",
       "shareLinkAccessedTitle": "Share Link Viewed",
       "shareLinkAccessedBody": "Someone viewed a shared album",
       "shareLinkExpiredTitle": "Share Link Expired",

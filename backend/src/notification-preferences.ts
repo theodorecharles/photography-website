@@ -34,6 +34,7 @@ export interface NotificationPreferences {
   homepageUpdated: boolean;
   largePhotoUpload: boolean;
   shareLinkCreated: boolean;
+  shareLinkShared: boolean;
   shareLinkAccessed: boolean;
   shareLinkExpired: boolean;
   shareLinkExpiredAccessed: boolean;
@@ -76,6 +77,7 @@ export const DEFAULT_NOTIFICATION_PREFERENCES: NotificationPreferences = {
   homepageUpdated: false, // Can be noisy
   largePhotoUpload: true, // 50+ photos in 5 minutes
   shareLinkCreated: true,
+  shareLinkShared: true, // Preview fetched by social media/messaging apps
   shareLinkAccessed: false, // Can be noisy
   shareLinkExpired: false, // Can be noisy
   shareLinkExpiredAccessed: true, // Someone tried to use expired link
@@ -105,10 +107,20 @@ export function getNotificationPreferences(): NotificationPreferences {
       return { ...DEFAULT_NOTIFICATION_PREFERENCES };
     }
     
+    // Filter out invalid keys (from old versions) to prevent validation errors
+    const validKeys = Object.keys(DEFAULT_NOTIFICATION_PREFERENCES);
+    const filteredPrefs: Record<string, boolean> = {};
+    
+    for (const key of validKeys) {
+      if (key in prefs) {
+        filteredPrefs[key] = prefs[key];
+      }
+    }
+    
     // Merge with defaults to ensure all keys exist
     return {
       ...DEFAULT_NOTIFICATION_PREFERENCES,
-      ...prefs
+      ...filteredPrefs
     };
   } catch (err) {
     warn('[NotificationPreferences] Error loading preferences, using defaults:', err);
@@ -283,6 +295,12 @@ export const NOTIFICATION_CATEGORIES: NotificationCategory[] = [
         titleKey: 'settings.notifications.types.shareLinkCreated.title',
         descriptionKey: 'settings.notifications.types.shareLinkCreated.description',
         icon: '🔗'
+      },
+      {
+        key: 'shareLinkShared',
+        titleKey: 'settings.notifications.types.shareLinkShared.title',
+        descriptionKey: 'settings.notifications.types.shareLinkShared.description',
+        icon: '📤'
       },
       {
         key: 'shareLinkAccessed',

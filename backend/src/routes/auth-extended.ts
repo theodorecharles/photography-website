@@ -115,6 +115,20 @@ setInterval(() => {
  */
 async function getLocationFromIP(ip: string): Promise<string> {
   try {
+    // Check for local/private IPs that won't have GeoIP data
+    const isLocalIP = 
+      ip === '::1' || 
+      ip === '127.0.0.1' || 
+      ip.startsWith('::ffff:127.') || 
+      ip.startsWith('192.168.') || 
+      ip.startsWith('10.') || 
+      (ip.startsWith('172.') && parseInt(ip.split('.')[1]) >= 16 && parseInt(ip.split('.')[1]) <= 31) ||
+      ip === 'unknown';
+    
+    if (isLocalIP) {
+      return 'Local Network';
+    }
+    
     // Try to import maxmind module
     const maxmind = await import('@maxmind/geoip2-node');
     const path = await import('path');
@@ -128,7 +142,7 @@ async function getLocationFromIP(ip: string): Promise<string> {
     // Check if database exists
     if (!fs.existsSync(dbPath)) {
       info('[Auth] GeoIP database not found at:', dbPath);
-      return '';
+      return 'Unknown';
     }
     
     const reader = await maxmind.Reader.open(dbPath);
@@ -140,11 +154,11 @@ async function getLocationFromIP(ip: string): Promise<string> {
       return response.country.names?.en || 'Unknown';
     }
     
-    return '';
+    return 'Unknown';
   } catch (err) {
     // GeoIP is optional - don't fail if not available
     verbose('[Auth] GeoIP lookup failed (this is OK if not configured):', err);
-    return '';
+    return 'Unknown';
   }
 }
 
@@ -164,7 +178,7 @@ async function trackFailedLogin(email: string, ipAddress: string): Promise<void>
       {
         userEmail: email,
         ipAddress,
-        location: location || 'Location unknown'
+        location: location || 'Unknown'
       }
     );
     warn(`[Auth] Failed login attempt for ${email} from ${ipAddress}${location ? ` (${location})` : ''}`);

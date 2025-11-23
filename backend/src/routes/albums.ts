@@ -474,9 +474,40 @@ router.get("/api/shared/:secretKey", async (req: Request, res): Promise<void> =>
     return;
   }
 
+  // Check if this is a meta tag injection request (server-side only, skip notifications)
+  const isMetaInjection = req.headers['x-meta-injection'] === 'true';
+
   // Check if expired
   if (isShareLinkExpired(shareLink)) {
-    // Notify admins that someone tried to access an expired link
+    // Notify admins that someone tried to access an expired link (skip for meta injection)
+    if (!isMetaInjection) {
+      try {
+        const { sendNotificationToUser } = await import('../push-notifications.js');
+        const { translateNotification } = await import('../i18n-backend.js');
+        const { getAllUsers } = await import('../database-users.js');
+        
+        const admins = getAllUsers().filter(u => u.role === 'admin');
+        for (const admin of admins) {
+          const title = await translateNotification('notifications.backend.shareLinkExpiredAccessedTitle', { albumName: shareLink.album });
+          const body = await translateNotification('notifications.backend.shareLinkExpiredAccessedBody', { albumName: shareLink.album });
+          
+          sendNotificationToUser(admin.id, {
+            title,
+            body,
+            tag: 'share-link-expired-accessed'
+          }, 'shareLinkExpiredAccessed');
+        }
+      } catch (err) {
+        error('[Albums] Failed to send expired link access notification:', err);
+      }
+    }
+    
+    res.status(410).json({ error: "Share link has expired", expired: true });
+    return;
+  }
+  
+  // Notify admins that someone accessed the share link (skip for meta injection)
+  if (!isMetaInjection) {
     try {
       const { sendNotificationToUser } = await import('../push-notifications.js');
       const { translateNotification } = await import('../i18n-backend.js');
@@ -484,42 +515,18 @@ router.get("/api/shared/:secretKey", async (req: Request, res): Promise<void> =>
       
       const admins = getAllUsers().filter(u => u.role === 'admin');
       for (const admin of admins) {
-        const title = await translateNotification('notifications.backend.shareLinkExpiredAccessedTitle', { albumName: shareLink.album });
-        const body = await translateNotification('notifications.backend.shareLinkExpiredAccessedBody', { albumName: shareLink.album });
+        const title = await translateNotification('notifications.backend.shareLinkAccessedTitle', { albumName: shareLink.album });
+        const body = await translateNotification('notifications.backend.shareLinkAccessedBody', { albumName: shareLink.album });
         
         sendNotificationToUser(admin.id, {
           title,
           body,
-          tag: 'share-link-expired-accessed'
-        }, 'shareLinkExpiredAccessed');
+          tag: 'share-link-accessed'
+        }, 'shareLinkAccessed');
       }
     } catch (err) {
-      error('[Albums] Failed to send expired link access notification:', err);
+      error('[Albums] Failed to send share link access notification:', err);
     }
-    
-    res.status(410).json({ error: "Share link has expired", expired: true });
-    return;
-  }
-  
-  // Notify admins that someone accessed the share link
-  try {
-    const { sendNotificationToUser } = await import('../push-notifications.js');
-    const { translateNotification } = await import('../i18n-backend.js');
-    const { getAllUsers } = await import('../database-users.js');
-    
-    const admins = getAllUsers().filter(u => u.role === 'admin');
-    for (const admin of admins) {
-      const title = await translateNotification('notifications.backend.shareLinkAccessedTitle', { albumName: shareLink.album });
-      const body = await translateNotification('notifications.backend.shareLinkAccessedBody', { albumName: shareLink.album });
-      
-      sendNotificationToUser(admin.id, {
-        title,
-        body,
-        tag: 'share-link-accessed'
-      }, 'shareLinkAccessed');
-    }
-  } catch (err) {
-    error('[Albums] Failed to send share link access notification:', err);
   }
 
   // Get the album name

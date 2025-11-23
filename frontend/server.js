@@ -524,7 +524,11 @@ app.get(/^\/.*/, async (req, res) => {
     try {
       // Fetch shared album data from backend
       const apiUrl = config.frontend.apiUrl;
-      const response = await fetch(`${apiUrl}/api/shared/${secretKey}`);
+      const response = await fetch(`${apiUrl}/api/shared/${secretKey}`, {
+        headers: {
+          'X-Meta-Injection': 'true' // Indicate this is for meta tag injection only
+        }
+      });
 
       if (response.ok) {
         const data = await response.json();

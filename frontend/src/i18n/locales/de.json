@@ -57,7 +57,7 @@
   },
   "header": {
     "albums": "Alben",
-    "links": "Links",
+    "links": "[EN] Links",
     "editAlbum": "Dieses Album bearbeiten",
     "editLinks": "Links bearbeiten",
     "logout": "Abmelden",
@@ -70,7 +70,7 @@
     "signIn": "Anmelden"
   },
   "album": {
-    "title": "Album",
+    "title": "[EN] Album",
     "photos": "Fotos",
     "viewAlbum": "{{albumName}} ansehen",
     "albumNotFound": "Album nicht gefunden"
@@ -90,7 +90,7 @@
     "exitFullscreen": "Vollbild verlassen",
     "file": "Datei",
     "titleLabel": "Titel",
-    "albumLabel": "Album",
+    "albumLabel": "[EN] Album",
     "size": "Größe",
     "loadingExif": "Lade EXIF-Daten...",
     "camera": "Kamera",
@@ -113,7 +113,7 @@
   },
   "admin": {
     "title": "Admin-Portal",
-    "dashboard": "Dashboard",
+    "dashboard": "[EN] Dashboard",
     "albums": "Alben",
     "settings": "Einstellungen",
     "metrics": "Metriken",
@@ -369,7 +369,7 @@
       "description": "Konfigurieren Sie Ihr Fotografie-Portfolio und die Systemeinstellungen"
     },
     "links": {
-      "title": "Links",
+      "title": "[EN] Links",
       "description": "Externe Seiten und benutzerdefinierte Navigation",
       "pageDescription": "Verwalten Sie externe Links, die in der Navigation Ihrer Website erscheinen"
     },
@@ -647,10 +647,10 @@
     "setupSmtp": "SMTP einrichten",
     "email": "E-Mail",
     "role": "Rolle",
-    "status": "Status",
+    "status": "[EN] Status",
     "actions": "Aktionen",
     "viewer": "Betrachter",
-    "manager": "Manager",
+    "manager": "[EN] Manager",
     "admin": "Administrator",
     "invited": "Eingeladen",
     "inviteExpired": "Einladung abgelaufen",
@@ -945,7 +945,7 @@
       "avgTime": "Durchschnittszeit",
       "views": "Aufrufe",
       "photoId": "Foto-ID",
-      "album": "Album",
+      "album": "[EN] Album",
       "fileName": "Dateiname",
       "viewPhoto": "Foto ansehen"
     },
@@ -1000,7 +1000,7 @@
     "title": "Bildqualität",
     "description": "Konfigurieren Sie die Bildqualität und Verarbeitungseinstellungen",
     "thumbnail": "MINIATURANSICHT",
-    "modal": "Modal",
+    "modal": "[EN] Modal",
     "download": "HERUNTERLADEN",
     "concurrency": "PARALLELITÄT",
     "quality": "Qualität",
@@ -1013,7 +1013,7 @@
     "warningNoteLocation": "in den erweiterten Einstellungen → Optimierte Bilder."
   },
   "links": {
-    "title": "Links",
+    "title": "[EN] Links",
     "description": "Externe Links und Kontaktinformationen verwalten",
     "titlePlaceholder": "Titel",
     "urlPlaceholder": "URL",
@@ -1067,7 +1067,7 @@
     "timeout": "Server-Neustart-Zeitüberschreitung. Bitte überprüfen Sie die Server-Protokolle.",
     "backendServer": "Backend-Server",
     "frontendServer": "Frontend-Server",
-    "online": "Online",
+    "online": "[EN] Online",
     "restarting": "Wird neu gestartet...",
     "timeoutDetails": "Der Server hat nicht innerhalb von {{seconds}} Sekunden geantwortet. Bitte überprüfen Sie die Server-Protokolle auf Fehler."
   },
@@ -1167,7 +1167,7 @@
     "organization": "Organisation",
     "username": "Benutzername",
     "password": "Passwort",
-    "stream": "Stream",
+    "stream": "[EN] Stream",
     "cancel": "Abbrechen",
     "save": "Speichern",
     "saving": "Speichern...",
@@ -1181,7 +1181,7 @@
   "seo": {
     "homepageTitle": "{{siteName}} - Galleria",
     "homepageDescription": "Fotografie-Portfolio von {{siteName}}. Sehen Sie sich beeindruckende Landschafts-, Porträt- und kreative Fotografie-Kollektionen an.",
-    "albumTitle": "{{albumName}} - {{siteName}}",
+    "albumTitle": "[EN] {{albumName}} - {{siteName}}",
     "albumDescription": "Sehen Sie sich die {{albumName}}-Fotos aus dem Fotografie-Portfolio von {{siteName}} an.",
     "licenseTitle": "Lizenz - {{siteName}}",
     "licenseDescription": "Lizenzinformationen für die Fotografie von {{siteName}}.",
@@ -1230,12 +1230,12 @@
     "authMethodGoogleDescription": "Mit Ihrem Google-Konto anmelden",
     "fullNameLabel": "Ihr vollständiger Name",
     "fullNameHint": "Dies wird in deinem Profil angezeigt",
-    "fullNamePlaceholder": "John Doe",
+    "fullNamePlaceholder": "[EN] John Doe",
     "passwordLabel": "Passwort",
     "passwordHint": "Mindestens 8 Zeichen",
-    "passwordPlaceholder": "••••••••",
+    "passwordPlaceholder": "[EN] ••••••••",
     "confirmPasswordLabel": "Passwort bestätigen",
-    "confirmPasswordPlaceholder": "••••••••",
+    "confirmPasswordPlaceholder": "[EN] ••••••••",
     "googleInstructions": "So erhältst du Google OAuth-Anmeldeinformationen:",
     "googleStep1": "Gehe zu",
     "googleCloudConsole": "Google Cloud Console",
@@ -1247,7 +1247,7 @@
     "googleClientIdLabel": "Google Client-ID",
     "googleClientIdPlaceholder": "xxxxx.apps.googleusercontent.com",
     "googleClientSecretLabel": "Google Client-Geheimnis",
-    "googleClientSecretPlaceholder": "GOCSPX-xxxxx",
+    "googleClientSecretPlaceholder": "[EN] GOCSPX-xxxxx",
     "backToBasicInfo": "← Zurück zu den Basisinformationen",
     "nextCustomize": "Weiter: Anpassen →",
     "customizeHeading": "Passen Sie Ihre Seite an",
@@ -1480,7 +1480,7 @@
   "general": {
     "title": "Allgemein",
     "description": "Passen Sie den Namen, den Untertitel und das Avatar Ihrer Website an",
-    "logo": "Logo",
+    "logo": "[EN] Logo",
     "clickOrDrag": "Klicken oder ziehen Sie das Bild hierher",
     "currentAvatar": "Aktuelles Avatar",
     "siteName": "Website-Name",
