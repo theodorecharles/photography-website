@@ -18,3 +18,12 @@ export const INTEGRATIONS_ADOPTION_VARIABLES = {
   SHOW_BADGES: 'showBadges',
 } as const;
 
+// Event keys for tracking feature configuration
+export const EVENTS = {
+  OPENAI_CONFIGURED: 'openai_configured',
+  ANALYTICS_CONFIGURED: 'analytics_configured',
+  GOOGLE_OAUTH_CONFIGURED: 'google_oauth_configured',
+  EMAIL_CONFIGURED: 'email_configured',
+  NOTIFICATIONS_ENABLED: 'notifications_enabled',
+} as const;
+
