@@ -11,6 +11,27 @@ mkdir -p /data/optimized
 mkdir -p /data/logs
 echo "✓ Data directories ready"
 
+# Download GeoIP database if it doesn't exist (for failed login location tracking)
+if [ ! -f "/data/GeoLite2-City.mmdb" ]; then
+    echo "Downloading GeoIP database for location lookup..."
+    
+    # Get current year and month
+    YEAR=$(date +%Y)
+    MONTH=$(date +%m)
+    GEOIP_URL="https://download.db-ip.com/free/dbip-city-lite-${YEAR}-${MONTH}.mmdb.gz"
+    
+    # Download and extract
+    if wget -qO- "$GEOIP_URL" | gunzip > /data/GeoLite2-City.mmdb 2>/dev/null; then
+        echo "✓ GeoIP database downloaded successfully"
+    else
+        echo "⚠ Failed to download GeoIP database. Location lookup will be disabled."
+        echo "  You can manually download from https://db-ip.com/db/download/ip-to-city-lite"
+        echo "  and save it as /data/GeoLite2-City.mmdb"
+    fi
+else
+    echo "✓ GeoIP database already exists"
+fi
+
 # Generate pre-rendered homepage HTML if config and database exist
 # Environment variables from docker-compose.yml (BACKEND_DOMAIN, FRONTEND_DOMAIN) 
 # are automatically available in the container
