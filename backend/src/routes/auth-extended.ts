@@ -982,6 +982,11 @@ router.post('/mfa/verify-setup', requireAuth, async (req: Request, res: Response
     enableMFA(userId, setup.challenge, backupCodes);
     challenges.delete(`mfa-setup-${setupToken}`);
 
+    // Update session to reflect MFA enabled
+    if ((req.session as any)?.user) {
+      (req.session as any).user.mfa_enabled = true;
+    }
+
     // Get user info for notification
     const user = getUserById(userId);
 
@@ -1028,6 +1033,11 @@ router.post('/mfa/disable', requireAuth, async (req: Request, res: Response) => 
     }
 
     disableMFA(userId);
+
+    // Update session to reflect MFA disabled
+    if ((req.session as any)?.user) {
+      (req.session as any).user.mfa_enabled = false;
+    }
 
     // Send push notification to all admins
     if (user) {
