@@ -16,7 +16,12 @@ import fs from 'fs';
 import path from 'path';
 import { DATA_DIR } from '../config.js';
 
-const MILESTONES = [100, 1000, 10000];
+// Milestones: 100, 1000, 5000, then every 5000 after that
+const MILESTONES = [
+  100, 1000, 5000, 10000, 15000, 20000, 25000, 30000, 35000, 40000, 
+  45000, 50000, 55000, 60000, 65000, 70000, 75000, 80000, 85000, 90000, 
+  95000, 100000, 150000, 200000, 250000, 300000, 400000, 500000, 1000000
+];
 const MILESTONE_FILE = path.join(DATA_DIR, '.album-milestones.json');
 
 interface MilestoneData {
