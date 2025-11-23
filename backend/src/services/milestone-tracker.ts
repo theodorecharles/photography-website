@@ -89,12 +89,12 @@ async function getAlbumViewCounts(): Promise<Map<string, number>> {
     // Query for album view counts (all-time)
     const sql = `
       SELECT
-        path AS album_path,
+        page_path AS album_path,
         COUNT(*) AS view_count
       FROM "${stream}"
-      WHERE event_type = 'page_view'
-        AND path LIKE '/albums/%'
-      GROUP BY path
+      WHERE event_type = 'pageview'
+        AND page_path LIKE '/albums/%'
+      GROUP BY page_path
       ORDER BY view_count DESC
     `;
 
