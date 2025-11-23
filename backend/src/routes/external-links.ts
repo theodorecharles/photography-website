@@ -95,7 +95,7 @@ router.put('/', requireManager, (req: Request, res: Response): void => {
     info("[ExternalLinks] Config reloaded after external links update");
     
     // Regenerate homepage HTML since external links are in the navigation
-    const appRoot = path.join(__dirname, '..', '..');
+    const appRoot = req.app.get('appRoot');
     generateHomepageHTML(appRoot).then(result => {
       if (result.success) {
         info("[ExternalLinks] Homepage HTML regenerated after external links update");

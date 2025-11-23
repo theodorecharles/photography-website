@@ -231,7 +231,7 @@ router.put("/", requireManager, (req: Request, res: Response) => {
     })();
 
     // Regenerate homepage HTML if branding changed (affects meta tags and initial data)
-    const appRoot = path.join(__dirname, '..', '..');
+    const appRoot = req.app.get('appRoot');
     generateHomepageHTML(appRoot).then(result => {
       if (result.success) {
         info("[Branding] Homepage HTML regenerated after branding update");
@@ -434,7 +434,7 @@ router.post(
       }
 
       // Regenerate homepage HTML since avatar changed (affects meta tags and branding)
-      const appRoot = path.join(__dirname, '..', '..');
+      const appRoot = req.app.get('appRoot');
       generateHomepageHTML(appRoot).then(result => {
         if (result.success) {
           info("[Avatar Upload] Homepage HTML regenerated after avatar change");
