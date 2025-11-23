@@ -652,8 +652,8 @@ app.get(/^\/.*/, async (req, res) => {
           return res.send(htmlWithBranding);
         }
       }
-    } catch (error) {
-      error("[MetaInjection] Failed to fetch shared album data:", error);
+    } catch (err) {
+      error("[MetaInjection] Failed to fetch shared album data:", err);
       // Fall through to default index.html
     }
   }
@@ -796,8 +796,8 @@ app.get(/^\/.*/, async (req, res) => {
           return res.send(htmlWithBranding);
         }
       }
-    } catch (error) {
-      error("[MetaInjection] Failed to fetch album data:", error);
+    } catch (err) {
+      error("[MetaInjection] Failed to fetch album data:", err);
       // Fall through to default handling
     }
   }
@@ -962,8 +962,8 @@ app.get(/^\/.*/, async (req, res) => {
           return res.send(htmlWithBranding);
         }
       }
-    } catch (error) {
-      error("[MetaInjection] Failed to fetch photo data:", error);
+    } catch (err) {
+      error("[MetaInjection] Failed to fetch photo data:", err);
       // Fall through to default handling
     }
   }
