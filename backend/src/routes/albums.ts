@@ -22,7 +22,8 @@ import {
   isShareLinkExpired,
   getAllFolders,
   getPublishedFolders,
-  getAlbumsInFolder
+  getAlbumsInFolder,
+  incrementAlbumViewCount
 } from "../database.js";
 import { error, warn, info, debug, verbose } from '../utils/logger.js';
 
@@ -377,6 +378,14 @@ const serveAlbumPhotos = (req: Request, res: Response, albumName: string): void 
   if (!albumState.published && !isAuthenticated) {
     res.status(403).json({ error: "Access denied" });
     return;
+  }
+
+  // Increment view count for milestone tracking
+  try {
+    incrementAlbumViewCount(sanitizedAlbum);
+  } catch (err) {
+    // Don't fail the request if view tracking fails
+    warn('[Albums] Failed to increment view count:', err);
   }
 
   // Check cache first

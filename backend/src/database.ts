@@ -150,6 +150,17 @@ export function initializeDatabase(): any {
     warn('[Database] Could not check/add notified column to share_links:', err);
   }
   
+  // Create album_view_counts table for milestone tracking
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS album_view_counts (
+      album TEXT PRIMARY KEY,
+      view_count INTEGER NOT NULL DEFAULT 0,
+      last_milestone INTEGER NOT NULL DEFAULT 0,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (album) REFERENCES albums(name) ON DELETE CASCADE ON UPDATE CASCADE
+    )
+  `);
+  
   // Create index for share links
   db.exec(`
     CREATE INDEX IF NOT EXISTS idx_share_links_secret 
@@ -1079,6 +1090,64 @@ export function updateFolderSortOrder(folderOrders: { name: string; sort_order: 
     error('[Database] Failed to update folder sort order:', err);
     return false;
   }
+}
+
+/**
+ * Increment view count for an album (for milestone tracking)
+ */
+export function incrementAlbumViewCount(album: string): void {
+  const db = getDatabase();
+  
+  const stmt = db.prepare(`
+    INSERT INTO album_view_counts (album, view_count, updated_at)
+    VALUES (?, 1, CURRENT_TIMESTAMP)
+    ON CONFLICT(album)
+    DO UPDATE SET 
+      view_count = view_count + 1,
+      updated_at = CURRENT_TIMESTAMP
+  `);
+  
+  stmt.run(album);
+}
+
+/**
+ * Get all album view counts
+ */
+export function getAllAlbumViewCounts(): Map<string, { views: number, lastMilestone: number }> {
+  const db = getDatabase();
+  
+  const stmt = db.prepare(`
+    SELECT album, view_count, last_milestone
+    FROM album_view_counts
+    ORDER BY view_count DESC
+  `);
+  
+  const results = stmt.all() as Array<{ album: string, view_count: number, last_milestone: number }>;
+  const viewCounts = new Map<string, { views: number, lastMilestone: number }>();
+  
+  for (const row of results) {
+    viewCounts.set(row.album, {
+      views: row.view_count,
+      lastMilestone: row.last_milestone
+    });
+  }
+  
+  return viewCounts;
+}
+
+/**
+ * Update last milestone reached for an album
+ */
+export function updateAlbumMilestone(album: string, milestone: number): void {
+  const db = getDatabase();
+  
+  const stmt = db.prepare(`
+    UPDATE album_view_counts
+    SET last_milestone = ?, updated_at = CURRENT_TIMESTAMP
+    WHERE album = ?
+  `);
+  
+  stmt.run(milestone, album);
 }
 
 /**
