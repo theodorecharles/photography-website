@@ -7,7 +7,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { API_URL } from '../config';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import './Footer.css';
 import { debug } from '../utils/logger';
 
@@ -20,6 +20,7 @@ interface FooterProps {
 
 function Footer({ albums: _albums = [], externalLinks: _externalLinks = [], currentAlbum: _currentAlbum }: FooterProps) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [currentYear, setCurrentYear] = useState<number>(new Date().getFullYear());
   const [siteName, setSiteName] = useState<string>('');
 
@@ -61,6 +62,36 @@ function Footer({ albums: _albums = [], externalLinks: _externalLinks = [], curr
     fetchBranding();
   }, []);
 
+  const handleLicenseClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const path = '/license';
+    console.log('[Footer] Navigating to:', path);
+    navigate(path, { replace: false });
+    // Force navigation fallback if needed
+    setTimeout(() => {
+      if (window.location.pathname !== path) {
+        console.log('[Footer] Fallback: Forcing navigation via location.href');
+        window.location.href = path;
+      }
+    }, 50);
+  };
+
+  const handleAdminClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const path = '/admin';
+    console.log('[Footer] Navigating to:', path);
+    navigate(path, { replace: false });
+    // Force navigation fallback if needed
+    setTimeout(() => {
+      if (window.location.pathname !== path) {
+        console.log('[Footer] Fallback: Forcing navigation via location.href');
+        window.location.href = path;
+      }
+    }, 50);
+  };
+
   return (
     <footer className="footer">
       <div className="footer-content">
@@ -69,9 +100,14 @@ function Footer({ albums: _albums = [], externalLinks: _externalLinks = [], curr
             <span>
               &copy; {currentYear} {siteName || 'Galleria'}.{' '}
               <span className="footer-separator">•</span>{' '}
-              <Link to="/license" className="footer-link">
+              <button
+                type="button"
+                onClick={handleLicenseClick}
+                className="footer-link"
+                style={{ background: 'none', border: 'none', padding: 0, font: 'inherit', cursor: 'pointer' }}
+              >
                 {t('footer.license')}
-              </Link>
+              </button>
             </span>
             <div className="footer-links">
               <span className="footer-powered-by">
@@ -88,9 +124,13 @@ function Footer({ albums: _albums = [], externalLinks: _externalLinks = [], curr
             </div>
           </div>
           <div className="footer-right">
-            <Link to="/admin" className="footer-signin-btn">
+            <button
+              type="button"
+              onClick={handleAdminClick}
+              className="footer-signin-btn"
+            >
               {t('footer.signIn')}
-            </Link>
+            </button>
           </div>
         </div>
       </div>

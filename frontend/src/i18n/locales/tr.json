@@ -592,6 +592,9 @@
           "title": "Süresi Dolmuş Bağlantı Erişim Denemesi",
           "description": "Birisi süresi dolmuş bir paylaşım bağlantısını kullanmaya çalıştığında"
         }
+      },
+      "events": {
+        "saved": "[EN] {{notification}} notification preference saved"
       }
     },
     "events": {},

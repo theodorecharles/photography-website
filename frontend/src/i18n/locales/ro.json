@@ -592,6 +592,9 @@
           "title": "Încercare de accesare a unui link expirat",
           "description": "Când cineva încearcă să folosească un link de partajare expirat"
         }
+      },
+      "events": {
+        "saved": "[EN] {{notification}} notification preference saved"
       }
     },
     "events": {},

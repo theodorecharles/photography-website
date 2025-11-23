@@ -592,6 +592,9 @@
           "title": "Nỗ lực Truy cập Liên kết Hết hạn",
           "description": "Khi ai đó cố gắng sử dụng liên kết chia sẻ đã hết hạn"
         }
+      },
+      "events": {
+        "saved": "[EN] {{notification}} notification preference saved"
       }
     },
     "events": {},

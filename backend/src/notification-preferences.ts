@@ -43,7 +43,6 @@ export interface NotificationPreferences {
   // System & Configuration
   configUpdated: boolean;
   smtpSettingsChanged: boolean;
-  openaiApiKeyUpdated: boolean;
   brandingUpdated: boolean;
   lowDiskSpace: boolean;
   databaseBackupCompleted: boolean;
@@ -63,7 +62,7 @@ export const DEFAULT_NOTIFICATION_PREFERENCES: NotificationPreferences = {
   mfaDisabled: true,
   passwordChanged: true,
   adminPasswordReset: true,
-  failedLoginAttempts: true, // Security: 5+ failed attempts in 15 minutes
+  failedLoginAttempts: true, // Security: Every failed login attempt
   
   // Content Management - selective defaults
   albumCreated: true,
@@ -86,7 +85,6 @@ export const DEFAULT_NOTIFICATION_PREFERENCES: NotificationPreferences = {
   // System & Configuration
   configUpdated: true,
   smtpSettingsChanged: true,
-  openaiApiKeyUpdated: true,
   brandingUpdated: false,
   lowDiskSpace: true, // Alerts when < 10% free space
   databaseBackupCompleted: true, // Manual or scheduled backups
@@ -334,12 +332,6 @@ export const NOTIFICATION_CATEGORIES: NotificationCategory[] = [
         titleKey: 'settings.notifications.types.smtpSettingsChanged.title',
         descriptionKey: 'settings.notifications.types.smtpSettingsChanged.description',
         icon: '📧'
-      },
-      {
-        key: 'openaiApiKeyUpdated',
-        titleKey: 'settings.notifications.types.openaiApiKeyUpdated.title',
-        descriptionKey: 'settings.notifications.types.openaiApiKeyUpdated.description',
-        icon: '🤖'
       },
       {
         key: 'brandingUpdated',

@@ -592,6 +592,9 @@
           "title": "Abgelaufener Link-Zugriffsversuch",
           "description": "Wenn jemand versucht, einen abgelaufenen Freigabelink zu verwenden"
         }
+      },
+      "events": {
+        "saved": "[EN] {{notification}} notification preference saved"
       }
     },
     "events": {},

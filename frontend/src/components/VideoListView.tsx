@@ -5,33 +5,51 @@
 
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { API_URL } from '../config';
+import { API_URL, SITE_URL } from '../config';
 import { Photo } from '../types/photo';
 import VideoPlayer from './ContentModal/VideoPlayer';
 import ImageCanvas from './ContentModal/ImageCanvas';
 import { ShareIcon, PlayIcon } from './icons';
 import LinkifiedText from './LinkifiedText';
 import VideoShareModal from './AdminPortal/VideoShareModal';
+import { error as logError } from '../utils/logger';
 import './VideoListView.css';
 
 interface VideoListViewProps {
   videos: Photo[];
   album: string;
   secretKey?: string; // For share link access
+  albumPublished?: boolean; // Whether album is published or not
 }
 
-const VideoListView: React.FC<VideoListViewProps> = ({ videos, album, secretKey }) => {
+const VideoListView: React.FC<VideoListViewProps> = ({ videos, album, secretKey, albumPublished = true }) => {
   const { t } = useTranslation();
   const [shareModalVideo, setShareModalVideo] = useState<Photo | null>(null);
   const [playingVideoId, setPlayingVideoId] = useState<string | null>(null);
   const [thumbnailLoadedMap, setThumbnailLoadedMap] = useState<Record<string, boolean>>({});
   const [modalImageLoadedMap, setModalImageLoadedMap] = useState<Record<string, boolean>>({});
   const [containerWidths, setContainerWidths] = useState<Record<string, number>>({});
+  const [copiedVideoId, setCopiedVideoId] = useState<string | null>(null);
 
   const imageQueryString = secretKey ? `?key=${secretKey}` : '';
 
-  const handleShareClick = (video: Photo) => {
-    setShareModalVideo(video);
+  const handleShareClick = async (video: Photo) => {
+    const filename = video.id.split('/').pop() || video.id;
+    
+    // If album is published, just copy the public link directly
+    if (albumPublished) {
+      try {
+        const publicUrl = `${SITE_URL}/album/${encodeURIComponent(album)}?video=${encodeURIComponent(filename)}`;
+        await navigator.clipboard.writeText(publicUrl);
+        setCopiedVideoId(video.id);
+        setTimeout(() => setCopiedVideoId(null), 2000);
+      } catch (err) {
+        logError('Failed to copy video link:', err);
+      }
+    } else {
+      // If album is unpublished, open share modal to generate a share link
+      setShareModalVideo(video);
+    }
   };
 
   const handlePlayClick = (videoId: string) => {
@@ -172,13 +190,13 @@ const VideoListView: React.FC<VideoListViewProps> = ({ videos, album, secretKey 
               <div className="video-header">
                 <h2 className="video-title">{video.title}</h2>
                 <button
-                  className="video-share-button"
+                  className={`video-share-button ${copiedVideoId === video.id ? 'copied' : ''}`}
                   onClick={() => handleShareClick(video)}
-                  title={t('videoList.shareVideo')}
+                  title={copiedVideoId === video.id ? t('photo.copied') : t('videoList.shareVideo')}
                 >
                   <ShareIcon width={20} height={20} />
                   <span className="video-share-text">
-                    {t('videoList.share')}
+                    {copiedVideoId === video.id ? t('photo.copied') : t('videoList.share')}
                   </span>
                 </button>
               </div>

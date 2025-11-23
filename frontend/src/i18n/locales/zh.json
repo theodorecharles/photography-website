@@ -592,6 +592,9 @@
           "title": "过期链接访问尝试",
           "description": "当有人尝试使用过期的分享链接"
         }
+      },
+      "events": {
+        "saved": "[EN] {{notification}} notification preference saved"
       }
     },
     "events": {},

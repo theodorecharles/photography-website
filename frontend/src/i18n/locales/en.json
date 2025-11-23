@@ -498,6 +498,9 @@
       "resetToDefaults": "Reset to Defaults",
       "enableAll": "Enable All",
       "disableAll": "Disable All",
+      "events": {
+        "saved": "{{notification}} notification preference saved"
+      },
       "categories": {
         "security": {
           "title": "Security & Authentication",
@@ -555,7 +558,7 @@
         },
         "failedLoginAttempts": {
           "title": "Failed Login Attempts",
-          "description": "When multiple failed login attempts are detected"
+          "description": "When a failed login attempt occurs"
         },
         "suspiciousActivity": {
           "title": "Suspicious Activity",

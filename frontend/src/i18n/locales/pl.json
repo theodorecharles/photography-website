@@ -592,6 +592,9 @@
           "title": "Próba dostępu do wygasłego linku",
           "description": "Kiedy ktoś próbuje użyć wygasłego linku udostępniania"
         }
+      },
+      "events": {
+        "saved": "[EN] {{notification}} notification preference saved"
       }
     },
     "events": {},

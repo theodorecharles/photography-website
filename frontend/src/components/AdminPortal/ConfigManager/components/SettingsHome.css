@@ -40,11 +40,14 @@
   display: inline-block;
 }
 
-.settings-card:hover .settings-card-icon {
-  background: #55ff682e;
-  border-color: rgba(74, 222, 128, 0.3);
-  transform: scale(1.05);
-  box-shadow: 0px 0px 25px rgba(129, 255, 111, 0.13);
+/* Only apply hover effects on devices that support hover (not touch devices) */
+@media (hover: hover) {
+  .settings-card:hover .settings-card-icon {
+    background: #55ff682e;
+    border-color: rgba(74, 222, 128, 0.3);
+    transform: scale(1.05);
+    box-shadow: 0px 0px 25px rgba(129, 255, 111, 0.13);
+  }
 }
 
 .settings-card:active .settings-card-icon {
@@ -78,14 +81,17 @@
   opacity: 0.9;
 }
 
-.settings-card:hover .settings-card-icon.needs-config {
-  background: rgba(245, 158, 11, 0.15);
-  border-color: rgba(245, 158, 11, 0.4);
-  box-shadow: 0px 0px 25px rgba(245, 158, 11, 0.2);
-}
+/* Only apply hover effects on devices that support hover (not touch devices) */
+@media (hover: hover) {
+  .settings-card:hover .settings-card-icon.needs-config {
+    background: rgba(245, 158, 11, 0.15);
+    border-color: rgba(245, 158, 11, 0.4);
+    box-shadow: 0px 0px 25px rgba(245, 158, 11, 0.2);
+  }
 
-.settings-card:hover .settings-card-icon.needs-config > svg {
-  opacity: 1;
+  .settings-card:hover .settings-card-icon.needs-config > svg {
+    opacity: 1;
+  }
 }
 
 .settings-card-badge {
@@ -116,9 +122,12 @@
   transition: all 0.2s ease;
 }
 
-.settings-card:hover .settings-card-title {
-  color: #fff;
-  transform: scale(1.05);
+/* Only apply hover effects on devices that support hover (not touch devices) */
+@media (hover: hover) {
+  .settings-card:hover .settings-card-title {
+    color: #fff;
+    transform: scale(1.05);
+  }
 }
 
 /* Responsive adjustments */

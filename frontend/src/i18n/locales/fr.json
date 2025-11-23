@@ -592,6 +592,9 @@
           "title": "Tentative d'accès à un lien expiré",
           "description": "Lorsqu'une personne essaie d'utiliser un lien de partage expiré"
         }
+      },
+      "events": {
+        "saved": "[EN] {{notification}} notification preference saved"
       }
     },
     "events": {},

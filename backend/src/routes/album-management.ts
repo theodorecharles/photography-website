@@ -669,11 +669,26 @@ router.delete("/:album", requireManager, async (req: Request, res: Response): Pr
       }
     });
 
+    // Cancel share link expiry timers before deleting (cascade delete will remove share links)
+    try {
+      const { getShareLinksForAlbum } = await import('../database.js');
+      const { cancelShareLinkExpiryTimer } = await import('../services/share-link-expiry-tracker.js');
+      const existingLinks = getShareLinksForAlbum(sanitizedAlbum);
+      for (const link of existingLinks) {
+        cancelShareLinkExpiryTimer(link.id);
+      }
+      if (existingLinks.length > 0) {
+        info(`[AlbumManagement] Cancelled ${existingLinks.length} share link expiry timer(s)`);
+      }
+    } catch (err) {
+      error('[AlbumManagement] Failed to cancel share link timers:', err);
+    }
+
     // Delete all metadata for this album from database
     const deletedCount = deleteAlbumMetadata(sanitizedAlbum);
     info(`[AlbumManagement] Deleted ${deletedCount} metadata entries for album: ${sanitizedAlbum}`);
 
-    // Delete album state from database
+    // Delete album state from database (cascade delete will also remove share_links)
     const albumDeleted = deleteAlbumState(sanitizedAlbum);
     if (albumDeleted) {
       info(`[AlbumManagement] Deleted album state for: ${sanitizedAlbum}`);

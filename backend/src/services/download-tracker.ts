@@ -57,7 +57,12 @@ async function notifyDownload(album: string, filename: string): Promise<void> {
         title,
         body,
         tag: 'photo-downloaded',
-        requireInteraction: false
+        requireInteraction: false,
+        data: {
+          type: 'photo-download',
+          album,
+          filename
+        }
       }, 'photoDownloaded');
     }
 

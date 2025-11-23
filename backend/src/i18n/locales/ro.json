@@ -78,7 +78,6 @@
       "folderUnpublishedTitle": "Dosar Nepublicat",
       "folderUnpublishedBody": "{{unpublishedBy}} a nepublicat dosarul {{folderName}} ({{albumCount}} albume: {{albumNames}})",
       "folderDeletedTitle": "Dosar Șters",
-      "folderDeletedBody": "{{deletedBy}} a șters dosarul {{folderName}} ({{albumCount}} albume: {{albumNames}})",
       "homepageUpdatedTitle": "Pagina Principală Actualizată",
       "homepageUpdatedBody": "{{updatedBy}} {{action}} {{albumName}} {{preposition}} pagina principală",
       "versionUpdateTitle": "Galleria actualizată",
@@ -88,7 +87,10 @@
       "albumViewMilestoneTitle": "🎉 Prag atins!",
       "albumViewMilestoneBody": "{{albumName}} a atins {{milestone}} vizualizări!",
       "shareLinkExpiredAccessedTitle": "Încercare de acces cu link expirat",
-      "shareLinkExpiredAccessedBody": "Cineva a încercat să acceseze {{albumName}} cu un link expirat"
+      "shareLinkExpiredAccessedBody": "Cineva a încercat să acceseze {{albumName}} cu un link expirat",
+      "folderDeletedBodyEmpty": "[EN] {{deletedBy}} deleted empty folder {{folderName}}",
+      "folderDeletedBodyWithDeleted": "[EN] {{deletedBy}} deleted folder {{folderName}} and {{albumCount}} albums: {{albumNames}}",
+      "folderDeletedBodyWithReleased": "[EN] {{deletedBy}} deleted folder {{folderName}} and released {{albumCount}} albums to root: {{albumNames}}"
     }
   },
   "email": {

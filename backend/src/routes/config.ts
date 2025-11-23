@@ -206,7 +206,6 @@ router.put("/", requireAdmin, express.json(), async (req, res) => {
 
     // Detect which settings changed for specific notifications
     const smtpChanged = JSON.stringify(currentConfig.email) !== JSON.stringify(updatedConfig.email);
-    const openaiChanged = currentConfig.openAI?.apiKey !== updatedConfig.openAI?.apiKey;
     const brandingChanged = JSON.stringify(currentConfig.branding) !== JSON.stringify(updatedConfig.branding);
 
     if (smtpChanged) {
@@ -219,18 +218,6 @@ router.put("/", requireAdmin, express.json(), async (req, res) => {
           updatedBy: (req.user as any).name || (req.user as any).email
         }
       ).catch(err => error('[Config] Failed to send SMTP change notification:', err));
-    }
-
-    if (openaiChanged) {
-      await notifyAllAdmins(
-        'notifications.backend.openaiApiKeyUpdatedTitle',
-        'notifications.backend.openaiApiKeyUpdatedBody',
-        'openai-api-key-updated',
-        'openaiApiKeyUpdated',
-        {
-          updatedBy: (req.user as any).name || (req.user as any).email
-        }
-      ).catch(err => error('[Config] Failed to send OpenAI change notification:', err));
     }
 
     if (brandingChanged) {
@@ -246,14 +233,46 @@ router.put("/", requireAdmin, express.json(), async (req, res) => {
     }
 
     // General config update notification if nothing specific matched
-    if (!smtpChanged && !openaiChanged && !brandingChanged) {
+    if (!smtpChanged && !brandingChanged) {
+      // Detect which specific settings changed
+      const changedSettings: string[] = [];
+      
+      // Check major config sections
+      if (JSON.stringify(currentConfig.pushNotifications) !== JSON.stringify(updatedConfig.pushNotifications)) {
+        changedSettings.push('Push Notifications');
+      }
+      if (JSON.stringify(currentConfig.openAI) !== JSON.stringify(updatedConfig.openAI)) {
+        changedSettings.push('OpenAI API');
+      }
+      if (JSON.stringify(currentConfig.environment) !== JSON.stringify(updatedConfig.environment)) {
+        changedSettings.push('Environment');
+      }
+      if (JSON.stringify(currentConfig.analytics) !== JSON.stringify(updatedConfig.analytics)) {
+        changedSettings.push('Analytics');
+      }
+      if (JSON.stringify(currentConfig.imageOptimization) !== JSON.stringify(updatedConfig.imageOptimization)) {
+        changedSettings.push('Image Optimization');
+      }
+      if (JSON.stringify(currentConfig.videoOptimization) !== JSON.stringify(updatedConfig.videoOptimization)) {
+        changedSettings.push('Video Optimization');
+      }
+      if (JSON.stringify(currentConfig.notificationPreferences) !== JSON.stringify(updatedConfig.notificationPreferences)) {
+        changedSettings.push('Notification Preferences');
+      }
+      
+      // Build descriptive message
+      const settingsDescription = changedSettings.length > 0 
+        ? changedSettings.join(', ')
+        : 'system configuration';
+      
       await notifyAllAdmins(
         'notifications.backend.configUpdatedTitle',
         'notifications.backend.configUpdatedBody',
         'config-updated',
         'configUpdated',
         {
-          updatedBy: (req.user as any).name || (req.user as any).email
+          updatedBy: (req.user as any).name || (req.user as any).email,
+          settings: settingsDescription
         }
       ).catch(err => error('[Config] Failed to send config update notification:', err));
     }

@@ -592,6 +592,9 @@
           "title": "Pagsubok sa Pag-access ng Nag-expire na Link",
           "description": "Kapag may nagtangkang gumamit ng nag-expire na link ng pagbabahagi"
         }
+      },
+      "events": {
+        "saved": "[EN] {{notification}} notification preference saved"
       }
     },
     "events": {},

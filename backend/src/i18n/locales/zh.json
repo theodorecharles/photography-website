@@ -78,7 +78,6 @@
       "folderUnpublishedTitle": "文件夹未发布",
       "folderUnpublishedBody": "{{unpublishedBy}} 未发布文件夹 {{folderName}} ({{albumCount}} 张专辑: {{albumNames}})",
       "folderDeletedTitle": "文件夹已删除",
-      "folderDeletedBody": "{{deletedBy}} 删除了文件夹 {{folderName}} ({{albumCount}} 张专辑: {{albumNames}})",
       "homepageUpdatedTitle": "主页已更新",
       "homepageUpdatedBody": "{{updatedBy}} {{action}} {{albumName}} {{preposition}} 主页",
       "versionUpdateTitle": "Galleria 已更新",
@@ -88,7 +87,10 @@
       "albumViewMilestoneTitle": "🎉 里程碑达成！",
       "albumViewMilestoneBody": "{{albumName}} 达到 {{milestone}} 次浏览！",
       "shareLinkExpiredAccessedTitle": "过期链接访问尝试",
-      "shareLinkExpiredAccessedBody": "有人尝试使用过期链接访问{{albumName}}"
+      "shareLinkExpiredAccessedBody": "有人尝试使用过期链接访问{{albumName}}",
+      "folderDeletedBodyEmpty": "[EN] {{deletedBy}} deleted empty folder {{folderName}}",
+      "folderDeletedBodyWithDeleted": "[EN] {{deletedBy}} deleted folder {{folderName}} and {{albumCount}} albums: {{albumNames}}",
+      "folderDeletedBodyWithReleased": "[EN] {{deletedBy}} deleted folder {{folderName}} and released {{albumCount}} albums to root: {{albumNames}}"
     }
   },
   "email": {

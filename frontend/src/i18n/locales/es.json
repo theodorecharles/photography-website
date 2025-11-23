@@ -592,6 +592,9 @@
           "title": "Intento de acceso a enlace caducado",
           "description": "Cuando alguien intenta usar un enlace compartido caducado"
         }
+      },
+      "events": {
+        "saved": "[EN] {{notification}} notification preference saved"
       }
     },
     "events": {},

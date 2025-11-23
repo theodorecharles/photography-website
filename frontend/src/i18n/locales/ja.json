@@ -592,6 +592,9 @@
           "title": "期限切れリンクのアクセス試行",
           "description": "誰かが期限切れの共有リンクを使用しようとしたとき"
         }
+      },
+      "events": {
+        "saved": "[EN] {{notification}} notification preference saved"
       }
     },
     "events": {},

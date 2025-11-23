@@ -78,7 +78,6 @@
       "folderUnpublishedTitle": "Mappe Ikke Publisert",
       "folderUnpublishedBody": "{{unpublishedBy}} upublisert mappe {{folderName}} ({{albumCount}} album: {{albumNames}})",
       "folderDeletedTitle": "Mappe Slettet",
-      "folderDeletedBody": "{{deletedBy}} slettet mappe {{folderName}} ({{albumCount}} album: {{albumNames}})",
       "homepageUpdatedTitle": "Hjemmeside Oppdatert",
       "homepageUpdatedBody": "{{updatedBy}} {{action}} {{albumName}} {{preposition}} hjemmeside",
       "versionUpdateTitle": "Galleria oppdatert",
@@ -88,7 +87,10 @@
       "albumViewMilestoneTitle": "🎉 Milepæl nådd!",
       "albumViewMilestoneBody": "{{albumName}} nådde {{milestone}} visninger!",
       "shareLinkExpiredAccessedTitle": "Forsøk på tilgang med utløpt lenke",
-      "shareLinkExpiredAccessedBody": "Noen prøvde å få tilgang til {{albumName}} med en utløpt lenke"
+      "shareLinkExpiredAccessedBody": "Noen prøvde å få tilgang til {{albumName}} med en utløpt lenke",
+      "folderDeletedBodyEmpty": "[EN] {{deletedBy}} deleted empty folder {{folderName}}",
+      "folderDeletedBodyWithDeleted": "[EN] {{deletedBy}} deleted folder {{folderName}} and {{albumCount}} albums: {{albumNames}}",
+      "folderDeletedBodyWithReleased": "[EN] {{deletedBy}} deleted folder {{folderName}} and released {{albumCount}} albums to root: {{albumNames}}"
     }
   },
   "email": {

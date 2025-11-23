@@ -78,7 +78,6 @@
       "folderUnpublishedTitle": "Mapp opublicerad",
       "folderUnpublishedBody": "{{unpublishedBy}} opublicerad mapp {{folderName}} ({{albumCount}} album: {{albumNames}})",
       "folderDeletedTitle": "Mapp raderad",
-      "folderDeletedBody": "{{deletedBy}} raderade mapp {{folderName}} ({{albumCount}} album: {{albumNames}})",
       "homepageUpdatedTitle": "Startsida uppdaterad",
       "homepageUpdatedBody": "{{updatedBy}} {{action}} {{albumName}} {{preposition}} startsida",
       "versionUpdateTitle": "Galleria uppdaterad",
@@ -88,7 +87,10 @@
       "albumViewMilestoneTitle": "🎉 Milstolpe nådd!",
       "albumViewMilestoneBody": "{{albumName}} nådde {{milestone}} visningar!",
       "shareLinkExpiredAccessedTitle": "Försök att komma åt en utgången länk",
-      "shareLinkExpiredAccessedBody": "Någon försökte komma åt {{albumName}} med en utgången länk"
+      "shareLinkExpiredAccessedBody": "Någon försökte komma åt {{albumName}} med en utgången länk",
+      "folderDeletedBodyEmpty": "[EN] {{deletedBy}} deleted empty folder {{folderName}}",
+      "folderDeletedBodyWithDeleted": "[EN] {{deletedBy}} deleted folder {{folderName}} and {{albumCount}} albums: {{albumNames}}",
+      "folderDeletedBodyWithReleased": "[EN] {{deletedBy}} deleted folder {{folderName}} and released {{albumCount}} albums to root: {{albumNames}}"
     }
   },
   "email": {

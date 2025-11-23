@@ -592,6 +592,9 @@
           "title": "Försök att använda en utgången länk",
           "description": "När någon försöker använda en utgången delningslänk"
         }
+      },
+      "events": {
+        "saved": "[EN] {{notification}} notification preference saved"
       }
     },
     "events": {},

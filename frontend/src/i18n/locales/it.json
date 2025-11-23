@@ -592,6 +592,9 @@
           "title": "Tentativo di accesso con link scaduto",
           "description": "Quando qualcuno tenta di utilizzare un link di condivisione scaduto"
         }
+      },
+      "events": {
+        "saved": "[EN] {{notification}} notification preference saved"
       }
     },
     "events": {},

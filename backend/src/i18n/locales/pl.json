@@ -78,7 +78,6 @@
       "folderUnpublishedTitle": "Folder nieopublikowany",
       "folderUnpublishedBody": "{{unpublishedBy}} nieopublikował folderu {{folderName}} ({{albumCount}} albumy: {{albumNames}})",
       "folderDeletedTitle": "Folder usunięty",
-      "folderDeletedBody": "{{deletedBy}} usunął folder {{folderName}} ({{albumCount}} albumy: {{albumNames}})",
       "homepageUpdatedTitle": "Strona główna zaktualizowana",
       "homepageUpdatedBody": "{{updatedBy}} {{action}} {{albumName}} {{preposition}} strony głównej",
       "versionUpdateTitle": "Galleria zaktualizowana",
@@ -88,7 +87,10 @@
       "albumViewMilestoneTitle": "🎉 Osiągnięto kamień milowy!",
       "albumViewMilestoneBody": "{{albumName}} osiągnął {{milestone}} wyświetleń!",
       "shareLinkExpiredAccessedTitle": "Próba dostępu do wygasłego linku",
-      "shareLinkExpiredAccessedBody": "Ktoś próbował uzyskać dostęp do {{albumName}} za pomocą wygasłego linku"
+      "shareLinkExpiredAccessedBody": "Ktoś próbował uzyskać dostęp do {{albumName}} za pomocą wygasłego linku",
+      "folderDeletedBodyEmpty": "[EN] {{deletedBy}} deleted empty folder {{folderName}}",
+      "folderDeletedBodyWithDeleted": "[EN] {{deletedBy}} deleted folder {{folderName}} and {{albumCount}} albums: {{albumNames}}",
+      "folderDeletedBodyWithReleased": "[EN] {{deletedBy}} deleted folder {{folderName}} and released {{albumCount}} albums to root: {{albumNames}}"
     }
   },
   "email": {

@@ -3,7 +3,7 @@
  * Displays an album accessed via a share link
  */
 
-import { useEffect, useState, lazy, Suspense } from 'react';
+import { useEffect, useState, useRef, lazy, Suspense } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import ContentGrid from './ContentGrid';
@@ -60,14 +60,26 @@ export default function SharedAlbum() {
   const [avatarCacheBust, setAvatarCacheBust] = useState<number>(Date.now());
   const [albums, setAlbums] = useState<string[]>([]);
   const [externalLinks, setExternalLinks] = useState<ExternalLink[]>([]);
+  
+  // Ref to prevent duplicate API calls in React StrictMode (development)
+  const hasCalledApi = useRef(false);
 
   useEffect(() => {
+    // Reset the ref when secretKey changes
+    hasCalledApi.current = false;
+    
     const validateShareLink = async () => {
       if (!secretKey) {
         setError('Invalid share link');
         setLoading(false);
         return;
       }
+
+      // Prevent duplicate API calls in React StrictMode
+      if (hasCalledApi.current) {
+        return;
+      }
+      hasCalledApi.current = true;
 
       try {
         // Load data in parallel

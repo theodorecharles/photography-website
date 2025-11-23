@@ -592,6 +592,9 @@
           "title": "만료된 링크 접근 시도",
           "description": "누군가 만료된 공유 링크를 사용하려고 할 때"
         }
+      },
+      "events": {
+        "saved": "[EN] {{notification}} notification preference saved"
       }
     },
     "events": {},

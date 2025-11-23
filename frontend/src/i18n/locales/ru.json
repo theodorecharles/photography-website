@@ -592,6 +592,9 @@
           "title": "Попытка доступа по истекшей ссылке",
           "description": "Когда кто-то пытается использовать истекшую ссылку для совместного доступа"
         }
+      },
+      "events": {
+        "saved": "[EN] {{notification}} notification preference saved"
       }
     },
     "events": {},

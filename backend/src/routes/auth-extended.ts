@@ -98,12 +98,7 @@ function getUserIdFromRequest(req: Request): number | null {
 // Store temporary challenges in memory (in production, use Redis or session store)
 const challenges = new Map<string, { challenge: string; userId?: number; user?: User; expires: number }>();
 
-// Track failed login attempts
-const failedLoginAttempts = new Map<string, { count: number; firstAttempt: number; notified: boolean }>();
-const FAILED_LOGIN_THRESHOLD = 5; // Send notification after 5 failed attempts
-const FAILED_LOGIN_WINDOW = 15 * 60 * 1000; // 15 minutes
-
-// Clean up expired challenges and failed login attempts every 5 minutes
+// Clean up expired challenges every 5 minutes
 setInterval(() => {
   const now = Date.now();
   
@@ -113,58 +108,69 @@ setInterval(() => {
       challenges.delete(key);
     }
   }
-  
-  // Clean old failed login attempts
-  for (const [email, data] of failedLoginAttempts.entries()) {
-    if (now - data.firstAttempt > FAILED_LOGIN_WINDOW) {
-      failedLoginAttempts.delete(email);
-    }
-  }
 }, 5 * 60 * 1000);
 
 /**
- * Track failed login attempt and send notification if threshold exceeded
+ * Get location from IP address using GeoIP
  */
-async function trackFailedLogin(email: string): Promise<void> {
-  const now = Date.now();
-  const existing = failedLoginAttempts.get(email);
-  
-  if (!existing || now - existing.firstAttempt > FAILED_LOGIN_WINDOW) {
-    // New window
-    failedLoginAttempts.set(email, { count: 1, firstAttempt: now, notified: false });
-    return;
-  }
-  
-  // Increment count
-  existing.count++;
-  
-  // Send notification if threshold reached and not already notified
-  if (existing.count >= FAILED_LOGIN_THRESHOLD && !existing.notified) {
-    existing.notified = true;
+async function getLocationFromIP(ip: string): Promise<string> {
+  try {
+    // Try to import maxmind module
+    const maxmind = await import('@maxmind/geoip2-node');
+    const path = await import('path');
+    const fs = await import('fs');
+    const { fileURLToPath } = await import('url');
     
-    try {
-      await notifyAllAdmins(
-        'notifications.backend.failedLoginAttemptsTitle',
-        'notifications.backend.failedLoginAttemptsBody',
-        'failed-login-attempts',
-        'failedLoginAttempts',
-        {
-          email,
-          attemptCount: existing.count
-        }
-      );
-      warn(`[Auth] ${existing.count} failed login attempts for ${email} - admins notified`);
-    } catch (err) {
-      error('[Auth] Failed to send failed login notification:', err);
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = path.dirname(__filename);
+    const dbPath = path.join(__dirname, '..', '..', 'data', 'GeoLite2-City.mmdb');
+    
+    // Check if database exists
+    if (!fs.existsSync(dbPath)) {
+      info('[Auth] GeoIP database not found at:', dbPath);
+      return '';
     }
+    
+    const reader = await maxmind.Reader.open(dbPath);
+    const response = reader.city(ip);
+    
+    if (response && response.city && response.country) {
+      return `${response.city.names?.en || 'Unknown City'}, ${response.country.names?.en || 'Unknown Country'}`;
+    } else if (response && response.country) {
+      return response.country.names?.en || 'Unknown';
+    }
+    
+    return '';
+  } catch (err) {
+    // GeoIP is optional - don't fail if not available
+    verbose('[Auth] GeoIP lookup failed (this is OK if not configured):', err);
+    return '';
   }
 }
 
 /**
- * Clear failed login attempts on successful login
+ * Track failed login attempt and send notification on EVERY attempt
  */
-function clearFailedLoginAttempts(email: string): void {
-  failedLoginAttempts.delete(email);
+async function trackFailedLogin(email: string, ipAddress: string): Promise<void> {
+  try {
+    // Get location from IP
+    const location = await getLocationFromIP(ipAddress);
+    
+    await notifyAllAdmins(
+      'notifications.backend.failedLoginAttemptsTitle',
+      'notifications.backend.failedLoginAttemptsBody',
+      'failed-login-attempts',
+      'failedLoginAttempts',
+      {
+        userEmail: email,
+        ipAddress,
+        location: location || 'Location unknown'
+      }
+    );
+    warn(`[Auth] Failed login attempt for ${email} from ${ipAddress}${location ? ` (${location})` : ''}`);
+  } catch (err) {
+    error('[Auth] Failed to send failed login notification:', err);
+  }
 }
 
 /**
@@ -173,6 +179,8 @@ function clearFailedLoginAttempts(email: string): void {
 router.post('/login', async (req: Request, res: Response) => {
   try {
     const { email, password, mfaToken } = req.body;
+    const ipAddress = req.ip || req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown';
+    const ipString = Array.isArray(ipAddress) ? ipAddress[0] : ipAddress;
 
     if (!email || !password) {
       return res.status(400).json({ error: 'Missing email or password' });
@@ -182,19 +190,19 @@ router.post('/login', async (req: Request, res: Response) => {
     const user = getUserByEmail(email);
 
     if (!user) {
-      await trackFailedLogin(email);
+      await trackFailedLogin(email, ipString);
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
     // Check if user is active
     if (!user.is_active) {
-      await trackFailedLogin(email);
+      await trackFailedLogin(email, ipString);
       return res.status(401).json({ error: 'Account is disabled' });
     }
 
     // Verify password
     if (!verifyPassword(user, password)) {
-      await trackFailedLogin(email);
+      await trackFailedLogin(email, ipString);
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
@@ -218,19 +226,16 @@ router.post('/login', async (req: Request, res: Response) => {
       }
 
       // Verify MFA token
-      const ipAddress = req.ip || 'unknown';
-      
       if (!user.totp_secret || !verifyTOTP(user.totp_secret, mfaToken)) {
         // Try backup code
         if (!verifyBackupCode(user, mfaToken)) {
-          await trackFailedLogin(email);
+          await trackFailedLogin(email, ipString);
           return res.status(401).json({ error: 'Invalid MFA token' });
         }
       }
     }
 
-    // Login successful - clear failed login attempts and create session
-    clearFailedLoginAttempts(email);
+    // Login successful - create session
     (req.session as any).userId = user.id;
     (req.session as any).user = {
       id: user.id,

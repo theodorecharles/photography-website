@@ -78,7 +78,6 @@
       "folderUnpublishedTitle": "Carpeta No Publicada",
       "folderUnpublishedBody": "{{unpublishedBy}} carpeta no publicada {{folderName}} ({{albumCount}} álbumes: {{albumNames}})",
       "folderDeletedTitle": "Carpeta Eliminada",
-      "folderDeletedBody": "{{deletedBy}} eliminó carpeta {{folderName}} ({{albumCount}} álbumes: {{albumNames}})",
       "homepageUpdatedTitle": "Página de Inicio Actualizada",
       "homepageUpdatedBody": "{{updatedBy}} {{action}} {{albumName}} {{preposition}} página de inicio",
       "versionUpdateTitle": "Galleria Actualizada",
@@ -88,7 +87,10 @@
       "albumViewMilestoneTitle": "🎉 ¡Hito alcanzado!",
       "albumViewMilestoneBody": "¡{{albumName}} alcanzó {{milestone}} vistas!",
       "shareLinkExpiredAccessedTitle": "Intento de acceso con enlace caducado",
-      "shareLinkExpiredAccessedBody": "Alguien intentó acceder a {{albumName}} con un enlace caducado"
+      "shareLinkExpiredAccessedBody": "Alguien intentó acceder a {{albumName}} con un enlace caducado",
+      "folderDeletedBodyEmpty": "[EN] {{deletedBy}} deleted empty folder {{folderName}}",
+      "folderDeletedBodyWithDeleted": "[EN] {{deletedBy}} deleted folder {{folderName}} and {{albumCount}} albums: {{albumNames}}",
+      "folderDeletedBodyWithReleased": "[EN] {{deletedBy}} deleted folder {{folderName}} and released {{albumCount}} albums to root: {{albumNames}}"
     }
   },
   "email": {

@@ -286,6 +286,16 @@ if [ -f "data/config.json" ]; then
     
     # Generate pre-rendered homepage HTML with all initial data baked in
     log "Generating pre-rendered homepage HTML..."
+    
+    # Source .env file to get domain configuration for HTML generation
+    if [ -f ".env" ]; then
+        # Export environment variables from .env file
+        set -a
+        source .env
+        set +a
+        log "Loaded environment variables from .env"
+    fi
+    
     if node scripts/generate-homepage-html.js; then
         log "Pre-rendered homepage HTML generated successfully"
     else

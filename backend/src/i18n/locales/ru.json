@@ -78,7 +78,6 @@
       "folderUnpublishedTitle": "Папка не опубликована",
       "folderUnpublishedBody": "{{unpublishedBy}} снял с публикации папку {{folderName}} ({{albumCount}} альбомов: {{albumNames}})",
       "folderDeletedTitle": "Папка удалена",
-      "folderDeletedBody": "{{deletedBy}} удалил папку {{folderName}} ({{albumCount}} альбомов: {{albumNames}})",
       "homepageUpdatedTitle": "Главная страница обновлена",
       "homepageUpdatedBody": "{{updatedBy}} {{action}} {{albumName}} {{preposition}} главной страницы",
       "versionUpdateTitle": "Галерея обновлена",
@@ -88,7 +87,10 @@
       "albumViewMilestoneTitle": "🎉 Достигнута веха!",
       "albumViewMilestoneBody": "{{albumName}} достиг {{milestone}} просмотров!",
       "shareLinkExpiredAccessedTitle": "Попытка доступа по истекшей ссылке",
-      "shareLinkExpiredAccessedBody": "Кто-то попытался получить доступ к {{albumName}} по истекшей ссылке"
+      "shareLinkExpiredAccessedBody": "Кто-то попытался получить доступ к {{albumName}} по истекшей ссылке",
+      "folderDeletedBodyEmpty": "[EN] {{deletedBy}} deleted empty folder {{folderName}}",
+      "folderDeletedBodyWithDeleted": "[EN] {{deletedBy}} deleted folder {{folderName}} and {{albumCount}} albums: {{albumNames}}",
+      "folderDeletedBodyWithReleased": "[EN] {{deletedBy}} deleted folder {{folderName}} and released {{albumCount}} albums to root: {{albumNames}}"
     }
   },
   "email": {

@@ -592,6 +592,9 @@
           "title": "Percobaan Akses Tautan Kedaluwarsa",
           "description": "Ketika seseorang mencoba menggunakan tautan berbagi yang kedaluwarsa"
         }
+      },
+      "events": {
+        "saved": "[EN] {{notification}} notification preference saved"
       }
     },
     "events": {},

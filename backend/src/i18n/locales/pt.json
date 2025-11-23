@@ -78,7 +78,6 @@
       "folderUnpublishedTitle": "Pasta Não Publicada",
       "folderUnpublishedBody": "{{unpublishedBy}} pasta não publicada {{folderName}} ({{albumCount}} álbuns: {{albumNames}})",
       "folderDeletedTitle": "Pasta Excluída",
-      "folderDeletedBody": "{{deletedBy}} excluiu pasta {{folderName}} ({{albumCount}} álbuns: {{albumNames}})",
       "homepageUpdatedTitle": "Página Inicial Atualizada",
       "homepageUpdatedBody": "{{updatedBy}} {{action}} {{albumName}} {{preposition}} página inicial",
       "versionUpdateTitle": "Galleria Atualizada",
@@ -88,7 +87,10 @@
       "albumViewMilestoneTitle": "🎉 Marco Alcançado!",
       "albumViewMilestoneBody": "{{albumName}} alcançou {{milestone}} visualizações!",
       "shareLinkExpiredAccessedTitle": "Tentativa de Acesso a Link Expirado",
-      "shareLinkExpiredAccessedBody": "Alguém tentou acessar {{albumName}} com um link expirado"
+      "shareLinkExpiredAccessedBody": "Alguém tentou acessar {{albumName}} com um link expirado",
+      "folderDeletedBodyEmpty": "[EN] {{deletedBy}} deleted empty folder {{folderName}}",
+      "folderDeletedBodyWithDeleted": "[EN] {{deletedBy}} deleted folder {{folderName}} and {{albumCount}} albums: {{albumNames}}",
+      "folderDeletedBodyWithReleased": "[EN] {{deletedBy}} deleted folder {{folderName}} and released {{albumCount}} albums to root: {{albumNames}}"
     }
   },
   "email": {

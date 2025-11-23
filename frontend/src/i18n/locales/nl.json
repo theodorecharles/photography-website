@@ -592,6 +592,9 @@
           "title": "Poging tot Toegang met Verlopen Link",
           "description": "Wanneer iemand probeert een verlopen deel-link te gebruiken"
         }
+      },
+      "events": {
+        "saved": "[EN] {{notification}} notification preference saved"
       }
     },
     "events": {},

@@ -134,13 +134,9 @@ function getExternalLinks(config) {
 /**
  * Replace runtime placeholders with current config values
  */
-function replaceRuntimePlaceholders(html, config) {
+function replaceRuntimePlaceholders(html, config, apiUrl, siteUrl) {
   const siteName = config.branding?.siteName || "Galleria";
   const avatarPath = config.branding?.avatarPath || "/photos/avatar.png";
-  const apiUrl = config.environment?.backend?.apiUrl || "http://localhost:3001";
-  const siteUrl = apiUrl.includes("localhost")
-    ? apiUrl.replace(":3001", ":3000")
-    : apiUrl.replace(/api(-dev)?\./, "www$1.");
 
   return html
     .replace(/__RUNTIME_SITE_NAME__/g, escapeHtml(siteName))
@@ -230,7 +226,18 @@ async function generateHomepageHtml() {
       );
 
     // Replace runtime placeholders
-    html = replaceRuntimePlaceholders(html, config);
+    html = replaceRuntimePlaceholders(html, config, apiUrl, siteUrl);
+
+    // Add cache busting to favicon and icon links
+    // This ensures browsers fetch updated icons when avatar changes
+    const cacheBuster = Date.now();
+    html = html
+      .replace(/href="\/favicon\.ico"/g, `href="/favicon.ico?v=${cacheBuster}"`)
+      .replace(/href="\/icon-192\.png"/g, `href="/icon-192.png?v=${cacheBuster}"`)
+      .replace(/href="\/icon-512\.png"/g, `href="/icon-512.png?v=${cacheBuster}"`)
+      .replace(/href="\/apple-touch-icon\.png"/g, `href="/apple-touch-icon.png?v=${cacheBuster}"`);
+    
+    success(`Added cache buster to favicon/icon links: v=${cacheBuster}`);
 
     // Build branding data
     const brandingData = {

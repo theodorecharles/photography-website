@@ -592,6 +592,9 @@
           "title": "Forsøk på tilgang til utløpt lenke",
           "description": "Når noen prøver å bruke en utløpt delelenke"
         }
+      },
+      "events": {
+        "saved": "[EN] {{notification}} notification preference saved"
       }
     },
     "events": {},
