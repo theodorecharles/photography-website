@@ -234,9 +234,13 @@ export async function sendNotificationToUser(
     } catch (err: any) {
       logError(`[PushNotifications] Failed to send notification:`, err);
       
-      // If subscription is invalid (410 Gone or 404 Not Found), remove it
-      if (err.statusCode === 410 || err.statusCode === 404) {
-        info(`[PushNotifications] Removing invalid subscription: ${subscription.endpoint.substring(0, 50)}...`);
+      // If subscription is invalid, remove it
+      // 410 Gone: Subscription expired
+      // 404 Not Found: Subscription doesn't exist
+      // 401 Unauthorized: VAPID keys changed (subscription created with old keys)
+      if (err.statusCode === 410 || err.statusCode === 404 || err.statusCode === 401) {
+        const reason = err.statusCode === 401 ? 'VAPID key mismatch' : 'subscription expired/invalid';
+        info(`[PushNotifications] Removing stale subscription (${reason}): ${subscription.endpoint.substring(0, 50)}...`);
         removeSubscription(subscription.endpoint);
       }
     }
