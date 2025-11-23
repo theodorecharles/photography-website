@@ -133,11 +133,10 @@ async function getLocationFromIP(ip: string): Promise<string> {
     const maxmind = await import('@maxmind/geoip2-node');
     const path = await import('path');
     const fs = await import('fs');
-    const { fileURLToPath } = await import('url');
     
-    const __filename = fileURLToPath(import.meta.url);
-    const __dirname = path.dirname(__filename);
-    const dbPath = path.join(__dirname, '..', '..', 'data', 'GeoLite2-City.mmdb');
+    // Use DATA_DIR from config instead of relative path resolution
+    const { DATA_DIR } = await import('../config.js');
+    const dbPath = path.join(DATA_DIR, 'GeoLite2-City.mmdb');
     
     // Check if database exists
     if (!fs.existsSync(dbPath)) {
