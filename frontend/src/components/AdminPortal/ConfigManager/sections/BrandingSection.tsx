@@ -687,12 +687,7 @@ const GeneralSection: React.FC<GeneralSectionProps> = ({
                   if (res.ok) {
                     setMessage({ type: 'success', text: t('general.animatedBackgroundSaved') });
                     setOriginalBranding(updatedBranding);
-                    // Blur active input to dismiss mobile keyboard before reload
-                    if (document.activeElement instanceof HTMLElement) {
-                      document.activeElement.blur();
-                    }
-                    // Reload to apply background changes
-                    await loadBranding();
+                    // Don't reload - state is already updated and background will apply on next navigation
                   } else {
                       const errorData = await res.json().catch(() => ({ error: t('common.unknownError') }));
                       setMessage({ type: 'error', text: errorData.error || t('general.failedToSaveSetting') });
