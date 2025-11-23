@@ -98,15 +98,22 @@ async function getAlbumViewCounts(): Promise<Map<string, number>> {
       ORDER BY view_count DESC
     `;
 
+    // Set wide time range for all-time query (last 10 years)
+    const endTime = Date.now() * 1000; // Convert to microseconds
+    const startTime = endTime - (10 * 365 * 24 * 60 * 60 * 1000 * 1000); // 10 years in microseconds
+
     const response = await fetch(queryEndpoint, {
       method: 'POST',
       headers: authHeaders,
       body: JSON.stringify({
         query: {
           sql,
+          start_time: startTime,
+          end_time: endTime,
+          from: 0,
+          size: 1000,
           sql_mode: 'full',
         },
-        size: 1000, // Get up to 1000 albums
       }),
     });
 
