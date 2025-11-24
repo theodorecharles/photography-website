@@ -32,3 +32,4 @@ export function useServiceWorkerNavigationReload() {
   }, [location.pathname]); // Trigger on navigation (pathname change)
 }
 
+
