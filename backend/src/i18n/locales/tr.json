@@ -78,7 +78,6 @@
       "folderUnpublishedTitle": "Klasör Yayınlanmadı",
       "folderUnpublishedBody": "{{unpublishedBy}} {{folderName}} klasörünü yayınlamadı ({{albumCount}} albümler: {{albumNames}})",
       "folderDeletedTitle": "Klasör Silindi",
-      "folderDeletedBody": "{{deletedBy}} {{folderName}} klasörünü sildi ({{albumCount}} albümler: {{albumNames}})",
       "homepageUpdatedTitle": "Ana Sayfa Güncellendi",
       "homepageUpdatedBody": "{{updatedBy}} {{albumName}} {{preposition}} ana sayfayı {{action}}",
       "versionUpdateTitle": "Galleria Güncellendi",
@@ -88,7 +87,12 @@
       "albumViewMilestoneTitle": "🎉 Dönüm Noktasına Ulaşıldı!",
       "albumViewMilestoneBody": "{{albumName}} {{milestone}} görüntülemeye ulaştı!",
       "shareLinkExpiredAccessedTitle": "Süresi Dolmuş Bağlantı Erişim Denemesi",
-      "shareLinkExpiredAccessedBody": "Birisi {{albumName}}'e süresi dolmuş bir bağlantı ile erişmeye çalıştı"
+      "shareLinkExpiredAccessedBody": "Birisi {{albumName}}'e süresi dolmuş bir bağlantı ile erişmeye çalıştı",
+      "folderDeletedBodyEmpty": "{{deletedBy}}, boş klasörü sildi {{folderName}}",
+      "folderDeletedBodyWithDeleted": "{{deletedBy}}, {{folderName}} klasörünü ve {{albumCount}} albümleri sildi: {{albumNames}}",
+      "folderDeletedBodyWithReleased": "{{deletedBy}}, {{folderName}} klasörünü sildi ve {{albumCount}} albümleri köke taşıdı: {{albumNames}}",
+      "shareLinkSharedTitle": "Paylaşım Bağlantısı Gönderildi",
+      "shareLinkSharedBody": "Birisi {{albumName}} bağlantısını sosyal medyada veya mesajlaşmada paylaştı"
     }
   },
   "email": {

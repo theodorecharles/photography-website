@@ -135,7 +135,7 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({
       setMessage({ type: "success", text: t('userManagement.mfaEnabledSuccessfully') });
       setMfaSetup(null);
       setMfaToken("");
-      loadCurrentUser();
+      await loadCurrentUser();
     } catch (err: any) {
       setMessage({ type: "error", text: err.message });
     } finally {
@@ -173,7 +173,7 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({
       if (!res.ok) throw new Error(t('profile.failedToDisableMfa'));
 
       setMessage({ type: "success", text: t('userManagement.mfaDisabledSuccessfully') });
-      loadCurrentUser();
+      await loadCurrentUser();
     } catch (err: any) {
       setMessage({ type: "error", text: err.message });
     } finally {
@@ -220,9 +220,9 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({
 
       const options = await optionsRes.json();
 
-      const credential = await navigator.credentials.create({
-        publicKey: options,
-      });
+      // Start WebAuthn registration
+      const { startRegistration } = await import("@simplewebauthn/browser");
+      const credential = await startRegistration(options);
 
       const verifyRes = await fetch(
         `${API_URL}/api/auth-extended/passkey/register-verify`,
@@ -241,9 +241,11 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({
 
       setMessage({ type: "success", text: t('userManagement.passkeyRegisteredSuccessfully') });
       setPasskeyName("");
+      // Update passkey list in modal and user data for passkey count badge
       if (showPasskeys !== undefined) {
-        handleLoadPasskeys();
+        await handleLoadPasskeys();
       }
+      await loadCurrentUser();
     } catch (err: any) {
       if (err.name === "NotAllowedError") {
         setMessage({ type: "error", text: t('userManagement.passkeyRegistrationCancelled') });
@@ -272,9 +274,11 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({
       if (!res.ok) throw new Error(t('userManagement.failedToRemovePasskey'));
 
       setMessage({ type: "success", text: t('userManagement.passkeyRemovedSuccessfully') });
+      // Update passkey list in modal and user data for passkey count badge
       if (showPasskeys !== undefined) {
-        handleLoadPasskeys();
+        await handleLoadPasskeys();
       }
+      await loadCurrentUser();
     } catch (err) {
       setMessage({ type: "error", text: t('userManagement.failedToRemovePasskey') });
     } finally {

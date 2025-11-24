@@ -416,10 +416,13 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
   };
 
   const handleSendPasswordReset = async (userId: number) => {
+    const user = users.find(u => u.id === userId);
+    if (!user) return;
+    
     setConfirmModal({
       show: true,
       title: t('userManagement.sendPasswordReset'),
-      message: t('userManagement.sendPasswordResetConfirm'),
+      message: t('userManagement.sendPasswordResetConfirm', { email: user.email }),
       confirmText: t('userManagement.sendPasswordReset'),
       isDangerous: false,
       onConfirm: () => {

@@ -30,6 +30,41 @@ router.get('/', requireAdmin, (req, res) => {
     const preferences = getNotificationPreferences();
     info('[NotificationPreferences] Loading preferences:', JSON.stringify(preferences, null, 2));
     
+    // Auto-cleanup: Remove any invalid keys from config.json
+    try {
+      const configPath = path.join(DATA_DIR, 'config.json');
+      const configData = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+      
+      if (configData.notificationPreferences) {
+        const validKeys = Object.keys(DEFAULT_NOTIFICATION_PREFERENCES);
+        const savedKeys = Object.keys(configData.notificationPreferences);
+        const invalidKeys = savedKeys.filter(key => !validKeys.includes(key));
+        
+        if (invalidKeys.length > 0) {
+          info('[NotificationPreferences] Removing invalid keys from config:', invalidKeys.join(', '));
+          
+          // Filter out invalid keys
+          const cleanedPrefs: Record<string, boolean> = {};
+          for (const key of validKeys) {
+            if (key in configData.notificationPreferences) {
+              cleanedPrefs[key] = configData.notificationPreferences[key];
+            }
+          }
+          
+          configData.notificationPreferences = {
+            ...DEFAULT_NOTIFICATION_PREFERENCES,
+            ...cleanedPrefs
+          };
+          
+          fs.writeFileSync(configPath, JSON.stringify(configData, null, 2), 'utf8');
+          reloadConfig();
+        }
+      }
+    } catch (cleanupErr) {
+      // Non-critical - log but don't fail the request
+      logError('[NotificationPreferences] Failed to cleanup invalid keys:', cleanupErr);
+    }
+    
     res.json({
       success: true,
       preferences,

@@ -591,7 +591,14 @@
         "shareLinkExpiredAccessed": {
           "title": "Forsøk på tilgang til utløpt lenke",
           "description": "Når noen prøver å bruke en utløpt delelenke"
+        },
+        "shareLinkShared": {
+          "title": "Delingslenke postet",
+          "description": "Når noen deler en lenke på sosiale medier eller meldinger"
         }
+      },
+      "events": {
+        "saved": "{{notification}} varselpreferanse lagret"
       }
     },
     "events": {},
@@ -1459,7 +1466,9 @@
       "databaseBackupCompletedTitle": "Sikkerhetskopiering fullført",
       "databaseBackupCompletedBody": "Database-sikkerhetskopiering fullført med suksess",
       "shareLinkExpiredAccessedTitle": "Forsøk på tilgang til utløpt lenke",
-      "shareLinkExpiredAccessedBody": "Noen prøvde å bruke en utløpt delelenke"
+      "shareLinkExpiredAccessedBody": "Noen prøvde å bruke en utløpt delelenke",
+      "shareLinkSharedTitle": "Delingslenke postet",
+      "shareLinkSharedBody": "Noen delte en lenke på sosiale medier eller meldinger"
     },
     "events": {},
     "error": "En feil oppstod",

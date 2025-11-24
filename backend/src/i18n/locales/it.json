@@ -78,7 +78,6 @@
       "folderUnpublishedTitle": "Cartella Non Pubblicata",
       "folderUnpublishedBody": "{{unpublishedBy}} ha non pubblicato la cartella {{folderName}} ({{albumCount}} album: {{albumNames}})",
       "folderDeletedTitle": "Cartella Eliminata",
-      "folderDeletedBody": "{{deletedBy}} ha eliminato la cartella {{folderName}} ({{albumCount}} album: {{albumNames}})",
       "homepageUpdatedTitle": "Homepage Aggiornata",
       "homepageUpdatedBody": "{{updatedBy}} {{action}} {{albumName}} {{preposition}} homepage",
       "versionUpdateTitle": "Galleria Aggiornata",
@@ -88,7 +87,12 @@
       "albumViewMilestoneTitle": "🎉 Traguardo raggiunto!",
       "albumViewMilestoneBody": "{{albumName}} ha raggiunto {{milestone}} visualizzazioni!",
       "shareLinkExpiredAccessedTitle": "Tentativo di accesso con link scaduto",
-      "shareLinkExpiredAccessedBody": "Qualcuno ha tentato di accedere a {{albumName}} con un link scaduto"
+      "shareLinkExpiredAccessedBody": "Qualcuno ha tentato di accedere a {{albumName}} con un link scaduto",
+      "folderDeletedBodyEmpty": "{{deletedBy}} ha eliminato la cartella vuota {{folderName}}",
+      "folderDeletedBodyWithDeleted": "{{deletedBy}} ha eliminato la cartella {{folderName}} e {{albumCount}} album: {{albumNames}}",
+      "folderDeletedBodyWithReleased": "{{deletedBy}} ha eliminato la cartella {{folderName}} e rilasciato {{albumCount}} album alla radice: {{albumNames}}",
+      "shareLinkSharedTitle": "Link di condivisione pubblicato",
+      "shareLinkSharedBody": "Qualcuno ha condiviso il link {{albumName}} sui social media o messaggistica"
     }
   },
   "email": {

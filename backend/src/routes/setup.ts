@@ -10,6 +10,10 @@ import { fileURLToPath } from "url";
 import crypto from "crypto";
 import multer from "multer";
 import sharp from "sharp";
+import https from "https";
+import { createWriteStream } from "fs";
+import { pipeline } from "stream/promises";
+import { createGunzip } from "zlib";
 import { error, warn, info, debug, verbose } from '../utils/logger.js';
 
 const router = Router();
@@ -32,6 +36,106 @@ const upload = multer({
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+/**
+ * Download GeoIP database for location lookup
+ * Uses DB-IP's free database (no registration required)
+ */
+async function downloadGeoIPDatabase(dataDir: string): Promise<boolean> {
+  try {
+    const dbPath = path.join(dataDir, 'GeoLite2-City.mmdb');
+    
+    // Skip if already exists
+    if (fs.existsSync(dbPath)) {
+      info('[Setup] GeoIP database already exists, skipping download');
+      return true;
+    }
+    
+    info('[Setup] Downloading GeoIP database...');
+    
+    // Get current year and month for DB-IP URL
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    
+    // DB-IP free database URL (updated monthly)
+    const dbipUrl = `https://download.db-ip.com/free/dbip-city-lite-${year}-${month}.mmdb.gz`;
+    
+    return new Promise((resolve) => {
+      https.get(dbipUrl, (response) => {
+        if (response.statusCode === 302 || response.statusCode === 301) {
+          // Follow redirect
+          const redirectUrl = response.headers.location;
+          if (redirectUrl) {
+            info('[Setup] Following redirect to:', redirectUrl);
+            https.get(redirectUrl, (redirectResponse) => {
+              if (redirectResponse.statusCode === 200) {
+                const gunzip = createGunzip();
+                const fileStream = createWriteStream(dbPath);
+                
+                redirectResponse.pipe(gunzip).pipe(fileStream);
+                
+                fileStream.on('finish', () => {
+                  info('[Setup] GeoIP database downloaded successfully');
+                  resolve(true);
+                });
+                
+                fileStream.on('error', (err) => {
+                  error('[Setup] Failed to write GeoIP database:', err);
+                  // Clean up partial file
+                  if (fs.existsSync(dbPath)) {
+                    fs.unlinkSync(dbPath);
+                  }
+                  resolve(false);
+                });
+              } else {
+                warn('[Setup] Failed to download GeoIP database (redirect response):', redirectResponse.statusCode);
+                resolve(false);
+              }
+            }).on('error', (err) => {
+              warn('[Setup] Failed to download GeoIP database (redirect):', err);
+              resolve(false);
+            });
+          } else {
+            warn('[Setup] No redirect location provided');
+            resolve(false);
+          }
+        } else if (response.statusCode === 200) {
+          const gunzip = createGunzip();
+          const fileStream = createWriteStream(dbPath);
+          
+          response.pipe(gunzip).pipe(fileStream);
+          
+          fileStream.on('finish', () => {
+            info('[Setup] GeoIP database downloaded successfully');
+            resolve(true);
+          });
+          
+          fileStream.on('error', (err) => {
+            error('[Setup] Failed to write GeoIP database:', err);
+            // Clean up partial file
+            if (fs.existsSync(dbPath)) {
+              fs.unlinkSync(dbPath);
+            }
+            resolve(false);
+          });
+        } else {
+          warn('[Setup] Failed to download GeoIP database, status:', response.statusCode);
+          warn('[Setup] This is optional - location lookup will show "Location unknown"');
+          resolve(false);
+        }
+      }).on('error', (err) => {
+        warn('[Setup] Failed to download GeoIP database:', err);
+        warn('[Setup] This is optional - location lookup will show "Location unknown"');
+        resolve(false);
+      });
+    });
+  } catch (err) {
+    warn('[Setup] GeoIP database download failed:', err);
+    warn('[Setup] This is optional - location lookup will show "Location unknown"');
+    return false;
+  }
+}
 
 /**
  * Check if initial setup is complete
@@ -481,6 +585,18 @@ router.post(
       } catch (err) {
         error("  Failed to initialize Google OAuth:", err);
       }
+
+      // Download GeoIP database in the background (don't block setup completion)
+      info("\n🌍 Downloading GeoIP database for location lookup...");
+      downloadGeoIPDatabase(dataDir).then(success => {
+        if (success) {
+          info("  ✓ GeoIP database downloaded successfully");
+        } else {
+          info("  ⚠️ GeoIP database download failed (location lookup will show 'Location unknown')");
+        }
+      }).catch(err => {
+        warn("  GeoIP database download error:", err);
+      });
 
       // Only restart if Google OAuth is selected (needs OAuth strategy initialization)
       // Password auth doesn't need restart - config reloaded dynamically

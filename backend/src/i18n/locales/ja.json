@@ -78,7 +78,6 @@
       "folderUnpublishedTitle": "フォルダー未公開",
       "folderUnpublishedBody": "{{unpublishedBy}} フォルダーを未公開 {{folderName}} ({{albumCount}} アルバム: {{albumNames}})",
       "folderDeletedTitle": "フォルダー削除",
-      "folderDeletedBody": "{{deletedBy}} フォルダーを削除 {{folderName}} ({{albumCount}} アルバム: {{albumNames}})",
       "homepageUpdatedTitle": "ホームページ更新",
       "homepageUpdatedBody": "{{updatedBy}} {{action}} {{albumName}} {{preposition}} ホームページ",
       "versionUpdateTitle": "ギャレリアが更新されました",
@@ -88,7 +87,12 @@
       "albumViewMilestoneTitle": "🎉 マイルストーン達成！",
       "albumViewMilestoneBody": "{{albumName}} が {{milestone}} 回の閲覧数に達しました！",
       "shareLinkExpiredAccessedTitle": "期限切れリンクアクセス試行",
-      "shareLinkExpiredAccessedBody": "誰かが期限切れのリンクで{{albumName}}にアクセスしようとしました"
+      "shareLinkExpiredAccessedBody": "誰かが期限切れのリンクで{{albumName}}にアクセスしようとしました",
+      "folderDeletedBodyEmpty": "{{deletedBy}} が空のフォルダ {{folderName}} を削除しました",
+      "folderDeletedBodyWithDeleted": "{{deletedBy}} がフォルダ {{folderName}} と {{albumCount}} 個のアルバムを削除しました: {{albumNames}}",
+      "folderDeletedBodyWithReleased": "{{deletedBy}} がフォルダ {{folderName}} を削除し、{{albumCount}} 個のアルバムをルートに解放しました: {{albumNames}}",
+      "shareLinkSharedTitle": "共有リンクが投稿されました",
+      "shareLinkSharedBody": "誰かがソーシャルメディアやメッセージングで {{albumName}} のリンクを共有しました"
     }
   },
   "email": {

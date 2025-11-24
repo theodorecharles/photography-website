@@ -34,6 +34,7 @@ export interface NotificationPreferences {
   homepageUpdated: boolean;
   largePhotoUpload: boolean;
   shareLinkCreated: boolean;
+  shareLinkShared: boolean;
   shareLinkAccessed: boolean;
   shareLinkExpired: boolean;
   shareLinkExpiredAccessed: boolean;
@@ -43,7 +44,6 @@ export interface NotificationPreferences {
   // System & Configuration
   configUpdated: boolean;
   smtpSettingsChanged: boolean;
-  openaiApiKeyUpdated: boolean;
   brandingUpdated: boolean;
   lowDiskSpace: boolean;
   databaseBackupCompleted: boolean;
@@ -63,7 +63,7 @@ export const DEFAULT_NOTIFICATION_PREFERENCES: NotificationPreferences = {
   mfaDisabled: true,
   passwordChanged: true,
   adminPasswordReset: true,
-  failedLoginAttempts: true, // Security: 5+ failed attempts in 15 minutes
+  failedLoginAttempts: true, // Security: Every failed login attempt
   
   // Content Management - selective defaults
   albumCreated: true,
@@ -77,6 +77,7 @@ export const DEFAULT_NOTIFICATION_PREFERENCES: NotificationPreferences = {
   homepageUpdated: false, // Can be noisy
   largePhotoUpload: true, // 50+ photos in 5 minutes
   shareLinkCreated: true,
+  shareLinkShared: true, // Preview fetched by social media/messaging apps
   shareLinkAccessed: false, // Can be noisy
   shareLinkExpired: false, // Can be noisy
   shareLinkExpiredAccessed: true, // Someone tried to use expired link
@@ -86,7 +87,6 @@ export const DEFAULT_NOTIFICATION_PREFERENCES: NotificationPreferences = {
   // System & Configuration
   configUpdated: true,
   smtpSettingsChanged: true,
-  openaiApiKeyUpdated: true,
   brandingUpdated: false,
   lowDiskSpace: true, // Alerts when < 10% free space
   databaseBackupCompleted: true, // Manual or scheduled backups
@@ -107,10 +107,20 @@ export function getNotificationPreferences(): NotificationPreferences {
       return { ...DEFAULT_NOTIFICATION_PREFERENCES };
     }
     
+    // Filter out invalid keys (from old versions) to prevent validation errors
+    const validKeys = Object.keys(DEFAULT_NOTIFICATION_PREFERENCES);
+    const filteredPrefs: Record<string, boolean> = {};
+    
+    for (const key of validKeys) {
+      if (key in prefs) {
+        filteredPrefs[key] = prefs[key];
+      }
+    }
+    
     // Merge with defaults to ensure all keys exist
     return {
       ...DEFAULT_NOTIFICATION_PREFERENCES,
-      ...prefs
+      ...filteredPrefs
     };
   } catch (err) {
     warn('[NotificationPreferences] Error loading preferences, using defaults:', err);
@@ -287,6 +297,12 @@ export const NOTIFICATION_CATEGORIES: NotificationCategory[] = [
         icon: '🔗'
       },
       {
+        key: 'shareLinkShared',
+        titleKey: 'settings.notifications.types.shareLinkShared.title',
+        descriptionKey: 'settings.notifications.types.shareLinkShared.description',
+        icon: '📤'
+      },
+      {
         key: 'shareLinkAccessed',
         titleKey: 'settings.notifications.types.shareLinkAccessed.title',
         descriptionKey: 'settings.notifications.types.shareLinkAccessed.description',
@@ -334,12 +350,6 @@ export const NOTIFICATION_CATEGORIES: NotificationCategory[] = [
         titleKey: 'settings.notifications.types.smtpSettingsChanged.title',
         descriptionKey: 'settings.notifications.types.smtpSettingsChanged.description',
         icon: '📧'
-      },
-      {
-        key: 'openaiApiKeyUpdated',
-        titleKey: 'settings.notifications.types.openaiApiKeyUpdated.title',
-        descriptionKey: 'settings.notifications.types.openaiApiKeyUpdated.description',
-        icon: '🤖'
       },
       {
         key: 'brandingUpdated',

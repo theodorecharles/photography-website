@@ -591,7 +591,14 @@
         "shareLinkExpiredAccessed": {
           "title": "Poging tot Toegang met Verlopen Link",
           "description": "Wanneer iemand probeert een verlopen deel-link te gebruiken"
+        },
+        "shareLinkShared": {
+          "title": "Deellink Geplaatst",
+          "description": "Wanneer iemand een link deelt op sociale media of berichten"
         }
+      },
+      "events": {
+        "saved": "{{notification}} meldingsvoorkeur opgeslagen"
       }
     },
     "events": {},
@@ -1459,7 +1466,9 @@
       "databaseBackupCompletedTitle": "Back-up voltooid",
       "databaseBackupCompletedBody": "Databaseback-up succesvol voltooid",
       "shareLinkExpiredAccessedTitle": "Poging tot Toegang met Verlopen Link",
-      "shareLinkExpiredAccessedBody": "Iemand probeerde een verlopen deel-link te gebruiken"
+      "shareLinkExpiredAccessedBody": "Iemand probeerde een verlopen deel-link te gebruiken",
+      "shareLinkSharedTitle": "Deellink Geplaatst",
+      "shareLinkSharedBody": "Iemand deelde een link op sociale media of berichten"
     },
     "events": {},
     "error": "Er is een fout opgetreden",

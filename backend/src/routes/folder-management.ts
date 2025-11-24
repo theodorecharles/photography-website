@@ -192,10 +192,22 @@ router.delete("/:folder", requireManager, async (req: Request, res: Response): P
             }
           });
           
+          // Cancel share link expiry timers before deleting
+          try {
+            const { getShareLinksForAlbum } = await import('../database.js');
+            const { cancelShareLinkExpiryTimer } = await import('../services/share-link-expiry-tracker.js');
+            const existingLinks = getShareLinksForAlbum(album.name);
+            for (const link of existingLinks) {
+              cancelShareLinkExpiryTimer(link.id);
+            }
+          } catch (err) {
+            error(`[FolderManagement] Failed to cancel share link timers for ${album.name}:`, err);
+          }
+          
           // Delete all metadata for this album from database
           deleteAlbumMetadata(album.name);
           
-          // Delete album state from database
+          // Delete album state from database (cascade delete will also remove share_links)
           deleteAlbumState(album.name);
           
           info(`[FolderManagement] Deleted album: ${album.name}`);
@@ -218,16 +230,32 @@ router.delete("/:folder", requireManager, async (req: Request, res: Response): P
 
     // Send push notification to all admins
     const userName = (req.user as any).name || (req.user as any).email;
+    
+    // Determine the action taken
+    let action: string;
+    let bodyKey: string;
+    if (albumsInFolder.length === 0) {
+      action = 'empty';
+      bodyKey = 'notifications.backend.folderDeletedBodyEmpty';
+    } else if (deleteAlbums) {
+      action = 'deleted';
+      bodyKey = 'notifications.backend.folderDeletedBodyWithDeleted';
+    } else {
+      action = 'released';
+      bodyKey = 'notifications.backend.folderDeletedBodyWithReleased';
+    }
+    
     await notifyAllAdmins(
       'notifications.backend.folderDeletedTitle',
-      'notifications.backend.folderDeletedBody',
+      bodyKey,
       'folder-deleted',
       'folderDeleted',
       {
         folderName: sanitizedFolder,
         deletedBy: userName,
         albumCount: albumsInFolder.length,
-        albumNames
+        albumNames,
+        action
       }
     ).catch(err => error('[FolderManagement] Failed to send folder deletion notification:', err));
 

@@ -15,7 +15,6 @@ services:
       - FRONTEND_DOMAIN=${FRONTEND_DOMAIN:-http://localhost:3000}
       - BACKEND_DOMAIN=${BACKEND_DOMAIN:-http://localhost:3001}
       - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-}
-      - API_URL=${BACKEND_DOMAIN:-http://localhost:3001}
       - LOG_LEVEL=${LOG_LEVEL:-info}
     volumes:
       - ${DATA_DIR:-/Users/Ted/Desktop/galleria-data}:/data

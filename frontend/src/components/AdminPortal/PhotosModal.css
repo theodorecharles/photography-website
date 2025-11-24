@@ -603,30 +603,6 @@ label.photos-btn {
   display: flex; /* Shown on desktop in controls bar (> 740px) */
 }
 
-/* Mobile Responsive - 768px for modal sizing, 500px for controls layout */
-@media (max-width: 768px) {
-  .photos-modal {
-    top: 54px;
-    width: 100%;
-    max-width: 100%;
-    height: calc(100vh - 54px);
-  }
-
-  .photos-modal-title {
-    font-size: 1.25rem;
-  }
-
-  /* Add bottom padding to modal content to ensure reorder bar is visible above Safari UI */
-  .photos-modal-content {
-    padding-bottom: 180px; /* Space for reorder bar + Safari toolbar */
-  }
-
-  /* Position reorder bar with extra safe area for Safari */
-  .photos-reorder-bar {
-    padding-bottom: max(0.75rem, calc(0.75rem + env(safe-area-inset-bottom, 0px) + 60px));
-  }
-}
-
 /* Hide photo count on very narrow screens */
 @media (max-width: 500px) {
   .photos-count {

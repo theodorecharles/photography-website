@@ -591,7 +591,14 @@
         "shareLinkExpiredAccessed": {
           "title": "Nỗ lực Truy cập Liên kết Hết hạn",
           "description": "Khi ai đó cố gắng sử dụng liên kết chia sẻ đã hết hạn"
+        },
+        "shareLinkShared": {
+          "title": "Đã đăng liên kết chia sẻ",
+          "description": "Khi ai đó chia sẻ một liên kết trên mạng xã hội hoặc nhắn tin"
         }
+      },
+      "events": {
+        "saved": "Tùy chọn thông báo {{notification}} đã được lưu"
       }
     },
     "events": {},
@@ -1459,7 +1466,9 @@
       "databaseBackupCompletedTitle": "Sao lưu hoàn tất",
       "databaseBackupCompletedBody": "Sao lưu cơ sở dữ liệu hoàn tất thành công",
       "shareLinkExpiredAccessedTitle": "Cố gắng truy cập liên kết đã hết hạn",
-      "shareLinkExpiredAccessedBody": "Ai đó đã cố gắng sử dụng liên kết chia sẻ đã hết hạn"
+      "shareLinkExpiredAccessedBody": "Ai đó đã cố gắng sử dụng liên kết chia sẻ đã hết hạn",
+      "shareLinkSharedTitle": "Đã đăng liên kết chia sẻ",
+      "shareLinkSharedBody": "Ai đó đã chia sẻ một liên kết trên mạng xã hội hoặc nhắn tin"
     },
     "events": {},
     "error": "Đã xảy ra lỗi",

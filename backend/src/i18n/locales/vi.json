@@ -78,7 +78,6 @@
       "folderUnpublishedTitle": "Thư mục chưa xuất bản",
       "folderUnpublishedBody": "{{unpublishedBy}} chưa xuất bản thư mục {{folderName}} ({{albumCount}} album: {{albumNames}})",
       "folderDeletedTitle": "Thư mục đã bị xóa",
-      "folderDeletedBody": "{{deletedBy}} đã xóa thư mục {{folderName}} ({{albumCount}} album: {{albumNames}})",
       "homepageUpdatedTitle": "Trang chủ đã được cập nhật",
       "homepageUpdatedBody": "{{updatedBy}} {{action}} {{albumName}} {{preposition}} trang chủ",
       "versionUpdateTitle": "Galleria Đã Được Cập Nhật",
@@ -88,7 +87,12 @@
       "albumViewMilestoneTitle": "🎉 Đã đạt cột mốc!",
       "albumViewMilestoneBody": "{{albumName}} đã đạt {{milestone}} lượt xem!",
       "shareLinkExpiredAccessedTitle": "Nỗ Lực Truy Cập Liên Kết Hết Hạn",
-      "shareLinkExpiredAccessedBody": "Ai đó đã cố gắng truy cập {{albumName}} bằng một liên kết hết hạn"
+      "shareLinkExpiredAccessedBody": "Ai đó đã cố gắng truy cập {{albumName}} bằng một liên kết hết hạn",
+      "folderDeletedBodyEmpty": "{{deletedBy}} đã xóa thư mục trống {{folderName}}",
+      "folderDeletedBodyWithDeleted": "{{deletedBy}} đã xóa thư mục {{folderName}} và {{albumCount}} album: {{albumNames}}",
+      "folderDeletedBodyWithReleased": "{{deletedBy}} đã xóa thư mục {{folderName}} và chuyển {{albumCount}} album lên gốc: {{albumNames}}",
+      "shareLinkSharedTitle": "Liên kết chia sẻ đã được đăng",
+      "shareLinkSharedBody": "Ai đó đã chia sẻ liên kết {{albumName}} trên mạng xã hội hoặc tin nhắn"
     }
   },
   "email": {

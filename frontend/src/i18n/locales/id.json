@@ -591,7 +591,14 @@
         "shareLinkExpiredAccessed": {
           "title": "Percobaan Akses Tautan Kedaluwarsa",
           "description": "Ketika seseorang mencoba menggunakan tautan berbagi yang kedaluwarsa"
+        },
+        "shareLinkShared": {
+          "title": "Tautan Berbagi Diposting",
+          "description": "Ketika seseorang membagikan tautan di media sosial atau pesan"
         }
+      },
+      "events": {
+        "saved": "Preferensi notifikasi {{notification}} disimpan"
       }
     },
     "events": {},
@@ -1459,7 +1466,9 @@
       "databaseBackupCompletedTitle": "Cadangan Selesai",
       "databaseBackupCompletedBody": "Cadangan basis data berhasil diselesaikan",
       "shareLinkExpiredAccessedTitle": "Percobaan Akses Tautan Kedaluwarsa",
-      "shareLinkExpiredAccessedBody": "Seseorang mencoba menggunakan tautan berbagi yang kedaluwarsa"
+      "shareLinkExpiredAccessedBody": "Seseorang mencoba menggunakan tautan berbagi yang kedaluwarsa",
+      "shareLinkSharedTitle": "Tautan Berbagi Diposting",
+      "shareLinkSharedBody": "Seseorang membagikan tautan di media sosial atau pesan"
     },
     "events": {},
     "error": "Terjadi kesalahan",

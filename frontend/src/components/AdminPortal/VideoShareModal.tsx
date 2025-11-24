@@ -172,34 +172,16 @@ export default function VideoShareModal({ album, filename, videoTitle, onClose }
             </div>
           )}
 
-          {loading && (
-            <div className="share-loading">
-              {t('shareModal.generating')}
-            </div>
-          )}
+          {error && <div className="share-error">{error}</div>}
+          {copied && <div className="share-success-inline">{t('shareModal.linkCopied')}</div>}
 
-          {error && (
-            <div className="share-error">
-              {error}
-            </div>
-          )}
-
-          {generatedLink && !loading && (
-            <div className="share-link-container">
-              <input
-                type="text"
-                value={generatedLink}
-                readOnly
-                className="share-link-input"
-              />
-              <button
-                onClick={handleCopyClick}
-                className={`copy-button ${copied ? 'copied' : ''}`}
-              >
-                {copied ? t('shareModal.copied') : t('shareModal.copyLink')}
-              </button>
-            </div>
-          )}
+          <button
+            className="copy-link-button"
+            onClick={handleCopyClick}
+            disabled={loading || !generatedLink}
+          >
+            {loading ? t('shareModal.generating') : t('shareModal.copyLink')}
+          </button>
         </div>
       </div>
     </div>

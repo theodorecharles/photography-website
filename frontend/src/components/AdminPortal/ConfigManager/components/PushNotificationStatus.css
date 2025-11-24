@@ -1,0 +1,68 @@
+.push-notification-status {
+  background: rgba(102, 126, 234, 0.1);
+  border: 1px solid rgba(102, 126, 234, 0.2);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.push-status-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.push-status-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #22c55e;
+}
+
+.push-status-text {
+  color: white;
+  font-size: 0.95rem;
+}
+
+.push-status-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.push-status-buttons button {
+  padding: 0.4rem 0.875rem;
+  font-size: 0.875rem;
+}
+
+.push-status-prompt {
+  color: #888;
+  font-size: 0.95rem;
+  flex: 1;
+}
+
+.push-subscribe-btn {
+  padding: 0.4rem 1rem;
+  font-size: 0.875rem;
+  white-space: nowrap;
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+  .push-notification-status {
+    flex-wrap: wrap;
+  }
+  
+  .push-status-buttons {
+    width: 100%;
+    flex: 1 1 100%;
+  }
+  
+  .push-status-buttons button {
+    flex: 1;
+  }
+}
+

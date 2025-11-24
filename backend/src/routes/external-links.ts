@@ -35,7 +35,7 @@ router.get('/', (req: Request, res: Response) => {
 });
 
 // PUT (update) external links
-router.put('/', requireManager, (req: Request, res: Response): void => {
+router.put('/', requireManager, async (req: Request, res: Response): Promise<void> => {
   try {
     const { links } = req.body;
 
@@ -95,16 +95,16 @@ router.put('/', requireManager, (req: Request, res: Response): void => {
     info("[ExternalLinks] Config reloaded after external links update");
     
     // Regenerate homepage HTML since external links are in the navigation
-    const appRoot = path.join(__dirname, '..', '..');
-    generateHomepageHTML(appRoot).then(result => {
-      if (result.success) {
-        info("[ExternalLinks] Homepage HTML regenerated after external links update");
-      } else {
-        error("[ExternalLinks] Failed to regenerate homepage HTML:", result.error);
-      }
-    }).catch(err => {
-      error("[ExternalLinks] Error regenerating homepage HTML:", err);
-    });
+    // WAIT for generation to complete before responding to ensure cache is fresh
+    const appRoot = req.app.get('appRoot');
+    const result = await generateHomepageHTML(appRoot);
+    
+    if (result.success) {
+      info("[ExternalLinks] Homepage HTML regenerated after external links update");
+    } else {
+      warn("[ExternalLinks] Failed to regenerate homepage HTML:", result.error);
+      // Don't fail the request - links are still saved
+    }
 
     res.json({ success: true, links });
   } catch (err) {

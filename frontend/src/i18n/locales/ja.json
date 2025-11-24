@@ -591,7 +591,14 @@
         "shareLinkExpiredAccessed": {
           "title": "期限切れリンクのアクセス試行",
           "description": "誰かが期限切れの共有リンクを使用しようとしたとき"
+        },
+        "shareLinkShared": {
+          "title": "リンクが共有されました",
+          "description": "誰かがソーシャルメディアやメッセージでリンクを共有したとき"
         }
+      },
+      "events": {
+        "saved": "{{notification}} 通知設定が保存されました"
       }
     },
     "events": {},
@@ -1459,7 +1466,9 @@
       "databaseBackupCompletedTitle": "バックアップ完了",
       "databaseBackupCompletedBody": "データベースのバックアップが正常に完了しました",
       "shareLinkExpiredAccessedTitle": "期限切れリンクのアクセス試行",
-      "shareLinkExpiredAccessedBody": "誰かが期限切れの共有リンクを使用しようとしました"
+      "shareLinkExpiredAccessedBody": "誰かが期限切れの共有リンクを使用しようとしました",
+      "shareLinkSharedTitle": "リンクが共有されました",
+      "shareLinkSharedBody": "誰かがソーシャルメディアやメッセージでリンクを共有しました"
     },
     "events": {},
     "error": "エラーが発生しました",

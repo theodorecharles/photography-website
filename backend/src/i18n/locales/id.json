@@ -78,7 +78,6 @@
       "folderUnpublishedTitle": "Folder Belum Diterbitkan",
       "folderUnpublishedBody": "{{unpublishedBy}} folder belum diterbitkan {{folderName}} ({{albumCount}} album: {{albumNames}})",
       "folderDeletedTitle": "Folder Dihapus",
-      "folderDeletedBody": "{{deletedBy}} menghapus folder {{folderName}} ({{albumCount}} album: {{albumNames}})",
       "homepageUpdatedTitle": "Beranda Diperbarui",
       "homepageUpdatedBody": "{{updatedBy}} {{action}} {{albumName}} {{preposition}} beranda",
       "versionUpdateTitle": "Galleria Diperbarui",
@@ -88,7 +87,12 @@
       "albumViewMilestoneTitle": "🎉 Pencapaian Tercapai!",
       "albumViewMilestoneBody": "{{albumName}} mencapai {{milestone}} tampilan!",
       "shareLinkExpiredAccessedTitle": "Percobaan Akses Tautan Kedaluwarsa",
-      "shareLinkExpiredAccessedBody": "Seseorang mencoba mengakses {{albumName}} dengan tautan yang kedaluwarsa"
+      "shareLinkExpiredAccessedBody": "Seseorang mencoba mengakses {{albumName}} dengan tautan yang kedaluwarsa",
+      "folderDeletedBodyEmpty": "{{deletedBy}} menghapus folder kosong {{folderName}}",
+      "folderDeletedBodyWithDeleted": "{{deletedBy}} menghapus folder {{folderName}} dan {{albumCount}} album: {{albumNames}}",
+      "folderDeletedBodyWithReleased": "{{deletedBy}} menghapus folder {{folderName}} dan memindahkan {{albumCount}} album ke root: {{albumNames}}",
+      "shareLinkSharedTitle": "Tautan Berbagi Diposting",
+      "shareLinkSharedBody": "Seseorang membagikan tautan {{albumName}} di media sosial atau pesan"
     }
   },
   "email": {

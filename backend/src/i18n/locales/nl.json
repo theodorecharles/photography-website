@@ -78,7 +78,6 @@
       "folderUnpublishedTitle": "Map Niet-gepubliceerd",
       "folderUnpublishedBody": "{{unpublishedBy}} niet-gepubliceerde map {{folderName}} ({{albumCount}} albums: {{albumNames}})",
       "folderDeletedTitle": "Map Verwijderd",
-      "folderDeletedBody": "{{deletedBy}} verwijderde map {{folderName}} ({{albumCount}} albums: {{albumNames}})",
       "homepageUpdatedTitle": "Homepage Bijgewerkt",
       "homepageUpdatedBody": "{{updatedBy}} {{action}} {{albumName}} {{preposition}} homepage",
       "versionUpdateTitle": "Galleria Bijgewerkt",
@@ -88,7 +87,12 @@
       "albumViewMilestoneTitle": "🎉 Mijlpaal Bereikt!",
       "albumViewMilestoneBody": "{{albumName}} heeft {{milestone}} weergaven bereikt!",
       "shareLinkExpiredAccessedTitle": "Poging tot Toegang met Verlopen Link",
-      "shareLinkExpiredAccessedBody": "Iemand probeerde {{albumName}} te openen met een verlopen link"
+      "shareLinkExpiredAccessedBody": "Iemand probeerde {{albumName}} te openen met een verlopen link",
+      "folderDeletedBodyEmpty": "{{deletedBy}} heeft lege map {{folderName}} verwijderd",
+      "folderDeletedBodyWithDeleted": "{{deletedBy}} heeft map {{folderName}} en {{albumCount}} albums verwijderd: {{albumNames}}",
+      "folderDeletedBodyWithReleased": "{{deletedBy}} heeft map {{folderName}} verwijderd en {{albumCount}} albums naar de hoofdmap verplaatst: {{albumNames}}",
+      "shareLinkSharedTitle": "Deel Link Geplaatst",
+      "shareLinkSharedBody": "Iemand heeft de {{albumName}} link gedeeld op sociale media of berichten"
     }
   },
   "email": {

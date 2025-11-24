@@ -200,11 +200,17 @@ router.post('/generate-keys', csrfProtection, requireManager, (req, res) => {
     // Re-initialize push notifications with new keys
     initializePushNotifications();
     
+    // Clear all existing subscriptions since they're now invalid with new VAPID keys
+    const deleteStmt = db.prepare('DELETE FROM push_subscriptions');
+    const deleteResult = deleteStmt.run();
+    info(`[PushNotifications] Cleared ${deleteResult.changes} existing subscription(s) - users will need to re-subscribe`);
+    
     res.json({
       success: true,
       publicKey: keys.publicKey,
       privateKey: keys.privateKey,
-      vapidSubject: `mailto:${adminEmail}`
+      vapidSubject: `mailto:${adminEmail}`,
+      clearedSubscriptions: deleteResult.changes
     });
   } catch (err: any) {
     error('[PushNotifications] Error generating VAPID keys:', err);

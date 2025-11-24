@@ -78,7 +78,6 @@
       "folderUnpublishedTitle": "Hindi Nailathala ang Folder",
       "folderUnpublishedBody": "{{unpublishedBy}} hindi nailathalang folder {{folderName}} ({{albumCount}} mga album: {{albumNames}})",
       "folderDeletedTitle": "Natanggal ang Folder",
-      "folderDeletedBody": "{{deletedBy}} natanggal na folder {{folderName}} ({{albumCount}} mga album: {{albumNames}})",
       "homepageUpdatedTitle": "Na-update ang Homepage",
       "homepageUpdatedBody": "{{updatedBy}} {{action}} {{albumName}} {{preposition}} homepage",
       "versionUpdateTitle": "Na-update ang Galleria",
@@ -88,7 +87,12 @@
       "albumViewMilestoneTitle": "🎉 Naabot na ang Milestone!",
       "albumViewMilestoneBody": "Naabot na ng {{albumName}} ang {{milestone}} na mga view!",
       "shareLinkExpiredAccessedTitle": "Pagsubok sa Pag-access ng Nag-expire na Link",
-      "shareLinkExpiredAccessedBody": "May nagtangkang mag-access ng {{albumName}} gamit ang nag-expire na link"
+      "shareLinkExpiredAccessedBody": "May nagtangkang mag-access ng {{albumName}} gamit ang nag-expire na link",
+      "folderDeletedBodyEmpty": "{{deletedBy}} ay nagtanggal ng walang laman na folder na {{folderName}}",
+      "folderDeletedBodyWithDeleted": "{{deletedBy}} ay nagtanggal ng folder na {{folderName}} at {{albumCount}} na mga album: {{albumNames}}",
+      "folderDeletedBodyWithReleased": "{{deletedBy}} ay nagtanggal ng folder na {{folderName}} at inilabas ang {{albumCount}} na mga album sa ugat: {{albumNames}}",
+      "shareLinkSharedTitle": "Naipost ang Link ng Pagbabahagi",
+      "shareLinkSharedBody": "May nagbahagi ng link ng {{albumName}} sa social media o messaging"
     }
   },
   "email": {

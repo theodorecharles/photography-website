@@ -335,22 +335,44 @@ self.addEventListener('push', (event) => {
  */
 self.addEventListener('notificationclick', (event) => {
   console.log('[SW] Notification clicked:', event.notification.tag);
+  console.log('[SW] Notification data:', event.notification.data);
   
   event.notification.close();
   
-  // Navigate to the app when notification is clicked
+  // Determine the URL to navigate to based on notification data
+  let targetUrl = '/admin'; // Default URL
+  
+  if (event.notification.data) {
+    const data = event.notification.data;
+    
+    // Handle photo download notifications - open the specific photo
+    if (data.type === 'photo-download' && data.album && data.filename) {
+      // Navigate to the album with the photo open in modal
+      // URL format: /album/AlbumName?photo=filename.jpg
+      targetUrl = `/album/${encodeURIComponent(data.album)}?photo=${encodeURIComponent(data.filename)}`;
+      console.log('[SW] Opening photo:', targetUrl);
+    }
+    // Future: Add other notification types here
+    // else if (data.type === 'share-link-accessed' && data.album) {
+    //   targetUrl = `/album/${encodeURIComponent(data.album)}`;
+    // }
+  }
+  
+  // Navigate to the target URL
   event.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
-      // If app is already open, focus it
+      // Check if we can navigate an existing window to the target URL
       for (const client of clientList) {
-        if (client.url.includes(self.location.origin) && 'focus' in client) {
-          return client.focus();
+        if (client.url.includes(self.location.origin) && 'focus' in client && 'navigate' in client) {
+          console.log('[SW] Navigating existing window to:', targetUrl);
+          return client.navigate(targetUrl).then(() => client.focus());
         }
       }
       
-      // Otherwise, open a new window
+      // Otherwise, open a new window with the target URL
       if (clients.openWindow) {
-        return clients.openWindow('/admin');
+        console.log('[SW] Opening new window to:', targetUrl);
+        return clients.openWindow(targetUrl);
       }
     })
   );

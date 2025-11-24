@@ -78,7 +78,6 @@
       "folderUnpublishedTitle": "Mappe Ikke Publisert",
       "folderUnpublishedBody": "{{unpublishedBy}} upublisert mappe {{folderName}} ({{albumCount}} album: {{albumNames}})",
       "folderDeletedTitle": "Mappe Slettet",
-      "folderDeletedBody": "{{deletedBy}} slettet mappe {{folderName}} ({{albumCount}} album: {{albumNames}})",
       "homepageUpdatedTitle": "Hjemmeside Oppdatert",
       "homepageUpdatedBody": "{{updatedBy}} {{action}} {{albumName}} {{preposition}} hjemmeside",
       "versionUpdateTitle": "Galleria oppdatert",
@@ -88,7 +87,12 @@
       "albumViewMilestoneTitle": "🎉 Milepæl nådd!",
       "albumViewMilestoneBody": "{{albumName}} nådde {{milestone}} visninger!",
       "shareLinkExpiredAccessedTitle": "Forsøk på tilgang med utløpt lenke",
-      "shareLinkExpiredAccessedBody": "Noen prøvde å få tilgang til {{albumName}} med en utløpt lenke"
+      "shareLinkExpiredAccessedBody": "Noen prøvde å få tilgang til {{albumName}} med en utløpt lenke",
+      "folderDeletedBodyEmpty": "{{deletedBy}} slettet tom mappe {{folderName}}",
+      "folderDeletedBodyWithDeleted": "{{deletedBy}} slettet mappe {{folderName}} og {{albumCount}} album: {{albumNames}}",
+      "folderDeletedBodyWithReleased": "{{deletedBy}} slettet mappe {{folderName}} og flyttet {{albumCount}} album til roten: {{albumNames}}",
+      "shareLinkSharedTitle": "Delingslenke postet",
+      "shareLinkSharedBody": "Noen delte {{albumName}}-lenken på sosiale medier eller meldingsplattform"
     }
   },
   "email": {

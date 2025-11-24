@@ -355,7 +355,7 @@ export const UserCard: React.FC<UserCardProps> = ({
                 borderRadius: "8px",
                 boxShadow: "0 4px 12px rgba(0, 0, 0, 0.3)",
                 zIndex: 100001,
-                minWidth: "127px",
+                minWidth: "150px",
                 overflow: "hidden",
               }}
             >
@@ -372,6 +372,7 @@ export const UserCard: React.FC<UserCardProps> = ({
                         ? "rgba(74, 222, 128, 0.1)"
                         : "transparent",
                     transition: "background 0.2s",
+                    whiteSpace: "nowrap",
                   }}
                   onMouseEnter={(e) => {
                     if (user.role !== role) {

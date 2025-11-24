@@ -58,9 +58,39 @@ if [ -f "data/gallery.db" ]; then
     if ! node migrate-share-link-notifications.js; then
         handle_error "Database migration (share link notifications) failed"
     fi
+    if ! node migrate-album-view-tracking.js; then
+        handle_error "Database migration (album view tracking) failed"
+    fi
     log "✓ Database migrations completed"
 else
     log "Skipping database migrations (database not initialized yet)"
+fi
+
+# Download GeoIP database if it doesn't exist (for failed login location tracking)
+if [ ! -f "data/GeoLite2-City.mmdb" ]; then
+    log "Downloading GeoIP database for location lookup..."
+    
+    # Get current year and month
+    YEAR=$(date +%Y)
+    MONTH=$(date +%m)
+    GEOIP_URL="https://download.db-ip.com/free/dbip-city-lite-${YEAR}-${MONTH}.mmdb.gz"
+    
+    # Download and extract
+    if curl -sL "$GEOIP_URL" | gunzip > data/GeoLite2-City.mmdb 2>/dev/null; then
+        # Verify the file was actually created and has content
+        if [ -s "data/GeoLite2-City.mmdb" ]; then
+            log "✓ GeoIP database downloaded successfully ($(du -h data/GeoLite2-City.mmdb | cut -f1))"
+        else
+            log "WARNING: GeoIP database download failed (empty file)"
+            rm -f data/GeoLite2-City.mmdb
+        fi
+    else
+        log "WARNING: Failed to download GeoIP database. Location lookup will be disabled."
+        log "         You can manually download from https://db-ip.com/db/download/ip-to-city-lite"
+        log "         and save it as data/GeoLite2-City.mmdb"
+    fi
+else
+    log "GeoIP database already exists ($(du -h data/GeoLite2-City.mmdb | cut -f1)), skipping download"
 fi
 
 # Run image optimization script (only if configured and albums exist)
@@ -286,6 +316,16 @@ if [ -f "data/config.json" ]; then
     
     # Generate pre-rendered homepage HTML with all initial data baked in
     log "Generating pre-rendered homepage HTML..."
+    
+    # Source .env file to get domain configuration for HTML generation
+    if [ -f ".env" ]; then
+        # Export environment variables from .env file
+        set -a
+        source .env
+        set +a
+        log "Loaded environment variables from .env"
+    fi
+    
     if node scripts/generate-homepage-html.js; then
         log "Pre-rendered homepage HTML generated successfully"
     else

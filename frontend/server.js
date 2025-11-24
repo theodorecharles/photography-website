@@ -524,7 +524,11 @@ app.get(/^\/.*/, async (req, res) => {
     try {
       // Fetch shared album data from backend
       const apiUrl = config.frontend.apiUrl;
-      const response = await fetch(`${apiUrl}/api/shared/${secretKey}`);
+      const response = await fetch(`${apiUrl}/api/shared/${secretKey}`, {
+        headers: {
+          'X-Meta-Injection': 'true' // Indicate this is for meta tag injection only
+        }
+      });
 
       if (response.ok) {
         const data = await response.json();
@@ -648,8 +652,8 @@ app.get(/^\/.*/, async (req, res) => {
           return res.send(htmlWithBranding);
         }
       }
-    } catch (error) {
-      error("[MetaInjection] Failed to fetch shared album data:", error);
+    } catch (err) {
+      error("[MetaInjection] Failed to fetch shared album data:", err);
       // Fall through to default index.html
     }
   }
@@ -792,8 +796,8 @@ app.get(/^\/.*/, async (req, res) => {
           return res.send(htmlWithBranding);
         }
       }
-    } catch (error) {
-      error("[MetaInjection] Failed to fetch album data:", error);
+    } catch (err) {
+      error("[MetaInjection] Failed to fetch album data:", err);
       // Fall through to default handling
     }
   }
@@ -958,8 +962,8 @@ app.get(/^\/.*/, async (req, res) => {
           return res.send(htmlWithBranding);
         }
       }
-    } catch (error) {
-      error("[MetaInjection] Failed to fetch photo data:", error);
+    } catch (err) {
+      error("[MetaInjection] Failed to fetch photo data:", err);
       // Fall through to default handling
     }
   }

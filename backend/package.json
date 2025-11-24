@@ -16,6 +16,7 @@
   "dependencies": {
     "@auth/core": "^0.41.1",
     "@auth/express": "^0.12.1",
+    "@maxmind/geoip2-node": "^6.3.0",
     "@simplewebauthn/server": "^9.0.3",
     "@simplewebauthn/types": "^9.0.1",
     "@types/better-sqlite3": "^7.6.13",

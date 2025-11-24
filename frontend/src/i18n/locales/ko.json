@@ -591,7 +591,14 @@
         "shareLinkExpiredAccessed": {
           "title": "만료된 링크 접근 시도",
           "description": "누군가 만료된 공유 링크를 사용하려고 할 때"
+        },
+        "shareLinkShared": {
+          "title": "링크 공유됨",
+          "description": "누군가 소셜 미디어나 메시징에 링크를 공유할 때"
         }
+      },
+      "events": {
+        "saved": "{{notification}} 알림 설정이 저장되었습니다"
       }
     },
     "events": {},
@@ -1459,7 +1466,9 @@
       "databaseBackupCompletedTitle": "백업 완료",
       "databaseBackupCompletedBody": "데이터베이스 백업이 성공적으로 완료되었습니다",
       "shareLinkExpiredAccessedTitle": "만료된 링크 접근 시도",
-      "shareLinkExpiredAccessedBody": "누군가 만료된 공유 링크를 사용하려고 했습니다"
+      "shareLinkExpiredAccessedBody": "누군가 만료된 공유 링크를 사용하려고 했습니다",
+      "shareLinkSharedTitle": "링크 공유됨",
+      "shareLinkSharedBody": "누군가 소셜 미디어나 메시징에 링크를 공유했습니다"
     },
     "events": {},
     "error": "오류가 발생했습니다",

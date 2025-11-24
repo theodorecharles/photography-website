@@ -212,6 +212,11 @@ const GeneralSection: React.FC<GeneralSectionProps> = ({
         setPendingAvatarFile(null);
         setAvatarPreviewUrl(null);
         
+        // Blur active input to dismiss mobile keyboard before reload
+        if (document.activeElement instanceof HTMLElement) {
+          document.activeElement.blur();
+        }
+        
         // Reload branding to get fresh data from server
         await loadBranding();
         
@@ -418,6 +423,10 @@ const GeneralSection: React.FC<GeneralSectionProps> = ({
                     setMessage({ type: 'success', text: t('general.photoLicenseUpdated') });
                     trackBrandingUpdate(['photoLicense']);
                     setOriginalBranding(updatedBranding);
+                    // Blur active input to dismiss mobile keyboard before reload
+                    if (document.activeElement instanceof HTMLElement) {
+                      document.activeElement.blur();
+                    }
                     await loadBranding();
                   } else {
                     const errorData = await res.json().catch(() => ({ error: t('common.unknownError') }));
@@ -675,12 +684,11 @@ const GeneralSection: React.FC<GeneralSectionProps> = ({
                       body: JSON.stringify(updatedBranding),
                     });
 
-                    if (res.ok) {
-                      setMessage({ type: 'success', text: t('general.animatedBackgroundSaved') });
-                      setOriginalBranding(updatedBranding);
-                      // Reload to apply background changes
-                      await loadBranding();
-                    } else {
+                  if (res.ok) {
+                    setMessage({ type: 'success', text: t('general.animatedBackgroundSaved') });
+                    setOriginalBranding(updatedBranding);
+                    // Don't reload - state is already updated and background will apply on next navigation
+                  } else {
                       const errorData = await res.json().catch(() => ({ error: t('common.unknownError') }));
                       setMessage({ type: 'error', text: errorData.error || t('general.failedToSaveSetting') });
                       // Revert on error

@@ -591,7 +591,14 @@
         "shareLinkExpiredAccessed": {
           "title": "过期链接访问尝试",
           "description": "当有人尝试使用过期的分享链接"
+        },
+        "shareLinkShared": {
+          "title": "分享链接已发布",
+          "description": "当有人在社交媒体或消息中分享链接时"
         }
+      },
+      "events": {
+        "saved": "{{notification}} 通知偏好已保存"
       }
     },
     "events": {},
@@ -1459,7 +1466,9 @@
       "databaseBackupCompletedTitle": "备份完成",
       "databaseBackupCompletedBody": "数据库备份成功完成",
       "shareLinkExpiredAccessedTitle": "过期链接访问尝试",
-      "shareLinkExpiredAccessedBody": "有人尝试使用过期的分享链接"
+      "shareLinkExpiredAccessedBody": "有人尝试使用过期的分享链接",
+      "shareLinkSharedTitle": "分享链接已发布",
+      "shareLinkSharedBody": "有人在社交媒体或消息中分享了一个链接"
     },
     "events": {},
     "error": "发生错误",

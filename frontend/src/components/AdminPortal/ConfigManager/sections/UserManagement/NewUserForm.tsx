@@ -132,6 +132,7 @@ export const NewUserForm: React.FC<NewUserFormProps> = ({
                     color: newUser.role === role ? '#4ade80' : '#e5e7eb',
                     background: newUser.role === role ? 'rgba(74, 222, 128, 0.1)' : 'transparent',
                     transition: 'background 0.2s',
+                    whiteSpace: 'nowrap',
                   }}
                   onMouseEnter={(e) => {
                     if (newUser.role !== role) {

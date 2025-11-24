@@ -591,7 +591,14 @@
         "shareLinkExpiredAccessed": {
           "title": "Süresi Dolmuş Bağlantı Erişim Denemesi",
           "description": "Birisi süresi dolmuş bir paylaşım bağlantısını kullanmaya çalıştığında"
+        },
+        "shareLinkShared": {
+          "title": "Paylaşım Bağlantısı Gönderildi",
+          "description": "Birisi sosyal medyada veya mesajlaşmada bir bağlantı paylaştığında"
         }
+      },
+      "events": {
+        "saved": "{{notification}} bildirim tercihi kaydedildi"
       }
     },
     "events": {},
@@ -1459,7 +1466,9 @@
       "databaseBackupCompletedTitle": "Yedekleme Tamamlandı",
       "databaseBackupCompletedBody": "Veritabanı yedeklemesi başarıyla tamamlandı",
       "shareLinkExpiredAccessedTitle": "Süresi Dolmuş Bağlantı Erişim Denemesi",
-      "shareLinkExpiredAccessedBody": "Birisi süresi dolmuş bir paylaşım bağlantısını kullanmaya çalıştı"
+      "shareLinkExpiredAccessedBody": "Birisi süresi dolmuş bir paylaşım bağlantısını kullanmaya çalıştı",
+      "shareLinkSharedTitle": "Paylaşım Bağlantısı Gönderildi",
+      "shareLinkSharedBody": "Birisi sosyal medyada veya mesajlaşmada bir bağlantı paylaştı"
     },
     "events": {},
     "error": "Bir hata oluştu",

@@ -114,8 +114,8 @@ function getOpenAIKey() {
   if (existsSync(CONFIG_PATH)) {
     try {
       const config = JSON.parse(readFileSync(CONFIG_PATH, "utf8"));
-      if (config.openAI?.apiKey) {
-        return config.openAI.apiKey;
+      if (config.openai?.apiKey) {
+        return config.openai.apiKey;
       }
     } catch (err) {
       // Config file exists but couldn't be parsed, fall through to env var

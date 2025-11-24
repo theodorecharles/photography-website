@@ -602,7 +602,7 @@ const ContentGrid: React.FC<ContentGridProps> = ({ album, onAlbumNotFound, initi
           <p>{t('app.loadingAlbum')}</p>
         </div>
       }>
-        <VideoListView videos={allPhotos} album={album} secretKey={secretKey} />
+        <VideoListView videos={allPhotos} album={album} secretKey={secretKey} albumPublished={albumPublished} />
       </Suspense>
     );
   }

@@ -591,7 +591,14 @@
         "shareLinkExpiredAccessed": {
           "title": "Próba dostępu do wygasłego linku",
           "description": "Kiedy ktoś próbuje użyć wygasłego linku udostępniania"
+        },
+        "shareLinkShared": {
+          "title": "Udostępniono link",
+          "description": "Gdy ktoś udostępnia link w mediach społecznościowych lub wiadomościach"
         }
+      },
+      "events": {
+        "saved": "Zapisano preferencję powiadomienia {{notification}}"
       }
     },
     "events": {},
@@ -1459,7 +1466,9 @@
       "databaseBackupCompletedTitle": "Zakończono tworzenie kopii zapasowej",
       "databaseBackupCompletedBody": "Tworzenie kopii zapasowej bazy danych zakończone pomyślnie",
       "shareLinkExpiredAccessedTitle": "Próba dostępu do wygasłego linku",
-      "shareLinkExpiredAccessedBody": "Ktoś próbował użyć wygasłego linku udostępniania"
+      "shareLinkExpiredAccessedBody": "Ktoś próbował użyć wygasłego linku udostępniania",
+      "shareLinkSharedTitle": "Udostępniono link",
+      "shareLinkSharedBody": "Ktoś udostępnił link w mediach społecznościowych lub wiadomościach"
     },
     "events": {},
     "error": "Wystąpił błąd",

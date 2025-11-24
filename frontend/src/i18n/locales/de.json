@@ -591,7 +591,14 @@
         "shareLinkExpiredAccessed": {
           "title": "Abgelaufener Link-Zugriffsversuch",
           "description": "Wenn jemand versucht, einen abgelaufenen Freigabelink zu verwenden"
+        },
+        "shareLinkShared": {
+          "title": "Freigabelink veröffentlicht",
+          "description": "Wenn jemand einen Link in sozialen Medien oder Nachrichten teilt"
         }
+      },
+      "events": {
+        "saved": "{{notification}} Benachrichtigungseinstellung gespeichert"
       }
     },
     "events": {},
@@ -1459,7 +1466,9 @@
       "databaseBackupCompletedTitle": "Sicherung abgeschlossen",
       "databaseBackupCompletedBody": "Datenbanksicherung erfolgreich abgeschlossen",
       "shareLinkExpiredAccessedTitle": "Abgelaufener Link-Zugriffsversuch",
-      "shareLinkExpiredAccessedBody": "Jemand hat versucht, einen abgelaufenen Freigabelink zu verwenden"
+      "shareLinkExpiredAccessedBody": "Jemand hat versucht, einen abgelaufenen Freigabelink zu verwenden",
+      "shareLinkSharedTitle": "Freigabelink veröffentlicht",
+      "shareLinkSharedBody": "Jemand hat einen Link in sozialen Medien oder Nachrichten geteilt"
     },
     "events": {},
     "error": "Ein Fehler ist aufgetreten",

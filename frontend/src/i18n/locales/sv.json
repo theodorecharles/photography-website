@@ -591,7 +591,14 @@
         "shareLinkExpiredAccessed": {
           "title": "Försök att använda en utgången länk",
           "description": "När någon försöker använda en utgången delningslänk"
+        },
+        "shareLinkShared": {
+          "title": "Delningslänk publicerad",
+          "description": "När någon delar en länk på sociala medier eller meddelanden"
         }
+      },
+      "events": {
+        "saved": "{{notification}} anmälningspreferens sparad"
       }
     },
     "events": {},
@@ -1459,7 +1466,9 @@
       "databaseBackupCompletedTitle": "Säkerhetskopiering slutförd",
       "databaseBackupCompletedBody": "Databassäkerhetskopiering slutförd framgångsrikt",
       "shareLinkExpiredAccessedTitle": "Försök att använda en utgången länk",
-      "shareLinkExpiredAccessedBody": "Någon försökte använda en utgången delningslänk"
+      "shareLinkExpiredAccessedBody": "Någon försökte använda en utgången delningslänk",
+      "shareLinkSharedTitle": "Delningslänk publicerad",
+      "shareLinkSharedBody": "Någon delade en länk på sociala medier eller meddelanden"
     },
     "events": {},
     "error": "Ett fel inträffade",

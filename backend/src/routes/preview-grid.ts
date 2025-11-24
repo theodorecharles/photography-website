@@ -375,6 +375,31 @@ router.get("/shared/:secretKey", async (req: Request, res: Response): Promise<vo
       return;
     }
     
+    // Notify admins that someone is sharing the link (preview fetched by social media/messaging apps)
+    // Only notify if not from our own server (check X-Meta-Injection header)
+    const isMetaInjection = req.headers['x-meta-injection'] === 'true';
+    if (!isMetaInjection) {
+      try {
+        const { sendNotificationToUser } = await import('../push-notifications.js');
+        const { translateNotification } = await import('../i18n-backend.js');
+        const { getAllUsers } = await import('../database-users.js');
+        
+        const admins = getAllUsers().filter(u => u.role === 'admin');
+        for (const admin of admins) {
+          const title = await translateNotification('notifications.backend.shareLinkSharedTitle', { albumName: shareLink.album });
+          const body = await translateNotification('notifications.backend.shareLinkSharedBody', { albumName: shareLink.album });
+          
+          sendNotificationToUser(admin.id, {
+            title,
+            body,
+            tag: 'share-link-shared'
+          }, 'shareLinkShared');
+        }
+      } catch (err) {
+        error('[PreviewGrid] Failed to send link shared notification:', err);
+      }
+    }
+    
     const albumName = shareLink.album;
     const photosDir = req.app.get("photosDir");
     const albumPath = path.join(photosDir, albumName);

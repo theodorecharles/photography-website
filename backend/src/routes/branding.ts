@@ -15,6 +15,7 @@ import { spawn } from "child_process";
 import { requireManager } from "../auth/middleware.js";
 import { csrfProtection } from "../security.js";
 import { error, warn, info, debug, verbose } from "../utils/logger.js";
+import { generateHomepageHTML } from "./homepage-html.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -229,6 +230,18 @@ router.put("/", requireManager, (req: Request, res: Response) => {
       }
     })();
 
+    // Regenerate homepage HTML if branding changed (affects meta tags and initial data)
+    const appRoot = req.app.get('appRoot');
+    generateHomepageHTML(appRoot).then(result => {
+      if (result.success) {
+        info("[Branding] Homepage HTML regenerated after branding update");
+      } else {
+        error("[Branding] Failed to regenerate homepage HTML:", result.error);
+      }
+    }).catch(err => {
+      error("[Branding] Error regenerating homepage HTML:", err);
+    });
+
     // Reload frontend if siteName, avatarPath, or metaDescription changed (affects HTML placeholders)
     const needsFrontendReload =
       updates.siteName || updates.avatarPath || updates.metaDescription;
@@ -419,6 +432,18 @@ router.post(
       if (verifyConfig.branding?.avatarPath !== `/photos/${avatarFilename}`) {
         throw new Error("Avatar path verification failed after config update");
       }
+
+      // Regenerate homepage HTML since avatar changed (affects meta tags and branding)
+      const appRoot = req.app.get('appRoot');
+      generateHomepageHTML(appRoot).then(result => {
+        if (result.success) {
+          info("[Avatar Upload] Homepage HTML regenerated after avatar change");
+        } else {
+          error("[Avatar Upload] Failed to regenerate homepage HTML:", result.error);
+        }
+      }).catch(err => {
+        error("[Avatar Upload] Error regenerating homepage HTML:", err);
+      });
 
       res.json({
         success: true,

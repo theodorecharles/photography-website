@@ -17,7 +17,7 @@ import PicturesTable from './PicturesTable';
 import PagesTable from './PagesTable';
 import ReferrersTable from './ReferrersTable';
 import EventTypesTable from './EventTypesTable';
-import { SkeletonCard } from './SkeletonLoader';
+import './SkeletonLoader.css';
 import './Metrics.css';
 
 // Import interfaces from types.ts (canonical location)
@@ -274,39 +274,41 @@ export default function Metrics() {
 
       {/* Summary Cards */}
       <div className="metrics-summary">
-        {loading && !stats ? (
-          <>
-            <SkeletonCard />
-            <SkeletonCard />
-            <SkeletonCard />
-          </>
-        ) : stats ? (
-          <>
-            <div className="metric-card">
-              <div className="metric-icon">👥</div>
-              <div className="metric-content">
-                <div className="metric-value">{formatNumber(stats.uniqueVisitors)}</div>
-                <div className="metric-label">{t('metrics.uniqueVisitors')}</div>
-              </div>
-            </div>
+        <div className="metric-card">
+          <div className="metric-icon">👥</div>
+          <div className="metric-content">
+            {loading && !stats ? (
+              <div className="skeleton-value"></div>
+            ) : (
+              <div className="metric-value">{formatNumber(stats?.uniqueVisitors || 0)}</div>
+            )}
+            <div className="metric-label">{t('metrics.uniqueVisitors')}</div>
+          </div>
+        </div>
 
-            <div className="metric-card">
-              <div className="metric-icon">📄</div>
-              <div className="metric-content">
-                <div className="metric-value">{formatNumber(stats.pageViews)}</div>
-                <div className="metric-label">{t('metrics.pageViews')}</div>
-              </div>
-            </div>
+        <div className="metric-card">
+          <div className="metric-icon">📄</div>
+          <div className="metric-content">
+            {loading && !stats ? (
+              <div className="skeleton-value"></div>
+            ) : (
+              <div className="metric-value">{formatNumber(stats?.pageViews || 0)}</div>
+            )}
+            <div className="metric-label">{t('metrics.pageViews')}</div>
+          </div>
+        </div>
 
-            <div className="metric-card">
-              <div className="metric-icon">⏱️</div>
-              <div className="metric-content">
-                <div className="metric-value">{formatDurationDetailed(stats.totalViewDuration || 0)}</div>
-                <div className="metric-label">{t('metrics.totalTimeViewing')}</div>
-              </div>
-            </div>
-          </>
-        ) : null}
+        <div className="metric-card">
+          <div className="metric-icon">⏱️</div>
+          <div className="metric-content">
+            {loading && !stats ? (
+              <div className="skeleton-value"></div>
+            ) : (
+              <div className="metric-value">{formatDurationDetailed(stats?.totalViewDuration || 0)}</div>
+            )}
+            <div className="metric-label">{t('metrics.totalTimeViewing')}</div>
+          </div>
+        </div>
       </div>
 
       {/* Visitor Locations Map */}

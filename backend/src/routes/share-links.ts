@@ -91,6 +91,12 @@ router.post("/create", csrfProtection, requireManager, async (req: Request, res:
     
     info(`Created share link for album "${sanitizedAlbum}": ${shareLink.secret_key} (expires: ${expiresAt || 'never'})`);
 
+    // Schedule expiry timer if link has an expiration date
+    if (expiresAt) {
+      const { scheduleNewShareLinkExpiry } = await import('../services/share-link-expiry-tracker.js');
+      scheduleNewShareLinkExpiry(shareLink.id);
+    }
+
     // Send push notification to all admins
     await notifyAllAdmins(
       'notifications.backend.shareLinkCreatedTitle',
@@ -218,9 +224,22 @@ router.delete("/album/:album", csrfProtection, requireManager, async (req: Reque
       return;
     }
 
+    // Get share link IDs before deleting so we can cancel timers
+    const existingLinks = getShareLinksForAlbum(sanitizedAlbum);
+    const linkIds = existingLinks.map(link => link.id);
+
+    // Delete the share links
     const deletedCount = deleteShareLinksForAlbum(sanitizedAlbum);
     
     info(`[ShareLinks] Deleted ${deletedCount} share links for album: ${sanitizedAlbum}`);
+
+    // Cancel expiry timers for deleted links
+    if (linkIds.length > 0) {
+      const { cancelShareLinkExpiryTimer } = await import('../services/share-link-expiry-tracker.js');
+      for (const linkId of linkIds) {
+        cancelShareLinkExpiryTimer(linkId);
+      }
+    }
 
     res.json({
       success: true,

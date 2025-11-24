@@ -45,17 +45,16 @@
 }
 
 .skeleton-value {
-  height: 1.8rem;
-  width: 90px;
+  height: 1.5rem;
+  width: 70%;
   border-radius: 4px;
-  margin-bottom: 0.25rem;
   background: rgba(255, 255, 255, 0.05);
   animation: skeleton-pulse 1.5s ease-in-out infinite;
 }
 
 .skeleton-label {
   height: 0.8rem;
-  width: 120px;
+  width: 85%;
   border-radius: 4px;
   background: rgba(255, 255, 255, 0.03);
   animation: skeleton-pulse 1.5s ease-in-out infinite;
@@ -205,5 +204,40 @@
   .skeleton-thumbnail {
     width: 50px;
     height: 50px;
+  }
+  
+  /* Adjust skeleton heights and widths for mobile */
+  .skeleton-value {
+    width: 80%;
+    height: 1.25rem;
+  }
+  
+  .skeleton-label {
+    width: 90%;
+    height: 0.7rem;
+  }
+  
+  /* Center skeleton icon */
+  .skeleton-icon {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Further adjust skeleton sizes for small mobile */
+  .skeleton-value {
+    width: 85%;
+    height: 1rem;
+  }
+  
+  .skeleton-label {
+    width: 95%;
+    height: 0.65rem;
+  }
+  
+  .skeleton-icon {
+    width: 35px;
+    height: 35px;
   }
 }

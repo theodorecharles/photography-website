@@ -591,7 +591,14 @@
         "shareLinkExpiredAccessed": {
           "title": "Încercare de accesare a unui link expirat",
           "description": "Când cineva încearcă să folosească un link de partajare expirat"
+        },
+        "shareLinkShared": {
+          "title": "Link de partajare postat",
+          "description": "Când cineva partajează un link pe rețelele sociale sau mesagerie"
         }
+      },
+      "events": {
+        "saved": "Preferința de notificare {{notification}} salvată"
       }
     },
     "events": {},
@@ -1459,7 +1466,9 @@
       "databaseBackupCompletedTitle": "Backup complet",
       "databaseBackupCompletedBody": "Backup-ul bazei de date a fost finalizat cu succes",
       "shareLinkExpiredAccessedTitle": "Încercare de accesare a unui link expirat",
-      "shareLinkExpiredAccessedBody": "Cineva a încercat să folosească un link de partajare expirat"
+      "shareLinkExpiredAccessedBody": "Cineva a încercat să folosească un link de partajare expirat",
+      "shareLinkSharedTitle": "Link de partajare postat",
+      "shareLinkSharedBody": "Cineva a partajat un link pe rețelele sociale sau mesagerie"
     },
     "events": {},
     "error": "A apărut o eroare",

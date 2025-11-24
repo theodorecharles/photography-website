@@ -591,7 +591,14 @@
         "shareLinkExpiredAccessed": {
           "title": "Tentativa de Acesso a Link Expirado",
           "description": "Quando alguém tenta usar um link de compartilhamento expirado"
+        },
+        "shareLinkShared": {
+          "title": "Link de Compartilhamento Postado",
+          "description": "Quando alguém compartilha um link nas redes sociais ou mensagens"
         }
+      },
+      "events": {
+        "saved": "Preferência de notificação {{notification}} salva"
       }
     },
     "events": {},
@@ -1459,7 +1466,9 @@
       "databaseBackupCompletedTitle": "Backup Completo",
       "databaseBackupCompletedBody": "Backup do banco de dados concluído com sucesso",
       "shareLinkExpiredAccessedTitle": "Tentativa de Acesso a Link Expirado",
-      "shareLinkExpiredAccessedBody": "Alguém tentou usar um link de compartilhamento expirado"
+      "shareLinkExpiredAccessedBody": "Alguém tentou usar um link de compartilhamento expirado",
+      "shareLinkSharedTitle": "Link de Compartilhamento Postado",
+      "shareLinkSharedBody": "Alguém compartilhou um link nas redes sociais ou mensagens"
     },
     "events": {},
     "error": "Ocorreu um erro",

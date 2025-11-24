@@ -591,7 +591,14 @@
         "shareLinkExpiredAccessed": {
           "title": "Pagsubok sa Pag-access ng Nag-expire na Link",
           "description": "Kapag may nagtangkang gumamit ng nag-expire na link ng pagbabahagi"
+        },
+        "shareLinkShared": {
+          "title": "Naipost ang Link ng Pagbabahagi",
+          "description": "Kapag may nagbahagi ng link sa social media o mensahe"
         }
+      },
+      "events": {
+        "saved": "{{notification}} na preference ng notipikasyon ay nasave"
       }
     },
     "events": {},
@@ -1402,7 +1409,7 @@
       "errorDisable": "Nabigong huwag paganahin ang push notifications. Pakisubukang muli.",
       "errorGenerateKeys": "Nabigong bumuo ng VAPID keys",
       "close": "Isara",
-      "title": "Push Notifications",
+      "title": "Mga Push Notification",
       "configured": "✓ Nakakonpigurado"
     },
     "backend": {
@@ -1459,7 +1466,9 @@
       "databaseBackupCompletedTitle": "Backup Kumpleto",
       "databaseBackupCompletedBody": "Ang backup ng database ay matagumpay na nakumpleto",
       "shareLinkExpiredAccessedTitle": "Pagsubok sa Pag-access ng Nag-expire na Link",
-      "shareLinkExpiredAccessedBody": "May nagtangkang gumamit ng nag-expire na link ng pagbabahagi"
+      "shareLinkExpiredAccessedBody": "May nagtangkang gumamit ng nag-expire na link ng pagbabahagi",
+      "shareLinkSharedTitle": "Naipost ang Link ng Pagbabahagi",
+      "shareLinkSharedBody": "May nagbahagi ng link sa social media o mensahe"
     },
     "events": {},
     "error": "Nagkaroon ng error",

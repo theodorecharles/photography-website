@@ -591,7 +591,14 @@
         "shareLinkExpiredAccessed": {
           "title": "Intento de acceso a enlace caducado",
           "description": "Cuando alguien intenta usar un enlace compartido caducado"
+        },
+        "shareLinkShared": {
+          "title": "Enlace compartido publicado",
+          "description": "Cuando alguien comparte un enlace en redes sociales o mensajería"
         }
+      },
+      "events": {
+        "saved": "Preferencia de notificación {{notification}} guardada"
       }
     },
     "events": {},
@@ -1459,7 +1466,9 @@
       "databaseBackupCompletedTitle": "Respaldo completo",
       "databaseBackupCompletedBody": "Respaldo de base de datos completado con éxito",
       "shareLinkExpiredAccessedTitle": "Intento de acceso a enlace caducado",
-      "shareLinkExpiredAccessedBody": "Alguien intentó usar un enlace compartido caducado"
+      "shareLinkExpiredAccessedBody": "Alguien intentó usar un enlace compartido caducado",
+      "shareLinkSharedTitle": "Enlace compartido publicado",
+      "shareLinkSharedBody": "Alguien compartió un enlace en redes sociales o mensajería"
     },
     "events": {},
     "error": "Ocurrió un error",

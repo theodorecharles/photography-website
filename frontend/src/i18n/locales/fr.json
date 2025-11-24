@@ -591,7 +591,14 @@
         "shareLinkExpiredAccessed": {
           "title": "Tentative d'accès à un lien expiré",
           "description": "Lorsqu'une personne essaie d'utiliser un lien de partage expiré"
+        },
+        "shareLinkShared": {
+          "title": "Lien de partage publié",
+          "description": "Quand quelqu'un partage un lien sur les réseaux sociaux ou par messagerie"
         }
+      },
+      "events": {
+        "saved": "Préférence de notification {{notification}} enregistrée"
       }
     },
     "events": {},
@@ -1459,7 +1466,9 @@
       "databaseBackupCompletedTitle": "Sauvegarde terminée",
       "databaseBackupCompletedBody": "Sauvegarde de la base de données réussie",
       "shareLinkExpiredAccessedTitle": "Tentative d'accès à un lien expiré",
-      "shareLinkExpiredAccessedBody": "Quelqu'un a essayé d'utiliser un lien de partage expiré"
+      "shareLinkExpiredAccessedBody": "Quelqu'un a essayé d'utiliser un lien de partage expiré",
+      "shareLinkSharedTitle": "Lien de partage publié",
+      "shareLinkSharedBody": "Quelqu'un a partagé un lien sur les réseaux sociaux ou par messagerie"
     },
     "events": {},
     "error": "Une erreur s'est produite",

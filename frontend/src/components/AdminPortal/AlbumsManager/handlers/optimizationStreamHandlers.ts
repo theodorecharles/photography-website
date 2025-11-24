@@ -72,7 +72,8 @@ export const createOptimizationStreamHandlers = (props: OptimizationStreamHandle
           setUploadingImages((prev: UploadingImage[]) => {
             const imageExists = prev.some(img => img.filename === filename);
             if (!imageExists) {
-              warn(`[Optimization Stream] Image ${filename} not found in uploadingImages array`);
+              warn(`[Optimization Stream] Image "${filename}" not found in uploadingImages array. Current images: [${prev.map(img => `"${img.filename}"`).join(', ')}]`);
+              return prev; // Return unchanged if image not found
             }
             
             return prev.map((img: UploadingImage) => {
