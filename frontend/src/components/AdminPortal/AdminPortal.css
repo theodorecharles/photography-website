@@ -51,11 +51,11 @@
 .admin-portal.animated-bg::after {
   content: '';
   position: fixed;
-  top: -30%;
-  right: -10%;
-  width: 700px;
-  height: 700px;
-  background: radial-gradient(circle, rgba(255, 193, 7, 0.15) 0%, rgba(255, 152, 0, 0.08) 40%, transparent 70%);
+  top: -50%;
+  right: -25%;
+  width: 800px;
+  height: 800px;
+  background: radial-gradient(circle, rgba(255, 193, 7, 0.15) 0%, rgba(255, 152, 0, 0.08) 35%, transparent 60%);
   border-radius: 50%;
   animation: float 18s ease-in-out infinite, pulse 6s ease-in-out infinite;
   pointer-events: none;
@@ -64,11 +64,11 @@
 
 .bokeh-circle-1 {
   position: fixed;
-  bottom: -20%;
-  left: -5%;
-  width: 600px;
-  height: 600px;
-  background: radial-gradient(circle, rgba(0, 188, 212, 0.15) 0%, rgba(0, 150, 136, 0.08) 40%, transparent 70%);
+  bottom: -40%;
+  left: -25%;
+  width: 700px;
+  height: 700px;
+  background: radial-gradient(circle, rgba(0, 188, 212, 0.15) 0%, rgba(0, 150, 136, 0.08) 35%, transparent 60%);
   border-radius: 50%;
   animation: floatReverse 22s ease-in-out infinite, pulseReverse 8s ease-in-out infinite;
   pointer-events: none;
@@ -79,9 +79,9 @@
   position: fixed;
   top: 40%;
   left: 50%;
-  width: 550px;
-  height: 550px;
-  background: radial-gradient(circle, rgba(74, 222, 128, 0.12) 0%, rgba(34, 197, 94, 0.06) 40%, transparent 70%);
+  width: 650px;
+  height: 650px;
+  background: radial-gradient(circle, rgba(74, 222, 128, 0.12) 0%, rgba(34, 197, 94, 0.06) 35%, transparent 60%);
   border-radius: 50%;
   animation: floatCenter 25s ease-in-out infinite, pulse 10s ease-in-out infinite;
   pointer-events: none;
@@ -537,7 +537,6 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 16px;
   padding: 3rem 2.5rem;
-  max-width: 500px;
   width: 100%;
   text-align: center;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);

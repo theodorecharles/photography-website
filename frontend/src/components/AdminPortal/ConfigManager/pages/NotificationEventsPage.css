@@ -7,10 +7,27 @@
   overflow-wrap: break-word;
 }
 
-/* Mobile: Hide descriptions */
+/* Mobile: Give more width to event labels and toggles */
 @media (max-width: 768px) {
   .notification-event-description {
     display: none;
+  }
+
+  /* Remove minimum width constraint on mobile */
+  .notification-events-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Remove padding from settings page for more horizontal space */
+  .settings-page {
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+  }
+
+  /* Adjust settings section margins */
+  .settings-section {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
   }
 }
 

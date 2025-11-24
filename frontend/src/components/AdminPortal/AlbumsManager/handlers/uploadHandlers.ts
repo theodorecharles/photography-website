@@ -84,11 +84,16 @@ export const createUploadHandlers = (props: UploadHandlersProps) => {
           try {
             const response = JSON.parse(xhr.responseText);
             if (response.success) {
-              // Update state to 'optimizing' (optimization tracked via separate SSE stream)
+              // Backend sanitizes filenames (Title Case, removes special chars, etc.)
+              // We need to update our uploadingImages array to use the sanitized filename
+              // so that optimization updates can find the correct image
+              const sanitizedFilename = response.filename;
+              
+              // Update state to 'optimizing' and replace original filename with sanitized filename
               setUploadingImages((prev: UploadingImage[]): UploadingImage[] =>
                 prev.map((img: UploadingImage): UploadingImage =>
                   img.filename === filename
-                    ? { ...img, state: 'optimizing', progress: 100, optimizeProgress: 0 }
+                    ? { ...img, filename: sanitizedFilename, state: 'optimizing', progress: 100, optimizeProgress: 0 }
                     : img
                 )
               );
