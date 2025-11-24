@@ -8,8 +8,6 @@
 .admin-portal {
   position: relative;
   min-height: 100vh;
-  background: #1a1a1a;
-  overflow-x: hidden; /* Prevent horizontal scroll from animated backgrounds */
 }
 
 /* Rotating gradient overlay for entire admin portal - only when animated-bg class is present */
