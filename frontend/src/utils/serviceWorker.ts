@@ -3,9 +3,7 @@
  * Registers and manages the service worker for caching
  */
 
-import { showToast } from "./toast";
 import { info } from '../utils/logger';
-import i18n from '../i18n/config';
 
 export function registerServiceWorker() {
   // Disable service worker on localhost (development)
@@ -63,25 +61,13 @@ export function registerServiceWorker() {
                   navigator.serviceWorker.controller
                 ) {
                   // New service worker available
-                  info("📦 New version available! Reloading...");
+                  info("📦 New version available! Will reload on next navigation.");
 
-                  // Show toast notification only in dev/local (not in production)
-                  const isProduction =
-                    window.location.hostname !== "localhost" &&
-                    window.location.hostname !== "127.0.0.1" &&
-                    !window.location.hostname.includes("dev");
-
-                  if (!isProduction) {
-                    showToast(
-                      i18n.t('serviceWorker.newVersionReloading'),
-                      "info"
-                    );
-                  }
+                  // Set global flag to trigger reload on next navigation
+                  window.__pendingServiceWorkerUpdate = true;
                   
-                  // Auto-reload after a brief delay
-                  setTimeout(() => {
-                    window.location.reload();
-                  }, 1000);
+                  // Store in sessionStorage as backup (survives if window object is cleared)
+                  sessionStorage.setItem('pendingServiceWorkerUpdate', 'true');
                 }
               });
             }
