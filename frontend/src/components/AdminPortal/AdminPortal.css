@@ -538,6 +538,7 @@
   border-radius: 16px;
   padding: 3rem 2.5rem;
   width: 100%;
+  max-width: 400px;
   text-align: center;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
   position: relative;
@@ -871,6 +872,14 @@
   margin-top: 1.5rem;
   padding-top: 1.5rem;
   border-top: 1px solid #e5e7eb;
+}
+
+.auth-version {
+  text-align: center;
+  margin-top: 1rem;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.875rem;
+  font-weight: 400;
 }
 
 /* Responsive Design */

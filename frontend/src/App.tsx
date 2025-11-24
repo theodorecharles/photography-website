@@ -31,6 +31,7 @@ import { SSEToasterProvider } from "./contexts/SSEToasterContext";
 import { AuthProvider } from "./contexts/AuthContext";
 import SSEToaster from "./components/SSEToaster";
 import { filterAlbums, filterFolders } from "./utils/albumFilters";
+import { useServiceWorkerNavigationReload } from "./utils/navigationInterceptor";
 
 // Lazy load components that aren't needed on initial page load
 const AdminPortal = lazy(() => import("./components/AdminPortal"));
@@ -239,6 +240,9 @@ function App() {
   const [setupComplete, setSetupComplete] = useState<boolean | null>(null);
   const location = useLocation();
   const { isAuthenticated } = useAuth();
+  
+  // Intercept navigation to reload when service worker update is pending
+  useServiceWorkerNavigationReload();
 
   // Check if initial setup is complete
   useEffect(() => {

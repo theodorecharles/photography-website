@@ -13,6 +13,7 @@ import {
   HomeIcon,
   LockIcon,
 } from '../icons/';
+import packageJson from '../../../../package.json';
 
 interface LoginFormProps {
   availableAuthMethods: {
@@ -393,6 +394,11 @@ export default function LoginForm({ availableAuthMethods, onLoginSuccess }: Logi
             {t('login.returnToGallery')}
           </a>
         </div>
+      </div>
+      
+      {/* Version Display */}
+      <div className="auth-version">
+        Galleria v{packageJson.version}
       </div>
     </div>
   );
