@@ -9,13 +9,14 @@
   position: relative;
   min-height: 100vh;
   background: #1a1a1a;
+  overflow-x: hidden; /* Prevent horizontal scroll from animated backgrounds */
 }
 
 /* Rotating gradient overlay for entire admin portal - only when animated-bg class is present */
 .admin-portal.animated-bg::before {
   content: '';
   position: fixed;
-  inset: -50%;
+  inset: -100%;
   background: 
     radial-gradient(circle at 50% 50%, #1a1a1a 0%, transparent 30%),
     conic-gradient(
