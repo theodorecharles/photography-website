@@ -545,6 +545,11 @@ export function updateImageSortOrder(album: string, imageOrders: { filename: str
   const db = getDatabase();
   
   try {
+    // First, let's see what's actually in the database for this album
+    const dbImages = db.prepare('SELECT filename FROM image_metadata WHERE album = ?').all(album) as Array<{ filename: string }>;
+    info(`[Database] Images in DB for ${album}:`, dbImages.map(i => i.filename).join(', '));
+    info(`[Database] Trying to update:`, imageOrders.map(i => i.filename).join(', '));
+    
     // Use a transaction for atomic updates
     // IMPORTANT: Only UPDATE existing entries, do not INSERT new ones
     // This prevents recreating duplicate entries after cleanup
