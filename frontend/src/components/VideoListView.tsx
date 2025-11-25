@@ -166,7 +166,7 @@ const VideoListView: React.FC<VideoListViewProps> = ({ videos, album, secretKey,
                       album={video.album}
                       filename={filename}
                       videoTitle={video.title}
-                      autoplay={false}
+                      autoplay={true}
                       onLoadStart={() => setThumbnailLoadedMap(prev => ({ ...prev, [video.id]: false }))}
                       onLoaded={() => {
                         setThumbnailLoadedMap(prev => ({ ...prev, [video.id]: true }));
