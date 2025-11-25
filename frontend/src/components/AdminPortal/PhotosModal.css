@@ -49,6 +49,7 @@
   width: 100%;
   max-width: 1024px;
   height: calc(100vh - 54px);
+  max-height: calc(100vh - 54px); /* Ensure it doesn't exceed viewport */
   background: #1a1a1a;
   border-left: 1px solid #444;
   border-right: 1px solid #444;
@@ -97,10 +98,17 @@
   overflow-y: auto;
   overflow-x: hidden;
   background-color: #111;
+  min-height: 0; /* Required for flexbox overflow to work properly */
 }
 
 .photos-grid {
   padding: 1.5rem;
+  padding-bottom: 2rem; /* Extra padding at bottom to ensure last items are visible */
+}
+
+.photos-list {
+  padding: 1rem 1.5rem;
+  padding-bottom: 2rem; /* Extra padding at bottom to ensure last items are visible */
 }
 
 /* ============================================
@@ -634,6 +642,13 @@ label.photos-btn {
     - Controls bar stacks vertically
     - Button text hidden (icons only)
   */
+  
+  /* Fix modal height on mobile to prevent bottom cutoff */
+  .photos-modal {
+    height: calc(100vh - 54px);
+    height: calc(100dvh - 54px); /* Use dynamic viewport height on supported browsers */
+  }
+  
   .publish-toggle-titlebar {
     display: flex !important; /* Show in title bar on mobile (<= 740px) */
   }

@@ -460,3 +460,10 @@ body:has(.modal-overlay) {
   transform: translateY(0);
 }
 
+/* Mobile-specific: Security Setup Modal positioning */
+@media (max-width: 768px) {
+  .security-setup-modal {
+    max-height: calc(91vh - 54px);
+  }
+}
+
