@@ -714,6 +714,10 @@ router.delete("/:album", requireManager, async (req: Request, res: Response): Pr
     // Regenerate static JSON files
     const appRoot = req.app.get('appRoot');
     generateStaticJSONFiles(appRoot);
+    
+    // Regenerate homepage HTML (in case deleted album was on homepage)
+    generateHomepageHTML(appRoot);
+    info(`[AlbumManagement] Regenerated homepage HTML after album deletion`);
 
     res.json({ success: true });
   } catch (err) {
