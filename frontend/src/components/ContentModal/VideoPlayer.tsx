@@ -356,8 +356,17 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         controls
         playsInline
         preload="metadata"
+        muted
         poster={posterUrlFull}
         data-video-id={`${album}/${filename}`}
+        onPlay={(e) => {
+          console.log('[VideoPlayer] Video PLAY event fired');
+          e.stopPropagation();
+        }}
+        onPause={(e) => {
+          console.log('[VideoPlayer] Video PAUSE event fired. Stack trace:', new Error().stack);
+          e.stopPropagation();
+        }}
         style={{
           width: '100%',
           height: '100%',
