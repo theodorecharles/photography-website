@@ -548,8 +548,6 @@ label.photos-btn {
   justify-content: space-between;
   align-items: center;
   padding: 0.75rem 1.5rem;
-  /* Add safe area padding for mobile Safari bottom bar */
-  padding-bottom: calc(0.75rem + env(safe-area-inset-bottom, 0px));
   background: #1f1f1f;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.5);
