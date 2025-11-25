@@ -1,14 +1,24 @@
 # Combined Frontend + Backend Dockerfile
 FROM node:22-alpine
 
-# Install build dependencies for better-sqlite3 and sharp, plus wget for health checks, ffmpeg for video processing
+# Install build dependencies for better-sqlite3 and sharp, plus wget for health checks
 RUN apk add --no-cache \
     python3 \
     make \
     g++ \
     vips-dev \
     wget \
-    ffmpeg
+    curl \
+    xz
+
+# Install ffmpeg with NVIDIA NVENC support from johnvansickle static builds
+# Alpine's ffmpeg doesn't include NVENC, so we use static builds that include all hwaccel
+RUN curl -L https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz -o /tmp/ffmpeg.tar.xz && \
+    tar -xf /tmp/ffmpeg.tar.xz -C /tmp && \
+    mv /tmp/ffmpeg-*-amd64-static/ffmpeg /usr/local/bin/ && \
+    mv /tmp/ffmpeg-*-amd64-static/ffprobe /usr/local/bin/ && \
+    rm -rf /tmp/ffmpeg* && \
+    ffmpeg -version
 
 WORKDIR /app
 
