@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # Diagnostic script to test NVIDIA hardware acceleration in Docker
 
 echo "=========================================="
@@ -7,11 +7,18 @@ echo "=========================================="
 echo ""
 
 echo "1. Checking NVIDIA GPU visibility..."
-if command -v nvidia-smi >/dev/null 2>&1; then
-    nvidia-smi --query-gpu=name,driver_version,memory.total --format=csv,noheader
-    echo "✓ nvidia-smi is available"
+if [ -c /dev/nvidia0 ]; then
+    echo "✓ NVIDIA device nodes present (/dev/nvidia0)"
+    if command -v nvidia-smi >/dev/null 2>&1; then
+        nvidia-smi --query-gpu=name,driver_version,memory.total --format=csv,noheader 2>/dev/null || echo "(nvidia-smi found but query failed)"
+        echo "✓ nvidia-smi is available"
+    else
+        echo "⚠ nvidia-smi not in container (this is OK if /dev/nvidia* exists)"
+    fi
 else
-    echo "✗ nvidia-smi not found"
+    echo "✗ No NVIDIA device nodes found"
+    echo "  Make sure you're using --runtime=nvidia or --gpus all"
+    echo "  Host must have nvidia-container-toolkit installed"
 fi
 echo ""
 
@@ -31,23 +38,45 @@ echo ""
 
 echo "4. Testing NVIDIA NVENC encoder..."
 if ffmpeg -hide_banner -encoders 2>/dev/null | grep -q "h264_nvenc"; then
-    echo "✓ h264_nvenc encoder is available"
+    echo "✓ h264_nvenc encoder is available in ffmpeg"
     
     # Try to actually use it
+    echo ""
     echo "5. Testing actual NVENC encoding (creating test file)..."
-    ffmpeg -f lavfi -i testsrc=duration=1:size=320x240:rate=30 -c:v h264_nvenc -t 1 /tmp/test_nvenc.mp4 -y 2>&1 | tail -5
+    echo "   This will fail if NVIDIA drivers aren't accessible..."
     
-    if [ -f "/tmp/test_nvenc.mp4" ]; then
-        echo "✓ NVENC test encoding succeeded!"
-        rm /tmp/test_nvenc.mp4
+    # Capture both stdout and stderr, show last few lines
+    if ffmpeg -f lavfi -i testsrc=duration=1:size=320x240:rate=30 -c:v h264_nvenc -t 1 /tmp/test_nvenc.mp4 -y 2>&1 | tee /tmp/ffmpeg_test.log | tail -10; then
+        if [ -f "/tmp/test_nvenc.mp4" ] && [ -s "/tmp/test_nvenc.mp4" ]; then
+            echo ""
+            echo "✅ NVENC test encoding SUCCEEDED!"
+            echo "   GPU acceleration is working correctly!"
+            rm -f /tmp/test_nvenc.mp4 /tmp/ffmpeg_test.log
+        else
+            echo ""
+            echo "✗ NVENC encoding failed - check output above"
+            echo "   Common issues:"
+            echo "   - NVIDIA drivers not accessible in container"
+            echo "   - Wrong GPU device or no --runtime=nvidia"
+            rm -f /tmp/ffmpeg_test.log
+        fi
     else
+        echo ""
         echo "✗ NVENC test encoding failed"
+        if grep -q "Cannot load libcuda" /tmp/ffmpeg_test.log 2>/dev/null; then
+            echo "   Issue: Cannot load NVIDIA libraries"
+            echo "   Solution: Make sure nvidia-container-toolkit is installed on host"
+        elif grep -q "No NVENC capable devices found" /tmp/ffmpeg_test.log 2>/dev/null; then
+            echo "   Issue: No NVENC-capable GPU found"
+            echo "   Solution: Check --runtime=nvidia and NVIDIA_VISIBLE_DEVICES"
+        fi
+        rm -f /tmp/ffmpeg_test.log
     fi
 else
-    echo "✗ h264_nvenc encoder NOT available"
+    echo "✗ h264_nvenc encoder NOT available in ffmpeg"
     echo ""
-    echo "This is the problem! FFmpeg doesn't have NVENC support."
-    echo "The Alpine ffmpeg package doesn't include NVIDIA encoder support."
+    echo "   This means ffmpeg wasn't compiled with NVENC support."
+    echo "   The image needs to be rebuilt with NVENC-enabled ffmpeg."
 fi
 echo ""
 

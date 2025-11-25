@@ -1,24 +1,25 @@
 # Combined Frontend + Backend Dockerfile
-FROM node:22-alpine
+# Use Debian-based Node image for better NVIDIA compatibility
+FROM node:22-slim
 
-# Install build dependencies for better-sqlite3 and sharp, plus wget for health checks
-RUN apk add --no-cache \
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
     python3 \
     make \
     g++ \
-    vips-dev \
     wget \
     curl \
-    xz
+    ca-certificates \
+    gnupg \
+    libvips-dev \
+    && rm -rf /var/lib/apt/lists/*
 
-# Install ffmpeg with NVIDIA NVENC support from johnvansickle static builds
-# Alpine's ffmpeg doesn't include NVENC, so we use static builds that include all hwaccel
-RUN curl -L https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz -o /tmp/ffmpeg.tar.xz && \
-    tar -xf /tmp/ffmpeg.tar.xz -C /tmp && \
-    mv /tmp/ffmpeg-*-amd64-static/ffmpeg /usr/local/bin/ && \
-    mv /tmp/ffmpeg-*-amd64-static/ffprobe /usr/local/bin/ && \
-    rm -rf /tmp/ffmpeg* && \
-    ffmpeg -version
+# Install ffmpeg with hwaccel support from official Debian repos
+# Note: Debian ffmpeg is compiled with --enable-nvenc but requires NVIDIA drivers at runtime
+RUN apt-get update && apt-get install -y \
+    ffmpeg \
+    && rm -rf /var/lib/apt/lists/* \
+    && ffmpeg -version
 
 WORKDIR /app
 
