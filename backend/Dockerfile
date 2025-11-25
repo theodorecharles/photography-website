@@ -1,25 +1,29 @@
-# Backend Dockerfile
+# Backend Dockerfile (DEPRECATED - use root Dockerfile instead)
+# This standalone backend Dockerfile is kept for compatibility but the root Dockerfile is preferred
 FROM node:22-alpine
 
-# Install build dependencies for better-sqlite3 and sharp, plus wget for health checks
+# Install build dependencies for better-sqlite3 and sharp, plus wget for health checks, ffmpeg for video processing
 RUN apk add --no-cache \
     python3 \
     make \
     g++ \
     vips-dev \
-    wget
+    wget \
+    ffmpeg
 
 WORKDIR /app
 
-# Copy package files
+# Copy package files for workspace
 COPY package*.json ./
 COPY backend/package*.json ./backend/
 
-# Install dependencies
-RUN npm ci
+# Install ALL dependencies via root workspace
+RUN npm ci && \
+    echo "✓ Workspace dependencies installed" && \
+    ls -la backend/node_modules/cors backend/node_modules/express || (echo "ERROR: Backend dependencies missing!" && exit 1)
 
-# Install backend dependencies and rebuild native modules for ARM64
-RUN cd backend && npm ci && npm rebuild better-sqlite3
+# Rebuild native modules for correct architecture
+RUN npm rebuild better-sqlite3 --build-from-source
 
 # Install tsx globally to run TypeScript directly
 RUN npm install -g tsx

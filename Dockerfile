@@ -1,29 +1,34 @@
 # Combined Frontend + Backend Dockerfile
 FROM node:22-alpine
 
-# Install build dependencies for better-sqlite3 and sharp, plus wget for health checks
+# Install build dependencies for better-sqlite3 and sharp, plus wget for health checks, ffmpeg for video processing
 RUN apk add --no-cache \
     python3 \
     make \
     g++ \
     vips-dev \
-    wget
+    wget \
+    ffmpeg
 
 WORKDIR /app
 
-# Copy package files
+# Copy package files for workspace
 COPY package*.json ./
 COPY backend/package*.json ./backend/
 COPY frontend/package*.json ./frontend/
 
-# Install root dependencies
-RUN npm ci
+# Install ALL dependencies via root workspace (this installs frontend + backend + root deps)
+# npm workspaces hoists all dependencies to root node_modules for sharing
+RUN npm ci && \
+    echo "✓ Workspace dependencies installed" && \
+    echo "Verifying dependencies are hoisted to root node_modules..." && \
+    ls -la node_modules/sharp node_modules/better-sqlite3 node_modules/openai && \
+    ls -la node_modules/cors node_modules/express node_modules/helmet && \
+    ls -la node_modules/react node_modules/react-dom && \
+    echo "✓ All dependencies verified and hoisted correctly"
 
-# Install backend dependencies and rebuild native modules for ARM64
-RUN cd backend && npm ci && npm rebuild better-sqlite3
-
-# Install frontend dependencies
-RUN cd frontend && npm ci
+# Rebuild native modules for correct architecture
+RUN npm rebuild better-sqlite3 --build-from-source
 
 # Install tsx and PM2 globally
 RUN npm install -g tsx pm2
@@ -33,11 +38,8 @@ COPY backend/ ./backend/
 COPY frontend/ ./frontend/
 COPY scripts/ ./scripts/
 
-# Rebuild native modules after copying source (ensures ARM64 compatibility)
-RUN cd backend && npm rebuild better-sqlite3 --build-from-source
-
 # Build frontend (create empty data dir for build)
-RUN mkdir -p ./data && cd frontend && npm run build
+RUN mkdir -p ./data && npm run build --workspace=frontend
 
 # Expose ports
 EXPOSE 3000 3001
