@@ -38,6 +38,22 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     
     initializingRef.current = true;
     console.log('[VideoPlayer] Initializing HLS for', filename);
+
+    // INTERCEPT play() and pause() to find culprit
+    const originalPlay = video.play.bind(video);
+    const originalPause = video.pause.bind(video);
+    
+    video.play = function() {
+      console.log('%c[VideoPlayer] play() CALLED', 'color: green; font-weight: bold');
+      console.log('Stack:', new Error().stack);
+      return originalPlay();
+    };
+    
+    video.pause = function() {
+      console.log('%c[VideoPlayer] pause() CALLED', 'color: red; font-weight: bold');
+      console.log('Stack:', new Error().stack);
+      originalPause();
+    };
     
     if (onLoadStart) onLoadStart();
 
@@ -112,7 +128,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         hls.startLevel = highestQualityLevel;
         
         if (onLoaded) onLoaded();
-        // No autoplay - user clicks play manually
+        console.log('[VideoPlayer] NOT calling play() - user must click');
       });
 
       // Log quality level changes for debugging
@@ -163,8 +179,6 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     } else {
       console.error('[VideoPlayer] HLS not supported');
     }
-
-
 
     return () => {
       console.log('[VideoPlayer] Cleanup: destroying HLS instance');
