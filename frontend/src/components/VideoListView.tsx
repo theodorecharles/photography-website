@@ -72,7 +72,6 @@ const VideoListView: React.FC<VideoListViewProps> = ({ videos, album, secretKey,
                   album={video.album}
                   filename={filename}
                   videoTitle={video.title}
-                  autoplay={false}
                   posterUrl={video.modal}
                   secretKey={secretKey}
                 />
