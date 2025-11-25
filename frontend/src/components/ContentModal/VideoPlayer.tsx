@@ -47,11 +47,8 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   const videoId = `${album}/${filename}`;
 
   useEffect(() => {
-    // Only initialize HLS if user has interacted or autoplay is enabled
-    if (!hasInteracted && !autoplay) {
-      console.log('[VideoPlayer] Waiting for user interaction before loading video');
-      return;
-    }
+    // Initialize HLS immediately when component mounts
+    // No autoplay - user will click play manually
 
     const debugInfo = {
       component: 'VideoPlayer',
@@ -161,13 +158,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         
         setError(null); // Clear loading status
         if (onLoaded) onLoaded();
-        if (autoplay) {
-          console.log('[VideoPlayer] Attempting autoplay');
-          video.play().catch(err => {
-            console.error('[VideoPlayer] Autoplay failed:', err);
-            // On mobile, autoplay often fails - user must manually start (silently fail)
-          });
-        }
+        // No autoplay - user clicks play manually
       });
 
       // Log quality level changes for debugging
@@ -214,13 +205,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         console.log('[VideoPlayer] Native HLS loaded');
         setError(null); // Clear loading status
         if (onLoaded) onLoaded();
-        if (autoplay) {
-          console.log('[VideoPlayer] Attempting native autoplay');
-          video.play().catch(err => {
-            console.error('[VideoPlayer] Native autoplay failed:', err);
-            // On mobile, autoplay often fails - user must manually start (silently fail)
-          });
-        }
+        // No autoplay - user clicks play manually
       });
 
       video.addEventListener('error', (e) => {
@@ -433,7 +418,6 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         preload="metadata"
         data-video-id={`${album}/${filename}`}
         style={{
-          display: hasInteracted || autoplay ? 'block' : 'none',
           width: '100%',
           height: '100%',
           maxWidth: '100%',
