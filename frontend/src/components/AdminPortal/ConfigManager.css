@@ -687,8 +687,8 @@
   }
 }
 
-/* AI Toggle Container */
-.ai-toggle-container {
+/* Generic Toggle Container (used for all toggle switches) */
+.toggle-container {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -696,18 +696,18 @@
   width: 100%;
 }
 
-.ai-toggle-label {
+.toggle-label-wrapper {
   flex: 1;
   min-width: 0; /* Allow text to wrap on mobile */
 }
 
-.ai-toggle-title {
+.toggle-title {
   color: #e5e7eb;
   font-size: 0.95rem;
   font-weight: 500;
 }
 
-.ai-toggle-controls {
+.toggle-controls {
   display: flex;
   align-items: center;
   gap: 0.75rem;
@@ -720,31 +720,31 @@
     gap: 1rem;
   }
 
-  .ai-toggle-container {
+  .toggle-container {
     flex-wrap: wrap;
     gap: 0.75rem;
   }
 
-  .ai-toggle-title {
+  .toggle-title {
     font-size: 0.9rem;
   }
 
-  .ai-toggle-controls {
+  .toggle-controls {
     gap: 0.5rem;
   }
 }
 
 @media (max-width: 480px) {
-  .ai-toggle-container {
+  .toggle-container {
     align-items: flex-start;
   }
 
-  .ai-toggle-label {
+  .toggle-label-wrapper {
     flex-basis: 100%;
     margin-bottom: 0.5rem;
   }
 
-  .ai-toggle-controls {
+  .toggle-controls {
     margin-left: 0;
   }
 }
@@ -1056,14 +1056,14 @@
     max-width: 100%;
   }
 
-  /* Ensure ai-toggle-controls stay visible on mobile */
-  .ai-toggle-controls {
+  /* Ensure toggle-controls stay visible on mobile */
+  .toggle-controls {
     flex-shrink: 0 !important;
     min-width: auto !important;
   }
 
   /* Make toggle labels more compact on mobile */
-  .ai-toggle-controls .toggle-label {
+  .toggle-controls .toggle-label {
     font-size: 0.75rem !important;
     min-width: 35px !important;
   }

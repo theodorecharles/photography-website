@@ -365,11 +365,11 @@ const VideoOptimizationSection: React.FC<VideoOptimizationSectionProps> = ({
                 </div>
               )}
             </div>
-            <div className="ai-toggle-container">
-              <div className="ai-toggle-label">
-                <p className="ai-toggle-title">{t('videoOptimization.hardwareTranscodingDescription')}</p>
+            <div className="toggle-container">
+              <div className="toggle-label-wrapper">
+                <p className="toggle-title">{t('videoOptimization.hardwareTranscodingDescription')}</p>
               </div>
-              <div className="ai-toggle-controls" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <div className="toggle-controls" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                 <label className="toggle-switch">
                   <input
                     type="checkbox"

@@ -305,8 +305,8 @@ const OpenAISection: React.FC<OpenAISectionProps> = ({
             <label className="openai-section-label">
               {t('openAI.autoGenerateLabel')}
             </label>
-            <div className="ai-toggle-container">
-              <div className="ai-toggle-controls">
+            <div className="toggle-container">
+              <div className="toggle-controls">
                 <button
                   type="button"
                   onClick={handleToggleAutoAI}
