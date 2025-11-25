@@ -434,20 +434,15 @@ const ContentModal: React.FC<ContentModalProps> = ({
     const isOnImageTitle = target.closest('.modal-image-title');
     const isOnVideoPlayer = target.closest('.modal-video-player');
     
-    // If clicking on any interactive element, don't close the modal
-    if (isOnButton || isOnInfoPanel || isOnControls || isOnImageTitle) {
-      e.stopPropagation();
+    // If clicking on video or video player, do nothing - let video handle its own events
+    if (isOnVideoPlayer || isDirectlyOnVideo) {
+      // Don't stop propagation, don't prevent default - video needs full control
       return;
     }
     
-    // If clicking on video player or controls, allow interaction with video
-    if (isOnVideoPlayer || isDirectlyOnVideo) {
+    // If clicking on any other interactive element, prevent modal close
+    if (isOnButton || isOnInfoPanel || isOnControls || isOnImageTitle) {
       e.stopPropagation();
-      
-      // Close info panel if clicking on video while it's open
-      if (showInfo && !target.closest('video')) {
-        setShowInfo(false);
-      }
       return;
     }
     
@@ -466,11 +461,11 @@ const ContentModal: React.FC<ContentModalProps> = ({
     // Don't stop propagation - let it bubble to the outer modal div which calls handleClose
   }, [showInfo]);
 
-  // Handle touch gestures
+  // Handle touch gestures (swipe to navigate)
   const handleTouchStart = (e: React.TouchEvent) => {
-    // Don't capture touches on video or video player
+    // Don't capture touches on interactive elements
     const target = e.target as HTMLElement;
-    if (target.closest('video') || target.closest('.modal-video-player')) {
+    if (target.closest('video, .modal-video-player, button, .modal-controls-top, .modal-info-panel')) {
       return;
     }
     
@@ -479,9 +474,9 @@ const ContentModal: React.FC<ContentModalProps> = ({
   };
 
   const handleTouchEnd = (e: React.TouchEvent) => {
-    // Don't capture touches on video or video player
+    // Don't process swipes on interactive elements
     const target = e.target as HTMLElement;
-    if (target.closest('video') || target.closest('.modal-video-player')) {
+    if (target.closest('video, .modal-video-player, button, .modal-controls-top, .modal-info-panel')) {
       return;
     }
     
@@ -492,6 +487,7 @@ const ContentModal: React.FC<ContentModalProps> = ({
     const deltaX = touchEndX - touchStartX.current;
     const deltaY = touchEndY - touchStartY.current;
 
+    // Only trigger swipe if it's horizontal and significant
     if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
       if (deltaX > 0) {
         handleNavigatePrev();

@@ -144,9 +144,11 @@
 }
 
 /* Mobile/Touch: hide play button overlay, tap thumbnail directly instead */
-@media (hover: none) or (pointer: coarse) {
+@media (hover: none), (pointer: coarse), (max-width: 1024px) {
   .video-play-overlay {
-    display: none;
+    display: none !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
   }
 }
 

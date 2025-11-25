@@ -16,7 +16,7 @@ import ContentModal from "./ContentModal";
 import NotFound from "./Misc/NotFound";
 import { reconstructPhoto, getNumColumns, distributePhotos } from "../utils/photoHelpers";
 import { info } from '../utils/logger';
-import { VideoIcon, PlayIcon } from './icons';
+import { VideoIcon } from './icons';
 
 // Lazy load VideoListView (includes VideoPlayer and hls.js)
 const VideoListView = lazy(() => import("./VideoListView"));
@@ -55,6 +55,9 @@ const ContentGrid: React.FC<ContentGridProps> = ({ album, onAlbumNotFound, initi
   
   // Check if album contains only videos
   const isVideoOnlyAlbum = allPhotos.length > 0 && allPhotos.every(photo => photo.media_type === 'video');
+
+  // Detect if this is a touch device
+  const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
   // Create index map for O(1) lookups (use allPhotos for navigation)
   const photoIndexMap = useMemo(() => {
@@ -95,11 +98,6 @@ const ContentGrid: React.FC<ContentGridProps> = ({ album, onAlbumNotFound, initi
     } else {
       setClickedVideoId(null);
     }
-  };
-
-  const handlePlayButtonClick = (e: React.MouseEvent, photo: Photo) => {
-    e.stopPropagation(); // Prevent thumbnail click handler
-    handlePhotoClick(photo, true); // Open with autoplay
   };
 
   const handleNavigatePrev = useCallback(() => {
@@ -633,8 +631,7 @@ const ContentGrid: React.FC<ContentGridProps> = ({ album, onAlbumNotFound, initi
                     : "4 / 3",
                 }}
                 onClick={() => {
-                  // On mobile/touch devices, open videos with autoplay
-                  const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+                  // On mobile/touch devices, open videos directly (no play button)
                   const shouldAutoplay = photo.media_type === 'video' && isTouchDevice;
                   handlePhotoClick(photo, shouldAutoplay);
                 }}
@@ -651,17 +648,9 @@ const ContentGrid: React.FC<ContentGridProps> = ({ album, onAlbumNotFound, initi
                   onLoad={(e) => handleImageLoad(e, photo.id)}
                 />
                 {photo.media_type === 'video' && (
-                  <>
-                    <div className="video-icon-overlay">
-                      <VideoIcon width="20" height="20" />
-                    </div>
-                    <div 
-                      className="video-play-overlay"
-                      onClick={(e) => handlePlayButtonClick(e, photo)}
-                    >
-                      <PlayIcon width="48" height="48" />
-                    </div>
-                  </>
+                  <div className="video-icon-overlay">
+                    <VideoIcon width="20" height="20" />
+                  </div>
                 )}
               </div>
             ))}
