@@ -60,9 +60,8 @@
 
 .footer-link {
   color: #fff;
-  text-decoration: none;
+  text-decoration: underline;
   font-weight: 500;
-  border-bottom: 1px solid #fff;
 }
 
 .footer-link:hover,
