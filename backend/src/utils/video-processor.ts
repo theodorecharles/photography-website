@@ -421,9 +421,10 @@ export async function generateHLS(
     let duration = 0;
 
     ffmpeg.stderr.on('data', (data) => {
-      stderr += data.toString();
+      const chunk = data.toString();
+      stderr += chunk;
       
-      // Extract duration from ffmpeg output
+      // Extract duration from ffmpeg output (only check once)
       if (duration === 0) {
         const durationMatch = stderr.match(/Duration: (\d+):(\d+):(\d+\.\d+)/);
         if (durationMatch) {
@@ -434,9 +435,10 @@ export async function generateHLS(
         }
       }
       
-      // Parse progress from ffmpeg output
+      // Parse progress from the LATEST chunk (not entire stderr buffer)
+      // This ensures we report the most recent progress, not the first match
       if (onProgress && duration > 0) {
-        const timeMatch = stderr.match(/time=(\d+):(\d+):(\d+\.\d+)/);
+        const timeMatch = chunk.match(/time=(\d+):(\d+):(\d+\.\d+)/);
         if (timeMatch) {
           const hours = parseInt(timeMatch[1]);
           const minutes = parseInt(timeMatch[2]);
