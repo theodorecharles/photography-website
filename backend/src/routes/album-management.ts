@@ -1459,14 +1459,17 @@ router.post("/:album/photo-order", requireManager, async (req: Request, res: Res
       return;
     }
 
-    // Sanitize and validate each photo filename
+    // Validate photo filenames - DON'T sanitize, use exact names from database
     const imageOrders = photoOrder.map((item, index) => {
-      const sanitizedFilename = sanitizePhotoName(item.filename);
-      if (!sanitizedFilename) {
-        throw new Error(`Invalid photo filename: ${item.filename}`);
+      const filename = item.filename;
+      
+      // Basic security validation only
+      if (!filename || filename.includes('..') || filename.includes('/') || filename.includes('\\')) {
+        throw new Error(`Invalid photo filename: ${filename}`);
       }
+      
       return {
-        filename: sanitizedFilename,
+        filename: filename,  // Use EXACT filename, no modifications
         sort_order: index
       };
     });
