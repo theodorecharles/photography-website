@@ -79,7 +79,6 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         maxMaxBufferLength: 15,
         maxBufferSize: 15 * 1000 * 1000,
         backBufferLength: 30,
-        startLevel: -1, // Auto select, but we'll override in MANIFEST_PARSED
         loader: CustomLoader,
         xhrSetup: (xhr: XMLHttpRequest) => {
           xhr.withCredentials = true;
@@ -87,35 +86,42 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
       });
 
       hlsRef.current = hls;
-      hls.loadSource(masterPlaylistUrl);
-      hls.attachMedia(video);
-
+      
       hls.on(Hls.Events.MANIFEST_PARSED, () => {
         console.log('[VideoPlayer] Loaded:', hls.levels.map(l => l.height + 'p'));
         
-        // Set default quality to 720p if available
+        // Set default quality to 720p if available (do this once on load)
         const preferredHeight = 720;
         const levelIndex = hls.levels.findIndex(level => level.height === preferredHeight);
         
         if (levelIndex !== -1) {
-          hls.currentLevel = levelIndex;
+          hls.loadLevel = levelIndex; // Use loadLevel to set initial quality without interrupting playback
           console.log(`[VideoPlayer] Starting at ${preferredHeight}p`);
         } else {
           // If 720p not available, use highest quality
-          hls.currentLevel = hls.levels.length - 1;
+          hls.loadLevel = hls.levels.length - 1;
           console.log(`[VideoPlayer] 720p not available, using highest quality: ${hls.levels[hls.levels.length - 1].height}p`);
         }
         
         if (onLoadedRef.current) onLoadedRef.current();
       });
+      
+      hls.loadSource(masterPlaylistUrl);
+      hls.attachMedia(video);
 
       hls.on(Hls.Events.LEVEL_SWITCHED, (_event, data) => {
         const level = hls.levels[data.level];
         const quality = `${level.height}p`;
+        console.log(`[VideoPlayer] Level switched to ${quality}`);
         trackVideoQualityChange(videoId, album, videoTitle, quality, true);
+      });
+      
+      hls.on(Hls.Events.LEVEL_SWITCHING, (_event, data) => {
+        console.log(`[VideoPlayer] Level switching to ${hls.levels[data.level].height}p`);
       });
 
       hls.on(Hls.Events.ERROR, (_event, data) => {
+        console.error('[VideoPlayer] HLS Error:', data.type, data.details, data);
         if (data.fatal) {
           console.error('[VideoPlayer] Fatal error:', data);
           switch (data.type) {
