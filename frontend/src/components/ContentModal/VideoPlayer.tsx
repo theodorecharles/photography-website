@@ -159,6 +159,9 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
       playsInline
       preload="metadata"
       poster={posterUrlFull}
+      onPlay={() => console.log('[VideoPlayer] Video PLAY event')}
+      onPause={() => console.log('[VideoPlayer] Video PAUSE event')}
+      onPlaying={() => console.log('[VideoPlayer] Video PLAYING event')}
       style={{
         width: '100%',
         height: '100%',
