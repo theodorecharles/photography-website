@@ -200,7 +200,6 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         controls
         playsInline
         preload="metadata"
-        muted
         poster={posterUrlFull}
         data-video-id={`${album}/${filename}`}
         style={{
