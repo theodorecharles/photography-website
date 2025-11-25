@@ -37,10 +37,19 @@
   color: #f8fafc;
 }
 
+.video-player-wrapper .plyr__control svg,
+.video-player-wrapper .plyr__menu__container svg {
+  fill: currentColor;
+}
+
 .video-player-wrapper .plyr__control--overlaid {
   background: rgba(74, 222, 128, 0.95);
   color: #0f172a;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+}
+
+.video-player-wrapper .plyr__control--overlaid svg {
+  fill: currentColor;
 }
 
 .video-player-wrapper .plyr__progress__buffer {
