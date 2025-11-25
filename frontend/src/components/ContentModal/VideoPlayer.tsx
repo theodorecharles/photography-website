@@ -5,6 +5,9 @@
 
 import React, { useEffect, useRef } from 'react';
 import Hls from 'hls.js';
+import Plyr from 'plyr';
+import 'plyr/dist/plyr.css';
+import './VideoPlayer.css';
 import { API_URL } from '../../config';
 import { trackVideoQualityChange } from '../../utils/analytics';
 
@@ -29,6 +32,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const hlsRef = useRef<Hls | null>(null);
+  const playerRef = useRef<Plyr | null>(null);
   const initializingRef = useRef(false);
   const videoId = `${album}/${filename}`;
 
@@ -39,22 +43,6 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     initializingRef.current = true;
     console.log('[VideoPlayer] Initializing HLS for', filename);
 
-    // INTERCEPT play() and pause() to find culprit
-    const originalPlay = video.play.bind(video);
-    const originalPause = video.pause.bind(video);
-    
-    video.play = function() {
-      console.log('%c[VideoPlayer] play() CALLED', 'color: green; font-weight: bold');
-      console.log('Stack:', new Error().stack);
-      return originalPlay();
-    };
-    
-    video.pause = function() {
-      console.log('%c[VideoPlayer] pause() CALLED', 'color: red; font-weight: bold');
-      console.log('Stack:', new Error().stack);
-      originalPause();
-    };
-    
     if (onLoadStart) onLoadStart();
 
     // Load master playlist for adaptive streaming
@@ -75,6 +63,27 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     if (typeof window !== 'undefined') {
       (window as any).lastVideoUrl = urlDebug;
     }
+
+    // Initialize Plyr for consistent controls across browsers
+    const player = new Plyr(video, {
+      controls: ['play-large', 'play', 'progress', 'current-time', 'mute', 'volume', 'settings', 'fullscreen'],
+      clickToPlay: true,
+      hideControls: true,
+      resetOnEnd: false,
+      fullscreen: { enabled: true, fallback: true, iosNative: true },
+    });
+    playerRef.current = player;
+
+    const cleanupPlayer = () => {
+      player.destroy();
+      playerRef.current = null;
+    };
+
+    const handleMetadataLoaded = () => {
+      if (onLoaded) onLoaded();
+    };
+
+    let nativeMetadataHandler: (() => void) | null = null;
 
     if (Hls.isSupported()) {
       console.log('[VideoPlayer] Using HLS.js for playback');
@@ -117,18 +126,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
 
       hls.on(Hls.Events.MANIFEST_PARSED, () => {
         console.log('[VideoPlayer] Master playlist loaded, available qualities:', hls.levels.map(l => l.height + 'p'));
-        
-        // Start at highest quality (720p or 1080p), then let ABR adapt if needed
-        // Find the highest quality level by bitrate
-        const highestQualityLevel = hls.levels.reduce((highest, level, index) => {
-          return level.bitrate > hls.levels[highest].bitrate ? index : highest;
-        }, 0);
-        
-        console.log(`[VideoPlayer] Starting at highest quality: ${hls.levels[highestQualityLevel].height}p`);
-        hls.startLevel = highestQualityLevel;
-        
-        if (onLoaded) onLoaded();
-        console.log('[VideoPlayer] Manifest loaded');
+        handleMetadataLoaded();
       });
 
       // Log quality level changes for debugging
@@ -167,11 +165,11 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
       // Native HLS support (Safari/iOS)
       console.log('[VideoPlayer] Using native HLS support');
       video.src = masterPlaylistUrl;
-      
-      video.addEventListener('loadedmetadata', () => {
+      nativeMetadataHandler = () => {
         console.log('[VideoPlayer] Native HLS loaded');
-        if (onLoaded) onLoaded();
-      });
+        handleMetadataLoaded();
+      };
+      video.addEventListener('loadedmetadata', nativeMetadataHandler);
 
       video.addEventListener('error', (e) => {
         console.error('[VideoPlayer] Native video error:', e, video.error);
@@ -187,6 +185,10 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         hlsRef.current.destroy();
         hlsRef.current = null;
       }
+      if (nativeMetadataHandler) {
+        video.removeEventListener('loadedmetadata', nativeMetadataHandler);
+      }
+      cleanupPlayer();
     };
   }, [album, filename, videoTitle, secretKey]); // Don't include callbacks in deps - they cause re-render loops
 
@@ -195,22 +197,24 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%' }}>
       
-      <video
+      <div className="video-player-wrapper">
+        <video
         ref={videoRef}
         controls
         playsInline
         preload="none"
         poster={posterUrlFull}
         data-video-id={`${album}/${filename}`}
-        style={{
-          width: '100%',
-          height: '100%',
-          display: 'block',
-          maxWidth: '100%',
-          maxHeight: '100%',
-          objectFit: 'contain'
-        }}
-      />
+          style={{
+            width: '100%',
+            height: '100%',
+            display: 'block',
+            maxWidth: '100%',
+            maxHeight: '100%',
+            objectFit: 'contain'
+          }}
+        />
+      </div>
     </div>
   );
 };
