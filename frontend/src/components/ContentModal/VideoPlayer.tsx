@@ -432,18 +432,13 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         playsInline
         preload="metadata"
         data-video-id={`${album}/${filename}`}
-        onClick={(e) => e.stopPropagation()}
-        onTouchEnd={(e) => e.stopPropagation()}
-        onPlay={(e) => e.stopPropagation()}
-        onPause={(e) => e.stopPropagation()}
         style={{
           display: hasInteracted || autoplay ? 'block' : 'none',
           width: '100%',
           height: '100%',
           maxWidth: '100%',
           maxHeight: '100%',
-          objectFit: 'contain',
-          pointerEvents: 'auto'
+          objectFit: 'contain'
         }}
       />
     </div>
