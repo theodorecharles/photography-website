@@ -546,18 +546,17 @@ export function updateImageSortOrder(album: string, imageOrders: { filename: str
   
   try {
     // Use a transaction for atomic updates
+    // IMPORTANT: Only UPDATE existing entries, do not INSERT new ones
+    // This prevents recreating duplicate entries after cleanup
     const transaction = db.transaction(() => {
       const stmt = db.prepare(`
-        INSERT INTO image_metadata (album, filename, sort_order)
-        VALUES (?, ?, ?)
-        ON CONFLICT(album, filename) 
-        DO UPDATE SET 
-          sort_order = excluded.sort_order,
-          updated_at = CURRENT_TIMESTAMP
+        UPDATE image_metadata 
+        SET sort_order = ?, updated_at = CURRENT_TIMESTAMP
+        WHERE album = ? AND filename = ?
       `);
       
       for (const { filename, sort_order } of imageOrders) {
-        stmt.run(album, filename, sort_order);
+        stmt.run(sort_order, album, filename);
       }
     });
     
