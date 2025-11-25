@@ -134,7 +134,7 @@ jobs:
           fi
 
           # Build and push with latest tag
-          docker build -t ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.DOCKER_IMAGE_NAME }}:$TAG .
+          docker build --no-cache -t ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.DOCKER_IMAGE_NAME }}:$TAG .
           docker push ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.DOCKER_IMAGE_NAME }}:$TAG
 
           # PRODUCTION ONLY: Also tag and push with version from package.json
