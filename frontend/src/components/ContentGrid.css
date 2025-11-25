@@ -130,14 +130,24 @@
   cursor: pointer;
 }
 
-.photo-item.video-item:hover .video-play-overlay {
-  opacity: 1;
-  pointer-events: auto;
+/* Desktop: show play button on hover */
+@media (hover: hover) and (pointer: fine) {
+  .photo-item.video-item:hover .video-play-overlay {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .video-play-overlay:hover {
+    background: rgba(0, 0, 0, 0.8);
+    transform: translate(-50%, -50%) scale(1.1);
+  }
 }
 
-.video-play-overlay:hover {
-  background: rgba(0, 0, 0, 0.8);
-  transform: translate(-50%, -50%) scale(1.1);
+/* Mobile/Touch: hide play button overlay, tap thumbnail directly instead */
+@media (hover: none) or (pointer: coarse) {
+  .video-play-overlay {
+    display: none;
+  }
 }
 
 @media (max-width: 511px) {

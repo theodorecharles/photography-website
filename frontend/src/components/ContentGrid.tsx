@@ -633,7 +633,10 @@ const ContentGrid: React.FC<ContentGridProps> = ({ album, onAlbumNotFound, initi
                     : "4 / 3",
                 }}
                 onClick={() => {
-                  handlePhotoClick(photo);
+                  // On mobile/touch devices, open videos with autoplay
+                  const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+                  const shouldAutoplay = photo.media_type === 'video' && isTouchDevice;
+                  handlePhotoClick(photo, shouldAutoplay);
                 }}
               >
                 {loadingImages.has(photo.id) && (
