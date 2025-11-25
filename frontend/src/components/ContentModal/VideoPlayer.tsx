@@ -68,7 +68,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     const player = new Plyr(video, {
       controls: ['play-large', 'play', 'progress', 'current-time', 'mute', 'volume', 'settings', 'fullscreen'],
       clickToPlay: true,
-      hideControls: true,
+      hideControls: false,
       resetOnEnd: false,
       fullscreen: { enabled: true, fallback: true, iosNative: true },
     });

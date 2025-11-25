@@ -7,7 +7,7 @@
 }
 
 .video-player-wrapper .plyr {
-  --plyr-color-main: #ff8a3c;
+  --plyr-color-main: #4ade80;
   --plyr-video-background: rgba(0, 0, 0, 0.9);
   display: flex;
   align-items: center;
@@ -28,13 +28,19 @@
 }
 
 .video-player-wrapper .plyr__controls {
-  background: rgba(0, 0, 0, 0.65);
+  background: rgba(0, 0, 0, 0.55);
   border-radius: 999px;
   padding: 0.35rem 0.65rem;
 }
 
 .video-player-wrapper .plyr__control {
   color: #f8fafc;
+}
+
+.video-player-wrapper .plyr__control--overlaid {
+  background: rgba(74, 222, 128, 0.95);
+  color: #0f172a;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
 }
 
 .video-player-wrapper .plyr__progress__buffer {
