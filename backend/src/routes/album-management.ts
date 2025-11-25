@@ -889,9 +889,10 @@ router.post("/:album/upload", requireManager, (req: Request, res: Response, next
     const mediaType = isVideo ? 'video' : 'photo';
     
     if (isVideo) {
-      // For videos, just move the file to the photos directory
+      // For videos, copy file then delete temp (rename doesn't work across filesystems in Docker)
       try {
-        await fs.promises.rename(file.path, destPath);
+        await fs.promises.copyFile(file.path, destPath);
+        await fs.promises.unlink(file.path);
       } catch (err: any) {
         error(`[Upload] Failed to move video ${file.originalname}:`, err.message);
         try {
