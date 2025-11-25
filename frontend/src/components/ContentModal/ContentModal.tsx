@@ -649,7 +649,12 @@ const ContentModal: React.FC<ContentModalProps> = ({
 
             {selectedPhoto.media_type === 'video' ? (
               /* Show video player directly - let native video controls handle thumbnail/poster */
-              <div className="modal-photo-container">
+              <div 
+                className="modal-photo-container"
+                onClick={(e) => e.stopPropagation()}
+                onTouchEnd={(e) => e.stopPropagation()}
+                onTouchStart={(e) => e.stopPropagation()}
+              >
                 <div className="modal-video-player">
                   <Suspense fallback={<div className="photo-loading-overlay"><div className="photo-loading-spinner"></div></div>}>
                     <VideoPlayer
