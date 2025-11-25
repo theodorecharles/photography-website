@@ -32,7 +32,6 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   const videoRef = useRef<HTMLVideoElement>(null);
   const hlsRef = useRef<Hls | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [hasInteracted, setHasInteracted] = useState(false); // Track if user clicked play
   const initializingRef = useRef(false); // Prevent multiple initializations
   
   // Analytics tracking state
@@ -307,7 +306,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         hlsRef.current = null;
       }
     };
-  }, [album, filename, videoTitle, autoplay, secretKey, hasInteracted]); // Don't include callbacks in deps - they cause re-render loops
+  }, [album, filename, videoTitle, autoplay, secretKey]); // Don't include callbacks in deps - they cause re-render loops
 
   if (error && !error.includes('Tap to play')) {
     return (
@@ -329,22 +328,10 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     );
   }
 
-  // Handle play button click - start loading video
-  const handlePlayClick = () => {
-    console.log('[VideoPlayer] User clicked play, initializing HLS');
-    setHasInteracted(true);
-    
-    // Auto-play once HLS is loaded
-    const video = videoRef.current;
-    if (video) {
-      video.play().catch(err => {
-        console.warn('[VideoPlayer] Auto-play failed:', err);
-      });
-    }
-  };
+  const posterUrlFull = posterUrl ? `${API_URL}${posterUrl}${secretKey ? `?key=${secretKey}` : ''}` : undefined;
 
   return (
-    <div style={{ position: 'relative', width: '100%', height: '100%', pointerEvents: 'auto' }}>
+    <div style={{ position: 'relative', width: '100%', height: '100%' }}>
       {error && (
         <div style={{
           position: 'absolute',
@@ -364,58 +351,12 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         </div>
       )}
       
-      {/* Show thumbnail with play button if video not loaded yet */}
-      {!hasInteracted && !autoplay && posterUrl && (
-        <div
-          onClick={handlePlayClick}
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: 'pointer',
-            zIndex: 5,
-            background: `url(${API_URL}${posterUrl}) center/contain no-repeat`,
-            backgroundColor: '#000'
-          }}
-        >
-          <div
-            style={{
-              width: '80px',
-              height: '80px',
-              borderRadius: '50%',
-              backgroundColor: 'rgba(0, 0, 0, 0.7)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              border: '3px solid rgba(255, 255, 255, 0.9)',
-              transition: 'transform 0.2s',
-            }}
-            onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
-            onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
-          >
-            <svg
-              width="32"
-              height="32"
-              viewBox="0 0 24 24"
-              fill="white"
-              style={{ marginLeft: '4px' }}
-            >
-              <path d="M8 5v14l11-7z" />
-            </svg>
-          </div>
-        </div>
-      )}
-      
       <video
         ref={videoRef}
         controls
         playsInline
         preload="metadata"
+        poster={posterUrlFull}
         data-video-id={`${album}/${filename}`}
         style={{
           width: '100%',
