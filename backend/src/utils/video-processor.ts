@@ -427,6 +427,10 @@ export async function generateHLS(
     } else {
       info(`[VideoProcessor] Generating ${resolution.name} HLS playlist with ${encoder}`);
     }
+    
+    // Log the exact ffmpeg command for debugging
+    info(`[VideoProcessor] Running ffmpeg command: ffmpeg ${args.join(' ')}`);
+    
     const ffmpeg = spawn('ffmpeg', args);
     let stderr = '';
     let duration = 0;
