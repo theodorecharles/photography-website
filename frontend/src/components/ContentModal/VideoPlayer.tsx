@@ -214,7 +214,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         ref={videoRef}
         controls
         playsInline
-        preload="metadata"
+        preload="none"
         poster={posterUrlFull}
         data-video-id={`${album}/${filename}`}
         style={{
