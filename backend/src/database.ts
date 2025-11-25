@@ -555,9 +555,20 @@ export function updateImageSortOrder(album: string, imageOrders: { filename: str
         WHERE album = ? AND filename = ?
       `);
       
+      let updatedCount = 0;
+      let notFoundCount = 0;
+      
       for (const { filename, sort_order } of imageOrders) {
-        stmt.run(sort_order, album, filename);
+        const result = stmt.run(sort_order, album, filename);
+        if (result.changes > 0) {
+          updatedCount++;
+        } else {
+          notFoundCount++;
+          error(`[Database] Image not found for update: ${album}/${filename}`);
+        }
       }
+      
+      info(`[Database] Updated ${updatedCount} images, ${notFoundCount} not found`);
     });
     
     transaction();
