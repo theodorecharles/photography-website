@@ -218,19 +218,27 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
 
     // Add video analytics event listeners
     const handlePlay = () => {
+      console.log('[VideoPlayer] handlePlay analytics called');
       watchStartTime.current = Date.now();
       playCount.current++;
-      trackVideoPlay(videoId, album, videoTitle, video.currentTime, video.duration);
+      // Delay analytics to avoid triggering re-render
+      setTimeout(() => {
+        trackVideoPlay(videoId, album, videoTitle, video.currentTime, video.duration);
+      }, 100);
     };
 
     const handlePause = () => {
+      console.log('[VideoPlayer] handlePause analytics called');
       if (watchStartTime.current) {
         const watchDuration = (Date.now() - watchStartTime.current) / 1000;
         totalWatchTime.current += watchDuration;
         watchStartTime.current = null;
       }
       pauseCount.current++;
-      trackVideoPause(videoId, album, videoTitle, video.currentTime, video.duration);
+      // Delay analytics to avoid triggering re-render
+      setTimeout(() => {
+        trackVideoPause(videoId, album, videoTitle, video.currentTime, video.duration);
+      }, 100);
     };
 
     const handleEnded = () => {
