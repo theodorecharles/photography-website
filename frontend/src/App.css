@@ -46,7 +46,7 @@ body {
   background-color: #1e1e1e;
   position: relative;
   width: 100%;
-  overflow-x: hidden;
+  overflow: visible;
   flex: 1 0 auto;
   min-height: calc(100vh - 200px);
 }

@@ -283,6 +283,7 @@
   margin: 0 auto;
   position: relative;
   z-index: 1;
+  overflow: visible;
 }
 
 .admin-header {
