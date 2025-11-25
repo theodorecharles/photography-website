@@ -48,6 +48,7 @@ const VideoThumbnailPicker: React.FC<VideoThumbnailPickerProps> = ({
         enableWorker: true,
         lowLatencyMode: false,
         backBufferLength: 90,
+        autoStartLoad: true, // MUST load segments for thumbnail picker to work
         debug: false,
         xhrSetup: (xhr: XMLHttpRequest) => {
           xhr.withCredentials = true;
@@ -59,19 +60,34 @@ const VideoThumbnailPicker: React.FC<VideoThumbnailPickerProps> = ({
       hls.attachMedia(video);
 
       hls.on(Hls.Events.MANIFEST_PARSED, () => {
-        setDuration(video.duration || 0);
+        console.log('[VideoThumbnailPicker] Manifest loaded');
+        // Don't set duration here - wait for loadedmetadata
         setVideoError(false);
       });
 
       hls.on(Hls.Events.ERROR, (_event, data) => {
+        console.error('[VideoThumbnailPicker] HLS error:', data);
         if (data.fatal) {
-          console.error('[VideoThumbnailPicker] HLS error:', data);
-          setVideoError(true);
+          switch (data.type) {
+            case Hls.ErrorTypes.NETWORK_ERROR:
+              console.error('[VideoThumbnailPicker] Network error, attempting recovery');
+              hls.startLoad();
+              break;
+            case Hls.ErrorTypes.MEDIA_ERROR:
+              console.error('[VideoThumbnailPicker] Media error, attempting recovery');
+              hls.recoverMediaError();
+              break;
+            default:
+              console.error('[VideoThumbnailPicker] Fatal error, giving up');
+              setVideoError(true);
+              break;
+          }
         }
       });
 
-      // Handle metadata loaded
+      // Handle metadata loaded - this is when we actually have duration
       const handleLoadedMetadata = () => {
+        console.log('[VideoThumbnailPicker] Metadata loaded, duration:', video.duration);
         setDuration(video.duration);
         setVideoError(false);
       };

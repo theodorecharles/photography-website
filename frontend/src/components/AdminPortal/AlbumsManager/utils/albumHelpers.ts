@@ -4,15 +4,15 @@
  */
 
 /**
- * Sanitizes and converts a string to title case for album names
+ * Sanitizes a string for album/folder names WITHOUT changing case
  * - Removes special characters (keeps only letters, numbers, spaces, hyphens, underscores)
- * - Converts to title case (Each Word Capitalized)
  * - Trims whitespace
+ * - Does NOT change capitalization
  * 
  * @example
- * sanitizeAndTitleCase("my-COOL album!!") → "My Cool Album"
+ * sanitizeName("my-COOL album!!") → "my COOL album"
  */
-export const sanitizeAndTitleCase = (str: string): string => {
+export const sanitizeName = (str: string): string => {
   if (!str) return '';
   
   // Remove special characters, keep only letters, numbers, spaces, hyphens, and underscores
@@ -20,6 +20,24 @@ export const sanitizeAndTitleCase = (str: string): string => {
   
   // Replace multiple spaces with single space
   sanitized = sanitized.replace(/\s+/g, ' ').trim();
+  
+  return sanitized;
+};
+
+/**
+ * Sanitizes and converts a string to title case for album names
+ * - Removes special characters (keeps only letters, numbers, spaces, hyphens, underscores)
+ * - Converts to title case (Each Word Capitalized)
+ * - Trims whitespace
+ * 
+ * ONLY USE for ghost tile drops where folder names may be all caps or have special chars
+ * For manual album creation/renaming, use sanitizeName() to preserve user's capitalization
+ * 
+ * @example
+ * sanitizeAndTitleCase("my-COOL album!!") → "My Cool Album"
+ */
+export const sanitizeAndTitleCase = (str: string): string => {
+  const sanitized = sanitizeName(str);
   
   // Convert to title case
   return sanitized

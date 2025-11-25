@@ -112,6 +112,16 @@ const serveMasterPlaylist = async (req: Request, res: Response, album: string, f
     // Check if master playlist exists
     if (!fs.existsSync(masterPlaylistPath)) {
       error(`[Video] Master playlist not found: ${masterPlaylistPath}`);
+      
+      // Debug: show what's actually in the video directory
+      const albumVideoDir = path.join(videoDir, sanitizedAlbum);
+      if (fs.existsSync(albumVideoDir)) {
+        const files = fs.readdirSync(albumVideoDir);
+        error(`[Video] Files in album directory: ${JSON.stringify(files)}`);
+      } else {
+        error(`[Video] Album video directory doesn't exist: ${albumVideoDir}`);
+      }
+      
       res.status(404).json({ error: 'Master playlist not found' });
       return;
     }

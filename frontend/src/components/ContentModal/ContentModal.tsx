@@ -14,7 +14,6 @@ import ModalControls from './ModalControls';
 import InfoPanel from './InfoPanel';
 import ImageCanvas from './ImageCanvas';
 import ModalNavigation from './ModalNavigation';
-import { PlayIcon } from '../icons';
 import './PhotoModal.css';
 import { error as logError } from '../../utils/logger';
 
@@ -43,7 +42,7 @@ const ContentModal: React.FC<ContentModalProps> = ({
   onNavigatePrev,
   onNavigateNext,
   onClose,
-  clickedVideo = false,
+  clickedVideo: _clickedVideo = false, // Unused - videos now always show player directly
   secretKey,
   isHomepage = false,
 }) => {
@@ -60,31 +59,6 @@ const ContentModal: React.FC<ContentModalProps> = ({
     () => !localStorage.getItem('hideNavigationHint')
   );
   const [siteName, setSiteName] = useState<string>('Galleria');
-  const [shouldAutoplay, setShouldAutoplay] = useState(clickedVideo);
-  const [showVideoPlayer, setShowVideoPlayer] = useState(clickedVideo);
-  const previousPhotoRef = useRef<string | null>(null);
-
-  // Track photo changes to determine if user navigated
-  useEffect(() => {
-    if (previousPhotoRef.current && previousPhotoRef.current !== selectedPhoto.id) {
-      // User navigated to a different photo/video, don't autoplay and show preview
-      setShouldAutoplay(false);
-      setShowVideoPlayer(false);
-    } else if (clickedVideo) {
-      // User directly clicked a video
-      setShowVideoPlayer(true);
-    }
-    previousPhotoRef.current = selectedPhoto.id;
-  }, [selectedPhoto.id, clickedVideo]);
-
-  // Handle play button click on video preview
-  const handlePlayClick = useCallback((e: React.MouseEvent | React.TouchEvent) => {
-    console.log('[ContentModal] Play button clicked');
-    e.stopPropagation();
-    e.preventDefault();
-    setShowVideoPlayer(true);
-    setShouldAutoplay(true);
-  }, []);
   
   const touchStartX = useRef<number | null>(null);
   const touchStartY = useRef<number | null>(null);
@@ -458,18 +432,25 @@ const ContentModal: React.FC<ContentModalProps> = ({
     const isOnInfoPanel = target.closest('.modal-info-panel');
     const isOnControls = target.closest('.modal-controls-top');
     const isOnImageTitle = target.closest('.modal-image-title');
+    const isOnVideoPlayer = target.closest('.modal-video-player');
     
-    // If clicking on any interactive element, don't close the modal
+    // If clicking on video or video player, do nothing - let video handle its own events
+    if (isOnVideoPlayer || isDirectlyOnVideo) {
+      // Don't stop propagation, don't prevent default - video needs full control
+      return;
+    }
+    
+    // If clicking on any other interactive element, prevent modal close
     if (isOnButton || isOnInfoPanel || isOnControls || isOnImageTitle) {
       e.stopPropagation();
       return;
     }
     
-    // If clicking directly on the image or video, don't close modal
-    if (isDirectlyOnImage || isDirectlyOnVideo) {
+    // If clicking directly on the image, don't close modal
+    if (isDirectlyOnImage) {
       e.stopPropagation();
       
-      // Close info panel if clicking on image/video while it's open
+      // Close info panel if clicking on image while it's open
       if (showInfo) {
         setShowInfo(false);
       }
@@ -480,13 +461,25 @@ const ContentModal: React.FC<ContentModalProps> = ({
     // Don't stop propagation - let it bubble to the outer modal div which calls handleClose
   }, [showInfo]);
 
-  // Handle touch gestures
+  // Handle touch gestures (swipe to navigate)
   const handleTouchStart = (e: React.TouchEvent) => {
+    // Don't capture touches on interactive elements
+    const target = e.target as HTMLElement;
+    if (target.closest('video, .modal-video-player, button, .modal-controls-top, .modal-info-panel')) {
+      return;
+    }
+    
     touchStartX.current = e.touches[0].clientX;
     touchStartY.current = e.touches[0].clientY;
   };
 
   const handleTouchEnd = (e: React.TouchEvent) => {
+    // Don't process swipes on interactive elements
+    const target = e.target as HTMLElement;
+    if (target.closest('video, .modal-video-player, button, .modal-controls-top, .modal-info-panel')) {
+      return;
+    }
+    
     if (!touchStartX.current || !touchStartY.current) return;
 
     const touchEndX = e.changedTouches[0].clientX;
@@ -494,6 +487,7 @@ const ContentModal: React.FC<ContentModalProps> = ({
     const deltaX = touchEndX - touchStartX.current;
     const deltaY = touchEndY - touchStartY.current;
 
+    // Only trigger swipe if it's horizontal and significant
     if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
       if (deltaX > 0) {
         handleNavigatePrev();
@@ -542,9 +536,9 @@ const ContentModal: React.FC<ContentModalProps> = ({
   // Note: Thumbnail preloading removed since we no longer receive the full photos array
   // Thumbnails are loaded on-demand and browser caching + server-side caching handles the rest
 
-  // Preload modal image after delay
+  // Preload modal image after delay (skip for videos)
   useEffect(() => {
-    if (selectedPhoto && !showModalImage) {
+    if (selectedPhoto && !showModalImage && selectedPhoto.media_type !== 'video') {
       const timer = setTimeout(() => {
         const img = new Image();
         const modalUrl = `${API_URL}${selectedPhoto.modal}${imageQueryString}`;
@@ -598,14 +592,18 @@ const ContentModal: React.FC<ContentModalProps> = ({
   return (
     <div 
       className={`modal ${isFullscreen ? 'fullscreen' : ''}`} 
-      onClick={handleClose}
-      onTouchEnd={(e) => {
-        // Prevent modal close if touching interactive elements
+      onClick={(e) => {
+        // Only close if clicking directly on the modal background
         const target = e.target as HTMLElement;
-        if (target.closest('button, .video-play-button-overlay')) {
-          console.log('[ContentModal] Blocked modal close - interactive element touched');
-          e.stopPropagation();
-          return;
+        if (target.classList.contains('modal')) {
+          handleClose();
+        }
+      }}
+      onTouchEnd={(e) => {
+        // Only close modal if touching the modal background
+        const target = e.target as HTMLElement;
+        if (target.classList.contains('modal')) {
+          handleClose();
         }
       }}
     >
@@ -650,52 +648,31 @@ const ContentModal: React.FC<ContentModalProps> = ({
             />
 
             {selectedPhoto.media_type === 'video' ? (
+              /* Show video player directly - NO event handlers on container */
               <div className="modal-photo-container">
-                {/* Always show thumbnail as background for videos */}
-                <ImageCanvas
-                  photo={selectedPhoto}
-                  apiUrl={API_URL}
-                  imageQueryString={imageQueryString}
-                  modalImageLoaded={modalImageLoaded}
-                  showModalImage={showModalImage}
-                  onThumbnailLoad={handleThumbnailLoad}
-                />
-                
-                {/* Play button overlay (hidden when video player is active) */}
-                {thumbnailLoaded && !showVideoPlayer && (
-                  <button
-                    onClick={handlePlayClick}
-                    onTouchEnd={(e) => {
-                      e.stopPropagation();
-                      e.preventDefault();
-                      handlePlayClick(e);
-                    }}
-                    className="video-play-button-overlay"
-                    aria-label="Play video"
-                  >
-                    <PlayIcon width={80} height={80} />
-                  </button>
-                )}
-                
-                {/* Video player overlay (on top of thumbnail) */}
-                {showVideoPlayer && (
-                  <div className="modal-video-overlay">
-                    <Suspense fallback={<div className="photo-loading-overlay"><div className="photo-loading-spinner"></div></div>}>
-                      <VideoPlayer
-                        album={selectedPhoto.album}
-                        filename={selectedPhoto.id.includes('/') ? selectedPhoto.id.split('/').pop() || selectedPhoto.id : selectedPhoto.id}
-                        videoTitle={selectedPhoto.title || selectedPhoto.id}
-                        autoplay={shouldAutoplay}
-                        onLoadStart={() => setThumbnailLoaded(false)}
-                        onLoaded={() => {
-                          setThumbnailLoaded(true);
-                          setModalImageLoaded(true);
-                        }}
-                        secretKey={secretKey}
-                      />
-                    </Suspense>
-                  </div>
-                )}
+                <div 
+                  className="modal-video-player"
+                  onClick={(e) => e.stopPropagation()}
+                  onTouchEnd={(e) => e.stopPropagation()}
+                  onTouchStart={(e) => e.stopPropagation()}
+                  onMouseDown={(e) => e.stopPropagation()}
+                  onMouseUp={(e) => e.stopPropagation()}
+                >
+                  <Suspense fallback={<div className="photo-loading-overlay"><div className="photo-loading-spinner"></div></div>}>
+                    <VideoPlayer
+                      album={selectedPhoto.album}
+                      filename={selectedPhoto.id.includes('/') ? selectedPhoto.id.split('/').pop() || selectedPhoto.id : selectedPhoto.id}
+                      videoTitle={selectedPhoto.title || selectedPhoto.id}
+                      posterUrl={selectedPhoto.thumbnail}
+                      onLoadStart={() => setThumbnailLoaded(false)}
+                      onLoaded={() => {
+                        setThumbnailLoaded(true);
+                        setModalImageLoaded(true);
+                      }}
+                      secretKey={secretKey}
+                    />
+                  </Suspense>
+                </div>
               </div>
             ) : (
               <div className="modal-photo-container">

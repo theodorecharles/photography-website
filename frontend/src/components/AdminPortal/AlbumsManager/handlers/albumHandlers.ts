@@ -14,7 +14,7 @@ import {
   trackAlbumHomepageToggle,
   trackAlbumMovedToFolder 
 } from '../../../../utils/analytics';
-import { sanitizeAndTitleCase, isValidAlbumName } from '../utils/albumHelpers';
+import { sanitizeName, isValidAlbumName } from '../utils/albumHelpers';
 import { error } from '../../../../utils/logger';
 
 
@@ -191,7 +191,7 @@ export const createAlbumHandlers = (props: AlbumHandlersProps) => {
   const handleRenameAlbum = async (): Promise<void> => {
     if (!renamingAlbum) return;
 
-    const sanitized = sanitizeAndTitleCase(newAlbumName);
+    const sanitized = sanitizeName(newAlbumName);
 
     if (!isValidAlbumName(sanitized)) {
       setMessage({
@@ -250,7 +250,7 @@ export const createAlbumHandlers = (props: AlbumHandlersProps) => {
 
   // Inline rename handler for PhotosPanel title editing
   const handleInlineRenameAlbum = async (oldName: string, newName: string): Promise<void> => {
-    const sanitized = sanitizeAndTitleCase(newName);
+    const sanitized = sanitizeName(newName);
 
     if (!isValidAlbumName(sanitized)) {
       throw new Error('Album name can only contain letters, numbers, spaces, hyphens, and underscores');

@@ -602,6 +602,19 @@ router.put("/:album/rename", requireManager, async (req: Request, res: Response)
       }
     });
     
+    // Rename video directory if it exists
+    const videoDir = req.app.get("videoDir");
+    let videoRenamed = false;
+    if (videoDir) {
+      const oldVideoPath = path.join(videoDir, sanitizedOldName);
+      const newVideoPath = path.join(videoDir, sanitizedNewName);
+      if (fs.existsSync(oldVideoPath)) {
+        fs.renameSync(oldVideoPath, newVideoPath);
+        videoRenamed = true;
+        info(`[AlbumManagement] Renamed video directory: ${sanitizedOldName} → ${sanitizedNewName}`);
+      }
+    }
+    
     // Update database
     const success = renameAlbum(sanitizedOldName, sanitizedNewName);
     if (!success) {
@@ -614,6 +627,14 @@ router.put("/:album/rename", requireManager, async (req: Request, res: Response)
           fs.renameSync(newOptimizedPath, oldOptimizedPath);
         }
       });
+      // Rollback video directory if it was renamed
+      if (videoRenamed && videoDir) {
+        const oldVideoPath = path.join(videoDir, sanitizedOldName);
+        const newVideoPath = path.join(videoDir, sanitizedNewName);
+        if (fs.existsSync(newVideoPath)) {
+          fs.renameSync(newVideoPath, oldVideoPath);
+        }
+      }
       res.status(500).json({ errorCode: 'DATABASE_UPDATE_FAILED', error: 'Failed to update database' });
       return;
     }
@@ -668,6 +689,16 @@ router.delete("/:album", requireManager, async (req: Request, res: Response): Pr
         fs.rmSync(optimizedPath, { recursive: true, force: true });
       }
     });
+
+    // Delete from video directory (if exists)
+    const videoDir = req.app.get("videoDir");
+    if (videoDir) {
+      const videoPath = path.join(videoDir, sanitizedAlbum);
+      if (fs.existsSync(videoPath)) {
+        fs.rmSync(videoPath, { recursive: true, force: true });
+        info(`[AlbumManagement] Deleted video directory: ${sanitizedAlbum}`);
+      }
+    }
 
     // Cancel share link expiry timers before deleting (cascade delete will remove share links)
     try {
@@ -1189,6 +1220,17 @@ router.patch("/:album/rename", requireManager, async (req: Request, res: Respons
       }
     });
 
+    // Rename video directory if it exists
+    const videoDir = req.app.get("videoDir");
+    if (videoDir) {
+      const oldVideoPath = path.join(videoDir, sanitizedOldName);
+      const newVideoPath = path.join(videoDir, sanitizedNewName);
+      if (fs.existsSync(oldVideoPath)) {
+        fs.renameSync(oldVideoPath, newVideoPath);
+        info(`Renamed video directory: ${sanitizedOldName} -> ${sanitizedNewName}`);
+      }
+    }
+
     // Invalidate cache for both old and new album names
     invalidateAlbumCache(sanitizedOldName);
     invalidateAlbumCache(sanitizedNewName);
@@ -1708,19 +1750,22 @@ router.post('/:albumName/video/:filename/update-thumbnail', requireManager, asyn
       return;
     }
     
-    // Sanitize inputs to prevent shell injection and directory traversal
+    // Validate inputs to prevent shell injection and directory traversal
+    // DON'T transform the names - use exact names from database
     const sanitizedAlbumName = sanitizeName(albumName);
-    const sanitizedFilename = sanitizePhotoName(filename);
     
     if (!sanitizedAlbumName) {
       res.status(400).json({ error: 'Invalid album name' });
       return;
     }
     
-    if (!sanitizedFilename) {
+    // Basic security check for filename - no transformation
+    if (!filename || filename.includes('..') || filename.includes('/') || filename.includes('\\')) {
       res.status(400).json({ error: 'Invalid filename' });
       return;
     }
+    
+    const sanitizedFilename = filename; // Use exact filename, no transformation
     
     if (typeof timestamp !== 'number' || timestamp < 0) {
       res.status(400).json({ error: 'Valid timestamp is required' });

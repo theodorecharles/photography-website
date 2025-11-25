@@ -121,7 +121,6 @@ const VideoPage: React.FC = () => {
           <VideoPlayer
             album={video.album}
             filename={filename || ''}
-            autoplay={true}
           />
         </div>
 
