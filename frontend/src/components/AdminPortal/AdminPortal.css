@@ -7,7 +7,6 @@
 
 .admin-portal {
   position: relative;
-  min-height: 100vh;
 }
 
 /* Rotating gradient overlay for entire admin portal - only when animated-bg class is present */
@@ -284,6 +283,7 @@
   margin: 0 auto;
   position: relative;
   z-index: 1;
+  overflow: visible;
 }
 
 .admin-header {

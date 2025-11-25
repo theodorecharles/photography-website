@@ -120,7 +120,7 @@ const SecuritySetupPrompt: React.FC<SecuritySetupPromptProps> = ({
       onClick={mfaSetup ? undefined : handleDismiss}
     >
       <div
-        className="generic-modal"
+        className="generic-modal security-setup-modal"
         onClick={(e) => e.stopPropagation()}
         style={{ maxWidth: "600px" }}
       >
