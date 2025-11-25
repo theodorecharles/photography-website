@@ -596,14 +596,18 @@ const ContentModal: React.FC<ContentModalProps> = ({
   return (
     <div 
       className={`modal ${isFullscreen ? 'fullscreen' : ''}`} 
-      onClick={handleClose}
-      onTouchEnd={(e) => {
-        // Prevent modal close if touching interactive elements
+      onClick={(e) => {
+        // Only close if clicking directly on the modal background
         const target = e.target as HTMLElement;
-        if (target.closest('button, .modal-video-player, video')) {
-          console.log('[ContentModal] Blocked modal close - interactive element touched');
-          e.stopPropagation();
-          return;
+        if (target.classList.contains('modal')) {
+          handleClose();
+        }
+      }}
+      onTouchEnd={(e) => {
+        // Only close modal if touching the modal background
+        const target = e.target as HTMLElement;
+        if (target.classList.contains('modal')) {
+          handleClose();
         }
       }}
     >
