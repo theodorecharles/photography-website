@@ -33,6 +33,9 @@ const VideoOptimizationSection: React.FC<VideoOptimizationSectionProps> = ({
 }) => {
   const { t } = useTranslation();
   const [isAutoSaving, setIsAutoSaving] = React.useState(false);
+  const [showGpuTest, setShowGpuTest] = React.useState(false);
+  const [gpuTestOutput, setGpuTestOutput] = React.useState<string[]>([]);
+  const [isTestingGpu, setIsTestingGpu] = React.useState(false);
 
   const updateConfig = (path: string[], value: any) => {
     if (!config) return;
@@ -114,6 +117,78 @@ const VideoOptimizationSection: React.FC<VideoOptimizationSectionProps> = ({
       });
     } finally {
       setSavingSection(null);
+    }
+  };
+
+  const handleTestGpu = async () => {
+    setShowGpuTest(true);
+    setGpuTestOutput([]);
+    setIsTestingGpu(true);
+
+    try {
+      const csrfResponse = await fetch(`${API_URL}/api/config/csrf-token`, {
+        credentials: 'include',
+      });
+      const { csrfToken } = await csrfResponse.json();
+
+      const response = await fetch(`${API_URL}/api/video-optimization/test-gpu`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': csrfToken,
+        },
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to start GPU test');
+      }
+
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
+
+      if (!reader) {
+        throw new Error('No response body');
+      }
+
+      let buffer = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+
+        if (done) {
+          setIsTestingGpu(false);
+          break;
+        }
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop() || '';
+
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            try {
+              const data = JSON.parse(line.slice(6));
+
+              if (data.type === 'stdout' || data.type === 'stderr') {
+                setGpuTestOutput((prev) => [...prev, data.message]);
+              } else if (data.type === 'complete') {
+                setGpuTestOutput((prev) => [...prev, '', data.message]);
+                setIsTestingGpu(false);
+              } else if (data.type === 'error') {
+                setGpuTestOutput((prev) => [...prev, '', `Error: ${data.message}`]);
+                setIsTestingGpu(false);
+              }
+            } catch (e) {
+              // Ignore parsing errors
+            }
+          }
+        }
+      }
+    } catch (err) {
+      error('[GPU Test] Failed:', err);
+      setGpuTestOutput((prev) => [...prev, '', `Error: Failed to run GPU test`]);
+      setIsTestingGpu(false);
     }
   };
 
@@ -294,7 +369,7 @@ const VideoOptimizationSection: React.FC<VideoOptimizationSectionProps> = ({
               <div className="ai-toggle-label">
                 <p className="ai-toggle-title">{t('videoOptimization.hardwareTranscodingDescription')}</p>
               </div>
-              <div className="ai-toggle-controls">
+              <div className="ai-toggle-controls" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                 <label className="toggle-switch">
                   <input
                     type="checkbox"
@@ -306,8 +381,30 @@ const VideoOptimizationSection: React.FC<VideoOptimizationSectionProps> = ({
                     {config?.environment?.optimization?.video?.hardwareAcceleration ? t('common.enabled') : t('common.disabled')}
                   </span>
                 </label>
+                <button
+                  type="button"
+                  onClick={handleTestGpu}
+                  disabled={isTestingGpu}
+                  className="btn-secondary"
+                  style={{
+                    padding: '0.4rem 0.8rem',
+                    fontSize: '0.85rem',
+                    whiteSpace: 'nowrap',
+                  }}
+                  title="Run diagnostic test to check if GPU hardware acceleration is available"
+                >
+                  {isTestingGpu ? 'Testing...' : '🔬 Test GPU'}
+                </button>
               </div>
             </div>
+            <p style={{
+              fontSize: '0.75rem',
+              color: 'rgba(255, 255, 255, 0.5)',
+              marginTop: '0.5rem',
+              marginBottom: '0',
+            }}>
+              Click "Test GPU" to verify NVIDIA hardware acceleration is working before enabling.
+            </p>
           </div>
 
           {/* Video Resolutions */}
@@ -509,6 +606,124 @@ const VideoOptimizationSection: React.FC<VideoOptimizationSectionProps> = ({
             </div>
           </div>
         </div>
+
+        {/* GPU Test Modal */}
+        {showGpuTest && (
+          <div 
+            className="modal-overlay" 
+            onClick={() => !isTestingGpu && setShowGpuTest(false)}
+            style={{ zIndex: 10000 }}
+          >
+            <div 
+              className="share-modal" 
+              onClick={(e) => e.stopPropagation()}
+              style={{ 
+                maxWidth: '800px',
+                width: '90%',
+                maxHeight: '80vh',
+                display: 'flex',
+                flexDirection: 'column'
+              }}
+            >
+              <div style={{ 
+                display: 'flex', 
+                justifyContent: 'space-between', 
+                alignItems: 'center',
+                marginBottom: '1rem',
+                paddingBottom: '1rem',
+                borderBottom: '1px solid rgba(255, 255, 255, 0.1)'
+              }}>
+                <h3 style={{ margin: 0 }}>🔬 GPU Hardware Acceleration Test</h3>
+                <button
+                  onClick={() => setShowGpuTest(false)}
+                  disabled={isTestingGpu}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: 'rgba(255, 255, 255, 0.7)',
+                    fontSize: '1.5rem',
+                    cursor: isTestingGpu ? 'not-allowed' : 'pointer',
+                    padding: '0',
+                    width: '30px',
+                    height: '30px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  ×
+                </button>
+              </div>
+
+              <div style={{
+                flex: 1,
+                overflowY: 'auto',
+                backgroundColor: '#1a1a1a',
+                padding: '1rem',
+                borderRadius: '4px',
+                fontFamily: 'monospace',
+                fontSize: '0.9rem',
+                lineHeight: '1.6',
+                whiteSpace: 'pre-wrap',
+                wordBreak: 'break-word',
+              }}>
+                {gpuTestOutput.length === 0 && isTestingGpu && (
+                  <div>Running GPU diagnostic test...</div>
+                )}
+                {gpuTestOutput.map((line, idx) => (
+                  <div 
+                    key={idx}
+                    style={{
+                      color: line.includes('✓') || line.includes('✅') 
+                        ? '#4ade80' 
+                        : line.includes('✗') || line.includes('❌') || line.toLowerCase().includes('error')
+                        ? '#ef4444'
+                        : line.includes('⚠')
+                        ? '#fbbf24'
+                        : 'rgba(255, 255, 255, 0.9)'
+                    }}
+                  >
+                    {line || '\u00A0'}
+                  </div>
+                ))}
+                {isTestingGpu && (
+                  <div style={{ color: 'rgba(255, 255, 255, 0.5)', marginTop: '0.5rem' }}>
+                    <span className="spinner" style={{ 
+                      display: 'inline-block',
+                      width: '12px',
+                      height: '12px',
+                      marginRight: '0.5rem',
+                      verticalAlign: 'middle'
+                    }}></span>
+                    Testing...
+                  </div>
+                )}
+              </div>
+
+              {!isTestingGpu && (
+                <div style={{ 
+                  marginTop: '1rem',
+                  display: 'flex',
+                  justifyContent: 'flex-end',
+                  gap: '0.5rem'
+                }}>
+                  <button
+                    onClick={handleTestGpu}
+                    className="btn-secondary"
+                  >
+                    Run Test Again
+                  </button>
+                  <button
+                    onClick={() => setShowGpuTest(false)}
+                    className="btn-primary"
+                  >
+                    Close
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
     </>
   );
 };
