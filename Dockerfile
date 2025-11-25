@@ -18,16 +18,14 @@ COPY backend/package*.json ./backend/
 COPY frontend/package*.json ./frontend/
 
 # Install ALL dependencies via root workspace (this installs frontend + backend + root deps)
-# npm workspaces handles everything, don't run npm ci in subdirectories
+# npm workspaces hoists all dependencies to root node_modules for sharing
 RUN npm ci && \
     echo "✓ Workspace dependencies installed" && \
-    echo "Checking root dependencies..." && \
+    echo "Verifying dependencies are hoisted to root node_modules..." && \
     ls -la node_modules/sharp node_modules/better-sqlite3 node_modules/openai && \
-    echo "Checking backend dependencies..." && \
-    ls -la backend/node_modules/cors backend/node_modules/express backend/node_modules/helmet && \
-    echo "Checking frontend dependencies..." && \
-    ls -la frontend/node_modules/react frontend/node_modules/react-dom && \
-    echo "✓ All dependencies verified"
+    ls -la node_modules/cors node_modules/express node_modules/helmet && \
+    ls -la node_modules/react node_modules/react-dom && \
+    echo "✓ All dependencies verified and hoisted correctly"
 
 # Rebuild native modules for correct architecture
 RUN npm rebuild better-sqlite3 --build-from-source
