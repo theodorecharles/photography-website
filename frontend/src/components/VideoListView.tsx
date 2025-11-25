@@ -128,54 +128,17 @@ const VideoListView: React.FC<VideoListViewProps> = ({ videos, album, secretKey,
               }}
             >
               <div 
-                className={`video-player-container ${isPlaying ? 'playing' : ''}`}
+                className="video-player-container"
                 data-video-id={video.id}
-                style={{ position: 'relative' }}
               >
-                {/* Always show thumbnail and modal image */}
-                <ImageCanvas
-                  photo={video}
-                  apiUrl={API_URL}
-                  imageQueryString={imageQueryString}
-                  modalImageLoaded={modalImageLoadedMap[video.id] || false}
-                  showModalImage={true}
-                  onThumbnailLoad={() => handleThumbnailLoad(video.id)}
-                  onModalLoad={(img) => handleModalLoad(video.id, img)}
+                <VideoPlayer
+                  album={video.album}
+                  filename={filename}
+                  videoTitle={video.title}
+                  autoplay={false}
+                  posterUrl={video.modal}
+                  secretKey={secretKey}
                 />
-                
-                {/* Play button overlay (hidden when video is playing) */}
-                {thumbnailLoaded && !isPlaying && (
-                  <button
-                    onClick={() => handlePlayClick(video.id)}
-                    onTouchEnd={(e) => {
-                      e.stopPropagation();
-                      e.preventDefault();
-                      handlePlayClick(video.id);
-                    }}
-                    className="video-play-button-overlay"
-                    aria-label="Play video"
-                  >
-                    <PlayIcon width={80} height={80} />
-                  </button>
-                )}
-                
-                {/* Video player overlay (only rendered when playing) */}
-                {isPlaying && (
-                  <div className="modal-video-overlay" style={{ pointerEvents: 'none' }}>
-                    <VideoPlayer
-                      album={video.album}
-                      filename={filename}
-                      videoTitle={video.title}
-                      autoplay={true}
-                      onLoadStart={() => setThumbnailLoadedMap(prev => ({ ...prev, [video.id]: false }))}
-                      onLoaded={() => {
-                        setThumbnailLoadedMap(prev => ({ ...prev, [video.id]: true }));
-                        setModalImageLoadedMap(prev => ({ ...prev, [video.id]: true }));
-                      }}
-                      secretKey={secretKey}
-                    />
-                  </div>
-                )}
               </div>
             </div>
             
