@@ -1123,3 +1123,107 @@
   transform: scale(1.1);
   box-shadow: 0 0 8px var(--primary-color);
 }
+
+/* GPU Test Modal */
+.gpu-test-modal {
+  max-width: 900px;
+}
+
+.gpu-test-output {
+  background: #000000;
+  border: 1px solid #3a3a3a;
+  border-radius: 8px;
+  padding: 1.25rem;
+  max-height: 500px;
+  min-height: 300px;
+  overflow-y: auto;
+  font-family: "Modern DOS", "Courier New", monospace;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+
+.gpu-test-output::-webkit-scrollbar {
+  width: 8px;
+}
+
+.gpu-test-output::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+.gpu-test-output::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+.gpu-test-output::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.gpu-test-line {
+  margin-bottom: 0.25rem;
+  color: rgba(255, 255, 255, 0.9);
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
+
+.gpu-test-line.success {
+  color: #4ade80;
+  font-weight: 500;
+}
+
+.gpu-test-line.error {
+  color: #ef4444;
+  font-weight: 500;
+}
+
+.gpu-test-line.warning {
+  color: #fbbf24;
+  font-weight: 500;
+}
+
+.gpu-test-line.testing {
+  color: rgba(255, 255, 255, 0.5);
+  margin-top: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.gpu-test-line.testing .spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-top-color: var(--primary-color);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.gpu-test-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+@media (max-width: 768px) {
+  .gpu-test-modal {
+    max-width: 100%;
+  }
+
+  .gpu-test-output {
+    font-size: 0.75rem;
+    max-height: 400px;
+    min-height: 250px;
+    padding: 1rem;
+  }
+
+  .gpu-test-actions {
+    flex-direction: column;
+  }
+
+  .gpu-test-actions button {
+    width: 100%;
+  }
+}

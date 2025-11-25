@@ -88,6 +88,19 @@ export function initializeDatabase(): any {
   } catch (err) {
     warn('[Database] Could not check/add sort_order column:', err);
   }
+
+  // Add media_type column if it doesn't exist (migration)
+  try {
+    const tableInfo = db.pragma('table_info(image_metadata)');
+    const hasMediaType = tableInfo.some((col: any) => col.name === 'media_type');
+    if (!hasMediaType) {
+      info('[Database] Adding media_type column to image_metadata...');
+      db.exec("ALTER TABLE image_metadata ADD COLUMN media_type TEXT NOT NULL DEFAULT 'photo'");
+      info('[Database] Successfully added media_type column');
+    }
+  } catch (err) {
+    warn('[Database] Could not check/add media_type column:', err);
+  }
   
   // Add sort_order column to albums if it doesn't exist (migration)
   try {
