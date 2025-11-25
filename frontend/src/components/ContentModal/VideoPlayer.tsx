@@ -306,7 +306,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         hlsRef.current = null;
       }
     };
-  }, [album, filename, videoTitle, autoplay, secretKey]); // Don't include callbacks in deps - they cause re-render loops
+  }, [album, filename, videoTitle, secretKey]); // Don't include callbacks in deps - they cause re-render loops
 
   if (error && !error.includes('Tap to play')) {
     return (
