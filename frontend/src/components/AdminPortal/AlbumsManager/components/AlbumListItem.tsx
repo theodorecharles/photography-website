@@ -76,14 +76,14 @@ export const AlbumListItem: React.FC<AlbumListItemProps> = ({
       case 'optimizing':
         // Show video stage if available
         if (uploadingImage.videoStage) {
-          // For resolutions (240p, 720p, etc), show resolution + percentage
-          // For other stages (rotation, thumbnail), just show percentage
+          // For resolutions (240p, 720p, etc), show resolution + stage progress
+          // For other stages (rotation, thumbnail), just show stage name
           if (uploadingImage.videoStage.match(/^\d+p$/)) {
-            return `${uploadingImage.videoStage} (${uploadingImage.optimizeProgress}%)`;
+            return `${uploadingImage.videoStage} (${Math.round(uploadingImage.videoStageProgress || 0)}%)`;
           }
-          return `${uploadingImage.optimizeProgress}%`;
+          return uploadingImage.videoStage;
         }
-        return t('sse.optimizingWithProgress', { progress: uploadingImage.optimizeProgress });
+        return t('sse.optimizingWithProgress', { progress: Math.round(uploadingImage.optimizeProgress || 0) });
       case 'generating-title':
         return t('sse.generatingTitleLowercase');
       case 'error':

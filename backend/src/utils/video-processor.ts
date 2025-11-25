@@ -14,6 +14,21 @@ const unlink = promisify(fs.unlink);
 const access = promisify(fs.access);
 const writeFile = promisify(fs.writeFile);
 
+/**
+ * Hardware encoder types supported
+ */
+export enum HardwareEncoder {
+  NONE = 'none',
+  NVIDIA = 'h264_nvenc',
+  INTEL_QSV = 'h264_qsv',
+  AMD = 'h264_amf',
+  VIDEOTOOLBOX = 'h264_videotoolbox',
+  VAAPI = 'h264_vaapi'
+}
+
+// Cache for detected hardware encoder
+let detectedEncoder: HardwareEncoder | null = null;
+
 export interface VideoResolution {
   name: string;
   height: number;
@@ -82,6 +97,77 @@ export async function getVideoMetadata(videoPath: string): Promise<VideoMetadata
       }
     });
   });
+}
+
+/**
+ * Detect available hardware encoder on the system
+ * Checks in priority order: NVIDIA > Intel QSV > AMD > VideoToolbox > VA-API
+ */
+export async function detectHardwareEncoder(): Promise<HardwareEncoder> {
+  // Return cached result if already detected
+  if (detectedEncoder !== null) {
+    return detectedEncoder;
+  }
+
+  info('[VideoProcessor] Detecting available hardware encoders...');
+
+  // List of encoders to check in priority order
+  const encodersToCheck: HardwareEncoder[] = [
+    HardwareEncoder.NVIDIA,
+    HardwareEncoder.INTEL_QSV,
+    HardwareEncoder.AMD,
+    HardwareEncoder.VIDEOTOOLBOX,
+    HardwareEncoder.VAAPI
+  ];
+
+  for (const encoder of encodersToCheck) {
+    try {
+      const isAvailable = await checkEncoderAvailable(encoder);
+      if (isAvailable) {
+        info(`[VideoProcessor] Hardware encoder detected: ${encoder}`);
+        detectedEncoder = encoder;
+        return encoder;
+      }
+    } catch (err) {
+      // Continue checking other encoders
+    }
+  }
+
+  info('[VideoProcessor] No hardware encoder available, using software encoding');
+  detectedEncoder = HardwareEncoder.NONE;
+  return HardwareEncoder.NONE;
+}
+
+/**
+ * Check if a specific hardware encoder is available
+ */
+async function checkEncoderAvailable(encoder: HardwareEncoder): Promise<boolean> {
+  return new Promise((resolve) => {
+    // Run ffmpeg with the encoder to see if it's supported
+    const ffmpeg = spawn('ffmpeg', ['-hide_banner', '-encoders']);
+    let stdout = '';
+
+    ffmpeg.stdout.on('data', (data) => {
+      stdout += data.toString();
+    });
+
+    ffmpeg.on('close', () => {
+      // Check if encoder is listed in available encoders
+      const encoderRegex = new RegExp(`\\s${encoder}\\s`, 'i');
+      resolve(encoderRegex.test(stdout));
+    });
+
+    ffmpeg.on('error', () => {
+      resolve(false);
+    });
+  });
+}
+
+/**
+ * Reset the cached hardware encoder detection (useful for testing)
+ */
+export function resetHardwareEncoderCache(): void {
+  detectedEncoder = null;
 }
 
 /**
@@ -178,12 +264,13 @@ export async function generateHLS(
   outputDir: string,
   resolution: VideoResolution,
   segmentDuration: number = 4,
+  hardwareAcceleration: boolean = false,
   onProgress?: (progress: number) => void
 ): Promise<void> {
   // Create output directory
   await mkdir(outputDir, { recursive: true });
 
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
     const playlistPath = path.join(outputDir, 'playlist.m3u8');
     const segmentPattern = path.join(outputDir, 'segment%03d.ts');
 
@@ -193,15 +280,125 @@ export async function generateHLS(
     const fps = 30;
     const gopSize = segmentDuration * fps;
 
-    const args = [
+    // Detect hardware encoder if hardware acceleration is enabled
+    let encoder = 'libx264'; // Default software encoder
+    let encoderArgs: string[] = [];
+    
+    if (hardwareAcceleration) {
+      const hwEncoder = await detectHardwareEncoder();
+      
+      if (hwEncoder !== HardwareEncoder.NONE) {
+        encoder = hwEncoder;
+        info(`[VideoProcessor] Using hardware encoder: ${encoder}`);
+        
+        // Configure encoder-specific arguments
+        switch (hwEncoder) {
+          case HardwareEncoder.NVIDIA:
+            // NVIDIA NVENC settings optimized for HLS streaming
+            // Critical: Use CBR + no B-frames for smooth HLS playback
+            encoderArgs = [
+              '-preset', 'p4', // p1 (fastest) to p7 (slowest), p4 is balanced
+              '-tune', 'hq', // High quality tuning
+              '-profile:v', 'main', // Main profile (baseline/main for HLS compatibility)
+              '-rc', 'cbr', // Constant bitrate for predictable streaming
+              '-b:v', resolution.videoBitrate,
+              '-maxrate', resolution.videoBitrate,
+              '-bufsize', `${parseInt(resolution.videoBitrate) * 2}k`,
+              '-spatial-aq', '1', // Spatial adaptive quantization
+              '-temporal-aq', '1', // Temporal adaptive quantization
+              '-forced-idr', '1', // Force IDR frames at every keyframe for HLS seeking
+              '-bf', '0', // NO B-frames - prevents stuttering in HLS
+              '-no-scenecut', '1', // Disable scenecut detection to prevent unexpected keyframes
+            ];
+            break;
+            
+          case HardwareEncoder.INTEL_QSV:
+            // Intel Quick Sync Video settings
+            encoderArgs = [
+              '-preset', 'medium',
+              '-global_quality', resolution.height >= 1080 ? '23' : resolution.height >= 720 ? '25' : '28',
+              '-b:v', resolution.videoBitrate,
+              '-maxrate', resolution.videoBitrate,
+              '-bufsize', `${parseInt(resolution.videoBitrate) * 2}k`,
+            ];
+            break;
+            
+          case HardwareEncoder.AMD:
+            // AMD AMF settings
+            encoderArgs = [
+              '-quality', 'balanced',
+              '-rc', 'vbr_latency',
+              '-qp_i', resolution.height >= 1080 ? '23' : resolution.height >= 720 ? '25' : '28',
+              '-b:v', resolution.videoBitrate,
+              '-maxrate', resolution.videoBitrate,
+              '-bufsize', `${parseInt(resolution.videoBitrate) * 2}k`,
+            ];
+            break;
+            
+          case HardwareEncoder.VIDEOTOOLBOX:
+            // Apple VideoToolbox settings
+            encoderArgs = [
+              '-b:v', resolution.videoBitrate,
+              '-maxrate', resolution.videoBitrate,
+              '-bufsize', `${parseInt(resolution.videoBitrate) * 2}k`,
+            ];
+            break;
+            
+          case HardwareEncoder.VAAPI:
+            // VA-API settings (Linux)
+            encoderArgs = [
+              '-qp', resolution.height >= 1080 ? '23' : resolution.height >= 720 ? '25' : '28',
+              '-b:v', resolution.videoBitrate,
+              '-maxrate', resolution.videoBitrate,
+              '-bufsize', `${parseInt(resolution.videoBitrate) * 2}k`,
+            ];
+            break;
+        }
+      } else {
+        warn('[VideoProcessor] Hardware acceleration enabled but no hardware encoder detected, falling back to software encoding');
+      }
+    }
+    
+    // Use software encoder settings if not using hardware
+    if (encoder === 'libx264') {
+      encoderArgs = [
+        '-preset', resolution.height >= 720 ? 'medium' : 'fast',
+        '-crf', resolution.height >= 1080 ? '23' : resolution.height >= 720 ? '25' : '28',
+        '-b:v', resolution.videoBitrate,
+        '-maxrate', resolution.videoBitrate,
+        '-bufsize', `${parseInt(resolution.videoBitrate) * 2}k`,
+      ];
+    }
+
+    // Build ffmpeg arguments
+    const args = [];
+    
+    // Add hardware acceleration input flags if using NVIDIA encoder
+    if (hardwareAcceleration && encoder === HardwareEncoder.NVIDIA) {
+      // Use CUDA for hardware decoding and keep frames in GPU memory
+      args.push(
+        '-hwaccel', 'cuda',
+        '-hwaccel_output_format', 'cuda',
+        '-extra_hw_frames', '2' // Pre-allocate GPU frames for smoother pipeline
+      );
+    }
+    
+    // Input and encoding arguments
+    args.push(
       '-i', inputPath,
-      '-c:v', 'libx264',
-      '-preset', resolution.height >= 720 ? 'medium' : 'fast',
-      '-crf', resolution.height >= 1080 ? '23' : resolution.height >= 720 ? '25' : '28',
-      '-vf', `scale=-2:${resolution.height}`,
-      '-b:v', resolution.videoBitrate,
-      '-maxrate', resolution.videoBitrate,
-      '-bufsize', `${parseInt(resolution.videoBitrate) * 2}k`,
+      '-c:v', encoder,
+      ...encoderArgs
+    );
+    
+    // For NVIDIA, use GPU-accelerated scaling filter
+    if (hardwareAcceleration && encoder === HardwareEncoder.NVIDIA) {
+      args.push('-vf', `scale_cuda=-2:${resolution.height}`);
+    } else {
+      args.push('-vf', `scale=-2:${resolution.height}`);
+    }
+    
+    // Add remaining arguments
+    args.push(
       // Force keyframes at segment boundaries to prevent buffer holes
       '-g', gopSize.toString(), // GOP size = segment duration * fps
       '-keyint_min', gopSize.toString(), // Minimum keyframe interval
@@ -210,26 +407,39 @@ export async function generateHLS(
       '-c:a', 'aac',
       '-b:a', resolution.audioBitrate,
       '-ac', '2',
+      // Bitstream filter: Convert to Annex B format (required for HLS/MPEG-TS)
+      '-bsf:v', 'h264_mp4toannexb',
       '-f', 'hls',
       '-hls_time', segmentDuration.toString(),
       '-hls_list_size', '0',
       '-hls_segment_filename', segmentPattern,
+      '-hls_segment_type', 'mpegts', // Explicitly use MPEG-TS segments
       '-start_number', '0',
-      '-hls_flags', 'independent_segments+split_by_time', // Ensure segments start at exact timestamps
+      '-hls_flags', 'independent_segments+split_by_time', // Independent segments for HLS
       '-avoid_negative_ts', 'make_zero', // Ensure timestamps start at 0
+      '-vsync', 'cfr', // Constant frame rate - prevents timing issues
       '-y',
       playlistPath
-    ];
+    );
 
-    info(`[VideoProcessor] Generating ${resolution.name} HLS playlist`);
+    if (hardwareAcceleration && encoder === HardwareEncoder.NVIDIA) {
+      info(`[VideoProcessor] Generating ${resolution.name} HLS playlist with CUDA hardware decode + ${encoder} encode`);
+    } else {
+      info(`[VideoProcessor] Generating ${resolution.name} HLS playlist with ${encoder}`);
+    }
+    
+    // Log the exact ffmpeg command for debugging
+    info(`[VideoProcessor] Running ffmpeg command: ffmpeg ${args.join(' ')}`);
+    
     const ffmpeg = spawn('ffmpeg', args);
     let stderr = '';
     let duration = 0;
 
     ffmpeg.stderr.on('data', (data) => {
-      stderr += data.toString();
+      const chunk = data.toString();
+      stderr += chunk;
       
-      // Extract duration from ffmpeg output
+      // Extract duration from ffmpeg output (only check once)
       if (duration === 0) {
         const durationMatch = stderr.match(/Duration: (\d+):(\d+):(\d+\.\d+)/);
         if (durationMatch) {
@@ -240,9 +450,10 @@ export async function generateHLS(
         }
       }
       
-      // Parse progress from ffmpeg output
+      // Parse progress from the LATEST chunk (not entire stderr buffer)
+      // This ensures we report the most recent progress, not the first match
       if (onProgress && duration > 0) {
-        const timeMatch = stderr.match(/time=(\d+):(\d+):(\d+\.\d+)/);
+        const timeMatch = chunk.match(/time=(\d+):(\d+):(\d+\.\d+)/);
         if (timeMatch) {
           const hours = parseInt(timeMatch[1]);
           const minutes = parseInt(timeMatch[2]);
@@ -352,16 +563,18 @@ export async function processVideo(
     });
 
     // Step 3: Generate HLS playlists for different resolutions
-    // Load resolution settings and segment duration from config
+    // Load resolution settings, segment duration, and hardware acceleration from config
     const configPath = path.join(dataDir, 'config.json');
     let resolutionConfig: any = null;
     let segmentDuration = 4; // Default
+    let hardwareAcceleration = false; // Default
     
     try {
       const configData = await fs.promises.readFile(configPath, 'utf-8');
       const config = JSON.parse(configData);
       resolutionConfig = config.environment?.optimization?.video?.resolutions;
       segmentDuration = config.environment?.optimization?.video?.segmentDuration || 4;
+      hardwareAcceleration = config.environment?.optimization?.video?.hardwareAcceleration || false;
     } catch (err) {
       warn('[VideoProcessor] Could not load video config from config.json, trying defaults');
     }
@@ -374,6 +587,7 @@ export async function processVideo(
         const defaults = JSON.parse(defaultsData);
         resolutionConfig = defaults.environment?.optimization?.video?.resolutions;
         segmentDuration = defaults.environment?.optimization?.video?.segmentDuration || 4;
+        hardwareAcceleration = defaults.environment?.optimization?.video?.hardwareAcceleration || false;
         info('[VideoProcessor] Using default video config from config.defaults.json');
       } catch (err) {
         error('[VideoProcessor] Failed to load video config from defaults:', err);
@@ -384,6 +598,8 @@ export async function processVideo(
     if (!resolutionConfig) {
       throw new Error('No video resolutions configured');
     }
+    
+    info(`[VideoProcessor] Hardware acceleration: ${hardwareAcceleration ? 'enabled' : 'disabled'}`);
 
     // Build resolutions array from config (only enabled resolutions)
     const resolutions: VideoResolution[] = [];
@@ -419,7 +635,7 @@ export async function processVideo(
         });
       }
 
-      await generateHLS(rotatedPath, resolutionDir, resolution, segmentDuration, (progress) => {
+      await generateHLS(rotatedPath, resolutionDir, resolution, segmentDuration, hardwareAcceleration, (progress) => {
         if (onProgress) {
           onProgress({
             stage,

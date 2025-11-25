@@ -16,11 +16,12 @@ export interface UploadingImage {
   thumbnailUrl?: string;
   error?: string;
   progress?: number;
-  optimizeProgress?: number; // 0-100 for optimization progress
+  optimizeProgress?: number; // 0-100 for overall optimization progress (shown in circle)
   uploadIndex?: number; // Track original position in upload batch for maintaining order
   photo?: Photo; // When state='complete', this contains the complete photo data
   retryCount?: number; // Number of retry attempts (max 5)
   videoStage?: string; // Track specific video processing stage (rotation, 240p, 360p, etc.)
+  videoStageProgress?: number; // 0-100 for individual stage progress (shown next to stage name)
   message?: string; // Additional message from processing
   isRetryable?: boolean; // Whether this error can be retried (defaults to true)
 }

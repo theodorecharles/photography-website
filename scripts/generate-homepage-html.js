@@ -125,7 +125,7 @@ function getExternalLinks(config) {
   if (externalLinks.length > 0) {
     success(`Loaded ${externalLinks.length} external links from config.json`);
   } else {
-    info('No external links found in config.json');
+    log('No external links found in config.json');
   }
   
   return { externalLinks };

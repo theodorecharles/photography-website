@@ -125,8 +125,8 @@ const AnalyticsSettings: React.FC<AnalyticsSettingsProps> = ({
           <label className="branding-label">
             {t('analyticsSettings.enableOpenObserve')}
           </label>
-          <div className="ai-toggle-container">
-            <div className="ai-toggle-controls">
+          <div className="toggle-container">
+            <div className="toggle-controls">
               <button
                 type="button"
                 onClick={() => updateConfig(

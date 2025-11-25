@@ -1,63 +1,46 @@
 # Example docker-compose.yml with environment variables
 # Copy this to docker-compose.yml and set your values
 
-version: '3.8'
-
 services:
-  backend:
+  app:
     build:
       context: .
-      dockerfile: backend/Dockerfile
-    container_name: galleria-backend
+      dockerfile: Dockerfile
+    container_name: galleria
     ports:
+      - "3000:3000"
       - "3001:3001"
     environment:
       - NODE_ENV=production
       - PORT=3001
+      - HOST=0.0.0.0
       - DATA_DIR=/data
       # Set your frontend domain (with or without protocol)
-      - FRONTEND_DOMAIN=https://www.example.com
+      - FRONTEND_DOMAIN=${FRONTEND_DOMAIN:-https://www.example.com}
       # Set your backend domain (with or without protocol)
-      - BACKEND_DOMAIN=https://api.example.com
+      - BACKEND_DOMAIN=${BACKEND_DOMAIN:-https://api.example.com}
       # Optional: Additional allowed origins (comma-separated)
-      # - ALLOWED_ORIGINS=https://example.com,https://another.com
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-}
       # Optional: Logging level (error, warn, info, debug, verbose)
-      # - LOG_LEVEL=info
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      
+      # NVIDIA GPU support for hardware video encoding
+      # Uncomment these lines if you have an NVIDIA GPU and want hardware acceleration
+      # You must also uncomment the 'runtime: nvidia' line below
+      # - NVIDIA_VISIBLE_DEVICES=all
+      # - NVIDIA_DRIVER_CAPABILITIES=compute,video,utility
     volumes:
       # Mount your data directory (photos, database, config, etc.)
-      - /path/to/your/data:/data
+      - ${DATA_DIR:-/path/to/your/data}:/data
     restart: unless-stopped
+    
+    # Uncomment this line to enable NVIDIA GPU support for hardware video encoding
+    # Requires: NVIDIA Docker runtime (nvidia-docker2) installed on host
+    # Install: https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html
+    # runtime: nvidia
+    
     healthcheck:
       test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3001/api/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
-
-  frontend:
-    build:
-      context: .
-      dockerfile: frontend/Dockerfile
-    container_name: galleria-frontend
-    ports:
-      - "3000:3000"
-    environment:
-      - NODE_ENV=production
-      - PORT=3000
-      - DATA_DIR=/data
-      # Backend API URL (should match BACKEND_DOMAIN above)
-      - API_URL=https://api.example.com
-      # Optional: Logging level (error, warn, info, debug, verbose)
-      # - VITE_LOG_LEVEL=info
-    volumes:
-      # Mount data directory read-only (for config.json)
-      - /path/to/your/data:/data:ro
-    depends_on:
-      backend:
-        condition: service_healthy
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000"]
       interval: 30s
       timeout: 10s
       retries: 3

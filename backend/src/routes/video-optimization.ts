@@ -451,5 +451,92 @@ router.post('/stop', requireManager, (req, res) => {
   }
 });
 
+/**
+ * POST /api/video-optimization/test-gpu
+ * Test NVIDIA GPU hardware acceleration support
+ * Streams diagnostic output via SSE
+ */
+router.post('/test-gpu', requireManager, (req, res) => {
+  // Set up SSE headers
+  res.writeHead(200, {
+    'Content-Type': 'text/event-stream',
+    'Cache-Control': 'no-cache, no-transform',
+    'Connection': 'keep-alive',
+    'X-Accel-Buffering': 'no'
+  });
+  res.setTimeout(0);
+
+  info('[GPU Test] Starting NVIDIA GPU diagnostic test');
+
+  const scriptPath = path.resolve(__dirname, '../../../scripts/test-nvidia-hardware.sh');
+  
+  // Spawn the diagnostic script
+  const child = spawn('/bin/bash', [scriptPath], {
+    cwd: path.resolve(__dirname, '../../../'),
+    env: { ...process.env }
+  });
+
+  // Capture stdout
+  child.stdout.on('data', (data: Buffer) => {
+    const lines = data.toString().split('\n');
+    lines.forEach((line: string) => {
+      if (line.trim()) {
+        const output = JSON.stringify({ type: 'stdout', message: line });
+        info(`[GPU Test] ${line}`);
+        res.write(`data: ${output}\n\n`);
+      }
+    });
+  });
+
+  // Capture stderr
+  child.stderr.on('data', (data: Buffer) => {
+    const lines = data.toString().split('\n');
+    lines.forEach((line: string) => {
+      if (line.trim()) {
+        const output = JSON.stringify({ type: 'stderr', message: line });
+        warn(`[GPU Test] ${line}`);
+        res.write(`data: ${output}\n\n`);
+      }
+    });
+  });
+
+  // Handle completion
+  child.on('close', (code: number | null) => {
+    const exitCode = code || 0;
+    const completeMessage = JSON.stringify({
+      type: 'complete',
+      exitCode,
+      message: exitCode === 0 
+        ? '✓ GPU diagnostic test completed' 
+        : '✗ GPU diagnostic test completed with errors'
+    });
+    
+    info(`[GPU Test] Diagnostic completed with exit code: ${exitCode}`);
+    res.write(`data: ${completeMessage}\n\n`);
+    res.end();
+  });
+
+  // Handle errors
+  child.on('error', (err: Error) => {
+    error('[GPU Test] Failed to start diagnostic script:', err);
+    const errorOutput = JSON.stringify({
+      type: 'error',
+      message: `Failed to start GPU test: ${err.message}`
+    });
+    res.write(`data: ${errorOutput}\n\n`);
+    res.end();
+  });
+
+  // Clean up when client disconnects
+  req.on('close', () => {
+    info('[GPU Test] Client disconnected, cleaning up');
+    try {
+      child.kill('SIGTERM');
+    } catch (err) {
+      // Ignore cleanup errors
+    }
+  });
+});
+
 export default router;
 

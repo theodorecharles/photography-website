@@ -167,6 +167,49 @@ The `restart.sh` script handles:
 
 ---
 
+## 🎬 Hardware Video Encoding
+
+Galleria supports hardware-accelerated video encoding for faster video processing using your GPU.
+
+### Supported Hardware
+
+- **NVIDIA GPUs** (NVENC) - Docker and native
+- **Intel Quick Sync Video** (QSV) - Native only
+- **AMD GPUs** (AMF) - Native only
+- **Apple VideoToolbox** - macOS native only
+- **VA-API** - Linux native only
+
+### Docker Setup (NVIDIA GPUs)
+
+**Prerequisites:**
+1. NVIDIA GPU with driver installed on host
+2. NVIDIA Container Toolkit installed: [Installation Guide](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html)
+
+**Enable in `docker-compose.yml`:**
+
+```yaml
+services:
+  app:
+    runtime: nvidia  # Enable NVIDIA runtime
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,video,utility
+```
+
+### Non-Docker Setup
+
+Hardware encoding automatically detects and uses available GPU encoders on your system. No special configuration needed - just ensure GPU drivers are installed.
+
+### Enable Hardware Encoding
+
+1. Navigate to **Admin Panel → Settings → Video Quality**
+2. Toggle **Hardware Transcoding** to enabled
+3. Video processing will now use GPU acceleration when available
+
+**Performance:** Hardware encoding can be 5-10x faster than software encoding, especially for high-resolution videos.
+
+---
+
 ## ⚙️ Configuration
 
 Configuration is managed through environment variables or the admin panel - you don't need to edit config files directly.

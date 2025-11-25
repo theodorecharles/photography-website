@@ -1,14 +1,25 @@
 # Combined Frontend + Backend Dockerfile
-FROM node:22-alpine
+# Use Debian-based Node image for better NVIDIA compatibility
+FROM node:22-slim
 
-# Install build dependencies for better-sqlite3 and sharp, plus wget for health checks, ffmpeg for video processing
-RUN apk add --no-cache \
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
     python3 \
     make \
     g++ \
-    vips-dev \
     wget \
-    ffmpeg
+    curl \
+    ca-certificates \
+    gnupg \
+    libvips-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install ffmpeg with hwaccel support from official Debian repos
+# Note: Debian ffmpeg is compiled with --enable-nvenc but requires NVIDIA drivers at runtime
+RUN apt-get update && apt-get install -y \
+    ffmpeg \
+    && rm -rf /var/lib/apt/lists/* \
+    && ffmpeg -version
 
 WORKDIR /app
 

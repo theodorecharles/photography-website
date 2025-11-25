@@ -217,7 +217,7 @@ const NotificationEventsPage: React.FC<NotificationEventsPageProps> = ({ setMess
                     </p>
                   </div>
 
-                  <div className="ai-toggle-controls" style={{ flexShrink: 0 }}>
+                  <div className="toggle-controls" style={{ flexShrink: 0 }}>
                     <span
                       className="toggle-label"
                       style={{

@@ -88,6 +88,39 @@ export function initializeDatabase(): any {
   } catch (err) {
     warn('[Database] Could not check/add sort_order column:', err);
   }
+
+  // Add media_type column if it doesn't exist (migration)
+  try {
+    const tableInfo = db.pragma('table_info(image_metadata)');
+    const hasMediaType = tableInfo.some((col: any) => col.name === 'media_type');
+    if (!hasMediaType) {
+      info('[Database] Adding media_type column to image_metadata...');
+      db.exec("ALTER TABLE image_metadata ADD COLUMN media_type TEXT NOT NULL DEFAULT 'photo'");
+      
+      // Fix existing video records (detect by file extension)
+      const videoExtensions = ['.mp4', '.mov', '.avi', '.webm', '.mkv', '.m4v', '.flv', '.wmv'];
+      const allRecords = db.prepare('SELECT id, filename FROM image_metadata').all() as Array<{ id: number, filename: string }>;
+      
+      let videoCount = 0;
+      const updateStmt = db.prepare('UPDATE image_metadata SET media_type = ? WHERE id = ?');
+      
+      for (const record of allRecords) {
+        const ext = record.filename.substring(record.filename.lastIndexOf('.')).toLowerCase();
+        if (videoExtensions.includes(ext)) {
+          updateStmt.run('video', record.id);
+          videoCount++;
+        }
+      }
+      
+      if (videoCount > 0) {
+        info(`[Database] Updated ${videoCount} existing video records to media_type='video'`);
+      }
+      
+      info('[Database] Successfully added media_type column');
+    }
+  } catch (err) {
+    warn('[Database] Could not check/add media_type column:', err);
+  }
   
   // Add sort_order column to albums if it doesn't exist (migration)
   try {

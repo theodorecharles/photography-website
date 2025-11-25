@@ -16,9 +16,12 @@ services:
       - BACKEND_DOMAIN=${BACKEND_DOMAIN:-http://localhost:3001}
       - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-}
       - LOG_LEVEL=${LOG_LEVEL:-info}
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,video,utility
     volumes:
       - ${DATA_DIR:-/Users/Ted/Desktop/galleria-data}:/data
     restart: unless-stopped
+    runtime: nvidia
     healthcheck:
       test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3001/api/health"]
       interval: 30s

@@ -81,11 +81,23 @@ export const createOptimizationStreamHandlers = (props: OptimizationStreamHandle
 
               // Map video processing states to 'optimizing'
               if (state === 'rotation' || state === '240p' || state === '360p' || state === '720p' || state === '1080p' || state === 'thumbnail' || state === 'modal-preview') {
+                // Calculate overall progress across all stages
+                // Video processing stages: rotation → resolutions (240p, 360p, 720p, 1080p) → thumbnail → modal-preview
+                const allStages = ['rotation', '240p', '360p', '720p', '1080p', 'thumbnail', 'modal-preview'];
+                const currentStageIndex = allStages.indexOf(state);
+                const totalStages = allStages.length;
+                
+                // Overall progress = (completed stages + current stage progress) / total stages
+                const overallProgress = currentStageIndex >= 0 
+                  ? Math.round(((currentStageIndex * 100 + progress) / totalStages))
+                  : progress;
+
                 return {
                   ...img,
                   state: 'optimizing',
-                  optimizeProgress: progress,
+                  optimizeProgress: overallProgress, // Overall progress for the circle
                   videoStage: state, // Track the specific video stage
+                  videoStageProgress: progress, // Individual stage progress
                   message
                 };
               }
