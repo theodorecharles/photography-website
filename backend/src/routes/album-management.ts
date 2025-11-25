@@ -1708,19 +1708,22 @@ router.post('/:albumName/video/:filename/update-thumbnail', requireManager, asyn
       return;
     }
     
-    // Sanitize inputs to prevent shell injection and directory traversal
+    // Validate inputs to prevent shell injection and directory traversal
+    // DON'T transform the names - use exact names from database
     const sanitizedAlbumName = sanitizeName(albumName);
-    const sanitizedFilename = sanitizePhotoName(filename);
     
     if (!sanitizedAlbumName) {
       res.status(400).json({ error: 'Invalid album name' });
       return;
     }
     
-    if (!sanitizedFilename) {
+    // Basic security check for filename - no transformation
+    if (!filename || filename.includes('..') || filename.includes('/') || filename.includes('\\')) {
       res.status(400).json({ error: 'Invalid filename' });
       return;
     }
+    
+    const sanitizedFilename = filename; // Use exact filename, no transformation
     
     if (typeof timestamp !== 'number' || timestamp < 0) {
       res.status(400).json({ error: 'Valid timestamp is required' });
