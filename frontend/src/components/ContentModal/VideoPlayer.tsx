@@ -3,7 +3,7 @@
  * HLS video player with adaptive streaming (automatic quality selection)
  */
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import Hls from 'hls.js';
 import { API_URL } from '../../config';
 import { trackVideoPlay, trackVideoPause, trackVideoEnd, trackVideoProgress, trackVideoSeek, trackVideoQualityChange, trackVideoSession } from '../../utils/analytics';
@@ -12,7 +12,6 @@ interface VideoPlayerProps {
   album: string;
   filename: string;
   videoTitle?: string;
-  autoplay?: boolean;
   posterUrl?: string; // Thumbnail to show before video plays
   onLoadStart?: () => void;
   onLoaded?: () => void;
@@ -23,7 +22,6 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   album,
   filename,
   videoTitle = '',
-  autoplay = false,
   posterUrl,
   onLoadStart,
   onLoaded,
