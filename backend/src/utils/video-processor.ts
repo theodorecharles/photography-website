@@ -294,14 +294,21 @@ export async function generateHLS(
         // Configure encoder-specific arguments
         switch (hwEncoder) {
           case HardwareEncoder.NVIDIA:
-            // NVIDIA NVENC settings
+            // NVIDIA NVENC settings optimized for HLS streaming
             encoderArgs = [
               '-preset', 'p4', // p1 (fastest) to p7 (slowest), p4 is balanced
+              '-tune', 'hq', // High quality tuning
+              '-profile:v', 'high', // H.264 High profile for better compression
               '-rc', 'vbr', // Variable bitrate
               '-cq', resolution.height >= 1080 ? '23' : resolution.height >= 720 ? '25' : '28',
               '-b:v', resolution.videoBitrate,
               '-maxrate', resolution.videoBitrate,
               '-bufsize', `${parseInt(resolution.videoBitrate) * 2}k`,
+              '-spatial-aq', '1', // Spatial adaptive quantization
+              '-temporal-aq', '1', // Temporal adaptive quantization
+              '-forced-idr', '1', // Force IDR frames at every keyframe for HLS seeking
+              '-bf', '2', // Use 2 B-frames for better compression
+              '-refs', '3', // Reference frames for better quality
             ];
             break;
             
@@ -400,6 +407,8 @@ export async function generateHLS(
       '-c:a', 'aac',
       '-b:a', resolution.audioBitrate,
       '-ac', '2',
+      // Bitstream filter: Convert to Annex B format (required for HLS/MPEG-TS)
+      '-bsf:v', 'h264_mp4toannexb',
       '-f', 'hls',
       '-hls_time', segmentDuration.toString(),
       '-hls_list_size', '0',
