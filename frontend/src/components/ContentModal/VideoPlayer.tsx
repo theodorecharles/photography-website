@@ -121,7 +121,6 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         console.log(`[VideoPlayer] Starting at highest quality: ${hls.levels[highestQualityLevel].height}p`);
         hls.startLevel = highestQualityLevel;
         
-        setError(null); // Clear loading status
         if (onLoaded) onLoaded();
         // No autoplay - user clicks play manually
       });

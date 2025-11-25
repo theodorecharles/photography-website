@@ -60,15 +60,13 @@ const ContentModal: React.FC<ContentModalProps> = ({
     () => !localStorage.getItem('hideNavigationHint')
   );
   const [siteName, setSiteName] = useState<string>('Galleria');
-  const [shouldAutoplay, setShouldAutoplay] = useState(clickedVideo);
   const [showVideoPlayer, setShowVideoPlayer] = useState(clickedVideo);
   const previousPhotoRef = useRef<string | null>(null);
 
   // Track photo changes to determine if user navigated
   useEffect(() => {
     if (previousPhotoRef.current && previousPhotoRef.current !== selectedPhoto.id) {
-      // User navigated to a different photo/video, don't autoplay and show preview
-      setShouldAutoplay(false);
+      // User navigated to a different photo/video, show preview
       setShowVideoPlayer(false);
     } else if (clickedVideo) {
       // User directly clicked a video
@@ -83,7 +81,6 @@ const ContentModal: React.FC<ContentModalProps> = ({
     e.stopPropagation();
     e.preventDefault();
     setShowVideoPlayer(true);
-    setShouldAutoplay(true);
   }, []);
   
   const touchStartX = useRef<number | null>(null);
