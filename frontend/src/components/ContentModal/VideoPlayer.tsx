@@ -41,22 +41,38 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
 
     if (onLoadStart) onLoadStart();
 
+    // Construct master playlist URL
     const masterPlaylistUrl = `${API_URL}/api/video/${encodeURIComponent(album)}/${encodeURIComponent(filename)}/master.m3u8`;
+    console.log('[VideoPlayer] Master playlist URL:', masterPlaylistUrl);
 
     if (Hls.isSupported()) {
       console.log('[VideoPlayer] Using HLS.js');
+      
+      // Custom loader to append secretKey to all requests
+      class CustomLoader extends Hls.DefaultConfig.loader {
+        constructor(config: any) {
+          super(config);
+          const load = this.load.bind(this);
+          this.load = function(context: any, config: any, callbacks: any) {
+            // Add secretKey to all video API requests
+            if (secretKey && context.url && context.url.includes('/api/video/')) {
+              const separator = context.url.includes('?') ? '&' : '?';
+              context.url = `${context.url}${separator}key=${secretKey}`;
+            }
+            return load(context, config, callbacks);
+          };
+        }
+      }
+
       const hls = new Hls({
         enableWorker: true,
         maxBufferLength: 10, // Buffer 10 seconds ahead
         maxMaxBufferLength: 15,
         maxBufferSize: 15 * 1000 * 1000,
         backBufferLength: 30,
-        xhrSetup: (xhr: XMLHttpRequest, url: string) => {
+        loader: CustomLoader,
+        xhrSetup: (xhr: XMLHttpRequest) => {
           xhr.withCredentials = true;
-          if (secretKey && url.includes('/api/video/')) {
-            const separator = url.includes('?') ? '&' : '?';
-            xhr.open('GET', `${url}${separator}key=${secretKey}`, true);
-          }
         },
       });
 
