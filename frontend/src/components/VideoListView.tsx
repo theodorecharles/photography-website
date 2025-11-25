@@ -161,7 +161,7 @@ const VideoListView: React.FC<VideoListViewProps> = ({ videos, album, secretKey,
                 
                 {/* Video player overlay (only rendered when playing) */}
                 {isPlaying && (
-                  <div className="modal-video-overlay">
+                  <div className="modal-video-overlay" style={{ pointerEvents: 'none' }}>
                     <VideoPlayer
                       album={video.album}
                       filename={filename}

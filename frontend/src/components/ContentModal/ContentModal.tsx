@@ -679,7 +679,7 @@ const ContentModal: React.FC<ContentModalProps> = ({
                 
                 {/* Video player overlay (on top of thumbnail) */}
                 {showVideoPlayer && (
-                  <div className="modal-video-overlay">
+                  <div className="modal-video-overlay" style={{ pointerEvents: 'none' }}>
                     <Suspense fallback={<div className="photo-loading-overlay"><div className="photo-loading-spinner"></div></div>}>
                       <VideoPlayer
                         album={selectedPhoto.album}
