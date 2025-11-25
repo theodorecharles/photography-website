@@ -125,7 +125,7 @@ const getContentInAlbum = (photosDir: string, album: string) => {
       const isVideo = img.media_type === 'video';
       const thumbnailFilename = isVideo ? img.filename.replace(/\.[^.]+$/, '.jpg') : img.filename;
 
-      return {
+      const photo = {
         id: `${album}/${img.filename}`,
         title: img.title || defaultTitle,
         description: img.description || undefined,
@@ -136,6 +136,13 @@ const getContentInAlbum = (photosDir: string, album: string) => {
         sort_order: img.sort_order ?? null,
         media_type: img.media_type || 'photo',
       };
+      
+      // Debug logging
+      if (album === 'Animals' && img.filename.includes('Charels')) {
+        info(`[Albums] Photo object for ${img.filename}:`, { id: photo.id, title: photo.title });
+      }
+      
+      return photo;
     });
     
     // Photos are already sorted by the database query
