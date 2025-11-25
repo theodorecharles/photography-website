@@ -82,23 +82,22 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
       const hls = new Hls({
         enableWorker: true,
         lowLatencyMode: false,
-        backBufferLength: 90,
-        // autoStartLoad defaults to true - loads initial segments to prevent loading spinner
+        backBufferLength: 30,
         // Enable automatic quality switching based on bandwidth
         abrEwmaDefaultEstimate: 5000000, // Start with higher estimate (5 Mbps) for better initial quality
         abrEwmaSlowVoD: 3, // Weight for slow EMA (VOD)
         abrEwmaFastVoD: 3, // Weight for fast EMA (VOD)
         abrMaxWithRealBitrate: false, // Use bandwidth estimate, not max bitrate
         debug: false, // Disable verbose logging in production
-        // Buffer configuration to prevent stalling and buffer holes
-        maxBufferLength: 30, // Maximum buffer length in seconds
-        maxMaxBufferLength: 60, // Maximum max buffer length
-        maxBufferSize: 60 * 1000 * 1000, // 60 MB max buffer size
-        maxBufferHole: 0.5, // Max hole size (seconds) that can be skipped
-        highBufferWatchdogPeriod: 2, // Check for buffer issues every 2 seconds
-        nudgeOffset: 0.1, // Small offset to skip tiny buffer holes
-        nudgeMaxRetry: 3, // Max retries for nudging
-        liveSyncDurationCount: 3, // VOD: buffer 3 segments initially
+        // Minimal buffer to prevent excessive preloading
+        maxBufferLength: 5, // Only buffer 5 seconds ahead
+        maxMaxBufferLength: 10, // Max 10 seconds
+        maxBufferSize: 10 * 1000 * 1000, // 10 MB max
+        maxBufferHole: 0.5,
+        highBufferWatchdogPeriod: 2,
+        nudgeOffset: 0.1,
+        nudgeMaxRetry: 3,
+        liveSyncDurationCount: 2, // Only load 2 segments initially
         xhrSetup: (xhr: XMLHttpRequest, url: string) => {
           // Send credentials (cookies) with video requests for authentication
           xhr.withCredentials = true;
