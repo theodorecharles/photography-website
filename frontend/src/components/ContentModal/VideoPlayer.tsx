@@ -205,6 +205,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         style={{
           width: '100%',
           height: '100%',
+          display: 'block',
           maxWidth: '100%',
           maxHeight: '100%',
           objectFit: 'contain'
