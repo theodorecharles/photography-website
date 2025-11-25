@@ -67,33 +67,27 @@
   justify-content: center;
 }
 
-/* Video container - holds VideoPlayer */
-.modal-video-container {
+/* Video player - holds VideoPlayer directly */
+.modal-video-player {
   position: relative;
   width: 100%;
   height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-/* Video overlay - positioned on top of thumbnail background */
-.modal-video-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 5; /* Above thumbnail, below controls */
-  background: rgba(0, 0, 0, 0.3); /* Slight darkening while loading */
   pointer-events: auto; /* Ensure video controls receive clicks */
 }
 
-.modal-video-overlay video {
+.modal-video-player video {
   pointer-events: auto; /* Explicitly allow video interactions */
+}
+
+/* Modal photo - for images and video thumbnails */
+.modal-photo {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  display: block;
 }
 
 /* Video play button overlay for navigated videos */

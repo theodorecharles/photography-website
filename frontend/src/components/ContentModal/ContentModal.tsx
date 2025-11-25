@@ -455,7 +455,7 @@ const ContentModal: React.FC<ContentModalProps> = ({
     const isOnInfoPanel = target.closest('.modal-info-panel');
     const isOnControls = target.closest('.modal-controls-top');
     const isOnImageTitle = target.closest('.modal-image-title');
-    const isOnVideoOverlay = target.closest('.modal-video-overlay');
+    const isOnVideoPlayer = target.closest('.modal-video-player');
     
     // If clicking on any interactive element, don't close the modal
     if (isOnButton || isOnInfoPanel || isOnControls || isOnImageTitle) {
@@ -463,8 +463,8 @@ const ContentModal: React.FC<ContentModalProps> = ({
       return;
     }
     
-    // If clicking on video overlay or controls, allow interaction with video
-    if (isOnVideoOverlay || isDirectlyOnVideo) {
+    // If clicking on video player or controls, allow interaction with video
+    if (isOnVideoPlayer || isDirectlyOnVideo) {
       e.stopPropagation();
       
       // Close info panel if clicking on video while it's open
@@ -611,7 +611,7 @@ const ContentModal: React.FC<ContentModalProps> = ({
       onTouchEnd={(e) => {
         // Prevent modal close if touching interactive elements
         const target = e.target as HTMLElement;
-        if (target.closest('button, .video-play-button-overlay, .modal-video-overlay, video')) {
+        if (target.closest('button, .video-play-button-overlay, .modal-video-player, video')) {
           console.log('[ContentModal] Blocked modal close - interactive element touched');
           e.stopPropagation();
           return;
@@ -660,40 +660,15 @@ const ContentModal: React.FC<ContentModalProps> = ({
 
             {selectedPhoto.media_type === 'video' ? (
               <div className="modal-photo-container">
-                {/* Always show thumbnail as background for videos */}
-                <ImageCanvas
-                  photo={selectedPhoto}
-                  apiUrl={API_URL}
-                  imageQueryString={imageQueryString}
-                  modalImageLoaded={modalImageLoaded}
-                  showModalImage={showModalImage}
-                  onThumbnailLoad={handleThumbnailLoad}
-                />
-                
-                {/* Play button overlay (hidden when video player is active) */}
-                {thumbnailLoaded && !showVideoPlayer && (
-                  <button
-                    onClick={handlePlayClick}
-                    onTouchEnd={(e) => {
-                      e.stopPropagation();
-                      e.preventDefault();
-                      handlePlayClick(e);
-                    }}
-                    className="video-play-button-overlay"
-                    aria-label="Play video"
-                  >
-                    <PlayIcon width={80} height={80} />
-                  </button>
-                )}
-                
-                {/* Video player overlay (on top of thumbnail) */}
-                {showVideoPlayer && (
-                  <div className="modal-video-overlay">
+                {showVideoPlayer ? (
+                  /* Show video player directly when playing */
+                  <div className="modal-video-player">
                     <Suspense fallback={<div className="photo-loading-overlay"><div className="photo-loading-spinner"></div></div>}>
                       <VideoPlayer
                         album={selectedPhoto.album}
                         filename={selectedPhoto.id.includes('/') ? selectedPhoto.id.split('/').pop() || selectedPhoto.id : selectedPhoto.id}
                         videoTitle={selectedPhoto.title || selectedPhoto.id}
+                        posterUrl={selectedPhoto.thumbnail}
                         onLoadStart={() => setThumbnailLoaded(false)}
                         onLoaded={() => {
                           setThumbnailLoaded(true);
@@ -703,6 +678,34 @@ const ContentModal: React.FC<ContentModalProps> = ({
                       />
                     </Suspense>
                   </div>
+                ) : (
+                  /* Show thumbnail with play button when not playing */
+                  <>
+                    <img
+                      src={`${API_URL}${selectedPhoto.thumbnail}${imageQueryString}`}
+                      alt={selectedPhoto.title || selectedPhoto.id}
+                      className="modal-photo"
+                      onLoad={handleThumbnailLoad}
+                      style={{
+                        opacity: thumbnailLoaded ? 1 : 0,
+                        transition: 'opacity 0.2s ease-in-out'
+                      }}
+                    />
+                    {thumbnailLoaded && (
+                      <button
+                        onClick={handlePlayClick}
+                        onTouchEnd={(e) => {
+                          e.stopPropagation();
+                          e.preventDefault();
+                          handlePlayClick(e);
+                        }}
+                        className="video-play-button-overlay"
+                        aria-label="Play video"
+                      >
+                        <PlayIcon width={80} height={80} />
+                      </button>
+                    )}
+                  </>
                 )}
               </div>
             ) : (
