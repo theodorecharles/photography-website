@@ -89,6 +89,11 @@
   justify-content: center;
   z-index: 5; /* Above thumbnail, below controls */
   background: rgba(0, 0, 0, 0.3); /* Slight darkening while loading */
+  pointer-events: auto; /* Ensure video controls receive clicks */
+}
+
+.modal-video-overlay video {
+  pointer-events: auto; /* Explicitly allow video interactions */
 }
 
 /* Video play button overlay for navigated videos */

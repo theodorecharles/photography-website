@@ -455,6 +455,7 @@ const ContentModal: React.FC<ContentModalProps> = ({
     const isOnInfoPanel = target.closest('.modal-info-panel');
     const isOnControls = target.closest('.modal-controls-top');
     const isOnImageTitle = target.closest('.modal-image-title');
+    const isOnVideoOverlay = target.closest('.modal-video-overlay');
     
     // If clicking on any interactive element, don't close the modal
     if (isOnButton || isOnInfoPanel || isOnControls || isOnImageTitle) {
@@ -462,11 +463,22 @@ const ContentModal: React.FC<ContentModalProps> = ({
       return;
     }
     
-    // If clicking directly on the image or video, don't close modal
-    if (isDirectlyOnImage || isDirectlyOnVideo) {
+    // If clicking on video overlay or controls, allow interaction with video
+    if (isOnVideoOverlay || isDirectlyOnVideo) {
       e.stopPropagation();
       
-      // Close info panel if clicking on image/video while it's open
+      // Close info panel if clicking on video while it's open
+      if (showInfo && !target.closest('video')) {
+        setShowInfo(false);
+      }
+      return;
+    }
+    
+    // If clicking directly on the image, don't close modal
+    if (isDirectlyOnImage) {
+      e.stopPropagation();
+      
+      // Close info panel if clicking on image while it's open
       if (showInfo) {
         setShowInfo(false);
       }
@@ -599,7 +611,7 @@ const ContentModal: React.FC<ContentModalProps> = ({
       onTouchEnd={(e) => {
         // Prevent modal close if touching interactive elements
         const target = e.target as HTMLElement;
-        if (target.closest('button, .video-play-button-overlay')) {
+        if (target.closest('button, .video-play-button-overlay, .modal-video-overlay, video')) {
           console.log('[ContentModal] Blocked modal close - interactive element touched');
           e.stopPropagation();
           return;
