@@ -75,10 +75,13 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
 
       const hls = new Hls({
         enableWorker: true,
-        maxBufferLength: 10, // Buffer 10 seconds ahead
-        maxMaxBufferLength: 15,
-        maxBufferSize: 15 * 1000 * 1000,
-        backBufferLength: 30,
+        maxBufferLength: 30, // Buffer 30 seconds ahead (increased)
+        maxMaxBufferLength: 60,
+        maxBufferSize: 60 * 1000 * 1000,
+        backBufferLength: 90,
+        maxBufferHole: 0.5, // Tolerate buffer holes up to 0.5s
+        maxFragLookUpTolerance: 0.25,
+        nudgeMaxRetry: 10, // Try harder to recover from stalls
         loader: CustomLoader,
         xhrSetup: (xhr: XMLHttpRequest) => {
           xhr.withCredentials = true;
@@ -121,17 +124,29 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
       });
 
       hls.on(Hls.Events.ERROR, (_event, data) => {
-        console.error('[VideoPlayer] HLS Error:', data.type, data.details, data);
+        console.error('[VideoPlayer] HLS Error:', data.type, data.details, 'fatal:', data.fatal, data);
+        
+        // Handle non-fatal buffer errors gracefully
+        if (!data.fatal && data.type === Hls.ErrorTypes.MEDIA_ERROR) {
+          if (data.details === 'bufferSeekOverHole' || data.details === 'bufferStalledError') {
+            console.log('[VideoPlayer] Ignoring non-fatal buffer error, HLS.js will recover');
+            return;
+          }
+        }
+        
         if (data.fatal) {
           console.error('[VideoPlayer] Fatal error:', data);
           switch (data.type) {
             case Hls.ErrorTypes.NETWORK_ERROR:
+              console.log('[VideoPlayer] Attempting to recover from network error');
               hls.startLoad();
               break;
             case Hls.ErrorTypes.MEDIA_ERROR:
+              console.log('[VideoPlayer] Attempting to recover from media error');
               hls.recoverMediaError();
               break;
             default:
+              console.error('[VideoPlayer] Unrecoverable error, destroying HLS');
               hls.destroy();
               break;
           }
