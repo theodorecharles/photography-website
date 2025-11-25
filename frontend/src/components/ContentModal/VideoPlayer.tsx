@@ -76,6 +76,9 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
       (window as any).lastVideoUrl = urlDebug;
     }
 
+    // Event handler for starting segment load on play (needs to be in outer scope for cleanup)
+    let handlePlay: (() => void) | null = null;
+
     if (Hls.isSupported()) {
       console.log('[VideoPlayer] Using HLS.js for playback');
       // Use HLS.js for adaptive streaming
@@ -83,6 +86,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         enableWorker: true,
         lowLatencyMode: false,
         backBufferLength: 90,
+        autoStartLoad: false, // DON'T load segments until user clicks play
         // Enable automatic quality switching based on bandwidth
         abrEwmaDefaultEstimate: 5000000, // Start with higher estimate (5 Mbps) for better initial quality
         abrEwmaSlowVoD: 3, // Weight for slow EMA (VOD)
@@ -128,8 +132,15 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         hls.startLevel = highestQualityLevel;
         
         if (onLoaded) onLoaded();
-        console.log('[VideoPlayer] NOT calling play() - user must click');
+        console.log('[VideoPlayer] Manifest loaded, waiting for user to click play');
       });
+      
+      // Start loading segments only when user clicks play
+      handlePlay = () => {
+        console.log('[VideoPlayer] User clicked play, starting segment load');
+        hls.startLoad();
+      };
+      video.addEventListener('play', handlePlay);
 
       // Log quality level changes for debugging
       hls.on(Hls.Events.LEVEL_SWITCHED, (_event, data) => {
@@ -186,6 +197,10 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
       if (hlsRef.current) {
         hlsRef.current.destroy();
         hlsRef.current = null;
+      }
+      // Remove play event listener
+      if (video && handlePlay) {
+        video.removeEventListener('play', handlePlay);
       }
     };
   }, [album, filename, videoTitle, secretKey]); // Don't include callbacks in deps - they cause re-render loops
