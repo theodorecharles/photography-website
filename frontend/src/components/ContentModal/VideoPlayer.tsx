@@ -31,6 +31,15 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   const hlsRef = useRef<Hls | null>(null);
   const initializingRef = useRef(false);
   const videoId = `${album}/${filename}`;
+  
+  // Store callbacks in refs to avoid triggering effect on every render
+  const onLoadStartRef = useRef(onLoadStart);
+  const onLoadedRef = useRef(onLoaded);
+  
+  useEffect(() => {
+    onLoadStartRef.current = onLoadStart;
+    onLoadedRef.current = onLoaded;
+  }, [onLoadStart, onLoaded]);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -39,7 +48,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     initializingRef.current = true;
     console.log('[VideoPlayer] Initializing for', filename);
 
-    if (onLoadStart) onLoadStart();
+    if (onLoadStartRef.current) onLoadStartRef.current();
 
     // Construct master playlist URL
     const masterPlaylistUrl = `${API_URL}/api/video/${encodeURIComponent(album)}/${encodeURIComponent(filename)}/master.m3u8`;
@@ -82,7 +91,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
 
       hls.on(Hls.Events.MANIFEST_PARSED, () => {
         console.log('[VideoPlayer] Loaded:', hls.levels.map(l => l.height + 'p'));
-        if (onLoaded) onLoaded();
+        if (onLoadedRef.current) onLoadedRef.current();
       });
 
       hls.on(Hls.Events.LEVEL_SWITCHED, (_event, data) => {
@@ -111,7 +120,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
       console.log('[VideoPlayer] Using native HLS (Safari)');
       video.src = masterPlaylistUrl;
       video.addEventListener('loadedmetadata', () => {
-        if (onLoaded) onLoaded();
+        if (onLoadedRef.current) onLoadedRef.current();
       });
     } else {
       console.error('[VideoPlayer] HLS not supported');
@@ -124,7 +133,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         hlsRef.current = null;
       }
     };
-  }, [album, filename, videoTitle, secretKey, onLoadStart, onLoaded]);
+  }, [album, filename, videoTitle, secretKey]);
 
   const posterUrlFull = posterUrl ? `${API_URL}${posterUrl}${secretKey ? `?key=${secretKey}` : ''}` : undefined;
 
