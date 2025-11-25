@@ -267,14 +267,14 @@ const AlbumGridItem: React.FC<AlbumGridItemProps> = ({
                       }}
                     />
                   </svg>
-                  <div className="progress-percentage">{uploadingImage.optimizeProgress}%</div>
+                  <div className="progress-percentage">{Math.round(uploadingImage.optimizeProgress || 0)}%</div>
                 </div>
               )}
               <span className="state-text">
                 {uploadingImage.videoStage 
                   ? uploadingImage.videoStage.match(/^\d+p$/) // Is it a resolution like "720p"?
-                    ? `${uploadingImage.videoStage} (${uploadingImage.optimizeProgress}%)`
-                    : `${uploadingImage.optimizeProgress}%` // Just show percentage for rotation/thumbnail stages
+                    ? `${uploadingImage.videoStage} (${Math.round(uploadingImage.optimizeProgress || 0)}%)`
+                    : `${Math.round(uploadingImage.optimizeProgress || 0)}%` // Just show percentage for rotation/thumbnail stages
                   : t('sse.optimizing')}
               </span>
             </div>
