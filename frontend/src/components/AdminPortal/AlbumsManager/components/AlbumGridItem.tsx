@@ -273,8 +273,8 @@ const AlbumGridItem: React.FC<AlbumGridItemProps> = ({
               <span className="state-text">
                 {uploadingImage.videoStage 
                   ? uploadingImage.videoStage.match(/^\d+p$/) // Is it a resolution like "720p"?
-                    ? `${uploadingImage.videoStage} (${Math.round(uploadingImage.optimizeProgress || 0)}%)`
-                    : `${Math.round(uploadingImage.optimizeProgress || 0)}%` // Just show percentage for rotation/thumbnail stages
+                    ? `${uploadingImage.videoStage} (${Math.round(uploadingImage.videoStageProgress || 0)}%)`
+                    : uploadingImage.videoStage // Show stage name for rotation/thumbnail
                   : t('sse.optimizing')}
               </span>
             </div>

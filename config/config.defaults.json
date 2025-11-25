@@ -28,6 +28,7 @@
         }
       },
       "video": {
+        "hardwareAcceleration": false,
         "segmentDuration": 4,
         "resolutions": {
           "240p": {

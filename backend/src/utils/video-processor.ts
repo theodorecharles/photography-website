@@ -295,20 +295,20 @@ export async function generateHLS(
         switch (hwEncoder) {
           case HardwareEncoder.NVIDIA:
             // NVIDIA NVENC settings optimized for HLS streaming
+            // Critical: Use CBR + no B-frames for smooth HLS playback
             encoderArgs = [
               '-preset', 'p4', // p1 (fastest) to p7 (slowest), p4 is balanced
               '-tune', 'hq', // High quality tuning
-              '-profile:v', 'high', // H.264 High profile for better compression
-              '-rc', 'vbr', // Variable bitrate
-              '-cq', resolution.height >= 1080 ? '23' : resolution.height >= 720 ? '25' : '28',
+              '-profile:v', 'main', // Main profile (baseline/main for HLS compatibility)
+              '-rc', 'cbr', // Constant bitrate for predictable streaming
               '-b:v', resolution.videoBitrate,
               '-maxrate', resolution.videoBitrate,
               '-bufsize', `${parseInt(resolution.videoBitrate) * 2}k`,
               '-spatial-aq', '1', // Spatial adaptive quantization
               '-temporal-aq', '1', // Temporal adaptive quantization
               '-forced-idr', '1', // Force IDR frames at every keyframe for HLS seeking
-              '-bf', '2', // Use 2 B-frames for better compression
-              '-refs', '3', // Reference frames for better quality
+              '-bf', '0', // NO B-frames - prevents stuttering in HLS
+              '-no-scenecut', '1', // Disable scenecut detection to prevent unexpected keyframes
             ];
             break;
             
@@ -413,9 +413,11 @@ export async function generateHLS(
       '-hls_time', segmentDuration.toString(),
       '-hls_list_size', '0',
       '-hls_segment_filename', segmentPattern,
+      '-hls_segment_type', 'mpegts', // Explicitly use MPEG-TS segments
       '-start_number', '0',
-      '-hls_flags', 'independent_segments+split_by_time', // Ensure segments start at exact timestamps
+      '-hls_flags', 'independent_segments+split_by_time', // Independent segments for HLS
       '-avoid_negative_ts', 'make_zero', // Ensure timestamps start at 0
+      '-vsync', 'cfr', // Constant frame rate - prevents timing issues
       '-y',
       playlistPath
     );
