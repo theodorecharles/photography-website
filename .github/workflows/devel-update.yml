@@ -132,7 +132,7 @@ jobs:
           fi
 
           # Build and push with dev tag only (no version tags on devel branch)
-          docker build -t ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.DOCKER_IMAGE_NAME }}:$TAG .
+          docker build --no-cache -t ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.DOCKER_IMAGE_NAME }}:$TAG .
           docker push ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.DOCKER_IMAGE_NAME }}:$TAG
 
           # Logout
