@@ -6,7 +6,7 @@
 import React, { useEffect, useRef } from 'react';
 import Hls from 'hls.js';
 import { API_URL } from '../../config';
-import { trackVideoPlay, trackVideoPause, trackVideoEnd, trackVideoProgress, trackVideoSeek, trackVideoQualityChange, trackVideoSession } from '../../utils/analytics';
+import { trackVideoQualityChange } from '../../utils/analytics';
 
 interface VideoPlayerProps {
   album: string;
@@ -30,16 +30,6 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   const videoRef = useRef<HTMLVideoElement>(null);
   const hlsRef = useRef<Hls | null>(null);
   const initializingRef = useRef(false);
-  
-  // Analytics tracking state
-  const watchStartTime = useRef<number | null>(null);
-  const totalWatchTime = useRef<number>(0);
-  const lastCurrentTime = useRef<number>(0);
-  const milestonesPassed = useRef<Set<number>>(new Set());
-  const playCount = useRef<number>(0);
-  const pauseCount = useRef<number>(0);
-  const seekCount = useRef<number>(0);
-  const maxPercentageReached = useRef<number>(0);
   const videoId = `${album}/${filename}`;
 
   useEffect(() => {
@@ -174,99 +164,11 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
       console.error('[VideoPlayer] HLS not supported');
     }
 
-    // Add video analytics event listeners
-    const handlePlay = () => {
-      console.log('[VideoPlayer] handlePlay analytics called');
-      watchStartTime.current = Date.now();
-      playCount.current++;
-      // Delay analytics to avoid triggering re-render
-      setTimeout(() => {
-        trackVideoPlay(videoId, album, videoTitle, video.currentTime, video.duration);
-      }, 100);
-    };
 
-    const handlePause = () => {
-      console.log('[VideoPlayer] handlePause analytics called');
-      if (watchStartTime.current) {
-        const watchDuration = (Date.now() - watchStartTime.current) / 1000;
-        totalWatchTime.current += watchDuration;
-        watchStartTime.current = null;
-      }
-      pauseCount.current++;
-      // Delay analytics to avoid triggering re-render
-      setTimeout(() => {
-        trackVideoPause(videoId, album, videoTitle, video.currentTime, video.duration);
-      }, 100);
-    };
-
-    const handleEnded = () => {
-      if (watchStartTime.current) {
-        const watchDuration = (Date.now() - watchStartTime.current) / 1000;
-        totalWatchTime.current += watchDuration;
-        watchStartTime.current = null;
-      }
-      trackVideoEnd(videoId, album, videoTitle, video.duration, totalWatchTime.current);
-    };
-
-    const handleTimeUpdate = () => {
-      if (!video.duration) return;
-      
-      const currentPercent = (video.currentTime / video.duration) * 100;
-      maxPercentageReached.current = Math.max(maxPercentageReached.current, Math.round(currentPercent));
-
-      // Track progress milestones (25%, 50%, 75%, 100%)
-      const milestones = [25, 50, 75, 100];
-      for (const milestone of milestones) {
-        if (currentPercent >= milestone && !milestonesPassed.current.has(milestone)) {
-          milestonesPassed.current.add(milestone);
-          trackVideoProgress(videoId, album, videoTitle, video.currentTime, video.duration, milestone);
-        }
-      }
-      
-      lastCurrentTime.current = video.currentTime;
-    };
-
-    const handleSeeking = () => {
-      // Track when user seeks to a different position
-      if (video.duration && Math.abs(video.currentTime - lastCurrentTime.current) > 1) {
-        seekCount.current++;
-        trackVideoSeek(videoId, album, videoTitle, lastCurrentTime.current, video.currentTime, video.duration);
-        lastCurrentTime.current = video.currentTime;
-      }
-    };
-
-    video.addEventListener('play', handlePlay);
-    video.addEventListener('pause', handlePause);
-    video.addEventListener('ended', handleEnded);
-    video.addEventListener('timeupdate', handleTimeUpdate);
-    video.addEventListener('seeking', handleSeeking);
 
     return () => {
       console.log('[VideoPlayer] Cleanup: destroying HLS instance');
-      
-      // Track session summary before unmounting
-      if (video.duration) {
-        trackVideoSession(
-          videoId,
-          album,
-          videoTitle,
-          video.duration,
-          totalWatchTime.current,
-          maxPercentageReached.current,
-          playCount.current,
-          pauseCount.current,
-          seekCount.current
-        );
-      }
-      
-      // Clean up event listeners
-      video.removeEventListener('play', handlePlay);
-      video.removeEventListener('pause', handlePause);
-      video.removeEventListener('ended', handleEnded);
-      video.removeEventListener('timeupdate', handleTimeUpdate);
-      video.removeEventListener('seeking', handleSeeking);
-      
-      initializingRef.current = false; // Reset on cleanup
+      initializingRef.current = false;
       if (hlsRef.current) {
         hlsRef.current.destroy();
         hlsRef.current = null;
@@ -287,14 +189,6 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         muted
         poster={posterUrlFull}
         data-video-id={`${album}/${filename}`}
-        onPlay={(e) => {
-          console.log('[VideoPlayer] Video PLAY event fired');
-          e.stopPropagation();
-        }}
-        onPause={(e) => {
-          console.log('[VideoPlayer] Video PAUSE event fired. Stack trace:', new Error().stack);
-          e.stopPropagation();
-        }}
         style={{
           width: '100%',
           height: '100%',
