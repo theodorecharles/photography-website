@@ -42,7 +42,7 @@ try {
 
   images.forEach((img, idx) => {
     const hasGoodTitle = img.title && img.title !== img.filename;
-    const normalized = img.filename.toLowerCase().replace(/[-\s]/g, '');
+    const normalized = img.filename.toLowerCase().replace(/[-\s_]/g, '');
     console.log(`${idx + 1}. ID ${img.id} | sort_order: ${img.sort_order}`);
     console.log(`   Filename: ${img.filename}`);
     console.log(`   Title: ${img.title} ${hasGoodTitle ? '✨' : '❌'}`);
@@ -56,7 +56,7 @@ try {
   const seenNormalized = new Map();
   
   images.forEach(img => {
-    const normalized = img.filename.toLowerCase().replace(/[-\s]/g, '');
+    const normalized = img.filename.toLowerCase().replace(/[-\s_]/g, '');
     if (seenNormalized.has(normalized)) {
       console.log(`⚠️  DUPLICATE DETECTED:`);
       console.log(`   Previous: ID ${seenNormalized.get(normalized).id} - ${seenNormalized.get(normalized).filename}`);

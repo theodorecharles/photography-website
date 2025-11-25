@@ -22,10 +22,11 @@ const db = new Database(DB_PATH);
 
 try {
   // Find duplicates (same album + similar filename)
+  // Remove dashes, spaces, and underscores for comparison
   const duplicates = db.prepare(`
     SELECT album, filename, COUNT(*) as count
     FROM image_metadata
-    GROUP BY album, LOWER(REPLACE(REPLACE(filename, '-', ''), ' ', ''))
+    GROUP BY album, LOWER(REPLACE(REPLACE(REPLACE(filename, '-', ''), ' ', ''), '_', ''))
     HAVING count > 1
   `).all();
 
@@ -40,13 +41,13 @@ try {
     console.log(`\n📁 Album: ${dup.album}`);
     
     // Get all entries for this album/filename combination
-    const normalizedBase = dup.filename.toLowerCase().replace(/[-\s]/g, '');
+    const normalizedBase = dup.filename.toLowerCase().replace(/[-\s_]/g, '');
     
     const entries = db.prepare(`
       SELECT id, filename, title, description, sort_order, created_at
       FROM image_metadata
       WHERE album = ?
-      AND LOWER(REPLACE(REPLACE(filename, '-', ''), ' ', '')) = ?
+      AND LOWER(REPLACE(REPLACE(REPLACE(filename, '-', ''), ' ', ''), '_', '')) = ?
       ORDER BY created_at ASC
     `).all(dup.album, normalizedBase);
 
