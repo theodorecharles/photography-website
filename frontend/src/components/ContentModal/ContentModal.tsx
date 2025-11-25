@@ -14,7 +14,6 @@ import ModalControls from './ModalControls';
 import InfoPanel from './InfoPanel';
 import ImageCanvas from './ImageCanvas';
 import ModalNavigation from './ModalNavigation';
-import { PlayIcon } from '../icons';
 import './PhotoModal.css';
 import { error as logError } from '../../utils/logger';
 
@@ -43,7 +42,7 @@ const ContentModal: React.FC<ContentModalProps> = ({
   onNavigatePrev,
   onNavigateNext,
   onClose,
-  clickedVideo = false,
+  clickedVideo: _clickedVideo = false, // Unused - videos now always show player directly
   secretKey,
   isHomepage = false,
 }) => {
@@ -60,28 +59,6 @@ const ContentModal: React.FC<ContentModalProps> = ({
     () => !localStorage.getItem('hideNavigationHint')
   );
   const [siteName, setSiteName] = useState<string>('Galleria');
-  const [showVideoPlayer, setShowVideoPlayer] = useState(clickedVideo);
-  const previousPhotoRef = useRef<string | null>(null);
-
-  // Track photo changes to determine if user navigated
-  useEffect(() => {
-    if (previousPhotoRef.current && previousPhotoRef.current !== selectedPhoto.id) {
-      // User navigated to a different photo/video, show preview
-      setShowVideoPlayer(false);
-    } else if (clickedVideo) {
-      // User directly clicked a video
-      setShowVideoPlayer(true);
-    }
-    previousPhotoRef.current = selectedPhoto.id;
-  }, [selectedPhoto.id, clickedVideo]);
-
-  // Handle play button click on video preview
-  const handlePlayClick = useCallback((e: React.MouseEvent | React.TouchEvent) => {
-    console.log('[ContentModal] Play button clicked');
-    e.stopPropagation();
-    e.preventDefault();
-    setShowVideoPlayer(true);
-  }, []);
   
   const touchStartX = useRef<number | null>(null);
   const touchStartY = useRef<number | null>(null);
@@ -551,9 +528,9 @@ const ContentModal: React.FC<ContentModalProps> = ({
   // Note: Thumbnail preloading removed since we no longer receive the full photos array
   // Thumbnails are loaded on-demand and browser caching + server-side caching handles the rest
 
-  // Preload modal image after delay
+  // Preload modal image after delay (skip for videos)
   useEffect(() => {
-    if (selectedPhoto && !showModalImage) {
+    if (selectedPhoto && !showModalImage && selectedPhoto.media_type !== 'video') {
       const timer = setTimeout(() => {
         const img = new Image();
         const modalUrl = `${API_URL}${selectedPhoto.modal}${imageQueryString}`;
@@ -611,7 +588,7 @@ const ContentModal: React.FC<ContentModalProps> = ({
       onTouchEnd={(e) => {
         // Prevent modal close if touching interactive elements
         const target = e.target as HTMLElement;
-        if (target.closest('button, .video-play-button-overlay, .modal-video-player, video')) {
+        if (target.closest('button, .modal-video-player, video')) {
           console.log('[ContentModal] Blocked modal close - interactive element touched');
           e.stopPropagation();
           return;
@@ -659,54 +636,24 @@ const ContentModal: React.FC<ContentModalProps> = ({
             />
 
             {selectedPhoto.media_type === 'video' ? (
+              /* Show video player directly - let native video controls handle thumbnail/poster */
               <div className="modal-photo-container">
-                {showVideoPlayer ? (
-                  /* Show video player directly when playing */
-                  <div className="modal-video-player">
-                    <Suspense fallback={<div className="photo-loading-overlay"><div className="photo-loading-spinner"></div></div>}>
-                      <VideoPlayer
-                        album={selectedPhoto.album}
-                        filename={selectedPhoto.id.includes('/') ? selectedPhoto.id.split('/').pop() || selectedPhoto.id : selectedPhoto.id}
-                        videoTitle={selectedPhoto.title || selectedPhoto.id}
-                        posterUrl={selectedPhoto.thumbnail}
-                        onLoadStart={() => setThumbnailLoaded(false)}
-                        onLoaded={() => {
-                          setThumbnailLoaded(true);
-                          setModalImageLoaded(true);
-                        }}
-                        secretKey={secretKey}
-                      />
-                    </Suspense>
-                  </div>
-                ) : (
-                  /* Show thumbnail with play button when not playing */
-                  <>
-                    <img
-                      src={`${API_URL}${selectedPhoto.thumbnail}${imageQueryString}`}
-                      alt={selectedPhoto.title || selectedPhoto.id}
-                      className="modal-photo"
-                      onLoad={handleThumbnailLoad}
-                      style={{
-                        opacity: thumbnailLoaded ? 1 : 0,
-                        transition: 'opacity 0.2s ease-in-out'
+                <div className="modal-video-player">
+                  <Suspense fallback={<div className="photo-loading-overlay"><div className="photo-loading-spinner"></div></div>}>
+                    <VideoPlayer
+                      album={selectedPhoto.album}
+                      filename={selectedPhoto.id.includes('/') ? selectedPhoto.id.split('/').pop() || selectedPhoto.id : selectedPhoto.id}
+                      videoTitle={selectedPhoto.title || selectedPhoto.id}
+                      posterUrl={selectedPhoto.thumbnail}
+                      onLoadStart={() => setThumbnailLoaded(false)}
+                      onLoaded={() => {
+                        setThumbnailLoaded(true);
+                        setModalImageLoaded(true);
                       }}
+                      secretKey={secretKey}
                     />
-                    {thumbnailLoaded && (
-                      <button
-                        onClick={handlePlayClick}
-                        onTouchEnd={(e) => {
-                          e.stopPropagation();
-                          e.preventDefault();
-                          handlePlayClick(e);
-                        }}
-                        className="video-play-button-overlay"
-                        aria-label="Play video"
-                      >
-                        <PlayIcon width={80} height={80} />
-                      </button>
-                    )}
-                  </>
-                )}
+                  </Suspense>
+                </div>
               </div>
             ) : (
               <div className="modal-photo-container">
