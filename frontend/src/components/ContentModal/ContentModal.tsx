@@ -468,11 +468,23 @@ const ContentModal: React.FC<ContentModalProps> = ({
 
   // Handle touch gestures
   const handleTouchStart = (e: React.TouchEvent) => {
+    // Don't capture touches on video or video player
+    const target = e.target as HTMLElement;
+    if (target.closest('video') || target.closest('.modal-video-player')) {
+      return;
+    }
+    
     touchStartX.current = e.touches[0].clientX;
     touchStartY.current = e.touches[0].clientY;
   };
 
   const handleTouchEnd = (e: React.TouchEvent) => {
+    // Don't capture touches on video or video player
+    const target = e.target as HTMLElement;
+    if (target.closest('video') || target.closest('.modal-video-player')) {
+      return;
+    }
+    
     if (!touchStartX.current || !touchStartY.current) return;
 
     const touchEndX = e.changedTouches[0].clientX;
