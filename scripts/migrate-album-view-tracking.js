@@ -14,7 +14,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 // Database path
-const DATA_DIR = process.env.DATA_DIR || join(__dirname, 'data');
+const DATA_DIR = process.env.DATA_DIR || join(__dirname, '..', 'data');
 const DB_PATH = join(DATA_DIR, 'gallery.db');
 const MILESTONE_FILE = join(DATA_DIR, '.album-milestones.json');
 
