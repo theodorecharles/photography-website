@@ -55,10 +55,10 @@ if [ -f "data/gallery.db" ]; then
     if ! node scripts/migrate-push-notifications.js; then
         handle_error "Database migration (push notifications) failed"
     fi
-    if ! node migrate-share-link-notifications.js; then
+    if ! node scripts/migrate-share-link-notifications.js; then
         handle_error "Database migration (share link notifications) failed"
     fi
-    if ! node migrate-album-view-tracking.js; then
+    if ! node scripts/migrate-album-view-tracking.js; then
         handle_error "Database migration (album view tracking) failed"
     fi
     log "✓ Database migrations completed"
