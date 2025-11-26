@@ -64,6 +64,7 @@ function escapeHtml(str) {
 
 /**
  * Fetch albums data from database
+ * For static homepage (non-authenticated), only return published albums and folders
  */
 function getAlbumsData() {
   const db = new Database(dbPath, { readonly: true });
@@ -73,14 +74,14 @@ function getAlbumsData() {
     const columns = db.prepare(`PRAGMA table_info(albums)`).all();
     const hasFolderId = columns.some(col => col.name === 'folder_id');
     
-    // Get all albums with their published state
+    // Get ONLY published albums (static HTML is for non-authenticated users)
     const albumsQuery = hasFolderId
-      ? `SELECT name, published, folder_id FROM albums WHERE name != 'homepage' ORDER BY name`
-      : `SELECT name, published FROM albums WHERE name != 'homepage' ORDER BY name`;
+      ? `SELECT name, published, folder_id FROM albums WHERE name != 'homepage' AND published = 1 ORDER BY name`
+      : `SELECT name, published FROM albums WHERE name != 'homepage' AND published = 1 ORDER BY name`;
     
     const albums = db.prepare(albumsQuery).all();
 
-    // Get all folders (if table exists)
+    // Get ONLY published folders (if table exists)
     let folders = [];
     try {
       const foldersTableExists = db.prepare(`
@@ -91,6 +92,7 @@ function getAlbumsData() {
         folders = db.prepare(`
           SELECT id, name, published
           FROM folders
+          WHERE published = 1
           ORDER BY name
         `).all();
       }
@@ -102,11 +104,12 @@ function getAlbumsData() {
     // Normalize published field from SQLite 1/0 to true/false
     const normalizedAlbums = albums.map(album => ({
       ...album,
-      published: !!album.published
+      published: true, // Already filtered to published albums
+      folder_id: album.folder_id ?? null
     }));
     const normalizedFolders = folders.map(folder => ({
       ...folder,
-      published: !!folder.published
+      published: true // Already filtered to published folders
     }));
 
     return { albums: normalizedAlbums, folders: normalizedFolders };
