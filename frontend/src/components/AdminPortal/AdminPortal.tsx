@@ -627,9 +627,8 @@ export default function AdminPortal() {
         <div className="galleria-footer">
           <span className="footer-text">
             <a 
-              href="https://github.com/theodorecharles/Galleria" 
+              href="https://galleria.website" 
               target="_blank" 
-              rel="noopener noreferrer"
               className="footer-galleria-link"
             >
               Galleria
