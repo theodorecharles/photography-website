@@ -6,7 +6,7 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
-import config, { DATA_DIR, getCurrentConfig } from '../config.js';
+import config, { DATA_DIR, getCurrentConfig, isEnvSet } from '../config.js';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -220,13 +220,21 @@ router.get(
         warn('[Auth] Could not reload config, using default');
       }
       
-      // Derive frontend URL from config
+      // Derive frontend URL from environment or config
+      let frontendUrl: string;
       const apiUrl = currentConfig.environment?.frontend?.apiUrl || currentConfig.frontend?.apiUrl || '';
-      const frontendPort = currentConfig.environment?.frontend?.port || currentConfig.frontend?.port || 3000;
       const isProduction = apiUrl.startsWith('https://');
-      const frontendUrl = isProduction
-        ? apiUrl.replace(/^https:\/\/api([-\.])/, 'https://www$1')
-        : apiUrl.replace(':3001', `:${frontendPort}`);
+      
+      // First, try FRONTEND_DOMAIN environment variable (most reliable)
+      if (isEnvSet(process.env.FRONTEND_DOMAIN)) {
+        frontendUrl = process.env.FRONTEND_DOMAIN!;
+      } else {
+        // Fallback: derive from config
+        const frontendPort = currentConfig.environment?.frontend?.port || currentConfig.frontend?.port || 3000;
+        frontendUrl = isProduction
+          ? apiUrl.replace(/^https:\/\/api([-\.])/, 'https://www$1')
+          : apiUrl.replace(':3001', `:${frontendPort}`);
+      }
 
       // Handle authentication errors
       if (err) {
