@@ -113,9 +113,8 @@ function Footer({ albums: _albums = [], externalLinks: _externalLinks = [], curr
               <span className="footer-powered-by">
                 {t('footer.poweredBy')}{' '}
                 <a 
-                  href="https://github.com/theodorecharles/Galleria" 
+                  href="https://galleria.website" 
                   target="_blank" 
-                  rel="noopener noreferrer"
                   className="footer-galleria-link"
                 >
                   {t('footer.galleria')}
