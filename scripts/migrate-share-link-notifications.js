@@ -19,7 +19,7 @@ const require = createRequire(import.meta.url);
 const Database = require('better-sqlite3');
 
 // Determine data directory and database path
-const DATA_DIR = process.env.DATA_DIR || join(__dirname, 'data');
+const DATA_DIR = process.env.DATA_DIR || join(__dirname, '..', 'data');
 const DB_PATH = join(DATA_DIR, 'gallery.db');
 
 console.log('[Migration] Opening database:', DB_PATH);
