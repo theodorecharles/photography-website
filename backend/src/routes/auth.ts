@@ -222,15 +222,15 @@ router.get(
       
       // Derive frontend URL from environment or config
       let frontendUrl: string;
+      const apiUrl = currentConfig.environment?.frontend?.apiUrl || currentConfig.frontend?.apiUrl || '';
+      const isProduction = apiUrl.startsWith('https://');
       
       // First, try FRONTEND_DOMAIN environment variable (most reliable)
       if (isEnvSet(process.env.FRONTEND_DOMAIN)) {
         frontendUrl = process.env.FRONTEND_DOMAIN!;
       } else {
         // Fallback: derive from config
-        const apiUrl = currentConfig.environment?.frontend?.apiUrl || currentConfig.frontend?.apiUrl || '';
         const frontendPort = currentConfig.environment?.frontend?.port || currentConfig.frontend?.port || 3000;
-        const isProduction = apiUrl.startsWith('https://');
         frontendUrl = isProduction
           ? apiUrl.replace(/^https:\/\/api([-\.])/, 'https://www$1')
           : apiUrl.replace(':3001', `:${frontendPort}`);
