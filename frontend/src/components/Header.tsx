@@ -525,10 +525,10 @@ function Navigation({
           </div>
           )}
           
-          {/* Edit Links button - only shown for admins (links are in settings) */}
-          {isAuthenticated && userRole === 'admin' && (
+          {/* Edit Links button - only shown for admins and managers */}
+          {isAuthenticated && (userRole === 'admin' || userRole === 'manager') && (
             <Link
-              to="/admin/settings?section=links"
+              to="/admin/settings/links"
               className="edit-album-btn"
               title={t('header.editLinks')}
             >
