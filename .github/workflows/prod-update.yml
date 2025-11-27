@@ -146,6 +146,18 @@ jobs:
           # Logout
           docker logout
 
+      - name: Clean up old Docker images
+        if: always()
+        run: |
+          # Remove dangling images (untagged)
+          docker image prune -f
+          
+          # Remove old build cache (keeps last 24 hours)
+          docker builder prune -af --filter "until=24h"
+          
+          # Remove unused images older than 24 hours (keeps recent images)
+          docker image prune -af --filter "until=24h"
+
       - name: Update Docker Hub README
         if: success() && vars.DOCKERHUB_USERNAME
         run: |
