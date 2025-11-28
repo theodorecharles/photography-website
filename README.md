@@ -338,48 +338,43 @@ galleria/
 
 Galleria supports **37 languages** with full UI and SEO localization:
 
-**English:**
-- 🇺🇸 English
-
-**European Languages:**
-- 🇪🇸 Spanish
-- 🇫🇷 French
-- 🇵🇹 Portuguese
-- 🇷🇺 Russian
-- 🇩🇪 German
-- 🇹🇷 Turkish
-- 🇮🇹 Italian
-- 🇵🇱 Polish
-- 🇺🇦 Ukrainian
-- 🇷🇴 Romanian
+- 🐑 Basque
+- 🇧🇬 Bulgarian
+- 🇲🇲 Burmese
+- 🇪🇸 Catalan
+- 🇨🇳 Chinese (Simplified)
+- 🇭🇷 Croatian
+- 🇨🇿 Czech
+- 🇩🇰 Danish
 - 🇳🇱 Dutch
+- 🇺🇸 English
+- 🇵🇭 Filipino
+- 🇫🇮 Finnish
+- 🇫🇷 French
+- 🇩🇪 German
 - 🇬🇷 Greek
 - 🇭🇺 Hungarian
-- 🇨🇿 Czech
-- 🇪🇸 Catalan
-- 🇸🇪 Swedish
-- 🇧🇬 Bulgarian
-- 🇷🇸 Serbian
-- 🇩🇰 Danish
-- 🇫🇮 Finnish
-- 🇳🇴 Norwegian
-- 🇸🇰 Slovak
-- 🇭🇷 Croatian
-- 🇱🇹 Lithuanian
-- 🇸🇮 Slovenian
-- 🐑 Basque
-- 🏛️ Latin
-
-**Asian Languages:**
-- 🇨🇳 Chinese (Simplified)
 - 🇮🇩 Indonesian
+- 🇮🇹 Italian
 - 🇯🇵 Japanese
-- 🇻🇳 Vietnamese
 - 🇰🇷 Korean
-- 🇵🇭 Filipino
-- 🇹🇭 Thai
+- 🏛️ Latin
+- 🇱🇹 Lithuanian
 - 🇲🇾 Malay
-- 🇲🇲 Burmese
+- 🇳🇴 Norwegian
+- 🇵🇱 Polish
+- 🇵🇹 Portuguese
+- 🇷🇴 Romanian
+- 🇷🇺 Russian
+- 🇷🇸 Serbian
+- 🇸🇰 Slovak
+- 🇸🇮 Slovenian
+- 🇪🇸 Spanish
+- 🇸🇪 Swedish
+- 🇹🇭 Thai
+- 🇹🇷 Turkish
+- 🇺🇦 Ukrainian
+- 🇻🇳 Vietnamese
 
 ### Changing Language
 
