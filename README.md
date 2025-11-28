@@ -336,27 +336,50 @@ galleria/
 
 ## 🌍 Internationalization
 
-Galleria supports **19 languages** with full UI and SEO localization:
+Galleria supports **37 languages** with full UI and SEO localization:
 
+**English:**
 - 🇺🇸 English
+
+**European Languages:**
 - 🇪🇸 Spanish
 - 🇫🇷 French
-- 🇩🇪 German
-- 🇯🇵 Japanese
-- 🇳🇱 Dutch
-- 🇮🇹 Italian
 - 🇵🇹 Portuguese
 - 🇷🇺 Russian
-- 🇨🇳 Chinese (Simplified)
-- 🇰🇷 Korean
-- 🇵🇱 Polish
+- 🇩🇪 German
 - 🇹🇷 Turkish
-- 🇸🇪 Swedish
-- 🇳🇴 Norwegian
+- 🇮🇹 Italian
+- 🇵🇱 Polish
+- 🇺🇦 Ukrainian
 - 🇷🇴 Romanian
-- 🇵🇭 Filipino
-- 🇻🇳 Vietnamese
+- 🇳🇱 Dutch
+- 🇬🇷 Greek
+- 🇭🇺 Hungarian
+- 🇨🇿 Czech
+- 🇪🇸 Catalan
+- 🇸🇪 Swedish
+- 🇧🇬 Bulgarian
+- 🇷🇸 Serbian
+- 🇩🇰 Danish
+- 🇫🇮 Finnish
+- 🇳🇴 Norwegian
+- 🇸🇰 Slovak
+- 🇭🇷 Croatian
+- 🇱🇹 Lithuanian
+- 🇸🇮 Slovenian
+- 🐑 Basque
+- 🏛️ Latin
+
+**Asian Languages:**
+- 🇨🇳 Chinese (Simplified)
 - 🇮🇩 Indonesian
+- 🇯🇵 Japanese
+- 🇻🇳 Vietnamese
+- 🇰🇷 Korean
+- 🇵🇭 Filipino
+- 🇹🇭 Thai
+- 🇲🇾 Malay
+- 🇲🇲 Burmese
 
 ### Changing Language
 
