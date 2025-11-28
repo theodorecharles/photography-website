@@ -1347,7 +1347,7 @@
     "basicInfoDescription": "Povedzte nám niečo o sebe a vašej stránke",
     "siteNameLabel": "Názov stránky / Vaše meno",
     "siteNameHint": "Toto sa zobrazí v hlavičke a názvoch stránok",
-    "siteNamePlaceholder": "John Doe Photography",
+    "siteNamePlaceholder": "John Doe Fotografia",
     "siteDescriptionLabel": "Popis stránky",
     "siteDescriptionHint": "Krátky popis pre vyhľadávače (voliteľné)",
     "siteDescriptionPlaceholder": "Fotografické portfólio od {{siteName}}",

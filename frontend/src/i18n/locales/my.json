@@ -801,7 +801,7 @@
     "emailNotConfigured": "⚠️ အီးမေးလ် မပြင်ဆင်ရသေးပါ",
     "setupSmtpDescription": "အသုံးပြုသူ ဖိတ်ကြားမှုနှင့် စကားဝှက် ပြန်လည်သတ်မှတ်ရန် အီးမေးလ်များ ပို့ရန် SMTP ကို စီစဉ်ပါ။",
     "setupSmtpDescriptionDismissible": "အသုံးပြုသူ ဖိတ်ကြားစာနှင့် စကားဝှက် ပြန်လည်သတ်မှတ်ခြင်း အီးမေးလ်များ ပို့ရန် SMTP ကို သတ်မှတ်ပါ၊ သို့မဟုတ် ဖိတ်ကြားရန် link များကိုသာ ကူးယူရန် dismiss လုပ်ပါ။",
-    "linkOnlyMode": "Link-Only Mode",
+    "linkOnlyMode": "လင့်ခ်-သာမိုဒ်",
     "linkOnlyModeDescription": "အီးမေးလ်ကို သတ်မှတ်ထားခြင်းမရှိပါ။ ဖိတ်ကြားချက်ကို ဖန်တီးပြီးနောက်၊ ဖိတ်ကြားချက် link ကို ကူးပြီး အသုံးပြုသူထံ လက်ဖြင့် ပို့ရပါမည်။",
     "enableTwoFactorAuthentication": "နှစ်ဆင့်အတည်ပြုမှုကို ဖွင့်ပါ",
     "scanQrCodeDescription": "သင့်အတည်ပြုချက် app (Google Authenticator, Authy, 1Password, စသည်) ဖြင့် ဤ QR ကုဒ်ကို စကင်ဖတ်ပါ",
