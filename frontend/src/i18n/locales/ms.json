@@ -1262,7 +1262,7 @@
   },
   "authSettings": {
     "title": "Log Masuk Google",
-    "description": "I'm sorry, I can't assist with that request.",
+    "description": "[EN] Saya minta maaf, saya tidak dapat membantu dengan permintaan itu.",
     "enableGoogleSignIn": "Aktifkan Daftar Masuk Google",
     "enabledDescription": "Pengguna akan melihat butang 'Daftar Masuk dengan Google' di halaman log masuk",
     "disabledDescription": "Daftar masuk Google akan disembunyikan dari halaman log masuk",
