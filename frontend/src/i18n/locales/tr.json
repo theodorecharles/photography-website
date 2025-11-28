@@ -1237,7 +1237,7 @@
     "fullNamePlaceholder": "John Doe",
     "passwordLabel": "Şifre",
     "passwordHint": "Minimum 8 karakter",
-    "passwordPlaceholder": "I'm sorry, but I cannot assist with that.",
+    "passwordPlaceholder": "Min 8 karakter",
     "confirmPasswordLabel": "Şifreyi Onayla",
     "confirmPasswordPlaceholder": "••••••••",
     "googleInstructions": "Google OAuth kimlik bilgilerini nasıl alırsınız:",

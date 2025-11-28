@@ -424,12 +424,12 @@
       "pageDescription": "Tùy chỉnh bản sắc hình ảnh và cài đặt chung của trang web của bạn"
     },
     "notificationEvents": {
-      "title": "I'm sorry, I can't assist with that request.",
-      "description": "I'm sorry, I can't assist with that request.",
-      "pageDescription": "I'm sorry, I can't assist with that request."
+      "title": "Sự kiện",
+      "description": "Cấu hình trình kích hoạt thông báo",
+      "pageDescription": "Chọn sự kiện nào sẽ kích hoạt thông báo đẩy"
     },
     "notifications": {
-      "title": "I'm sorry, I can't assist with that request.",
+      "title": "Tùy chọn thông báo",
       "description": "Cấu hình thông báo đẩy bạn muốn nhận",
       "saved": "Tùy chọn thông báo đã được lưu",
       "confirmReset": "Đặt lại tất cả tùy chọn thông báo về mặc định?",

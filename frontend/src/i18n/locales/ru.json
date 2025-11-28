@@ -424,7 +424,7 @@
       "pageDescription": "Настройте визуальную идентичность и общие настройки вашего сайта"
     },
     "notificationEvents": {
-      "title": "I'm sorry, I can't assist with that request.",
+      "title": "События",
       "description": "Настроить триггеры уведомлений",
       "pageDescription": "Выберите, какие события должны вызывать push-уведомления"
     },
