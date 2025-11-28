@@ -15,6 +15,7 @@ import { createWriteStream } from "fs";
 import { pipeline } from "stream/promises";
 import { createGunzip } from "zlib";
 import { error, warn, info, debug, verbose } from '../utils/logger.js';
+import { sendInstallationEvent } from '../utils/installation-analytics.js';
 
 const router = Router();
 
@@ -142,6 +143,10 @@ async function downloadGeoIPDatabase(dataDir: string): Promise<boolean> {
  */
 router.get("/status", async (req: Request, res: Response): Promise<void> => {
   try {
+    // Send installation_started event if not already sent
+    sendInstallationEvent('installation_started').catch(err => {
+      warn('[Setup] Failed to send installation_started event:', err);
+    });
     const projectRoot = path.join(__dirname, "../../../");
     const dataDir = process.env.DATA_DIR || path.join(projectRoot, "data");
     const configPath = path.join(dataDir, "config.json");
@@ -601,6 +606,14 @@ router.post(
       // Only restart if Google OAuth is selected (needs OAuth strategy initialization)
       // Password auth doesn't need restart - config reloaded dynamically
       const requiresRestart = authMethod === "google";
+
+      // Send setup_complete event
+      sendInstallationEvent('setup_complete', {
+        auth_method: authMethod,
+        site_name: siteName,
+      }).catch(err => {
+        warn('[Setup] Failed to send setup_complete event:', err);
+      });
 
       res.json({
         success: true,

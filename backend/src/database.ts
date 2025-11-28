@@ -1198,6 +1198,7 @@ export function updateAlbumMilestone(album: string, milestone: number): void {
   stmt.run(milestone, album);
 }
 
+
 /**
  * Close the database connection
  */
