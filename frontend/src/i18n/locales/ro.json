@@ -66,7 +66,6 @@
   "footer": {
     "license": "Licență",
     "poweredBy": "Împins de",
-    "galleria": "Galleria",
     "signIn": "Conectare"
   },
   "album": {
@@ -1148,11 +1147,7 @@
     "cancel": "Anulează",
     "save": "Salvează",
     "saving": "Se salvează...",
-    "hostPlaceholder": "smtp.gmail.com",
-    "usernamePlaceholder": "your-email@gmail.com",
-    "passwordPlaceholder": "Parolă aplicație sau parolă SMTP",
-    "fromNamePlaceholder": "Site de fotografie",
-    "fromAddressPlaceholder": "noreply@yoursite.com"
+    "passwordPlaceholder": "Parolă aplicație sau parolă SMTP"
   },
   "analyticsSettings": {
     "title": "Analitică",
@@ -1161,7 +1156,7 @@
     "enabled": "Activat",
     "disabled": "Dezactivat",
     "scriptPath": "Calea scriptului",
-    "openObserveEndpoint": "OpenObserve Endpoint",
+    "openObserveEndpoint": "Punct final OpenObserve",
     "organization": "Organizație",
     "username": "Nume utilizator",
     "password": "Parolă",
@@ -1225,7 +1220,6 @@
     "accountDescription": "Configurează-ți contul pentru a accesa panoul de administrare",
     "emailLabel": "Adresa ta de email",
     "emailHint": "Aceasta va fi adresa ta de login",
-    "emailPlaceholder": "john@example.com",
     "authMethodLabel": "Alege metoda de autentificare",
     "authMethodHint": "Cum ai dori să te conectezi?",
     "authMethodPassword": "Parolă",
@@ -1234,12 +1228,9 @@
     "authMethodGoogleDescription": "Conectează-te cu contul tău Google",
     "fullNameLabel": "Numele tău complet",
     "fullNameHint": "Acest lucru va fi afișat în profilul tău",
-    "fullNamePlaceholder": "John Doe",
     "passwordLabel": "Parolă",
     "passwordHint": "Minimum 8 caractere",
-    "passwordPlaceholder": "••••••••",
     "confirmPasswordLabel": "Confirmă parola",
-    "confirmPasswordPlaceholder": "••••••••",
     "googleInstructions": "Cum să obții acreditivele Google OAuth:",
     "googleStep1": "Mergi la",
     "googleCloudConsole": "Google Cloud Console",
@@ -1249,9 +1240,7 @@
     "googleStep5": "Adaugă URI de redirecționare:",
     "googleStep6": "Copiază ID-ul Clientului și Secretul Clientului de mai jos",
     "googleClientIdLabel": "ID-ul Clientului Google",
-    "googleClientIdPlaceholder": "xxxxx.apps.googleusercontent.com",
     "googleClientSecretLabel": "Secretul Clientului Google",
-    "googleClientSecretPlaceholder": "GOCSPX-xxxxx",
     "backToBasicInfo": "← Înapoi la Informații de Bază",
     "nextCustomize": "Următor: Personalizează →",
     "customizeHeading": "Personalizează-ți site-ul",
@@ -1332,7 +1321,6 @@
     "title": "Trimite email de test",
     "description": "Introduceți o adresă de email pentru a trimite un mesaj de test și verificați dacă configurația dvs. SMTP funcționează corect.",
     "emailLabel": "Adresă de email",
-    "emailPlaceholder": "your@email.com",
     "close": "Închide",
     "sendButton": "Trimite email de test",
     "sending": "Se trimite...",

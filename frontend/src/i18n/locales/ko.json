@@ -66,7 +66,6 @@
   "footer": {
     "license": "라이센스",
     "poweredBy": "제공",
-    "galleria": "갤러리아",
     "signIn": "로그인"
   },
   "album": {
@@ -1148,11 +1147,7 @@
     "cancel": "취소",
     "save": "저장",
     "saving": "저장 중...",
-    "hostPlaceholder": "smtp.gmail.com",
-    "usernamePlaceholder": "your-email@gmail.com",
-    "passwordPlaceholder": "앱 비밀번호 또는 SMTP 비밀번호",
-    "fromNamePlaceholder": "사진 사이트",
-    "fromAddressPlaceholder": "noreply@yoursite.com"
+    "passwordPlaceholder": "앱 비밀번호 또는 SMTP 비밀번호"
   },
   "analyticsSettings": {
     "title": "분석",
@@ -1203,7 +1198,7 @@
     "rateLimitDescription": "속도를 줄이고 다시 시도하세요."
   },
   "oobe": {
-    "title": "Galleria",
+    "title": "갤러리아",
     "subtitle": "몇 가지 단계로 포트폴리오를 설정해 보세요",
     "language": "언어",
     "selectLanguage": "언어 선택",
@@ -1225,7 +1220,6 @@
     "accountDescription": "관리자 패널에 접근하기 위해 계정을 설정하세요",
     "emailLabel": "귀하의 이메일 주소",
     "emailHint": "이것은 귀하의 로그인 이메일이 됩니다",
-    "emailPlaceholder": "john@example.com",
     "authMethodLabel": "인증 방법 선택",
     "authMethodHint": "어떻게 로그인하시겠습니까?",
     "authMethodPassword": "비밀번호",
@@ -1234,12 +1228,9 @@
     "authMethodGoogleDescription": "Google 계정으로 로그인",
     "fullNameLabel": "귀하의 전체 이름",
     "fullNameHint": "이것은 귀하의 프로필에 표시됩니다",
-    "fullNamePlaceholder": "존 도",
     "passwordLabel": "비밀번호",
     "passwordHint": "최소 8자",
-    "passwordPlaceholder": "••••••••",
     "confirmPasswordLabel": "비밀번호 확인",
-    "confirmPasswordPlaceholder": "••••••••",
     "googleInstructions": "Google OAuth 자격 증명을 얻는 방법:",
     "googleStep1": "이동하십시오",
     "googleCloudConsole": "Google Cloud Console",
@@ -1249,9 +1240,7 @@
     "googleStep5": "리디렉션 URI 추가:",
     "googleStep6": "아래의 클라이언트 ID와 클라이언트 비밀을 복사하세요",
     "googleClientIdLabel": "Google 클라이언트 ID",
-    "googleClientIdPlaceholder": "xxxxx.apps.googleusercontent.com",
     "googleClientSecretLabel": "Google 클라이언트 비밀",
-    "googleClientSecretPlaceholder": "GOCSPX-xxxxx",
     "backToBasicInfo": "← 기본 정보로 돌아가기",
     "nextCustomize": "다음: 사용자 정의 →",
     "customizeHeading": "사이트 사용자 정의",
@@ -1332,7 +1321,6 @@
     "title": "테스트 이메일 보내기",
     "description": "테스트 메시지를 보내고 SMTP 구성이 올바르게 작동하는지 확인하려면 이메일 주소를 입력하세요.",
     "emailLabel": "이메일 주소",
-    "emailPlaceholder": "your@email.com",
     "close": "닫기",
     "sendButton": "테스트 이메일 보내기",
     "sending": "전송 중...",

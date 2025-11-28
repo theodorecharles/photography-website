@@ -66,7 +66,6 @@
   "footer": {
     "license": "许可证",
     "poweredBy": "技术支持",
-    "galleria": "画廊",
     "signIn": "登录"
   },
   "album": {
@@ -98,7 +97,7 @@
     "focalLength": "焦距",
     "aperture": "光圈",
     "shutter": "快门",
-    "iso": "ISO",
+    "iso": "国际标准化组织",
     "dateTaken": "拍摄日期",
     "resolution": "分辨率",
     "duration": "持续时间",
@@ -1148,11 +1147,7 @@
     "cancel": "取消",
     "save": "保存",
     "saving": "保存中...",
-    "hostPlaceholder": "smtp.gmail.com",
-    "usernamePlaceholder": "your-email@gmail.com",
-    "passwordPlaceholder": "应用密码或SMTP密码",
-    "fromNamePlaceholder": "摄影网站",
-    "fromAddressPlaceholder": "noreply@yoursite.com"
+    "passwordPlaceholder": "应用密码或SMTP密码"
   },
   "analyticsSettings": {
     "title": "分析",
@@ -1225,7 +1220,6 @@
     "accountDescription": "设置您的账户以访问管理面板",
     "emailLabel": "您的电子邮件地址",
     "emailHint": "这将是您的登录电子邮件",
-    "emailPlaceholder": "john@example.com",
     "authMethodLabel": "选择认证方式",
     "authMethodHint": "您希望如何登录？",
     "authMethodPassword": "密码",
@@ -1234,12 +1228,9 @@
     "authMethodGoogleDescription": "使用您的 Google 账户登录",
     "fullNameLabel": "您的全名",
     "fullNameHint": "这将在您的个人资料中显示",
-    "fullNamePlaceholder": "约翰·多",
     "passwordLabel": "密码",
     "passwordHint": "最少 8 个字符",
-    "passwordPlaceholder": "••••••••",
     "confirmPasswordLabel": "确认密码",
-    "confirmPasswordPlaceholder": "••••••••",
     "googleInstructions": "如何获取 Google OAuth 凭据：",
     "googleStep1": "前往",
     "googleCloudConsole": "Google Cloud 控制台",
@@ -1249,9 +1240,7 @@
     "googleStep5": "添加重定向 URI：",
     "googleStep6": "复制下面的客户端 ID 和客户端密钥",
     "googleClientIdLabel": "Google 客户端 ID",
-    "googleClientIdPlaceholder": "xxxxx.apps.googleusercontent.com",
     "googleClientSecretLabel": "Google 客户端密钥",
-    "googleClientSecretPlaceholder": "GOCSPX-xxxxx",
     "backToBasicInfo": "← 返回基本信息",
     "nextCustomize": "下一个：自定义 →",
     "customizeHeading": "自定义您的网站",
@@ -1332,7 +1321,6 @@
     "title": "发送测试邮件",
     "description": "输入电子邮件地址以发送测试消息并验证您的SMTP配置是否正常工作。",
     "emailLabel": "电子邮件地址",
-    "emailPlaceholder": "your@email.com",
     "close": "关闭",
     "sendButton": "发送测试邮件",
     "sending": "发送中...",

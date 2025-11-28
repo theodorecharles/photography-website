@@ -86,7 +86,6 @@
   "footer": {
     "license": "Lesen",
     "poweredBy": "Dikuasakan oleh",
-    "galleria": "Galeri",
     "signIn": "Admin"
   },
   "album": {
@@ -1190,7 +1189,6 @@
     "title": "Hantar E-mel Ujian",
     "description": "Masukkan alamat e-mel untuk menghantar mesej ujian dan mengesahkan konfigurasi SMTP anda berfungsi dengan betul.",
     "emailLabel": "Alamat E-mel",
-    "emailPlaceholder": "your@email.com",
     "close": "Tutup",
     "sendButton": "Hantar E-mel Ujian",
     "sending": "Menghantar...",
@@ -1262,7 +1260,7 @@
   },
   "authSettings": {
     "title": "Log Masuk Google",
-    "description": "I'm sorry, I can't assist with that request.",
+    "description": "Kredensial Google OAuth untuk log masuk pentadbir",
     "enableGoogleSignIn": "Aktifkan Daftar Masuk Google",
     "enabledDescription": "Pengguna akan melihat butang 'Daftar Masuk dengan Google' di halaman log masuk",
     "disabledDescription": "Daftar masuk Google akan disembunyikan dari halaman log masuk",
@@ -1300,11 +1298,7 @@
     "cancel": "Batal",
     "save": "Simpan",
     "saving": "Menyimpan...",
-    "hostPlaceholder": "smtp.gmail.com",
-    "usernamePlaceholder": "your-email@gmail.com",
-    "passwordPlaceholder": "Kata laluan aplikasi atau kata laluan SMTP",
-    "fromNamePlaceholder": "Laman Fotografi",
-    "fromAddressPlaceholder": "noreply@yoursite.com"
+    "passwordPlaceholder": "Kata laluan aplikasi atau kata laluan SMTP"
   },
   "analyticsSettings": {
     "title": "Analitik",
@@ -1357,7 +1351,6 @@
     "accountDescription": "Sediakan akaun anda untuk mengakses panel admin",
     "emailLabel": "Alamat Emel Anda",
     "emailHint": "Ini akan menjadi emel log masuk anda",
-    "emailPlaceholder": "john@example.com",
     "authMethodLabel": "Pilih Kaedah Pengesahan",
     "authMethodHint": "Bagaimana anda ingin log masuk?",
     "authMethodPassword": "Kata Laluan",
@@ -1366,12 +1359,9 @@
     "authMethodGoogleDescription": "Log masuk dengan akaun Google anda",
     "fullNameLabel": "Nama Penuh Anda",
     "fullNameHint": "Ini akan dipaparkan dalam profil anda",
-    "fullNamePlaceholder": "John Doe",
     "passwordLabel": "Kata Laluan",
     "passwordHint": "Minimum 8 aksara",
-    "passwordPlaceholder": "••••••••",
     "confirmPasswordLabel": "Sahkan Kata Laluan",
-    "confirmPasswordPlaceholder": "••••••••",
     "googleInstructions": "Cara mendapatkan kelayakan Google OAuth:",
     "googleStep1": "Pergi ke",
     "googleCloudConsole": "Konsol Google Cloud",
@@ -1381,9 +1371,7 @@
     "googleStep5": "Tambah URI pengalihan:",
     "googleStep6": "Salin ID Pelanggan dan Rahsia Pelanggan di bawah",
     "googleClientIdLabel": "ID Pelanggan Google",
-    "googleClientIdPlaceholder": "xxxxx.apps.googleusercontent.com",
     "googleClientSecretLabel": "Rahsia Pelanggan Google",
-    "googleClientSecretPlaceholder": "GOCSPX-xxxxx",
     "backToBasicInfo": "← Kembali ke Maklumat Asas",
     "nextCustomize": "Seterusnya: Sesuaikan →",
     "customizeHeading": "Sesuaikan Laman Anda",

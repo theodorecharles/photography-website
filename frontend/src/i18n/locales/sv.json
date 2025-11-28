@@ -66,7 +66,6 @@
   "footer": {
     "license": "Licens",
     "poweredBy": "Drivs av",
-    "galleria": "Galleria",
     "signIn": "Logga in"
   },
   "album": {
@@ -1148,11 +1147,7 @@
     "cancel": "Avbryt",
     "save": "Spara",
     "saving": "Sparar...",
-    "hostPlaceholder": "smtp.gmail.com",
-    "usernamePlaceholder": "din-email@gmail.com",
-    "passwordPlaceholder": "App-lösenord eller SMTP-lösenord",
-    "fromNamePlaceholder": "Fotografisajt",
-    "fromAddressPlaceholder": "noreply@dinsajt.com"
+    "passwordPlaceholder": "App-lösenord eller SMTP-lösenord"
   },
   "analyticsSettings": {
     "title": "ANALYS",
@@ -1203,7 +1198,7 @@
     "rateLimitDescription": "Vänligen sänk hastigheten och försök igen."
   },
   "oobe": {
-    "title": "Galleria",
+    "title": "Galleri",
     "subtitle": "Låt oss ställa in din portfölj på bara några steg",
     "language": "Språk",
     "selectLanguage": "Välj språk",
@@ -1225,7 +1220,6 @@
     "accountDescription": "Ställ in ditt konto för att få tillgång till administrationspanelen",
     "emailLabel": "Din e-postadress",
     "emailHint": "Detta kommer att vara din inloggnings-e-post",
-    "emailPlaceholder": "john@example.com",
     "authMethodLabel": "Välj autentiseringsmetod",
     "authMethodHint": "Hur vill du logga in?",
     "authMethodPassword": "Lösenord",
@@ -1234,12 +1228,9 @@
     "authMethodGoogleDescription": "Logga in med ditt Google-konto",
     "fullNameLabel": "Ditt fullständiga namn",
     "fullNameHint": "Detta kommer att visas i din profil",
-    "fullNamePlaceholder": "John Doe",
     "passwordLabel": "Lösenord",
     "passwordHint": "Minst 8 tecken",
-    "passwordPlaceholder": "••••••••",
     "confirmPasswordLabel": "Bekräfta lösenord",
-    "confirmPasswordPlaceholder": "••••••••",
     "googleInstructions": "Hur man får Google OAuth-uppgifter:",
     "googleStep1": "Gå till",
     "googleCloudConsole": "Google Cloud Console",
@@ -1249,9 +1240,7 @@
     "googleStep5": "Lägg till omdirigerings-URI:",
     "googleStep6": "Kopiera klient-ID och klienthemlighet nedan",
     "googleClientIdLabel": "Google klient-ID",
-    "googleClientIdPlaceholder": "xxxxx.apps.googleusercontent.com",
     "googleClientSecretLabel": "Google klienthemlighet",
-    "googleClientSecretPlaceholder": "GOCSPX-xxxxx",
     "backToBasicInfo": "← Tillbaka till Grundläggande information",
     "nextCustomize": "Nästa: Anpassa →",
     "customizeHeading": "Anpassa din webbplats",
@@ -1332,7 +1321,6 @@
     "title": "Skicka test-e-post",
     "description": "Ange en e-postadress för att skicka ett testmeddelande och verifiera att din SMTP-konfiguration fungerar korrekt.",
     "emailLabel": "E-postadress",
-    "emailPlaceholder": "din@email.com",
     "close": "Stäng",
     "sendButton": "Skicka test-e-post",
     "sending": "Skickar...",

@@ -17,7 +17,8 @@
     "General",
     "Logo",
     "Modal",
-    "URL"
+    "URL",
+    "No"
   ],
   "fr": [
     "album",
@@ -53,7 +54,8 @@
     "Account",
     "Branding",
     "Copyright",
-    "min"
+    "min",
+    "No"
   ],
   "nl": [
     "album",
@@ -198,13 +200,22 @@
     "Album",
     "Logo",
     "URL",
-    "min"
+    "min",
+    "Online",
+    "Stream"
   ],
   "cs": [
     "album",
     "Album",
     "URL",
-    "min"
+    "min",
+    "Online",
+    "Info",
+    "Debug",
+    "Stream",
+    "Role",
+    "Logo",
+    "Email"
   ],
   "uk": [
     "URL",
@@ -214,7 +225,9 @@
     "Error",
     "General",
     "URL",
-    "min"
+    "min",
+    "Modal",
+    "No"
   ],
   "bg": [
     "URL",
@@ -225,7 +238,13 @@
     "album",
     "Album",
     "URL",
-    "min"
+    "min",
+    "Modal",
+    "Status",
+    "Online",
+    "Email (SMTP)",
+    "Logo",
+    "Email"
   ],
   "da": [
     "Stop",
@@ -239,7 +258,21 @@
     "Download",
     "Links",
     "URL",
-    "min"
+    "min",
+    "Modal",
+    "Online",
+    "Status",
+    "Info",
+    "Upload",
+    "Manager",
+    "Medium",
+    "Frontend Server",
+    "Send Test Email",
+    "Video Bitrate",
+    "Audio Bitrate",
+    "Stream",
+    "Logo",
+    "Email"
   ],
   "fi": [
     "Logo",
@@ -252,7 +285,13 @@
     "album",
     "Album",
     "URL",
-    "min"
+    "min",
+    "Info",
+    "Stream",
+    "Session Secret",
+    "Online",
+    "Logo",
+    "Email"
   ],
   "lt": [
     "URL",
@@ -263,7 +302,10 @@
     "album",
     "Album",
     "URL",
-    "min"
+    "min",
+    "Modal",
+    "Status",
+    "Admin"
   ],
   "sr": [
     "Filter",
@@ -288,14 +330,36 @@
     "Download",
     "Links",
     "URL",
-    "min"
+    "min",
+    "Lens",
+    "Login",
+    "Logout",
+    "Sign Up",
+    "Meta Keywords",
+    "Copyright",
+    "Logging",
+    "Remove",
+    "Custom...",
+    "Thumbnail",
+    "Photo ID",
+    "Video Bitrate",
+    "Audio Bitrate",
+    "Debug",
+    "Info",
+    "Status",
+    "Online",
+    "Logo"
   ],
   "ms": [
     "Admin",
     "album",
     "Album",
     "URL",
-    "min"
+    "min",
+    "Modal",
+    "Status",
+    "Debug",
+    "Logo"
   ],
   "th": [
     "Session Secret",
@@ -307,7 +371,12 @@
     "Passkey",
     "Passkeys",
     "URL",
-    "min"
+    "min",
+    "Modal",
+    "Session Secret",
+    "Referrer",
+    "From Name",
+    "From Email Address"
   ],
   "_common": [
     "John Doe",
@@ -333,7 +402,20 @@
     "Max Parallel Jobs",
     "MFA QR Code",
     "Email Address",
-    "URL"
+    "URL",
+    "✓",
+    "⚠️ Important:",
+    "💡 Tip",
+    "🔑 Password",
+    "✓ Multi-Factor Authentication (MFA)",
+    "HLS STREAMING",
+    "API KEY",
+    "e.g., 400k, 2500k, 5000k",
+    "e.g., 64k, 96k, 128k, 192k",
+    "{{siteName}} - Galleria",
+    "{{albumName}} - {{siteName}}",
+    "{{progress}}%",
+    "Folder \"{{folderName}}\" {{action}}"
   ]
 }
 

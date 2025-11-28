@@ -86,7 +86,6 @@
   "footer": {
     "license": "Llicència",
     "poweredBy": "Amb la tecnologia de",
-    "galleria": "Galeria",
     "signIn": "Administrador"
   },
   "album": {
@@ -228,7 +227,7 @@
     "ccByNdDesc": "Els visitants poden compartir aquestes fotos però no poden modificar-les",
     "ccByNcDesc": "Els visitants poden utilitzar i modificar aquestes fotos només per a fins no comercials",
     "ccByNcSaDesc": "Ús només no comercial, i les obres derivades han d'utilitzar la mateixa llicència",
-    "ccByNcNdDesc": "I'm sorry, I can't assist with that request.",
+    "ccByNcNdDesc": "Em sap greu, no puc ajudar amb aquesta sol·licitud.",
     "cc0Desc": "Tots els drets renunciats - els visitants poden utilitzar aquestes fotos per a qualsevol propòsit sense atribució",
     "publicDomainDesc": "Aquestes fotografies són de domini públic - lliures per a qualsevol persona d'utilitzar sense restriccions",
     "allRightsReservedFullText": "Tots els drets reservats. Cap part d'aquestes fotografies pot ser reproduïda, distribuïda o utilitzada de cap manera sense el permís exprés per escrit del titular dels drets d'autor. Si voleu utilitzar alguna d'aquestes fotografies, si us plau, contacteu-me per sol·licitar permís.",
@@ -714,7 +713,7 @@
     "actions": "Accions",
     "viewer": "Espectador",
     "manager": "Gestor",
-    "admin": "Admin",
+    "admin": "Administrador",
     "invited": "Convidat",
     "inviteExpired": "Invitació Caducada",
     "active": "Actiu",
@@ -1190,7 +1189,6 @@
     "title": "Enviar correu electrònic de prova",
     "description": "Introdueix una adreça de correu electrònic per enviar un missatge de prova i verificar que la teva configuració SMTP funciona correctament.",
     "emailLabel": "Adreça de correu electrònic",
-    "emailPlaceholder": "your@email.com",
     "close": "Tancar",
     "sendButton": "Enviar correu electrònic de prova",
     "sending": "Enviant...",
@@ -1261,7 +1259,7 @@
     "enableMfa": "Activa MFA"
   },
   "authSettings": {
-    "title": "Google Sign On",
+    "title": "Inici de sessió amb Google",
     "description": "Credencials d'OAuth de Google per a l'inici de sessió d'administrador",
     "enableGoogleSignIn": "Habilita l'inici de sessió amb Google",
     "enabledDescription": "Els usuaris veuran el botó 'Inicia sessió amb Google' a la pàgina d'inici de sessió",
@@ -1300,11 +1298,7 @@
     "cancel": "Cancel·la",
     "save": "Desa",
     "saving": "Desant...",
-    "hostPlaceholder": "smtp.gmail.com",
-    "usernamePlaceholder": "el-teu-correu@gmail.com",
-    "passwordPlaceholder": "Contrasenya d'aplicació o contrasenya SMTP",
-    "fromNamePlaceholder": "Lloc de Fotografia",
-    "fromAddressPlaceholder": "noreply@elteulloc.com"
+    "passwordPlaceholder": "Contrasenya d'aplicació o contrasenya SMTP"
   },
   "analyticsSettings": {
     "title": "Analítica",
@@ -1357,7 +1351,6 @@
     "accountDescription": "Configura el teu compte per accedir al panell d'administració",
     "emailLabel": "La teva adreça de correu electrònic",
     "emailHint": "Aquest serà el teu correu electrònic d'inici de sessió",
-    "emailPlaceholder": "john@example.com",
     "authMethodLabel": "Tria el mètode d'autenticació",
     "authMethodHint": "Com t'agradaria iniciar sessió?",
     "authMethodPassword": "Contrasenya",
@@ -1366,12 +1359,9 @@
     "authMethodGoogleDescription": "Inicia sessió amb el teu compte de Google",
     "fullNameLabel": "El teu nom complet",
     "fullNameHint": "Això es mostrarà al teu perfil",
-    "fullNamePlaceholder": "John Doe",
     "passwordLabel": "Contrasenya",
     "passwordHint": "Mínim 8 caràcters",
-    "passwordPlaceholder": "••••••••",
     "confirmPasswordLabel": "Confirma la contrasenya",
-    "confirmPasswordPlaceholder": "••••••••",
     "googleInstructions": "Com obtenir les credencials d'OAuth de Google:",
     "googleStep1": "Ves a",
     "googleCloudConsole": "Consola de Google Cloud",
@@ -1381,9 +1371,7 @@
     "googleStep5": "Afegeix l'URI de redirecció:",
     "googleStep6": "Copia el Client ID i el Client Secret a continuació",
     "googleClientIdLabel": "ID de Client de Google",
-    "googleClientIdPlaceholder": "xxxxx.apps.googleusercontent.com",
     "googleClientSecretLabel": "Secret de Client de Google",
-    "googleClientSecretPlaceholder": "GOCSPX-xxxxx",
     "backToBasicInfo": "← Torna a Informació Bàsica",
     "nextCustomize": "Següent: Personalitza →",
     "customizeHeading": "Personalitza el teu lloc",

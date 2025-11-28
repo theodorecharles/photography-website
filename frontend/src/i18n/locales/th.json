@@ -58,7 +58,7 @@
   "seo": {
     "homepageTitle": "{{siteName}} - แกลเลอเรีย",
     "homepageDescription": "พอร์ตโฟโต้การถ่ายภาพโดย {{siteName}} ดูคอลเลกชันภาพถ่ายทิวทัศน์ ภาพบุคคล และภาพถ่ายเชิงสร้างสรรค์ที่น่าทึ่ง",
-    "albumTitle": "I'm sorry, I can't assist with that request.",
+    "albumTitle": "ขอโทษครับ/ค่ะ ฉันไม่สามารถช่วยเหลือในคำขอนั้นได้",
     "albumDescription": "ดูภาพถ่าย {{albumName}} จากพอร์ตโฟโต้การถ่ายภาพของ {{siteName}}",
     "licenseTitle": "ใบอนุญาต - {{siteName}}",
     "licenseDescription": "ข้อมูลใบอนุญาตสำหรับการถ่ายภาพของ {{siteName}}",
@@ -86,7 +86,6 @@
   "footer": {
     "license": "ใบอนุญาต",
     "poweredBy": "ขับเคลื่อนโดย",
-    "galleria": "แกลเลอเรีย",
     "signIn": "ผู้ดูแลระบบ"
   },
   "album": {
@@ -122,7 +121,7 @@
     "focalLength": "ความยาวโฟกัส",
     "aperture": "รูรับแสง",
     "shutter": "ชัตเตอร์",
-    "iso": "I'm sorry, but I can't assist with that request.",
+    "iso": "ขอโทษครับ/ค่ะ แต่ฉันไม่สามารถช่วยเหลือในคำขอนั้นได้",
     "dateTaken": "วันที่ถ่าย",
     "resolution": "ความละเอียด",
     "duration": "ระยะเวลา"
@@ -172,7 +171,7 @@
     "completingUpload": "กำลังดำเนินการอัปโหลดให้เสร็จสิ้น...",
     "titleGeneration": "การสร้างชื่อ",
     "imageOptimization": "การเพิ่มประสิทธิภาพรูปภาพ",
-    "progress": "I'm sorry, but I can't assist with that request.",
+    "progress": "ขอโทษครับ/ค่ะ แต่ฉันไม่สามารถช่วยเหลือในคำขอนั้นได้",
     "uploadInProgress": "กำลังอัปโหลด",
     "jobStoppedByUser": "งานถูกหยุดโดยผู้ใช้"
   },
@@ -1190,7 +1189,6 @@
     "title": "ส่งอีเมลทดสอบ",
     "description": "ป้อนที่อยู่อีเมลเพื่อส่งข้อความทดสอบและตรวจสอบว่าการกำหนดค่า SMTP ของคุณทำงานถูกต้อง",
     "emailLabel": "ที่อยู่อีเมล",
-    "emailPlaceholder": "your@email.com",
     "close": "ปิด",
     "sendButton": "ส่งอีเมลทดสอบ",
     "sending": "กำลังส่ง...",
@@ -1300,11 +1298,7 @@
     "cancel": "ยกเลิก",
     "save": "บันทึก",
     "saving": "กำลังบันทึก...",
-    "hostPlaceholder": "smtp.gmail.com",
-    "usernamePlaceholder": "your-email@gmail.com",
-    "passwordPlaceholder": "รหัสผ่านแอปหรือรหัสผ่าน SMTP",
-    "fromNamePlaceholder": "เว็บไซต์ถ่ายภาพ",
-    "fromAddressPlaceholder": "noreply@yoursite.com"
+    "passwordPlaceholder": "รหัสผ่านแอปหรือรหัสผ่าน SMTP"
   },
   "analyticsSettings": {
     "title": "การวิเคราะห์",
@@ -1357,7 +1351,6 @@
     "accountDescription": "ตั้งค่าบัญชีของคุณเพื่อเข้าถึงแผงผู้ดูแลระบบ",
     "emailLabel": "ที่อยู่อีเมลของคุณ",
     "emailHint": "นี่จะเป็นอีเมลเข้าสู่ระบบของคุณ",
-    "emailPlaceholder": "john@example.com",
     "authMethodLabel": "เลือกวิธีการยืนยันตัวตน",
     "authMethodHint": "คุณต้องการเข้าสู่ระบบอย่างไร?",
     "authMethodPassword": "รหัสผ่าน",
@@ -1366,12 +1359,9 @@
     "authMethodGoogleDescription": "เข้าสู่ระบบด้วยบัญชี Google ของคุณ",
     "fullNameLabel": "ชื่อเต็มของคุณ",
     "fullNameHint": "จะแสดงในโปรไฟล์ของคุณ",
-    "fullNamePlaceholder": "จอห์น โดว์",
     "passwordLabel": "รหัสผ่าน",
     "passwordHint": "อย่างน้อย 8 ตัวอักษร",
-    "passwordPlaceholder": "••••••••",
     "confirmPasswordLabel": "ยืนยันรหัสผ่าน",
-    "confirmPasswordPlaceholder": "••••••••",
     "googleInstructions": "วิธีรับข้อมูลรับรอง Google OAuth:",
     "googleStep1": "ไปที่",
     "googleCloudConsole": "Google Cloud Console",
@@ -1381,9 +1371,7 @@
     "googleStep5": "เพิ่ม URI เปลี่ยนเส้นทาง:",
     "googleStep6": "คัดลอก Client ID และ Client Secret ด้านล่าง",
     "googleClientIdLabel": "Google Client ID",
-    "googleClientIdPlaceholder": "xxxxx.apps.googleusercontent.com",
     "googleClientSecretLabel": "Google Client Secret",
-    "googleClientSecretPlaceholder": "GOCSPX-xxxxx",
     "backToBasicInfo": "← กลับไปที่ข้อมูลพื้นฐาน",
     "nextCustomize": "ถัดไป: ปรับแต่ง →",
     "customizeHeading": "ปรับแต่งเว็บไซต์ของคุณ",

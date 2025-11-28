@@ -86,7 +86,6 @@
   "footer": {
     "license": "Licencija",
     "poweredBy": "Palaikoma",
-    "galleria": "Galerija",
     "signIn": "Administratorius"
   },
   "album": {
@@ -1190,7 +1189,6 @@
     "title": "Siųsti bandomąjį el. laišką",
     "description": "Įveskite el. pašto adresą, kad išsiųstumėte bandomąją žinutę ir patikrintumėte, ar jūsų SMTP konfigūracija veikia tinkamai.",
     "emailLabel": "El. pašto adresas",
-    "emailPlaceholder": "your@email.com",
     "close": "Uždaryti",
     "sendButton": "Siųsti bandomąjį el. laišką",
     "sending": "Siunčiama...",
@@ -1300,11 +1298,7 @@
     "cancel": "Atšaukti",
     "save": "Išsaugoti",
     "saving": "Išsaugoma...",
-    "hostPlaceholder": "smtp.gmail.com",
-    "usernamePlaceholder": "jūsų-el.paštas@gmail.com",
-    "passwordPlaceholder": "Programėlės slaptažodis arba SMTP slaptažodis",
-    "fromNamePlaceholder": "Fotografijos svetainė",
-    "fromAddressPlaceholder": "noreply@jūsųsvetaine.com"
+    "passwordPlaceholder": "Programėlės slaptažodis arba SMTP slaptažodis"
   },
   "analyticsSettings": {
     "title": "Analitika",
@@ -1357,7 +1351,6 @@
     "accountDescription": "Nustatykite savo paskyrą, kad galėtumėte pasiekti administratoriaus skydelį",
     "emailLabel": "Jūsų el. pašto adresas",
     "emailHint": "Tai bus jūsų prisijungimo el. paštas",
-    "emailPlaceholder": "john@example.com",
     "authMethodLabel": "Pasirinkite autentifikavimo metodą",
     "authMethodHint": "Kaip norėtumėte prisijungti?",
     "authMethodPassword": "Slaptažodis",
@@ -1366,12 +1359,9 @@
     "authMethodGoogleDescription": "Prisijungti su savo Google paskyra",
     "fullNameLabel": "Jūsų pilnas vardas",
     "fullNameHint": "Tai bus rodoma jūsų profilyje",
-    "fullNamePlaceholder": "John Doe",
     "passwordLabel": "Slaptažodis",
     "passwordHint": "Mažiausiai 8 simboliai",
-    "passwordPlaceholder": "••••••••",
     "confirmPasswordLabel": "Patvirtinti slaptažodį",
-    "confirmPasswordPlaceholder": "••••••••",
     "googleInstructions": "Kaip gauti „Google OAuth“ kredencialus:",
     "googleStep1": "Eikite į",
     "googleCloudConsole": "„Google Cloud Console“",
@@ -1381,9 +1371,7 @@
     "googleStep5": "Pridėkite peradresavimo URI:",
     "googleStep6": "Nukopijuokite Kliento ID ir Kliento Slaptąjį raktą žemiau",
     "googleClientIdLabel": "„Google“ Kliento ID",
-    "googleClientIdPlaceholder": "xxxxx.apps.googleusercontent.com",
     "googleClientSecretLabel": "„Google“ Kliento Slaptasis raktas",
-    "googleClientSecretPlaceholder": "GOCSPX-xxxxx",
     "backToBasicInfo": "← Atgal į Pagrindinę informaciją",
     "nextCustomize": "Toliau: Tinkinti →",
     "customizeHeading": "Tinkinkite savo svetainę",

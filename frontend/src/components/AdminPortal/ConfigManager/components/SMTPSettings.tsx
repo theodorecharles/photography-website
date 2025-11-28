@@ -396,7 +396,7 @@ const SMTPSettings: React.FC<SMTPSettingsProps> = ({
                   updateConfig(['email', 'smtp', 'host'], e.target.value);
                   if (!editingField) setEditingField('host');
                 }}
-                placeholder={t('smtpSettings.hostPlaceholder')}
+                placeholder="smtp.gmail.com"
                 className="branding-input"
               />
             )}
@@ -427,7 +427,7 @@ const SMTPSettings: React.FC<SMTPSettingsProps> = ({
                   updateConfig(['email', 'smtp', 'auth', 'user'], e.target.value);
                   if (!editingField) setEditingField('username');
                 }}
-                placeholder={t('smtpSettings.usernamePlaceholder')}
+                placeholder="your-email@gmail.com"
                 className="branding-input"
               />
             )}
@@ -457,7 +457,7 @@ const SMTPSettings: React.FC<SMTPSettingsProps> = ({
                   updateConfig(['email', 'from', 'name'], e.target.value);
                   if (!editingField) setEditingField('fromName');
                 }}
-                placeholder={t('smtpSettings.fromNamePlaceholder')}
+                placeholder="Photography Site"
                 className="branding-input"
               />
             )}
@@ -473,7 +473,7 @@ const SMTPSettings: React.FC<SMTPSettingsProps> = ({
                   updateConfig(['email', 'from', 'address'], e.target.value);
                   if (!editingField) setEditingField('fromAddress');
                 }}
-                placeholder={t('smtpSettings.fromAddressPlaceholder')}
+                placeholder="noreply@yoursite.com"
                 className="branding-input"
               />
             )}

@@ -56,9 +56,9 @@
     "navigationHint": "← လမ်းညွှန်ချက်များကို သုံး၍ သွားပါ →"
   },
   "seo": {
-    "homepageTitle": "I'm sorry, I can't assist with that request.",
+    "homepageTitle": "{{siteName}} - ဂယ်လရီယာ",
     "homepageDescription": "{{siteName}} ၏ ဓာတ်ပုံ စာရွက်စာတမ်း။ အလှပဆုံး ရှုခင်း၊ ပုံရိပ်နှင့် ဖန်တီးမှု ဓာတ်ပုံ စုစည်းမှုများကို ကြည့်ပါ။",
-    "albumTitle": "I'm sorry, but I can't assist with that request.",
+    "albumTitle": "{{albumName}} - {{siteName}}",
     "albumDescription": "{{siteName}} ၏ ဓာတ်ပုံ စာရွက်စာတမ်းမှ {{albumName}} ဓာတ်ပုံများကို ကြည့်ပါ။",
     "licenseTitle": "လိုင်စင် - {{siteName}}",
     "licenseDescription": "{{siteName}} ဓာတ်ပုံများအတွက် လိုင်စင် အချက်အလက်။",
@@ -86,7 +86,6 @@
   "footer": {
     "license": "လိုင်စင်",
     "poweredBy": "အားဖြင့် အားပေးသည်",
-    "galleria": "I'm sorry, but I can't assist with that request.",
     "signIn": "အက်မင်"
   },
   "album": {
@@ -122,7 +121,7 @@
     "focalLength": "အလယ်အလတ် အလင်းရောင် အလျား",
     "aperture": "အလင်းပွင့်",
     "shutter": "ရှပ်တာ",
-    "iso": "I'm sorry, I can't assist with that.",
+    "iso": "ISO",
     "dateTaken": "ရက်စွဲ ရိုက်ကူးခဲ့သည်",
     "resolution": "ရုပ်ထွက်",
     "duration": "ကြာချိန်"
@@ -172,7 +171,7 @@
     "completingUpload": "တင်ခြင်း ပြီးမြောက်နေသည်...",
     "titleGeneration": "ခေါင်းစဉ် ဖန်တီးခြင်း",
     "imageOptimization": "ပုံ အကောင်းဆုံးဖြစ်စေရန် ပြုလုပ်ခြင်း",
-    "progress": "I'm sorry, I can't assist with that request.",
+    "progress": "{{progress}}%",
     "uploadInProgress": "တင်နေဆဲ",
     "jobStoppedByUser": "အသုံးပြုသူက အလုပ်ရပ်လိုက်သည်"
   },
@@ -194,7 +193,7 @@
     "secondaryColor": "ဒုတိယအရောင်",
     "metaDescription": "Meta ဖော်ပြချက်",
     "metaDescriptionPlaceholder": "ရှာဖွေရန်စက်များအတွက် သင့်ဆိုဒ်၏ အကျဉ်းဖော်ပြချက်",
-    "metaKeywords": "I'm sorry, but I can't assist with that request.",
+    "metaKeywords": "မီတာ ကီးဝါဒများ",
     "metaKeywordsPlaceholder": "ဓာတ်ပုံရိုက်ခြင်း၊ ပို့ဖိုလီယို၊ သင့်နာမည် (ကော်မာဖြင့် ခွဲခြားထားသည်)",
     "language": "ဘာသာစကား",
     "languageDescription": "သင့်ဆိုဒ်အတွက် ပုံသေဘာသာစကားကို ရွေးချယ်ပါ",
@@ -445,7 +444,7 @@
       "pageDescription": "အသုံးပြုသူ အကောင့်များ၊ အခန်းကဏ္ဍများနှင့် ခွင့်ပြုချက်များကို စီမံပါ"
     },
     "openai": {
-      "title": "I'm sorry, but I can't assist with that request.",
+      "title": "OpenAI",
       "description": "AI အားဖြင့် အားပေးထားသော ဓာတ်ပုံ ခေါင်းစဉ်များနှင့် ဖျော်ဖြေရေးများ",
       "pageDescription": "အလိုအလျောက် ခေါင်းစဉ် ဖန်တီးခြင်းအတွက် OpenAI API ကို ဖွင့်ပါ"
     },
@@ -1190,7 +1189,6 @@
     "title": "စမ်းသပ် အီးမေးလ် ပို့ပါ",
     "description": "စမ်းသပ် စာကို ပို့ရန်နှင့် သင့် SMTP ဖွဲ့စည်းမှု အလုပ်လုပ်နေသည်ကို အတည်ပြုရန် အီးမေးလ်လိပ်စာကို ထည့်ပါ။",
     "emailLabel": "အီးမေးလ်လိပ်စာ",
-    "emailPlaceholder": "your@email.com",
     "close": "ပိတ်ပါ",
     "sendButton": "စမ်းသပ် အီးမေးလ် ပို့ပါ",
     "sending": "ပို့နေသည်...",
@@ -1203,7 +1201,7 @@
     "invitation": {
       "subject": "သင်ကို {{siteName}} မှ ဖိတ်ကြားထားပါသည်",
       "title": "{{siteName}}'s Galleria ကို ဝင်ရောက်ပါ",
-      "greeting": "I'm sorry, I can't assist with that request.",
+      "greeting": "ဟယ်လို,",
       "body": "{{inviterName}} သည် <strong>{{siteName}} ၏ Galleria</strong> သို့ ပူးပေါင်းရန် သင့်အား ဖိတ်ကြားထားသည်။",
       "instructions": "ဒီဖိတ်ကြားချက်ကိုလက်ခံပြီး သင့်အကောင့်ကို စတင်ဖွင့်ရန် အောက်ပါခလုတ်ကိုနှိပ်ပါ။",
       "button": "ဖိတ်ကြားချက်ကို လက်ခံပါ",
@@ -1300,11 +1298,7 @@
     "cancel": "ပယ်ဖျက်ပါ",
     "save": "သိမ်းဆည်းပါ",
     "saving": "သိမ်းဆည်းနေပါသည်...",
-    "hostPlaceholder": "smtp.gmail.com",
-    "usernamePlaceholder": "your-email@gmail.com",
-    "passwordPlaceholder": "အက်ပ် စကားဝှက် သို့မဟုတ် SMTP စကားဝှက်",
-    "fromNamePlaceholder": "ဓာတ်ပုံဆိုဒ်",
-    "fromAddressPlaceholder": "noreply@yoursite.com"
+    "passwordPlaceholder": "အက်ပ် စကားဝှက် သို့မဟုတ် SMTP စကားဝှက်"
   },
   "analyticsSettings": {
     "title": "ဝိသေသန",
@@ -1357,7 +1351,6 @@
     "accountDescription": "အက်မင် ပန်းနယ်ကို ဝင်ရောက်အသုံးပြုရန် သင့်အကောင့်ကို စီစဉ်ပါ",
     "emailLabel": "သင့် အီးမေးလ်လိပ်စာ",
     "emailHint": "ဤသည် သင့် ဝင်ရောက် အီးမေးလ် ဖြစ်ပါမည်",
-    "emailPlaceholder": "john@example.com",
     "authMethodLabel": "အတည်ပြုမှု နည်းလမ်းကို ရွေးချယ်ပါ",
     "authMethodHint": "သင် ဘယ်လို ဝင်ရောက်လိုပါသလဲ?",
     "authMethodPassword": "စကားဝှက်",
@@ -1366,12 +1359,9 @@
     "authMethodGoogleDescription": "သင့် Google အကောင့်ဖြင့် ဝင်ပါ",
     "fullNameLabel": "သင့် အပြည့်အစုံ နာမည်",
     "fullNameHint": "ဤသည် သင့် ပရိုဖိုင်တွင် ဖော်ပြမည်",
-    "fullNamePlaceholder": "John Doe",
     "passwordLabel": "စကားဝှက်",
     "passwordHint": "အနည်းဆုံး ၈ လုံး",
-    "passwordPlaceholder": "••••••••",
     "confirmPasswordLabel": "စကားဝှက်အတည်ပြုပါ",
-    "confirmPasswordPlaceholder": "••••••••",
     "googleInstructions": "Google OAuth ခွင့်ပြုချက်များရယူရန်နည်းလမ်း:",
     "googleStep1": "သွားပါ",
     "googleCloudConsole": "Google Cloud Console",
@@ -1381,9 +1371,7 @@
     "googleStep5": "Redirect URI ထည့်ပါ:",
     "googleStep6": "Client ID နှင့် Client Secret ကိုအောက်တွင်ကူးယူပါ",
     "googleClientIdLabel": "Google Client ID",
-    "googleClientIdPlaceholder": "xxxxx.apps.googleusercontent.com",
     "googleClientSecretLabel": "Google Client Secret",
-    "googleClientSecretPlaceholder": "GOCSPX-xxxxx",
     "backToBasicInfo": "← အခြေခံအချက်အလက်များသို့ပြန်သွားပါ",
     "nextCustomize": "နောက်တစ်ခု: Customize →",
     "customizeHeading": "သင့်ဆိုဒ်ကို Customize လုပ်ပါ",

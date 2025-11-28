@@ -86,7 +86,6 @@
   "footer": {
     "license": "Lisenssi",
     "poweredBy": "Toimii",
-    "galleria": "Galleria",
     "signIn": "Ylläpito"
   },
   "album": {
@@ -1063,7 +1062,7 @@
     "title": "Kuvan laatu",
     "description": "Määritä kuvan laatu ja käsittelyasetukset",
     "thumbnail": "Pikkukuva",
-    "modal": "Modal",
+    "modal": "Modaalinen",
     "download": "Lataa",
     "concurrency": "Samanaikaisuus",
     "quality": "Laatu",
@@ -1190,7 +1189,6 @@
     "title": "Lähetä testisähköposti",
     "description": "Syötä sähköpostiosoite lähettääksesi testiviestin ja varmistaaksesi, että SMTP-kokoonpanosi toimii oikein.",
     "emailLabel": "Sähköpostiosoite",
-    "emailPlaceholder": "sinun@email.com",
     "close": "Sulje",
     "sendButton": "Lähetä testisähköposti",
     "sending": "Lähetetään...",
@@ -1300,11 +1298,7 @@
     "cancel": "Peruuta",
     "save": "Tallenna",
     "saving": "Tallennetaan...",
-    "hostPlaceholder": "smtp.gmail.com",
-    "usernamePlaceholder": "your-email@gmail.com",
-    "passwordPlaceholder": "Sovellussalasana tai SMTP-salasana",
-    "fromNamePlaceholder": "Valokuvaussivusto",
-    "fromAddressPlaceholder": "noreply@yoursite.com"
+    "passwordPlaceholder": "Sovellussalasana tai SMTP-salasana"
   },
   "analyticsSettings": {
     "title": "Analytiikka",
@@ -1357,7 +1351,6 @@
     "accountDescription": "Määritä tilisi pääsyäksesi hallintapaneeliin",
     "emailLabel": "Sähköpostiosoitteesi",
     "emailHint": "Tämä on kirjautumissähköpostisi",
-    "emailPlaceholder": "john@example.com",
     "authMethodLabel": "Valitse todennusmenetelmä",
     "authMethodHint": "Miten haluat kirjautua sisään?",
     "authMethodPassword": "Salasana",
@@ -1366,12 +1359,9 @@
     "authMethodGoogleDescription": "Kirjaudu sisään Google-tililläsi",
     "fullNameLabel": "Koko nimesi",
     "fullNameHint": "Tämä näkyy profiilissasi",
-    "fullNamePlaceholder": "John Doe",
     "passwordLabel": "Salasana",
     "passwordHint": "Vähintään 8 merkkiä",
-    "passwordPlaceholder": "••••••••",
     "confirmPasswordLabel": "Vahvista salasana",
-    "confirmPasswordPlaceholder": "••••••••",
     "googleInstructions": "Kuinka saada Google OAuth -tunnistetiedot:",
     "googleStep1": "Siirry",
     "googleCloudConsole": "Google Cloud Console",
@@ -1381,9 +1371,7 @@
     "googleStep5": "Lisää uudelleenohjaus-URI:",
     "googleStep6": "Kopioi asiakastunnus ja salaisuus alla",
     "googleClientIdLabel": "Google-asiakastunnus",
-    "googleClientIdPlaceholder": "xxxxx.apps.googleusercontent.com",
     "googleClientSecretLabel": "Google-asiakassalaisuus",
-    "googleClientSecretPlaceholder": "GOCSPX-xxxxx",
     "backToBasicInfo": "← Takaisin perustietoihin",
     "nextCustomize": "Seuraava: Mukauta →",
     "customizeHeading": "Mukauta sivustoasi",

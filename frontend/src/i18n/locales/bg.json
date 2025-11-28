@@ -86,7 +86,6 @@
   "footer": {
     "license": "Лиценз",
     "poweredBy": "Захранва се от",
-    "galleria": "Галерия",
     "signIn": "Администратор"
   },
   "album": {
@@ -1190,7 +1189,6 @@
     "title": "Изпращане на тестов имейл",
     "description": "Въведете имейл адрес, за да изпратите тестово съобщение и да проверите дали вашата SMTP конфигурация работи правилно.",
     "emailLabel": "Имейл адрес",
-    "emailPlaceholder": "your@email.com",
     "close": "Затвори",
     "sendButton": "Изпращане на тестов имейл",
     "sending": "Изпращане...",
@@ -1300,11 +1298,7 @@
     "cancel": "Отказ",
     "save": "Запази",
     "saving": "Запазване...",
-    "hostPlaceholder": "smtp.gmail.com",
-    "usernamePlaceholder": "your-email@gmail.com",
-    "passwordPlaceholder": "Парола за приложение или SMTP парола",
-    "fromNamePlaceholder": "Сайт за фотография",
-    "fromAddressPlaceholder": "noreply@yoursite.com"
+    "passwordPlaceholder": "Парола за приложение или SMTP парола"
   },
   "analyticsSettings": {
     "title": "Аналитика",
@@ -1357,7 +1351,6 @@
     "accountDescription": "Настройте акаунта си за достъп до администраторския панел",
     "emailLabel": "Вашият имейл адрес",
     "emailHint": "Това ще бъде вашият имейл за вход",
-    "emailPlaceholder": "john@example.com",
     "authMethodLabel": "Изберете метод за удостоверяване",
     "authMethodHint": "Как бихте искали да влезете?",
     "authMethodPassword": "Парола",
@@ -1366,12 +1359,9 @@
     "authMethodGoogleDescription": "Вход с вашия Google акаунт",
     "fullNameLabel": "Вашето пълно име",
     "fullNameHint": "Това ще бъде показано във вашия профил",
-    "fullNamePlaceholder": "Джон Доу",
     "passwordLabel": "Парола",
     "passwordHint": "Минимум 8 знака",
-    "passwordPlaceholder": "••••••••",
     "confirmPasswordLabel": "Потвърдете паролата",
-    "confirmPasswordPlaceholder": "••••••••",
     "googleInstructions": "Как да получите идентификационни данни за Google OAuth:",
     "googleStep1": "Отидете на",
     "googleCloudConsole": "Google Cloud Console",
@@ -1381,9 +1371,7 @@
     "googleStep5": "Добавете URI за пренасочване:",
     "googleStep6": "Копирайте Client ID и Client Secret по-долу",
     "googleClientIdLabel": "Google Client ID",
-    "googleClientIdPlaceholder": "xxxxx.apps.googleusercontent.com",
     "googleClientSecretLabel": "Google Client Secret",
-    "googleClientSecretPlaceholder": "GOCSPX-xxxxx",
     "backToBasicInfo": "← Обратно към Основна информация",
     "nextCustomize": "Напред: Персонализиране →",
     "customizeHeading": "Персонализирайте вашия сайт",

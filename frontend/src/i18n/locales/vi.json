@@ -66,7 +66,6 @@
   "footer": {
     "license": "Giấy phép",
     "poweredBy": "Được cung cấp bởi",
-    "galleria": "Galleria",
     "signIn": "Đăng Nhập"
   },
   "album": {
@@ -1148,11 +1147,7 @@
     "cancel": "Hủy",
     "save": "Lưu",
     "saving": "Đang lưu...",
-    "hostPlaceholder": "smtp.gmail.com",
-    "usernamePlaceholder": "your-email@gmail.com",
-    "passwordPlaceholder": "Mật khẩu ứng dụng hoặc mật khẩu SMTP",
-    "fromNamePlaceholder": "Trang web nhiếp ảnh",
-    "fromAddressPlaceholder": "noreply@yoursite.com"
+    "passwordPlaceholder": "Mật khẩu ứng dụng hoặc mật khẩu SMTP"
   },
   "analyticsSettings": {
     "title": "Phân tích",
@@ -1225,7 +1220,6 @@
     "accountDescription": "Thiết lập tài khoản của bạn để truy cập bảng điều khiển quản trị",
     "emailLabel": "Địa chỉ email của bạn",
     "emailHint": "Đây sẽ là email đăng nhập của bạn",
-    "emailPlaceholder": "john@example.com",
     "authMethodLabel": "Chọn phương thức xác thực",
     "authMethodHint": "Bạn muốn đăng nhập bằng cách nào?",
     "authMethodPassword": "Mật khẩu",
@@ -1234,12 +1228,9 @@
     "authMethodGoogleDescription": "Đăng nhập bằng tài khoản Google của bạn",
     "fullNameLabel": "Họ và tên của bạn",
     "fullNameHint": "Điều này sẽ được hiển thị trong hồ sơ của bạn",
-    "fullNamePlaceholder": "John Doe",
     "passwordLabel": "Mật khẩu",
     "passwordHint": "Tối thiểu 8 ký tự",
-    "passwordPlaceholder": "••••••••",
     "confirmPasswordLabel": "Xác nhận mật khẩu",
-    "confirmPasswordPlaceholder": "••••••••",
     "googleInstructions": "Cách lấy thông tin xác thực Google OAuth:",
     "googleStep1": "Đi đến",
     "googleCloudConsole": "Google Cloud Console",
@@ -1249,9 +1240,7 @@
     "googleStep5": "Thêm URI chuyển hướng:",
     "googleStep6": "Sao chép ID Khách hàng và Mật khẩu Khách hàng bên dưới",
     "googleClientIdLabel": "ID Khách hàng Google",
-    "googleClientIdPlaceholder": "xxxxx.apps.googleusercontent.com",
     "googleClientSecretLabel": "Mật khẩu Khách hàng Google",
-    "googleClientSecretPlaceholder": "GOCSPX-xxxxx",
     "backToBasicInfo": "← Quay lại Thông tin Cơ bản",
     "nextCustomize": "Tiếp theo: Tùy chỉnh →",
     "customizeHeading": "Tùy chỉnh trang web của bạn",
@@ -1332,7 +1321,6 @@
     "title": "Gửi Email Kiểm Tra",
     "description": "Nhập địa chỉ email để gửi tin nhắn kiểm tra và xác minh cấu hình SMTP của bạn hoạt động chính xác.",
     "emailLabel": "Địa chỉ Email",
-    "emailPlaceholder": "your@email.com",
     "close": "Đóng",
     "sendButton": "Gửi Email Kiểm Tra",
     "sending": "Đang gửi...",

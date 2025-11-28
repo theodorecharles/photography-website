@@ -86,7 +86,6 @@
   "footer": {
     "license": "Lizentzia",
     "poweredBy": "Hornitua",
-    "galleria": "Galeria",
     "signIn": "Administrazioa"
   },
   "album": {
@@ -1190,7 +1189,6 @@
     "title": "Bidali Proba Emaila",
     "description": "Sartu helbide elektroniko bat proba mezu bat bidaltzeko eta zure SMTP konfigurazioa behar bezala funtzionatzen duela egiaztatzeko.",
     "emailLabel": "Helbide Elektronikoa",
-    "emailPlaceholder": "your@email.com",
     "close": "Itxi",
     "sendButton": "Bidali Proba Emaila",
     "sending": "Bidaltzen...",
@@ -1300,11 +1298,7 @@
     "cancel": "Utzi",
     "save": "Gorde",
     "saving": "Gordetzen...",
-    "hostPlaceholder": "smtp.gmail.com",
-    "usernamePlaceholder": "zure-emaila@gmail.com",
-    "passwordPlaceholder": "Aplikazioaren pasahitza edo SMTP pasahitza",
-    "fromNamePlaceholder": "Argazkilaritza Gunea",
-    "fromAddressPlaceholder": "noreply@yoursite.com"
+    "passwordPlaceholder": "Aplikazioaren pasahitza edo SMTP pasahitza"
   },
   "analyticsSettings": {
     "title": "Analitika",
@@ -1357,7 +1351,6 @@
     "accountDescription": "Konfiguratu zure kontua administrazio panela eskuratzeko",
     "emailLabel": "Zure Helbide Elektronikoa",
     "emailHint": "Hau izango da zure saioa hasteko helbide elektronikoa",
-    "emailPlaceholder": "john@example.com",
     "authMethodLabel": "Aukeratu Autentifikazio Metodoa",
     "authMethodHint": "Nola nahi duzu saioa hasi?",
     "authMethodPassword": "Pasahitza",
@@ -1366,12 +1359,9 @@
     "authMethodGoogleDescription": "Hasi saioa zure Google kontuarekin",
     "fullNameLabel": "Zure Izen Osoa",
     "fullNameHint": "Zure profilean agertuko da",
-    "fullNamePlaceholder": "John Doe",
     "passwordLabel": "Pasahitza",
     "passwordHint": "Gutxienez 8 karaktere",
-    "passwordPlaceholder": "••••••••",
     "confirmPasswordLabel": "Pasahitza Berretsi",
-    "confirmPasswordPlaceholder": "••••••••",
     "googleInstructions": "Nola lortu Google OAuth kredentzialak:",
     "googleStep1": "Joan",
     "googleCloudConsole": "Google Cloud Console",
@@ -1381,9 +1371,7 @@
     "googleStep5": "Gehitu birbideratze URI:",
     "googleStep6": "Kopiatu bezeroaren IDa eta bezeroaren sekretua behean",
     "googleClientIdLabel": "Google Bezeroaren IDa",
-    "googleClientIdPlaceholder": "xxxxx.apps.googleusercontent.com",
     "googleClientSecretLabel": "Google Bezeroaren Sekretua",
-    "googleClientSecretPlaceholder": "GOCSPX-xxxxx",
     "backToBasicInfo": "← Itzuli Oinarrizko Informaziora",
     "nextCustomize": "Hurrengoa: Pertsonalizatu →",
     "customizeHeading": "Pertsonalizatu Zure Gunea",

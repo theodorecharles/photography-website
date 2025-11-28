@@ -86,7 +86,6 @@
   "footer": {
     "license": "License",
     "poweredBy": "Powered by",
-    "galleria": "Galleria",
     "signIn": "Admin"
   },
   "album": {
@@ -1190,7 +1189,6 @@
     "title": "Send Test Email",
     "description": "Enter an email address to send a test message and verify your SMTP configuration is working correctly.",
     "emailLabel": "Email Address",
-    "emailPlaceholder": "your@email.com",
     "close": "Close",
     "sendButton": "Send Test Email",
     "sending": "Sending...",
@@ -1300,11 +1298,7 @@
     "cancel": "Cancel",
     "save": "Save",
     "saving": "Saving...",
-    "hostPlaceholder": "smtp.gmail.com",
-    "usernamePlaceholder": "your-email@gmail.com",
-    "passwordPlaceholder": "App password or SMTP password",
-    "fromNamePlaceholder": "Photography Site",
-    "fromAddressPlaceholder": "noreply@yoursite.com"
+    "passwordPlaceholder": "App password or SMTP password"
   },
   "analyticsSettings": {
     "title": "Analytics",
@@ -1357,7 +1351,6 @@
     "accountDescription": "Set up your account to access the admin panel",
     "emailLabel": "Your Email Address",
     "emailHint": "This will be your login email",
-    "emailPlaceholder": "john@example.com",
     "authMethodLabel": "Choose Authentication Method",
     "authMethodHint": "How would you like to sign in?",
     "authMethodPassword": "Password",
@@ -1366,12 +1359,9 @@
     "authMethodGoogleDescription": "Sign in with your Google account",
     "fullNameLabel": "Your Full Name",
     "fullNameHint": "This will be displayed in your profile",
-    "fullNamePlaceholder": "John Doe",
     "passwordLabel": "Password",
     "passwordHint": "Minimum 8 characters",
-    "passwordPlaceholder": "••••••••",
     "confirmPasswordLabel": "Confirm Password",
-    "confirmPasswordPlaceholder": "••••••••",
     "googleInstructions": "How to get Google OAuth credentials:",
     "googleStep1": "Go to",
     "googleCloudConsole": "Google Cloud Console",
@@ -1381,9 +1371,7 @@
     "googleStep5": "Add redirect URI:",
     "googleStep6": "Copy the Client ID and Client Secret below",
     "googleClientIdLabel": "Google Client ID",
-    "googleClientIdPlaceholder": "xxxxx.apps.googleusercontent.com",
     "googleClientSecretLabel": "Google Client Secret",
-    "googleClientSecretPlaceholder": "GOCSPX-xxxxx",
     "backToBasicInfo": "← Back to Basic Info",
     "nextCustomize": "Next: Customize →",
     "customizeHeading": "Customize Your Site",
