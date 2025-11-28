@@ -36,6 +36,10 @@ data/
 data-backup-*/
 config/config.local.json
 
+# Installation analytics tracking
+.installation-analytics.json
+data/.installation-analytics.json
+
 # Video files (HLS playlists and segments)
 video/
 
