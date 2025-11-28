@@ -66,7 +66,6 @@
   "footer": {
     "license": "Licentie",
     "poweredBy": "Aangedreven door",
-    "galleria": "Galleria",
     "signIn": "Aanmelden"
   },
   "album": {
@@ -1148,11 +1147,7 @@
     "cancel": "Annuleren",
     "save": "Opslaan",
     "saving": "Opslaan...",
-    "hostPlaceholder": "smtp.gmail.com",
-    "usernamePlaceholder": "jouw-email@gmail.com",
-    "passwordPlaceholder": "App-wachtwoord of SMTP-wachtwoord",
-    "fromNamePlaceholder": "Fotografie Site",
-    "fromAddressPlaceholder": "noreply@yoursite.com"
+    "passwordPlaceholder": "App-wachtwoord of SMTP-wachtwoord"
   },
   "analyticsSettings": {
     "title": "Analyse",
@@ -1225,7 +1220,6 @@
     "accountDescription": "Stel je account in om toegang te krijgen tot het admin paneel",
     "emailLabel": "Uw e-mailadres",
     "emailHint": "Dit zal uw inlog-e-mailadres zijn",
-    "emailPlaceholder": "john@example.com",
     "authMethodLabel": "Kies authenticatiemethode",
     "authMethodHint": "Hoe wilt u inloggen?",
     "authMethodPassword": "Wachtwoord",
@@ -1234,12 +1228,9 @@
     "authMethodGoogleDescription": "Inloggen met uw Google-account",
     "fullNameLabel": "Uw volledige naam",
     "fullNameHint": "Dit wordt weergegeven in je profiel",
-    "fullNamePlaceholder": "John Doe",
     "passwordLabel": "Wachtwoord",
     "passwordHint": "Minimaal 8 tekens",
-    "passwordPlaceholder": "••••••••",
     "confirmPasswordLabel": "Bevestig wachtwoord",
-    "confirmPasswordPlaceholder": "••••••••",
     "googleInstructions": "Hoe je Google OAuth-gegevens kunt krijgen:",
     "googleStep1": "Ga naar",
     "googleCloudConsole": "Google Cloud Console",
@@ -1249,9 +1240,7 @@
     "googleStep5": "Voeg omleidings-URI toe:",
     "googleStep6": "Kopieer de Client-ID en Client Secret hieronder",
     "googleClientIdLabel": "Google Client-ID",
-    "googleClientIdPlaceholder": "xxxxx.apps.googleusercontent.com",
     "googleClientSecretLabel": "Google Client Secret",
-    "googleClientSecretPlaceholder": "GOCSPX-xxxxx",
     "backToBasicInfo": "← Terug naar Basisinformatie",
     "nextCustomize": "Volgende: Aanpassen →",
     "customizeHeading": "Pas uw site aan",
@@ -1332,7 +1321,6 @@
     "title": "Verstuur test-e-mail",
     "description": "Voer een e-mailadres in om een testbericht te verzenden en te verifiëren of uw SMTP-configuratie correct werkt.",
     "emailLabel": "E-mailadres",
-    "emailPlaceholder": "jouw@email.com",
     "close": "Sluiten",
     "sendButton": "Verstuur test-e-mail",
     "sending": "Verzenden...",

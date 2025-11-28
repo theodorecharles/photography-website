@@ -86,7 +86,6 @@
   "footer": {
     "license": "Άδεια",
     "poweredBy": "Υποστηρίζεται από",
-    "galleria": "Γκαλερί",
     "signIn": "Διαχειριστής"
   },
   "album": {
@@ -1190,7 +1189,6 @@
     "title": "Αποστολή Δοκιμαστικού Email",
     "description": "Εισάγετε μια διεύθυνση email για να στείλετε ένα δοκιμαστικό μήνυμα και να επαληθεύσετε ότι η διαμόρφωση SMTP λειτουργεί σωστά.",
     "emailLabel": "Διεύθυνση Email",
-    "emailPlaceholder": "your@email.com",
     "close": "Κλείσιμο",
     "sendButton": "Αποστολή Δοκιμαστικού Email",
     "sending": "Αποστολή...",
@@ -1300,11 +1298,7 @@
     "cancel": "Ακύρωση",
     "save": "Αποθήκευση",
     "saving": "Αποθήκευση...",
-    "hostPlaceholder": "smtp.gmail.com",
-    "usernamePlaceholder": "your-email@gmail.com",
-    "passwordPlaceholder": "Κωδικός εφαρμογής ή κωδικός πρόσβασης SMTP",
-    "fromNamePlaceholder": "Ιστότοπος Φωτογραφίας",
-    "fromAddressPlaceholder": "noreply@yoursite.com"
+    "passwordPlaceholder": "Κωδικός εφαρμογής ή κωδικός πρόσβασης SMTP"
   },
   "analyticsSettings": {
     "title": "Αναλυτικά Στοιχεία",
@@ -1357,7 +1351,6 @@
     "accountDescription": "Ρυθμίστε τον λογαριασμό σας για πρόσβαση στον πίνακα διαχείρισης",
     "emailLabel": "Η Διεύθυνση Email σας",
     "emailHint": "Αυτό θα είναι το email σύνδεσής σας",
-    "emailPlaceholder": "john@example.com",
     "authMethodLabel": "Επιλέξτε Μέθοδο Επαλήθευσης",
     "authMethodHint": "Πώς θα θέλατε να συνδεθείτε;",
     "authMethodPassword": "Κωδικός πρόσβασης",
@@ -1366,12 +1359,9 @@
     "authMethodGoogleDescription": "Σύνδεση με τον λογαριασμό σας Google",
     "fullNameLabel": "Το Πλήρες Όνομά σας",
     "fullNameHint": "Αυτό θα εμφανίζεται στο προφίλ σας",
-    "fullNamePlaceholder": "John Doe",
     "passwordLabel": "Κωδικός πρόσβασης",
     "passwordHint": "Ελάχιστο 8 χαρακτήρες",
-    "passwordPlaceholder": "••••••••",
     "confirmPasswordLabel": "Επιβεβαίωση Κωδικού",
-    "confirmPasswordPlaceholder": "••••••••",
     "googleInstructions": "Πώς να αποκτήσετε διαπιστευτήρια OAuth της Google:",
     "googleStep1": "Μεταβείτε στο",
     "googleCloudConsole": "Κονσόλα Google Cloud",
@@ -1381,9 +1371,7 @@
     "googleStep5": "Προσθέστε URI ανακατεύθυνσης:",
     "googleStep6": "Αντιγράψτε το Client ID και το Client Secret παρακάτω",
     "googleClientIdLabel": "Google Client ID",
-    "googleClientIdPlaceholder": "xxxxx.apps.googleusercontent.com",
     "googleClientSecretLabel": "Google Client Secret",
-    "googleClientSecretPlaceholder": "GOCSPX-xxxxx",
     "backToBasicInfo": "← Επιστροφή στις Βασικές Πληροφορίες",
     "nextCustomize": "Επόμενο: Προσαρμογή →",
     "customizeHeading": "Προσαρμόστε τον Ιστότοπό σας",

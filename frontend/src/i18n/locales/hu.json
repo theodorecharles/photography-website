@@ -86,7 +86,6 @@
   "footer": {
     "license": "Licenc",
     "poweredBy": "Támogatja",
-    "galleria": "Galéria",
     "signIn": "Admin"
   },
   "album": {
@@ -1190,7 +1189,6 @@
     "title": "Teszt e-mail küldése",
     "description": "Adjon meg egy e-mail címet, hogy tesztüzenetet küldjön, és ellenőrizze, hogy az SMTP konfiguráció helyesen működik-e.",
     "emailLabel": "E-mail cím",
-    "emailPlaceholder": "your@email.com",
     "close": "Bezárás",
     "sendButton": "Teszt e-mail küldése",
     "sending": "Küldés...",
@@ -1300,11 +1298,7 @@
     "cancel": "Mégse",
     "save": "Mentés",
     "saving": "Mentés...",
-    "hostPlaceholder": "smtp.gmail.com",
-    "usernamePlaceholder": "your-email@gmail.com",
-    "passwordPlaceholder": "Alkalmazás jelszó vagy SMTP jelszó",
-    "fromNamePlaceholder": "Fotózás oldal",
-    "fromAddressPlaceholder": "noreply@yoursite.com"
+    "passwordPlaceholder": "Alkalmazás jelszó vagy SMTP jelszó"
   },
   "analyticsSettings": {
     "title": "Analitika",
@@ -1357,7 +1351,6 @@
     "accountDescription": "Állítsd be a fiókodat az admin panel eléréséhez",
     "emailLabel": "Az email címed",
     "emailHint": "Ez lesz a bejelentkezési email címed",
-    "emailPlaceholder": "john@example.com",
     "authMethodLabel": "Hitelesítési módszer kiválasztása",
     "authMethodHint": "Hogyan szeretnél bejelentkezni?",
     "authMethodPassword": "Jelszó",
@@ -1366,12 +1359,9 @@
     "authMethodGoogleDescription": "Bejelentkezés a Google fiókoddal",
     "fullNameLabel": "Teljes neved",
     "fullNameHint": "Ez fog megjelenni a profilodban",
-    "fullNamePlaceholder": "John Doe",
     "passwordLabel": "Jelszó",
     "passwordHint": "Minimum 8 karakter",
-    "passwordPlaceholder": "••••••••",
     "confirmPasswordLabel": "Jelszó megerősítése",
-    "confirmPasswordPlaceholder": "••••••••",
     "googleInstructions": "Hogyan szerezhet Google OAuth hitelesítő adatokat:",
     "googleStep1": "Menjen a",
     "googleCloudConsole": "Google Cloud Konzol",
@@ -1381,9 +1371,7 @@
     "googleStep5": "Adja hozzá az átirányítási URI-t:",
     "googleStep6": "Másolja le az alábbi Ügyfélazonosítót és Ügyféltitkot",
     "googleClientIdLabel": "Google Ügyfélazonosító",
-    "googleClientIdPlaceholder": "xxxxx.apps.googleusercontent.com",
     "googleClientSecretLabel": "Google Ügyféltitok",
-    "googleClientSecretPlaceholder": "GOCSPX-xxxxx",
     "backToBasicInfo": "← Vissza az Alapinformációkhoz",
     "nextCustomize": "Következő: Testreszabás →",
     "customizeHeading": "Testreszabás az Ön webhelyéhez",

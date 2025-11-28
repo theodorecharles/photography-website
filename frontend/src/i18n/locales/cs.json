@@ -86,7 +86,6 @@
   "footer": {
     "license": "Licence",
     "poweredBy": "Poháněno",
-    "galleria": "Galerie",
     "signIn": "Administrátor"
   },
   "album": {
@@ -673,7 +672,7 @@
     "logLevelSilent": "Tichý",
     "logLevelError": "Chyba",
     "logLevelWarn": "Varování",
-    "logLevelInfo": "Info",
+    "logLevelInfo": "Informace",
     "logLevelDebug": "Ladění",
     "logLevelVerbose": "Podrobný",
     "logLevelTrace": "Trasování",
@@ -1190,7 +1189,6 @@
     "title": "Odeslat testovací e-mail",
     "description": "Zadejte e-mailovou adresu pro odeslání testovací zprávy a ověření, že vaše SMTP konfigurace funguje správně.",
     "emailLabel": "E-mailová adresa",
-    "emailPlaceholder": "váš@email.com",
     "close": "Zavřít",
     "sendButton": "Odeslat testovací e-mail",
     "sending": "Odesílání...",
@@ -1300,11 +1298,7 @@
     "cancel": "Zrušit",
     "save": "Uložit",
     "saving": "Ukládání...",
-    "hostPlaceholder": "smtp.gmail.com",
-    "usernamePlaceholder": "váš-email@gmail.com",
-    "passwordPlaceholder": "Heslo aplikace nebo heslo SMTP",
-    "fromNamePlaceholder": "Fotografická stránka",
-    "fromAddressPlaceholder": "noreply@vasestranka.com"
+    "passwordPlaceholder": "Heslo aplikace nebo heslo SMTP"
   },
   "analyticsSettings": {
     "title": "Analytika",
@@ -1357,7 +1351,6 @@
     "accountDescription": "Nastavte si účet pro přístup k administračnímu panelu",
     "emailLabel": "Vaše e-mailová adresa",
     "emailHint": "Toto bude váš přihlašovací e-mail",
-    "emailPlaceholder": "john@example.com",
     "authMethodLabel": "Vyberte metodu ověřování",
     "authMethodHint": "Jak se chcete přihlásit?",
     "authMethodPassword": "Heslo",
@@ -1366,12 +1359,9 @@
     "authMethodGoogleDescription": "Přihlásit se pomocí účtu Google",
     "fullNameLabel": "Vaše celé jméno",
     "fullNameHint": "Toto bude zobrazeno ve vašem profilu",
-    "fullNamePlaceholder": "John Doe",
     "passwordLabel": "Heslo",
     "passwordHint": "Minimálně 8 znaků",
-    "passwordPlaceholder": "••••••••",
     "confirmPasswordLabel": "Potvrdit heslo",
-    "confirmPasswordPlaceholder": "••••••••",
     "googleInstructions": "Jak získat přihlašovací údaje Google OAuth:",
     "googleStep1": "Přejděte na",
     "googleCloudConsole": "Google Cloud Console",
@@ -1381,9 +1371,7 @@
     "googleStep5": "Přidejte přesměrovací URI:",
     "googleStep6": "Zkopírujte níže uvedené ID klienta a tajemství klienta",
     "googleClientIdLabel": "ID klienta Google",
-    "googleClientIdPlaceholder": "xxxxx.apps.googleusercontent.com",
     "googleClientSecretLabel": "Tajemství klienta Google",
-    "googleClientSecretPlaceholder": "GOCSPX-xxxxx",
     "backToBasicInfo": "← Zpět na základní informace",
     "nextCustomize": "Další: Přizpůsobit →",
     "customizeHeading": "Přizpůsobte si svůj web",

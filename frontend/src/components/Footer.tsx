@@ -117,7 +117,7 @@ function Footer({ albums: _albums = [], externalLinks: _externalLinks = [], curr
                   target="_blank" 
                   className="footer-galleria-link"
                 >
-                  {t('footer.galleria')}
+                  Galleria
                 </a>
               </span>
             </div>

@@ -460,7 +460,7 @@ export default function SetupWizard() {
                   id="authorizedEmail"
                   value={authorizedEmail}
                   onChange={(e) => setAuthorizedEmail(e.target.value)}
-                  placeholder={t('oobe.emailPlaceholder')}
+                  placeholder="john@example.com"
                   required
                   autoFocus
                 />
@@ -513,7 +513,7 @@ export default function SetupWizard() {
                       id="adminName"
                       value={adminName}
                       onChange={(e) => setAdminName(e.target.value)}
-                      placeholder={t('oobe.fullNamePlaceholder')}
+                      placeholder="John Doe"
                       required
                     />
                   </div>
@@ -543,7 +543,7 @@ export default function SetupWizard() {
                       id="adminPasswordConfirm"
                       value={adminPasswordConfirm}
                       onChange={(e) => setAdminPasswordConfirm(e.target.value)}
-                      placeholder={t('oobe.confirmPasswordPlaceholder')}
+                      placeholder="••••••••"
                       minLength={8}
                       required
                     />
@@ -576,7 +576,7 @@ export default function SetupWizard() {
                       id="googleClientId"
                       value={googleClientId}
                       onChange={(e) => setGoogleClientId(e.target.value)}
-                      placeholder={t('oobe.googleClientIdPlaceholder')}
+                      placeholder="xxxxx.apps.googleusercontent.com"
                       required
                     />
                   </div>
@@ -590,7 +590,7 @@ export default function SetupWizard() {
                       id="googleClientSecret"
                       value={googleClientSecret}
                       onChange={(e) => setGoogleClientSecret(e.target.value)}
-                      placeholder={t('oobe.googleClientSecretPlaceholder')}
+                      placeholder="GOCSPX-xxxxx"
                       required
                     />
                   </div>

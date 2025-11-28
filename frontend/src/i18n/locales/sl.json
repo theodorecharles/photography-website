@@ -86,7 +86,6 @@
   "footer": {
     "license": "Licenca",
     "poweredBy": "Poganja",
-    "galleria": "Galerija",
     "signIn": "Skrbnik"
   },
   "album": {
@@ -1190,7 +1189,6 @@
     "title": "Pošlji testno e-pošto",
     "description": "Vnesite e-poštni naslov za pošiljanje testnega sporočila in preverite, ali vaša SMTP konfiguracija deluje pravilno.",
     "emailLabel": "E-poštni naslov",
-    "emailPlaceholder": "your@email.com",
     "close": "Zapri",
     "sendButton": "Pošlji testno e-pošto",
     "sending": "Pošiljanje...",
@@ -1300,11 +1298,7 @@
     "cancel": "Prekliči",
     "save": "Shrani",
     "saving": "Shranjevanje...",
-    "hostPlaceholder": "smtp.gmail.com",
-    "usernamePlaceholder": "your-email@gmail.com",
-    "passwordPlaceholder": "Geslo aplikacije ali geslo SMTP",
-    "fromNamePlaceholder": "Fotografija stran",
-    "fromAddressPlaceholder": "noreply@yoursite.com"
+    "passwordPlaceholder": "Geslo aplikacije ali geslo SMTP"
   },
   "analyticsSettings": {
     "title": "Analitika",
@@ -1357,7 +1351,6 @@
     "accountDescription": "Nastavite svoj račun za dostop do skrbniške plošče",
     "emailLabel": "Vaš e-poštni naslov",
     "emailHint": "To bo vaš prijavni e-poštni naslov",
-    "emailPlaceholder": "john@example.com",
     "authMethodLabel": "Izberite način avtentikacije",
     "authMethodHint": "Kako želite prijaviti?",
     "authMethodPassword": "Geslo",
@@ -1366,12 +1359,9 @@
     "authMethodGoogleDescription": "Prijavite se z vašim Google računom",
     "fullNameLabel": "Vaše polno ime",
     "fullNameHint": "To bo prikazano v vašem profilu",
-    "fullNamePlaceholder": "John Doe",
     "passwordLabel": "Geslo",
     "passwordHint": "Najmanj 8 znakov",
-    "passwordPlaceholder": "••••••••",
     "confirmPasswordLabel": "Potrdi geslo",
-    "confirmPasswordPlaceholder": "••••••••",
     "googleInstructions": "Kako pridobiti Google OAuth poverilnice:",
     "googleStep1": "Pojdi na",
     "googleCloudConsole": "Google Cloud Console",
@@ -1381,9 +1371,7 @@
     "googleStep5": "Dodaj preusmeritveni URI:",
     "googleStep6": "Kopiraj spodaj ID odjemalca in skrivnost odjemalca",
     "googleClientIdLabel": "Google ID odjemalca",
-    "googleClientIdPlaceholder": "xxxxx.apps.googleusercontent.com",
     "googleClientSecretLabel": "Google skrivnost odjemalca",
-    "googleClientSecretPlaceholder": "GOCSPX-xxxxx",
     "backToBasicInfo": "← Nazaj na Osnovne informacije",
     "nextCustomize": "Naprej: Prilagodi →",
     "customizeHeading": "Prilagodi svojo stran",

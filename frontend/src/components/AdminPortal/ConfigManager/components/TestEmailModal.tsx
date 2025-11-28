@@ -82,7 +82,7 @@ export const TestEmailModal: React.FC<TestEmailModalProps> = ({ onClose }) => {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder={t('testEmailModal.emailPlaceholder')}
+              placeholder="your@email.com"
               className="branding-input"
               style={{ width: '100%' }}
               disabled={loading}

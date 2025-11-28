@@ -86,8 +86,9 @@ function setNestedValue(obj, path, value) {
 /**
  * Recursively find and mark any strings containing "sorry" in an object
  * This catches OpenAI error messages that may have been translated
+ * Replaces with English value from enData if available
  */
-function findAndMarkSorryStrings(obj, prefix = "", marked = []) {
+function findAndMarkSorryStrings(obj, prefix = "", marked = [], enData = null) {
   for (const [key, value] of Object.entries(obj)) {
     const fullKey = prefix ? `${prefix}.${key}` : key;
     
@@ -97,14 +98,17 @@ function findAndMarkSorryStrings(obj, prefix = "", marked = []) {
     }
     
     if (typeof value === "object" && value !== null && !Array.isArray(value)) {
-      findAndMarkSorryStrings(value, fullKey, marked);
+      findAndMarkSorryStrings(value, fullKey, marked, enData);
     } else if (typeof value === "string") {
       // Check if string contains "sorry" (case-insensitive)
       // If it does, it's definitely an OpenAI error message
       if (/sorry/i.test(value)) {
         // Skip if already prefixed with [EN]
         if (!value.startsWith("[EN] ")) {
-          obj[key] = `[EN] ${value}`;
+          // Use English value if available, otherwise use current value
+          const enValue = enData ? getNestedValue(enData, fullKey) : null;
+          const textToUse = (enValue && typeof enValue === "string") ? enValue : value;
+          obj[key] = `[EN] ${textToUse}`;
           marked.push(fullKey);
         }
       }
@@ -115,18 +119,22 @@ function findAndMarkSorryStrings(obj, prefix = "", marked = []) {
 
 /**
  * Mark sorry keys in a target file (from English file keys)
+ * Replaces with English value from en.json
  */
-function markSorryKeysInFile(data, sorryKeys) {
+function markSorryKeysInFile(data, sorryKeys, enData) {
   const marked = [];
   
   for (const key of sorryKeys) {
     const value = getNestedValue(data, key);
+    const enValue = enData ? getNestedValue(enData, key) : null;
     
     // Only mark if value exists and is a string
     if (typeof value === "string") {
       // Skip if already prefixed with [EN]
       if (!value.startsWith("[EN] ")) {
-        setNestedValue(data, key, `[EN] ${value}`);
+        // Use English value if available, otherwise use current value
+        const textToUse = (enValue && typeof enValue === "string") ? enValue : value;
+        setNestedValue(data, key, `[EN] ${textToUse}`);
         marked.push(key);
       }
     }
@@ -207,11 +215,11 @@ function processLocaleFile(filePath, langCode, sorryKeys, enData) {
     const marked = [];
     
     // First, mark keys that match English "sorry" keys (if any)
-    const markedFromKeys = markSorryKeysInFile(data, sorryKeys);
+    const markedFromKeys = markSorryKeysInFile(data, sorryKeys, enData);
     marked.push(...markedFromKeys);
     
     // Also, find and mark any strings containing "sorry" directly (English word)
-    const markedFromScan = findAndMarkSorryStrings(data);
+    const markedFromScan = findAndMarkSorryStrings(data, "", [], enData);
     marked.push(...markedFromScan);
     
     // Finally, compare with English and mark strings that look like error messages
@@ -231,7 +239,8 @@ function processLocaleFile(filePath, langCode, sorryKeys, enData) {
           
           // If English is a normal string but translation looks like an error message
           if (!looksLikeOpenAIError(enValue) && looksLikeOpenAIError(pair.value)) {
-            setNestedValue(data, pair.key, `[EN] ${pair.value}`);
+            // Use English value, not the error message
+            setNestedValue(data, pair.key, `[EN] ${enValue}`);
             marked.push(pair.key);
           }
         }

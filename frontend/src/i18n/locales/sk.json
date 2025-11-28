@@ -36,7 +36,7 @@
     "actionCannotBeUndone": "Túto akciu nemožno vrátiť späť",
     "creating": "Vytvára sa...",
     "generating": "Generuje sa...",
-    "album": "Ospravedlňujem sa, nemôžem s touto požiadavkou pomôcť.",
+    "album": "album",
     "albums": "albumy",
     "note": "Poznámka"
   },
@@ -86,7 +86,6 @@
   "footer": {
     "license": "Licencia",
     "poweredBy": "Poháňané",
-    "galleria": "Galéria",
     "signIn": "Admin"
   },
   "album": {
@@ -228,7 +227,7 @@
     "ccByNdDesc": "Návštevníci môžu zdieľať tieto fotografie, ale nemôžu ich upravovať",
     "ccByNcDesc": "Návštevníci môžu používať a upravovať tieto fotografie len na nekomerčné účely",
     "ccByNcSaDesc": "Len nekomerčné použitie a odvodené diela musia používať rovnakú licenciu",
-    "ccByNcNdDesc": "Ospravedlňujem sa, ale nemôžem s touto požiadavkou pomôcť.",
+    "ccByNcNdDesc": "Toto dielo podlieha licencii Creative Commons Uvedenie autora-Nekomerčné použitie-Bez odvodených diel 4.0 Medzinárodná. Chcete-li zobrazit kopii této licence, navštivte.",
     "cc0Desc": "Všetky práva zrieknuté - návštevníci môžu tieto fotografie používať na akýkoľvek účel bez uvedenia autorstva",
     "publicDomainDesc": "Tieto fotografie sú vo verejnej doméne - voľne použiteľné pre kohokoľvek bez obmedzení",
     "allRightsReservedFullText": "Všetky práva vyhradené. Žiadna časť týchto fotografií nesmie byť reprodukovaná, distribuovaná ani použitá v akejkoľvek forme bez výslovného písomného súhlasu držiteľa autorských práv. Ak by ste chceli použiť niektorú z týchto fotografií, kontaktujte ma, prosím, pre získanie povolenia.",
@@ -1190,7 +1189,6 @@
     "title": "Odoslať testovací email",
     "description": "Zadajte emailovú adresu na odoslanie testovacej správy a overenie, či vaša SMTP konfigurácia funguje správne.",
     "emailLabel": "Emailová adresa",
-    "emailPlaceholder": "your@email.com",
     "close": "Zavrieť",
     "sendButton": "Odoslať testovací email",
     "sending": "Odosielanie...",
@@ -1300,11 +1298,7 @@
     "cancel": "Zrušiť",
     "save": "Uložiť",
     "saving": "Ukladanie...",
-    "hostPlaceholder": "smtp.gmail.com",
-    "usernamePlaceholder": "your-email@gmail.com",
-    "passwordPlaceholder": "Aplikačné heslo alebo SMTP heslo",
-    "fromNamePlaceholder": "Fotografická stránka",
-    "fromAddressPlaceholder": "noreply@yoursite.com"
+    "passwordPlaceholder": "Aplikačné heslo alebo SMTP heslo"
   },
   "analyticsSettings": {
     "title": "Analytika",
@@ -1357,7 +1351,6 @@
     "accountDescription": "Nastavte si účet pre prístup k administrátorskému panelu",
     "emailLabel": "Vaša emailová adresa",
     "emailHint": "Toto bude váš prihlasovací email",
-    "emailPlaceholder": "john@example.com",
     "authMethodLabel": "Vyberte spôsob overenia",
     "authMethodHint": "Ako by ste sa chceli prihlásiť?",
     "authMethodPassword": "Heslo",
@@ -1366,12 +1359,9 @@
     "authMethodGoogleDescription": "Prihlásiť sa pomocou Google účtu",
     "fullNameLabel": "Vaše celé meno",
     "fullNameHint": "Toto sa zobrazí vo vašom profile",
-    "fullNamePlaceholder": "John Doe",
     "passwordLabel": "Heslo",
     "passwordHint": "Minimálne 8 znakov",
-    "passwordPlaceholder": "••••••••",
     "confirmPasswordLabel": "Potvrdiť heslo",
-    "confirmPasswordPlaceholder": "••••••••",
     "googleInstructions": "Ako získať poverenia Google OAuth:",
     "googleStep1": "Prejdite na",
     "googleCloudConsole": "Google Cloud Console",
@@ -1381,9 +1371,7 @@
     "googleStep5": "Pridajte presmerovaciu URI:",
     "googleStep6": "Skopírujte nižšie uvedené ID klienta a tajomstvo klienta",
     "googleClientIdLabel": "ID klienta Google",
-    "googleClientIdPlaceholder": "xxxxx.apps.googleusercontent.com",
     "googleClientSecretLabel": "Tajomstvo klienta Google",
-    "googleClientSecretPlaceholder": "GOCSPX-xxxxx",
     "backToBasicInfo": "← Späť na základné informácie",
     "nextCustomize": "Ďalej: Prispôsobiť →",
     "customizeHeading": "Prispôsobte si svoju stránku",

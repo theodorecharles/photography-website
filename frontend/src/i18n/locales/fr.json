@@ -66,7 +66,6 @@
   "footer": {
     "license": "Licence",
     "poweredBy": "Propulsé par",
-    "galleria": "Galleria",
     "signIn": "Se connecter"
   },
   "album": {
@@ -1154,11 +1153,7 @@
     "cancel": "Annuler",
     "save": "Enregistrer",
     "saving": "Enregistrement...",
-    "hostPlaceholder": "smtp.gmail.com",
-    "usernamePlaceholder": "votre-email@gmail.com",
-    "passwordPlaceholder": "Mot de passe d'application ou mot de passe SMTP",
-    "fromNamePlaceholder": "Site de photographie",
-    "fromAddressPlaceholder": "noreply@yoursite.com"
+    "passwordPlaceholder": "Mot de passe d'application ou mot de passe SMTP"
   },
   "analyticsSettings": {
     "title": "ANALYTIQUE",
@@ -1225,7 +1220,6 @@
     "accountDescription": "Configurez votre compte pour accéder au panneau d'administration",
     "emailLabel": "Votre adresse e-mail",
     "emailHint": "Ceci sera votre e-mail de connexion",
-    "emailPlaceholder": "john@example.com",
     "authMethodLabel": "Choisissez la méthode d'authentification",
     "authMethodHint": "Comment souhaitez-vous vous connecter ?",
     "authMethodPassword": "Mot de passe",
@@ -1234,12 +1228,9 @@
     "authMethodGoogleDescription": "Connectez-vous avec votre compte Google",
     "fullNameLabel": "Votre nom complet",
     "fullNameHint": "Cela sera affiché dans votre profil",
-    "fullNamePlaceholder": "John Doe",
     "passwordLabel": "Mot de passe",
     "passwordHint": "Minimum 8 caractères",
-    "passwordPlaceholder": "••••••••",
     "confirmPasswordLabel": "Confirmer le mot de passe",
-    "confirmPasswordPlaceholder": "••••••••",
     "googleInstructions": "Comment obtenir des identifiants Google OAuth :",
     "googleStep1": "Allez à",
     "googleCloudConsole": "Google Cloud Console",
@@ -1249,9 +1240,7 @@
     "googleStep5": "Ajouter l'URI de redirection :",
     "googleStep6": "Copier l'ID client et le secret client ci-dessous",
     "googleClientIdLabel": "ID client Google",
-    "googleClientIdPlaceholder": "xxxxx.apps.googleusercontent.com",
     "googleClientSecretLabel": "Secret client Google",
-    "googleClientSecretPlaceholder": "GOCSPX-xxxxx",
     "backToBasicInfo": "← Retour aux informations de base",
     "nextCustomize": "Suivant : Personnaliser →",
     "customizeHeading": "Personnaliser votre site",
@@ -1332,7 +1321,6 @@
     "title": "Envoyer un e-mail de test",
     "description": "Entrez une adresse e-mail pour envoyer un message de test et vérifier que votre configuration SMTP fonctionne correctement.",
     "emailLabel": "Adresse e-mail",
-    "emailPlaceholder": "votre@email.com",
     "close": "Fermer",
     "sendButton": "Envoyer un e-mail de test",
     "sending": "Envoi...",

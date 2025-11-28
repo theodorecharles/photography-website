@@ -66,7 +66,6 @@
   "footer": {
     "license": "Licencja",
     "poweredBy": "Zasilane przez",
-    "galleria": "Galeria",
     "signIn": "Zaloguj się"
   },
   "album": {
@@ -1148,11 +1147,7 @@
     "cancel": "Anuluj",
     "save": "Zapisz",
     "saving": "Zapisywanie...",
-    "hostPlaceholder": "smtp.gmail.com",
-    "usernamePlaceholder": "twoj-email@gmail.com",
-    "passwordPlaceholder": "Hasło aplikacji lub hasło SMTP",
-    "fromNamePlaceholder": "Strona fotograficzna",
-    "fromAddressPlaceholder": "noreply@twojastrona.com"
+    "passwordPlaceholder": "Hasło aplikacji lub hasło SMTP"
   },
   "analyticsSettings": {
     "title": "Analityka",
@@ -1183,7 +1178,7 @@
     "disableMfa": "Wyłącz MFA"
   },
   "seo": {
-    "homepageTitle": "{{siteName}} - Galleria",
+    "homepageTitle": "{{siteName}} - Galeria",
     "homepageDescription": "Portfolio fotograficzne autorstwa {{siteName}}. Zobacz oszałamiające kolekcje fotografii krajobrazowej, portretowej i kreatywnej.",
     "albumTitle": "{{albumName}} - {{siteName}}",
     "albumDescription": "Zobacz zdjęcia {{albumName}} z portfolio fotograficznego {{siteName}}.",
@@ -1203,7 +1198,7 @@
     "rateLimitDescription": "Proszę zwolnić tempo i spróbować ponownie."
   },
   "oobe": {
-    "title": "Galleria",
+    "title": "Galeria",
     "subtitle": "Skonfiguruj swoje portfolio w zaledwie kilku krokach",
     "language": "Język",
     "selectLanguage": "Wybierz język",
@@ -1225,7 +1220,6 @@
     "accountDescription": "Skonfiguruj swoje konto, aby uzyskać dostęp do panelu administracyjnego",
     "emailLabel": "Twój adres e-mail",
     "emailHint": "To będzie twój e-mail do logowania",
-    "emailPlaceholder": "john@example.com",
     "authMethodLabel": "Wybierz metodę uwierzytelniania",
     "authMethodHint": "Jak chcesz się zalogować?",
     "authMethodPassword": "Hasło",
@@ -1234,12 +1228,9 @@
     "authMethodGoogleDescription": "Zaloguj się za pomocą swojego konta Google",
     "fullNameLabel": "Twoje pełne imię i nazwisko",
     "fullNameHint": "To będzie wyświetlane w Twoim profilu",
-    "fullNamePlaceholder": "John Doe",
     "passwordLabel": "Hasło",
     "passwordHint": "Minimum 8 znaków",
-    "passwordPlaceholder": "••••••••",
     "confirmPasswordLabel": "Potwierdź hasło",
-    "confirmPasswordPlaceholder": "••••••••",
     "googleInstructions": "Jak uzyskać dane uwierzytelniające Google OAuth:",
     "googleStep1": "Przejdź do",
     "googleCloudConsole": "Google Cloud Console",
@@ -1249,9 +1240,7 @@
     "googleStep5": "Dodaj URI przekierowania:",
     "googleStep6": "Skopiuj identyfikator klienta i tajny klucz klienta poniżej",
     "googleClientIdLabel": "Identyfikator klienta Google",
-    "googleClientIdPlaceholder": "xxxxx.apps.googleusercontent.com",
     "googleClientSecretLabel": "Tajny klucz klienta Google",
-    "googleClientSecretPlaceholder": "GOCSPX-xxxxx",
     "backToBasicInfo": "← Wróć do podstawowych informacji",
     "nextCustomize": "Dalej: Dostosuj →",
     "customizeHeading": "Dostosuj swoją stronę",
@@ -1332,7 +1321,6 @@
     "title": "Wyślij wiadomość testową",
     "description": "Wprowadź adres e-mail, aby wysłać wiadomość testową i zweryfikować, czy Twoja konfiguracja SMTP działa poprawnie.",
     "emailLabel": "Adres e-mail",
-    "emailPlaceholder": "twoj@email.com",
     "close": "Zamknij",
     "sendButton": "Wyślij wiadomość testową",
     "sending": "Wysyłanie...",

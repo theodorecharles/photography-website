@@ -66,7 +66,6 @@
   "footer": {
     "license": "Lizenz",
     "poweredBy": "Betrieben von",
-    "galleria": "Galleria",
     "signIn": "Anmelden"
   },
   "album": {
@@ -1154,11 +1153,7 @@
     "cancel": "Abbrechen",
     "save": "Speichern",
     "saving": "Speichere...",
-    "hostPlaceholder": "smtp.gmail.com",
-    "usernamePlaceholder": "your-email@gmail.com",
-    "passwordPlaceholder": "App-Passwort oder SMTP-Passwort",
-    "fromNamePlaceholder": "Fotografie-Website",
-    "fromAddressPlaceholder": "noreply@yoursite.com"
+    "passwordPlaceholder": "App-Passwort oder SMTP-Passwort"
   },
   "analyticsSettings": {
     "title": "ANALYSE",
@@ -1183,7 +1178,7 @@
     "endpointPlaceholder": "https://api.openobserve.ai"
   },
   "seo": {
-    "homepageTitle": "{{siteName}} - Galleria",
+    "homepageTitle": "{{siteName}} - Galerie",
     "homepageDescription": "Fotografie-Portfolio von {{siteName}}. Sehen Sie sich beeindruckende Landschafts-, Porträt- und kreative Fotografie-Kollektionen an.",
     "albumTitle": "{{albumName}} - {{siteName}}",
     "albumDescription": "Sehen Sie sich die {{albumName}}-Fotos aus dem Fotografie-Portfolio von {{siteName}} an.",
@@ -1203,7 +1198,7 @@
     "rateLimitDescription": "Bitte verlangsamen Sie sich und versuchen Sie es erneut."
   },
   "oobe": {
-    "title": "Galleria",
+    "title": "Galerie",
     "subtitle": "Lass uns dein Portfolio in nur wenigen Schritten einrichten",
     "language": "Sprache",
     "selectLanguage": "Sprache auswählen",
@@ -1225,7 +1220,6 @@
     "accountDescription": "Richten Sie Ihr Konto ein, um auf das Admin-Panel zuzugreifen",
     "emailLabel": "Ihre E-Mail-Adresse",
     "emailHint": "Dies wird Ihre Anmelde-E-Mail sein",
-    "emailPlaceholder": "john@example.com",
     "authMethodLabel": "Wählen Sie die Authentifizierungsmethode",
     "authMethodHint": "Wie möchten Sie sich anmelden?",
     "authMethodPassword": "Passwort",
@@ -1234,12 +1228,9 @@
     "authMethodGoogleDescription": "Mit Ihrem Google-Konto anmelden",
     "fullNameLabel": "Ihr vollständiger Name",
     "fullNameHint": "Dies wird in deinem Profil angezeigt",
-    "fullNamePlaceholder": "John Doe",
     "passwordLabel": "Passwort",
     "passwordHint": "Mindestens 8 Zeichen",
-    "passwordPlaceholder": "••••••••",
     "confirmPasswordLabel": "Passwort bestätigen",
-    "confirmPasswordPlaceholder": "••••••••",
     "googleInstructions": "So erhältst du Google OAuth-Anmeldeinformationen:",
     "googleStep1": "Gehe zu",
     "googleCloudConsole": "Google Cloud Console",
@@ -1249,9 +1240,7 @@
     "googleStep5": "Fügen Sie die Umleitungs-URI hinzu:",
     "googleStep6": "Kopieren Sie die Client-ID und das Client-Geheimnis unten",
     "googleClientIdLabel": "Google Client-ID",
-    "googleClientIdPlaceholder": "xxxxx.apps.googleusercontent.com",
     "googleClientSecretLabel": "Google Client-Geheimnis",
-    "googleClientSecretPlaceholder": "GOCSPX-xxxxx",
     "backToBasicInfo": "← Zurück zu den Basisinformationen",
     "nextCustomize": "Weiter: Anpassen →",
     "customizeHeading": "Passen Sie Ihre Seite an",
@@ -1332,7 +1321,6 @@
     "title": "Test-E-Mail senden",
     "description": "Geben Sie eine E-Mail-Adresse ein, um eine Testnachricht zu senden und zu überprüfen, ob Ihre SMTP-Konfiguration korrekt funktioniert.",
     "emailLabel": "E-Mail-Adresse",
-    "emailPlaceholder": "deine@email.com",
     "close": "Schließen",
     "sendButton": "Test-E-Mail senden",
     "sending": "Wird gesendet...",
