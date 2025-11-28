@@ -424,7 +424,7 @@
       "pageDescription": "Tilpass nettstedets visuelle identitet og generelle innstillinger"
     },
     "notificationEvents": {
-      "title": "I'm sorry, I can't assist with that request.",
+      "title": "Hendelser",
       "description": "Konfigurer varslingsutløsere",
       "pageDescription": "Velg hvilke hendelser som skal utløse push-varsler"
     },

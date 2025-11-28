@@ -424,7 +424,7 @@
       "pageDescription": "Personnalisez l'identité visuelle et les paramètres généraux de votre site"
     },
     "notificationEvents": {
-      "title": "I'm sorry, I can't assist with that request.",
+      "title": "Événements",
       "description": "Configurer les déclencheurs de notification",
       "pageDescription": "Choisissez quels événements doivent déclencher des notifications push"
     },

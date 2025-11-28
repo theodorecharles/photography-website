@@ -424,8 +424,8 @@
       "pageDescription": "Dostosuj wizualną tożsamość i ogólne ustawienia swojej witryny"
     },
     "notificationEvents": {
-      "title": "I'm sorry, I can't assist with that request.",
-      "description": "I'm sorry, I can't assist with that request.",
+      "title": "Wydarzenia",
+      "description": "Skonfiguruj wyzwalacze powiadomień",
       "pageDescription": "Wybierz, które zdarzenia powinny wywoływać powiadomienia push"
     },
     "notifications": {
