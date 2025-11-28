@@ -56,7 +56,7 @@
     "navigationHint": "← tekan kekunci anak panah untuk navigasi →"
   },
   "seo": {
-    "homepageTitle": "{{siteName}} - Galleria",
+    "homepageTitle": "{{siteName}} - Galeri",
     "homepageDescription": "Portfolio fotografi oleh {{siteName}}. Lihat koleksi fotografi landskap, potret, dan kreatif yang menakjubkan.",
     "albumTitle": "{{albumName}} - {{siteName}}",
     "albumDescription": "Lihat foto {{albumName}} dari portfolio fotografi {{siteName}}.",
@@ -86,7 +86,7 @@
   "footer": {
     "license": "Lesen",
     "poweredBy": "Dikuasakan oleh",
-    "galleria": "Galleria",
+    "galleria": "Galeri",
     "signIn": "Admin"
   },
   "album": {
@@ -673,7 +673,7 @@
     "logLevelSilent": "Senyap",
     "logLevelError": "Ralat",
     "logLevelWarn": "Amaran",
-    "logLevelInfo": "Info",
+    "logLevelInfo": "Maklumat",
     "logLevelDebug": "Debug",
     "logLevelVerbose": "Terperinci",
     "logLevelTrace": "Jejak",

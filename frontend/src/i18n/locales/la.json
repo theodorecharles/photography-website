@@ -1413,7 +1413,7 @@
     "authenticationConfigured": "Authenticatio configurata",
     "redirectToSignIn": "Ad signum in redirectionem eris",
     "uploadFirstAlbum": "Tunc primum album tuum upload potes!",
-    "setupError": "Setup Error",
+    "setupError": "Error Occursus",
     "tryAgain": "Iterum Conare",
     "errorInvalidEmail": "Quaeso insere validum electronicae inscriptionem",
     "errorPasswordMismatch": "Tesserae non conveniunt",
@@ -1432,7 +1432,7 @@
     "disable": "Deactivate",
     "blocked": "Notificationes a navigatro obstructae. Reprehende tua navigatri occasus.",
     "subscribePrompt": "Subscribe ut notificationes recipias",
-    "subscribe": "Subscribe",
+    "subscribe": "Subscribere",
     "settings": {
       "configureEvents": "⚙️ Configure Eventus",
       "cancel": "Cancella",
