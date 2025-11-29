@@ -1266,7 +1266,7 @@
     "disabledDescription": "การลงชื่อเข้าใช้ด้วย Google จะถูกซ่อนจากหน้าลงชื่อเข้าใช้",
     "googleClientId": "Google Client ID",
     "googleClientSecret": "Google Client Secret",
-    "sessionSecret": "Session Secret",
+    "sessionSecret": "ความลับของเซสชัน",
     "authorizedEmails": "อีเมลที่ได้รับอนุญาต",
     "addEmail": "+ เพิ่มอีเมล",
     "cancel": "ยกเลิก",

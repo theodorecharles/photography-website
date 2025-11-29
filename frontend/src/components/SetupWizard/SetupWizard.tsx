@@ -528,7 +528,7 @@ export default function SetupWizard() {
                       id="adminPassword"
                       value={adminPassword}
                       onChange={(e) => setAdminPassword(e.target.value)}
-                      placeholder={t('oobe.passwordPlaceholder')}
+                      placeholder="••••••••"
                       minLength={8}
                       required
                     />

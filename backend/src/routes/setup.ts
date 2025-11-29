@@ -189,11 +189,18 @@ router.get("/status", async (req: Request, res: Response): Promise<void> => {
 
     // Only send installation_started event if setup is NOT complete (actual OOBE)
     if (!setupComplete) {
-      // Capture origin URL from request
-      const protocol = req.headers["x-forwarded-proto"] || (req.secure ? "https" : "http");
-      const hostHeader = req.headers["x-forwarded-host"] || req.headers["host"] || "unknown";
+      // Capture origin URL from request - try multiple header sources
+      const protocol = req.headers["x-forwarded-proto"] ||
+                      (req.headers["x-forwarded-ssl"] === "on" ? "https" : undefined) ||
+                      (req.secure ? "https" : "http");
+      const hostHeader = req.headers["x-forwarded-host"] ||
+                        req.headers["x-original-host"] ||
+                        req.headers["host"] ||
+                        "unknown";
       const host = Array.isArray(hostHeader) ? hostHeader[0] : hostHeader;
       const origin = `${protocol}://${host}`;
+
+      info(`[Setup] Sending installation_started event from origin: ${origin}`);
 
       sendInstallationEvent('installation_started', {
         origin_url: origin,
