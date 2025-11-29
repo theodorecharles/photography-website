@@ -189,6 +189,17 @@ router.get("/status", async (req: Request, res: Response): Promise<void> => {
 
     // Only send installation_started event if setup is NOT complete (actual OOBE)
     if (!setupComplete) {
+      // Debug: Log all headers to diagnose origin detection issues
+      info('[Setup] Request headers:', {
+        host: req.headers.host,
+        'x-forwarded-host': req.headers['x-forwarded-host'],
+        'x-original-host': req.headers['x-original-host'],
+        'x-forwarded-proto': req.headers['x-forwarded-proto'],
+        'x-forwarded-ssl': req.headers['x-forwarded-ssl'],
+        secure: req.secure,
+        referer: req.headers.referer || req.headers.referrer,
+      });
+
       // Capture origin URL from request - try multiple header sources
       const protocol = req.headers["x-forwarded-proto"] ||
                       (req.headers["x-forwarded-ssl"] === "on" ? "https" : undefined) ||
