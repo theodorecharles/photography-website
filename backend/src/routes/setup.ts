@@ -143,10 +143,6 @@ async function downloadGeoIPDatabase(dataDir: string): Promise<boolean> {
  */
 router.get("/status", async (req: Request, res: Response): Promise<void> => {
   try {
-    // Send installation_started event if not already sent
-    sendInstallationEvent('installation_started').catch(err => {
-      warn('[Setup] Failed to send installation_started event:', err);
-    });
     const projectRoot = path.join(__dirname, "../../../");
     const dataDir = process.env.DATA_DIR || path.join(projectRoot, "data");
     const configPath = path.join(dataDir, "config.json");
@@ -190,6 +186,22 @@ router.get("/status", async (req: Request, res: Response): Promise<void> => {
 
     const setupComplete =
       checks.configExists && checks.databaseExists && checks.isConfigured;
+
+    // Only send installation_started event if setup is NOT complete (actual OOBE)
+    if (!setupComplete) {
+      // Capture origin URL from request
+      const protocol = req.headers["x-forwarded-proto"] || (req.secure ? "https" : "http");
+      const hostHeader = req.headers["x-forwarded-host"] || req.headers["host"] || "unknown";
+      const host = Array.isArray(hostHeader) ? hostHeader[0] : hostHeader;
+      const origin = `${protocol}://${host}`;
+
+      sendInstallationEvent('installation_started', {
+        origin_url: origin,
+        referrer: req.headers.referer || req.headers.referrer || 'direct',
+      }).catch(err => {
+        warn('[Setup] Failed to send installation_started event:', err);
+      });
+    }
 
     res.json({
       setupComplete,
@@ -607,10 +619,14 @@ router.post(
       // Password auth doesn't need restart - config reloaded dynamically
       const requiresRestart = authMethod === "google";
 
-      // Send setup_complete event
+      // Send setup_complete event with origin URL
+      const origin = `${protocol}://${host}`;
       sendInstallationEvent('setup_complete', {
         auth_method: authMethod,
         site_name: siteName,
+        origin_url: origin,
+        frontend_url: frontendUrl,
+        backend_url: backendUrl,
       }).catch(err => {
         warn('[Setup] Failed to send setup_complete event:', err);
       });
