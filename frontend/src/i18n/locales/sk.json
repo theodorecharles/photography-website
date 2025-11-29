@@ -1266,7 +1266,7 @@
     "disabledDescription": "Prihlásenie cez Google bude skryté z prihlasovacej stránky",
     "googleClientId": "Google Client ID",
     "googleClientSecret": "Google Client Secret",
-    "sessionSecret": "Session Secret",
+    "sessionSecret": "Tajomstvo relácie",
     "authorizedEmails": "Autorizované e-maily",
     "addEmail": "+ Pridať e-mail",
     "cancel": "Zrušiť",

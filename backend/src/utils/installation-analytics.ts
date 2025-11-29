@@ -10,6 +10,9 @@ import { info, warn, error } from './logger.js';
 
 const INSTALL_ANALYTICS_URL = 'https://galleria.website/api/analytics/install';
 
+// In-memory tracking to prevent race conditions when multiple requests come in simultaneously
+const inFlightEvents = new Set<string>();
+
 /**
  * Get the path to the installation analytics tracking file
  */
@@ -80,38 +83,52 @@ export async function sendInstallationEvent(
   eventData?: Record<string, any>
 ): Promise<boolean> {
   try {
-    // Check if event has already been sent
+    // Check if event has already been sent (file-based tracking)
     if (hasInstallationEventBeenSent(eventType)) {
       info(`[Installation Analytics] Event ${eventType} already sent, skipping`);
       return false;
     }
 
-    // Prepare the event payload
-    const payload = {
-      event_type: eventType,
-      timestamp: new Date().toISOString(),
-      ...eventData,
-    };
-
-    // Send to central analytics server
-    const response = await fetch(INSTALL_ANALYTICS_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      warn(`[Installation Analytics] Failed to send ${eventType}:`, response.status, errorText);
+    // Check if event is currently in-flight to prevent race conditions
+    if (inFlightEvents.has(eventType)) {
+      info(`[Installation Analytics] Event ${eventType} already in-flight, skipping`);
       return false;
     }
 
-    // Mark event as sent in file
-    markInstallationEventSent(eventType);
-    info(`[Installation Analytics] Successfully sent ${eventType} event`);
-    return true;
+    // Mark event as in-flight
+    inFlightEvents.add(eventType);
+
+    try {
+      // Prepare the event payload
+      const payload = {
+        event_type: eventType,
+        timestamp: new Date().toISOString(),
+        ...eventData,
+      };
+
+      // Send to central analytics server
+      const response = await fetch(INSTALL_ANALYTICS_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        warn(`[Installation Analytics] Failed to send ${eventType}:`, response.status, errorText);
+        return false;
+      }
+
+      // Mark event as sent in file
+      markInstallationEventSent(eventType);
+      info(`[Installation Analytics] Successfully sent ${eventType} event`);
+      return true;
+    } finally {
+      // Always remove from in-flight set, even if sending failed
+      inFlightEvents.delete(eventType);
+    }
   } catch (err) {
     error(`[Installation Analytics] Error sending ${eventType}:`, err);
     return false;
