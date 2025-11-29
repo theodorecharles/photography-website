@@ -151,7 +151,29 @@ function getOpenAIKey() {
 }
 
 /**
- * Translate placeholders for a language
+ * Check if the response is an apology or refusal from OpenAI
+ */
+function isApologyResponse(text) {
+  const lowerText = text.toLowerCase();
+  const apologyPatterns = [
+    "sorry",
+    "i can't",
+    "i cannot",
+    "i'm not able to",
+    "i am not able to",
+    "i don't have",
+    "i do not have",
+    "as an ai",
+    "i apologize",
+    "i'm unable",
+    "i am unable",
+  ];
+
+  return apologyPatterns.some(pattern => lowerText.includes(pattern));
+}
+
+/**
+ * Translate placeholders for a language with retry logic
  */
 async function translateLanguage(openai, langCode, langName, filePath) {
   try {
@@ -170,6 +192,7 @@ async function translateLanguage(openai, langCode, langName, filePath) {
     // Batch translate (max 50 at a time to avoid token limits)
     const batchSize = 50;
     let totalTranslated = 0;
+    const failedTranslations = [];
 
     for (let i = 0; i < placeholders.length; i += batchSize) {
       const batch = placeholders.slice(i, i + batchSize);
@@ -181,30 +204,94 @@ async function translateLanguage(openai, langCode, langName, filePath) {
 
 ${textList}`;
 
-      const response = await openai.chat.completions.create({
-        model: "gpt-4o",
-        messages: [{ role: "user", content: prompt }],
-        temperature: 0.3,
-      });
+      let translatedText = null;
+      let retryCount = 0;
+      const maxRetries = 3;
 
-      const translatedText = response.choices[0].message.content.trim();
-      const translations = translatedText
-        .split("\n")
-        .map((line) => line.replace(/^\d+\.\s*/, "").trim())
-        .filter((line) => line.length > 0);
+      // Retry loop for handling apology responses
+      while (retryCount < maxRetries) {
+        try {
+          const response = await openai.chat.completions.create({
+            model: "gpt-4o",
+            messages: [{ role: "user", content: prompt }],
+            temperature: 0.3,
+          });
 
-      // Apply translations
-      for (let j = 0; j < Math.min(translations.length, batch.length); j++) {
-        setNestedValue(data, batch[j].key, translations[j]);
-        totalTranslated++;
+          const responseText = response.choices[0].message.content.trim();
+
+          // Check if response is an apology
+          if (isApologyResponse(responseText)) {
+            retryCount++;
+            log(`  ⚠️  OpenAI returned an apology response (attempt ${retryCount}/${maxRetries})`, "yellow");
+            log(`     Response: ${responseText.substring(0, 100)}...`, "yellow");
+
+            if (retryCount < maxRetries) {
+              // Wait a bit before retrying
+              await new Promise(resolve => setTimeout(resolve, 1000 * retryCount));
+              continue;
+            } else {
+              // Max retries reached, log the failure
+              log(`  ✗ Failed after ${maxRetries} attempts - OpenAI refused to translate`, "red");
+              failedTranslations.push({
+                batch: batch.map(b => b.key),
+                reason: "OpenAI refusal",
+                response: responseText.substring(0, 200)
+              });
+              break;
+            }
+          }
+
+          // Success - valid translation received
+          translatedText = responseText;
+          break;
+
+        } catch (apiError) {
+          retryCount++;
+          log(`  ⚠️  API error (attempt ${retryCount}/${maxRetries}): ${apiError.message}`, "yellow");
+
+          if (retryCount < maxRetries) {
+            await new Promise(resolve => setTimeout(resolve, 1000 * retryCount));
+          } else {
+            throw apiError;
+          }
+        }
+      }
+
+      // Process translations if we got a valid response
+      if (translatedText) {
+        const translations = translatedText
+          .split("\n")
+          .map((line) => line.replace(/^\d+\.\s*/, "").trim())
+          .filter((line) => line.length > 0);
+
+        // Apply translations
+        for (let j = 0; j < Math.min(translations.length, batch.length); j++) {
+          setNestedValue(data, batch[j].key, translations[j]);
+          totalTranslated++;
+        }
       }
     }
 
     // Write back to file
     writeFileSync(filePath, JSON.stringify(data, null, 2) + "\n", "utf8");
 
-    log(`  ✓ Translated ${totalTranslated} string(s)`, "green");
-    return { success: true, translated: totalTranslated };
+    // Report results
+    if (failedTranslations.length > 0) {
+      log(`  ⚠️  Translated ${totalTranslated} string(s), ${failedTranslations.length} batch(es) failed`, "yellow");
+      failedTranslations.forEach(failure => {
+        log(`     Failed keys: ${failure.batch.join(", ")}`, "yellow");
+        log(`     Reason: ${failure.reason}`, "yellow");
+      });
+      return {
+        success: false,
+        translated: totalTranslated,
+        failed: failedTranslations.length,
+        failedDetails: failedTranslations
+      };
+    } else {
+      log(`  ✓ Translated ${totalTranslated} string(s)`, "green");
+      return { success: true, translated: totalTranslated };
+    }
   } catch (err) {
     log(`  ✗ Translation failed: ${err.message}`, "red");
     return { success: false, translated: 0, error: err.message };
@@ -267,10 +354,17 @@ async function main() {
     log(`\n${colors.cyan}${colors.bold}SUMMARY${colors.reset}`);
     log(`${colors.cyan}${"═".repeat(60)}${colors.reset}\n`);
 
+    let hasFailures = false;
+    const failureDetails = [];
+
     for (const dir of allResults) {
       const successful = dir.results.filter((r) => r.success).length;
       const totalTranslated = dir.results.reduce(
         (sum, r) => sum + r.translated,
+        0
+      );
+      const totalFailed = dir.results.reduce(
+        (sum, r) => sum + (r.failed || 0),
         0
       );
 
@@ -278,9 +372,44 @@ async function main() {
         `${dir.name}: ${successful}/${dir.results.length} languages, ${totalTranslated} strings translated`,
         totalTranslated > 0 ? "green" : "yellow"
       );
+
+      if (totalFailed > 0) {
+        hasFailures = true;
+        log(`  ⚠️  ${totalFailed} batch(es) failed due to OpenAI refusals`, "yellow");
+
+        // Collect failure details
+        dir.results.forEach(result => {
+          if (result.failedDetails && result.failedDetails.length > 0) {
+            failureDetails.push({
+              language: result.langName,
+              details: result.failedDetails
+            });
+          }
+        });
+      }
     }
 
-    log("\n✨ Translation complete!\n", "green");
+    if (hasFailures) {
+      log(`\n${colors.yellow}${colors.bold}FAILED TRANSLATIONS${colors.reset}`);
+      log(`${colors.yellow}${"═".repeat(60)}${colors.reset}\n`);
+
+      failureDetails.forEach(({ language, details }) => {
+        log(`Language: ${language}`, "yellow");
+        details.forEach((failure, idx) => {
+          log(`  Batch ${idx + 1}:`, "yellow");
+          log(`    Keys: ${failure.batch.join(", ")}`, "yellow");
+          log(`    OpenAI response: "${failure.response}"`, "yellow");
+        });
+        console.log();
+      });
+
+      log(`💡 Tip: The failed translations still have [EN] prefix. You can:`, "cyan");
+      log(`   1. Try running the script again`, "cyan");
+      log(`   2. Use interactive-translate.js to manually translate them`, "cyan");
+      log(`   3. Check if the content triggered OpenAI's content policy\n`, "cyan");
+    }
+
+    log(hasFailures ? "\n⚠️  Translation complete with some failures\n" : "\n✨ Translation complete!\n", hasFailures ? "yellow" : "green");
   } catch (err) {
     log(`\n✗ Error: ${err.message}\n`, "red");
     process.exit(1);
