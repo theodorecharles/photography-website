@@ -191,7 +191,8 @@ router.get("/status", async (req: Request, res: Response): Promise<void> => {
     if (!setupComplete) {
       // Capture origin URL - prefer referer (shows frontend domain) over host (shows API domain)
       let origin = 'unknown';
-      const referer = req.headers.referer || req.headers.referrer;
+      const refererHeader = req.headers.referer || req.headers.referrer;
+      const referer = Array.isArray(refererHeader) ? refererHeader[0] : refererHeader;
 
       if (referer) {
         // Extract origin from referer URL (e.g., "https://www-docker.tedcharles.net/")
