@@ -189,27 +189,33 @@ router.get("/status", async (req: Request, res: Response): Promise<void> => {
 
     // Only send installation_started event if setup is NOT complete (actual OOBE)
     if (!setupComplete) {
-      // Debug: Log all headers to diagnose origin detection issues
-      info('[Setup] Request headers:', {
-        host: req.headers.host,
-        'x-forwarded-host': req.headers['x-forwarded-host'],
-        'x-original-host': req.headers['x-original-host'],
-        'x-forwarded-proto': req.headers['x-forwarded-proto'],
-        'x-forwarded-ssl': req.headers['x-forwarded-ssl'],
-        secure: req.secure,
-        referer: req.headers.referer || req.headers.referrer,
-      });
+      // Capture origin URL - prefer referer (shows frontend domain) over host (shows API domain)
+      let origin = 'unknown';
+      const referer = req.headers.referer || req.headers.referrer;
 
-      // Capture origin URL from request - try multiple header sources
-      const protocol = req.headers["x-forwarded-proto"] ||
-                      (req.headers["x-forwarded-ssl"] === "on" ? "https" : undefined) ||
-                      (req.secure ? "https" : "http");
-      const hostHeader = req.headers["x-forwarded-host"] ||
-                        req.headers["x-original-host"] ||
-                        req.headers["host"] ||
-                        "unknown";
-      const host = Array.isArray(hostHeader) ? hostHeader[0] : hostHeader;
-      const origin = `${protocol}://${host}`;
+      if (referer) {
+        // Extract origin from referer URL (e.g., "https://www-docker.tedcharles.net/")
+        try {
+          const refererUrl = new URL(referer);
+          origin = refererUrl.origin; // Gets protocol + host
+        } catch (err) {
+          warn('[Setup] Failed to parse referer URL:', referer);
+        }
+      }
+
+      // Fallback to host header if no referer
+      if (origin === 'unknown') {
+        const protocol = req.headers["x-forwarded-proto"] ||
+                        (req.headers["x-forwarded-ssl"] === "on" ? "https" : undefined) ||
+                        (req.secure ? "https" : "http");
+        const hostHeader = req.headers["x-forwarded-host"] ||
+                          req.headers["x-original-host"] ||
+                          req.headers["host"];
+        if (hostHeader) {
+          const host = Array.isArray(hostHeader) ? hostHeader[0] : hostHeader;
+          origin = `${protocol}://${host}`;
+        }
+      }
 
       info(`[Setup] Sending installation_started event from origin: ${origin}`);
 
