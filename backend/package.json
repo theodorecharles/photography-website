@@ -38,7 +38,7 @@
     "i18next": "^25.6.3",
     "i18next-fs-backend": "^2.6.1",
     "multer": "^2.0.2",
-    "nodemailer": "^7.0.10",
+    "nodemailer": "^7.0.11",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
     "qrcode": "^1.5.4",
