@@ -313,25 +313,21 @@ router.post(
       const projectRoot = path.resolve(__dirname, "../../..");
       const dataDir = process.env.DATA_DIR || path.join(projectRoot, "data");
       const photosDir = path.join(dataDir, "photos");
-      const frontendPublicDir = path.join(projectRoot, "frontend", "public");
+      const iconsDir = path.join(dataDir, "icons");
 
       // Ensure directories exist
       if (!fs.existsSync(photosDir)) {
         fs.mkdirSync(photosDir, { recursive: true });
       }
-      if (!fs.existsSync(frontendPublicDir)) {
-        fs.mkdirSync(frontendPublicDir, { recursive: true });
+      if (!fs.existsSync(iconsDir)) {
+        fs.mkdirSync(iconsDir, { recursive: true });
       }
 
       // Use .png extension for consistency
       const avatarFilename = "avatar.png";
       const avatarPath = path.join(photosDir, avatarFilename);
-      const faviconPngPath = path.join(frontendPublicDir, "favicon.png");
-      const faviconIcoPath = path.join(frontendPublicDir, "favicon.ico");
-
-      // Also define dist path for immediate serving
-      const frontendDistDir = path.join(projectRoot, "frontend", "dist");
-      const faviconIcoPathDist = path.join(frontendDistDir, "favicon.ico");
+      const faviconPngPath = path.join(iconsDir, "favicon.png");
+      const faviconIcoPath = path.join(iconsDir, "favicon.ico");
 
       // Use Sharp to process the avatar image
       try {
@@ -343,12 +339,9 @@ router.post(
           .toFile(avatarPath);
 
         // Update icon files so they stay in sync with avatar
-        const icon192Path = path.join(frontendPublicDir, "icon-192.png");
-        const icon512Path = path.join(frontendPublicDir, "icon-512.png");
-        const appleTouchIconPath = path.join(
-          frontendPublicDir,
-          "apple-touch-icon.png"
-        );
+        const icon192Path = path.join(iconsDir, "icon-192.png");
+        const icon512Path = path.join(iconsDir, "icon-512.png");
+        const appleTouchIconPath = path.join(iconsDir, "apple-touch-icon.png");
 
         // Generate icon-192.png (192x192)
         await sharp(file.path)
@@ -385,25 +378,7 @@ router.post(
           .toFormat("png")
           .toFile(faviconIcoPath);
 
-        info(
-          "[Avatar Upload] Generated avatar.png, icon files, and favicons using Sharp"
-        );
-
-        // Also copy all icons and favicons to dist directory so they're immediately served
-        if (fs.existsSync(frontendDistDir)) {
-          const faviconPngPathDist = path.join(frontendDistDir, "favicon.png");
-          const icon192PathDist = path.join(frontendDistDir, "icon-192.png");
-          const icon512PathDist = path.join(frontendDistDir, "icon-512.png");
-          const appleTouchIconPathDist = path.join(frontendDistDir, "apple-touch-icon.png");
-          
-          fs.copyFileSync(faviconIcoPath, faviconIcoPathDist);
-          fs.copyFileSync(faviconPngPath, faviconPngPathDist);
-          fs.copyFileSync(icon192Path, icon192PathDist);
-          fs.copyFileSync(icon512Path, icon512PathDist);
-          fs.copyFileSync(appleTouchIconPath, appleTouchIconPathDist);
-          
-          info("[Avatar Upload] Copied all icons and favicons to dist directory");
-        }
+        info("[Avatar Upload] Generated avatar.png, icon files, and favicons to data/icons/");
       } catch (err: any) {
         error("[Avatar Upload] Failed to process avatar with Sharp:", err);
         res.status(500).json({ error: "Failed to process avatar image" });
