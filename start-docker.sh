@@ -46,6 +46,18 @@ else
     echo "⚠ Skipping homepage HTML generation (system not configured yet)"
 fi
 
+# Run migrations if config exists
+if [ -f "/data/config.json" ]; then
+    echo "Running migrations..."
+
+    # Reset colors to default (removes OOBE color customization)
+    if node scripts/migrate-reset-colors.js; then
+        echo "✓ Color migration completed"
+    else
+        echo "⚠ Color migration failed (continuing anyway)"
+    fi
+fi
+
 # Generate static JSON files if config exists
 if [ -f "/data/config.json" ]; then
     echo "Generating static JSON files..."

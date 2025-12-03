@@ -256,8 +256,6 @@ router.post(
         adminPassword,
         googleClientId,
         googleClientSecret,
-        primaryColor,
-        secondaryColor,
         metaDescription,
         language,
       } = req.body;
@@ -458,8 +456,6 @@ router.post(
 
       // Update config with user-provided values
       config.branding.siteName = siteName;
-      config.branding.primaryColor = primaryColor || "#4ade80";
-      config.branding.secondaryColor = secondaryColor || "#22c55e";
       config.branding.metaDescription =
         metaDescription || `Photography portfolio by ${siteName}`;
       config.branding.metaKeywords = `photography, portfolio, ${siteName.toLowerCase()}`;
