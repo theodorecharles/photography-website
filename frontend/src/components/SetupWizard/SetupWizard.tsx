@@ -26,8 +26,6 @@ export default function SetupWizard() {
   const [authorizedEmail, setAuthorizedEmail] = useState('');
   const [googleClientId, setGoogleClientId] = useState('');
   const [googleClientSecret, setGoogleClientSecret] = useState('');
-  const [primaryColor, setPrimaryColor] = useState('#4ade80');
-  const [secondaryColor, setSecondaryColor] = useState('#22c55e');
   const [metaDescription, setMetaDescription] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
@@ -195,8 +193,6 @@ export default function SetupWizard() {
           adminPassword: authMethod === 'password' ? adminPassword : undefined,
           googleClientId: authMethod === 'google' ? googleClientId : undefined,
           googleClientSecret: authMethod === 'google' ? googleClientSecret : undefined,
-          primaryColor,
-          secondaryColor,
           metaDescription: metaDescription || t('oobe.siteDescriptionPlaceholder', { siteName }),
           language: currentLanguage,
         }),
@@ -656,35 +652,6 @@ export default function SetupWizard() {
               <p className="step-description">
                 {t('oobe.customizeDescription')}
               </p>
-
-              <div className="form-group">
-                <label>
-                  {t('oobe.colorsLabel')}
-                  <span className="field-hint">{t('oobe.colorsHint')}</span>
-                </label>
-                <div className="color-inputs">
-                  <div className="color-input-group">
-                    <label htmlFor="primaryColor">{t('oobe.primaryColorLabel')}</label>
-                    <input
-                      type="color"
-                      id="primaryColor"
-                      value={primaryColor}
-                      onChange={(e) => setPrimaryColor(e.target.value)}
-                    />
-                    <span className="color-value">{primaryColor}</span>
-                  </div>
-                  <div className="color-input-group">
-                    <label htmlFor="secondaryColor">{t('oobe.secondaryColorLabel')}</label>
-                    <input
-                      type="color"
-                      id="secondaryColor"
-                      value={secondaryColor}
-                      onChange={(e) => setSecondaryColor(e.target.value)}
-                    />
-                    <span className="color-value">{secondaryColor}</span>
-                  </div>
-                </div>
-              </div>
 
               <div className="form-group">
                 <label htmlFor="avatar">
