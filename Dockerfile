@@ -48,9 +48,14 @@ RUN npm install -g tsx pm2
 COPY backend/ ./backend/
 COPY frontend/ ./frontend/
 COPY scripts/ ./scripts/
+COPY config/ ./config/
 
-# Build frontend (create empty data dir for build)
-RUN mkdir -p ./data && npm run build --workspace=frontend
+# Generate default favicons from config/icons/ (before frontend build)
+# Creates empty data dir so generate-favicons falls back to default icons
+RUN mkdir -p ./data && npm run generate-favicons
+
+# Build frontend
+RUN npm run build --workspace=frontend
 
 # Expose ports
 EXPOSE 3000 3001

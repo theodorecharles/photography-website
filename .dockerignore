@@ -10,7 +10,6 @@ build
 data/logs/*
 data/optimized/*
 data/photos/*
-!data/photos/avatar.png
 data/gallery.db*
 .DS_Store
 .vscode
