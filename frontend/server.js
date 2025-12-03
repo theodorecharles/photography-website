@@ -339,13 +339,35 @@ app.get("/manifest.json", (req, res) => {
 });
 
 // Serve dynamic apple-touch-icon for iOS home screen
-app.get("/apple-touch-icon.png", (req, res) => {
-  const apiUrl = config.frontend.apiUrl;
-  const avatarPath = configFile.branding?.avatarPath || "/photos/avatar.png";
-  const avatarUrl = `${apiUrl}${avatarPath}`;
+app.get("/apple-touch-icon.png", (req, res, next) => {
+  // Check if custom icon exists in data/icons/
+  const customIconPath = path.join(dataDir, "icons", "apple-touch-icon.png");
+  if (fs.existsSync(customIconPath)) {
+    return res.sendFile(customIconPath);
+  }
+  // Fall through to static files (defaults from dist/)
+  next();
+});
 
-  // Redirect to the avatar image
-  res.redirect(307, avatarUrl);
+// Serve icons from data/icons/ if they exist, otherwise fall through to dist/ defaults
+const iconFiles = ["icon-192.png", "icon-512.png", "favicon.ico", "favicon.png"];
+iconFiles.forEach((iconFile) => {
+  app.get(`/${iconFile}`, (req, res, next) => {
+    const customIconPath = path.join(dataDir, "icons", iconFile);
+    if (fs.existsSync(customIconPath)) {
+      // Set appropriate content type
+      const ext = path.extname(iconFile).toLowerCase();
+      if (ext === ".png") {
+        res.setHeader("Content-Type", "image/png");
+      } else if (ext === ".ico") {
+        res.setHeader("Content-Type", "image/x-icon");
+      }
+      res.setHeader("Cache-Control", "public, max-age=86400"); // Cache for 1 day
+      return res.sendFile(customIconPath);
+    }
+    // Fall through to static files (defaults from dist/)
+    next();
+  });
 });
 
 // Serve static files from the dist directory
