@@ -14,7 +14,7 @@
   content: '';
   position: fixed;
   inset: -100%;
-  background: 
+  background:
     radial-gradient(circle at 50% 50%, #1a1a1a 0%, transparent 30%),
     conic-gradient(
       from 0deg at 50% 50%,

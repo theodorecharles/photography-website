@@ -624,6 +624,75 @@ router.post(
         error("  Failed to initialize Google OAuth:", err);
       }
 
+      // Set up default avatar if none will be uploaded
+      // This copies the default Galleria logo as the avatar
+      info("\n🖼️ Setting up default avatar...");
+      try {
+        const photosDir = path.join(dataDir, "photos");
+        const iconsDir = path.join(dataDir, "icons");
+        const avatarPath = path.join(photosDir, "avatar.png");
+
+        // Create icons directory if it doesn't exist
+        if (!fs.existsSync(iconsDir)) {
+          fs.mkdirSync(iconsDir, { recursive: true });
+        }
+
+        // Use the default Galleria logo (icon-512.png for best quality)
+        const defaultIconPath = path.join(projectRoot, "config/icons/icon-512.png");
+
+        if (fs.existsSync(defaultIconPath)) {
+          // Copy as avatar.png
+          await sharp(defaultIconPath)
+            .resize(512, 512, { fit: 'cover' })
+            .png()
+            .toFile(avatarPath);
+
+          // Generate all icon variants
+          const icon192Path = path.join(iconsDir, 'icon-192.png');
+          const icon512Path = path.join(iconsDir, 'icon-512.png');
+          const appleTouchIconPath = path.join(iconsDir, 'apple-touch-icon.png');
+          const faviconPngPath = path.join(iconsDir, 'favicon.png');
+          const faviconIcoPath = path.join(iconsDir, 'favicon.ico');
+
+          await sharp(defaultIconPath)
+            .resize(192, 192, { fit: 'cover' })
+            .png()
+            .toFile(icon192Path);
+
+          await sharp(defaultIconPath)
+            .resize(512, 512, { fit: 'cover' })
+            .png()
+            .toFile(icon512Path);
+
+          await sharp(defaultIconPath)
+            .resize(192, 192, { fit: 'cover' })
+            .png()
+            .toFile(appleTouchIconPath);
+
+          await sharp(defaultIconPath)
+            .resize(512, 512, { fit: 'cover' })
+            .png()
+            .toFile(faviconPngPath);
+
+          await sharp(defaultIconPath)
+            .resize(32, 32, { fit: 'cover' })
+            .toFormat('png')
+            .toFile(faviconIcoPath);
+
+          // Update config with avatar path
+          config.branding.avatarPath = "/photos/avatar.png";
+          config.branding.faviconPath = "/favicon.ico";
+          fs.writeFileSync(configPath, JSON.stringify(config, null, 2), "utf8");
+
+          info("  ✓ Default avatar and icons set up successfully");
+        } else {
+          warn("  ⚠️ Default icon not found at:", defaultIconPath);
+        }
+      } catch (err) {
+        warn("  Failed to set up default avatar:", err);
+        // Non-fatal - continue with setup
+      }
+
       // Download GeoIP database in the background (don't block setup completion)
       info("\n🌍 Downloading GeoIP database for location lookup...");
       downloadGeoIPDatabase(dataDir).then(success => {

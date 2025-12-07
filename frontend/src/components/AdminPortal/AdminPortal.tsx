@@ -40,6 +40,20 @@ export default function AdminPortal() {
   const [loading, setLoading] = useState(true);
   const [cssLoaded, setCssLoaded] = useState(false);
   const sseToaster = useSSEToaster();
+
+  // Detect Linux Firefox for animated background workaround
+  const isLinuxFirefox = () => {
+    const ua = navigator.userAgent;
+    const isFirefox = ua.includes('Firefox');
+    const isLinux = ua.includes('Linux');
+    return isFirefox && isLinux;
+  };
+
+  // Helper to determine if animated background should be shown
+  const shouldShowAnimatedBg = () => {
+    if (isLinuxFirefox()) return false; // Disable on Linux Firefox due to gradient banding
+    return branding.enableAnimatedBackground !== false;
+  };
   
   // Redirect to /admin/albums after successful login
   useEffect(() => {
@@ -455,7 +469,7 @@ export default function AdminPortal() {
 
   if (loading || !cssLoaded) {
     return (
-      <div className={`admin-portal ${branding.enableAnimatedBackground !== false ? 'animated-bg' : ''}`}>
+      <div className={`admin-portal ${shouldShowAnimatedBg() ? 'animated-bg' : ''}`}>
         <div className="admin-container">
           <div className="loading-container loading-container-full">
             <div className="loading-spinner"></div>
@@ -468,9 +482,9 @@ export default function AdminPortal() {
 
   if (!authStatus?.authenticated) {
     return (
-      <div className={`admin-portal ${branding.enableAnimatedBackground !== false ? 'animated-bg' : ''}`}>
+      <div className={`admin-portal ${shouldShowAnimatedBg() ? 'animated-bg' : ''}`}>
         <div className="admin-container">
-          <LoginForm 
+          <LoginForm
             availableAuthMethods={availableAuthMethods}
             onLoginSuccess={handleLoginSuccess}
           />
@@ -480,7 +494,7 @@ export default function AdminPortal() {
   }
 
   return (
-    <div className={`admin-portal ${branding.enableAnimatedBackground !== false ? 'animated-bg' : ''}`}>
+    <div className={`admin-portal ${shouldShowAnimatedBg() ? 'animated-bg' : ''}`}>
       <div className="admin-container">
         <div className="admin-header">
           <button
