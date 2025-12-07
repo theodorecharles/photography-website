@@ -21,7 +21,7 @@ services:
     volumes:
       - ${DATA_DIR:-/Users/Ted/Desktop/galleria-data}:/data
     restart: unless-stopped
-    runtime: nvidia
+    # runtime: nvidia  # Uncomment if you have NVIDIA GPU + Container Toolkit
     healthcheck:
       test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3001/api/health"]
       interval: 30s
