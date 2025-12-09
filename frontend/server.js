@@ -255,7 +255,9 @@ app.use("/notifications", express.json(), async (req, res) => {
   // Map /notifications/* to /api/push-notifications/* on backend
   const backendPath = req.path.replace(/^\//, '/api/push-notifications/');
   const targetUrl = `${apiUrl}${backendPath}${req.url.includes('?') ? req.url.substring(req.url.indexOf('?')) : ''}`;
-  
+
+  info(`[Notifications Proxy] ${req.method} ${req.path} -> ${targetUrl}`);
+
   try {
     // Forward the request to the backend (using Node's built-in fetch)
     const response = await fetch(targetUrl, {
@@ -267,20 +269,22 @@ app.use("/notifications", express.json(), async (req, res) => {
       },
       body: req.method !== 'GET' && req.method !== 'HEAD' ? JSON.stringify(req.body) : undefined,
     });
-    
+
+    info(`[Notifications Proxy] Response status: ${response.status}`);
+
     // Forward the response back to the client
     const data = await response.text();
     res.status(response.status);
-    
+
     // Copy relevant headers
     const contentType = response.headers.get('content-type');
     if (contentType) {
       res.setHeader('Content-Type', contentType);
     }
-    
+
     res.send(data);
   } catch (err) {
-    error(`[Proxy] Failed to proxy push notification request:`, err);
+    error(`[Notifications Proxy] Failed to proxy ${req.method} ${req.path} to ${targetUrl}:`, err.message);
     res.status(500).json({ error: 'Proxy error', message: err.message });
   }
 });
