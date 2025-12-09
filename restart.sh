@@ -43,28 +43,12 @@ if ! npm install; then
     handle_error "Root npm install failed"
 fi
 
-# Run database migrations (if database exists)
-if [ -f "data/gallery.db" ]; then
-    log "Running database migrations..."
-    if ! node scripts/migrate-share-links-cascade.js; then
-        handle_error "Database migration (share links) failed"
-    fi
-    if ! node scripts/migrate-add-video-support.js; then
-        handle_error "Database migration (video support) failed"
-    fi
-    if ! node scripts/migrate-push-notifications.js; then
-        handle_error "Database migration (push notifications) failed"
-    fi
-    if ! node scripts/migrate-share-link-notifications.js; then
-        handle_error "Database migration (share link notifications) failed"
-    fi
-    if ! node scripts/migrate-album-view-tracking.js; then
-        handle_error "Database migration (album view tracking) failed"
-    fi
-    log "✓ Database migrations completed"
-else
-    log "Skipping database migrations (database not initialized yet)"
+# Run all database migrations automatically
+log "Running database migrations..."
+if ! node scripts/run-all-migrations.js; then
+    handle_error "Database migrations failed"
 fi
+log "✓ Database migrations completed"
 
 # Download GeoIP database if it doesn't exist (for failed login location tracking)
 if [ ! -f "data/GeoLite2-City.mmdb" ]; then
