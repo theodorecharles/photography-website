@@ -350,56 +350,20 @@ if (!sessionSecret) {
   }
 }
 
-// Determine cookie domain based on environment
-// For localhost/IPs, DON'T set domain (undefined) - browsers handle these specially
-// For production domains, extract the base domain to share across subdomains
-let cookieDomain: string | undefined = undefined;
-try {
-  // Prefer BACKEND_DOMAIN env var over config.frontend.apiUrl
-  // This handles Docker deployments where config may have internal IP but env var has public domain
-  const backendUrlString = isEnvSet(process.env.BACKEND_DOMAIN)
-    ? process.env.BACKEND_DOMAIN!
-    : config.frontend.apiUrl;
-  const backendUrl = new URL(backendUrlString);
-  const hostname = backendUrl.hostname;
-
-  debug(`[Cookie Domain] Using URL: ${backendUrlString} (hostname: ${hostname})`);
-
-  // Check if hostname is an IP address (IPv4 pattern)
-  const isIpAddress = /^(\d{1,3}\.){3}\d{1,3}$/.test(hostname);
-
-  if (hostname === "localhost" || hostname === "127.0.0.1" || isIpAddress) {
-    // For local development or IP addresses, leave domain undefined
-    // Setting explicit domain on IPs causes cookie rejection
-    cookieDomain = undefined;
-    debug(
-      `[Cookie Domain] Set to undefined (${isIpAddress ? "IP address" : "localhost"})`
-    );
-  } else {
-    // For production domains, extract base domain (e.g., 'example.com' from 'api.example.com')
-    // Set to '.domain.com' to share across subdomains
-    const parts = hostname.split(".");
-    if (parts.length >= 2) {
-      // Get last two parts (domain.tld)
-      cookieDomain = "." + parts.slice(-2).join(".");
-      debug(`[Cookie Domain] Set to: ${cookieDomain}`);
-    }
+// Helper to extract base domain from hostname (e.g., 'api.example.com' -> '.example.com')
+function getBaseDomain(hostname: string): string | undefined {
+  const parts = hostname.split(".");
+  if (parts.length >= 2) {
+    return "." + parts.slice(-2).join(".");
   }
-} catch (err) {
-  warn("[Cookie Domain] Could not parse backend URL, using undefined");
+  return undefined;
 }
 
-// Use the isProduction variable already defined above (line 56)
-// For localhost, disable SameSite to allow cross-port cookies
-// For production, use 'lax' for OAuth compatibility
-const sameSiteValue = isProduction ? "lax" : false;
-
-debug("[Server] Session cookie config:", {
-  secure: isProduction,
-  httpOnly: true,
-  sameSite: sameSiteValue,
-  domain: cookieDomain,
-});
+// Helper to check if hostname is an IP address or localhost
+function isLocalOrIP(hostname: string): boolean {
+  const isIpAddress = /^(\d{1,3}\.){3}\d{1,3}$/.test(hostname);
+  return hostname === "localhost" || hostname === "127.0.0.1" || isIpAddress;
+}
 
 // Initialize SQLite session store
 const db = initializeDatabase();
@@ -408,6 +372,8 @@ const SqliteStore = SqliteStoreFactory(session);
 // Initialize push notifications after database is ready
 initializePushNotifications();
 
+// Session middleware with dynamic cookie configuration
+// Cookie domain and secure flag are set per-request based on how the user accesses the site
 app.use(
   session({
     store: new SqliteStore({
@@ -422,16 +388,42 @@ app.use(
     saveUninitialized: false,
     rolling: true, // Extend session on every request to prevent expiration during long uploads
     cookie: {
-      secure: isProduction, // HTTPS only in production
       httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
-      // Disable SameSite for localhost (different ports = cross-site)
-      // Use 'lax' for production (OAuth compatible)
-      sameSite: sameSiteValue as any,
-      domain: cookieDomain,
+      // Default values - will be overridden per-request by middleware below
+      secure: false,
+      sameSite: "lax" as any,
     },
   })
 );
+
+// Middleware to dynamically set cookie options based on request origin
+// This allows both IP access (http://4.20.69.80) and domain access (https://api.example.com)
+app.use((req: Request, res: Response, next) => {
+  if (req.session && req.session.cookie) {
+    const host = req.hostname || req.headers.host?.split(":")[0] || "";
+    const isSecure = req.secure || req.headers["x-forwarded-proto"] === "https";
+
+    // Set secure flag based on actual connection protocol
+    req.session.cookie.secure = isSecure;
+
+    // Set sameSite based on environment
+    // Use 'lax' for HTTPS (production), false/none for HTTP (development)
+    req.session.cookie.sameSite = isSecure ? "lax" : false;
+
+    // Set domain based on how user is accessing
+    if (isLocalOrIP(host)) {
+      // IP or localhost access: don't set domain (browser uses exact origin)
+      req.session.cookie.domain = undefined as any;
+    } else {
+      // Domain access: set base domain for cross-subdomain sharing
+      req.session.cookie.domain = getBaseDomain(host) as any;
+    }
+
+    debug(`[Session Cookie] host=${host}, secure=${isSecure}, domain=${req.session.cookie.domain}`);
+  }
+  next();
+});
 
 // Middleware to detect and clear stale session cookies
 // This handles the case where a client has a connect.sid cookie referencing
@@ -448,20 +440,21 @@ app.use((req: Request, res: Response, next) => {
     // Clear cookies on all possible domains to handle domain changes
     // This ensures old cookies from different domain configurations are removed
     const hostname = req.hostname;
+    const baseDomain = getBaseDomain(hostname);
     const clearCookieOptions = { path: "/", httpOnly: true };
 
     // Clear on exact hostname (e.g., api-docker.tedcharles.net)
     res.clearCookie("connect.sid", { ...clearCookieOptions, domain: hostname });
 
     // Clear on base domain (e.g., .tedcharles.net)
-    if (cookieDomain) {
-      res.clearCookie("connect.sid", { ...clearCookieOptions, domain: cookieDomain });
+    if (baseDomain) {
+      res.clearCookie("connect.sid", { ...clearCookieOptions, domain: baseDomain });
     }
 
     // Clear without explicit domain (browser default)
     res.clearCookie("connect.sid", clearCookieOptions);
 
-    debug(`[Session] Cleared cookies on domains: ${hostname}, ${cookieDomain || 'none'}, default`);
+    debug(`[Session] Cleared cookies on domains: ${hostname}, ${baseDomain || 'none'}, default`);
 
     req.session.regenerate((err) => {
       if (err) {
