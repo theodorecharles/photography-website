@@ -372,6 +372,21 @@ const SqliteStore = SqliteStoreFactory(session);
 // Initialize push notifications after database is ready
 initializePushNotifications();
 
+// Middleware to set dynamic cookie options BEFORE session middleware runs
+// This allows both IP access (http://4.20.69.80) and domain access (https://api.example.com)
+app.use((req: Request, res: Response, next) => {
+  const host = req.hostname || req.headers.host?.split(":")[0] || "";
+  const isSecure = req.secure || req.headers["x-forwarded-proto"] === "https";
+
+  // Store computed values on request for session middleware to use
+  (req as any).__cookieSecure = isSecure;
+  (req as any).__cookieSameSite = isSecure ? "lax" : false;
+  (req as any).__cookieDomain = isLocalOrIP(host) ? undefined : getBaseDomain(host);
+
+  debug(`[Session Cookie] host=${host}, secure=${isSecure}, domain=${(req as any).__cookieDomain}`);
+  next();
+});
+
 // Session middleware with dynamic cookie configuration
 // Cookie domain and secure flag are set per-request based on how the user accesses the site
 app.use(
@@ -390,37 +405,21 @@ app.use(
     cookie: {
       httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
-      // Default values - will be overridden per-request by middleware below
-      secure: false,
+      secure: "auto" as any, // Will be set dynamically
       sameSite: "lax" as any,
     },
   })
 );
 
-// Middleware to dynamically set cookie options based on request origin
-// This allows both IP access (http://4.20.69.80) and domain access (https://api.example.com)
+// Middleware to apply dynamic cookie options after session is initialized
 app.use((req: Request, res: Response, next) => {
   if (req.session && req.session.cookie) {
-    const host = req.hostname || req.headers.host?.split(":")[0] || "";
-    const isSecure = req.secure || req.headers["x-forwarded-proto"] === "https";
-
-    // Set secure flag based on actual connection protocol
-    req.session.cookie.secure = isSecure;
-
-    // Set sameSite based on environment
-    // Use 'lax' for HTTPS (production), false/none for HTTP (development)
-    req.session.cookie.sameSite = isSecure ? "lax" : false;
-
-    // Set domain based on how user is accessing
-    if (isLocalOrIP(host)) {
-      // IP or localhost access: don't set domain (browser uses exact origin)
-      req.session.cookie.domain = undefined as any;
-    } else {
-      // Domain access: set base domain for cross-subdomain sharing
-      req.session.cookie.domain = getBaseDomain(host) as any;
+    req.session.cookie.secure = (req as any).__cookieSecure;
+    req.session.cookie.sameSite = (req as any).__cookieSameSite;
+    // Only set domain if we have one (undefined means browser default)
+    if ((req as any).__cookieDomain) {
+      req.session.cookie.domain = (req as any).__cookieDomain;
     }
-
-    debug(`[Session Cookie] host=${host}, secure=${isSecure}, domain=${req.session.cookie.domain}`);
   }
   next();
 });
