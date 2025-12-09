@@ -533,7 +533,7 @@ app.get(/^\/.*/, async (req, res) => {
         // Fall through to default handling
       }
     } else {
-      warn("[SSR] Pre-rendered homepage not found, using default index.html");
+      debug("[SSR] Pre-rendered homepage not found, using default index.html");
       // Fall through to default handling
     }
   }

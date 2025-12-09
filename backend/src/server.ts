@@ -422,6 +422,28 @@ app.use(
   })
 );
 
+// Middleware to detect and clear stale session cookies
+// This handles the case where a client has a connect.sid cookie referencing
+// a session that no longer exists in the database (e.g., after DB reset or config change)
+app.use((req: Request, res: Response, next) => {
+  // Check if client sent a session cookie but session is empty/uninitialized
+  const hasCookie = req.headers.cookie?.includes("connect.sid");
+  const sessionIsEmpty = !req.session || (!req.session.passport && !(req.session as any).userId);
+
+  if (hasCookie && sessionIsEmpty && req.sessionID) {
+    // The client has a stale cookie - regenerate the session to clear it
+    debug("[Session] Detected stale session cookie, regenerating session");
+    req.session.regenerate((err) => {
+      if (err) {
+        warn("[Session] Failed to regenerate stale session:", err);
+      }
+      next();
+    });
+  } else {
+    next();
+  }
+});
+
 // Initialize Passport for Google OAuth
 app.use(passport.initialize());
 app.use(passport.session());
