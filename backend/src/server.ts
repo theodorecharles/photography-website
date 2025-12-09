@@ -428,7 +428,7 @@ app.use(
 app.use((req: Request, res: Response, next) => {
   // Check if client sent a session cookie but session is empty/uninitialized
   const hasCookie = req.headers.cookie?.includes("connect.sid");
-  const sessionIsEmpty = !req.session || (!req.session.passport && !(req.session as any).userId);
+  const sessionIsEmpty = !req.session || (!(req.session as any).passport && !(req.session as any).userId);
 
   if (hasCookie && sessionIsEmpty && req.sessionID) {
     // The client has a stale cookie - regenerate the session to clear it
