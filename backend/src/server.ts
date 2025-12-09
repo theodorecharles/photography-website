@@ -29,6 +29,7 @@ import config, {
   RATE_LIMIT_WINDOW_MS,
   RATE_LIMIT_MAX_REQUESTS,
   getLogLevel,
+  isEnvSet,
 } from "./config.ts";
 import { validateProductionSecurity } from "./security.ts";
 import { initializeDatabase } from "./database.ts";
@@ -351,8 +352,15 @@ if (!sessionSecret) {
 // For production domains, extract the base domain to share across subdomains
 let cookieDomain: string | undefined = undefined;
 try {
-  const backendUrl = new URL(config.frontend.apiUrl);
+  // Prefer BACKEND_DOMAIN env var over config.frontend.apiUrl
+  // This handles Docker deployments where config may have internal IP but env var has public domain
+  const backendUrlString = isEnvSet(process.env.BACKEND_DOMAIN)
+    ? process.env.BACKEND_DOMAIN!
+    : config.frontend.apiUrl;
+  const backendUrl = new URL(backendUrlString);
   const hostname = backendUrl.hostname;
+
+  debug(`[Cookie Domain] Using URL: ${backendUrlString} (hostname: ${hostname})`);
 
   // Check if hostname is an IP address (IPv4 pattern)
   const isIpAddress = /^(\d{1,3}\.){3}\d{1,3}$/.test(hostname);
@@ -362,7 +370,7 @@ try {
     // Setting explicit domain on IPs causes cookie rejection
     cookieDomain = undefined;
     debug(
-      `Cookie domain: undefined (${isIpAddress ? "IP address" : "localhost"})`
+      `[Cookie Domain] Set to undefined (${isIpAddress ? "IP address" : "localhost"})`
     );
   } else {
     // For production domains, extract base domain (e.g., 'example.com' from 'api.example.com')
@@ -371,11 +379,11 @@ try {
     if (parts.length >= 2) {
       // Get last two parts (domain.tld)
       cookieDomain = "." + parts.slice(-2).join(".");
-      debug(`Cookie domain set to: ${cookieDomain}`);
+      debug(`[Cookie Domain] Set to: ${cookieDomain}`);
     }
   }
 } catch (err) {
-  warn("Could not parse backend URL for cookie domain, using undefined");
+  warn("[Cookie Domain] Could not parse backend URL, using undefined");
 }
 
 // Use the isProduction variable already defined above (line 56)
