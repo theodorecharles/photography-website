@@ -131,7 +131,10 @@ app.use((req, res, next) => {
 });
 
 // HTTPS redirect middleware (production only)
-const isProduction = config.frontend.apiUrl.startsWith("https://");
+// Check BACKEND_DOMAIN env var first (for Docker), then fall back to config
+const isProduction = isEnvSet(process.env.BACKEND_DOMAIN)
+  ? process.env.BACKEND_DOMAIN!.startsWith("https://")
+  : config.frontend.apiUrl.startsWith("https://");
 if (isProduction) {
   app.use((req, res, next) => {
     // Skip HTTPS redirect for IP addresses (e.g., direct Docker access) and localhost
