@@ -441,6 +441,25 @@ app.use((req: Request, res: Response, next) => {
   if (hasCookie && sessionIsEmpty && req.sessionID) {
     // The client has a stale cookie - regenerate the session to clear it
     debug("[Session] Detected stale session cookie, regenerating session");
+
+    // Clear cookies on all possible domains to handle domain changes
+    // This ensures old cookies from different domain configurations are removed
+    const hostname = req.hostname;
+    const clearCookieOptions = { path: "/", httpOnly: true };
+
+    // Clear on exact hostname (e.g., api-docker.tedcharles.net)
+    res.clearCookie("connect.sid", { ...clearCookieOptions, domain: hostname });
+
+    // Clear on base domain (e.g., .tedcharles.net)
+    if (cookieDomain) {
+      res.clearCookie("connect.sid", { ...clearCookieOptions, domain: cookieDomain });
+    }
+
+    // Clear without explicit domain (browser default)
+    res.clearCookie("connect.sid", clearCookieOptions);
+
+    debug(`[Session] Cleared cookies on domains: ${hostname}, ${cookieDomain || 'none'}, default`);
+
     req.session.regenerate((err) => {
       if (err) {
         warn("[Session] Failed to regenerate stale session:", err);
