@@ -46,16 +46,12 @@ else
     echo "⚠ Skipping homepage HTML generation (system not configured yet)"
 fi
 
-# Run migrations if config exists
-if [ -f "/data/config.json" ]; then
-    echo "Running migrations..."
-
-    # Reset colors to default (removes OOBE color customization)
-    if node scripts/migrate-reset-colors.js; then
-        echo "✓ Color migration completed"
-    else
-        echo "⚠ Color migration failed (continuing anyway)"
-    fi
+# Run all database migrations automatically
+echo "Running database migrations..."
+if node scripts/run-all-migrations.js; then
+    echo "✓ Database migrations completed"
+else
+    echo "⚠ Some migrations failed (continuing anyway)"
 fi
 
 # Generate static JSON files if config exists

@@ -14,6 +14,7 @@ import {
   AnalyticsIcon,
   LoggingIcon,
 } from '../../../icons';
+import { API_URL } from '../../../../config';
 import './SettingsHome.css';
 
 interface SettingsCardProps {
@@ -59,7 +60,7 @@ const SettingsHome: React.FC = () => {
 
   useEffect(() => {
     // Fetch config to check what's configured
-    fetch('/api/config', {
+    fetch(`${API_URL}/api/config`, {
       credentials: 'include',
       headers: {
         'Accept': 'application/json',
