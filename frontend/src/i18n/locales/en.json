@@ -205,6 +205,7 @@
     "photoGridTheme": "Photo Grid Theme",
     "photoGridThemeDescription": "Choose light or dark theme for the photo grid background.",
     "photoGridThemeSaved": "Photo grid theme saved!",
+    "dropdownStyleSaved": "Dropdown style saved!",
     "customCSS": "Custom CSS",
     "customCSSDescription": "Add custom CSS styles to your site. Changes are applied after saving.",
     "customCSSPlaceholder": "/* Enter your custom CSS here */\n.header {\n  /* Example: border-radius: 0; */\n}",

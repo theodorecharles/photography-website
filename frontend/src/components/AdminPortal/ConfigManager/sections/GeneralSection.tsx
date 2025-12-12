@@ -1291,9 +1291,12 @@ const GeneralSection: React.FC<GeneralSectionProps> = ({
                   if (res.ok) {
                     setMessage({ type: 'success', text: t('general.photoGridThemeSaved') });
                     setOriginalBranding(updatedBranding);
+                  } else {
+                    const errorData = await res.json().catch(() => ({}));
+                    setMessage({ type: 'error', text: errorData.error || 'Failed to save photo grid theme' });
                   }
                 } catch (err) {
-                  // Silent fail
+                  setMessage({ type: 'error', text: 'Failed to save photo grid theme' });
                 }
               }}
             />
@@ -1330,10 +1333,14 @@ const GeneralSection: React.FC<GeneralSectionProps> = ({
                     body: JSON.stringify(updatedBranding),
                   });
                   if (res.ok) {
+                    setMessage({ type: 'success', text: t('general.dropdownStyleSaved') });
                     setOriginalBranding(updatedBranding);
+                  } else {
+                    const errorData = await res.json().catch(() => ({}));
+                    setMessage({ type: 'error', text: errorData.error || 'Failed to save dropdown style' });
                   }
                 } catch (err) {
-                  // Silent fail
+                  setMessage({ type: 'error', text: 'Failed to save dropdown style' });
                 }
               }}
             />
