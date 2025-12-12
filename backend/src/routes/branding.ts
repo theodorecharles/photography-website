@@ -171,7 +171,10 @@ router.put("/", requireManager, (req: Request, res: Response) => {
           return;
         }
       } else if (key === "headerBlur") {
-        if (typeof value !== "number" || value < 0 || value > 20) {
+        // Handle backward compatibility: convert old boolean values to numbers
+        if (typeof value === "boolean") {
+          updates.headerBlur = value ? 10 : 0; // true -> 10px, false -> 0px
+        } else if (typeof value !== "number" || value < 0 || value > 20) {
           res.status(400).json({ error: "Header blur must be a number between 0 and 20" });
           return;
         }
