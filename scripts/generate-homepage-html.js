@@ -248,7 +248,10 @@ async function generateHomepageHtml() {
       avatarPath: config.branding?.avatarPath || "/photos/avatar.png",
       primaryColor: config.branding?.primaryColor || "#4ade80",
       secondaryColor: config.branding?.secondaryColor || "#3b82f6",
-      language: config.branding?.language || "en"
+      language: config.branding?.language || "en",
+      headerTheme: config.branding?.headerTheme || "light",
+      headerBackgroundColor: config.branding?.headerBackgroundColor || "#e7e7e7",
+      headerTextColor: config.branding?.headerTextColor || "#1e1e1e"
     };
 
     // Build initial data object

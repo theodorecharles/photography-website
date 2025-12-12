@@ -667,9 +667,12 @@ app.get(/^\/.*/, async (req, res) => {
             avatarPath: configFile.branding?.avatarPath || "/photos/avatar.png",
             primaryColor: configFile.branding?.primaryColor || "#4ade80",
             secondaryColor: configFile.branding?.secondaryColor || "#3b82f6",
-            language: configFile.branding?.language || "en"
+            language: configFile.branding?.language || "en",
+            headerTheme: configFile.branding?.headerTheme || "light",
+            headerBackgroundColor: configFile.branding?.headerBackgroundColor || "#e7e7e7",
+            headerTextColor: configFile.branding?.headerTextColor || "#1e1e1e"
           };
-          
+
           const htmlWithBranding = htmlWithPlaceholders.replace(
             '<script type="module"',
             `<script>window.__RUNTIME_API_URL__ = "${apiUrl}"; window.__RUNTIME_BRANDING__ = ${JSON.stringify(brandingData)};</script>\n    <script type="module"`
@@ -811,9 +814,12 @@ app.get(/^\/.*/, async (req, res) => {
             avatarPath: configFile.branding?.avatarPath || "/photos/avatar.png",
             primaryColor: configFile.branding?.primaryColor || "#4ade80",
             secondaryColor: configFile.branding?.secondaryColor || "#3b82f6",
-            language: configFile.branding?.language || "en"
+            language: configFile.branding?.language || "en",
+            headerTheme: configFile.branding?.headerTheme || "light",
+            headerBackgroundColor: configFile.branding?.headerBackgroundColor || "#e7e7e7",
+            headerTextColor: configFile.branding?.headerTextColor || "#1e1e1e"
           };
-          
+
           const htmlWithBranding = htmlWithPlaceholders.replace(
             '<script type="module"',
             `<script>window.__RUNTIME_API_URL__ = "${apiUrl}"; window.__RUNTIME_BRANDING__ = ${JSON.stringify(brandingData)};</script>\n    <script type="module"`
@@ -977,9 +983,12 @@ app.get(/^\/.*/, async (req, res) => {
             avatarPath: configFile.branding?.avatarPath || "/photos/avatar.png",
             primaryColor: configFile.branding?.primaryColor || "#4ade80",
             secondaryColor: configFile.branding?.secondaryColor || "#3b82f6",
-            language: configFile.branding?.language || "en"
+            language: configFile.branding?.language || "en",
+            headerTheme: configFile.branding?.headerTheme || "light",
+            headerBackgroundColor: configFile.branding?.headerBackgroundColor || "#e7e7e7",
+            headerTextColor: configFile.branding?.headerTextColor || "#1e1e1e"
           };
-          
+
           const htmlWithBranding = htmlWithPlaceholders.replace(
             '<script type="module"',
             `<script>window.__RUNTIME_API_URL__ = "${apiUrl}"; window.__RUNTIME_BRANDING__ = ${JSON.stringify(brandingData)};</script>\n    <script type="module"`
@@ -1070,7 +1079,10 @@ app.get(/^\/.*/, async (req, res) => {
       avatarPath: configFile.branding?.avatarPath || "/photos/avatar.png",
       primaryColor: configFile.branding?.primaryColor || "#4ade80",
       secondaryColor: configFile.branding?.secondaryColor || "#3b82f6",
-      language: configFile.branding?.language || "en"
+      language: configFile.branding?.language || "en",
+      headerTheme: configFile.branding?.headerTheme || "light",
+      headerBackgroundColor: configFile.branding?.headerBackgroundColor || "#e7e7e7",
+      headerTextColor: configFile.branding?.headerTextColor || "#1e1e1e"
     };
     
     modifiedHtml = modifiedHtml.replace(
